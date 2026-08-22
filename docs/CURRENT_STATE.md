@@ -118,6 +118,12 @@ Public n8n URL:
 
 `https://publisher.hodor.com.pl/`
 
+Planned production Studio URL:
+
+`https://studio.hodor.com.pl/`
+
+The Studio URL is the user-facing project site. The publisher URL remains the public n8n endpoint.
+
 The new n8n host port remains bound to localhost and public traffic reaches it through the existing Caddy reverse proxy.
 
 Protected existing work runtime:
