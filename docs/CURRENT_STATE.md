@@ -64,7 +64,8 @@ Current M3 design decisions:
 - exact topic-length and duration bounds are not yet fixed in source of truth and must not be guessed as previous decisions.
 - production workflow name is `WF01 — Create Content Job`;
 - production workflow ID is `Xy94qe35OigtMxkR`;
-- the production workflow shell exists in the new n8n instance but has no nodes configured yet.
+- the production workflow contains an untested input path: `Receive Job Request` -> `Normalize and Validate Input` -> `Input Valid?`, with the false branch connected to `Return Invalid Input` (HTTP 400);
+- the valid PostgreSQL insert and HTTP 201 response path are not configured yet.
 
 ## Current branch and PR
 
@@ -93,6 +94,7 @@ Main currently includes public n8n access through merge commit:
 - public access to the new n8n instance is configured;
 - n8n owner account is configured;
 - production workflow shell `WF01 — Create Content Job` exists in n8n with ID `Xy94qe35OigtMxkR`;
+- WF01 input normalization and invalid-input HTTP 400 path are configured but not yet tested;
 - `publisher.hodor.com.pl` routes to the new n8n instance;
 - staged n8n workflow topology is defined in `docs/ARCHITECTURE.md`;
 - internal stage hand-off is finalized as native n8n sub-workflow execution with `job_id`, not public webhook chaining;
@@ -243,7 +245,7 @@ Do not wire Job Intake to Script & Scene Planning during M3 acceptance.
 
 ## Exact next action
 
-Configure the public `POST /jobs` Webhook trigger in production workflow `WF01 — Create Content Job` (`Xy94qe35OigtMxkR`), then build its normalization and validation path according to M3 acceptance criteria.
+Configure the valid branch in `WF01 — Create Content Job`: insert exactly one row into `jobs`, return HTTP 201 with the PostgreSQL-generated `job_id`, and keep Script & Scene Planning disconnected.
 
 After the workflow is built:
 
