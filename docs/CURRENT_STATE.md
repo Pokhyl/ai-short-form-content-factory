@@ -54,6 +54,15 @@ Acceptance:
 - response contains the new `job_id`;
 - no AI call during M3 acceptance testing.
 
+Current M3 design decisions:
+
+- public entry is `POST /jobs` through n8n;
+- valid creation should return HTTP `201 Created`;
+- PostgreSQL generates `jobs.id` with its existing UUID default;
+- M3 stops after the job is created and the response is returned;
+- M3 does not start Script & Scene Planning yet;
+- exact topic-length and duration bounds are not yet fixed in source of truth and must not be guessed as previous decisions.
+
 ## Current branch and PR
 
 Branch:
@@ -81,7 +90,13 @@ Main currently includes public n8n access through merge commit:
 - public access to the new n8n instance is configured;
 - n8n owner account is configured;
 - `publisher.hodor.com.pl` routes to the new n8n instance;
-- staged n8n workflow topology is defined in `docs/ARCHITECTURE.md`.
+- staged n8n workflow topology is defined in `docs/ARCHITECTURE.md`;
+- internal stage hand-off is finalized as native n8n sub-workflow execution with `job_id`, not public webhook chaining;
+- render boundary is finalized as synchronous-first `n8n -> media-worker -> n8n -> PostgreSQL`; async render is deferred until real behavior proves it necessary;
+- media-worker is not allowed to write product state directly to PostgreSQL;
+- human review is a real STOP boundary after `review_ready`; Buffer publishing starts only from a later explicit human action;
+- idempotency is treated as a stage-specific concern, not an automatic property of split workflows;
+- watchdog/reconciler/retry infrastructure remains deliberately deferred until real quality runs reveal recurring failure patterns.
 
 ## Runtime
 
@@ -122,28 +137,81 @@ Application tables in `public`:
 
 The `n8n` schema belongs to n8n and must not be modified manually.
 
+Current schema naming that must be respected:
+
+- `jobs.language_code`;
+- `jobs.target_duration_seconds`;
+- `jobs.last_error`;
+- `scenes.audio_path`;
+- `scenes.visual_path`;
+- `scenes.duration_seconds`.
+
+Do not silently replace these with alternative names from external architecture suggestions.
+
+`jobs.status` and `jobs.current_stage` are separate concepts:
+
+- `status` is the lifecycle/result state;
+- `current_stage` identifies the stage currently responsible for work or failure.
+
+No migration is needed merely to encode proposed state names while the existing TEXT columns are sufficient.
+
 ## Current workflow topology
 
 The product is not implemented as one giant n8n workflow.
 
 ```text
+PUBLIC ENTRY
 Job Intake
   -> Script & Scene Planning
   -> Voiceover Generation
   -> Visual Sourcing
   -> Video Render
   -> review_ready
+  -> STOP
 
-Human review
+HUMAN ACTION
   -> Buffer Draft Publishing
 ```
 
 Stage hand-off contract:
 
-- `job_id` is passed between stage workflows;
+- internal automatic stages use native n8n sub-workflow execution, not public HTTP webhooks;
+- `job_id` is the normal hand-off payload;
 - each stage reloads the durable state it needs from PostgreSQL;
+- each stage checks that the job is eligible for that stage;
 - a stage persists its result before starting the next stage;
-- failure prevents the next stage from starting.
+- failure prevents the next stage from starting;
+- a stage being separate does not by itself make it idempotent.
+
+Public webhooks are reserved for real external boundaries such as Job Intake and the later human review action.
+
+## Render boundary
+
+Initial render design:
+
+```text
+n8n
+  -> POST /render to media-worker
+  -> media-worker performs FFmpeg work and returns the result
+  -> n8n validates it
+  -> n8n writes final_video_path and review_ready to PostgreSQL
+```
+
+Do not add `render_id`, async callback, polling, or direct media-worker database access before a real render test proves synchronous HTTP is insufficient.
+
+## Human review boundary
+
+After successful rendering:
+
+```text
+final_video_path persisted
+status = review_ready
+current_stage = review
+generation execution stops
+```
+
+The later review UI creates the explicit user action that may start Buffer Draft Publishing.
+Do not combine Human Review and Buffer publishing into one long-running workflow.
 
 ## Current task
 
@@ -153,19 +221,29 @@ M3 scope only:
 
 ```text
 topic + language + duration
-  -> validate
-  -> INSERT one row into jobs
-  -> return job_id
+  -> normalize/validate
+  -> invalid: reject without inserting a job
+  -> valid: INSERT exactly one row into jobs
+  -> return HTTP 201 with job_id
 ```
 
 Do not implement AI generation yet.
 Do not implement later stage workflows yet.
+Do not wire Job Intake to Script & Scene Planning during M3 acceptance.
 
 ## Exact next action
 
 Create the production `Job Intake` workflow in the new n8n instance and configure its public intake trigger and validation path according to M3 acceptance criteria.
 
-After the workflow is built, export its JSON into the repository under `n8n/workflows/` and validate M3 with real HTTP requests and direct PostgreSQL checks before merging PR #4.
+After the workflow is built:
+
+1. test invalid HTTP requests and confirm no row is inserted;
+2. test one valid request and confirm exactly one `jobs` row is inserted;
+3. confirm the response contains the correct `job_id`;
+4. verify the row directly in PostgreSQL;
+5. export the production workflow JSON under `n8n/workflows/`;
+6. update this file with the validated result;
+7. only then complete and merge PR #4.
 
 ## Working rules
 
@@ -182,10 +260,16 @@ Before answering or acting on this project:
 ## Do not do
 
 - no giant single n8n workflow for the whole lifecycle;
+- no public webhook chaining between internal automatic stages;
 - no custom dispatcher;
+- no watchdog/reconciler at this stage;
+- no PostgreSQL polling queue;
 - no Redis;
 - no n8n queue mode;
 - no leases/fencing/reconciliation engine;
+- no generic retry/idempotency framework before concrete failure patterns require it;
+- no direct product-state writes from media-worker to PostgreSQL;
+- no async render infrastructure before synchronous render is proven insufficient;
 - no extra microservices without a demonstrated requirement;
 - no secrets in GitHub;
 - no global Docker prune operations on the shared VPS;
