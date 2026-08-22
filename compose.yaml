@@ -33,12 +33,20 @@ services:
       N8N_HOST: ${N8N_HOST}
       N8N_PORT: ${N8N_PORT}
       N8N_PROTOCOL: ${N8N_PROTOCOL}
+      N8N_EDITOR_BASE_URL: ${N8N_EDITOR_BASE_URL}
+      WEBHOOK_URL: ${WEBHOOK_URL}
+      N8N_PROXY_HOPS: ${N8N_PROXY_HOPS}
       GENERIC_TIMEZONE: ${GENERIC_TIMEZONE}
       TZ: ${GENERIC_TIMEZONE}
     ports:
       - "127.0.0.1:${N8N_PORT}:5678"
     volumes:
       - n8n_data:/home/node/.n8n
+    networks:
+      default:
+      edge:
+        aliases:
+          - content-factory-n8n
 
   media-worker:
     build:
@@ -50,6 +58,11 @@ services:
       - "127.0.0.1:${MEDIA_WORKER_PORT}:3001"
     volumes:
       - media_data:/data
+
+networks:
+  edge:
+    external: true
+    name: n8n_default
 
 volumes:
   postgres_data:
