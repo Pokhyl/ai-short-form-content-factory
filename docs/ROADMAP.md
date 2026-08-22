@@ -55,6 +55,8 @@ Learning focus:
 
 ## M2 — PostgreSQL application state
 
+Status: completed on 2026-08-22.
+
 Goal: understand and use the four application tables.
 
 Acceptance:
@@ -63,6 +65,13 @@ Acceptance:
 - read it back;
 - create scenes linked by foreign key;
 - verify cascade behavior in a disposable test row.
+
+Validated runtime result:
+
+- manually inserted and read back a `jobs` row;
+- created two `scenes` linked to the job through `scenes.job_id`;
+- verified the foreign-key relationship uses the existing job UUID;
+- verified `ON DELETE CASCADE` by deleting a disposable job and confirming its linked scene was automatically removed.
 
 Learning focus:
 
