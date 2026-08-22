@@ -62,6 +62,9 @@ Current M3 design decisions:
 - M3 stops after the job is created and the response is returned;
 - M3 does not start Script & Scene Planning yet;
 - exact topic-length and duration bounds are not yet fixed in source of truth and must not be guessed as previous decisions.
+- production workflow name is `WF01 — Create Content Job`;
+- production workflow ID is `Xy94qe35OigtMxkR`;
+- the production workflow shell exists in the new n8n instance but has no nodes configured yet.
 
 ## Current branch and PR
 
@@ -89,6 +92,7 @@ Main currently includes public n8n access through merge commit:
 - three-service runtime is deployed on the VPS;
 - public access to the new n8n instance is configured;
 - n8n owner account is configured;
+- production workflow shell `WF01 — Create Content Job` exists in n8n with ID `Xy94qe35OigtMxkR`;
 - `publisher.hodor.com.pl` routes to the new n8n instance;
 - staged n8n workflow topology is defined in `docs/ARCHITECTURE.md`;
 - internal stage hand-off is finalized as native n8n sub-workflow execution with `job_id`, not public webhook chaining;
@@ -239,7 +243,7 @@ Do not wire Job Intake to Script & Scene Planning during M3 acceptance.
 
 ## Exact next action
 
-Create the production `Job Intake` workflow in the new n8n instance and configure its public intake trigger and validation path according to M3 acceptance criteria.
+Configure the public `POST /jobs` Webhook trigger in production workflow `WF01 — Create Content Job` (`Xy94qe35OigtMxkR`), then build its normalization and validation path according to M3 acceptance criteria.
 
 After the workflow is built:
 
