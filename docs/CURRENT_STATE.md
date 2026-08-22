@@ -5,6 +5,20 @@ Last updated: 2026-08-22
 This file is the first checkpoint to read before continuing work on this repository.
 If chat history conflicts with this file, `docs/ARCHITECTURE.md`, or `docs/ROADMAP.md`, the repository wins.
 
+## Mandatory assistant protocol
+
+For every technical reply or action about this project, the assistant must first fetch the current version of `docs/CURRENT_STATE.md` from the active feature branch. Do not rely on a previously fetched copy or on chat memory.
+
+When the reply involves architecture, also fetch `docs/ARCHITECTURE.md` before answering.
+When the reply changes milestone scope, acceptance, or progression, also fetch `docs/ROADMAP.md` before answering.
+
+If repository state and chat history disagree, stop using chat memory and follow the repository source of truth.
+If a fact is not present in the repository and cannot be verified directly, state that it is unknown instead of reconstructing it from memory.
+Do not introduce a new workflow, service, architectural boundary, retry mechanism, or runtime change unless it is explicitly marked as a new proposal first.
+After every completed implementation or runtime step, update this file before moving to the next step.
+
+The project owner should not need to remind the assistant to perform this protocol.
+
 ## Project
 
 AI Short-Form Content Factory
@@ -157,9 +171,9 @@ After the workflow is built, export its JSON into the repository under `n8n/work
 
 Before answering or acting on this project:
 
-1. read `docs/CURRENT_STATE.md` first;
-2. read `docs/ARCHITECTURE.md` for architecture decisions;
-3. read `docs/ROADMAP.md` for milestone scope and acceptance;
+1. fetch the current `docs/CURRENT_STATE.md` from the active feature branch on every technical turn;
+2. fetch `docs/ARCHITECTURE.md` when architecture is involved;
+3. fetch `docs/ROADMAP.md` when milestone scope or acceptance is involved;
 4. do not replace missing facts with remembered chat guesses;
 5. if proposing a new architecture decision, label it as a new proposal before changing the source of truth;
 6. after every completed implementation or runtime step, update this file in the same feature branch;
