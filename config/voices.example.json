@@ -1,21 +1,32 @@
 {
-  "provider": "google_cloud_tts",
+  "profile": "google-selected-v1",
+  "provider": "google_cloud_text_to_speech",
+  "api": {
+    "method": "POST",
+    "endpoint": "https://texttospeech.googleapis.com/v1/text:synthesize",
+    "authentication": "google_oauth2",
+    "audio_encoding": "MP3"
+  },
   "voices": {
     "en": {
-      "voice_name": "RECOVER_SELECTED_VOICE_ID",
-      "language_code": "RECOVER_SELECTED_LANGUAGE_CODE"
+      "language_code": "en-US",
+      "voice_name": "en-US-Chirp3-HD-Algenib",
+      "model_family": "chirp3-hd"
     },
     "pl": {
-      "voice_name": "RECOVER_SELECTED_VOICE_ID",
-      "language_code": "RECOVER_SELECTED_LANGUAGE_CODE"
+      "language_code": "pl-PL",
+      "voice_name": "pl-PL-Chirp3-HD-Enceladus",
+      "model_family": "chirp3-hd"
     },
     "ru": {
-      "voice_name": "RECOVER_SELECTED_VOICE_ID",
-      "language_code": "RECOVER_SELECTED_LANGUAGE_CODE"
+      "language_code": "ru-RU",
+      "voice_name": "ru-RU-Wavenet-D",
+      "model_family": "wavenet"
     },
     "uk": {
-      "voice_name": "RECOVER_SELECTED_VOICE_ID",
-      "language_code": "RECOVER_SELECTED_LANGUAGE_CODE"
+      "language_code": "uk-UA",
+      "voice_name": "uk-UA-Chirp3-HD-Enceladus",
+      "model_family": "chirp3-hd"
     }
   }
 }
