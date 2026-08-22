@@ -15,7 +15,9 @@ Acceptance:
 
 ## M1 — Docker foundation
 
-Goal: run the three-service stack locally.
+Status: completed on 2026-08-22.
+
+Goal: run the three-service stack on the persistent VPS runtime.
 
 Services:
 
@@ -27,8 +29,19 @@ Acceptance:
 
 - `docker compose up -d` succeeds;
 - PostgreSQL becomes healthy;
-- n8n opens locally;
-- `GET /health` on media-worker returns `200` and reports FFmpeg/ffprobe.
+- n8n health endpoint returns `200`;
+- `GET /health` on media-worker returns `200` and reports FFmpeg/ffprobe;
+- application tables exist in `public`;
+- n8n owns a separate `n8n` schema;
+- n8n and media-worker host ports are bound to `127.0.0.1` only.
+
+Validated runtime result:
+
+- PostgreSQL 18 is healthy;
+- n8n 2.33.3 is running and created its internal schema/tables;
+- media-worker is running with FFmpeg 8.1.2 and ffprobe 8.1.2;
+- `jobs`, `scenes`, `assets`, and `publications` exist;
+- persistent Docker volumes exist for PostgreSQL, n8n, and media data.
 
 Learning focus:
 
