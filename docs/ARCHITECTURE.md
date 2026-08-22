@@ -78,21 +78,101 @@ The worker should expose small HTTP operations instead of embedding large FFmpeg
 
 ## Orchestration model
 
-Start with one main n8n workflow.
+The production pipeline is split into stage workflows. Do not build the whole product as one large n8n workflow and do not keep one execution open across the complete lifecycle.
+
+Initial workflow topology:
 
 ```text
-Intake
-  -> Create job
-  -> Generate script
-  -> Save scenes
-  -> Generate voiceovers
-  -> Source visuals
-  -> Render
-  -> Review-ready
-  -> Buffer draft
+Job Intake
+  -> Script & Scene Planning
+  -> Voiceover Generation
+  -> Visual Sourcing
+  -> Video Render
+  -> review_ready
+
+Human review
+  -> Buffer Draft Publishing
 ```
 
-A sub-workflow is introduced only when extraction makes the main workflow objectively easier to understand or reuse.
+### Workflow responsibilities
+
+#### Job Intake
+
+Public entry point for creating a content job.
+
+- accepts `topic`, `language`, and `duration`;
+- validates input;
+- creates exactly one row in `jobs`;
+- returns the new `job_id` to the caller;
+- starts `Script & Scene Planning` with that `job_id` only after the job exists durably.
+
+M3 implements this workflow only. It does not call AI yet during M3 acceptance testing.
+
+#### Script & Scene Planning
+
+- receives `job_id`;
+- loads the job from PostgreSQL;
+- generates the structured script and scene plan;
+- validates model output;
+- persists scenes;
+- starts `Voiceover Generation` only after the scene plan is stored successfully.
+
+#### Voiceover Generation
+
+- receives `job_id`;
+- loads the persisted scenes;
+- generates one voiceover per scene using the configured voice for the job language;
+- stores audio paths and measured durations;
+- starts `Visual Sourcing` only after all required scene audio is ready.
+
+#### Visual Sourcing
+
+- receives `job_id`;
+- loads scenes and their visual intent;
+- searches the configured providers;
+- persists selected asset metadata and local paths;
+- uses a local fallback when no acceptable external asset exists;
+- starts `Video Render` only after every scene has usable visual material.
+
+#### Video Render
+
+- receives `job_id`;
+- loads the complete persisted job state;
+- calls `media-worker` for normalization and FFmpeg rendering;
+- validates the rendered output;
+- stores `final_video_path`;
+- marks the job `review_ready`;
+- stops. It does not publish automatically.
+
+#### Buffer Draft Publishing
+
+This workflow is outside the automatic generation chain.
+
+- starts only after an explicit human review action;
+- receives `job_id`;
+- verifies that a completed rendered video exists;
+- sends the approved video to Buffer as a draft;
+- persists the publishing result in `publications`.
+
+The exact review UI trigger is implemented when the review UI/publishing milestones are reached. Do not keep the generation execution waiting for human input.
+
+### Workflow hand-off contract
+
+`job_id` is the contract between stage workflows.
+
+Each stage:
+
+1. receives `job_id`;
+2. reloads the durable state it needs from PostgreSQL;
+3. updates `jobs.current_stage` before or as the stage begins;
+4. performs only its own responsibility;
+5. persists its output before starting the next stage;
+6. starts the next workflow only after successful persistence;
+7. on failure, records the error and does not start the next stage.
+
+Stage workflows are internal n8n workflows and are not exposed as public webhooks merely to pass data between stages. The public entry point is `Job Intake`; the later human review action provides the explicit entry point for publishing.
+
+This design deliberately avoids one giant workflow while also avoiding a custom orchestration platform. n8n remains the orchestrator and PostgreSQL remains the durable source of truth.
 
 Do not build:
 
@@ -163,7 +243,7 @@ Buffer is the first publishing integration because draft publishing already work
 Initial target:
 
 ```text
-final.mp4 -> Buffer draft -> manual review -> publish
+final.mp4 -> human review -> Buffer draft
 ```
 
 Direct TikTok/Instagram/YouTube API publishing is a later milestone, not a prerequisite for the first complete product.
