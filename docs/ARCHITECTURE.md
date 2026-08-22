@@ -344,6 +344,10 @@ Direct TikTok/Instagram/YouTube API publishing is a later milestone, not a prere
 
 ## UI direction
 
+Planned production Studio URL:
+
+`https://studio.hodor.com.pl/`
+
 The previous Studio screen is retained only as a UX reference, not as code.
 
 Desired layout:
