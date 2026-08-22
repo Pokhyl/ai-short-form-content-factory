@@ -1,0 +1,21 @@
+{
+  "provider": "google_cloud_tts",
+  "voices": {
+    "en": {
+      "voice_name": "RECOVER_SELECTED_VOICE_ID",
+      "language_code": "RECOVER_SELECTED_LANGUAGE_CODE"
+    },
+    "pl": {
+      "voice_name": "RECOVER_SELECTED_VOICE_ID",
+      "language_code": "RECOVER_SELECTED_LANGUAGE_CODE"
+    },
+    "ru": {
+      "voice_name": "RECOVER_SELECTED_VOICE_ID",
+      "language_code": "RECOVER_SELECTED_LANGUAGE_CODE"
+    },
+    "uk": {
+      "voice_name": "RECOVER_SELECTED_VOICE_ID",
+      "language_code": "RECOVER_SELECTED_LANGUAGE_CODE"
+    }
+  }
+}
