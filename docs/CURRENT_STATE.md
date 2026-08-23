@@ -205,9 +205,40 @@ Final VPS reconciliation was then verified on 2026-08-23:
 
 WF01 must return HTTP 201 without waiting for the downstream pipeline to complete.
 
+## Deferred M9 Studio status endpoint requirement
+
+This is intentionally deferred from M5, but it must not be forgotten.
+
+The production Studio must monitor jobs through one separate read-only HTTP status endpoint, not through public webhooks added to each internal stage.
+
+Locked direction:
+
+- internal automatic hand-offs remain native n8n sub-workflows: WF01 -> WF02 -> WF03 -> later stages;
+- do not add public progress webhooks to WF02/WF03/WF04 merely so the site can see progress;
+- during M9 add one separate n8n workflow/webhook that accepts a `job_id`, validates it, reads durable state from PostgreSQL, and returns job status;
+- at minimum return `job_id`, `status`, `current_stage`, and `last_error`;
+- the browser must never connect directly to PostgreSQL;
+- the Studio may poll this single status endpoint while a job is running.
+
+This requirement is also recorded in `docs/ROADMAP.md` M9 by commit `ec0eb9a6167820c6d3c895ec9f8a606773a2f470`.
+
 ## WF03 implementation checkpoint
 
-The production n8n workflow `WF03 — Voiceover Generation` has been created as the real M5 stage workflow, and a real HTTP Request node named `Generate Voiceover` has been added to it. The exact workflow ID has not yet been recorded. No Cloud TTS request from this real node has been accepted yet.
+Production workflow:
+
+- name: `WF03 — Voiceover Generation`;
+- exact workflow ID verified from the live n8n URL on 2026-08-23: `UHxvCZNqaLb1RKMM`.
+
+The latest full-canvas screenshot directly shows the currently saved WF03 topology as only two nodes:
+
+```text
+When clicking 'Execute workflow'
+-> Generate Voiceover
+```
+
+`Generate Voiceover` is the real HTTP Request node intended for Google Cloud Text-to-Speech. No Cloud TTS request from this real node has been accepted yet.
+
+The current Manual Trigger is only a temporary scaffold and must be replaced by a production `Execute Sub-workflow Trigger` receiving only `job_id` before WF02 is wired to WF03.
 
 The previously suggested disposable/temporary TTS node is no longer part of the plan. The real `Generate Voiceover` node will remain in WF03, but it must be fed by the permanent dynamic job/scene path rather than by hardcoded test narration or language.
 
@@ -224,7 +255,9 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 ## Exact next action
 
-Resume M5 in production `WF03 — Voiceover Generation`. First record the exact WF03 workflow ID from the live n8n workflow URL and inspect the current saved WF03 nodes/configuration before adding the permanent dynamic job/scene path. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
+Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`). Replace the temporary Manual Trigger with an `Execute Sub-workflow Trigger` named `Receive Job ID` and define exactly one string workflow input: `job_id`. Do not connect that trigger directly to `Generate Voiceover`; the permanent validation/PostgreSQL preparation path must be inserted first. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
+
+Before the next VPS Git change, synchronize the VPS branch again because the remote feature branch has advanced with documentation commits.
 
 ## Do not do
 
