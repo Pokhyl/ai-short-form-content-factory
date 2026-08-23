@@ -272,7 +272,7 @@ Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastruc
 
 ## Exact next action
 
-Identify the actual AI provider/credential available for this project, configure exactly one structured-output request, and do not expose or commit the API key.
+Add a `Validate Structured Plan` Code node after `Generate Structured Plan`, parse and independently validate the complete Gemini JSON response, and keep every PostgreSQL write downstream of that validation.
 
 ## Working rules
 
