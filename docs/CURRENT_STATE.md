@@ -118,43 +118,56 @@ Stage hand-off remains only:
 }
 ```
 
-## Verified M5 repository boundary
+## Verified M5 repository and runtime boundary
 
-Repository inspection established:
-
-- `services/media-worker/src/server.mjs` currently implements only `GET /health`; there is no audio upload/save/probe endpoint yet;
-- the media-worker image already has FFmpeg and ffprobe;
-- `compose.yaml` mounts persistent `media_data` only at `/data` inside `media-worker`;
-- n8n does not share `media_data` directly;
-- therefore the repository currently has no path for n8n to persist generated TTS audio into durable media storage or ask media-worker to measure generated audio;
-- `.env.example` intentionally contains no external-provider configuration yet.
-
-## Verified M5 production runtime inspection — complete
-
-Read-only production inspection established:
+Repository/runtime inspection established:
 
 - production VPS is on `feat/m5-voiceover`;
 - n8n credential metadata contains exactly `Application PostgreSQL | postgres` and `Google Gemini API | httpHeaderAuth`;
 - no dedicated Google Cloud Text-to-Speech credential exists in the new production n8n runtime;
 - the Gemini header-auth credential must not be reused or assumed valid for Cloud TTS;
 - media-worker `GET /health` returns HTTP 200 and reports FFmpeg 8.1.2 plus ffprobe 8.1.2;
-- the persistent Docker volume `ai-short-form-content-factory_media_data` is mounted at `/data` and is writable by media-worker;
-- accepted M4 job `6b08098c-e5c7-45bd-babb-036705b563e1` is `language_code = pl`, `target_duration_seconds = 30`, `status = processing`, `current_stage = script`, `last_error IS NULL`;
-- the job has exactly 8 `planned` scenes;
-- every scene has non-empty narration;
-- all 8 scenes still have `audio_path IS NULL`;
-- all 8 scenes still have `duration_seconds IS NULL`;
-- aggregate verification returned `scene_count = 8`, `audio_path_null_count = 8`, `duration_null_count = 8`, `invalid_narration_count = 0`.
-
-The accepted M4 job is therefore a clean eligible M5 test job.
+- persistent Docker volume `ai-short-form-content-factory_media_data` is mounted at `/data` and writable by media-worker;
+- n8n does not share `media_data` directly;
+- accepted M4 job `6b08098c-e5c7-45bd-babb-036705b563e1` is `pl`, 30 seconds, `processing/script`, `last_error IS NULL`;
+- it has exactly 8 `planned` scenes, all with non-empty narration;
+- all 8 scenes have `audio_path IS NULL` and `duration_seconds IS NULL`;
+- the accepted M4 job is therefore a clean eligible M5 test job.
 
 ## Concrete smallest M5 implementation boundary
 
-No new service is required. n8n will own the Google Cloud TTS request and PostgreSQL writes; the existing media-worker will receive the returned MP3 bytes, persist them under its existing `/data` volume, validate/probe the audio with ffprobe, and return a durable media-relative path plus measured duration to n8n.
+No new service is required. n8n owns the Google Cloud TTS request and PostgreSQL writes. The existing media-worker owns local audio persistence plus ffprobe validation/duration measurement.
 
-The file operation will use a deterministic per-scene path under `jobs/<job_id>/voiceover/` so a repeated store for the same scene replaces the same artifact rather than creating duplicate files. `scenes.audio_path` will store the media-relative path, not a host-specific absolute path.
+Google Cloud TTS REST synthesis requires OAuth authentication with the `cloud-platform` scope. A dedicated Google authentication credential must be created in n8n before the real TTS call. Do not use an API-key guess or reuse the Gemini header credential.
 
-Google Cloud TTS REST synthesis requires OAuth authentication with the `cloud-platform` scope; a dedicated Google authentication credential must be created in n8n before the real TTS call. Do not use an API-key guess or reuse the Gemini header credential.
+`scenes.audio_path` will store a media-relative path under the media-worker `/data` root, not a host-specific absolute path.
+
+## Implemented M5 media-worker boundary
+
+Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` adds internal JSON `POST /audio/store` to `services/media-worker/src/server.mjs` while preserving `GET /health`.
+
+Request contract:
+
+```json
+{
+  "job_id": "<uuid>",
+  "scene_number": 1,
+  "audio_base64": "<Google TTS MP3 base64>"
+}
+```
+
+Behavior:
+
+- validates JSON size, UUID, scene number, and canonical base64;
+- decodes MP3 bytes only inside media-worker;
+- writes to a temporary file under deterministic `jobs/<job_id>/voiceover/scene-XX.mp3` storage;
+- probes the temporary file with ffprobe and rejects invalid/non-positive duration audio;
+- atomically renames the validated file into place;
+- repeated storage for the same job/scene replaces the same deterministic artifact instead of creating duplicate files;
+- returns `audio_path`, measured `duration_seconds`, and byte size;
+- does not write PostgreSQL state.
+
+The Node.js source passed `node --check` before commit. Runtime deployment/test has not yet occurred.
 
 ## Reliability constraints
 
@@ -164,7 +177,7 @@ No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service i
 
 ## Exact next action
 
-Implement the smallest missing media-worker operation in the M5 branch: add an internal JSON `POST /audio/store` endpoint that accepts `job_id`, `scene_number`, and Google TTS `audio_base64`; validates and atomically writes one MP3 to deterministic media-relative storage under `/data/jobs/<job_id>/voiceover/`; probes the temporary file with ffprobe before publish; and returns `audio_path`, `duration_seconds`, and byte size. Preserve `GET /health`. After committing this repository change, sync/rebuild only `media-worker` on the VPS and test the endpoint with a disposable generated MP3 before building WF03.
+Sync the VPS to the current `feat/m5-voiceover` head, rebuild/recreate only `media-worker`, verify `GET /health`, then test `POST /audio/store` with a disposable locally generated MP3 that does not touch PostgreSQL. Require a successful response with a deterministic media-relative path and positive ffprobe duration, verify the file exists under `/data`, then delete only that disposable test artifact. After this runtime boundary passes, record the checkpoint and build WF03 plus the dedicated Google Cloud TTS credential.
 
 ## Do not do
 
