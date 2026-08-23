@@ -64,9 +64,10 @@ Current M3 design decisions:
 - exact topic-length and duration bounds are not yet fixed in source of truth and must not be guessed as previous decisions.
 - production workflow name is `WF01 — Create Content Job`;
 - production workflow ID is `Xy94qe35OigtMxkR`;
-- the production workflow contains the complete but untested M3 path: `Receive Job Request` -> `Normalize and Validate Input` -> `Input Valid?`;
-- the false branch is connected to `Return Invalid Input` (HTTP 400);
-- the true branch is connected to `Insert Job` -> `Return Created Job` (intended HTTP 201 with the PostgreSQL-generated `job_id`);
+- the published production workflow contains the complete M3 path: `Receive Job Request` -> `Normalize and Validate Input` -> `Input Valid?`;
+- the false branch is connected to `Return Invalid Input` and returned HTTP 400 for an unsupported `de` language request;
+- the true branch is connected to `Insert Job` -> `Return Created Job` and returned HTTP 201 with `job_id` `ba081017-2345-4212-a1c4-cde6df8de574` for a valid request;
+- direct PostgreSQL verification of those HTTP results is still pending because the local SSH key requested its passphrase;
 - Script & Scene Planning remains disconnected.
 
 ## Current branch and PR
@@ -96,7 +97,9 @@ Main currently includes public n8n access through merge commit:
 - public access to the new n8n instance is configured;
 - n8n owner account is configured;
 - production workflow shell `WF01 — Create Content Job` exists in n8n with ID `Xy94qe35OigtMxkR`;
-- the complete WF01 M3 graph is configured in n8n, including the invalid HTTP 400 branch and the valid PostgreSQL insert / HTTP 201 branch, but has not yet been execution-tested;
+- the complete WF01 M3 graph is configured and published in n8n;
+- production HTTP testing returned 400 for invalid input and 201 with a generated `job_id` for valid input;
+- direct PostgreSQL verification is still pending;
 - `publisher.hodor.com.pl` routes to the new n8n instance;
 - staged n8n workflow topology is defined in `docs/ARCHITECTURE.md`;
 - internal stage hand-off is finalized as native n8n sub-workflow execution with `job_id`, not public webhook chaining;
@@ -247,17 +250,15 @@ Do not wire Job Intake to Script & Scene Planning during M3 acceptance.
 
 ## Exact next action
 
-Publish `WF01 — Create Content Job` so its production webhook is registered, then run the M3 acceptance tests against the production endpoint. Script & Scene Planning must remain disconnected.
+Complete direct PostgreSQL verification for the production HTTP test: confirm no invalid marker row exists, confirm exactly one row exists for `job_id` `ba081017-2345-4212-a1c4-cde6df8de574`, and compare the stored values. Script & Scene Planning must remain disconnected.
 
-Acceptance sequence:
+Remaining acceptance sequence:
 
-1. test invalid HTTP requests and confirm no row is inserted;
-2. test one valid request and confirm exactly one `jobs` row is inserted;
-3. confirm the response contains the correct `job_id`;
-4. verify the row directly in PostgreSQL;
-5. export the production workflow JSON under `n8n/workflows/`;
-6. update this file with the validated result;
-7. only then complete and merge PR #4.
+1. verify the invalid request created no PostgreSQL row;
+2. verify the valid request created exactly one row whose UUID matches the returned `job_id`;
+3. export the production workflow JSON under `n8n/workflows/`;
+4. update this file with the validated result;
+5. only then complete and merge PR #4.
 
 ## Working rules
 
