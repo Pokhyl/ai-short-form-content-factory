@@ -30,6 +30,18 @@ Topic
   -> Buffer draft
 ```
 
+## Runtime
+
+VPS: `root@37.27.87.6`
+
+Project path: `/opt/ai-short-form-content-factory`
+
+Services: `n8n`, `postgres`, `media-worker`.
+
+Public n8n URL: `https://publisher.hodor.com.pl/`
+
+The `n8n` PostgreSQL schema belongs to n8n and must not be modified manually.
+
 ## M4 completed checkpoint
 
 M4 PR #5 was merged into `main` on 2026-08-23.
@@ -46,18 +58,6 @@ Production WF02:
 - accepted quality job: `6b08098c-e5c7-45bd-babb-036705b563e1` with exactly 8 persisted scenes and manual quality PASS.
 
 Do not rerun prior M4 acceptance jobs.
-
-## Runtime
-
-VPS: `root@37.27.87.6`
-
-Project path: `/opt/ai-short-form-content-factory`
-
-Services: `n8n`, `postgres`, `media-worker`.
-
-Public n8n URL: `https://publisher.hodor.com.pl/`
-
-The `n8n` PostgreSQL schema belongs to n8n and must not be modified manually.
 
 ## Exact recovered M5 voice configuration
 
@@ -165,43 +165,20 @@ Do not create a replacement OAuth client, API key, service account, or billing s
 
 ## WF01 hand-off checkpoint
 
-WF01 is no longer treated as fully finished merely because M3 acceptance passed. Production chain wiring is being completed as downstream stages become available.
-
 Production `WF01 — Create Content Job` workflow ID: `Xy94qe35OigtMxkR`.
 
-On 2026-08-23 the user added and saved a real `Execute Sub-workflow` node named `Start Script Planning`. The latest WF01 canvas screenshot directly confirms this branch topology:
+The saved production WF01 export and remote repository copy are verified with blob SHA `a71161b373bb56bd0aba8abeba410e17011dcb5c`.
 
-```text
-Insert Job
-├──> Return Created Job
-└──> Start Script Planning
-```
+The export confirms:
 
-The same canvas shows `Start Script Planning` targeting workflow ID `TJfA4ZYUEKSTad6k`, which is production `WF02 — Plan Script and Scenes`.
-
-The saved production WF01 export was captured from n8n and copied into `n8n/workflows/WF01-create-content-job.json`. Verification on the VPS passed:
-
-- branch: `feat/m5-voiceover`;
-- exported file size: 8564 bytes;
-- repository copy size: 8564 bytes;
-- `git diff --check` passed;
-- target workflow ID: `TJfA4ZYUEKSTad6k`;
+- target workflow ID: `TJfA4ZYUEKSTad6k` (`WF02 — Plan Script and Scenes`);
 - mapped input: `job_id = {{ $json.job_id }}`;
 - `waitForSubWorkflow = false`;
 - `Insert Job` branches to both `Return Created Job` and `Start Script Planning`.
 
-The VPS then synchronized to remote checkpoint `318e9dca6f93645179791feb4fa8092298ebff17` and created local commit `10f36e0` with message `n8n: wire WF01 to script planning`. The subsequent VPS `git push` failed because the VPS origin is HTTPS and no GitHub username/credential was available non-interactively.
+Remote workflow commit: `353149dbe5ff7e511ad5dfe7683b00755f765727`.
 
-The verified WF01 export was then committed to the remote branch directly through the connected GitHub integration as commit `353149dbe5ff7e511ad5dfe7683b00755f765727`. Its content blob SHA is `a71161b373bb56bd0aba8abeba410e17011dcb5c`, matching the verified exported file diff target. Therefore the intended WF01 export is present in the remote repository even though the VPS push itself failed.
-
-Final VPS reconciliation was then verified on 2026-08-23:
-
-- VPS working tree was clean before alignment;
-- local WF01 blob SHA and remote WF01 blob SHA both equaled `a71161b373bb56bd0aba8abeba410e17011dcb5c`;
-- the remote WF01 export independently passed checks for target WF02 ID, `job_id` mapping, and `waitForSubWorkflow = false`;
-- the only pre-alignment tree difference was `docs/CURRENT_STATE.md`;
-- VPS was reset to `origin/feat/m5-voiceover` commit `508dfdd32ce9cd7c8758feacce30c54e723269cd`;
-- final `VPS_REMOTE_MATCH` check returned `YES` and working tree status was empty.
+Final VPS reconciliation was verified on 2026-08-23: working tree clean, local/remote WF01 blobs matched, remote handoff checks passed, VPS aligned to remote, and `VPS_REMOTE_MATCH` returned `YES`.
 
 WF01 must return HTTP 201 without waiting for the downstream pipeline to complete.
 
@@ -227,20 +204,36 @@ This requirement is also recorded in `docs/ROADMAP.md` M9 by commit `ec0eb9a6167
 Production workflow:
 
 - name: `WF03 — Voiceover Generation`;
-- exact workflow ID verified from the live n8n URL on 2026-08-23: `UHxvCZNqaLb1RKMM`.
+- exact workflow ID: `UHxvCZNqaLb1RKMM`.
 
-The latest full-canvas screenshot directly shows the currently saved WF03 topology as only two nodes:
+Latest screenshots on 2026-08-23 directly confirm the canvas now shows:
 
 ```text
-When clicking 'Execute workflow'
+Receive Job ID
 -> Generate Voiceover
 ```
 
-`Generate Voiceover` is the real HTTP Request node intended for Google Cloud Text-to-Speech. No Cloud TTS request from this real node has been accepted yet.
+Therefore the old Manual Trigger is no longer present on the visible canvas and a node named `Receive Job ID` is now present.
 
-The current Manual Trigger is only a temporary scaffold and must be replaced by a production `Execute Sub-workflow Trigger` receiving only `job_id` before WF02 is wired to WF03.
+Important verification boundary:
 
-The previously suggested disposable/temporary TTS node is no longer part of the plan. The real `Generate Voiceover` node will remain in WF03, but it must be fed by the permanent dynamic job/scene path rather than by hardcoded test narration or language.
+- the screenshots do **not** show the `Receive Job ID` node Parameters, so its exact node type and whether the one workflow input is actually configured as `job_id` string are not yet directly verified;
+- the canvas currently shows `Receive Job ID` connected directly to `Generate Voiceover`; this direct connection is only temporary and must be replaced by the permanent validation/PostgreSQL preparation path before any real TTS execution.
+
+The `Generate Voiceover` Parameters screenshot directly confirms:
+
+- Method: `POST`;
+- Authentication: `Predefined Credential Type`;
+- Credential Type: `Google OAuth2 API`;
+- selected credential display name: `Google account`;
+- `Send Headers` is enabled;
+- header name: `x-goog-user-project`;
+- header value: `n8n-drive-voiceover`;
+- `Send Body` is enabled.
+
+The URL field visibly points to the Google Text-to-Speech API, but the screenshot does not provide a reliable untruncated proof of the final URL characters. The body configuration is below the visible fold and is not yet verified. No Cloud TTS request from this real node has been accepted yet.
+
+The real `Generate Voiceover` node will remain in WF03, but it must be fed by the permanent dynamic job/scene path rather than by hardcoded test narration or language.
 
 ## Smallest M5 implementation boundary
 
@@ -255,7 +248,12 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 ## Exact next action
 
-Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`). Replace the temporary Manual Trigger with an `Execute Sub-workflow Trigger` named `Receive Job ID` and define exactly one string workflow input: `job_id`. Do not connect that trigger directly to `Generate Voiceover`; the permanent validation/PostgreSQL preparation path must be inserted first. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
+Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
+
+1. Verify/configure `Receive Job ID` as an `Execute Sub-workflow Trigger` with exactly one string workflow input named `job_id`.
+2. Insert a Code node named `Normalize Job ID` immediately after it, using the same UUID normalization/validation logic already accepted in WF02.
+3. Do **not** connect `Normalize Job ID` directly to `Generate Voiceover` yet; PostgreSQL job/scene loading and eligibility validation must be inserted first.
+4. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
 
 Before the next VPS Git change, synchronize the VPS branch again because the remote feature branch has advanced with documentation commits.
 
