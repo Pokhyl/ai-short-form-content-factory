@@ -6,7 +6,7 @@ This file is the first checkpoint to read before continuing work on this reposit
 
 ## Mandatory assistant protocol
 
-For every technical reply or action about this project, fetch the current `docs/CURRENT_STATE.md` from the active feature branch first. Fetch `docs/ARCHITECTURE.md` when architecture is involved and `docs/ROADMAP.md` when milestone scope, acceptance, or progression is involved. Repository state overrides chat memory. Unknown facts must not be guessed. After every completed implementation or runtime step, update this file before moving on. Export production n8n workflows into the repository.
+For every technical reply or action about this project, fetch the current `docs/CURRENT_STATE.md` from the active feature branch first. Fetch `docs/ARCHITECTURE.md` when architecture is involved and `docs/ROADMAP.md` when milestone scope, acceptance, or progression is involved. Repository state overrides chat memory. Unknown facts must not be guessed. After every completed implementation or runtime/setup step, update this file before moving on. Export production n8n workflows into the repository.
 
 ## Project
 
@@ -44,11 +44,9 @@ Future Studio URL: `https://studio.hodor.com.pl/`
 
 The `n8n` PostgreSQL schema belongs to n8n and must not be modified manually. Application state lives in `public`.
 
-## M4 completed checkpoint
+## Completed upstream checkpoints
 
-M4 PR #5 was merged into `main` on 2026-08-23.
-
-Merge commit: `7d25bac1c4d1a90b2b29183d9ec3ca280d1acfc4`.
+M4 PR #5 merged into `main` on 2026-08-23, merge commit `7d25bac1c4d1a90b2b29183d9ec3ca280d1acfc4`.
 
 Production `WF02 — Plan Script and Scenes`:
 
@@ -60,7 +58,19 @@ Production `WF02 — Plan Script and Scenes`:
 
 Do not rerun prior M4 acceptance jobs.
 
-## Exact recovered M5 voice configuration
+Production `WF01 — Create Content Job`:
+
+- workflow ID: `Xy94qe35OigtMxkR`;
+- verified export blob SHA: `a71161b373bb56bd0aba8abeba410e17011dcb5c`;
+- verified target: `TJfA4ZYUEKSTad6k` (`WF02`);
+- verified input mapping: `job_id = {{ $json.job_id }}`;
+- verified `waitForSubWorkflow = false`;
+- verified `Insert Job` branches to both `Return Created Job` and `Start Script Planning`;
+- remote workflow commit: `353149dbe5ff7e511ad5dfe7683b00755f765727`.
+
+WF01 must return HTTP 201 without waiting for the downstream pipeline.
+
+## Exact M5 voice configuration
 
 Provider: Google Cloud Text-to-Speech.
 
@@ -77,7 +87,7 @@ Do not substitute guessed voices.
 
 ## M5 architecture contract
 
-Voiceover Generation is a separate n8n stage workflow.
+`WF03 — Voiceover Generation` is a separate n8n stage workflow.
 
 It:
 
@@ -92,7 +102,7 @@ It:
 - starts Visual Sourcing only after every required scene audio is ready;
 - on failure records `jobs.status = failed`, `jobs.current_stage = voiceover`, and `jobs.last_error`, and does not start the next stage.
 
-Stage hand-off remains only:
+Stage hand-off payload remains only:
 
 ```json
 {
@@ -112,17 +122,9 @@ WF03 is reusable production logic, not a workflow for one topic, one phrase, one
 - no production TTS node may hardcode a topic, narration phrase, or Polish-only settings;
 - concrete values may be used only for acceptance/testing and must not remain as permanent production configuration.
 
-## Verified M5 production boundary
-
-- accepted M4 job `6b08098c-e5c7-45bd-babb-036705b563e1` is `pl`, 30 seconds, `processing/script`, with exactly 8 planned scenes and non-empty narration;
-- all accepted-job `audio_path` / `duration_seconds` values were NULL at the M5 starting checkpoint;
-- media-worker `GET /health` returned HTTP 200 with FFmpeg 8.1.2 and ffprobe 8.1.2;
-- persistent volume `ai-short-form-content-factory_media_data` is mounted at `/data` and writable by media-worker;
-- n8n does not mount that media volume directly.
-
 ## Accepted media-worker audio boundary
 
-Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` added internal `POST /audio/store` to the existing `media-worker` service.
+Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` added internal `POST /audio/store` to existing `media-worker`.
 
 Request:
 
@@ -137,7 +139,7 @@ Request:
 Behavior:
 
 - stores deterministic media-relative path `jobs/<job_id>/voiceover/scene-XX.mp3`;
-- validates the stored candidate with ffprobe before replacing the final path;
+- validates the candidate with ffprobe before replacing the final path;
 - returns `audio_path`, measured `duration_seconds`, and byte size;
 - never writes PostgreSQL directly.
 
@@ -155,44 +157,24 @@ Verified:
 - current callback: `https://publisher.hodor.com.pl/rest/oauth2-credential/callback`;
 - current n8n credential type: `Google OAuth2 API`;
 - scope: `https://www.googleapis.com/auth/cloud-platform`;
-- user completed Google authorization in the current n8n runtime;
+- user completed Google authorization in current n8n runtime;
 - first real authenticated Cloud TTS request is still pending acceptance.
 
-Do not create a replacement OAuth client, API key, service account, or billing setup. Never expose OAuth secrets.
+Do not create replacement auth objects and never expose OAuth secrets.
 
-## WF01 hand-off checkpoint
+## Verified M5 production boundary
 
-Production `WF01 — Create Content Job` workflow ID: `Xy94qe35OigtMxkR`.
+Accepted M4 job `6b08098c-e5c7-45bd-babb-036705b563e1` was `pl`, 30 seconds, `processing/script`, with exactly 8 planned scenes and non-empty narration. At the M5 starting checkpoint all its `audio_path` / `duration_seconds` values were NULL.
 
-Verified export blob SHA: `a71161b373bb56bd0aba8abeba410e17011dcb5c`.
+Media-worker health and writable persistent `/data` media volume were verified. n8n does not mount that media volume directly.
 
-Verified hand-off:
+## Deferred M9 Studio status endpoint
 
-- target workflow ID: `TJfA4ZYUEKSTad6k` (`WF02`);
-- input mapping: `job_id = {{ $json.job_id }}`;
-- `waitForSubWorkflow = false`;
-- `Insert Job` branches to both `Return Created Job` and `Start Script Planning`.
+Do not implement during M5, but do not forget it.
 
-Remote workflow commit: `353149dbe5ff7e511ad5dfe7683b00755f765727`.
+During M9 add one separate read-only n8n HTTP status workflow/webhook that accepts `job_id`, validates it, reads PostgreSQL, and returns at minimum `job_id`, `status`, `current_stage`, and `last_error`. Do not add public progress webhooks to WF02/WF03/WF04. Browser must never connect directly to PostgreSQL. Studio may poll the single status endpoint.
 
-WF01 must return HTTP 201 without waiting for the downstream pipeline.
-
-## Deferred M9 Studio status endpoint requirement
-
-Do not forget this requirement, but do not implement it during M5.
-
-The Studio must monitor jobs through one separate read-only HTTP status endpoint, not through public webhooks added to each internal stage.
-
-During M9 add one n8n workflow/webhook that accepts a `job_id`, validates it, reads durable state from PostgreSQL, and returns at minimum:
-
-- `job_id`;
-- `status`;
-- `current_stage`;
-- `last_error`.
-
-The browser must never connect directly to PostgreSQL. Studio may poll this single endpoint while a job is running.
-
-This requirement is also recorded in `docs/ROADMAP.md` M9 by commit `ec0eb9a6167820c6d3c895ec9f8a606773a2f470`.
+This is also recorded in `docs/ROADMAP.md` M9 by commit `ec0eb9a6167820c6d3c895ec9f8a606773a2f470`.
 
 ## WF03 implementation checkpoint
 
@@ -216,17 +198,11 @@ Directly verified from screenshots:
 
 User-reported implementation steps on 2026-08-23, not yet independently verified by screenshot/export:
 
-1. `Require Eligible Voiceover Job` was added after `Load Voiceover Context`, Mode `Run Once for All Items`, using the supplied validation code that checks:
-   - job exists;
-   - `status = processing` and `current_stage = script`;
-   - supported language `en/pl/ru/uk`;
-   - exact duration-specific scene count;
-   - sequential scene numbers;
-   - non-empty narration;
-   - no pre-existing `audio_path` or `duration_seconds`.
-2. `Begin Voiceover Stage` was added after `Require Eligible Voiceover Job` as an `Application PostgreSQL` / `Execute Query` node with parameter `{{ [ $json.job_id ] }}`. The supplied SQL atomically updates only `processing/script` jobs to `current_stage = voiceover`, leaves `status = processing`, and returns whether the transition occurred.
+1. `Require Eligible Voiceover Job` was added after `Load Voiceover Context`, Mode `Run Once for All Items`, using supplied validation code that checks job existence, `processing/script`, supported language, exact duration-specific scene count, sequential scenes, non-empty narration, and no existing audio results.
+2. `Begin Voiceover Stage` was added after eligibility validation as `Application PostgreSQL` / `Execute Query`, using supplied SQL that atomically changes only `processing/script` jobs to `current_stage = voiceover`, keeps `status = processing`, and returns `transitioned`, `status`, and `current_stage`.
+3. `Prepare Voiceover Items` was added after `Begin Voiceover Stage`, Mode `Run Once for All Items`, using supplied code that requires `transitioned === true`, checks job identity/state, selects the exact locked voice from `jobs.language_code`, and emits one item per scene with only `job_id`, `scene_id`, `scene_number`, `language_code`, `voice_name`, and `narration`.
 
-Do not treat these two user-reported nodes as visually/export-verified until a screenshot or workflow export confirms them.
+Do not treat these three user-reported nodes as visually/export-verified until a screenshot or workflow export confirms them.
 
 ## Smallest M5 implementation boundary
 
@@ -241,22 +217,22 @@ No new service is required.
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
-1. Add a Code node after `Begin Voiceover Stage` that verifies `transitioned === true` and prepares one output item per scene.
-2. Select the exact voice deterministically from `jobs.language_code` using the locked four-language map.
-3. Each output item must carry only the durable identifiers/data needed for the next TTS request: `job_id`, `scene_id`, `scene_number`, `language_code`, `voice_name`, and `narration`.
-4. Keep `Generate Voiceover` disconnected until this preparation node is configured and verified.
+1. Configure the existing `Generate Voiceover` HTTP Request node as the permanent dynamic Google Cloud TTS request fed by `Prepare Voiceover Items`.
+2. Use the exact endpoint `https://texttospeech.googleapis.com/v1/text:synthesize`, the existing Google OAuth2 credential, `x-goog-user-project: n8n-drive-voiceover`, JSON body built from the current scene item, and `audioEncoding = MP3`.
+3. Do not execute real TTS yet until the dynamic body is configured and visually verified.
+4. After TTS configuration, add the existing media-worker `/audio/store` call, then persist returned `audio_path` and measured `duration_seconds` through n8n.
 5. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
 
-Before the next VPS Git change, synchronize the VPS branch again because the remote feature branch has advanced with documentation commits.
+Before the next VPS Git change, synchronize the VPS branch because the remote feature branch has advanced with documentation commits.
 
 ## Do not do
 
-- do not substitute different voice presets;
-- do not hardcode a topic, narration phrase, or Polish-only settings in production WF03;
-- do not reuse the Gemini credential for TTS;
+- do not substitute voice presets;
+- do not hardcode topic, narration, or Polish-only settings;
+- do not reuse Gemini credential for TTS;
 - do not create new auth objects;
 - do not expose secrets;
-- do not start M6 before M5 passes real voice acceptance;
+- do not start M6 before M5 real voice acceptance;
 - do not modify the `n8n` PostgreSQL schema manually;
 - do not add retry/dispatcher/queue/watchdog/Redis/generic idempotency infrastructure;
 - do not add extra services;
