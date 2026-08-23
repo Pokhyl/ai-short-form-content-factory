@@ -192,7 +192,16 @@ The saved production WF01 export was captured from n8n and copied into `n8n/work
 
 The VPS then synchronized to remote checkpoint `318e9dca6f93645179791feb4fa8092298ebff17` and created local commit `10f36e0` with message `n8n: wire WF01 to script planning`. The subsequent VPS `git push` failed because the VPS origin is HTTPS and no GitHub username/credential was available non-interactively.
 
-The verified WF01 export was then committed to the remote branch directly through the connected GitHub integration as commit `353149dbe5ff7e511ad5dfe7683b00755f765727`. Its content blob SHA is `a71161b373bb56bd0aba8abeba410e17011dcb5c`, matching the verified exported file diff target. Therefore the intended WF01 export is now present in the remote repository even though the VPS push itself failed.
+The verified WF01 export was then committed to the remote branch directly through the connected GitHub integration as commit `353149dbe5ff7e511ad5dfe7683b00755f765727`. Its content blob SHA is `a71161b373bb56bd0aba8abeba410e17011dcb5c`, matching the verified exported file diff target. Therefore the intended WF01 export is present in the remote repository even though the VPS push itself failed.
+
+Final VPS reconciliation was then verified on 2026-08-23:
+
+- VPS working tree was clean before alignment;
+- local WF01 blob SHA and remote WF01 blob SHA both equaled `a71161b373bb56bd0aba8abeba410e17011dcb5c`;
+- the remote WF01 export independently passed checks for target WF02 ID, `job_id` mapping, and `waitForSubWorkflow = false`;
+- the only pre-alignment tree difference was `docs/CURRENT_STATE.md`;
+- VPS was reset to `origin/feat/m5-voiceover` commit `508dfdd32ce9cd7c8758feacce30c54e723269cd`;
+- final `VPS_REMOTE_MATCH` check returned `YES` and working tree status was empty.
 
 WF01 must return HTTP 201 without waiting for the downstream pipeline to complete.
 
@@ -215,7 +224,7 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 ## Exact next action
 
-Reconcile the VPS Git branch with the remote branch after the failed HTTPS push. First fetch `origin/feat/m5-voiceover`, verify the VPS working tree is clean and that the local commit tree matches the remote tree, then fast-align/reset the VPS branch to the remote commit. Do not rerun WF01 or the end-to-end chain before this Git reconciliation is verified.
+Resume M5 in production `WF03 — Voiceover Generation`. First record the exact WF03 workflow ID from the live n8n workflow URL and inspect the current saved WF03 nodes/configuration before adding the permanent dynamic job/scene path. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
 
 ## Do not do
 
