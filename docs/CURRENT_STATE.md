@@ -167,19 +167,19 @@ Do not create a replacement OAuth client, API key, service account, or billing s
 
 WF01 is no longer treated as fully finished merely because M3 acceptance passed. Production chain wiring is being completed as downstream stages become available.
 
-On 2026-08-23 the user added and saved a real `Execute Sub-workflow` node named `Start Script Planning` in production `WF01 — Create Content Job`. It targets `WF02 — Plan Script and Scenes` and maps only the newly inserted `job_id` according to the user's configuration step.
+Production `WF01 — Create Content Job` workflow ID: `Xy94qe35OigtMxkR`.
 
-The screenshot supplied immediately afterward was actually the `WF02 — Plan Script and Scenes` canvas, not WF01. Therefore the WF01 branch topology has NOT yet been visually confirmed from a screenshot. Do not claim otherwise.
-
-Required production behavior remains:
+On 2026-08-23 the user added and saved a real `Execute Sub-workflow` node named `Start Script Planning`. The latest WF01 canvas screenshot directly confirms this branch topology:
 
 ```text
 Insert Job
 ├──> Return Created Job
-└──> Start Script Planning -> WF02
+└──> Start Script Planning
 ```
 
-The updated live WF01 workflow export and runtime end-to-end hand-off have not yet been verified or committed.
+The same canvas shows `Start Script Planning` targeting workflow ID `TJfA4ZYUEKSTad6k`, which is production `WF02 — Plan Script and Scenes`. The prior node-configuration step established that only `job_id` is mapped; that mapping is not visible on the canvas screenshot itself.
+
+The first remote export attempt on 2026-08-23 reached the production VPS on branch `feat/m5-voiceover` with a clean pre-export Git status and the n8n CLI reported `Successfully exported 1 workflow.` No subsequent copy/diff output was produced in that command, so the repository file replacement and diff are NOT yet considered verified.
 
 WF01 must return HTTP 201 without waiting for the downstream pipeline to complete.
 
@@ -202,7 +202,7 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 ## Exact next action
 
-Return to the production `WF01 — Create Content Job` canvas and visually verify that `Insert Job` branches to both `Return Created Job` and `Start Script Planning`. Confirm that `Start Script Planning` targets WF02 and passes only `job_id`. Only after that visual confirmation, export the saved production WF01 and inspect the diff before any end-to-end test.
+Inspect the already-created `/tmp/WF01-create-content-job.json` inside the n8n container, copy it into `n8n/workflows/WF01-create-content-job.json` using a method whose exit/result is visible, then inspect `git diff --check`, the WF01 diff, and final `git status`. Do not rerun the workflow or end-to-end chain yet.
 
 ## Do not do
 
