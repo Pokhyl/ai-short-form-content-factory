@@ -142,12 +142,21 @@ Learning focus:
 
 ## M5 — Voiceover
 
+Status: in progress.
+
 Goal: generate one audio file per scene using the previously selected voices.
 
 Before implementation:
 
 - recover the exact selected voice IDs for EN/PL/RU/UK;
 - do not substitute guessed voices.
+
+Recovered exact voice presets:
+
+- EN: `en-US-Chirp3-HD-Algenib`;
+- PL: `pl-PL-Chirp3-HD-Enceladus`;
+- RU: `ru-RU-Wavenet-D`;
+- UK: `uk-UA-Chirp3-HD-Enceladus`.
 
 Acceptance:
 
