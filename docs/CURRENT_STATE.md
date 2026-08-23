@@ -167,15 +167,15 @@ Do not create a replacement OAuth client, API key, service account, or billing s
 
 WF01 is no longer treated as fully finished merely because M3 acceptance passed. Production chain wiring is being completed as downstream stages become available.
 
-On 2026-08-23 the user added a real `Execute Sub-workflow` node named `Start Script Planning` to production `WF01 — Create Content Job` and selected `WF02 — Plan Script and Scenes` as the target. The node maps only `job_id` from the newly inserted job. The user reports the node configuration step is complete; the updated live workflow export and runtime end-to-end hand-off have not yet been verified or committed.
-
-Required production behavior remains:
+On 2026-08-23 the user added and saved a real `Execute Sub-workflow` node named `Start Script Planning` in production `WF01 — Create Content Job`. It targets `WF02 — Plan Script and Scenes` and maps only the newly inserted `job_id`. The saved canvas was visually confirmed to have the required branch topology:
 
 ```text
 Insert Job
 ├──> Return Created Job
 └──> Start Script Planning -> WF02
 ```
+
+The updated live workflow export and runtime end-to-end hand-off have not yet been verified or committed.
 
 WF01 must return HTTP 201 without waiting for the downstream pipeline to complete.
 
@@ -198,7 +198,7 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 ## Exact next action
 
-Verify and save the updated production WF01 wiring before moving on: confirm on the canvas that `Insert Job` branches to both `Return Created Job` and `Start Script Planning`, with the latter targeting WF02 and passing only `job_id`. Then save/publish the workflow change. Do not run an end-to-end test until the saved topology is visually confirmed. After saving, export the updated production WF01 to the repository before progressing.
+Export the saved production WF01 from the current n8n runtime and replace `n8n/workflows/WF01-create-content-job.json` in the repository. Inspect the resulting diff to confirm the only intended workflow change is the new `Start Script Planning` hand-off to WF02 with `job_id`. Do not run the end-to-end chain until that export is captured and reviewed.
 
 ## Do not do
 
