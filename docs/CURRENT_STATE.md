@@ -138,7 +138,8 @@ Read-only runtime inspection established:
 - Cloud Text-to-Speech API is already enabled in that project;
 - the project currently shows an active Google Cloud free-trial balance, so no new TTS project needs to be created merely to continue M5;
 - Google Cloud IAM -> Service Accounts for `n8n-drive-voiceover` is currently empty (`Brak wierszy do wyświetlenia`);
-- an empty Service Accounts list proves only that no service account currently exists. It does NOT prove which authentication method the old n8n voiceover used; the prior setup may have used an API key or OAuth credential instead. Do not create a new service account until the project-level Credentials page has been inspected.
+- project-level Google Cloud Credentials inspection shows no API keys and exactly two OAuth 2.0 web clients: `n8n-tts-oauth` and `n8n-drive-oauth`;
+- therefore the prior working TTS setup did not rely on a surviving API key or service account. The dedicated existing OAuth client `n8n-tts-oauth` is the recovered TTS authentication path to inspect and reuse if its redirect URI is compatible with the current n8n runtime.
 
 ## Implemented and accepted media-worker audio boundary
 
@@ -185,7 +186,7 @@ No new service is required.
 - `scenes.audio_path` stores a media-relative path under `/data`, never a host-specific absolute path;
 - no generic retry/idempotency framework is added.
 
-A dedicated Google authentication credential for Cloud TTS must exist in n8n before the real TTS request. The exact authentication type has not yet been recovered and must not be guessed.
+The recovered Google authentication path is the existing OAuth 2.0 client `n8n-tts-oauth` in project `n8n-drive-voiceover`. It must be reused only after its current redirect URI and secret availability are verified against the new n8n runtime; do not create a replacement credential before that check.
 
 ## Reliability constraints
 
@@ -195,13 +196,13 @@ No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service i
 
 ## Exact next action
 
-Open Google Cloud project `n8n-drive-voiceover` -> APIs & Services -> Credentials and inspect the existing credential inventory. Determine whether the old voiceover setup left an API key, OAuth 2.0 client, or another credential that can explain the previous working TTS integration. Do not create a new service account, API key, OAuth client, or billing setup yet. After the credential type is identified, recreate only that minimum authentication path in the new n8n runtime and verify one authenticated Cloud TTS request before building WF03.
+Open the existing OAuth 2.0 web client `n8n-tts-oauth` in Google Cloud project `n8n-drive-voiceover` and inspect its Authorized redirect URIs and whether a client secret is available for reuse. Do not create a new API key, service account, OAuth client, or billing setup. Compare the saved redirect URI to the callback URL required by the current n8n runtime at `https://publisher.hodor.com.pl/`. If compatible, recreate only the corresponding OAuth credential in the new n8n runtime and verify one authenticated Cloud TTS request before building WF03.
 
 ## Do not do
 
 - do not substitute different voice presets;
 - do not reuse the Gemini credential for TTS;
-- do not create a new Google Cloud auth credential until the existing project credential inventory is inspected;
+- do not create a new Google Cloud auth credential while `n8n-tts-oauth` remains reusable;
 - do not implement M5 on the old M4 branch;
 - do not start M6 before M5 passes real voice acceptance;
 - do not modify the n8n PostgreSQL schema manually;
