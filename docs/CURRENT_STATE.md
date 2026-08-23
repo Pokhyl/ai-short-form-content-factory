@@ -104,6 +104,8 @@ Main currently includes public n8n access through merge commit:
 - direct PostgreSQL verification confirmed the invalid request inserted zero rows and the valid request inserted exactly one row;
 - the PostgreSQL UUID matches the `job_id` returned by the production webhook;
 - M3 runtime acceptance has passed with Script & Scene Planning disconnected and no AI call;
+- the VPS repository checkout is now on `feat/m3-n8n-intake` and tracks `origin/feat/m3-n8n-intake`;
+- n8n CLI reported successful export of one workflow to `/tmp/wf01-create-content-job.json` inside the n8n container; copying and validating the repository file are still pending;
 - `publisher.hodor.com.pl` routes to the new n8n instance;
 - staged n8n workflow topology is defined in `docs/ARCHITECTURE.md`;
 - internal stage hand-off is finalized as native n8n sub-workflow execution with `job_id`, not public webhook chaining;
@@ -254,7 +256,7 @@ Do not wire Job Intake to Script & Scene Planning during M3 acceptance.
 
 ## Exact next action
 
-Export the published `WF01 — Create Content Job` workflow JSON into `n8n/workflows/`, verify that no credentials or secrets are included, then commit the export on `feat/m3-n8n-intake`.
+Copy the successfully exported `/tmp/wf01-create-content-job.json` from the n8n container into `n8n/workflows/WF01-create-content-job.json`, validate its workflow ID and secret scan, then commit it on `feat/m3-n8n-intake`.
 
 Remaining M3 closure sequence:
 
