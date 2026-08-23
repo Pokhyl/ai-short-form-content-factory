@@ -41,46 +41,43 @@ Topic
 
 ## Current milestone
 
-M3 — n8n intake
+M4 — Script + scene plan
 
-Status: completed on 2026-08-23.
+Status: in progress.
 
 Goal:
 
-Submit `topic`, `language`, and `duration` through n8n and create one durable job in PostgreSQL.
+Generate one structured script with scene planning and persist its validated scenes in PostgreSQL.
 
 Acceptance:
 
-- invalid input is rejected;
-- valid input creates exactly one `jobs` row;
-- response contains the new `job_id`;
-- no AI call during M3 acceptance testing.
+- one AI request returns validated structured JSON;
+- scenes are stored in PostgreSQL;
+- narration and visual intent are readable and coherent;
+- malformed model output does not enter the database.
 
-Current M3 design decisions:
+Current M4 architecture contract:
 
-- public entry is `POST /jobs` through n8n;
-- valid creation should return HTTP `201 Created`;
-- PostgreSQL generates `jobs.id` with its existing UUID default;
-- M3 stops after the job is created and the response is returned;
-- M3 does not start Script & Scene Planning yet;
-- exact topic-length and duration bounds are not yet fixed in source of truth and must not be guessed as previous decisions.
-- production workflow name is `WF01 — Create Content Job`;
-- production workflow ID is `Xy94qe35OigtMxkR`;
-- the published production workflow contains the complete M3 path: `Receive Job Request` -> `Normalize and Validate Input` -> `Input Valid?`;
-- the false branch is connected to `Return Invalid Input` and returned HTTP 400 for an unsupported `de` language request;
-- the true branch is connected to `Insert Job` -> `Return Created Job` and returned HTTP 201 with `job_id` `ba081017-2345-4212-a1c4-cde6df8de574` for a valid request;
-- direct PostgreSQL verification returned `invalid_rows = 0` and `valid_rows = 1`;
-- the stored valid row UUID matches the HTTP response: `ba081017-2345-4212-a1c4-cde6df8de574`;
-- the stored valid row has `language_code = 'en'`, `target_duration_seconds = 60`, `status = 'created'`, and `current_stage = 'intake'`;
-- Script & Scene Planning remains disconnected.
+- the stage receives only `job_id`;
+- it reloads the job from PostgreSQL;
+- it verifies that the job is eligible for script planning;
+- it makes one AI request for the structured script and scene plan;
+- it validates the complete model output before persistence;
+- it persists scenes and updates job state only after validation succeeds;
+- malformed output must not create partial scene state;
+- Voiceover Generation is not implemented as part of M4.
 
 ## Current branch and PR
 
 Branch:
 
-`main`
+`feat/m4-script-scene-planning`
 
-Merged PR:
+PR:
+
+Not opened yet.
+
+Previous merged PR:
 
 `#4 — M3: implement n8n job intake`
 
@@ -248,25 +245,25 @@ Do not combine Human Review and Buffer publishing into one long-running workflow
 
 ## Current task
 
-M3 is complete and merged. Do not begin M4 until a new M4 task and feature branch are explicitly started.
+Implement the production `Script & Scene Planning` stage as a separate n8n workflow.
 
-M3 scope only:
+M4 scope only:
 
 ```text
-topic + language + duration
-  -> normalize/validate
-  -> invalid: reject without inserting a job
-  -> valid: INSERT exactly one row into jobs
-  -> return HTTP 201 with job_id
+job_id
+  -> load and validate eligible job
+  -> one AI request for structured script + scene plan
+  -> validate the complete structured result
+  -> malformed: fail without inserting scenes
+  -> valid: persist all scenes and update job state
 ```
 
-Do not implement AI generation yet.
-Do not implement later stage workflows yet.
-Do not wire Job Intake to Script & Scene Planning during M3 acceptance.
+Do not implement Voiceover Generation yet.
+Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastructure.
 
 ## Exact next action
 
-Stop after M3 closure. In the next task, read the source of truth and explicitly start M4 on a new feature branch; do not extend WF01 as part of M3.
+Inspect the actual PostgreSQL schema, migrations, repository workflow conventions, and existing AI/provider configuration. Then define the smallest production workflow and persistence contract using only verified project facts.
 
 ## Working rules
 
