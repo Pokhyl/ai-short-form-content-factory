@@ -122,6 +122,19 @@ Stage hand-off remains only:
 
 Do not pass narration collections or audio binaries between stage workflows when they can be loaded from durable state.
 
+## Verified M5 repository boundary
+
+A read-only repository inspection of the M5 branch established:
+
+- `services/media-worker/src/server.mjs` currently implements only `GET /health`; there is no audio upload/save/probe endpoint yet;
+- the current media-worker image already has both FFmpeg and ffprobe and reports their versions through `/health`;
+- `compose.yaml` mounts the persistent `media_data` volume only at `/data` inside `media-worker`;
+- the n8n service mounts only `n8n_data` and does not share the `media_data` volume directly;
+- therefore the current repository contains no existing path for n8n to persist generated TTS audio into the durable media volume or ask media-worker to measure a generated audio file;
+- `.env.example` intentionally contains no external-provider configuration yet; provider configuration must be introduced explicitly as part of M5 and no current Google Cloud credential may be assumed from repository files.
+
+This inspection does not yet choose the exact media-worker endpoint shape. Any M5 file-ingest/probe endpoint must stay inside the existing `media-worker` service, preserve the three-service architecture, and keep PostgreSQL writes in n8n.
+
 ## Reliability constraints
 
 TTS is an external side effect. Add only the smallest stage-specific repeated-execution guard when the real M5 behavior is implemented and tested. Do not add a generic retry/idempotency framework.
@@ -130,7 +143,7 @@ No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service i
 
 ## Exact next action
 
-Before building WF03 Voiceover Generation, perform a read-only inspection of the current repository/runtime boundary needed by M5: verify the existing `media-worker` audio/file capabilities from repository code, inspect the production n8n credential metadata/configuration relevant to Google Cloud Text-to-Speech without exposing secret values, and confirm the exact current PostgreSQL eligibility state/columns for the accepted test job and scenes. Use those verified facts to choose the smallest M5 implementation; do not recreate old prototype architecture by memory.
+Perform one read-only production inspection before implementation: sync the VPS repository to `feat/m5-voiceover`; inspect n8n credential metadata (`name` and `type` only, never encrypted credential data) to determine whether a usable Google Cloud TTS auth credential already exists; confirm `media-worker` is healthy and `/data` is the persistent media mount; and inspect the accepted M4 job/scenes to confirm the exact voiceover eligibility state and that `audio_path`/`duration_seconds` are still unset. After this runtime inspection, record the result here and implement only the smallest missing M5 boundary.
 
 ## Do not do
 
