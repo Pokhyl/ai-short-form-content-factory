@@ -95,6 +95,7 @@ Main currently includes public n8n access through merge commit:
 
 ## Completed
 
+- `Build Planning Request` is connected after `Require Eligible Job` and passed execution; it produced provider-independent system/user prompts plus the expected scenes output contract without making an AI call;
 - the production WF02 input block is assembled in n8n as `Receive Job ID` -> `Normalize Job ID` -> `Load Eligible Job` -> `Require Eligible Job`;
 - the complete four-node input block passed a real PostgreSQL-backed test with job `ba081017-2345-4212-a1c4-cde6df8de574`: `job_exists = true`, `eligible = true`, `language_code = 'en'`, `target_duration_seconds = 60`, `status = 'created'`, and `current_stage = 'intake'`;
 - M4 feature branch `feat/m4-script-scene-planning` was created from the completed M3 `main` state;
@@ -270,7 +271,7 @@ Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastruc
 
 ## Exact next action
 
-Define the minimal structured M4 model-output contract, prepare the single AI request payload, and then configure the provider-specific request only after the actual provider and credential are identified.
+Identify the actual AI provider/credential available for this project, configure exactly one structured-output request, and do not expose or commit the API key.
 
 ## Working rules
 
