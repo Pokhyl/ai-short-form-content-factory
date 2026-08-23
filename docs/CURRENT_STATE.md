@@ -27,11 +27,33 @@ Topic
   -> Buffer draft
 ```
 
-## Completed milestone
+## Current milestone
 
-M4 — Script + scene plan
+M5 — Voiceover
 
-Status: completed on 2026-08-23.
+Status: in progress.
+
+Goal:
+
+Generate one playable voiceover file per persisted scene using the exact previously selected voice preset for the job language, measure the real audio duration, and persist `audio_path` plus `duration_seconds` before starting Visual Sourcing.
+
+Acceptance:
+
+- every required scene has a playable audio file;
+- actual audio duration is measured and stored;
+- voice quality is manually accepted in all supported languages used for testing.
+
+## Branch / PR
+
+Current branch: `feat/m5-voiceover`
+
+M4 PR `#5 — M4: implement script and scene planning` was finalized and merged into `main` on 2026-08-23.
+
+M4 merge commit: `7d25bac1c4d1a90b2b29183d9ec3ca280d1acfc4`.
+
+The M5 branch was created directly from that merge commit.
+
+## Completed M4 checkpoint
 
 Production WF02:
 
@@ -40,22 +62,9 @@ Production WF02:
 - final topology: 8 nodes ending in terminal `Persist Scene Plan`;
 - final accepted export SHA-256: `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`;
 - final export commit: `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`;
-- M4 completion docs commit: `9e1336775165702b60d94474b449b09fb0148042`.
+- accepted quality job: `6b08098c-e5c7-45bd-babb-036705b563e1` with exactly 8 persisted scenes and manual quality PASS.
 
-M4 acceptance passed:
-
-- one Gemini request returns validated structured JSON;
-- 15/30/45/60-second jobs require exactly 4/8/12/15 scenes;
-- every scene has sequential `scene_number`, target-language `narration`, `visual_subject_type = factual|generic`, target-language `visual_description`, and a unique English `visual_query` no longer than 100 characters;
-- scene persistence and job-state mutation are atomic;
-- malformed output creates no partial scene state;
-- the fourth meaningful-topic quality run passed manual review for language, coherence, factual/causal accuracy, narration-to-visual alignment, classifications, and visual queries.
-
-Accepted quality job:
-
-`6b08098c-e5c7-45bd-babb-036705b563e1`
-
-It remains `processing/script` with exactly 8 persisted scenes. Do not rerun it.
+Do not rerun prior M4 acceptance jobs.
 
 ## Runtime
 
@@ -71,11 +80,11 @@ Protected old runtime: `/opt/n8n` — do not modify except for a narrowly requir
 
 The `n8n` PostgreSQL schema belongs to n8n and must not be modified manually.
 
-## M5 voice configuration recovered
+## Exact recovered M5 voice configuration
 
-The exact previously selected voice presets have now been recovered from prior project runtime/test evidence. These are product decisions and must be reused exactly; do not substitute guessed voices.
+The exact previously selected voice presets were recovered from prior project runtime/test evidence and are product decisions. Reuse them exactly; do not substitute guessed voices.
 
-Google Cloud Text-to-Speech voice presets:
+Provider family confirmed by the prior voice-testing evidence: Google Cloud Text-to-Speech.
 
 | Language | Exact voice preset |
 | --- | --- |
@@ -84,42 +93,51 @@ Google Cloud Text-to-Speech voice presets:
 | Russian (`ru`) | `ru-RU-Wavenet-D` |
 | Ukrainian (`uk`) | `uk-UA-Chirp3-HD-Enceladus` |
 
-Prior evidence also confirms that the previous voice-testing work used Google Cloud Text-to-Speech. Current production credential availability in the new n8n runtime has not yet been verified and must not be assumed.
+Current credential/auth availability in the new production n8n runtime has not yet been verified and must not be assumed.
 
-## M5 contract already defined by architecture
+## M5 architecture contract
 
-Voiceover Generation is a separate stage workflow.
+Voiceover Generation is a separate n8n stage workflow.
 
 It:
 
 - receives only `job_id`;
-- reloads the persisted job/scenes from PostgreSQL;
-- validates stage eligibility;
+- reloads persisted job/scenes from PostgreSQL;
+- validates that the job is eligible for voiceover;
 - changes `jobs.current_stage` to `voiceover` only when M5 actually begins;
 - generates one voiceover file per scene using the exact configured voice for the job language;
 - stores `scenes.audio_path`;
 - measures real audio duration and stores it in `scenes.duration_seconds`;
-- persists state through n8n, not directly from media-worker;
-- starts Visual Sourcing only after every required scene audio file is ready;
+- persists product state through n8n, not directly from media-worker;
+- starts Visual Sourcing only after all required scene audio is ready;
 - on failure records `jobs.status = failed`, `jobs.current_stage = voiceover`, and `jobs.last_error`, and does not start the next stage.
 
-Do not add a generic retry/idempotency framework. Add only the smallest stage-specific guard required when the TTS side effect is implemented and tested.
+Stage hand-off remains only:
 
-## Branch / PR checkpoint
+```json
+{
+  "job_id": "<uuid>"
+}
+```
 
-Current branch: `feat/m4-script-scene-planning`
+Do not pass narration collections or audio binaries between stage workflows when they can be loaded from durable state.
 
-PR `#5 — M4: implement script and scene planning` is still open and draft even though M4 acceptance is complete. Before M5 implementation, finalize and merge PR #5 into `main`, then create the M5 feature branch from the resulting `main` head.
+## Reliability constraints
+
+TTS is an external side effect. Add only the smallest stage-specific repeated-execution guard when the real M5 behavior is implemented and tested. Do not add a generic retry/idempotency framework.
+
+No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service is allowed unless a concrete later failure pattern requires a new explicit decision.
 
 ## Exact next action
 
-Finalize PR #5 so its description reflects the completed M4 state, mark it ready, and merge it into `main` only if its head is still the verified M4 head and GitHub reports it mergeable. Then create a new M5 feature branch from the resulting `main` head, update this checkpoint for M5, and perform a read-only inspection of the new production runtime for the Google Cloud TTS credential/auth configuration and any existing media-worker audio/file capabilities before building the Voiceover workflow. Do not guess current credential availability or invent a new service.
+Before building WF03 Voiceover Generation, perform a read-only inspection of the current repository/runtime boundary needed by M5: verify the existing `media-worker` audio/file capabilities from repository code, inspect the production n8n credential metadata/configuration relevant to Google Cloud Text-to-Speech without exposing secret values, and confirm the exact current PostgreSQL eligibility state/columns for the accepted test job and scenes. Use those verified facts to choose the smallest M5 implementation; do not recreate old prototype architecture by memory.
 
 ## Do not do
 
-- do not rerun accepted or failed M4 quality-test jobs;
 - do not substitute different voice presets;
-- do not start M5 implementation on the M4 branch;
+- do not guess that a current Google Cloud credential already exists;
+- do not implement M5 on the old M4 branch;
+- do not start M6 before M5 passes real voice acceptance;
 - do not modify the n8n PostgreSQL schema manually;
 - do not add retry/dispatcher/queue/watchdog/Redis/generic idempotency infrastructure;
 - do not add extra services;
