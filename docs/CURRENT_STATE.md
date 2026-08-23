@@ -97,13 +97,14 @@ Main currently includes public n8n access through merge commit:
 
 ## Completed
 
+- the first production attempt to apply `db/migrations/002_add_scene_visual_subject_type.sql` was safely blocked and rolled back because `public.scenes` contained two existing rows with `visual_subject_type IS NULL`; the pre-migration scene fingerprint was `2|d60e159d9818466051761f575dd4b051`. No classification was guessed and the migration did not complete. The next action is to identify those two rows and their parent jobs without modifying data, then decide from verified provenance whether they are disposable test data or require an explicit classification/migration treatment;
 - on the VPS, the previously untracked `n8n/` directory was inspected without deletion; it contained exactly `n8n/workflows/WF01-create-content-job.json`, and both its file list and SHA-256 matched the committed M3 copy; the local file SHA-256 was `f5fee4f6ffc570cb6f3001e223c982bdeddd5d5a9fbdf38f18859ba8b97d4672`;
 - the verified duplicate VPS `n8n/` directory was moved to recoverable backup `/tmp/ai-short-form-content-factory-n8n-backup-20260823T120403Z`; the backed-up WF01 retained SHA-256 `f5fee4f6ffc570cb6f3001e223c982bdeddd5d5a9fbdf38f18859ba8b97d4672`;
 - the VPS repository checkout was switched safely from `feat/m3-n8n-intake` to `feat/m4-script-scene-planning`; after `git pull --ff-only` it was at M4 checkpoint `95db4c17480933f11af5adb1779710961b91bda4` before this documentation checkpoint commit;
-- production PostgreSQL reachability was rechecked successfully with `pg_isready`; the migration had not started when that command block ended, so `db/migrations/002_add_scene_visual_subject_type.sql` still requires application and direct PostgreSQL verification;
+- production PostgreSQL reachability was rechecked successfully with `pg_isready`;
 - the production v1 M4 scene contract is now an explicit project decision: 15/30/45/60-second jobs require exactly 4/8/12/15 scenes, and each scene maps to one narration segment, one later voiceover file, one selected visual asset, and one rendered timeline segment;
 - each planned scene now requires `visual_subject_type = factual|generic`, target-language `visual_description`, and a case-insensitively unique English `visual_query` no longer than 100 characters; factual scenes route to Wikimedia Commons and generic scenes route to Pixabay with Pexels fallback;
-- the clean-install schema now includes `scenes.visual_subject_type`, and `db/migrations/002_add_scene_visual_subject_type.sql` safely adds the required non-null checked column to an existing database without assigning false classifications to existing rows; the migration has not yet been applied to production PostgreSQL;
+- the clean-install schema now includes `scenes.visual_subject_type`, and `db/migrations/002_add_scene_visual_subject_type.sql` safely adds the required non-null checked column to an existing database without assigning false classifications to existing rows; the migration has not yet been applied successfully to production PostgreSQL;
 - `Validate Structured Plan` passed against the real Gemini response: it parsed the model text, accepted exactly five sequential scenes with non-empty required fields, restored the original job context, and emitted normalized scenes plus AI metadata; no PostgreSQL write has occurred yet;
 - the production `Generate Structured Plan` HTTP Request completed one real Google Gemini API call with `gemini-3.5-flash-lite`; the response finished with `STOP`, returned structured JSON containing five scenes, and reported 248 prompt tokens, 424 candidate tokens, and 672 total tokens; this synthetic marker-topic run proves the API and structured-output transport, but does not yet prove narration quality for a real topic;
 - `Build Planning Request` is connected after `Require Eligible Job` and passed execution; it produced provider-independent system/user prompts plus the expected scenes output contract without making an AI call;
@@ -282,7 +283,7 @@ Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastruc
 
 ## Exact next action
 
-Apply `db/migrations/002_add_scene_visual_subject_type.sql` to the production PostgreSQL database and verify the new column, NOT NULL requirement, and factual/generic check constraint directly in PostgreSQL. Then update `Build Planning Request`, the Gemini response schema, and `Validate Structured Plan` in the live WF02 before adding persistence.
+Inspect the two existing `public.scenes` rows that blocked `db/migrations/002_add_scene_visual_subject_type.sql`, together with their parent `jobs`, without modifying data. Determine from verified row content/provenance whether they are disposable test rows or require an explicit factual/generic classification treatment. Only after that evidence-based decision should the migration be retried. Then verify the new column, NOT NULL requirement, and factual/generic check constraint directly in PostgreSQL before updating `Build Planning Request`, the Gemini response schema, and `Validate Structured Plan` in the live WF02.
 
 ## Working rules
 
