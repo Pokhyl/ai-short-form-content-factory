@@ -97,7 +97,8 @@ Main currently includes public n8n access through merge commit:
 
 ## Completed
 
-- a recoverable PostgreSQL custom-format backup of the production `public` schema/data was created successfully inside the production PostgreSQL container at `/tmp/ai-short-form-content-factory-public-20260823T121528Z.dump`; `pg_restore -l` accepted the archive, its size was about 8.9K, and SHA-256 was `f147aaff08278aa09d467f5661a3b0d6e50ff5376a27faf364273678016ee39a`. The command block ended before the backup was copied from the container to the VPS host, so no M2 data deletion or migration execution occurred after this backup step;
+- the validated PostgreSQL custom-format backup `/tmp/ai-short-form-content-factory-public-20260823T121528Z.dump` was copied from the production PostgreSQL container to `/tmp` on the VPS host and verified there. The host copy is about 8.9K and has SHA-256 `f147aaff08278aa09d467f5661a3b0d6e50ff5376a27faf364273678016ee39a`, exactly matching the already-validated container copy. No database rows were modified while creating or copying this backup;
+- a recoverable PostgreSQL custom-format backup of the production `public` schema/data was created successfully inside the production PostgreSQL container at `/tmp/ai-short-form-content-factory-public-20260823T121528Z.dump`; `pg_restore -l` accepted the archive, its size was about 8.9K, and SHA-256 was `f147aaff08278aa09d467f5661a3b0d6e50ff5376a27faf364273678016ee39a`;
 - the two `public.scenes` rows that blocked migration 002 were inspected without modifying the database. Both belong to job `b2c1fc1c-e5f1-468b-a64d-7eeca2cb963d` whose topic is exactly `M2 manual SQL test`; their narration/visual fields explicitly identify them as the first and second SQL test scenes created on 2026-08-22. The job has exactly two scenes, zero assets, and zero publications. This matches the completed M2 PostgreSQL manual-test provenance in `docs/ROADMAP.md`, so these rows are disposable M2 test state rather than M3/M4 production content. The failed migration rollback was confirmed: `visual_subject_type` and its check constraint are absent, and the scene fingerprint remains `2|d60e159d9818466051761f575dd4b051`;
 - the first production attempt to apply `db/migrations/002_add_scene_visual_subject_type.sql` was safely blocked and rolled back because `public.scenes` contained two existing rows with `visual_subject_type IS NULL`; the pre-migration scene fingerprint was `2|d60e159d9818466051761f575dd4b051`. No classification was guessed and the migration did not complete;
 - on the VPS, the previously untracked `n8n/` directory was inspected without deletion; it contained exactly `n8n/workflows/WF01-create-content-job.json`, and both its file list and SHA-256 matched the committed M3 copy; the local file SHA-256 was `f5fee4f6ffc570cb6f3001e223c982bdeddd5d5a9fbdf38f18859ba8b97d4672`;
@@ -136,7 +137,7 @@ Main currently includes public n8n access through merge commit:
 - `n8n/workflows/WF01-create-content-job.json` is committed on `feat/m3-n8n-intake` in commit `82747eba4ad7d8fd3f27dcced1f8583e0601a6e9`;
 - `publisher.hodor.com.pl` routes to the new n8n instance;
 - staged n8n workflow topology is defined in `docs/ARCHITECTURE.md`;
-- internal stage hand-off is finalized as native n8n sub-workflow execution with `job_id`, not public webhook chaining;
+- internal stage hand-off is finalized as native n8n sub-workflow execution with `job_id`, not public HTTP webhooks;
 - render boundary is finalized as synchronous-first `n8n -> media-worker -> n8n -> PostgreSQL`; async render is deferred until real behavior proves it necessary;
 - media-worker is not allowed to write product state directly to PostgreSQL;
 - human review is a real STOP boundary after `review_ready`; Buffer publishing starts only from a later explicit human action;
@@ -230,7 +231,7 @@ Stage hand-off contract:
 - internal automatic stages use native n8n sub-workflow execution, not public HTTP webhooks;
 - `job_id` is the normal hand-off payload;
 - each stage reloads the durable state it needs from PostgreSQL;
-- each stage checks that the job is eligible for that stage;
+- each stage checks that the job is eligible for the stage;
 - a stage persists its result before starting the next stage;
 - failure prevents the next stage from starting;
 - a stage being separate does not by itself make it idempotent.
@@ -285,7 +286,7 @@ Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastruc
 
 ## Exact next action
 
-Copy the already-created and validated PostgreSQL custom-format backup `/tmp/ai-short-form-content-factory-public-20260823T121528Z.dump` from the production PostgreSQL container to `/tmp` on the VPS host and verify that the host copy has SHA-256 `f147aaff08278aa09d467f5661a3b0d6e50ff5376a27faf364273678016ee39a`. Do not recreate the dump and do not delete M2 data until that host-level recoverable copy is confirmed. After the backup is confirmed on the host, remove only the verified disposable M2 test job, apply migration 002, verify the new schema constraints and retained M3 state, then update the live WF02 planning contract.
+Verify the host-level backup `/tmp/ai-short-form-content-factory-public-20260823T121528Z.dump` still exists with SHA-256 `f147aaff08278aa09d467f5661a3b0d6e50ff5376a27faf364273678016ee39a`, then remove only the verified disposable M2 test job `b2c1fc1c-e5f1-468b-a64d-7eeca2cb963d` after exact precondition checks. Apply `db/migrations/002_add_scene_visual_subject_type.sql`, verify `scenes.visual_subject_type` is `TEXT NOT NULL` with a check constraint that accepts only `factual` and `generic`, and verify the retained M3 job `ba081017-2345-4212-a1c4-cde6df8de574` and other retained application data are unchanged. Then update `Build Planning Request`, the Gemini response schema, and `Validate Structured Plan` in the live WF02.
 
 ## Working rules
 
