@@ -177,9 +177,27 @@ Insert Job
 └──> Start Script Planning
 ```
 
-The same canvas shows `Start Script Planning` targeting workflow ID `TJfA4ZYUEKSTad6k`, which is production `WF02 — Plan Script and Scenes`. The prior node-configuration step established that only `job_id` is mapped; that mapping is not visible on the canvas screenshot itself.
+The same canvas shows `Start Script Planning` targeting workflow ID `TJfA4ZYUEKSTad6k`, which is production `WF02 — Plan Script and Scenes`.
 
-The first remote export attempt on 2026-08-23 reached the production VPS on branch `feat/m5-voiceover` with a clean pre-export Git status and the n8n CLI reported `Successfully exported 1 workflow.` No subsequent copy/diff output was produced in that command, so the repository file replacement and diff are NOT yet considered verified.
+The saved production WF01 export was then captured from n8n and copied into `n8n/workflows/WF01-create-content-job.json`. Verification on the VPS passed:
+
+- branch: `feat/m5-voiceover`;
+- exported file: `/tmp/WF01-create-content-job.json`;
+- exported size: 8564 bytes;
+- copied repository file size: 8564 bytes;
+- `git diff --check` passed;
+- repository status shows only `M n8n/workflows/WF01-create-content-job.json` before committing this export.
+
+The inspected workflow diff confirms the intended hand-off configuration exactly:
+
+- target workflow ID: `TJfA4ZYUEKSTad6k` (`WF02 — Plan Script and Scenes`);
+- mapped input: `job_id = {{ $json.job_id }}`;
+- `waitForSubWorkflow = false`;
+- `Insert Job` branches to both `Return Created Job` and `Start Script Planning`.
+
+The remaining diff entries are n8n export metadata/position changes (`updatedAt`, node position, `versionId`, `activeVersionId`, `versionCounter`, version metadata) associated with the saved workflow version.
+
+The updated WF01 export has been verified but has not yet been committed from the VPS working tree.
 
 WF01 must return HTTP 201 without waiting for the downstream pipeline to complete.
 
@@ -202,7 +220,7 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 ## Exact next action
 
-Inspect the already-created `/tmp/WF01-create-content-job.json` inside the n8n container, copy it into `n8n/workflows/WF01-create-content-job.json` using a method whose exit/result is visible, then inspect `git diff --check`, the WF01 diff, and final `git status`. Do not rerun the workflow or end-to-end chain yet.
+Synchronize the VPS branch with the remote `feat/m5-voiceover` documentation commits without losing the verified local WF01 export, then commit and push `n8n/workflows/WF01-create-content-job.json`. Do not run the end-to-end chain yet.
 
 ## Do not do
 
