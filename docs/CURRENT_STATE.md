@@ -43,6 +43,8 @@ Topic
 
 M3 — n8n intake
 
+Status: completed on 2026-08-23.
+
 Goal:
 
 Submit `topic`, `language`, and `duration` through n8n and create one durable job in PostgreSQL.
@@ -242,7 +244,7 @@ Do not combine Human Review and Buffer publishing into one long-running workflow
 
 ## Current task
 
-Close M3 after the production `Job Intake` workflow passed acceptance and its export was committed.
+Perform the final review and merge PR #4. M3 implementation, production acceptance, workflow export, and milestone documentation are complete.
 
 M3 scope only:
 
@@ -260,14 +262,13 @@ Do not wire Job Intake to Script & Scene Planning during M3 acceptance.
 
 ## Exact next action
 
-Mark M3 completed in `docs/ROADMAP.md`, then perform the final review and merge PR #4.
+Perform the final review of PR #4 and merge it if GitHub reports no unresolved blockers.
 
 Remaining M3 closure sequence:
 
-1. record the completed M3 result in `docs/ROADMAP.md`;
-2. verify PR #4 contains the committed workflow export and has no unresolved blockers;
-3. complete and merge PR #4;
-4. do not start M4 in this task.
+1. verify PR #4 contains the committed workflow export and has no unresolved blockers;
+2. complete and merge PR #4;
+3. do not start M4 in this task.
 
 ## Working rules
 
