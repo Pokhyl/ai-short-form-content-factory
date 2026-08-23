@@ -73,9 +73,9 @@ Branch:
 
 `feat/m4-script-scene-planning`
 
-PR:
+Draft PR:
 
-Not opened yet.
+`#5 — M4: implement script and scene planning`
 
 Previous merged PR:
 
@@ -268,7 +268,7 @@ Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastruc
 
 ## Exact next action
 
-Try the already-authorized runtime access paths without requesting credentials. If none provides access, stop before choosing an AI provider or model because the repository does not contain that decision.
+The only remaining access path is a user-controlled sign-in to production n8n in Cloud Browser. After sign-in, inspect available AI credentials and nodes, then define and build the smallest M4 workflow. Do not choose a provider or model before that runtime fact is visible.
 
 ## Working rules
 
