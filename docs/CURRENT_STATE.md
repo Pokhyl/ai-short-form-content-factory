@@ -7,25 +7,13 @@ If chat history conflicts with this file, `docs/ARCHITECTURE.md`, or `docs/ROADM
 
 ## Mandatory assistant protocol
 
-For every technical reply or action about this project, the assistant must first fetch the current version of `docs/CURRENT_STATE.md` from the active feature branch. Do not rely on a previously fetched copy or on chat memory.
-
-When the reply involves architecture, also fetch `docs/ARCHITECTURE.md` before answering.
-When the reply changes milestone scope, acceptance, or progression, also fetch `docs/ROADMAP.md` before answering.
-
-If repository state and chat history disagree, stop using chat memory and follow the repository source of truth.
-If a fact is not present in the repository and cannot be verified directly, state that it is unknown instead of reconstructing it from memory.
-Do not introduce a new workflow, service, architectural boundary, retry mechanism, or runtime change unless it is explicitly marked as a new proposal first.
-After every completed implementation or runtime step, update this file before moving on.
-
-The project owner should not need to remind the assistant to perform this protocol.
+For every technical reply or action about this project, fetch the current `docs/CURRENT_STATE.md` from the active feature branch first. Fetch `docs/ARCHITECTURE.md` when architecture is involved and `docs/ROADMAP.md` when milestone scope, acceptance, or progression is involved. Repository state overrides chat memory. Unknown facts must not be guessed. After every completed implementation or runtime step, update this file before moving on. Export production n8n workflows into the repository.
 
 ## Project
 
 AI Short-Form Content Factory
 
-Repository:
-
-`Pokhyl/ai-short-form-content-factory`
+Repository: `Pokhyl/ai-short-form-content-factory`
 
 Product goal:
 
@@ -45,237 +33,119 @@ M4 — Script + scene plan
 
 Status: in progress.
 
-Goal:
-
-Generate one structured script with scene planning and persist its validated scenes in PostgreSQL.
-
 Acceptance:
 
 - one AI request returns validated structured JSON;
-- scenes are stored in PostgreSQL;
+- 15/30/45/60-second jobs return exactly 4/8/12/15 scenes;
+- every scene contains sequential `scene_number`, target-language `narration`, `visual_subject_type`, target-language `visual_description`, and an English `visual_query`;
+- `visual_subject_type` is exactly `factual` or `generic`;
+- visual queries are non-empty, case-insensitively unique, and no longer than 100 characters;
+- scenes are stored atomically in PostgreSQL;
 - narration and visual intent are readable and coherent;
 - malformed model output does not enter the database.
 
-Current M4 architecture contract:
+## Branch / PR
 
-- the stage receives only `job_id`;
-- it reloads the job from PostgreSQL;
-- it verifies that the job is eligible for script planning;
-- it requires exactly 4/8/12/15 scenes for 15/30/45/60-second jobs;
-- each scene carries target-language narration and visual description, a factual/generic subject classification, and a unique English visual query;
-- it makes one AI request for the structured script and scene plan;
-- it validates the complete model output before persistence;
-- it persists scenes and updates job state only after validation succeeds;
-- malformed output must not create partial scene state;
-- Voiceover Generation is not implemented as part of M4.
+Branch: `feat/m4-script-scene-planning`
 
-## Current branch and PR
-
-Branch:
-
-`feat/m4-script-scene-planning`
-
-Draft PR:
-
-`#5 — M4: implement script and scene planning`
-
-Previous merged PR:
-
-`#4 — M3: implement n8n job intake`
-
-Merge commit:
-
-`e8059f5af93f3624ee3210e8b2f66f25c72e27bd`
-
-Base branch:
-
-`main`
-
-Main currently includes public n8n access through merge commit:
-
-`718301bf1e36dd4d6bef40292d8d2b22f08ee751`
-
-## Completed
-
-- the third meaningful-topic M4 manual-quality review has completed for job `1ff6453a-177c-4dc4-9b16-3cac05b2243a` (`Jak działa Kanał Panamski i jego system śluz`, `pl`, 30 seconds). Structural/persistence acceptance passed: the job is `processing/script` with exactly 8 persisted scenes. Manual quality acceptance nevertheless FAILED. Scene 5 still incorrectly says water is gravity-fed or pumped out (`wypompowywana`), while normal Panama Canal lock operation is gravity-driven without pumps. Scene 3 also gives a misleading cause by saying sea levels on the two sides differ and therefore locks are required; the relevant mechanism is that the canal route rises to Gatun Lake above sea level and vessels must be raised and lowered. The remaining scene sequence, visual alignment, factual/generic classifications, and English visual queries are broadly usable. This job must not be rerun because it is already `processing/script`;
-- a third prompt-only M4 quality refinement has now been saved in the live WF02 `Build Planning Request`. It strengthens grammar/spelling requirements, conservative factual accuracy, causal/mechanistic accuracy for explanatory and technical topics, internal cause-and-effect consistency, avoidance of unsupported pumps/motors/pressure systems/measurements/named components, direct narration-to-visual alignment, and visual-query alignment with the primary visual subject. JSON schema, validator, persistence SQL, topology, credentials, database schema, and job-state contract were not intentionally changed;
-- the second meaningful-topic M4 manual-quality review has completed for job `ac32c553-dacd-4a21-bd7e-af3cd4941a82` (`Jak działa Kanał Panamski i jego system śluz`, `pl`, 30 seconds). Structural/persistence acceptance passed: the job is `processing/script` with exactly 8 persisted scenes. Manual quality acceptance nevertheless FAILED. Scene 1 visual description contains the Polish grammar error `z widokom na oba oceany` instead of `z widokiem na oba oceany`. Scene 5 narration focuses on the ship entering the lock and the gates closing, while its visual description instead focuses on tugs and positioning lines, so the main visual moment does not directly match the narration. The earlier factual error about pumps is fixed: scene 6 now correctly describes gravity filling/draining, and the earlier `opadaj` grammar error is also fixed. This job must not be rerun because it is already `processing/script`;
-- a second prompt-only M4 quality refinement has now been saved in the live WF02 `Build Planning Request`. In addition to the existing grammar and factual-accuracy instructions, each `visual_description` must now directly depict the same main subject or action as its narration, the model must prefer the primary visual moment rather than a secondary supporting detail, and real names/places must use correct official spelling when applicable. No JSON schema, validator, persistence SQL, topology, credentials, database schema, or job-state contract change is intended by this refinement;
-- the prompt-only M4 quality correction has been saved in the live WF02 `Build Planning Request`: narration and visual descriptions are now explicitly required to use natural, grammatically correct target-language text, factual claims must be accurate, mechanisms/technical details must not be invented or guessed, and the model must prefer a simpler accurate statement when uncertain. The JSON schema, validator, persistence SQL, topology, credentials, database schema, and job-state contract were not intentionally changed as part of this correction;
-- a fresh second meaningful-topic M4 quality-test job was created through WF01 with the same topic `Jak działa Kanał Panamski i jego system śluz`, language `pl`, and duration 30 seconds: `job_id = ac32c553-dacd-4a21-bd7e-af3cd4941a82`. The complete eight-node WF02 has now run successfully for this job. `Persist Scene Plan` returned `status = processing`, `current_stage = script`, `inserted_scene_count = 8`, `expected_scene_count = 8`, with `updated_at = 2026-08-23T13:55:33.842Z`. Structural/persistence execution therefore passed for the second quality run, but manual language/coherence/factual-quality acceptance has not yet been performed; the persisted eight scenes must now be inspected before M4 can pass;
-- the first meaningful-topic M4 quality run has completed for job `80638242-ebee-4848-a1a4-9090446a95a8` (`Jak działa Kanał Panamski i jego system śluz`, `pl`, 30 seconds). WF02 completed and PostgreSQL now shows the job as `status = processing`, `current_stage = script` with exactly 8 persisted scenes, satisfying the duration-specific structural/persistence contract. Manual quality acceptance nevertheless FAILED. Scene 6 contains a Polish grammar error (`poziom wody podnosi się lub opadaj` instead of `...opada`). Scene 5 says water is gravity-fed or pumped out of the chamber, but the Panama Canal Authority states that the operating locks use gravity and no pumps for normal lock filling/draining. The remaining scene sequence is coherent, factual/generic classifications are broadly sensible, visual descriptions are relevant, and English visual queries are usable. This job remains evidence of the failed quality run and must not be rerun because it is already `processing/script`;
-- the final production eight-node WF02 export has been recovered from the live n8n container, copied to the VPS host, and validated. Workflow `TJfA4ZYUEKSTad6k` / `WF02 — Plan Script and Scenes` contains exactly eight nodes including terminal `Persist Scene Plan`; the export preserves the duration-specific Gemini schema and validator contract, the atomic PostgreSQL persistence statement and n8n query-parameter expression, credential references only, and no known runtime secrets. The verified export is 24,682 bytes with SHA-256 `fc8088d678999774021bfe745b0d17507e5bfde2f71e407b4e9f8bd6230e87aa` and replaces the earlier seven-node repository export;
-- direct read-only PostgreSQL verification of the successful `Persist Scene Plan` execution has passed for retained job `ba081017-2345-4212-a1c4-cde6df8de574`. The job is exactly `status = processing`, `current_stage = script`, `last_error IS NULL`. PostgreSQL contains exactly 15 scenes numbered 1..15 with 15 distinct scene numbers; every scene has `status = planned`, non-empty narration, non-empty visual description, non-empty visual query, `visual_subject_type` limited to `factual|generic`, query length no more than 100 characters, and all 15 visual queries remain case-insensitively distinct. `audio_path`, `visual_path`, and `duration_seconds` are NULL for all 15 scenes. The job has 0 assets and 0 publications. The final aggregate persistence check returned `PASS`. This establishes structural persistence acceptance for the retained synthetic marker job; manual script/visual quality acceptance still requires a meaningful real topic;
-- live WF02 contains `Persist Scene Plan` directly after `Validate Structured Plan`. The first execution was rejected before any write because `Query Parameters` had been entered as literal text, causing PostgreSQL to receive the literal `$json.job_id` instead of a UUID. After correcting the n8n expression to `{{ [ $json.job_id, JSON.stringify($json.scenes) ] }}`, the node completed successfully for retained job `ba081017-2345-4212-a1c4-cde6df8de574` and returned `status = processing`, `current_stage = script`, `inserted_scene_count = 15`, `expected_scene_count = 15`, with `updated_at = 2026-08-23T13:14:45.180Z`;
-- the read-only M4 persistence inspection is complete. Production PostgreSQL is `content_factory` on PostgreSQL 18.6 and the application schema contains exactly `jobs`, `scenes`, `assets`, and `publications`. `jobs` has the expected lifecycle/state columns and no triggers; `scenes` has `UNIQUE (job_id, scene_number)`, FK `job_id -> jobs(id) ON DELETE CASCADE`, `visual_subject_type TEXT NOT NULL` with the factual/generic CHECK, nullable narration/visual-description/query/audio/visual/duration fields, and default `status = 'planned'`. `jobs` and `scenes` have RLS disabled, no public functions/procedures reference them, and there is no application migration-tracking table. The retained M3 job `ba081017-2345-4212-a1c4-cde6df8de574` was `status = 'created'`, `current_stage = 'intake'`, duration 60, language `en`, with 0 scenes, 0 assets, and 0 publications before the persistence execution. There were no duplicate scene numbers anywhere. This inspection modified nothing. Therefore M4 persistence does not require another schema migration, trigger, or database function; the smallest implementation is one PostgreSQL node after `Validate Structured Plan` using one atomic SQL statement that rechecks/locks job eligibility, writes the full validated scene set, and updates job state only if the complete write succeeds;
-- production WF02 export is fully verified, committed, and present on GitHub for the pre-persistence seven-node version. The live workflow `TJfA4ZYUEKSTad6k` (`WF02 — Plan Script and Scenes`) was exported once from production and saved as `n8n/workflows/WF02-plan-script-and-scenes.json`; that export is 19,533 bytes with SHA-256 `0be23f3835b85c72cc1bc78c721ca35c617cb8c9fa1ededfb7b0d8694923a03e`. Validation confirmed exactly seven expected nodes, the updated duration-derived Gemini schema, the production M4 validator, terminal `Validate Structured Plan`, credential references only, and absence of known runtime secrets. The export commit is `58c9640c0b903c35ef506ec7f7d1daef6f5721c2` (`feat(m4): export script planning workflow`). Because `Persist Scene Plan` has now been added live and persistence verification passed, WF02 must now be exported again as the eight-node production version;
-- the updated live WF02 planning contract passed one real 60-second structural run for retained job `ba081017-2345-4212-a1c4-cde6df8de574`. `Validate Structured Plan` returned exactly 15 sequential scenes numbered 1..15; every scene contained all five required fields; `visual_subject_type` was always exactly `factual` or `generic`; the validator therefore also confirmed non-empty required strings, English `visual_query` values no longer than 100 characters, and case-insensitive query uniqueness. The Gemini response used model `gemini-3.5-flash-lite`, response ID `dOqKaqXPOJGmkdUP2qW1kQk`, 507 prompt tokens, 981 output tokens, and 1488 total tokens. Because the job topic is the synthetic M3 marker `M3_VALID_BB26793B-3A2E-4B5C-AD8D-2FD22D97CA03`, this run is structural acceptance only and is not yet manual quality acceptance for a meaningful real topic;
-- a second read-only inspection of saved live WF02 configuration identified the earlier mismatch exactly: `Build Planning Request` was already on the new M4 contract, while both downstream nodes were still saved in their old versions. `Generate Structured Plan` still had `responseJsonSchema.scenes.minItems = 1`, no exact `maxItems`, no `visual_subject_type` property, and only four required scene fields. `Validate Structured Plan` still accepted any non-empty scene array, required only `scene_number`, `narration`, `visual_description`, and `visual_query`, and did not enforce duration-specific scene count, `visual_subject_type`, query length, or case-insensitive query uniqueness. Those two nodes were subsequently corrected and the structural contract passed;
-- the first real 60-second run after updating only `Build Planning Request` returned exactly 15 sequential scenes from `gemini-3.5-flash-lite`, but every scene lacked `visual_subject_type` and the old validator nevertheless accepted the output. That failed contract run used response ID `XeiKatXWBYirnsEP8tDG0AY` with 507 prompt tokens, 1178 output tokens, and 1685 total tokens. At that time no persistence node existed, so it created no scene rows or job-state mutation;
-- the live WF02 `Build Planning Request` node emits the production duration-specific planning contract for the retained 60-second M3 job: `required_scene_count = 15`, language `English`, and a prompt/output shape containing exactly the five required scene fields `scene_number`, `narration`, `visual_subject_type`, `visual_description`, and `visual_query`. The generated instructions require exactly 15 scenes, sequential numbering, target-language narration/visual description, `factual|generic` classification, non-empty English visual queries no longer than 100 characters and unique ignoring case, and explicitly exclude `duration_seconds` and concrete provider/asset selection;
-- production migration `db/migrations/002_add_scene_visual_subject_type.sql` has been applied successfully to PostgreSQL. Before destructive cleanup, the production `public` schema/data was backed up in PostgreSQL custom format at `/tmp/ai-short-form-content-factory-public-20260823T121528Z.dump` inside the PostgreSQL container and on the VPS host; both copies were validated and have SHA-256 `f147aaff08278aa09d467f5661a3b0d6e50ff5376a27faf364273678016ee39a`;
-- the only rows blocking migration 002 were the verified disposable M2 manual SQL-test job `b2c1fc1c-e5f1-468b-a64d-7eeca2cb963d` and its two test scenes. Exact precondition checks confirmed the known topic, two known test scenes, zero assets, and zero publications. Deleting that one M2 test job removed exactly those two scenes through the existing `ON DELETE CASCADE` relationship;
-- after migration 002, `public.scenes.visual_subject_type` exists as `TEXT NOT NULL`; constraint `scenes_visual_subject_type_check` is present and PostgreSQL reports `CHECK ((visual_subject_type = ANY (ARRAY['factual'::text, 'generic'::text])))`;
-- a rollback-only functional database probe confirmed that `factual` and `generic` are accepted, an invalid value is rejected by the check constraint, and `NULL` is rejected by the NOT NULL constraint;
-- retained production application data was fingerprinted before and after the M2 cleanup/migration and the retained M3 job fingerprint was unchanged before persistence;
-- on the VPS, the previously untracked `n8n/` directory was inspected without deletion; it contained exactly `n8n/workflows/WF01-create-content-job.json`, and both its file list and SHA-256 matched the committed M3 copy; the duplicate VPS copy was moved to recoverable backup `/tmp/ai-short-form-content-factory-n8n-backup-20260823T120403Z`;
-- the VPS repository checkout is on `feat/m4-script-scene-planning` and is used for M4 runtime work;
-- the production v1 M4 scene contract is an explicit project decision: 15/30/45/60-second jobs require exactly 4/8/12/15 scenes, and each scene maps to one narration segment, one later voiceover file, one selected visual asset, and one rendered timeline segment;
-- each planned scene requires `visual_subject_type = factual|generic`, target-language `visual_description`, and a case-insensitively unique English `visual_query` no longer than 100 characters; factual scenes route to Wikimedia Commons and generic scenes route to Pixabay with Pexels fallback;
-- the clean-install schema includes `scenes.visual_subject_type`, and migration 002 brings the production database to the same required scene-subject contract;
-- the production WF02 input block is assembled in n8n as `Receive Job ID` -> `Normalize Job ID` -> `Load Eligible Job` -> `Require Eligible Job`;
-- the complete four-node input block passed a real PostgreSQL-backed test with job `ba081017-2345-4212-a1c4-cde6df8de574`: `job_exists = true`, `eligible = true`, `language_code = 'en'`, `target_duration_seconds = 60`, `status = 'created'`, and `current_stage = 'intake'` before persistence;
-- M4 feature branch `feat/m4-script-scene-planning` was created from the completed M3 `main` state;
-- the repository itself contains no AI credential or API secret;
-- repository foundation, M1 Docker foundation, M2 PostgreSQL application-state validation, and M3 n8n intake are complete;
-- the three-service runtime is deployed on the VPS and `publisher.hodor.com.pl` routes to the new n8n instance;
-- internal stage hand-off is native n8n sub-workflow execution with `job_id`, not public HTTP webhooks;
-- render boundary is synchronous-first `n8n -> media-worker -> n8n -> PostgreSQL`;
-- media-worker is not allowed to write product state directly to PostgreSQL;
-- human review is a real STOP boundary after `review_ready`;
-- retry/dispatcher/watchdog/queue infrastructure remains deliberately deferred.
+Draft PR: `#5 — M4: implement script and scene planning`
 
 ## Runtime
 
-VPS SSH target:
+VPS: `root@37.27.87.6`
 
-`root@37.27.87.6`
+Project path: `/opt/ai-short-form-content-factory`
 
-Project path:
+Services: `n8n`, `postgres`, `media-worker`.
 
-`/opt/ai-short-form-content-factory`
+Public n8n URL: `https://publisher.hodor.com.pl/`
 
-Services:
+Protected old runtime: `/opt/n8n` — do not modify except for a narrowly required, backed-up, validated Caddy change.
 
-- `n8n`;
-- `postgres`;
-- `media-worker`.
+The `n8n` PostgreSQL schema belongs to n8n and must not be modified manually.
 
-Public n8n URL:
+## Current M4 production contract
 
-`https://publisher.hodor.com.pl/`
+WF02: `TJfA4ZYUEKSTad6k` / `WF02 — Plan Script and Scenes`
 
-Planned production Studio URL:
-
-`https://studio.hodor.com.pl/`
-
-The Studio URL is the user-facing project site. The publisher URL remains the public n8n endpoint.
-
-The new n8n host port remains bound to localhost and public traffic reaches it through the existing Caddy reverse proxy.
-
-Protected existing work runtime:
-
-`/opt/n8n`
-
-Do not modify or remove that runtime except for a narrowly required, backed-up, validated Caddy configuration change.
-
-## Database
-
-Application tables in `public`:
-
-- `jobs`;
-- `scenes`;
-- `assets`;
-- `publications`.
-
-The `n8n` schema belongs to n8n and must not be modified manually.
-
-Current schema naming that must be respected:
-
-- `jobs.language_code`;
-- `jobs.target_duration_seconds`;
-- `jobs.last_error`;
-- `scenes.audio_path`;
-- `scenes.visual_path`;
-- `scenes.duration_seconds`;
-- `scenes.visual_subject_type`.
-
-`scenes.visual_subject_type` is present in production PostgreSQL as `TEXT NOT NULL` with allowed values `factual` and `generic`.
-
-`jobs.status` and `jobs.current_stage` are separate concepts:
-
-- `status` is the lifecycle/result state;
-- `current_stage` identifies the stage currently responsible for work or failure.
-
-After successful atomic M4 persistence, the intended state is `status = processing`, `current_stage = script`; Voiceover changes `current_stage` only when M5 actually begins.
-
-## Current workflow topology
-
-The product is not implemented as one giant n8n workflow.
+Topology:
 
 ```text
-PUBLIC ENTRY
-Job Intake
-  -> Script & Scene Planning
-  -> Voiceover Generation
-  -> Visual Sourcing
-  -> Video Render
-  -> review_ready
-  -> STOP
-
-HUMAN ACTION
-  -> Buffer Draft Publishing
+Receive Job ID
+  -> Normalize Job ID
+  -> Load Eligible Job
+  -> Require Eligible Job
+  -> Build Planning Request
+  -> Generate Structured Plan
+  -> Validate Structured Plan
+  -> Persist Scene Plan
 ```
 
-Stage hand-off contract:
+`Persist Scene Plan` is terminal.
 
-- internal automatic stages use native n8n sub-workflow execution, not public HTTP webhooks;
-- `job_id` is the normal hand-off payload;
-- each stage reloads the durable state it needs from PostgreSQL;
-- each stage checks that the job is eligible for the stage;
-- a stage persists its result before starting the next stage;
-- failure prevents the next stage from starting;
-- a stage being separate does not by itself make it idempotent.
+The stage receives only `job_id`, reloads PostgreSQL state, verifies eligibility, makes one Gemini request, validates the complete result, then atomically persists all scenes and updates the job. After successful M4 persistence the intended state is `status = processing`, `current_stage = script`. M5 has not started.
 
-## Current task
+Production scene counts: 15/30/45/60 seconds -> exactly 4/8/12/15 scenes.
 
-Implement the production `Script & Scene Planning` stage as a separate n8n workflow.
+Each scene requires:
 
-M4 scope only:
+- sequential `scene_number`;
+- target-language `narration`;
+- `visual_subject_type = factual|generic`;
+- target-language `visual_description`;
+- unique English `visual_query` <= 100 characters.
 
-```text
-job_id
-  -> load and validate eligible job
-  -> one AI request for structured script + scene plan
-  -> validate the complete structured result
-  -> malformed: fail without inserting scenes
-  -> valid: persist all scenes and update job state
-```
+`audio_path`, `visual_path`, and `duration_seconds` remain unset in M4.
 
-Do not implement Voiceover Generation yet.
-Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastructure.
+## Verified implementation state
+
+- production migration `002_add_scene_visual_subject_type.sql` is applied; `scenes.visual_subject_type` is `TEXT NOT NULL` with `factual|generic` CHECK;
+- PostgreSQL persistence was verified with a 60-second structural job: exactly 15 scenes, sequential 1..15, valid required fields, unique queries, no audio/visual/duration values, 0 assets, 0 publications;
+- final eight-node WF02 export is committed in `n8n/workflows/WF02-plan-script-and-scenes.json`;
+- verified eight-node export SHA-256: `fc8088d678999774021bfe745b0d17507e5bfde2f71e407b4e9f8bd6230e87aa`;
+- commit containing the eight-node export and atomic persistence: `5208dc1fc6b8f6ea47179dc70c0b0494c7c5aebc`;
+- no retry, dispatcher, queue, watchdog, Redis, new service, or M5 work has been added.
+
+## M4 manual-quality history
+
+Quality topic used: `Jak działa Kanał Panamski i jego system śluz`, language `pl`, duration 30 seconds.
+
+1. Job `80638242-ebee-4848-a1a4-9090446a95a8`: structural/persistence PASS, manual quality FAIL due Polish grammar error (`opadaj`) and an incorrect pump claim.
+2. Job `ac32c553-dacd-4a21-bd7e-af3cd4941a82`: structural/persistence PASS, manual quality FAIL due `z widokom` grammar error and narration/visual mismatch.
+3. Job `1ff6453a-177c-4dc4-9b16-3cac05b2243a`: structural/persistence PASS, manual quality FAIL because the pump claim reappeared and scene 3 used a misleading causal explanation about differing sea levels.
+
+`Build Planning Request` has since been refined again, prompt-only, to require natural target-language grammar, conservative factual accuracy, correct causal/mechanistic explanations, avoidance of unsupported technical details, direct narration-to-visual alignment, correct names/spelling, and aligned English visual queries. Schema, validator, persistence SQL, topology, credentials, DB schema, and job-state contract were not intentionally changed by these prompt refinements.
+
+## Fourth quality run — current checkpoint
+
+Fresh fourth job: `6b08098c-e5c7-45bd-babb-036705b563e1`
+
+Topic: `Jak działa Kanał Panamski i jego system śluz`
+
+Language: `pl`
+
+Duration: 30 seconds
+
+The complete eight-node WF02 has run exactly once. `Persist Scene Plan` returned:
+
+- `status = processing`;
+- `current_stage = script`;
+- `inserted_scene_count = 8`;
+- `expected_scene_count = 8`;
+- `updated_at = 2026-08-23T14:28:00.905Z`.
+
+Structural/persistence execution therefore passed for this fourth run. Manual quality acceptance has not yet been performed. Do not rerun this job.
 
 ## Exact next action
 
-Create a fresh fourth meaningful-topic quality-test job through the normal WF01 intake boundary using topic `Jak działa Kanał Panamski i jego system śluz`, language `pl`, and duration 30 seconds. Run the complete eight-node WF02 exactly once for that new job, then perform one read-only PostgreSQL inspection of its exactly 8 persisted scenes. Manually review target-language grammar/readability, scene-to-scene coherence, factual and causal accuracy, narration-to-visual alignment, factual/generic classifications, official names/spelling where applicable, and English visual-query relevance. Do not rerun any prior quality-test job. M4 remains blocked and M5 must not start until this fresh run passes manual quality acceptance and persistence verification.
-
-## Working rules
-
-Before answering or acting on this project:
-
-1. fetch the current `docs/CURRENT_STATE.md` from the active feature branch on every technical turn;
-2. fetch `docs/ARCHITECTURE.md` when architecture is involved;
-3. fetch `docs/ROADMAP.md` when milestone scope or acceptance is involved;
-4. do not replace missing facts with remembered chat guesses;
-5. if proposing a new architecture decision, label it as a new proposal before changing the source of truth;
-6. after every completed implementation or runtime step, update this file in the same feature branch;
-7. export production n8n workflows into the repository so workflow structure is not dependent on chat memory.
+Perform one read-only PostgreSQL inspection of job `6b08098c-e5c7-45bd-babb-036705b563e1` and all 8 persisted scenes. Verify the job remains `processing/script` and has exactly 8 scenes. Manually review Polish grammar/readability, scene-to-scene coherence, factual and causal accuracy, narration-to-visual alignment, factual/generic classifications, official names/spelling where applicable, and English visual-query relevance. If this run passes, update `CURRENT_STATE.md`, export the final live WF02 again because `Build Planning Request` has changed since the last repository export, validate/commit/push that export, then complete M4 before starting M5.
 
 ## Do not do
 
-- no giant single n8n workflow for the whole lifecycle;
-- no public webhook chaining between internal automatic stages;
-- no custom dispatcher;
-- no watchdog/reconciler at this stage;
-- no PostgreSQL polling queue;
-- no Redis;
-- no n8n queue mode;
-- no leases/fencing/reconciliation engine;
-- no generic retry/idempotency framework before concrete failure patterns require it;
-- no direct product-state writes from media-worker to PostgreSQL;
-- no async render infrastructure before synchronous render is proven insufficient;
-- no extra microservices without a demonstrated requirement;
-- no secrets in GitHub;
-- no global Docker prune operations on the shared VPS;
-- do not delete or casually modify the protected `/opt/n8n` work runtime;
-- do not start M5 before M4 passes its real acceptance checks.
+- do not rerun any previous quality-test job;
+- do not start M5 before M4 passes;
+- do not modify the n8n PostgreSQL schema manually;
+- do not add retry/dispatcher/queue/watchdog/Redis/generic idempotency infrastructure;
+- do not add extra services;
+- do not modify `/opt/n8n` casually;
+- do not put secrets in GitHub.
