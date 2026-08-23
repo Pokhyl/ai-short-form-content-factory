@@ -179,25 +179,20 @@ Insert Job
 
 The same canvas shows `Start Script Planning` targeting workflow ID `TJfA4ZYUEKSTad6k`, which is production `WF02 — Plan Script and Scenes`.
 
-The saved production WF01 export was then captured from n8n and copied into `n8n/workflows/WF01-create-content-job.json`. Verification on the VPS passed:
+The saved production WF01 export was captured from n8n and copied into `n8n/workflows/WF01-create-content-job.json`. Verification on the VPS passed:
 
 - branch: `feat/m5-voiceover`;
-- exported file: `/tmp/WF01-create-content-job.json`;
-- exported size: 8564 bytes;
-- copied repository file size: 8564 bytes;
+- exported file size: 8564 bytes;
+- repository copy size: 8564 bytes;
 - `git diff --check` passed;
-- repository status shows only `M n8n/workflows/WF01-create-content-job.json` before committing this export.
-
-The inspected workflow diff confirms the intended hand-off configuration exactly:
-
-- target workflow ID: `TJfA4ZYUEKSTad6k` (`WF02 — Plan Script and Scenes`);
+- target workflow ID: `TJfA4ZYUEKSTad6k`;
 - mapped input: `job_id = {{ $json.job_id }}`;
 - `waitForSubWorkflow = false`;
 - `Insert Job` branches to both `Return Created Job` and `Start Script Planning`.
 
-The remaining diff entries are n8n export metadata/position changes (`updatedAt`, node position, `versionId`, `activeVersionId`, `versionCounter`, version metadata) associated with the saved workflow version.
+The VPS then synchronized to remote checkpoint `318e9dca6f93645179791feb4fa8092298ebff17` and created local commit `10f36e0` with message `n8n: wire WF01 to script planning`. The subsequent VPS `git push` failed because the VPS origin is HTTPS and no GitHub username/credential was available non-interactively.
 
-The updated WF01 export has been verified but has not yet been committed from the VPS working tree.
+The verified WF01 export was then committed to the remote branch directly through the connected GitHub integration as commit `353149dbe5ff7e511ad5dfe7683b00755f765727`. Its content blob SHA is `a71161b373bb56bd0aba8abeba410e17011dcb5c`, matching the verified exported file diff target. Therefore the intended WF01 export is now present in the remote repository even though the VPS push itself failed.
 
 WF01 must return HTTP 201 without waiting for the downstream pipeline to complete.
 
@@ -220,7 +215,7 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 ## Exact next action
 
-Synchronize the VPS branch with the remote `feat/m5-voiceover` documentation commits without losing the verified local WF01 export, then commit and push `n8n/workflows/WF01-create-content-job.json`. Do not run the end-to-end chain yet.
+Reconcile the VPS Git branch with the remote branch after the failed HTTPS push. First fetch `origin/feat/m5-voiceover`, verify the VPS working tree is clean and that the local commit tree matches the remote tree, then fast-align/reset the VPS branch to the remote commit. Do not rerun WF01 or the end-to-end chain before this Git reconciliation is verified.
 
 ## Do not do
 
