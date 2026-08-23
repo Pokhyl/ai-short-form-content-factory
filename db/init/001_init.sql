@@ -23,13 +23,16 @@ CREATE TABLE IF NOT EXISTS scenes (
   narration TEXT,
   visual_description TEXT,
   visual_query TEXT,
+  visual_subject_type TEXT NOT NULL,
   audio_path TEXT,
   visual_path TEXT,
   duration_seconds NUMERIC(8, 3),
   status TEXT NOT NULL DEFAULT 'planned',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE (job_id, scene_number)
+  UNIQUE (job_id, scene_number),
+  CONSTRAINT scenes_visual_subject_type_check
+    CHECK (visual_subject_type IN ('factual', 'generic'))
 );
 
 CREATE TABLE IF NOT EXISTS assets (
