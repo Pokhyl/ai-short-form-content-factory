@@ -40,7 +40,7 @@ Production WF02:
 
 - workflow ID: `TJfA4ZYUEKSTad6k`;
 - name: `WF02 — Plan Script and Scenes`;
-- final topology: 8 nodes ending in `Persist Scene Plan`;
+- final accepted M4 topology: 8 nodes ending in `Persist Scene Plan`;
 - final accepted export SHA-256: `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`;
 - final accepted export commit: `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`;
 - accepted quality job: `6b08098c-e5c7-45bd-babb-036705b563e1` with exactly 8 persisted scenes and manual quality PASS.
@@ -56,8 +56,6 @@ Project path: `/opt/ai-short-form-content-factory`
 Services: `n8n`, `postgres`, `media-worker`.
 
 Public n8n URL: `https://publisher.hodor.com.pl/`
-
-Protected old runtime: `/opt/n8n` — do not modify except for a narrowly required, backed-up, validated Caddy change.
 
 The `n8n` PostgreSQL schema belongs to n8n and must not be modified manually.
 
@@ -165,6 +163,22 @@ Verified:
 
 Do not create a replacement OAuth client, API key, service account, or billing setup.
 
+## WF01 hand-off checkpoint
+
+WF01 is no longer treated as fully finished merely because M3 acceptance passed. Production chain wiring is being completed as downstream stages become available.
+
+On 2026-08-23 the user added a real `Execute Sub-workflow` node named `Start Script Planning` to production `WF01 — Create Content Job` and selected `WF02 — Plan Script and Scenes` as the target. The node maps only `job_id` from the newly inserted job. The user reports the node configuration step is complete; the updated live workflow export and runtime end-to-end hand-off have not yet been verified or committed.
+
+Required production behavior remains:
+
+```text
+Insert Job
+├──> Return Created Job
+└──> Start Script Planning -> WF02
+```
+
+WF01 must return HTTP 201 without waiting for the downstream pipeline to complete.
+
 ## WF03 implementation checkpoint
 
 The production n8n workflow `WF03 — Voiceover Generation` has been created as the real M5 stage workflow, and a real HTTP Request node named `Generate Voiceover` has been added to it. The exact workflow ID has not yet been recorded. No Cloud TTS request from this real node has been accepted yet.
@@ -184,7 +198,7 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 ## Exact next action
 
-Build the permanent beginning of WF03 before executing TTS: add the native sub-workflow trigger `When Executed by Another Workflow` and name it `Receive Job ID`. WF03 must receive only `job_id`. Then add the permanent PostgreSQL load/eligibility path so `Generate Voiceover` eventually receives real persisted `scenes.narration`, `jobs.language_code`, and the corresponding configured voice. Do not hardcode a topic, narration phrase, or language in the production node.
+Verify and save the updated production WF01 wiring before moving on: confirm on the canvas that `Insert Job` branches to both `Return Created Job` and `Start Script Planning`, with the latter targeting WF02 and passing only `job_id`. Then save/publish the workflow change. Do not run an end-to-end test until the saved topology is visually confirmed. After saving, export the updated production WF01 to the repository before progressing.
 
 ## Do not do
 
@@ -198,5 +212,4 @@ Build the permanent beginning of WF03 before executing TTS: add the native sub-w
 - do not modify the n8n PostgreSQL schema manually;
 - do not add retry/dispatcher/queue/watchdog/Redis/generic idempotency infrastructure;
 - do not add extra services;
-- do not modify `/opt/n8n` casually;
 - do not put secrets in GitHub.
