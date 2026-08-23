@@ -61,6 +61,8 @@ Current M4 architecture contract:
 - the stage receives only `job_id`;
 - it reloads the job from PostgreSQL;
 - it verifies that the job is eligible for script planning;
+- it requires exactly 4/8/12/15 scenes for 15/30/45/60-second jobs;
+- each scene carries target-language narration and visual description, a factual/generic subject classification, and a unique English visual query;
 - it makes one AI request for the structured script and scene plan;
 - it validates the complete model output before persistence;
 - it persists scenes and updates job state only after validation succeeds;
@@ -95,13 +97,16 @@ Main currently includes public n8n access through merge commit:
 
 ## Completed
 
+- the production v1 M4 scene contract is now an explicit project decision: 15/30/45/60-second jobs require exactly 4/8/12/15 scenes, and each scene maps to one narration segment, one later voiceover file, one selected visual asset, and one rendered timeline segment;
+- each planned scene now requires `visual_subject_type = factual|generic`, target-language `visual_description`, and a case-insensitively unique English `visual_query` no longer than 100 characters; factual scenes route to Wikimedia Commons and generic scenes route to Pixabay with Pexels fallback;
+- the clean-install schema now includes `scenes.visual_subject_type`, and `db/migrations/002_add_scene_visual_subject_type.sql` safely adds the required non-null checked column to an existing database without assigning false classifications to existing rows; the migration has not yet been applied to production PostgreSQL;
 - `Validate Structured Plan` passed against the real Gemini response: it parsed the model text, accepted exactly five sequential scenes with non-empty required fields, restored the original job context, and emitted normalized scenes plus AI metadata; no PostgreSQL write has occurred yet;
 - the production `Generate Structured Plan` HTTP Request completed one real Google Gemini API call with `gemini-3.5-flash-lite`; the response finished with `STOP`, returned structured JSON containing five scenes, and reported 248 prompt tokens, 424 candidate tokens, and 672 total tokens; this synthetic marker-topic run proves the API and structured-output transport, but does not yet prove narration quality for a real topic;
 - `Build Planning Request` is connected after `Require Eligible Job` and passed execution; it produced provider-independent system/user prompts plus the expected scenes output contract without making an AI call;
 - the production WF02 input block is assembled in n8n as `Receive Job ID` -> `Normalize Job ID` -> `Load Eligible Job` -> `Require Eligible Job`;
 - the complete four-node input block passed a real PostgreSQL-backed test with job `ba081017-2345-4212-a1c4-cde6df8de574`: `job_exists = true`, `eligible = true`, `language_code = 'en'`, `target_duration_seconds = 60`, `status = 'created'`, and `current_stage = 'intake'`;
 - M4 feature branch `feat/m4-script-scene-planning` was created from the completed M3 `main` state;
-- the actual `scenes` schema was inspected and already contains `job_id`, `scene_number`, `narration`, `visual_description`, `visual_query`, `duration_seconds`, and `status`; no M4 migration is currently justified;
+- the previous `scenes` schema was inspected and contains `job_id`, `scene_number`, `narration`, `visual_description`, `visual_query`, `duration_seconds`, and `status`; the approved factual/generic routing contract now justifies the new `visual_subject_type` migration;
 - the repository contains no configured AI provider, model, API-key environment variable, or exported AI credential;
 - the isolated browser session reaches the production n8n sign-in page, but no user takeover surface is available in the current chat interface; this path cannot provide authenticated runtime access;
 - direct SSH from the work environment cannot reach VPS port 22 (`Network is unreachable`), so it cannot inspect the n8n runtime either;
@@ -184,7 +189,8 @@ Current schema naming that must be respected:
 - `jobs.last_error`;
 - `scenes.audio_path`;
 - `scenes.visual_path`;
-- `scenes.duration_seconds`.
+- `scenes.duration_seconds`;
+- `scenes.visual_subject_type`.
 
 Do not silently replace these with alternative names from external architecture suggestions.
 
@@ -273,7 +279,7 @@ Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastruc
 
 ## Exact next action
 
-Inspect the repository-defined `scenes` schema, then add one parameterized PostgreSQL persistence statement after `Validate Structured Plan` so scene insertion and job-state advancement succeed or roll back together.
+Apply `db/migrations/002_add_scene_visual_subject_type.sql` to the production PostgreSQL database and verify the new column, NOT NULL requirement, and factual/generic check constraint directly in PostgreSQL. Then update `Build Planning Request`, the Gemini response schema, and `Validate Structured Plan` in the live WF02 before adding persistence.
 
 ## Working rules
 
