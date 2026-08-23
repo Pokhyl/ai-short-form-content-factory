@@ -196,7 +196,6 @@ Directly verified from screenshots:
 - latest `Generate Voiceover` screenshot directly verifies `Body Content Type = JSON` and `Specify Body = Using JSON`;
 - the visible lower part of the JSON expression includes dynamic `name: $json.voice_name` and `audioConfig.audioEncoding = 'MP3'`;
 - the top of the JSON expression is outside the visible editor area, so `input.text`, language mapping, and the complete body are not yet independently verified line-for-line from a screenshot;
-- the latest screenshot explicitly shows `No input connected` on the left side of `Generate Voiceover`; therefore `Prepare Voiceover Items -> Generate Voiceover` is not yet connected at this checkpoint;
 - no real Cloud TTS request has been accepted yet.
 
 User-reported implementation steps on 2026-08-23, not yet independently verified by screenshot/export:
@@ -204,8 +203,9 @@ User-reported implementation steps on 2026-08-23, not yet independently verified
 1. `Require Eligible Voiceover Job` was added after `Load Voiceover Context`, Mode `Run Once for All Items`, using supplied validation code that checks job existence, `processing/script`, supported language, exact duration-specific scene count, sequential scenes, non-empty narration, and no existing audio results.
 2. `Begin Voiceover Stage` was added after eligibility validation as `Application PostgreSQL` / `Execute Query`, using supplied SQL that atomically changes only `processing/script` jobs to `current_stage = voiceover`, keeps `status = processing`, and returns `transitioned`, `status`, and `current_stage`.
 3. `Prepare Voiceover Items` was added after `Begin Voiceover Stage`, Mode `Run Once for All Items`, using supplied code that requires `transitioned === true`, checks job identity/state, selects the exact locked voice from `jobs.language_code`, and emits one item per scene with only `job_id`, `scene_id`, `scene_number`, `language_code`, `voice_name`, and `narration`.
+4. User reports `Prepare Voiceover Items` is now connected directly to `Generate Voiceover`. This connection has not yet been independently verified by a canvas screenshot/export.
 
-Do not treat these three user-reported nodes as visually/export-verified until a screenshot or workflow export confirms them.
+Do not treat these user-reported nodes/connections as visually/export-verified until a screenshot or workflow export confirms them.
 
 ## Smallest M5 implementation boundary
 
@@ -220,9 +220,9 @@ No new service is required.
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
-1. Connect `Prepare Voiceover Items` directly to the existing `Generate Voiceover` node. Do not execute it yet.
-2. After connection, visually verify the full dynamic JSON body, especially `input.text = $json.narration` and dynamic language mapping, before the first real TTS request.
-3. Then add the existing media-worker `/audio/store` call and persist returned `audio_path` plus measured `duration_seconds` through n8n.
+1. Visually verify the complete dynamic JSON body in `Generate Voiceover`, especially `input.text = $json.narration`, dynamic language mapping, `name = $json.voice_name`, and `audioEncoding = MP3`.
+2. Do not execute real TTS until that complete body is verified.
+3. After body verification, add the existing media-worker `/audio/store` call and persist returned `audio_path` plus measured `duration_seconds` through n8n.
 4. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
 
 Before the next VPS Git change, synchronize the VPS branch because the remote feature branch has advanced with documentation commits.
