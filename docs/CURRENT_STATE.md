@@ -104,7 +104,6 @@ Stage hand-off remains only:
 ## Verified M5 production boundary
 
 - production VPS is on `feat/m5-voiceover`;
-- new production n8n currently contains only `Application PostgreSQL | postgres` and `Google Gemini API | httpHeaderAuth`; no TTS OAuth credential exists yet;
 - accepted M4 job `6b08098c-e5c7-45bd-babb-036705b563e1` is `pl`, 30 seconds, `processing/script`, with exactly 8 planned scenes, non-empty narration, and all `audio_path` / `duration_seconds` still NULL;
 - media-worker `GET /health` returns HTTP 200 with FFmpeg 8.1.2 and ffprobe 8.1.2;
 - persistent Docker volume `ai-short-form-content-factory_media_data` is mounted at `/data` and writable by media-worker;
@@ -151,7 +150,9 @@ Verified:
 - on 2026-08-23 the same OAuth client was updated and saved with current callback `https://publisher.hodor.com.pl/rest/oauth2-credential/callback`;
 - on 2026-08-23 one new enabled client secret was created on this same existing OAuth client; the old secret remains present separately;
 - the actual new secret value must stay local and must never be posted to chat or GitHub;
-- local retention/download of the new secret has not yet been explicitly confirmed in chat.
+- on 2026-08-23 the current n8n runtime was configured with a new `Google OAuth2 API` credential using the existing `n8n-tts-oauth` Client ID, the fresh client secret, scope `https://www.googleapis.com/auth/cloud-platform`, and the current n8n callback URL;
+- the credential fields were saved in n8n, but Google account authorization / token acquisition has not yet been confirmed;
+- local retention/download of the new secret has not been explicitly confirmed in chat.
 
 Do not create a replacement OAuth client, API key, service account, or billing setup.
 
@@ -164,11 +165,11 @@ No new service is required.
 - `scenes.audio_path` stores a media-relative path under `/data`;
 - no generic retry/idempotency framework is added.
 
-For HTTP Request authentication, n8n provides `Google OAuth2 API`, which uses Google authorization-code OAuth with Google auth/token URLs. The TTS credential must use the existing `n8n-tts-oauth` Client ID plus the fresh secret and a Cloud TTS-capable Google scope. Do not reuse the Gemini header-auth credential.
+For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` credential backed by `n8n-tts-oauth`. Do not reuse the Gemini header-auth credential.
 
 ## Exact next action
 
-Before leaving the Google OAuth client page, ensure the new secret is actually copied/downloaded and stored locally. Do not expose it in screenshots/chat/GitHub. Then create a new `Google OAuth2 API` credential in the current n8n runtime using the existing `n8n-tts-oauth` Client ID and the fresh secret, with the Cloud TTS scope required for the REST call. Authorize the Google account and verify one authenticated TTS request before building WF03.
+Authorize the newly saved `Google OAuth2 API` credential in the current n8n runtime with the intended Google account and confirm that n8n reports the credential as connected. If Google authorization fails, capture the exact error without exposing secrets. After authorization succeeds, verify one authenticated Cloud Text-to-Speech request before building WF03.
 
 ## Do not do
 
