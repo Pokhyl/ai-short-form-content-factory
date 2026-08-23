@@ -1,6 +1,6 @@
 # Architecture — Source of Truth
 
-Last updated: 2026-08-22
+Last updated: 2026-08-23
 
 This document is the current architecture source of truth for the clean rebuild.
 If older prototypes, screenshots, deleted repositories, previous workflow designs, or chat suggestions conflict with this file, this file wins unless it is explicitly updated.
@@ -145,6 +145,8 @@ Exact topic-length and duration bounds are not yet an architecture decision. Do 
 - validates the complete model output before any scene write;
 - persists scenes and updates the job state atomically;
 - starts `Voiceover Generation` only after the scene plan is stored successfully.
+
+After successful atomic M4 persistence, set `jobs.status = 'processing'` and keep `jobs.current_stage = 'script'`. `Voiceover Generation` changes `current_stage` to `voiceover` only when that stage actually begins.
 
 Production v1 scene-count contract:
 
