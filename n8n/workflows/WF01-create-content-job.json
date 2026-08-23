@@ -1,0 +1,228 @@
+[
+  {
+    "updatedAt": "2026-08-22T22:18:44.928Z",
+    "createdAt": "2026-08-22T20:43:40.321Z",
+    "id": "Xy94qe35OigtMxkR",
+    "name": "WF01 — Create Content Job",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "jobs",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -656,
+          -16
+        ],
+        "id": "6a7bbc92-422f-4671-b1e9-78fd51654d99",
+        "name": "Receive Job Request",
+        "webhookId": "cdbc2641-439e-48af-a76a-9cd722b0ad00"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body = $json.body ?? {};\n\nconst rawTopic = body.topic;\nconst rawLanguage = body.language;\nconst rawDuration = body.duration;\n\nconst topic =\n  typeof rawTopic === 'string'\n    ? rawTopic.replace(/\\s+/g, ' ').trim()\n    : '';\n\nconst languageCode =\n  typeof rawLanguage === 'string'\n    ? rawLanguage.trim().toLowerCase()\n    : '';\n\nconst duration =\n  typeof rawDuration === 'number'\n    ? rawDuration\n    : typeof rawDuration === 'string' &&\n        rawDuration.trim() !== ''\n      ? Number(rawDuration)\n      : Number.NaN;\n\nconst errors = [];\n\nif (!topic) {\n  errors.push(\n    'topic must be a non-empty string'\n  );\n}\n\nif (\n  !['en', 'pl', 'ru', 'uk'].includes(\n    languageCode\n  )\n) {\n  errors.push(\n    'language must be one of: en, pl, ru, uk'\n  );\n}\n\nif (\n  !Number.isInteger(duration) ||\n  duration <= 0\n) {\n  errors.push(\n    'duration must be a positive integer'\n  );\n}\n\nreturn [\n  {\n    json: {\n      valid: errors.length === 0,\n      topic,\n      language_code: languageCode,\n      target_duration_seconds:\n        Number.isInteger(duration)\n          ? duration\n          : null,\n      errors,\n    },\n  },\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -432,
+          -16
+        ],
+        "id": "40ce141e-2c85-419c-b2ec-27ed4ab45b21",
+        "name": "Normalize and Validate Input"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "fe4974eb-058a-4234-9451-04bf7f35073d",
+                "leftValue": "={{ $json.valid }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -208,
+          -16
+        ],
+        "id": "4da6e526-0f94-4c60-a274-760e8888d549",
+        "name": "Input Valid?"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{\n  {\n    error: 'invalid_input',\n    details: $json.errors\n  }\n}}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          16,
+          80
+        ],
+        "id": "2a32d056-f379-4cd2-95c9-bcffd36a0deb",
+        "name": "Return Invalid Input"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "INSERT INTO public.jobs (\n  topic,\n  language_code,\n  target_duration_seconds\n)\nVALUES ($1, $2, $3)\nRETURNING id AS job_id;",
+          "options": {
+            "queryReplacement": "={{   [     $json.topic,     $json.language_code,     $json.target_duration_seconds   ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          16,
+          -112
+        ],
+        "id": "e4c3e36a-8cb4-4f43-895f-d3d706c18fc7",
+        "name": "Insert Job",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{\n  {\n    job_id: $json.job_id\n  }\n}}",
+          "options": {
+            "responseCode": 201
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          240,
+          -112
+        ],
+        "id": "3add0488-56cc-4100-91a0-fa6a48a69ff9",
+        "name": "Return Created Job"
+      }
+    ],
+    "connections": {
+      "Receive Job Request": {
+        "main": [
+          [
+            {
+              "node": "Normalize and Validate Input",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize and Validate Input": {
+        "main": [
+          [
+            {
+              "node": "Input Valid?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Input Valid?": {
+        "main": [
+          [
+            {
+              "node": "Insert Job",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Return Invalid Input",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert Job": {
+        "main": [
+          [
+            {
+              "node": "Return Created Job",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate",
+      "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "nodeGroups": [],
+    "pinData": {},
+    "versionId": "f1cf6698-df77-426b-a7b2-ed7836d98c03",
+    "activeVersionId": "f1cf6698-df77-426b-a7b2-ed7836d98c03",
+    "versionCounter": 33,
+    "triggerCount": 1,
+    "sourceWorkflowId": null,
+    "tags": [],
+    "shared": [
+      {
+        "updatedAt": "2026-08-22T20:43:40.321Z",
+        "createdAt": "2026-08-22T20:43:40.321Z",
+        "role": "workflow:owner",
+        "workflowId": "Xy94qe35OigtMxkR",
+        "projectId": "x92yC4agLVaxmmyf",
+        "project": {
+          "updatedAt": "2026-08-22T20:38:05.582Z",
+          "createdAt": "2026-08-22T18:46:49.400Z",
+          "id": "x92yC4agLVaxmmyf",
+          "name": "Vitalii Pokhyl <pokhylvitalii@gmail.com>",
+          "type": "personal",
+          "icon": null,
+          "description": null,
+          "customTelemetryTags": [],
+          "creatorId": "beb98494-dbaf-489c-9de8-6abf234326a4"
+        }
+      }
+    ],
+    "versionMetadata": {
+      "name": "Version f1cf6698",
+      "description": ""
+    }
+  }
+]
