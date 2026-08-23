@@ -140,11 +140,40 @@ Exact topic-length and duration bounds are not yet an architecture decision. Do 
 - receives `job_id`;
 - loads the job from PostgreSQL;
 - validates that the job is eligible for this stage;
-- generates the structured script and scene plan;
-- validates model output;
-- persists scenes;
-- updates the job state;
+- derives the exact scene count from `target_duration_seconds`;
+- generates the structured script and scene plan in one AI request;
+- validates the complete model output before any scene write;
+- persists scenes and updates the job state atomically;
 - starts `Voiceover Generation` only after the scene plan is stored successfully.
+
+Production v1 scene-count contract:
+
+| Target duration | Required scenes |
+| ---: | ---: |
+| 15 seconds | 4 |
+| 30 seconds | 8 |
+| 45 seconds | 12 |
+| 60 seconds | 15 |
+
+For the first complete version, one scene is one narration segment, one voiceover file,
+one selected visual asset, and one rendered timeline segment.
+
+Each planned scene contains:
+
+- `scene_number`;
+- `narration` in the requested job language;
+- `visual_subject_type` with exactly one of `factual` or `generic`;
+- `visual_description` in the requested job language;
+- `visual_query` in English, preserving official names and proper nouns.
+
+The scene validator requires the exact duration-specific scene count, sequential scene
+numbers starting at 1, non-empty required strings, a valid `visual_subject_type`,
+case-insensitively unique `visual_query` values, and queries no longer than 100
+characters. These structural checks do not replace manual quality acceptance for
+language correctness, narration coherence, or visual relevance.
+
+`scenes.duration_seconds` is not estimated by the planning model. Voiceover
+Generation writes the measured audio duration later.
 
 #### Voiceover Generation
 
@@ -299,11 +328,19 @@ Visual sourcing must never stop the whole product merely because no good stock a
 Initial policy:
 
 ```text
-exact/factual subject -> Wikimedia Commons
+visual_subject_type = factual -> Wikimedia Commons
+                                 -> local graphic/text fallback
 
-generic subject       -> Pixabay
-                        -> Pexels fallback
+visual_subject_type = generic -> Pixabay
+                                 -> Pexels fallback
+                                 -> local graphic/text fallback
 ```
+
+The planning stage classifies the subject, but it does not select a concrete provider
+asset. Visual Sourcing applies the deterministic provider route above. A failed
+factual Wikimedia search does not silently substitute misleading generic stock.
+The actual provider ID, source URL, attribution, license, local filename, and
+`scenes.visual_path` are created only after M6 selects and downloads the asset.
 
 For each scene:
 
