@@ -2,8 +2,7 @@
 
 Last updated: 2026-08-23
 
-This file is the first checkpoint to read before continuing work on this repository.
-If chat history conflicts with this file, `docs/ARCHITECTURE.md`, or `docs/ROADMAP.md`, the repository wins.
+This file is the first checkpoint to read before continuing work on this repository. If chat history conflicts with this file, `docs/ARCHITECTURE.md`, or `docs/ROADMAP.md`, the repository wins.
 
 ## Mandatory assistant protocol
 
@@ -14,6 +13,10 @@ For every technical reply or action about this project, fetch the current `docs/
 AI Short-Form Content Factory
 
 Repository: `Pokhyl/ai-short-form-content-factory`
+
+Current branch: `feat/m5-voiceover`
+
+Current milestone: M5 — Voiceover (`in progress`).
 
 Product goal:
 
@@ -27,39 +30,17 @@ Topic
   -> Buffer draft
 ```
 
-## Current milestone
+## M4 completed checkpoint
 
-M5 — Voiceover
+M4 PR #5 was merged into `main` on 2026-08-23.
 
-Status: in progress.
-
-Goal:
-
-Generate one playable voiceover file per persisted scene using the exact previously selected voice preset for the job language, measure the real audio duration, and persist `audio_path` plus `duration_seconds` before starting Visual Sourcing.
-
-Acceptance:
-
-- every required scene has a playable audio file;
-- actual audio duration is measured and stored;
-- voice quality is manually accepted in all supported languages used for testing.
-
-## Branch / PR
-
-Current branch: `feat/m5-voiceover`
-
-M4 PR `#5 — M4: implement script and scene planning` was merged into `main` on 2026-08-23.
-
-M4 merge commit: `7d25bac1c4d1a90b2b29183d9ec3ca280d1acfc4`.
-
-The M5 branch was created directly from that merge commit.
-
-## Completed M4 checkpoint
+Merge commit: `7d25bac1c4d1a90b2b29183d9ec3ca280d1acfc4`.
 
 Production WF02:
 
 - workflow ID: `TJfA4ZYUEKSTad6k`;
 - name: `WF02 — Plan Script and Scenes`;
-- final topology: 8 nodes ending in terminal `Persist Scene Plan`;
+- final topology: 8 nodes ending in `Persist Scene Plan`;
 - final accepted export SHA-256: `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`;
 - final accepted export commit: `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`;
 - accepted quality job: `6b08098c-e5c7-45bd-babb-036705b563e1` with exactly 8 persisted scenes and manual quality PASS.
@@ -122,33 +103,18 @@ Stage hand-off remains only:
 
 ## Verified M5 production boundary
 
-Read-only runtime inspection established:
-
 - production VPS is on `feat/m5-voiceover`;
-- n8n credential metadata contains `Application PostgreSQL | postgres` and `Google Gemini API | httpHeaderAuth` only;
-- no dedicated Google Cloud Text-to-Speech credential exists in the new production n8n runtime;
-- the Gemini header-auth credential must not be reused for Cloud TTS;
+- new production n8n currently contains only `Application PostgreSQL | postgres` and `Google Gemini API | httpHeaderAuth`; no TTS OAuth credential exists yet;
+- accepted M4 job `6b08098c-e5c7-45bd-babb-036705b563e1` is `pl`, 30 seconds, `processing/script`, with exactly 8 planned scenes, non-empty narration, and all `audio_path` / `duration_seconds` still NULL;
 - media-worker `GET /health` returns HTTP 200 with FFmpeg 8.1.2 and ffprobe 8.1.2;
 - persistent Docker volume `ai-short-form-content-factory_media_data` is mounted at `/data` and writable by media-worker;
-- n8n does not mount that media volume directly;
-- accepted M4 job `6b08098c-e5c7-45bd-babb-036705b563e1` is `pl`, 30 seconds, `processing/script`, `last_error IS NULL`;
-- it has exactly 8 `planned` scenes with non-empty narration;
-- all 8 scenes still have `audio_path IS NULL` and `duration_seconds IS NULL` and are a clean eligible M5 test state;
-- the existing Google Cloud project used for prior voiceover work has been identified as `n8n-drive-voiceover` (project ID `n8n-drive-voiceover`);
-- Cloud Text-to-Speech API is already enabled in that project;
-- the project currently shows an active Google Cloud free-trial balance, so no new TTS project needs to be created merely to continue M5;
-- Google Cloud IAM -> Service Accounts for `n8n-drive-voiceover` is currently empty (`Brak wierszy do wyświetlenia`);
-- project-level Google Cloud Credentials inspection shows no API keys and exactly two OAuth 2.0 web clients: `n8n-tts-oauth` and `n8n-drive-oauth`;
-- the dedicated TTS OAuth client `n8n-tts-oauth` exists and was last used on 2026-08-18;
-- its legacy Authorized redirect URI pointed to deleted old n8n runtime `https://tiktok-n8n.hodor.com.pl/rest/oauth2-credential/callback`;
-- on 2026-08-23 that redirect URI was migrated and saved on the same existing OAuth client as `https://publisher.hodor.com.pl/rest/oauth2-credential/callback`;
-- the existing client secret remains masked and Google states that existing client secrets cannot be viewed or downloaded again, so the old secret cannot be recovered from this screen. A new secret on the existing OAuth client is required unless an external copy of the old secret still exists.
+- n8n does not mount that media volume directly.
 
-## Implemented and accepted media-worker audio boundary
+## Accepted media-worker audio boundary
 
-Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` added internal JSON `POST /audio/store` to the existing `media-worker` service while preserving the three-service architecture.
+Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` added internal `POST /audio/store` to the existing `media-worker` service.
 
-Request contract:
+Request:
 
 ```json
 {
@@ -160,53 +126,56 @@ Request contract:
 
 Behavior:
 
-- validates JSON size, UUID, scene number, and canonical base64;
-- stores audio under deterministic media-relative path `jobs/<job_id>/voiceover/scene-XX.mp3`;
+- stores deterministic media-relative path `jobs/<job_id>/voiceover/scene-XX.mp3`;
 - validates the stored candidate with ffprobe before replacing the final path;
 - returns `audio_path`, measured `duration_seconds`, and byte size;
 - never writes PostgreSQL directly.
 
-Runtime acceptance passed:
+Runtime acceptance passed with a disposable MP3: endpoint HTTP 200, path exact, duration 0.8s, size 4312 bytes, independent ffprobe match, cleanup confirmed, PostgreSQL untouched.
 
-- deployed FFmpeg contains `libmp3lame`;
-- disposable MP3 generation returned exit code 0;
-- the disposable file was 4312 bytes, MP3, duration 0.800000 seconds;
-- `POST /audio/store` returned HTTP 200;
-- returned path was exactly `jobs/00000000-0000-4000-8000-000000000005/voiceover/scene-999.mp3`;
-- returned `duration_seconds = 0.8` and `bytes = 4312`;
-- independent ffprobe on the stored file confirmed duration 0.800000 and size 4312;
-- PostgreSQL was not touched by these media-worker tests;
-- final explicit cleanup verification showed both disposable files already absent before removal and still absent afterward: `/tmp/m5-audio-store-test.mp3` and `/data/jobs/00000000-0000-4000-8000-000000000005/voiceover/scene-999.mp3`.
+Do not repeat synthetic media-worker testing before real TTS.
 
-The media-worker audio persistence/probe boundary is accepted and does not need further synthetic testing before the real TTS workflow.
+## Recovered Google Cloud TTS authentication path
 
-## Concrete smallest M5 implementation boundary
+Existing Google Cloud project: `n8n-drive-voiceover`.
+
+Verified:
+
+- Cloud Text-to-Speech API is already enabled;
+- project has active free-trial credit;
+- there are no API keys;
+- there are no service accounts;
+- OAuth clients include `n8n-tts-oauth` and `n8n-drive-oauth`;
+- `n8n-tts-oauth` is the dedicated prior TTS OAuth client;
+- its old redirect URI pointed to deleted `https://tiktok-n8n.hodor.com.pl/rest/oauth2-credential/callback`;
+- on 2026-08-23 the same OAuth client was updated and saved with current callback `https://publisher.hodor.com.pl/rest/oauth2-credential/callback`;
+- on 2026-08-23 one new enabled client secret was created on this same existing OAuth client; the old secret remains present separately;
+- the actual new secret value must stay local and must never be posted to chat or GitHub;
+- local retention/download of the new secret has not yet been explicitly confirmed in chat.
+
+Do not create a replacement OAuth client, API key, service account, or billing setup.
+
+## Smallest M5 implementation boundary
 
 No new service is required.
 
 - n8n owns Google Cloud TTS requests and PostgreSQL reads/writes;
 - media-worker owns local audio persistence plus ffprobe duration validation;
-- `scenes.audio_path` stores a media-relative path under `/data`, never a host-specific absolute path;
+- `scenes.audio_path` stores a media-relative path under `/data`;
 - no generic retry/idempotency framework is added.
 
-Reuse the existing Google OAuth 2.0 web client `n8n-tts-oauth` in project `n8n-drive-voiceover`. Its redirect URI is now migrated to the current n8n callback. Create one fresh client secret on this same existing client because the old secret is not recoverable from Google Cloud. Do not create a replacement OAuth client, API key, or service account.
-
-## Reliability constraints
-
-TTS is an external side effect. Add only the smallest stage-specific repeated-execution guard when the real M5 behavior is implemented and tested. Do not add a generic retry/idempotency framework.
-
-No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service is allowed unless a concrete later failure pattern requires a new explicit decision.
+For HTTP Request authentication, n8n provides `Google OAuth2 API`, which uses Google authorization-code OAuth with Google auth/token URLs. The TTS credential must use the existing `n8n-tts-oauth` Client ID plus the fresh secret and a Cloud TTS-capable Google scope. Do not reuse the Gemini header-auth credential.
 
 ## Exact next action
 
-On the existing OAuth 2.0 web client `n8n-tts-oauth`, create exactly one new client secret using `Add secret`. Copy/store that new secret locally and do not post it in chat, screenshots, or GitHub. Then create the corresponding OAuth credential in the current n8n runtime using this existing client ID plus the new secret and authorize it for Cloud Text-to-Speech. Verify one authenticated Cloud TTS request before building WF03.
+Before leaving the Google OAuth client page, ensure the new secret is actually copied/downloaded and stored locally. Do not expose it in screenshots/chat/GitHub. Then create a new `Google OAuth2 API` credential in the current n8n runtime using the existing `n8n-tts-oauth` Client ID and the fresh secret, with the Cloud TTS scope required for the REST call. Authorize the Google account and verify one authenticated TTS request before building WF03.
 
 ## Do not do
 
 - do not substitute different voice presets;
 - do not reuse the Gemini credential for TTS;
 - do not create a new OAuth client, API key, service account, or billing setup;
-- do not expose the new OAuth client secret in chat, screenshots, or GitHub;
+- do not expose OAuth secrets in chat, screenshots, or GitHub;
 - do not implement M5 on the old M4 branch;
 - do not start M6 before M5 passes real voice acceptance;
 - do not modify the n8n PostgreSQL schema manually;
