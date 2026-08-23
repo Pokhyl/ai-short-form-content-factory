@@ -101,6 +101,16 @@ Stage hand-off remains only:
 }
 ```
 
+## Production generality invariant
+
+WF03 is a reusable production stage, not a workflow for one topic, one test phrase, one language, or one job.
+
+- narration must come from persisted `scenes.narration`;
+- language must come from persisted `jobs.language_code`;
+- the TTS voice must be selected deterministically from the exact four-language voice map above;
+- no production TTS node may hardcode a topic, narration phrase, or Polish-only language setting;
+- a concrete job may be used for acceptance, but test values must not become permanent workflow configuration.
+
 ## Verified M5 production boundary
 
 - production VPS is on `feat/m5-voiceover`;
@@ -157,9 +167,9 @@ Do not create a replacement OAuth client, API key, service account, or billing s
 
 ## WF03 implementation checkpoint
 
-The production n8n workflow `WF03 — Voiceover Generation` has now been created as the real M5 stage workflow, and a real HTTP Request node named `Generate Voiceover` has been added to it. The exact workflow ID has not yet been recorded. No Cloud TTS request from this real node has been accepted yet.
+The production n8n workflow `WF03 — Voiceover Generation` has been created as the real M5 stage workflow, and a real HTTP Request node named `Generate Voiceover` has been added to it. The exact workflow ID has not yet been recorded. No Cloud TTS request from this real node has been accepted yet.
 
-The previously suggested disposable/temporary TTS node is no longer part of the plan. Authentication verification will be performed directly on the real `Generate Voiceover` node and that same node will remain in WF03.
+The previously suggested disposable/temporary TTS node is no longer part of the plan. The real `Generate Voiceover` node will remain in WF03, but it must be fed by the permanent dynamic job/scene path rather than by hardcoded test narration or language.
 
 ## Smallest M5 implementation boundary
 
@@ -174,11 +184,12 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 ## Exact next action
 
-Configure the real WF03 `Generate Voiceover` HTTP Request node for one authenticated `POST https://texttospeech.googleapis.com/v1/text:synthesize` request using the saved Google OAuth2 credential, header `x-goog-user-project: n8n-drive-voiceover`, a short Polish test phrase, exact voice `pl-PL-Chirp3-HD-Enceladus`, and MP3 output. Acceptance for this checkpoint is HTTP success with a non-empty base64 `audioContent` response from this real WF03 node. Do not store the returned test audio or write PostgreSQL yet. After this request passes, keep this node and build the actual WF03 input/load/eligibility/per-scene/store/persistence path around it.
+Build the permanent beginning of WF03 before executing TTS: add the native sub-workflow trigger `When Executed by Another Workflow` and name it `Receive Job ID`. WF03 must receive only `job_id`. Then add the permanent PostgreSQL load/eligibility path so `Generate Voiceover` eventually receives real persisted `scenes.narration`, `jobs.language_code`, and the corresponding configured voice. Do not hardcode a topic, narration phrase, or language in the production node.
 
 ## Do not do
 
 - do not substitute different voice presets;
+- do not hardcode a topic, narration phrase, or Polish-only settings in production WF03;
 - do not reuse the Gemini credential for TTS;
 - do not create a new OAuth client, API key, service account, or billing setup;
 - do not expose OAuth secrets in chat, screenshots, or GitHub;
