@@ -93,8 +93,6 @@ Provider family confirmed by the prior voice-testing evidence: Google Cloud Text
 | Russian (`ru`) | `ru-RU-Wavenet-D` |
 | Ukrainian (`uk`) | `uk-UA-Chirp3-HD-Enceladus` |
 
-Current credential/auth availability in the new production n8n runtime has not yet been verified and must not be assumed.
-
 ## M5 architecture contract
 
 Voiceover Generation is a separate n8n stage workflow.
@@ -120,20 +118,31 @@ Stage hand-off remains only:
 }
 ```
 
-Do not pass narration collections or audio binaries between stage workflows when they can be loaded from durable state.
-
 ## Verified M5 repository boundary
 
-A read-only repository inspection of the M5 branch established:
+Repository inspection established:
 
 - `services/media-worker/src/server.mjs` currently implements only `GET /health`; there is no audio upload/save/probe endpoint yet;
-- the current media-worker image already has both FFmpeg and ffprobe and reports their versions through `/health`;
-- `compose.yaml` mounts the persistent `media_data` volume only at `/data` inside `media-worker`;
-- the n8n service mounts only `n8n_data` and does not share the `media_data` volume directly;
-- therefore the current repository contains no existing path for n8n to persist generated TTS audio into the durable media volume or ask media-worker to measure a generated audio file;
-- `.env.example` intentionally contains no external-provider configuration yet; provider configuration must be introduced explicitly as part of M5 and no current Google Cloud credential may be assumed from repository files.
+- the media-worker image already has both FFmpeg and ffprobe;
+- `compose.yaml` mounts persistent `media_data` only at `/data` inside `media-worker`;
+- n8n does not share `media_data` directly;
+- therefore the repository currently has no path for n8n to persist generated TTS audio into durable media storage or ask media-worker to measure a generated audio file;
+- `.env.example` intentionally contains no external-provider configuration yet.
 
-This inspection does not yet choose the exact media-worker endpoint shape. Any M5 file-ingest/probe endpoint must stay inside the existing `media-worker` service, preserve the three-service architecture, and keep PostgreSQL writes in n8n.
+## Verified M5 production runtime inspection — partial
+
+Read-only runtime inspection completed for steps 1–4:
+
+- VPS successfully switched to `feat/m5-voiceover` and synced to repository checkpoint `5f3f2e66ab42e6d07235abb8260b11008772e588` at the time of inspection;
+- `n8n.credentials_entity` contained exactly two credential metadata rows: `Application PostgreSQL | postgres` and `Google Gemini API | httpHeaderAuth`;
+- no dedicated Google Cloud Text-to-Speech credential metadata exists in the current production n8n database;
+- do not assume the Gemini header-auth credential is valid or authorized for Cloud Text-to-Speech;
+- media-worker `GET /health` returned HTTP 200 and reported FFmpeg 8.1.2 plus ffprobe 8.1.2;
+- the persistent media mount is Docker volume `ai-short-form-content-factory_media_data` at `/data`;
+- `/data` exists and is writable by media-worker;
+- at inspection time `/data` filesystem reported about 37.2G total, 22.3G used, 13.4G available, 63% used.
+
+The submitted inspection run returned to the Mac prompt after step 4, so the intended step-5 PostgreSQL eligibility query did not produce output. Do not infer the current accepted-job scene/audio state from that missing output.
 
 ## Reliability constraints
 
@@ -143,12 +152,12 @@ No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service i
 
 ## Exact next action
 
-Perform one read-only production inspection before implementation: sync the VPS repository to `feat/m5-voiceover`; inspect n8n credential metadata (`name` and `type` only, never encrypted credential data) to determine whether a usable Google Cloud TTS auth credential already exists; confirm `media-worker` is healthy and `/data` is the persistent media mount; and inspect the accepted M4 job/scenes to confirm the exact voiceover eligibility state and that `audio_path`/`duration_seconds` are still unset. After this runtime inspection, record the result here and implement only the smallest missing M5 boundary.
+Run only the missing read-only PostgreSQL inspection for accepted M4 job `6b08098c-e5c7-45bd-babb-036705b563e1`: confirm job `status/current_stage/language`, exact scene count and narration presence, and that every scene still has `audio_path` and `duration_seconds` unset. Do not repeat the already completed credential/media-worker checks. After that one query, record the result and choose the smallest concrete M5 implementation boundary.
 
 ## Do not do
 
 - do not substitute different voice presets;
-- do not guess that a current Google Cloud credential already exists;
+- do not guess or reuse the Gemini credential for TTS without explicit verification;
 - do not implement M5 on the old M4 branch;
 - do not start M6 before M5 passes real voice acceptance;
 - do not modify the n8n PostgreSQL schema manually;
