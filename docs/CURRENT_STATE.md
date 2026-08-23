@@ -95,6 +95,7 @@ Main currently includes public n8n access through merge commit:
 
 ## Completed
 
+- `Validate Structured Plan` passed against the real Gemini response: it parsed the model text, accepted exactly five sequential scenes with non-empty required fields, restored the original job context, and emitted normalized scenes plus AI metadata; no PostgreSQL write has occurred yet;
 - the production `Generate Structured Plan` HTTP Request completed one real Google Gemini API call with `gemini-3.5-flash-lite`; the response finished with `STOP`, returned structured JSON containing five scenes, and reported 248 prompt tokens, 424 candidate tokens, and 672 total tokens; this synthetic marker-topic run proves the API and structured-output transport, but does not yet prove narration quality for a real topic;
 - `Build Planning Request` is connected after `Require Eligible Job` and passed execution; it produced provider-independent system/user prompts plus the expected scenes output contract without making an AI call;
 - the production WF02 input block is assembled in n8n as `Receive Job ID` -> `Normalize Job ID` -> `Load Eligible Job` -> `Require Eligible Job`;
@@ -272,7 +273,7 @@ Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastruc
 
 ## Exact next action
 
-Add a `Validate Structured Plan` Code node after `Generate Structured Plan`, parse and independently validate the complete Gemini JSON response, and keep every PostgreSQL write downstream of that validation.
+Inspect the repository-defined `scenes` schema, then add one parameterized PostgreSQL persistence statement after `Validate Structured Plan` so scene insertion and job-state advancement succeed or roll back together.
 
 ## Working rules
 
