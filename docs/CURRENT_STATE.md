@@ -173,7 +173,9 @@ The Node.js source passed `node --check` before commit.
 
 The M5 media-worker code was synced to VPS repository head `2f0ade0f07dda373dfd5346535dab0246452cd45`, then only `media-worker` was rebuilt and recreated successfully. The rebuilt worker started and `GET /health` passed with FFmpeg 8.1.2 and ffprobe 8.1.2.
 
-The disposable `/audio/store` boundary test did not complete. The shell returned to the Mac prompt immediately after printing `=== 4. Create disposable MP3 ===`; no `Disposable MP3: OK`, endpoint response, ffprobe verification, cleanup result, or PostgreSQL action followed. The exact failure inside the disposable MP3 creation/check step is not yet known and must be diagnosed rather than guessed. PostgreSQL was not touched by this runtime test.
+The disposable `/audio/store` boundary test did not complete. The shell returned to the Mac prompt immediately after printing `=== 4. Create disposable MP3 ===`; no endpoint response, ffprobe verification, cleanup result, or PostgreSQL action followed. PostgreSQL was not touched by this runtime test.
+
+A follow-up read-only encoder check confirmed that the deployed FFmpeg includes `libmp3lame` (`libmp3lame MP3 (MPEG audio layer 3)`). Therefore the earlier stop was not caused by a missing MP3 encoder. The exact result of the MP3 generation command itself still needs to be observed directly.
 
 ## Reliability constraints
 
@@ -183,7 +185,7 @@ No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service i
 
 ## Exact next action
 
-Diagnose only the failed disposable MP3 creation/check inside the already-deployed media-worker. Confirm whether the MP3 encoder is available, run the same ffmpeg command with explicit exit/status output, and verify whether `/tmp/m5-audio-store-test.mp3` is created. Do not rebuild the container, repeat earlier health/database checks, or change application state. Once the exact cause is known, correct only the test command or the minimal media-worker dependency if required, then continue the `/audio/store` runtime test.
+Run only the disposable MP3 generation command directly inside the already-deployed media-worker and print its exit code, resulting file metadata, and ffprobe duration. Do not rebuild the container, repeat earlier checks, or touch PostgreSQL. If MP3 generation succeeds, immediately continue the existing `/audio/store` boundary test with that same disposable file.
 
 ## Do not do
 
