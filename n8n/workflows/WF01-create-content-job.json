@@ -1,6 +1,6 @@
 [
   {
-    "updatedAt": "2026-08-22T22:18:44.928Z",
+    "updatedAt": "2026-08-23T16:55:31.137Z",
     "createdAt": "2026-08-22T20:43:40.321Z",
     "id": "Xy94qe35OigtMxkR",
     "name": "WF01 — Create Content Job",
@@ -124,10 +124,55 @@
         "typeVersion": 1.5,
         "position": [
           240,
-          -112
+          -224
         ],
         "id": "3add0488-56cc-4100-91a0-fa6a48a69ff9",
         "name": "Return Created Job"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "TJfA4ZYUEKSTad6k",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/TJfA4ZYUEKSTad6k",
+            "cachedResultName": "WF02 — Plan Script and Scenes"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "job_id": "={{ $json.job_id }}"
+            },
+            "matchingColumns": [
+              "job_id"
+            ],
+            "schema": [
+              {
+                "id": "job_id",
+                "displayName": "job_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {
+            "waitForSubWorkflow": false
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          256,
+          -32
+        ],
+        "id": "50d35ae9-615d-4c68-bce5-a4210e48c491",
+        "name": "Start Script Planning"
       }
     ],
     "connections": {
@@ -178,6 +223,11 @@
               "node": "Return Created Job",
               "type": "main",
               "index": 0
+            },
+            {
+              "node": "Start Script Planning",
+              "type": "main",
+              "index": 0
             }
           ]
         ]
@@ -194,9 +244,9 @@
     },
     "nodeGroups": [],
     "pinData": {},
-    "versionId": "f1cf6698-df77-426b-a7b2-ed7836d98c03",
-    "activeVersionId": "f1cf6698-df77-426b-a7b2-ed7836d98c03",
-    "versionCounter": 33,
+    "versionId": "cbe9acfc-7d1c-4b43-b62e-f03ddc2cb644",
+    "activeVersionId": "cbe9acfc-7d1c-4b43-b62e-f03ddc2cb644",
+    "versionCounter": 40,
     "triggerCount": 1,
     "sourceWorkflowId": null,
     "tags": [],
@@ -221,7 +271,7 @@
       }
     ],
     "versionMetadata": {
-      "name": "Version f1cf6698",
+      "name": "Version cbe9acfc",
       "description": ""
     }
   }
