@@ -47,7 +47,7 @@ Acceptance:
 
 Current branch: `feat/m5-voiceover`
 
-M4 PR `#5 — M4: implement script and scene planning` was finalized and merged into `main` on 2026-08-23.
+M4 PR `#5 — M4: implement script and scene planning` was merged into `main` on 2026-08-23.
 
 M4 merge commit: `7d25bac1c4d1a90b2b29183d9ec3ca280d1acfc4`.
 
@@ -61,7 +61,7 @@ Production WF02:
 - name: `WF02 — Plan Script and Scenes`;
 - final topology: 8 nodes ending in terminal `Persist Scene Plan`;
 - final accepted export SHA-256: `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`;
-- final export commit: `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`;
+- final accepted export commit: `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`;
 - accepted quality job: `6b08098c-e5c7-45bd-babb-036705b563e1` with exactly 8 persisted scenes and manual quality PASS.
 
 Do not rerun prior M4 acceptance jobs.
@@ -84,7 +84,7 @@ The `n8n` PostgreSQL schema belongs to n8n and must not be modified manually.
 
 The exact previously selected voice presets were recovered from prior project runtime/test evidence and are product decisions. Reuse them exactly; do not substitute guessed voices.
 
-Provider family confirmed by the prior voice-testing evidence: Google Cloud Text-to-Speech.
+Provider: Google Cloud Text-to-Speech.
 
 | Language | Exact voice preset |
 | --- | --- |
@@ -123,26 +123,38 @@ Stage hand-off remains only:
 Repository inspection established:
 
 - `services/media-worker/src/server.mjs` currently implements only `GET /health`; there is no audio upload/save/probe endpoint yet;
-- the media-worker image already has both FFmpeg and ffprobe;
+- the media-worker image already has FFmpeg and ffprobe;
 - `compose.yaml` mounts persistent `media_data` only at `/data` inside `media-worker`;
 - n8n does not share `media_data` directly;
-- therefore the repository currently has no path for n8n to persist generated TTS audio into durable media storage or ask media-worker to measure a generated audio file;
+- therefore the repository currently has no path for n8n to persist generated TTS audio into durable media storage or ask media-worker to measure generated audio;
 - `.env.example` intentionally contains no external-provider configuration yet.
 
-## Verified M5 production runtime inspection — partial
+## Verified M5 production runtime inspection — complete
 
-Read-only runtime inspection completed for steps 1–4:
+Read-only production inspection established:
 
-- VPS successfully switched to `feat/m5-voiceover` and synced to repository checkpoint `5f3f2e66ab42e6d07235abb8260b11008772e588` at the time of inspection;
-- `n8n.credentials_entity` contained exactly two credential metadata rows: `Application PostgreSQL | postgres` and `Google Gemini API | httpHeaderAuth`;
-- no dedicated Google Cloud Text-to-Speech credential metadata exists in the current production n8n database;
-- do not assume the Gemini header-auth credential is valid or authorized for Cloud Text-to-Speech;
-- media-worker `GET /health` returned HTTP 200 and reported FFmpeg 8.1.2 plus ffprobe 8.1.2;
-- the persistent media mount is Docker volume `ai-short-form-content-factory_media_data` at `/data`;
-- `/data` exists and is writable by media-worker;
-- at inspection time `/data` filesystem reported about 37.2G total, 22.3G used, 13.4G available, 63% used.
+- production VPS is on `feat/m5-voiceover`;
+- n8n credential metadata contains exactly `Application PostgreSQL | postgres` and `Google Gemini API | httpHeaderAuth`;
+- no dedicated Google Cloud Text-to-Speech credential exists in the new production n8n runtime;
+- the Gemini header-auth credential must not be reused or assumed valid for Cloud TTS;
+- media-worker `GET /health` returns HTTP 200 and reports FFmpeg 8.1.2 plus ffprobe 8.1.2;
+- the persistent Docker volume `ai-short-form-content-factory_media_data` is mounted at `/data` and is writable by media-worker;
+- accepted M4 job `6b08098c-e5c7-45bd-babb-036705b563e1` is `language_code = pl`, `target_duration_seconds = 30`, `status = processing`, `current_stage = script`, `last_error IS NULL`;
+- the job has exactly 8 `planned` scenes;
+- every scene has non-empty narration;
+- all 8 scenes still have `audio_path IS NULL`;
+- all 8 scenes still have `duration_seconds IS NULL`;
+- aggregate verification returned `scene_count = 8`, `audio_path_null_count = 8`, `duration_null_count = 8`, `invalid_narration_count = 0`.
 
-The submitted inspection run returned to the Mac prompt after step 4, so the intended step-5 PostgreSQL eligibility query did not produce output. Do not infer the current accepted-job scene/audio state from that missing output.
+The accepted M4 job is therefore a clean eligible M5 test job.
+
+## Concrete smallest M5 implementation boundary
+
+No new service is required. n8n will own the Google Cloud TTS request and PostgreSQL writes; the existing media-worker will receive the returned MP3 bytes, persist them under its existing `/data` volume, validate/probe the audio with ffprobe, and return a durable media-relative path plus measured duration to n8n.
+
+The file operation will use a deterministic per-scene path under `jobs/<job_id>/voiceover/` so a repeated store for the same scene replaces the same artifact rather than creating duplicate files. `scenes.audio_path` will store the media-relative path, not a host-specific absolute path.
+
+Google Cloud TTS REST synthesis requires OAuth authentication with the `cloud-platform` scope; a dedicated Google authentication credential must be created in n8n before the real TTS call. Do not use an API-key guess or reuse the Gemini header credential.
 
 ## Reliability constraints
 
@@ -152,12 +164,12 @@ No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service i
 
 ## Exact next action
 
-Run only the missing read-only PostgreSQL inspection for accepted M4 job `6b08098c-e5c7-45bd-babb-036705b563e1`: confirm job `status/current_stage/language`, exact scene count and narration presence, and that every scene still has `audio_path` and `duration_seconds` unset. Do not repeat the already completed credential/media-worker checks. After that one query, record the result and choose the smallest concrete M5 implementation boundary.
+Implement the smallest missing media-worker operation in the M5 branch: add an internal JSON `POST /audio/store` endpoint that accepts `job_id`, `scene_number`, and Google TTS `audio_base64`; validates and atomically writes one MP3 to deterministic media-relative storage under `/data/jobs/<job_id>/voiceover/`; probes the temporary file with ffprobe before publish; and returns `audio_path`, `duration_seconds`, and byte size. Preserve `GET /health`. After committing this repository change, sync/rebuild only `media-worker` on the VPS and test the endpoint with a disposable generated MP3 before building WF03.
 
 ## Do not do
 
 - do not substitute different voice presets;
-- do not guess or reuse the Gemini credential for TTS without explicit verification;
+- do not guess or reuse the Gemini credential for TTS;
 - do not implement M5 on the old M4 branch;
 - do not start M6 before M5 passes real voice acceptance;
 - do not modify the n8n PostgreSQL schema manually;
