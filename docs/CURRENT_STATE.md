@@ -167,7 +167,13 @@ Behavior:
 - returns `audio_path`, measured `duration_seconds`, and byte size;
 - does not write PostgreSQL state.
 
-The Node.js source passed `node --check` before commit. Runtime deployment/test has not yet occurred.
+The Node.js source passed `node --check` before commit.
+
+## Media-worker runtime deployment checkpoint
+
+The M5 media-worker code was synced to VPS repository head `2f0ade0f07dda373dfd5346535dab0246452cd45`, then only `media-worker` was rebuilt and recreated successfully. The rebuilt worker started and `GET /health` passed with FFmpeg 8.1.2 and ffprobe 8.1.2.
+
+The disposable `/audio/store` boundary test did not complete. The shell returned to the Mac prompt immediately after printing `=== 4. Create disposable MP3 ===`; no `Disposable MP3: OK`, endpoint response, ffprobe verification, cleanup result, or PostgreSQL action followed. The exact failure inside the disposable MP3 creation/check step is not yet known and must be diagnosed rather than guessed. PostgreSQL was not touched by this runtime test.
 
 ## Reliability constraints
 
@@ -177,7 +183,7 @@ No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service i
 
 ## Exact next action
 
-Sync the VPS to the current `feat/m5-voiceover` head, rebuild/recreate only `media-worker`, verify `GET /health`, then test `POST /audio/store` with a disposable locally generated MP3 that does not touch PostgreSQL. Require a successful response with a deterministic media-relative path and positive ffprobe duration, verify the file exists under `/data`, then delete only that disposable test artifact. After this runtime boundary passes, record the checkpoint and build WF03 plus the dedicated Google Cloud TTS credential.
+Diagnose only the failed disposable MP3 creation/check inside the already-deployed media-worker. Confirm whether the MP3 encoder is available, run the same ffmpeg command with explicit exit/status output, and verify whether `/tmp/m5-audio-store-test.mp3` is created. Do not rebuild the container, repeat earlier health/database checks, or change application state. Once the exact cause is known, correct only the test command or the minimal media-worker dependency if required, then continue the `/audio/store` runtime test.
 
 ## Do not do
 
