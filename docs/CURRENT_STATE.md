@@ -173,9 +173,7 @@ The Node.js source passed `node --check` before commit.
 
 The M5 media-worker code was synced to VPS repository head `2f0ade0f07dda373dfd5346535dab0246452cd45`, then only `media-worker` was rebuilt and recreated successfully. The rebuilt worker started and `GET /health` passed with FFmpeg 8.1.2 and ffprobe 8.1.2.
 
-The disposable `/audio/store` boundary test did not complete. The shell returned to the Mac prompt immediately after printing `=== 4. Create disposable MP3 ===`; no endpoint response, ffprobe verification, cleanup result, or PostgreSQL action followed. PostgreSQL was not touched by this runtime test.
-
-A follow-up read-only encoder check confirmed that the deployed FFmpeg includes `libmp3lame` (`libmp3lame MP3 (MPEG audio layer 3)`). Therefore the earlier stop was not caused by a missing MP3 encoder. The exact result of the MP3 generation command itself still needs to be observed directly.
+The earlier combined disposable `/audio/store` test stopped at the MP3 creation step, but follow-up diagnosis proved the deployed FFmpeg includes `libmp3lame` and the MP3 generation command itself works correctly. Direct generation returned `ffmpeg exit: 0`, created `/tmp/m5-audio-store-test.mp3` with size 4312 bytes, and ffprobe reported `format_name=mp3` with `duration=0.800000`. Therefore the media-worker image can create and probe MP3 successfully; the earlier stop came from the surrounding shell test flow rather than an encoder/runtime limitation. PostgreSQL was not touched.
 
 ## Reliability constraints
 
@@ -185,7 +183,7 @@ No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service i
 
 ## Exact next action
 
-Run only the disposable MP3 generation command directly inside the already-deployed media-worker and print its exit code, resulting file metadata, and ffprobe duration. Do not rebuild the container, repeat earlier checks, or touch PostgreSQL. If MP3 generation succeeds, immediately continue the existing `/audio/store` boundary test with that same disposable file.
+Use the already-created disposable `/tmp/m5-audio-store-test.mp3` to test only `POST /audio/store` on the deployed media-worker. Require HTTP success, deterministic `audio_path`, positive `duration_seconds`, positive byte size, and a matching stored file under `/data`; then delete only the disposable `/tmp` file and its deterministic `/data/jobs/00000000-0000-4000-8000-000000000005/voiceover/scene-999.mp3` test artifact. Do not rebuild the container or touch PostgreSQL. After this endpoint boundary passes, record the checkpoint and proceed to the dedicated Google Cloud TTS credential plus WF03.
 
 ## Do not do
 
