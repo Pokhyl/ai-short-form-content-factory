@@ -136,7 +136,8 @@ Read-only runtime inspection established:
 - all 8 scenes still have `audio_path IS NULL` and `duration_seconds IS NULL` and are a clean eligible M5 test state;
 - the existing Google Cloud project used for prior voiceover work has been identified as `n8n-drive-voiceover` (project ID `n8n-drive-voiceover`);
 - Cloud Text-to-Speech API is already enabled in that project;
-- the project currently shows an active Google Cloud free-trial balance, so no new TTS project needs to be created merely to continue M5.
+- the project currently shows an active Google Cloud free-trial balance, so no new TTS project needs to be created merely to continue M5;
+- Google Cloud IAM -> Service Accounts for `n8n-drive-voiceover` is currently empty (`Brak wierszy do wyświetlenia`), so the legacy service account no longer exists and cannot be reused.
 
 ## Implemented and accepted media-worker audio boundary
 
@@ -193,7 +194,7 @@ No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service i
 
 ## Exact next action
 
-In Google Cloud project `n8n-drive-voiceover`, inspect IAM & Admin -> Service Accounts and determine whether the prior voiceover service account still exists. Do not create a new account or key yet. If it exists, reuse that service account and create/import only the minimum credential material required by the new n8n runtime. If it does not exist, create a dedicated TTS service account in this already-enabled project rather than creating another Google Cloud project. Then create and verify the dedicated Google Cloud credential in n8n and continue with the initial WF03 input/eligibility block. Do not start M6.
+Create a new dedicated service account inside the existing Google Cloud project `n8n-drive-voiceover` because the prior service account is absent. Do not create another Google Cloud project. Grant only the minimum access needed for Cloud TTS; do not use Owner/Editor/Viewer. Then create a new JSON key for this dedicated account, import it into a dedicated Google Service Account credential in the new n8n runtime, verify one authenticated Cloud TTS request, and only then continue with WF03. Never place the JSON key in GitHub or chat.
 
 ## Do not do
 
