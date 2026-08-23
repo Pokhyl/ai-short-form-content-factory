@@ -97,6 +97,10 @@ Main currently includes public n8n access through merge commit:
 
 ## Completed
 
+- on the VPS, the previously untracked `n8n/` directory was inspected without deletion; it contained exactly `n8n/workflows/WF01-create-content-job.json`, and both its file list and SHA-256 matched the committed M3 copy; the local file SHA-256 was `f5fee4f6ffc570cb6f3001e223c982bdeddd5d5a9fbdf38f18859ba8b97d4672`;
+- the verified duplicate VPS `n8n/` directory was moved to recoverable backup `/tmp/ai-short-form-content-factory-n8n-backup-20260823T120403Z`; the backed-up WF01 retained SHA-256 `f5fee4f6ffc570cb6f3001e223c982bdeddd5d5a9fbdf38f18859ba8b97d4672`;
+- the VPS repository checkout was switched safely from `feat/m3-n8n-intake` to `feat/m4-script-scene-planning`; after `git pull --ff-only` it was at M4 checkpoint `95db4c17480933f11af5adb1779710961b91bda4` before this documentation checkpoint commit;
+- production PostgreSQL reachability was rechecked successfully with `pg_isready`; the migration had not started when that command block ended, so `db/migrations/002_add_scene_visual_subject_type.sql` still requires application and direct PostgreSQL verification;
 - the production v1 M4 scene contract is now an explicit project decision: 15/30/45/60-second jobs require exactly 4/8/12/15 scenes, and each scene maps to one narration segment, one later voiceover file, one selected visual asset, and one rendered timeline segment;
 - each planned scene now requires `visual_subject_type = factual|generic`, target-language `visual_description`, and a case-insensitively unique English `visual_query` no longer than 100 characters; factual scenes route to Wikimedia Commons and generic scenes route to Pixabay with Pexels fallback;
 - the clean-install schema now includes `scenes.visual_subject_type`, and `db/migrations/002_add_scene_visual_subject_type.sql` safely adds the required non-null checked column to an existing database without assigning false classifications to existing rows; the migration has not yet been applied to production PostgreSQL;
@@ -122,7 +126,6 @@ Main currently includes public n8n access through merge commit:
 - direct PostgreSQL verification confirmed the invalid request inserted zero rows and the valid request inserted exactly one row;
 - the PostgreSQL UUID matches the `job_id` returned by the production webhook;
 - M3 runtime acceptance has passed with Script & Scene Planning disconnected and no AI call;
-- the VPS repository checkout is now on `feat/m3-n8n-intake` and tracks `origin/feat/m3-n8n-intake`;
 - n8n CLI exported one workflow and the file was copied to `n8n/workflows/WF01-create-content-job.json` in the VPS repository checkout;
 - the exported workflow file is 7125 bytes, contains workflow ID `Xy94qe35OigtMxkR`, and matched neither `POSTGRES_PASSWORD` nor `N8N_ENCRYPTION_KEY` runtime values;
 - the exported workflow passed structural validation: exactly six expected nodes, correct valid/invalid routing, parameterized PostgreSQL INSERT, HTTP 400/201 responses, and no AI or sub-workflow nodes;
