@@ -139,7 +139,9 @@ Read-only runtime inspection established:
 - the project currently shows an active Google Cloud free-trial balance, so no new TTS project needs to be created merely to continue M5;
 - Google Cloud IAM -> Service Accounts for `n8n-drive-voiceover` is currently empty (`Brak wierszy do wyświetlenia`);
 - project-level Google Cloud Credentials inspection shows no API keys and exactly two OAuth 2.0 web clients: `n8n-tts-oauth` and `n8n-drive-oauth`;
-- therefore the prior working TTS setup did not rely on a surviving API key or service account. The dedicated existing OAuth client `n8n-tts-oauth` is the recovered TTS authentication path to inspect and reuse if its redirect URI is compatible with the current n8n runtime.
+- the dedicated TTS OAuth client `n8n-tts-oauth` exists and was last used on 2026-08-18;
+- `n8n-tts-oauth` currently has Authorized redirect URI `https://tiktok-n8n.hodor.com.pl/rest/oauth2-credential/callback`, which points to the deleted old n8n runtime and is not compatible with the current n8n URL `https://publisher.hodor.com.pl/`;
+- the existing client secret is masked and Google states that existing client secrets cannot be viewed or downloaded again, so the old secret cannot be recovered from this screen. A new secret on the existing OAuth client is required unless an external copy of the old secret still exists.
 
 ## Implemented and accepted media-worker audio boundary
 
@@ -186,7 +188,7 @@ No new service is required.
 - `scenes.audio_path` stores a media-relative path under `/data`, never a host-specific absolute path;
 - no generic retry/idempotency framework is added.
 
-The recovered Google authentication path is the existing OAuth 2.0 client `n8n-tts-oauth` in project `n8n-drive-voiceover`. It must be reused only after its current redirect URI and secret availability are verified against the new n8n runtime; do not create a replacement credential before that check.
+Reuse the existing Google OAuth 2.0 web client `n8n-tts-oauth` in project `n8n-drive-voiceover`. Update its redirect URI to the current n8n callback and create a fresh client secret on this existing client because the old secret is not recoverable from Google Cloud. Do not create a replacement OAuth client, API key, or service account.
 
 ## Reliability constraints
 
@@ -196,13 +198,14 @@ No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service i
 
 ## Exact next action
 
-Open the existing OAuth 2.0 web client `n8n-tts-oauth` in Google Cloud project `n8n-drive-voiceover` and inspect its Authorized redirect URIs and whether a client secret is available for reuse. Do not create a new API key, service account, OAuth client, or billing setup. Compare the saved redirect URI to the callback URL required by the current n8n runtime at `https://publisher.hodor.com.pl/`. If compatible, recreate only the corresponding OAuth credential in the new n8n runtime and verify one authenticated Cloud TTS request before building WF03.
+Edit the existing OAuth 2.0 web client `n8n-tts-oauth`: add/replace its Authorized redirect URI with `https://publisher.hodor.com.pl/rest/oauth2-credential/callback`, save the client, then create one new client secret on this same OAuth client and retain that secret locally without posting it to chat or GitHub. After that, create the corresponding OAuth credential in the new n8n runtime and verify one authenticated Cloud TTS request before building WF03.
 
 ## Do not do
 
 - do not substitute different voice presets;
 - do not reuse the Gemini credential for TTS;
-- do not create a new Google Cloud auth credential while `n8n-tts-oauth` remains reusable;
+- do not create a new OAuth client, API key, service account, or billing setup;
+- do not expose the new OAuth client secret in chat, screenshots, or GitHub;
 - do not implement M5 on the old M4 branch;
 - do not start M6 before M5 passes real voice acceptance;
 - do not modify the n8n PostgreSQL schema manually;
