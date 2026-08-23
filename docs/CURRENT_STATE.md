@@ -97,27 +97,26 @@ Main currently includes public n8n access through merge commit:
 
 ## Completed
 
-- the validated PostgreSQL custom-format backup `/tmp/ai-short-form-content-factory-public-20260823T121528Z.dump` was copied from the production PostgreSQL container to `/tmp` on the VPS host and verified there. The host copy is about 8.9K and has SHA-256 `f147aaff08278aa09d467f5661a3b0d6e50ff5376a27faf364273678016ee39a`, exactly matching the already-validated container copy. No database rows were modified while creating or copying this backup;
-- a recoverable PostgreSQL custom-format backup of the production `public` schema/data was created successfully inside the production PostgreSQL container at `/tmp/ai-short-form-content-factory-public-20260823T121528Z.dump`; `pg_restore -l` accepted the archive, its size was about 8.9K, and SHA-256 was `f147aaff08278aa09d467f5661a3b0d6e50ff5376a27faf364273678016ee39a`;
-- the two `public.scenes` rows that blocked migration 002 were inspected without modifying the database. Both belong to job `b2c1fc1c-e5f1-468b-a64d-7eeca2cb963d` whose topic is exactly `M2 manual SQL test`; their narration/visual fields explicitly identify them as the first and second SQL test scenes created on 2026-08-22. The job has exactly two scenes, zero assets, and zero publications. This matches the completed M2 PostgreSQL manual-test provenance in `docs/ROADMAP.md`, so these rows are disposable M2 test state rather than M3/M4 production content. The failed migration rollback was confirmed: `visual_subject_type` and its check constraint are absent, and the scene fingerprint remains `2|d60e159d9818466051761f575dd4b051`;
-- the first production attempt to apply `db/migrations/002_add_scene_visual_subject_type.sql` was safely blocked and rolled back because `public.scenes` contained two existing rows with `visual_subject_type IS NULL`; the pre-migration scene fingerprint was `2|d60e159d9818466051761f575dd4b051`. No classification was guessed and the migration did not complete;
+- production migration `db/migrations/002_add_scene_visual_subject_type.sql` has now been applied successfully to PostgreSQL. Before destructive cleanup, the production `public` schema/data was backed up in PostgreSQL custom format at `/tmp/ai-short-form-content-factory-public-20260823T121528Z.dump` inside the PostgreSQL container and on the VPS host; both copies were validated and have SHA-256 `f147aaff08278aa09d467f5661a3b0d6e50ff5376a27faf364273678016ee39a`;
+- the only rows blocking migration 002 were the verified disposable M2 manual SQL-test job `b2c1fc1c-e5f1-468b-a64d-7eeca2cb963d` and its two test scenes. Exact precondition checks confirmed the known topic, two known test scenes, zero assets, and zero publications. Deleting that one M2 test job removed exactly those two scenes through the existing `ON DELETE CASCADE` relationship;
+- after migration 002, `public.scenes.visual_subject_type` exists as `TEXT NOT NULL`; constraint `scenes_visual_subject_type_check` is present and PostgreSQL reports `CHECK ((visual_subject_type = ANY (ARRAY['factual'::text, 'generic'::text])))`;
+- a rollback-only functional database probe confirmed that `factual` and `generic` are accepted, an invalid value is rejected by the check constraint, and `NULL` is rejected by the NOT NULL constraint;
+- retained production application data was fingerprinted before and after the M2 cleanup/migration. The fingerprints were unchanged: `jobs|1|8db8e4e9a7eebb6a76c7f52e5cdad46b`, `scenes|0|d41d8cd98f00b204e9800998ecf8427e`, `assets|0|d41d8cd98f00b204e9800998ecf8427e`, and `publications|0|d41d8cd98f00b204e9800998ecf8427e`;
+- retained M3 job `ba081017-2345-4212-a1c4-cde6df8de574` was unchanged across cleanup/migration; its before/after fingerprint was `0e746abfd825776756963d40d0a7224c`. The current production scene count is zero;
+- the first production attempt to apply migration 002 had previously been safely blocked and rolled back because two legacy M2 test scenes had no factual/generic classification; no classification was guessed and no partial migration state was left behind;
 - on the VPS, the previously untracked `n8n/` directory was inspected without deletion; it contained exactly `n8n/workflows/WF01-create-content-job.json`, and both its file list and SHA-256 matched the committed M3 copy; the local file SHA-256 was `f5fee4f6ffc570cb6f3001e223c982bdeddd5d5a9fbdf38f18859ba8b97d4672`;
 - the verified duplicate VPS `n8n/` directory was moved to recoverable backup `/tmp/ai-short-form-content-factory-n8n-backup-20260823T120403Z`; the backed-up WF01 retained SHA-256 `f5fee4f6ffc570cb6f3001e223c982bdeddd5d5a9fbdf38f18859ba8b97d4672`;
-- the VPS repository checkout was switched safely from `feat/m3-n8n-intake` to `feat/m4-script-scene-planning`; after `git pull --ff-only` it was at M4 checkpoint `95db4c17480933f11af5adb1779710961b91bda4` before the later documentation checkpoint commits;
-- production PostgreSQL reachability was rechecked successfully with `pg_isready`;
-- the production v1 M4 scene contract is now an explicit project decision: 15/30/45/60-second jobs require exactly 4/8/12/15 scenes, and each scene maps to one narration segment, one later voiceover file, one selected visual asset, and one rendered timeline segment;
-- each planned scene now requires `visual_subject_type = factual|generic`, target-language `visual_description`, and a case-insensitively unique English `visual_query` no longer than 100 characters; factual scenes route to Wikimedia Commons and generic scenes route to Pixabay with Pexels fallback;
-- the clean-install schema now includes `scenes.visual_subject_type`, and `db/migrations/002_add_scene_visual_subject_type.sql` safely adds the required non-null checked column to an existing database without assigning false classifications to existing rows; the migration has not yet been applied successfully to production PostgreSQL;
-- `Validate Structured Plan` passed against the real Gemini response: it parsed the model text, accepted exactly five sequential scenes with non-empty required fields, restored the original job context, and emitted normalized scenes plus AI metadata; no PostgreSQL write has occurred yet;
-- the production `Generate Structured Plan` HTTP Request completed one real Google Gemini API call with `gemini-3.5-flash-lite`; the response finished with `STOP`, returned structured JSON containing five scenes, and reported 248 prompt tokens, 424 candidate tokens, and 672 total tokens; this synthetic marker-topic run proves the API and structured-output transport, but does not yet prove narration quality for a real topic;
-- `Build Planning Request` is connected after `Require Eligible Job` and passed execution; it produced provider-independent system/user prompts plus the expected scenes output contract without making an AI call;
+- the VPS repository checkout was switched safely from `feat/m3-n8n-intake` to `feat/m4-script-scene-planning` and is used for M4 runtime work;
+- the production v1 M4 scene contract is an explicit project decision: 15/30/45/60-second jobs require exactly 4/8/12/15 scenes, and each scene maps to one narration segment, one later voiceover file, one selected visual asset, and one rendered timeline segment;
+- each planned scene requires `visual_subject_type = factual|generic`, target-language `visual_description`, and a case-insensitively unique English `visual_query` no longer than 100 characters; factual scenes route to Wikimedia Commons and generic scenes route to Pixabay with Pexels fallback;
+- the clean-install schema includes `scenes.visual_subject_type`, and migration 002 now brings the production database to the same required scene-subject contract;
+- `Validate Structured Plan` previously passed against a real Gemini response under the older five-scene test contract: it parsed the model text, accepted five sequential scenes with non-empty required fields, restored the original job context, and emitted normalized scenes plus AI metadata; this is transport proof only and is not acceptance for the current 4/8/12/15 scene contract;
+- the production `Generate Structured Plan` HTTP Request completed one real Google Gemini API call with `gemini-3.5-flash-lite`; the response finished with `STOP`, returned structured JSON containing five scenes, and reported 248 prompt tokens, 424 candidate tokens, and 672 total tokens; this proves the API/structured-output transport, not the current M4 contract or narration quality;
+- `Build Planning Request` is connected after `Require Eligible Job` and passed execution under the older contract;
 - the production WF02 input block is assembled in n8n as `Receive Job ID` -> `Normalize Job ID` -> `Load Eligible Job` -> `Require Eligible Job`;
 - the complete four-node input block passed a real PostgreSQL-backed test with job `ba081017-2345-4212-a1c4-cde6df8de574`: `job_exists = true`, `eligible = true`, `language_code = 'en'`, `target_duration_seconds = 60`, `status = 'created'`, and `current_stage = 'intake'`;
 - M4 feature branch `feat/m4-script-scene-planning` was created from the completed M3 `main` state;
-- the previous `scenes` schema was inspected and contains `job_id`, `scene_number`, `narration`, `visual_description`, `visual_query`, `duration_seconds`, and `status`; the approved factual/generic routing contract now justifies the new `visual_subject_type` migration;
-- the repository contains no configured AI provider, model, API-key environment variable, or exported AI credential;
-- the isolated browser session reaches the production n8n sign-in page, but no user takeover surface is available in the current chat interface; this path cannot provide authenticated runtime access;
-- direct SSH from the work environment cannot reach VPS port 22 (`Network is unreachable`), so it cannot inspect the n8n runtime either;
+- the repository itself contains no AI credential or API secret;
 - repository foundation;
 - M1 Docker foundation;
 - M2 PostgreSQL application-state validation;
@@ -198,6 +197,8 @@ Current schema naming that must be respected:
 - `scenes.visual_path`;
 - `scenes.duration_seconds`;
 - `scenes.visual_subject_type`.
+
+`scenes.visual_subject_type` is now present in production PostgreSQL as `TEXT NOT NULL` with allowed values `factual` and `generic`.
 
 Do not silently replace these with alternative names from external architecture suggestions.
 
@@ -286,7 +287,7 @@ Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastruc
 
 ## Exact next action
 
-Verify the host-level backup `/tmp/ai-short-form-content-factory-public-20260823T121528Z.dump` still exists with SHA-256 `f147aaff08278aa09d467f5661a3b0d6e50ff5376a27faf364273678016ee39a`, then remove only the verified disposable M2 test job `b2c1fc1c-e5f1-468b-a64d-7eeca2cb963d` after exact precondition checks. Apply `db/migrations/002_add_scene_visual_subject_type.sql`, verify `scenes.visual_subject_type` is `TEXT NOT NULL` with a check constraint that accepts only `factual` and `generic`, and verify the retained M3 job `ba081017-2345-4212-a1c4-cde6df8de574` and other retained application data are unchanged. Then update `Build Planning Request`, the Gemini response schema, and `Validate Structured Plan` in the live WF02.
+Update the live WF02 `Build Planning Request`, Gemini structured-response schema, and `Validate Structured Plan` nodes to the production M4 contract: exact 4/8/12/15 scene counts for 15/30/45/60 seconds; sequential scene numbers starting at 1; target-language non-empty `narration` and `visual_description`; `visual_subject_type` exactly `factual` or `generic`; non-empty English `visual_query` values no longer than 100 characters and unique case-insensitively. Make one real Gemini request and validate the complete result against this contract. Do not add PostgreSQL scene persistence or job-state mutation until this new contract passes. After the live contract passes, export the production WF02 workflow into the repository before adding persistence.
 
 ## Working rules
 
@@ -317,4 +318,4 @@ Before answering or acting on this project:
 - no secrets in GitHub;
 - no global Docker prune operations on the shared VPS;
 - do not delete or casually modify the protected `/opt/n8n` work runtime;
-- do not start M4 before M3 passes its real acceptance checks.
+- do not start M5 before M4 passes its real acceptance checks.
