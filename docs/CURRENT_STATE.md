@@ -95,6 +95,7 @@ Main currently includes public n8n access through merge commit:
 
 ## Completed
 
+- the initial production WF02 input block is visibly assembled in n8n as `Receive Job ID` -> `Normalize Job ID` -> `Load Eligible Job` -> `Require Eligible Job`; functional execution testing is still pending;
 - M4 feature branch `feat/m4-script-scene-planning` was created from the completed M3 `main` state;
 - the actual `scenes` schema was inspected and already contains `job_id`, `scene_number`, `narration`, `visual_description`, `visual_query`, `duration_seconds`, and `status`; no M4 migration is currently justified;
 - the repository contains no configured AI provider, model, API-key environment variable, or exported AI credential;
@@ -268,7 +269,7 @@ Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastruc
 
 ## Exact next action
 
-Cloud Browser cannot be used for user-controlled sign-in in the current interface. Continue only through an authenticated access path that is actually available; do not choose an AI provider or model before that runtime fact is visible.
+Functionally test the complete four-node WF02 input block using the known M3 job UUID, verify the loaded job fields and eligibility result, and only then add the AI request boundary.
 
 ## Working rules
 
