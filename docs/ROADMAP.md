@@ -84,6 +84,8 @@ Learning focus:
 
 ## M3 — n8n intake
 
+Status: completed on 2026-08-23.
+
 Goal: submit topic, language, and duration through n8n and create a job.
 
 Acceptance:
@@ -92,6 +94,15 @@ Acceptance:
 - valid input creates exactly one job;
 - response contains the new job ID;
 - no AI call yet.
+
+Validated runtime result:
+
+- the production invalid request returned HTTP 400 and inserted zero `jobs` rows;
+- the production valid request returned HTTP 201 with `job_id` `ba081017-2345-4212-a1c4-cde6df8de574`;
+- PostgreSQL contained exactly one matching job row and its UUID matched the HTTP response;
+- the stored job had `language_code = 'en'`, `target_duration_seconds = 60`, `status = 'created'`, and `current_stage = 'intake'`;
+- `n8n/workflows/WF01-create-content-job.json` contains the validated six-node production workflow export;
+- Script & Scene Planning stayed disconnected and no AI call occurred.
 
 Learning focus:
 
