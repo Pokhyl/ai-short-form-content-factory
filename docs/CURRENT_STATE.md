@@ -151,10 +151,15 @@ Verified:
 - on 2026-08-23 one new enabled client secret was created on this same existing OAuth client; the old secret remains present separately;
 - the actual new secret value must stay local and must never be posted to chat or GitHub;
 - on 2026-08-23 the current n8n runtime was configured with a new `Google OAuth2 API` credential using the existing `n8n-tts-oauth` Client ID, the fresh client secret, scope `https://www.googleapis.com/auth/cloud-platform`, and the current n8n callback URL;
-- on 2026-08-23 the user completed Google account authorization for that saved credential in the current n8n runtime; authorization is treated as connected pending the first real authenticated Cloud TTS request;
-- local retention/download of the new secret has not been explicitly confirmed in chat.
+- on 2026-08-23 the user completed Google account authorization for that saved credential in the current n8n runtime; authorization is treated as connected pending the first real authenticated Cloud TTS request.
 
 Do not create a replacement OAuth client, API key, service account, or billing setup.
+
+## WF03 implementation checkpoint
+
+The production n8n workflow `WF03 — Voiceover Generation` has now been created as the real M5 stage workflow, and a real HTTP Request node named `Generate Voiceover` has been added to it. The exact workflow ID has not yet been recorded. No Cloud TTS request from this real node has been accepted yet.
+
+The previously suggested disposable/temporary TTS node is no longer part of the plan. Authentication verification will be performed directly on the real `Generate Voiceover` node and that same node will remain in WF03.
 
 ## Smallest M5 implementation boundary
 
@@ -169,7 +174,7 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 ## Exact next action
 
-Use the existing temporary HTTP Request node to perform exactly one authenticated `POST https://texttospeech.googleapis.com/v1/text:synthesize` request with the saved Google OAuth2 credential, header `x-goog-user-project: n8n-drive-voiceover`, a short Polish test phrase, exact voice `pl-PL-Chirp3-HD-Enceladus`, and MP3 output. Acceptance for this checkpoint is HTTP success with a non-empty base64 `audioContent` response. Do not store the returned test audio, do not write PostgreSQL, and do not build WF03 until this authenticated TTS request passes.
+Configure the real WF03 `Generate Voiceover` HTTP Request node for one authenticated `POST https://texttospeech.googleapis.com/v1/text:synthesize` request using the saved Google OAuth2 credential, header `x-goog-user-project: n8n-drive-voiceover`, a short Polish test phrase, exact voice `pl-PL-Chirp3-HD-Enceladus`, and MP3 output. Acceptance for this checkpoint is HTTP success with a non-empty base64 `audioContent` response from this real WF03 node. Do not store the returned test audio or write PostgreSQL yet. After this request passes, keep this node and build the actual WF03 input/load/eligibility/per-scene/store/persistence path around it.
 
 ## Do not do
 
