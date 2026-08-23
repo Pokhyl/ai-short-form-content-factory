@@ -240,10 +240,21 @@ Initial screen:
 - error message;
 - final video preview when ready.
 
+Backend/status boundary for the Studio:
+
+- keep internal stage hand-offs as native n8n sub-workflows; do not add public webhooks to WF02/WF03/WF04 merely for UI progress;
+- add one read-only HTTP status endpoint for the Studio, implemented as a separate n8n workflow/webhook;
+- the endpoint receives a `job_id`, validates it, reads durable state from PostgreSQL, and returns the current job state;
+- at minimum expose `job_id`, `status`, `current_stage`, and `last_error`; add final output fields when the UI milestone requires them;
+- the browser must not connect directly to PostgreSQL;
+- the Studio may poll this single status endpoint while a job is running.
+
 Acceptance:
 
 - create and monitor a job without opening n8n;
-- UI reads real database/runtime state.
+- UI reads real database/runtime state;
+- one job-status HTTP endpoint can report the current `status`, `current_stage`, and `last_error` for a valid `job_id`;
+- no public per-stage webhook network is introduced for progress tracking.
 
 ## M10 — Buffer draft publishing
 
