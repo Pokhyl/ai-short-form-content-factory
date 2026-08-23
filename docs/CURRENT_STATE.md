@@ -206,19 +206,17 @@ Production workflow:
 - name: `WF03 — Voiceover Generation`;
 - exact workflow ID: `UHxvCZNqaLb1RKMM`.
 
-Latest screenshots on 2026-08-23 directly confirm the canvas now shows:
+Verified from screenshots on 2026-08-23:
 
-```text
-Receive Job ID
--> Generate Voiceover
-```
+- the old Manual Trigger is gone and a node named `Receive Job ID` is present;
+- `Normalize Job ID` exists with the accepted WF02 UUID normalization/validation code;
+- its Mode is configured as `Run Once for All Items`;
+- a PostgreSQL node named `Load Voiceover Context` has been added after `Normalize Job ID`;
+- `Load Voiceover Context` uses credential `Application PostgreSQL` and operation `Execute Query`;
+- its query is parameterized with `$1::uuid` and the visible query text loads job fields plus scene aggregation including `scene_id`, `scene_number`, `narration`, `audio_path`, `duration_seconds`, and scene `status`;
+- `Query Parameters` is in expression mode and visibly contains `{{ [ $json.job_id ] }}`.
 
-Therefore the old Manual Trigger is no longer present on the visible canvas and a node named `Receive Job ID` is now present.
-
-Important verification boundary:
-
-- the screenshots do **not** show the `Receive Job ID` node Parameters, so its exact node type and whether the one workflow input is actually configured as `job_id` string are not yet directly verified;
-- the canvas currently shows `Receive Job ID` connected directly to `Generate Voiceover`; this direct connection is only temporary and must be replaced by the permanent validation/PostgreSQL preparation path before any real TTS execution.
+Verification boundary: the screenshot does not show the entire SQL query body at once, so the complete pasted query is not yet independently verified line-for-line from the image. The node has not been executed yet and no database output from it has been accepted yet.
 
 The `Generate Voiceover` Parameters screenshot directly confirms:
 
@@ -250,10 +248,9 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
-1. Verify/configure `Receive Job ID` as an `Execute Sub-workflow Trigger` with exactly one string workflow input named `job_id`.
-2. Insert a Code node named `Normalize Job ID` immediately after it, using the same UUID normalization/validation logic already accepted in WF02.
-3. Do **not** connect `Normalize Job ID` directly to `Generate Voiceover` yet; PostgreSQL job/scene loading and eligibility validation must be inserted first.
-4. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
+1. Add a Code node after `Load Voiceover Context` to validate stage eligibility and loaded scene structure before any state change or TTS side effect.
+2. Do not connect this validation node directly to `Generate Voiceover` yet; after validation, add the PostgreSQL state transition that changes `jobs.current_stage` to `voiceover` only when M5 actually begins, then prepare per-scene voiceover items.
+3. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
 
 Before the next VPS Git change, synchronize the VPS branch again because the remote feature branch has advanced with documentation commits.
 
