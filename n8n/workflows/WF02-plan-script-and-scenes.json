@@ -1,6 +1,6 @@
 [
   {
-    "updatedAt": "2026-08-23T12:41:24.591Z",
+    "updatedAt": "2026-08-23T13:14:41.343Z",
     "createdAt": "2026-08-23T09:46:09.713Z",
     "id": "TJfA4ZYUEKSTad6k",
     "name": "WF02 — Plan Script and Scenes",
@@ -127,6 +127,29 @@
         ],
         "id": "db508eae-13d5-40d4-beda-3aad1aebccc3",
         "name": "Validate Structured Plan"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH input AS MATERIALIZED (\n  SELECT\n    $1::uuid AS job_id,\n    $2::jsonb AS scenes_json\n),\n\nlocked_job AS MATERIALIZED (\n  SELECT\n    j.id AS job_id,\n    CASE j.target_duration_seconds\n      WHEN 15 THEN 4\n      WHEN 30 THEN 8\n      WHEN 45 THEN 12\n      WHEN 60 THEN 15\n      ELSE NULL\n    END AS expected_scene_count\n  FROM public.jobs j\n  JOIN input i\n    ON i.job_id = j.id\n  WHERE j.status = 'created'\n    AND j.current_stage = 'intake'\n    AND NOT EXISTS (\n      SELECT 1\n      FROM public.scenes existing_scene\n      WHERE existing_scene.job_id = j.id\n    )\n  FOR UPDATE\n),\n\nparsed_scenes AS MATERIALIZED (\n  SELECT\n    scene.scene_number,\n    scene.narration,\n    scene.visual_subject_type,\n    scene.visual_description,\n    scene.visual_query\n  FROM input i\n  CROSS JOIN LATERAL jsonb_to_recordset(\n    CASE\n      WHEN jsonb_typeof(i.scenes_json) = 'array'\n        THEN i.scenes_json\n      ELSE '[]'::jsonb\n    END\n  ) AS scene (\n    scene_number INTEGER,\n    narration TEXT,\n    visual_subject_type TEXT,\n    visual_description TEXT,\n    visual_query TEXT\n  )\n),\n\nvalid_scenes AS MATERIALIZED (\n  SELECT\n    p.scene_number,\n    btrim(p.narration) AS narration,\n    p.visual_subject_type,\n    btrim(p.visual_description)\n      AS visual_description,\n    btrim(p.visual_query)\n      AS visual_query\n  FROM parsed_scenes p\n  CROSS JOIN locked_job j\n  WHERE j.expected_scene_count IS NOT NULL\n    AND p.scene_number BETWEEN\n      1 AND j.expected_scene_count\n    AND btrim(p.narration) <> ''\n    AND p.visual_subject_type IN (\n      'factual',\n      'generic'\n    )\n    AND btrim(p.visual_description) <> ''\n    AND btrim(p.visual_query) <> ''\n    AND char_length(\n      btrim(p.visual_query)\n    ) <= 100\n),\n\nvalidation_summary AS MATERIALIZED (\n  SELECT\n    j.job_id,\n    j.expected_scene_count,\n    count(v.scene_number)::integer\n      AS valid_scene_count,\n    count(\n      DISTINCT v.scene_number\n    )::integer\n      AS distinct_scene_numbers,\n    min(v.scene_number)\n      AS min_scene_number,\n    max(v.scene_number)\n      AS max_scene_number,\n    count(\n      DISTINCT lower(v.visual_query)\n    )::integer\n      AS distinct_visual_queries\n  FROM locked_job j\n  LEFT JOIN valid_scenes v\n    ON TRUE\n  GROUP BY\n    j.job_id,\n    j.expected_scene_count\n),\n\neligible_plan AS MATERIALIZED (\n  SELECT\n    s.job_id,\n    s.expected_scene_count\n  FROM validation_summary s\n  JOIN input i\n    ON i.job_id = s.job_id\n  WHERE jsonb_typeof(i.scenes_json) = 'array'\n    AND jsonb_array_length(\n      i.scenes_json\n    ) = s.expected_scene_count\n    AND s.valid_scene_count =\n      s.expected_scene_count\n    AND s.distinct_scene_numbers =\n      s.expected_scene_count\n    AND s.min_scene_number = 1\n    AND s.max_scene_number =\n      s.expected_scene_count\n    AND s.distinct_visual_queries =\n      s.expected_scene_count\n),\n\ninserted_scenes AS (\n  INSERT INTO public.scenes (\n    job_id,\n    scene_number,\n    narration,\n    visual_subject_type,\n    visual_description,\n    visual_query\n  )\n  SELECT\n    e.job_id,\n    v.scene_number,\n    v.narration,\n    v.visual_subject_type,\n    v.visual_description,\n    v.visual_query\n  FROM eligible_plan e\n  CROSS JOIN valid_scenes v\n  ORDER BY v.scene_number\n  RETURNING\n    job_id,\n    scene_number\n),\n\ninsert_summary AS MATERIALIZED (\n  SELECT\n    job_id,\n    count(*)::integer\n      AS inserted_scene_count\n  FROM inserted_scenes\n  GROUP BY job_id\n),\n\nupdated_job AS (\n  UPDATE public.jobs j\n  SET\n    status = 'processing',\n    current_stage = 'script',\n    last_error = NULL,\n    updated_at = now()\n  FROM eligible_plan e\n  JOIN insert_summary inserted\n    ON inserted.job_id = e.job_id\n   AND inserted.inserted_scene_count =\n       e.expected_scene_count\n  WHERE j.id = e.job_id\n  RETURNING\n    j.id AS job_id,\n    j.status,\n    j.current_stage,\n    j.updated_at\n)\n\nSELECT\n  updated.job_id,\n  updated.status,\n  updated.current_stage,\n  inserted.inserted_scene_count,\n  eligible.expected_scene_count,\n  updated.updated_at\nFROM updated_job updated\nJOIN insert_summary inserted\n  ON inserted.job_id = updated.job_id\nJOIN eligible_plan eligible\n  ON eligible.job_id = updated.job_id;",
+          "options": {
+            "queryReplacement": "={{ [ $json.job_id, JSON.stringify($json.scenes) ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          912,
+          -32
+        ],
+        "id": "01a6b660-aa56-4108-a30b-a938f7c7997b",
+        "name": "Persist Scene Plan",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        }
       }
     ],
     "connections": {
@@ -195,6 +218,17 @@
             }
           ]
         ]
+      },
+      "Validate Structured Plan": {
+        "main": [
+          [
+            {
+              "node": "Persist Scene Plan",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "settings": {
@@ -216,9 +250,9 @@
         }
       ]
     },
-    "versionId": "47b5dcc0-be4c-476a-b4e1-99752d35442d",
+    "versionId": "a96bb195-5e14-44cd-914e-e0537ebcb272",
     "activeVersionId": "47b5dcc0-be4c-476a-b4e1-99752d35442d",
-    "versionCounter": 39,
+    "versionCounter": 46,
     "triggerCount": 0,
     "sourceWorkflowId": null,
     "tags": [],
@@ -243,8 +277,8 @@
       }
     ],
     "versionMetadata": {
-      "name": "Version 47b5dcc0",
-      "description": ""
+      "name": null,
+      "description": null
     }
   }
 ]
