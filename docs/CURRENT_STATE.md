@@ -98,7 +98,7 @@ Main currently includes public n8n access through merge commit:
 - M4 feature branch `feat/m4-script-scene-planning` was created from the completed M3 `main` state;
 - the actual `scenes` schema was inspected and already contains `job_id`, `scene_number`, `narration`, `visual_description`, `visual_query`, `duration_seconds`, and `status`; no M4 migration is currently justified;
 - the repository contains no configured AI provider, model, API-key environment variable, or exported AI credential;
-- the production n8n Cloud Browser currently stops at the n8n sign-in page, so runtime AI credentials cannot be inspected through that session;
+- the isolated browser session reaches the production n8n sign-in page, but no user takeover surface is available in the current chat interface; this path cannot provide authenticated runtime access;
 - direct SSH from the work environment cannot reach VPS port 22 (`Network is unreachable`), so it cannot inspect the n8n runtime either;
 - repository foundation;
 - M1 Docker foundation;
@@ -268,7 +268,7 @@ Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastruc
 
 ## Exact next action
 
-The only remaining access path is a user-controlled sign-in to production n8n in Cloud Browser. After sign-in, inspect available AI credentials and nodes, then define and build the smallest M4 workflow. Do not choose a provider or model before that runtime fact is visible.
+Cloud Browser cannot be used for user-controlled sign-in in the current interface. Continue only through an authenticated access path that is actually available; do not choose an AI provider or model before that runtime fact is visible.
 
 ## Working rules
 
