@@ -115,6 +115,8 @@ Learning focus:
 
 ## M4 — Script + scene plan
 
+Status: completed on 2026-08-23.
+
 Goal: generate one structured script and persist its scenes.
 
 Acceptance:

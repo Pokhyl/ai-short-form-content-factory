@@ -31,7 +31,7 @@ Topic
 
 M4 — Script + scene plan
 
-Status: in progress.
+Status: completed on 2026-08-23.
 
 Acceptance:
 
@@ -101,8 +101,7 @@ Each scene requires:
 
 - production migration `002_add_scene_visual_subject_type.sql` is applied; `scenes.visual_subject_type` is `TEXT NOT NULL` with `factual|generic` CHECK;
 - PostgreSQL persistence was verified with a 60-second structural job: exactly 15 scenes, sequential 1..15, valid required fields, unique queries, no audio/visual/duration values, 0 assets, 0 publications;
-- an eight-node WF02 export is committed in `n8n/workflows/WF02-plan-script-and-scenes.json` from commit `5208dc1fc6b8f6ea47179dc70c0b0494c7c5aebc`, but the live `Build Planning Request` prompt has been refined since that export, so the repository export is now stale and must be refreshed before M4 can be completed;
-- previous verified eight-node export SHA-256: `fc8088d678999774021bfe745b0d17507e5bfde2f71e407b4e9f8bd6230e87aa`;
+- the final accepted live eight-node WF02 has been re-exported after all prompt-only quality refinements, fully validated, and committed to `n8n/workflows/WF02-plan-script-and-scenes.json`; final export SHA-256 is `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1` and the export commit is `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`;
 - no retry, dispatcher, queue, watchdog, Redis, new service, or M5 work has been added.
 
 ## M4 manual-quality history
@@ -138,12 +137,12 @@ Read-only PostgreSQL inspection confirmed the same job state and exactly 8 persi
 
 ## Exact next action
 
-Export the final live eight-node WF02 again because `Build Planning Request` changed after the previous repository export. Validate that the export still contains exactly the eight-node production topology, the accepted current planning prompt, the existing Gemini structured-output schema and validator, the existing atomic `Persist Scene Plan` SQL and query-parameter expression, credential references only, and no runtime secrets. Replace `n8n/workflows/WF02-plan-script-and-scenes.json`, commit and push the refreshed export, then update `CURRENT_STATE.md` and mark M4 complete. Do not start M5 until that final export checkpoint is committed.
+M4 is complete. Before implementing M5 — Voiceover, recover and verify the exact previously selected voice IDs for EN/PL/RU/UK as required by `docs/ROADMAP.md`; do not substitute guessed voices. After the exact voice configuration is recovered, begin M5 as a separate stage and keep actual audio duration measurement in M5.
 
 ## Do not do
 
 - do not rerun any previous quality-test job;
-- do not start M5 before the final refreshed WF02 export is committed and M4 is marked complete;
+- do not substitute guessed voice IDs when preparing M5;
 - do not modify the n8n PostgreSQL schema manually;
 - do not add retry/dispatcher/queue/watchdog/Redis/generic idempotency infrastructure;
 - do not add extra services;
