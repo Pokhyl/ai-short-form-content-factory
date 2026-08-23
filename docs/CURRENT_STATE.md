@@ -151,7 +151,7 @@ Verified:
 - on 2026-08-23 one new enabled client secret was created on this same existing OAuth client; the old secret remains present separately;
 - the actual new secret value must stay local and must never be posted to chat or GitHub;
 - on 2026-08-23 the current n8n runtime was configured with a new `Google OAuth2 API` credential using the existing `n8n-tts-oauth` Client ID, the fresh client secret, scope `https://www.googleapis.com/auth/cloud-platform`, and the current n8n callback URL;
-- the credential fields were saved in n8n, but Google account authorization / token acquisition has not yet been confirmed;
+- on 2026-08-23 the user completed Google account authorization for that saved credential in the current n8n runtime; authorization is treated as connected pending the first real authenticated Cloud TTS request;
 - local retention/download of the new secret has not been explicitly confirmed in chat.
 
 Do not create a replacement OAuth client, API key, service account, or billing setup.
@@ -169,7 +169,7 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 ## Exact next action
 
-Authorize the newly saved `Google OAuth2 API` credential in the current n8n runtime with the intended Google account and confirm that n8n reports the credential as connected. If Google authorization fails, capture the exact error without exposing secrets. After authorization succeeds, verify one authenticated Cloud Text-to-Speech request before building WF03.
+Use the existing temporary HTTP Request node to perform exactly one authenticated `POST https://texttospeech.googleapis.com/v1/text:synthesize` request with the saved Google OAuth2 credential, header `x-goog-user-project: n8n-drive-voiceover`, a short Polish test phrase, exact voice `pl-PL-Chirp3-HD-Enceladus`, and MP3 output. Acceptance for this checkpoint is HTTP success with a non-empty base64 `audioContent` response. Do not store the returned test audio, do not write PostgreSQL, and do not build WF03 until this authenticated TTS request passes.
 
 ## Do not do
 
