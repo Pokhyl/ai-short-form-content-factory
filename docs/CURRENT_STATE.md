@@ -97,10 +97,11 @@ Main currently includes public n8n access through merge commit:
 
 ## Completed
 
-- the first production attempt to apply `db/migrations/002_add_scene_visual_subject_type.sql` was safely blocked and rolled back because `public.scenes` contained two existing rows with `visual_subject_type IS NULL`; the pre-migration scene fingerprint was `2|d60e159d9818466051761f575dd4b051`. No classification was guessed and the migration did not complete. The next action is to identify those two rows and their parent jobs without modifying data, then decide from verified provenance whether they are disposable test data or require an explicit classification/migration treatment;
+- the two `public.scenes` rows that blocked migration 002 were inspected without modifying the database. Both belong to job `b2c1fc1c-e5f1-468b-a64d-7eeca2cb963d` whose topic is exactly `M2 manual SQL test`; their narration/visual fields explicitly identify them as the first and second SQL test scenes created on 2026-08-22. The job has exactly two scenes, zero assets, and zero publications. This matches the completed M2 PostgreSQL manual-test provenance in `docs/ROADMAP.md`, so these rows are disposable M2 test state rather than M3/M4 production content. The failed migration rollback was confirmed: `visual_subject_type` and its check constraint are absent, and the scene fingerprint remains `2|d60e159d9818466051761f575dd4b051`;
+- the first production attempt to apply `db/migrations/002_add_scene_visual_subject_type.sql` was safely blocked and rolled back because `public.scenes` contained two existing rows with `visual_subject_type IS NULL`; the pre-migration scene fingerprint was `2|d60e159d9818466051761f575dd4b051`. No classification was guessed and the migration did not complete;
 - on the VPS, the previously untracked `n8n/` directory was inspected without deletion; it contained exactly `n8n/workflows/WF01-create-content-job.json`, and both its file list and SHA-256 matched the committed M3 copy; the local file SHA-256 was `f5fee4f6ffc570cb6f3001e223c982bdeddd5d5a9fbdf38f18859ba8b97d4672`;
 - the verified duplicate VPS `n8n/` directory was moved to recoverable backup `/tmp/ai-short-form-content-factory-n8n-backup-20260823T120403Z`; the backed-up WF01 retained SHA-256 `f5fee4f6ffc570cb6f3001e223c982bdeddd5d5a9fbdf38f18859ba8b97d4672`;
-- the VPS repository checkout was switched safely from `feat/m3-n8n-intake` to `feat/m4-script-scene-planning`; after `git pull --ff-only` it was at M4 checkpoint `95db4c17480933f11af5adb1779710961b91bda4` before this documentation checkpoint commit;
+- the VPS repository checkout was switched safely from `feat/m3-n8n-intake` to `feat/m4-script-scene-planning`; after `git pull --ff-only` it was at M4 checkpoint `95db4c17480933f11af5adb1779710961b91bda4` before the later documentation checkpoint commits;
 - production PostgreSQL reachability was rechecked successfully with `pg_isready`;
 - the production v1 M4 scene contract is now an explicit project decision: 15/30/45/60-second jobs require exactly 4/8/12/15 scenes, and each scene maps to one narration segment, one later voiceover file, one selected visual asset, and one rendered timeline segment;
 - each planned scene now requires `visual_subject_type = factual|generic`, target-language `visual_description`, and a case-insensitively unique English `visual_query` no longer than 100 characters; factual scenes route to Wikimedia Commons and generic scenes route to Pixabay with Pexels fallback;
@@ -247,7 +248,7 @@ n8n
   -> n8n writes final_video_path and review_ready to PostgreSQL
 ```
 
-Do not add `render_id`, async callback, polling, or direct media-worker database access before a real render test proves synchronous HTTP is insufficient.
+Do not add `render_id`, async callback, polling, or direct media-worker database writes before real render behavior proves that the synchronous HTTP boundary is insufficient.
 
 ## Human review boundary
 
@@ -283,7 +284,7 @@ Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastruc
 
 ## Exact next action
 
-Inspect the two existing `public.scenes` rows that blocked `db/migrations/002_add_scene_visual_subject_type.sql`, together with their parent `jobs`, without modifying data. Determine from verified row content/provenance whether they are disposable test rows or require an explicit factual/generic classification treatment. Only after that evidence-based decision should the migration be retried. Then verify the new column, NOT NULL requirement, and factual/generic check constraint directly in PostgreSQL before updating `Build Planning Request`, the Gemini response schema, and `Validate Structured Plan` in the live WF02.
+Create a recoverable backup of the production `public` schema/data, then remove only the verified disposable M2 test job `b2c1fc1c-e5f1-468b-a64d-7eeca2cb963d` after exact precondition checks confirm its known topic, two known test scenes, zero assets, and zero publications. Rely on the existing `ON DELETE CASCADE` relationship to remove only those two test scenes. Then apply `db/migrations/002_add_scene_visual_subject_type.sql`, verify `scenes.visual_subject_type` is `TEXT NOT NULL` with the factual/generic check constraint, verify the retained M3 job is unchanged, and only then update `Build Planning Request`, the Gemini response schema, and `Validate Structured Plan` in the live WF02.
 
 ## Working rules
 
