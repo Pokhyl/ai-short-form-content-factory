@@ -99,6 +99,7 @@ Main currently includes public n8n access through merge commit:
 - the actual `scenes` schema was inspected and already contains `job_id`, `scene_number`, `narration`, `visual_description`, `visual_query`, `duration_seconds`, and `status`; no M4 migration is currently justified;
 - the repository contains no configured AI provider, model, API-key environment variable, or exported AI credential;
 - the production n8n Cloud Browser currently stops at the n8n sign-in page, so runtime AI credentials cannot be inspected through that session;
+- direct SSH from the work environment cannot reach VPS port 22 (`Network is unreachable`), so it cannot inspect the n8n runtime either;
 - repository foundation;
 - M1 Docker foundation;
 - M2 PostgreSQL application-state validation;
