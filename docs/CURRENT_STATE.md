@@ -133,7 +133,10 @@ Read-only runtime inspection established:
 - n8n does not mount that media volume directly;
 - accepted M4 job `6b08098c-e5c7-45bd-babb-036705b563e1` is `pl`, 30 seconds, `processing/script`, `last_error IS NULL`;
 - it has exactly 8 `planned` scenes with non-empty narration;
-- all 8 scenes still have `audio_path IS NULL` and `duration_seconds IS NULL` and are a clean eligible M5 test state.
+- all 8 scenes still have `audio_path IS NULL` and `duration_seconds IS NULL` and are a clean eligible M5 test state;
+- the existing Google Cloud project used for prior voiceover work has been identified as `n8n-drive-voiceover` (project ID `n8n-drive-voiceover`);
+- Cloud Text-to-Speech API is already enabled in that project;
+- the project currently shows an active Google Cloud free-trial balance, so no new TTS project needs to be created merely to continue M5.
 
 ## Implemented and accepted media-worker audio boundary
 
@@ -190,7 +193,7 @@ No retry, dispatcher, queue, watchdog, Redis, n8n queue mode, or extra service i
 
 ## Exact next action
 
-Create and verify a dedicated Google Cloud authentication credential in n8n for Cloud Text-to-Speech, then build the initial WF03 — Voiceover Generation input/eligibility block on `feat/m5-voiceover`: receive only `job_id`, reload the job/scenes from PostgreSQL, require `status = processing`, `current_stage = script`, non-empty narration, and unset `audio_path`/`duration_seconds`, then transition `current_stage` to `voiceover` only when the stage begins. After that, add the per-scene Google TTS request using the exact recovered voice preset for the job language, send returned MP3 base64 to the accepted `media-worker POST /audio/store` boundary, and persist `audio_path` plus measured `duration_seconds` through n8n. Do not start M6.
+In Google Cloud project `n8n-drive-voiceover`, inspect IAM & Admin -> Service Accounts and determine whether the prior voiceover service account still exists. Do not create a new account or key yet. If it exists, reuse that service account and create/import only the minimum credential material required by the new n8n runtime. If it does not exist, create a dedicated TTS service account in this already-enabled project rather than creating another Google Cloud project. Then create and verify the dedicated Google Cloud credential in n8n and continue with the initial WF03 input/eligibility block. Do not start M6.
 
 ## Do not do
 
