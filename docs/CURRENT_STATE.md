@@ -193,7 +193,10 @@ Directly verified from screenshots:
 - visible SQL loads job fields and aggregated scene data including `scene_id`, `scene_number`, `narration`, `audio_path`, `duration_seconds`, and scene `status`;
 - complete SQL has not yet been independently verified line-for-line from a single screenshot;
 - `Generate Voiceover` is a real HTTP Request node using `POST`, `Google OAuth2 API`, credential display name `Google account`, header `x-goog-user-project: n8n-drive-voiceover`, and `Send Body = ON`;
-- TTS body and exact final URL have not yet been fully verified from screenshots;
+- latest `Generate Voiceover` screenshot directly verifies `Body Content Type = JSON` and `Specify Body = Using JSON`;
+- the visible lower part of the JSON expression includes dynamic `name: $json.voice_name` and `audioConfig.audioEncoding = 'MP3'`;
+- the top of the JSON expression is outside the visible editor area, so `input.text`, language mapping, and the complete body are not yet independently verified line-for-line from a screenshot;
+- the latest screenshot explicitly shows `No input connected` on the left side of `Generate Voiceover`; therefore `Prepare Voiceover Items -> Generate Voiceover` is not yet connected at this checkpoint;
 - no real Cloud TTS request has been accepted yet.
 
 User-reported implementation steps on 2026-08-23, not yet independently verified by screenshot/export:
@@ -217,11 +220,10 @@ No new service is required.
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
-1. Configure the existing `Generate Voiceover` HTTP Request node as the permanent dynamic Google Cloud TTS request fed by `Prepare Voiceover Items`.
-2. Use the exact endpoint `https://texttospeech.googleapis.com/v1/text:synthesize`, the existing Google OAuth2 credential, `x-goog-user-project: n8n-drive-voiceover`, JSON body built from the current scene item, and `audioEncoding = MP3`.
-3. Do not execute real TTS yet until the dynamic body is configured and visually verified.
-4. After TTS configuration, add the existing media-worker `/audio/store` call, then persist returned `audio_path` and measured `duration_seconds` through n8n.
-5. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
+1. Connect `Prepare Voiceover Items` directly to the existing `Generate Voiceover` node. Do not execute it yet.
+2. After connection, visually verify the full dynamic JSON body, especially `input.text = $json.narration` and dynamic language mapping, before the first real TTS request.
+3. Then add the existing media-worker `/audio/store` call and persist returned `audio_path` plus measured `duration_seconds` through n8n.
+4. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
 
 Before the next VPS Git change, synchronize the VPS branch because the remote feature branch has advanced with documentation commits.
 
