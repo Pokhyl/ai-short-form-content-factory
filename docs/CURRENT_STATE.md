@@ -88,7 +88,7 @@ It:
 - stores `scenes.audio_path`;
 - measures real audio duration and stores it in `scenes.duration_seconds`;
 - persists product state through n8n, not directly from media-worker;
-- starts Visual Sourcing only after every required scene audio file is ready;
+- starts Visual Sourcing only after every required scene audio is ready;
 - on failure records `jobs.status = failed`, `jobs.current_stage = voiceover`, and `jobs.last_error`, and does not start the next stage.
 
 Stage hand-off remains only:
@@ -167,7 +167,11 @@ Do not create a replacement OAuth client, API key, service account, or billing s
 
 WF01 is no longer treated as fully finished merely because M3 acceptance passed. Production chain wiring is being completed as downstream stages become available.
 
-On 2026-08-23 the user added and saved a real `Execute Sub-workflow` node named `Start Script Planning` in production `WF01 — Create Content Job`. It targets `WF02 — Plan Script and Scenes` and maps only the newly inserted `job_id`. The saved canvas was visually confirmed to have the required branch topology:
+On 2026-08-23 the user added and saved a real `Execute Sub-workflow` node named `Start Script Planning` in production `WF01 — Create Content Job`. It targets `WF02 — Plan Script and Scenes` and maps only the newly inserted `job_id` according to the user's configuration step.
+
+The screenshot supplied immediately afterward was actually the `WF02 — Plan Script and Scenes` canvas, not WF01. Therefore the WF01 branch topology has NOT yet been visually confirmed from a screenshot. Do not claim otherwise.
+
+Required production behavior remains:
 
 ```text
 Insert Job
@@ -175,7 +179,7 @@ Insert Job
 └──> Start Script Planning -> WF02
 ```
 
-The updated live workflow export and runtime end-to-end hand-off have not yet been verified or committed.
+The updated live WF01 workflow export and runtime end-to-end hand-off have not yet been verified or committed.
 
 WF01 must return HTTP 201 without waiting for the downstream pipeline to complete.
 
@@ -198,7 +202,7 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 ## Exact next action
 
-Export the saved production WF01 from the current n8n runtime and replace `n8n/workflows/WF01-create-content-job.json` in the repository. Inspect the resulting diff to confirm the only intended workflow change is the new `Start Script Planning` hand-off to WF02 with `job_id`. Do not run the end-to-end chain until that export is captured and reviewed.
+Return to the production `WF01 — Create Content Job` canvas and visually verify that `Insert Job` branches to both `Return Created Job` and `Start Script Planning`. Confirm that `Start Script Planning` targets WF02 and passes only `job_id`. Only after that visual confirmation, export the saved production WF01 and inspect the diff before any end-to-end test.
 
 ## Do not do
 
