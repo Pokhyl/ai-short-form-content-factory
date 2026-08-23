@@ -218,6 +218,12 @@ Verified from screenshots on 2026-08-23:
 
 Verification boundary: the screenshot does not show the entire SQL query body at once, so the complete pasted query is not yet independently verified line-for-line from the image. The node has not been executed yet and no database output from it has been accepted yet.
 
+User-reported implementation checkpoint on 2026-08-23 (not yet independently verified by screenshot/export):
+
+- Code node `Require Eligible Voiceover Job` was added after `Load Voiceover Context`;
+- Mode was set to `Run Once for All Items`;
+- the supplied validation code checks job existence, `processing/script` eligibility, supported language, duration-specific scene count, sequential scene numbers, non-empty narration, and absence of existing `audio_path` / `duration_seconds` before M5 begins.
+
 The `Generate Voiceover` Parameters screenshot directly confirms:
 
 - Method: `POST`;
@@ -248,9 +254,10 @@ For HTTP Request authentication, use the saved dedicated `Google OAuth2 API` cre
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
-1. Add a Code node after `Load Voiceover Context` to validate stage eligibility and loaded scene structure before any state change or TTS side effect.
-2. Do not connect this validation node directly to `Generate Voiceover` yet; after validation, add the PostgreSQL state transition that changes `jobs.current_stage` to `voiceover` only when M5 actually begins, then prepare per-scene voiceover items.
-3. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
+1. Add a PostgreSQL node after `Require Eligible Voiceover Job` that atomically changes `jobs.current_stage` from `script` to `voiceover` only for the validated `processing` job and returns whether the transition actually occurred.
+2. After that transition is confirmed, prepare one voiceover item per scene with the exact deterministic four-language voice map.
+3. Keep `Generate Voiceover` disconnected until this permanent preparation path is in place.
+4. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
 
 Before the next VPS Git change, synchronize the VPS branch again because the remote feature branch has advanced with documentation commits.
 
