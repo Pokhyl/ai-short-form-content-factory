@@ -78,11 +78,15 @@ Current M3 design decisions:
 
 Branch:
 
-`feat/m3-n8n-intake`
+`main`
 
-PR:
+Merged PR:
 
-`#4 — M3: implement n8n job intake` (ready for review)
+`#4 — M3: implement n8n job intake`
+
+Merge commit:
+
+`e8059f5af93f3624ee3210e8b2f66f25c72e27bd`
 
 Base branch:
 
@@ -244,7 +248,7 @@ Do not combine Human Review and Buffer publishing into one long-running workflow
 
 ## Current task
 
-Merge PR #4. M3 implementation, production acceptance, workflow export, milestone documentation, and final PR review are complete.
+M3 is complete and merged. Do not begin M4 until a new M4 task and feature branch are explicitly started.
 
 M3 scope only:
 
@@ -262,12 +266,7 @@ Do not wire Job Intake to Script & Scene Planning during M3 acceptance.
 
 ## Exact next action
 
-Merge PR #4 after the final GitHub status check.
-
-Remaining M3 closure sequence:
-
-1. complete and merge PR #4;
-2. do not start M4 in this task.
+Stop after M3 closure. In the next task, read the source of truth and explicitly start M4 on a new feature branch; do not extend WF01 as part of M3.
 
 ## Working rules
 
