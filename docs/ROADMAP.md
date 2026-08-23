@@ -115,11 +115,19 @@ Learning focus:
 
 ## M4 — Script + scene plan
 
+Status: completed on 2026-08-23.
+
 Goal: generate one structured script and persist its scenes.
 
 Acceptance:
 
 - one AI request returns validated structured JSON;
+- 15/30/45/60-second jobs return exactly 4/8/12/15 scenes;
+- every scene contains sequential `scene_number`, target-language `narration`,
+  `visual_subject_type`, target-language `visual_description`, and an English
+  `visual_query`;
+- `visual_subject_type` is exactly `factual` or `generic`;
+- visual queries are non-empty, case-insensitively unique, and no longer than 100 characters;
 - scenes are stored in PostgreSQL;
 - narration and visual intent are readable and coherent;
 - malformed model output does not enter the database.

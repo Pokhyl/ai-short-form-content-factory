@@ -7,25 +7,13 @@ If chat history conflicts with this file, `docs/ARCHITECTURE.md`, or `docs/ROADM
 
 ## Mandatory assistant protocol
 
-For every technical reply or action about this project, the assistant must first fetch the current version of `docs/CURRENT_STATE.md` from the active feature branch. Do not rely on a previously fetched copy or on chat memory.
-
-When the reply involves architecture, also fetch `docs/ARCHITECTURE.md` before answering.
-When the reply changes milestone scope, acceptance, or progression, also fetch `docs/ROADMAP.md` before answering.
-
-If repository state and chat history disagree, stop using chat memory and follow the repository source of truth.
-If a fact is not present in the repository and cannot be verified directly, state that it is unknown instead of reconstructing it from memory.
-Do not introduce a new workflow, service, architectural boundary, retry mechanism, or runtime change unless it is explicitly marked as a new proposal first.
-After every completed implementation or runtime step, update this file before moving to the next step.
-
-The project owner should not need to remind the assistant to perform this protocol.
+For every technical reply or action about this project, fetch the current `docs/CURRENT_STATE.md` from the active feature branch first. Fetch `docs/ARCHITECTURE.md` when architecture is involved and `docs/ROADMAP.md` when milestone scope, acceptance, or progression is involved. Repository state overrides chat memory. Unknown facts must not be guessed. After every completed implementation or runtime step, update this file before moving on. Export production n8n workflows into the repository.
 
 ## Project
 
 AI Short-Form Content Factory
 
-Repository:
-
-`Pokhyl/ai-short-form-content-factory`
+Repository: `Pokhyl/ai-short-form-content-factory`
 
 Product goal:
 
@@ -39,262 +27,101 @@ Topic
   -> Buffer draft
 ```
 
-## Current milestone
+## Completed milestone
 
-M3 — n8n intake
+M4 — Script + scene plan
 
 Status: completed on 2026-08-23.
 
-Goal:
+Production WF02:
 
-Submit `topic`, `language`, and `duration` through n8n and create one durable job in PostgreSQL.
+- workflow ID: `TJfA4ZYUEKSTad6k`;
+- name: `WF02 — Plan Script and Scenes`;
+- final topology: 8 nodes ending in terminal `Persist Scene Plan`;
+- final accepted export SHA-256: `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`;
+- final export commit: `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`;
+- M4 completion docs commit: `9e1336775165702b60d94474b449b09fb0148042`.
 
-Acceptance:
+M4 acceptance passed:
 
-- invalid input is rejected;
-- valid input creates exactly one `jobs` row;
-- response contains the new `job_id`;
-- no AI call during M3 acceptance testing.
+- one Gemini request returns validated structured JSON;
+- 15/30/45/60-second jobs require exactly 4/8/12/15 scenes;
+- every scene has sequential `scene_number`, target-language `narration`, `visual_subject_type = factual|generic`, target-language `visual_description`, and a unique English `visual_query` no longer than 100 characters;
+- scene persistence and job-state mutation are atomic;
+- malformed output creates no partial scene state;
+- the fourth meaningful-topic quality run passed manual review for language, coherence, factual/causal accuracy, narration-to-visual alignment, classifications, and visual queries.
 
-Current M3 design decisions:
+Accepted quality job:
 
-- public entry is `POST /jobs` through n8n;
-- valid creation should return HTTP `201 Created`;
-- PostgreSQL generates `jobs.id` with its existing UUID default;
-- M3 stops after the job is created and the response is returned;
-- M3 does not start Script & Scene Planning yet;
-- exact topic-length and duration bounds are not yet fixed in source of truth and must not be guessed as previous decisions.
-- production workflow name is `WF01 — Create Content Job`;
-- production workflow ID is `Xy94qe35OigtMxkR`;
-- the published production workflow contains the complete M3 path: `Receive Job Request` -> `Normalize and Validate Input` -> `Input Valid?`;
-- the false branch is connected to `Return Invalid Input` and returned HTTP 400 for an unsupported `de` language request;
-- the true branch is connected to `Insert Job` -> `Return Created Job` and returned HTTP 201 with `job_id` `ba081017-2345-4212-a1c4-cde6df8de574` for a valid request;
-- direct PostgreSQL verification returned `invalid_rows = 0` and `valid_rows = 1`;
-- the stored valid row UUID matches the HTTP response: `ba081017-2345-4212-a1c4-cde6df8de574`;
-- the stored valid row has `language_code = 'en'`, `target_duration_seconds = 60`, `status = 'created'`, and `current_stage = 'intake'`;
-- Script & Scene Planning remains disconnected.
+`6b08098c-e5c7-45bd-babb-036705b563e1`
 
-## Current branch and PR
-
-Branch:
-
-`main`
-
-Merged PR:
-
-`#4 — M3: implement n8n job intake`
-
-Merge commit:
-
-`e8059f5af93f3624ee3210e8b2f66f25c72e27bd`
-
-Base branch:
-
-`main`
-
-Main currently includes public n8n access through merge commit:
-
-`718301bf1e36dd4d6bef40292d8d2b22f08ee751`
-
-## Completed
-
-- repository foundation;
-- M1 Docker foundation;
-- M2 PostgreSQL application-state validation;
-- three-service runtime is deployed on the VPS;
-- public access to the new n8n instance is configured;
-- n8n owner account is configured;
-- production workflow shell `WF01 — Create Content Job` exists in n8n with ID `Xy94qe35OigtMxkR`;
-- the complete WF01 M3 graph is configured and published in n8n;
-- production HTTP testing returned 400 for invalid input and 201 with a generated `job_id` for valid input;
-- direct PostgreSQL verification confirmed the invalid request inserted zero rows and the valid request inserted exactly one row;
-- the PostgreSQL UUID matches the `job_id` returned by the production webhook;
-- M3 runtime acceptance has passed with Script & Scene Planning disconnected and no AI call;
-- the VPS repository checkout is now on `feat/m3-n8n-intake` and tracks `origin/feat/m3-n8n-intake`;
-- n8n CLI exported one workflow and the file was copied to `n8n/workflows/WF01-create-content-job.json` in the VPS repository checkout;
-- the exported workflow file is 7125 bytes, contains workflow ID `Xy94qe35OigtMxkR`, and matched neither `POSTGRES_PASSWORD` nor `N8N_ENCRYPTION_KEY` runtime values;
-- the exported workflow passed structural validation: exactly six expected nodes, correct valid/invalid routing, parameterized PostgreSQL INSERT, HTTP 400/201 responses, and no AI or sub-workflow nodes;
-- the export contains only the `Application PostgreSQL` credential reference, contains no credential value or runtime secret, and has SHA-256 `f5fee4f6ffc570cb6f3001e223c982bdeddd5d5a9fbdf38f18859ba8b97d4672`;
-- `n8n/workflows/WF01-create-content-job.json` is committed on `feat/m3-n8n-intake` in commit `82747eba4ad7d8fd3f27dcced1f8583e0601a6e9`;
-- `publisher.hodor.com.pl` routes to the new n8n instance;
-- staged n8n workflow topology is defined in `docs/ARCHITECTURE.md`;
-- internal stage hand-off is finalized as native n8n sub-workflow execution with `job_id`, not public webhook chaining;
-- render boundary is finalized as synchronous-first `n8n -> media-worker -> n8n -> PostgreSQL`; async render is deferred until real behavior proves it necessary;
-- media-worker is not allowed to write product state directly to PostgreSQL;
-- human review is a real STOP boundary after `review_ready`; Buffer publishing starts only from a later explicit human action;
-- idempotency is treated as a stage-specific concern, not an automatic property of split workflows;
-- watchdog/reconciler/retry infrastructure remains deliberately deferred until real quality runs reveal recurring failure patterns.
+It remains `processing/script` with exactly 8 persisted scenes. Do not rerun it.
 
 ## Runtime
 
-VPS SSH target:
+VPS: `root@37.27.87.6`
 
-`root@37.27.87.6`
+Project path: `/opt/ai-short-form-content-factory`
 
-Project path:
+Services: `n8n`, `postgres`, `media-worker`.
 
-`/opt/ai-short-form-content-factory`
+Public n8n URL: `https://publisher.hodor.com.pl/`
 
-Services:
+Protected old runtime: `/opt/n8n` — do not modify except for a narrowly required, backed-up, validated Caddy change.
 
-- `n8n`;
-- `postgres`;
-- `media-worker`.
+The `n8n` PostgreSQL schema belongs to n8n and must not be modified manually.
 
-Public n8n URL:
+## M5 voice configuration recovered
 
-`https://publisher.hodor.com.pl/`
+The exact previously selected voice presets have now been recovered from prior project runtime/test evidence. These are product decisions and must be reused exactly; do not substitute guessed voices.
 
-Planned production Studio URL:
+Google Cloud Text-to-Speech voice presets:
 
-`https://studio.hodor.com.pl/`
+| Language | Exact voice preset |
+| --- | --- |
+| English (`en`) | `en-US-Chirp3-HD-Algenib` |
+| Polish (`pl`) | `pl-PL-Chirp3-HD-Enceladus` |
+| Russian (`ru`) | `ru-RU-Wavenet-D` |
+| Ukrainian (`uk`) | `uk-UA-Chirp3-HD-Enceladus` |
 
-The Studio URL is the user-facing project site. The publisher URL remains the public n8n endpoint.
+Prior evidence also confirms that the previous voice-testing work used Google Cloud Text-to-Speech. Current production credential availability in the new n8n runtime has not yet been verified and must not be assumed.
 
-The new n8n host port remains bound to localhost and public traffic reaches it through the existing Caddy reverse proxy.
+## M5 contract already defined by architecture
 
-Protected existing work runtime:
+Voiceover Generation is a separate stage workflow.
 
-`/opt/n8n`
+It:
 
-Do not modify or remove that runtime except for a narrowly required, backed-up, validated Caddy configuration change.
+- receives only `job_id`;
+- reloads the persisted job/scenes from PostgreSQL;
+- validates stage eligibility;
+- changes `jobs.current_stage` to `voiceover` only when M5 actually begins;
+- generates one voiceover file per scene using the exact configured voice for the job language;
+- stores `scenes.audio_path`;
+- measures real audio duration and stores it in `scenes.duration_seconds`;
+- persists state through n8n, not directly from media-worker;
+- starts Visual Sourcing only after every required scene audio file is ready;
+- on failure records `jobs.status = failed`, `jobs.current_stage = voiceover`, and `jobs.last_error`, and does not start the next stage.
 
-## Database
+Do not add a generic retry/idempotency framework. Add only the smallest stage-specific guard required when the TTS side effect is implemented and tested.
 
-Application tables in `public`:
+## Branch / PR checkpoint
 
-- `jobs`;
-- `scenes`;
-- `assets`;
-- `publications`.
+Current branch: `feat/m4-script-scene-planning`
 
-The `n8n` schema belongs to n8n and must not be modified manually.
-
-Current schema naming that must be respected:
-
-- `jobs.language_code`;
-- `jobs.target_duration_seconds`;
-- `jobs.last_error`;
-- `scenes.audio_path`;
-- `scenes.visual_path`;
-- `scenes.duration_seconds`.
-
-Do not silently replace these with alternative names from external architecture suggestions.
-
-`jobs.status` and `jobs.current_stage` are separate concepts:
-
-- `status` is the lifecycle/result state;
-- `current_stage` identifies the stage currently responsible for work or failure.
-
-No migration is needed merely to encode proposed state names while the existing TEXT columns are sufficient.
-
-## Current workflow topology
-
-The product is not implemented as one giant n8n workflow.
-
-```text
-PUBLIC ENTRY
-Job Intake
-  -> Script & Scene Planning
-  -> Voiceover Generation
-  -> Visual Sourcing
-  -> Video Render
-  -> review_ready
-  -> STOP
-
-HUMAN ACTION
-  -> Buffer Draft Publishing
-```
-
-Stage hand-off contract:
-
-- internal automatic stages use native n8n sub-workflow execution, not public HTTP webhooks;
-- `job_id` is the normal hand-off payload;
-- each stage reloads the durable state it needs from PostgreSQL;
-- each stage checks that the job is eligible for that stage;
-- a stage persists its result before starting the next stage;
-- failure prevents the next stage from starting;
-- a stage being separate does not by itself make it idempotent.
-
-Public webhooks are reserved for real external boundaries such as Job Intake and the later human review action.
-
-## Render boundary
-
-Initial render design:
-
-```text
-n8n
-  -> POST /render to media-worker
-  -> media-worker performs FFmpeg work and returns the result
-  -> n8n validates it
-  -> n8n writes final_video_path and review_ready to PostgreSQL
-```
-
-Do not add `render_id`, async callback, polling, or direct media-worker database access before a real render test proves synchronous HTTP is insufficient.
-
-## Human review boundary
-
-After successful rendering:
-
-```text
-final_video_path persisted
-status = review_ready
-current_stage = review
-generation execution stops
-```
-
-The later review UI creates the explicit user action that may start Buffer Draft Publishing.
-Do not combine Human Review and Buffer publishing into one long-running workflow.
-
-## Current task
-
-M3 is complete and merged. Do not begin M4 until a new M4 task and feature branch are explicitly started.
-
-M3 scope only:
-
-```text
-topic + language + duration
-  -> normalize/validate
-  -> invalid: reject without inserting a job
-  -> valid: INSERT exactly one row into jobs
-  -> return HTTP 201 with job_id
-```
-
-Do not implement AI generation yet.
-Do not implement later stage workflows yet.
-Do not wire Job Intake to Script & Scene Planning during M3 acceptance.
+PR `#5 — M4: implement script and scene planning` is still open and draft even though M4 acceptance is complete. Before M5 implementation, finalize and merge PR #5 into `main`, then create the M5 feature branch from the resulting `main` head.
 
 ## Exact next action
 
-Stop after M3 closure. In the next task, read the source of truth and explicitly start M4 on a new feature branch; do not extend WF01 as part of M3.
-
-## Working rules
-
-Before answering or acting on this project:
-
-1. fetch the current `docs/CURRENT_STATE.md` from the active feature branch on every technical turn;
-2. fetch `docs/ARCHITECTURE.md` when architecture is involved;
-3. fetch `docs/ROADMAP.md` when milestone scope or acceptance is involved;
-4. do not replace missing facts with remembered chat guesses;
-5. if proposing a new architecture decision, label it as a new proposal before changing the source of truth;
-6. after every completed implementation or runtime step, update this file in the same feature branch;
-7. export production n8n workflows into the repository so workflow structure is not dependent on chat memory.
+Finalize PR #5 so its description reflects the completed M4 state, mark it ready, and merge it into `main` only if its head is still the verified M4 head and GitHub reports it mergeable. Then create a new M5 feature branch from the resulting `main` head, update this checkpoint for M5, and perform a read-only inspection of the new production runtime for the Google Cloud TTS credential/auth configuration and any existing media-worker audio/file capabilities before building the Voiceover workflow. Do not guess current credential availability or invent a new service.
 
 ## Do not do
 
-- no giant single n8n workflow for the whole lifecycle;
-- no public webhook chaining between internal automatic stages;
-- no custom dispatcher;
-- no watchdog/reconciler at this stage;
-- no PostgreSQL polling queue;
-- no Redis;
-- no n8n queue mode;
-- no leases/fencing/reconciliation engine;
-- no generic retry/idempotency framework before concrete failure patterns require it;
-- no direct product-state writes from media-worker to PostgreSQL;
-- no async render infrastructure before synchronous render is proven insufficient;
-- no extra microservices without a demonstrated requirement;
-- no secrets in GitHub;
-- no global Docker prune operations on the shared VPS;
-- do not delete or casually modify the protected `/opt/n8n` work runtime;
-- do not start M4 before M3 passes its real acceptance checks.
+- do not rerun accepted or failed M4 quality-test jobs;
+- do not substitute different voice presets;
+- do not start M5 implementation on the M4 branch;
+- do not modify the n8n PostgreSQL schema manually;
+- do not add retry/dispatcher/queue/watchdog/Redis/generic idempotency infrastructure;
+- do not add extra services;
+- do not modify `/opt/n8n` casually;
+- do not put secrets in GitHub.
