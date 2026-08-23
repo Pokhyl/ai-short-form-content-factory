@@ -80,9 +80,9 @@ Branch:
 
 `feat/m3-n8n-intake`
 
-Draft PR:
+PR:
 
-`#4 — M3: implement n8n job intake`
+`#4 — M3: implement n8n job intake` (ready for review)
 
 Base branch:
 
@@ -244,7 +244,7 @@ Do not combine Human Review and Buffer publishing into one long-running workflow
 
 ## Current task
 
-Perform the final review and merge PR #4. M3 implementation, production acceptance, workflow export, and milestone documentation are complete.
+Merge PR #4. M3 implementation, production acceptance, workflow export, milestone documentation, and final PR review are complete.
 
 M3 scope only:
 
@@ -262,13 +262,12 @@ Do not wire Job Intake to Script & Scene Planning during M3 acceptance.
 
 ## Exact next action
 
-Perform the final review of PR #4 and merge it if GitHub reports no unresolved blockers.
+Merge PR #4 after the final GitHub status check.
 
 Remaining M3 closure sequence:
 
-1. verify PR #4 contains the committed workflow export and has no unresolved blockers;
-2. complete and merge PR #4;
-3. do not start M4 in this task.
+1. complete and merge PR #4;
+2. do not start M4 in this task.
 
 ## Working rules
 
