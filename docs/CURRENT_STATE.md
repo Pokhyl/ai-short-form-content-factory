@@ -95,6 +95,10 @@ Main currently includes public n8n access through merge commit:
 
 ## Completed
 
+- M4 feature branch `feat/m4-script-scene-planning` was created from the completed M3 `main` state;
+- the actual `scenes` schema was inspected and already contains `job_id`, `scene_number`, `narration`, `visual_description`, `visual_query`, `duration_seconds`, and `status`; no M4 migration is currently justified;
+- the repository contains no configured AI provider, model, API-key environment variable, or exported AI credential;
+- the production n8n Cloud Browser currently stops at the n8n sign-in page, so runtime AI credentials cannot be inspected through that session;
 - repository foundation;
 - M1 Docker foundation;
 - M2 PostgreSQL application-state validation;
@@ -263,7 +267,7 @@ Do not add retry, dispatcher, queue, watchdog, or generic idempotency infrastruc
 
 ## Exact next action
 
-Inspect the actual PostgreSQL schema, migrations, repository workflow conventions, and existing AI/provider configuration. Then define the smallest production workflow and persistence contract using only verified project facts.
+Try the already-authorized runtime access paths without requesting credentials. If none provides access, stop before choosing an AI provider or model because the repository does not contain that decision.
 
 ## Working rules
 
