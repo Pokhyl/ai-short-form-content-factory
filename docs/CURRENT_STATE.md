@@ -107,7 +107,9 @@ Main currently includes public n8n access through merge commit:
 - the VPS repository checkout is now on `feat/m3-n8n-intake` and tracks `origin/feat/m3-n8n-intake`;
 - n8n CLI exported one workflow and the file was copied to `n8n/workflows/WF01-create-content-job.json` in the VPS repository checkout;
 - the exported workflow file is 7125 bytes, contains workflow ID `Xy94qe35OigtMxkR`, and matched neither `POSTGRES_PASSWORD` nor `N8N_ENCRYPTION_KEY` runtime values;
-- the workflow export remains uncommitted pending structural validation;
+- the exported workflow passed structural validation: exactly six expected nodes, correct valid/invalid routing, parameterized PostgreSQL INSERT, HTTP 400/201 responses, and no AI or sub-workflow nodes;
+- the export contains only the `Application PostgreSQL` credential reference, contains no credential value or runtime secret, and has SHA-256 `f5fee4f6ffc570cb6f3001e223c982bdeddd5d5a9fbdf38f18859ba8b97d4672`;
+- `n8n/workflows/WF01-create-content-job.json` is committed on `feat/m3-n8n-intake` in commit `82747eba4ad7d8fd3f27dcced1f8583e0601a6e9`;
 - `publisher.hodor.com.pl` routes to the new n8n instance;
 - staged n8n workflow topology is defined in `docs/ARCHITECTURE.md`;
 - internal stage hand-off is finalized as native n8n sub-workflow execution with `job_id`, not public webhook chaining;
@@ -240,7 +242,7 @@ Do not combine Human Review and Buffer publishing into one long-running workflow
 
 ## Current task
 
-Implement the production `Job Intake` workflow in n8n.
+Close M3 after the production `Job Intake` workflow passed acceptance and its export was committed.
 
 M3 scope only:
 
@@ -258,14 +260,14 @@ Do not wire Job Intake to Script & Scene Planning during M3 acceptance.
 
 ## Exact next action
 
-Validate the exported JSON structure and expected six-node WF01 topology, then commit and push only `n8n/workflows/WF01-create-content-job.json` on `feat/m3-n8n-intake`.
+Mark M3 completed in `docs/ROADMAP.md`, then perform the final review and merge PR #4.
 
 Remaining M3 closure sequence:
 
-1. export the production workflow JSON under `n8n/workflows/`;
-2. verify the export contains workflow structure but no credentials or secrets;
-3. update this file and `docs/ROADMAP.md` with the completed M3 result;
-4. complete and merge PR #4 only after the repository export is committed.
+1. record the completed M3 result in `docs/ROADMAP.md`;
+2. verify PR #4 contains the committed workflow export and has no unresolved blockers;
+3. complete and merge PR #4;
+4. do not start M4 in this task.
 
 ## Working rules
 
