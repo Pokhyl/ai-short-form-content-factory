@@ -168,9 +168,19 @@ Meaning: `status = processing`, `current_stage = script`, exactly 4 scenes, narr
 
 On 2026-08-24 the first real manual WF03 execution was run for this acceptance job. The n8n editor screenshot shows the entire normal success path green through `Require Voiceover Completion`; the failure branch is not shown as executed. This proves the workflow execution visually reached the success terminus, including the real Google TTS and media-worker nodes.
 
-The following are **not yet independently verified after that run** and must be checked before accepting Polish M5:
+A first PostgreSQL post-run check then confirmed:
 
-- persisted job status/stage/last_error
+```text
+job_id: db19212b-7914-4346-9ec6-234d315c80d0
+status: processing
+current_stage: voiceover
+last_error: empty
+```
+
+That terminal command returned after the job-state query, so the screenshot does **not** yet prove the scene audio rows or MP3 files. Do not infer those checks passed.
+
+Still pending before accepting Polish M5:
+
 - all four `scenes.audio_path` values
 - all four positive measured `scenes.duration_seconds` values
 - corresponding MP3 files existing and being readable/playable
@@ -191,8 +201,8 @@ Do not start M6 before real M5 acceptance.
 ## Exact next action
 
 1. Do not execute WF03 again for `db19212b-7914-4346-9ec6-234d315c80d0`.
-2. Verify PostgreSQL job state and all four scene audio fields for that exact job.
-3. Verify each corresponding MP3 exists in media storage and can be probed/read.
+2. Query only the four scene audio rows for that exact job and verify non-empty `audio_path` plus positive measured `duration_seconds`.
+3. Then verify the corresponding MP3 files in media storage.
 4. Then manually listen to the Polish output before marking Polish accepted.
 5. Keep WF02->WF03 disconnected and do not start M6 until M5 acceptance is complete.
 
