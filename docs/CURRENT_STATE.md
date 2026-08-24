@@ -87,7 +87,7 @@ Do not substitute guessed voices.
 - stores measured real `scenes.duration_seconds`
 - keeps PostgreSQL writes in n8n; media-worker never writes product state
 - starts Visual Sourcing only after all required scene audio is ready
-- on stage failure must record `jobs.status = failed`, keep `jobs.current_stage = voiceover`, store `jobs.last_error`, and not start the next stage
+- on stage failure records `jobs.status = failed`, keeps `jobs.current_stage = voiceover`, stores `jobs.last_error`, and does not start the next stage
 
 Internal stage hand-off payload remains only:
 
@@ -143,19 +143,17 @@ Verified:
 
 Do not create replacement auth objects. Never expose OAuth secrets.
 
-## WF03 final export verification checkpoint
+## WF03 final structural verification
 
 Production workflow:
 
 - name `WF03 — Voiceover Generation`
 - workflow ID `UHxvCZNqaLb1RKMM`
-- final verification export SHA-256 `33f5ab18a4e80fa2e63ad80fc845d8d113ff168fc8e802ffb218c26495d45d1e`
-- export reports exactly 17 nodes
-- export reports `ACTIVE: True`
-- VPS was fast-forwarded to remote commit `9bb923a` before export
-- `n8n/workflows/WF03-voiceover-generation.json` remains local/uncommitted; the verification script exited before replacing it because one check failed
+- last full verification export SHA-256 `33f5ab18a4e80fa2e63ad80fc845d8d113ff168fc8e802ffb218c26495d45d1e`
+- that export had exactly 17 nodes
+- at that verification checkpoint the export reported `ACTIVE: True`
 
-The final saved production export proves all expected node types and the intended success topology:
+Export-proven success topology:
 
 ```text
 Receive Job ID
@@ -175,7 +173,7 @@ Receive Job ID
 -> STOP
 ```
 
-It also proves the stage-specific failure path from each configured failure-capable node:
+Export-proven failure topology:
 
 ```text
 error output
@@ -184,7 +182,7 @@ error output
 -> Stop Voiceover Failure
 ```
 
-Verified `On Error = continueErrorOutput` plus error-output connection to `Prepare Voiceover Failure` for:
+Verified `On Error = continueErrorOutput` plus error-output routing for:
 
 - `Begin Voiceover Stage`
 - `Prepare Voiceover Items`
@@ -197,29 +195,27 @@ Verified `On Error = continueErrorOutput` plus error-output connection to `Prepa
 - `Verify Voiceover Completion`
 - `Require Voiceover Completion`
 
-Verified from the final export:
+Verified from export:
 
 - `Generate Voiceover.method = POST`
 - exact TTS endpoint `https://texttospeech.googleapis.com/v1/text:synthesize`
 - `Store Audio.method = POST`
 - exact media-worker endpoint `http://media-worker:3001/audio/store`
-- `Require TTS Response` is `Run Once for Each Item` and requires non-empty `audioContent`
-- `Require Stored Audio` is `Run Once for Each Item` and validates `audio_path`, positive `duration_seconds`, and positive `bytes`
-- `Prepare Voiceover Failure` resolves `job_id` from the validated upstream job and emits `last_error`
-- failure SQL sets `status = failed`, keeps `current_stage = voiceover`, writes `last_error`, and is parameterized by `job_id` plus `last_error`
-- `Stop Voiceover Failure` uses the persisted/normalized failure message
+- `Require TTS Response` is per-item and rejects missing `audioContent`
+- `Require Stored Audio` is per-item and validates `audio_path`, positive `duration_seconds`, and positive `bytes`
+- failure path resolves the validated upstream `job_id`, writes `status = failed`, keeps `current_stage = voiceover`, stores `last_error`, then stops with an error
 - per-item linkage from `Prepare Voiceover Items` into `Store Audio` and `Persist Audio Result` is present
-- no accepted M3/M4 test job UUID is hardcoded
+- no accepted M3/M4 test UUID is hardcoded
 - no Visual Sourcing hand-off exists yet
 - successful completion has no normal downstream connection
 
-The verification script returned `OK` for every structural, topology, HTTP, response-guard, failure-path, per-item-linkage, and product-generality check except one:
+The previous final verifier returned `OK` for every structural/configuration check except `WORKFLOW_INACTIVE`, because WF03 was active at that moment.
 
-```text
-WORKFLOW_INACTIVE: FAIL
-```
+## Latest user-reported runtime/UI step
 
-The sole remaining mismatch is that WF03 is currently active. This is not a topology/configuration defect, but the project is still in controlled M5 acceptance and WF02->WF03 is not wired. Keep WF03 inactive until the first deliberate real TTS acceptance step is prepared.
+On 2026-08-24 the user reports WF03 was deactivated in n8n and saved, with no node/configuration changes.
+
+This deactivation is user-reported and must still be independently proven by a fresh production export before committing the workflow file.
 
 No real TTS request has been accepted yet.
 
@@ -241,11 +237,13 @@ During M9 add one separate read-only n8n HTTP status workflow/webhook accepting 
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
-1. In n8n, deactivate WF03 and save that state. Do not change any node/configuration.
-2. Re-export WF03 and verify only that `active === false`; also record the new export SHA-256.
-3. Replace `n8n/workflows/WF03-voiceover-generation.json` with that inactive final export and commit the verified workflow export to `feat/m5-voiceover`.
-4. After the export commit is remote and VPS is reconciled, prepare the first real controlled M5 TTS acceptance run.
-5. Do not wire WF02->WF03 yet and do not start M6.
+1. Synchronize the VPS branch with this remote documentation checkpoint without overwriting the existing untracked workflow export.
+2. Re-export the saved production WF03 and prove `active === false`.
+3. Reconfirm the 17-node critical structure and POST/error-path invariants from that fresh export.
+4. Replace `n8n/workflows/WF03-voiceover-generation.json` with the verified inactive export.
+5. Commit and push only that workflow export to `feat/m5-voiceover`.
+6. After the workflow export commit is remote and the VPS is clean/reconciled, update this file with the final export SHA and commit SHA before preparing the first real controlled M5 TTS acceptance run.
+7. Do not wire WF02->WF03 and do not start M6.
 
 ## Do not do
 
