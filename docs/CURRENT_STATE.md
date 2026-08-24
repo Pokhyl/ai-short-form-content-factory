@@ -185,11 +185,19 @@ A subsequent PostgreSQL scene query independently verified all four persisted au
 | 3 | `jobs/db19212b-7914-4346-9ec6-234d315c80d0/voiceover/scene-03.mp3` | 6.768 |
 | 4 | `jobs/db19212b-7914-4346-9ec6-234d315c80d0/voiceover/scene-04.mp3` | 6.576 |
 
-Therefore the database persistence requirement is proven for this Polish acceptance job: all four `audio_path` values are non-empty and all four measured durations are positive.
+Media storage was then independently verified with `ffprobe` for all four exact MP3 files:
+
+| Scene | ffprobe duration | size bytes |
+| ---: | ---: | ---: |
+| 1 | 6.096000 | 24384 |
+| 2 | 6.576000 | 26304 |
+| 3 | 6.768000 | 27072 |
+| 4 | 6.576000 | 26304 |
+
+This proves all four corresponding MP3 files exist, are non-empty, and are readable/probeable. The ffprobe durations exactly match the durations persisted in PostgreSQL.
 
 Still pending before accepting Polish M5:
 
-- corresponding MP3 files existing in media storage and being probeable/readable
 - manual listening quality of the Polish voice
 
 Do not rerun this job blindly.
@@ -207,14 +215,14 @@ Do not start M6 before real M5 acceptance.
 ## Exact next action
 
 1. Do not execute WF03 again for `db19212b-7914-4346-9ec6-234d315c80d0`.
-2. Verify the four persisted MP3 files exist in media storage and are probeable/readable.
-3. Then manually listen to the Polish output before marking Polish accepted.
+2. Copy the four verified Polish MP3 files to the operator machine and listen to them manually.
+3. Record manual Polish voice-quality PASS/FAIL before preparing acceptance runs for the remaining supported languages.
 4. Keep WF02->WF03 disconnected and do not start M6 until M5 acceptance is complete.
 
 ## Do not do
 
 - do not rerun prior M4 acceptance jobs
-- do not rerun the current successful-looking M5 job before verification
+- do not rerun the current successful M5 job before verification
 - do not wire WF02->WF03 yet
 - do not expose private SSH keys, GitHub tokens, OAuth secrets, or credentials
 - do not substitute voice presets
