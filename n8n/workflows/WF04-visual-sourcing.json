@@ -1,0 +1,1325 @@
+[
+  {
+    "id": "M6VisualSourcing1",
+    "name": "WF04 — Visual Sourcing",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "job_id"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -192,
+          0
+        ],
+        "id": "d38afe28-2dfe-4419-bbe0-123a328465f7",
+        "name": "Receive Job ID"
+      },
+      {
+        "parameters": {
+          "jsCode": "const jobId = String($json.job_id ?? '')\n  .trim()\n  .toLowerCase();\n\nconst uuidPattern =\n  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;\n\nif (!uuidPattern.test(jobId)) {\n  throw new Error('job_id must be a valid UUID');\n}\n\nreturn [{ json: { job_id: jobId } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          32,
+          0
+        ],
+        "id": "e1ed59f2-cfbf-4f12-a69b-32c04a337218",
+        "name": "Normalize Job ID"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH input AS (\n  SELECT $1::uuid AS job_id\n)\nSELECT\n  input.job_id AS requested_job_id,\n  jobs.id AS job_id,\n  jobs.language_code,\n  jobs.target_duration_seconds,\n  jobs.status,\n  jobs.current_stage,\n  jobs.last_error,\n  jobs.id IS NOT NULL AS job_exists,\n  COUNT(scenes.id)::int AS scene_count,\n  COALESCE(\n    jsonb_agg(\n      jsonb_build_object(\n        'scene_id', scenes.id,\n        'scene_number', scenes.scene_number,\n        'narration', scenes.narration,\n        'visual_description', scenes.visual_description,\n        'visual_query', scenes.visual_query,\n        'visual_subject_type', scenes.visual_subject_type,\n        'audio_path', scenes.audio_path,\n        'duration_seconds', scenes.duration_seconds,\n        'visual_path', scenes.visual_path,\n        'status', scenes.status,\n        'asset_count', (\n          SELECT COUNT(*)::int\n          FROM public.assets assets\n          WHERE assets.scene_id = scenes.id\n        )\n      )\n      ORDER BY scenes.scene_number\n    ) FILTER (WHERE scenes.id IS NOT NULL),\n    '[]'::jsonb\n  ) AS scenes\nFROM input\nLEFT JOIN public.jobs\n  ON jobs.id = input.job_id\nLEFT JOIN public.scenes\n  ON scenes.job_id = jobs.id\nGROUP BY\n  input.job_id,\n  jobs.id,\n  jobs.language_code,\n  jobs.target_duration_seconds,\n  jobs.status,\n  jobs.current_stage,\n  jobs.last_error;",
+          "options": {
+            "queryReplacement": "={{ [ $json.job_id ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          256,
+          0
+        ],
+        "id": "87b08648-dd3d-4b75-93bd-3c46ff6d08a7",
+        "name": "Load Visual Context",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const job = $input.first().json;\n\nif (!job.job_exists) {\n  throw new Error(`Job ${job.requested_job_id} was not found`);\n}\n\nif (\n  job.status !== 'processing' ||\n  !['voiceover', 'visuals'].includes(job.current_stage)\n) {\n  throw new Error(\n    `Job ${job.job_id} is not eligible for visual sourcing: ` +\n    `status=${job.status}, current_stage=${job.current_stage}`\n  );\n}\n\nconst requiredScenesByDuration = {\n  15: 4,\n  30: 8,\n  45: 12,\n  60: 15,\n};\n\nconst requiredSceneCount =\n  requiredScenesByDuration[Number(job.target_duration_seconds)];\n\nif (!requiredSceneCount) {\n  throw new Error(\n    `Unsupported target_duration_seconds: ${job.target_duration_seconds}`\n  );\n}\n\nif (!Array.isArray(job.scenes)) {\n  throw new Error(`Job ${job.job_id} scenes are unavailable`);\n}\n\nif (\n  Number(job.scene_count) !== requiredSceneCount ||\n  job.scenes.length !== requiredSceneCount\n) {\n  throw new Error(\n    `Job ${job.job_id} must have exactly ${requiredSceneCount} scenes`\n  );\n}\n\nconst seenQueries = new Set();\nlet pendingSceneCount = 0;\nlet completedSceneCount = 0;\n\nfor (let index = 0; index < job.scenes.length; index++) {\n  const scene = job.scenes[index];\n  const expected = index + 1;\n\n  if (Number(scene.scene_number) !== expected) {\n    throw new Error(\n      `Invalid scene_number at position ${expected}: received ${scene.scene_number}`\n    );\n  }\n\n  for (const field of [\n    'scene_id',\n    'narration',\n    'visual_description',\n    'visual_query',\n  ]) {\n    if (\n      typeof scene[field] !== 'string' ||\n      scene[field].trim() === ''\n    ) {\n      throw new Error(\n        `Scene ${expected} is missing ${field}`\n      );\n    }\n  }\n\n  const query = scene.visual_query.trim();\n\n  if (query.length > 100) {\n    throw new Error(\n      `Scene ${expected} visual_query exceeds 100 characters`\n    );\n  }\n\n  const queryKey = query.toLowerCase();\n  if (seenQueries.has(queryKey)) {\n    throw new Error(\n      `Duplicate visual_query at scene ${expected}`\n    );\n  }\n  seenQueries.add(queryKey);\n\n  if (!['factual', 'generic'].includes(scene.visual_subject_type)) {\n    throw new Error(\n      `Scene ${expected} has invalid visual_subject_type`\n    );\n  }\n\n  const audioPath =\n    typeof scene.audio_path === 'string'\n      ? scene.audio_path.trim()\n      : '';\n  const duration = Number(scene.duration_seconds);\n\n  if (\n    !audioPath ||\n    !Number.isFinite(duration) ||\n    duration <= 0\n  ) {\n    throw new Error(\n      `Scene ${expected} does not have completed voiceover`\n    );\n  }\n\n  const visualPath =\n    typeof scene.visual_path === 'string'\n      ? scene.visual_path.trim()\n      : '';\n  const assetCount = Number(scene.asset_count ?? 0);\n\n  if (!Number.isInteger(assetCount) || assetCount < 0) {\n    throw new Error(\n      `Scene ${expected} has invalid asset_count`\n    );\n  }\n\n  if (visualPath) {\n    if (assetCount < 1) {\n      throw new Error(\n        `Scene ${expected} has visual_path without asset metadata`\n      );\n    }\n    completedSceneCount++;\n  } else {\n    if (assetCount !== 0) {\n      throw new Error(\n        `Scene ${expected} has asset metadata without visual_path`\n      );\n    }\n    pendingSceneCount++;\n  }\n}\n\nif (\n  job.current_stage === 'voiceover' &&\n  completedSceneCount > 0\n) {\n  throw new Error(\n    `Job ${job.job_id} has visual output before visual stage start`\n  );\n}\n\nconst alreadyComplete =\n  pendingSceneCount === 0 &&\n  completedSceneCount === requiredSceneCount;\n\nif (\n  alreadyComplete &&\n  job.current_stage !== 'visuals'\n) {\n  throw new Error(\n    `Job ${job.job_id} is visually complete but current_stage is ${job.current_stage}`\n  );\n}\n\nreturn [{\n  json: {\n    ...job,\n    required_scene_count: requiredSceneCount,\n    pending_scene_count: pendingSceneCount,\n    completed_scene_count: completedSceneCount,\n    already_complete: alreadyComplete,\n  },\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          480,
+          0
+        ],
+        "id": "9d72991e-4796-4fb9-b98a-efb7547954d4",
+        "name": "Require Eligible Visual Job"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "021123bf-23bd-464c-8147-3dbc551fdfe3",
+                "leftValue": "={{ $json.already_complete }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          704,
+          0
+        ],
+        "id": "4abe11a2-65c9-4e38-baf9-5ddb316d8679",
+        "name": "Visuals Already Complete?"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH transitioned AS (\n  UPDATE public.jobs\n  SET\n    current_stage = 'visuals',\n    updated_at = now()\n  WHERE id = $1::uuid\n    AND status = 'processing'\n    AND current_stage = 'voiceover'\n  RETURNING\n    id,\n    status,\n    current_stage\n),\nexisting AS (\n  SELECT\n    id,\n    status,\n    current_stage\n  FROM public.jobs\n  WHERE id = $1::uuid\n    AND status = 'processing'\n    AND current_stage = 'visuals'\n),\nready AS (\n  SELECT\n    id,\n    status,\n    current_stage,\n    true AS started_now\n  FROM transitioned\n\n  UNION ALL\n\n  SELECT\n    id,\n    status,\n    current_stage,\n    false AS started_now\n  FROM existing\n\n  LIMIT 1\n)\nSELECT\n  $1::uuid AS job_id,\n  EXISTS (\n    SELECT 1\n    FROM ready\n  ) AS ready_to_run,\n  (\n    SELECT status\n    FROM ready\n    LIMIT 1\n  ) AS status,\n  (\n    SELECT current_stage\n    FROM ready\n    LIMIT 1\n  ) AS current_stage,\n  COALESCE(\n    (\n      SELECT started_now\n      FROM ready\n      LIMIT 1\n    ),\n    false\n  ) AS started_now;",
+          "options": {
+            "queryReplacement": "={{ [ $json.job_id ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          928,
+          64
+        ],
+        "id": "929ed270-7b75-4b91-8fdb-7406f0f1a0fd",
+        "name": "Begin Visual Stage",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const transition = $input.first().json;\nconst job = $('Require Eligible Visual Job').first().json;\n\nif (transition.ready_to_run !== true) {\n  throw new Error(\n    `Job ${job.job_id} could not enter or resume visuals stage`\n  );\n}\n\nif (String(transition.job_id) !== String(job.job_id)) {\n  throw new Error('Visual stage transition job_id mismatch');\n}\n\nif (\n  transition.status !== 'processing' ||\n  transition.current_stage !== 'visuals'\n) {\n  throw new Error(\n    `Unexpected visual state: status=${transition.status}, ` +\n    `current_stage=${transition.current_stage}`\n  );\n}\n\nconst pendingScenes = job.scenes.filter((scene) => {\n  const visualPath =\n    typeof scene.visual_path === 'string'\n      ? scene.visual_path.trim()\n      : '';\n  return !visualPath;\n});\n\nif (pendingScenes.length === 0) {\n  throw new Error(\n    `Job ${job.job_id} has no pending visual scenes`\n  );\n}\n\nreturn pendingScenes.map((scene) => ({\n  json: {\n    job_id: job.job_id,\n    scene_id: scene.scene_id,\n    scene_number: Number(scene.scene_number),\n    narration: scene.narration.trim(),\n    visual_description: scene.visual_description.trim(),\n    visual_query: scene.visual_query.trim(),\n    visual_subject_type: scene.visual_subject_type,\n  },\n}));"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1152,
+          64
+        ],
+        "id": "d3b3097b-42bf-4456-908f-27066aa22a9c",
+        "name": "Prepare Visual Items",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "047540a0-e44c-473b-8e0a-5410182f2819",
+                "leftValue": "={{ $json.visual_subject_type === 'factual' }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1376,
+          64
+        ],
+        "id": "ac927397-708a-485f-9a0c-c4886243fc8f",
+        "name": "Is Factual?"
+      },
+      {
+        "parameters": {
+          "url": "={{ 'https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&generator=search&gsrnamespace=6&gsrlimit=10&gsrsearch=' + encodeURIComponent($json.visual_query) + '&prop=imageinfo&iiprop=url%7Cmime%7Csize%7Cextmetadata' }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          1600,
+          -176
+        ],
+        "id": "b7199884-0ea9-4740-b763-f4a541685578",
+        "name": "Search Wikimedia",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "\nfunction textTokens(value) {\n  const stop = new Set([\n    'the','and','for','with','from','into','over','under','about',\n    'this','that','these','those','their','there','where','when',\n    'what','which','who','why','how','its','his','her','our','your',\n    'image','photo','picture','view','scene'\n  ]);\n\n  return String(value ?? '')\n    .toLowerCase()\n    .normalize('NFKD')\n    .replace(/[^\\p{L}\\p{N}]+/gu, ' ')\n    .split(/\\s+/u)\n    .filter((token) => token.length >= 3 && !stop.has(token));\n}\n\nfunction overlapScore(query, candidateText) {\n  const q = new Set(textTokens(query));\n  const c = new Set(textTokens(candidateText));\n  let score = 0;\n  for (const token of q) {\n    if (c.has(token)) score += 10;\n  }\n  return score;\n}\n\nfunction cleanText(value) {\n  return String(value ?? '')\n    .replace(/<[^>]*>/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim()\n    .slice(0, 1000);\n}\n\nconst response = $input.first().json;\nconst scene = $('Prepare Visual Items').item.json;\nconst pages = Array.isArray(response?.query?.pages)\n  ? response.query.pages\n  : [];\n\nconst supported = new Set([\n  'image/jpeg',\n  'image/png',\n  'image/webp',\n  'image/gif',\n]);\nconst maxBytes = 24 * 1024 * 1024;\n\nconst candidates = [];\n\nfor (let index = 0; index < pages.length; index++) {\n  const page = pages[index];\n  const info = page?.imageinfo?.[0] ?? {};\n  const mime = String(info.mime ?? '').toLowerCase();\n  const url = String(info.url ?? '').trim();\n  const width = Number(info.width);\n  const height = Number(info.height);\n  const size = Number(info.size ?? 0);\n\n  if (\n    !supported.has(mime) ||\n    !url ||\n    !Number.isFinite(width) ||\n    !Number.isFinite(height) ||\n    width < 320 ||\n    height < 320 ||\n    (Number.isFinite(size) && size > maxBytes)\n  ) {\n    continue;\n  }\n\n  const ext = info.extmetadata ?? {};\n  const title = String(page.title ?? '');\n  const overlap =\n    overlapScore(scene.visual_query, title);\n  const score =\n    overlap +\n    Math.max(0, 10 - index);\n\n  candidates.push({\n    index,\n    overlap,\n    score,\n    title,\n    info,\n    ext,\n    width,\n    height,\n    size,\n  });\n}\n\ncandidates.sort((a, b) =>\n  b.score - a.score || a.index - b.index\n);\n\nconst selected = candidates[0];\n\nif (!selected || selected.overlap < 10) {\n  return [{\n    json: {\n      ...scene,\n      candidate_found: false,\n      fallback_reason: 'No acceptable Wikimedia Commons candidate matched the visual query',\n    },\n  }];\n}\n\nconst license =\n  cleanText(selected.ext?.LicenseShortName?.value);\nconst licenseUrl =\n  cleanText(selected.ext?.LicenseUrl?.value);\nconst author =\n  cleanText(\n    selected.ext?.Artist?.value ||\n    selected.ext?.Credit?.value\n  );\nconst sourceUrl =\n  String(selected.info.descriptionurl ?? '').trim() ||\n  `https://commons.wikimedia.org/wiki/${encodeURIComponent(\n    selected.title.replace(/\\s+/g, '_')\n  )}`;\n\nreturn [{\n  json: {\n    ...scene,\n    candidate_found: true,\n    provider: 'wikimedia',\n    provider_asset_id: String(selected.title),\n    download_url: String(selected.info.url),\n    source_url: sourceUrl,\n    author: author || null,\n    license: license || null,\n    license_url: licenseUrl || null,\n    metadata: {\n      selected_rank: selected.index + 1,\n      selection_score: selected.score,\n      token_overlap_score: selected.overlap,\n      source_title: selected.title,\n      source_mime: String(selected.info.mime ?? ''),\n      source_width: selected.width,\n      source_height: selected.height,\n      source_bytes: Number.isFinite(selected.size)\n        ? selected.size\n        : null,\n    },\n  },\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1824,
+          -176
+        ],
+        "id": "a3cd08d5-ebca-42ae-b156-1e32acc0b730",
+        "name": "Select Wikimedia Candidate",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "410e6a99-57b2-4336-9597-25fe1217ec15",
+                "leftValue": "={{ $json.candidate_found }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2048,
+          -176
+        ],
+        "id": "a1f24a69-a22e-4769-ab47-f6fb91299ef6",
+        "name": "Wikimedia Candidate Found?"
+      },
+      {
+        "parameters": {
+          "url": "={{ 'https://pixabay.com/api/?key=' + encodeURIComponent($env.PIXABAY_API_KEY) + '&q=' + encodeURIComponent($json.visual_query) + '&image_type=photo&orientation=vertical&safesearch=true&per_page=10' }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          1600,
+          272
+        ],
+        "id": "61b06986-90f0-4ae2-849b-05584333513e",
+        "name": "Search Pixabay",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "\nfunction textTokens(value) {\n  const stop = new Set([\n    'the','and','for','with','from','into','over','under','about',\n    'this','that','these','those','their','there','where','when',\n    'what','which','who','why','how','its','his','her','our','your',\n    'image','photo','picture','view','scene'\n  ]);\n\n  return String(value ?? '')\n    .toLowerCase()\n    .normalize('NFKD')\n    .replace(/[^\\p{L}\\p{N}]+/gu, ' ')\n    .split(/\\s+/u)\n    .filter((token) => token.length >= 3 && !stop.has(token));\n}\n\nfunction overlapScore(query, candidateText) {\n  const q = new Set(textTokens(query));\n  const c = new Set(textTokens(candidateText));\n  let score = 0;\n  for (const token of q) {\n    if (c.has(token)) score += 10;\n  }\n  return score;\n}\n\nfunction cleanText(value) {\n  return String(value ?? '')\n    .replace(/<[^>]*>/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim()\n    .slice(0, 1000);\n}\n\nconst response = $input.first().json;\nconst scene = $('Prepare Visual Items').item.json;\nconst hits = Array.isArray(response?.hits)\n  ? response.hits\n  : [];\nconst maxBytes = 24 * 1024 * 1024;\n\nconst candidates = [];\n\nfor (let index = 0; index < hits.length; index++) {\n  const hit = hits[index] ?? {};\n  const url =\n    String(hit.largeImageURL ?? hit.webformatURL ?? '').trim();\n  const width = Number(hit.imageWidth ?? 0);\n  const height = Number(hit.imageHeight ?? 0);\n  const size = Number(hit.imageSize ?? 0);\n\n  if (\n    !url ||\n    !Number.isFinite(width) ||\n    !Number.isFinite(height) ||\n    width < 320 ||\n    height < 320 ||\n    (Number.isFinite(size) && size > maxBytes)\n  ) {\n    continue;\n  }\n\n  const text = `${hit.tags ?? ''} ${hit.user ?? ''}`;\n  const overlap =\n    overlapScore(scene.visual_query, text);\n  const score =\n    overlap +\n    Math.max(0, 10 - index) +\n    (height >= width ? 3 : 0);\n\n  candidates.push({\n    index,\n    overlap,\n    score,\n    hit,\n    url,\n    width,\n    height,\n    size,\n  });\n}\n\ncandidates.sort((a, b) =>\n  b.score - a.score || a.index - b.index\n);\n\nconst selected = candidates[0];\n\nif (!selected || selected.overlap < 10) {\n  return [{\n    json: {\n      ...scene,\n      candidate_found: false,\n      fallback_reason: 'No acceptable Pixabay candidate matched the visual query',\n    },\n  }];\n}\n\nreturn [{\n  json: {\n    ...scene,\n    candidate_found: true,\n    provider: 'pixabay',\n    provider_asset_id: String(selected.hit.id ?? ''),\n    download_url: selected.url,\n    source_url: String(selected.hit.pageURL ?? '').trim() || null,\n    author: String(selected.hit.user ?? '').trim() || null,\n    license: 'Pixabay Content License',\n    license_url: 'https://pixabay.com/service/license-summary/',\n    metadata: {\n      selected_rank: selected.index + 1,\n      selection_score: selected.score,\n      token_overlap_score: selected.overlap,\n      tags: String(selected.hit.tags ?? ''),\n      source_width: selected.width,\n      source_height: selected.height,\n      source_bytes: Number.isFinite(selected.size)\n        ? selected.size\n        : null,\n    },\n  },\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1824,
+          272
+        ],
+        "id": "b91d7668-c049-44e5-a02a-3ed08855c46e",
+        "name": "Select Pixabay Candidate",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "1f0724f8-fce4-44b5-8fda-ad94ae0ec36a",
+                "leftValue": "={{ $json.candidate_found }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2048,
+          272
+        ],
+        "id": "69b64b8c-916f-4e51-91ee-362387e4f95c",
+        "name": "Pixabay Candidate Found?"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const scene = $('Prepare Visual Items').item.json;\nconst errorItem = $input.first()?.json ?? {};\n\nlet reason =\n  errorItem.error?.message ||\n  errorItem.error?.description ||\n  errorItem.errorMessage ||\n  errorItem.message ||\n  'Pixabay search failed';\n\nreturn [{\n  json: {\n    ...scene,\n    fallback_reason: String(reason).slice(0, 1000),\n  },\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2048,
+          448
+        ],
+        "id": "371981c3-56fc-401b-8540-834c0ef1c812",
+        "name": "Recover Generic Context"
+      },
+      {
+        "parameters": {
+          "url": "={{ 'https://api.pexels.com/v1/search?query=' + encodeURIComponent($json.visual_query) + '&per_page=10&orientation=portrait' }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "={{ $env.PEXELS_API_KEY }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          2272,
+          272
+        ],
+        "id": "1e5f1391-3db2-486b-949d-86bbdc77f36c",
+        "name": "Search Pexels",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "\nfunction textTokens(value) {\n  const stop = new Set([\n    'the','and','for','with','from','into','over','under','about',\n    'this','that','these','those','their','there','where','when',\n    'what','which','who','why','how','its','his','her','our','your',\n    'image','photo','picture','view','scene'\n  ]);\n\n  return String(value ?? '')\n    .toLowerCase()\n    .normalize('NFKD')\n    .replace(/[^\\p{L}\\p{N}]+/gu, ' ')\n    .split(/\\s+/u)\n    .filter((token) => token.length >= 3 && !stop.has(token));\n}\n\nfunction overlapScore(query, candidateText) {\n  const q = new Set(textTokens(query));\n  const c = new Set(textTokens(candidateText));\n  let score = 0;\n  for (const token of q) {\n    if (c.has(token)) score += 10;\n  }\n  return score;\n}\n\nfunction cleanText(value) {\n  return String(value ?? '')\n    .replace(/<[^>]*>/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim()\n    .slice(0, 1000);\n}\n\nconst response = $input.first().json;\nconst scene = $('Prepare Visual Items').item.json;\nconst photos = Array.isArray(response?.photos)\n  ? response.photos\n  : [];\n\nconst candidates = [];\n\nfor (let index = 0; index < photos.length; index++) {\n  const photo = photos[index] ?? {};\n  const url = String(photo?.src?.original ?? '').trim();\n  const width = Number(photo.width ?? 0);\n  const height = Number(photo.height ?? 0);\n\n  if (\n    !url ||\n    !Number.isFinite(width) ||\n    !Number.isFinite(height) ||\n    width < 320 ||\n    height < 320\n  ) {\n    continue;\n  }\n\n  const text =\n    `${photo.alt ?? ''} ${photo.photographer ?? ''}`;\n  const overlap =\n    overlapScore(scene.visual_query, text);\n  const score =\n    overlap +\n    Math.max(0, 10 - index) +\n    (height >= width ? 3 : 0);\n\n  candidates.push({\n    index,\n    overlap,\n    score,\n    photo,\n    url,\n    width,\n    height,\n  });\n}\n\ncandidates.sort((a, b) =>\n  b.score - a.score || a.index - b.index\n);\n\nconst selected = candidates[0];\n\nif (!selected || selected.overlap < 10) {\n  return [{\n    json: {\n      ...scene,\n      candidate_found: false,\n      fallback_reason: 'No acceptable Pexels candidate matched the visual query',\n    },\n  }];\n}\n\nreturn [{\n  json: {\n    ...scene,\n    candidate_found: true,\n    provider: 'pexels',\n    provider_asset_id: String(selected.photo.id ?? ''),\n    download_url: selected.url,\n    source_url: String(selected.photo.url ?? '').trim() || null,\n    author:\n      String(selected.photo.photographer ?? '').trim() || null,\n    license: 'Pexels License',\n    license_url: 'https://www.pexels.com/license/',\n    metadata: {\n      selected_rank: selected.index + 1,\n      selection_score: selected.score,\n      token_overlap_score: selected.overlap,\n      alt: String(selected.photo.alt ?? ''),\n      source_width: selected.width,\n      source_height: selected.height,\n    },\n  },\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2496,
+          272
+        ],
+        "id": "8333954a-cc34-47cb-a94c-5c5d27d389ba",
+        "name": "Select Pexels Candidate",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "a96ad697-4c11-45ab-b0ef-c2d8a5b9e205",
+                "leftValue": "={{ $json.candidate_found }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2720,
+          272
+        ],
+        "id": "43a006d4-165f-419d-97ec-96507fe1b3b1",
+        "name": "Pexels Candidate Found?"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const item = $input.first().json;\n\nif (\n  item.candidate_found !== true ||\n  typeof item.download_url !== 'string' ||\n  item.download_url.trim() === ''\n) {\n  throw new Error('Selected visual candidate is incomplete');\n}\n\nreturn [{ json: item }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2944,
+          -16
+        ],
+        "id": "819c81b9-9f56-44e8-86c6-d3a79e0d3377",
+        "name": "Prepare Selected Download",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.download_url }}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          3168,
+          -16
+        ],
+        "id": "39d55b7a-bf17-4e56-b790-7ba5d4a567fc",
+        "name": "Download Selected Visual",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ 'http://media-worker:3001/visual/store?job_id=' + encodeURIComponent($('Prepare Selected Download').item.json.job_id) + '&scene_number=' + $('Prepare Selected Download').item.json.scene_number }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "={{ $binary.data.mimeType }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "binaryData",
+          "inputDataFieldName": "data",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          3392,
+          -16
+        ],
+        "id": "33fb9135-f5e1-4518-a636-253504d731b5",
+        "name": "Store Selected Visual",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const visualPath =\n  typeof $json.visual_path === 'string'\n    ? $json.visual_path.trim()\n    : '';\nconst width = Number($json.width);\nconst height = Number($json.height);\nconst bytes = Number($json.bytes);\n\nif (!visualPath) {\n  throw new Error(\n    'media-worker response is missing visual_path'\n  );\n}\n\nif (\n  !Number.isFinite(width) ||\n  width <= 0 ||\n  !Number.isFinite(height) ||\n  height <= 0\n) {\n  throw new Error(\n    'media-worker returned invalid visual dimensions'\n  );\n}\n\nif (!Number.isFinite(bytes) || bytes <= 0) {\n  throw new Error(\n    'media-worker returned invalid visual byte size'\n  );\n}\n\nreturn {\n  json: {\n    ...$json,\n    visual_path: visualPath,\n    width,\n    height,\n    bytes,\n  },\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3616,
+          -16
+        ],
+        "id": "b3e188ad-c1c1-417c-920f-c0fc1fd8a578",
+        "name": "Require Stored Visual",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const stored = $input.first().json;\nconst selected = $('Prepare Selected Download').item.json;\n\nreturn [{\n  json: {\n    job_id: selected.job_id,\n    scene_id: selected.scene_id,\n    scene_number: selected.scene_number,\n    provider: selected.provider,\n    provider_asset_id: selected.provider_asset_id || null,\n    source_url: selected.source_url || null,\n    author: selected.author || null,\n    license: selected.license || null,\n    license_url: selected.license_url || null,\n    visual_path: stored.visual_path,\n    metadata: {\n      ...(selected.metadata ?? {}),\n      normalized_width: Number(stored.width),\n      normalized_height: Number(stored.height),\n      normalized_codec: stored.codec_name ?? null,\n      normalized_bytes: Number(stored.bytes),\n      source_content_type: stored.source_content_type ?? null,\n      stored_by: 'media-worker',\n    },\n  },\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3840,
+          -16
+        ],
+        "id": "0f4edc5c-39b0-4a34-ad5a-10d38c4c3db6",
+        "name": "Prepare Selected Persistence",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const selected = $('Prepare Selected Download').item.json;\nconst errorItem = $input.first()?.json ?? {};\n\nconst candidates = [\n  errorItem.error?.message,\n  errorItem.error?.description,\n  errorItem.error,\n  errorItem.errorMessage,\n  errorItem.message,\n];\n\nlet message = candidates.find(\n  (value) =>\n    typeof value === 'string' &&\n    value.trim() !== ''\n);\n\nif (!message) {\n  try {\n    message = JSON.stringify(errorItem);\n  } catch {\n    message = 'External visual download/store failed';\n  }\n}\n\nreturn [{\n  json: {\n    ...selected,\n    retry_pexels: selected.provider === 'pixabay',\n    fallback_reason:\n      String(message || 'External visual failed')\n        .trim()\n        .slice(0, 1000),\n  },\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3616,
+          160
+        ],
+        "id": "4483f3d9-6237-46dd-9a65-58e38c148acd",
+        "name": "Handle Selected External Failure"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "a2588701-8bb2-4669-939a-101fb14f88e6",
+                "leftValue": "={{ $json.retry_pexels }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          3840,
+          160
+        ],
+        "id": "94f15b8e-36f8-4b81-b581-3447e58b1258",
+        "name": "Retry Pexels?"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const scene = $('Prepare Visual Items').item.json;\nconst incoming = $input.first()?.json ?? {};\n\nconst candidates = [\n  incoming.fallback_reason,\n  incoming.error?.message,\n  incoming.error?.description,\n  incoming.error,\n  incoming.errorMessage,\n  incoming.message,\n];\n\nlet reason = candidates.find(\n  (value) =>\n    typeof value === 'string' &&\n    value.trim() !== ''\n);\n\nif (!reason) {\n  reason = 'No acceptable external visual asset was available';\n}\n\nreturn [{\n  json: {\n    ...scene,\n    fallback_reason:\n      String(reason).trim().slice(0, 1000),\n  },\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2944,
+          480
+        ],
+        "id": "d7c1978f-1984-46ee-bbfc-2b85d4cab110",
+        "name": "Prepare Fallback Context",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/fallback",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ ({ job_id: $json.job_id, scene_number: $json.scene_number, text: $json.narration }) }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          3168,
+          480
+        ],
+        "id": "aa975bdb-bd32-42ee-bc78-edc6050e9258",
+        "name": "Create Fallback Visual",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const visualPath =\n  typeof $json.visual_path === 'string'\n    ? $json.visual_path.trim()\n    : '';\nconst width = Number($json.width);\nconst height = Number($json.height);\nconst bytes = Number($json.bytes);\n\nif ($json.fallback !== true || !visualPath) {\n  throw new Error(\n    'media-worker fallback response is invalid'\n  );\n}\n\nif (\n  !Number.isFinite(width) ||\n  width <= 0 ||\n  !Number.isFinite(height) ||\n  height <= 0 ||\n  !Number.isFinite(bytes) ||\n  bytes <= 0\n) {\n  throw new Error(\n    'media-worker fallback dimensions/bytes are invalid'\n  );\n}\n\nreturn {\n  json: {\n    ...$json,\n    visual_path: visualPath,\n    width,\n    height,\n    bytes,\n  },\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3392,
+          480
+        ],
+        "id": "4880f12c-df27-4714-8cfb-7922a2b6d5c8",
+        "name": "Require Fallback Visual",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const stored = $input.first().json;\nconst scene = $('Prepare Fallback Context').item.json;\n\nreturn [{\n  json: {\n    job_id: scene.job_id,\n    scene_id: scene.scene_id,\n    scene_number: scene.scene_number,\n    provider: 'local_fallback',\n    provider_asset_id: null,\n    source_url: null,\n    author: null,\n    license: null,\n    license_url: null,\n    visual_path: stored.visual_path,\n    metadata: {\n      fallback: true,\n      reason: scene.fallback_reason,\n      normalized_width: Number(stored.width),\n      normalized_height: Number(stored.height),\n      normalized_codec: stored.codec_name ?? null,\n      normalized_bytes: Number(stored.bytes),\n      stored_by: 'media-worker',\n    },\n  },\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3616,
+          480
+        ],
+        "id": "aef12f42-3bc6-4bf9-8038-dbc76467739c",
+        "name": "Prepare Fallback Persistence",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH target_scene AS (\n  SELECT id\n  FROM public.scenes\n  WHERE id = $1::uuid\n    AND job_id = $2::uuid\n    AND NULLIF(BTRIM(visual_path), '') IS NULL\n  FOR UPDATE\n),\ninserted AS (\n  INSERT INTO public.assets (\n    scene_id,\n    provider,\n    provider_asset_id,\n    source_url,\n    author,\n    license,\n    license_url,\n    local_path,\n    metadata\n  )\n  SELECT\n    $1::uuid,\n    $3::text,\n    NULLIF($4::text, ''),\n    NULLIF($5::text, ''),\n    NULLIF($6::text, ''),\n    NULLIF($7::text, ''),\n    NULLIF($8::text, ''),\n    $9::text,\n    $10::jsonb\n  FROM target_scene\n  WHERE NOT EXISTS (\n    SELECT 1\n    FROM public.assets\n    WHERE scene_id = $1::uuid\n  )\n  RETURNING id\n),\nupdated AS (\n  UPDATE public.scenes\n  SET\n    visual_path = $9::text,\n    updated_at = now()\n  WHERE id = $1::uuid\n    AND job_id = $2::uuid\n    AND NULLIF(BTRIM($9::text), '') IS NOT NULL\n    AND EXISTS (\n      SELECT 1\n      FROM inserted\n    )\n  RETURNING\n    id,\n    job_id,\n    scene_number,\n    visual_path\n)\nSELECT\n  $1::uuid AS scene_id,\n  $2::uuid AS job_id,\n  EXISTS (\n    SELECT 1\n    FROM inserted\n  ) AS asset_inserted,\n  EXISTS (\n    SELECT 1\n    FROM updated\n  ) AS scene_updated,\n  (\n    SELECT id\n    FROM inserted\n    LIMIT 1\n  ) AS asset_id,\n  (\n    SELECT scene_number\n    FROM updated\n    LIMIT 1\n  ) AS scene_number,\n  (\n    SELECT visual_path\n    FROM updated\n    LIMIT 1\n  ) AS visual_path,\n  (\n    EXISTS (SELECT 1 FROM inserted)\n    AND EXISTS (SELECT 1 FROM updated)\n  ) AS persisted;",
+          "options": {
+            "queryReplacement": "={{ [ $json.scene_id, $json.job_id, $json.provider, $json.provider_asset_id ?? '', $json.source_url ?? '', $json.author ?? '', $json.license ?? '', $json.license_url ?? '', $json.visual_path, JSON.stringify($json.metadata ?? {}) ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          4064,
+          272
+        ],
+        "id": "857d631f-1e2e-4010-ad38-326d8ac06600",
+        "name": "Persist Visual Result",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH job_state AS (\n  SELECT\n    id,\n    status,\n    current_stage,\n    target_duration_seconds,\n    CASE target_duration_seconds\n      WHEN 15 THEN 4\n      WHEN 30 THEN 8\n      WHEN 45 THEN 12\n      WHEN 60 THEN 15\n      ELSE NULL\n    END AS required_scene_count\n  FROM public.jobs\n  WHERE id = $1::uuid\n),\nscene_state AS (\n  SELECT\n    COUNT(*)::int AS total_scene_count,\n    COUNT(*) FILTER (\n      WHERE NULLIF(BTRIM(scenes.visual_path), '') IS NOT NULL\n        AND EXISTS (\n          SELECT 1\n          FROM public.assets\n          WHERE assets.scene_id = scenes.id\n        )\n    )::int AS ready_scene_count,\n    COUNT(*) FILTER (\n      WHERE NULLIF(BTRIM(scenes.visual_path), '') IS NULL\n         OR NOT EXISTS (\n           SELECT 1\n           FROM public.assets\n           WHERE assets.scene_id = scenes.id\n         )\n    )::int AS incomplete_scene_count\n  FROM public.scenes scenes\n  WHERE scenes.job_id = $1::uuid\n)\nSELECT\n  $1::uuid AS job_id,\n  EXISTS (\n    SELECT 1\n    FROM job_state\n  ) AS job_exists,\n  job_state.status,\n  job_state.current_stage,\n  job_state.target_duration_seconds,\n  job_state.required_scene_count,\n  scene_state.total_scene_count,\n  scene_state.ready_scene_count,\n  scene_state.incomplete_scene_count,\n  (\n    job_state.status = 'processing'\n    AND job_state.current_stage = 'visuals'\n    AND job_state.required_scene_count IS NOT NULL\n    AND scene_state.total_scene_count = job_state.required_scene_count\n    AND scene_state.ready_scene_count = job_state.required_scene_count\n    AND scene_state.incomplete_scene_count = 0\n  ) AS all_visuals_ready\nFROM job_state\nCROSS JOIN scene_state;",
+          "options": {
+            "queryReplacement": "={{ [ $json.job_id ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          4288,
+          272
+        ],
+        "id": "4f1becbf-1bc3-4d16-af9d-7d58ff6074c2",
+        "name": "Verify Visual Completion",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "d7982094-b4bc-400a-b763-017308facb47",
+                "leftValue": "={{ $json.all_visuals_ready }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          4512,
+          272
+        ],
+        "id": "f2fb35ba-d6be-47d2-af97-47665d760c7e",
+        "name": "All Visuals Ready?"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const result = $input.first().json;\n\nif (!result.job_exists) {\n  throw new Error(\n    `Job ${result.job_id} was not found during visual completion check`\n  );\n}\n\nif (\n  result.status !== 'processing' ||\n  result.current_stage !== 'visuals'\n) {\n  throw new Error(\n    `Unexpected job state after visuals: ` +\n    `status=${result.status}, current_stage=${result.current_stage}`\n  );\n}\n\nif (result.all_visuals_ready !== true) {\n  throw new Error(\n    `Visual sourcing is incomplete for job ${result.job_id}: ` +\n    `ready=${result.ready_scene_count}, ` +\n    `total=${result.total_scene_count}, ` +\n    `required=${result.required_scene_count}, ` +\n    `incomplete=${result.incomplete_scene_count}`\n  );\n}\n\nreturn [{\n  json: {\n    job_id: result.job_id,\n    status: result.status,\n    current_stage: result.current_stage,\n    scene_count: Number(result.total_scene_count),\n    visuals_complete: true,\n  },\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4736,
+          176
+        ],
+        "id": "21a17da2-2f5b-4fcf-97b3-b8862fef91f3",
+        "name": "Require Visual Completion",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const errorItem = $input.first()?.json ?? {};\nconst job = $('Require Eligible Visual Job').first().json;\n\nif (\n  typeof job.job_id !== 'string' ||\n  job.job_id.trim() === ''\n) {\n  throw new Error(\n    'Validated job_id is unavailable while recording visual failure'\n  );\n}\n\nconst candidates = [\n  errorItem.error?.message,\n  errorItem.error?.description,\n  errorItem.error,\n  errorItem.errorMessage,\n  errorItem.errorDescription,\n  errorItem.message,\n];\n\nlet message = candidates.find(\n  (value) =>\n    typeof value === 'string' &&\n    value.trim() !== ''\n);\n\nif (!message) {\n  try {\n    message = JSON.stringify(errorItem);\n  } catch {\n    message = '';\n  }\n}\n\nmessage = String(\n  message || 'Unknown visual sourcing stage failure'\n)\n  .trim()\n  .slice(0, 4000);\n\nreturn [{\n  json: {\n    job_id: job.job_id,\n    last_error: message,\n  },\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4288,
+          720
+        ],
+        "id": "eb89d79f-1697-4867-b1f6-b5dbc15a4e50",
+        "name": "Prepare Visual Failure"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH updated AS (\n  UPDATE public.jobs\n  SET\n    status = 'failed',\n    current_stage = 'visuals',\n    last_error = CASE\n      WHEN status = 'failed'\n        AND NULLIF(BTRIM(last_error), '') IS NOT NULL\n      THEN last_error\n      ELSE LEFT($2::text, 4000)\n    END,\n    updated_at = now()\n  WHERE id = $1::uuid\n    AND current_stage = 'visuals'\n    AND status IN ('processing', 'failed')\n  RETURNING\n    id,\n    status,\n    current_stage,\n    last_error\n)\nSELECT\n  $1::uuid AS job_id,\n  EXISTS (\n    SELECT 1\n    FROM updated\n  ) AS failure_recorded,\n  (\n    SELECT status\n    FROM updated\n    LIMIT 1\n  ) AS status,\n  (\n    SELECT current_stage\n    FROM updated\n    LIMIT 1\n  ) AS current_stage,\n  COALESCE(\n    (\n      SELECT last_error\n      FROM updated\n      LIMIT 1\n    ),\n    LEFT($2::text, 4000)\n  ) AS last_error;",
+          "options": {
+            "queryReplacement": "={{ [ $json.job_id, $json.last_error ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          4512,
+          720
+        ],
+        "id": "67f98b45-37e6-451d-ae94-61785920c828",
+        "name": "Record Visual Failure",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "errorMessage": "={{ $json.last_error || 'Visual sourcing stage failed' }}"
+        },
+        "type": "n8n-nodes-base.stopAndError",
+        "typeVersion": 1,
+        "position": [
+          4736,
+          720
+        ],
+        "id": "7d5e8ba3-5f7b-4d67-a788-3d47fb91ed66",
+        "name": "Stop Visual Failure"
+      }
+    ],
+    "connections": {
+      "Receive Job ID": {
+        "main": [
+          [
+            {
+              "node": "Normalize Job ID",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Job ID": {
+        "main": [
+          [
+            {
+              "node": "Load Visual Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Load Visual Context": {
+        "main": [
+          [
+            {
+              "node": "Require Eligible Visual Job",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Require Eligible Visual Job": {
+        "main": [
+          [
+            {
+              "node": "Visuals Already Complete?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Visuals Already Complete?": {
+        "main": [
+          [
+            {
+              "node": "Verify Visual Completion",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Begin Visual Stage",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Begin Visual Stage": {
+        "main": [
+          [
+            {
+              "node": "Prepare Visual Items",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Visual Items": {
+        "main": [
+          [
+            {
+              "node": "Is Factual?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is Factual?": {
+        "main": [
+          [
+            {
+              "node": "Search Wikimedia",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Search Pixabay",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search Wikimedia": {
+        "main": [
+          [
+            {
+              "node": "Select Wikimedia Candidate",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Fallback Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Select Wikimedia Candidate": {
+        "main": [
+          [
+            {
+              "node": "Wikimedia Candidate Found?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Fallback Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wikimedia Candidate Found?": {
+        "main": [
+          [
+            {
+              "node": "Prepare Selected Download",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Fallback Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search Pixabay": {
+        "main": [
+          [
+            {
+              "node": "Select Pixabay Candidate",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Recover Generic Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Recover Generic Context": {
+        "main": [
+          [
+            {
+              "node": "Search Pexels",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Select Pixabay Candidate": {
+        "main": [
+          [
+            {
+              "node": "Pixabay Candidate Found?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Recover Generic Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pixabay Candidate Found?": {
+        "main": [
+          [
+            {
+              "node": "Prepare Selected Download",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Search Pexels",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search Pexels": {
+        "main": [
+          [
+            {
+              "node": "Select Pexels Candidate",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Fallback Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Select Pexels Candidate": {
+        "main": [
+          [
+            {
+              "node": "Pexels Candidate Found?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Fallback Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pexels Candidate Found?": {
+        "main": [
+          [
+            {
+              "node": "Prepare Selected Download",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Fallback Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Selected Download": {
+        "main": [
+          [
+            {
+              "node": "Download Selected Visual",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download Selected Visual": {
+        "main": [
+          [
+            {
+              "node": "Store Selected Visual",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Handle Selected External Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Store Selected Visual": {
+        "main": [
+          [
+            {
+              "node": "Require Stored Visual",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Handle Selected External Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Require Stored Visual": {
+        "main": [
+          [
+            {
+              "node": "Prepare Selected Persistence",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Handle Selected External Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Selected Persistence": {
+        "main": [
+          [
+            {
+              "node": "Persist Visual Result",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Handle Selected External Failure": {
+        "main": [
+          [
+            {
+              "node": "Retry Pexels?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Retry Pexels?": {
+        "main": [
+          [
+            {
+              "node": "Search Pexels",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Fallback Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Fallback Context": {
+        "main": [
+          [
+            {
+              "node": "Create Fallback Visual",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Fallback Visual": {
+        "main": [
+          [
+            {
+              "node": "Require Fallback Visual",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Require Fallback Visual": {
+        "main": [
+          [
+            {
+              "node": "Prepare Fallback Persistence",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Fallback Persistence": {
+        "main": [
+          [
+            {
+              "node": "Persist Visual Result",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Persist Visual Result": {
+        "main": [
+          [
+            {
+              "node": "Verify Visual Completion",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verify Visual Completion": {
+        "main": [
+          [
+            {
+              "node": "All Visuals Ready?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "All Visuals Ready?": {
+        "main": [
+          [
+            {
+              "node": "Require Visual Completion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Require Visual Completion": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Visual Failure": {
+        "main": [
+          [
+            {
+              "node": "Record Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Record Visual Failure": {
+        "main": [
+          [
+            {
+              "node": "Stop Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate",
+      "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "tags": []
+  }
+]
