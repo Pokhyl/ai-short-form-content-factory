@@ -6,7 +6,7 @@ This file is the first checkpoint to read before continuing work on this reposit
 
 ## Mandatory assistant protocol
 
-For every technical reply or action about this project, fetch the current `docs/CURRENT_STATE.md` from the active feature branch first. Fetch `docs/ARCHITECTURE.md` when architecture is involved and `docs/ROADMAP.md` when milestone scope, acceptance, or progression is involved. Repository state overrides chat memory. Unknown facts must not be guessed. After every completed implementation or runtime/setup step, update this file before moving on. Export production n8n workflows into the repository.
+Before every technical reply/action for this project, fetch this file from the active branch. Fetch `docs/ARCHITECTURE.md` when architecture is involved and `docs/ROADMAP.md` when milestone scope/acceptance/progression is involved. Repository state overrides chat memory. Unknown facts must not be guessed. After each completed implementation/runtime/setup step, update this file before moving on. Export production n8n workflows into the repository.
 
 ## Project
 
@@ -30,28 +30,42 @@ Topic -> Script + scene plan -> Voiceover -> Visual sourcing -> Render -> Human 
 - application state: PostgreSQL `public`
 - n8n internal schema: `n8n`; never modify it manually
 
-## Upstream checkpoints
-
-### WF01 — Create Content Job
+## WF01 — Create Content Job
 
 - workflow ID `Xy94qe35OigtMxkR`
-- hand-off target `TJfA4ZYUEKSTad6k` (`WF02`)
+- native hand-off target `TJfA4ZYUEKSTad6k` (`WF02`)
 - payload `job_id = {{ $json.job_id }}`
 - `waitForSubWorkflow = false`
 - remote workflow commit `353149dbe5ff7e511ad5dfe7683b00755f765727`
 
-### WF02 — Plan Script and Scenes
+## WF02 — Plan Script and Scenes
 
 - workflow ID `TJfA4ZYUEKSTad6k`
 - accepted pre-handoff export SHA-256 `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`
 - accepted pre-handoff export commit `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`
 - accepted quality job `6b08098c-e5c7-45bd-babb-036705b563e1`
-- on 2026-08-24 the operator reported adding one native n8n `Execute Sub-workflow` node after `Persist Scene Plan`
+
+On 2026-08-24 the operator added one native n8n `Execute Sub-workflow` node after `Persist Scene Plan`:
+
 - reported node name: `Start Voiceover Generation`
-- reported target workflow: `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`)
-- intended payload: `job_id = {{ $json.job_id }}` only
+- reported target: `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`)
+- intended payload: dynamic `job_id` only
 - intended `waitForSubWorkflow = false`
-- this WF02 hand-off change is **not yet independently verified from a fresh export and is not yet committed**
+
+A first combined export/verification shell block stopped immediately after printing `=== EXPORT WF02 ===`, before its Python verification ran. A follow-up diagnostic proved the n8n export itself is healthy:
+
+```text
+REPO FILE STATE: M n8n/workflows/WF02-plan-script-and-scenes.json
+repo export size: 25138 bytes
+n8n export command: success
+EXPORT_RC: 0
+FILE_CREATED: YES
+diagnostic export size: 25138 bytes
+```
+
+`n8n export:workflow --id=TJfA4ZYUEKSTad6k` reported `Successfully exported 1 workflow.` The diagnostic JSON begins with the expected workflow ID/name and `active=true`.
+
+This proves the export command succeeded and the local workflow file is non-empty; it does **not yet prove** the local file is byte-identical to the diagnostic export or that the new WF02->WF03 hand-off fields are correct. The hand-off is not yet committed.
 
 ## M5 exact voice configuration — locked
 
@@ -64,13 +78,11 @@ Provider: Google Cloud Text-to-Speech.
 | `ru` | `ru-RU-Wavenet-D` |
 | `uk` | `uk-UA-Chirp3-HD-Enceladus` |
 
-On 2026-08-24 the operator explicitly decided to keep **all four configured voices unchanged**. No further voice substitution or voice-selection work is required unless a concrete runtime problem appears.
+The operator explicitly decided to keep all four configured voices unchanged. Do not spend additional time comparing/replacing them unless a concrete runtime problem appears.
 
 ## M5 contract
 
-WF03 receives only `job_id`, reloads persisted state from PostgreSQL, validates eligibility, sets `current_stage = voiceover`, generates one audio file per scene using the locked voice map, stores `scenes.audio_path` and measured `scenes.duration_seconds`, and records stage failures as `status = failed`, `current_stage = voiceover`, plus `last_error`. PostgreSQL writes remain in n8n. M6 is not wired yet.
-
-Production generality is mandatory: narration from `scenes.narration`, language from `jobs.language_code`, voice from the locked map, and no hardcoded topic/test narration/test job in permanent nodes.
+WF03 receives only `job_id`, reloads persisted state from PostgreSQL, validates eligibility, sets `current_stage = voiceover`, generates one voiceover per scene using the locked voice map, stores `scenes.audio_path` plus measured `scenes.duration_seconds`, and records failures as `status=failed`, `current_stage=voiceover`, plus `last_error`. PostgreSQL writes remain in n8n. M6 is not wired yet.
 
 ## Google Cloud TTS authentication
 
@@ -86,45 +98,17 @@ Verified:
 
 Do not create replacement auth objects or expose secrets.
 
-## WF03 repository checkpoint
-
-Production workflow:
+## WF03 repository/runtime checkpoint
 
 - name `WF03 — Voiceover Generation`
 - workflow ID `UHxvCZNqaLb1RKMM`
-- inactive (`active = false`)
+- inactive (`active=false`)
 - 17 nodes
 - final export SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`
-- local workflow commit `519ae3391771884abf6e2caa1632a2002b4085e2`
+- original local workflow commit `519ae3391771884abf6e2caa1632a2002b4085e2`
 - merge/push checkpoint `28b5cca041cf29984ca155e36b280ef00649d873`
 - remote file SHA verified identical
-- no Visual Sourcing hand-off exists yet
-
-Success topology:
-
-```text
-Receive Job ID
--> Normalize Job ID
--> Load Voiceover Context
--> Require Eligible Voiceover Job
--> Begin Voiceover Stage
--> Prepare Voiceover Items
--> Generate Voiceover
--> Require TTS Response
--> Store Audio
--> Require Stored Audio
--> Persist Audio Result
--> Require Persisted Audio Batch
--> Verify Voiceover Completion
--> Require Voiceover Completion
--> STOP
-```
-
-Failure topology:
-
-```text
-error output -> Prepare Voiceover Failure -> Record Voiceover Failure -> Stop Voiceover Failure
-```
+- no M6/Visual Sourcing hand-off yet
 
 ## Real M5 runtime acceptance
 
@@ -134,27 +118,25 @@ Polish 15-second acceptance job:
 db19212b-7914-4346-9ec6-234d315c80d0
 ```
 
-Verified before WF03:
+Before WF03:
 
 ```text
-status = processing
-current_stage = script
-scene_count = 4
-narration_count = 4
-audio_state_count = 0
+status=processing
+current_stage=script
+scene_count=4
+narration_count=4
+audio_state_count=0
 ```
 
-The real WF03 execution completed through the normal success path.
-
-Verified after WF03:
+Real WF03 execution completed through the normal success path. After WF03:
 
 ```text
-status = processing
-current_stage = voiceover
-last_error = empty
+status=processing
+current_stage=voiceover
+last_error=empty
 ```
 
-Persisted and probed audio:
+Persisted/probed audio:
 
 | Scene | duration_seconds | size bytes |
 | ---: | ---: | ---: |
@@ -163,38 +145,35 @@ Persisted and probed audio:
 | 3 | 6.768 | 27072 |
 | 4 | 6.576 | 26304 |
 
-All four `audio_path` values are populated, all four MP3 files exist, are non-empty, and are readable/probeable. The files were copied to the operator Mac and listened to manually; Polish voice quality was accepted.
-
-The operator has explicitly confirmed that all four configured voice presets are to remain as selected. Do not spend additional time comparing/replacing EN/PL/RU/UK voices.
+All four `audio_path` values are populated; all MP3 files exist, are non-empty, readable/probeable, and durations match PostgreSQL. Files were copied to the operator Mac and listened to manually; Polish voice quality was accepted. Do not rerun this job.
 
 ## M5 status
 
-M5 voice generation is functionally proven with a real TTS run: playable files are produced, real durations are measured/persisted, and the selected voice set is accepted by the operator.
-
-M5 remains `in progress` only because the newly added WF02->WF03 hand-off has not yet been verified from a fresh production export and committed. Do not start M6 before that integration checkpoint is complete.
+Voice generation is functionally proven with real TTS output and the selected voice set is locked. M5 remains `in progress` only because the new WF02->WF03 integration must be verified from the fresh export and committed/pushed.
 
 ## Exact next action
 
-1. Do not rerun the accepted Polish job.
-2. Export fresh production workflow `TJfA4ZYUEKSTad6k` from n8n to `n8n/workflows/WF02-plan-script-and-scenes.json` on the VPS.
-3. Verify from that export that:
-   - workflow ID is `TJfA4ZYUEKSTad6k`
-   - `Persist Scene Plan` connects to exactly one `Start Voiceover Generation` node
-   - that node is native `n8n-nodes-base.executeWorkflow`
-   - target workflow is `UHxvCZNqaLb1RKMM`
+1. Do not rerun accepted M4/M5 jobs.
+2. Compare host `n8n/workflows/WF02-plan-script-and-scenes.json` with `/tmp/wf02-diagnostic.json` from the successful n8n diagnostic export (hash/byte identity).
+3. Verify from the exported JSON:
+   - workflow ID `TJfA4ZYUEKSTad6k`
+   - `Persist Scene Plan` connects to exactly one `Start Voiceover Generation`
+   - node type `n8n-nodes-base.executeWorkflow`
+   - target `UHxvCZNqaLb1RKMM`
    - payload contains only dynamic `job_id`
-   - `waitForSubWorkflow = false`
-   - no hardcoded acceptance UUID/topic/language data was introduced
-4. Only after those checks pass, commit and push the refreshed WF02 export.
-5. Then update this file with the verified export SHA/commit and close M5 before starting M6.
+   - `waitForSubWorkflow=false`
+   - no hardcoded acceptance UUID/topic data
+   - inspect `versionId` vs `activeVersionId` to determine whether the edited version is published
+4. Only after those checks pass, commit/push the refreshed WF02 export (and publish first if required).
+5. Then update this file with export SHA/commit and close M5 before starting M6.
 
 ## Do not do
 
-- do not change the four selected voice presets
+- do not change the four selected voices
 - do not rerun prior accepted M4/M5 jobs
-- do not start M6 before the WF02->WF03 integration checkpoint is verified and committed
+- do not start M6 before WF02->WF03 integration is verified and committed
 - do not expose private SSH keys, GitHub tokens, OAuth secrets, or credentials
-- do not hardcode topic/narration/language-specific test data into production nodes
+- do not hardcode test job/topic/language-specific data into permanent nodes
 - do not reuse Gemini credential for TTS
 - do not create new Google TTS auth objects
 - do not modify the `n8n` PostgreSQL schema manually
