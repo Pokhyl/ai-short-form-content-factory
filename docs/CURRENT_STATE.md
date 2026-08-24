@@ -540,6 +540,27 @@ scene 4 -> asset 9637984, matched [cat]
 
 The code change is not yet runtime-accepted against persisted re-selection output. The next step is to reselect through n8n on the same acceptance job using a temporary n8n-owned acceptance reset/retry harness; do not manually mutate PostgreSQL outside n8n and do not rerun WF03/M5.
 
+## M6 first weighted re-selection harness attempt
+
+The first weighted re-selection attempt did not reach the application reset or provider calls. The temporary n8n-owned reset node had an invalid `queryReplacement` expression and PostgreSQL rejected the literal string instead of a UUID:
+
+```text
+invalid input syntax for type uuid: "{ [ 'db19212b-7914-4346-9ec6-234d315c80d0' ] }"
+```
+
+Because the reset query failed before mutation, durable application state remained unchanged. The temporary 38-node harness was removed immediately and the clean weighted 36-node WF04 was restored and verified:
+
+```text
+CLEAN_NODE_COUNT: 36
+CLEAN_MANUAL_TRIGGER: NO
+CLEAN_RESET_NODE: NO
+CLEAN_ACTIVE: false
+CLEAN_PIN_DATA: EMPTY
+CLEAN_WEIGHTED_SELECTOR: YES
+```
+
+The corrected acceptance harness must set `job_id` in a Code node first and pass it to the temporary PostgreSQL reset node through the standard expression `={{ [ $json.job_id ] }}`. This remains an n8n-owned application-state reset; do not mutate PostgreSQL directly outside n8n.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
