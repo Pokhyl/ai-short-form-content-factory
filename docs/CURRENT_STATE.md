@@ -309,6 +309,53 @@ Pixabay now references credential `M6PixabayQuery01`; Pexels references credenti
 
 This corrected workflow has been committed and pushed but has not yet been re-imported/runtime-proven after the fix.
 
+## M6 second WF04 runtime attempt checkpoint
+
+The corrected provider-auth workflow was re-imported and the same acceptance job was resumed from `processing/visuals` on 2026-08-24. WF03/M5 were not rerun. The temporary Manual Trigger harness was again removed immediately after execution and the clean 36-node WF04 was restored.
+
+Provider authentication is now runtime-proven:
+
+```text
+Search Pixabay: success with real provider results
+Search Pexels: success with real provider results
+```
+
+The second attempt exposed a separate Code-node return-shape bug. The affected `runOnceForEachItem` nodes still returned arrays such as `[{ json: ... }]`, which n8n rejected with:
+
+```text
+Select Pixabay Candidate: A 'json' property isn't an object [item 0]
+Select Pexels Candidate: A 'json' property isn't an object [item 0]
+Prepare Fallback Context: A 'json' property isn't an object [item 0]
+```
+
+Because fallback context was invalid, `Create Fallback Visual` sent no valid string `text`; media-worker correctly rejected all fallback calls with HTTP 400 `invalid_text`. The workflow then recorded the stage failure.
+
+Verified durable/runtime state after the attempt:
+
+```text
+job_id: db19212b-7914-4346-9ec6-234d315c80d0
+status: failed
+current_stage: visuals
+last_error: media-worker fallback response is invalid [line 10]
+scene 1 visual_path: empty, asset_count: 0
+scene 2 visual_path: empty, asset_count: 0
+scene 3 visual_path: empty, asset_count: 0
+scene 4 visual_path: empty, asset_count: 0
+visual media directory: absent
+```
+
+Clean WF04 restoration after the attempt was verified:
+
+```text
+WF04_CLEAN_NODE_COUNT: 36
+WF04_CLEAN_NATIVE_TRIGGER: YES
+WF04_CLEAN_MANUAL_TRIGGER: NO
+WF04_CLEAN_TEST_JOB_LITERAL: NO
+WF04_CLEAN_PIN_DATA: EMPTY
+```
+
+The next implementation must fix the per-item return shape and add the smallest WF04-specific explicit resume path for a `failed/visuals` job produced by a prior WF04 execution. Do not manually reset PostgreSQL outside n8n and do not build generic retry infrastructure.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -320,10 +367,11 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. re-import the corrected WF04 and resume the same acceptance job directly from `processing/visuals`; do not rerun WF03/M5;
-2. verify PostgreSQL asset/visual persistence and media files, then manually review selected visual relevance and attribution/license metadata;
-3. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`;
-4. export the cleaned production workflows to the repository and close M6 only after ROADMAP acceptance is satisfied.
+1. fix all `runOnceForEachItem` Code-node return shapes in WF04 from array returns to one item/object;
+2. add the smallest WF04-specific resume transition for `failed/visuals` so this acceptance job can be intentionally retried through n8n without manual PostgreSQL mutation;
+3. re-import the clean corrected WF04 and resume the same acceptance job; do not rerun WF03/M5;
+4. verify PostgreSQL asset/visual persistence and media files, then manually review selected visual relevance and attribution/license metadata;
+5. after WF04 is runtime-proven and manually accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export the clean production workflows, and close M6 only after ROADMAP acceptance is satisfied.
 
 ## Do not do
 
