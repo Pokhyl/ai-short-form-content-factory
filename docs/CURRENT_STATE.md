@@ -45,27 +45,34 @@ Topic -> Script + scene plan -> Voiceover -> Visual sourcing -> Render -> Human 
 - accepted pre-handoff export commit `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`
 - accepted quality job `6b08098c-e5c7-45bd-babb-036705b563e1`
 
-On 2026-08-24 the operator added one native n8n `Execute Sub-workflow` node after `Persist Scene Plan`:
-
-- reported node name: `Start Voiceover Generation`
-- reported target: `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`)
-- intended payload: dynamic `job_id` only
-- intended `waitForSubWorkflow = false`
-
-A first combined export/verification shell block stopped immediately after printing `=== EXPORT WF02 ===`, before its Python verification ran. A follow-up diagnostic proved the n8n export itself is healthy:
+On 2026-08-24 the operator added one native n8n `Execute Sub-workflow` node after `Persist Scene Plan` and a direct inspection of the current exported JSON verified the hand-off structure:
 
 ```text
-REPO FILE STATE: M n8n/workflows/WF02-plan-script-and-scenes.json
-repo export size: 25138 bytes
-n8n export command: success
-EXPORT_RC: 0
-FILE_CREATED: YES
-diagnostic export size: 25138 bytes
+WORKFLOW_ID: TJfA4ZYUEKSTad6k
+NODE_COUNT: 9
+NODE_TYPE: n8n-nodes-base.executeWorkflow
+HANDOFF_TARGET: UHxvCZNqaLb1RKMM
+INPUT_KEYS: ['job_id']
+JOB_ID_VALUE: ={{ $json.job_id }}
+WAIT_FOR_SUBWORKFLOW: False
+PERSIST_TARGETS: ['Start Voiceover Generation']
+ACTIVE: True
+VERSION_ID: 1c117439-5075-4e09-b8c4-379e5fa84939
+ACTIVE_VERSION_ID: 6cb2b548-ac21-4c48-a2cf-b8e4aa764b83
+PUBLISHED_CURRENT_VERSION: NO
+WF02_WF03_HANDOFF_VERIFICATION: OK
 ```
 
-`n8n export:workflow --id=TJfA4ZYUEKSTad6k` reported `Successfully exported 1 workflow.` The diagnostic JSON begins with the expected workflow ID/name and `active=true`.
+Therefore the new WF02->WF03 hand-off configuration itself is verified:
 
-This proves the export command succeeded and the local workflow file is non-empty; it does **not yet prove** the local file is byte-identical to the diagnostic export or that the new WF02->WF03 hand-off fields are correct. The hand-off is not yet committed.
+- node name `Start Voiceover Generation`
+- native node type `n8n-nodes-base.executeWorkflow`
+- target workflow `UHxvCZNqaLb1RKMM`
+- payload contains dynamic `job_id` only
+- `waitForSubWorkflow=false`
+- `Persist Scene Plan` connects to exactly this hand-off node
+
+The edited WF02 version is **not yet the published/current active version** because `versionId != activeVersionId`. Do not commit this as the final production checkpoint until the current edited version is published and re-exported/verified. The latest local export is modified and not yet committed.
 
 ## M5 exact voice configuration — locked
 
@@ -149,29 +156,21 @@ All four `audio_path` values are populated; all MP3 files exist, are non-empty, 
 
 ## M5 status
 
-Voice generation is functionally proven with real TTS output and the selected voice set is locked. M5 remains `in progress` only because the new WF02->WF03 integration must be verified from the fresh export and committed/pushed.
+Voice generation is functionally proven with real TTS output and the selected voice set is locked. The WF02->WF03 hand-off structure is now independently verified from the current export, but the edited WF02 version is still unpublished. M5 remains `in progress` until that version is published, freshly re-exported/verified, committed, and pushed.
 
 ## Exact next action
 
 1. Do not rerun accepted M4/M5 jobs.
-2. Compare host `n8n/workflows/WF02-plan-script-and-scenes.json` with `/tmp/wf02-diagnostic.json` from the successful n8n diagnostic export (hash/byte identity).
-3. Verify from the exported JSON:
-   - workflow ID `TJfA4ZYUEKSTad6k`
-   - `Persist Scene Plan` connects to exactly one `Start Voiceover Generation`
-   - node type `n8n-nodes-base.executeWorkflow`
-   - target `UHxvCZNqaLb1RKMM`
-   - payload contains only dynamic `job_id`
-   - `waitForSubWorkflow=false`
-   - no hardcoded acceptance UUID/topic data
-   - inspect `versionId` vs `activeVersionId` to determine whether the edited version is published
-4. Only after those checks pass, commit/push the refreshed WF02 export (and publish first if required).
-5. Then update this file with export SHA/commit and close M5 before starting M6.
+2. In n8n, publish the current edited version of `WF02 — Plan Script and Scenes` so the version containing `Start Voiceover Generation` becomes the active version.
+3. After publish, export WF02 again and verify `versionId == activeVersionId` plus the already-proven hand-off fields.
+4. Then commit/push the refreshed production WF02 export.
+5. Update this file with the final export SHA and commit, close M5, and only then start M6.
 
 ## Do not do
 
 - do not change the four selected voices
 - do not rerun prior accepted M4/M5 jobs
-- do not start M6 before WF02->WF03 integration is verified and committed
+- do not start M6 before WF02->WF03 integration is published, verified, committed, and pushed
 - do not expose private SSH keys, GitHub tokens, OAuth secrets, or credentials
 - do not hardcode test job/topic/language-specific data into permanent nodes
 - do not reuse Gemini credential for TTS
