@@ -65,7 +65,7 @@ Do not substitute guessed voices.
 
 ## M5 contract
 
-WF03 receives only `job_id`, reloads persisted state from PostgreSQL, validates eligibility, sets `current_stage = voiceover`, generates one audio file per scene using the locked voice map, stores `scenes.audio_path` and measured `scenes.duration_seconds`, and records failures as `status = failed`, `current_stage = voiceover`, plus `last_error`. PostgreSQL writes remain in n8n. M6 is not wired yet.
+WF03 receives only `job_id`, reloads persisted state from PostgreSQL, validates eligibility, sets `current_stage = voiceover`, generates one audio file per scene using the locked voice map, stores `scenes.audio_path` and measured `scenes.duration_seconds`, and records stage failures as `status = failed`, `current_stage = voiceover`, plus `last_error`. PostgreSQL writes remain in n8n. M6 is not wired yet.
 
 Production generality is mandatory: narration from `scenes.narration`, language from `jobs.language_code`, voice from the locked map, and no hardcoded topic/test narration/test job in permanent nodes.
 
@@ -131,37 +131,40 @@ error output -> Prepare Voiceover Failure -> Record Voiceover Failure -> Stop Vo
 
 Verified invariants include intended `continueErrorOutput` routes, TTS POST endpoint, media-worker POST endpoint, response guards, failure SQL, per-item linkage, no hardcoded acceptance UUIDs, and no M6 hand-off.
 
-## Local workflow commit
+## WF03 repository checkpoint — remote verified
 
-The exact verified workflow export is committed locally on the VPS as:
+The exact verified workflow export was originally committed on the VPS as:
 
 ```text
 519ae3391771884abf6e2caa1632a2002b4085e2
 feat: add WF03 voiceover workflow
 ```
 
-The commit contains only `n8n/workflows/WF03-voiceover-generation.json`.
+That commit contains only `n8n/workflows/WF03-voiceover-generation.json` and remains intact in history.
 
-Do not amend, reset, recreate, or rebase this commit.
+Repository-specific deploy-key SSH access was verified from the VPS with both read and dry-run write access.
 
-## Git divergence and repository write access
+The remote documentation-only branch changes and the local WF03-only commit were explicitly proven to touch disjoint paths before reconciliation.
 
-A diagnostic proved:
-
-- local-only changed path is exactly `n8n/workflows/WF03-voiceover-generation.json`
-- remote-only changed path is exactly `docs/CURRENT_STATE.md`
-- the paths are disjoint
-
-A repository-specific GitHub deploy key is configured with **Read/write** access. Runtime verification from the VPS with that exact key succeeded on 2026-08-24:
+A normal merge commit was then created and pushed:
 
 ```text
-READ_ACCESS: YES
-WRITE_ACCESS: YES
+28b5cca041cf29984ca155e36b280ef00649d873
+merge: sync M5 documentation before WF03 push
 ```
 
-The write test used `git push --dry-run`; therefore no probe branch was actually created.
+Post-push verification on 2026-08-24 proved:
 
-Repository-specific SSH read/write access from the VPS is now independently verified.
+```text
+WF03_COMMIT_PRESERVED: YES
+REMOTE_HEAD_MATCH: YES
+REMOTE_WF03_SHA_OK: YES
+WF03_REMOTE_PUSH_VERIFIED: YES
+FINAL_REMOTE_COMMIT: 28b5cca041cf29984ca155e36b280ef00649d873
+WF03_EXPORT_SHA256: e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438
+```
+
+Therefore the verified inactive 17-node WF03 export is now present on remote `feat/m5-voiceover` with the expected SHA-256.
 
 No real TTS request has been accepted yet.
 
@@ -177,22 +180,21 @@ Do not start M6 before real M5 acceptance.
 
 ## Exact next action
 
-1. Preserve local workflow commit `519ae3391771884abf6e2caa1632a2002b4085e2` intact.
-2. Fetch latest remote `feat/m5-voiceover`.
-3. Reconfirm local-only changes are only WF03 and remote-only changes are only `docs/CURRENT_STATE.md`.
-4. Merge the remote branch into the local branch with a normal merge commit; do not rebase.
-5. Verify `519ae33` remains an ancestor and workflow SHA remains exactly `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`.
-6. Push through the repository-specific SSH key.
-7. Fetch again and verify remote HEAD equals local HEAD and the remote workflow file has the expected SHA-256.
-8. Update this file with the final remote commit before preparing the first real controlled M5 TTS acceptance run.
-9. Do not wire WF02->WF03 and do not start M6.
+1. Prepare the first real controlled M5 TTS acceptance run without wiring WF02->WF03.
+2. Use a fresh disposable acceptance job; do not reuse the accepted M3/M4 jobs.
+3. Before executing WF03, verify the chosen job is `status = processing`, `current_stage = script`, has the exact required scene count for its target duration, has non-empty narration, and has no existing audio fields.
+4. Invoke WF03 with only `{ "job_id": "<uuid>" }`.
+5. After the run, verify PostgreSQL contains positive measured `duration_seconds` and non-empty `audio_path` for every required scene, and verify the corresponding MP3 files are playable.
+6. Manually listen to the generated voice before marking that language accepted.
+7. Keep WF02->WF03 disconnected and do not start M6 until M5 acceptance is complete.
 
 ## Do not do
 
-- do not amend/reset/recreate/rebase local WF03 commit `519ae3391771884abf6e2caa1632a2002b4085e2`
-- do not expose private SSH keys, GitHub tokens, or credentials
+- do not rerun prior M4 acceptance jobs
+- do not wire WF02->WF03 yet
+- do not expose private SSH keys, GitHub tokens, OAuth secrets, or credentials
 - do not substitute voice presets
-- do not hardcode topic/narration/language-specific test data
+- do not hardcode topic/narration/language-specific test data into production nodes
 - do not reuse Gemini credential for TTS
 - do not create new Google TTS auth objects
 - do not start M6 before M5 real voice acceptance
