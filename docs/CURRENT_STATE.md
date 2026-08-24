@@ -1,6 +1,6 @@
 # Current Project State
 
-Last updated: 2026-08-23
+Last updated: 2026-08-24
 
 This file is the first checkpoint to read before continuing work on this repository. If chat history conflicts with this file, `docs/ARCHITECTURE.md`, or `docs/ROADMAP.md`, the repository wins.
 
@@ -174,6 +174,7 @@ User-reported implementation steps, not yet independently verified by screenshot
 4. User reports `Prepare Voiceover Items -> Generate Voiceover` is connected.
 5. `Store Audio` was added after `Generate Voiceover` as HTTP Request `POST http://media-worker:3001/audio/store`, no authentication, JSON body using the linked scene `job_id`, `scene_number`, and Google response `$json.audioContent` as `audio_base64`.
 6. User reports `Generate Voiceover -> Store Audio` is connected.
+7. `Persist Audio Result` was added after `Store Audio` as `Application PostgreSQL` / `Execute Query`. The supplied SQL updates the exact scene by `scene_id + job_id`, writes media-worker `audio_path` and measured `duration_seconds`, requires an empty prior audio state and positive duration, and returns `persisted` plus the stored values. User reports this step is configured and connected.
 
 Do not treat the user-reported nodes/connections as independently verified until workflow export or screenshot proves them.
 
@@ -187,12 +188,11 @@ Recorded also in `docs/ROADMAP.md` M9 by commit `ec0eb9a6167820c6d3c895ec9f8a606
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
-1. Add PostgreSQL node `Persist Audio Result` immediately after `Store Audio`.
-2. Persist `audio_path` and measured `duration_seconds` onto the exact scene identified by the linked `Prepare Voiceover Items` item.
-3. Make the write conditional on matching `scene_id` + `job_id` and an empty prior audio state; return whether persistence occurred.
-4. Do not execute real TTS yet.
-5. After persistence exists, add durable all-scenes-ready verification before any downstream hand-off.
-6. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
+1. Add a Code node after `Persist Audio Result`, Mode `Run Once for All Items`, that requires every persistence result in the current pending-scene batch to have `persisted === true`, requires a single shared `job_id`, and emits exactly one `{ job_id }` item.
+2. Add one PostgreSQL completion-verification node after that aggregation. It must verify from durable PostgreSQL state that the job is still `processing/voiceover`, that the exact duration-specific scene count exists, and that every scene has non-empty `audio_path` plus positive `duration_seconds`.
+3. Do not advance `current_stage` to `visuals` and do not wire a Visual Sourcing workflow yet; M6 is not implemented.
+4. Do not execute real TTS until the full WF03 structure is in place and exported/verified.
+5. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
 
 Before the next VPS Git change, synchronize the VPS branch because remote documentation commits have advanced the feature branch.
 
