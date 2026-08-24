@@ -67,7 +67,17 @@ WF02_ACTIVE_VERSION: 1c117439-5075-4e09-b8c4-379e5fa84939
 WF02_PUBLISHED_CURRENT: YES
 ```
 
-Therefore the edited WF02 version containing `Start Voiceover Generation` is now the published/current production version.
+Therefore the edited WF02 version containing `Start Voiceover Generation` is the published/current production version.
+
+Latest export inspection found pinned test data on node `Receive Job ID`:
+
+```text
+WF02
+PIN_DATA_KEYS: ['Receive Job ID']
+PIN_DATA_EMPTY: NO
+```
+
+This pinned data must be removed before the final repository export checkpoint.
 
 ## M5 exact voice configuration — locked
 
@@ -119,7 +129,15 @@ WF03_ACTIVE_VERSION: 41e4e421-3acc-4a3f-bca6-0aa15e37eec1
 WF03_PUBLISHED_CURRENT: YES
 ```
 
-This supersedes the older repository checkpoint that described WF03 as inactive. The repository export must now be refreshed so it matches the active production workflow.
+Latest export inspection also found pinned test data on node `Receive Job ID`:
+
+```text
+WF03
+PIN_DATA_KEYS: ['Receive Job ID']
+PIN_DATA_EMPTY: NO
+```
+
+This pinned data must be removed before the final repository export checkpoint.
 
 ## Real M5 runtime acceptance
 
@@ -162,15 +180,18 @@ All four `audio_path` values are populated; all MP3 files exist, are non-empty, 
 
 Voice generation is functionally proven with real TTS output and the selected voice set is locked. WF02->WF03 hand-off structure is verified, and fresh runtime exports prove both WF02 and WF03 are active and their current versions are published.
 
-M5 remains `in progress` only until the fresh active production exports of WF02 and WF03 are copied into the repository, verified, committed, and pushed. After that checkpoint, close M5 before starting M6.
+M5 remains `in progress` because both current workflow exports still contain pinned acceptance input on `Receive Job ID`. Remove those pins, republish the cleaned versions, then fresh-export/verify/commit/push both workflows. After that checkpoint, close M5 before starting M6.
 
 ## Exact next action
 
 1. Do not rerun accepted M4/M5 jobs.
-2. Reuse the just-created `/tmp/check-wf02.json` and `/tmp/check-wf03.json` inside the n8n container; copy them to the repository workflow paths without re-exporting.
-3. Verify the copied files still contain the proven active/current versions, the WF02->WF03 hand-off contract, empty `pinData`, no hardcoded acceptance data, and the four locked voice IDs.
-4. Commit/push both refreshed workflow exports.
-5. Update this file with final export SHA-256 values and commit, mark M5 complete, update `docs/ROADMAP.md`, and only then start M6.
+2. In n8n, open WF02 and remove pinned data from `Receive Job ID`.
+3. In n8n, open WF03 and remove pinned data from `Receive Job ID`.
+4. Do not execute either workflow.
+5. Publish the cleaned WF02 and WF03 versions so the active versions also contain no pin data.
+6. Fresh-export both workflows and verify `pinData` is empty plus all previously verified hand-off/version invariants.
+7. Commit/push both refreshed workflow exports.
+8. Update this file with final export SHA-256 values and commit, mark M5 complete, update `docs/ROADMAP.md`, and only then start M6.
 
 ## Do not do
 
