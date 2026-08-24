@@ -82,7 +82,7 @@ Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` added `POST /audio/store` to t
 
 Use existing project `n8n-drive-voiceover` and dedicated OAuth client `n8n-tts-oauth`.
 
-Verified:
+Verified before first real run:
 
 - Text-to-Speech API enabled
 - active free-trial credit
@@ -90,7 +90,6 @@ Verified:
 - n8n credential type `Google OAuth2 API`
 - scope `https://www.googleapis.com/auth/cloud-platform`
 - Google authorization completed
-- first real authenticated TTS request still pending acceptance
 
 Do not create replacement auth objects or expose secrets.
 
@@ -151,32 +150,33 @@ merge: sync M5 documentation before WF03 push
 
 Post-push verification proved remote HEAD matched local HEAD and the remote WF03 file had exact SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`.
 
-## First real M5 acceptance job — prepared
+## First real M5 acceptance job — first WF03 execution completed visually
 
-A fresh disposable Polish 15-second acceptance job was created through production WF01 on 2026-08-24:
+Fresh Polish 15-second acceptance job:
 
 ```text
 job_id: db19212b-7914-4346-9ec6-234d315c80d0
 ```
 
-Observed runtime progression:
+Pre-run state was verified as:
 
 ```text
-ATTEMPT_1: created|intake|0|0|0|
-ATTEMPT_2: processing|script|4|4|0|
+processing|script|4|4|0
 ```
 
-Therefore, at the second check the job had:
+Meaning: `status = processing`, `current_stage = script`, exactly 4 scenes, narration present in all 4, and no existing audio fields.
 
-- `status = processing`
-- `current_stage = script`
-- exactly 4 scenes, which is the required count for a 15-second job
-- non-empty narration for all 4 scenes
-- zero existing audio fields
+On 2026-08-24 the first real manual WF03 execution was run for this acceptance job. The n8n editor screenshot shows the entire normal success path green through `Require Voiceover Completion`; the failure branch is not shown as executed. This proves the workflow execution visually reached the success terminus, including the real Google TTS and media-worker nodes.
 
-This job is the first controlled M5 TTS acceptance candidate. Do not reuse prior M3/M4 acceptance jobs.
+The following are **not yet independently verified after that run** and must be checked before accepting Polish M5:
 
-No real TTS request has yet been executed for this job.
+- persisted job status/stage/last_error
+- all four `scenes.audio_path` values
+- all four positive measured `scenes.duration_seconds` values
+- corresponding MP3 files existing and being readable/playable
+- manual listening quality of the Polish voice
+
+Do not rerun this job blindly.
 
 ## M5 acceptance
 
@@ -190,19 +190,16 @@ Do not start M6 before real M5 acceptance.
 
 ## Exact next action
 
-1. Use acceptance job `db19212b-7914-4346-9ec6-234d315c80d0` for the first real controlled WF03 run.
-2. Do not wire WF02->WF03.
-3. Invoke WF03 with only `{ "job_id": "db19212b-7914-4346-9ec6-234d315c80d0" }`.
-4. After the run, verify job status/stage/error plus all four scenes in PostgreSQL.
-5. Require non-empty `audio_path` and positive measured `duration_seconds` for all four scenes.
-6. Verify the corresponding MP3 files exist and are readable/playable.
-7. Manually listen to the Polish voice before marking Polish accepted.
-8. If the run fails, inspect the exact n8n execution and persisted `last_error` before changing WF03; do not rerun blindly.
-9. Keep M6 disconnected until M5 acceptance is complete.
+1. Do not execute WF03 again for `db19212b-7914-4346-9ec6-234d315c80d0`.
+2. Verify PostgreSQL job state and all four scene audio fields for that exact job.
+3. Verify each corresponding MP3 exists in media storage and can be probed/read.
+4. Then manually listen to the Polish output before marking Polish accepted.
+5. Keep WF02->WF03 disconnected and do not start M6 until M5 acceptance is complete.
 
 ## Do not do
 
 - do not rerun prior M4 acceptance jobs
+- do not rerun the current successful-looking M5 job before verification
 - do not wire WF02->WF03 yet
 - do not expose private SSH keys, GitHub tokens, OAuth secrets, or credentials
 - do not substitute voice presets
