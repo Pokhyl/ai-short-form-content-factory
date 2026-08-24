@@ -38,13 +38,11 @@ M5 — Voiceover completed on 2026-08-24.
 - WF03 final export SHA-256: `666a2de498e4feac7e7877bf2ebc44e61c63fbd38698f239f427ecf673042c86`
 - workflow export commit preserved in remote history: `8e6e4a9a578e7d65778e4ca42a77558497549c99`
 - final verified M5 remote head: `16a431209d8392c50dcc33c59444da3149744427`
-- WF02 -> WF03 native hand-off uses dynamic `job_id` only with `waitForSubWorkflow=false`
-- both workflows are active/current/published and contain no pinned acceptance data
 - do not rerun accepted M4/M5 jobs
 
 ## M6 branch/setup checkpoint
 
-The M6 branch was created from the completed M5/doc checkpoint and pushed successfully:
+The M6 branch was created and pushed successfully:
 
 ```text
 BRANCH: feat/m6-visual-sourcing
@@ -81,7 +79,7 @@ A read-only production schema inspection confirmed the existing application sche
 - `metadata jsonb NOT NULL`
 - `created_at timestamptz NOT NULL`
 
-No application-schema migration is currently required for the first M6 implementation. Do not add one unless concrete workflow behavior proves a missing durable field.
+No application-schema migration is currently required for the first M6 implementation.
 
 ## M6 architecture contract
 
@@ -95,30 +93,37 @@ factual -> Wikimedia Commons -> local graphic/text fallback
 generic -> Pixabay -> Pexels -> local graphic/text fallback
 ```
 
-For every scene M6 must:
-
-1. receive only `job_id` from WF03;
-2. reload job/scenes from PostgreSQL;
-3. validate stage eligibility and that voiceover output is complete;
-4. set `jobs.current_stage = 'visuals'` only when M6 begins;
-5. search a bounded candidate set using `visual_query` and the deterministic provider route;
-6. reject unusable candidates deterministically;
-7. choose one candidate;
-8. download only the selected original;
-9. use existing `media-worker` for validation, normalization, and local storage;
-10. persist selected asset metadata in `public.assets` and the local normalized path in `scenes.visual_path`;
-11. create a local graphic/text fallback instead of failing merely because no provider result is acceptable;
-12. start Video Render only after every scene has usable visual material. M7 is not implemented yet, so M6 must stop after verified visual persistence until the render workflow exists.
+For every scene M6 must receive only `job_id`, reload durable state, verify voiceover completion, enter `current_stage='visuals'`, use the deterministic provider route, select one bounded candidate, download only the selected original, persist metadata in `public.assets`, persist the normalized local path in `scenes.visual_path`, use a local graphic/text fallback when no acceptable external asset exists, and stop after verified visual persistence until M7 exists.
 
 Provider/API requests and PostgreSQL writes remain in n8n. Media/file validation, normalization, and local storage remain in `media-worker`. Do not add a service.
 
-## Existing M6-relevant code
+## M6 media-worker implementation checkpoint
 
-- repository currently contains production workflows WF01, WF02, WF03 only; WF04 does not yet exist
-- existing media-worker uses Node 22 + built-in modules, FFmpeg/ffprobe and no npm runtime dependencies
-- media-worker currently exposes only `GET /health` and `POST /audio/store`
-- media-worker stores durable media under `/data` through the existing `media_data` Docker volume
-- `.env.example` currently has no Wikimedia/Pixabay/Pexels configuration; external provider configuration must be added only as M6 implements each provider and no real secret may be committed
+The first reusable M6 media boundary is now implemented in the repository.
+
+Commits:
+
+```text
+007425004f780d8e25d34fe19cb644feb2057d03 feat: prepare media worker for visual normalization
+379517019d9cbbbb01ddd62215f1fe7fcb90e72c feat: add visual normalization and fallback endpoints
+```
+
+Changes:
+
+- existing `media-worker` remains the only media service
+- Docker image now installs `font-dejavu` in addition to FFmpeg
+- `GET /health` remains unchanged
+- `POST /audio/store` remains supported
+- new `POST /visual/store?job_id=<uuid>&scene_number=<n>` accepts selected image binary from n8n
+- supported selected-image content types: JPEG, PNG, WebP, GIF
+- request body is bounded to 25 MiB
+- selected image is probed, normalized with FFmpeg to a maximum 1920x1920 bounding box while preserving aspect ratio, converted to JPEG, probed again, and stored under the deterministic path `jobs/<job_id>/visuals/scene-XX.jpg`
+- response returns `visual_path`, source and normalized dimensions, codec and byte size
+- new `POST /visual/fallback` accepts JSON `{job_id, scene_number, text}` and generates a deterministic 1080x1920 local text/graphic JPEG through FFmpeg using DejaVu Sans
+- media-worker still does not write PostgreSQL
+- no npm runtime dependency was added
+
+This implementation is provider-agnostic: n8n remains responsible for Wikimedia/Pixabay/Pexels search, candidate selection, downloading the selected original, and PostgreSQL persistence.
 
 ## M6 acceptance from ROADMAP
 
@@ -131,15 +136,17 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-Implement the smallest reusable media-worker visual boundary before building WF04:
+Deploy and runtime-test only the new media-worker visual boundary before creating WF04:
 
-1. add one visual storage/normalization operation to the existing media-worker, without a new service or database write;
-2. keep the first operation provider-agnostic so n8n remains responsible for Wikimedia/Pixabay/Pexels search/selection;
-3. use deterministic job/scene paths under `jobs/<job_id>/visuals/`;
-4. validate/normalize selected media with FFmpeg/ffprobe and return only local path plus technical metadata;
-5. add local fallback generation through the same existing service boundary;
-6. test this media-worker boundary with disposable synthetic input only;
-7. update this file before creating WF04.
+1. fast-forward the VPS M6 branch from remote;
+2. rebuild/recreate only `media-worker` from the M6 branch;
+3. verify `/health` still succeeds;
+4. generate one disposable synthetic image inside the container and POST it to `/visual/store` using a disposable UUID/scene number;
+5. POST one disposable fallback request to `/visual/fallback`;
+6. ffprobe both returned files and verify deterministic paths/dimensions;
+7. delete the disposable synthetic job media directory;
+8. do not touch PostgreSQL during this test;
+9. update this file before creating WF04.
 
 ## Do not do
 
