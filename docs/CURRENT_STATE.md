@@ -99,8 +99,6 @@ Provider/API requests and PostgreSQL writes remain in n8n. Media/file validation
 
 ## M6 media-worker implementation checkpoint
 
-The first reusable M6 media boundary is now implemented in the repository.
-
 Commits:
 
 ```text
@@ -108,22 +106,65 @@ Commits:
 379517019d9cbbbb01ddd62215f1fe7fcb90e72c feat: add visual normalization and fallback endpoints
 ```
 
-Changes:
+Implemented boundary:
 
 - existing `media-worker` remains the only media service
-- Docker image now installs `font-dejavu` in addition to FFmpeg
-- `GET /health` remains unchanged
+- Docker image includes FFmpeg and `font-dejavu`
+- `GET /health` remains supported
 - `POST /audio/store` remains supported
-- new `POST /visual/store?job_id=<uuid>&scene_number=<n>` accepts selected image binary from n8n
-- supported selected-image content types: JPEG, PNG, WebP, GIF
-- request body is bounded to 25 MiB
-- selected image is probed, normalized with FFmpeg to a maximum 1920x1920 bounding box while preserving aspect ratio, converted to JPEG, probed again, and stored under the deterministic path `jobs/<job_id>/visuals/scene-XX.jpg`
-- response returns `visual_path`, source and normalized dimensions, codec and byte size
-- new `POST /visual/fallback` accepts JSON `{job_id, scene_number, text}` and generates a deterministic 1080x1920 local text/graphic JPEG through FFmpeg using DejaVu Sans
-- media-worker still does not write PostgreSQL
+- `POST /visual/store?job_id=<uuid>&scene_number=<n>` accepts selected JPEG/PNG/WebP/GIF binary from n8n, validates/probes it, normalizes it to JPEG within a 1920x1920 bounding box, and stores it at `jobs/<job_id>/visuals/scene-XX.jpg`
+- `POST /visual/fallback` accepts `{job_id, scene_number, text}` and creates a deterministic 1080x1920 local graphic/text JPEG
+- media-worker does not write PostgreSQL
 - no npm runtime dependency was added
 
-This implementation is provider-agnostic: n8n remains responsible for Wikimedia/Pixabay/Pexels search, candidate selection, downloading the selected original, and PostgreSQL persistence.
+## M6 media-worker runtime acceptance checkpoint
+
+The new media boundary was deployed and tested on the VPS with disposable synthetic input only. PostgreSQL was not touched.
+
+Runtime head used for deployment:
+
+```text
+68da38cd345f9059239eaf1bf2f4080ff0f1899e
+```
+
+Verified results:
+
+```text
+MEDIA_WORKER_HEALTH: OK
+
+VISUAL_STORE_STATUS: 200
+VISUAL_STORE_BODY: {
+  "visual_path": "jobs/11111111-1111-4111-8111-111111111111/visuals/scene-01.jpg",
+  "media_type": "image",
+  "source_content_type": "image/png",
+  "source_width": 640,
+  "source_height": 360,
+  "width": 1920,
+  "height": 1080,
+  "codec_name": "mjpeg",
+  "bytes": 26056
+}
+
+VISUAL_FALLBACK_STATUS: 200
+VISUAL_FALLBACK_BODY: {
+  "visual_path": "jobs/11111111-1111-4111-8111-111111111111/visuals/scene-02.jpg",
+  "media_type": "image",
+  "fallback": true,
+  "width": 1080,
+  "height": 1920,
+  "codec_name": "mjpeg",
+  "bytes": 33566
+}
+
+STORE_FFPROBE: mjpeg 1920x1080
+FALLBACK_FFPROBE: mjpeg 1080x1920
+STORE_FILE_BYTES: 26056
+FALLBACK_FILE_BYTES: 33566
+DISPOSABLE_MEDIA_REMOVED: YES
+M6_MEDIA_WORKER_RUNTIME_TEST: OK
+```
+
+Therefore the reusable media-worker visual storage/normalization/fallback boundary is runtime-proven and ready for WF04.
 
 ## M6 acceptance from ROADMAP
 
@@ -136,17 +177,13 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-Deploy and runtime-test only the new media-worker visual boundary before creating WF04:
+Create `WF04 — Visual Sourcing` next, but first verify provider runtime prerequisites without exposing secrets:
 
-1. fast-forward the VPS M6 branch from remote;
-2. rebuild/recreate only `media-worker` from the M6 branch;
-3. verify `/health` still succeeds;
-4. generate one disposable synthetic image inside the container and POST it to `/visual/store` using a disposable UUID/scene number;
-5. POST one disposable fallback request to `/visual/fallback`;
-6. ffprobe both returned files and verify deterministic paths/dimensions;
-7. delete the disposable synthetic job media directory;
-8. do not touch PostgreSQL during this test;
-9. update this file before creating WF04.
+1. confirm whether `PIXABAY_API_KEY` and `PEXELS_API_KEY` already exist in the VPS runtime configuration; print only PRESENT/MISSING, never values;
+2. Wikimedia Commons requires no API secret and can be implemented immediately;
+3. if either stock-provider key is missing, add only the missing runtime secret plus documented placeholder in `.env.example` before wiring that provider;
+4. then create/import WF04 as a native sub-workflow that receives only `job_id`, reloads job/scenes, validates complete voiceover, enters `current_stage='visuals'`, routes factual/generic scenes deterministically, stores normalized visuals through media-worker, persists `assets` + `scenes.visual_path`, and stops without M7 hand-off until M7 exists;
+5. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`.
 
 ## Do not do
 
