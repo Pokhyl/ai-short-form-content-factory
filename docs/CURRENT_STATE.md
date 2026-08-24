@@ -568,14 +568,14 @@ The corrected acceptance harness must set `job_id` in a Code node first and pass
 - oversized/unusable files are normalized before render
 - no acceptable external result produces a local fallback scene instead of stopping the job
 
-Technical green execution alone is not M6 acceptance; visual relevance must be manually reviewed on real M6 output.
+Technical green execution alone is not M6 acceptance. Final scene-to-image relevance review for M6 is performed through Google AI Studio on the real selected images against each scene narration/visual intent; tag/metadata inspection is only a diagnostic aid and does not replace that review.
 
 ## Exact next action
 
 1. commit/push the clean weighted-selector WF04 plus this implementation checkpoint;
 2. run one corrected M6 acceptance re-selection through n8n on the same job using a temporary n8n-owned reset/retry harness; do not rerun WF03/M5 and do not manually mutate PostgreSQL outside n8n;
 3. verify all four persisted assets/files and their provider/license metadata;
-4. manually review all four selected visuals for scene relevance;
+4. review all four selected visuals in Google AI Studio against each scene narration and visual intent;
 5. only after relevance is accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export clean production workflows, and close M6.
 
 ## Do not do
