@@ -38,6 +38,8 @@ services:
       N8N_PROXY_HOPS: ${N8N_PROXY_HOPS}
       GENERIC_TIMEZONE: ${GENERIC_TIMEZONE}
       TZ: ${GENERIC_TIMEZONE}
+      PIXABAY_API_KEY: ${PIXABAY_API_KEY}
+      PEXELS_API_KEY: ${PEXELS_API_KEY}
     ports:
       - "127.0.0.1:${N8N_PORT}:5678"
     volumes:
