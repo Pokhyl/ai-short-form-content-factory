@@ -843,7 +843,21 @@ M7 handoff: still absent
 
 Wikimedia search now requests a bounded 640px preview (`iiurlwidth=640`) for semantic ranking while retaining the original file URL for the single selected download. Pixabay ranking uses `webformatURL`/`previewURL`; Pexels ranking uses `src.medium`/`src.small`. Original provider IDs, source URLs, authors, licenses, dimensions, and provider rank remain attached to the candidate and are persisted only for the semantic winner.
 
-All six modified/new Code-node scripts passed `node --check` inside the production n8n container, and the workflow JSON parses successfully. This implementation has not yet been imported/runtime-accepted on the GPS job.
+All six modified/new Code-node scripts passed `node --check` inside the production n8n container, and the workflow JSON parses successfully.
+
+The clean SigLIP-ranked WF04 has now been imported into production. Runtime export verification immediately after import:
+
+```text
+node_count: 42
+active: false
+pin_data: empty
+manual_acceptance_trigger: absent
+acceptance_reset_node: absent
+SigLIP rank nodes: 3
+old required_core_tokens gate: absent
+```
+
+The workflow has not yet been reselected on the GPS acceptance job after this import.
 
 ## M6 acceptance from ROADMAP
 
@@ -856,8 +870,7 @@ Technical green execution alone is not M6 acceptance. Final scene-to-image relev
 
 ## Exact next action
 
-1. import the clean 42-node SigLIP-ranked WF04 into production;
-2. reselect the existing GPS acceptance job through the n8n-owned reset harness without rerunning M4/M5;
+1. reselect the existing GPS acceptance job through the n8n-owned reset harness without rerunning M4/M5;
 3. inspect durable 8/8 results and run the required Gemini/Google AI Studio acceptance review on the actual selected images;
 4. only after visual acceptance, wire WF03 -> WF04, export the clean production workflows, update ROADMAP M6 completed, and close M6;
 5. do not start M7 before M6 is closed.
