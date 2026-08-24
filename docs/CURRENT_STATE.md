@@ -479,6 +479,35 @@ CLEAN_PIN_DATA: EMPTY
 
 No acceptance job execution occurred in this attempt. The next action is read-only inspection of n8n webhook-registration persistence/startup state for WF04 while a temporary active/published harness is loaded; do not modify the n8n schema manually.
 
+## M6 successful corrected WF04 runtime checkpoint
+
+The corrected retry-fix WF04 was finally executed successfully on the accepted M5 job without rerunning WF03/M5. The acceptance harness used a temporary Manual Trigger placed first in the WF04 node list so the CLI selected it as the trigger source, then set only the accepted `job_id` and routed into the normal `Normalize Job ID` path. The harness was removed immediately after execution by re-importing the clean repository workflow.
+
+Verified execution result:
+
+```text
+job_id: db19212b-7914-4346-9ec6-234d315c80d0
+CLI trigger selected: M6 Acceptance Manual Trigger
+execution status: success
+last node executed: Require Visual Completion
+job status: processing
+current_stage: visuals
+scene_count: 4
+visuals_complete: true
+```
+
+Post-execution clean workflow restoration was verified:
+
+```text
+CLEAN_NODE_COUNT: 36
+CLEAN_MANUAL_TRIGGER: NO
+CLEAN_TEST_JOB_LITERAL: NO
+CLEAN_ACTIVE: false
+CLEAN_PIN_DATA: EMPTY
+```
+
+The next action is durable verification of all four persisted `scenes.visual_path` values, `public.assets` metadata rows, and the four normalized visual files, followed by manual visual relevance review.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
