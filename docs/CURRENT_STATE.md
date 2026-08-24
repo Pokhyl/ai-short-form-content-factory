@@ -288,6 +288,27 @@ Credential intent:
 
 The repository WF04 still requires a follow-up edit to reference these credentials and remove the blocked `$env` expressions. No second WF04 runtime attempt has been made yet.
 
+## M6 WF04 blocker-fix checkpoint
+
+The two blockers from the first runtime attempt were corrected in repository commit:
+
+```text
+be38e82 fix: use n8n credentials for visual providers
+```
+
+Verified workflow changes:
+
+```text
+WF04_PER_ITEM_CODE_FIXED: 10
+WF04_PIXABAY_AUTH: httpQueryAuth
+WF04_PEXELS_AUTH: httpHeaderAuth
+WF04_PROVIDER_ENV_REFERENCES: NONE
+```
+
+Pixabay now references credential `M6PixabayQuery01`; Pexels references credential `M6PexelsHeader01`. Secret values are not present in the workflow export. All `runOnceForEachItem` Code nodes that used `$input.first()` were corrected to use the current item directly.
+
+This corrected workflow has been committed and pushed but has not yet been re-imported/runtime-proven after the fix.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -299,11 +320,10 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. wire the newly created n8n provider credentials into WF04, remove the blocked `$env` expressions, and correct per-item Code nodes that use `$input.first()`;
-2. re-import the cleaned WF04 and resume the same acceptance job directly from `processing/visuals`; do not rerun WF03/M5;
-3. verify PostgreSQL asset/visual persistence and media files, then manually review selected visual relevance and attribution/license metadata;
-4. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`;
-5. export the cleaned production workflows to the repository and close M6 only after ROADMAP acceptance is satisfied.
+1. re-import the corrected WF04 and resume the same acceptance job directly from `processing/visuals`; do not rerun WF03/M5;
+2. verify PostgreSQL asset/visual persistence and media files, then manually review selected visual relevance and attribution/license metadata;
+3. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`;
+4. export the cleaned production workflows to the repository and close M6 only after ROADMAP acceptance is satisfied.
 
 ## Do not do
 
