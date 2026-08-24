@@ -45,7 +45,7 @@ Topic -> Script + scene plan -> Voiceover -> Visual sourcing -> Render -> Human 
 - accepted pre-handoff export commit `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`
 - accepted quality job `6b08098c-e5c7-45bd-babb-036705b563e1`
 
-Verified WF02->WF03 hand-off structure from export:
+Verified WF02->WF03 hand-off structure:
 
 ```text
 NODE_COUNT: 9
@@ -58,26 +58,20 @@ PERSIST_TARGETS: ['Start Voiceover Generation']
 WF02_WF03_HANDOFF_VERIFICATION: OK
 ```
 
-Fresh runtime export verification after publish on 2026-08-24:
+After removing pinned data and publishing, the fresh production export verified:
 
 ```text
-WF02_ACTIVE: true
-WF02_VERSION: 1c117439-5075-4e09-b8c4-379e5fa84939
-WF02_ACTIVE_VERSION: 1c117439-5075-4e09-b8c4-379e5fa84939
-WF02_PUBLISHED_CURRENT: YES
+WF02_ACTIVE: YES
+WF02_VERSION: 294e91cb-54b5-4f5f-97b7-a0f1f57fd02b
+WF02_PIN_DATA: EMPTY
+WF02_WF03_HANDOFF: OK
 ```
 
-Therefore the edited WF02 version containing `Start Voiceover Generation` is the published/current production version.
-
-Latest export inspection found pinned test data on node `Receive Job ID`:
+Final verified export SHA-256:
 
 ```text
-WF02
-PIN_DATA_KEYS: ['Receive Job ID']
-PIN_DATA_EMPTY: NO
+d06d0ff1bb325d6c54999c2f89fee8e9b887ed436872092caff34a9d21fc60b7
 ```
-
-The operator then reported removing that pin from `Receive Job ID` and publishing the cleaned WF02 version. This cleanup is not yet independently verified from a fresh export.
 
 ## M5 exact voice configuration — locked
 
@@ -114,30 +108,30 @@ Do not create replacement auth objects or expose secrets.
 
 - name `WF03 — Voiceover Generation`
 - workflow ID `UHxvCZNqaLb1RKMM`
-- 17-node production implementation previously exported and structurally verified
-- prior repository export SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`
-- original workflow commit `519ae3391771884abf6e2caa1632a2002b4085e2`
-- merge/push checkpoint `28b5cca041cf29984ca155e36b280ef00649d873`
+- 17-node production implementation
 - no M6/Visual Sourcing hand-off yet
 
-Fresh runtime export verification on 2026-08-24:
+After removing pinned data and publishing, the fresh production export verified:
 
 ```text
-WF03_ACTIVE: true
-WF03_VERSION: 41e4e421-3acc-4a3f-bca6-0aa15e37eec1
-WF03_ACTIVE_VERSION: 41e4e421-3acc-4a3f-bca6-0aa15e37eec1
-WF03_PUBLISHED_CURRENT: YES
+WF03_ACTIVE: YES
+WF03_VERSION: 3a606df5-21cb-45b3-9f7a-a9da74f74d3c
+WF03_PIN_DATA: EMPTY
+WF03_VOICE_MAP: OK
 ```
 
-Latest export inspection also found pinned test data on node `Receive Job ID`:
+Final verified export SHA-256:
 
 ```text
-WF03
-PIN_DATA_KEYS: ['Receive Job ID']
-PIN_DATA_EMPTY: NO
+666a2de498e4feac7e7877bf2ebc44e61c63fbd38698f239f427ecf673042c86
 ```
 
-The operator then reported removing that pin from `Receive Job ID` and publishing the cleaned WF03 version. This cleanup is not yet independently verified from a fresh export.
+The final combined export verification also proved:
+
+```text
+HARDCODED_ACCEPTANCE_DATA: NONE
+M5_FINAL_EXPORT_VERIFICATION: OK
+```
 
 ## Real M5 runtime acceptance
 
@@ -176,26 +170,39 @@ Persisted/probed audio:
 
 All four `audio_path` values are populated; all MP3 files exist, are non-empty, readable/probeable, and durations match PostgreSQL. Files were copied to the operator Mac and listened to manually; Polish voice quality was accepted. Do not rerun this job.
 
+## Local repository checkpoint
+
+The verified production exports were copied into the VPS repository and committed locally:
+
+```text
+8e6e4a9 feat: finalize M5 voiceover workflows
+```
+
+The commit contains only the refreshed WF02 and WF03 exports. The push then failed before reaching GitHub:
+
+```text
+fatal: could not read Username for 'https://github.com': No such device or address
+```
+
+Therefore `8e6e4a9` is currently a local VPS commit and is **not yet a remote checkpoint**.
+
 ## M5 status
 
-Voice generation is functionally proven with real TTS output and the selected voice set is locked. WF02->WF03 hand-off structure is verified, and earlier fresh runtime exports proved both WF02 and WF03 active/current before pin cleanup.
-
-The operator reports that both `Receive Job ID` pins were removed and both cleaned workflows were published. M5 remains `in progress` until fresh exports independently verify empty `pinData`, current published versions, all hand-off/version invariants, and the cleaned production exports are committed/pushed. After that checkpoint, close M5 before starting M6.
+Voice generation, production hand-off, active/current workflow versions, empty pin data, locked voice map, and final workflow exports are all verified. M5 remains `in progress` only because local workflow commit `8e6e4a9` has not yet been pushed to GitHub.
 
 ## Exact next action
 
 1. Do not rerun accepted M4/M5 jobs.
-2. Fresh-export WF02 and WF03 after the reported pin cleanup/publish.
-3. Verify both exports have empty `pinData`, `versionId == activeVersionId`, expected active state/node counts, WF02->WF03 hand-off contract, no hardcoded acceptance data, and all four locked voice IDs.
-4. Copy those fresh production exports into the repository workflow paths.
-5. Commit/push both refreshed workflow exports.
-6. Update this file with final export SHA-256 values and commit, mark M5 complete, update `docs/ROADMAP.md`, and only then start M6.
+2. On the VPS, verify the dedicated repository SSH deploy key exists and can read the repository.
+3. Fetch the current remote `feat/m5-voiceover` branch over SSH, merge it normally with local commit `8e6e4a9` if the remote advanced, and push over SSH. Do not force/rebase/reset.
+4. Verify remote head contains local workflow commit `8e6e4a9` as an ancestor and both workflow files have the final SHA-256 values above.
+5. Then update this file with the final remote checkpoint, mark M5 complete, update `docs/ROADMAP.md`, and only then start M6.
 
 ## Do not do
 
 - do not change the four selected voices
 - do not rerun prior accepted M4/M5 jobs
-- do not start M6 before refreshed WF02/WF03 production exports are verified and committed/pushed
+- do not start M6 before the verified workflow commit is pushed and the remote checkpoint is recorded
 - do not expose private SSH keys, GitHub tokens, OAuth secrets, or credentials
 - do not hardcode test job/topic/language-specific data into permanent nodes
 - do not reuse Gemini credential for TTS
