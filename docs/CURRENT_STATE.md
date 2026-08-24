@@ -236,13 +236,28 @@ feat: add WF03 voiceover workflow
 
 The commit contains only `n8n/workflows/WF03-voiceover-generation.json`.
 
-Push did **not** complete. Exact failure:
+The first push did not complete because the VPS HTTPS remote has no write credentials:
 
 ```text
 fatal: could not read Username for 'https://github.com': No such device or address
 ```
 
-Therefore the verified WF03 export is safely committed locally on the VPS but is not yet present on the remote branch. Do not recreate or recommit it. Resolve GitHub push authentication for the VPS or transfer/push the existing commit by another safe method.
+## VPS Git authentication diagnostic
+
+A non-destructive diagnostic was completed on 2026-08-24.
+
+Verified:
+
+- local HEAD remains `519ae33 feat: add WF03 voiceover workflow`
+- remote is HTTPS for fetch and push: `https://github.com/Pokhyl/ai-short-form-content-factory.git`
+- no Git credential helper is configured on the VPS
+- GitHub CLI is not installed
+- default `ssh -T git@github.com` fails with `Permission denied (publickey)`
+- `/root/.ssh` exposes a public key named `tiktok-video-pipeline-v2-deploy.pub`; the diagnostic did not yet test whether the matching nonstandard private key exists or whether it has access to this repository
+- remote `feat/m5-voiceover` advanced to documentation commit `04160df` after the local WF03 commit was created
+- current divergence reported by Git is `1 1`: one local-only commit (WF03) and one remote-only commit (documentation)
+
+The verified workflow commit is still safe locally. Do not recreate it. Before any history reconciliation, first test the existing nonstandard SSH key explicitly against this repository. If it cannot access this repository, create/use a repository-specific write credential without exposing private material in chat.
 
 No real TTS request has been accepted yet.
 
@@ -265,20 +280,22 @@ During M9 add one separate read-only n8n HTTP status workflow/webhook accepting 
 Continue M5 without touching n8n workflow configuration.
 
 1. Preserve VPS local commit `519ae3391771884abf6e2caa1632a2002b4085e2`; do not amend, reset, or recreate it.
-2. Inspect the VPS Git authentication options non-destructively (current remote URL, available GitHub CLI auth, existing SSH key/auth) before changing repository remote/auth configuration.
-3. Use the smallest safe authentication fix, then fetch the latest remote `feat/m5-voiceover` documentation checkpoint and reconcile the existing local WF03 commit without losing it.
-4. Push the existing WF03 workflow commit to the remote feature branch.
-5. Verify the remote branch contains the workflow file and the expected export SHA before preparing the first real controlled M5 TTS acceptance run.
-6. Do not wire WF02->WF03 and do not start M6.
+2. Non-destructively test whether `/root/.ssh/tiktok-video-pipeline-v2-deploy` exists and whether that exact key can read `git@github.com:Pokhyl/ai-short-form-content-factory.git` using `IdentitiesOnly=yes`.
+3. Do not change the remote URL yet.
+4. If the key has repository access, verify local-only and remote-only changed paths are disjoint before reconciling the one local workflow commit with the one remote documentation commit, then push using that key.
+5. If the key does not have repository access, create/use the smallest repository-specific GitHub write credential and then perform the same targeted reconciliation.
+6. Verify the remote branch contains the workflow file and the expected export SHA before preparing the first real controlled M5 TTS acceptance run.
+7. Do not wire WF02->WF03 and do not start M6.
 
 ## Do not do
 
 - do not amend/reset/recreate local WF03 commit `519ae3391771884abf6e2caa1632a2002b4085e2`
+- do not rebase/merge until the local-only and remote-only changed paths have been explicitly checked
+- do not expose private SSH keys, GitHub tokens, or credentials
 - do not substitute voice presets
 - do not hardcode topic/narration/language-specific test data
 - do not reuse Gemini credential for TTS
-- do not create new auth objects
-- do not expose secrets
+- do not create new Google TTS auth objects
 - do not start M6 before M5 real voice acceptance
 - do not modify the `n8n` PostgreSQL schema manually
 - do not add retry/dispatcher/queue/watchdog/Redis/generic idempotency infrastructure
