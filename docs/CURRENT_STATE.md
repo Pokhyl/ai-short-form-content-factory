@@ -12,7 +12,8 @@ Before every technical reply/action for this project, fetch this file from the a
 
 - repository: `Pokhyl/ai-short-form-content-factory`
 - branch: `feat/m5-voiceover`
-- milestone: M5 — Voiceover (`in progress`)
+- completed milestone: M5 — Voiceover
+- next milestone: M6 — Visual sourcing
 
 Target flow:
 
@@ -45,7 +46,7 @@ Topic -> Script + scene plan -> Voiceover -> Visual sourcing -> Render -> Human 
 - accepted pre-handoff export commit `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`
 - accepted quality job `6b08098c-e5c7-45bd-babb-036705b563e1`
 
-Verified WF02->WF03 hand-off structure:
+Final M5 hand-off verification:
 
 ```text
 NODE_COUNT: 9
@@ -58,7 +59,7 @@ PERSIST_TARGETS: ['Start Voiceover Generation']
 WF02_WF03_HANDOFF_VERIFICATION: OK
 ```
 
-After removing pinned data and publishing, the fresh production export verified:
+After pinned test data was removed and the cleaned version was published, the fresh production export verified:
 
 ```text
 WF02_ACTIVE: YES
@@ -67,7 +68,7 @@ WF02_PIN_DATA: EMPTY
 WF02_WF03_HANDOFF: OK
 ```
 
-Final verified export SHA-256:
+Final production export SHA-256:
 
 ```text
 d06d0ff1bb325d6c54999c2f89fee8e9b887ed436872092caff34a9d21fc60b7
@@ -111,7 +112,7 @@ Do not create replacement auth objects or expose secrets.
 - 17-node production implementation
 - no M6/Visual Sourcing hand-off yet
 
-After removing pinned data and publishing, the fresh production export verified:
+After pinned test data was removed and the cleaned version was published, the fresh production export verified:
 
 ```text
 WF03_ACTIVE: YES
@@ -120,7 +121,7 @@ WF03_PIN_DATA: EMPTY
 WF03_VOICE_MAP: OK
 ```
 
-Final verified export SHA-256:
+Final production export SHA-256:
 
 ```text
 666a2de498e4feac7e7877bf2ebc44e61c63fbd38698f239f427ecf673042c86
@@ -170,39 +171,64 @@ Persisted/probed audio:
 
 All four `audio_path` values are populated; all MP3 files exist, are non-empty, readable/probeable, and durations match PostgreSQL. Files were copied to the operator Mac and listened to manually; Polish voice quality was accepted. Do not rerun this job.
 
-## Local repository checkpoint
+## Final M5 repository checkpoint
 
-The verified production exports were copied into the VPS repository and committed locally:
-
-```text
-8e6e4a9 feat: finalize M5 voiceover workflows
-```
-
-The commit contains only the refreshed WF02 and WF03 exports. The push then failed before reaching GitHub:
+The cleaned production workflow exports were committed locally in:
 
 ```text
-fatal: could not read Username for 'https://github.com': No such device or address
+8e6e4a9a578e7d65778e4ca42a77558497549c99 feat: finalize M5 voiceover workflows
 ```
 
-Therefore `8e6e4a9` is currently a local VPS commit and is **not yet a remote checkpoint**.
+The remote branch had advanced with documentation commits, so the VPS fetched it over the dedicated SSH deploy key and merged normally. The workflow commit remained an ancestor of the final head.
+
+Final remote checkpoint:
+
+```text
+LOCAL_HEAD:  16a431209d8392c50dcc33c59444da3149744427
+REMOTE_HEAD: 16a431209d8392c50dcc33c59444da3149744427
+WORKFLOW_COMMIT_PRESERVED: YES
+REMOTE_HEAD_MATCH: YES
+M5_WORKFLOW_CHECKPOINT_PUSHED: YES
+```
+
+The remote checkpoint contains the final workflow export SHA-256 values:
+
+```text
+WF02 d06d0ff1bb325d6c54999c2f89fee8e9b887ed436872092caff34a9d21fc60b7
+WF03 666a2de498e4feac7e7877bf2ebc44e61c63fbd38698f239f427ecf673042c86
+```
 
 ## M5 status
 
-Voice generation, production hand-off, active/current workflow versions, empty pin data, locked voice map, and final workflow exports are all verified. M5 remains `in progress` only because local workflow commit `8e6e4a9` has not yet been pushed to GitHub.
+M5 — Voiceover was completed on 2026-08-24.
+
+Completion evidence:
+
+- real Google Cloud TTS generation succeeded;
+- every accepted test scene has a playable MP3;
+- real audio duration was measured and persisted;
+- selected voice quality was manually accepted for the supported test used for acceptance;
+- exact EN/PL/RU/UK voice map is locked;
+- WF02 -> WF03 native hand-off is verified;
+- both production workflows are active/current and published;
+- pinned acceptance data was removed from both workflows;
+- no hardcoded acceptance UUID/topic data remains in the production exports;
+- final WF02/WF03 exports are committed and pushed to the remote branch;
+- final remote head is `16a431209d8392c50dcc33c59444da3149744427`.
 
 ## Exact next action
 
-1. Do not rerun accepted M4/M5 jobs.
-2. On the VPS, verify the dedicated repository SSH deploy key exists and can read the repository.
-3. Fetch the current remote `feat/m5-voiceover` branch over SSH, merge it normally with local commit `8e6e4a9` if the remote advanced, and push over SSH. Do not force/rebase/reset.
-4. Verify remote head contains local workflow commit `8e6e4a9` as an ancestor and both workflow files have the final SHA-256 values above.
-5. Then update this file with the final remote checkpoint, mark M5 complete, update `docs/ROADMAP.md`, and only then start M6.
+M6 — Visual sourcing is next. Before any M6 implementation or architecture change:
+
+1. Fetch this file again.
+2. Fetch `docs/ARCHITECTURE.md` and `docs/ROADMAP.md`.
+3. Inspect the current application schema and existing repository code relevant to `assets`, `scenes.visual_*`, media-worker file handling, and workflow naming/numbering.
+4. Ground the M6 implementation plan in those repository facts before changing n8n, PostgreSQL application schema, or media-worker behavior.
 
 ## Do not do
 
-- do not change the four selected voices
+- do not change the four selected voices without a concrete runtime reason
 - do not rerun prior accepted M4/M5 jobs
-- do not start M6 before the verified workflow commit is pushed and the remote checkpoint is recorded
 - do not expose private SSH keys, GitHub tokens, OAuth secrets, or credentials
 - do not hardcode test job/topic/language-specific data into permanent nodes
 - do not reuse Gemini credential for TTS
