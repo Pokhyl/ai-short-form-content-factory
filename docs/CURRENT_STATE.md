@@ -272,7 +272,7 @@ On 2026-08-24 a new repository-specific ED25519 deploy key was generated on the 
 
 Only the public key may be added to GitHub. The private key must never be copied into chat or GitHub.
 
-No repository access has been proven with this new key yet. The next required step is to add the public key to `Pokhyl/ai-short-form-content-factory` as a deploy key with **Allow write access** enabled, then verify read and dry-run write access with this exact key before any merge or push.
+A GitHub repository screenshot on 2026-08-24 confirms that deploy key `ai-short-form-content-factory VPS` is now listed for `Pokhyl/ai-short-form-content-factory`, the displayed fingerprint matches `SHA256:kCGmX0GiyqasX9UXAWbfl46SUNTdnoKtiHnrfVeOZRY`, and GitHub shows `Read/write`. The key is still shown as `Never used`, so repository authentication with this exact key has not yet been proven from the VPS.
 
 No real TTS request has been accepted yet.
 
@@ -295,12 +295,11 @@ During M9 add one separate read-only n8n HTTP status workflow/webhook accepting 
 Continue M5 without touching n8n workflow configuration.
 
 1. Preserve VPS local commit `519ae3391771884abf6e2caa1632a2002b4085e2`; do not amend, reset, recreate, or rebase it.
-2. Add only `/root/.ssh/ai-short-form-content-factory-deploy.pub` to GitHub repository `Pokhyl/ai-short-form-content-factory` as a deploy key with **Allow write access** enabled.
-3. Verify repository read and dry-run write access with `/root/.ssh/ai-short-form-content-factory-deploy` using `IdentitiesOnly=yes` before changing any Git remote configuration.
-4. Fetch the latest remote `feat/m5-voiceover`, verify again that remote-only changes remain documentation-only, then merge the remote branch into the local branch with a normal merge commit so local commit `519ae33` remains intact in history.
-5. Push through the repository-specific SSH key, then verify the remote branch contains `n8n/workflows/WF03-voiceover-generation.json` with expected export SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`.
-6. Only after remote verification may the first real controlled M5 TTS acceptance run be prepared.
-7. Do not wire WF02->WF03 and do not start M6.
+2. Verify repository read and dry-run write access with `/root/.ssh/ai-short-form-content-factory-deploy` using `IdentitiesOnly=yes` before changing any Git remote configuration.
+3. Fetch the latest remote `feat/m5-voiceover`, verify again that remote-only changes remain documentation-only, then merge the remote branch into the local branch with a normal merge commit so local commit `519ae33` remains intact in history.
+4. Push through the repository-specific SSH key, then verify the remote branch contains `n8n/workflows/WF03-voiceover-generation.json` with expected export SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`.
+5. Only after remote verification may the first real controlled M5 TTS acceptance run be prepared.
+6. Do not wire WF02->WF03 and do not start M6.
 
 ## Do not do
 
