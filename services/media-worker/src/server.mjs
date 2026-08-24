@@ -1,15 +1,24 @@
 import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { mkdir, rename, rm, writeFile } from "node:fs/promises";
+import { mkdir, rename, rm, stat, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { dirname, resolve, sep } from "node:path";
 
 const port = Number(process.env.PORT ?? 3001);
 const dataRoot = resolve(process.env.MEDIA_DATA_ROOT ?? "/data");
 const maxJsonBodyBytes = 8 * 1024 * 1024;
+const maxVisualBodyBytes = 25 * 1024 * 1024;
 const uuidPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const base64Pattern = /^[A-Za-z0-9+/]+={0,2}$/;
+const supportedImageTypes = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
+const fallbackFontPath =
+  "/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf";
 
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
   throw new Error("PORT must be a valid TCP port");
@@ -41,18 +50,18 @@ function sendJson(response, statusCode, payload) {
   response.end(JSON.stringify(payload));
 }
 
-async function readJsonBody(request) {
+async function readBody(request, maxBytes) {
   const chunks = [];
   let totalBytes = 0;
 
   for await (const chunk of request) {
     totalBytes += chunk.length;
 
-    if (totalBytes > maxJsonBodyBytes) {
+    if (totalBytes > maxBytes) {
       throw new HttpError(
         413,
         "payload_too_large",
-        `JSON body exceeds ${maxJsonBodyBytes} bytes`,
+        `Request body exceeds ${maxBytes} bytes`,
       );
     }
 
@@ -63,10 +72,15 @@ async function readJsonBody(request) {
     throw new HttpError(400, "empty_body", "Request body is required");
   }
 
+  return Buffer.concat(chunks);
+}
+
+async function readJsonBody(request) {
+  const body = await readBody(request, maxJsonBodyBytes);
   let parsed;
 
   try {
-    parsed = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    parsed = JSON.parse(body.toString("utf8"));
   } catch {
     throw new HttpError(400, "invalid_json", "Request body must be valid JSON");
   }
@@ -112,7 +126,7 @@ function decodeAudioBase64(value) {
   return audio;
 }
 
-function buildAudioPath(jobId, sceneNumber) {
+function validateJobAndScene(jobId, sceneNumber) {
   if (!uuidPattern.test(jobId)) {
     throw new HttpError(400, "invalid_job_id", "job_id must be a valid UUID");
   }
@@ -124,6 +138,10 @@ function buildAudioPath(jobId, sceneNumber) {
       "scene_number must be an integer between 1 and 1000",
     );
   }
+}
+
+function buildAudioPath(jobId, sceneNumber) {
+  validateJobAndScene(jobId, sceneNumber);
 
   const fileName = `scene-${String(sceneNumber).padStart(2, "0")}.mp3`;
   const relativePath = `jobs/${jobId.toLowerCase()}/voiceover/${fileName}`;
@@ -134,6 +152,23 @@ function buildAudioPath(jobId, sceneNumber) {
     !absolutePath.startsWith(`${dataRoot}${sep}`)
   ) {
     throw new HttpError(400, "invalid_audio_path", "Resolved audio path is unsafe");
+  }
+
+  return { relativePath, absolutePath };
+}
+
+function buildVisualPath(jobId, sceneNumber) {
+  validateJobAndScene(jobId, sceneNumber);
+
+  const fileName = `scene-${String(sceneNumber).padStart(2, "0")}.jpg`;
+  const relativePath = `jobs/${jobId.toLowerCase()}/visuals/${fileName}`;
+  const absolutePath = resolve(dataRoot, relativePath);
+
+  if (
+    absolutePath !== dataRoot &&
+    !absolutePath.startsWith(`${dataRoot}${sep}`)
+  ) {
+    throw new HttpError(400, "invalid_visual_path", "Resolved visual path is unsafe");
   }
 
   return { relativePath, absolutePath };
@@ -164,6 +199,107 @@ function probeDurationSeconds(filePath) {
   }
 
   return durationSeconds;
+}
+
+function probeImage(filePath) {
+  const output = execFileSync(
+    "ffprobe",
+    [
+      "-v",
+      "error",
+      "-select_streams",
+      "v:0",
+      "-show_entries",
+      "stream=codec_name,width,height,pix_fmt",
+      "-of",
+      "json",
+      filePath,
+    ],
+    {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    },
+  );
+
+  const parsed = JSON.parse(output);
+  const stream = parsed.streams?.[0];
+  const width = Number(stream?.width);
+  const height = Number(stream?.height);
+
+  if (!stream || !Number.isInteger(width) || width <= 0 || !Number.isInteger(height) || height <= 0) {
+    throw new Error("ffprobe did not return a valid image stream");
+  }
+
+  return {
+    codec_name: stream.codec_name ?? null,
+    width,
+    height,
+    pix_fmt: stream.pix_fmt ?? null,
+  };
+}
+
+function normalizeImage(sourcePath, targetPath) {
+  execFileSync(
+    "ffmpeg",
+    [
+      "-v",
+      "error",
+      "-y",
+      "-i",
+      sourcePath,
+      "-vf",
+      "scale=1920:1920:force_original_aspect_ratio=decrease",
+      "-frames:v",
+      "1",
+      "-q:v",
+      "2",
+      targetPath,
+    ],
+    {
+      stdio: ["ignore", "pipe", "pipe"],
+    },
+  );
+}
+
+function wrapFallbackText(value) {
+  if (typeof value !== "string") {
+    throw new HttpError(400, "invalid_text", "text must be a string");
+  }
+
+  const normalized = value.replace(/\s+/gu, " ").trim();
+
+  if (normalized.length === 0 || normalized.length > 500) {
+    throw new HttpError(
+      400,
+      "invalid_text",
+      "text must contain between 1 and 500 characters",
+    );
+  }
+
+  const words = normalized.split(" ");
+  const lines = [];
+  let current = "";
+
+  for (const word of words) {
+    const candidate = current.length === 0 ? word : `${current} ${word}`;
+
+    if (candidate.length <= 30) {
+      current = candidate;
+      continue;
+    }
+
+    if (current.length > 0) {
+      lines.push(current);
+    }
+
+    current = word;
+  }
+
+  if (current.length > 0) {
+    lines.push(current);
+  }
+
+  return lines.slice(0, 12).join("\n");
 }
 
 async function storeAudio(request, response) {
@@ -206,12 +342,151 @@ async function storeAudio(request, response) {
   }
 }
 
+async function storeVisual(request, response, requestUrl) {
+  const jobId = String(requestUrl.searchParams.get("job_id") ?? "")
+    .trim()
+    .toLowerCase();
+  const sceneNumber = Number(requestUrl.searchParams.get("scene_number"));
+  const contentType = String(request.headers["content-type"] ?? "")
+    .split(";", 1)[0]
+    .trim()
+    .toLowerCase();
+
+  validateJobAndScene(jobId, sceneNumber);
+
+  if (!supportedImageTypes.has(contentType)) {
+    throw new HttpError(
+      415,
+      "unsupported_visual_type",
+      `Unsupported image Content-Type: ${contentType || "missing"}`,
+    );
+  }
+
+  const visual = await readBody(request, maxVisualBodyBytes);
+  const { relativePath, absolutePath } = buildVisualPath(jobId, sceneNumber);
+  const directoryPath = dirname(absolutePath);
+  const sourcePath = `${absolutePath}.source-${randomUUID()}`;
+  const normalizedPath = `${absolutePath}.normalized-${randomUUID()}.jpg`;
+
+  await mkdir(directoryPath, { recursive: true });
+
+  try {
+    await writeFile(sourcePath, visual, { flag: "wx" });
+    const sourceProbe = probeImage(sourcePath);
+
+    normalizeImage(sourcePath, normalizedPath);
+
+    const normalizedProbe = probeImage(normalizedPath);
+    const normalizedStat = await stat(normalizedPath);
+
+    await rename(normalizedPath, absolutePath);
+    await rm(sourcePath, { force: true });
+
+    sendJson(response, 200, {
+      visual_path: relativePath,
+      media_type: "image",
+      source_content_type: contentType,
+      source_width: sourceProbe.width,
+      source_height: sourceProbe.height,
+      width: normalizedProbe.width,
+      height: normalizedProbe.height,
+      codec_name: normalizedProbe.codec_name,
+      bytes: normalizedStat.size,
+    });
+  } catch (error) {
+    await rm(sourcePath, { force: true }).catch(() => {});
+    await rm(normalizedPath, { force: true }).catch(() => {});
+
+    if (error instanceof HttpError) {
+      throw error;
+    }
+
+    throw new HttpError(
+      422,
+      "invalid_visual",
+      `Visual could not be stored and normalized: ${error.message}`,
+    );
+  }
+}
+
+async function createVisualFallback(request, response) {
+  const body = await readJsonBody(request);
+  const jobId = String(body.job_id ?? "").trim().toLowerCase();
+  const sceneNumber = Number(body.scene_number);
+  const text = wrapFallbackText(body.text);
+
+  const { relativePath, absolutePath } = buildVisualPath(jobId, sceneNumber);
+  const directoryPath = dirname(absolutePath);
+  const textPath = `${absolutePath}.text-${randomUUID()}.txt`;
+  const generatedPath = `${absolutePath}.generated-${randomUUID()}.jpg`;
+
+  await mkdir(directoryPath, { recursive: true });
+
+  try {
+    await writeFile(textPath, text, { encoding: "utf8", flag: "wx" });
+
+    execFileSync(
+      "ffmpeg",
+      [
+        "-v",
+        "error",
+        "-y",
+        "-f",
+        "lavfi",
+        "-i",
+        "color=c=0x111111:s=1080x1920:d=1",
+        "-vf",
+        `drawtext=fontfile=${fallbackFontPath}:textfile=${textPath}:fontcolor=white:fontsize=54:line_spacing=18:x=(w-text_w)/2:y=(h-text_h)/2`,
+        "-frames:v",
+        "1",
+        "-q:v",
+        "2",
+        generatedPath,
+      ],
+      {
+        stdio: ["ignore", "pipe", "pipe"],
+      },
+    );
+
+    const probe = probeImage(generatedPath);
+    const generatedStat = await stat(generatedPath);
+
+    await rename(generatedPath, absolutePath);
+    await rm(textPath, { force: true });
+
+    sendJson(response, 200, {
+      visual_path: relativePath,
+      media_type: "image",
+      fallback: true,
+      width: probe.width,
+      height: probe.height,
+      codec_name: probe.codec_name,
+      bytes: generatedStat.size,
+    });
+  } catch (error) {
+    await rm(textPath, { force: true }).catch(() => {});
+    await rm(generatedPath, { force: true }).catch(() => {});
+
+    if (error instanceof HttpError) {
+      throw error;
+    }
+
+    throw new HttpError(
+      422,
+      "fallback_generation_failed",
+      `Fallback visual could not be generated: ${error.message}`,
+    );
+  }
+}
+
 const ffmpegVersion = readToolVersion("ffmpeg");
 const ffprobeVersion = readToolVersion("ffprobe");
 
 const server = createServer(async (request, response) => {
   try {
-    if (request.method === "GET" && request.url === "/health") {
+    const requestUrl = new URL(request.url ?? "/", "http://localhost");
+
+    if (request.method === "GET" && requestUrl.pathname === "/health") {
       sendJson(response, 200, {
         status: "ok",
         ffmpeg: ffmpegVersion,
@@ -220,8 +495,18 @@ const server = createServer(async (request, response) => {
       return;
     }
 
-    if (request.method === "POST" && request.url === "/audio/store") {
+    if (request.method === "POST" && requestUrl.pathname === "/audio/store") {
       await storeAudio(request, response);
+      return;
+    }
+
+    if (request.method === "POST" && requestUrl.pathname === "/visual/store") {
+      await storeVisual(request, response, requestUrl);
+      return;
+    }
+
+    if (request.method === "POST" && requestUrl.pathname === "/visual/fallback") {
+      await createVisualFallback(request, response);
       return;
     }
 
