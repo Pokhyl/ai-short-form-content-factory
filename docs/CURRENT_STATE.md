@@ -43,10 +43,15 @@ Topic -> Script + scene plan -> Voiceover -> Visual sourcing -> Render -> Human 
 ### WF02 — Plan Script and Scenes
 
 - workflow ID `TJfA4ZYUEKSTad6k`
-- accepted export SHA-256 `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`
-- accepted export commit `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`
+- accepted pre-handoff export SHA-256 `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`
+- accepted pre-handoff export commit `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`
 - accepted quality job `6b08098c-e5c7-45bd-babb-036705b563e1`
-- WF02->WF03 is not wired yet
+- on 2026-08-24 the operator reported adding one native n8n `Execute Sub-workflow` node after `Persist Scene Plan`
+- reported node name: `Start Voiceover Generation`
+- reported target workflow: `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`)
+- intended payload: `job_id = {{ $json.job_id }}` only
+- intended `waitForSubWorkflow = false`
+- this WF02 hand-off change is **not yet independently verified from a fresh export and is not yet committed**
 
 ## M5 exact voice configuration — locked
 
@@ -160,31 +165,38 @@ Persisted and probed audio:
 
 All four `audio_path` values are populated, all four MP3 files exist, are non-empty, and are readable/probeable. The files were copied to the operator Mac and listened to manually; Polish voice quality was accepted.
 
-The operator has now explicitly confirmed that all four configured voice presets are to remain as selected. Do not spend additional time comparing/replacing EN/PL/RU/UK voices.
+The operator has explicitly confirmed that all four configured voice presets are to remain as selected. Do not spend additional time comparing/replacing EN/PL/RU/UK voices.
 
 ## M5 status
 
 M5 voice generation is functionally proven with a real TTS run: playable files are produced, real durations are measured/persisted, and the selected voice set is accepted by the operator.
 
-M5 remains `in progress` only because final pipeline integration WF02->WF03 has not yet been added/exported/verified. Do not start M6 before that integration checkpoint is complete.
+M5 remains `in progress` only because the newly added WF02->WF03 hand-off has not yet been verified from a fresh production export and committed. Do not start M6 before that integration checkpoint is complete.
 
 ## Exact next action
 
-1. Keep the four voice presets exactly as locked above.
-2. Do not rerun the accepted Polish job.
-3. Prepare the grounded WF02->WF03 native n8n sub-workflow hand-off using payload only `{ "job_id": "<uuid>" }` and `waitForSubWorkflow = false`.
-4. Export and verify the resulting WF02 workflow before committing it.
-5. After the hand-off checkpoint is complete, close M5 and only then start M6.
+1. Do not rerun the accepted Polish job.
+2. Export fresh production workflow `TJfA4ZYUEKSTad6k` from n8n to `n8n/workflows/WF02-plan-script-and-scenes.json` on the VPS.
+3. Verify from that export that:
+   - workflow ID is `TJfA4ZYUEKSTad6k`
+   - `Persist Scene Plan` connects to exactly one `Start Voiceover Generation` node
+   - that node is native `n8n-nodes-base.executeWorkflow`
+   - target workflow is `UHxvCZNqaLb1RKMM`
+   - payload contains only dynamic `job_id`
+   - `waitForSubWorkflow = false`
+   - no hardcoded acceptance UUID/topic/language data was introduced
+4. Only after those checks pass, commit and push the refreshed WF02 export.
+5. Then update this file with the verified export SHA/commit and close M5 before starting M6.
 
 ## Do not do
 
 - do not change the four selected voice presets
 - do not rerun prior accepted M4/M5 jobs
+- do not start M6 before the WF02->WF03 integration checkpoint is verified and committed
 - do not expose private SSH keys, GitHub tokens, OAuth secrets, or credentials
 - do not hardcode topic/narration/language-specific test data into production nodes
 - do not reuse Gemini credential for TTS
 - do not create new Google TTS auth objects
-- do not start M6 before the WF02->WF03 integration checkpoint is complete
 - do not modify the `n8n` PostgreSQL schema manually
 - do not add retry/dispatcher/queue/watchdog/Redis/generic idempotency infrastructure
 - do not add extra services
