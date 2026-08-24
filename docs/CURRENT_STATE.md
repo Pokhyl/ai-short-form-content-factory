@@ -39,7 +39,7 @@ Topic -> Script + scene plan -> Voiceover -> Visual sourcing -> Render -> Human 
 - verified payload `job_id = {{ $json.job_id }}`
 - verified `waitForSubWorkflow = false`
 - remote workflow commit `353149dbe5ff7e511ad5dfe7683b00755f765727`
-- final WF01->WF02 runtime hand-off has not yet been acceptance-tested
+- final WF01->WF02 runtime hand-off has not yet been separately acceptance-tested
 
 ### WF02 — Plan Script and Scenes
 
@@ -150,7 +150,9 @@ merge: sync M5 documentation before WF03 push
 
 Post-push verification proved remote HEAD matched local HEAD and the remote WF03 file had exact SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`.
 
-## First real M5 acceptance job — runtime progress
+Repository-specific deploy-key SSH read/write access from the VPS is verified. Do not reuse unrelated deploy keys.
+
+## M5 acceptance — Polish PASS
 
 Fresh Polish 15-second acceptance job:
 
@@ -158,17 +160,13 @@ Fresh Polish 15-second acceptance job:
 job_id: db19212b-7914-4346-9ec6-234d315c80d0
 ```
 
-Pre-run state was verified as:
+Pre-run state:
 
 ```text
 processing|script|4|4|0
 ```
 
-Meaning: `status = processing`, `current_stage = script`, exactly 4 scenes, narration present in all 4, and no existing audio fields.
-
-On 2026-08-24 the first real manual WF03 execution was run for this acceptance job. The n8n editor screenshot showed the entire normal success path green through `Require Voiceover Completion`; the failure branch was not shown as executed.
-
-Post-run job state was then verified as:
+The first real manual WF03 execution completed through the normal success path. Post-run job state was verified as:
 
 ```text
 status: processing
@@ -176,7 +174,7 @@ current_stage: voiceover
 last_error: empty
 ```
 
-A subsequent PostgreSQL scene query independently verified all four persisted audio rows:
+PostgreSQL independently verified all four audio rows:
 
 | Scene | audio_path | duration_seconds |
 | ---: | --- | ---: |
@@ -185,7 +183,7 @@ A subsequent PostgreSQL scene query independently verified all four persisted au
 | 3 | `jobs/db19212b-7914-4346-9ec6-234d315c80d0/voiceover/scene-03.mp3` | 6.768 |
 | 4 | `jobs/db19212b-7914-4346-9ec6-234d315c80d0/voiceover/scene-04.mp3` | 6.576 |
 
-Media storage was then independently verified with `ffprobe` for all four exact MP3 files:
+Media storage was independently verified with `ffprobe`:
 
 | Scene | ffprobe duration | size bytes |
 | ---: | ---: | ---: |
@@ -194,35 +192,48 @@ Media storage was then independently verified with `ffprobe` for all four exact 
 | 3 | 6.768000 | 27072 |
 | 4 | 6.576000 | 26304 |
 
-This proves all four corresponding MP3 files exist, are non-empty, and are readable/probeable. The ffprobe durations exactly match the durations persisted in PostgreSQL.
+The four MP3 files were copied to the operator Mac and listened to manually. On 2026-08-24 the operator accepted the Polish voice quality as normal/acceptable.
 
-Still pending before accepting Polish M5:
+Therefore Polish M5 voice acceptance is **PASS**:
 
-- manual listening quality of the Polish voice
+- every required scene has a real playable MP3
+- measured durations are positive and persisted
+- stored files are readable/probeable
+- manual Polish voice quality is accepted
 
-Do not rerun this job blindly.
+Do not rerun this Polish acceptance job.
 
-## M5 acceptance
+## M5 acceptance status
 
-Per `docs/ROADMAP.md`:
+Per `docs/ROADMAP.md`, M5 requires:
 
 - every scene has a playable audio file
 - actual audio duration is measured
 - voice quality is manually accepted in all supported languages used for testing
 
-Do not start M6 before real M5 acceptance.
+Current language acceptance:
+
+- `pl`: PASS
+- `en`: pending
+- `ru`: pending
+- `uk`: pending
+
+M5 remains in progress. Do not start M6 yet.
 
 ## Exact next action
 
-1. Do not execute WF03 again for `db19212b-7914-4346-9ec6-234d315c80d0`.
-2. Copy the four verified Polish MP3 files to the operator machine and listen to them manually.
-3. Record manual Polish voice-quality PASS/FAIL before preparing acceptance runs for the remaining supported languages.
-4. Keep WF02->WF03 disconnected and do not start M6 until M5 acceptance is complete.
+1. Keep WF02->WF03 disconnected.
+2. Prepare one fresh 15-second English acceptance job through production WF01/WF02.
+3. Verify it reaches `status = processing`, `current_stage = script`, exactly 4 scenes, narration present in all 4, and zero audio fields.
+4. Run WF03 once for that new job using only its `job_id`.
+5. Verify job state, all four persisted audio rows, all four MP3 files, and then manually listen to the English voice.
+6. After English PASS/FAIL is recorded, repeat the same controlled process for Russian and Ukrainian.
+7. Do not start M6 until M5 acceptance is complete.
 
 ## Do not do
 
 - do not rerun prior M4 acceptance jobs
-- do not rerun the current successful M5 job before verification
+- do not rerun the accepted Polish M5 job
 - do not wire WF02->WF03 yet
 - do not expose private SSH keys, GitHub tokens, OAuth secrets, or credentials
 - do not substitute voice presets
