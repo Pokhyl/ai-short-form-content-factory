@@ -525,6 +525,21 @@ The relevance check found one concrete M6 quality failure: scene 2 query `cat la
 
 The smallest corrective change is to weight query-token matches by their position in `visual_query` for both Pixabay and Pexels selectors, preserving provider order and fallback behavior. Earlier query terms receive more weight; no provider, service, persistence, or handoff contract changes are required.
 
+## M6 weighted visual-selection implementation checkpoint
+
+The relevance-ranking fix was implemented in both `Select Pixabay Candidate` and `Select Pexels Candidate` without changing provider order, credentials, persistence, media-worker calls, or the handoff contract. Query-token matches are now weighted by position (`30, 25, 20, ...`, floor `10`) instead of every matched token contributing the same `10` points. Selected metadata also records `matched_tokens`.
+
+A live Pixabay search simulation against the four accepted scene queries confirmed the corrected ranking behavior before runtime re-selection:
+
+```text
+scene 1 -> asset 5129332, matched [close, cat]
+scene 2 -> asset 7965411, matched [cat]  (human anatomy asset 254129 no longer wins)
+scene 3 -> asset 8032816, matched [relaxed, cat]
+scene 4 -> asset 9637984, matched [cat]
+```
+
+The code change is not yet runtime-accepted against persisted re-selection output. The next step is to reselect through n8n on the same acceptance job using a temporary n8n-owned acceptance reset/retry harness; do not manually mutate PostgreSQL outside n8n and do not rerun WF03/M5.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -536,10 +551,10 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. update `Select Pixabay Candidate` and `Select Pexels Candidate` so earlier `visual_query` tokens carry more relevance weight while provider order and fallback behavior remain unchanged;
-2. commit/push the clean WF04 selector fix and update this file with the implementation checkpoint;
-3. run one corrected M6 acceptance re-selection through n8n without rerunning WF03/M5 and without manual PostgreSQL mutation outside n8n;
-4. verify persisted assets/files and manually review all four selected visuals for relevance;
+1. commit/push the clean weighted-selector WF04 plus this implementation checkpoint;
+2. run one corrected M6 acceptance re-selection through n8n on the same job using a temporary n8n-owned reset/retry harness; do not rerun WF03/M5 and do not manually mutate PostgreSQL outside n8n;
+3. verify all four persisted assets/files and their provider/license metadata;
+4. manually review all four selected visuals for scene relevance;
 5. only after relevance is accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export clean production workflows, and close M6.
 
 ## Do not do
