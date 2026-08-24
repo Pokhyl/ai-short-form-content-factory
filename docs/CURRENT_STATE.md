@@ -216,6 +216,24 @@ The workflow receives only `job_id`, reloads durable job/scene state, verifies c
 
 The workflow is intentionally inactive and has not yet been runtime-accepted on real scene output. Technical import success is not M6 acceptance.
 
+## M6 real-job eligibility checkpoint
+
+A read-only production query identified exactly one job eligible for the first WF04 runtime acceptance without rerunning M4 or M5:
+
+```text
+job_id: db19212b-7914-4346-9ec6-234d315c80d0
+topic: Dlaczego koty mruczą?
+language_code: pl
+target_duration_seconds: 15
+scene_count: 4
+audio_ready: 4
+visuals_ready: 0
+asset_count: 0
+status/current_stage filter: processing/voiceover
+```
+
+This is the already accepted M5 job. Do not execute WF03 again. It is eligible to enter WF04 directly.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
