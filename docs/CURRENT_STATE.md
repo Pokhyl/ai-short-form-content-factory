@@ -131,33 +131,12 @@ Verified results:
 
 ```text
 MEDIA_WORKER_HEALTH: OK
-
 VISUAL_STORE_STATUS: 200
-VISUAL_STORE_BODY: {
-  "visual_path": "jobs/11111111-1111-4111-8111-111111111111/visuals/scene-01.jpg",
-  "media_type": "image",
-  "source_content_type": "image/png",
-  "source_width": 640,
-  "source_height": 360,
-  "width": 1920,
-  "height": 1080,
-  "codec_name": "mjpeg",
-  "bytes": 26056
-}
-
+VISUAL_STORE_PATH: jobs/11111111-1111-4111-8111-111111111111/visuals/scene-01.jpg
+VISUAL_STORE_NORMALIZED: mjpeg 1920x1080
 VISUAL_FALLBACK_STATUS: 200
-VISUAL_FALLBACK_BODY: {
-  "visual_path": "jobs/11111111-1111-4111-8111-111111111111/visuals/scene-02.jpg",
-  "media_type": "image",
-  "fallback": true,
-  "width": 1080,
-  "height": 1920,
-  "codec_name": "mjpeg",
-  "bytes": 33566
-}
-
-STORE_FFPROBE: mjpeg 1920x1080
-FALLBACK_FFPROBE: mjpeg 1080x1920
+VISUAL_FALLBACK_PATH: jobs/11111111-1111-4111-8111-111111111111/visuals/scene-02.jpg
+VISUAL_FALLBACK_NORMALIZED: mjpeg 1080x1920
 STORE_FILE_BYTES: 26056
 FALLBACK_FILE_BYTES: 33566
 DISPOSABLE_MEDIA_REMOVED: YES
@@ -165,6 +144,29 @@ M6_MEDIA_WORKER_RUNTIME_TEST: OK
 ```
 
 Therefore the reusable media-worker visual storage/normalization/fallback boundary is runtime-proven and ready for WF04.
+
+## M6 provider prerequisite checkpoint
+
+Production runtime key-presence check on 2026-08-24:
+
+```text
+PIXABAY_API_KEY: MISSING
+PEXELS_API_KEY: MISSING
+WIKIMEDIA_API_KEY: NOT_REQUIRED
+M6_PROVIDER_PREREQUISITES_CHECK: DONE
+```
+
+No secret value was printed or committed.
+
+Repository placeholders were added to `.env.example` in commit:
+
+```text
+721318ed0bc5423d5daf5b87343a5d30eb446150 docs: add M6 provider env placeholders
+```
+
+`.env.example` now documents `PIXABAY_API_KEY` and `PEXELS_API_KEY` with placeholder values only. Wikimedia Commons requires no API key.
+
+The real Pixabay and Pexels keys are still missing from the VPS runtime. Do not invent or commit them. The factual Wikimedia path can be implemented without a secret, but the complete generic provider route cannot be runtime-proven until both stock-provider keys exist.
 
 ## M6 acceptance from ROADMAP
 
@@ -177,13 +179,16 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-Create `WF04 — Visual Sourcing` next, but first verify provider runtime prerequisites without exposing secrets:
+Obtain the two free provider API keys and add them only to the VPS `.env`, never to GitHub or chat:
 
-1. confirm whether `PIXABAY_API_KEY` and `PEXELS_API_KEY` already exist in the VPS runtime configuration; print only PRESENT/MISSING, never values;
-2. Wikimedia Commons requires no API secret and can be implemented immediately;
-3. if either stock-provider key is missing, add only the missing runtime secret plus documented placeholder in `.env.example` before wiring that provider;
-4. then create/import WF04 as a native sub-workflow that receives only `job_id`, reloads job/scenes, validates complete voiceover, enters `current_stage='visuals'`, routes factual/generic scenes deterministically, stores normalized visuals through media-worker, persists `assets` + `scenes.visual_path`, and stops without M7 hand-off until M7 exists;
-5. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`.
+1. obtain a Pixabay API key from the Pixabay API account/documentation flow;
+2. obtain a Pexels API key from the Pexels API account/request-key flow;
+3. write `PIXABAY_API_KEY` and `PEXELS_API_KEY` into `/opt/ai-short-form-content-factory/.env` on the VPS without printing their values;
+4. verify only PRESENT/MISSING;
+5. then create/import `WF04 — Visual Sourcing` with the complete deterministic provider route;
+6. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`.
+
+Do not create a partial production generic route that silently skips Pixabay/Pexels while the architecture says they are the configured stock route. Local fallback remains the terminal fallback only after the configured provider path has genuinely been attempted or when provider access is unavailable by explicit design.
 
 ## Do not do
 
