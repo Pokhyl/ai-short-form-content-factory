@@ -234,6 +234,43 @@ status/current_stage filter: processing/voiceover
 
 This is the already accepted M5 job. Do not execute WF03 again. It is eligible to enter WF04 directly.
 
+## M6 first WF04 runtime attempt checkpoint
+
+The first real WF04 execution attempt was made on 2026-08-24 using the accepted M5 job directly; WF03/M5 were not rerun.
+
+Runtime facts:
+
+```text
+job_id: db19212b-7914-4346-9ec6-234d315c80d0
+isolated CLI task-broker port: 5680
+Begin Visual Stage: succeeded
+job status/current_stage after attempt: processing/visuals
+visuals_ready: 0
+asset_count: 0
+last_error: empty
+```
+
+The alternate task-broker port removed the previous CLI port collision, so WF04 reached provider execution. Two concrete workflow/runtime blockers were then exposed:
+
+```text
+Search Pixabay: access to env vars denied
+Recover Generic Context: Can't use .first() here ... This is only available in Run Once for All Items mode
+```
+
+Therefore the provider key values are present in the n8n container, but direct `$env` access from workflow nodes is blocked by the current n8n runtime policy. Also, at least one `runOnceForEachItem` Code node incorrectly uses `$input.first()` and must be corrected before the next attempt.
+
+The temporary Manual Trigger acceptance harness was removed immediately after the attempt. The clean runtime WF04 was re-imported and verified:
+
+```text
+WF04_CLEAN_NODE_COUNT: 36
+WF04_CLEAN_NATIVE_TRIGGER: YES
+WF04_CLEAN_MANUAL_TRIGGER: NO
+WF04_CLEAN_TEST_JOB_LITERAL: NO
+WF04_CLEAN_PIN_DATA: EMPTY
+```
+
+No visual files or `public.assets` rows were persisted by this failed attempt. The acceptance job is now resumable from `processing/visuals`; do not move it back to voiceover and do not rerun WF03.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -245,8 +282,8 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. identify one real job that is already `processing/voiceover`, has complete audio for every required scene, and has no visual output yet; do not rerun M4 or M5;
-2. invoke the imported inactive WF04 manually for that `job_id` using a temporary runtime-only test harness, then immediately restore the clean workflow definition with no pinned/hardcoded acceptance data;
+1. fix the two proven WF04 blockers without changing the provider route: replace blocked workflow `$env` secret access with an n8n-supported provider authentication mechanism, and correct per-item Code nodes that use `$input.first()`;
+2. re-import the cleaned WF04 and resume the same acceptance job directly from `processing/visuals`; do not rerun WF03/M5;
 3. verify PostgreSQL asset/visual persistence and media files, then manually review selected visual relevance and attribution/license metadata;
 4. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`;
 5. export the cleaned production workflows to the repository and close M6 only after ROADMAP acceptance is satisfied.
