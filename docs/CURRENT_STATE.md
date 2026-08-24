@@ -12,11 +12,9 @@ For every technical reply or action about this project, fetch the current `docs/
 
 AI Short-Form Content Factory
 
-Repository: `Pokhyl/ai-short-form-content-factory`
-
-Current branch: `feat/m5-voiceover`
-
-Current milestone: M5 — Voiceover (`in progress`).
+- repository: `Pokhyl/ai-short-form-content-factory`
+- branch: `feat/m5-voiceover`
+- milestone: M5 — Voiceover (`in progress`)
 
 Target flow:
 
@@ -42,27 +40,26 @@ Topic
 
 ## Completed upstream checkpoints
 
-M4 PR #5 merged into `main` on 2026-08-23, merge commit `7d25bac1c4d1a90b2b29183d9ec3ca280d1acfc4`.
-
-Production `WF02 — Plan Script and Scenes`:
-
-- workflow ID `TJfA4ZYUEKSTad6k`
-- accepted topology: 8 nodes ending in `Persist Scene Plan`
-- accepted export SHA-256 `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`
-- accepted export commit `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`
-- accepted quality job `6b08098c-e5c7-45bd-babb-036705b563e1`, Polish, 30 seconds, exactly 8 persisted scenes, manual quality PASS
-- do not rerun prior M4 acceptance jobs
-
 Production `WF01 — Create Content Job`:
 
 - workflow ID `Xy94qe35OigtMxkR`
 - verified export blob `a71161b373bb56bd0aba8abeba410e17011dcb5c`
-- verified target `TJfA4ZYUEKSTad6k` (`WF02`)
+- verified hand-off target `TJfA4ZYUEKSTad6k` (`WF02`)
 - verified input `job_id = {{ $json.job_id }}`
 - verified `waitForSubWorkflow = false`
-- verified `Insert Job` branches to both `Return Created Job` and `Start Script Planning`
+- verified `Insert Job` branches to `Return Created Job` and `Start Script Planning`
 - remote workflow commit `353149dbe5ff7e511ad5dfe7683b00755f765727`
-- WF01 must return HTTP 201 without waiting for downstream completion
+- final WF01->WF02 end-to-end runtime hand-off has not yet been acceptance-tested
+
+Production `WF02 — Plan Script and Scenes`:
+
+- workflow ID `TJfA4ZYUEKSTad6k`
+- M4 accepted topology: 8 nodes ending in `Persist Scene Plan`
+- accepted export SHA-256 `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`
+- accepted export commit `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`
+- accepted quality job `6b08098c-e5c7-45bd-babb-036705b563e1`, Polish, 30 seconds, exactly 8 scenes, manual quality PASS
+- do not rerun prior M4 acceptance jobs
+- WF02->WF03 is not wired yet
 
 ## M5 exact voice configuration
 
@@ -79,18 +76,18 @@ Do not substitute guessed voices.
 
 ## M5 architecture contract
 
-`WF03 — Voiceover Generation` is a separate n8n stage workflow. It:
+`WF03 — Voiceover Generation` is a separate n8n stage. It:
 
 - receives only `job_id`
 - reloads persisted job/scenes from PostgreSQL
-- validates stage eligibility
-- changes `jobs.current_stage` to `voiceover` only when M5 actually begins
-- generates one voiceover file per scene using the exact configured voice for the job language
+- validates eligibility
+- changes `jobs.current_stage` to `voiceover` only when M5 begins
+- generates one audio file per scene using the exact voice for `jobs.language_code`
 - stores `scenes.audio_path`
-- measures real audio duration and stores it in `scenes.duration_seconds`
-- persists product state through n8n, not directly from media-worker
-- starts Visual Sourcing only after every required scene audio is ready
-- on failure records `jobs.status = failed`, `jobs.current_stage = voiceover`, and `jobs.last_error`, and does not start the next stage
+- stores measured real `scenes.duration_seconds`
+- keeps PostgreSQL writes in n8n; media-worker never writes product state
+- starts Visual Sourcing only after all required scene audio is ready
+- on stage failure must record `jobs.status = failed`, `jobs.current_stage = voiceover`, and `jobs.last_error`, and must not start the next stage
 
 Internal stage hand-off payload remains only:
 
@@ -106,12 +103,12 @@ Internal automatic hand-offs use native n8n sub-workflows, not public webhooks. 
 
 - narration comes from persisted `scenes.narration`
 - language comes from persisted `jobs.language_code`
-- voice comes from the locked four-language map above
+- voice comes from the locked map above
 - no hardcoded topic, test narration, Polish-only setting, or concrete acceptance job in permanent production nodes
 
 ## Media-worker audio boundary
 
-Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` added `POST /audio/store` to the existing `media-worker`.
+Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` added `POST /audio/store` to existing `media-worker`.
 
 Request:
 
@@ -125,16 +122,14 @@ Request:
 
 Behavior:
 
-- deterministic media-relative path `jobs/<job_id>/voiceover/scene-XX.mp3`
+- deterministic path `jobs/<job_id>/voiceover/scene-XX.mp3`
 - ffprobe validation before final replace
 - returns `audio_path`, measured `duration_seconds`, and `bytes`
-- media-worker never writes PostgreSQL
-
-Synthetic acceptance already passed; do not repeat it before real TTS.
+- synthetic runtime acceptance already passed; do not repeat before real TTS
 
 ## Google Cloud TTS authentication
 
-Use existing project `n8n-drive-voiceover` and existing dedicated OAuth client `n8n-tts-oauth`.
+Use existing project `n8n-drive-voiceover` and dedicated OAuth client `n8n-tts-oauth`.
 
 Verified:
 
@@ -146,7 +141,7 @@ Verified:
 - Google authorization completed in current runtime
 - first real authenticated TTS request still pending acceptance
 
-Do not create replacement auth objects and never expose OAuth secrets.
+Do not create replacement auth objects. Never expose OAuth secrets.
 
 ## WF03 implementation checkpoint
 
@@ -158,41 +153,64 @@ Production workflow:
 Directly verified from screenshots:
 
 - old Manual Trigger removed; `Receive Job ID` present
-- `Normalize Job ID` exists with accepted UUID normalization/validation code and Mode `Run Once for All Items`
-- `Load Voiceover Context` exists, uses `Application PostgreSQL` / `Execute Query`, `$1::uuid`, and query parameter `{{ [ $json.job_id ] }}`
-- visible SQL loads job fields and aggregated scenes including `scene_id`, `scene_number`, `narration`, `audio_path`, `duration_seconds`, and scene `status`
-- `Generate Voiceover` is HTTP Request with `POST`, `Google OAuth2 API`, credential display name `Google account`, header `x-goog-user-project: n8n-drive-voiceover`, `Send Body = ON`, `Body Content Type = JSON`, `Specify Body = Using JSON`
-- visible lower JSON includes dynamic `$json.voice_name` and `audioEncoding = 'MP3'`
+- `Normalize Job ID` exists with accepted UUID normalization/validation and Mode `Run Once for All Items`
+- `Load Voiceover Context` exists and uses `Application PostgreSQL` / `Execute Query`, `$1::uuid`, query parameter `{{ [ $json.job_id ] }}`; visible SQL loads job fields and aggregated scenes
+- `Generate Voiceover` is HTTP Request `POST` using `Google OAuth2 API`, credential display `Google account`, header `x-goog-user-project: n8n-drive-voiceover`, JSON body, dynamic `$json.voice_name`, MP3 encoding
 - complete TTS JSON has not yet been independently export-verified
 - no real Cloud TTS request has been accepted yet
 
-User-reported implementation steps, not yet independently verified by screenshot/export:
+User-reported implementation in current production WF03, not yet independently verified by export:
 
-1. `Require Eligible Voiceover Job` exists after `Load Voiceover Context`. It was updated to allow `processing/script` or resumable `processing/voiceover`, validates exact scene count/sequence/narration, and requires consistent audio state per scene.
-2. `Begin Voiceover Stage` exists after eligibility validation. It was updated to atomically change `processing/script` to `voiceover` or accept an already `processing/voiceover` resumable job, returning `ready_to_run` and `started_now`.
-3. `Prepare Voiceover Items` exists after `Begin Voiceover Stage`. It was updated to require `ready_to_run`, select the exact locked voice, skip scenes whose `audio_path` and `duration_seconds` are already complete, and emit one item per pending scene with `job_id`, `scene_id`, `scene_number`, `language_code`, `voice_name`, and `narration`.
-4. User reports `Prepare Voiceover Items -> Generate Voiceover` is connected.
-5. `Store Audio` was added after `Generate Voiceover` as HTTP Request `POST http://media-worker:3001/audio/store`, no authentication, JSON body using the linked scene `job_id`, `scene_number`, and Google response `$json.audioContent` as `audio_base64`.
-6. User reports `Generate Voiceover -> Store Audio` is connected.
-7. `Persist Audio Result` was added after `Store Audio` as `Application PostgreSQL` / `Execute Query`. The supplied SQL updates the exact scene by `scene_id + job_id`, writes media-worker `audio_path` and measured `duration_seconds`, requires an empty prior audio state and positive duration, and returns `persisted` plus the stored values. User reports this step is configured and connected.
+```text
+Receive Job ID
+-> Normalize Job ID
+-> Load Voiceover Context
+-> Require Eligible Voiceover Job
+-> Begin Voiceover Stage
+-> Prepare Voiceover Items
+-> Generate Voiceover
+-> Store Audio
+-> Persist Audio Result
+-> Require Persisted Audio Batch
+-> Verify Voiceover Completion
+```
 
-Do not treat the user-reported nodes/connections as independently verified until workflow export or screenshot proves them.
+Reported node behavior/configuration:
+
+1. `Require Eligible Voiceover Job` accepts `processing/script` or resumable `processing/voiceover`, validates language, exact duration-specific scene count, sequential scenes, non-empty narration, and consistent prior audio state.
+2. `Begin Voiceover Stage` atomically changes `processing/script` to `voiceover` or accepts existing `processing/voiceover`, returning `ready_to_run` and `started_now`.
+3. `Prepare Voiceover Items` selects the exact locked voice, skips already-complete scenes, and emits one item per pending scene containing `job_id`, `scene_id`, `scene_number`, `language_code`, `voice_name`, `narration`.
+4. `Generate Voiceover` is connected after preparation.
+5. `Store Audio` is HTTP Request `POST http://media-worker:3001/audio/store`, no auth, with linked `job_id`, `scene_number`, and Google `$json.audioContent` as `audio_base64`.
+6. `Persist Audio Result` writes media-worker `audio_path` and measured `duration_seconds` to the exact scene by `scene_id + job_id`, only when prior audio state is empty, and returns `persisted`.
+7. `Require Persisted Audio Batch` is Code / `Run Once for All Items`; user reports it requires every persistence result to have `persisted === true`, requires one shared `job_id`, and emits exactly one `{ job_id }` item.
+8. `Verify Voiceover Completion` is PostgreSQL / `Execute Query`; user reports it reloads durable DB state and returns exact scene counts plus `all_audio_ready`, true only when the job is `processing/voiceover`, the duration-specific required scene count exists, and every scene has non-empty `audio_path` plus positive `duration_seconds`.
+
+Do not treat user-reported nodes/connections as independently verified until workflow export or screenshot proves them.
+
+## M5 acceptance
+
+Per `docs/ROADMAP.md`:
+
+- every scene has a playable audio file
+- actual audio duration is measured
+- voice quality is manually accepted in all supported languages used for testing
+
+Do not start M6 before real M5 acceptance.
 
 ## Deferred M9 Studio status endpoint
 
-Do not implement during M5, but do not forget it. During M9 add one separate read-only n8n HTTP status workflow/webhook accepting `job_id`, validating it, reading PostgreSQL, and returning at minimum `job_id`, `status`, `current_stage`, and `last_error`. Do not add public progress webhooks to WF02/WF03/WF04. Browser never connects directly to PostgreSQL. Studio may poll this single endpoint.
-
-Recorded also in `docs/ROADMAP.md` M9 by commit `ec0eb9a6167820c6d3c895ec9f8a606773a2f470`.
+During M9 add one separate read-only n8n HTTP status workflow/webhook accepting `job_id`, validating it, reading PostgreSQL, and returning at minimum `job_id`, `status`, `current_stage`, `last_error`. Do not add public progress webhooks to WF02/WF03/WF04. Browser never connects directly to PostgreSQL. Studio may poll this single endpoint.
 
 ## Exact next action
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
-1. Add a Code node after `Persist Audio Result`, Mode `Run Once for All Items`, that requires every persistence result in the current pending-scene batch to have `persisted === true`, requires a single shared `job_id`, and emits exactly one `{ job_id }` item.
-2. Add one PostgreSQL completion-verification node after that aggregation. It must verify from durable PostgreSQL state that the job is still `processing/voiceover`, that the exact duration-specific scene count exists, and that every scene has non-empty `audio_path` plus positive `duration_seconds`.
-3. Do not advance `current_stage` to `visuals` and do not wire a Visual Sourcing workflow yet; M6 is not implemented.
-4. Do not execute real TTS until the full WF03 structure is in place and exported/verified.
-5. Do not wire WF02 to WF03 and do not run the end-to-end chain yet.
+1. Add one final Code guard after `Verify Voiceover Completion` that requires `all_audio_ready === true` and emits one completion item for the job.
+2. Keep the successful M5 end state at `processing/voiceover` for now; do not advance to `visuals` and do not wire M6 because M6 is not implemented.
+3. Then export the full production WF03 to the repository and verify all node code, SQL, TTS JSON, connections, and resumable behavior from the export before the first real TTS execution.
+4. Before real TTS acceptance, add/verify the smallest stage-specific failure path needed so failures after entering `voiceover` record `status = failed`, `current_stage = voiceover`, and `last_error` without introducing generic retry infrastructure.
+5. Do not wire WF02->WF03 and do not run the full chain yet.
 
 Before the next VPS Git change, synchronize the VPS branch because remote documentation commits have advanced the feature branch.
 
