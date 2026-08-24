@@ -35,22 +35,20 @@ Topic -> Script + scene plan -> Voiceover -> Visual sourcing -> Render -> Human 
 ### WF01 — Create Content Job
 
 - workflow ID `Xy94qe35OigtMxkR`
-- verified hand-off target `TJfA4ZYUEKSTad6k` (`WF02`)
-- verified payload `job_id = {{ $json.job_id }}`
-- verified `waitForSubWorkflow = false`
+- hand-off target `TJfA4ZYUEKSTad6k` (`WF02`)
+- payload `job_id = {{ $json.job_id }}`
+- `waitForSubWorkflow = false`
 - remote workflow commit `353149dbe5ff7e511ad5dfe7683b00755f765727`
-- final WF01->WF02 runtime hand-off has not yet been separately acceptance-tested
 
 ### WF02 — Plan Script and Scenes
 
 - workflow ID `TJfA4ZYUEKSTad6k`
 - accepted export SHA-256 `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`
 - accepted export commit `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`
-- accepted quality job `6b08098c-e5c7-45bd-babb-036705b563e1`, Polish, 30 seconds, 8 scenes, manual quality PASS
-- do not rerun prior M4 acceptance jobs
+- accepted quality job `6b08098c-e5c7-45bd-babb-036705b563e1`
 - WF02->WF03 is not wired yet
 
-## M5 exact voice configuration
+## M5 exact voice configuration — locked
 
 Provider: Google Cloud Text-to-Speech.
 
@@ -61,7 +59,7 @@ Provider: Google Cloud Text-to-Speech.
 | `ru` | `ru-RU-Wavenet-D` |
 | `uk` | `uk-UA-Chirp3-HD-Enceladus` |
 
-Do not substitute guessed voices.
+On 2026-08-24 the operator explicitly decided to keep **all four configured voices unchanged**. No further voice substitution or voice-selection work is required unless a concrete runtime problem appears.
 
 ## M5 contract
 
@@ -69,23 +67,13 @@ WF03 receives only `job_id`, reloads persisted state from PostgreSQL, validates 
 
 Production generality is mandatory: narration from `scenes.narration`, language from `jobs.language_code`, voice from the locked map, and no hardcoded topic/test narration/test job in permanent nodes.
 
-## Media-worker audio boundary
-
-Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` added `POST /audio/store` to the existing media-worker.
-
-- deterministic path `jobs/<job_id>/voiceover/scene-XX.mp3`
-- ffprobe validation
-- returns `audio_path`, measured `duration_seconds`, and `bytes`
-- synthetic runtime acceptance already passed; do not repeat it before real TTS
-
 ## Google Cloud TTS authentication
 
 Use existing project `n8n-drive-voiceover` and dedicated OAuth client `n8n-tts-oauth`.
 
-Verified before first real run:
+Verified:
 
 - Text-to-Speech API enabled
-- active free-trial credit
 - callback `https://publisher.hodor.com.pl/rest/oauth2-credential/callback`
 - n8n credential type `Google OAuth2 API`
 - scope `https://www.googleapis.com/auth/cloud-platform`
@@ -93,16 +81,21 @@ Verified before first real run:
 
 Do not create replacement auth objects or expose secrets.
 
-## WF03 final verified export
+## WF03 repository checkpoint
 
-- workflow name `WF03 — Voiceover Generation`
+Production workflow:
+
+- name `WF03 — Voiceover Generation`
 - workflow ID `UHxvCZNqaLb1RKMM`
-- exact final export is inactive (`active = false`)
-- exact final export has 17 nodes
+- inactive (`active = false`)
+- 17 nodes
 - final export SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`
+- local workflow commit `519ae3391771884abf6e2caa1632a2002b4085e2`
+- merge/push checkpoint `28b5cca041cf29984ca155e36b280ef00649d873`
+- remote file SHA verified identical
 - no Visual Sourcing hand-off exists yet
 
-Verified success topology:
+Success topology:
 
 ```text
 Receive Job ID
@@ -122,125 +115,76 @@ Receive Job ID
 -> STOP
 ```
 
-Verified failure topology:
+Failure topology:
 
 ```text
 error output -> Prepare Voiceover Failure -> Record Voiceover Failure -> Stop Voiceover Failure
 ```
 
-Verified invariants include intended `continueErrorOutput` routes, TTS POST endpoint, media-worker POST endpoint, response guards, failure SQL, per-item linkage, no hardcoded acceptance UUIDs, and no M6 hand-off.
+## Real M5 runtime acceptance
 
-## WF03 repository checkpoint — remote verified
-
-The exact verified workflow export was originally committed on the VPS as:
+Polish 15-second acceptance job:
 
 ```text
-519ae3391771884abf6e2caa1632a2002b4085e2
-feat: add WF03 voiceover workflow
+db19212b-7914-4346-9ec6-234d315c80d0
 ```
 
-That commit contains only `n8n/workflows/WF03-voiceover-generation.json` and remains intact in history.
-
-A normal merge commit was created and pushed after documentation-only remote changes were proven disjoint from the local WF03-only commit:
+Verified before WF03:
 
 ```text
-28b5cca041cf29984ca155e36b280ef00649d873
-merge: sync M5 documentation before WF03 push
+status = processing
+current_stage = script
+scene_count = 4
+narration_count = 4
+audio_state_count = 0
 ```
 
-Post-push verification proved remote HEAD matched local HEAD and the remote WF03 file had exact SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`.
+The real WF03 execution completed through the normal success path.
 
-Repository-specific deploy-key SSH read/write access from the VPS is verified. Do not reuse unrelated deploy keys.
-
-## M5 acceptance — Polish PASS
-
-Fresh Polish 15-second acceptance job:
+Verified after WF03:
 
 ```text
-job_id: db19212b-7914-4346-9ec6-234d315c80d0
+status = processing
+current_stage = voiceover
+last_error = empty
 ```
 
-Pre-run state:
+Persisted and probed audio:
 
-```text
-processing|script|4|4|0
-```
-
-The first real manual WF03 execution completed through the normal success path. Post-run job state was verified as:
-
-```text
-status: processing
-current_stage: voiceover
-last_error: empty
-```
-
-PostgreSQL independently verified all four audio rows:
-
-| Scene | audio_path | duration_seconds |
-| ---: | --- | ---: |
-| 1 | `jobs/db19212b-7914-4346-9ec6-234d315c80d0/voiceover/scene-01.mp3` | 6.096 |
-| 2 | `jobs/db19212b-7914-4346-9ec6-234d315c80d0/voiceover/scene-02.mp3` | 6.576 |
-| 3 | `jobs/db19212b-7914-4346-9ec6-234d315c80d0/voiceover/scene-03.mp3` | 6.768 |
-| 4 | `jobs/db19212b-7914-4346-9ec6-234d315c80d0/voiceover/scene-04.mp3` | 6.576 |
-
-Media storage was independently verified with `ffprobe`:
-
-| Scene | ffprobe duration | size bytes |
+| Scene | duration_seconds | size bytes |
 | ---: | ---: | ---: |
-| 1 | 6.096000 | 24384 |
-| 2 | 6.576000 | 26304 |
-| 3 | 6.768000 | 27072 |
-| 4 | 6.576000 | 26304 |
+| 1 | 6.096 | 24384 |
+| 2 | 6.576 | 26304 |
+| 3 | 6.768 | 27072 |
+| 4 | 6.576 | 26304 |
 
-The four MP3 files were copied to the operator Mac and listened to manually. On 2026-08-24 the operator accepted the Polish voice quality as normal/acceptable.
+All four `audio_path` values are populated, all four MP3 files exist, are non-empty, and are readable/probeable. The files were copied to the operator Mac and listened to manually; Polish voice quality was accepted.
 
-Therefore Polish M5 voice acceptance is **PASS**:
+The operator has now explicitly confirmed that all four configured voice presets are to remain as selected. Do not spend additional time comparing/replacing EN/PL/RU/UK voices.
 
-- every required scene has a real playable MP3
-- measured durations are positive and persisted
-- stored files are readable/probeable
-- manual Polish voice quality is accepted
+## M5 status
 
-Do not rerun this Polish acceptance job.
+M5 voice generation is functionally proven with a real TTS run: playable files are produced, real durations are measured/persisted, and the selected voice set is accepted by the operator.
 
-## M5 acceptance status
-
-Per `docs/ROADMAP.md`, M5 requires:
-
-- every scene has a playable audio file
-- actual audio duration is measured
-- voice quality is manually accepted in all supported languages used for testing
-
-Current language acceptance:
-
-- `pl`: PASS
-- `en`: pending
-- `ru`: pending
-- `uk`: pending
-
-M5 remains in progress. Do not start M6 yet.
+M5 remains `in progress` only because final pipeline integration WF02->WF03 has not yet been added/exported/verified. Do not start M6 before that integration checkpoint is complete.
 
 ## Exact next action
 
-1. Keep WF02->WF03 disconnected.
-2. Prepare one fresh 15-second English acceptance job through production WF01/WF02.
-3. Verify it reaches `status = processing`, `current_stage = script`, exactly 4 scenes, narration present in all 4, and zero audio fields.
-4. Run WF03 once for that new job using only its `job_id`.
-5. Verify job state, all four persisted audio rows, all four MP3 files, and then manually listen to the English voice.
-6. After English PASS/FAIL is recorded, repeat the same controlled process for Russian and Ukrainian.
-7. Do not start M6 until M5 acceptance is complete.
+1. Keep the four voice presets exactly as locked above.
+2. Do not rerun the accepted Polish job.
+3. Prepare the grounded WF02->WF03 native n8n sub-workflow hand-off using payload only `{ "job_id": "<uuid>" }` and `waitForSubWorkflow = false`.
+4. Export and verify the resulting WF02 workflow before committing it.
+5. After the hand-off checkpoint is complete, close M5 and only then start M6.
 
 ## Do not do
 
-- do not rerun prior M4 acceptance jobs
-- do not rerun the accepted Polish M5 job
-- do not wire WF02->WF03 yet
+- do not change the four selected voice presets
+- do not rerun prior accepted M4/M5 jobs
 - do not expose private SSH keys, GitHub tokens, OAuth secrets, or credentials
-- do not substitute voice presets
 - do not hardcode topic/narration/language-specific test data into production nodes
 - do not reuse Gemini credential for TTS
 - do not create new Google TTS auth objects
-- do not start M6 before M5 real voice acceptance
+- do not start M6 before the WF02->WF03 integration checkpoint is complete
 - do not modify the `n8n` PostgreSQL schema manually
 - do not add retry/dispatcher/queue/watchdog/Redis/generic idempotency infrastructure
 - do not add extra services
