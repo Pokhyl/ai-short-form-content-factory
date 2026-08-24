@@ -45,10 +45,9 @@ Topic -> Script + scene plan -> Voiceover -> Visual sourcing -> Render -> Human 
 - accepted pre-handoff export commit `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`
 - accepted quality job `6b08098c-e5c7-45bd-babb-036705b563e1`
 
-On 2026-08-24 the operator added one native n8n `Execute Sub-workflow` node after `Persist Scene Plan` and a direct inspection of the current exported JSON verified the hand-off structure:
+Verified WF02->WF03 hand-off structure from export:
 
 ```text
-WORKFLOW_ID: TJfA4ZYUEKSTad6k
 NODE_COUNT: 9
 NODE_TYPE: n8n-nodes-base.executeWorkflow
 HANDOFF_TARGET: UHxvCZNqaLb1RKMM
@@ -56,23 +55,19 @@ INPUT_KEYS: ['job_id']
 JOB_ID_VALUE: ={{ $json.job_id }}
 WAIT_FOR_SUBWORKFLOW: False
 PERSIST_TARGETS: ['Start Voiceover Generation']
-ACTIVE: True
-VERSION_ID: 1c117439-5075-4e09-b8c4-379e5fa84939
-ACTIVE_VERSION_ID: 6cb2b548-ac21-4c48-a2cf-b8e4aa764b83
-PUBLISHED_CURRENT_VERSION: NO
 WF02_WF03_HANDOFF_VERIFICATION: OK
 ```
 
-Therefore the new WF02->WF03 hand-off configuration itself is verified:
+Fresh runtime export verification after publish on 2026-08-24:
 
-- node name `Start Voiceover Generation`
-- native node type `n8n-nodes-base.executeWorkflow`
-- target workflow `UHxvCZNqaLb1RKMM`
-- payload contains dynamic `job_id` only
-- `waitForSubWorkflow=false`
-- `Persist Scene Plan` connects to exactly this hand-off node
+```text
+WF02_ACTIVE: true
+WF02_VERSION: 1c117439-5075-4e09-b8c4-379e5fa84939
+WF02_ACTIVE_VERSION: 1c117439-5075-4e09-b8c4-379e5fa84939
+WF02_PUBLISHED_CURRENT: YES
+```
 
-The operator then reported clicking `Publish` for this edited WF02 version. A screenshot shows the expected 9-node WF02 canvas including `Start Voiceover Generation`, but UI appearance alone does not prove that `activeVersionId` now equals `versionId`. The publish action therefore remains pending independent export verification before the final production checkpoint is committed.
+Therefore the edited WF02 version containing `Start Voiceover Generation` is now the published/current production version.
 
 ## M5 exact voice configuration — locked
 
@@ -105,17 +100,26 @@ Verified:
 
 Do not create replacement auth objects or expose secrets.
 
-## WF03 repository/runtime checkpoint
+## WF03 — Voiceover Generation
 
 - name `WF03 — Voiceover Generation`
 - workflow ID `UHxvCZNqaLb1RKMM`
-- inactive (`active=false`)
-- 17 nodes
-- final export SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`
-- original local workflow commit `519ae3391771884abf6e2caa1632a2002b4085e2`
+- 17-node production implementation previously exported and structurally verified
+- prior repository export SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`
+- original workflow commit `519ae3391771884abf6e2caa1632a2002b4085e2`
 - merge/push checkpoint `28b5cca041cf29984ca155e36b280ef00649d873`
-- remote file SHA verified identical
 - no M6/Visual Sourcing hand-off yet
+
+Fresh runtime export verification on 2026-08-24:
+
+```text
+WF03_ACTIVE: true
+WF03_VERSION: 41e4e421-3acc-4a3f-bca6-0aa15e37eec1
+WF03_ACTIVE_VERSION: 41e4e421-3acc-4a3f-bca6-0aa15e37eec1
+WF03_PUBLISHED_CURRENT: YES
+```
+
+This supersedes the older repository checkpoint that described WF03 as inactive. The repository export must now be refreshed so it matches the active production workflow.
 
 ## Real M5 runtime acceptance
 
@@ -156,23 +160,23 @@ All four `audio_path` values are populated; all MP3 files exist, are non-empty, 
 
 ## M5 status
 
-Voice generation is functionally proven with real TTS output and the selected voice set is locked. The WF02->WF03 hand-off structure is independently verified. The operator has reported publishing the edited WF02 version, but that publish must still be confirmed from a fresh export (`versionId == activeVersionId`) and the production export must then be committed/pushed. M5 remains `in progress` until that checkpoint is complete.
+Voice generation is functionally proven with real TTS output and the selected voice set is locked. WF02->WF03 hand-off structure is verified, and fresh runtime exports prove both WF02 and WF03 are active and their current versions are published.
+
+M5 remains `in progress` only until the fresh active production exports of WF02 and WF03 are copied into the repository, verified, committed, and pushed. After that checkpoint, close M5 before starting M6.
 
 ## Exact next action
 
 1. Do not rerun accepted M4/M5 jobs.
-2. Fresh-export WF02 after the operator's publish action and verify inside the n8n container that:
-   - `versionId == activeVersionId`
-   - the previously verified WF02->WF03 hand-off fields remain unchanged.
-3. Replace `n8n/workflows/WF02-plan-script-and-scenes.json` with that fresh production export.
-4. Commit/push the refreshed production WF02 export.
-5. Update this file with final export SHA/commit, close M5, and only then start M6.
+2. Reuse the just-created `/tmp/check-wf02.json` and `/tmp/check-wf03.json` inside the n8n container; copy them to the repository workflow paths without re-exporting.
+3. Verify the copied files still contain the proven active/current versions, the WF02->WF03 hand-off contract, empty `pinData`, no hardcoded acceptance data, and the four locked voice IDs.
+4. Commit/push both refreshed workflow exports.
+5. Update this file with final export SHA-256 values and commit, mark M5 complete, update `docs/ROADMAP.md`, and only then start M6.
 
 ## Do not do
 
 - do not change the four selected voices
 - do not rerun prior accepted M4/M5 jobs
-- do not start M6 before WF02->WF03 integration is published, verified, committed, and pushed
+- do not start M6 before refreshed WF02/WF03 production exports are verified and committed/pushed
 - do not expose private SSH keys, GitHub tokens, OAuth secrets, or credentials
 - do not hardcode test job/topic/language-specific data into permanent nodes
 - do not reuse Gemini credential for TTS
