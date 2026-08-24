@@ -508,6 +508,23 @@ CLEAN_PIN_DATA: EMPTY
 
 The next action is durable verification of all four persisted `scenes.visual_path` values, `public.assets` metadata rows, and the four normalized visual files, followed by manual visual relevance review.
 
+## M6 durable visual verification and relevance finding
+
+The successful WF04 execution was verified against durable application state and media files. All four scenes now have one persisted asset and one normalized local JPEG:
+
+```text
+scene 1: pixabay, jobs/db19212b-7914-4346-9ec6-234d315c80d0/visuals/scene-01.jpg, 381899 bytes, 1371x1920
+scene 2: pixabay, jobs/db19212b-7914-4346-9ec6-234d315c80d0/visuals/scene-02.jpg, 297748 bytes, 1343x1920
+scene 3: pixabay, jobs/db19212b-7914-4346-9ec6-234d315c80d0/visuals/scene-03.jpg, 188382 bytes, 1280x1920
+scene 4: pixabay, jobs/db19212b-7914-4346-9ec6-234d315c80d0/visuals/scene-04.jpg, 117124 bytes, 1280x1920
+```
+
+Each persisted asset contains provider/source/author/license/local-path metadata. `jobs.status='processing'`, `current_stage='visuals'`, and `last_error` is empty.
+
+The relevance check found one concrete M6 quality failure: scene 2 query `cat larynx anatomy illustration animation` selected Pixabay asset `254129`, whose tags describe a human anatomy diagram (`anatomy, man, human, body, ...`). The current selector gives every matching query token the same weight, so the generic token `anatomy` on rank 1 narrowly beat the rank-2 cat result. M6 is therefore not accepted yet despite the green execution.
+
+The smallest corrective change is to weight query-token matches by their position in `visual_query` for both Pixabay and Pexels selectors, preserving provider order and fallback behavior. Earlier query terms receive more weight; no provider, service, persistence, or handoff contract changes are required.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -519,11 +536,11 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. load the temporary webhook WF04 again, publish/activate it, restart only `n8n`, and perform read-only inspection of n8n webhook-registration persistence plus startup logs for `M6VisualSourcing1`/the temporary path;
-2. determine the exact registered production webhook path/state from evidence, then call it once with the accepted `job_id` if registration exists;
-3. immediately restore the clean repository WF04, unpublish/deactivate it, restart only `n8n`, and verify cleanup;
-4. verify PostgreSQL asset/visual persistence and media files, then manually review selected visual relevance and attribution/license metadata;
-5. after WF04 is runtime-proven and manually accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export the clean production workflows, and close M6 only after ROADMAP acceptance is satisfied.
+1. update `Select Pixabay Candidate` and `Select Pexels Candidate` so earlier `visual_query` tokens carry more relevance weight while provider order and fallback behavior remain unchanged;
+2. commit/push the clean WF04 selector fix and update this file with the implementation checkpoint;
+3. run one corrected M6 acceptance re-selection through n8n without rerunning WF03/M5 and without manual PostgreSQL mutation outside n8n;
+4. verify persisted assets/files and manually review all four selected visuals for relevance;
+5. only after relevance is accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export clean production workflows, and close M6.
 
 ## Do not do
 
