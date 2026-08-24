@@ -445,6 +445,17 @@ N8N_CLEAN_READY: YES
 
 No acceptance job execution occurred in this attempt. The next action is to inspect the installed n8n CLI activation command/options and verify the exact runtime active/published state before another webhook attempt; do not infer activation semantics.
 
+## M6 n8n activation CLI checkpoint
+
+Installed n8n CLI help was inspected directly. Exact commands/options are now known:
+
+```text
+n8n publish:workflow --id=<workflow_id> [--versionId=<version_id>]
+n8n update:workflow --id=<workflow_id> --active=true|false
+```
+
+`publish:workflow` only controls the published version; `update:workflow --active=true` explicitly sets the workflow active state. The next temporary webhook attempt must use both explicit active state and publication, export/verify `active=true` plus `versionId == activeVersionId`, then restart n8n before calling the webhook.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
