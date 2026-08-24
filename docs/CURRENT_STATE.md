@@ -377,6 +377,30 @@ The retry path is intentionally stage-specific: only a prior `failed/visuals` st
 
 The corrected workflow was re-imported into production n8n from repository head e5cd6a7b9e722c5ac2f89036e510cdec8fe48ee9 and the clean 36-node runtime definition was verified. No acceptance execution has been run after this re-import yet.
 
+## M6 third runtime-attempt checkpoint
+
+A third acceptance attempt was made after the retry-fix re-import, using a temporary Manual Trigger harness inside WF04. The CLI execution still chose the native `Execute Workflow Trigger` (`Receive Job ID`) as its trigger source instead of the temporary Manual Trigger, so WF04 received no `job_id` and stopped immediately in `Normalize Job ID` with:
+
+```text
+job_id must be a valid UUID
+```
+
+This attempt did not reach PostgreSQL stage transition or provider calls. Durable state remained unchanged:
+
+```text
+job_id: db19212b-7914-4346-9ec6-234d315c80d0
+status: failed
+current_stage: visuals
+last_error: media-worker fallback response is invalid [line 10]
+scene visuals: 0/4
+asset_count: 0
+visual media directory: absent
+```
+
+The temporary harness was removed immediately by re-importing the clean repository WF04. Post-run cleanup verified 36 nodes, no Manual Trigger, no acceptance job literal, and empty pin data.
+
+The next retry must invoke WF04 through its intended sub-workflow boundary with `{job_id}` rather than relying on direct CLI trigger selection. The smallest acceptance harness is a temporary wrapper workflow: Manual Trigger -> set acceptance `job_id` -> Execute Sub-workflow WF04. Remove the wrapper after execution.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -388,10 +412,11 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. resume the same acceptance job through the re-imported corrected WF04; do not rerun WF03/M5;
-2. verify PostgreSQL asset/visual persistence and media files;
-3. manually review selected visual relevance and attribution/license metadata;
-4. after WF04 is runtime-proven and manually accepted, wire WF03 -> WF04 with waitForSubWorkflow=false, export the clean production workflows, and close M6 only after ROADMAP acceptance is satisfied.
+1. create a temporary acceptance wrapper workflow containing only Manual Trigger -> set the accepted `job_id` -> Execute Sub-workflow WF04 with `job_id` only;
+2. execute that wrapper through the isolated CLI runner port, then remove the wrapper immediately;
+3. verify PostgreSQL asset/visual persistence and media files;
+4. manually review selected visual relevance and attribution/license metadata;
+5. after WF04 is runtime-proven and manually accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export the clean production workflows, and close M6 only after ROADMAP acceptance is satisfied.
 
 ## Do not do
 
