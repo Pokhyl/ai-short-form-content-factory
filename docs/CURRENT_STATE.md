@@ -375,7 +375,7 @@ WF04_PROVIDER_ROUTE_UNCHANGED: YES
 
 The retry path is intentionally stage-specific: only a prior `failed/visuals` state may be resumed back into `processing/visuals` by WF04. No generic retry framework was added and PostgreSQL was not manually reset.
 
-The corrected workflow has not yet been runtime-proven after this commit.
+The corrected workflow was re-imported into production n8n from repository head e5cd6a7b9e722c5ac2f89036e510cdec8fe48ee9 and the clean 36-node runtime definition was verified. No acceptance execution has been run after this re-import yet.
 
 ## M6 acceptance from ROADMAP
 
@@ -388,11 +388,10 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. fix all `runOnceForEachItem` Code-node return shapes in WF04 from array returns to one item/object;
-2. add the smallest WF04-specific resume transition for `failed/visuals` so this acceptance job can be intentionally retried through n8n without manual PostgreSQL mutation;
-3. re-import the clean corrected WF04 and resume the same acceptance job; do not rerun WF03/M5;
-4. verify PostgreSQL asset/visual persistence and media files, then manually review selected visual relevance and attribution/license metadata;
-5. after WF04 is runtime-proven and manually accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export the clean production workflows, and close M6 only after ROADMAP acceptance is satisfied.
+1. resume the same acceptance job through the re-imported corrected WF04; do not rerun WF03/M5;
+2. verify PostgreSQL asset/visual persistence and media files;
+3. manually review selected visual relevance and attribution/license metadata;
+4. after WF04 is runtime-proven and manually accepted, wire WF03 -> WF04 with waitForSubWorkflow=false, export the clean production workflows, and close M6 only after ROADMAP acceptance is satisfied.
 
 ## Do not do
 
