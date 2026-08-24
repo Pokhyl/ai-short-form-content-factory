@@ -77,7 +77,7 @@ PIN_DATA_KEYS: ['Receive Job ID']
 PIN_DATA_EMPTY: NO
 ```
 
-This pinned data must be removed before the final repository export checkpoint.
+The operator then reported removing that pin from `Receive Job ID` and publishing the cleaned WF02 version. This cleanup is not yet independently verified from a fresh export.
 
 ## M5 exact voice configuration — locked
 
@@ -137,7 +137,7 @@ PIN_DATA_KEYS: ['Receive Job ID']
 PIN_DATA_EMPTY: NO
 ```
 
-This pinned data must be removed before the final repository export checkpoint.
+The operator then reported removing that pin from `Receive Job ID` and publishing the cleaned WF03 version. This cleanup is not yet independently verified from a fresh export.
 
 ## Real M5 runtime acceptance
 
@@ -178,20 +178,18 @@ All four `audio_path` values are populated; all MP3 files exist, are non-empty, 
 
 ## M5 status
 
-Voice generation is functionally proven with real TTS output and the selected voice set is locked. WF02->WF03 hand-off structure is verified, and fresh runtime exports prove both WF02 and WF03 are active and their current versions are published.
+Voice generation is functionally proven with real TTS output and the selected voice set is locked. WF02->WF03 hand-off structure is verified, and earlier fresh runtime exports proved both WF02 and WF03 active/current before pin cleanup.
 
-M5 remains `in progress` because both current workflow exports still contain pinned acceptance input on `Receive Job ID`. Remove those pins, republish the cleaned versions, then fresh-export/verify/commit/push both workflows. After that checkpoint, close M5 before starting M6.
+The operator reports that both `Receive Job ID` pins were removed and both cleaned workflows were published. M5 remains `in progress` until fresh exports independently verify empty `pinData`, current published versions, all hand-off/version invariants, and the cleaned production exports are committed/pushed. After that checkpoint, close M5 before starting M6.
 
 ## Exact next action
 
 1. Do not rerun accepted M4/M5 jobs.
-2. In n8n, open WF02 and remove pinned data from `Receive Job ID`.
-3. In n8n, open WF03 and remove pinned data from `Receive Job ID`.
-4. Do not execute either workflow.
-5. Publish the cleaned WF02 and WF03 versions so the active versions also contain no pin data.
-6. Fresh-export both workflows and verify `pinData` is empty plus all previously verified hand-off/version invariants.
-7. Commit/push both refreshed workflow exports.
-8. Update this file with final export SHA-256 values and commit, mark M5 complete, update `docs/ROADMAP.md`, and only then start M6.
+2. Fresh-export WF02 and WF03 after the reported pin cleanup/publish.
+3. Verify both exports have empty `pinData`, `versionId == activeVersionId`, expected active state/node counts, WF02->WF03 hand-off contract, no hardcoded acceptance data, and all four locked voice IDs.
+4. Copy those fresh production exports into the repository workflow paths.
+5. Commit/push both refreshed workflow exports.
+6. Update this file with final export SHA-256 values and commit, mark M5 complete, update `docs/ROADMAP.md`, and only then start M6.
 
 ## Do not do
 
