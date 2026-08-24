@@ -150,7 +150,7 @@ merge: sync M5 documentation before WF03 push
 
 Post-push verification proved remote HEAD matched local HEAD and the remote WF03 file had exact SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`.
 
-## First real M5 acceptance job — first WF03 execution completed visually
+## First real M5 acceptance job — runtime progress
 
 Fresh Polish 15-second acceptance job:
 
@@ -166,24 +166,30 @@ processing|script|4|4|0
 
 Meaning: `status = processing`, `current_stage = script`, exactly 4 scenes, narration present in all 4, and no existing audio fields.
 
-On 2026-08-24 the first real manual WF03 execution was run for this acceptance job. The n8n editor screenshot shows the entire normal success path green through `Require Voiceover Completion`; the failure branch is not shown as executed. This proves the workflow execution visually reached the success terminus, including the real Google TTS and media-worker nodes.
+On 2026-08-24 the first real manual WF03 execution was run for this acceptance job. The n8n editor screenshot showed the entire normal success path green through `Require Voiceover Completion`; the failure branch was not shown as executed.
 
-A first PostgreSQL post-run check then confirmed:
+Post-run job state was then verified as:
 
 ```text
-job_id: db19212b-7914-4346-9ec6-234d315c80d0
 status: processing
 current_stage: voiceover
 last_error: empty
 ```
 
-That terminal command returned after the job-state query, so the screenshot does **not** yet prove the scene audio rows or MP3 files. Do not infer those checks passed.
+A subsequent PostgreSQL scene query independently verified all four persisted audio rows:
+
+| Scene | audio_path | duration_seconds |
+| ---: | --- | ---: |
+| 1 | `jobs/db19212b-7914-4346-9ec6-234d315c80d0/voiceover/scene-01.mp3` | 6.096 |
+| 2 | `jobs/db19212b-7914-4346-9ec6-234d315c80d0/voiceover/scene-02.mp3` | 6.576 |
+| 3 | `jobs/db19212b-7914-4346-9ec6-234d315c80d0/voiceover/scene-03.mp3` | 6.768 |
+| 4 | `jobs/db19212b-7914-4346-9ec6-234d315c80d0/voiceover/scene-04.mp3` | 6.576 |
+
+Therefore the database persistence requirement is proven for this Polish acceptance job: all four `audio_path` values are non-empty and all four measured durations are positive.
 
 Still pending before accepting Polish M5:
 
-- all four `scenes.audio_path` values
-- all four positive measured `scenes.duration_seconds` values
-- corresponding MP3 files existing and being readable/playable
+- corresponding MP3 files existing in media storage and being probeable/readable
 - manual listening quality of the Polish voice
 
 Do not rerun this job blindly.
@@ -201,10 +207,9 @@ Do not start M6 before real M5 acceptance.
 ## Exact next action
 
 1. Do not execute WF03 again for `db19212b-7914-4346-9ec6-234d315c80d0`.
-2. Query only the four scene audio rows for that exact job and verify non-empty `audio_path` plus positive measured `duration_seconds`.
-3. Then verify the corresponding MP3 files in media storage.
-4. Then manually listen to the Polish output before marking Polish accepted.
-5. Keep WF02->WF03 disconnected and do not start M6 until M5 acceptance is complete.
+2. Verify the four persisted MP3 files exist in media storage and are probeable/readable.
+3. Then manually listen to the Polish output before marking Polish accepted.
+4. Keep WF02->WF03 disconnected and do not start M6 until M5 acceptance is complete.
 
 ## Do not do
 
