@@ -185,6 +185,37 @@ The complete configured provider route is therefore available to WF04 at runtime
 
 The VPS is enrolled in SentinelX. The operator explicitly approved adding `sudo git` to the SentinelX command allowlist so repository synchronization can be performed through the connected server tool. The policy was reloaded successfully and `sudo git` access was verified before the M6 runtime sync.
 
+## M6 WF04 implementation/import checkpoint
+
+The first production-shaped `WF04 — Visual Sourcing` definition was added to the repository and imported into n8n on 2026-08-24.
+
+Repository workflow commit:
+
+```text
+e13f6105b0cad74a4a88295547319d622a3ce752 feat: add WF04 visual sourcing
+```
+
+Imported runtime structure:
+
+```text
+WF04_ID: M6VisualSourcing1
+WF04_ACTIVE: false
+WF04_NODE_COUNT: 36
+WF04_PIN_DATA_EMPTY: YES
+HAS_WIKIMEDIA: YES
+HAS_PIXABAY: YES
+HAS_PEXELS: YES
+HAS_LOCAL_FALLBACK: YES
+HAS_M7_HANDOFF: NO
+PROVIDER_KEY_LITERALS_IN_WORKFLOW: NO
+PROVIDER_ENV_REFERENCES_ONLY: YES
+WF04_IMPORT_STRUCTURE: OK
+```
+
+The workflow receives only `job_id`, reloads durable job/scene state, verifies completed voiceover, transitions/resumes `current_stage=visuals`, applies the deterministic factual/generic provider routes, downloads only the selected external candidate, delegates file validation/normalization/fallback generation to `media-worker`, persists one `public.assets` row plus `scenes.visual_path`, and stops after verified visual persistence because M7 does not exist yet.
+
+The workflow is intentionally inactive and has not yet been runtime-accepted on real scene output. Technical import success is not M6 acceptance.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -196,13 +227,11 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. create/import `WF04 — Visual Sourcing` with the complete deterministic provider route:
-   - factual -> Wikimedia Commons -> local graphic/text fallback
-   - generic -> Pixabay -> Pexels -> local graphic/text fallback
-2. runtime-prove WF04 on real M6 output without rerunning accepted M4/M5 jobs;
-3. manually review selected visual relevance and required attribution/license metadata;
+1. identify one real job that is already `processing/voiceover`, has complete audio for every required scene, and has no visual output yet; do not rerun M4 or M5;
+2. invoke the imported inactive WF04 manually for that `job_id` using a temporary runtime-only test harness, then immediately restore the clean workflow definition with no pinned/hardcoded acceptance data;
+3. verify PostgreSQL asset/visual persistence and media files, then manually review selected visual relevance and attribution/license metadata;
 4. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`;
-5. export production workflows to the repository and close M6 only after ROADMAP acceptance is satisfied.
+5. export the cleaned production workflows to the repository and close M6 only after ROADMAP acceptance is satisfied.
 
 ## Do not do
 
