@@ -142,7 +142,7 @@ Learning focus:
 
 ## M5 — Voiceover
 
-Status: in progress.
+Status: completed on 2026-08-24.
 
 Goal: generate one audio file per scene using the previously selected voices.
 
@@ -163,6 +163,19 @@ Acceptance:
 - every scene has a playable audio file;
 - actual audio duration is measured;
 - voice quality is manually accepted in all supported languages used for testing.
+
+Validated runtime/repository result:
+
+- real Google Cloud Text-to-Speech generation completed successfully for the acceptance job;
+- every acceptance scene produced a non-empty, readable/probeable MP3;
+- measured audio durations matched the values persisted in PostgreSQL;
+- Polish voice quality was manually accepted and the configured EN/PL/RU/UK voice set was locked as the product choice;
+- WF02 hands off to WF03 through a native `Execute Sub-workflow` node with dynamic `job_id` only and `waitForSubWorkflow=false`;
+- the final cleaned production exports contain no pinned acceptance data or hardcoded acceptance UUID/topic values;
+- final WF02 export SHA-256 is `d06d0ff1bb325d6c54999c2f89fee8e9b887ed436872092caff34a9d21fc60b7`;
+- final WF03 export SHA-256 is `666a2de498e4feac7e7877bf2ebc44e61c63fbd38698f239f427ecf673042c86`;
+- workflow export commit `8e6e4a9a578e7d65778e4ca42a77558497549c99` is preserved in remote history;
+- final verified remote head is `16a431209d8392c50dcc33c59444da3149744427`.
 
 Learning focus:
 
