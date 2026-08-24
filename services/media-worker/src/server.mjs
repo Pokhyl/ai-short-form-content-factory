@@ -29,6 +29,7 @@ const siglipCacheDir = resolve(
 const maxRankCandidates = 10;
 const trustedPreviewHosts = new Set([
   "cdn.pixabay.com",
+  "pixabay.com",
   "images.pexels.com",
   "upload.wikimedia.org",
 ]);
