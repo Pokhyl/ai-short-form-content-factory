@@ -271,6 +271,23 @@ WF04_CLEAN_PIN_DATA: EMPTY
 
 No visual files or `public.assets` rows were persisted by this failed attempt. The acceptance job is now resumable from `processing/visuals`; do not move it back to voiceover and do not rerun WF03.
 
+## M6 provider credential runtime checkpoint
+
+Two project-scoped n8n generic credentials were created/imported on 2026-08-24 from the already configured container environment without printing or committing secret values:
+
+```text
+M6PixabayQuery01: PRESENT (httpQueryAuth)
+M6PexelsHeader01: PRESENT (httpHeaderAuth)
+```
+
+Credential intent:
+
+- Pixabay uses query authentication with parameter name `key`;
+- Pexels uses header authentication with header name `Authorization`;
+- secret values remain encrypted in n8n credentials and are not stored in the public workflow export.
+
+The repository WF04 still requires a follow-up edit to reference these credentials and remove the blocked `$env` expressions. No second WF04 runtime attempt has been made yet.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -282,7 +299,7 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. fix the two proven WF04 blockers without changing the provider route: replace blocked workflow `$env` secret access with an n8n-supported provider authentication mechanism, and correct per-item Code nodes that use `$input.first()`;
+1. wire the newly created n8n provider credentials into WF04, remove the blocked `$env` expressions, and correct per-item Code nodes that use `$input.first()`;
 2. re-import the cleaned WF04 and resume the same acceptance job directly from `processing/visuals`; do not rerun WF03/M5;
 3. verify PostgreSQL asset/visual persistence and media files, then manually review selected visual relevance and attribution/license metadata;
 4. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`;
