@@ -456,6 +456,29 @@ n8n update:workflow --id=<workflow_id> --active=true|false
 
 `publish:workflow` only controls the published version; `update:workflow --active=true` explicitly sets the workflow active state. The next temporary webhook attempt must use both explicit active state and publication, export/verify `active=true` plus `versionId == activeVersionId`, then restart n8n before calling the webhook.
 
+## M6 explicit-active webhook attempt checkpoint
+
+The temporary Webhook WF04 was re-imported, published, explicitly activated with `update:workflow --active=true`, exported, and verified before restart:
+
+```text
+TEMP_ACTIVE: true
+TEMP_PUBLISHED_CURRENT: YES
+TEMP_WEBHOOK_PRESENT: YES
+```
+
+After an n8n-only restart, the localhost production webhook still returned HTTP 404 (`Cannot POST /webhook/m6-wf04-acceptance-7a9c31`). Therefore active/published workflow metadata alone is not sufficient evidence that this webhook was registered by the running process.
+
+The clean repository WF04 was immediately restored, unpublished/deactivated, n8n was restarted again, and cleanup was verified:
+
+```text
+CLEAN_ACTIVE: false
+CLEAN_NODE_COUNT: 36
+CLEAN_WEBHOOK_PRESENT: NO
+CLEAN_PIN_DATA: EMPTY
+```
+
+No acceptance job execution occurred in this attempt. The next action is read-only inspection of n8n webhook-registration persistence/startup state for WF04 while a temporary active/published harness is loaded; do not modify the n8n schema manually.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -467,9 +490,9 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. inspect `publish:workflow` and deprecated `update:workflow` CLI help for exact activation semantics/options;
-2. re-import the temporary webhook WF04 only after the exact activation command is known, activate/publish it, verify exported `active` and `versionId/activeVersionId`, restart only `n8n`, then call the localhost webhook once;
-3. immediately restore the clean repository WF04, unpublish/deactivate it as required, restart only `n8n`, and verify cleanup;
+1. load the temporary webhook WF04 again, publish/activate it, restart only `n8n`, and perform read-only inspection of n8n webhook-registration persistence plus startup logs for `M6VisualSourcing1`/the temporary path;
+2. determine the exact registered production webhook path/state from evidence, then call it once with the accepted `job_id` if registration exists;
+3. immediately restore the clean repository WF04, unpublish/deactivate it, restart only `n8n`, and verify cleanup;
 4. verify PostgreSQL asset/visual persistence and media files, then manually review selected visual relevance and attribution/license metadata;
 5. after WF04 is runtime-proven and manually accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export the clean production workflows, and close M6 only after ROADMAP acceptance is satisfied.
 
