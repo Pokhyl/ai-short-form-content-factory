@@ -72,7 +72,7 @@ Therefore the new WF02->WF03 hand-off configuration itself is verified:
 - `waitForSubWorkflow=false`
 - `Persist Scene Plan` connects to exactly this hand-off node
 
-The edited WF02 version is **not yet the published/current active version** because `versionId != activeVersionId`. Do not commit this as the final production checkpoint until the current edited version is published and re-exported/verified. The latest local export is modified and not yet committed.
+The operator then reported clicking `Publish` for this edited WF02 version. A screenshot shows the expected 9-node WF02 canvas including `Start Voiceover Generation`, but UI appearance alone does not prove that `activeVersionId` now equals `versionId`. The publish action therefore remains pending independent export verification before the final production checkpoint is committed.
 
 ## M5 exact voice configuration — locked
 
@@ -156,15 +156,17 @@ All four `audio_path` values are populated; all MP3 files exist, are non-empty, 
 
 ## M5 status
 
-Voice generation is functionally proven with real TTS output and the selected voice set is locked. The WF02->WF03 hand-off structure is now independently verified from the current export, but the edited WF02 version is still unpublished. M5 remains `in progress` until that version is published, freshly re-exported/verified, committed, and pushed.
+Voice generation is functionally proven with real TTS output and the selected voice set is locked. The WF02->WF03 hand-off structure is independently verified. The operator has reported publishing the edited WF02 version, but that publish must still be confirmed from a fresh export (`versionId == activeVersionId`) and the production export must then be committed/pushed. M5 remains `in progress` until that checkpoint is complete.
 
 ## Exact next action
 
 1. Do not rerun accepted M4/M5 jobs.
-2. In n8n, publish the current edited version of `WF02 — Plan Script and Scenes` so the version containing `Start Voiceover Generation` becomes the active version.
-3. After publish, export WF02 again and verify `versionId == activeVersionId` plus the already-proven hand-off fields.
-4. Then commit/push the refreshed production WF02 export.
-5. Update this file with the final export SHA and commit, close M5, and only then start M6.
+2. Fresh-export WF02 after the operator's publish action and verify inside the n8n container that:
+   - `versionId == activeVersionId`
+   - the previously verified WF02->WF03 hand-off fields remain unchanged.
+3. Replace `n8n/workflows/WF02-plan-script-and-scenes.json` with that fresh production export.
+4. Commit/push the refreshed production WF02 export.
+5. Update this file with final export SHA/commit, close M5, and only then start M6.
 
 ## Do not do
 
