@@ -561,7 +561,6 @@ CLEAN_WEIGHTED_SELECTOR: YES
 
 The corrected acceptance harness must set `job_id` in a Code node first and pass it to the temporary PostgreSQL reset node through the standard expression `={{ [ $json.job_id ] }}`. This remains an n8n-owned application-state reset; do not mutate PostgreSQL directly outside n8n.
 
-
 ## M6 weighted re-selection runtime acceptance checkpoint
 
 The corrected weighted re-selection was executed successfully on 2026-08-24 against the same accepted M5 job. WF03/M5 were not rerun.
@@ -629,6 +628,50 @@ CLEAN_WEIGHTED_SELECTOR: YES
 
 This proves the weighted selector runtime path and durable persistence, but it does not close M6. Scene 2 is now a cat photo (Pixabay `7965411`) while its requested intent remains a cat larynx anatomy illustration/animation. Final real-image semantic review is still required before M6 acceptance.
 
+## M6 stricter semantic-coverage implementation checkpoint
+
+Manual review of the weighted runtime images found that subject-only cat photos are still too weak for acceptance when a scene requests a more specific visual relationship. Scene 2 remains the concrete failure: the query is `cat larynx anatomy illustration animation`, but weighted runtime selected Pixabay `7965411`, which is an ordinary cat portrait rather than cat-larynx anatomy.
+
+The bounded selector acceptance was therefore tightened in both `Select Pixabay Candidate` and `Select Pexels Candidate` without changing provider order, credentials, persistence, media-worker, or handoff contracts:
+
+- weighted token scoring remains unchanged;
+- when a query contains more than one meaningful token, an external candidate must match at least 2 distinct query tokens;
+- the first meaningful query token must be one of the matched tokens, so the highest-priority subject/intent term cannot disappear;
+- candidates are filtered by this semantic-coverage gate before final score/rank selection, so a weak top-ranked candidate does not hide a lower-ranked acceptable candidate;
+- accepted metadata now records `required_match_count` and `required_primary_token`;
+- if Pixabay has no acceptable candidate, the existing route continues to Pexels; if Pexels also has none, the existing local graphic/text fallback is used.
+
+JSON structure and both modified Code-node scripts were syntax-checked. This implementation is not yet runtime-accepted. The next action is to commit/push the clean 36-node WF04 plus this checkpoint, re-import it, then reselect the same acceptance job through the n8n-owned reset harness and review the resulting real images.
+
+## M6 harder-topic runtime finding and core-subject gate checkpoint
+
+A deliberately harder independent acceptance job was created through production WF01 and allowed to run normally through WF02/WF03 before WF04 was invoked with a temporary Manual Trigger harness. This was not the cat job.
+
+```text
+job_id: 82a54ce1-e306-46be-92ca-201aec4bcb9a
+topic: Jak GPS ustala pozycję telefonu i dlaczego myli się między wieżowcami?
+language: pl
+duration: 30 seconds
+scene_count: 8
+voiceover_ready: 8/8
+WF04 execution status: success
+visuals_complete: true
+```
+
+The clean 36-node WF04 was restored immediately after execution. Durable verification found 8/8 visual paths and 8 asset rows, but the harder topic exposed that the previous two-token gate still accepts semantically wrong stock when provider tags contain query words in unrelated contexts. Concrete failures included Pixabay `4109368` (`radio poster wall`) for `radio wave bouncing off a skyscraper wall` and Pixabay `2707528` (lighthouse) for `phone navigation screen showing inaccurate location`.
+
+A bounded stronger acceptance rule was therefore implemented in both stock selectors without changing provider order or architecture:
+
+- weighted query scoring remains;
+- the existing minimum matched-token and primary-token requirements remain;
+- the first two meaningful query tokens are now treated as core subject tokens;
+- Pixabay must contain both core tokens in the high-confidence page URL slug, not merely anywhere in free-form tags;
+- Pexels must contain both core tokens in its descriptive `alt` text; photographer names no longer contribute to semantic scoring;
+- if the high-confidence subject gate fails, the existing route continues to the next provider and ultimately local fallback;
+- accepted metadata records `required_core_tokens` and `subject_matched_tokens`.
+
+A live provider simulation on the 8-scene GPS job showed the intended conservative result: scene 1 retains a relevant smartphone-outdoors Pixabay photo, scene 6 has a relevant Pexels skyscraper-street candidate, and the six technical/relational scenes have no high-confidence stock result and therefore fall through rather than accepting unrelated imagery. This implementation still requires production re-selection runtime acceptance.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -640,9 +683,11 @@ Technical green execution alone is not M6 acceptance. Final scene-to-image relev
 
 ## Exact next action
 
-1. review the four real selected images against each scene `narration`, `visual_description`, and `visual_query` using the required Google AI Studio review;
-2. if any scene fails semantic relevance, make the smallest bounded WF04 selection/acceptance correction while preserving the provider route exactly, then reselect on the same job through an n8n-owned reset harness and restore the clean WF04 again;
-3. only after all four real visuals are semantically accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export clean production workflows, update ROADMAP M6 completed, and close M6.
+1. commit/publish the clean core-subject-gated 36-node WF04 and re-import it into production;
+2. reselect the 8-scene GPS acceptance job through an n8n-owned reset harness, restore clean WF04, and verify durable state/files;
+3. inspect the 8 real resulting visuals against narration/description/query; unrelated stock must not survive the new gate;
+4. reselect the original cat acceptance job with the same production selector and verify that the larynx scene no longer resolves to a generic cat portrait;
+5. complete the required real-image semantic review; only then wire WF03 -> WF04, update ROADMAP M6 completed, and close M6.
 
 ## Do not do
 
