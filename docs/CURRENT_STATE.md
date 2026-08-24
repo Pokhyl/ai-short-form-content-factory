@@ -43,11 +43,10 @@ Topic
 Production `WF01 — Create Content Job`:
 
 - workflow ID `Xy94qe35OigtMxkR`
-- verified export blob `a71161b373bb56bd0aba8abeba410e17011dcb5c`
 - verified hand-off target `TJfA4ZYUEKSTad6k` (`WF02`)
 - verified input `job_id = {{ $json.job_id }}`
 - verified `waitForSubWorkflow = false`
-- verified `Insert Job` branches to `Return Created Job` and `Start Script Planning`
+- verified `Insert Job` branches to both response and `Start Script Planning`
 - remote workflow commit `353149dbe5ff7e511ad5dfe7683b00755f765727`
 - final WF01->WF02 end-to-end runtime hand-off has not yet been acceptance-tested
 
@@ -86,8 +85,8 @@ Do not substitute guessed voices.
 - stores `scenes.audio_path`
 - stores measured real `scenes.duration_seconds`
 - keeps PostgreSQL writes in n8n; media-worker never writes product state
-- starts Visual Sourcing only after all required scene audio is ready
 - on stage failure records `jobs.status = failed`, keeps `jobs.current_stage = voiceover`, stores `jobs.last_error`, and does not start the next stage
+- starts Visual Sourcing only after all required scene audio is ready; M6 is not wired yet
 
 Internal stage hand-off payload remains only:
 
@@ -108,7 +107,7 @@ Internal automatic hand-offs use native n8n sub-workflows, not public webhooks. 
 
 ## Media-worker audio boundary
 
-Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` added `POST /audio/store` to existing `media-worker`.
+Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` added `POST /audio/store` to the existing `media-worker`.
 
 Request:
 
@@ -125,7 +124,7 @@ Behavior:
 - deterministic path `jobs/<job_id>/voiceover/scene-XX.mp3`
 - ffprobe validation before final replace
 - returns `audio_path`, measured `duration_seconds`, and `bytes`
-- synthetic runtime acceptance already passed; do not repeat before real TTS
+- synthetic runtime acceptance already passed; do not repeat it before real TTS
 
 ## Google Cloud TTS authentication
 
@@ -149,9 +148,9 @@ Production workflow:
 
 - name `WF03 — Voiceover Generation`
 - workflow ID `UHxvCZNqaLb1RKMM`
-- last full verification export SHA-256 `33f5ab18a4e80fa2e63ad80fc845d8d113ff168fc8e802ffb218c26495d45d1e`
-- that export had exactly 17 nodes
-- at that verification checkpoint the export reported `ACTIVE: True`
+- last full structural verification export SHA-256 `33f5ab18a4e80fa2e63ad80fc845d8d113ff168fc8e802ffb218c26495d45d1e`
+- that full export had exactly 17 nodes
+- every structural/configuration check passed except that the workflow was still published (`ACTIVE: True`) at that moment
 
 Export-proven success topology:
 
@@ -195,7 +194,7 @@ Verified `On Error = continueErrorOutput` plus error-output routing for:
 - `Verify Voiceover Completion`
 - `Require Voiceover Completion`
 
-Verified from export:
+Verified from the full export:
 
 - `Generate Voiceover.method = POST`
 - exact TTS endpoint `https://texttospeech.googleapis.com/v1/text:synthesize`
@@ -209,13 +208,24 @@ Verified from export:
 - no Visual Sourcing hand-off exists yet
 - successful completion has no normal downstream connection
 
-The previous verifier returned `OK` for every structural/configuration check except `WORKFLOW_INACTIVE`, because WF03 was still published/active.
+## Latest independently verified runtime state
 
-## Latest user-reported runtime/UI step
+After explicitly using **Unpublish** in the n8n UI, a fresh production export check was run on 2026-08-24.
 
-On 2026-08-24 the user reports that WF03 was explicitly **Unpublished** in the n8n UI. No node/configuration changes were requested or reported.
+It returned exactly:
 
-This unpublish state is user-reported and must be independently proven by a fresh production export before the workflow file is committed.
+```text
+WORKFLOW_ID: UHxvCZNqaLb1RKMM
+ACTIVE: false
+NODE_COUNT: 17
+WORKFLOW_ID_OK: YES
+WORKFLOW_INACTIVE_OK: YES
+NODE_COUNT_OK: YES
+```
+
+Therefore WF03 is now independently verified as unpublished/inactive, with the correct workflow ID and still exactly 17 nodes.
+
+The existing VPS repository workflow file `n8n/workflows/WF03-voiceover-generation.json` is still the prior local/untracked export until the next step replaces it with a fresh inactive export. It has not been committed yet.
 
 No real TTS request has been accepted yet.
 
@@ -231,17 +241,18 @@ Do not start M6 before real M5 acceptance.
 
 ## Deferred M9 Studio status endpoint
 
-During M9 add one separate read-only n8n HTTP status workflow/webhook accepting `job_id`, validating it, reading PostgreSQL, and returning at minimum `job_id`, `status`, `current_stage`, `last_error`. Do not add public progress webhooks to WF02/WF03/WF04. Browser never connects directly to PostgreSQL. Studio may poll this single endpoint.
+During M9 add one separate read-only n8n HTTP status workflow/webhook accepting `job_id`, validating it, reading PostgreSQL, and returning at minimum `job_id`, `status`, `current_stage`, and `last_error`. Do not add public progress webhooks to WF02/WF03/WF04. Browser never connects directly to PostgreSQL. Studio may poll this single endpoint.
 
 ## Exact next action
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
 1. Synchronize the VPS branch with this documentation checkpoint without overwriting the existing untracked workflow export.
-2. Re-export WF03 and verify only that `active === false` plus the workflow ID and node count remain correct.
-3. If inactive is confirmed, replace `n8n/workflows/WF03-voiceover-generation.json` with that fresh export, record its SHA-256, commit and push only that workflow export to `feat/m5-voiceover`.
-4. After the workflow export commit is remote and the VPS is clean/reconciled, update this file with the final export SHA and commit SHA before preparing the first real controlled M5 TTS acceptance run.
-5. Do not wire WF02->WF03 and do not start M6.
+2. Export WF03 one final time while it is independently verified inactive, copy that fresh export to `n8n/workflows/WF03-voiceover-generation.json`, and record its SHA-256.
+3. Verify `workflow id`, `active === false`, and `node count === 17` on the exact file that will be committed.
+4. Commit and push only `n8n/workflows/WF03-voiceover-generation.json` to `feat/m5-voiceover`.
+5. After the workflow export commit is remote and the VPS is clean/reconciled, update this file with the final export SHA and workflow commit SHA before preparing the first real controlled M5 TTS acceptance run.
+6. Do not wire WF02->WF03 and do not start M6.
 
 ## Do not do
 
