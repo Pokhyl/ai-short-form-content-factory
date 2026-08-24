@@ -147,13 +147,12 @@ Therefore the reusable media-worker visual storage/normalization/fallback bounda
 
 ## M6 provider prerequisite checkpoint
 
-Production runtime key-presence check on 2026-08-24:
+Production runtime key-presence check on 2026-08-24 now confirms both configured stock-provider keys are present in `/opt/ai-short-form-content-factory/.env`:
 
 ```text
-PIXABAY_API_KEY: MISSING
-PEXELS_API_KEY: MISSING
+PIXABAY_API_KEY: PRESENT
+PEXELS_API_KEY: PRESENT
 WIKIMEDIA_API_KEY: NOT_REQUIRED
-M6_PROVIDER_PREREQUISITES_CHECK: DONE
 ```
 
 No secret value was printed or committed.
@@ -164,9 +163,9 @@ Repository placeholders were added to `.env.example` in commit:
 721318ed0bc5423d5daf5b87343a5d30eb446150 docs: add M6 provider env placeholders
 ```
 
-`.env.example` now documents `PIXABAY_API_KEY` and `PEXELS_API_KEY` with placeholder values only. Wikimedia Commons requires no API key.
+`.env.example` documents `PIXABAY_API_KEY` and `PEXELS_API_KEY` with placeholder values only. Wikimedia Commons requires no API key.
 
-The real Pixabay and Pexels keys are still missing from the VPS runtime. Do not invent or commit them. The factual Wikimedia path can be implemented without a secret, but the complete generic provider route cannot be runtime-proven until both stock-provider keys exist.
+The complete configured provider route is now unblocked for implementation and runtime proof.
 
 ## M6 acceptance from ROADMAP
 
@@ -179,16 +178,13 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-Obtain the two free provider API keys and add them only to the VPS `.env`, never to GitHub or chat:
-
-1. obtain a Pixabay API key from the Pixabay API account/documentation flow;
-2. obtain a Pexels API key from the Pexels API account/request-key flow;
-3. write `PIXABAY_API_KEY` and `PEXELS_API_KEY` into `/opt/ai-short-form-content-factory/.env` on the VPS without printing their values;
-4. verify only PRESENT/MISSING;
-5. then create/import `WF04 — Visual Sourcing` with the complete deterministic provider route;
-6. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`.
-
-Do not create a partial production generic route that silently skips Pixabay/Pexels while the architecture says they are the configured stock route. Local fallback remains the terminal fallback only after the configured provider path has genuinely been attempted or when provider access is unavailable by explicit design.
+1. create/import `WF04 — Visual Sourcing` with the complete deterministic provider route:
+   - factual -> Wikimedia Commons -> local graphic/text fallback
+   - generic -> Pixabay -> Pexels -> local graphic/text fallback
+2. runtime-prove WF04 on real M6 output without rerunning accepted M4/M5 jobs;
+3. manually review selected visual relevance and required attribution/license metadata;
+4. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`;
+5. export production workflows to the repository and close M6 only after ROADMAP acceptance is satisfied.
 
 ## Do not do
 
