@@ -741,6 +741,23 @@ core_subject_gate: present in Pixabay and Pexels selectors
 
 This closes the concrete false-positive defect found during harder visual testing. M6 is still not formally closed because the repository requires final real-image semantic review through Google AI Studio before milestone acceptance.
 
+## M6 Google AI Studio review handoff checkpoint
+
+The exact final runtime visuals for both acceptance jobs were packaged for the required external semantic review. The package contains all 12 real JPEGs, `MANIFEST.tsv`, `AI_STUDIO_PROMPT.txt`, and `SHA256SUMS.txt`.
+
+```text
+archive: m6-visual-review.tar.gz
+archive_bytes: 2008983
+archive_sha256: f69a9cbbeef76178f65ed7ccc8beb3373e19155002dfc0c16f1e668517dfde11
+contents: 8 GPS JPEGs + 4 cat JPEGs + manifest + review prompt + per-file SHA256 sums
+```
+
+A temporary one-hour drop share was created for operator handoff. The temporary URL is intentionally not committed to GitHub.
+
+The current ChatGPT tool/plugin environment does not expose a Google AI Studio or Gemini Studio connector capable of uploading these real files and performing the mandated review. A plugin-directory search found no relevant Google AI Studio/Gemini review integration. Therefore the remaining Google AI Studio review is an explicit operator action, not a code/runtime blocker.
+
+After the operator returns the AI Studio scene-by-scene verdict, continue from that verdict without rerunning accepted upstream stages. If all scenes pass, wire WF03 -> WF04 and close M6. If any scene fails, make only the smallest bounded WF04 correction justified by the failed scene and reselect that job through the existing n8n-owned reset harness.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
