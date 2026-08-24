@@ -356,6 +356,27 @@ WF04_CLEAN_PIN_DATA: EMPTY
 
 The next implementation must fix the per-item return shape and add the smallest WF04-specific explicit resume path for a `failed/visuals` job produced by a prior WF04 execution. Do not manually reset PostgreSQL outside n8n and do not build generic retry infrastructure.
 
+## M6 retry-fix implementation checkpoint
+
+The second runtime attempt exposed a per-item Code-node return-shape bug and left the acceptance job in `failed/visuals` with no persisted visual output. The corrective workflow change was completed and pushed in commit:
+
+```text
+ffd27ea fix: make visual sourcing retryable
+```
+
+Verified implementation facts:
+
+```text
+WF04_PER_ITEM_RETURN_SHAPE_FIXED: 10
+WF04_FAILED_VISUALS_RETRY_ELIGIBILITY: YES
+WF04_FAILED_VISUALS_RESUME_TRANSITION: YES
+WF04_PROVIDER_ROUTE_UNCHANGED: YES
+```
+
+The retry path is intentionally stage-specific: only a prior `failed/visuals` state may be resumed back into `processing/visuals` by WF04. No generic retry framework was added and PostgreSQL was not manually reset.
+
+The corrected workflow has not yet been runtime-proven after this commit.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
