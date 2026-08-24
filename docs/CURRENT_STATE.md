@@ -209,13 +209,33 @@ Verified from export:
 - no Visual Sourcing hand-off exists yet
 - successful completion has no normal downstream connection
 
-The previous final verifier returned `OK` for every structural/configuration check except `WORKFLOW_INACTIVE`, because WF03 was active at that moment.
+## Latest runtime/export result
 
-## Latest user-reported runtime/UI step
+The user attempted to deactivate WF03 in the n8n UI and reported it saved. A fresh production export was then performed after synchronizing the VPS to remote commit `a2b6718`.
 
-On 2026-08-24 the user reports WF03 was deactivated in n8n and saved, with no node/configuration changes.
+That fresh export still reports:
 
-This deactivation is user-reported and must still be independently proven by a fresh production export before committing the workflow file.
+```text
+ACTIVE: True
+WORKFLOW_INACTIVE: FAIL [True]
+```
+
+Every other verification check passed again:
+
+- exact 17-node set
+- complete success topology
+- all required failure-output routes
+- `continueErrorOutput` on all intended failure-capable nodes
+- TTS `POST` and exact endpoint
+- media-worker `POST` and exact endpoint
+- response guards
+- failure SQL
+- no hardcoded acceptance job UUIDs
+- no M6 hand-off
+
+Because the verifier exits on `WORKFLOW_INACTIVE`, the final workflow export is still not committed.
+
+The current n8n 2.x model distinguishes saved draft state from published state. Saving node/workflow edits does not itself unpublish an already published workflow. The next UI action must explicitly unpublish WF03 rather than merely save the draft.
 
 No real TTS request has been accepted yet.
 
@@ -237,13 +257,12 @@ During M9 add one separate read-only n8n HTTP status workflow/webhook accepting 
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
-1. Synchronize the VPS branch with this remote documentation checkpoint without overwriting the existing untracked workflow export.
-2. Re-export the saved production WF03 and prove `active === false`.
-3. Reconfirm the 17-node critical structure and POST/error-path invariants from that fresh export.
-4. Replace `n8n/workflows/WF03-voiceover-generation.json` with the verified inactive export.
-5. Commit and push only that workflow export to `feat/m5-voiceover`.
-6. After the workflow export commit is remote and the VPS is clean/reconciled, update this file with the final export SHA and commit SHA before preparing the first real controlled M5 TTS acceptance run.
-7. Do not wire WF02->WF03 and do not start M6.
+1. In the n8n UI, explicitly **Unpublish** WF03. Do not change nodes and do not rely on Save as a substitute for unpublishing.
+2. Re-export WF03 and verify only that the saved/exported workflow now has `active === false` while the already-proven 17-node structure remains unchanged.
+3. Replace `n8n/workflows/WF03-voiceover-generation.json` with the verified unpublished export.
+4. Commit and push only that workflow export to `feat/m5-voiceover`.
+5. After the workflow export commit is remote and the VPS is clean/reconciled, update this file with the final export SHA and commit SHA before preparing the first real controlled M5 TTS acceptance run.
+6. Do not wire WF02->WF03 and do not start M6.
 
 ## Do not do
 
