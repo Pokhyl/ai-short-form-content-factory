@@ -561,6 +561,7 @@ CLEAN_WEIGHTED_SELECTOR: YES
 
 The corrected acceptance harness must set `job_id` in a Code node first and pass it to the temporary PostgreSQL reset node through the standard expression `={{ [ $json.job_id ] }}`. This remains an n8n-owned application-state reset; do not mutate PostgreSQL directly outside n8n.
 
+
 ## M6 weighted re-selection runtime acceptance checkpoint
 
 The corrected weighted re-selection was executed successfully on 2026-08-24 against the same accepted M5 job. WF03/M5 were not rerun.
@@ -672,22 +673,89 @@ A bounded stronger acceptance rule was therefore implemented in both stock selec
 
 A live provider simulation on the 8-scene GPS job showed the intended conservative result: scene 1 retains a relevant smartphone-outdoors Pixabay photo, scene 6 has a relevant Pexels skyscraper-street candidate, and the six technical/relational scenes have no high-confidence stock result and therefore fall through rather than accepting unrelated imagery. This implementation still requires production re-selection runtime acceptance.
 
+## M6 core-subject gate runtime re-selection checkpoint
+
+The stronger core-subject gate has now been runtime-proven on both the deliberately harder GPS job and the original cat acceptance job using n8n-owned reset harnesses. Each harness was removed immediately afterward and the clean 36-node WF04 was restored.
+
+GPS acceptance job:
+
+```text
+job_id: 82a54ce1-e306-46be-92ca-201aec4bcb9a
+reset: deleted_asset_count=8, reset_scene_count=8, job_reset=true
+execution status: success
+last node: Require Visual Completion
+visuals_complete: true
+durable visual paths: 8/8
+durable asset rows: 8
+```
+
+The stricter gate rejected the previously observed false positives. External stock survived only where the provider description strongly matched the scene subject:
+
+```text
+scene 1 -> Pixabay 6586105, smartphone outdoors, accepted
+scene 2 -> local_fallback
+scene 3 -> local_fallback
+scene 4 -> local_fallback
+scene 5 -> local_fallback
+scene 6 -> Pexels 17002617, urban street/skyscrapers, accepted
+scene 7 -> local_fallback
+scene 8 -> local_fallback
+```
+
+All 8 GPS JPEGs exist, are non-empty, and are ffprobe-readable. The two external files were normalized by media-worker and the six fallbacks are 1080x1920 MJPEG JPEGs.
+
+Original cat acceptance job:
+
+```text
+job_id: db19212b-7914-4346-9ec6-234d315c80d0
+reset: deleted_asset_count=4, reset_scene_count=4, job_reset=true
+execution status: success
+last node: Require Visual Completion
+visuals_complete: true
+durable visual paths: 4/4
+durable asset rows: 4
+```
+
+Final cat selections under the same production selector:
+
+```text
+scene 1 -> Pexels 18968229, close-up sleeping/resting cat
+scene 2 -> local_fallback for `cat larynx anatomy illustration animation`
+scene 3 -> Pexels 30243245, relaxed cat stretching
+scene 4 -> Pexels 38151469, cat looking indoors
+```
+
+The larynx scene no longer resolves to a generic cat portrait or human-anatomy image. It correctly falls through to the existing local fallback because neither stock provider produced a high-confidence core-subject match.
+
+All 4 cat JPEGs exist, are non-empty, and are ffprobe-readable. Final clean WF04 runtime verification after the cat run:
+
+```text
+node_count: 36
+manual_trigger: false
+acceptance_reset_node: false
+acceptance_job_literal: false
+active: false
+pin_data: empty
+core_subject_gate: present in Pixabay and Pexels selectors
+```
+
+This closes the concrete false-positive defect found during harder visual testing. M6 is still not formally closed because the repository requires final real-image semantic review through Google AI Studio before milestone acceptance.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
 - attribution/license metadata is saved where required
 - oversized/unusable files are normalized before render
-- no acceptable external result produces a local fallback scene instead of stopping the job
+- no acceptable result produces a local fallback scene instead of stopping the job
 
 Technical green execution alone is not M6 acceptance. Final scene-to-image relevance review for M6 is performed through Google AI Studio on the real selected images against each scene narration/visual intent; tag/metadata inspection is only a diagnostic aid and does not replace that review.
 
 ## Exact next action
 
-1. commit/publish the clean core-subject-gated 36-node WF04 and re-import it into production;
-2. reselect the 8-scene GPS acceptance job through an n8n-owned reset harness, restore clean WF04, and verify durable state/files;
-3. inspect the 8 real resulting visuals against narration/description/query; unrelated stock must not survive the new gate;
-4. reselect the original cat acceptance job with the same production selector and verify that the larynx scene no longer resolves to a generic cat portrait;
-5. complete the required real-image semantic review; only then wire WF03 -> WF04, update ROADMAP M6 completed, and close M6.
+1. perform the required Google AI Studio review on the real GPS and cat outputs against narration, visual_description, and visual_query;
+2. if any real image fails relevance, make only the smallest bounded WF04 correction and rerun that job through the n8n-owned reset harness;
+3. once semantic review passes, wire WF03 -> WF04 with native Execute Sub-workflow and `waitForSubWorkflow=false`, export the clean production workflows, update ROADMAP M6 completed, and close M6;
+4. do not start M7 before M6 is closed.
 
 ## Do not do
 
