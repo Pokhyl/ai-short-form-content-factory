@@ -87,7 +87,7 @@ Do not substitute guessed voices.
 - stores measured real `scenes.duration_seconds`
 - keeps PostgreSQL writes in n8n; media-worker never writes product state
 - starts Visual Sourcing only after all required scene audio is ready
-- on stage failure must record `jobs.status = failed`, `jobs.current_stage = voiceover`, and `jobs.last_error`, and must not start the next stage
+- on stage failure must record `jobs.status = failed`, keep `jobs.current_stage = voiceover`, store `jobs.last_error`, and not start the next stage
 
 Internal stage hand-off payload remains only:
 
@@ -149,14 +149,12 @@ Production workflow:
 
 - name `WF03 — Voiceover Generation`
 - workflow ID `UHxvCZNqaLb1RKMM`
-- saved production export SHA-256 `15c8b7d6bb2c6e5833f1d91b1b8e04321638d53b048b26bcaf611ec6b8f12faa`
-- export reports `ACTIVE: False`
-- export reports exactly 12 nodes
-- VPS was synchronized by fast-forward to remote commit `2a2b525`
-- production export is copied to `n8n/workflows/WF03-voiceover-generation.json`
-- workflow file is still untracked on VPS and has not been committed
+- first full saved export SHA-256 `15c8b7d6bb2c6e5833f1d91b1b8e04321638d53b048b26bcaf611ec6b8f12faa`
+- workflow is inactive
+- first export had exactly 12 nodes
+- first export was copied to `n8n/workflows/WF03-voiceover-generation.json` on VPS and remains uncommitted/untracked until final verification
 
-Export-proven topology:
+Export-proven topology before failure handling:
 
 ```text
 Receive Job ID
@@ -173,32 +171,41 @@ Receive Job ID
 -> Require Voiceover Completion
 ```
 
-The first export validation returned `CRITICAL_EXPORT_CHECKS: OK` and `EXPORT_READY_FOR_REVIEW: YES` for workflow ID, all 12 nodes, Google TTS endpoint/header, media-worker endpoint presence, MP3, all four locked voices, dynamic narration/voice, `audioContent`, `audio_path`, `duration_seconds`, and `all_audio_ready`.
+## Exact parameter review
 
-## Exact WF03 parameter review
+Full parameter dump of all 12 nodes was reviewed line-for-line.
 
-A full parameter dump of all 12 saved production nodes was reviewed line-for-line on 2026-08-24.
+Verified:
 
-Verified exactly from the export:
+- `Receive Job ID` is `executeWorkflowTrigger` with declared `job_id` input.
+- `Normalize Job ID` matches intended UUID normalization/validation.
+- `Load Voiceover Context` matches intended parameterized SQL.
+- `Require Eligible Voiceover Job` matches intended resumable `processing/script` or `processing/voiceover` validation and scene/audio consistency checks.
+- `Begin Voiceover Stage` matches intended `script -> voiceover` transition/resume SQL.
+- `Prepare Voiceover Items` matches the locked four-language voice map and emits pending-scene items.
+- `Generate Voiceover` is saved as `POST https://texttospeech.googleapis.com/v1/text:synthesize`, uses Google OAuth2, `x-goog-user-project: n8n-drive-voiceover`, dynamic narration, dynamic language mapping, dynamic voice name, and MP3.
+- `Store Audio` body uses the linked `Prepare Voiceover Items` `job_id`/`scene_number` and Google `audioContent`.
+- `Persist Audio Result` writes the exact scene by linked `scene_id + job_id` and stores media-worker `audio_path` plus measured `duration_seconds` only when prior audio state is empty.
+- `Require Persisted Audio Batch`, `Verify Voiceover Completion`, and `Require Voiceover Completion` match the intended code/SQL.
 
-- `Receive Job ID` uses `executeWorkflowTrigger` with one declared `job_id` input, matching the accepted WF02 trigger shape.
-- `Normalize Job ID` matches the intended UUID normalization/validation code.
-- `Load Voiceover Context` matches the intended parameterized SQL and `{{ [ $json.job_id ] }}` query parameter.
-- `Require Eligible Voiceover Job` matches the intended resumable `processing/script` or `processing/voiceover` validation and scene/audio consistency checks.
-- `Begin Voiceover Stage` matches the intended conditional `script -> voiceover` transition/resume SQL and returns `ready_to_run` / `started_now`.
-- `Prepare Voiceover Items` matches the intended four-language voice map and pending-scene item shape.
-- `Generate Voiceover` is correctly saved as `POST https://texttospeech.googleapis.com/v1/text:synthesize`, uses `googleOAuth2Api`, `x-goog-user-project: n8n-drive-voiceover`, dynamic narration, dynamic language mapping, dynamic voice name, and MP3.
-- `Persist Audio Result`, `Require Persisted Audio Batch`, `Verify Voiceover Completion`, and `Require Voiceover Completion` match the intended SQL/code.
-- all node execution flags are currently empty; no M5 failure handling has been added yet.
+A mismatch was found in the first export: `Store Audio.parameters.method` was omitted, which would default to GET. The node was corrected in n8n to explicit POST.
 
-Critical mismatch found in the saved export:
+Runtime/export verification after the correction returned exactly:
 
-- `Store Audio` does **not** contain a `method` parameter.
-- n8n HTTP Request v4.x defaults `method` to `GET` when omitted.
-- therefore the currently saved `Store Audio` node would call `GET http://media-worker:3001/audio/store`, while media-worker accepts only `POST /audio/store`.
-- this must be fixed before any real TTS execution or failure-path work proceeds.
+```text
+STORE_AUDIO_METHOD: POST
+STORE_AUDIO_METHOD_OK: YES
+```
+
+Therefore `Store Audio` method is now verified as `POST` in the saved production workflow.
 
 No real TTS request has been accepted yet.
+
+## Reliability note for current n8n line
+
+Failure handling is not yet implemented. Do not run real TTS before it is added and re-exported.
+
+There is a current upstream report against n8n 2.33.5 where HTTP Request with `On Error = Continue (using error output)` can route a failed request through the normal output as well. This behavior is not proven on this runtime's 2.33.3, but critical M5 failure handling should not depend blindly on that mode without accounting for the risk.
 
 ## M5 acceptance
 
@@ -218,11 +225,13 @@ During M9 add one separate read-only n8n HTTP status workflow/webhook accepting 
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
-1. Fix `Store Audio` so its saved HTTP method is explicitly `POST`.
-2. Do not change any other `Store Audio` parameter.
-3. Re-export WF03 and verify that the exported `Store Audio.parameters.method` is exactly `POST` before doing anything else.
-4. Then add the smallest stage-specific failure path required by architecture so failures after entering `voiceover` record `jobs.status = failed`, keep `jobs.current_stage = voiceover`, store `jobs.last_error`, and do not start a later stage.
-5. Do not run real TTS yet, do not wire WF02->WF03, and do not start M6.
+1. Add the smallest stage-specific failure path for failures after `Begin Voiceover Stage`.
+2. The failure path must resolve the current `job_id` from the already-validated upstream job, persist `status = failed`, `current_stage = voiceover`, and a non-empty `last_error`, then terminate the execution as failed.
+3. Do not add generic retry/dispatcher/error infrastructure.
+4. Because of the current HTTP Request error-output regression reported on n8n 2.33.5, choose a design that does not allow a failed HTTP request to continue into persistence as if it succeeded.
+5. Re-export and verify the final WF03 after failure handling.
+6. Only then begin the first real TTS acceptance run.
+7. Do not wire WF02->WF03 and do not start M6.
 
 ## Do not do
 
