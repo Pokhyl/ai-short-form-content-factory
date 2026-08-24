@@ -218,7 +218,7 @@ ACTIVE: false
 NODE_COUNT: 17
 ```
 
-A fresh inactive export was then written to `n8n/workflows/WF03-voiceover-generation.json` on the VPS and verified immediately before commit.
+A fresh inactive export was written to `n8n/workflows/WF03-voiceover-generation.json` on the VPS and verified immediately before commit.
 
 Verified exact file values:
 
@@ -242,22 +242,24 @@ The first push did not complete because the VPS HTTPS remote has no write creden
 fatal: could not read Username for 'https://github.com': No such device or address
 ```
 
-## VPS Git authentication diagnostic
+## VPS Git authentication and divergence diagnostic
 
-A non-destructive diagnostic was completed on 2026-08-24.
+A second non-destructive diagnostic was completed on 2026-08-24 after the remote documentation branch advanced.
 
-Verified:
+Verified at diagnostic time:
 
 - local HEAD remains `519ae33 feat: add WF03 voiceover workflow`
-- remote is HTTPS for fetch and push: `https://github.com/Pokhyl/ai-short-form-content-factory.git`
-- no Git credential helper is configured on the VPS
-- GitHub CLI is not installed
-- default `ssh -T git@github.com` fails with `Permission denied (publickey)`
-- `/root/.ssh` exposes a public key named `tiktok-video-pipeline-v2-deploy.pub`; the diagnostic did not yet test whether the matching nonstandard private key exists or whether it has access to this repository
-- remote `feat/m5-voiceover` advanced to documentation commit `04160df` after the local WF03 commit was created
-- current divergence reported by Git is `1 1`: one local-only commit (WF03) and one remote-only commit (documentation)
+- merge base is `7c4c3dbe15c19ef2cff1d84a672fd66102f625b0`
+- divergence was `1 2`: one local-only WF03 commit and two remote-only documentation commits
+- local-only changed path is exactly `n8n/workflows/WF03-voiceover-generation.json`
+- remote-only changed path is exactly `docs/CURRENT_STATE.md`
+- therefore the local and remote changed paths are explicitly proven disjoint
+- matching private key `/root/.ssh/tiktok-video-pipeline-v2-deploy` exists
+- public-key fingerprint is `SHA256:PvJt6+susKrlP2CIm7xsojHotHFDEJCwPhCnqzn1XeQ`
+- an explicit `IdentitiesOnly=yes` read test of that exact key against `git@github.com:Pokhyl/ai-short-form-content-factory.git` fails with `Permission denied (publickey)`
+- therefore that existing key does not provide repository access and must not be used for this repository
 
-The verified workflow commit is still safe locally. Do not recreate it. Before any history reconciliation, first test the existing nonstandard SSH key explicitly against this repository. If it cannot access this repository, create/use a repository-specific write credential without exposing private material in chat.
+The verified WF03 commit is still safe locally. Do not recreate, amend, reset, or rebase it. Because the changed paths are now proven disjoint, a targeted merge of the latest remote documentation branch into the local branch is allowed once a repository-specific write credential is available. Prefer a repository-specific deploy key rather than reusing the unrelated `tiktok-video-pipeline-v2-deploy` key.
 
 No real TTS request has been accepted yet.
 
@@ -279,18 +281,19 @@ During M9 add one separate read-only n8n HTTP status workflow/webhook accepting 
 
 Continue M5 without touching n8n workflow configuration.
 
-1. Preserve VPS local commit `519ae3391771884abf6e2caa1632a2002b4085e2`; do not amend, reset, or recreate it.
-2. Non-destructively test whether `/root/.ssh/tiktok-video-pipeline-v2-deploy` exists and whether that exact key can read `git@github.com:Pokhyl/ai-short-form-content-factory.git` using `IdentitiesOnly=yes`.
-3. Do not change the remote URL yet.
-4. If the key has repository access, verify local-only and remote-only changed paths are disjoint before reconciling the one local workflow commit with the one remote documentation commit, then push using that key.
-5. If the key does not have repository access, create/use the smallest repository-specific GitHub write credential and then perform the same targeted reconciliation.
-6. Verify the remote branch contains the workflow file and the expected export SHA before preparing the first real controlled M5 TTS acceptance run.
-7. Do not wire WF02->WF03 and do not start M6.
+1. Preserve VPS local commit `519ae3391771884abf6e2caa1632a2002b4085e2`; do not amend, reset, recreate, or rebase it.
+2. Create a new repository-specific ED25519 deploy key on the VPS for `Pokhyl/ai-short-form-content-factory`; never expose its private key.
+3. Add only the generated public key to this GitHub repository as a deploy key with write access.
+4. Verify repository read and dry-run write access with that exact key before changing any Git remote configuration.
+5. Fetch the latest remote `feat/m5-voiceover`, verify again that remote-only changes remain documentation-only, then merge the remote branch into the local branch with a normal merge commit so local commit `519ae33` remains intact in history.
+6. Push through the repository-specific SSH key, then verify the remote branch contains `n8n/workflows/WF03-voiceover-generation.json` with expected export SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`.
+7. Only after remote verification may the first real controlled M5 TTS acceptance run be prepared.
+8. Do not wire WF02->WF03 and do not start M6.
 
 ## Do not do
 
-- do not amend/reset/recreate local WF03 commit `519ae3391771884abf6e2caa1632a2002b4085e2`
-- do not rebase/merge until the local-only and remote-only changed paths have been explicitly checked
+- do not amend/reset/recreate/rebase local WF03 commit `519ae3391771884abf6e2caa1632a2002b4085e2`
+- do not reuse `/root/.ssh/tiktok-video-pipeline-v2-deploy` for this repository
 - do not expose private SSH keys, GitHub tokens, or credentials
 - do not substitute voice presets
 - do not hardcode topic/narration/language-specific test data
