@@ -424,6 +424,27 @@ The clean 36-node WF04 was immediately re-imported and unpublished afterward. Po
 
 A controlled n8n-only restart is now the smallest grounded way to register the temporary webhook harness. The acceptance procedure must: import/publish temp WF04 -> restart only n8n -> call localhost webhook -> wait/verify execution -> restore clean WF04 + unpublish -> restart only n8n again so the temporary webhook is removed from the running process.
 
+## M6 webhook restart attempt checkpoint
+
+The controlled temporary-webhook procedure was executed exactly as planned: temp WF04 import/publish -> n8n-only restart -> localhost POST -> clean WF04 restore/unpublish -> n8n-only restart. The running n8n service returned HTTP 404 even after the restart:
+
+```text
+Cannot POST /webhook/m6-wf04-acceptance-7a9c31
+HTTP_STATUS: 404
+```
+
+Therefore CLI `publish:workflow` alone did not register the temporary production webhook in the running service for this inactive WF04. The clean workflow was restored and verified afterward:
+
+```text
+NODE_COUNT: 36
+TEMP_WEBHOOK_PRESENT: NO
+ACTIVE: false
+PIN_DATA: EMPTY
+N8N_CLEAN_READY: YES
+```
+
+No acceptance job execution occurred in this attempt. The next action is to inspect the installed n8n CLI activation command/options and verify the exact runtime active/published state before another webhook attempt; do not infer activation semantics.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -435,12 +456,11 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. import/publish the temporary localhost-only WF04 Webhook acceptance harness;
-2. restart only the `n8n` service so the temporary webhook is registered;
-3. call the webhook once from localhost with the accepted `job_id` and wait for completion;
-4. immediately restore the clean repository WF04, unpublish it, and restart only `n8n` again to remove the temporary webhook from the running process;
-5. verify PostgreSQL asset/visual persistence and media files, then manually review selected visual relevance and attribution/license metadata;
-6. after WF04 is runtime-proven and manually accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export the clean production workflows, and close M6 only after ROADMAP acceptance is satisfied.
+1. inspect `publish:workflow` and deprecated `update:workflow` CLI help for exact activation semantics/options;
+2. re-import the temporary webhook WF04 only after the exact activation command is known, activate/publish it, verify exported `active` and `versionId/activeVersionId`, restart only `n8n`, then call the localhost webhook once;
+3. immediately restore the clean repository WF04, unpublish/deactivate it as required, restart only `n8n`, and verify cleanup;
+4. verify PostgreSQL asset/visual persistence and media files, then manually review selected visual relevance and attribution/license metadata;
+5. after WF04 is runtime-proven and manually accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export the clean production workflows, and close M6 only after ROADMAP acceptance is satisfied.
 
 ## Do not do
 
