@@ -142,31 +142,41 @@ feat: add WF03 voiceover workflow
 
 That commit contains only `n8n/workflows/WF03-voiceover-generation.json` and remains intact in history.
 
-Repository-specific deploy-key SSH access was verified from the VPS with both read and dry-run write access.
-
-The remote documentation-only branch changes and the local WF03-only commit were explicitly proven to touch disjoint paths before reconciliation.
-
-A normal merge commit was then created and pushed:
+A normal merge commit was created and pushed after documentation-only remote changes were proven disjoint from the local WF03-only commit:
 
 ```text
 28b5cca041cf29984ca155e36b280ef00649d873
 merge: sync M5 documentation before WF03 push
 ```
 
-Post-push verification on 2026-08-24 proved:
+Post-push verification proved remote HEAD matched local HEAD and the remote WF03 file had exact SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`.
+
+## First real M5 acceptance job — prepared
+
+A fresh disposable Polish 15-second acceptance job was created through production WF01 on 2026-08-24:
 
 ```text
-WF03_COMMIT_PRESERVED: YES
-REMOTE_HEAD_MATCH: YES
-REMOTE_WF03_SHA_OK: YES
-WF03_REMOTE_PUSH_VERIFIED: YES
-FINAL_REMOTE_COMMIT: 28b5cca041cf29984ca155e36b280ef00649d873
-WF03_EXPORT_SHA256: e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438
+job_id: db19212b-7914-4346-9ec6-234d315c80d0
 ```
 
-Therefore the verified inactive 17-node WF03 export is now present on remote `feat/m5-voiceover` with the expected SHA-256.
+Observed runtime progression:
 
-No real TTS request has been accepted yet.
+```text
+ATTEMPT_1: created|intake|0|0|0|
+ATTEMPT_2: processing|script|4|4|0|
+```
+
+Therefore, at the second check the job had:
+
+- `status = processing`
+- `current_stage = script`
+- exactly 4 scenes, which is the required count for a 15-second job
+- non-empty narration for all 4 scenes
+- zero existing audio fields
+
+This job is the first controlled M5 TTS acceptance candidate. Do not reuse prior M3/M4 acceptance jobs.
+
+No real TTS request has yet been executed for this job.
 
 ## M5 acceptance
 
@@ -180,13 +190,15 @@ Do not start M6 before real M5 acceptance.
 
 ## Exact next action
 
-1. Prepare the first real controlled M5 TTS acceptance run without wiring WF02->WF03.
-2. Use a fresh disposable acceptance job; do not reuse the accepted M3/M4 jobs.
-3. Before executing WF03, verify the chosen job is `status = processing`, `current_stage = script`, has the exact required scene count for its target duration, has non-empty narration, and has no existing audio fields.
-4. Invoke WF03 with only `{ "job_id": "<uuid>" }`.
-5. After the run, verify PostgreSQL contains positive measured `duration_seconds` and non-empty `audio_path` for every required scene, and verify the corresponding MP3 files are playable.
-6. Manually listen to the generated voice before marking that language accepted.
-7. Keep WF02->WF03 disconnected and do not start M6 until M5 acceptance is complete.
+1. Use acceptance job `db19212b-7914-4346-9ec6-234d315c80d0` for the first real controlled WF03 run.
+2. Do not wire WF02->WF03.
+3. Invoke WF03 with only `{ "job_id": "db19212b-7914-4346-9ec6-234d315c80d0" }`.
+4. After the run, verify job status/stage/error plus all four scenes in PostgreSQL.
+5. Require non-empty `audio_path` and positive measured `duration_seconds` for all four scenes.
+6. Verify the corresponding MP3 files exist and are readable/playable.
+7. Manually listen to the Polish voice before marking Polish accepted.
+8. If the run fails, inspect the exact n8n execution and persisted `last_error` before changing WF03; do not rerun blindly.
+9. Keep M6 disconnected until M5 acceptance is complete.
 
 ## Do not do
 
