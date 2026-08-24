@@ -808,6 +808,43 @@ disposable smoke-test media removed after verification
 
 The long first `/visual/rank` call was the one-time model download into the persistent existing `/data` volume. The model is now cached for subsequent ranking calls. No application database state was mutated during these media-worker smoke tests. WF04 has not yet been rewired to call `/visual/rank`.
 
+## M6 WF04 SigLIP rewiring implementation checkpoint
+
+WF04 has now been refactored back to the restored semantic-ranking plan. The old tag/alt/URL token gates are no longer used as the production selection mechanism.
+
+Implemented flow per provider:
+
+```text
+provider search (max 10)
+-> deterministic file/metadata usability filter
+-> candidate_pool with trusted preview URLs + original/attribution metadata
+-> POST /visual/rank to media-worker
+-> choose ranked[0] by candidate_id
+-> download only the selected original
+-> existing normalize/store/persist path
+```
+
+Implementation facts:
+
+```text
+WF04 node count: 42
+Wikimedia pool builder: present
+Pixabay pool builder: present
+Pexels pool builder: present
+SigLIP rank HTTP nodes: 3
+rank result resolver nodes: 3
+old required_core_tokens gate: removed
+old subject_matched_tokens gate: removed
+old required_primary_token gate: removed
+provider order: unchanged
+local fallback behavior: unchanged
+M7 handoff: still absent
+```
+
+Wikimedia search now requests a bounded 640px preview (`iiurlwidth=640`) for semantic ranking while retaining the original file URL for the single selected download. Pixabay ranking uses `webformatURL`/`previewURL`; Pexels ranking uses `src.medium`/`src.small`. Original provider IDs, source URLs, authors, licenses, dimensions, and provider rank remain attached to the candidate and are persisted only for the semantic winner.
+
+All six modified/new Code-node scripts passed `node --check` inside the production n8n container, and the workflow JSON parses successfully. This implementation has not yet been imported/runtime-accepted on the GPS job.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -819,8 +856,8 @@ Technical green execution alone is not M6 acceptance. Final scene-to-image relev
 
 ## Exact next action
 
-1. refactor WF04 provider selectors so deterministic filters produce bounded candidate pools and SigLIP ranks the real previews; remove the core-token/tag/alt/URL gates as the selection mechanism;
-2. re-import clean WF04 and reselect the existing GPS acceptance job through the n8n-owned reset harness without rerunning M4/M5;
+1. import the clean 42-node SigLIP-ranked WF04 into production;
+2. reselect the existing GPS acceptance job through the n8n-owned reset harness without rerunning M4/M5;
 3. inspect durable 8/8 results and run the required Gemini/Google AI Studio acceptance review on the actual selected images;
 4. only after visual acceptance, wire WF03 -> WF04, export the clean production workflows, update ROADMAP M6 completed, and close M6;
 5. do not start M7 before M6 is closed.

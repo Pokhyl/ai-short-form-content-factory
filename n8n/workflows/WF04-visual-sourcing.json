@@ -181,7 +181,7 @@
       },
       {
         "parameters": {
-          "url": "={{ 'https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&generator=search&gsrnamespace=6&gsrlimit=10&gsrsearch=' + encodeURIComponent($json.visual_query) + '&prop=imageinfo&iiprop=url%7Cmime%7Csize%7Cextmetadata' }}",
+          "url": "={{ 'https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&generator=search&gsrnamespace=6&gsrlimit=10&gsrsearch=' + encodeURIComponent($json.visual_query) + '&prop=imageinfo&iiprop=url%7Cmime%7Csize%7Cextmetadata&iiurlwidth=640' }}",
           "options": {}
         },
         "type": "n8n-nodes-base.httpRequest",
@@ -197,7 +197,7 @@
       {
         "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "\nfunction textTokens(value) {\n  const stop = new Set([\n    'the','and','for','with','from','into','over','under','about',\n    'this','that','these','those','their','there','where','when',\n    'what','which','who','why','how','its','his','her','our','your',\n    'image','photo','picture','view','scene'\n  ]);\n\n  return String(value ?? '')\n    .toLowerCase()\n    .normalize('NFKD')\n    .replace(/[^\\p{L}\\p{N}]+/gu, ' ')\n    .split(/\\s+/u)\n    .filter((token) => token.length >= 3 && !stop.has(token));\n}\n\nfunction overlapScore(query, candidateText) {\n  const q = new Set(textTokens(query));\n  const c = new Set(textTokens(candidateText));\n  let score = 0;\n  for (const token of q) {\n    if (c.has(token)) score += 10;\n  }\n  return score;\n}\n\nfunction cleanText(value) {\n  return String(value ?? '')\n    .replace(/<[^>]*>/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim()\n    .slice(0, 1000);\n}\n\nconst response = $json;\nconst scene = $('Prepare Visual Items').item.json;\nconst pages = Array.isArray(response?.query?.pages)\n  ? response.query.pages\n  : [];\n\nconst supported = new Set([\n  'image/jpeg',\n  'image/png',\n  'image/webp',\n  'image/gif',\n]);\nconst maxBytes = 24 * 1024 * 1024;\n\nconst candidates = [];\n\nfor (let index = 0; index < pages.length; index++) {\n  const page = pages[index];\n  const info = page?.imageinfo?.[0] ?? {};\n  const mime = String(info.mime ?? '').toLowerCase();\n  const url = String(info.url ?? '').trim();\n  const width = Number(info.width);\n  const height = Number(info.height);\n  const size = Number(info.size ?? 0);\n\n  if (\n    !supported.has(mime) ||\n    !url ||\n    !Number.isFinite(width) ||\n    !Number.isFinite(height) ||\n    width < 320 ||\n    height < 320 ||\n    (Number.isFinite(size) && size > maxBytes)\n  ) {\n    continue;\n  }\n\n  const ext = info.extmetadata ?? {};\n  const title = String(page.title ?? '');\n  const overlap =\n    overlapScore(scene.visual_query, title);\n  const score =\n    overlap +\n    Math.max(0, 10 - index);\n\n  candidates.push({\n    index,\n    overlap,\n    score,\n    title,\n    info,\n    ext,\n    width,\n    height,\n    size,\n  });\n}\n\ncandidates.sort((a, b) =>\n  b.score - a.score || a.index - b.index\n);\n\nconst selected = candidates[0];\n\nif (!selected || selected.overlap < 10) {\n  return {\n    json: {\n      ...scene,\n      candidate_found: false,\n      fallback_reason: 'No acceptable Wikimedia Commons candidate matched the visual query',\n    },\n  };\n}\n\nconst license =\n  cleanText(selected.ext?.LicenseShortName?.value);\nconst licenseUrl =\n  cleanText(selected.ext?.LicenseUrl?.value);\nconst author =\n  cleanText(\n    selected.ext?.Artist?.value ||\n    selected.ext?.Credit?.value\n  );\nconst sourceUrl =\n  String(selected.info.descriptionurl ?? '').trim() ||\n  `https://commons.wikimedia.org/wiki/${encodeURIComponent(\n    selected.title.replace(/\\s+/g, '_')\n  )}`;\n\nreturn {\n  json: {\n    ...scene,\n    candidate_found: true,\n    provider: 'wikimedia',\n    provider_asset_id: String(selected.title),\n    download_url: String(selected.info.url),\n    source_url: sourceUrl,\n    author: author || null,\n    license: license || null,\n    license_url: licenseUrl || null,\n    metadata: {\n      selected_rank: selected.index + 1,\n      selection_score: selected.score,\n      token_overlap_score: selected.overlap,\n      source_title: selected.title,\n      source_mime: String(selected.info.mime ?? ''),\n      source_width: selected.width,\n      source_height: selected.height,\n      source_bytes: Number.isFinite(selected.size)\n        ? selected.size\n        : null,\n    },\n  },\n};"
+          "jsCode": "function cleanText(value) {\n  return String(value ?? '')\n    .replace(/<[^>]*>/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim()\n    .slice(0, 1000);\n}\n\nconst response = $json;\nconst scene = $('Prepare Visual Items').item.json;\nconst pages = Array.isArray(response?.query?.pages) ? response.query.pages : [];\nconst supported = new Set(['image/jpeg','image/png','image/webp','image/gif']);\nconst maxBytes = 24 * 1024 * 1024;\nconst candidatePool = [];\n\nfor (let index = 0; index < pages.length && candidatePool.length < 10; index++) {\n  const page = pages[index] ?? {};\n  const info = page?.imageinfo?.[0] ?? {};\n  const mime = String(info.mime ?? '').toLowerCase();\n  const downloadUrl = String(info.url ?? '').trim();\n  const previewUrl = String(info.thumburl ?? info.url ?? '').trim();\n  const width = Number(info.width);\n  const height = Number(info.height);\n  const size = Number(info.size ?? 0);\n  if (!supported.has(mime) || !downloadUrl || !previewUrl || !Number.isFinite(width) || !Number.isFinite(height) || width < 320 || height < 320 || (Number.isFinite(size) && size > maxBytes)) continue;\n  const ext = info.extmetadata ?? {};\n  const title = String(page.title ?? '').trim();\n  const sourceUrl = String(info.descriptionurl ?? '').trim() || `https://commons.wikimedia.org/wiki/${encodeURIComponent(title.replace(/\\s+/g, '_'))}`;\n  candidatePool.push({\n    candidate_id: title || `wikimedia-${index + 1}`,\n    preview_url: previewUrl,\n    provider: 'wikimedia',\n    provider_asset_id: title,\n    download_url: downloadUrl,\n    source_url: sourceUrl,\n    author: cleanText(ext?.Artist?.value || ext?.Credit?.value) || null,\n    license: cleanText(ext?.LicenseShortName?.value) || null,\n    license_url: cleanText(ext?.LicenseUrl?.value) || null,\n    metadata: { provider_rank:index+1, source_title:title, source_mime:mime, source_width:width, source_height:height, source_bytes:Number.isFinite(size)?size:null },\n  });\n}\n\nreturn { json: { ...scene, candidate_found:candidatePool.length>0, candidate_pool:candidatePool, fallback_reason:candidatePool.length>0?null:'No deterministically usable Wikimedia Commons candidate was available' } };"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -206,7 +206,7 @@
           -176
         ],
         "id": "a3cd08d5-ebca-42ae-b156-1e32acc0b730",
-        "name": "Select Wikimedia Candidate",
+        "name": "Prepare Wikimedia Candidate Pool",
         "onError": "continueErrorOutput"
       },
       {
@@ -269,7 +269,7 @@
       {
         "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "function textTokens(value) {\n  const stop = new Set([\n    'the','and','for','with','from','into','over','under','about',\n    'this','that','these','those','their','there','where','when',\n    'what','which','who','why','how','its','his','her','our','your',\n    'image','photo','picture','view','scene'\n  ]);\n\n  return String(value ?? '')\n    .toLowerCase()\n    .normalize('NFKD')\n    .replace(/[^\\p{L}\\p{N}]+/gu, ' ')\n    .split(/\\s+/u)\n    .filter((token) => token.length >= 3 && !stop.has(token));\n}\n\nfunction overlapScore(query, candidateText) {\n  const queryTokens = [...new Set(textTokens(query))];\n  const candidateTokens = new Set(textTokens(candidateText));\n\n  let score = 0;\n  const matchedTokens = [];\n\n  for (let index = 0; index < queryTokens.length; index++) {\n    const token = queryTokens[index];\n    if (!candidateTokens.has(token)) continue;\n\n    const tokenWeight = Math.max(10, 30 - index * 5);\n    score += tokenWeight;\n    matchedTokens.push(token);\n  }\n\n  return {\n    score,\n    matchedTokens,\n    queryTokens,\n    queryTokenCount: queryTokens.length,\n    primaryToken: queryTokens[0] ?? null,\n  };\n}\n\nfunction pixabaySubjectText(pageUrl) {\n  const raw = String(pageUrl ?? '').trim();\n  if (!raw) return '';\n\n  const path = raw.split('?')[0].replace(/\\/+$/g, '');\n  const slug = path.split('/').pop() ?? '';\n\n  return slug\n    .replace(/-\\d+$/g, '')\n    .replace(/-/g, ' ');\n}\n\nconst response = $json;\nconst scene = $('Prepare Visual Items').item.json;\nconst hits = Array.isArray(response?.hits)\n  ? response.hits\n  : [];\nconst maxBytes = 24 * 1024 * 1024;\n\nconst candidates = [];\n\nfor (let index = 0; index < hits.length; index++) {\n  const hit = hits[index] ?? {};\n  const url =\n    String(hit.largeImageURL ?? hit.webformatURL ?? '').trim();\n  const width = Number(hit.imageWidth ?? 0);\n  const height = Number(hit.imageHeight ?? 0);\n  const size = Number(hit.imageSize ?? 0);\n\n  if (\n    !url ||\n    !Number.isFinite(width) ||\n    !Number.isFinite(height) ||\n    width < 320 ||\n    height < 320 ||\n    (Number.isFinite(size) && size > maxBytes)\n  ) {\n    continue;\n  }\n\n  const text = `${hit.tags ?? ''}`;\n  const overlapResult =\n    overlapScore(scene.visual_query, text);\n  const overlap = overlapResult.score;\n  const coreTokens = overlapResult.queryTokens.slice(0, 2);\n  const subjectTokens = new Set(\n    textTokens(pixabaySubjectText(hit.pageURL))\n  );\n  const subjectMatchedTokens = coreTokens.filter((token) =>\n    subjectTokens.has(token)\n  );\n  const score =\n    overlap +\n    Math.max(0, 10 - index) +\n    (height >= width ? 3 : 0);\n\n  candidates.push({\n    index,\n    overlap,\n    matchedTokens: overlapResult.matchedTokens,\n    queryTokens: overlapResult.queryTokens,\n    queryTokenCount: overlapResult.queryTokenCount,\n    primaryToken: overlapResult.primaryToken,\n    coreTokens,\n    subjectMatchedTokens,\n    score,\n    hit,\n    url,\n    width,\n    height,\n    size,\n  });\n}\n\nconst queryTokenCount = candidates[0]?.queryTokenCount ?? 0;\nconst requiredMatchCount = Math.min(2, Math.max(1, queryTokenCount));\nconst primaryToken = candidates[0]?.primaryToken ?? null;\nconst requiredCoreTokens = candidates[0]?.coreTokens ?? [];\n\nconst acceptableCandidates = candidates.filter((candidate) =>\n  candidate.overlap >= 10 &&\n  candidate.matchedTokens.length >= requiredMatchCount &&\n  (!primaryToken || candidate.matchedTokens.includes(primaryToken)) &&\n  candidate.subjectMatchedTokens.length === requiredCoreTokens.length\n);\n\nacceptableCandidates.sort((a, b) =>\n  b.score - a.score || a.index - b.index\n);\n\nconst selected = acceptableCandidates[0];\n\nif (!selected) {\n  return {\n    json: {\n      ...scene,\n      candidate_found: false,\n      fallback_reason: 'No acceptable Pixabay candidate met core visual-query subject coverage',\n    },\n  };\n}\n\nreturn {\n  json: {\n    ...scene,\n    candidate_found: true,\n    provider: 'pixabay',\n    provider_asset_id: String(selected.hit.id ?? ''),\n    download_url: selected.url,\n    source_url: String(selected.hit.pageURL ?? '').trim() || null,\n    author: String(selected.hit.user ?? '').trim() || null,\n    license: 'Pixabay Content License',\n    license_url: 'https://pixabay.com/service/license-summary/',\n    metadata: {\n      selected_rank: selected.index + 1,\n      selection_score: selected.score,\n      token_overlap_score: selected.overlap,\n      matched_tokens: selected.matchedTokens,\n      required_match_count: requiredMatchCount,\n      required_primary_token: primaryToken,\n      required_core_tokens: requiredCoreTokens,\n      subject_matched_tokens: selected.subjectMatchedTokens,\n      tags: String(selected.hit.tags ?? ''),\n      source_width: selected.width,\n      source_height: selected.height,\n      source_bytes: Number.isFinite(selected.size)\n        ? selected.size\n        : null,\n    },\n  },\n};"
+          "jsCode": "const response = $json;\nconst scene = $('Prepare Visual Items').item.json;\nconst hits = Array.isArray(response?.hits) ? response.hits : [];\nconst maxBytes = 24 * 1024 * 1024;\nconst candidatePool = [];\nfor (let index = 0; index < hits.length && candidatePool.length < 10; index++) {\n  const hit = hits[index] ?? {};\n  const downloadUrl = String(hit.largeImageURL ?? hit.webformatURL ?? '').trim();\n  const previewUrl = String(hit.webformatURL ?? hit.previewURL ?? '').trim();\n  const width = Number(hit.imageWidth ?? 0);\n  const height = Number(hit.imageHeight ?? 0);\n  const size = Number(hit.imageSize ?? 0);\n  if (!downloadUrl || !previewUrl || !Number.isFinite(width) || !Number.isFinite(height) || width < 320 || height < 320 || (Number.isFinite(size) && size > maxBytes)) continue;\n  candidatePool.push({\n    candidate_id:String(hit.id ?? `pixabay-${index+1}`), preview_url:previewUrl, provider:'pixabay', provider_asset_id:String(hit.id ?? ''), download_url:downloadUrl,\n    source_url:String(hit.pageURL ?? '').trim() || null, author:String(hit.user ?? '').trim() || null,\n    license:'Pixabay Content License', license_url:'https://pixabay.com/service/license-summary/',\n    metadata:{ provider_rank:index+1, tags:String(hit.tags ?? ''), source_width:width, source_height:height, source_bytes:Number.isFinite(size)?size:null },\n  });\n}\nreturn { json:{ ...scene, candidate_found:candidatePool.length>0, candidate_pool:candidatePool, fallback_reason:candidatePool.length>0?null:'No deterministically usable Pixabay candidate was available' } };"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -278,7 +278,7 @@
           272
         ],
         "id": "b91d7668-c049-44e5-a02a-3ed08855c46e",
-        "name": "Select Pixabay Candidate",
+        "name": "Prepare Pixabay Candidate Pool",
         "onError": "continueErrorOutput"
       },
       {
@@ -355,7 +355,7 @@
       {
         "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "function textTokens(value) {\n  const stop = new Set([\n    'the','and','for','with','from','into','over','under','about',\n    'this','that','these','those','their','there','where','when',\n    'what','which','who','why','how','its','his','her','our','your',\n    'image','photo','picture','view','scene'\n  ]);\n\n  return String(value ?? '')\n    .toLowerCase()\n    .normalize('NFKD')\n    .replace(/[^\\p{L}\\p{N}]+/gu, ' ')\n    .split(/\\s+/u)\n    .filter((token) => token.length >= 3 && !stop.has(token));\n}\n\nfunction overlapScore(query, candidateText) {\n  const queryTokens = [...new Set(textTokens(query))];\n  const candidateTokens = new Set(textTokens(candidateText));\n\n  let score = 0;\n  const matchedTokens = [];\n\n  for (let index = 0; index < queryTokens.length; index++) {\n    const token = queryTokens[index];\n    if (!candidateTokens.has(token)) continue;\n\n    const tokenWeight = Math.max(10, 30 - index * 5);\n    score += tokenWeight;\n    matchedTokens.push(token);\n  }\n\n  return {\n    score,\n    matchedTokens,\n    queryTokens,\n    queryTokenCount: queryTokens.length,\n    primaryToken: queryTokens[0] ?? null,\n  };\n}\n\nconst response = $json;\nconst scene = $('Prepare Visual Items').item.json;\nconst photos = Array.isArray(response?.photos)\n  ? response.photos\n  : [];\n\nconst candidates = [];\n\nfor (let index = 0; index < photos.length; index++) {\n  const photo = photos[index] ?? {};\n  const url = String(photo?.src?.original ?? '').trim();\n  const width = Number(photo.width ?? 0);\n  const height = Number(photo.height ?? 0);\n\n  if (\n    !url ||\n    !Number.isFinite(width) ||\n    !Number.isFinite(height) ||\n    width < 320 ||\n    height < 320\n  ) {\n    continue;\n  }\n\n  const alt = String(photo.alt ?? '');\n  const overlapResult =\n    overlapScore(scene.visual_query, alt);\n  const overlap = overlapResult.score;\n  const coreTokens = overlapResult.queryTokens.slice(0, 2);\n  const subjectTokens = new Set(textTokens(alt));\n  const subjectMatchedTokens = coreTokens.filter((token) =>\n    subjectTokens.has(token)\n  );\n  const score =\n    overlap +\n    Math.max(0, 10 - index) +\n    (height >= width ? 3 : 0);\n\n  candidates.push({\n    index,\n    overlap,\n    matchedTokens: overlapResult.matchedTokens,\n    queryTokens: overlapResult.queryTokens,\n    queryTokenCount: overlapResult.queryTokenCount,\n    primaryToken: overlapResult.primaryToken,\n    coreTokens,\n    subjectMatchedTokens,\n    score,\n    photo,\n    url,\n    width,\n    height,\n  });\n}\n\nconst queryTokenCount = candidates[0]?.queryTokenCount ?? 0;\nconst requiredMatchCount = Math.min(2, Math.max(1, queryTokenCount));\nconst primaryToken = candidates[0]?.primaryToken ?? null;\nconst requiredCoreTokens = candidates[0]?.coreTokens ?? [];\n\nconst acceptableCandidates = candidates.filter((candidate) =>\n  candidate.overlap >= 10 &&\n  candidate.matchedTokens.length >= requiredMatchCount &&\n  (!primaryToken || candidate.matchedTokens.includes(primaryToken)) &&\n  candidate.subjectMatchedTokens.length === requiredCoreTokens.length\n);\n\nacceptableCandidates.sort((a, b) =>\n  b.score - a.score || a.index - b.index\n);\n\nconst selected = acceptableCandidates[0];\n\nif (!selected) {\n  return {\n    json: {\n      ...scene,\n      candidate_found: false,\n      fallback_reason: 'No acceptable Pexels candidate met core visual-query subject coverage',\n    },\n  };\n}\n\nreturn {\n  json: {\n    ...scene,\n    candidate_found: true,\n    provider: 'pexels',\n    provider_asset_id: String(selected.photo.id ?? ''),\n    download_url: selected.url,\n    source_url: String(selected.photo.url ?? '').trim() || null,\n    author:\n      String(selected.photo.photographer ?? '').trim() || null,\n    license: 'Pexels License',\n    license_url: 'https://www.pexels.com/license/',\n    metadata: {\n      selected_rank: selected.index + 1,\n      selection_score: selected.score,\n      token_overlap_score: selected.overlap,\n      matched_tokens: selected.matchedTokens,\n      required_match_count: requiredMatchCount,\n      required_primary_token: primaryToken,\n      required_core_tokens: requiredCoreTokens,\n      subject_matched_tokens: selected.subjectMatchedTokens,\n      alt: String(selected.photo.alt ?? ''),\n      source_width: selected.width,\n      source_height: selected.height,\n    },\n  },\n};"
+          "jsCode": "const response = $json;\nconst scene = $('Prepare Visual Items').item.json;\nconst photos = Array.isArray(response?.photos) ? response.photos : [];\nconst candidatePool = [];\nfor (let index = 0; index < photos.length && candidatePool.length < 10; index++) {\n  const photo = photos[index] ?? {};\n  const downloadUrl = String(photo?.src?.original ?? '').trim();\n  const previewUrl = String(photo?.src?.medium ?? photo?.src?.small ?? photo?.src?.original ?? '').trim();\n  const width = Number(photo.width ?? 0);\n  const height = Number(photo.height ?? 0);\n  if (!downloadUrl || !previewUrl || !Number.isFinite(width) || !Number.isFinite(height) || width < 320 || height < 320) continue;\n  candidatePool.push({\n    candidate_id:String(photo.id ?? `pexels-${index+1}`), preview_url:previewUrl, provider:'pexels', provider_asset_id:String(photo.id ?? ''), download_url:downloadUrl,\n    source_url:String(photo.url ?? '').trim() || null, author:String(photo.photographer ?? '').trim() || null,\n    license:'Pexels License', license_url:'https://www.pexels.com/license/',\n    metadata:{ provider_rank:index+1, alt:String(photo.alt ?? ''), source_width:width, source_height:height },\n  });\n}\nreturn { json:{ ...scene, candidate_found:candidatePool.length>0, candidate_pool:candidatePool, fallback_reason:candidatePool.length>0?null:'No deterministically usable Pexels candidate was available' } };"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -364,7 +364,7 @@
           272
         ],
         "id": "8333954a-cc34-47cb-a94c-5c5d27d389ba",
-        "name": "Select Pexels Candidate",
+        "name": "Prepare Pexels Candidate Pool",
         "onError": "continueErrorOutput"
       },
       {
@@ -752,6 +752,114 @@
         ],
         "id": "7d5e8ba3-5f7b-4d67-a788-3d47fb91ed66",
         "name": "Stop Visual Failure"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/rank",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { query: $json.visual_query, candidates: $json.candidate_pool.map((candidate) => ({ candidate_id: candidate.candidate_id, preview_url: candidate.preview_url })) } }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          2272,
+          -176
+        ],
+        "id": "3648fb10-81e0-4281-8770-6bec4c98888e",
+        "name": "Rank Wikimedia Candidate Previews",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const ranking = $json;\nconst pool = $('Prepare Wikimedia Candidate Pool').item.json;\nif (!Array.isArray(pool.candidate_pool) || pool.candidate_pool.length === 0) throw new Error('Visual candidate pool is unavailable during semantic selection');\nif (!Array.isArray(ranking.ranked) || ranking.ranked.length !== pool.candidate_pool.length) throw new Error('media-worker semantic ranking response is incomplete');\nconst best = ranking.ranked[0];\nif (!best || typeof best.candidate_id !== 'string' || !Number.isFinite(Number(best.score))) throw new Error('media-worker semantic ranking did not return a valid winner');\nconst selected = pool.candidate_pool.find((candidate) => String(candidate.candidate_id) === String(best.candidate_id));\nif (!selected) throw new Error('Semantic ranking winner does not exist in the trusted provider pool');\nreturn { json: { job_id:pool.job_id, scene_id:pool.scene_id, scene_number:pool.scene_number, narration:pool.narration, visual_description:pool.visual_description, visual_query:pool.visual_query, visual_subject_type:pool.visual_subject_type, candidate_found:true, provider:selected.provider, provider_asset_id:selected.provider_asset_id, download_url:selected.download_url, source_url:selected.source_url, author:selected.author, license:selected.license, license_url:selected.license_url, metadata:{ ...selected.metadata, semantic_model:String(ranking.model ?? ''), semantic_dtype:String(ranking.dtype ?? ''), semantic_score:Number(best.score), semantic_rank:Number(best.rank ?? 1), semantic_candidate_count:Number(ranking.candidate_count ?? ranking.ranked.length) } } };"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2496,
+          -176
+        ],
+        "id": "e6db293e-f9d9-4f6f-8763-48147ea3854b",
+        "name": "Select Ranked Wikimedia Candidate",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/rank",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { query: $json.visual_query, candidates: $json.candidate_pool.map((candidate) => ({ candidate_id: candidate.candidate_id, preview_url: candidate.preview_url })) } }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          2272,
+          96
+        ],
+        "id": "a675cad6-bd71-489c-9e77-ee165c29d8f0",
+        "name": "Rank Pixabay Candidate Previews",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const ranking = $json;\nconst pool = $('Prepare Pixabay Candidate Pool').item.json;\nif (!Array.isArray(pool.candidate_pool) || pool.candidate_pool.length === 0) throw new Error('Visual candidate pool is unavailable during semantic selection');\nif (!Array.isArray(ranking.ranked) || ranking.ranked.length !== pool.candidate_pool.length) throw new Error('media-worker semantic ranking response is incomplete');\nconst best = ranking.ranked[0];\nif (!best || typeof best.candidate_id !== 'string' || !Number.isFinite(Number(best.score))) throw new Error('media-worker semantic ranking did not return a valid winner');\nconst selected = pool.candidate_pool.find((candidate) => String(candidate.candidate_id) === String(best.candidate_id));\nif (!selected) throw new Error('Semantic ranking winner does not exist in the trusted provider pool');\nreturn { json: { job_id:pool.job_id, scene_id:pool.scene_id, scene_number:pool.scene_number, narration:pool.narration, visual_description:pool.visual_description, visual_query:pool.visual_query, visual_subject_type:pool.visual_subject_type, candidate_found:true, provider:selected.provider, provider_asset_id:selected.provider_asset_id, download_url:selected.download_url, source_url:selected.source_url, author:selected.author, license:selected.license, license_url:selected.license_url, metadata:{ ...selected.metadata, semantic_model:String(ranking.model ?? ''), semantic_dtype:String(ranking.dtype ?? ''), semantic_score:Number(best.score), semantic_rank:Number(best.rank ?? 1), semantic_candidate_count:Number(ranking.candidate_count ?? ranking.ranked.length) } } };"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2496,
+          96
+        ],
+        "id": "3114adee-1f12-4a70-8fe6-d1119c60d991",
+        "name": "Select Ranked Pixabay Candidate",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/rank",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { query: $json.visual_query, candidates: $json.candidate_pool.map((candidate) => ({ candidate_id: candidate.candidate_id, preview_url: candidate.preview_url })) } }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          2944,
+          272
+        ],
+        "id": "50f8dec0-6673-413a-8bea-8afcff1abec9",
+        "name": "Rank Pexels Candidate Previews",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const ranking = $json;\nconst pool = $('Prepare Pexels Candidate Pool').item.json;\nif (!Array.isArray(pool.candidate_pool) || pool.candidate_pool.length === 0) throw new Error('Visual candidate pool is unavailable during semantic selection');\nif (!Array.isArray(ranking.ranked) || ranking.ranked.length !== pool.candidate_pool.length) throw new Error('media-worker semantic ranking response is incomplete');\nconst best = ranking.ranked[0];\nif (!best || typeof best.candidate_id !== 'string' || !Number.isFinite(Number(best.score))) throw new Error('media-worker semantic ranking did not return a valid winner');\nconst selected = pool.candidate_pool.find((candidate) => String(candidate.candidate_id) === String(best.candidate_id));\nif (!selected) throw new Error('Semantic ranking winner does not exist in the trusted provider pool');\nreturn { json: { job_id:pool.job_id, scene_id:pool.scene_id, scene_number:pool.scene_number, narration:pool.narration, visual_description:pool.visual_description, visual_query:pool.visual_query, visual_subject_type:pool.visual_subject_type, candidate_found:true, provider:selected.provider, provider_asset_id:selected.provider_asset_id, download_url:selected.download_url, source_url:selected.source_url, author:selected.author, license:selected.license, license_url:selected.license_url, metadata:{ ...selected.metadata, semantic_model:String(ranking.model ?? ''), semantic_dtype:String(ranking.dtype ?? ''), semantic_score:Number(best.score), semantic_rank:Number(best.rank ?? 1), semantic_candidate_count:Number(ranking.candidate_count ?? ranking.ranked.length) } } };"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3168,
+          272
+        ],
+        "id": "aa2820ca-c7dd-4ade-ad59-37c3b5818d4b",
+        "name": "Select Ranked Pexels Candidate",
+        "onError": "continueErrorOutput"
       }
     ],
     "connections": {
@@ -875,25 +983,7 @@
         "main": [
           [
             {
-              "node": "Select Wikimedia Candidate",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Fallback Context",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Select Wikimedia Candidate": {
-        "main": [
-          [
-            {
-              "node": "Wikimedia Candidate Found?",
+              "node": "Prepare Wikimedia Candidate Pool",
               "type": "main",
               "index": 0
             }
@@ -911,7 +1001,7 @@
         "main": [
           [
             {
-              "node": "Prepare Selected Download",
+              "node": "Rank Wikimedia Candidate Previews",
               "type": "main",
               "index": 0
             }
@@ -929,7 +1019,7 @@
         "main": [
           [
             {
-              "node": "Select Pixabay Candidate",
+              "node": "Prepare Pixabay Candidate Pool",
               "type": "main",
               "index": 0
             }
@@ -954,29 +1044,11 @@
           ]
         ]
       },
-      "Select Pixabay Candidate": {
-        "main": [
-          [
-            {
-              "node": "Pixabay Candidate Found?",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Recover Generic Context",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
       "Pixabay Candidate Found?": {
         "main": [
           [
             {
-              "node": "Prepare Selected Download",
+              "node": "Rank Pixabay Candidate Previews",
               "type": "main",
               "index": 0
             }
@@ -994,25 +1066,7 @@
         "main": [
           [
             {
-              "node": "Select Pexels Candidate",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Fallback Context",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Select Pexels Candidate": {
-        "main": [
-          [
-            {
-              "node": "Pexels Candidate Found?",
+              "node": "Prepare Pexels Candidate Pool",
               "type": "main",
               "index": 0
             }
@@ -1030,7 +1084,7 @@
         "main": [
           [
             {
-              "node": "Prepare Selected Download",
+              "node": "Rank Pexels Candidate Previews",
               "type": "main",
               "index": 0
             }
@@ -1310,6 +1364,168 @@
           [
             {
               "node": "Stop Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Wikimedia Candidate Pool": {
+        "main": [
+          [
+            {
+              "node": "Wikimedia Candidate Found?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Fallback Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Pixabay Candidate Pool": {
+        "main": [
+          [
+            {
+              "node": "Pixabay Candidate Found?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Recover Generic Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Pexels Candidate Pool": {
+        "main": [
+          [
+            {
+              "node": "Pexels Candidate Found?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Fallback Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rank Wikimedia Candidate Previews": {
+        "main": [
+          [
+            {
+              "node": "Select Ranked Wikimedia Candidate",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Select Ranked Wikimedia Candidate": {
+        "main": [
+          [
+            {
+              "node": "Prepare Selected Download",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rank Pixabay Candidate Previews": {
+        "main": [
+          [
+            {
+              "node": "Select Ranked Pixabay Candidate",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Select Ranked Pixabay Candidate": {
+        "main": [
+          [
+            {
+              "node": "Prepare Selected Download",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rank Pexels Candidate Previews": {
+        "main": [
+          [
+            {
+              "node": "Select Ranked Pexels Candidate",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Select Ranked Pexels Candidate": {
+        "main": [
+          [
+            {
+              "node": "Prepare Selected Download",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
               "type": "main",
               "index": 0
             }
