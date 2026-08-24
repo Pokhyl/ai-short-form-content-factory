@@ -74,6 +74,7 @@ Owns media/file operations:
 - media validation;
 - image/video normalization;
 - local file storage;
+- local image/text semantic ranking for visual candidate previews;
 - final rendering.
 
 The worker exposes small HTTP operations instead of embedding large FFmpeg scripts in n8n Code nodes.
@@ -346,13 +347,17 @@ The actual provider ID, source URL, attribution, license, local filename, and
 
 For each scene:
 
-1. search a bounded candidate set;
+1. search a bounded candidate set from the provider selected by the deterministic route;
 2. reject unusable metadata/file types deterministically;
-3. rank/select a suitable candidate;
-4. download only the selected original;
-5. normalize it before render.
+3. keep the surviving provider candidates as a bounded pool (initial provider query limit: 10);
+4. send only provider preview images plus the scene's English `visual_query` to the existing `media-worker`;
+5. rank the real preview images locally with SigLIP and choose the highest-ranked surviving candidate;
+6. download only that selected candidate's original file;
+7. normalize it before render.
 
-If no acceptable asset exists, use a local graphic/text fallback scene instead of a misleading random image.
+Do not replace this semantic image ranking with increasingly strict tag/alt/URL token gates. Provider metadata is for deterministic safety/filtering and persisted attribution, not a substitute for looking at the actual candidate image. The production selector does not call Gemini/Google AI Studio to choose every image. Google AI Studio/Gemini vision is used as an M6 acceptance/review check on the final real images, not as the primary production selector.
+
+If a provider has no deterministically usable candidates, continue through the configured provider route. If the route yields no usable candidate at all, use a local graphic/text fallback scene instead of a misleading random image.
 
 Large files are validated and normalized before the render/publish stage.
 

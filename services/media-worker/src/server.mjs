@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, rename, rm, stat, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
+import { pipeline, env } from "@huggingface/transformers";
 import { dirname, resolve, sep } from "node:path";
 
 const port = Number(process.env.PORT ?? 3001);
@@ -18,7 +19,24 @@ const supportedImageTypes = new Set([
   "image/gif",
 ]);
 const fallbackFontPath =
-  "/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf";
+  "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
+const siglipModel =
+  process.env.SIGLIP_MODEL ?? "Xenova/siglip-base-patch16-224";
+const siglipDtype = process.env.SIGLIP_DTYPE ?? "q4";
+const siglipCacheDir = resolve(
+  process.env.TRANSFORMERS_CACHE ?? `${dataRoot}/models/huggingface`,
+);
+const maxRankCandidates = 10;
+const trustedPreviewHosts = new Set([
+  "cdn.pixabay.com",
+  "images.pexels.com",
+  "upload.wikimedia.org",
+]);
+
+env.cacheDir = siglipCacheDir;
+env.allowRemoteModels = true;
+
+let siglipPipelinePromise = null;
 
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
   throw new Error("PORT must be a valid TCP port");
@@ -124,6 +142,52 @@ function decodeAudioBase64(value) {
   }
 
   return audio;
+}
+
+function validatePreviewUrl(value) {
+  if (typeof value !== "string" || value.trim() === "") {
+    throw new HttpError(
+      400,
+      "invalid_preview_url",
+      "preview_url must be a non-empty HTTPS URL",
+    );
+  }
+
+  let parsed;
+
+  try {
+    parsed = new URL(value);
+  } catch {
+    throw new HttpError(400, "invalid_preview_url", "preview_url is invalid");
+  }
+
+  if (
+    parsed.protocol !== "https:" ||
+    !trustedPreviewHosts.has(parsed.hostname.toLowerCase())
+  ) {
+    throw new HttpError(
+      400,
+      "untrusted_preview_url",
+      `preview_url host is not allowed: ${parsed.hostname}`,
+    );
+  }
+
+  return parsed.toString();
+}
+
+function getSiglipPipeline() {
+  if (siglipPipelinePromise === null) {
+    siglipPipelinePromise = pipeline(
+      "zero-shot-image-classification",
+      siglipModel,
+      { dtype: siglipDtype },
+    ).catch((error) => {
+      siglipPipelinePromise = null;
+      throw error;
+    });
+  }
+
+  return siglipPipelinePromise;
 }
 
 function validateJobAndScene(jobId, sceneNumber) {
@@ -409,6 +473,117 @@ async function storeVisual(request, response, requestUrl) {
   }
 }
 
+async function rankVisualCandidates(request, response) {
+  const body = await readJsonBody(request);
+  const query = String(body.query ?? "").replace(/\s+/gu, " ").trim();
+  const candidates = body.candidates;
+
+  if (query.length === 0 || query.length > 200) {
+    throw new HttpError(
+      400,
+      "invalid_rank_query",
+      "query must contain between 1 and 200 characters",
+    );
+  }
+
+  if (
+    !Array.isArray(candidates) ||
+    candidates.length === 0 ||
+    candidates.length > maxRankCandidates
+  ) {
+    throw new HttpError(
+      400,
+      "invalid_rank_candidates",
+      `candidates must contain between 1 and ${maxRankCandidates} items`,
+    );
+  }
+
+  const normalizedCandidates = candidates.map((candidate, index) => {
+    if (candidate === null || typeof candidate !== "object" || Array.isArray(candidate)) {
+      throw new HttpError(
+        400,
+        "invalid_rank_candidate",
+        `candidate ${index + 1} must be an object`,
+      );
+    }
+
+    const candidateId = String(candidate.candidate_id ?? "").trim();
+
+    if (candidateId.length === 0 || candidateId.length > 200) {
+      throw new HttpError(
+        400,
+        "invalid_candidate_id",
+        `candidate ${index + 1} candidate_id is invalid`,
+      );
+    }
+
+    return {
+      candidate_id: candidateId,
+      preview_url: validatePreviewUrl(candidate.preview_url),
+    };
+  });
+
+  if (new Set(normalizedCandidates.map((candidate) => candidate.candidate_id)).size !== normalizedCandidates.length) {
+    throw new HttpError(
+      400,
+      "duplicate_candidate_id",
+      "candidate_id values must be unique",
+    );
+  }
+
+  try {
+    await mkdir(siglipCacheDir, { recursive: true });
+    const classifier = await getSiglipPipeline();
+    const rawOutput = await classifier(
+      normalizedCandidates.map((candidate) => candidate.preview_url),
+      [query],
+      { hypothesis_template: "{}" },
+    );
+
+    const perImageOutput =
+      normalizedCandidates.length === 1 &&
+      Array.isArray(rawOutput) &&
+      !Array.isArray(rawOutput[0])
+        ? [rawOutput]
+        : rawOutput;
+
+    if (!Array.isArray(perImageOutput) || perImageOutput.length !== normalizedCandidates.length) {
+      throw new Error("SigLIP returned an unexpected batch shape");
+    }
+
+    const ranked = normalizedCandidates
+      .map((candidate, index) => {
+        const score = Number(perImageOutput[index]?.[0]?.score);
+
+        if (!Number.isFinite(score) || score < 0 || score > 1) {
+          throw new Error(`SigLIP returned an invalid score for candidate ${candidate.candidate_id}`);
+        }
+
+        return { candidate_id: candidate.candidate_id, score };
+      })
+      .sort((left, right) => right.score - left.score)
+      .map((candidate, index) => ({ ...candidate, rank: index + 1 }));
+
+    sendJson(response, 200, {
+      model: siglipModel,
+      dtype: siglipDtype,
+      query,
+      candidate_count: ranked.length,
+      ranked,
+    });
+  } catch (error) {
+    if (error instanceof HttpError) {
+      throw error;
+    }
+
+    throw new HttpError(
+      422,
+      "visual_ranking_failed",
+      `Visual candidates could not be ranked: ${error.message}`,
+    );
+  }
+}
+
 async function createVisualFallback(request, response) {
   const body = await readJsonBody(request);
   const jobId = String(body.job_id ?? "").trim().toLowerCase();
@@ -491,6 +666,10 @@ const server = createServer(async (request, response) => {
         status: "ok",
         ffmpeg: ffmpegVersion,
         ffprobe: ffprobeVersion,
+        semantic_ranker: {
+          model: siglipModel,
+          dtype: siglipDtype,
+        },
       });
       return;
     }
@@ -502,6 +681,11 @@ const server = createServer(async (request, response) => {
 
     if (request.method === "POST" && requestUrl.pathname === "/visual/store") {
       await storeVisual(request, response, requestUrl);
+      return;
+    }
+
+    if (request.method === "POST" && requestUrl.pathname === "/visual/rank") {
+      await rankVisualCandidates(request, response);
       return;
     }
 

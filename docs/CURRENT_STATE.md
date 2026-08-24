@@ -758,6 +758,43 @@ The current ChatGPT tool/plugin environment does not expose a Google AI Studio o
 
 After the operator returns the AI Studio scene-by-scene verdict, continue from that verdict without rerunning accepted upstream stages. If all scenes pass, wire WF03 -> WF04 and close M6. If any scene fails, make only the smallest bounded WF04 correction justified by the failed scene and reselect that job through the existing n8n-owned reset harness.
 
+## M6 restored semantic-ranking implementation checkpoint
+
+The operator rejected the current result of 2 external GPS photos plus 6 text fallbacks and confirmed that the implementation had drifted from the previously agreed visual-selection plan. The tag/alt/URL core-token gates are therefore not the target architecture.
+
+The restored production-selection contract is now explicit in `docs/ARCHITECTURE.md`:
+
+```text
+provider search (bounded to 10)
+-> deterministic metadata/file-type filtering
+-> surviving candidate preview pool
+-> local SigLIP image/text ranking in media-worker
+-> select highest-ranked real image
+-> download only selected original
+-> normalize/store/persist
+-> provider fallback only when the current provider has no usable pool
+-> local graphic/text fallback only when the configured route has no usable candidate
+```
+
+Gemini/Google AI Studio remains an acceptance/review check on the final real images; it is not the normal production image selector.
+
+A disposable runtime feasibility probe was completed before modifying production:
+
+```text
+model: Xenova/siglip-base-patch16-224
+dtype: q4
+model cache: ~202 MB
+VPS memory: 3.7 GiB RAM + 2.0 GiB swap
+model warm load: ~1.2 s
+2-image batch inference: ~1.1 s
+known cat image ranked strongly above unrelated lighthouse/radio labels
+known GPS smartphone image ranked above unrelated satellite/lighthouse labels
+```
+
+The first implementation slice is complete but not yet deployed: `media-worker` now has a planned `POST /visual/rank` boundary using `@huggingface/transformers` 3.8.1 and q4 SigLIP. It accepts 1-10 trusted provider preview URLs, ranks them against one query, and returns only candidate IDs/scores/ranks. Preview hosts are restricted to Wikimedia, Pixabay, and Pexels CDNs. The existing `/visual/store`, `/visual/fallback`, and audio boundaries are unchanged. The model cache is under the existing `/data` volume, so no fourth service or new persistent service is introduced. Source syntax and package lock generation passed in a disposable Node 22 container.
+
+This implementation has not yet been built/deployed in the production media-worker and WF04 has not yet been rewired to call it.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -769,10 +806,12 @@ Technical green execution alone is not M6 acceptance. Final scene-to-image relev
 
 ## Exact next action
 
-1. perform the required Google AI Studio review on the real GPS and cat outputs against narration, visual_description, and visual_query;
-2. if any real image fails relevance, make only the smallest bounded WF04 correction and rerun that job through the n8n-owned reset harness;
-3. once semantic review passes, wire WF03 -> WF04 with native Execute Sub-workflow and `waitForSubWorkflow=false`, export the clean production workflows, update ROADMAP M6 completed, and close M6;
-4. do not start M7 before M6 is closed.
+1. build and deploy the modified existing media-worker; verify `/health`, `/audio/store` compatibility, `/visual/store`, `/visual/fallback`, and the new `/visual/rank`;
+2. refactor WF04 provider selectors so deterministic filters produce bounded candidate pools and SigLIP ranks the real previews; remove the core-token/tag/alt/URL gates as the selection mechanism;
+3. re-import clean WF04 and reselect the existing GPS acceptance job through the n8n-owned reset harness without rerunning M4/M5;
+4. inspect durable 8/8 results and run the required Gemini/Google AI Studio acceptance review on the actual selected images;
+5. only after visual acceptance, wire WF03 -> WF04, export the clean production workflows, update ROADMAP M6 completed, and close M6;
+6. do not start M7 before M6 is closed.
 
 ## Do not do
 
