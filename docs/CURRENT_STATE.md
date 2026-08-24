@@ -857,7 +857,31 @@ SigLIP rank nodes: 3
 old required_core_tokens gate: absent
 ```
 
-The workflow has not yet been reselected on the GPS acceptance job after this import.
+The GPS acceptance job has now been reselected through the n8n-owned reset harness using the SigLIP-ranked WF04. Runtime result:
+
+```text
+job_id: 82a54ce1-e306-46be-92ca-201aec4bcb9a
+reset deleted_asset_count: 8
+reset reset_scene_count: 8
+reset job_reset: true
+execution status: success
+last node: Require Visual Completion
+visuals_complete: true
+```
+
+A cleanup-script redirection mistake initially prevented the automatic clean-workflow restore after the successful run; this was detected immediately from the runtime export. The clean workflow was then explicitly re-imported and verified:
+
+```text
+node_count: 42
+manual_acceptance_trigger: absent
+acceptance_reset_node: absent
+active: false
+pin_data: empty
+SigLIP rank nodes: 3
+old required_core_tokens gate: absent
+```
+
+The runtime selection itself succeeded. Durable selected asset verification is the next action.
 
 ## M6 acceptance from ROADMAP
 
@@ -870,8 +894,7 @@ Technical green execution alone is not M6 acceptance. Final scene-to-image relev
 
 ## Exact next action
 
-1. reselect the existing GPS acceptance job through the n8n-owned reset harness without rerunning M4/M5;
-3. inspect durable 8/8 results and run the required Gemini/Google AI Studio acceptance review on the actual selected images;
+1. inspect durable 8/8 GPS selections/files and run the required Gemini/Google AI Studio acceptance review on the actual selected images;
 4. only after visual acceptance, wire WF03 -> WF04, export the clean production workflows, update ROADMAP M6 completed, and close M6;
 5. do not start M7 before M6 is closed.
 
