@@ -173,6 +173,7 @@ Receive Job ID
 -> Persist Audio Result
 -> Require Persisted Audio Batch
 -> Verify Voiceover Completion
+-> Require Voiceover Completion
 ```
 
 Reported node behavior/configuration:
@@ -185,8 +186,9 @@ Reported node behavior/configuration:
 6. `Persist Audio Result` writes media-worker `audio_path` and measured `duration_seconds` to the exact scene by `scene_id + job_id`, only when prior audio state is empty, and returns `persisted`.
 7. `Require Persisted Audio Batch` is Code / `Run Once for All Items`; user reports it requires every persistence result to have `persisted === true`, requires one shared `job_id`, and emits exactly one `{ job_id }` item.
 8. `Verify Voiceover Completion` is PostgreSQL / `Execute Query`; user reports it reloads durable DB state and returns exact scene counts plus `all_audio_ready`, true only when the job is `processing/voiceover`, the duration-specific required scene count exists, and every scene has non-empty `audio_path` plus positive `duration_seconds`.
+9. `Require Voiceover Completion` is Code / `Run Once for All Items`; user reports it requires job existence, `processing/voiceover`, and `all_audio_ready === true`, then emits one completion item with `voiceover_complete = true`. Successful M5 still stops at `processing/voiceover`; it does not advance to M6.
 
-Do not treat user-reported nodes/connections as independently verified until workflow export or screenshot proves them.
+Do not treat user-reported nodes/connections as independently verified until workflow export proves them.
 
 ## M5 acceptance
 
@@ -206,13 +208,11 @@ During M9 add one separate read-only n8n HTTP status workflow/webhook accepting 
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
-1. Add one final Code guard after `Verify Voiceover Completion` that requires `all_audio_ready === true` and emits one completion item for the job.
-2. Keep the successful M5 end state at `processing/voiceover` for now; do not advance to `visuals` and do not wire M6 because M6 is not implemented.
-3. Then export the full production WF03 to the repository and verify all node code, SQL, TTS JSON, connections, and resumable behavior from the export before the first real TTS execution.
-4. Before real TTS acceptance, add/verify the smallest stage-specific failure path needed so failures after entering `voiceover` record `status = failed`, `current_stage = voiceover`, and `last_error` without introducing generic retry infrastructure.
+1. Synchronize the VPS feature branch with remote documentation commits without overwriting untracked/uncommitted work.
+2. Export the full saved production WF03 from n8n to a temporary file, copy it into `n8n/workflows/`, and inspect the export before committing it.
+3. Verify exact node types, code, SQL, TTS JSON, media-worker request, per-item linkage, connections, and resumable behavior from the export. Do not run TTS yet.
+4. Before real TTS acceptance, add/verify the smallest stage-specific failure path needed so failures after entering `voiceover` record `status = failed`, `current_stage = voiceover`, and `last_error` without generic retry infrastructure.
 5. Do not wire WF02->WF03 and do not run the full chain yet.
-
-Before the next VPS Git change, synchronize the VPS branch because remote documentation commits have advanced the feature branch.
 
 ## Do not do
 
