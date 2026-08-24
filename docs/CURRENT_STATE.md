@@ -171,9 +171,9 @@ Receive Job ID
 -> Require Voiceover Completion
 ```
 
-## Exact parameter review
+## Exact parameter review before failure handling
 
-Full parameter dump of all 12 nodes was reviewed line-for-line.
+Full parameter dump of the original 12 nodes was reviewed line-for-line.
 
 Verified:
 
@@ -197,15 +197,52 @@ STORE_AUDIO_METHOD: POST
 STORE_AUDIO_METHOD_OK: YES
 ```
 
-Therefore `Store Audio` method is now verified as `POST` in the saved production workflow.
+Therefore `Store Audio` method is verified as `POST` in the saved production workflow.
+
+## User-reported WF03 failure-path implementation checkpoint
+
+On 2026-08-24 the user reported the requested stage-specific failure handling is now configured in production WF03. It has not yet been independently verified from a new export.
+
+Reported changes:
+
+1. `Require TTS Response` Code node was inserted between `Generate Voiceover` and `Store Audio`, Mode `Run Once for Each Item`, requiring non-empty `audioContent` before normal flow can continue.
+2. `Require Stored Audio` Code node was inserted between `Store Audio` and `Persist Audio Result`, Mode `Run Once for Each Item`, requiring non-empty `audio_path`, positive `duration_seconds`, and positive `bytes`.
+3. `Prepare Voiceover Failure` Code node was added, Mode `Run Once for All Items`, resolving `job_id` from `Require Eligible Voiceover Job` and normalizing a non-empty failure message up to 4000 characters.
+4. `Record Voiceover Failure` PostgreSQL node was added to set `status = failed`, keep `current_stage = voiceover`, preserve an existing non-empty failure message on repeated failure recording, and store `last_error`.
+5. `Stop Voiceover Failure` Stop And Error node was added after failure persistence.
+6. The following nodes were configured with `On Error = Continue (using error output)` and their error outputs were reported connected to `Prepare Voiceover Failure`: `Begin Voiceover Stage`, `Prepare Voiceover Items`, `Generate Voiceover`, `Require TTS Response`, `Store Audio`, `Require Stored Audio`, `Persist Audio Result`, `Require Persisted Audio Batch`, `Verify Voiceover Completion`, `Require Voiceover Completion`.
+7. Success flow is reported as:
+
+```text
+Receive Job ID
+-> Normalize Job ID
+-> Load Voiceover Context
+-> Require Eligible Voiceover Job
+-> Begin Voiceover Stage
+-> Prepare Voiceover Items
+-> Generate Voiceover
+-> Require TTS Response
+-> Store Audio
+-> Require Stored Audio
+-> Persist Audio Result
+-> Require Persisted Audio Batch
+-> Verify Voiceover Completion
+-> Require Voiceover Completion
+-> STOP
+```
+
+8. Reported failure flow is:
+
+```text
+error output
+-> Prepare Voiceover Failure
+-> Record Voiceover Failure
+-> Stop Voiceover Failure
+```
+
+The HTTP-response guard nodes are intentional because there is a current upstream report against n8n 2.33.5 where `Continue (using error output)` may also leak an HTTP Request failure through normal output. That upstream report is not proven on this runtime's 2.33.3, so export verification must confirm the local saved topology/settings before any real TTS execution.
 
 No real TTS request has been accepted yet.
-
-## Reliability note for current n8n line
-
-Failure handling is not yet implemented. Do not run real TTS before it is added and re-exported.
-
-There is a current upstream report against n8n 2.33.5 where HTTP Request with `On Error = Continue (using error output)` can route a failed request through the normal output as well. This behavior is not proven on this runtime's 2.33.3, but critical M5 failure handling should not depend blindly on that mode without accounting for the risk.
 
 ## M5 acceptance
 
@@ -225,13 +262,12 @@ During M9 add one separate read-only n8n HTTP status workflow/webhook accepting 
 
 Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
 
-1. Add the smallest stage-specific failure path for failures after `Begin Voiceover Stage`.
-2. The failure path must resolve the current `job_id` from the already-validated upstream job, persist `status = failed`, `current_stage = voiceover`, and a non-empty `last_error`, then terminate the execution as failed.
-3. Do not add generic retry/dispatcher/error infrastructure.
-4. Because of the current HTTP Request error-output regression reported on n8n 2.33.5, choose a design that does not allow a failed HTTP request to continue into persistence as if it succeeded.
-5. Re-export and verify the final WF03 after failure handling.
-6. Only then begin the first real TTS acceptance run.
-7. Do not wire WF02->WF03 and do not start M6.
+1. Synchronize the VPS feature branch with the remote documentation checkpoint without overwriting the existing untracked WF03 export.
+2. Re-export the final saved production WF03 after the reported failure-path changes and replace `n8n/workflows/WF03-voiceover-generation.json` with that export.
+3. Verify from the export: all expected nodes/types, exact success topology, exact failure topology, `Store Audio.method = POST`, both response-guard Code bodies, all required `onError` settings/error-output connections, failure SQL, Stop And Error configuration, TTS/media-worker parameters, per-item linkage expressions, and absence of hardcoded acceptance-job UUIDs.
+4. Do not commit the workflow export until this verification passes.
+5. Only after final structural/export verification may the first real TTS acceptance run begin.
+6. Do not wire WF02->WF03 and do not start M6.
 
 ## Do not do
 
