@@ -793,7 +793,20 @@ known GPS smartphone image ranked above unrelated satellite/lighthouse labels
 
 The first implementation slice is complete but not yet deployed: `media-worker` now has a planned `POST /visual/rank` boundary using `@huggingface/transformers` 3.8.1 and q4 SigLIP. It accepts 1-10 trusted provider preview URLs, ranks them against one query, and returns only candidate IDs/scores/ranks. Preview hosts are restricted to Wikimedia, Pixabay, and Pexels CDNs. The existing `/visual/store`, `/visual/fallback`, and audio boundaries are unchanged. The model cache is under the existing `/data` volume, so no fourth service or new persistent service is introduced. Source syntax and package lock generation passed in a disposable Node 22 container.
 
-This implementation has not yet been built/deployed in the production media-worker and WF04 has not yet been rewired to call it.
+The modified existing media-worker has now been built and deployed in production. Runtime verification:
+
+```text
+/health: 200, semantic_ranker=Xenova/siglip-base-patch16-224 q4
+/visual/rank: 200 on a real 3-candidate Pixabay pool
+first production model download/cache fill: 286.39 s
+production model cache after first load: 211 MB
+/audio/store compatibility smoke test: 200
+/visual/store compatibility smoke test: 200, mjpeg 1280x1920
+/visual/fallback compatibility smoke test: 200, mjpeg 1080x1920
+disposable smoke-test media removed after verification
+```
+
+The long first `/visual/rank` call was the one-time model download into the persistent existing `/data` volume. The model is now cached for subsequent ranking calls. No application database state was mutated during these media-worker smoke tests. WF04 has not yet been rewired to call `/visual/rank`.
 
 ## M6 acceptance from ROADMAP
 
@@ -806,12 +819,11 @@ Technical green execution alone is not M6 acceptance. Final scene-to-image relev
 
 ## Exact next action
 
-1. build and deploy the modified existing media-worker; verify `/health`, `/audio/store` compatibility, `/visual/store`, `/visual/fallback`, and the new `/visual/rank`;
-2. refactor WF04 provider selectors so deterministic filters produce bounded candidate pools and SigLIP ranks the real previews; remove the core-token/tag/alt/URL gates as the selection mechanism;
-3. re-import clean WF04 and reselect the existing GPS acceptance job through the n8n-owned reset harness without rerunning M4/M5;
-4. inspect durable 8/8 results and run the required Gemini/Google AI Studio acceptance review on the actual selected images;
-5. only after visual acceptance, wire WF03 -> WF04, export the clean production workflows, update ROADMAP M6 completed, and close M6;
-6. do not start M7 before M6 is closed.
+1. refactor WF04 provider selectors so deterministic filters produce bounded candidate pools and SigLIP ranks the real previews; remove the core-token/tag/alt/URL gates as the selection mechanism;
+2. re-import clean WF04 and reselect the existing GPS acceptance job through the n8n-owned reset harness without rerunning M4/M5;
+3. inspect durable 8/8 results and run the required Gemini/Google AI Studio acceptance review on the actual selected images;
+4. only after visual acceptance, wire WF03 -> WF04, export the clean production workflows, update ROADMAP M6 completed, and close M6;
+5. do not start M7 before M6 is closed.
 
 ## Do not do
 
