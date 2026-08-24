@@ -165,13 +165,25 @@ Repository placeholders were added to `.env.example` in commit:
 
 `.env.example` documents `PIXABAY_API_KEY` and `PEXELS_API_KEY` with placeholder values only. Wikimedia Commons requires no API key.
 
-The n8n service definition now explicitly passes both provider variables from `.env` into the container in commit:
+The n8n service definition explicitly passes both provider variables from `.env` into the container in commit:
 
 ```text
 84bcdfd661c033a8a1a277eaffc1d42fd8230d1b feat: expose visual provider keys to n8n
 ```
 
-This compose change is committed remotely but is not yet runtime-deployed/recreated on the VPS. The current n8n container must be recreated from the updated compose definition before WF04 can consume the keys through environment variables.
+Runtime deployment was completed on 2026-08-24 after syncing the VPS branch through remote checkpoint `83956e329129f015c2d17d3bb44c146065c08da6`. Only the `n8n` service was recreated. Verification result:
+
+```text
+PIXABAY_API_KEY: PRESENT
+PEXELS_API_KEY: PRESENT
+N8N_HEALTH_STATUS: 200
+```
+
+The complete configured provider route is therefore available to WF04 at runtime.
+
+## SentinelX operator checkpoint
+
+The VPS is enrolled in SentinelX. The operator explicitly approved adding `sudo git` to the SentinelX command allowlist so repository synchronization can be performed through the connected server tool. The policy was reloaded successfully and `sudo git` access was verified before the M6 runtime sync.
 
 ## M6 acceptance from ROADMAP
 
@@ -184,16 +196,13 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. sync the VPS M6 branch to the current remote head;
-2. recreate only the n8n service so `PIXABAY_API_KEY` and `PEXELS_API_KEY` enter its environment;
-3. verify only provider variable presence inside the n8n container, never print values;
-4. create/import `WF04 — Visual Sourcing` with the complete deterministic provider route:
+1. create/import `WF04 — Visual Sourcing` with the complete deterministic provider route:
    - factual -> Wikimedia Commons -> local graphic/text fallback
    - generic -> Pixabay -> Pexels -> local graphic/text fallback
-5. runtime-prove WF04 on real M6 output without rerunning accepted M4/M5 jobs;
-6. manually review selected visual relevance and required attribution/license metadata;
-7. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`;
-8. export production workflows to the repository and close M6 only after ROADMAP acceptance is satisfied.
+2. runtime-prove WF04 on real M6 output without rerunning accepted M4/M5 jobs;
+3. manually review selected visual relevance and required attribution/license metadata;
+4. after WF04 is runtime-proven, wire WF03 -> WF04 with `waitForSubWorkflow=false`;
+5. export production workflows to the repository and close M6 only after ROADMAP acceptance is satisfied.
 
 ## Do not do
 
