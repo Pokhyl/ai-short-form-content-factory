@@ -208,24 +208,41 @@ Verified from the full export:
 - no Visual Sourcing hand-off exists yet
 - successful completion has no normal downstream connection
 
-## Latest independently verified runtime state
+## Final inactive export and local commit checkpoint
 
-After explicitly using **Unpublish** in the n8n UI, a fresh production export check was run on 2026-08-24.
-
-It returned exactly:
+After explicitly using **Unpublish** in n8n, the production export was independently verified as:
 
 ```text
 WORKFLOW_ID: UHxvCZNqaLb1RKMM
 ACTIVE: false
 NODE_COUNT: 17
-WORKFLOW_ID_OK: YES
-WORKFLOW_INACTIVE_OK: YES
-NODE_COUNT_OK: YES
 ```
 
-Therefore WF03 is now independently verified as unpublished/inactive, with the correct workflow ID and still exactly 17 nodes.
+A fresh inactive export was then written to `n8n/workflows/WF03-voiceover-generation.json` on the VPS and verified immediately before commit.
 
-The existing VPS repository workflow file `n8n/workflows/WF03-voiceover-generation.json` is still the prior local/untracked export until the next step replaces it with a fresh inactive export. It has not been committed yet.
+Verified exact file values:
+
+- workflow ID `UHxvCZNqaLb1RKMM`
+- `active = false`
+- exactly 17 nodes
+- export SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`
+
+The VPS created local commit:
+
+```text
+519ae3391771884abf6e2caa1632a2002b4085e2
+feat: add WF03 voiceover workflow
+```
+
+The commit contains only `n8n/workflows/WF03-voiceover-generation.json`.
+
+Push did **not** complete. Exact failure:
+
+```text
+fatal: could not read Username for 'https://github.com': No such device or address
+```
+
+Therefore the verified WF03 export is safely committed locally on the VPS but is not yet present on the remote branch. Do not recreate or recommit it. Resolve GitHub push authentication for the VPS or transfer/push the existing commit by another safe method.
 
 No real TTS request has been accepted yet.
 
@@ -245,17 +262,18 @@ During M9 add one separate read-only n8n HTTP status workflow/webhook accepting 
 
 ## Exact next action
 
-Continue M5 in production `WF03 — Voiceover Generation` (`UHxvCZNqaLb1RKMM`).
+Continue M5 without touching n8n workflow configuration.
 
-1. Synchronize the VPS branch with this documentation checkpoint without overwriting the existing untracked workflow export.
-2. Export WF03 one final time while it is independently verified inactive, copy that fresh export to `n8n/workflows/WF03-voiceover-generation.json`, and record its SHA-256.
-3. Verify `workflow id`, `active === false`, and `node count === 17` on the exact file that will be committed.
-4. Commit and push only `n8n/workflows/WF03-voiceover-generation.json` to `feat/m5-voiceover`.
-5. After the workflow export commit is remote and the VPS is clean/reconciled, update this file with the final export SHA and workflow commit SHA before preparing the first real controlled M5 TTS acceptance run.
+1. Preserve VPS local commit `519ae3391771884abf6e2caa1632a2002b4085e2`; do not amend, reset, or recreate it.
+2. Inspect the VPS Git authentication options non-destructively (current remote URL, available GitHub CLI auth, existing SSH key/auth) before changing repository remote/auth configuration.
+3. Use the smallest safe authentication fix, then fetch the latest remote `feat/m5-voiceover` documentation checkpoint and reconcile the existing local WF03 commit without losing it.
+4. Push the existing WF03 workflow commit to the remote feature branch.
+5. Verify the remote branch contains the workflow file and the expected export SHA before preparing the first real controlled M5 TTS acceptance run.
 6. Do not wire WF02->WF03 and do not start M6.
 
 ## Do not do
 
+- do not amend/reset/recreate local WF03 commit `519ae3391771884abf6e2caa1632a2002b4085e2`
 - do not substitute voice presets
 - do not hardcode topic/narration/language-specific test data
 - do not reuse Gemini credential for TTS
