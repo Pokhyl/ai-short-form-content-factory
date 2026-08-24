@@ -401,6 +401,14 @@ The temporary harness was removed immediately by re-importing the clean reposito
 
 The next retry must invoke WF04 through its intended sub-workflow boundary with `{job_id}` rather than relying on direct CLI trigger selection. The smallest acceptance harness is a temporary wrapper workflow: Manual Trigger -> set acceptance `job_id` -> Execute Sub-workflow WF04. Remove the wrapper after execution.
 
+## M6 wrapper execution limitation checkpoint
+
+A temporary three-node wrapper file was prepared to invoke WF04 through its intended `{job_id}` sub-workflow boundary without importing a persistent test workflow. The installed n8n CLI does not execute workflow files directly despite still exposing the deprecated `--file` flag: `n8n execute --file=...` exits without running the workflow and reports `--id has to be set`.
+
+Therefore a wrapper must be imported into n8n to execute by ID, which would leave a persistent temporary workflow because this n8n CLI exposes no workflow-delete command. To avoid polluting production n8n, do not import the wrapper.
+
+The next acceptance harness will instead add a temporary private localhost-only Webhook trigger to the existing WF04, invoke it once through the running n8n service with the accepted `job_id`, then immediately re-import the clean repository WF04 and unpublish it. This preserves the production workflow ID and leaves no additional workflow object.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -412,8 +420,8 @@ Technical green execution alone is not M6 acceptance; visual relevance must be m
 
 ## Exact next action
 
-1. create a temporary acceptance wrapper workflow containing only Manual Trigger -> set the accepted `job_id` -> Execute Sub-workflow WF04 with `job_id` only;
-2. execute that wrapper through the isolated CLI runner port, then remove the wrapper immediately;
+1. create a temporary Webhook acceptance trigger inside WF04 that accepts `job_id` and routes to `Normalize Job ID`;
+2. import/publish that temporary WF04, call the webhook once from localhost with the accepted job, wait for completion, then immediately restore the clean repository WF04 and unpublish it;
 3. verify PostgreSQL asset/visual persistence and media files;
 4. manually review selected visual relevance and attribution/license metadata;
 5. after WF04 is runtime-proven and manually accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export the clean production workflows, and close M6 only after ROADMAP acceptance is satisfied.
