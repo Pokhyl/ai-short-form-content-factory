@@ -561,6 +561,74 @@ CLEAN_WEIGHTED_SELECTOR: YES
 
 The corrected acceptance harness must set `job_id` in a Code node first and pass it to the temporary PostgreSQL reset node through the standard expression `={{ [ $json.job_id ] }}`. This remains an n8n-owned application-state reset; do not mutate PostgreSQL directly outside n8n.
 
+
+## M6 weighted re-selection runtime acceptance checkpoint
+
+The corrected weighted re-selection was executed successfully on 2026-08-24 against the same accepted M5 job. WF03/M5 were not rerun.
+
+The temporary n8n-owned acceptance harness used the required order:
+
+```text
+Manual Trigger
+-> Set Acceptance Job ID (Code)
+-> Reset Acceptance Visual State (PostgreSQL)
+-> normal WF04 path
+```
+
+The temporary PostgreSQL reset node received the job id through the standard expression `={{ [ $json.job_id ] }}`. The n8n-owned reset succeeded:
+
+```text
+deleted_asset_count: 4
+reset_scene_count: 4
+job_reset: true
+```
+
+The weighted WF04 execution completed successfully with `Require Visual Completion` as the last node and `visuals_complete: true`.
+
+Runtime weighted selections:
+
+```text
+scene 1 -> Pixabay 5129332, matched [close, cat]
+scene 2 -> Pixabay 7965411, matched [cat]
+scene 3 -> Pixabay 8032816, matched [relaxed, cat]
+scene 4 -> Pixabay 9637984, matched [cat]
+```
+
+The previous human-anatomy asset `254129` no longer won scene 2.
+
+Durable application state was verified read-only after the run:
+
+```text
+job status/current_stage: processing/visuals
+last_error: empty
+scenes.visual_path: 4/4
+asset rows: 4
+provider/source/author/license/license_url: present on all 4 asset rows
+```
+
+All four normalized JPEG files exist and are probeable with `ffprobe`:
+
+```text
+scene-01.jpg | 381899 bytes | mjpeg | 1371x1920
+scene-02.jpg | 249448 bytes | mjpeg | 1280x1920
+scene-03.jpg | 188382 bytes | mjpeg | 1280x1920
+scene-04.jpg | 117124 bytes | mjpeg | 1280x1920
+```
+
+The temporary harness was immediately replaced by the clean production WF04. Runtime export verification after restoration:
+
+```text
+CLEAN_NODE_COUNT: 36
+CLEAN_MANUAL_TRIGGER: NO
+CLEAN_RESET_NODE: NO
+CLEAN_TEST_JOB_LITERAL: NO
+CLEAN_ACTIVE: false
+CLEAN_PIN_DATA: EMPTY
+CLEAN_WEIGHTED_SELECTOR: YES
+```
+
+This proves the weighted selector runtime path and durable persistence, but it does not close M6. Scene 2 is now a cat photo (Pixabay `7965411`) while its requested intent remains a cat larynx anatomy illustration/animation. Final real-image semantic review is still required before M6 acceptance.
+
 ## M6 acceptance from ROADMAP
 
 - selected visual meaningfully matches narration
@@ -572,11 +640,9 @@ Technical green execution alone is not M6 acceptance. Final scene-to-image relev
 
 ## Exact next action
 
-1. commit/push the clean weighted-selector WF04 plus this implementation checkpoint;
-2. run one corrected M6 acceptance re-selection through n8n on the same job using a temporary n8n-owned reset/retry harness; do not rerun WF03/M5 and do not manually mutate PostgreSQL outside n8n;
-3. verify all four persisted assets/files and their provider/license metadata;
-4. review all four selected visuals in Google AI Studio against each scene narration and visual intent;
-5. only after relevance is accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export clean production workflows, and close M6.
+1. review the four real selected images against each scene `narration`, `visual_description`, and `visual_query` using the required Google AI Studio review;
+2. if any scene fails semantic relevance, make the smallest bounded WF04 selection/acceptance correction while preserving the provider route exactly, then reselect on the same job through an n8n-owned reset harness and restore the clean WF04 again;
+3. only after all four real visuals are semantically accepted, wire WF03 -> WF04 with `waitForSubWorkflow=false`, export clean production workflows, update ROADMAP M6 completed, and close M6.
 
 ## Do not do
 
