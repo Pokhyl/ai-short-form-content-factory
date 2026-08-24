@@ -881,7 +881,22 @@ SigLIP rank nodes: 3
 old required_core_tokens gate: absent
 ```
 
-The runtime selection itself succeeded. Durable selected asset verification is the next action.
+The runtime selection itself succeeded. Durable verification after the SigLIP-ranked run found 8/8 external visual assets and no text fallback on the harder GPS job:
+
+```text
+scene 1 -> Pixabay 8544672 | semantic_score 0.540842 | 10 candidates
+scene 2 -> Pixabay 3063614 | semantic_score 0.002613 | 10 candidates
+scene 3 -> Pixabay 4908370 | semantic_score 0.058504 | 10 candidates
+scene 4 -> Pixabay 4479295 | semantic_score 0.008190 | 10 candidates
+scene 5 -> Pixabay 63014   | semantic_score 0.007782 | 10 candidates
+scene 6 -> Pixabay 246224  | semantic_score 0.136531 | 10 candidates
+scene 7 -> Pixabay 683746  | semantic_score 0.006887 | 10 candidates
+scene 8 -> Pixabay 476236  | semantic_score 0.000293 | 10 candidates
+```
+
+All eight assets have source/provider/license metadata and all eight normalized JPEGs are present and ffprobe-readable. Dimensions are valid and bounded by 1920px height.
+
+This confirms the original candidate-pool + SigLIP production mechanism is functioning and eliminates the previous `2 images + 6 text fallbacks` failure. The low absolute SigLIP scores on several technical scenes are not silently treated as acceptance: actual-image semantic review remains required before M6 closure.
 
 ## M6 acceptance from ROADMAP
 
@@ -894,7 +909,7 @@ Technical green execution alone is not M6 acceptance. Final scene-to-image relev
 
 ## Exact next action
 
-1. inspect durable 8/8 GPS selections/files and run the required Gemini/Google AI Studio acceptance review on the actual selected images;
+1. review the actual 8 GPS images against narration/visual intent (Gemini/Google AI Studio acceptance check);
 4. only after visual acceptance, wire WF03 -> WF04, export the clean production workflows, update ROADMAP M6 completed, and close M6;
 5. do not start M7 before M6 is closed.
 
