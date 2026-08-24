@@ -10,8 +10,6 @@ For every technical reply or action about this project, fetch the current `docs/
 
 ## Project
 
-AI Short-Form Content Factory
-
 - repository: `Pokhyl/ai-short-form-content-factory`
 - branch: `feat/m5-voiceover`
 - milestone: M5 — Voiceover (`in progress`)
@@ -19,13 +17,7 @@ AI Short-Form Content Factory
 Target flow:
 
 ```text
-Topic
-  -> Script + scene plan
-  -> Voiceover
-  -> Visual sourcing
-  -> Render
-  -> Human review
-  -> Buffer draft
+Topic -> Script + scene plan -> Voiceover -> Visual sourcing -> Render -> Human review -> Buffer draft
 ```
 
 ## Runtime
@@ -38,25 +30,23 @@ Topic
 - application state: PostgreSQL `public`
 - n8n internal schema: `n8n`; never modify it manually
 
-## Completed upstream checkpoints
+## Upstream checkpoints
 
-Production `WF01 — Create Content Job`:
+### WF01 — Create Content Job
 
 - workflow ID `Xy94qe35OigtMxkR`
 - verified hand-off target `TJfA4ZYUEKSTad6k` (`WF02`)
-- verified input `job_id = {{ $json.job_id }}`
+- verified payload `job_id = {{ $json.job_id }}`
 - verified `waitForSubWorkflow = false`
-- verified `Insert Job` branches to both response and `Start Script Planning`
 - remote workflow commit `353149dbe5ff7e511ad5dfe7683b00755f765727`
-- final WF01->WF02 end-to-end runtime hand-off has not yet been acceptance-tested
+- final WF01->WF02 runtime hand-off has not yet been acceptance-tested
 
-Production `WF02 — Plan Script and Scenes`:
+### WF02 — Plan Script and Scenes
 
 - workflow ID `TJfA4ZYUEKSTad6k`
-- M4 accepted topology: 8 nodes ending in `Persist Scene Plan`
 - accepted export SHA-256 `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`
 - accepted export commit `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`
-- accepted quality job `6b08098c-e5c7-45bd-babb-036705b563e1`, Polish, 30 seconds, exactly 8 scenes, manual quality PASS
+- accepted quality job `6b08098c-e5c7-45bd-babb-036705b563e1`, Polish, 30 seconds, 8 scenes, manual quality PASS
 - do not rerun prior M4 acceptance jobs
 - WF02->WF03 is not wired yet
 
@@ -73,56 +63,18 @@ Provider: Google Cloud Text-to-Speech.
 
 Do not substitute guessed voices.
 
-## M5 architecture contract
+## M5 contract
 
-`WF03 — Voiceover Generation` is a separate n8n stage. It:
+WF03 receives only `job_id`, reloads persisted state from PostgreSQL, validates eligibility, sets `current_stage = voiceover`, generates one audio file per scene using the locked voice map, stores `scenes.audio_path` and measured `scenes.duration_seconds`, and records failures as `status = failed`, `current_stage = voiceover`, plus `last_error`. PostgreSQL writes remain in n8n. M6 is not wired yet.
 
-- receives only `job_id`
-- reloads persisted job/scenes from PostgreSQL
-- validates eligibility
-- changes `jobs.current_stage` to `voiceover` only when M5 begins
-- generates one audio file per scene using the exact voice for `jobs.language_code`
-- stores `scenes.audio_path`
-- stores measured real `scenes.duration_seconds`
-- keeps PostgreSQL writes in n8n; media-worker never writes product state
-- on stage failure records `jobs.status = failed`, keeps `jobs.current_stage = voiceover`, stores `jobs.last_error`, and does not start the next stage
-- starts Visual Sourcing only after all required scene audio is ready; M6 is not wired yet
-
-Internal stage hand-off payload remains only:
-
-```json
-{
-  "job_id": "<uuid>"
-}
-```
-
-Internal automatic hand-offs use native n8n sub-workflows, not public webhooks. Caller must not wait for the complete downstream pipeline.
-
-## Production generality invariant
-
-- narration comes from persisted `scenes.narration`
-- language comes from persisted `jobs.language_code`
-- voice comes from the locked map above
-- no hardcoded topic, test narration, Polish-only setting, or concrete acceptance job in permanent production nodes
+Production generality is mandatory: narration from `scenes.narration`, language from `jobs.language_code`, voice from the locked map, and no hardcoded topic/test narration/test job in permanent nodes.
 
 ## Media-worker audio boundary
 
-Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` added `POST /audio/store` to the existing `media-worker`.
-
-Request:
-
-```json
-{
-  "job_id": "<uuid>",
-  "scene_number": 1,
-  "audio_base64": "<Google TTS MP3 base64>"
-}
-```
-
-Behavior:
+Commit `1ac60492baa19e113baf9d7cdb315e7641988ff0` added `POST /audio/store` to the existing media-worker.
 
 - deterministic path `jobs/<job_id>/voiceover/scene-XX.mp3`
-- ffprobe validation before final replace
+- ffprobe validation
 - returns `audio_path`, measured `duration_seconds`, and `bytes`
 - synthetic runtime acceptance already passed; do not repeat it before real TTS
 
@@ -134,25 +86,24 @@ Verified:
 
 - Text-to-Speech API enabled
 - active free-trial credit
-- current callback `https://publisher.hodor.com.pl/rest/oauth2-credential/callback`
+- callback `https://publisher.hodor.com.pl/rest/oauth2-credential/callback`
 - n8n credential type `Google OAuth2 API`
 - scope `https://www.googleapis.com/auth/cloud-platform`
-- Google authorization completed in current runtime
+- Google authorization completed
 - first real authenticated TTS request still pending acceptance
 
-Do not create replacement auth objects. Never expose OAuth secrets.
+Do not create replacement auth objects or expose secrets.
 
-## WF03 final structural verification
+## WF03 final verified export
 
-Production workflow:
-
-- name `WF03 — Voiceover Generation`
+- workflow name `WF03 — Voiceover Generation`
 - workflow ID `UHxvCZNqaLb1RKMM`
-- last full structural verification export SHA-256 `33f5ab18a4e80fa2e63ad80fc845d8d113ff168fc8e802ffb218c26495d45d1e`
-- that full export had exactly 17 nodes
-- every structural/configuration check passed except that the workflow was still published (`ACTIVE: True`) at that moment
+- exact final export is inactive (`active = false`)
+- exact final export has 17 nodes
+- final export SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`
+- no Visual Sourcing hand-off exists yet
 
-Export-proven success topology:
+Verified success topology:
 
 ```text
 Receive Job ID
@@ -172,62 +123,17 @@ Receive Job ID
 -> STOP
 ```
 
-Export-proven failure topology:
+Verified failure topology:
 
 ```text
-error output
--> Prepare Voiceover Failure
--> Record Voiceover Failure
--> Stop Voiceover Failure
+error output -> Prepare Voiceover Failure -> Record Voiceover Failure -> Stop Voiceover Failure
 ```
 
-Verified `On Error = continueErrorOutput` plus error-output routing for:
+Verified invariants include intended `continueErrorOutput` routes, TTS POST endpoint, media-worker POST endpoint, response guards, failure SQL, per-item linkage, no hardcoded acceptance UUIDs, and no M6 hand-off.
 
-- `Begin Voiceover Stage`
-- `Prepare Voiceover Items`
-- `Generate Voiceover`
-- `Require TTS Response`
-- `Store Audio`
-- `Require Stored Audio`
-- `Persist Audio Result`
-- `Require Persisted Audio Batch`
-- `Verify Voiceover Completion`
-- `Require Voiceover Completion`
+## Local workflow commit
 
-Verified from the full export:
-
-- `Generate Voiceover.method = POST`
-- exact TTS endpoint `https://texttospeech.googleapis.com/v1/text:synthesize`
-- `Store Audio.method = POST`
-- exact media-worker endpoint `http://media-worker:3001/audio/store`
-- `Require TTS Response` is per-item and rejects missing `audioContent`
-- `Require Stored Audio` is per-item and validates `audio_path`, positive `duration_seconds`, and positive `bytes`
-- failure path resolves the validated upstream `job_id`, writes `status = failed`, keeps `current_stage = voiceover`, stores `last_error`, then stops with an error
-- per-item linkage from `Prepare Voiceover Items` into `Store Audio` and `Persist Audio Result` is present
-- no accepted M3/M4 test UUID is hardcoded
-- no Visual Sourcing hand-off exists yet
-- successful completion has no normal downstream connection
-
-## Final inactive export and local commit checkpoint
-
-After explicitly using **Unpublish** in n8n, the production export was independently verified as:
-
-```text
-WORKFLOW_ID: UHxvCZNqaLb1RKMM
-ACTIVE: false
-NODE_COUNT: 17
-```
-
-A fresh inactive export was written to `n8n/workflows/WF03-voiceover-generation.json` on the VPS and verified immediately before commit.
-
-Verified exact file values:
-
-- workflow ID `UHxvCZNqaLb1RKMM`
-- `active = false`
-- exactly 17 nodes
-- export SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`
-
-The VPS created local commit:
+The exact verified workflow export is committed locally on the VPS as:
 
 ```text
 519ae3391771884abf6e2caa1632a2002b4085e2
@@ -236,43 +142,26 @@ feat: add WF03 voiceover workflow
 
 The commit contains only `n8n/workflows/WF03-voiceover-generation.json`.
 
-The first push did not complete because the VPS HTTPS remote has no write credentials:
+Do not amend, reset, recreate, or rebase this commit.
 
-```text
-fatal: could not read Username for 'https://github.com': No such device or address
-```
+## Git divergence and repository write access
 
-## VPS Git authentication and divergence diagnostic
+A diagnostic proved:
 
-A second non-destructive diagnostic was completed on 2026-08-24 after the remote documentation branch advanced.
-
-Verified at diagnostic time:
-
-- local HEAD remains `519ae33 feat: add WF03 voiceover workflow`
-- merge base is `7c4c3dbe15c19ef2cff1d84a672fd66102f625b0`
-- divergence was `1 2`: one local-only WF03 commit and two remote-only documentation commits
 - local-only changed path is exactly `n8n/workflows/WF03-voiceover-generation.json`
 - remote-only changed path is exactly `docs/CURRENT_STATE.md`
-- therefore the local and remote changed paths are explicitly proven disjoint
-- matching private key `/root/.ssh/tiktok-video-pipeline-v2-deploy` exists
-- public-key fingerprint is `SHA256:PvJt6+susKrlP2CIm7xsojHotHFDEJCwPhCnqzn1XeQ`
-- an explicit `IdentitiesOnly=yes` read test of that exact key against `git@github.com:Pokhyl/ai-short-form-content-factory.git` fails with `Permission denied (publickey)`
-- therefore that existing key does not provide repository access and must not be used for this repository
+- the paths are disjoint
 
-The verified WF03 commit is still safe locally. Do not recreate, amend, reset, or rebase it. Because the changed paths are now proven disjoint, a targeted merge of the latest remote documentation branch into the local branch is allowed once a repository-specific write credential is available. Prefer a repository-specific deploy key rather than reusing the unrelated `tiktok-video-pipeline-v2-deploy` key.
+A repository-specific GitHub deploy key is configured with **Read/write** access. Runtime verification from the VPS with that exact key succeeded on 2026-08-24:
 
-## Repository-specific deploy key checkpoint
+```text
+READ_ACCESS: YES
+WRITE_ACCESS: YES
+```
 
-On 2026-08-24 a new repository-specific ED25519 deploy key was generated on the VPS:
+The write test used `git push --dry-run`; therefore no probe branch was actually created.
 
-- private key path: `/root/.ssh/ai-short-form-content-factory-deploy`
-- public key path: `/root/.ssh/ai-short-form-content-factory-deploy.pub`
-- fingerprint: `SHA256:kCGmX0GiyqasX9UXAWbfl46SUNTdnoKtiHnrfVeOZRY`
-- comment: `ai-short-form-content-factory-deploy`
-
-Only the public key may be added to GitHub. The private key must never be copied into chat or GitHub.
-
-A GitHub repository screenshot on 2026-08-24 confirms that deploy key `ai-short-form-content-factory VPS` is now listed for `Pokhyl/ai-short-form-content-factory`, the displayed fingerprint matches `SHA256:kCGmX0GiyqasX9UXAWbfl46SUNTdnoKtiHnrfVeOZRY`, and GitHub shows `Read/write`. The key is still shown as `Never used`, so repository authentication with this exact key has not yet been proven from the VPS.
+Repository-specific SSH read/write access from the VPS is now independently verified.
 
 No real TTS request has been accepted yet.
 
@@ -286,25 +175,21 @@ Per `docs/ROADMAP.md`:
 
 Do not start M6 before real M5 acceptance.
 
-## Deferred M9 Studio status endpoint
-
-During M9 add one separate read-only n8n HTTP status workflow/webhook accepting `job_id`, validating it, reading PostgreSQL, and returning at minimum `job_id`, `status`, `current_stage`, and `last_error`. Do not add public progress webhooks to WF02/WF03/WF04. Browser never connects directly to PostgreSQL. Studio may poll this single endpoint.
-
 ## Exact next action
 
-Continue M5 without touching n8n workflow configuration.
-
-1. Preserve VPS local commit `519ae3391771884abf6e2caa1632a2002b4085e2`; do not amend, reset, recreate, or rebase it.
-2. Verify repository read and dry-run write access with `/root/.ssh/ai-short-form-content-factory-deploy` using `IdentitiesOnly=yes` before changing any Git remote configuration.
-3. Fetch the latest remote `feat/m5-voiceover`, verify again that remote-only changes remain documentation-only, then merge the remote branch into the local branch with a normal merge commit so local commit `519ae33` remains intact in history.
-4. Push through the repository-specific SSH key, then verify the remote branch contains `n8n/workflows/WF03-voiceover-generation.json` with expected export SHA-256 `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`.
-5. Only after remote verification may the first real controlled M5 TTS acceptance run be prepared.
-6. Do not wire WF02->WF03 and do not start M6.
+1. Preserve local workflow commit `519ae3391771884abf6e2caa1632a2002b4085e2` intact.
+2. Fetch latest remote `feat/m5-voiceover`.
+3. Reconfirm local-only changes are only WF03 and remote-only changes are only `docs/CURRENT_STATE.md`.
+4. Merge the remote branch into the local branch with a normal merge commit; do not rebase.
+5. Verify `519ae33` remains an ancestor and workflow SHA remains exactly `e767862611224b0a1a414508750d13817409ffc5cbb6352b4ecec22f86975438`.
+6. Push through the repository-specific SSH key.
+7. Fetch again and verify remote HEAD equals local HEAD and the remote workflow file has the expected SHA-256.
+8. Update this file with the final remote commit before preparing the first real controlled M5 TTS acceptance run.
+9. Do not wire WF02->WF03 and do not start M6.
 
 ## Do not do
 
 - do not amend/reset/recreate/rebase local WF03 commit `519ae3391771884abf6e2caa1632a2002b4085e2`
-- do not reuse `/root/.ssh/tiktok-video-pipeline-v2-deploy` for this repository
 - do not expose private SSH keys, GitHub tokens, or credentials
 - do not substitute voice presets
 - do not hardcode topic/narration/language-specific test data
