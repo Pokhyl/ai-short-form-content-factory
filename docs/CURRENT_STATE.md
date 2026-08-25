@@ -3260,3 +3260,58 @@ generic: 5
 Generic scenes are ordinary visual stock moments such as panoramic bridge views, cars on the deck, cable/tower establishing views, shoreline cable views and the cinematic closing shot; all five selected Pixabay. Factual scenes are information-bearing force/tension/cross-section/anchorage/aerodynamic explanatory visuals and correctly avoided the generic stock route, using the local explanatory fallback when bounded Wikimedia did not provide an acceptable candidate.
 
 This closes the M8 routing-classification defect: the original 102/102 `generic` failure is corrected without the later over-classification of every technical-topic scene as factual. Provider relevance inside factual sourcing remains a separate quality concern, but routing now sends the right scene class to the right provider family.
+
+
+## M8 deterministic routing v3 production deployment checkpoint — 2026-08-25
+
+The paired WF02 routing-v3 and WF04 Wikimedia exact-subject guard were imported and published to production, followed by an n8n restart. Runtime verification confirmed:
+
+```text
+WF02 active: true
+WF02 nodes: 13
+WF02 deterministic normalizedSubjectType: present
+WF02 proper-name detection: present
+WF04 active: true
+WF04 nodes: 44
+WF04 required_title_terms guard: present
+n8n health: 200
+```
+
+No service, provider, schema, webhook, polling boundary, or second planning AI request was added. Fresh named-subject end-to-end regression is required next.
+
+## M8 deterministic routing v3 production regression closure — 2026-08-25
+
+WF02 routing v3 and the WF04 exact named-subject Wikimedia guard were deployed together and runtime-tested through a fresh real WF01 production submission.
+
+```text
+job_id: 6714d548-be2e-4c91-a765-14ec8d5a5763
+topic: Dlaczego Golden Gate Bridge jest pomarańczowy i jak działa jego konstrukcja?
+language/duration: pl / 30s
+final state: review_ready/review
+measured voiceover: 28.680s
+scene count: 8
+visual paths: 8/8
+```
+
+Persisted routing/provider result:
+
+```text
+factual: 8
+generic: 0
+Wikimedia: 5
+local_fallback: 3
+```
+
+All eight scenes are legitimately factual in this test: five require the exact named subject `Golden Gate Bridge`, while three request explanatory suspension-bridge diagrams/force visuals. The exact-subject guard preserved required title terms and selected only Wikimedia files whose titles contain `Golden Gate Bridge`; the earlier wrong-object failure where a Golden Gate query selected a San Francisco-Oakland Bay Bridge file did not recur. Explanatory diagram scenes with no acceptable exact external candidate fell back locally rather than accepting a semantically similar but incorrect named object.
+
+The clean production WF04 export was saved back to the repository after runtime acceptance:
+
+```text
+WF04 id: M6VisualSourcing1
+active: true
+node count: 44
+pinData: empty
+SHA-256: d65c3dc3d62c759f200f797aa02f4ed2f1bb32e1184150c3c8edb0b3a26fe465
+```
+
+This closes the exact named-subject mismatch demonstrated during M8 and confirms deterministic routing v3 + the Wikimedia title guard as the current production behavior. No provider/service/schema/webhook/polling boundary or second planning AI request was added.

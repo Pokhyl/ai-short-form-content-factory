@@ -169,6 +169,8 @@ Each planned scene contains:
 - `visual_description` in the requested job language;
 - `visual_query` in English, preserving official names and proper nouns.
 
+For production routing, the persisted `visual_subject_type` is a validated/normalized routing signal rather than blindly trusting the model label. Explicit explanatory intent (for example diagrams, schematics, cross-sections, anatomy, maps, interfaces/screens, molecules, vectors, force/load/tension/pressure illustrations, circuits, mechanisms, cutaways, blueprints, or labeled views) routes to `factual`. Preserved exact proper-name phrases/acronyms also route to `factual`. Ordinary unnamed stock-suitable photos route to `generic`. This prevents a technical topic from forcing every scene into factual sourcing while still protecting information-bearing visuals.
+
 The scene validator requires the exact duration-specific scene count, sequential scene
 numbers starting at 1, non-empty required strings, a valid `visual_subject_type`,
 case-insensitively unique `visual_query` values, and queries no longer than 100
@@ -198,6 +200,7 @@ Generation writes the measured audio duration later.
 - loads scenes and their visual intent;
 - validates that the job is eligible for this stage;
 - searches the configured providers;
+- for exact named-subject Wikimedia searches, requires the selected Commons file title to retain the exact proper-name/acronym terms; if no exact candidate survives, falls back rather than accepting a different named subject on visual similarity alone;
 - persists selected asset metadata and local paths;
 - uses a local fallback when no acceptable external asset exists;
 - updates the job state;
