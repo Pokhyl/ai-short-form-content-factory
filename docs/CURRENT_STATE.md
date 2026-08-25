@@ -2491,3 +2491,70 @@ media-worker health: PASS
 free disk: 6.9 GB
 M9: not started
 ```
+
+
+## M8 quality finding — job 1/10 — 2026-08-25
+
+Production job `3b8ca48f-3108-4791-bb72-36f54c40f526` completed successfully for PL / 15s / `Dlaczego popcorn strzela podczas podgrzewania?`.
+
+```text
+status: review_ready/review
+scene_count: 4
+measured voiceover: 15.672s
+duration gate: PASS
+final video: H.264 1080x1920 yuv420p + AAC 48 kHz stereo
+render duration: 15.672s
+render size: 1,054,186 bytes
+technical render: PASS
+```
+
+Script/content review found a quality issue despite technical success: sentence grammar is split across scene boundaries. Scene 1 ends with `Ziarno kukurydzy zawiera w środku niewielką ilość`, scene 2 starts with `wody oraz...`; scene 3 ends with `...zamienia się w parę`, and scene 4 starts with `i powoduje...`. The complete narration is understandable, but per-scene subtitles/cuts expose sentence fragments and can produce unnatural pacing.
+
+Visual selection also produced a concrete semantic mismatch:
+
+```text
+scene 4 intent/query: popcorn popping explosion action shot
+selected provider: Pixabay
+selected asset page: egg-shot-explosion-2475886
+```
+
+The selected scene-4 asset is an egg-explosion asset rather than popcorn. This shows that image-semantic similarity can over-weight visual action/composition while missing the required subject identity. Scene 1 used the local fallback for a corn-kernel cross-section, while scenes 2-3 selected generic corn images that are only partially specific to the requested shell/heating-steam actions.
+
+M8 recurring-pattern candidates after the first quality job:
+
+1. narration word-budget enforcement can split one sentence across multiple scene boundaries;
+2. SigLIP can choose a compositionally similar but subject-wrong generic stock image when the query contains strong action words such as `explosion`;
+3. technical success (`review_ready`, valid duration, valid MP4) is insufficient as a content-quality acceptance signal.
+
+Voice naturalness still requires listening to the rendered output; duration/probe checks only prove technical completeness and timing, not subjective voice quality.
+
+
+## M8 quality findings — jobs 2-3/10 — 2026-08-25
+
+Job 2, `50605154-c84a-43f1-b072-60aa20aa5d2f`, EN / 30s / contactless payment card, completed `review_ready/review` with 30.096s measured audio and a 30.134s H.264/AAC render. All eight scene narrations are complete sentences, so the scene-boundary fragmentation seen in job 1 is not universal.
+
+However, visual specificity remains weaker than the written visual intent in several scenes. Examples:
+
+- scene 2 asks for the internal copper antenna embedded inside a payment card, but the selected Pixabay asset is a generic spiral copper-wire photo (`spiral-copper-wire-metallic-coil-14242`);
+- scene 4 asks for radio waves emitting from the terminal, but the selected asset is a generic payment-terminal photo;
+- scene 5 asks for electrical current through the embedded card antenna, but the selected asset is generic electronic-current imagery;
+- scene 8 asks for an approved message/checkmark on the terminal, but the selected asset is another generic terminal image.
+
+The EN30 script is generally coherent, though wording such as `the card nears the retailer payment terminal` is less natural than a human-edited narration, and `constant low radio frequency field` is an oversimplified description of the NFC reader field.
+
+Job 3, `2a715fee-6694-4827-96dd-341989eae04c`, RU / 45s / autumn leaf color, completed `review_ready/review` with 42.720s measured audio and a 42.767s H.264/AAC render.
+
+Its script quality is materially worse: every one of the first 11 scene boundaries lacks terminal punctuation and the narration is split into fixed-size word fragments. The final fragment `скрыты под ним все лето назад же` is grammatically/semantically defective Russian. This confirms that the narration cardinality mechanism can preserve duration while degrading sentence-level language quality, especially on longer scripts.
+
+Visual mismatches are also visible from selected asset identity/metadata, for example:
+
+- scene 8 requests a cool autumn sunset but selects a winter mountain panorama (`landscape-mountain-panorama-winter-10071292`);
+- scene 10 requests a leaf gradually turning yellow but selects a Valentines/heart-leaf asset (`valentines-day-background-heart-leaf-1776746`);
+- exact explanatory intent such as a chlorophyll molecule falls back locally rather than finding an accurate external diagram.
+
+Recurring M8 patterns now supported by multiple jobs:
+
+1. duration compliance can conflict with natural sentence boundaries and language quality;
+2. longer scripts are more exposed to fixed-cardinality fragmenting than short scripts;
+3. stock-image semantic ranking often captures category/action similarity but misses exact subject or explanatory detail;
+4. technical render success remains strong even when content quality is weak.
