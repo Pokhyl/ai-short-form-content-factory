@@ -3315,3 +3315,36 @@ SHA-256: d65c3dc3d62c759f200f797aa02f4ed2f1bb32e1184150c3c8edb0b3a26fe465
 ```
 
 This closes the exact named-subject mismatch demonstrated during M8 and confirms deterministic routing v3 + the Wikimedia title guard as the current production behavior. No provider/service/schema/webhook/polling boundary or second planning AI request was added.
+
+## M8 manual quality rejection and prototype-direction checkpoint — 2026-08-25
+
+Manual review of the completed M8 sample rejected the current production content format. The concrete human-review failures are:
+
+- one static visual is held for the full narration scene and the resulting pacing feels visually dead;
+- selected visuals are still frequently not relevant enough to the spoken content;
+- the current production voiceover result is subjectively unacceptable.
+
+Read-only inspection proves the first problem is architectural rather than an isolated ranking threshold: `docs/ARCHITECTURE.md` currently defines one scene as one narration segment + one voiceover file + one selected visual + one rendered timeline segment, and `media-worker` render uses `-loop 1` on that single image for the full measured scene duration. WF03 also synthesizes separate per-scene TTS files and may apply a bounded `speakingRate` correction.
+
+M8 is therefore NOT accepted and M9 must not start. Do not continue adding regex/ranking/validator complexity to preserve this rejected presentation model.
+
+A deliberately isolated quality-first prototype was created without changing WF01-WF05, application PostgreSQL state, service topology, or production render code:
+
+```text
+topic: Почему попкорн взрывается?
+language: ru
+prototype duration: 17.680 s
+voice: Gemini 3.1 Flash TTS Preview / Charon
+voice generation: one continuous narration request, no per-scene split, no pace-correction pass
+visual sources: free Pexels stock video downloads only
+visual beats: 6 over 17.680 s
+render: 1080x1920 H.264 yuv420p + AAC 48 kHz stereo
+prototype file: /opt/ai-short-form-content-factory/.tmp-m8-prototype/final.mp4
+production workflow changes: NONE
+production DB changes: NONE
+```
+
+The prototype uses visual editing independently from narration sentence boundaries: the continuous narration runs across several short video beats. Horizontal source clips are preserved over a blurred 9:16 background instead of being stretched or blindly center-cropped.
+
+The temporary n8n harness `M8PrototypeTTS1` exists only to use the already-connected Gemini API credential without exposing the secret. It must be removed after the prototype review. No prototype behavior becomes architecture until manual viewing/listening accepts the direction.
+
