@@ -1737,3 +1737,357 @@ source syntax check: PASS (Node 22)
 ```
 
 This is implementation-only. The media-worker image has not yet been rebuilt/redeployed with `/render`, WF05 does not exist yet, and M7 runtime acceptance remains pending.
+
+
+## Duration regression correction checkpoint — 2026-08-25
+
+A concrete upstream regression was found while preparing M7: production 30-second Polish jobs had persisted measured voiceover totals of 47.160s, 47.232s, and 48.456s; the accepted 15-second Polish job measured 26.016s. This would make a synchronous M7 render correctly follow voiceover timing but produce videos materially longer than the requested target duration.
+
+Repository implementation correction now present locally:
+
+- `WF02 — Plan Script and Scenes` derives a deterministic narration character budget from `target_duration_seconds` (target 14 characters/second, accepted planning range 13-15 characters/second), instructs Gemini with that budget, and deterministically rejects a generated plan outside the range before persistence.
+- `WF03 — Voiceover Generation` now sums the real measured scene audio durations at completion and rejects the voiceover stage if the total is outside 90%-110% of `jobs.target_duration_seconds`.
+- no TTS audio is truncated or accelerated to hide an oversized script; M7 will continue to follow real measured audio duration.
+- no M6 visual-selection behavior was changed.
+- both modified workflow export JSON files parse successfully.
+
+This is a regression correction, not M7 acceptance. Runtime import/calibration on new jobs is still required before the duration defect is considered closed.
+
+
+## Duration regression runtime deployment checkpoint — 2026-08-25
+
+The corrected production-shaped WF02/WF03 exports were imported into n8n, both workflows were published, and n8n was restarted as required by the CLI. After startup completed, the public n8n health endpoint returned HTTP 200.
+
+```text
+WF02_IMPORTED: YES
+WF02_PUBLISHED: YES
+WF03_IMPORTED: YES
+WF03_PUBLISHED: YES
+N8N_RESTARTED: YES
+N8N_HEALTH_STATUS: 200
+```
+
+Real new-job calibration is the next required step; the duration regression is not yet considered closed merely from import/deployment success.
+
+
+## Duration regression first calibration checkpoint — 2026-08-25
+
+The first new production 30-second Polish job after the initial duration guard was `7fa5e441-8fb0-40af-8313-8bc8ef61128d`. WF02 executed but correctly rejected the generated plan before persistence because Gemini returned 509 total narration characters while the initial 30-second allowed range was 390-450. The job therefore remained `created/intake` with zero scenes; no bad-duration voiceover or visual side effects were produced.
+
+This proved the deterministic rejection guard works, but also showed that a total-only prompt was insufficient for reliable model compliance. WF02 was therefore tightened without changing its output shape or adding another AI request:
+
+- derive mandatory per-scene narration character bounds from the same total duration budget;
+- include the per-scene range explicitly in system and user prompts;
+- add supported JSON-schema `description` guidance to the `narration` field;
+- deterministically validate every individual narration against that per-scene range before persistence;
+- retain the existing total narration range validation.
+
+Google Gemini's current `responseJsonSchema` does not support `minLength`/`maxLength`, so those unsupported schema keywords were not invented or used. Runtime re-import and a second real 30-second Polish calibration job are still required.
+
+
+## Duration regression second WF02 deployment checkpoint — 2026-08-25
+
+The tightened per-scene WF02 duration guidance/validation was imported, published, n8n was restarted, and public health returned HTTP 200. A second real 30-second Polish calibration job can now be run against the active workflow version.
+
+
+## Duration regression second calibration finding — 2026-08-25
+
+The second real 30-second Polish calibration job `ecf17925-a549-4386-9b57-455900642b8a` was also rejected before persistence, this time because scene 1 contained 41 narration characters while the provisional per-scene minimum was 49. This showed that enforcing an equal minimum on every scene is unnecessarily strict and can reject a potentially valid total narration budget.
+
+WF02 was corrected again: the per-scene minimum was removed, the per-scene maximum is retained to prevent oversized individual scenes, and the total narration minimum/maximum remains the authoritative duration-budget validation. Output shape and one-AI-request architecture remain unchanged.
+
+
+## Duration regression third WF02 deployment checkpoint — 2026-08-25
+
+The revised WF02 with no per-scene minimum and with the per-scene maximum plus total narration range was imported and published. n8n was restarted and public health returned HTTP 200. A third real 30-second Polish calibration run is next.
+
+
+## Duration regression third calibration finding — 2026-08-25
+
+The third real 30-second Polish calibration job `aaefe436-35fb-4121-9506-48173940a27d` was rejected before persistence because the model produced only 311 total narration characters against the 390-450 total range. Together with the first 509-character result, this proves that prompt-only character budgeting is not sufficiently deterministic for production timing.
+
+A stronger correction is therefore required while preserving the existing one-AI-request M4 architecture and durable `scenes.narration` field. The next calibration step is to measure the actual speaking pace of the four already-selected TTS voices using a disposable runtime harness, then enforce a bounded narration word count through Gemini structured-output array cardinality (`minItems`/`maxItems`, which the current Gemini API supports) and deterministically join the validated word tokens into the persisted narration string. No second planning AI request is being introduced.
+
+
+## Duration regression selected-voice calibration checkpoint — 2026-08-25
+
+A disposable n8n runtime harness was executed against the exact selected EN/PL/RU/UK production voices and the existing media-worker audio probe. It performed no PostgreSQL writes. Measured samples:
+
+```text
+EN en-US-Chirp3-HD-Algenib: 56 words / 346 chars -> 23.088s -> 2.425 words/s
+PL pl-PL-Chirp3-HD-Enceladus: 54 words / 371 chars -> 26.136s -> 2.066 words/s
+RU ru-RU-Wavenet-D: 52 words / 386 chars -> 26.424s -> 1.968 words/s
+UK uk-UA-Chirp3-HD-Enceladus: 50 words / 376 chars -> 27.456s -> 1.821 words/s
+```
+
+Historical persisted Polish jobs independently measured approximately 1.93-2.04 words/s, consistent with the disposable Polish calibration. This confirms that language/voice-specific word count is a materially better duration control than the prior prompt-only character budget.
+
+The correction will keep the M4 one-AI-request contract and persisted `scenes.narration` string, but constrain Gemini's structured intermediate narration as an exact-size `narration_words` array per scene using supported `minItems=maxItems`, validate each token deterministically, and join the tokens into the persisted narration string. No TTS speaking-rate manipulation, second planning request, schema migration, or M6 redesign is required.
+
+
+## Duration regression exact word-budget implementation checkpoint — 2026-08-25
+
+WF02 was changed locally from prompt-only character limits to schema-enforced exact narration word cardinality while preserving the existing one-AI-request M4 boundary and persisted scene shape.
+
+- calibrated words/second constants: EN 2.425, PL 2.066, RU 1.968, UK 1.821;
+- `words_per_scene = round(target_duration_seconds * calibrated_words_per_second / required_scene_count)`;
+- Gemini intermediate structured output now uses `narration_words: array<string>` with `minItems == maxItems == words_per_scene` for every scene;
+- each token is deterministically validated as one non-empty, whitespace-free word token containing a letter/number; punctuation must attach to a word;
+- WF02 joins validated tokens with single spaces into the durable `scenes.narration` string before PostgreSQL persistence;
+- the unstable character-count acceptance gate was removed;
+- final persisted scene fields and SQL schema are unchanged;
+- workflow JSON parses successfully and contains the new `narration_words` schema.
+
+For the concrete 30-second Polish case the deterministic budget is 8 words per scene × 8 scenes = 64 words, which the calibrated selected voice predicts at approximately 31 seconds. Production import and real-job runtime proof are still required.
+
+
+## Duration regression exact word-budget production deployment checkpoint — 2026-08-25
+
+The exact word-budget WF02 export was copied into the production n8n container, imported, published, and n8n was restarted as required by the CLI. The public health endpoint returned HTTP 200 after restart.
+
+```text
+WF02_WORD_BUDGET_IMPORTED: YES
+WF02_WORD_BUDGET_PUBLISHED: YES
+N8N_RESTARTED: YES
+N8N_HEALTH_STATUS: 200
+```
+
+A fresh real 30-second Polish job must now prove that the active WF02 persists exactly 8 scenes × 8 narration words and that WF03 measures a total audio duration inside the 27-33 second acceptance window before the regression is closed.
+
+
+## Duration regression first exact-word production calibration — 2026-08-25
+
+Fresh production job `e73db013-ccd8-49ee-9368-a9d50dde7a1d` (`pl`, target 30s) proved the schema-enforced word cardinality works exactly:
+
+```text
+scene_count: 8
+words_per_scene: 8 / 8 / 8 / 8 / 8 / 8 / 8 / 8
+total_narration_words: 64
+measured_audio_duration: 35.040s
+WF03_duration_gate: REJECTED
+job_state: failed/voiceover
+```
+
+No visual sourcing was started because WF03 correctly rejected 35.040s outside the 27-33s window. The remaining calibration error is attributable to per-scene TTS segmentation overhead that was absent from the earlier long single-sample voice-rate measurement. For Polish, comparing the continuous selected-voice calibration (2.066 words/s) with this 8-scene runtime result yields approximately 0.5s additional duration per generated scene. The word-budget formula must therefore reserve measured per-scene overhead before converting the remaining target time to words.
+
+
+## Duration regression segmented-TTS overhead implementation checkpoint — 2026-08-25
+
+WF02 now reserves the measured segmented-TTS overhead before converting the remaining target time to exact narration word cardinality:
+
+```text
+measured_scene_overhead_seconds = 0.5
+spoken_time_budget_seconds = target_duration_seconds - required_scene_count * 0.5
+words_per_scene = round(spoken_time_budget_seconds * calibrated_words_per_second / required_scene_count)
+```
+
+For PL 30s this changes the exact schema budget from 8 to 7 words per scene (56 words total), with a calibrated prediction of approximately 31.11s. Deterministic predictions for all supported language/duration combinations remain inside ±10% of 15/30/45/60 targets. Runtime production proof is still required; the WF03 measured-duration gate remains authoritative.
+
+
+## Duration regression WF02 activation recovery checkpoint — 2026-08-25
+
+The exact word-budget WF02 had been imported inactive by the n8n CLI. The supported legacy activation command was executed successfully for workflow `TJfA4ZYUEKSTad6k` using `n8n update:workflow --active=true`, which published the current version and requested activation. No n8n internal-schema SQL was modified manually. n8n must be restarted before the activation takes effect.
+
+
+## Duration regression WF02 activation verified checkpoint — 2026-08-25
+
+After the legacy n8n activation command, the n8n service was restarted and the public health endpoint returned HTTP 200. Startup logs explicitly confirmed all four production stage workflows active, including `WF02 — Plan Script and Scenes` (`TJfA4ZYUEKSTad6k`). No manual edits were made to the n8n internal schema.
+
+
+## Duration regression second exact-word production calibration — 2026-08-25
+
+Fresh production job `6915c670-a487-45de-97a8-0a014739f237` (`pl`, target 30s) ran with the reactivated segmented-TTS-aware WF02 and proved the revised exact schema cardinality: 8 scenes × 7 words = 56 words. Measured aggregate audio duration was `33.120s`. WF03 correctly rejected it because the authoritative 30s acceptance window is `27.000-33.000s`; no visual sourcing handoff occurred. This is only 0.120s over the upper bound, so the word-cardinality mechanism is working but the PL segmented calibration still needs one more reduction. Before changing the shared calibration logic, EN/RU/UK 30s production runs will be measured to derive language/voice-specific segmented overhead instead of guessing one global constant.
+
+
+## Duration regression 30-second multi-language calibration checkpoint — 2026-08-25
+
+Fresh production 30-second jobs using the exact selected voices measured the current segmented word budgets as follows:
+
+```text
+EN: 8 words/scene × 8 -> 23.472s -> rejected as too short
+PL: 7 words/scene × 8 -> 33.120s -> rejected as 0.120s too long
+RU: 6 words/scene × 8 -> 25.440s -> rejected as too short
+UK: 6 words/scene × 8 -> 27.648s -> accepted and advanced to visuals
+```
+
+This proves one global segmented-TTS overhead/rate formula is not reliable across the four selected voices. The next correction is an empirical language-specific exact `words_per_scene` contract derived from production segmented audio: EN 10, PL 6, RU 7, UK 6 for the 15/30/45 scene-density regime, with a separate 60-second adjustment only if runtime validation requires it. WF03's measured aggregate ±10% duration gate remains authoritative.
+
+
+## Duration regression empirical language budget implementation checkpoint — 2026-08-25
+
+WF02 was changed locally from a single global segmented-TTS formula to an empirical language/duration exact word-budget table derived from real selected-voice production measurements. Current table:
+
+```text
+EN: 15/30/45/60 -> 10/10/10/10 words per scene
+PL: 15/30/45/60 -> 6/6/6/6 words per scene
+RU: 15/30/45/60 -> 7/7/7/7 words per scene
+UK: 15/30/45/60 -> 6/6/6/7 words per scene
+```
+
+The Gemini structured-output `minItems=maxItems` enforcement and deterministic token validator are unchanged. The persisted scene shape remains `narration` string with no DB migration. The previous global calibrated-rate/scene-overhead fields were removed from WF02 planning metadata and replaced by `narration_word_budget_source='segmented_production_calibration_v1'`. Workflow JSON round-trips successfully. Production deployment and runtime proof are still required.
+
+
+## Duration regression empirical language budget production deployment checkpoint — 2026-08-25
+
+The empirical language/duration word-budget WF02 export was copied into production n8n, imported, reactivated with the legacy supported activation command, and n8n was restarted. Startup logs confirmed `WF02 — Plan Script and Scenes` active. The first health probe immediately after restart returned 502 while n8n was still starting; the next probe returned HTTP 200. Production is healthy with the new WF02 active.
+
+
+## Duration regression second 30-second multi-language calibration checkpoint — 2026-08-25
+
+Fresh 30-second production jobs using the empirical uniform per-scene table measured:
+
+```text
+EN 10 words/scene × 8 = 80 words -> 32.232s -> accepted
+PL 6 words/scene × 8 = 48 words -> 26.400s -> rejected too short
+RU 7 words/scene × 8 = 56 words -> 27.528s -> accepted
+UK 6 words/scene × 8 = 48 words -> 25.392s -> rejected too short
+```
+
+Together with the earlier PL 56-word result at 33.120s and UK 48-word result at 27.648s on different wording, this proves one uniform integer word count for every scene is too coarse for PL/UK and that lexical variation is material. The next correction will keep exact schema enforcement but move to per-scene word-count arrays using JSON Schema `prefixItems`, allowing intermediate totals such as 52 words (7/6 alternating) instead of forcing either 48 or 56. No second AI request, TTS speed manipulation, DB migration, or M6 redesign is introduced.
+
+
+## Duration regression scene-specific prefixItems implementation checkpoint — 2026-08-25
+
+WF02 now uses scene-specific exact narration word counts rather than one uniform integer per scene. Production-derived repeating patterns are EN `[10,9]`, PL `[7,6]`, RU `[7]`, UK `[7,6]`; each duration expands the relevant pattern to the required 4/8/12/15 scene count. Gemini `responseJsonSchema` now uses `prefixItems`, with each scene schema fixing both `scene_number` and that scene's `narration_words` cardinality via `minItems=maxItems`. The deterministic validator independently checks the same `scene_word_counts` array and exact total before persistence. For 30s the exact totals are EN 76, PL 52, RU 56, UK 52 words. Workflow JSON round-trips successfully. Production deployment/runtime proof is still required.
+
+
+## Duration regression scene-specific prefixItems production deployment checkpoint — 2026-08-25
+
+The `segmented_production_calibration_v2` WF02 with scene-specific `prefixItems` word counts was copied into production n8n, imported, reactivated, and n8n was restarted. Public `/healthz` returned HTTP 200 and startup logs explicitly confirmed `WF02 — Plan Script and Scenes` active. Production runtime validation of the new 30-second EN/PL/RU/UK totals is the next required step.
+
+
+## Duration regression prefixItems first production runtime checkpoint — 2026-08-25
+
+Fresh 30-second jobs using `segmented_production_calibration_v2` produced mixed results:
+
+```text
+RU: exact 7,7,7,7,7,7,7,7 word counts -> 56 total -> 29.784s -> accepted -> visuals
+UK: exact 7,6,7,6,7,6,7,6 word counts -> 52 total -> 28.704s -> accepted -> visuals
+EN: remained created/intake with 0 scenes
+PL: remained created/intake with 0 scenes
+```
+
+This proves Gemini `prefixItems` is accepted by the current runtime and the scene-specific schema/cardinality path works end-to-end for RU/UK. EN/PL failed before persistence and have no durable `last_error`, so their WF02 execution errors must be inspected before any further budget change.
+
+
+## Duration regression EN prefixItems diagnostic checkpoint — 2026-08-25
+
+An isolated no-DB-write WF02 diagnostic harness reproduced the EN planning failure. Gemini accepted the scene-specific `prefixItems` schema and returned the correct scene array/cardinalities, but one `narration_words` string item contained two whitespace-separated words (`colors combined.`). The deterministic validator therefore rejected scene 2 before persistence. This is not a `prefixItems` support failure; it is a model violation of the extra one-item/one-word semantic rule that JSON Schema cannot express because string `minLength`/`maxLength` and regex token constraints are not available in the current response schema subset. PL will be checked for the same failure class before changing validator semantics.
+
+## Duration regression PL exact-count correction checkpoint — 2026-08-25
+
+Production job `440d1f66-36ab-48c9-b60e-f12a32099740` proved the active segmented word pattern was intentionally `pl: [7, 6]`, yielding 52 words across 8 scenes and 26.232s of measured audio, just below the 27.000s lower bound. The validator was behaving correctly; the remaining error was the configured Polish pattern itself.
+
+WF02 local export is now corrected from `pl: [7, 6]` to `pl: [7]`, so a 30-second Polish job must contain exactly 7 narration word tokens in every one of the 8 scenes (56 words total). Production import/activation/restart and a fresh runtime proof are required next.
+
+## Duration regression PL exact-count production deployment checkpoint — 2026-08-25
+
+The corrected WF02 export with `pl: [7]` was copied into the production n8n container, imported, republished with workflow ID `TJfA4ZYUEKSTad6k`, and n8n was restarted. The public `/healthz` endpoint returned HTTP 200 after restart. A fresh real PL/30 job is now required to prove 8 scenes × 7 words and measured aggregate TTS duration within 27-33 seconds.
+
+
+## Duration regression bounded packed-word tolerance implementation checkpoint — 2026-08-25
+
+The EN diagnostic proved Gemini can occasionally pack two whitespace-separated spoken words into one schema string item even when the prompt says one word per item. WF02's validator was therefore hardened without relaxing schema cardinality: each scene still receives the exact schema-enforced `scene_word_counts` array length; validator now deterministically splits each string item on whitespace, allows at most two spoken words in one item, allows at most one packed extra word per scene, and caps total packed extras to `max(1, ceil(scene_count/4))`. Punctuation-only content remains rejected. The persisted narration is rebuilt from the unpacked spoken words. This preserves the one-AI-request architecture and bounded duration control while tolerating the specific model formatting defect. Workflow JSON round-trips successfully. Production deployment/runtime proof is still required.
+
+
+## Duration regression bounded packed-word tolerance production deployment checkpoint — 2026-08-25
+
+The bounded packed-word-tolerance WF02 was imported into production, reactivated, and n8n restarted. Public health is HTTP 200 and startup logs confirm `WF02 — Plan Script and Scenes` active. The next required proof is a fresh 30-second production run in EN/PL/RU/UK.
+
+## Duration regression WF03 single pace-correction implementation checkpoint — 2026-08-25
+
+Official Google Cloud TTS documentation currently confirms Chirp 3 HD pace control through `speaking_rate` across all locales. A disposable runtime check on the exact selected Polish voice `pl-PL-Chirp3-HD-Enceladus` confirmed the control works proportionally: the same 7-word Polish phrase measured 5.664s at the default pace and 4.680s at `speaking_rate=1.2`.
+
+WF03 local export now implements one bounded TTS pace-correction pass after baseline synthesis and measurement. If aggregate duration is already inside ±10%, WF04 starts normally. If it is outside, WF03 computes `speaking_rate = actual_duration / target_duration`, permits exactly one correction only when the required rate is within 0.80-1.25, regenerates all scene audio with Google TTS using that rate, overwrites the deterministic scene audio files, persists the newly measured durations, verifies aggregate duration again, and only then allows WF04. A second miss fails closed. No second AI planning request, audio truncation, render-time squeezing, schema migration, or additional service is introduced.
+
+
+## Duration regression bounded-tolerance 30-second production checkpoint — 2026-08-25
+
+Fresh 30-second production jobs after bounded packed-word tolerance measured:
+
+```text
+EN: 76 persisted spoken words -> 32.280s -> accepted -> visuals
+PL: 56 persisted spoken words -> 33.528s -> rejected (0.528s above 33.000s)
+RU: 56 persisted spoken words -> 26.520s -> rejected (0.480s below 27.000s)
+UK: 52 persisted spoken words -> 31.752s -> accepted -> visuals
+```
+
+PL's persisted 56-word count is inconsistent with the intended 52-unit schema plus the new global packed-extra cap of 2, so the active production WF02 export must be compared with the local definition before any further timing calibration.
+
+## Duration regression WF03 pace-correction production deployment checkpoint — 2026-08-25
+
+The updated WF03 export with a single bounded TTS pace-correction pass was imported into production, republished under workflow ID `UHxvCZNqaLb1RKMM`, and n8n was restarted. After startup the public health endpoint returned HTTP 200 and logs confirmed WF01/WF02/WF03/WF04 are all active. A fresh real PL/30 job is now required to prove baseline measurement, one correction pass, final measured duration inside 27-33 seconds, and successful handoff beyond voiceover.
+
+## Duration regression PL/30 production acceptance checkpoint — 2026-08-25
+
+Fresh production job `8b049375-f93c-4b58-a786-df74d18b1d90` (`pl`, target 30s) completed the corrected WF02/WF03 timing contract successfully:
+
+```text
+scene_count: 8
+words_per_scene: 7 / 7 / 7 / 7 / 7 / 7 / 7 / 7
+total_narration_words: 56
+final_measured_audio_duration: 30.648s
+allowed_window: 27.000-33.000s
+voiceover_result: ACCEPTED
+job_state_after_voiceover: processing/visuals
+```
+
+This proves the single pace-correction path can normalize a real segmented Polish job into the target window without truncation and that WF04 handoff occurs only after the corrected measured duration passes the gate. EN/RU/UK 30-second runtime checks remain required before treating the correction as language-general.
+
+## Duration regression all-language 30-second acceptance checkpoint — 2026-08-25
+
+Fresh production 30-second jobs passed the corrected WF02/WF03 timing gate in all four configured languages and advanced to `processing/visuals`:
+
+```text
+EN 8b424b03-97c7-4d75-ae35-88313c3a8e26 -> 8 scenes, 76 words, 27.336s
+PL 8b049375-f93c-4b58-a786-df74d18b1d90 -> 8 scenes, 56 words, 30.648s
+RU a7badfa4-aadb-4e62-98b5-cb232ace1526 -> 8 scenes, 56 words, 28.656s
+UK 1db85b72-07b9-4b87-82f6-cf94b73a6cd5 -> 8 scenes, 52 words, 31.920s
+```
+
+All four final measured aggregate durations are inside the 27.000-33.000s acceptance window and no job has a voiceover error. This proves the correction is not Polish-only. Remaining duration-scaling proof should cover the other supported scene-count contracts (15s/4 scenes, 45s/12 scenes, 60s/15 scenes).
+
+## Duration regression PL/60 production acceptance checkpoint — 2026-08-25
+
+Fresh production job `a5e12021-aba0-4f1d-b0e5-1809ad02e716` (`pl`, target 60s) passed the corrected timing contract with 15 scenes, 105 narration words, final measured aggregate audio duration 58.512s, and advanced to `processing/visuals`. This proves the 15-scene/60-second contract works with the pace-correction-capable WF03.
+
+Two concurrently submitted disposable PL jobs for 15s and 45s (`a0410a69-1ae0-4368-a71e-0043cc45076e`, `9a51a33d-f58a-41c2-8344-5a5521bf19a2`) remained at `created/intake` with zero scenes and no application `last_error`, so they did not exercise the timing logic. n8n logs showed generic `Unknown error [line 8]` messages during that interval. These two durations will be rechecked serially to avoid conflating a transient orchestration/concurrency symptom with duration acceptance.
+
+## Duration regression complete runtime acceptance checkpoint — 2026-08-25
+
+The timing regression is now runtime-proven across all four supported languages at 30 seconds and across all four supported duration/scene-count contracts in Polish.
+
+All-language 30-second final measured durations:
+
+```text
+EN -> 27.336s -> processing/visuals
+PL -> 30.648s -> processing/visuals
+RU -> 28.656s -> processing/visuals
+UK -> 31.920s -> processing/visuals
+```
+
+Polish duration-scaling proof:
+
+```text
+15s / 4 scenes  -> 14.208s -> voiceover accepted, processing/visuals
+30s / 8 scenes  -> 30.648s -> voiceover accepted, processing/visuals
+45s / 12 scenes -> 42.024s -> voiceover accepted, then failed inside visuals with unrelated `Unknown error [line 8]`
+60s / 15 scenes -> 58.512s -> voiceover accepted, processing/visuals
+```
+
+A second disposable 15-second job measured 14.304s and likewise passed voiceover before later failing inside visuals with the same unrelated visual-stage error. Therefore the duration regression is closed: WF02 produces bounded narration, WF03 measures real aggregate audio, performs at most one bounded Google TTS pace correction when needed, remeasures, fails closed if the corrected duration is still outside ±10%, and only starts WF04 after timing acceptance. The visual-stage `Unknown error [line 8]` observed on two disposable jobs is a separate M6 runtime issue and does not invalidate voiceover timing acceptance.
+
+## Duration contract source-of-truth update checkpoint — 2026-08-25
+
+`docs/ARCHITECTURE.md` and `docs/ROADMAP.md` were updated locally to reflect the runtime-proven timing contract: aggregate measured voiceover must be inside ±10% of target before WF04 handoff; WF03 may perform at most one bounded native Google TTS pace-correction pass (`0.80-1.25`) and must remeasure; a second miss fails closed; no audio truncation, render-time squeezing, second planning AI request, new service, or DB schema change is introduced.
+
+## Duration regression clean production export checkpoint — 2026-08-25
+
+The active production WF02/WF03 workflows were exported back into the repository after runtime acceptance. Both exports parse as JSON.
+
+```text
+WF02 SHA-256: fc516894cc2e9c333318b9578041650db08481a5693549f61753a55a7d1df43c
+WF03 SHA-256: 43a709f1d68d6bc582a50e9ad19ec7f0d748050f8e85dd90f1588de602f484a6
+```
+
+These exports are the clean production versions to commit for the closed duration regression.

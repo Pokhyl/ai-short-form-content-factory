@@ -162,6 +162,8 @@ Acceptance:
 
 - every scene has a playable audio file;
 - actual audio duration is measured;
+- aggregate measured voiceover duration is inside ±10% of the requested 15/30/45/60-second target before Visual Sourcing can start;
+- at most one bounded native Google TTS pace-correction pass may be used to satisfy that timing gate; a second miss fails closed;
 - voice quality is manually accepted in all supported languages used for testing.
 
 Validated runtime/repository result:
@@ -176,6 +178,10 @@ Validated runtime/repository result:
 - final WF03 export SHA-256 is `666a2de498e4feac7e7877bf2ebc44e61c63fbd38698f239f427ecf673042c86`;
 - workflow export commit `8e6e4a9a578e7d65778e4ca42a77558497549c99` is preserved in remote history;
 - final verified remote head is `16a431209d8392c50dcc33c59444da3149744427`.
+- duration-regression correction on 2026-08-25 preserved the one-AI-request M4 boundary, added bounded narration word cardinality, and added one measured Google TTS pace-correction pass in WF03;
+- fresh 30-second production jobs passed the timing gate in EN/PL/RU/UK at 27.336s / 30.648s / 28.656s / 31.920s respectively;
+- Polish runtime scaling passed all production duration contracts: 15s -> 14.208s, 30s -> 30.648s, 45s -> 42.024s, 60s -> 58.512s;
+- WF04 handoff occurs only after aggregate measured voiceover duration passes the timing gate.
 
 Learning focus:
 

@@ -185,8 +185,12 @@ Generation writes the measured audio duration later.
 - validates that the job is eligible for this stage;
 - generates one voiceover per scene using the configured voice for the job language;
 - stores audio paths and measured durations on the scene state;
+- validates the aggregate measured voiceover duration against the job target;
+- when aggregate duration is outside the ±10% timing window, may perform exactly one bounded Google TTS pace-correction pass using `speaking_rate = measured_duration / target_duration` only when the required rate is within the production quality-safe range `0.80-1.25`;
+- remeasures every regenerated scene and fails closed if the corrected aggregate duration is still outside the ±10% timing window;
+- does not truncate audio, squeeze timing during render, or make a second AI planning request to correct duration;
 - updates the job state;
-- starts `Visual Sourcing` only after all required scene audio is ready.
+- starts `Visual Sourcing` only after all required scene audio is ready and aggregate measured duration has passed the timing gate.
 
 #### Visual Sourcing
 
