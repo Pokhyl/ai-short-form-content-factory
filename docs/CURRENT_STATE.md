@@ -1717,3 +1717,23 @@ M6 acceptance evidence is complete:
 - WF04 is published/active so the native sub-workflow target is callable.
 
 M6 — Visual sourcing is closed on 2026-08-25. M7 has not been started.
+
+
+## M7 synchronous media-worker render implementation checkpoint
+
+M7 implementation has started from the closed M6 checkpoint. Read-only runtime inspection confirmed the existing application schema already contains `public.jobs.final_video_path`, and the accepted GPS job has complete persisted `narration`, `audio_path`, `visual_path`, and measured `duration_seconds` for all 8 scenes. The referenced voiceover MP3 and normalized JPEG files exist under the existing media-worker `/data` volume. No M7 schema migration is required for the first render implementation.
+
+The existing `media-worker` has been extended in place with the first synchronous `POST /render` implementation. The handler accepts one job-scoped render manifest from n8n, validates that persisted media paths belong to the requested job, re-probes the real audio files, uses those measured durations as the scene timeline, validates visual files, burns cumulative ASS subtitles, renders a 1080x1920 H.264/AAC MP4 with FFmpeg, validates the finished output with ffprobe, and stores it at `jobs/<job_id>/render/final.mp4` in the existing media volume. It returns the validated path, codecs, dimensions, duration, byte size, and per-scene timing to n8n. It does not write PostgreSQL and no service was added.
+
+```text
+render boundary: POST /render
+output path: jobs/<job_id>/render/final.mp4
+video target: H.264 1080x1920 yuv420p
+ audio target: AAC 48 kHz stereo
+subtitles: burned ASS, cumulative timing from measured scene audio
+media-worker database writes: none
+service topology: unchanged
+source syntax check: PASS (Node 22)
+```
+
+This is implementation-only. The media-worker image has not yet been rebuilt/redeployed with `/render`, WF05 does not exist yet, and M7 runtime acceptance remains pending.

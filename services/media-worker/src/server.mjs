@@ -798,6 +798,453 @@ async function createVisualFallback(request, response) {
   }
 }
 
+function buildRenderPath(jobId) {
+  if (!uuidPattern.test(jobId)) {
+    throw new HttpError(400, "invalid_job_id", "job_id must be a valid UUID");
+  }
+
+  const relativePath = `jobs/${jobId.toLowerCase()}/render/final.mp4`;
+  const absolutePath = resolve(dataRoot, relativePath);
+
+  if (
+    absolutePath !== dataRoot &&
+    !absolutePath.startsWith(`${dataRoot}${sep}`)
+  ) {
+    throw new HttpError(400, "invalid_render_path", "Resolved render path is unsafe");
+  }
+
+  return { relativePath, absolutePath };
+}
+
+function resolvePersistedMediaPath(jobId, value, kind) {
+  if (typeof value !== "string" || value.trim() === "") {
+    throw new HttpError(
+      400,
+      `invalid_${kind}_path`,
+      `${kind}_path must be a non-empty relative path`,
+    );
+  }
+
+  const normalized = value.trim().replaceAll("\\", "/");
+  const expectedPrefix = `jobs/${jobId.toLowerCase()}/`;
+  const expectedSegment = kind === "audio" ? "voiceover/" : "visuals/";
+
+  if (
+    normalized.startsWith("/") ||
+    normalized.includes("../") ||
+    !normalized.startsWith(`${expectedPrefix}${expectedSegment}`)
+  ) {
+    throw new HttpError(
+      400,
+      `invalid_${kind}_path`,
+      `${kind}_path does not belong to job ${jobId}`,
+    );
+  }
+
+  const absolutePath = resolve(dataRoot, normalized);
+
+  if (
+    absolutePath === dataRoot ||
+    !absolutePath.startsWith(`${dataRoot}${sep}`)
+  ) {
+    throw new HttpError(
+      400,
+      `invalid_${kind}_path`,
+      `Resolved ${kind}_path is unsafe`,
+    );
+  }
+
+  return { relativePath: normalized, absolutePath };
+}
+
+function wrapSubtitleText(value) {
+  if (typeof value !== "string") {
+    throw new HttpError(400, "invalid_narration", "narration must be a string");
+  }
+
+  const normalized = value.replace(/\s+/gu, " ").trim();
+
+  if (normalized.length === 0 || normalized.length > 1200) {
+    throw new HttpError(
+      400,
+      "invalid_narration",
+      "narration must contain between 1 and 1200 characters",
+    );
+  }
+
+  const words = normalized.split(" ");
+  const lines = [];
+  let current = "";
+
+  for (const word of words) {
+    const candidate = current.length === 0 ? word : `${current} ${word}`;
+
+    if (candidate.length <= 34) {
+      current = candidate;
+      continue;
+    }
+
+    if (current.length > 0) {
+      lines.push(current);
+    }
+
+    current = word;
+  }
+
+  if (current.length > 0) {
+    lines.push(current);
+  }
+
+  return lines.slice(0, 4).join("\\N");
+}
+
+function escapeAssText(value) {
+  return wrapSubtitleText(value)
+    .replaceAll("\\", "\\\\")
+    .replaceAll("{", "\\{")
+    .replaceAll("}", "\\}")
+    .replaceAll("\\\\N", "\\N");
+}
+
+function assTime(seconds) {
+  const centiseconds = Math.max(0, Math.round(Number(seconds) * 100));
+  const hours = Math.floor(centiseconds / 360000);
+  const minutes = Math.floor((centiseconds % 360000) / 6000);
+  const wholeSeconds = Math.floor((centiseconds % 6000) / 100);
+  const fraction = centiseconds % 100;
+
+  return `${hours}:${String(minutes).padStart(2, "0")}:${String(wholeSeconds).padStart(2, "0")}.${String(fraction).padStart(2, "0")}`;
+}
+
+function probeRenderedVideo(filePath) {
+  const output = execFileSync(
+    "ffprobe",
+    [
+      "-v",
+      "error",
+      "-show_entries",
+      "format=duration:stream=index,codec_type,codec_name,width,height,pix_fmt,sample_rate,channels",
+      "-of",
+      "json",
+      filePath,
+    ],
+    {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    },
+  );
+
+  const parsed = JSON.parse(output);
+  const video = parsed.streams?.find((stream) => stream.codec_type === "video");
+  const audio = parsed.streams?.find((stream) => stream.codec_type === "audio");
+  const durationSeconds = Number(parsed.format?.duration);
+
+  if (
+    !video ||
+    !audio ||
+    video.codec_name !== "h264" ||
+    Number(video.width) !== 1080 ||
+    Number(video.height) !== 1920 ||
+    audio.codec_name !== "aac" ||
+    !Number.isFinite(durationSeconds) ||
+    durationSeconds <= 0
+  ) {
+    throw new Error("ffprobe did not return the required H.264/AAC 1080x1920 output");
+  }
+
+  return {
+    duration_seconds: durationSeconds,
+    width: Number(video.width),
+    height: Number(video.height),
+    video_codec: video.codec_name,
+    video_pix_fmt: video.pix_fmt ?? null,
+    audio_codec: audio.codec_name,
+    audio_sample_rate: Number(audio.sample_rate) || null,
+    audio_channels: Number(audio.channels) || null,
+  };
+}
+
+async function renderVideo(request, response) {
+  const body = await readJsonBody(request);
+  const jobId = String(body.job_id ?? "").trim().toLowerCase();
+  const scenes = body.scenes;
+
+  if (!uuidPattern.test(jobId)) {
+    throw new HttpError(400, "invalid_job_id", "job_id must be a valid UUID");
+  }
+
+  if (!Array.isArray(scenes) || scenes.length === 0 || scenes.length > 100) {
+    throw new HttpError(
+      400,
+      "invalid_render_scenes",
+      "scenes must contain between 1 and 100 items",
+    );
+  }
+
+  const normalizedScenes = [];
+
+  for (let index = 0; index < scenes.length; index += 1) {
+    const scene = scenes[index];
+
+    if (scene === null || typeof scene !== "object" || Array.isArray(scene)) {
+      throw new HttpError(
+        400,
+        "invalid_render_scene",
+        `scene ${index + 1} must be an object`,
+      );
+    }
+
+    const sceneNumber = Number(scene.scene_number);
+
+    if (!Number.isInteger(sceneNumber) || sceneNumber !== index + 1) {
+      throw new HttpError(
+        400,
+        "invalid_scene_number",
+        `scene ${index + 1} must have sequential scene_number`,
+      );
+    }
+
+    const persistedDuration = Number(scene.duration_seconds);
+
+    if (!Number.isFinite(persistedDuration) || persistedDuration <= 0) {
+      throw new HttpError(
+        400,
+        "invalid_scene_duration",
+        `scene ${sceneNumber} duration_seconds must be positive`,
+      );
+    }
+
+    const audioPath = resolvePersistedMediaPath(jobId, scene.audio_path, "audio");
+    const visualPath = resolvePersistedMediaPath(jobId, scene.visual_path, "visual");
+    const narration = String(scene.narration ?? "").replace(/\s+/gu, " ").trim();
+
+    if (narration.length === 0 || narration.length > 1200) {
+      throw new HttpError(
+        400,
+        "invalid_narration",
+        `scene ${sceneNumber} narration is invalid`,
+      );
+    }
+
+    let audioStat;
+    let visualStat;
+
+    try {
+      [audioStat, visualStat] = await Promise.all([
+        stat(audioPath.absolutePath),
+        stat(visualPath.absolutePath),
+      ]);
+    } catch {
+      throw new HttpError(
+        422,
+        "render_input_missing",
+        `scene ${sceneNumber} media file is missing`,
+      );
+    }
+
+    if (!audioStat.isFile() || !visualStat.isFile()) {
+      throw new HttpError(
+        422,
+        "render_input_invalid",
+        `scene ${sceneNumber} media input is not a file`,
+      );
+    }
+
+    const measuredDuration = probeDurationSeconds(audioPath.absolutePath);
+
+    if (Math.abs(measuredDuration - persistedDuration) > 0.15) {
+      throw new HttpError(
+        422,
+        "audio_duration_mismatch",
+        `scene ${sceneNumber} persisted duration differs from ffprobe duration`,
+      );
+    }
+
+    probeImage(visualPath.absolutePath);
+
+    normalizedScenes.push({
+      scene_number: sceneNumber,
+      narration,
+      audio_path: audioPath,
+      visual_path: visualPath,
+      duration_seconds: measuredDuration,
+    });
+  }
+
+  const { relativePath, absolutePath } = buildRenderPath(jobId);
+  const renderDirectory = dirname(absolutePath);
+  const workDirectory = `${renderDirectory}/.tmp-${randomUUID()}`;
+  const subtitlePath = `${workDirectory}/subtitles.ass`;
+  const temporaryOutputPath = `${workDirectory}/final.mp4`;
+
+  await mkdir(workDirectory, { recursive: true });
+
+  try {
+    let cursor = 0;
+    const dialogueLines = [];
+    const timings = [];
+
+    for (const scene of normalizedScenes) {
+      const start = cursor;
+      const end = cursor + scene.duration_seconds;
+      timings.push({
+        scene_number: scene.scene_number,
+        start_seconds: start,
+        end_seconds: end,
+        duration_seconds: scene.duration_seconds,
+      });
+      dialogueLines.push(
+        `Dialogue: 0,${assTime(start)},${assTime(end)},Subtitle,,0,0,0,,${escapeAssText(scene.narration)}`,
+      );
+      cursor = end;
+    }
+
+    const ass = [
+      "[Script Info]",
+      "ScriptType: v4.00+",
+      "PlayResX: 1080",
+      "PlayResY: 1920",
+      "WrapStyle: 2",
+      "ScaledBorderAndShadow: yes",
+      "",
+      "[V4+ Styles]",
+      "Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding",
+      "Style: Subtitle,DejaVu Sans,58,&H00FFFFFF,&H000000FF,&H00101010,&H78000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,165,1",
+      "",
+      "[Events]",
+      "Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text",
+      ...dialogueLines,
+      "",
+    ].join("\n");
+
+    await writeFile(subtitlePath, ass, { encoding: "utf8", flag: "wx" });
+
+    const ffmpegArgs = ["-v", "error", "-y"];
+
+    for (const scene of normalizedScenes) {
+      ffmpegArgs.push(
+        "-loop",
+        "1",
+        "-framerate",
+        "30",
+        "-t",
+        scene.duration_seconds.toFixed(6),
+        "-i",
+        scene.visual_path.absolutePath,
+        "-i",
+        scene.audio_path.absolutePath,
+      );
+    }
+
+    const filters = [];
+
+    for (let index = 0; index < normalizedScenes.length; index += 1) {
+      const duration = normalizedScenes[index].duration_seconds.toFixed(6);
+      filters.push(
+        `[${index * 2}:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,fps=30,format=yuv420p[v${index}]`,
+      );
+      filters.push(
+        `[${index * 2 + 1}:a]atrim=0:${duration},asetpts=PTS-STARTPTS,aformat=sample_rates=48000:channel_layouts=stereo[a${index}]`,
+      );
+    }
+
+    const concatInputs = normalizedScenes
+      .map((_, index) => `[v${index}][a${index}]`)
+      .join("");
+
+    filters.push(
+      `${concatInputs}concat=n=${normalizedScenes.length}:v=1:a=1[vcat][acat]`,
+    );
+    filters.push(
+      `[vcat]subtitles=filename=${subtitlePath}:fontsdir=/usr/share/fonts/truetype/dejavu[vout]`,
+    );
+
+    ffmpegArgs.push(
+      "-filter_complex",
+      filters.join(";"),
+      "-map",
+      "[vout]",
+      "-map",
+      "[acat]",
+      "-c:v",
+      "libx264",
+      "-preset",
+      "medium",
+      "-crf",
+      "20",
+      "-profile:v",
+      "high",
+      "-level",
+      "4.1",
+      "-pix_fmt",
+      "yuv420p",
+      "-c:a",
+      "aac",
+      "-b:a",
+      "192k",
+      "-ar",
+      "48000",
+      "-ac",
+      "2",
+      "-movflags",
+      "+faststart",
+      "-shortest",
+      temporaryOutputPath,
+    );
+
+    execFileSync("ffmpeg", ffmpegArgs, {
+      stdio: ["ignore", "pipe", "pipe"],
+      maxBuffer: 32 * 1024 * 1024,
+    });
+
+    const probe = probeRenderedVideo(temporaryOutputPath);
+    const expectedDuration = normalizedScenes.reduce(
+      (sum, scene) => sum + scene.duration_seconds,
+      0,
+    );
+
+    if (Math.abs(probe.duration_seconds - expectedDuration) > 0.6) {
+      throw new Error(
+        `Rendered duration ${probe.duration_seconds} differs from scene audio total ${expectedDuration}`,
+      );
+    }
+
+    const outputStat = await stat(temporaryOutputPath);
+
+    await mkdir(renderDirectory, { recursive: true });
+    await rename(temporaryOutputPath, absolutePath);
+
+    sendJson(response, 200, {
+      video_path: relativePath,
+      media_type: "video",
+      width: probe.width,
+      height: probe.height,
+      video_codec: probe.video_codec,
+      video_pix_fmt: probe.video_pix_fmt,
+      audio_codec: probe.audio_codec,
+      audio_sample_rate: probe.audio_sample_rate,
+      audio_channels: probe.audio_channels,
+      duration_seconds: probe.duration_seconds,
+      expected_audio_duration_seconds: expectedDuration,
+      subtitles_burned_in: true,
+      scene_timings: timings,
+      bytes: outputStat.size,
+    });
+  } catch (error) {
+    if (error instanceof HttpError) {
+      throw error;
+    }
+
+    throw new HttpError(
+      422,
+      "render_failed",
+      `Video could not be rendered: ${error.message}`,
+    );
+  } finally {
+    await rm(workDirectory, { recursive: true, force: true }).catch(() => {});
+  }
+}
+
 const ffmpegVersion = readToolVersion("ffmpeg");
 const ffprobeVersion = readToolVersion("ffprobe");
 
@@ -835,6 +1282,11 @@ const server = createServer(async (request, response) => {
 
     if (request.method === "POST" && requestUrl.pathname === "/visual/fallback") {
       await createVisualFallback(request, response);
+      return;
+    }
+
+    if (request.method === "POST" && requestUrl.pathname === "/render") {
+      await renderVideo(request, response);
       return;
     }
 
