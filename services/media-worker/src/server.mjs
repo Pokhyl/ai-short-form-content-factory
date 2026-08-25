@@ -40,7 +40,12 @@ env.cacheDir = siglipCacheDir;
 env.allowRemoteModels = true;
 
 let siglipPipelinePromise = null;
-let previewFetchTail = Promise.resolve();
+const maxConcurrentPreviewFetches = 3;
+const previewFetchTimeoutMs = 10000;
+const previewFetchAttempts = 2;
+let availablePreviewFetchSlots = maxConcurrentPreviewFetches;
+const previewFetchWaiters = [];
+let siglipInferenceTail = Promise.resolve();
 const previewUserAgent =
   "ai-short-form-content-factory/1.0 (https://github.com/Pokhyl/ai-short-form-content-factory)";
 
@@ -48,37 +53,118 @@ function sleep(milliseconds) {
   return new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
 }
 
-async function fetchPreviewWithRetry(url) {
-  const run = async () => {
-    let lastStatus = null;
+async function acquirePreviewFetchSlot() {
+  if (availablePreviewFetchSlots > 0) {
+    availablePreviewFetchSlots -= 1;
+    return;
+  }
 
-    for (let attempt = 0; attempt < 4; attempt += 1) {
+  await new Promise((resolvePromise) => previewFetchWaiters.push(resolvePromise));
+}
+
+function releasePreviewFetchSlot() {
+  const nextWaiter = previewFetchWaiters.shift();
+  if (nextWaiter) {
+    nextWaiter();
+    return;
+  }
+
+  availablePreviewFetchSlots += 1;
+}
+
+async function withPreviewFetchSlot(operation) {
+  await acquirePreviewFetchSlot();
+  try {
+    return await operation();
+  } finally {
+    releasePreviewFetchSlot();
+  }
+}
+
+async function fetchPreviewAttempt(url) {
+  return withPreviewFetchSlot(async () => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), previewFetchTimeoutMs);
+
+    try {
       const response = await fetch(url, {
         headers: { "User-Agent": previewUserAgent },
+        signal: controller.signal,
       });
-      lastStatus = response.status;
+      const retryAfterSeconds = Number(response.headers.get("retry-after"));
 
-      if (response.ok) {
-        await sleep(50);
-        return response;
+      if (!response.ok) {
+        return {
+          ok: false,
+          status: response.status,
+          retryAfterSeconds: Number.isFinite(retryAfterSeconds) ? retryAfterSeconds : null,
+          buffer: null,
+        };
       }
 
-      if (response.status !== 429 && response.status !== 503) {
-        return response;
-      }
-
-      const retryAfter = Number(response.headers.get("retry-after"));
-      const delayMilliseconds = Number.isFinite(retryAfter) && retryAfter > 0
-        ? Math.min(retryAfter * 1000, 5000)
-        : 400 * (attempt + 1);
-      await sleep(delayMilliseconds);
+      const buffer = Buffer.from(await response.arrayBuffer());
+      return {
+        ok: true,
+        status: response.status,
+        retryAfterSeconds: null,
+        buffer,
+      };
+    } finally {
+      clearTimeout(timeout);
     }
+  });
+}
 
-    return { ok: false, status: lastStatus ?? 503 };
-  };
+async function fetchPreviewWithRetry(url) {
+  let lastResult = null;
+  let lastError = null;
 
-  const queued = previewFetchTail.then(run, run);
-  previewFetchTail = queued.then(() => undefined, () => undefined);
+  for (let attempt = 0; attempt < previewFetchAttempts; attempt += 1) {
+    try {
+      const result = await fetchPreviewAttempt(url);
+      lastResult = result;
+
+      if (result.ok) {
+        await sleep(50);
+        return result;
+      }
+
+      if (result.status !== 429 && result.status !== 503) {
+        return result;
+      }
+
+      if (attempt + 1 < previewFetchAttempts) {
+        const delayMilliseconds =
+          Number.isFinite(result.retryAfterSeconds) && result.retryAfterSeconds > 0
+            ? Math.min(result.retryAfterSeconds * 1000, 3000)
+            : 400 * (attempt + 1);
+        await sleep(delayMilliseconds);
+      }
+    } catch (error) {
+      lastError = error;
+      if (attempt + 1 < previewFetchAttempts) {
+        await sleep(400 * (attempt + 1));
+      }
+    }
+  }
+
+  if (lastResult) {
+    return lastResult;
+  }
+
+  throw new Error(
+    `Preview fetch failed after ${previewFetchAttempts} attempts: ${String(lastError?.message ?? lastError ?? "unknown error")}`
+  );
+}
+
+async function runSiglipInference(classifier, previewImages, query) {
+  const run = () => classifier(
+    previewImages,
+    [query],
+    { hypothesis_template: "{}" },
+  );
+  const queued = siglipInferenceTail.then(run, run);
+  siglipInferenceTail = queued.then(() => undefined, () => undefined);
   return queued;
 }
 
@@ -600,30 +686,50 @@ async function rankVisualCandidates(request, response) {
     const previewImages = [];
     const rejected = [];
 
-    for (const candidate of normalizedCandidates) {
-      try {
-        const previewResponse = await fetchPreviewWithRetry(candidate.preview_url);
+    const decodedCandidates = await Promise.all(
+      normalizedCandidates.map(async (candidate) => {
+        try {
+          const previewResult = await fetchPreviewWithRetry(candidate.preview_url);
 
-        if (!previewResponse.ok) {
-          throw new Error(`HTTP ${previewResponse.status}`);
+          if (!previewResult.ok || !previewResult.buffer) {
+            throw new Error(`HTTP ${previewResult.status}`);
+          }
+
+          const { data, info } = await sharp(previewResult.buffer)
+            .flatten({ background: "#ffffff" })
+            .toColourspace("srgb")
+            .removeAlpha()
+            .raw()
+            .toBuffer({ resolveWithObject: true });
+
+          if (info.channels !== 3) {
+            throw new Error(`normalized channels=${info.channels}`);
+          }
+
+          return {
+            candidate,
+            image: new RawImage(data, info.width, info.height, info.channels),
+            rejectionReason: null,
+          };
+        } catch (error) {
+          return {
+            candidate,
+            image: null,
+            rejectionReason: String(error.message ?? error).slice(0, 300),
+          };
         }
+      }),
+    );
 
-        const previewBuffer = Buffer.from(await previewResponse.arrayBuffer());
-        const { data, info } = await sharp(previewBuffer)
-          .flatten({ background: "#ffffff" })
-          .toColourspace("srgb")
-          .removeAlpha()
-          .raw()
-          .toBuffer({ resolveWithObject: true });
-
-        if (info.channels !== 3) {
-          throw new Error(`normalized channels=${info.channels}`);
-        }
-
-        rankableCandidates.push(candidate);
-        previewImages.push(new RawImage(data, info.width, info.height, info.channels));
-      } catch (error) {
-        rejected.push({ candidate_id: candidate.candidate_id, reason: String(error.message ?? error).slice(0, 300) });
+    for (const decoded of decodedCandidates) {
+      if (decoded.image) {
+        rankableCandidates.push(decoded.candidate);
+        previewImages.push(decoded.image);
+      } else {
+        rejected.push({
+          candidate_id: decoded.candidate.candidate_id,
+          reason: decoded.rejectionReason,
+        });
       }
     }
 
@@ -631,11 +737,7 @@ async function rankVisualCandidates(request, response) {
       throw new Error("No candidate preview could be decoded for semantic ranking");
     }
 
-    const rawOutput = await classifier(
-      previewImages,
-      [query],
-      { hypothesis_template: "{}" },
-    );
+    const rawOutput = await runSiglipInference(classifier, previewImages, query);
 
     const perImageOutput =
       rankableCandidates.length === 1 &&
@@ -1260,6 +1362,9 @@ const server = createServer(async (request, response) => {
         semantic_ranker: {
           model: siglipModel,
           dtype: siglipDtype,
+          preview_fetch_concurrency: maxConcurrentPreviewFetches,
+          preview_fetch_timeout_ms: previewFetchTimeoutMs,
+          preview_fetch_attempts: previewFetchAttempts,
         },
       });
       return;

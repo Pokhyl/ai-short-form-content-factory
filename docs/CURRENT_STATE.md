@@ -2108,3 +2108,113 @@ force push: NO
 ```
 
 The remote branch is now synchronized through the measured voiceover-duration regression fix and the existing M7 synchronous media-worker render boundary. The separate `visuals` runtime failures observed on two duration-calibration jobs remain a distinct issue to inspect before continuing M7 workflow implementation.
+
+## GitHub sync cleanup verification — 2026-08-25
+
+The follow-up exact bundle fast-forward containing the sync checkpoint itself completed successfully. GitHub resolves commit `369f1132e5157fa7ab495745f928ee7670e10ac6` on `feat/m6-visual-sourcing`; the temporary runner branch was deleted; the temporary bundle HTTP server on port 18766 was stopped; all `.sync-*` transfer files were removed; the local working tree was clean after cleanup.
+
+## Visual sourcing concurrent-rank failure diagnosis — 2026-08-25
+
+Read-only inspection of n8n execution payloads identified the concrete cause of the two duration-calibration jobs that later failed in `visuals`:
+
+```text
+job a0410a69-1ae0-4368-a71e-0043cc45076e -> WF04 execution 209
+job 9a51a33d-f58a-41c2-8344-5a5521bf19a2 -> WF04 execution 208
+failing operation: Rank Pixabay Candidate Previews
+actual transport error: AxiosError ECONNABORTED
+actual message: timeout of 120000ms exceeded
+rank node execution time: approximately 120 seconds
+```
+
+`Select Ranked Pixabay Candidate` then converted the failed rank item into the generic `Unknown error [line 8]`, which was persisted by the existing WF04 failure path. Both failed visual executions overlapped in time with other production calibration jobs, so the next diagnostic step is to inspect the current WF04 rank-node timeout and media-worker SigLIP execution/concurrency behavior before changing M6. No application or n8n database state was modified during this diagnosis.
+
+## Visual sourcing bounded preview-concurrency implementation checkpoint — 2026-08-25
+
+The concrete cause of the two concurrent WF04 failures was confirmed as the media-worker preview-fetch implementation, not provider search or SigLIP selection itself. `Rank Pixabay Candidate Previews` timed out in n8n after 120000 ms while the media-worker globally serialized every preview download through one `previewFetchTail` chain. Concurrent jobs therefore shared one unbounded cross-request queue; one slow preview could block every later preview request.
+
+The existing media-worker has been corrected in place without changing M6 architecture:
+
+```text
+global preview serialization: removed
+max concurrent provider preview downloads: 3
+per-preview fetch timeout: 10000 ms
+bounded fetch attempts: 2
+response body download: covered by the same timeout/slot
+candidate decoding: concurrent, bounded by the global preview-fetch slots
+SigLIP model inference: serialized separately to avoid concurrent model-memory pressure
+n8n rank-node timeout: unchanged at 120000 ms
+service topology: unchanged
+```
+
+`/visual/rank` still accepts the same bounded 1-10 trusted preview candidates and returns the same ranking contract. Provider order, candidate-pool construction, selected-original download, persistence, and fallback semantics are unchanged. `/health` now reports the preview-fetch concurrency/timeout/attempt settings for runtime verification. The modified `server.mjs` passes `node --check` inside the production media-worker container. Runtime rebuild/deploy plus concurrent regression proof are still required.
+
+## Visual sourcing bounded preview-concurrency runtime deployment checkpoint — 2026-08-25
+
+The corrected existing media-worker was rebuilt and recreated in place; no other project service was recreated and no service was added. Production health after restart:
+
+```text
+/health: 200
+semantic_ranker: Xenova/siglip-base-patch16-224 q4
+preview_fetch_concurrency: 3
+preview_fetch_timeout_ms: 10000
+preview_fetch_attempts: 2
+```
+
+The n8n `/visual/rank` node timeout remains 120000 ms. The next required proof is concurrent ranking with the real failed candidate pools followed by WF04 retry of the two `failed/visuals` jobs.
+
+## Visual sourcing concurrent real-pool regression proof — 2026-08-25
+
+The exact Pixabay candidate pools preserved in the two failed WF04 executions (`208` and `209`) were decoded read-only from n8n execution data and replayed directly against the deployed media-worker. No application rows or n8n internal rows were modified by this proof.
+
+```text
+real rank requests replayed concurrently: 15
+candidates per request: 10
+HTTP 200 responses: 15/15
+failed rank responses: 0
+fastest request: 6.372s
+slowest request: 71.037s
+overall wall time: 71s
+n8n production rank timeout: 120s
+```
+
+The same real pools that previously produced `ECONNABORTED timeout of 120000ms exceeded` therefore complete under concurrent load with substantial margin after the bounded preview-concurrency fix. Temporary replay files were removed immediately. End-to-end WF04 retry on both existing `failed/visuals` jobs remains required before closing the regression.
+
+## Visual sourcing concurrent-rank regression closure checkpoint — 2026-08-25
+
+The bounded preview-concurrency fix is now end-to-end runtime-proven through the existing WF04 retry path on both jobs that previously failed with 120-second semantic-rank timeouts.
+
+```text
+job 9a51a33d-f58a-41c2-8344-5a5521bf19a2
+  prior state: failed/visuals, 12 scenes, 1 visual persisted
+  retry execution: success
+  last node: Require Visual Completion
+  final state: processing/visuals
+  visual paths: 12/12
+  asset rows: 12
+  CLI runtime: ~92s
+
+job a0410a69-1ae0-4368-a71e-0043cc45076e
+  prior state: failed/visuals, 4 scenes, 0 visuals persisted
+  retry execution: success
+  last node: Require Visual Completion
+  final state: processing/visuals
+  visual paths: 4/4
+  asset rows: 4
+  CLI runtime: ~34s
+```
+
+No manual application-state SQL reset was used; both jobs resumed through the existing `failed/visuals` eligibility/retry path. The temporary Manual Trigger harness was removed and the clean production WF04 was restored/published/activated and n8n restarted.
+
+Clean runtime verification:
+
+```text
+WF04 node_count: 43
+active: true
+Manual Trigger: absent
+regression job setter: absent
+pin data: empty
+SigLIP rank nodes: 3
+temporary harness files: removed
+```
+
+The separate visual-stage concurrency regression is closed. The accepted M6 provider/SigLIP/fallback architecture is unchanged. M7 work may resume from the existing synchronous `/render` implementation checkpoint.
