@@ -2091,3 +2091,20 @@ WF03 SHA-256: 43a709f1d68d6bc582a50e9ad19ec7f0d748050f8e85dd90f1588de602f484a6
 ```
 
 These exports are the clean production versions to commit for the closed duration regression.
+
+## GitHub exact-sync checkpoint — 2026-08-25
+
+The two clean local commits that were previously ahead of `origin/feat/m6-visual-sourcing` were transferred to GitHub as their exact existing Git objects through a one-shot verified bundle fast-forward. No force push or history reconstruction was used.
+
+```text
+remote base: 9ac7314bc851666db8c28935daee87753863c2ce
+render boundary: 770e36d
+voiceover duration fix: 988bf01c443e00b1ac159d2e222bb015d6adc862
+verified remote head: 988bf01c443e00b1ac159d2e222bb015d6adc862
+verified remote CURRENT_STATE blob: 957d5418114df4d7aa2946ced56d9ca5b51a5879
+temporary GitHub Actions branch: removed
+temporary bundle HTTP server/files: removed
+force push: NO
+```
+
+The remote branch is now synchronized through the measured voiceover-duration regression fix and the existing M7 synchronous media-worker render boundary. The separate `visuals` runtime failures observed on two duration-calibration jobs remain a distinct issue to inspect before continuing M7 workflow implementation.
