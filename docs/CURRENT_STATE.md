@@ -3189,3 +3189,74 @@ The first factual-routing regression over-classified all 15 bridge scenes as fac
 - all WF02 Code nodes pass Node 24 syntax validation.
 
 Production deployment and a second fresh routing regression are required next.
+
+
+## M8 factual-routing correction v2 production deployment checkpoint — 2026-08-25
+
+The refined 13-node WF02 routing v2 was imported and published to production. n8n restarted successfully and `/healthz` returned 200. The active workflow remains on `gemini-3.6-flash`, preserves the `WF02 -> WF03` native sub-workflow boundary with `waitForSubWorkflow=true`, and keeps the deterministic factual normalizer narrowed to explicit explanatory markers.
+
+No service, provider, schema, webhook, polling boundary, or second planning AI request was added. Fresh production routing regression is required next.
+
+
+## M8 factual-routing v2 second production regression — 2026-08-25
+
+Fresh production job `95860da4-f760-40f1-8bc1-eab35a49190e` (`Jak działa most wiszący?`, PL, 60s) proved that routing v2 is directionally correct but still too factual-heavy. Runtime state reached `processing/render` with 15/15 audio and 15/15 visuals, measured voiceover 55.776s.
+
+```text
+factual: 12 / 15
+generic: 3 / 15
+providers: local_fallback 10, Wikimedia 2, Pixabay 3
+```
+
+Correct stock-route examples now include aerial bridge view, road traffic on the deck, and illuminated night scenic view. Explicit explanatory diagrams remain factual. However several ordinary unnamed component/photo scenes still remain factual, producing excessive local fallbacks. One exact named-subject failure also appeared: `Golden Gate suspension bridge panorama wide shot` selected Wikimedia `File:San Francisco Oakland Bay Bridge I (219590923).jpeg`, proving that semantic ranking alone does not protect exact named identity.
+
+Next correction: make routing deterministic from explicit explanatory markers or a preserved exact proper-name phrase; otherwise use generic stock. Then add an exact named-subject guard in Wikimedia retrieval/selection so a different named object cannot win on visual similarity alone.
+
+
+## M8 deterministic routing v3 + Wikimedia exact-subject guard implementation checkpoint — 2026-08-25
+
+Two related quality corrections are implemented locally and syntax-validated before production deployment.
+
+WF02 routing v3:
+
+- the model still returns `visual_subject_type`, but the persisted routing signal is normalized deterministically from visual intent;
+- explicit explanatory markers (`diagram`, `schematic`, `cross-section`, `anatomy`, `map`, `screen/interface`, `molecule`, `vector`, `force/load/tension/pressure`, `mechanism`, `circuit`, `flowchart`, `cutaway`, `blueprint`, labeled views) route to `factual`;
+- a preserved exact proper-name phrase (two consecutive capitalized words) or uppercase acronym also routes to `factual`;
+- otherwise the scene routes to `generic`, preventing ordinary unnamed component/photo scenes from being forced into Wikimedia/local fallback merely because the overall topic is technical;
+- prompt explicitly requires normal capitalization for official names/proper nouns so exact-subject detection remains available.
+
+WF04 exact named-subject guard:
+
+- `Prepare Wikimedia Query` extracts exact proper-name/acronym terms from `visual_query`;
+- when no specialized technical rewrite applies, exact named queries are narrowed using `intitle:`;
+- `Prepare Wikimedia Candidate Pool` rejects Wikimedia candidates whose file title does not contain all required exact-subject terms;
+- required title terms are persisted in candidate metadata;
+- when no exact candidate remains, the existing local fallback path is used instead of accepting a visually similar but different named subject.
+
+All Code nodes in both WF02 and WF04 pass Node 24 syntax validation inside the production n8n container. No provider/service/schema/webhook/polling boundary or second planning AI request was added. Production deployment and fresh end-to-end regression are required next.
+
+
+## M8 factual-routing correction v2 production regression closure — 2026-08-25
+
+The refined routing v2 was deployed and then tested through a fresh real WF01 production submission.
+
+```text
+job_id: 5214fa02-669a-44b8-9a9e-4deaba16cbcb
+topic: Jak działa most wiszący?
+language/duration: pl / 60s
+final state: review_ready/review
+measured voiceover: 56.856s
+scene count: 15
+visual paths: 15/15
+```
+
+Persisted scene routing after v2:
+
+```text
+factual: 10
+generic: 5
+```
+
+Generic scenes are ordinary visual stock moments such as panoramic bridge views, cars on the deck, cable/tower establishing views, shoreline cable views and the cinematic closing shot; all five selected Pixabay. Factual scenes are information-bearing force/tension/cross-section/anchorage/aerodynamic explanatory visuals and correctly avoided the generic stock route, using the local explanatory fallback when bounded Wikimedia did not provide an acceptable candidate.
+
+This closes the M8 routing-classification defect: the original 102/102 `generic` failure is corrected without the later over-classification of every technical-topic scene as factual. Provider relevance inside factual sourcing remains a separate quality concern, but routing now sends the right scene class to the right provider family.
