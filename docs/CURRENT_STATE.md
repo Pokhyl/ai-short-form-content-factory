@@ -2443,3 +2443,21 @@ WF05 pin data: empty
 ```
 
 M7 — Render is closed on 2026-08-25. M8 has not been started.
+
+
+## M7 exact GitHub sync checkpoint — 2026-08-25
+
+The completed M7 repository state was transferred to GitHub as the exact existing local Git commit through a one-shot verified bundle fast-forward. No force push or history reconstruction was used.
+
+```text
+M7 commit: 1c1216f360a626f38b55ec6c05389d66e13d8bfd
+commit message: feat: complete m7 render workflow
+verified local head: 1c1216f360a626f38b55ec6c05389d66e13d8bfd
+verified origin/feat/m6-visual-sourcing: 1c1216f360a626f38b55ec6c05389d66e13d8bfd
+head parity: YES
+temporary GitHub Actions branch: removed
+temporary bundle HTTP server/files: removed
+force push: NO
+```
+
+GitHub now contains the closed M7 render implementation, clean production WF04/WF05 exports, architecture compatibility note, runtime acceptance evidence, and completed M7 roadmap status. M8 remains not started.
