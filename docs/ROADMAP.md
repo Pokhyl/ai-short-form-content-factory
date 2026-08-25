@@ -264,6 +264,8 @@ Learning focus:
 
 ## M8 — Quality run
 
+Status: in progress as of 2026-08-25.
+
 Goal: prove the content pipeline, not only the code.
 
 Acceptance:

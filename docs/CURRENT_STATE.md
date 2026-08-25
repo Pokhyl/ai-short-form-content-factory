@@ -2461,3 +2461,33 @@ force push: NO
 ```
 
 GitHub now contains the closed M7 render implementation, clean production WF04/WF05 exports, architecture compatibility note, runtime acceptance evidence, and completed M7 roadmap status. M8 remains not started.
+
+
+## M8 quality-run start checkpoint — 2026-08-25
+
+M8 has started after M7 closure. The acceptance contract remains unchanged: generate at least 10 materially different production videos, review script, voice, visual relevance, subtitles, and render, and record concrete recurring failure patterns before adding recovery complexity.
+
+The first M8 production matrix intentionally covers all four supported languages and all four supported target durations without changing pipeline architecture:
+
+```text
+1.  pl / 15s / Dlaczego popcorn strzela podczas podgrzewania?
+2.  en / 30s / How does a contactless payment card work?
+3.  ru / 45s / Почему осенью листья меняют цвет?
+4.  uk / 60s / Як працює сонячна електростанція?
+5.  en / 15s / Why do airplanes leave white contrails?
+6.  pl / 30s / Jak powstaje tęcza?
+7.  ru / 60s / Как пчёлы находят дорогу к улью?
+8.  uk / 45s / Чому морська вода солона?
+9.  pl / 60s / Jak działa most wiszący?
+10. en / 45s / How do volcanoes erupt?
+```
+
+Pre-run environment verification:
+
+```text
+project services: postgres, n8n, media-worker (3 total)
+n8n health: HTTP 200
+media-worker health: PASS
+free disk: 6.9 GB
+M9: not started
+```
