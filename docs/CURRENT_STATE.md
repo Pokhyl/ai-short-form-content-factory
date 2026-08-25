@@ -2613,3 +2613,81 @@ All eight scene narrations are complete sentences, but language/science quality 
 Visual selection is strong for broad observable scenes (rainbow, sun, droplets) but weak for explanatory optics. Scenes 5-7 request refraction, spectrum splitting and colored rays inside/exiting a droplet, yet select generic water-drop/splash photographs rather than images that actually show those optical processes. Scene 4 falls back locally for the beam-entering-droplet illustration.
 
 This further supports a split in visual quality: concrete nouns/observable scenes retrieve good stock, while causal/mechanistic explanatory scenes need diagrams or generated/local explanatory graphics rather than stock-image semantic similarity alone.
+
+
+## M8 quality finding — job 7/10 — 2026-08-25
+
+Job `3dd5ac1d-fe1d-4d60-aa44-73ccbe9478c7`, RU / 60s / bee navigation, completed `review_ready/review` with 59.880s measured audio and a 59.934s valid H.264/AAC render.
+
+Unlike the RU45 job, all 15 scene narrations are complete sentences. This proves the severe scene-fragmentation failure is stochastic/model-output dependent rather than a deterministic consequence of Russian or long duration.
+
+Content quality still has problems:
+
+- `при любой погоде` overstates what polarized-light navigation enables;
+- flower odors and colony/hive odors can aid foraging/close-range recognition, but the script gives them disproportionate weight as the explanation for returning home;
+- the final two scenes shift from how a bee returns to the hive toward the waggle dance used to communicate food direction to other bees, causing topic drift.
+
+Visual detail mismatches continue:
+
+- scene 5 asks for a honey-bee compound eye but selects a macro photo of a fly compound eye;
+- scene 8 asks for an aerial landscape of trees/fields but selects a drone/quadcopter image;
+- scene 13 asks for honeybee gland secretion but selects a generic bee-on-flower asset;
+- scene 14 asks for the waggle dance on honeycomb but selects a generic bee image rather than an observable dance.
+
+The comparison of RU45 and RU60 is important for M8: structural validators cannot predict language coherence. Both jobs satisfy scene cardinality, timing and render contracts, but one is badly fragmented while the other is sentence-complete and instead suffers factual emphasis/topic-drift issues.
+
+
+## M8 quality finding — job 8/10 — 2026-08-25
+
+Job `29640393-bb65-4cfa-8c52-a86e58270c91`, UK / 45s / sea-water salinity, completed `review_ready/review` with 45.360s measured audio and a 45.434s valid H.264/AAC render. All 12 scene narrations are complete sentences.
+
+Content/factual review found several defects:
+
+- `Атмосферні опади містять слабку концентрацію вуглекислого газу` is awkward/inaccurate phrasing; the relevant mechanism is that rainwater absorbs carbon dioxide and becomes slightly acidic;
+- `Зрештою усі річки падають до океану` is both unidiomatic Ukrainian and factually overbroad because endorheic drainage basins exist;
+- `А мінерали залишаються там назавжди` is false: dissolved salts have both inputs and removal pathways, and modern ocean salt input/output is approximately balanced rather than salts remaining forever;
+- the final standalone `Кінець.` is filler rather than useful narration.
+
+Visual relevance is adequate for broad observable scenes such as ocean, rocks, rain, streams and salt, but mechanistic visuals are weak. All 12 scenes were classified `generic` and all 12 selected Pixabay stock. None used the factual/Wikimedia route despite the scientific explanation.
+
+## M8 runtime finding — original job 9 attempt — 2026-08-25
+
+Original PL / 60s suspension-bridge job `e27fded8-6777-4cb7-8f74-a2b8045065b1` did not produce a video. WF01 execution 271 succeeded, but child WF02 execution 272 failed during `Validate Structured Plan`.
+
+Exact validator error:
+
+```text
+Scene 1 narration item 7 contains punctuation-only content: .
+```
+
+The Gemini response violated the prompt by returning a standalone punctuation item in `narration_words`; the same response also contained malformed Polish such as `si` where `się` was intended. The strict validator correctly rejected the plan before any scene persistence.
+
+A separate durable-state defect was exposed: despite WF02 execution 272 ending `error`, the job remained `created/intake` with an empty `last_error` and no `updated_at` transition for more than 15 minutes. This violates the stage hand-off rule that a stage failure should be recorded durably. No validator weakening or manual application-state SQL reset was used. A fresh replacement submission of the same topic was started through the real WF01 webhook to obtain the tenth completed M8 video.
+
+## M8 quality finding — job 10/10 matrix position — 2026-08-25
+
+Job `8a461c03-98bc-4cce-a767-b31e15ffed3d`, EN / 45s / volcano eruptions, completed `review_ready/review` with 45.432s measured audio and a 45.467s valid H.264/AAC render. All 12 scene narrations are complete sentences, but the content has several important defects:
+
+- scene 4 says `The pressure increases significantly as more magma moves upward.` This reverses the relevant decompression mechanism: as magma rises, surrounding pressure decreases, allowing dissolved gases to exsolve and expand;
+- scene 5/6 therefore has a partially inconsistent causal chain even though gas expansion can help drive eruptive ascent;
+- scene 7 says `in a eruption` instead of `in an eruption`;
+- scene 8 says magma that reaches `earth` is lava; the intended distinction is magma reaching the surface;
+- scene 10 says rock fragments `cool quickly to form ash and cinders`, which oversimplifies/incorrectly describes fragmentation products.
+
+Visual selection again matches broad volcano imagery better than explanatory mechanisms. Examples: scene 1 requests an underground magma chamber but selects a cave photo; scene 4 requests pressure inside a volcanic conduit but selects an industrial steel conduit; scene 5 requests expanding gas bubbles in magma but selects a soap-bubble photo; scene 8 requests lava flow but selects a generic mountain image. All 12 scenes were classified `generic` and all 12 selected Pixabay.
+
+## M8 aggregate routing finding after nine completed videos — 2026-08-25
+
+Across the nine completed original matrix videos (jobs 1-8 and 10):
+
+```text
+total scenes: 90
+visual_subject_type generic: 90
+visual_subject_type factual: 0
+providers: Pixabay 84, local_fallback 5, Wikimedia 1
+fragmented sentence boundaries: 13 / 81
+```
+
+The 90/90 `generic` result exposes an upstream classification-contract mismatch rather than a universal provider/ranker failure. WF02 currently instructs the model to use `generic` when a broad illustrative concept, action, setting, **diagram**, mood, or stock-style scene is suitable. WF04/M6 routing, however, is designed to send factual/technical/diagram-like intent toward Wikimedia/local explanatory sourcing and uses only narrow regex overrides for selected technical query families. This makes many scientific/mechanistic scenes default to Pixabay even when stock photography cannot depict the requested mechanism.
+
+The recurring M8 visual failure is therefore rooted in both planning classification and downstream candidate relevance. SigLIP can rank the best item in a poor stock candidate pool, but it cannot recover an exact diagram/mechanism that the route never searched for.
