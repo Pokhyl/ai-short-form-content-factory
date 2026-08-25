@@ -2691,3 +2691,83 @@ fragmented sentence boundaries: 13 / 81
 The 90/90 `generic` result exposes an upstream classification-contract mismatch rather than a universal provider/ranker failure. WF02 currently instructs the model to use `generic` when a broad illustrative concept, action, setting, **diagram**, mood, or stock-style scene is suitable. WF04/M6 routing, however, is designed to send factual/technical/diagram-like intent toward Wikimedia/local explanatory sourcing and uses only narrow regex overrides for selected technical query families. This makes many scientific/mechanistic scenes default to Pixabay even when stock photography cannot depict the requested mechanism.
 
 The recurring M8 visual failure is therefore rooted in both planning classification and downstream candidate relevance. SigLIP can rank the best item in a poor stock candidate pool, but it cannot recover an exact diagram/mechanism that the route never searched for.
+
+
+## M8 repeated PL60 planning failure and replacement quality checkpoint — 2026-08-25
+
+A second real production submission of `Jak działa most wiszący?` / PL / 60s was created as job `0ba911ee-00a9-407d-930b-ba5eb9283ae4`. WF01 execution 278 succeeded, but WF02 execution 279 reproduced the exact same validator failure as the original attempt:
+
+```text
+Scene 1 narration item 7 contains punctuation-only content: .
+```
+
+The second job again remained durably `created/intake` with an empty `last_error`, confirming two independent recurring defects rather than a one-off model response: PL60 structured planning can repeatedly emit standalone punctuation despite the prompt/schema contract, and WF02 errors are not recorded into durable job failure state.
+
+To complete the M8 requirement of ten actually generated videos without weakening validators or modifying production workflows mid-quality-run, a materially different replacement topic was submitted through WF01: `Jak działa lodówka?` / PL / 45s, job `52c75df6-deec-4b00-9804-16a8b8ee166e`.
+
+Before render completion, its persisted 12-scene plan and completed visual sourcing already exposed additional quality defects:
+
+- Polish character/text corruption is present in durable narration/visual text, e.g. `lod3ufka`, `Gł3ownym`, `kr3uųy`, `spręųarka`, `ciœnienie`, `Zbliųenie` and `częœci`;
+- all 12 scenes are again classified `generic`;
+- provider use is Pixabay 9, Wikimedia 2, local fallback 1, with Wikimedia reached through WF04 technical-query regex rather than stored `factual` classification;
+- several stock selections are semantically wrong: refrigerant coils -> fishing rope, evaporator coils -> warehouse steel coil, chilled refrigerator interior -> airplane seats, refrigerator compressor -> generic air pump;
+- filler/awkward wording appears in `Spręųarka zwiększa ciœnienie oraz temperaturę gazu tymczasem` and `Gorący gaz płynie wtedy do skraplacza zatem`.
+
+Measured persisted scene audio totals 46.704s. Final render/ffprobe acceptance remained pending at this checkpoint.
+
+
+## M8 ten-video technical completion checkpoint — 2026-08-25
+
+The replacement PL / 45s refrigerator job `52c75df6-deec-4b00-9804-16a8b8ee166e` completed the full production chain and reached `review_ready/review` in 155 seconds. Its final video is `jobs/52c75df6-deec-4b00-9804-16a8b8ee166e/render/final.mp4`.
+
+```text
+measured scene audio: 46.704s
+render duration: 46.734s
+render/audio delta: 0.030s
+video: H.264 1080x1920 yuv420p
+audio: AAC 48 kHz stereo
+ffprobe: PASS
+```
+
+With that replacement, M8 now has ten materially different production videos that actually reached `review_ready/review` without changing production workflow code during the quality run.
+
+Final objective aggregate across the ten successful videos:
+
+```text
+successful videos: 10 / 10
+scenes: 102
+visual_subject_type generic: 102
+visual_subject_type factual: 0
+providers: Pixabay 93, Wikimedia 3, local_fallback 6
+fragmented sentence boundaries: 13 / 92
+all final videos: H.264 1080x1920 yuv420p + AAC 48 kHz stereo
+ffprobe media contract: PASS for 10 / 10
+maximum absolute render-duration vs measured-audio delta: 0.083s
+```
+
+The render/timing subsystem is therefore consistently strong in the M8 sample, while content planning and visual-routing quality are the dominant weaknesses. The full 102/102 `generic` result strengthens the already identified WF02/WF04 routing-contract mismatch.
+
+M8 is not yet marked completed at this checkpoint because the acceptance wording also requires review of visible subtitles and subjective voice quality. Visible-frame/subtitle inspection is the next objective review step. Voice naturalness requires actual listening and must not be inferred from duration/ffprobe alone.
+
+
+## M8 ten-video burned-subtitle verification — 2026-08-25
+
+Burned subtitle presence was independently verified on all ten successful final MP4s rather than trusting only the render response. For each video, a frame from the middle of scene 1 was compared against the same source visual scaled/padded without subtitles. A high-threshold pixel difference was measured separately in an upper control region and the lower subtitle region.
+
+```text
+video 01: control >80 = 0.0000%, subtitle >80 = 3.1806% (22,328 pixels) PASS
+video 02: control >80 = 0.0000%, subtitle >80 = 4.6829% (32,874 pixels) PASS
+video 03: control >80 = 0.0000%, subtitle >80 = 3.1466% (22,089 pixels) PASS
+video 04: control >80 = 0.0000%, subtitle >80 = 3.8306% (26,891 pixels) PASS
+video 05: control >80 = 0.0000%, subtitle >80 = 4.0991% (28,776 pixels) PASS
+video 06: control >80 = 0.0000%, subtitle >80 = 2.9074% (20,410 pixels) PASS
+video 07: control >80 = 0.0000%, subtitle >80 = 2.8397% (19,935 pixels) PASS
+video 08: control >80 = 0.0000%, subtitle >80 = 3.0605% (21,485 pixels) PASS
+video 09: control >80 = 0.0113%, subtitle >80 = 4.0685% (28,561 pixels) PASS
+video 10: control >80 = 0.1069%, subtitle >80 = 4.1915% (29,424 pixels) PASS
+burned subtitle overlay: 10 / 10 PASS
+```
+
+This proves the subtitle overlay is localized to the intended lower-frame area across the M8 sample. It does not prove that the subtitle text itself is linguistically correct: the PL refrigerator job burns the already-corrupted persisted narration (for example `lod3ufka`), confirming that this defect originates upstream of render/subtitle compositing.
+
+Objective script, visual relevance, subtitle-presence and render review is now complete for the ten-video M8 sample. Subjective voice naturalness still requires actual listening and is the remaining manual quality-review item; duration/codec/waveform checks must not be treated as a substitute for listening.
