@@ -3348,3 +3348,18 @@ The prototype uses visual editing independently from narration sentence boundari
 
 The temporary n8n harness `M8PrototypeTTS1` exists only to use the already-connected Gemini API credential without exposing the secret. It must be removed after the prototype review. No prototype behavior becomes architecture until manual viewing/listening accepts the direction.
 
+## M8 prototype harness cleanup checkpoint — 2026-08-25
+
+The temporary prototype TTS webhook was unpublished immediately after generating the review artifact. n8n was restarted and `/healthz` returned HTTP 200. The temporary workflow JSON was removed from both the host and n8n container, and the temporary host HTTP server on port 8765 was stopped.
+
+```text
+M8PrototypeTTS1: UNPUBLISHED
+prototype TTS public webhook: CLOSED
+n8n health: 200
+temporary host HTTP server: STOPPED
+temporary workflow JSON: REMOVED
+prototype final.mp4: PRESERVED FOR MANUAL REVIEW
+```
+
+WF01-WF05, production PostgreSQL state, and service topology were not modified by this cleanup. The prototype video remains the only artifact awaiting manual quality judgement before any architecture change.
+
