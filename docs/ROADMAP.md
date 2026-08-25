@@ -230,6 +230,8 @@ Learning focus:
 
 ## M7 — Render
 
+Status: completed on 2026-08-25.
+
 Goal: media-worker creates a valid vertical MP4.
 
 Acceptance:
@@ -239,6 +241,19 @@ Acceptance:
 - scene timing follows actual voice duration;
 - subtitles are visible and synchronized;
 - ffprobe validates final output.
+
+Validated runtime/repository result:
+
+- synchronous `POST /render` in the existing media-worker renders the persisted scene manifest without database writes or a new service;
+- direct runtime acceptance rendered a corrected 15-second Polish job from 14.304s measured scene audio into a 14.334s MP4;
+- ffprobe confirmed 1080x1920 H.264/yuv420p video plus AAC 48 kHz stereo audio;
+- burned ASS subtitles were verified both by the render response and by frame-difference proof localized to the subtitle region while a control region remained pixel-identical;
+- WF05 reloads durable job/scene state, revalidates exact scene count and the ±10% aggregate measured-audio contract, calls `/render`, validates the returned media contract, stores `final_video_path`, and transitions the job to `review_ready/review`;
+- a 45-second/12-scene job with 42.024s measured audio passed WF04 -> WF05 and reached `review_ready/review`;
+- n8n 2.33.3 nested fire-and-forget behavior was proven unreliable for the final WF04 -> WF05 boundary, so this native sub-workflow hand-off uses `waitForSubWorkflow=true`; no webhook, callback, polling, schema change, or new service was introduced;
+- fresh production job `ebc9a3cd-0d33-4509-983d-2d335ff3c518` entered through the public WF01 webhook and completed WF01 -> WF02 -> WF03 -> WF04 -> WF05 with all five executions successful, ending at `review_ready/review`;
+- that end-to-end output measured 15.310s, 1,517,484 bytes, and ffprobe confirmed 1080x1920 H.264/yuv420p + AAC 48 kHz stereo;
+- clean production exports are WF04 SHA-256 `d4042a4360f231b9da9c4ac8047f2f94b0ef767bbb3c86e147d344ff3239f25f` and WF05 SHA-256 `846239db7b0d95a7f69ad202e92c249d5df68ef0a71dfb75d48257a4d55b8b0d`.
 
 Learning focus:
 

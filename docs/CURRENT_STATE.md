@@ -2218,3 +2218,228 @@ temporary harness files: removed
 ```
 
 The separate visual-stage concurrency regression is closed. The accepted M6 provider/SigLIP/fallback architecture is unchanged. M7 work may resume from the existing synchronous `/render` implementation checkpoint.
+
+## M7 direct synchronous render runtime checkpoint — 2026-08-25
+
+The currently deployed media-worker `/render` boundary was exercised directly against corrected production job `a0410a69-1ae0-4368-a71e-0043cc45076e` (`pl`, target 15s, 4 scenes, measured audio total 14.304s, visuals 4/4). The test built its manifest read-only from durable PostgreSQL scene state and did not write application state.
+
+```text
+POST /render: HTTP 200
+render runtime: 17.527s
+video_path: jobs/a0410a69-1ae0-4368-a71e-0043cc45076e/render/final.mp4
+rendered duration: 14.334s
+expected measured-audio duration: 14.304s
+duration delta: 0.030s
+width x height: 1080x1920
+video codec: h264
+pixel format: yuv420p
+audio codec: aac
+audio sample rate: 48000 Hz
+audio channels: 2
+subtitles_burned_in response flag: true
+bytes: 1044787
+```
+
+Independent `ffprobe` inside the existing media-worker confirmed the same H.264/AAC streams, dimensions, pixel format, 14.334s duration, and 1,044,787-byte output. Temporary render manifest/result files were removed. This proves the synchronous render/file/codec/timing boundary itself. Visible subtitle inspection on a real rendered frame and n8n WF05 orchestration/persistence are still required for M7 acceptance.
+
+## M7 direct render and subtitle visibility proof — 2026-08-25
+
+The synchronous media-worker render boundary is now runtime-proven on corrected 15-second Polish job `a0410a69-1ae0-4368-a71e-0043cc45076e`, whose aggregate measured voiceover duration had already passed the production timing gate and whose visuals were complete 4/4.
+
+```text
+POST /render: HTTP 200
+render wall time: 17.527s
+expected audio duration: 14.304s
+rendered duration: 14.334s
+output: jobs/a0410a69-1ae0-4368-a71e-0043cc45076e/render/final.mp4
+size: 1,044,787 bytes
+video: H.264, 1080x1920, yuv420p
+audio: AAC, 48 kHz, stereo
+ffprobe inside media-worker: PASS
+```
+
+Burned subtitle visibility was verified independently from the render response flag by comparing an actual 1.5-second rendered frame against the normalized source visual after matching the same 1080x1920 scale/pad transform. The upper control region was pixel-identical (`mean_abs_diff = 0`, zero pixels over 40 levels of difference), while the subtitle region contained 20,994 pixels differing by more than 80 levels. This proves a real burned text overlay is present in the expected subtitle area rather than the result being attributable to global scaling/compression changes. Temporary proof frames were removed.
+
+This proves the media-worker half of M7 acceptance. WF05 orchestration, PostgreSQL persistence of `final_video_path`, and transition to `review_ready/review` remain required before M7 can be closed.
+
+
+## M7 WF05 implementation checkpoint — 2026-08-25
+
+`n8n/workflows/WF05-video-render.json` now contains the first production-shaped `WF05 — Video Render` workflow (`M7VideoRender1`). It follows the existing stage contract and does not add a service or schema migration.
+
+Implemented flow:
+
+```text
+Receive job_id
+-> normalize UUID
+-> reload job + scenes from PostgreSQL
+-> validate render eligibility, exact duration-specific scene count, complete audio/visual paths, and aggregate audio ±10%
+-> skip re-render for an already valid review_ready/review final path
+-> transition processing/visuals or failed/render to processing/render
+-> build job-scoped render manifest
+-> synchronous POST http://media-worker:3001/render (300s request ceiling)
+-> validate exact output path, 1080x1920, H.264/yuv420p, AAC 48kHz stereo, burned subtitles, file size, total duration and every scene timing
+-> persist final_video_path in PostgreSQL
+-> set status=review_ready, current_stage=review, clear last_error
+-> stop
+```
+
+The failure branch records `failed/render` only after the render stage has begun. The idempotency guard prevents a completed `review_ready/review` job with the deterministic `jobs/<job_id>/render/final.mp4` path from re-rendering. WF05 JSON parses successfully, contains 16 uniquely named nodes, every connection target resolves, the production PostgreSQL credential reference is present on all database nodes, and the render request is bounded at 300000 ms. Runtime import/publish and acceptance remain required.
+
+## M7 WF05 production deployment checkpoint — 2026-08-25
+
+`WF05 — Video Render` (`M7VideoRender1`) was imported into production n8n, published, and n8n was restarted. The public n8n health endpoint returned HTTP 200 after restart.
+
+Clean runtime export verification:
+
+```text
+workflow id: M7VideoRender1
+active: true
+node count: 16
+Manual Trigger: absent
+pin data: empty
+```
+
+Temporary import/export files were removed from the n8n container. No application data was changed by deployment itself. A real WF05 execution on an eligible visuals-complete job is still required before M7 acceptance.
+
+## M7 WF05 runtime acceptance checkpoint — 2026-08-25
+
+Production-shaped `WF05 — Video Render` was executed once on corrected visuals-complete 15-second Polish job `a0410a69-1ae0-4368-a71e-0043cc45076e` through a temporary same-ID Manual Trigger harness. The CLI execution used an isolated task-broker port (`5681`) so it did not collide with the running n8n service. The clean production WF05 was restored, republished, and n8n restarted immediately after the test.
+
+Runtime result:
+
+```text
+WF05 execution status: success
+last node: Require Render Completion
+job status: review_ready
+job current_stage: review
+final_video_path: jobs/a0410a69-1ae0-4368-a71e-0043cc45076e/render/final.mp4
+last_error: empty
+render duration: 14.334s
+persisted aggregate audio duration: 14.304s
+render bytes: 1,044,787
+video: H.264, 1080x1920, yuv420p
+audio: AAC, 48 kHz, stereo
+subtitles_burned_in: true
+ffprobe: PASS
+```
+
+The clean production workflow after restore is active, has 16 nodes, no Manual Trigger, no acceptance setter, and empty pin data. This proves WF05 can reload durable state, enter the render stage, call the synchronous media-worker boundary, validate the output, persist `final_video_path`, and transition the job to `review_ready/review` without direct media-worker database writes.
+
+The remaining M7 integration proof is the production stage handoff from visually complete WF04 to WF05 using native Execute Sub-workflow with dynamic `job_id` only and `waitForSubWorkflow=false`.
+
+
+## M7 WF04 -> WF05 handoff implementation checkpoint — 2026-08-25
+
+The clean production WF04 export now contains one additional native `Execute Sub-workflow` node, `Start Video Render`, after `Require Visual Completion` succeeds. It calls `M7VideoRender1` with dynamic `job_id` only and `waitForSubWorkflow=false`, preserving the stage execution/lifecycle boundary. A dispatch error is routed into the existing WF04 visual failure branch because WF05 has not yet begun its render stage in that case.
+
+```text
+WF04 node count: 44
+handoff target: M7VideoRender1
+payload: job_id only
+waitForSubWorkflow: false
+public render webhook: none
+new service: none
+```
+
+The modified WF04 JSON parses successfully. Runtime import/publish and a real native handoff proof remain required before M7 can be closed.
+
+## M7 WF04 -> WF05 production deployment checkpoint — 2026-08-25
+
+The updated clean WF04 with native `Start Video Render` handoff was imported, published, and n8n restarted. Public health returned HTTP 200. Runtime export confirms WF04 is active with 44 nodes; `Start Video Render` targets `M7VideoRender1`, sends dynamic `job_id` only, and has `waitForSubWorkflow=false`. No Manual Trigger or pin data is present.
+
+A 45-second/12-scene visuals-complete job is reserved for the native handoff acceptance run; no application state was modified by deployment itself.
+
+
+## M7 native handoff CLI limitation checkpoint — 2026-08-25
+
+A temporary same-ID WF04 Manual Trigger harness proved the `Start Video Render` node itself resolves `M7VideoRender1`: the parent execution completed successfully and recorded child execution ID `218` for workflow `M7VideoRender1`. However, because the parent was launched with the standalone `n8n execute` CLI while `waitForSubWorkflow=false`, child execution `218` was stored as `success/integrated` with empty `runData` and did not execute WF05 nodes. The application job therefore remained unchanged at `processing/visuals`.
+
+This CLI-only detached-child behavior is not accepted as a production handoff result and does not indicate a WF05 render failure. The clean production WF04 was restored/published/active with 44 nodes and the clean WF05 remains active with 16 nodes. The remaining handoff proof must use the real active production runtime, starting from WF01 rather than a CLI parent harness.
+
+
+## M7 nested detached sub-workflow runtime diagnosis — 2026-08-25
+
+Production execution `223` proved that n8n 2.33.3 can create a detached nested WF05 execution with the correct published workflow version but complete it immediately with empty `resultData.runData`, leaving the job in `processing/visuals`. The same symptom is documented in current n8n 2.x sub-workflow bug reports. The installed `ExecuteWorkflow` implementation uses `doNotWaitToFinish: true` when `waitForSubWorkflow=false`.
+
+For the final WF04 -> WF05 handoff only, the local production workflow now keeps the native Execute Sub-workflow boundary but enables `waitForSubWorkflow=true`. WF05 remains a separate integrated execution and still owns the synchronous media-worker `/render` call and all `render` state transitions. `Start Video Render` no longer routes child failures into the WF04 visual failure path, because WF05 already persists failures as `failed/render`. No webhook, polling, callback, new service, direct media-worker database write, or schema change is introduced. Runtime proof is required before this compatibility change is accepted.
+
+
+## M7 WF04 -> WF05 synchronous handoff compatibility proof — 2026-08-25
+
+The n8n 2.33.3 nested fire-and-forget behavior was isolated to `waitForSubWorkflow=false`: child executions were created with the correct published WF05 version but completed immediately with empty `resultData.runData`. The final WF04 -> WF05 handoff therefore keeps the native Execute Sub-workflow boundary and dynamic `job_id` input but enables `waitForSubWorkflow=true`. WF05 remains a separate integrated execution and owns the render state transition.
+
+The existing 45-second job `9a51a33d-f58a-41c2-8344-5a5521bf19a2` (12/12 visuals, 42.024s measured voiceover) passed this compatibility path:
+
+```text
+WF04 Start Video Render runtime: ~49.6s
+WF05 execution: 225
+WF05 status: success
+final job status: review_ready
+final current_stage: review
+final_video_path: jobs/9a51a33d-f58a-41c2-8344-5a5521bf19a2/render/final.mp4
+```
+
+Clean production WF04 was restored after the temporary manual acceptance trigger and verified with 44 nodes, active=true, no Manual Trigger, no acceptance setter, empty pin data, `waitForSubWorkflow=true`, and no `onError` override on `Start Video Render`. Child render failures therefore remain owned by WF05 as `failed/render` instead of being reclassified by WF04 as visual failures. A fresh end-to-end production job through WF01 remains required before M7 closure.
+
+
+## M7 full production acceptance and closure — 2026-08-25
+
+A fresh production job was submitted through the real public WF01 `/webhook/jobs` boundary after the final WF04 -> WF05 n8n 2.33.3 compatibility adjustment. No stage was invoked manually and no application-state SQL reset was used.
+
+```text
+job_id: ebc9a3cd-0d33-4509-983d-2d335ff3c518
+language: pl
+target_duration_seconds: 15
+T+0:  created/intake
+T+16: processing/visuals, 4/4 audio, measured voiceover 15.288s
+T+46: processing/render, 4/4 visuals
+T+76: review_ready/review
+final_video_path: jobs/ebc9a3cd-0d33-4509-983d-2d335ff3c518/render/final.mp4
+last_error: empty
+```
+
+The real production execution chain completed successfully:
+
+```text
+226  WF01 Xy94qe35OigtMxkR  -> success / webhook
+227  WF02 TJfA4ZYUEKSTad6k  -> success / integrated
+228  WF03 UHxvCZNqaLb1RKMM  -> success / integrated
+229  WF04 M6VisualSourcing1 -> success / integrated
+230  WF05 M7VideoRender1     -> success / integrated
+```
+
+Final media validation inside the existing media-worker container:
+
+```text
+video codec: h264
+resolution: 1080x1920
+pixel format: yuv420p
+audio codec: aac
+audio sample rate: 48000 Hz
+audio channels: 2
+rendered duration: 15.310s
+rendered size: 1,517,484 bytes
+ffprobe: PASS
+```
+
+Earlier direct `/render` acceptance on job `a0410a69-1ae0-4368-a71e-0043cc45076e` also proved the render timeline follows measured scene audio: 14.304s aggregate measured audio produced a 14.334s final MP4. Burned subtitle visibility was verified by comparing an extracted rendered frame with the original visual: a control region had mean absolute pixel difference 0, while the subtitle region contained 20,994 pixels with absolute difference greater than 80, proving a localized burned text overlay rather than a general image change.
+
+The final native WF04 -> WF05 handoff uses `waitForSubWorkflow=true` because n8n 2.33.3 was runtime-proven to create nested detached WF05 children with the correct published version but empty `resultData.runData` when `waitForSubWorkflow=false`. The synchronous handoff keeps WF05 as a separate integrated execution and introduces no webhook, callback, polling, render queue, new persistent service, direct media-worker database write, or schema migration.
+
+Clean production workflow exports after acceptance:
+
+```text
+WF04 SHA-256: d4042a4360f231b9da9c4ac8047f2f94b0ef767bbb3c86e147d344ff3239f25f
+WF05 SHA-256: 846239db7b0d95a7f69ad202e92c249d5df68ef0a71dfb75d48257a4d55b8b0d
+WF04 active: true
+WF04 node_count: 44
+WF04 Manual Trigger: absent
+WF04 pin data: empty
+WF05 active: true
+WF05 node_count: 16
+WF05 Manual Trigger: absent
+WF05 pin data: empty
+```
+
+M7 — Render is closed on 2026-08-25. M8 has not been started.

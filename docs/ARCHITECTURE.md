@@ -226,6 +226,8 @@ n8n
 
 Do not introduce `render_id`, asynchronous callbacks, polling, or direct media-worker database writes before real render behavior proves that the synchronous HTTP boundary is insufficient.
 
+Production n8n 2.33.3 has a proven nested fire-and-forget sub-workflow defect in this pipeline: a WF04 -> WF05 call with `waitForSubWorkflow=false` can create a child execution using the correct published WF05 version but finish that child with empty `resultData.runData` before the first WF05 node runs. Therefore the final WF04 -> WF05 hand-off uses the same native Execute Sub-workflow boundary and passes only `job_id`, but sets `waitForSubWorkflow=true`. WF05 remains a distinct integrated execution, owns all `render` state transitions, and synchronously calls `media-worker` `/render`. Earlier stage hand-offs remain detached where they are runtime-proven. Do not replace this compatibility boundary with public webhooks, callbacks, polling, or direct database writes from `media-worker`.
+
 #### Buffer Draft Publishing
 
 This workflow is outside the automatic generation chain.
