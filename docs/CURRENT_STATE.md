@@ -2771,3 +2771,421 @@ burned subtitle overlay: 10 / 10 PASS
 This proves the subtitle overlay is localized to the intended lower-frame area across the M8 sample. It does not prove that the subtitle text itself is linguistically correct: the PL refrigerator job burns the already-corrupted persisted narration (for example `lod3ufka`), confirming that this defect originates upstream of render/subtitle compositing.
 
 Objective script, visual relevance, subtitle-presence and render review is now complete for the ten-video M8 sample. Subjective voice naturalness still requires actual listening and is the remaining manual quality-review item; duration/codec/waveform checks must not be treated as a substitute for listening.
+
+## M8 WF02 durable script-failure implementation checkpoint — 2026-08-25
+
+The recurring M8 defect where WF02 execution errors left jobs stranded at `created/intake` with an empty `last_error` has been corrected in the repository workflow definition. This is a stage-local reliability fix required by the existing architecture error contract; no generic retry framework was added.
+
+`WF02 — Plan Script and Scenes` now routes errors from the planning work boundary into a dedicated script-failure branch:
+
+```text
+Build Planning Request
+Generate Structured Plan
+Validate Structured Plan
+Persist Scene Plan
+Start Voiceover Generation
+  -> on error: Prepare Script Failure
+  -> Record Script Failure
+  -> Stop Script Failure
+```
+
+`Record Script Failure` updates the same durable job to `status='failed'`, `current_stage='script'`, stores the bounded error text in `last_error`, and updates `updated_at`. It accepts the pre-persistence `created/intake` state as well as `processing/script` for a post-persistence handoff failure. Eligibility/UUID validation errors before a job has been accepted for planning remain outside this branch.
+
+The clean WF02 export now has 12 nodes and all five planning/handoff nodes have explicit `continueErrorOutput` routing to the failure branch. JSON/connection assertions pass. This checkpoint is implementation-only: production import/publish and a fresh PL60 runtime reproduction are required next.
+
+## M8 WF02 deployment CLI compatibility note — 2026-08-25
+
+The first WF02 import attempt with the new durable script-failure branch did not modify production because n8n 2.33.3 rejected `import:workflow --activeState=fromJson` in regular deployment mode: that flag is supported only in queue or multi-main mode. The workflow code/export remains unchanged locally and production WF02 was not imported by that failed command. Deployment must use the regular import/publish/activation path already compatible with this single-main runtime.
+
+## M8 WF02 durable script-failure production deployment checkpoint — 2026-08-25
+
+The 12-node WF02 with the dedicated script-failure branch has been imported into production n8n, published, reactivated, and n8n restarted. Public health returned HTTP 200.
+
+Clean runtime export verification:
+
+```text
+workflow: WF02 — Plan Script and Scenes
+id: TJfA4ZYUEKSTad6k
+active: true
+node count: 12
+activeVersionId == versionId: true
+Manual Trigger: absent
+pin data: empty
+error-routed nodes: Build Planning Request, Generate Structured Plan, Validate Structured Plan, Persist Scene Plan, Start Voiceover Generation
+all five onError: continueErrorOutput
+```
+
+The initial deployment command using `--activeState=fromJson` was rejected before import because this single-main n8n runtime does not support that flag; the successful deployment used regular import, publish, explicit activation, and restart. A fresh PL60 production request must now prove that the same planning-validator failure transitions the durable job to `failed/script` with populated `last_error`.
+
+## M8 WF02 durable script-failure runtime proof — 2026-08-25
+
+A fresh production PL / 60s suspension-bridge request was submitted through the public WF01 webhook after deploying the WF02 failure branch.
+
+```text
+job_id: f5816f94-506a-4b0d-83ce-63bec2c1ce25
+HTTP intake: 201
+initial state: created/intake
+terminal state: failed/script
+scene rows: 0
+updated_at advanced on failure: YES
+```
+
+This closes the durable-state portion of the recurring defect: a planning/validation failure no longer strands the job in `created/intake`. However, the persisted `last_error` from this run was only `. [line 158]`, which is not sufficiently diagnostic even though the lifecycle state is correct. The next bounded correction is to inspect the exact n8n error-output item shape for this execution and preserve the full validator message in `last_error`.
+
+## M8 WF02 full validator-error preservation implementation checkpoint — 2026-08-25
+
+Read-only decoding of production WF02 execution `286` proved that n8n 2.33.3 truncates a thrown Code-node error when `continueErrorOutput` is used: `Validate Structured Plan` emitted only `{error: ". [line 158]"}` even though the original validator exception was `Scene 1 narration item 7 contains punctuation-only content: .`. The custom failure branch could therefore not recover the full message.
+
+The repository WF02 has been narrowed accordingly: expected structured-plan validation exceptions are now caught inside `Validate Structured Plan` itself and emitted as normal structured data (`planning_failed=true`, `planning_error=<full bounded message>`). A new `Planning Valid?` IF routes valid plans to persistence and invalid plans to the existing durable script-failure branch. Runtime HTTP/provider failures still use normal n8n error routing. `Prepare Script Failure` now prioritizes `planning_error`.
+
+```text
+WF02 node count: 13
+Validate Structured Plan onError: removed
+Planning Valid?: added
+valid plan -> Persist Scene Plan
+invalid plan -> Prepare Script Failure
+full validation message bound: 4000 characters
+```
+
+This preserves the strict validator and the one-AI-request planning boundary. It does not accept standalone punctuation or malformed output; it only preserves the full rejection reason. Production deployment and a fresh PL60 regression are required next.
+
+## M8 WF02 full validator-error preservation production deployment checkpoint — 2026-08-25
+
+The 13-node WF02 validator-message preservation version has been imported, published, explicitly reactivated, and n8n restarted. Public n8n health returned HTTP 200.
+
+Clean production export verification:
+
+```text
+workflow id: TJfA4ZYUEKSTad6k
+active: true
+node count: 13
+activeVersionId == versionId: true
+Manual Trigger: absent
+pin data: empty
+Validate Structured Plan onError: absent
+Planning Valid?: present
+Validate Structured Plan -> Planning Valid?
+Planning Valid? true -> Persist Scene Plan
+Planning Valid? false -> Prepare Script Failure
+```
+
+No validator was weakened and no second AI request was introduced. The next runtime proof is a fresh PL60 suspension-bridge request, expected either to pass normally if Gemini returns a compliant plan or, if the recurring standalone-punctuation defect reproduces, to persist `failed/script` with the full validator message instead of the n8n-truncated `. [line 158]`.
+
+## M8 WF02 validator-message regression run finding — 2026-08-25
+
+A fresh production PL / 60s suspension-bridge request after deploying the 13-node validator-message version created job `85b5989a-ac11-43dd-9529-98baee65ff82`. This particular Gemini response passed structured validation, so the intended invalid-plan error-message path was not exercised. WF02 execution `288` completed `success` and atomically persisted all 15 scenes.
+
+Unexpectedly, no WF03 child execution was created and the durable job remained `processing/script` with 15 scenes and zero audio. This is a new handoff regression introduced or exposed by the current WF02 modification and must be diagnosed before any further M8 correction. The job is not manually reset and WF03 is not invoked directly until the exact `Start Voiceover Generation` execution behavior is read from execution `288`.
+
+## M8 PL60 valid-plan WF02 handoff diagnosis checkpoint — 2026-08-25
+
+The fresh PL60 regression job `85b5989a-ac11-43dd-9529-98baee65ff82` produced a compliant 15-scene plan, so WF02 execution `288` persisted scenes successfully. Read-only decoding of execution `288` corrected the initial handoff observation: `Start Voiceover Generation` did execute and recorded native subexecution metadata for child execution `289`, workflow `UHxvCZNqaLb1RKMM`, while the parent node itself completed success in 41 ms.
+
+The child did not appear in the earlier job-id execution search and the durable job remained `processing/script` with zero audio, so the next diagnostic step is to inspect execution `289` directly for the same empty-`runData` detached-subworkflow symptom previously proven at the WF04 -> WF05 boundary. No application state is manually changed before that inspection.
+
+## M8 WF02 -> WF03 detached-child compatibility correction — 2026-08-25
+
+Direct read-only inspection of child execution `289` from parent WF02 execution `288` confirmed the same n8n 2.33.3 nested fire-and-forget failure previously proven at WF04 -> WF05:
+
+```text
+execution: 289
+workflow: WF03 / UHxvCZNqaLb1RKMM
+mode: integrated
+status: success
+runtime: 44 ms
+resultData.runData keys: empty
+resultData.error: none
+startData: empty
+durable job after child: processing/script
+audio rows/paths: 0 / 15
+```
+
+WF02 did dispatch the correct WF03 workflow, but the detached child ended before the first WF03 node. The architecture compatibility note is therefore widened only to the newly proven affected handoff. `Start Voiceover Generation` remains native Execute Sub-workflow with dynamic `job_id` only and now sets `waitForSubWorkflow=true`. WF03 remains a separate integrated execution; no webhook, polling, callback, queue, new service, or direct worker database write is introduced. Other detached handoffs are unchanged unless this same defect is proven there.
+
+Production deployment and a fresh end-to-end regression are required next.
+
+## M8 WF02 -> WF03 synchronous native handoff production deployment checkpoint — 2026-08-25
+
+The WF02 compatibility correction for the proven empty detached WF03 child has been deployed. `WF02 — Plan Script and Scenes` was imported, published, explicitly reactivated, and n8n restarted. Public health returned HTTP 200.
+
+```text
+workflow id: TJfA4ZYUEKSTad6k
+active: true
+node count: 13
+activeVersionId == versionId: true
+Start Voiceover Generation -> UHxvCZNqaLb1RKMM
+payload: job_id only
+waitForSubWorkflow: true
+Manual Trigger: absent
+pin data: empty
+```
+
+The same native stage boundary is preserved. The next proof is a fresh PL60 production job through WF01; it must either persist a full `failed/script` validator message for invalid model output or execute WF03 nodes normally for a valid plan.
+
+
+## M8 WF02 -> WF03 synchronous compatibility runtime closure — 2026-08-25
+
+After production n8n 2.33.3 reproduced an empty detached WF03 child (`execution 289`, `success/integrated`, 44 ms, empty `runData`) from `WF02 -> WF03` with `waitForSubWorkflow=false`, the handoff was changed to the same native Execute Sub-workflow contract with dynamic `job_id` only and `waitForSubWorkflow=true`. No webhook, polling, callback, queue, new service, or schema change was introduced.
+
+Fresh production regression job:
+
+```text
+job_id: c20f2432-42d5-4f55-a96a-2eac7aaa697d
+topic: Jak działa most wiszący?
+language: pl
+target duration: 60s
+final state: review_ready/review
+scenes: 15/15
+measured audio paths: 15/15
+visual paths: 15/15
+```
+
+Execution chain:
+
+```text
+290 WF01 Xy94qe35OigtMxkR  -> success / webhook
+291 WF02 TJfA4ZYUEKSTad6k  -> success / integrated
+292 WF03 UHxvCZNqaLb1RKMM  -> success / integrated (~5.16s; real audio work completed)
+293 WF04 M6VisualSourcing1 -> success / integrated
+294 WF05 M7VideoRender1    -> success / integrated
+```
+
+The job progressed through `processing/visuals`, then `processing/render`, then persisted `final_video_path = jobs/c20f2432-42d5-4f55-a96a-2eac7aaa697d/render/final.mp4` and reached `review_ready/review`. This closes the `WF02 -> WF03` empty-child runtime regression for the compatibility configuration `waitForSubWorkflow=true`.
+
+A separate validator-message improvement is also present locally: `Validate Structured Plan` now converts expected plan-validation exceptions to an explicit `planning_error` result and routes them through `Planning Valid? -> Prepare Script Failure`, because n8n Code-node `continueErrorOutput` was proven to truncate the original validation message to `. [line 158]`. A future invalid-plan runtime sample is still required to prove preservation of the full validator message in `jobs.last_error`.
+
+## M8 WF02 sentence-boundary planning implementation checkpoint — 2026-08-25
+
+The M8 sample proved that fixed per-scene narration word budgets can preserve TTS duration while splitting one grammatical sentence across multiple scenes. The existing calibrated per-language word-count patterns are retained, but WF02 planning/validation now additionally requires every scene narration to be a complete standalone sentence.
+
+Implementation:
+
+```text
+scene count contract: unchanged (4/8/12/15)
+calibrated per-scene word counts: unchanged
+one AI planning request: unchanged
+new prompt rule: never split one grammatical sentence across scenes
+new prompt rule: every scene starts as a standalone sentence
+new prompt rule: every scene ends with . ! ? or … attached to the final word
+new validator: reject lowercase fragment starts
+new validator: reject narration without sentence-final punctuation
+validator still rejects punctuation-only narration items
+```
+
+The change does not add a second AI request, filler/recovery workflow, new service, or schema change. All WF02 Code-node scripts pass `node --check` inside the production n8n Node 24 runtime. Runtime import and a fresh PL/60 production quality regression are still required before this M8 defect can be considered corrected.
+
+## M8 WF02 sentence-boundary first runtime regression — 2026-08-25
+
+Fresh production PL/60 suspension-bridge job `fb864adf-a6dc-4644-8817-1f634b954a4a` was submitted after the standalone-sentence prompt/validator deployment. WF02 persisted all 15 scenes and entered `processing/voiceover` within approximately 6 seconds.
+
+Structural result:
+
+```text
+scene_count: 15/15
+scenes ending with sentence-final punctuation: 15/15
+scenes beginning with a capitalized sentence start: 15/15
+cross-scene grammatical fragments of the previous form: eliminated in this sample
+```
+
+However, the exact fixed seven-word PL budget per scene still degrades language quality. Persisted examples include `zatem`, `ciągle`, missing preposition in `zakotwiczone brzegach`, dangling `wraz`, and the unnatural closing `Fizyka pozwala połączyć dwa brzegi wielką inteligencją.`. This proves that sentence-boundary enforcement alone is insufficient: the remaining recurring defect is the exact equal per-scene word count, which encourages filler and malformed wording.
+
+Next correction: retain the calibrated aggregate language/duration word target, but allow bounded variable scene lengths so every scene can be a natural complete sentence while the total narration stays close enough to the existing TTS duration calibration. The one-AI-request boundary and WF03 measured-duration gate remain unchanged.
+
+## M8 WF02 variable scene-word-range implementation checkpoint — 2026-08-25
+
+The equal fixed per-scene word count was proven to create filler and malformed language even after sentence-boundary enforcement. WF02 now retains the existing calibrated language/duration aggregate word target but allows bounded variable sentence lengths per scene.
+
+Implementation contract:
+
+```text
+one AI planning request: unchanged
+scene count: unchanged (4/8/12/15)
+calibrated aggregate word target: unchanged
+aggregate tolerance: ±5% rounded up, minimum 2 words
+PL/RU scene range around target 7: 5-9 spoken words
+EN target 9/10 scenes: bounded target±2, minimum 5
+UK target 6/7 scenes: bounded target±2, minimum 5
+each scene remains one complete standalone sentence
+validator checks actual unpacked word count per scene and aggregate total before persistence
+WF03 measured-duration ±10% gate and one bounded TTS pace correction: unchanged
+```
+
+For PL/60 specifically, the calibrated target remains 105 spoken words and the validator accepts only 99-111 aggregate spoken words while allowing individual scenes to vary 5-9 words. This is intended to remove filler caused by forcing every scene to exactly seven words without relaxing overall duration control.
+
+All WF02 Code-node scripts pass `node --check` in the production n8n Node 24 runtime. Runtime import and a fresh production PL/60 quality/timing regression are still required.
+
+## M8 WF02 variable scene-word-range production deployment checkpoint — 2026-08-25
+
+The variable scene-word-range WF02 was imported and published in production. The current production export confirms:
+
+```text
+WF02 active: true
+versionId == activeVersionId: true
+node count: 13
+waitForSubWorkflow to WF03: true
+sentence-boundary prompt/validator: present
+```
+
+The n8n service was restarted and local `/healthz` returned HTTP 200. The deprecated `update:workflow --active=true` command was not required because `publish:workflow` left the imported current version active. No n8n internal schema was modified manually.
+
+A fresh PL/60 production quality/timing regression is required next.
+
+## M8 WF02 variable scene-range first runtime regression — 2026-08-25
+
+Fresh PL/60 suspension-bridge job `49047c31-429a-4598-b5ca-3ff9f88b1de9` exercised the variable-length scene planner in production. The plan was rejected before scene persistence because its aggregate narration contained 85 spoken words while the first variable-range implementation required 99-111 around the calibrated target 105.
+
+```text
+final job state: failed/script
+scenes persisted: 0
+last_error: Planning narration contains 85 spoken words; required aggregate range=99-111, calibrated target=105
+```
+
+This runtime result proves two things:
+
+1. WF02 now durably records `failed/script` and preserves the full structured-plan validator message instead of truncating it to `. [line 158]`; that failure-state/message defect is closed.
+2. The initial ±5% planning word-total gate is too narrow for natural variable-length sentences. Do not return to exact seven-word Polish scenes. The next diagnostic is to inspect the rejected 85-word plan quality, then align the planning aggregate range with the already accepted WF03 bounded TTS pace-correction capability (`speaking_rate 0.80-1.25`) while retaining fail-closed measured-duration validation.
+
+## M8 WF02 stronger planner + bounded natural-sentence implementation checkpoint — 2026-08-25
+
+The first variable-length production sample produced materially better scene pacing but still exposed weak Polish spelling/grammar from `gemini-3.5-flash-lite` (`wisia`, `zakotwienjach`, and a scene containing `...przepaść. dolinę.`). Official Google Gemini API documentation was checked on 2026-08-25 and `gemini-3.6-flash` supports structured outputs and has a Free Tier, so upgrading the planner does not violate the project's free-first policy.
+
+WF02 implementation now:
+
+```text
+planning model: gemini-3.6-flash
+one AI request: unchanged
+scene count: unchanged
+per-scene bounded variable word ranges: retained
+aggregate planning word tolerance: widened from ±5% to ±15%
+PL/60 calibrated target: 105 words; planning range now 89-121
+measured WF03 duration gate: unchanged and remains authoritative
+TTS pace correction: unchanged, bounded 0.80-1.25
+validator: rejects sentence-final punctuation before the final narration word
+validator: still requires exactly one standalone sentence per scene
+```
+
+The stronger model/range correction is intended to prefer natural language over filler while still preventing the severe 150%+ narration oversizing that originally triggered the duration regression. The final acceptance remains measured audio duration, not word count alone. All WF02 Code-node scripts pass Node 24 syntax checking inside the n8n container. Runtime import and PL/60 regression remain required.
+
+## M8 WF02 gemini-3.6-flash production deployment checkpoint — 2026-08-25
+
+The stronger planner/current variable-range WF02 has been imported, published, and loaded by a restarted production n8n service.
+
+```text
+WF02 active: true
+versionId == activeVersionId: true
+node count: 13
+planning model: gemini-3.6-flash
+WF02 -> WF03: native sub-workflow, job_id only, waitForSubWorkflow=true
+pin data: empty
+n8n health: HTTP 200
+```
+
+No other workflow, service, database schema, or provider configuration changed in this deployment. Fresh PL/60 language/timing regression is next.
+
+
+## M8 factual-routing correction implementation checkpoint — 2026-08-25
+
+Fresh PL/60 quality regression on `gemini-3.6-flash` confirmed that narration quality and timing improved materially, but visual routing still classified 14/15 scenes as `generic`, including explicit explanatory intents such as `load distribution diagram`, `tension forces diagram`, and `force anchorage diagram`.
+
+WF02 has now been corrected without adding a provider/service/schema or a second AI request:
+
+- the planning prompt defines `factual` to include scientific/engineering mechanisms, anatomy, diagrams, schematics, maps, interfaces/screens, cross-sections, molecules, forces/vectors, technical components, process illustrations, and other cases where decorative stock is insufficient;
+- `generic` is reserved for scenes where ordinary stock imagery is genuinely sufficient;
+- the validator deterministically normalizes explicitly technical/diagram-like visual intent to `factual` even if the model returns `generic`;
+- the normalizer covers explicit terms including diagram/schematic/cross-section/anatomy/map/screen/interface/molecule/vector/force/load/tension/pressure/mechanism/component/internal/circuit/structure/anchorage/foundation;
+- all WF02 Code nodes pass Node 24 syntax validation inside the production n8n container.
+
+This checkpoint is implementation-only. Production import plus fresh end-to-end routing regression are required before the M8 visual-routing defect is considered closed.
+
+
+## M8 factual-routing correction production deployment checkpoint — 2026-08-25
+
+The corrected 13-node WF02 was imported and published to production and n8n restarted successfully. Runtime verification after restart:
+
+```text
+WF02 active: true
+node_count: 13
+model: gemini-3.6-flash
+waitForSubWorkflow WF02 -> WF03: true
+deterministic factualIntentPattern normalizer: present
+updated factual/generic prompt instructions: present
+pinData: empty
+n8n health: 200
+```
+
+No service, provider, application-schema migration, public webhook, polling boundary, or second planning AI request was added. Fresh production routing regression is required next.
+
+
+## M8 factual-routing production deployment checkpoint — 2026-08-25
+
+The strengthened WF02 visual classification contract is now deployed in production. The planner still emits only the existing `factual|generic` enum, but the validator normalizes explanatory/technical intent to `factual` when the persisted visual intent requires diagrams, schematics, cross-sections, anatomy, maps/screens, molecules, forces/load/tension/pressure, technical components, internal structures, circuits, flowcharts, anchorages/foundations, or an explicit explanatory mechanism.
+
+Production verification after import/publish/restart:
+
+```text
+WF02 active: true
+node count: 13
+planner: gemini-3.6-flash
+factual intent normalizer: present
+WF02 -> WF03 waitForSubWorkflow: true
+pin data: empty
+n8n health: 200
+```
+
+No provider order, service topology, database schema, or WF04 selection algorithm changed in this step. A fresh technical-topic production regression is required next to verify that factual scenes actually enter the Wikimedia/local explanatory route rather than stock Pixabay.
+
+
+## M8 factual-routing first production regression — 2026-08-25
+
+Fresh production job `cda23b73-1390-4e32-aa41-d0d077c97395` (`Jak działa most wiszący?`, PL, 60s) proved that the first routing correction over-classified. The job reached `processing/render` with 15/15 audio and 15/15 visuals, measured voiceover 56.712s, but scene routing was:
+
+```text
+factual: 15 / 15
+generic: 0 / 15
+providers: Wikimedia 2, local_fallback 13
+```
+
+Explicit explanatory queries such as `suspension bridge physics forces diagram`, `tension and compression force vectors structural mechanics`, and `bridge pylon caisson underwater foundation diagram` correctly moved away from generic stock. However ordinary scenic/observable shots such as panoramic bridge views and sunset/drone imagery were also classified factual, causing unnecessary local fallbacks.
+
+Therefore the routing defect is not yet closed. The next correction must preserve factual routing for explicit diagram/mechanism/exact-subject intent while forcing clearly stock-suitable scenic/observable imagery back to `generic`.
+
+
+## M8 factual-routing production regression closure — 2026-08-25
+
+A fresh real production job was submitted through WF01 after the strengthened WF02 factual-intent normalization was deployed.
+
+```text
+job_id: 8907258f-d1e2-437d-b32b-ebaa1fa0b9ff
+topic: Jak działa transformator elektryczny?
+language/duration: pl / 60s
+final state: review_ready/review
+measured voiceover: 60.456s
+scene count: 15
+visual paths: 15/15
+WF01-WF05 executions: all success
+```
+
+Persisted routing result:
+
+```text
+factual scenes: 14
+generic scenes: 1
+providers: Wikimedia 4, local_fallback 10, Pixabay 1
+```
+
+The only generic scene is the broad closing household scene (`residential house with warm electric lighting outside`), which correctly uses Pixabay. Technical/diagram scenes now avoid the generic stock path. Examples include transformer coil diagrams, magnetic-field/flux diagrams, turn-ratio diagrams, and transmission infrastructure routed as factual.
+
+This closes the M8 102/102-generic routing defect. The remaining quality issue is candidate availability/relevance inside the factual route: many exact explanatory transformer scenes correctly fall back locally because bounded Wikimedia search does not return an acceptable external diagram. That is preferable to a semantically wrong stock photograph and is a separate quality/recovery concern.
+
+
+## M8 factual-routing correction v2 implementation checkpoint — 2026-08-25
+
+The first factual-routing regression over-classified all 15 bridge scenes as factual. WF02 routing instructions were refined again:
+
+- `factual` is now limited to exact named/identifiable subjects or explanatory visuals whose informational content must be accurate (diagram, schematic, cross-section, anatomy, map, interface/screen, molecule, force/vector/load/tension illustration, circuit, mechanism);
+- `generic` explicitly includes unnamed scenic views, ordinary examples of bridges/machines/vehicles/buildings, people, rooms, landscapes, generic close-ups, lifestyle/action shots, and cinematic establishing shots;
+- the prompt explicitly says not to classify an entire technical/scientific topic as factual; each scene must be classified independently;
+- the deterministic validator override was narrowed to explicit explanatory markers and no longer treats broad words such as `structure`, `component`, `internal`, `foundation`, or `anchorage` as factual by themselves;
+- all WF02 Code nodes pass Node 24 syntax validation.
+
+Production deployment and a second fresh routing regression are required next.
