@@ -2558,3 +2558,58 @@ Recurring M8 patterns now supported by multiple jobs:
 2. longer scripts are more exposed to fixed-cardinality fragmenting than short scripts;
 3. stock-image semantic ranking often captures category/action similarity but misses exact subject or explanatory detail;
 4. technical render success remains strong even when content quality is weak.
+
+
+## M8 quality finding — job 4/10 — 2026-08-25
+
+Job `cc520cf9-781c-4071-933e-78feb5874b8c`, UK / 60s / solar power station, completed `review_ready/review` with 56.784s measured audio and a 56.867s valid H.264/AAC render.
+
+All 15 scene narrations end as complete sentences, so fixed scene cardinality does not always force sentence fragmentation. However, Ukrainian language/factual quality contains several defects despite structural validity:
+
+- `перетворити наструм` has a missing space and should be `перетворити на струм`;
+- `Фокуси фізики створюють рух заряджених частинок середині` is unnatural/incorrect Ukrainian construction;
+- `Тут включається в роботу` is a Russian-influenced phrase; idiomatic Ukrainian would use wording such as `У роботу вступає`;
+- `зберігати струм на ніч` is technically wrong wording: batteries store energy, not electric current;
+- `чисте джерело без шкідливих викидів` is too absolute unless explicitly limited to direct operational emissions.
+
+Visual specificity failures continue:
+
+- scene 7 asks for household appliances in a modern room but selects a hand-held food mixer;
+- scene 8 asks for a wall-mounted solar inverter but selects another solar-panel asset;
+- scene 9 asks for a DC-to-AC conversion animation but selects an electricity mast/line photo;
+- scene 11 asks for an energy-storage battery system but selects a data-center/engine-room image;
+- scene 12 asks for an illuminated night city but selects road light trails;
+- scene 15 asks for a renewable-energy innovation concept and selects generic wind turbines.
+
+After four jobs, M8 evidence separates two independent script-quality failure modes: sentence-fragmentation on some duration/language combinations, and complete but grammatically/technically weak sentences on others. The visual problem remains consistent: selected stock often matches the broad semantic category but not the exact explanatory object/action requested by the scene.
+
+
+## M8 quality finding — job 5/10 — 2026-08-25
+
+Job `0396e781-f2d6-4bbe-a8de-d912f418d205`, EN / 15s / airplane contrails, completed `review_ready/review` with 16.272s measured audio and a 16.283s valid H.264/AAC render.
+
+This job is a positive counterexample to the earlier quality failures. All four narration scenes are complete, natural English sentences, and selected visuals are materially closer to the requested explanatory intent:
+
+- scene 1 selects an actual airplane/contrails photo from Pixabay;
+- scene 2 selects Wikimedia `Ice Nucleation Mechanisms.svg` for ice-crystal formation;
+- scene 3 uses the local explanatory fallback for hot exhaust meeting cold air;
+- scene 4 selects an ice/frozen-water image.
+
+The remaining script issue is minor factual wording: after water vapor condenses/freezes in a contrail, the visible particles are ice crystals; scene 4 ends with `freezes into tiny droplets`, which is imprecise after the freezing step.
+
+This result shows that the M8 visual problem is not a universal provider failure. Exact subject-rich queries and factual/diagram routes can produce good visual relevance, while abstract action/detail-heavy generic queries are substantially more vulnerable to semantically adjacent but wrong stock.
+
+
+## M8 quality finding — job 6/10 — 2026-08-25
+
+Job `7e1fb92b-b0ab-42a7-8e3e-8e31090302dd`, PL / 30s / rainbow formation, completed `review_ready/review` with 28.728s measured audio and a 28.779s valid H.264/AAC render.
+
+All eight scene narrations are complete sentences, but language/science quality still has defects:
+
+- scene 4 contains the typo/word error `Światło słoneczne wada do wnętrza każdej kropli` (intended `wpada`/`wchodzi`);
+- scene 8 ends with the filler `dzisiaj`, which adds no meaning and reads like duration-padding;
+- the explanation covers light entering a droplet, refraction/dispersion and colored rays leaving it, but omits the internal reflection step that is essential to the primary-rainbow mechanism.
+
+Visual selection is strong for broad observable scenes (rainbow, sun, droplets) but weak for explanatory optics. Scenes 5-7 request refraction, spectrum splitting and colored rays inside/exiting a droplet, yet select generic water-drop/splash photographs rather than images that actually show those optical processes. Scene 4 falls back locally for the beam-entering-droplet illustration.
+
+This further supports a split in visual quality: concrete nouns/observable scenes retrieve good stock, while causal/mechanistic explanatory scenes need diagrams or generated/local explanatory graphics rather than stock-image semantic similarity alone.
