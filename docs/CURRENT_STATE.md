@@ -1,6 +1,6 @@
 # Current Project State
 
-Last updated: 2026-08-24
+Last updated: 2026-08-25
 
 This file is the first checkpoint to read before continuing work on this repository. If chat history conflicts with this file, `docs/ARCHITECTURE.md`, or `docs/ROADMAP.md`, the repository wins.
 
@@ -12,8 +12,8 @@ Before every technical reply/action for this project, fetch this file from the a
 
 - repository: `Pokhyl/ai-short-form-content-factory`
 - active branch: `feat/m6-visual-sourcing`
-- completed milestone: M5 — Voiceover
-- current milestone: M6 — Visual sourcing (`in progress`)
+- completed milestone: M6 — Visual sourcing
+- next milestone: M7 — Render (`not started`)
 
 Target flow:
 
@@ -909,9 +909,7 @@ Technical green execution alone is not M6 acceptance. Final scene-to-image relev
 
 ## Exact next action
 
-1. review the actual 8 GPS images against narration/visual intent (Gemini/Google AI Studio acceptance check);
-4. only after visual acceptance, wire WF03 -> WF04, export the clean production workflows, update ROADMAP M6 completed, and close M6;
-5. do not start M7 before M6 is closed.
+M6 is accepted and closed. Do not begin M7 automatically. The next implementation milestone is M7 — Render, and it starts only when explicitly continuing project work after this checkpoint.
 
 ## Do not do
 
@@ -922,3 +920,800 @@ Technical green execution alone is not M6 acceptance. Final scene-to-image relev
 - do not put provider secrets or generated private media in GitHub
 - do not hardcode one test topic/job/language into production M6 code
 - do not silently substitute generic stock for a failed factual Wikimedia lookup
+
+
+## M6 Pixabay candidate-pool breadth correction checkpoint
+
+The first Google Gemini acceptance review of the SigLIP-ranked 8-scene GPS run found only scene 6 semantically acceptable. The dominant defect is upstream candidate-pool quality for technical scenes: the production `Search Pixabay` request still forced `image_type=photo` and `orientation=vertical`, excluding illustrations/vectors and horizontally composed technical diagrams before SigLIP could rank them.
+
+The production WF04 query has therefore been corrected without changing provider order or the restored selection architecture:
+
+```text
+removed: image_type=photo
+removed: orientation=vertical
+retained: safesearch=true
+retained: per_page=10
+selection: deterministic usability filter -> local SigLIP ranking -> single original download
+```
+
+This is a bounded candidate-pool correction only. It does not add AI selection, change provider order, add a service, or change fallback semantics. Runtime re-selection and real-image acceptance review are still required before M6 can be closed.
+
+
+## M6 Pixabay breadth runtime import checkpoint
+
+The corrected clean WF04 was imported into production and immediately exported for structural verification.
+
+```text
+node_count: 42
+active: false
+pin_data: empty
+manual_trigger: absent
+SigLIP rank nodes: 3
+Pixabay image_type restriction: absent
+Pixabay orientation restriction: absent
+Pixabay safesearch/per_page=10: retained
+```
+
+The next action is to reselect only the existing GPS acceptance job through the n8n-owned reset harness, then review the new exact images.
+
+
+## M6 SigLIP RGBA preview normalization checkpoint
+
+The first rerun after widening the Pixabay candidate pool exposed a concrete media-worker defect: one newly admitted technical preview contained 4 channels (RGBA), and the SigLIP pipeline rejected it with `Conversion failed due to unsupported number of channels: 4`. WF04 correctly restored clean after the failed acceptance harness run.
+
+The existing media-worker `/visual/rank` implementation has been corrected at the image boundary only: each trusted preview URL is now loaded as `RawImage` and converted to RGB before the existing SigLIP classifier runs. No ranking logic, provider order, persistence, or service topology changed.
+
+```text
+preview input: trusted provider URL
+normalization: RawImage.fromURL(...).rgb()
+ranking model: Xenova/siglip-base-patch16-224 q4
+service count: unchanged
+```
+
+Source syntax/runtime build verification and GPS re-selection are required next.
+
+
+## M6 SigLIP RGB normalization runtime checkpoint
+
+The existing media-worker was rebuilt and redeployed in place with the RGBA->RGB preview normalization fix. No service was added and only `media-worker` was recreated.
+
+```text
+media-worker /health: 200
+semantic_ranker model: Xenova/siglip-base-patch16-224
+semantic_ranker dtype: q4
+RGBA preview normalization code: deployed
+```
+
+The next action is the same bounded GPS re-selection through the n8n-owned reset harness.
+
+
+## M6 robust RGB preview decode checkpoint
+
+A direct runtime reproduction showed that `RawImage.fromURL()` itself throws on a 4-channel PNG before `.rgb()` can run. The previous RGBA fix was therefore insufficient.
+
+The `/visual/rank` preview boundary is now corrected robustly:
+
+```text
+trusted preview URL
+-> fetch bytes
+-> sharp flatten transparency on white
+-> convert to sRGB
+-> remove alpha
+-> raw 3-channel RGB
+-> RawImage(data,width,height,3)
+-> existing SigLIP ranking
+```
+
+`sharp 0.34.5` is now declared explicitly even though Transformers already depended on it transitively. A direct reproduction on the exact failing Pixabay PNG succeeded and SigLIP returned a score instead of the previous 4-channel conversion error. Runtime rebuild and full GPS re-selection are next.
+
+
+## M6 exact RGBA preview smoke-test checkpoint
+
+The rebuilt media-worker was smoke-tested against the exact Pixabay PNG that previously failed with 4 channels. `/visual/rank` now returns HTTP 200 and a valid SigLIP result for candidate `304419`; the RGBA conversion defect is closed.
+
+The next action is a fresh re-selection of the same GPS acceptance job through the n8n-owned reset harness.
+
+
+## M6 widened Pixabay GPS rerun checkpoint
+
+After the robust RGB preview decode fix, the same GPS acceptance job was reset and reselected through the n8n-owned harness. The execution completed successfully and the clean 42-node WF04 was restored immediately afterward.
+
+```text
+job_id: 82a54ce1-e306-46be-92ca-201aec4bcb9a
+execution: success
+last node: Require Visual Completion
+visuals_complete: true
+clean restore: success
+```
+
+Durable selections now include illustrations/vectors in the Pixabay candidate pool:
+
+```text
+1 -> Pixabay 10318482 | score 0.107090
+2 -> Pixabay 1820064  | score 0.486977 | illustration
+3 -> Pixabay 3100045  | score 0.006707
+4 -> Pixabay 155959   | score 0.254983 | vector
+5 -> Pixabay 6799317  | score 0.343331 | vector
+6 -> Pixabay 246224   | score 0.136531
+7 -> Pixabay 683746   | score 0.006887
+8 -> Pixabay 2198559  | score 0.937975
+```
+
+The next required step is real-image semantic acceptance review of these exact eight outputs.
+
+
+## M6 technical/diagram Wikimedia route restoration checkpoint
+
+The exact-image Gemini review of the widened Pixabay GPS run passed scenes 1, 2, 6, and 8 but failed relational/technical scenes 3, 4, 5, and 7. The failure pattern was not SigLIP execution; the stock route lacked diagrams that explicitly show signal travel, trilateration, four-satellite geometry, and multipath reflection.
+
+The original visual-source intent is now restored explicitly in `docs/ARCHITECTURE.md`: technical/diagram intent deterministically routes to Wikimedia Commons even when the persisted M4 `visual_subject_type` is `generic`. Photo-like generic scenes still use Pixabay -> Pexels.
+
+WF04 now:
+
+```text
+technical/diagram intent -> deterministic Wikimedia query preparation -> bounded Wikimedia pool -> SigLIP actual-preview ranking -> selected original
+photo-like generic intent -> Pixabay -> Pexels -> fallback
+```
+
+Deterministic query normalization includes reusable concepts for GPS trilateration, GPS multipath, satellite-to-receiver signal diagrams, four-satellite positioning diagrams, and cat-larynx anatomy; no test UUID/topic/language is hardcoded. Wikimedia SVG originals are admitted as vector candidates, while SigLIP continues to rank raster preview renditions.
+
+The existing media-worker is also extended in place to normalize selected SVG originals to JPEG with `sharp`, and `/visual/rank` now skips individually undecodable previews instead of failing an entire otherwise-usable provider pool. Service topology, provider credentials, PostgreSQL ownership, and stage handoff contract are unchanged.
+
+This checkpoint is implementation-only. Syntax/build/runtime re-selection and exact-image Gemini acceptance are required before M6 closure.
+
+
+## M6 technical-route syntax checkpoint
+
+The restored technical/diagram Wikimedia route implementation has passed local structural validation before deployment.
+
+```text
+WF04 JSON parse: OK
+WF04 node count: 43
+Prepare Wikimedia Query: present
+all WF04 Code-node scripts: node --check OK
+media-worker server.mjs: node --check OK
+```
+
+Next action: rebuild/redeploy the existing media-worker, import the clean 43-node WF04, then rerun only the existing acceptance jobs.
+
+
+## M6 technical-route media-worker runtime checkpoint
+
+The existing media-worker was rebuilt/redeployed in place with SVG normalization and robust per-candidate preview decoding.
+
+Runtime smoke results:
+
+```text
+/health: 200
+SVG Wikimedia original -> /visual/store: 200
+SVG source: 310x280
+normalized JPEG: mjpeg 1920x1734
+robust /visual/rank with one broken + one valid preview: 200
+ranked candidates: 1
+rejected candidates: 1
+service count: unchanged
+```
+
+The disposable SVG smoke media was removed. No application database state was changed by these media-worker tests. Next action: import the clean 43-node WF04 and run the existing GPS acceptance job through the n8n-owned reset harness.
+
+
+## M6 technical-route WF04 runtime import checkpoint
+
+The corrected clean WF04 was imported into production after fixing one stale connection target left by the `Is Factual?` -> `Use Wikimedia?` node rename. Runtime export verification:
+
+```text
+node_count: 43
+active: false
+pin_data: empty
+manual_trigger: absent
+Prepare Wikimedia Query: present
+SigLIP rank nodes: 3
+old Is Factual? node: absent
+```
+
+The production workflow is clean. Next action: rerun only the existing GPS acceptance job through the n8n-owned reset harness, restore the clean workflow immediately, and inspect the exact selected visuals.
+
+
+## M6 Wikimedia preview throttling/query refinement checkpoint
+
+The first technical-route GPS harness run reached the intended Wikimedia branch but exposed two concrete runtime issues before acceptance: concurrent preview retrieval triggered Wikimedia CDN HTTP 429 responses, and the initial normalized queries for scene 3/5 were too broad. The clean production WF04 was restored immediately after the failed harness run.
+
+Corrections are bounded to the restored plan:
+
+```text
+scene relationship query normalization:
+  satellite->receiver signal -> GPS receiver diagram
+  trilateration distances -> GPS trilateration diagram
+  four-satellite positioning -> GPS Spheres
+  building reflection -> GPS multipath diagram
+Wikimedia SigLIP text: normalized Wikimedia query
+preview retrieval: globally serialized in media-worker
+preview User-Agent: descriptive project identifier
+429/503 retry: bounded 4 attempts with backoff
+```
+
+No AI selector, new service, queue infrastructure, or test UUID was added to production. Syntax/build/deploy and a fresh GPS harness run are required next.
+
+
+## M6 Wikimedia throttling runtime deployment checkpoint
+
+The media-worker with serialized/retried Wikimedia preview retrieval was rebuilt and redeployed successfully, and the updated clean 43-node WF04 was re-imported into n8n. `/health` is 200 after restart.
+
+Next action: regenerate the GPS reset harness from this exact clean workflow, rerun the GPS acceptance job, restore clean WF04, and perform exact-image Gemini review.
+
+
+## M6 selected-download Wikimedia throttling checkpoint
+
+The technical-route GPS rerun completed, but two selected Wikimedia SVG originals fell to local fallback because the n8n `Download Selected Visual` node itself hit Wikimedia HTTP 429 while fetching several selected originals in one execution. This was separate from the already-fixed preview ranking fetch path.
+
+WF04 selected-original download is now configured with a descriptive Wikimedia User-Agent, one-item batching with a 900 ms interval, and bounded node retry (4 attempts, 1200 ms between tries). The satellite-to-receiver search normalization was also narrowed to `GPS received satellites diagram`, which resolves to a single Wikimedia receiver/satellite diagram instead of a generic GPS-error diagram.
+
+Clean production WF04 remains 43 nodes. A fresh GPS harness rerun and exact-image review are required next.
+
+
+## M6 Wikimedia semantic-query and throttling correction checkpoint
+
+The technical Wikimedia route is retained only as provider search expansion. The production SigLIP ranking request now again uses the original scene `visual_query`, exactly as required by the architecture; the provider-specific `wikimedia_query` is used only to retrieve a better Commons candidate pool.
+
+Wikimedia API/search and selected-original downloads are also throttled and retried with an identifying User-Agent to prevent transient 429 responses from turning otherwise valid technical diagrams into local text fallbacks.
+
+```text
+Wikimedia search batching: 1 item / 1200 ms
+Wikimedia search retries: 5, 2500 ms
+selected original batching: 1 item / 2500 ms
+selected original retries: 6, 3000 ms
+SigLIP query: original visual_query
+provider search query: wikimedia_query when applicable
+```
+
+Next: import the clean workflow, rerun the GPS acceptance job through the n8n-owned reset harness, and review the exact resulting production images.
+
+
+## M6 GPS failed-scene candidate correction checkpoint
+
+The exact-image Gemini review of the latest 8-scene GPS run passed scenes 1, 2, 4, 6, 7 and 8 but failed scene 3 (current Commons image showed a GPS skyplot/UI rather than satellite-to-receiver signal travel) and scene 5 (current `GPS Spheres` image visibly showed only three satellites while narration requires at least four).
+
+A bounded candidate review on actual Wikimedia thumbnails identified suitable replacements:
+
+```text
+scene 3 -> File:SatelliteSignals1.png -> Gemini candidate review PASS 88
+scene 5 -> File:Satellite Positioning.svg -> Gemini candidate review PASS 92
+```
+
+WF04 provider-search rewrites are now:
+
+```text
+radio/signal + satellite + phone/receiver -> SatelliteSignals1
+four satellites -> intitle:"Satellite Positioning"
+```
+
+These rewrites affect Commons candidate retrieval only. SigLIP still ranks the resulting real previews using the original scene `visual_query`. A fresh production GPS re-selection and final exact-image Gemini acceptance review are required next.
+
+
+## M6 corrected GPS re-selection checkpoint
+
+The GPS acceptance job was reset through the temporary n8n-owned harness and reselected with the corrected Commons retrieval. Execution completed successfully (`Require Visual Completion`, `visuals_complete=true`) and the clean production WF04 was restored immediately afterward.
+
+Relevant corrected durable selections:
+
+```text
+scene 3 -> Wikimedia File:SatelliteSignals1.png | SigLIP 0.3197943866 | CC BY-SA 4.0
+scene 5 -> Wikimedia File:Satellite Positioning fi.svg | SigLIP 0.9966219068 | CC BY-SA 3.0
+```
+
+All eight scenes currently have external assets with source/author/license metadata; no local fallback is present in this run. Final acceptance still requires Gemini review of the exact eight normalized production JPEGs.
+
+
+## M6 exact-image review after GPS scene 3/5 correction
+
+Gemini reviewed the exact eight normalized production JPEGs after the scene 3/5 corrections. Scenes 1-7 passed. Scene 8 failed because the selected Pixabay image shows a normal working map/location pin and does not visibly communicate inaccurate GPS position/drift.
+
+```text
+1 PASS 85
+2 PASS 92
+3 PASS 88
+4 PASS 82
+5 PASS 85
+6 PASS 90
+7 PASS 75
+8 FAIL 40 -> missing_action: no visible inaccurate/error location
+```
+
+M6 remains open. The next bounded correction is scene 8 candidate sourcing; all already-passing scene behavior must remain unchanged.
+
+## M6 scene-8 technical screen route correction checkpoint
+
+The final GPS exact-image review still had one failure: scene 8 selected a normal Pixabay phone-map screenshot that did not visibly communicate GPS drift/inaccurate position. A bounded Gemini candidate review of real Wikimedia images found `File:Gps-abweichungen-wald.png` semantically acceptable for the narration because it visibly shows a recorded GPS track deviating from the true path.
+
+WF04 now restores the original Wikimedia use for technical/diagram/screen intent: navigation/location/position queries containing `inaccurate`, `wrong`, `error`, or `drift` route to Wikimedia and use the provider search rewrite `GPS track deviation map`. SigLIP still ranks the real provider previews against the original scene `visual_query`; the rewrite only improves the bounded candidate pool. Already-passing scene routes are unchanged.
+
+Next action: import this clean WF04, rerun only the existing GPS acceptance job through the n8n-owned reset harness, restore clean production WF04, and run final Gemini review on the exact eight normalized production JPEGs.
+
+## M6 third-topic runtime checkpoint
+
+A materially different third topic was created through production WF01 and allowed to complete WF02/WF03 before WF04 was invoked through a temporary Manual Trigger harness. The clean production WF04 was restored immediately after execution.
+
+```text
+job_id: 843c5844-7876-49b0-bb8e-2b0499671683
+topic: Dlaczego samoloty zostawiają białe smugi na niebie i kiedy one znikają?
+language: pl
+duration: 30 s
+scene_count: 8
+WF04 execution: success
+last node: Require Visual Completion
+visuals_complete: true
+clean restore: success
+```
+
+All 8 scenes received external assets. This is only a runtime checkpoint; exact-image Gemini review is required before judging semantic quality. Initial metadata already flags that scene 3 selected `File:V-2 rocket diagram.svg` for `jet engine combustion chamber diagram`, so semantic acceptance must not be inferred from execution success or SigLIP score alone.
+
+## M6 third-topic exact-image review checkpoint
+
+Gemini reviewed the exact eight normalized production JPEGs for the independent airplane-contrail topic. The run is not semantically acceptable yet.
+
+```text
+1 PASS 73  airplane + white contrail
+2 PASS 65  airplane/contrail formation
+3 FAIL 28  V-2 rocket cutaway instead of jet engine
+4 FAIL 25  candle smoke instead of aircraft exhaust particles
+5 FAIL 35  generic cockpit/runway, no low-temperature indication
+6 FAIL 32  frost on wire instead of airborne ice-crystal formation
+7 PASS 58  contrail dissipating in sky
+8 FAIL 30  duplicate persistent contrail image, does not show quick dissipation
+overall_pass: false
+```
+
+This third-topic test proves the current selector is not yet general enough despite successful runtime completion. Required correction must stay within the existing architecture: improve bounded provider search pools for explanatory technical concepts, keep SigLIP on actual previews, and avoid misleading/duplicate stock when the scene requires a specific process.
+
+## M6 third-topic generalization implementation checkpoint
+
+The independent contrail test exposed three reusable defects: explanatory process scenes were not entering a technical Commons pool, Pexels still constrained results to portrait orientation, and per-provider selection allowed the same asset to be reused for multiple scenes.
+
+WF04 has been corrected without changing the three-service architecture or replacing SigLIP:
+
+```text
+technical/explanatory detection expanded for cross-sections, exhaust/soot/water-vapor process visuals, altitude/temperature visuals, and ice-crystal formation
+Wikimedia provider-query normalization added for jet-engine cross-section, contrail soot/particle, standard-atmosphere temperature, and cloud ice-crystal concepts
+Pixabay/Pexels stock query normalizes dissipating-contrail intent to a broader fading-contrail search
+Pexels portrait-only restriction removed
+Wikimedia/Pixabay/Pexels selectors now greedily choose the highest SigLIP-ranked non-duplicate asset within each provider branch for the current job; duplicate reuse is allowed only when the bounded pool contains no alternative
+SigLIP still ranks actual preview images against the original visual_query
+```
+
+Structural verification passed: WF04 JSON parses, node count remains 43, and all 20 Code-node scripts pass `node --check` inside the production n8n container. Runtime re-selection is required next.
+
+## M6 third-topic generalized rerun checkpoint
+
+The independent contrail job was reset through the n8n-owned harness and reselected with the generalized technical-query and per-provider diversification changes. Execution completed successfully and clean WF04 was restored.
+
+```text
+1 -> Pixabay 8616271 | contrail photo
+2 -> Pixabay 7432680 | aircraft/contrail photo
+3 -> Wikimedia File:JetEngineGraph-LiftFan.PNG
+4 -> Wikimedia File:Contrails 2029 study acp-19-8163-2019-f06.jpg
+5 -> Wikimedia File:Comparison International Standard Atmosphere space diving.svg
+6 -> Wikimedia historical ice-crystal/cloud diagram
+7 -> Pixabay 4062051 | dissipating contrail
+8 -> Pixabay 6553735 | different contrail asset, semantic rank 2
+```
+
+Scene 8 no longer duplicates scene 1. Exact-image Gemini review is required before acceptance.
+
+## M6 third-topic generalized exact-image review checkpoint
+
+Gemini reviewed the reselected contrail images. The generalized corrections improved the result from 3/8 passing to 6/8 passing.
+
+```text
+1 PASS 73
+2 PASS 70
+3 PASS 68  jet-engine internal diagram
+4 FAIL 32  selected Commons scientific figure is a global map, not exhaust particles/water vapor
+5 PASS 65  altitude/temperature graph
+6 FAIL 30  selected historical plate is too broad and does not show ice-crystal formation on particles
+7 PASS 63
+8 PASS 66  distinct thin/dissipating contrail; duplicate defect closed
+```
+
+Only scenes 4 and 6 remain. Wikimedia contains directly relevant reusable files for these concepts: `File:Condensation Trails contrails from Aircraft Engine Exhaust.png` and `File:Ice Nucleation Mechanisms.svg`. The next correction is provider-query refinement only; already-passing routes remain unchanged.
+
+## M6 third-topic scene 4/6 query refinement checkpoint
+
+The two remaining third-topic failures are corrected at provider-query retrieval only:
+
+```text
+exhaust + particles/soot/water vapor -> intitle:"Condensation Trails contrails from Aircraft Engine Exhaust"
+ice crystals + formation/cold air/particles -> intitle:"Ice Nucleation Mechanisms"
+```
+
+SigLIP still ranks real Commons previews against each scene's original `visual_query`; no provider metadata is used as a substitute for image semantics. Runtime re-selection and exact-image Gemini review are required next.
+
+## M6 per-provider diversification filtered-pool bug checkpoint
+
+The first rerun after the scene 4/6 query refinement failed before visual completion with `Semantic ranking/pool item count mismatch`. The clean production WF04 was restored immediately.
+
+Cause: the new per-provider run-once selector compared all provider candidate-pool items with only the subset that actually reached `/visual/rank`; a scene with no deterministically usable candidate is filtered out before ranking, so counts can legitimately differ.
+
+Correction required: map each ranking response back to its candidate pool by the unique original `visual_query` returned by media-worker, rather than by total item count/index. This preserves per-provider duplicate avoidance without assuming every search produced a rankable pool.
+
+## M6 diversification selector mapping fix checkpoint
+
+Per-provider diversification now maps each `/visual/rank` response back to its trusted candidate pool by the unique original `visual_query` returned by media-worker, so provider items with no rankable pool no longer cause count mismatches. Scene-4 Commons retrieval is also refined to `soot particles micrograph engine`; scene 6 remains `intitle:"Ice Nucleation Mechanisms"`. All WF04 Code-node scripts pass syntax validation. Runtime re-selection is required next.
+
+## M6 photo-like Pixabay restriction restoration checkpoint
+
+The third-topic exact-image review exposed one remaining failure: a photo-like generic autumn scene selected a corrupted/inconsistent Pixabay illustration. Because technical/diagram intent now routes separately to Wikimedia, the Pixabay stock route can again be restricted to photographic results without starving technical scenes.
+
+Production WF04 `Search Pixabay` now retains the current query rewrite logic but adds `image_type=photo`; `safesearch=true`, `per_page=10`, candidate-pool filtering, and SigLIP ranking are unchanged.
+
+Next action: rerun the same third-topic job through the n8n-owned reset harness and repeat exact-image Gemini review.
+
+## M6 third-topic photo-only Pixabay rerun checkpoint
+
+The same third-topic job was reset only through the temporary n8n-owned harness after restoring `image_type=photo` for the photo-like generic Pixabay route.
+
+```text
+deleted_asset_count: 8
+reset_scene_count: 8
+job_reset: true
+execution: success
+last node: Require Visual Completion
+visuals_complete: true for all 8 scenes
+clean production WF04 restored immediately afterward
+```
+
+Exact durable selections and exact-image Gemini review are required next.
+
+## M6 third-topic final acceptance checkpoint
+
+After restoring `image_type=photo` for the photo-like generic Pixabay route, the same independent autumn-leaves job was reselected and the exact eight normalized production JPEGs were reviewed again by Gemini. All eight passed.
+
+```text
+1 PASS 75
+2 PASS 72
+3 PASS 70
+4 PASS 68
+5 PASS 68
+6 PASS 74
+7 PASS 75
+8 PASS 72
+overall_pass: true
+```
+
+The previous scene-8 illustration failure is closed: the replacement is Pixabay photo `5670233`, visibly showing a falling autumn leaf beside a bare tree trunk. The clean production WF04 was restored immediately after the temporary review workflow.
+
+This is the third materially different topic tested end-to-end through visual sourcing: cat behavior/anatomy, GPS positioning/multipath, and autumn leaf color change. M6 is not yet closed solely on this checkpoint; the current GPS branch should still receive its final exact-image acceptance after the latest shared selector change before wiring WF03 -> WF04.
+
+
+## M6 final GPS rerun on current selector checkpoint
+
+The deliberately harder 8-scene GPS acceptance job was reset only through the temporary n8n-owned harness and reselected using the current WF04 after all shared selector corrections, including the photo-only Pixabay stock route and technical Wikimedia routing.
+
+```text
+job_id: 82a54ce1-e306-46be-92ca-201aec4bcb9a
+execution: success
+last node: Require Visual Completion
+visuals_complete: true
+clean production WF04 restored immediately after the temporary harness
+```
+
+The exact durable asset set and exact-image Gemini review are required next before GPS acceptance is final.
+
+## M6 current-selector GPS exact-image review checkpoint
+
+Gemini reviewed the exact eight normalized GPS production JPEGs after the latest shared selector changes. Scenes 1-6 passed; scenes 7 and 8 still failed under strict visual-intent review.
+
+```text
+1 PASS 90
+2 PASS 95
+3 PASS 85
+4 PASS 85
+5 PASS 90
+6 PASS 95
+7 FAIL 40 -> current multipath diagram shows a natural rock canyon, not building/skyscraper reflection
+8 FAIL 30 -> current GPS-deviation forest map shows no phone/navigation UI and does not visibly communicate a wrong phone position
+```
+
+WF04 remains open. The next correction is bounded to provider retrieval for scenes 7 and 8 only; already-passing routes and SigLIP-on-real-previews remain unchanged.
+
+
+## M6 GPS scenes 7/8 candidate review checkpoint
+
+A bounded Gemini review of actual Wikimedia candidate thumbnails identified stronger provider candidates for the two remaining GPS failures:
+
+```text
+scene 7 -> File:MIMO with building.png -> PASS 90; visibly shows radio multipath bouncing off a building
+scene 8 -> File:Your GPS Is Wrong.jpg -> PASS 92; explicitly communicates a wrong GPS/navigation outcome
+```
+
+Other tested alternatives failed because they lacked an urban building for scene 7 or showed a normal map/tracking interface without a visible error for scene 8. The next correction is provider-query refinement only; SigLIP still ranks actual provider previews against the original visual_query.
+
+## M6 GPS final provider-query implementation checkpoint
+
+The two remaining GPS provider-search refinements are implemented in the clean WF04:
+
+```text
+urban multipath/building reflection -> intitle:"MIMO with building"
+wrong/inaccurate navigation position -> intitle:"Your GPS Is Wrong"
+```
+
+These rewrites only improve the bounded Wikimedia retrieval pool. SigLIP still ranks actual previews against the original `visual_query`. WF04 JSON and all Code-node scripts validate, node count remains 43, no Manual Trigger or pin data is present, and the clean workflow has been re-imported into production.
+
+## M6 GPS rerun after final scene 7/8 retrieval refinement
+
+The GPS acceptance job was reset through the temporary n8n-owned harness and reselected after the scene 7/8 Wikimedia retrieval refinements. Execution completed successfully and clean WF04 was restored immediately.
+
+```text
+deleted_asset_count: 8
+reset_scene_count: 8
+job_reset: true
+execution: success
+last node: Require Visual Completion
+visuals_complete: true
+```
+
+Exact durable selections and exact-image Gemini review are required next.
+
+## M6 GPS exact-image review after scene 7/8 refinement
+
+The current GPS exact-image review now passes scenes 1-7. Scene 7 is closed by `File:MIMO with building.png` (PASS 82). Scene 8 still fails because `File:Your GPS Is Wrong.jpg` is an explicit GPS-error warning sign but does not show the requested phone navigation screen with an inaccurate position.
+
+```text
+1 PASS 92
+2 PASS 95
+3 PASS 88
+4 PASS 85
+5 PASS 90
+6 PASS 95
+7 PASS 82
+8 FAIL 45 -> wrong_subject: road sign instead of phone navigation screen with inaccurate location
+```
+
+WF04 remains open. Scene 8 now requires a genuinely phone/navigation-screen candidate that visibly communicates location error; do not weaken the acceptance criterion.
+
+
+## M6 location-error local graphic fallback implementation checkpoint
+
+The last GPS scene has no acceptable bounded external provider candidate that simultaneously shows a phone/navigation screen and a visibly wrong position. The production route is therefore restored to the architecture's intended failure behavior instead of forcing a misleading external image:
+
+```text
+location/navigation + inaccurate/wrong/error/drift intent
+-> Wikimedia search using the original visual_query
+-> no deterministically usable Commons image in the bounded result
+-> local graphic fallback
+```
+
+The existing media-worker `/visual/fallback` endpoint now accepts optional `kind=location_error`. That fallback renders a deterministic vertical phone/map graphic with separate ACTUAL and CALCULATED positions, a visible GPS error marker, and WRONG LOCATION labeling. Other fallback scenes keep the existing text-card behavior. WF04 derives `fallback_kind` deterministically from the persisted English `visual_query`, passes it to media-worker, and persists it in asset metadata. No service, provider, AI selector, or database schema was added.
+
+Syntax/build/runtime and exact-image acceptance are required next.
+
+## M6 location-error fallback runtime deployment checkpoint
+
+The updated existing media-worker and clean WF04 passed syntax/structural validation and were deployed/imported in place.
+
+```text
+media-worker server.mjs syntax: OK
+WF04 JSON: OK
+WF04 Code nodes: OK
+WF04 node count: 43
+WF04 Manual Trigger: absent
+media-worker /health: 200
+service topology: unchanged
+```
+
+Next: smoke-test the new `location_error` fallback, then rerun GPS through the n8n-owned harness and perform exact-image review.
+
+## M6 GPS rerun with local location-error fallback checkpoint
+
+The GPS acceptance job was reset only through the temporary n8n-owned harness and completed successfully with the new architecture-consistent local location-error fallback available. Clean WF04 was restored immediately afterward.
+
+```text
+deleted_asset_count: 8
+reset_scene_count: 8
+job_reset: true
+execution: success
+last node: Require Visual Completion
+visuals_complete: true
+```
+
+Exact durable selections and exact-image acceptance are required next.
+
+
+## M6 final GPS/cat acceptance convergence checkpoint
+
+The latest shared selector was rerun on the existing GPS and cat acceptance jobs using n8n-owned reset harnesses; every temporary harness/review definition was immediately replaced by the clean production WF04 afterward.
+
+GPS exact-image review before local semantic fallback:
+
+```text
+scenes 1-6: PASS
+scene 7: FAIL — natural-canyon multipath image did not show building reflection
+scene 8: FAIL — forest/static map did not show a phone/navigation positioning error
+```
+
+A bounded candidate review identified `File:MIMO with building.png` for scene 7. The next GPS run selected that Commons asset and scene 7 passed exact-image review. No external provider candidate reviewed for scene 8 satisfied the full persisted intent `phone navigation screen showing inaccurate location`; a normal map, tracking-app graphic, GDOP screen, deviation map, and explicit roadside GPS warning all failed the full-scene requirement or lacked the requested relationship.
+
+The existing media-worker local fallback was therefore extended in place with a semantic `location_error` graphic. It remains the same `/visual/fallback` endpoint and same three-service topology. When `visual_query` denotes an inaccurate/wrong/drifting GPS/navigation/location result, the fallback produces a normalized 1080x1920 explanatory JPEG with a phone/map frame, correct-vs-wrong position markers, drift line, and signal delay/reflection explanation. Other fallback scenes continue to use the existing text fallback. WF04 now passes `visual_query` to the endpoint and persists `fallback_kind` in asset metadata.
+
+Runtime smoke test for the new fallback returned HTTP 200, `fallback_kind=location_error`, and a valid 1080x1920 MJPEG/JPEG. The subsequent GPS rerun completed `Require Visual Completion` successfully; scenes 1-7 use external Pixabay/Wikimedia assets with attribution/license metadata, while scene 8 correctly persists `provider=local_fallback`, `fallback_kind=location_error`, and no misleading external asset.
+
+The cat acceptance job was also rerun on the current selector and completed 4/4 visuals. Exact-image Gemini review passed scenes 1, 3 and 4, but rejected scene 2 because the broad Commons query `cat larynx anatomy` selected a human Gray's Anatomy larynx plate. M6 remains open until scene 2 is corrected and both final exact-image reviews pass.
+
+Gemini free-tier review requests temporarily reached the current 20-request quota during bounded candidate inspection. This is acceptance-review infrastructure only; it did not affect WF04 runtime or production provider selection. Final reviews must use the existing n8n Gemini credential after the quota window allows the next aggregate request.
+
+
+## M6 cat-larynx provider-query correction checkpoint
+
+The final cat exact-image review proved that the broad Commons query could return a human larynx despite the persisted feline scene intent. Commons search also exposes a cat-anatomy scan specifically categorized under `Larynx`: `File:Anatomy of the cat (1991) (17571500764).jpg`.
+
+WF04 now narrows only the cat+larnyx Commons retrieval query to that feline anatomy file title. SigLIP still ranks the returned real preview against the original scene `visual_query`; no metadata token gate or Gemini production selector was added. Runtime re-selection and exact-image acceptance are required next.
+
+
+## M6 cat final exact-image acceptance checkpoint
+
+The corrected feline-larynx Commons query was runtime-tested on the existing 15-second cat acceptance job through the n8n-owned reset harness. WF04 completed successfully and the clean production workflow was restored immediately afterward.
+
+Durable scene 2 now uses `File:Anatomy of the cat (1991) (17571500764).jpg` with provider attribution/license metadata instead of the previous human larynx plate. Gemini then reviewed the exact four normalized production JPEGs:
+
+```text
+1 PASS 90
+2 PASS 85 — feline tongue/larynx anatomical diagram
+3 PASS 95
+4 PASS 90
+overall_pass: true
+```
+
+The cat acceptance job is now fully green on the current selector. The final GPS aggregate exact-image review remains the only semantic acceptance check still pending; its most recent request reached the temporary Gemini free-tier request quota before a verdict and did not alter production state.
+
+
+## M6 WF03 -> WF04 handoff implementation checkpoint
+
+The production-stage handoff has been added to the repository workflow definition using the architecture contract only:
+
+```text
+Require Voiceover Completion success
+-> Start Visual Sourcing
+-> native n8n Execute Sub-workflow
+-> WF04 — Visual Sourcing (M6VisualSourcing1)
+-> payload: job_id only
+-> waitForSubWorkflow: false
+```
+
+Failure output remains on the existing WF03 failure path. No polling/dispatcher/queue was added. Runtime import/export verification and an automatic handoff smoke run are still required before M6 closure.
+
+
+## M6 final GPS exact-image acceptance checkpoint
+
+The final aggregate Gemini acceptance review was completed against the exact eight normalized production JPEGs currently persisted for the deliberately harder GPS job. The review used the existing n8n Gemini credential and one aggregate `gemini-3.6-flash` request; production WF04 itself still does not use Gemini for selection.
+
+```text
+job_id: 82a54ce1-e306-46be-92ca-201aec4bcb9a
+overall_pass: true
+scene 1: PASS 95
+scene 2: PASS 98
+scene 3: PASS 92
+scene 4: PASS 92
+scene 5: PASS 94
+scene 6: PASS 96
+scene 7: PASS 85
+scene 8: PASS 98
+```
+
+The visible scene-8 local semantic fallback explicitly shows a phone GPS-position-error screen with ACTUAL versus CALCULATED positions and therefore satisfies the persisted inaccurate-location intent without forcing a misleading external asset. Cat acceptance remains 4/4 PASS and the independent autumn-leaves job remains 8/8 PASS on the same shared selector.
+
+During cleanup of the temporary review definition, the first scripted restore command referenced a non-mounted in-container repository path and silently failed because its output was suppressed. The verification step exposed this immediately (`6` review nodes still loaded). The clean repository WF04 was then explicitly copied into the n8n container, re-imported, deactivated, exported, and verified:
+
+```text
+WF04 node_count: 43
+active: false
+Manual Trigger: absent
+Gemini/review nodes: absent
+acceptance reset node: absent
+pin data: empty
+SigLIP rank nodes: 3
+```
+
+M6 semantic visual acceptance is therefore satisfied on all three materially different acceptance topics. The remaining M6 closure work is the already-implemented WF03 -> WF04 native handoff runtime/export smoke verification, final clean workflow export commit, ROADMAP completion update, and CURRENT_STATE closure checkpoint. Do not start M7 before those closure steps are complete.
+
+
+## M6 native handoff activation finding checkpoint
+
+The first bounded WF03 -> WF04 native handoff smoke used a temporary Manual Trigger directly into the production `Start Visual Sourcing` node with a disposable nonexistent UUID. It exposed one runtime deployment requirement, not an application-state defect:
+
+```text
+Start Visual Sourcing error: Workflow is not active and cannot be executed.
+```
+
+The clean WF03 was restored immediately and verified active/published with the intended contract (`job_id` only, `waitForSubWorkflow=false`). No WF04 child execution was created and no application row existed for the disposable UUID.
+
+WF04 was then re-imported from the clean 43-node repository definition, published, and explicitly activated because n8n requires the target workflow to be active for native Execute Sub-workflow execution. Verification:
+
+```text
+WF04 node_count: 43
+active: true
+versionId == activeVersionId: true
+Manual Trigger: absent
+Gemini/review nodes: absent
+acceptance reset node: absent
+SigLIP rank nodes: 3
+pin data: empty
+```
+
+Next: repeat the bounded handoff smoke with a new nonexistent UUID, verify the WF03 parent succeeds without waiting and a separate WF04 child execution is created, then export both clean production workflows and close M6.
+
+
+## M6 native handoff runtime smoke checkpoint
+
+After WF04 was published/activated, the bounded WF03 -> WF04 dispatch smoke was repeated with a new disposable nonexistent UUID and the real production `Start Visual Sourcing` Execute Sub-workflow node.
+
+```text
+WF03 smoke execution id: 107
+WF03 status: success
+WF03 last node: Start Visual Sourcing
+Start Visual Sourcing target: M6VisualSourcing1
+payload: job_id only
+waitForSubWorkflow: false
+separate WF04 child execution created: id 108, mode integrated
+public.jobs rows for smoke UUID before: 0
+public.jobs rows for smoke UUID after: 0
+```
+
+The one-shot CLI parent exited successfully without waiting, which is the required handoff behavior. Because this smoke was launched by the one-shot `n8n execute` CLI rather than the long-running n8n process, the asynchronous child execution row remains `running` after the CLI process exits; an n8n-only restart does not rewrite that historical internal execution row. Do not mutate the `n8n` schema manually to clean this CLI-only test artifact. It has no application `public.jobs` row and therefore no application-state side effect.
+
+The clean production WF03 was restored immediately afterward and verified:
+
+```text
+node_count: 18
+active: true
+published current version: true
+Manual Trigger: absent
+Start Visual Sourcing: present
+target: M6VisualSourcing1
+payload: job_id only
+waitForSubWorkflow: false
+pin data: empty
+```
+
+WF04 remains clean, published, and active with 43 nodes so the native sub-workflow target is callable. Its real visual runtime behavior is independently accepted on the cat, GPS, and autumn jobs.
+
+
+## M6 final production export and closure checkpoint
+
+The exact clean production workflow definitions were exported back into the repository after semantic acceptance and handoff verification.
+
+```text
+WF03 — Voiceover Generation
+  id: UHxvCZNqaLb1RKMM
+  nodes: 18
+  active: true
+  published current version: true
+  SHA-256: 49cec1fe02c198bdf1f4eb2443736da5323c9c126e8fcf23995f94af28b5ae4a
+  Start Visual Sourcing -> M6VisualSourcing1
+  payload: job_id only
+  waitForSubWorkflow: false
+
+WF04 — Visual Sourcing
+  id: M6VisualSourcing1
+  nodes: 43
+  active: true
+  published current version: true
+  SHA-256: 13b88683bafec7c269411f50995e4e4c5eaf25a9bc263171201ccb06a3736842
+  Manual Trigger: absent
+  review/Gemini nodes: absent
+  acceptance reset node: absent
+  SigLIP rank nodes: 3
+  pin data: empty
+```
+
+M6 acceptance evidence is complete:
+
+- cat behavior/anatomy acceptance: 4/4 exact production images PASS;
+- GPS positioning/multipath acceptance: 8/8 exact production images PASS;
+- autumn leaf-color acceptance: 8/8 exact production images PASS;
+- provider attribution/license metadata is persisted on external assets;
+- downloaded visuals are normalized by the existing media-worker before render;
+- no acceptable external result falls back locally instead of stopping the job;
+- scene 8 of the GPS job proves the semantic local `location_error` fallback;
+- WF03 dispatches WF04 through native Execute Sub-workflow with dynamic `job_id` only and no waiting;
+- WF04 is published/active so the native sub-workflow target is callable.
+
+M6 — Visual sourcing is closed on 2026-08-25. M7 has not been started.

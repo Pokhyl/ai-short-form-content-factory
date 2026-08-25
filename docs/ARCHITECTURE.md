@@ -334,14 +334,20 @@ Initial policy:
 visual_subject_type = factual -> Wikimedia Commons
                                  -> local graphic/text fallback
 
-visual_subject_type = generic -> Pixabay
-                                 -> Pexels fallback
-                                 -> local graphic/text fallback
+technical/diagram/screen visual intent -> Wikimedia Commons
+                                -> local graphic/text fallback
+
+photo-like visual_subject_type = generic -> Pixabay
+                                         -> Pexels fallback
+                                         -> local graphic/text fallback
 ```
 
 The planning stage classifies the subject, but it does not select a concrete provider
-asset. Visual Sourcing applies the deterministic provider route above. A failed
-factual Wikimedia search does not silently substitute misleading generic stock.
+asset. Visual Sourcing applies the deterministic provider route above. Technical/diagram/screen
+intent is detected deterministically from the persisted English `visual_query` so diagrams,
+anatomy, satellite/signal relationships, navigation/location-error screens, and similar explanatory visuals can use Wikimedia
+even when the planning-stage subject type is `generic`. A failed Wikimedia search does not
+silently substitute misleading generic stock.
 The actual provider ID, source URL, attribution, license, local filename, and
 `scenes.visual_path` are created only after M6 selects and downloads the asset.
 

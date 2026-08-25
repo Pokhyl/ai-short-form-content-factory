@@ -186,6 +186,8 @@ Learning focus:
 
 ## M6 — Visual sourcing
 
+Status: completed on 2026-08-25.
+
 Goal: choose usable media for each scene without building a separate orchestration system.
 
 Initial sources:
@@ -200,6 +202,17 @@ Acceptance:
 - attribution/license metadata is saved where required;
 - oversized/unusable files are normalized before render;
 - no acceptable result produces a local fallback scene instead of stopping the job.
+
+Validated runtime/repository result:
+
+- provider search keeps a bounded candidate pool and local SigLIP ranks actual preview images against scene intent;
+- Wikimedia Commons handles factual/technical/diagram/screen intent, while photo-like generic intent uses Pixabay with Pexels fallback;
+- exact normalized production-image acceptance passed 4/4 cat scenes, 8/8 GPS scenes, and 8/8 autumn-leaf scenes;
+- external asset rows persist source/provider/author/license metadata;
+- media-worker normalization and local fallback behavior are runtime-proven;
+- GPS scene 8 uses the local semantic `location_error` fallback instead of a misleading external image;
+- WF03 hands off to WF04 through native Execute Sub-workflow with dynamic `job_id` only and `waitForSubWorkflow=false`;
+- clean production WF03/WF04 exports are committed with no acceptance harness, review node, reset node, or pin data.
 
 Learning focus:
 
