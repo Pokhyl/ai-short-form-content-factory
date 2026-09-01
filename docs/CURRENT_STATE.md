@@ -1,127 +1,115 @@
-# Current Project State
+# Current Project State — Rebuild
 
-Last updated: 2026-08-23
+Last updated: 2026-09-01
 
-This file is the first checkpoint to read before continuing work on this repository.
-If chat history conflicts with this file, `docs/ARCHITECTURE.md`, or `docs/ROADMAP.md`, the repository wins.
+This file is the authoritative source of truth for active branch `rebuild/simple-pipeline`. If chat memory, old branches, old workflow exports, or older docs conflict with this file, this file wins.
 
-## Mandatory assistant protocol
+## Mandatory protocol
 
-For every technical reply or action about this project, fetch the current `docs/CURRENT_STATE.md` from the active feature branch first. Fetch `docs/ARCHITECTURE.md` when architecture is involved and `docs/ROADMAP.md` when milestone scope, acceptance, or progression is involved. Repository state overrides chat memory. Unknown facts must not be guessed. After every completed implementation or runtime step, update this file before moving on. Export production n8n workflows into the repository.
+Before EVERY technical response, diagnosis, recommendation, code/config change, deployment, or test for this project:
 
-## Project
+1. Read `docs/PERMANENT_PROJECT_RULES.md` from GitHub.
+2. Read this file from GitHub branch `rebuild/simple-pipeline`.
+3. Architecture change: also read `docs/ARCHITECTURE.md`.
+4. Milestone/acceptance/gate change: also read `docs/ROADMAP.md` and `docs/PROCESS_GATE.md`.
+5. Upstream/provider change: also read `docs/UPSTREAM_DECISION.md`.
 
-AI Short-Form Content Factory
+Repository state overrides chat memory. Unknown state must not be guessed.
 
-Repository: `Pokhyl/ai-short-form-content-factory`
+## Product
 
-Product goal:
+Self-hosted AI Short-Form Content Factory:
 
-```text
-Topic
-  -> Script + scene plan
-  -> Voiceover
-  -> Visual sourcing
-  -> Render
-  -> Human review
-  -> Buffer draft
-```
+`topic -> factual narration + visual plan -> continuous natural voice -> truthful/relevant visuals -> render -> human review`
 
-## Completed milestone
+Publishing is outside the automatic generation chain.
 
-M4 — Script + scene plan
+## Runtime invariants
 
-Status: completed on 2026-08-23.
+Exactly three persistent project services:
 
-Production WF02:
+- `ai-short-form-content-factory-n8n-1`
+- `ai-short-form-content-factory-postgres-1`
+- `ai-short-form-content-factory-media-worker-1`
 
-- workflow ID: `TJfA4ZYUEKSTad6k`;
-- name: `WF02 — Plan Script and Scenes`;
-- final topology: 8 nodes ending in terminal `Persist Scene Plan`;
-- final accepted export SHA-256: `be35214a12a4ef933145e629a3cf070376378a1b1a9ba9cd3256b8fbd5f0fdc1`;
-- final export commit: `8a545d3f2fc1942b3f95aa9c6919b0cfc2995ac2`;
-- M4 completion docs commit: `9e1336775165702b60d94474b449b09fb0148042`.
+Per-video external API cost must remain `0 PLN`.
 
-M4 acceptance passed:
+Measured VPS capacity on 2026-09-01:
 
-- one Gemini request returns validated structured JSON;
-- 15/30/45/60-second jobs require exactly 4/8/12/15 scenes;
-- every scene has sequential `scene_number`, target-language `narration`, `visual_subject_type = factual|generic`, target-language `visual_description`, and a unique English `visual_query` no longer than 100 characters;
-- scene persistence and job-state mutation are atomic;
-- malformed output creates no partial scene state;
-- the fourth meaningful-topic quality run passed manual review for language, coherence, factual/causal accuracy, narration-to-visual alignment, classifications, and visual queries.
+- 2 vCPU
+- 3.7 GiB RAM
+- 2.0 GiB swap
+- no GPU
+- root filesystem 38 GiB, about 2.7 GiB free at measurement time
 
-Accepted quality job:
+Do not add a fourth persistent service unless a separately measured blocker proves it necessary and the architecture decision is documented first.
 
-`6b08098c-e5c7-45bd-babb-036705b563e1`
+## Voice — current production
 
-It remains `processing/script` with exactly 8 persisted scenes. Do not rerun it.
+WF03 is Edge-only continuous voice. Fixed voices:
 
-## Runtime
+- EN `en-US-AndrewNeural`
+- PL `pl-PL-MarekNeural`
+- RU `ru-RU-DmitryNeural`
+- UK `uk-UA-OstapNeural`
 
-VPS: `root@37.27.87.6`
+Provider rate/pitch/volume remain default. No `atempo`, rate correction, pause rewrite, or silence-removal filter is allowed.
 
-Project path: `/opt/ai-short-form-content-factory`
+The destructive `silenceremove` stage was removed in implementation commit `146abeb`. Media-worker preserves provider timing and only normalizes format to 48 kHz stereo PCM WAV.
 
-Services: `n8n`, `postgres`, `media-worker`.
+WF02 was recalibrated against untouched/default-rate Edge timing in implementation commit `097cdb7`. Current production WF02 active/published version is `857ac0dd-f1e7-4a55-825c-ba21dc70ad9d`, exact published core SHA-256 `030cf6b5ec6f9e75bcef8c5714ed618831c02f6aa899a38db39aafd76af2b0a3`.
 
-Public n8n URL: `https://publisher.hodor.com.pl/`
+EN15 planning currently targets about 196 non-space characters / 33 words; equivalent per-language clean-Edge calibration exists for PL/RU/UK. The measured WF03 duration gate remains authoritative.
 
-Protected old runtime: `/opt/n8n` — do not modify except for a narrowly required, backed-up, validated Caddy change.
+## Visuals — current production
 
-The `n8n` PostgreSQL schema belongs to n8n and must not be modified manually.
+WF04 preserves canonical reference provenance plus structured `reference_media_kind = diagram | animation | photo` for technical-reference beats. The repair implementation is commit `7a302ce`.
 
-## M5 voice configuration recovered
+Current production WF04 active/published version is `772c8790-0538-4e28-9892-7f3c94ff6e66`, exact core SHA-256 `a4bbfb6affc3d64433f01aa3be92a97b46c9a643d3eb0b88883f7e8053cc0d85`.
 
-The exact previously selected voice presets have now been recovered from prior project runtime/test evidence. These are product decisions and must be reused exactly; do not substitute guessed voices.
+Stock/exact semantics, renderer and review remain unchanged by the current provider work.
 
-Google Cloud Text-to-Speech voice presets:
+## Permanent provider rule — active blocker
 
-| Language | Exact voice preset |
-| --- | --- |
-| English (`en`) | `en-US-Chirp3-HD-Algenib` |
-| Polish (`pl`) | `pl-PL-Chirp3-HD-Enceladus` |
-| Russian (`ru`) | `ru-RU-Wavenet-D` |
-| Ukrainian (`uk`) | `uk-UA-Chirp3-HD-Enceladus` |
+Production MUST NOT depend on request-count/rate/quota-limited hosted AI Free Tier as a required generation dependency.
 
-Prior evidence also confirms that the previous voice-testing work used Google Cloud Text-to-Speech. Current production credential availability in the new n8n runtime has not yet been verified and must not be assumed.
+Latest production evidence after clean-Edge deployment:
 
-## M5 contract already defined by architecture
+- primary `gemini-3.6-flash` returned `429 RESOURCE_EXHAUSTED` for Free Tier metric `generativelanguage.googleapis.com/generate_content_free_tier_requests`, limit `20`, with explicit retry-after;
+- fallback `gemini-3.5-flash` simultaneously returned `503 UNAVAILABLE / high demand`;
+- prior fresh attempts also produced repeated `503` from both models.
 
-Voiceover Generation is a separate stage workflow.
+Therefore Gemini Free Tier is not an acceptable critical-path dependency. Do not wait for quota reset and do not repair this with sleeps, retry loops, model hopping, extra keys/accounts/projects, paid fallback, or weakened acceptance.
 
-It:
+## Current systemic objective
 
-- receives only `job_id`;
-- reloads the persisted job/scenes from PostgreSQL;
-- validates stage eligibility;
-- changes `jobs.current_stage` to `voiceover` only when M5 actually begins;
-- generates one voiceover file per scene using the exact configured voice for the job language;
-- stores `scenes.audio_path`;
-- measures real audio duration and stores it in `scenes.duration_seconds`;
-- persists state through n8n, not directly from media-worker;
-- starts Visual Sourcing only after every required scene audio file is ready;
-- on failure records `jobs.status = failed`, `jobs.current_stage = voiceover`, and `jobs.last_error`, and does not start the next stage.
+Remove Gemini / any hosted quota-limited semantic AI from the REQUIRED production generation path while preserving:
 
-Do not add a generic retry/idempotency framework. Add only the smallest stage-specific guard required when the TTS side effect is implemented and tested.
+- 0 PLN per-video API cost;
+- truthful factual narration grounded in retrieved evidence;
+- output languages EN/PL/RU/UK;
+- natural Edge voice with no speed/pause manipulation;
+- current duration and visual truth gates;
+- exactly three persistent services.
 
-## Branch / PR checkpoint
+A local semantic engine may run inside the existing `media-worker`; that does not add a fourth service. Any local model must fit measured VPS CPU/RAM/disk constraints and must not become a silent quality downgrade. Candidate/model selection must be proven on materially different topics and all four languages before production deployment.
 
-Current branch: `feat/m4-script-scene-planning`
+## Acceptance matrix
 
-PR `#5 — M4: implement script and scene planning` is still open and draft even though M4 acceptance is complete. Before M5 implementation, finalize and merge PR #5 into `main`, then create the M5 feature branch from the resulting `main` head.
+Frozen CASE 1 remains:
 
-## Exact next action
+`How does a zipper work?` / `en` / `15`
 
-Finalize PR #5 so its description reflects the completed M4 state, mark it ready, and merge it into `main` only if its head is still the verified M4 head and GitHub reports it mergeable. Then create a new M5 feature branch from the resulting `main` head, update this checkpoint for M5, and perform a read-only inspection of the new production runtime for the Google Cloud TTS credential/auth configuration and any existing media-worker audio/file capabilities before building the Voiceover workflow. Do not guess current credential availability or invent a new service.
+No later matrix case may be accepted before CASE 1 passes on one unchanged runtime:
 
-## Do not do
+- factual/coherent narration;
+- natural clean Edge measured duration;
+- every selected visual/provenance/content check;
+- final ffprobe;
+- human-visible voice/render quality.
 
-- do not rerun accepted or failed M4 quality-test jobs;
-- do not substitute different voice presets;
-- do not start M5 implementation on the M4 branch;
-- do not modify the n8n PostgreSQL schema manually;
-- do not add retry/dispatcher/queue/watchdog/Redis/generic idempotency infrastructure;
-- do not add extra services;
-- do not modify `/opt/n8n` casually;
-- do not put secrets in GitHub.
+First real product failure stops progression and is repaired systemically, never with a topic-specific patch.
+
+## Immediate next action
+
+Design and prove a local, zero-API-cost semantic replacement for Gemini inside the existing three-service architecture. Start with read-only capability/resource/model probes; do not mutate production until the model/approach passes cross-topic/cross-language structured-output and factual-grounding tests against the existing WF02 contract. Then document architecture decision, implement behind the same durable WF02 boundary, run full local regression, deploy boundedly, and restart CASE 1 from a completely fresh job.
