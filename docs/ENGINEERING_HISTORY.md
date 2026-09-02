@@ -295,3 +295,29 @@ Selective commit proof:
 - production remained unchanged with exactly three persistent services.
 
 The next action is bounded production deployment of commit `f7c4096`: create rollback snapshot, apply migration 013, deploy media-worker/WF04/WF05 and corrected compose only, verify runtime contracts, then start a completely fresh induction job.
+
+## 2026-09-02 — Pre-deploy visual-quality-v2 rollback snapshot created
+
+Rollback snapshot:
+
+- path `/opt/ai-short-form-content-factory/rollback/20260902T175543Z-pre-visual-quality-v2`;
+- 14 files were captured and checksum-validated;
+- live WF04 export SHA-256 `6a73b0bfda88fc4cc05544f306136f3638c097543ef65f67ce988fa532609ceb`;
+- live WF05 export SHA-256 `4bb176b86256711cd604557d6579a9bca94a9964d69a5cf9cfbf7c9b62ba0a12`;
+- schema-only dump SHA-256 `fab11933320bb3778fcea14d7113a77b12f4eee93b5419f6679a9b7ed95d5ebf`;
+- snapshot includes production compose, complete media-worker source tree, file copies of WF04/WF05, exact live n8n WF04/WF05 exports, public DB schema/core-column metadata, git/runtime state and container/image identities;
+- `.env` was deliberately not copied.
+
+Verified pre-deploy live state:
+
+- production branch `feat/m6-visual-sourcing`, HEAD `7657c9e03110ed62297e054449762f2aed959f02` with historical local production changes/untracked artifacts already present;
+- rebuild visual commit is `f7c4096503c9620910b387129a5a06cce4d26d42`;
+- exactly `media-worker`, `n8n`, `postgres` are running;
+- PostgreSQL is healthy;
+- `jobs.visual_quality` column count is `0`;
+- running media-worker has neither Pixabay nor Pexels variable present yet, matching the diagnosed old compose wiring;
+- running media-worker `/health` is `ok` with local `Xenova/siglip-base-patch16-224`, dtype `q4`.
+
+The first snapshot metadata command emitted a shell syntax warning while trying to interpolate one verification line; snapshot files/checksums were already valid. The metadata line was recomputed independently and appended correctly: `visual_quality_column_verified=0`, PostgreSQL healthy, worker provider vars absent. This warning did not mutate production and is not treated as deployment proof.
+
+No production schema, workflow, container or service was changed while creating/verifying this snapshot. The next action is the bounded mutation deploy using this rollback directory.
