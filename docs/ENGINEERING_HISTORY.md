@@ -321,3 +321,31 @@ Verified pre-deploy live state:
 The first snapshot metadata command emitted a shell syntax warning while trying to interpolate one verification line; snapshot files/checksums were already valid. The metadata line was recomputed independently and appended correctly: `visual_quality_column_verified=0`, PostgreSQL healthy, worker provider vars absent. This warning did not mutate production and is not treated as deployment proof.
 
 No production schema, workflow, container or service was changed while creating/verifying this snapshot. The next action is the bounded mutation deploy using this rollback directory.
+
+## 2026-09-02 — Visual-quality-v2 schema and media-worker deployed
+
+Bounded production phase completed before workflow publication:
+
+- exact committed files from local commit `f7c4096503c9620910b387129a5a06cce4d26d42` were copied into production for compose, migration 013, WF04, WF05 and the four media-worker visual/render source files;
+- each copied production file was byte-compared against the exact commit object and matched;
+- the production compose diff was independently verified to contain only the two intended media-worker environment declarations for `PIXABAY_API_KEY` and `PEXELS_API_KEY`;
+- the new media-worker image was built before switching the running container.
+
+Schema proof:
+
+- migration `013_visual_quality_gate.sql` executed successfully with `BEGIN / ALTER TABLE / ALTER TABLE / ALTER TABLE / COMMIT`;
+- `jobs.visual_quality` column count is now `1`;
+- `jobs_visual_quality_check` constraint count is `1`;
+- the migration is additive relative to the pre-deploy snapshot.
+
+Live media-worker proof:
+
+- old worker container ID began `0907393119fc...`;
+- recreated worker container ID begins `c8accec45c30...`;
+- both `PIXABAY_API_KEY` and `PEXELS_API_KEY` are now present in the live worker environment; values were not printed;
+- `/health` is `ok` with `Xenova/siglip-base-patch16-224`, dtype `q4`;
+- direct production `/visual/discover` for induction returned provider counts canonical article `5`, Pexels `15`, Pixabay `18`, one-beat candidate count `60`, provider set Wikimedia/Pexels/Pixabay, and no provider errors;
+- direct production `/visual/rank` ranked 6 candidates and every result carried a valid 64-hex-character `visual_hash`; proof prefix from the top result was `fcfffc3ffc3ffc3f`;
+- exactly `media-worker`, `n8n`, `postgres` remain running and PostgreSQL remains healthy.
+
+WF04/WF05 have not yet been imported/published at this checkpoint. The next action is regular-mode import of WF04 and WF05, publish both IDs, exactly one n8n restart, then export and compare live workflow cores against commit `f7c4096`.
