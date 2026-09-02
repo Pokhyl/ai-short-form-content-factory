@@ -1,6 +1,6 @@
 # Current Project State — Rebuild
 
-Last updated: 2026-09-01
+Last updated: 2026-09-02
 
 This file is the authoritative source of truth for active branch `rebuild/simple-pipeline`. If chat memory, old branches, old workflow exports, or older docs conflict with this file, this file wins.
 
@@ -20,7 +20,7 @@ Repository state overrides chat memory. Unknown state must not be guessed.
 
 Self-hosted AI Short-Form Content Factory:
 
-`topic -> factual narration + visual plan -> continuous natural voice -> truthful/relevant visuals -> render -> human review`
+`topic -> evidence -> final narration -> continuous natural voice -> timed beats -> truthful/relevant visuals -> render -> human review`
 
 Publishing is outside the automatic generation chain.
 
@@ -32,15 +32,15 @@ Exactly three persistent project services:
 - `ai-short-form-content-factory-postgres-1`
 - `ai-short-form-content-factory-media-worker-1`
 
-Per-video external API cost must remain `0 PLN`.
+Per-video external API cost remains `0 PLN`.
 
-Measured VPS capacity on 2026-09-01:
+Measured VPS class:
 
 - 2 vCPU
 - 3.7 GiB RAM
 - 2.0 GiB swap
 - no GPU
-- root filesystem 38 GiB, about 2.7 GiB free at measurement time
+- constrained local disk
 
 Do not add a fourth persistent service unless a separately measured blocker proves it necessary and the architecture decision is documented first.
 
@@ -57,59 +57,125 @@ Provider rate/pitch/volume remain default. No `atempo`, rate correction, pause r
 
 The destructive `silenceremove` stage was removed in implementation commit `146abeb`. Media-worker preserves provider timing and only normalizes format to 48 kHz stereo PCM WAV.
 
-WF02 was recalibrated against untouched/default-rate Edge timing in implementation commit `097cdb7`. Current production WF02 active/published version is `857ac0dd-f1e7-4a55-825c-ba21dc70ad9d`, exact published core SHA-256 `030cf6b5ec6f9e75bcef8c5714ed618831c02f6aa899a38db39aafd76af2b0a3`.
-
-EN15 planning currently targets about 196 non-space characters / 33 words; equivalent per-language clean-Edge calibration exists for PL/RU/UK. The measured WF03 duration gate remains authoritative.
+Production WF02 was recalibrated against untouched/default-rate Edge timing in implementation commit `097cdb7`, but its current monolithic generation architecture is now superseded by the staged redesign below.
 
 ## Visuals — current production
 
-WF04 preserves canonical reference provenance plus structured `reference_media_kind = diagram | animation | photo` for technical-reference beats. The repair implementation is commit `7a302ce`.
+WF04 currently preserves canonical reference provenance plus structured `reference_media_kind = diagram | animation | photo` for technical-reference beats. The repair implementation is commit `7a302ce`.
 
-Current production WF04 active/published version is `772c8790-0538-4e28-9892-7f3c94ff6e66`, exact core SHA-256 `a4bbfb6affc3d64433f01aa3be92a97b46c9a643d3eb0b88883f7e8053cc0d85`.
+The fresh zipper run after that repair proved reference-form selection, but also exposed a real stock semantic defect: a generic drysuit zipper photo was selected for a beat requesting continuous-coil detail. This remains an unresolved product issue and must be addressed by the redesigned visual-intent + stock eligibility boundary, not by a zipper-specific patch.
 
-Stock/exact semantics, renderer and review remain unchanged by the current provider work.
+## Permanent provider rule
 
-## Permanent provider rule — active blocker
+Production MUST NOT depend on request-count/rate/quota-limited hosted semantic AI as a required generation dependency.
 
-Production MUST NOT depend on request-count/rate/quota-limited hosted AI Free Tier as a required generation dependency.
+Fresh production evidence:
 
-Latest production evidence after clean-Edge deployment:
+- `gemini-3.6-flash` returned `429 RESOURCE_EXHAUSTED` for Free Tier request quota;
+- `gemini-3.5-flash` simultaneously returned `503 UNAVAILABLE / high demand`;
+- repeated fresh attempts also produced provider `503` failures.
 
-- primary `gemini-3.6-flash` returned `429 RESOURCE_EXHAUSTED` for Free Tier metric `generativelanguage.googleapis.com/generate_content_free_tier_requests`, limit `20`, with explicit retry-after;
-- fallback `gemini-3.5-flash` simultaneously returned `503 UNAVAILABLE / high demand`;
-- prior fresh attempts also produced repeated `503` from both models.
+Do not wait for quota reset and do not repair this with sleeps, retry loops, model hopping, extra keys/accounts/projects, paid fallback, or weakened acceptance.
 
-Therefore Gemini Free Tier is not an acceptable critical-path dependency. Do not wait for quota reset and do not repair this with sleeps, retry loops, model hopping, extra keys/accounts/projects, paid fallback, or weakened acceptance.
+## Rejected local-model experiment
 
-## Current systemic objective
+Do not continue benchmarking local models against the old monolithic WF02 request.
 
-Remove Gemini / any hosted quota-limited semantic AI from the REQUIRED production generation path while preserving:
+The old zipper EN15 request was about 4.7k input tokens before generation and required one model response to contain exact narration tokens, claim/evidence links and six complete visual-scene objects. Qwen3 0.6B/1.7B fit the VPS individually but the old workload was too slow/brittle; complex JSON-schema/GBNF decoding also produced sampler/latency problems.
 
-- 0 PLN per-video API cost;
-- truthful factual narration grounded in retrieved evidence;
-- output languages EN/PL/RU/UK;
-- natural Edge voice with no speed/pause manipulation;
-- current duration and visual truth gates;
-- exactly three persistent services.
+This is classified as an architecture-boundary failure, not a reason to keep model hopping.
 
-A local semantic engine may run inside the existing `media-worker`; that does not add a fourth service. Any local model must fit measured VPS CPU/RAM/disk constraints and must not become a silent quality downgrade. Candidate/model selection must be proven on materially different topics and all four languages before production deployment.
+## Selected staged architecture — NOT YET IMPLEMENTED
 
-## Acceptance matrix
+The new source-of-truth architecture is defined in `docs/ARCHITECTURE.md` and `docs/UPSTREAM_DECISION.md`.
 
-Frozen CASE 1 remains:
+### WF02 becomes research + narration only
 
-`How does a zipper work?` / `en` / `15`
+1. Retrieve bounded factual sources.
+2. Split source text into deterministic evidence units.
+3. Select a compact diverse evidence packet before local inference: normally at most two evidence units per final sentence (`6/10/14/18` max selected units for `15/30/45/60` seconds).
+4. Persist selected evidence/provenance durably in PostgreSQL.
+5. Call a local semantic engine with only topic + target language + duration guidance + selected evidence.
+6. Return/persist narration + sentence evidence references only.
+7. Do NOT create scenes and do NOT generate visual intent in WF02.
 
-No later matrix case may be accepted before CASE 1 passes on one unchanged runtime:
+### WF03 becomes final voice + timed beat creator
 
-- factual/coherent narration;
-- natural clean Edge measured duration;
-- every selected visual/provenance/content check;
-- final ffprobe;
-- human-visible voice/render quality.
+1. Synthesize one continuous default-rate Edge voice.
+2. Measured duration remains the hard gate.
+3. If the first synthesis misses the unchanged duration gate, allow at most one bounded TEXT-fit rewrite against the same persisted evidence; revalidate and synthesize once more. Never modify audio speed/pauses.
+4. If final voice still misses, fail closed.
+5. Only after final script + voice pass, deterministically create `6/10/14/18` timed beats/scenes.
+6. Visual-specific scene fields remain unset at this stage.
+
+### WF04 becomes visual intent + sourcing
+
+1. Generate compact local visual intent only from final timed beats + relevant evidence/canonical entity context.
+2. Persist visual-support provenance for fact-critical specificity.
+3. Enforce eligibility before ranking:
+   - exact identity match;
+   - canonical reference provenance + requested representation form;
+   - metadata-supported `concrete_subject` for truth-critical stock;
+   - contextual stock only when substitution remains truthful.
+4. Only eligible candidates reach local SigLIP relative ranking.
+5. Empty eligible lanes fail closed.
+
+### WF05/WF06
+
+Render/review boundaries remain conceptually unchanged and consume only final accepted voice, timed beats and visuals.
+
+## Required database changes
+
+Before production implementation:
+
+- add durable job evidence/provenance storage (`job_evidence` or equivalent);
+- allow scene rows to exist in a pre-visual `timed` state with narration/timing present and visual fields null;
+- require complete/consistent visual fields before a scene can advance to visual-ready state;
+- persist evidence references that justify fact-critical visual intent.
+
+No migration has been applied yet for this redesign.
+
+## Heavy-compute invariant
+
+`media-worker` must have one global heavyweight-compute boundary. Local semantic inference and SigLIP must not run concurrently or remain simultaneously resident when that exceeds measured memory.
+
+Semantic inference must release model memory after the request. SigLIP lifetime must be explicitly controlled. Concurrent-job testing must prove no RAM/swap exhaustion before production acceptance.
+
+## Local model selection — next phase only
+
+Do not select/deploy a model using the old giant WF02 prompt.
+
+First implement a local evaluation harness for the new compact contracts. Then evaluate feasible multilingual local candidates on materially different topics and all four languages. A weak model is rejected; Gemini is not restored as fallback.
+
+## Frozen product acceptance
+
+CASE 1 remains:
+
+`How does a zipper work? / en / 15`
+
+No later matrix case may be accepted before CASE 1 passes on one unchanged redesigned runtime:
+
+- selected evidence is relevant and persisted;
+- narration facts/coherence pass;
+- natural clean Edge measured duration passes;
+- timed beats exactly reconstruct the final narration/voice timeline;
+- every visual intent is evidence-consistent;
+- every selected asset/provenance/content check passes;
+- final ffprobe passes;
+- human-visible voice/render quality passes.
 
 First real product failure stops progression and is repaired systemically, never with a topic-specific patch.
 
 ## Immediate next action
 
-Design and prove a local, zero-API-cost semantic replacement for Gemini inside the existing three-service architecture. Start with read-only capability/resource/model probes; do not mutate production until the model/approach passes cross-topic/cross-language structured-output and factual-grounding tests against the existing WF02 contract. Then document architecture decision, implement behind the same durable WF02 boundary, run full local regression, deploy boundedly, and restart CASE 1 from a completely fresh job.
+Implement the redesign in a disposable/local branch surface before production mutation, in this order:
+
+1. schema/migration for durable evidence + timed pre-visual scenes;
+2. deterministic evidence reducer and compact narration contract/harness;
+3. evaluate local narration candidate(s) against that compact contract;
+4. voice/text-fit boundary + timed scene creation;
+5. compact visual-intent contract + stock/reference/exact eligibility changes;
+6. full local regression;
+7. document exact implementation proof;
+8. bounded deploy with rollback evidence;
+9. completely fresh CASE 1.
