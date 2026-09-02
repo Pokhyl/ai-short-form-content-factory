@@ -274,3 +274,24 @@ Final full pre-commit proof:
 - production remained exactly `media-worker`, `n8n`, `postgres`; PostgreSQL stayed healthy.
 
 The visual rewrite is now eligible for a coherent local commit. The unrelated WF02 fact-search-query change and its regression must remain outside that commit and be handled separately after the visual rewrite is deployed and proven.
+
+## 2026-09-02 — Visual rewrite committed locally
+
+Local commit:
+
+- SHA `f7c4096503c9620910b387129a5a06cce4d26d42`;
+- subject `redesign: enforce perceptual visual diversity`;
+- 15 files changed, 825 insertions, 91 deletions.
+
+Selective commit proof:
+
+- staged files were limited to compose, migration 013, WF04, WF05, media-worker visual/render modules and visual regression tests;
+- `n8n/workflows/WF02-plan-script-and-scenes.json` was explicitly excluded;
+- `tests/wf02_fact_search_query_regression.mjs` was explicitly excluded;
+- `.env` files were not staged;
+- `git diff --cached --check` passed;
+- configured Pixabay/Pexels secret values were checked against the staged patch without printing them and neither value was present;
+- after commit the only remaining worktree changes were the separate WF02 workflow modification and untracked WF02 fact-search-query regression;
+- production remained unchanged with exactly three persistent services.
+
+The next action is bounded production deployment of commit `f7c4096`: create rollback snapshot, apply migration 013, deploy media-worker/WF04/WF05 and corrected compose only, verify runtime contracts, then start a completely fresh induction job.
