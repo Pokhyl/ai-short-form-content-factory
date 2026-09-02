@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-02
 
-This file is authoritative for branch `rebuild/simple-pipeline`. Repository state overrides chat memory.
+This file is authoritative for branch `rebuild/simple-pipeline`. Repository/runtime state overrides chat memory.
 
 ## Mandatory protocol
 
@@ -13,175 +13,135 @@ Before EVERY technical response, diagnosis, recommendation, code/config change, 
 3. Architecture change: also read `docs/ARCHITECTURE.md`.
 4. Milestone/acceptance/gate change: also read `docs/ROADMAP.md` and `docs/PROCESS_GATE.md`.
 5. Upstream/provider change: also read `docs/UPSTREAM_DECISION.md`.
+6. Then inspect fresh VPS/runtime state before acting.
 
-## Product
+## Hard invariants
 
-`topic -> factual evidence -> deterministic evidence-backed narration -> local duration preflight -> one continuous natural voice -> timed beats -> deterministic truthful visuals -> render -> human review`
+- exactly three persistent services: `n8n`, `postgres`, `media-worker`;
+- external API cost per generated video: `0 PLN`;
+- no Gemini or other quota-limited hosted semantic AI in the required critical path;
+- no general local generative LLM in the required critical path;
+- no quota waits/retries, extra keys/accounts, paid fallback, topic-specific patches, acceptance bypasses, threshold weakening, or repeated fitting TTS;
+- automatic production performs exactly ONE Edge synthesis per job.
 
-Publishing is outside automatic generation.
+Critical path:
 
-## Runtime invariants
+`topic -> factual evidence -> deterministic evidence-backed narration -> local duration preflight -> one natural Edge voice -> timed beats -> deterministic truthful visual eligibility -> local SigLIP ranking -> render -> human review`
 
-Exactly three persistent services:
+## Production state
 
-- `ai-short-form-content-factory-n8n-1`
-- `ai-short-form-content-factory-postgres-1`
-- `ai-short-form-content-factory-media-worker-1`
+Production migration `db/migrations/012_staged_semantic_pipeline.sql` is applied and preserves legacy `scene_v1`, `beat_v2`, and new `staged_v1` rows.
 
-Per-video external API cost: `0 PLN`.
+Published staged workflows:
 
-Measured VPS:
+- WF02 `TJfA4ZYUEKSTad6k` — deterministic evidence/narration;
+- WF03 `UHxvCZNqaLb1RKMM` — one natural Edge voice + timed beats;
+- WF04 `M6VisualSourcing1` — deterministic visual sourcing;
+- WF05 `M7VideoRender1` — render.
 
-- 2 vCPU
-- 3.7 GiB RAM
-- 2.0 GiB swap
-- no GPU
+Exactly three project services are healthy after the latest bounded deploy.
 
-## Permanent provider rule
+Latest rollback snapshot:
 
-Production MUST NOT require a request-count/rate/quota-limited hosted semantic AI.
+`/opt/ai-short-form-content-factory/rollback/20260902T135709Z-pre-wf04-assignment`
 
-Fresh Gemini production evidence included both `429 RESOURCE_EXHAUSTED` and `503 UNAVAILABLE / high demand`.
+## Latest systemic visual fixes
 
-Do not solve this with waiting, retries, extra keys/accounts/projects, paid fallback or weaker acceptance.
+Key commits:
 
-## Local LLM decision — rejected as required critical path
+- `0f4723a` — dedupe selected visual downloads by `candidate_id` and reuse one stored local asset for multiple truthful scene targets;
+- `f7c321a` — preserve alternative factual branches, preserve animated GIFs as video, remove hidden preview retry loop, use bounded preview cache;
+- `954b383` — constrained deterministic visual assignment.
 
-The later compact-local-model direction has also been rejected after actual VPS measurements.
+`954b383` replaces scene-order greedy selection with deterministic maximum bipartite matching over already metadata-eligible/ranked candidates. It prioritizes constrained beats and maximizes unique truthful assets. Reuse occurs only when a unique assignment cannot cover every beat.
 
-Observed failures:
+Proof before production deploy:
 
-- Qwen3 1.7B: grounded output possible, but narration length/contract remained unreliable;
-- Qwen2.5 3B: constrained fitting damaged natural sentence structure;
-- Qwen3 4B: grounded narration possible, but duration fitting failed and memory reached roughly 3.2-3.5 GB RSS;
-- Qwen3.5 4B IQ4_XS: roughly 2.5 GB RSS plus material swap during inference;
-- continuing to benchmark more general models is classified as model hopping, not architecture work.
+- `WF04_ASSIGNMENT_PASS`;
+- cross-topic constrained-assignment regression PASS;
+- all edited WF04 Code nodes compile under production Node 24;
+- real CASE1 planner runtime PASS: 6 plans from 17 canonical Zipper media;
+- real download-dedupe regression PASS.
 
-All current llama/Qwen benchmark processes have been stopped. Experimental Qwen GGUF files were removed from `/tmp/local-narrator-eval`; disk returned to roughly 6.3 GB free and normal service memory remained available.
+Production live WF04 export after deploy contains `eligible_siglip_max_unique_matching` and the augmenting-path matcher. Media-worker health reports one preview fetch attempt plus bounded cache; no retry loop.
 
-Do not resume general-LLM model selection unless the user explicitly reverses this architecture decision.
+## Fresh frozen CASE1 — current result
 
-## Selected critical path — deterministic
-
-### WF02
-
-1. Retrieve bounded factual sources, preferring the requested narration language.
-2. Split into atomic evidence units.
-3. Deterministically remove neighboring/noisy entities and persist selected evidence/provenance.
-4. Compile narration from factual evidence spans only.
-5. Allowed compiler operations: source-artifact cleanup, whitespace/punctuation normalization, removal of clearly incidental parenthetical material, linguistically safe clause splitting, evidence-span selection/order, capitalization/final punctuation.
-6. Every final narration segment keeps exact evidence IDs/source spans.
-7. No generated factual predicates, names, dates, numbers, materials or mechanisms may be added.
-8. The old exact `3/5/7/9` narration sentence-count gate is removed. Natural sentence count may vary.
-9. Generate multiple deterministic evidence-backed candidate assemblies and use local duration estimation to choose the best fitting one before TTS.
-
-### WF03
-
-Fixed Edge voices remain:
-
-- EN `en-US-AndrewNeural`
-- PL `pl-PL-MarekNeural`
-- RU `ru-RU-DmitryNeural`
-- UK `uk-UA-OstapNeural`
-
-Provider rate/pitch/volume remain default.
-
-Automatic production performs exactly ONE Edge synthesis per job.
-
-No `atempo`, speed correction, silence removal, pause rewrite, padding, scene-level TTS, second fitting synthesis or hidden provider retry.
-
-Measured clean Edge duration is authoritative. A miss fails closed.
-
-Timed beats are created only after voice acceptance and are independent of narration sentence count.
-
-### Duration preflight
-
-Use only already measured clean-Edge calibration data. No new TTS calls for calibration experiments.
-
-The current simple char/sentence estimator is not accepted as final. A combined 160-sample check exposed worst-case errors around 4.5 seconds for EN/UK, which is too weak for reliable one-shot TTS.
-
-Next estimator must use richer deterministic linguistic features and be evaluated out-of-sample. Final measured target gate remains unchanged.
-
-### WF04
-
-A generative visual-planning call is no longer required.
-
-Derive visual lane/query/eligibility from final beat text + evidence + canonical source/entity metadata.
-
-Eligibility remains before SigLIP:
-
-- exact identity match;
-- canonical reference provenance + representation form;
-- metadata-supported concrete subject for truth-critical stock;
-- truthful contextual stock only.
-
-Only eligible candidates reach local relative SigLIP ranking. Empty lane fails closed.
-
-## Existing redesign work on VPS
-
-Uncommitted local rebuild work currently includes:
-
-- `db/migrations/012_staged_semantic_pipeline.sql`;
-- updated `db/init/001_init.sql`;
-- `tests/staged_pipeline_core.mjs`;
-- `tests/staged_pipeline_regression.mjs`.
-
-Migration 012 was already proved on disposable databases both as an upgrade of the current schema and as fresh-init compatibility. It has NOT been applied to production.
-
-The migration keeps legacy historical `planned` rows compatible and introduces new `timed -> visual_planned -> visual_ready` lifecycle states.
-
-The deterministic evidence reducer has been exercised on real historical cases:
-
-- zipper EN15;
-- popcorn PL15;
-- induction EN15;
-- glass RU30;
-- Poland UK15;
-- Zelensky UK30.
-
-It correctly removed known neighboring/noisy sources such as Quarter-zipper, Genmaicha, V.E.T.O., Wielkopolska/Małopolska where they were not the target.
-
-## Voice issue already repaired
-
-The destructive old `silenceremove` post-processing stage was removed. Edge output now preserves provider timing and is only normalized to 48 kHz stereo PCM WAV.
-
-## Visual issue still unresolved
-
-The old zipper run proved canonical reference-form selection, but a continuous-coil beat still received an unsupported generic drysuit zipper photo. This must be fixed by deterministic evidence/metadata eligibility, never by a zipper-specific patch.
-
-## Frozen product acceptance
-
-CASE 1 remains:
+Frozen CASE1:
 
 `How does a zipper work? / en / 15`
 
-No later matrix case is accepted before a fresh CASE 1 passes on one unchanged redesigned runtime:
+Fresh job on the unchanged post-deploy runtime:
 
-- relevant persisted evidence;
-- factual/coherent natural narration;
-- local pre-TTS duration candidate accepted;
-- exactly one Edge synthesis;
-- measured clean Edge duration passes;
-- timed beats exactly cover accepted voice;
-- every visual intent/provenance/content check passes;
-- final ffprobe passes;
-- human-visible voice/render quality passes.
+`227c8a50-ef1a-49e5-8d26-fdb40f663c83`
 
-First real product failure stops progression and is repaired systemically.
+Database state:
 
-## Immediate next action
+- `status = review_ready`;
+- `current_stage = review`;
+- `last_error = null`;
+- final video: `jobs/227c8a50-ef1a-49e5-8d26-fdb40f663c83/render/final.mp4`.
 
-Do not benchmark another LLM.
+Narration:
 
-Continue local/disposable implementation in this order:
+`A zipper consists of a slider mounted on two rows of metal or plastic teeth. The slider, operated by hand, contains a Y-shaped channel that meshes or separates them. The teeth may be individually discrete or shaped from a continuous coil.`
 
-1. implement deterministic provenance-preserving narration compiler on the six real cases;
-2. replace fixed sentence-count validation with natural variable sentence count;
-3. build richer clean-Edge duration estimator from existing measured corpus and prove out-of-sample false-safe behavior;
-4. combine narration candidates + estimator into a zero-TTS preflight search;
-5. implement one-shot WF03 + timed beats;
-6. implement deterministic WF04 visual intent/eligibility;
-7. full local regression;
-8. commit implementation and exact proof;
-9. bounded production deploy with rollback evidence;
-10. completely fresh CASE 1.
+Evidence/provenance PASS:
+
+- `W1:P3:S1` supports zipper/slider/two rows of metal or plastic teeth;
+- `W1:P3:S2` supports the Y-shaped slider channel that meshes/separates teeth;
+- `W1:P3:S3` supports individually discrete teeth versus a continuous coil;
+- final narration segments persist exact evidence IDs/source spans.
+
+Duration/voice PASS:
+
+- duration V2 prediction: `15.033 s`;
+- conservative interval: `13.644–16.422 s`;
+- unchanged measured target gate: `13.5–16.5 s`;
+- fresh measured Edge voice: `15.480 s`;
+- fixed voice: `en-US-AndrewNeural`;
+- WF03 execution `9690` contains exactly one `Generate Natural Voiceover` run;
+- fallback voice node did not execute;
+- timed beats cover exactly `0.000–15.480 s`.
+
+Visual/provenance PASS:
+
+1. structure -> `File:Reissverschluss Teile 2 (fcm).jpg` component diagram;
+2. metal/plastic teeth -> `File:Plastic watertight drysuit zipper closed teeth detail P8110024.jpg`, required anchor `teeth`;
+3. slider -> `File:Zipper Pullers.jpg`, required anchor `slider`;
+4. Y-channel/meshing mechanism -> `File:Zipper animated.gif`, stored as `scene-04.mp4` with `stored_media_type=video`;
+5. individually discrete teeth -> the truthful closed-teeth detail asset, with `excluded_metadata_anchors=["coil"]`;
+6. continuous coil -> `File:Coil plastic and metal zippers.jpg`, required anchor `coil`.
+
+The closed-teeth asset is reused locally for scenes 2 and 5; `shared_download_target_count=2`. It is not downloaded twice. The continuous-coil beat no longer receives the historical unsupported drysuit substitution.
+
+Render/ffprobe PASS:
+
+- H.264 High;
+- `1080x1920`;
+- `yuv420p`;
+- `30 fps`;
+- AAC LC;
+- `48 kHz` stereo;
+- audio duration `15.480 s`;
+- container/video duration about `15.534 s` due to 30 fps frame quantization;
+- final MP4 exists in the production media volume.
+
+## Acceptance status
+
+All machine-verifiable frozen CASE1 gates currently PASS on one unchanged fresh runtime:
+
+- persisted evidence/provenance;
+- factual deterministic narration;
+- pre-TTS duration gate;
+- exactly one Edge synthesis path;
+- measured duration;
+- exact timed-beat coverage;
+- visual eligibility/provenance/content constraints;
+- duplicate-download reuse;
+- animated mechanism representation;
+- render and ffprobe.
+
+The only remaining frozen CASE1 gate is **human-visible review of this exact fresh job** `227c8a50-ef1a-49e5-8d26-fdb40f663c83` for voice/video quality. A previously viewed older video is a useful quality baseline but is not evidence for this fresh unchanged runtime.
+
+Do not start the next matrix case until that exact fresh video is human-accepted. Do not modify the runtime merely to seek cosmetic improvement before an actual product failure is observed.
