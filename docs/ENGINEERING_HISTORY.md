@@ -189,4 +189,24 @@ Actual rewrite behavior:
 - proof marker: `PL_COMBUSTION_ENGINE_DRYRUN_PASS`;
 - production still had exactly `media-worker`, `n8n`, `postgres` running after the test.
 
-This cross-topic PASS does not prove production quality by itself. Next required dry-run is a materially different Russian-language refrigerator case, followed by a Ukrainian case before commit/deploy.
+## 2026-09-02 — Cross-topic RU refrigerator dry-run PASS
+
+Cross-topic fixture:
+
+- language `ru`;
+- topic `Как работает холодильник?`;
+- canonical source `ru:Холодильник`, resolved English title `Refrigerator`;
+- six factual beat fragments derived from the Russian Wikipedia introduction;
+- no TTS and no production job mutation.
+
+Actual rewrite behavior:
+
+- discovery returned `69–72` normalized candidates per beat;
+- provider discovery counts: canonical article `19`, Pexels `15`, Pixabay `18`, with no provider errors in this request;
+- every truth-eligible pool contained the bounded maximum `10` candidates and included candidates from Pexels, Pixabay and Wikimedia;
+- actual assignment used Wikimedia and Pexels assets;
+- quality: `visual-quality-v2`, 6 assets, 6 perceptual clusters, required `5`, adjacent duplicates `0`, max cluster-duration share `0.1667`, PASS;
+- proof marker: `RU_REFRIGERATOR_DRYRUN_PASS`;
+- production still had exactly `media-worker`, `n8n`, `postgres` running after the test.
+
+The next required cross-topic dry-run is Ukrainian `Вулкан`, after which the rewrite diff must be inspected before any commit/deploy.
