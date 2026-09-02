@@ -1,126 +1,105 @@
-# Upstream Decision — Local Semantic Replacement
+# Upstream Decision — Deterministic Semantic Critical Path
 
 Last updated: 2026-09-02
 
 ## Trigger
 
-Production WF02 currently requires Gemini Free Tier. Fresh production evidence showed both:
+Production Gemini Free Tier is not reliable enough for a required dependency:
 
-- `gemini-3.6-flash` -> `429 RESOURCE_EXHAUSTED` on Free Tier request quota;
-- `gemini-3.5-flash` -> `503 UNAVAILABLE / high demand`.
+- `gemini-3.6-flash` produced `429 RESOURCE_EXHAUSTED`;
+- `gemini-3.5-flash` produced `503 UNAVAILABLE / high demand`.
 
-A quota-limited hosted semantic AI is rejected as a required production dependency.
+Quota waits, retries, extra accounts/keys, model hopping and paid fallback are forbidden.
 
-## Rejected approach: local model behind the old WF02 contract
+## Rejected approach 1 — local model behind old WF02
 
-The first local-model experiment preserved the old monolithic WF02 request: a large source dump plus narration, evidence-linking, duration-shape and visual-planning instructions in one response.
+The old request mixed research, narration, evidence linking, duration control and visual planning. It was several thousand input tokens and was too slow/brittle for small local models.
 
-Fresh evaluation proved that this was the wrong workload for the VPS, not merely the wrong model:
+## Rejected approach 2 — required compact general local LLM
 
-- zipper EN15 old request contained about 4.7k input tokens before generation;
-- the response contract also required exact script tokens, claim support and six visual-plan objects;
-- Qwen3 0.6B / 1.7B fit memory individually, but the full old workload was too slow/brittle for production;
-- complex JSON-schema/GBNF decoding added further sampler/latency problems.
+The boundary was reduced to compact narration-only prompts and tested again on the real 2 vCPU / 3.7 GiB VPS.
 
-Do not continue model hopping against that monolithic contract. It is superseded.
+Measured results still failed the product requirement:
+
+- Qwen3 1.7B produced valid-looking prose but did not reliably control narration length;
+- Qwen2.5 3B broke natural sentence structure during constrained fitting;
+- Qwen3 4B produced grounded text but failed bounded duration fitting and consumed roughly 3.2-3.5 GB RSS;
+- Qwen3.5 4B IQ4_XS consumed roughly 2.5 GB RSS plus material swap during inference;
+- repeated model benchmarking did not solve the one-shot-TTS duration/reliability boundary.
+
+Therefore a general-purpose generative LLM is rejected as a REQUIRED production dependency on this VPS. Do not continue model hopping.
 
 ## Selected systemic direction
 
-Keep exactly three persistent services and move to a staged semantic boundary:
+Critical path:
 
-1. deterministic retrieval and evidence reduction in n8n;
-2. one compact local narration call using only a small persisted evidence packet;
-3. deterministic local pre-TTS duration estimation against the fixed Edge voice/language calibration;
-4. any bounded text-fit rewrite happens locally BEFORE TTS and uses the same persisted evidence;
-5. exactly one automatic Edge synthesis per video;
-6. measured clean-Edge duration is validated once; a miss fails closed and does not trigger automatic re-synthesis;
-7. deterministic timed-beat creation only after final narration/voice are accepted;
-8. a separate compact local visual-intent call on the final beats;
-9. deterministic candidate eligibility + local visual ranking;
-10. render + review.
+1. deterministic public factual retrieval;
+2. deterministic evidence reduction and durable provenance;
+3. deterministic evidence-backed narration compilation from source spans;
+4. richer local duration estimation using existing clean-Edge measurements;
+5. local candidate assembly/search with zero TTS calls;
+6. exactly one automatic Edge synthesis per video;
+7. measured duration acceptance once;
+8. deterministic timed beat creation;
+9. deterministic visual intent from beat/evidence/canonical metadata;
+10. deterministic exact/reference/stock eligibility;
+11. SigLIP relative ranking only after eligibility;
+12. render + human review.
 
-The local model is no longer responsible for research, final asset selection, duration measurement, evidence storage and visual planning simultaneously.
+## Narration boundary
 
-## Evidence boundary
+Narration is not free-form generation.
 
-Raw retrieved source text is split deterministically into atomic evidence units. The reducer selects a small diverse packet before any generative call.
+The compiler may only select, normalize, safely shorten and order factual source clauses/sentences while preserving exact evidence provenance. New factual predicates, identities, dates, numbers, materials and mechanisms may not be invented.
 
-Normal maximum selected evidence count is two units per requested narration sentence:
+The exact `3/5/7/9` narration sentence-count requirement is removed. It was an internal implementation constraint, not a product requirement. Natural sentence count may vary.
 
-- 15 s: 3 sentences -> max 6 selected units;
-- 30 s: 5 sentences -> max 10;
-- 45 s: 7 sentences -> max 14;
-- 60 s: 9 sentences -> max 18.
+## Duration boundary
 
-Selected evidence and provenance must be persisted in PostgreSQL. The narration model may cite only those selected IDs.
+Edge may be called exactly once automatically for a job.
 
-## Narration and duration boundary
+Before Edge, candidate narration assemblies are evaluated locally against an empirical fixed-voice estimator using already measured clean-Edge samples. No new TTS calls are spent on calibration experiments.
 
-The compact local narration request contains topic, target language, duration/length guidance and selected evidence only.
+The estimator chooses among evidence-backed candidates; it does not rewrite audio or create a hidden provider search loop.
 
-It returns narration + sentence-to-evidence references only. It does not return visual scenes.
-
-The project must not use hosted TTS itself as a duration-search loop. Before Edge is called, a deterministic local duration estimator uses the fixed voice/language calibration and accumulated clean production measurements to estimate whether the text is inside the target duration band.
-
-A bounded text-fit rewrite, if needed, happens before TTS and costs no additional hosted TTS request. It rewrites content against the same evidence and must pass the same factual/language validator.
-
-Automatic production then performs exactly one Edge synthesis for the job. Provider rate/pitch/volume remain default and audio timing is never manipulated.
-
-The measured Edge duration is authoritative for final acceptance and beat timing. If that single synthesis is outside the quality gate, the job fails closed. It must not automatically call Edge again, retry around provider limits, or use a second synthesis as duration feedback.
-
-Measured misses are retained as calibration data so the local duration estimator improves systemically across topics for that fixed voice/language, rather than creating per-topic exceptions.
+The measured Edge output is authoritative. A miss fails closed and does not trigger another synthesis.
 
 ## Visual boundary
 
-Visual intent is generated only after final script and measured voice are accepted.
+A generative visual-plan call is no longer required.
 
-The visual-intent request receives final timed beats and only relevant evidence/canonical context. It returns mode/query/brief/reference form/concrete subject/exact identity plus evidence references for fact-critical specificity.
+Visual lane/query/eligibility data is derived from final beat text, supporting evidence, canonical source titles/entity IDs and media metadata.
 
-The semantic model never selects the final media file.
+Final assets remain deterministic-eligibility-first:
 
-WF04 continues to enforce deterministic lanes:
+- exact identity must match canonical identity;
+- technical/reference media must match canonical provenance and representation form;
+- truth-critical stock metadata must substantiate its concrete subject;
+- contextual stock substitutions must remain truthful.
 
-- exact identity eligibility;
-- canonical technical-reference provenance + `reference_media_kind`;
-- metadata-supported `concrete_subject` for truth-critical stock;
-- relative local image ranking only after eligibility.
+Only eligible candidates reach local SigLIP relative ranking.
 
-Empty eligible lanes fail closed.
+## Provider-call budget
 
-## Runtime / memory boundary
-
-The local semantic engine runs inside existing `media-worker` as bounded compute, not a fourth service.
-
-The VPS is 2 vCPU / 3.7 GiB RAM / 2 GiB swap / no GPU. Therefore local semantic inference and SigLIP must share one heavyweight-compute gate and must not remain concurrently resident when that would exceed measured memory.
-
-Model selection resumes only against the new compact contracts. The candidate must pass cross-topic and EN/PL/RU/UK quality before deployment.
-
-## Provider-call budget boundary
-
-Hosted upstream calls must not be multiplied for quality-search loops.
-
-For Edge voice specifically:
+For Edge voice:
 
 - maximum automatic synthesis count per job: `1`;
-- no automatic TTS retry for duration fitting;
+- no duration-fitting retry;
 - no scene-by-scene TTS;
-- no second synthesis after local text fitting;
-- provider errors fail the stage instead of causing an unbounded or hidden retry loop.
-
-This keeps the voice provider request budget proportional to completed generation attempts instead of multiplying it by duration fitting.
+- no hidden retry around provider limits.
 
 ## Forbidden responses to failure
 
 - restore Gemini or another quota-limited semantic fallback;
+- benchmark more general LLMs as the critical narration path;
 - quota waits/retry loops;
-- extra API keys/accounts/projects;
+- extra keys/accounts/projects;
 - paid hosted fallback;
-- topic-specific prompts/mappings;
+- topic-specific mappings/prompts;
 - weakening factual/duration/visual/render gates;
-- forcing a weak local model into production merely because it is local;
-- adding a fourth persistent service to avoid fixing boundaries;
-- using repeated Edge synthesis as a duration-fitting mechanism.
+- repeated Edge synthesis;
+- adding a fourth persistent service merely to avoid fixing boundaries.
 
 ## Production acceptance
 
-After the staged architecture is implemented and regression-tested, restart frozen CASE 1 `How does a zipper work? / en / 15` from a completely new job. It must pass evidence, narration, one-shot natural voice/duration, timed beats, visual intent, every selected asset/provenance/content check, ffprobe and human-visible quality on one unchanged runtime.
+After deterministic narration/duration/visual planning is implemented and fully regression-tested, restart frozen CASE 1 `How does a zipper work? / en / 15` from a completely new job. It must pass factual evidence, natural narration, one-shot Edge duration, timed beats, every selected visual/provenance/content check, ffprobe and human-visible quality on one unchanged runtime.
