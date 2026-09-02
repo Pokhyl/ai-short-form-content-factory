@@ -22,7 +22,7 @@ No fourth persistent service is introduced by local inference. A local semantic 
 
 ### n8n
 
-Owns orchestration, public factual retrieval, deterministic evidence reduction, PostgreSQL transitions, validation boundaries, and stage hand-offs.
+Owns orchestration, public factual retrieval, deterministic evidence reduction, PostgreSQL transitions, validation boundaries, duration preflight, and stage hand-offs.
 
 ### PostgreSQL
 
@@ -46,7 +46,9 @@ Per-video external API cost remains `0 PLN`.
 
 A request-count/rate/quota-limited hosted semantic AI may not be a REQUIRED production dependency. Gemini Free Tier is rejected from the critical path after repeated production `429 RESOURCE_EXHAUSTED` and `503 UNAVAILABLE` failures.
 
-Forbidden quota workarounds: sleeps, retry loops, quota-window waits, model hopping, extra keys/accounts/projects, paid semantic fallback, or weaker acceptance.
+Hosted upstream services must not be used as search loops. Edge voice is therefore limited to exactly one automatic synthesis attempt per job. Duration fitting happens before TTS using local deterministic estimation and local text fitting.
+
+Forbidden quota workarounds: sleeps, retry loops, quota-window waits, model hopping, extra keys/accounts/projects, paid semantic fallback, repeated TTS synthesis for fitting, or weaker acceptance.
 
 Public zero-cost factual/media retrieval may remain external. The architecture must fail closed when evidence/media is insufficient instead of inventing content.
 
@@ -101,17 +103,25 @@ Required narration invariants:
 - no viewer-facing dependence on incidental source artifacts;
 - deterministic validator fails closed before voice.
 
-Clean-Edge calibration is guidance for draft length, not a reason to force a tiny exact character band through grammar decoding. Actual measured voice duration remains authoritative.
+Clean-Edge calibration is used to plan text length before TTS. WF02 persists selected evidence plus the validated narration, then invokes WF03. No `scenes` rows are created yet.
 
-WF02 persists selected evidence plus the validated narration, then invokes WF03. No `scenes` rows are created yet.
-
-## WF03 — natural voice, bounded text fit, timed beats
+## WF03 — one-shot natural voice + timed beats
 
 WF03 owns the final narration/voice boundary.
 
-### A. Continuous Edge voice
+### A. Local duration preflight before Edge
 
-One job-level synthesis using fixed voices:
+The project must not call hosted TTS repeatedly to discover the right text length.
+
+Before any Edge request, a deterministic local duration estimator evaluates the narration using the fixed target voice/language calibration plus accumulated clean production measurements. This estimator is local and costs no provider request.
+
+If the draft is predicted outside the target band, a bounded local TEXT-fit rewrite may occur before TTS. The rewrite must use the same persisted evidence packet and pass the same factual/language/sentence validator. No hosted TTS call is spent during this fitting stage.
+
+The preflight is systemic per fixed voice/language, not topic-specific. Measured production durations continuously provide calibration data; no single-topic exception is allowed.
+
+### B. Exactly one continuous Edge synthesis
+
+Automatic production performs exactly one job-level Edge synthesis using fixed voices:
 
 - EN `en-US-AndrewNeural`
 - PL `pl-PL-MarekNeural`
@@ -120,19 +130,21 @@ One job-level synthesis using fixed voices:
 
 Provider rate/pitch/volume remain default. No `atempo`, time-stretch, speed correction, pause rewrite, silence removal, padding, or scene-by-scene TTS.
 
-### B. Duration feedback
+There is no second automatic Edge synthesis for duration fitting and no hidden retry loop around provider limits.
 
-Measured clean Edge duration is the hard quality signal.
+### C. Measured duration acceptance
 
-If the first natural narration is outside the unchanged target-relative duration gate, the architecture allows one bounded TEXT-fit pass only: the local semantic engine rewrites the narration against the same persisted evidence packet and measured duration target. The rewrite must pass the same factual/language/sentence validator before a second and final Edge synthesis.
+The single clean Edge output is measured once. That measured duration is authoritative.
 
-This is a content-fit stage, not audio manipulation and not a quota retry. There is no unbounded loop. If the final synthesis still misses the quality gate, the job fails closed.
+If it passes the target-relative quality gate, continue. If it misses, the job fails closed. The pipeline does not automatically rewrite and call Edge again.
 
-### C. Timed beat creation
+The failed measured sample may be retained as calibration evidence for future jobs so the local pre-TTS estimator improves across topics for that fixed voice/language.
 
-Only after final script + final measured voice are accepted, WF03 deterministically splits the final narration into `6/10/14/18` transport beats and computes beat timings that exactly cover the accepted voice duration.
+### D. Timed beat creation
 
-WF03 inserts `scenes` rows containing narration + timing only. Visual-specific fields remain unset until WF04. This prevents visual plans from becoming stale when narration is fitted for real voice duration.
+Only after the single final script + measured voice are accepted, WF03 deterministically splits the final narration into `6/10/14/18` transport beats and computes beat timings that exactly cover the accepted voice duration.
+
+WF03 inserts `scenes` rows containing narration + timing only. Visual-specific fields remain unset until WF04. This prevents visual plans from becoming stale and keeps TTS provider usage to one request per job.
 
 ## WF04 — visual intent + sourcing
 
@@ -225,8 +237,10 @@ After implementation and full local regression, start a completely fresh frozen 
 CASE 1 passes only when all are true on one unchanged runtime:
 
 - evidence is relevant and persisted;
-- narration is factual/coherent and naturally spoken;
-- clean Edge duration passes;
+- narration is factual/coherent;
+- local duration preflight passes before TTS;
+- exactly one clean Edge synthesis is performed;
+- measured clean Edge duration passes;
 - timed beats reconstruct the final narration;
 - every visual intent is evidence-consistent;
 - every selected asset/provenance/content check passes;
