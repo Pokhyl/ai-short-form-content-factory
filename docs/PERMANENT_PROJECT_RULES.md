@@ -19,6 +19,7 @@ Gemini Free Tier failures such as `429 RESOURCE_EXHAUSTED`, request-per-window/d
 Do not solve quota exhaustion with sleeps, retry loops, quota-window waiting, model hopping, extra API keys/accounts/projects, paid fallback, or weaker acceptance gates.
 
 The systemic direction is to remove quota-limited hosted semantic AI from the required production path while preserving:
+
 - 0 PLN per-video API cost;
 - truthful factual narration;
 - existing quality/acceptance gates;
@@ -30,7 +31,7 @@ Any proposal that keeps Gemini or another quota-limited hosted AI as a required 
 
 Every meaningful technical change and every discovered failure must be recorded in GitHub so the project does not repeat solved mistakes after a chat/context reset.
 
-`docs/CURRENT_STATE.md` is the required operational history for the active branch unless a more specific durable document is explicitly designated there.
+`docs/CURRENT_STATE.md` remains the operational source of truth for the active branch. `docs/ENGINEERING_HISTORY.md` is the required durable chronological engineering log for detailed changes, failures, root causes, regressions, rejected approaches, deployments and rollback facts.
 
 Before moving past a meaningful change or failure, record the relevant facts, including when applicable:
 
@@ -49,4 +50,10 @@ Do not silently overwrite or erase a previous mistake. If an earlier result was 
 
 A fix is not complete merely because code changed. The durable record must make it possible for a future session to understand the failure, the root cause, the implemented correction, and the proof without relying on chat memory.
 
-Before starting a new approach, check the durable history for the same or equivalent failure so previously rejected/broken approaches are not repeated.
+Before starting a new approach, check both `docs/CURRENT_STATE.md` and `docs/ENGINEERING_HISTORY.md` for the same or equivalent failure so previously rejected/broken approaches are not repeated.
+
+## 4. Logging cadence
+
+Do not wait until the end of a long session to write history. Record a verified root cause, a material architectural/code change, a meaningful failed test, or an accepted regression result before moving on to the next independent stage.
+
+Small transient command typos do not need separate entries unless they could mislead acceptance or are likely to recur. Any diagnostic mistake that could create a false PASS/FAIL must be recorded.
