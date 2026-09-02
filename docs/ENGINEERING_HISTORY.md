@@ -231,4 +231,46 @@ Actual rewrite behavior:
 - proof marker: `UK_VOLCANO_DRYRUN_PASS`;
 - production still had exactly `media-worker`, `n8n`, `postgres` running after the test.
 
-Cross-topic pre-deploy evidence is now complete across EN induction, PL combustion engine, RU refrigerator and UK volcano. The next action is full local diff inspection, explicit separation of unrelated WF02 retrieval work, then coherent visual-rewrite commit before any production deploy.
+Cross-topic pre-deploy evidence is now complete across EN induction, PL combustion engine, RU refrigerator and UK volcano.
+
+## 2026-09-02 — Visual rewrite pre-commit gate PASS
+
+The first broad pre-commit run exposed test-harness problems rather than product failures:
+
+- `staged_pipeline_regression`, `case1_staged_regression`, and `case1_visual_regression` were invoked in a disposable container without their historical `/tmp` fixture mounts;
+- `wf04_code_node_runtime_regression` and `wf04_download_dedupe_regression` were invoked without their required external fixture environment variables;
+- `wf04_assignment_regression` still encoded the obsolete `candidate_id == unique visual` matcher and did not provide the now-required `visual_hash`;
+- `wf04_representation_relevance_regression` extracted helpers from the old canonical-only planner and no longer represented the actual WF04 runtime contract.
+
+Correction without weakening product gates:
+
+- historical CASE1/staged tests were rerun with their preserved real fixtures and passed unchanged;
+- `wf04_assignment_regression` now tests perceptual-cluster assignment and fail-closed insufficient diversity;
+- `wf04_representation_relevance_regression` now executes the actual current planner and verifies that metadata-irrelevant media is excluded before ranking;
+- `wf04_code_node_runtime_regression` is self-contained and executes the actual current Prepare + Build Code nodes with a multi-source truth-eligibility fixture;
+- `wf04_download_dedupe_regression` is self-contained and proves non-adjacent reuse dedupes one download while preserving `visual-quality-v2` metadata;
+- no diversity threshold, factual eligibility rule, duration gate, or provider requirement was weakened.
+
+Final full pre-commit proof:
+
+- media-worker syntax PASS for `server.mjs`, `visual-discovery.mjs`, `visual-quality.mjs`, `visual-framing.mjs`;
+- WF04 Code compile PASS `14` nodes; WF05 Code compile PASS `8` nodes;
+- `visual_discovery_regression` PASS;
+- `visual_quality_regression` PASS;
+- `wf04_perceptual_assignment_regression` PASS;
+- updated `wf04_assignment_regression` PASS;
+- updated `wf04_code_node_runtime_regression` PASS with eligible Pexels/Pixabay/Wikimedia candidates;
+- updated `wf04_download_dedupe_regression` PASS;
+- `wf04_rank_query_contract_regression` PASS, max query `200`;
+- updated `wf04_representation_relevance_regression` PASS;
+- `deterministic_visual_cross_topic_regression` PASS;
+- `r4v_visual_integrity_regression` PASS;
+- `staged_pipeline_regression` PASS, retained Edge corpus `150`, safe count `40`, false-safe `0`;
+- `case1_staged_regression` PASS;
+- `case1_visual_regression` PASS;
+- `wf04_final_design_gate.py` PASS;
+- migration 013 DDL executed inside an explicit transaction and rolled back; `jobs.visual_quality` count was `0` before and `0` after rollback;
+- production `.env` resolves non-empty `PIXABAY_API_KEY` and `PEXELS_API_KEY` for the corrected media-worker compose contract; secret values were not printed;
+- production remained exactly `media-worker`, `n8n`, `postgres`; PostgreSQL stayed healthy.
+
+The visual rewrite is now eligible for a coherent local commit. The unrelated WF02 fact-search-query change and its regression must remain outside that commit and be handled separately after the visual rewrite is deployed and proven.
