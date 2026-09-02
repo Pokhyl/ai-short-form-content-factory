@@ -8,48 +8,50 @@ Last updated: 2026-09-02
 
 Before every technical action, read fresh GitHub `docs/PERMANENT_PROJECT_RULES.md` and branch `rebuild/simple-pipeline/docs/CURRENT_STATE.md`. Read additional scope docs as required there.
 
-No topic-specific hacks, acceptance bypasses, magic thresholds, query rewrites for one case, manual asset substitutions, sleeps/retries to hide provider quotas, extra keys/accounts/projects, paid semantic fallback, repeated hosted TTS fitting, or weak local-model deployment merely to remove Gemini.
+No topic-specific hacks, acceptance bypasses, manual asset substitutions, quota waits/retries, extra keys/accounts/projects, paid semantic fallback, repeated hosted TTS fitting, or model hopping.
 
-## Active gate — staged zero-quota semantic architecture
+## Active gate — deterministic zero-quota critical path
 
-The old monolithic WF02 semantic boundary is rejected. Do not spend more time model-hopping against the old multi-thousand-token request.
+The old monolithic Gemini WF02 is rejected.
 
-The next accepted production architecture is:
+The later attempt to preserve a required compact local generative LLM is also rejected after measured 3B/4B failures on the actual VPS.
 
-`retrieval -> deterministic persisted evidence packet -> compact local narration -> local duration preflight/text fit -> exactly one natural Edge synthesis -> timed beats -> compact local visual intent -> deterministic visual eligibility/ranking -> render -> review`
+Accepted direction:
+
+`retrieval -> persisted evidence -> deterministic evidence-backed narration compiler -> local duration candidate selection -> exactly one natural Edge synthesis -> timed beats -> deterministic visual intent/eligibility -> local ranking -> render -> review`
 
 Exactly three persistent services and 0 PLN per-video external API cost remain mandatory.
 
 ## Required implementation sequence
 
-1. Add durable evidence/provenance schema.
-2. Change scene lifecycle so WF03 can create `timed` narration/timing rows before visual fields exist, while DB constraints require complete visual intent before visual-ready state.
-3. Build deterministic evidence reducer and compact narration evaluation contract. Do not feed raw source dumps to the local model.
-4. Evaluate feasible local multilingual narration candidates on materially different topics and EN/PL/RU/UK using the compact contract and unchanged factual validator principles.
-5. Build deterministic local duration preflight from fixed Edge voice/language calibration and measured clean production durations.
-6. Any bounded evidence-grounded text-fit rewrite must happen BEFORE TTS and must not consume a hosted TTS request.
-7. Automatic production may call Edge exactly once per job. No second synthesis for duration fitting and no hidden TTS retry loop.
-8. If the single measured Edge duration misses the quality gate, fail closed and retain the measurement only as future calibration data.
-9. Create timed beats only from final accepted script/voice.
-10. Build compact visual-intent contract on final beats and relevant evidence only.
-11. Enforce stock/reference/exact eligibility before local ranking; truth-critical stock requires metadata-supported `concrete_subject`.
-12. Add heavyweight-compute serialization/model-lifetime controls in media-worker and prove semantic/SigLIP overlap cannot exhaust RAM/swap.
-13. Run full static/behavior/Code-node/Studio/WF04/R8/media-worker/render/diff/database migration gates.
-14. Commit implementation and update GitHub source-of-truth with exact hashes/proof.
-15. Deploy boundedly with rollback evidence and exact-published proof.
-16. Start one completely fresh frozen CASE 1: `How does a zipper work? / en / 15`.
-17. CASE 1 passes only if evidence, narration, local duration preflight, exactly one natural clean Edge synthesis, measured duration, timed beats, visual intent, every selected visual/provenance/content check, final ffprobe and human-visible quality all pass.
-18. First real product failure stops progression and is repaired systemically before any later case.
+1. Keep/prove durable evidence/provenance schema and staged scene lifecycle.
+2. Finish deterministic evidence reducer on materially different real topics.
+3. Implement provenance-preserving narration compiler from source sentences/clauses.
+4. Remove exact `3/5/7/9` sentence count from narration acceptance; sentence count is not a product gate.
+5. Build richer local Edge-duration estimator from already measured clean-Edge corpus only; do not generate new TTS calibration traffic.
+6. Generate multiple deterministic evidence-backed narration assemblies locally and choose the best duration-fit candidate without TTS.
+7. Require factual/mechanism coverage and exact evidence provenance for the selected narration.
+8. Automatic production may call Edge exactly once per job. No second synthesis for fitting and no hidden retry loop.
+9. A measured duration miss fails closed and becomes future calibration evidence only.
+10. Create timed beats only after accepted measured voice; beat count is independent of sentence count.
+11. Implement deterministic visual intent from beat/evidence/canonical metadata; no required generative visual-planning call.
+12. Enforce exact/reference/stock eligibility before SigLIP ranking.
+13. Truth-critical stock requires metadata support for the concrete subject; empty eligible lane fails closed.
+14. Run full database/static/behavior/Code-node/Studio/WF04/R8/media-worker/render/diff gates.
+15. Commit implementation and update GitHub source-of-truth with exact proof.
+16. Deploy boundedly with rollback evidence.
+17. Start one completely fresh frozen CASE 1: `How does a zipper work? / en / 15`.
+18. CASE 1 must pass evidence, deterministic narration, preflight, exactly one natural Edge call, measured duration, timed beats, visual provenance/content, ffprobe and human-visible quality.
+19. First real product failure stops progression and is fixed systemically.
 
 ## Explicit non-goals
 
 Do not:
 
-- add another persistent model service;
-- keep Gemini as emergency fallback;
-- preserve the old exact giant JSON/GBNF response contract just because tests already exist;
-- force visual planning before final voice duration is known;
-- keep evidence only in transient n8n execution data;
-- use SigLIP as a truth oracle before deterministic eligibility;
-- loosen acceptance to make a local model appear successful;
-- call Edge twice merely to learn that the first narration was too long or too short.
+- benchmark more general LLMs as the main narration path;
+- add a fourth persistent model service;
+- keep Gemini as fallback;
+- restore a fixed narration sentence count merely to simplify prompting;
+- use SigLIP as a truth oracle;
+- loosen the final duration or visual gates;
+- call Edge more than once to search for a fitting script.
