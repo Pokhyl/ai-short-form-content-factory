@@ -380,3 +380,33 @@ Operational note:
 - immediately after the human acceptance, fresh SentinelX runtime inspection was attempted twice;
 - both attempts returned `agent_offline` because the SentinelX hub had restarted;
 - no production mutation was performed while runtime verification was unavailable.
+
+## 2026-09-02 — User-run UK 60s script retrieval failure observed in Studio
+
+Observed directly from the user's Studio screenshot:
+
+- job `85fcc63b-b89b-40d0-b253-6383b715f105`;
+- topic entered: `как работает индукционная плита`;
+- selected output language: `uk`;
+- target duration: `60 s`;
+- status/stage: `failed/script`;
+- exact Studio error: `Wikipedia native fact search returned no full-text pages [line 8]`;
+- no scenes were available, so the job failed before voice, visuals, or render.
+
+Interpretation:
+
+- this reproduces the same WF02 native-Wikipedia retrieval class already identified from Polish popcorn: the current live retrieval path can return an empty full-text page set before downstream narration/voice stages;
+- the input also exercises a cross-language case where the topic text is Russian while the requested output language is Ukrainian; whether this language mismatch is independently causal is NOT yet verified and must not be recorded as root cause without runtime/execution evidence.
+
+Operational state during diagnosis:
+
+- mandatory GitHub source-of-truth/history were reread;
+- repeated fresh SentinelX execution attempts failed with connector error `Cannot call "send" once a close message has been sent` after the hub restart;
+- no production mutation was performed while runtime inspection was unavailable.
+
+Required next proof once server access returns:
+
+- read the exact job row and n8n WF02 execution for `85fcc63b-b89b-40d0-b253-6383b715f105`;
+- inspect the exact native-Wikipedia query actually emitted for this job;
+- regression-test the separated WF02 retrieval correction against both the original Polish popcorn case and this RU-topic/UK-output case;
+- preserve full evidence-validation tokens and do not add topic mappings, retries, provider fallbacks, or weaker factual gates.
