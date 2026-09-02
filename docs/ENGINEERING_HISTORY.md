@@ -2,428 +2,349 @@
 
 Chronological durable record for material changes, failures, verified root causes, regressions, deploys and rollback facts. `docs/CURRENT_STATE.md` remains the operational source of truth.
 
-## 2026-09-02 — Induction visual quality invalidated previous machine PASS
+This file was compacted on 2026-09-02 after the visual-quality-v2 production proof. The compaction preserves the material failures, decisions, commits, rollback locations, deployment facts and acceptance evidence from the earlier detailed log. Exact implementation history remains recoverable from the listed commits and rollback snapshots.
 
-Job: `13f64c50-8dd5-47e4-a88f-1411d258e7c4`
+## 2026-09-02 — Previous induction machine PASS invalidated by human-visible failure
+
+Job: `13f64c50-8dd5-47e4-a88f-1411d258e7c4`.
 
 Observed product failure:
 
-- job was previously marked `review_ready`;
-- six scenes were marked `visual_ready`;
+- the job had reached `review_ready` and all six scenes were `visual_ready`;
 - human-visible inspection showed only two effective visual states across the ~14-second video;
-- roughly the first four seconds used one image and most of the remainder used another.
+- roughly the first four seconds used one image and most of the remaining video used another.
 
 Verified systemic root cause:
 
-- production acceptance checked per-scene asset presence, not video-level visual sequence quality;
+- production acceptance checked per-scene asset presence, not video-level visual-sequence quality;
 - the clean rebuild had effectively reduced sourcing to a small canonical/Wikimedia pool;
-- max-unique assignment by candidate/file ID could not guarantee perceptual diversity.
+- different candidate/file IDs were incorrectly sufficient to count as different visuals.
 
 Decision:
 
-- previous induction machine PASS is invalidated;
-- full visual-pipeline rewrite is active;
-- no further M8 progression until new sequence-level gates are regression-tested and boundedly deployed.
+- the old induction machine PASS is permanently invalidated;
+- M8 progression stopped;
+- a sequence-level visual architecture was required instead of topic-specific matcher patches.
 
-## 2026-09-02 — Multi-source visual rewrite started locally
+## 2026-09-02 — Visual-quality-v2 rewrite designed and regression-proven
 
-Local rebuild work includes:
+New required visual path:
 
-- `services/media-worker/src/visual-discovery.mjs`;
-- `services/media-worker/src/visual-quality.mjs`;
-- `db/migrations/013_visual_quality_gate.sql`;
-- rewritten `n8n/workflows/WF04-visual-sourcing.json`;
-- strengthened `n8n/workflows/WF05-video-render.json`;
-- still-image motion in `services/media-worker/src/visual-framing.mjs`;
-- pre-render and post-render visual-state checks in `services/media-worker/src/server.mjs`.
+`timed beat + evidence -> deterministic search intents -> multi-source candidate discovery -> metadata/provenance eligibility -> local SigLIP ranking + perceptual identity -> global sequence assignment -> sequence quality gate -> persist -> render -> post-render visual-state gate -> review_ready`
 
-Provider facts:
+Material implementation:
 
-- Wikimedia Commons expanded search is usable;
-- Pixabay direct provider check works with the configured key;
-- an earlier standalone Pexels check returned HTTP 403, so Pexels remains optional and may never be required for pipeline success.
+- `services/media-worker/src/visual-discovery.mjs` — bounded normalized discovery from canonical article media, Wikimedia Commons, Pixabay, and optional Pexels;
+- `services/media-worker/src/visual-quality.mjs` — fail-closed sequence-quality contract;
+- `/visual/rank` returns a 256-bit perceptual preview hash;
+- WF04 assigns globally by perceptual clusters instead of candidate ID only;
+- WF05 independently validates persisted visual quality before render;
+- media-worker independently validates actual rendered midpoint-frame diversity after render;
+- still photographs receive deterministic subtle motion; factual diagrams remain stable/readable;
+- migration `013_visual_quality_gate.sql` adds durable `jobs.visual_quality`.
 
-Real induction dry-run before perceptual clustering:
+Current visual-quality-v2 sequence contract:
 
-- about 20–22 Wikimedia candidates discovered per beat;
-- up to 10 truth-eligible candidates per beat;
-- six different induction-related assets could be assigned instead of two repeated assets.
-
-The dry-run also exposed missing `duration_seconds` propagation, which produced `NaN` in one quality metric. The propagation was corrected locally and non-finite diversity metrics are fail-closed.
-
-## 2026-09-02 — Perceptual identity added to ranking and assignment
-
-Material change:
-
-- `/visual/rank` locally computes a 256-bit average-hash fingerprint from the ranked preview;
-- WF04 validates the returned 64-hex-character `visual_hash`;
-- global assignment clusters candidates by Hamming distance rather than treating different candidate IDs as automatically different visuals;
-- current clustering threshold is 18 bits out of 256;
-- assignment requires 75% unique perceptual states, minimum 3, capped by beat count; for 6 beats this is 5 states;
+- every beat has one truth-eligible selected asset;
+- 6 beats require at least 5 distinct perceptual clusters;
 - adjacent duplicate clusters are forbidden;
-- a cluster may occupy at most 34% of total duration.
+- no cluster may occupy more than `0.34` of total beat duration;
+- missing/NaN/non-finite metrics fail closed;
+- post-render midpoint frames must independently satisfy the same required state count.
 
-This is a systemic sequence-level rule, not a topic-specific induction patch.
+Negative regression fixture remains the old induction pattern: 6 beats but only 2 effective clusters, 4 adjacent repeats and ~68% duration share for one visual -> MUST FAIL.
 
-## 2026-09-02 — Diagnostic compile harness false result
+Positive 6-beat fixture: at least 5 perceptual clusters, no adjacent duplicates, max share <= 0.34 -> PASS.
 
-Diagnostic mistake:
+## 2026-09-02 — Diagnostic compile-harness false PASS/FAIL risk corrected
 
-- an initial compile harness treated n8n workflow export JSON as an object;
-- the actual rebuild exports are top-level arrays containing one workflow object;
-- the broken harness therefore reported `WF04_CODE_COMPILE_PASS 0` and `WF05_CODE_COMPILE_PASS 0` without compiling the Code nodes.
+A diagnostic harness initially treated n8n workflow exports as objects even though rebuild exports are top-level arrays. That produced meaningless zero-count compile output.
 
 Correction:
 
-- harness now unwraps the first array element before iterating nodes;
-- verified actual node counts are WF04 `14` Code nodes and WF05 `8` Code nodes;
-- corrected compile run: `WF04_CODE_COMPILE_PASS 14`, `WF05_CODE_COMPILE_PASS 8`.
+- workflow export shape is now validated/unwrapped before compiling Code nodes;
+- verified counts: WF04 `14` Code nodes, WF05 `8` Code nodes;
+- a zero-count compile result is never accepted as PASS.
 
-Rule:
-
-- never use a zero-count compile result as PASS;
-- workflow-export shape must be validated before Code-node compilation.
-
-## 2026-09-02 — Visual quality v1/v2 contract mismatch found and fixed locally
+## 2026-09-02 — WF04/media-worker visual-quality-v1/v2 mismatch corrected
 
 Verified defect:
 
-- WF04 pre-render logic had already moved to `visual_cluster_key` perceptual diversity;
-- media-worker render preflight still called old `visual-quality-v1` using only `asset_key`;
-- therefore six different files that were perceptually only two states could pass the renderer's pre-render sequence check and rely only on post-render detection.
+- WF04 had moved to perceptual `visual_cluster_key` diversity;
+- media-worker pre-render logic still used file `asset_key` uniqueness;
+- six different files representing only two perceptual states could therefore pass the renderer preflight.
 
-Systemic correction:
+Correction:
 
-- `services/media-worker/src/visual-quality.mjs` now exposes `evaluateVisualSequence` with `visual-quality-v2` semantics;
-- perceptual `visual_cluster_key` is authoritative for sequence diversity;
-- `asset_key` is retained for file identity/audit only;
-- WF05 manifest now carries both `asset_key` and `visual_cluster_key`;
-- media-worker requires both identities before rendering;
-- WF05 independently validates v2 cluster metrics and returned beat cluster identity;
-- post-render frame-state validation uses the same required perceptual state count.
+- perceptual cluster identity is authoritative for sequence diversity;
+- file identity is retained only for audit/download identity;
+- WF05 manifest carries both identities;
+- media-worker requires both and validates visual-quality-v2;
+- post-render frame clustering uses the same required state count.
 
-Regression proof after the correction:
+Regression proof included:
 
-- `VISUAL_QUALITY_V2_REGRESSION_PASS`;
-- fixture with 6 unique file IDs but only 2 perceptual clusters: FAIL;
-- fixture with 6 file IDs and 5 perceptual clusters, no adjacent duplicate, max cluster share 0.3333: PASS;
-- near-identical synthetic 256-bit hashes cluster together;
-- malformed hash size fails closed;
-- `WF04_PERCEPTUAL_ASSIGNMENT_REGRESSION_PASS` proves six different candidate IDs can collapse to five perceptual states and a four-state fixture fails with `4/5`;
-- media-worker module syntax PASS;
+- 6 distinct file IDs but only 2 clusters -> FAIL;
+- 6 file IDs and 5 clusters -> PASS;
+- malformed perceptual hashes fail closed;
+- `WF04_PERCEPTUAL_ASSIGNMENT_REGRESSION_PASS`;
 - `WF04_CODE_COMPILE_PASS 14`;
 - `WF05_CODE_COMPILE_PASS 8`.
 
-Production status at this point:
+## 2026-09-02 — Media-worker provider-environment wiring defect corrected
 
-- none of these rewrite changes are deployed yet;
-- production still has exactly three running services.
+Verified configuration defect:
 
-## 2026-09-02 — Media-worker provider environment wiring defect
+- production `.env` had Pixabay/Pexels values, but the media-worker compose service did not receive them;
+- a normal worker recreate therefore could not use those adapters.
 
-Verified configuration error:
+Correction:
 
-- earlier diagnostics had incorrectly described rebuild compose as already passing `PIXABAY_API_KEY` and `PEXELS_API_KEY` into `media-worker`;
-- fresh exact compose inspection showed those variables existed only in the `n8n` service environment;
-- the `media-worker` service had only `PORT`, so the new discovery adapter could never use Pixabay/Pexels after a normal rebuild/deploy even though keys existed in `.env`.
+- compose now passes `PIXABAY_API_KEY` and `PEXELS_API_KEY` to media-worker without storing secret values in Git;
+- Pexels remains optional and can never be required for success.
 
-Systemic correction made locally:
+## 2026-09-02 — Cross-topic pre-deploy dry-runs PASS
 
-- `compose.yaml` media-worker environment now includes `PIXABAY_API_KEY: ${PIXABAY_API_KEY}` and `PEXELS_API_KEY: ${PEXELS_API_KEY}`;
-- no secret values are stored in Git;
-- Pexels remains optional regardless of current health;
-- Pixabay can now be actually available to the worker after container recreation.
+Actual rewritten discovery/ranking/assignment was exercised on materially different topics/languages before production deployment.
 
-Production is not changed yet. Current production still has exactly three running services.
+EN induction:
 
-## 2026-09-02 — Exact induction perceptual dry-run PASS
+- exact old induction context used only as immutable dry-run input;
+- about 53-55 normalized candidates per beat in the final adapter run;
+- truth eligibility reduced to bounded pools;
+- actual local SigLIP returned valid 64-hex perceptual hashes;
+- final assignment: 6 assets / 6 perceptual clusters, required 5, adjacent duplicates 0, max duration share `0.1813` -> PASS.
 
-The rewrite was tested without deploying by building a temporary rewrite media-worker image and running the actual WF04 Code-node bodies against the persisted old induction job context. The three production services remained unchanged before and after the test.
+PL combustion engine:
 
-Exact source job used only as immutable dry-run input:
+- 5 perceptual clusters for 6 beats;
+- one cluster reused non-adjacently;
+- adjacent duplicates 0;
+- max share `0.3333` -> PASS.
 
-- `13f64c50-8dd5-47e4-a88f-1411d258e7c4`;
-- topic `How does induction heating work?`;
-- language `en`;
-- target `15`;
-- 6 persisted timed beats and 6 persisted evidence rows.
+RU refrigerator:
 
-Temporary worker proof:
+- 6 assets / 6 perceptual clusters;
+- adjacent duplicates 0;
+- max share `0.1667` -> PASS.
 
-- `/health` PASS with `Xenova/siglip-base-patch16-224`, dtype `q4`;
-- `PIXABAY_API_KEY` and `PEXELS_API_KEY` were both actually present in the temporary worker environment without exposing values;
-- discovery provider counts: canonical article `5`, Pexels `15`, Pixabay `18`;
-- this exact adapter request reported no provider errors, so the older standalone Pexels HTTP 403 result must not be generalized into a claim that the current discovery adapter is always unhealthy; Pexels nevertheless remains optional by architecture;
-- every induction beat discovered `53–55` normalized candidates from Wikimedia/Pexels/Pixabay;
-- truth eligibility reduced each beat to a bounded pool of `10` candidates; the selected eligible pools contained Pixabay and Wikimedia candidates.
+UK volcano:
 
-Actual local SigLIP/perceptual proof:
+- 6 assets / 6 perceptual clusters;
+- adjacent duplicates 0;
+- max share `0.1667` -> PASS.
 
-- every ranked candidate returned a valid 64-hex-character `visual_hash`;
-- the actual `Attach Rank Results` and `Choose Visual Assignment` Code-node logic executed successfully;
-- selected assets were six different induction-related Wikimedia visuals, including `Induction heating of bar`, `Stirling radioisotope generator head testing`, `Induction heating apparatus 1927`, `Silicon grown by Czochralski process 1956 closeup`, `Northup induction furnace`, and `Induction heater`;
-- final pre-render quality: version `visual-quality-v2`, 6 assets, 6 perceptual clusters, required 5, adjacent duplicate clusters `0`, max cluster-duration share `0.1813`, PASS;
-- all quality values were finite;
-- proof marker: `INDUCTION_PERCEPTUAL_DRYRUN_PASS`.
-
-This is a dry-run proof of the new sourcing/ranking/assignment contract, not a human-visible production PASS. No production workflow/container/schema was changed.
-
-## 2026-09-02 — Cross-topic PL combustion-engine dry-run PASS
-
-Cross-topic fixture:
-
-- language `pl`;
-- topic `Jak działa silnik spalinowy?`;
-- canonical source `pl:Silnik spalinowy`;
-- six factual beat fragments derived from the Polish Wikipedia introduction;
-- no TTS and no production job mutation.
-
-Actual rewrite behavior:
-
-- discovery returned `52–53` normalized candidates per beat;
-- provider discovery was active, but strict truth eligibility reduced the per-beat pools to `3–4` Wikimedia candidates for this source;
-- the canonical source did not resolve an English langlink in the tested API response, so the case also exercises the non-English canonical-title fallback;
-- the actual SigLIP/perceptual/global assignment selected 5 unique assets forming 5 perceptual clusters for 6 beats;
-- one visual cluster was reused non-adjacently;
-- quality: `visual-quality-v2`, required clusters `5`, actual clusters `5`, adjacent duplicates `0`, max cluster-duration share `0.3333`, PASS;
-- proof marker: `PL_COMBUSTION_ENGINE_DRYRUN_PASS`;
-- production still had exactly `media-worker`, `n8n`, `postgres` running after the test.
-
-## 2026-09-02 — Cross-topic RU refrigerator dry-run PASS
-
-Cross-topic fixture:
-
-- language `ru`;
-- topic `Как работает холодильник?`;
-- canonical source `ru:Холодильник`, resolved English title `Refrigerator`;
-- six factual beat fragments derived from the Russian Wikipedia introduction;
-- no TTS and no production job mutation.
-
-Actual rewrite behavior:
-
-- discovery returned `69–72` normalized candidates per beat;
-- provider discovery counts: canonical article `19`, Pexels `15`, Pixabay `18`, with no provider errors in this request;
-- every truth-eligible pool contained the bounded maximum `10` candidates and included candidates from Pexels, Pixabay and Wikimedia;
-- actual assignment used Wikimedia and Pexels assets;
-- quality: `visual-quality-v2`, 6 assets, 6 perceptual clusters, required `5`, adjacent duplicates `0`, max cluster-duration share `0.1667`, PASS;
-- proof marker: `RU_REFRIGERATOR_DRYRUN_PASS`;
-- production still had exactly `media-worker`, `n8n`, `postgres` running after the test.
-
-## 2026-09-02 — Cross-topic UK volcano dry-run PASS
-
-Cross-topic fixture:
-
-- language `uk`;
-- topic about how a volcano works;
-- canonical source `uk:Вулкан`, resolved English title `Volcano`;
-- six factual beat fragments derived from the Ukrainian Wikipedia introduction;
-- no TTS and no production job mutation.
-
-Actual rewrite behavior:
-
-- an initial attempt was interrupted by a SentinelX agent disconnect and was not counted;
-- recovery check confirmed no temporary rewrite container remained and production still had exactly `media-worker`, `n8n`, `postgres` running;
-- the repeated clean dry-run discovered `95–112` normalized candidates per beat;
-- provider discovery counts: canonical article `44`, Pexels `15`, Pixabay `18`, with no provider errors;
-- all six truth-eligible pools contained the bounded maximum `10` candidates and included Pexels, Pixabay and Wikimedia;
-- actual assignment used Wikimedia and Pexels assets;
-- quality: `visual-quality-v2`, 6 assets, 6 perceptual clusters, required `5`, adjacent duplicates `0`, max cluster-duration share `0.1667`, PASS;
-- proof marker: `UK_VOLCANO_DRYRUN_PASS`;
-- production still had exactly `media-worker`, `n8n`, `postgres` running after the test.
-
-Cross-topic pre-deploy evidence is now complete across EN induction, PL combustion engine, RU refrigerator and UK volcano.
+No threshold was lowered for any topic.
 
 ## 2026-09-02 — Visual rewrite pre-commit gate PASS
 
-The first broad pre-commit run exposed test-harness problems rather than product failures:
+Broad proof before commit included:
 
-- `staged_pipeline_regression`, `case1_staged_regression`, and `case1_visual_regression` were invoked in a disposable container without their historical `/tmp` fixture mounts;
-- `wf04_code_node_runtime_regression` and `wf04_download_dedupe_regression` were invoked without their required external fixture environment variables;
-- `wf04_assignment_regression` still encoded the obsolete `candidate_id == unique visual` matcher and did not provide the now-required `visual_hash`;
-- `wf04_representation_relevance_regression` extracted helpers from the old canonical-only planner and no longer represented the actual WF04 runtime contract.
+- media-worker syntax PASS;
+- WF04 Code compile PASS `14`;
+- WF05 Code compile PASS `8`;
+- visual discovery regression PASS;
+- visual quality v2 regression PASS;
+- perceptual assignment PASS;
+- representation-relevance PASS;
+- download-dedupe PASS;
+- rank-query contract PASS at maximum 200 characters;
+- deterministic cross-topic visual regression PASS;
+- staged pipeline regression PASS on retained Edge corpus: 150 samples, safe count 40, false-safe 0;
+- CASE1 staged/visual regressions PASS;
+- migration 013 DDL transaction/rollback proof PASS;
+- no provider secret value appeared in the staged patch.
 
-Correction without weakening product gates:
-
-- historical CASE1/staged tests were rerun with their preserved real fixtures and passed unchanged;
-- `wf04_assignment_regression` now tests perceptual-cluster assignment and fail-closed insufficient diversity;
-- `wf04_representation_relevance_regression` now executes the actual current planner and verifies that metadata-irrelevant media is excluded before ranking;
-- `wf04_code_node_runtime_regression` is self-contained and executes the actual current Prepare + Build Code nodes with a multi-source truth-eligibility fixture;
-- `wf04_download_dedupe_regression` is self-contained and proves non-adjacent reuse dedupes one download while preserving `visual-quality-v2` metadata;
-- no diversity threshold, factual eligibility rule, duration gate, or provider requirement was weakened.
-
-Final full pre-commit proof:
-
-- media-worker syntax PASS for `server.mjs`, `visual-discovery.mjs`, `visual-quality.mjs`, `visual-framing.mjs`;
-- WF04 Code compile PASS `14` nodes; WF05 Code compile PASS `8` nodes;
-- `visual_discovery_regression` PASS;
-- `visual_quality_regression` PASS;
-- `wf04_perceptual_assignment_regression` PASS;
-- updated `wf04_assignment_regression` PASS;
-- updated `wf04_code_node_runtime_regression` PASS with eligible Pexels/Pixabay/Wikimedia candidates;
-- updated `wf04_download_dedupe_regression` PASS;
-- `wf04_rank_query_contract_regression` PASS, max query `200`;
-- updated `wf04_representation_relevance_regression` PASS;
-- `deterministic_visual_cross_topic_regression` PASS;
-- `r4v_visual_integrity_regression` PASS;
-- `staged_pipeline_regression` PASS, retained Edge corpus `150`, safe count `40`, false-safe `0`;
-- `case1_staged_regression` PASS;
-- `case1_visual_regression` PASS;
-- `wf04_final_design_gate.py` PASS;
-- migration 013 DDL executed inside an explicit transaction and rolled back; `jobs.visual_quality` count was `0` before and `0` after rollback;
-- production `.env` resolves non-empty `PIXABAY_API_KEY` and `PEXELS_API_KEY` for the corrected media-worker compose contract; secret values were not printed;
-- production remained exactly `media-worker`, `n8n`, `postgres`; PostgreSQL stayed healthy.
-
-The visual rewrite is now eligible for a coherent local commit. The unrelated WF02 fact-search-query change and its regression must remain outside that commit and be handled separately after the visual rewrite is deployed and proven.
+The unrelated WF02 native-Wikipedia retrieval-query work was explicitly excluded.
 
 ## 2026-09-02 — Visual rewrite committed locally
 
-Local commit:
+Commit:
 
-- SHA `f7c4096503c9620910b387129a5a06cce4d26d42`;
-- subject `redesign: enforce perceptual visual diversity`;
-- 15 files changed, 825 insertions, 91 deletions.
+- `f7c4096503c9620910b387129a5a06cce4d26d42`
+- `redesign: enforce perceptual visual diversity`
 
-Selective commit proof:
+Selective commit contained compose, migration 013, WF04, WF05, media-worker visual/render modules and visual regression tests only. WF02 retrieval work and `.env` were excluded.
 
-- staged files were limited to compose, migration 013, WF04, WF05, media-worker visual/render modules and visual regression tests;
-- `n8n/workflows/WF02-plan-script-and-scenes.json` was explicitly excluded;
-- `tests/wf02_fact_search_query_regression.mjs` was explicitly excluded;
-- `.env` files were not staged;
-- `git diff --cached --check` passed;
-- configured Pixabay/Pexels secret values were checked against the staged patch without printing them and neither value was present;
-- after commit the only remaining worktree changes were the separate WF02 workflow modification and untracked WF02 fact-search-query regression;
-- production remained unchanged with exactly three persistent services.
+## 2026-09-02 — Pre-deploy visual-quality-v2 rollback snapshot
 
-The next action is bounded production deployment of commit `f7c4096`: create rollback snapshot, apply migration 013, deploy media-worker/WF04/WF05 and corrected compose only, verify runtime contracts, then start a completely fresh induction job.
+Rollback path:
 
-## 2026-09-02 — Pre-deploy visual-quality-v2 rollback snapshot created
+`/opt/ai-short-form-content-factory/rollback/20260902T175543Z-pre-visual-quality-v2`
 
-Rollback snapshot:
+Snapshot captured production compose, media-worker source, WF04/WF05 file copies, exact live workflow exports, public schema/core-column metadata and runtime/container identities. `.env` was deliberately excluded.
 
-- path `/opt/ai-short-form-content-factory/rollback/20260902T175543Z-pre-visual-quality-v2`;
-- 14 files were captured and checksum-validated;
-- live WF04 export SHA-256 `6a73b0bfda88fc4cc05544f306136f3638c097543ef65f67ce988fa532609ceb`;
-- live WF05 export SHA-256 `4bb176b86256711cd604557d6579a9bca94a9964d69a5cf9cfbf7c9b62ba0a12`;
-- schema-only dump SHA-256 `fab11933320bb3778fcea14d7113a77b12f4eee93b5419f6679a9b7ed95d5ebf`;
-- snapshot includes production compose, complete media-worker source tree, file copies of WF04/WF05, exact live n8n WF04/WF05 exports, public DB schema/core-column metadata, git/runtime state and container/image identities;
-- `.env` was deliberately not copied.
+## 2026-09-02 — Visual-quality-v2 deployed to production
 
-Verified pre-deploy live state:
+Schema/media-worker phase:
 
-- production branch `feat/m6-visual-sourcing`, HEAD `7657c9e03110ed62297e054449762f2aed959f02` with historical local production changes/untracked artifacts already present;
-- rebuild visual commit is `f7c4096503c9620910b387129a5a06cce4d26d42`;
-- exactly `media-worker`, `n8n`, `postgres` are running;
-- PostgreSQL is healthy;
-- `jobs.visual_quality` column count is `0`;
-- running media-worker has neither Pixabay nor Pexels variable present yet, matching the diagnosed old compose wiring;
-- running media-worker `/health` is `ok` with local `Xenova/siglip-base-patch16-224`, dtype `q4`.
+- exact committed files from `f7c4096` were copied and byte-compared;
+- migration 013 applied successfully;
+- `jobs.visual_quality` and its object constraint are live;
+- media-worker recreated with provider env present, values not exposed;
+- `/health` PASS with local `Xenova/siglip-base-patch16-224`, dtype `q4`;
+- direct `/visual/discover` returned Wikimedia/Pexels/Pixabay candidates;
+- direct `/visual/rank` returned valid 64-hex perceptual hashes.
 
-The first snapshot metadata command emitted a shell syntax warning while trying to interpolate one verification line; snapshot files/checksums were already valid. The metadata line was recomputed independently and appended correctly: `visual_quality_column_verified=0`, PostgreSQL healthy, worker provider vars absent. This warning did not mutate production and is not treated as deployment proof.
+WF04/WF05 publication:
 
-No production schema, workflow, container or service was changed while creating/verifying this snapshot. The next action is the bounded mutation deploy using this rollback directory.
+- WF04 `M6VisualSourcing1` and WF05 `M7VideoRender1` imported/published;
+- n8n restarted exactly once after both publications;
+- live workflow core equality PASS;
+- WF04 live core SHA-256 at this checkpoint: `cc09f58e9ee74c346b1270bc7d014690fdcf4e163fa8a403d8839b152384cd5f`;
+- WF05 live core SHA-256: `c8e5d25c7114af81ea8ea19bf41560f2d4393f5292c5416fd5b8a2455bc289e9`;
+- exactly three persistent services remained running and PostgreSQL healthy.
 
-## 2026-09-02 — Visual-quality-v2 schema and media-worker deployed
+## 2026-09-02 — Fresh induction exposed reference-media lifecycle mismatch
 
-Bounded production phase completed before workflow publication:
+Fresh post-deploy job:
 
-- exact committed files from local commit `f7c4096503c9620910b387129a5a06cce4d26d42` were copied into production for compose, migration 013, WF04, WF05 and the four media-worker visual/render source files;
-- each copied production file was byte-compared against the exact commit object and matched;
-- the production compose diff was independently verified to contain only the two intended media-worker environment declarations for `PIXABAY_API_KEY` and `PEXELS_API_KEY`;
-- the new media-worker image was built before switching the running container.
+`1afc307d-aaac-4eed-8387-b05e1b6721eb`
 
-Schema proof:
+WF04 execution: `9902`.
 
-- migration `013_visual_quality_gate.sql` executed successfully with `BEGIN / ALTER TABLE / ALTER TABLE / ALTER TABLE / COMMIT`;
-- `jobs.visual_quality` column count is now `1`;
-- `jobs_visual_quality_check` constraint count is `1`;
-- the migration is additive relative to the pre-deploy snapshot.
+Upstream had already completed one Edge synthesis, measured duration `13.944 s` and six timed beats. WF04 then failed during visual-plan persistence.
 
-Live media-worker proof:
+Exact error:
 
-- old worker container ID began `0907393119fc...`;
-- recreated worker container ID begins `c8accec45c30...`;
-- both `PIXABAY_API_KEY` and `PEXELS_API_KEY` are now present in the live worker environment; values were not printed;
-- `/health` is `ok` with `Xenova/siglip-base-patch16-224`, dtype `q4`;
-- direct production `/visual/discover` for induction returned provider counts canonical article `5`, Pexels `15`, Pixabay `18`, one-beat candidate count `60`, provider set Wikimedia/Pexels/Pixabay, and no provider errors;
-- direct production `/visual/rank` ranked 6 candidates and every result carried a valid 64-hex-character `visual_hash`; proof prefix from the top result was `fcfffc3ffc3ffc3f`;
-- exactly `media-worker`, `n8n`, `postgres` remain running and PostgreSQL remains healthy.
+`new row for relation "scenes" violates check constraint "scenes_reference_media_kind_check"`
 
-WF04/WF05 have not yet been imported/published at this checkpoint. The next action is regular-mode import of WF04 and WF05, publish both IDs, exactly one n8n restart, then export and compare live workflow cores against commit `f7c4096`.
+Failing row semantics:
 
-## 2026-09-02 — Visual-quality-v2 WF04/WF05 production publication PASS
-
-Regular-mode workflow deployment completed:
-
-- WF04 `M6VisualSourcing1` imported successfully; n8n temporarily deactivated the workflow during import as expected;
-- WF05 `M7VideoRender1` imported successfully with the same expected temporary deactivation;
-- both workflow IDs were published using `n8n publish:workflow --id=...`;
-- n8n was restarted exactly once after both publications;
-- readiness passed after restart.
-
-Exact live equality proof:
-
-- WF04 expected `nodes/connections/settings` core SHA-256 `cc09f58e9ee74c346b1270bc7d014690fdcf4e163fa8a403d8839b152384cd5f`;
-- live published WF04 core SHA-256 is exactly `cc09f58e9ee74c346b1270bc7d014690fdcf4e163fa8a403d8839b152384cd5f`, active `true`, ID `M6VisualSourcing1`, 27 nodes;
-- WF05 expected core SHA-256 `c8e5d25c7114af81ea8ea19bf41560f2d4393f5292c5416fd5b8a2455bc289e9`;
-- live published WF05 core SHA-256 is exactly `c8e5d25c7114af81ea8ea19bf41560f2d4393f5292c5416fd5b8a2455bc289e9`, active `true`, ID `M7VideoRender1`, 16 nodes;
-- proof marker `LIVE_WORKFLOW_CORE_EQUALITY_PASS`.
-
-Post-publication runtime proof:
-
-- `jobs.visual_quality` column remains present;
-- live worker still has both provider variables present without exposing values;
-- live worker `/health` is `ok` with SigLIP q4;
-- exactly `media-worker`, `n8n`, `postgres` remain running;
-- PostgreSQL remains healthy.
-
-The visual-quality-v2 rewrite is now fully deployed under rollback snapshot `/opt/ai-short-form-content-factory/rollback/20260902T175543Z-pre-visual-quality-v2`. The next required action is a completely fresh induction job through the unchanged upstream WF01/WF02/WF03 and the newly deployed WF04/WF05. The old failed job `13f64c50-8dd5-47e4-a88f-1411d258e7c4` must not be reused.
-
-## 2026-09-02 — Fresh production induction exposed reference-media lifecycle mismatch
-
-Fresh job `1afc307d-aaac-4eed-8387-b05e1b6721eb` was created through production WF01 for `How does induction heating work? / en / 15` after the visual-quality-v2 deploy.
-
-Upstream proof before the failure:
-
-- HTTP intake returned `201` with the new job ID;
-- deterministic narration and evidence provenance completed;
-- exactly one Edge synthesis completed with `en-US-AndrewNeural`;
-- measured voice duration was `13.944 s` and the existing duration gate accepted it;
-- six timed beats were created;
-- WF04 execution `9902` then failed during visual-plan persistence before ranking/download/render.
-
-Exact production error from `n8n.execution_data`:
-
-- `new row for relation "scenes" violates check constraint "scenes_reference_media_kind_check"`;
-- the failing `visual_planned` row had `visual_evidence_type = technical_reference` and `reference_media_kind = mixed`.
+- `visual_evidence_type = technical_reference`;
+- `reference_media_kind = mixed`;
+- status `visual_planned`.
 
 Verified systemic root cause:
 
-- the new WF04 planner used `mixed` to mean that the concrete representation had intentionally not yet been selected;
-- the durable `scenes.reference_media_kind` contract only permits real media kinds `diagram`, `animation`, `photo` or `NULL`;
-- the older consistency constraint also required technical-reference rows to have a concrete kind even while still `visual_planned`;
-- therefore workflow semantics and staged DB lifecycle were inconsistent. This is not induction-specific.
+- `mixed` was being used as a fake durable media kind to mean “not selected yet”;
+- the database correctly only recognizes actual non-null kinds `diagram|animation|photo`;
+- the staged lifecycle contract did not allow a technical reference to remain unset while still `visual_planned`.
 
-Systemic correction prepared locally:
+The failed job was not reused because its one allowed Edge synthesis had already occurred.
 
-- WF04 no longer writes the fake media kind `mixed`;
-- `visual_planned` technical-reference scenes keep `reference_media_kind = NULL` while ranking/selection remains open;
-- selected `visual_ready` scenes still persist the actual chosen `photo|diagram|animation` through the existing `Persist Visual Result` path;
-- migration `014_reference_media_kind_lifecycle.sql` changes only the lifecycle consistency constraint so technical-reference `visual_planned` may remain unset, while technical-reference rows past planning still require a concrete kind;
-- the separate media-kind enum constraint remains unchanged, so invalid non-null values are still rejected.
+## 2026-09-02 — Reference-media lifecycle fixed systemically
 
-Regression proof before deployment:
+Correction:
 
-- WF04 Code-node compile PASS `14`;
-- `wf04_code_node_runtime_regression` PASS and now explicitly requires `reference_media_kind = NULL` before asset selection;
-- `wf04_assignment_regression` PASS;
-- `wf04_perceptual_assignment_regression` PASS;
-- `wf04_representation_relevance_regression` PASS after replacing its obsolete literal `mixed` expectation with the same unset-before-selection contract;
-- `wf04_download_dedupe_regression` PASS;
-- `wf04_rank_query_contract_regression` PASS at max `200` characters;
-- `visual_quality_regression` PASS;
-- `visual_discovery_regression` PASS;
-- migration 014 was exercised inside an outer production transaction and rolled back: `visual_planned + NULL` PASS, `visual_ready + NULL` rejected with expected `check_violation`, `visual_ready + photo` PASS;
-- after rollback the failed job's scene 1 was restored to `timed|NULL` and the live production constraint definition was unchanged;
-- exactly `media-worker`, `n8n`, `postgres` remained running and PostgreSQL stayed healthy.
+- WF04 uses `reference_media_kind = NULL` while a technical reference is only `visual_planned`;
+- after actual asset selection, `visual_ready` persists the concrete `photo|diagram|animation`;
+- migration `014_reference_media_kind_lifecycle.sql` aligns the DB lifecycle with those semantics;
+- invalid non-null media-kind values remain rejected.
 
-The failed job is terminal and must not be retried because it already consumed its one allowed Edge synthesis. The next action is a selective commit of WF04 + migration 014 + affected visual tests, bounded WF04/schema deploy, then a completely fresh induction job.
+Regression proof:
+
+- `visual_planned + technical_reference + NULL` -> PASS;
+- `visual_ready + technical_reference + NULL` -> expected check violation;
+- `visual_ready + technical_reference + photo` -> PASS;
+- WF04 Code compile PASS `14`;
+- runtime planner regression PASS;
+- assignment/perceptual assignment PASS;
+- representation relevance PASS;
+- download dedupe PASS;
+- rank query contract PASS;
+- visual quality/discovery regressions PASS.
+
+Selective commit:
+
+- `b83bf6d48f1df259c7c6fa0136748ca10d13f1af`
+- `fix: align reference media kind lifecycle`
+
+WF02 retrieval work remained excluded.
+
+Rollback snapshot before this bounded deploy:
+
+`/opt/ai-short-form-content-factory/rollback/20260902T181813Z-pre-reference-media-kind-lifecycle`
+
+Production deploy proof:
+
+- migration 014 is live;
+- n8n readiness HTTP 200;
+- WF04 active with 27 nodes;
+- expected/live WF04 core SHA-256 both equal `66edb387d6e0ea6ae8a9961f40c8b06e3a5ef376ea19441375beaa0c5790ef75`;
+- exactly three persistent services remained running and PostgreSQL healthy.
+
+## 2026-09-02 — Fresh production induction machine PASS after visual rewrite
+
+Fresh job:
+
+`2c182ff8-ea9f-4ddf-a417-b49f796d23f5`
+
+Topic: `How does induction heating work? / en / 15`.
+
+This job is a MACHINE PASS only. Human-visible product acceptance remains pending.
+
+Upstream/narration proof:
+
+- deterministic evidence compiler produced evidence-backed narration;
+- duration preflight predicted `14.358 s` and marked the candidate safe for the single-TTS boundary;
+- execution `9926` run data was decoded from n8n `execution_data`;
+- `Prepare Continuous Voiceover` ran exactly once;
+- `Generate Natural Voiceover` ran exactly once and succeeded (`executionTimeMs = 1084`);
+- `Require Natural Voiceover` ran exactly once;
+- persisted provider `microsoft_edge_readaloud`, model `edge_neural`, voice `en-US-AndrewNeural`;
+- measured voice duration `13.944 s` passed the unchanged 15-second ±10% gate;
+- six timed beats were created.
+
+Live WF03 proof:
+
+- live published workflow `UHxvCZNqaLb1RKMM` was exported from n8n rather than trusting the stale filesystem export;
+- it is active with 15 nodes;
+- Gemini is absent from the live workflow;
+- there is one synthesis HTTP node, `Generate Natural Voiceover`, using the media-worker Edge route;
+- prepared request carries `max_automatic_synthesis_count: 1`.
+
+Visual pre-render proof:
+
+- 6 beats;
+- 6 selected assets;
+- 6 perceptual clusters;
+- required clusters 5;
+- adjacent duplicate clusters `0`;
+- max visual-cluster duration share `0.1813`;
+- durable `visual_quality.pre_render_pass = true`.
+
+Selected assets were six different induction-related Wikimedia visuals:
+
+1. `File:Induction heating of bar.jpg`;
+2. `File:Stirling radioisotope generator head testing.jpg`;
+3. `File:Induction heating apparatus 1927.jpg`;
+4. `File:Silicon grown by Czochralski process 1956 closeup.jpg`;
+5. `File:Northup induction furnace.jpg`;
+6. `File:Induction heater.jpg`.
+
+Render/post-render proof:
+
+- final path `jobs/2c182ff8-ea9f-4ddf-a417-b49f796d23f5/render/final.mp4`;
+- job reached `review_ready/review` with no `last_error`;
+- persisted rendered clusters `[[1],[2],[3],[4],[5],[6]]`;
+- rendered visual state count `6`, required `5`;
+- adjacent rendered duplicate count `0`;
+- max cluster duration share `0.1813`;
+- independent midpoint-frame hashing at 1.1665, 3.395, 5.721, 8.145, 10.4975 and 12.817 seconds also produced six separate clusters;
+- minimum pairwise Hamming distance between sampled states was far above the threshold 18, so the former two-state failure did not recur.
+
+ffprobe proof:
+
+- duration `14.000000 s`;
+- H.264 video;
+- 1080x1920;
+- yuv420p;
+- 30 fps;
+- AAC audio;
+- 48 kHz stereo;
+- file size `3,767,544` bytes.
+
+Runtime after proof:
+
+- exactly `media-worker`, `n8n`, `postgres` are running;
+- PostgreSQL is healthy;
+- rebuild HEAD is `b83bf6d48f1df259c7c6fa0136748ca10d13f1af`;
+- only the separate WF02 retrieval work remains dirty: modified `n8n/workflows/WF02-plan-script-and-scenes.json` and untracked `tests/wf02_fact_search_query_regression.mjs`.
+
+Human gate:
+
+- DO NOT mark this job as M8 induction PASS yet;
+- exact fresh video must be viewed by the user in Studio;
+- if accepted, M8 #2 becomes PASS and testing continues on materially different topics/languages;
+- if rejected, progression stops and the visible defect is fixed systemically before generating further M8 videos.
