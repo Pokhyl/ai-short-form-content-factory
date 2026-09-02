@@ -377,3 +377,53 @@ Post-publication runtime proof:
 - PostgreSQL remains healthy.
 
 The visual-quality-v2 rewrite is now fully deployed under rollback snapshot `/opt/ai-short-form-content-factory/rollback/20260902T175543Z-pre-visual-quality-v2`. The next required action is a completely fresh induction job through the unchanged upstream WF01/WF02/WF03 and the newly deployed WF04/WF05. The old failed job `13f64c50-8dd5-47e4-a88f-1411d258e7c4` must not be reused.
+
+## 2026-09-02 — Fresh production induction exposed reference-media lifecycle mismatch
+
+Fresh job `1afc307d-aaac-4eed-8387-b05e1b6721eb` was created through production WF01 for `How does induction heating work? / en / 15` after the visual-quality-v2 deploy.
+
+Upstream proof before the failure:
+
+- HTTP intake returned `201` with the new job ID;
+- deterministic narration and evidence provenance completed;
+- exactly one Edge synthesis completed with `en-US-AndrewNeural`;
+- measured voice duration was `13.944 s` and the existing duration gate accepted it;
+- six timed beats were created;
+- WF04 execution `9902` then failed during visual-plan persistence before ranking/download/render.
+
+Exact production error from `n8n.execution_data`:
+
+- `new row for relation "scenes" violates check constraint "scenes_reference_media_kind_check"`;
+- the failing `visual_planned` row had `visual_evidence_type = technical_reference` and `reference_media_kind = mixed`.
+
+Verified systemic root cause:
+
+- the new WF04 planner used `mixed` to mean that the concrete representation had intentionally not yet been selected;
+- the durable `scenes.reference_media_kind` contract only permits real media kinds `diagram`, `animation`, `photo` or `NULL`;
+- the older consistency constraint also required technical-reference rows to have a concrete kind even while still `visual_planned`;
+- therefore workflow semantics and staged DB lifecycle were inconsistent. This is not induction-specific.
+
+Systemic correction prepared locally:
+
+- WF04 no longer writes the fake media kind `mixed`;
+- `visual_planned` technical-reference scenes keep `reference_media_kind = NULL` while ranking/selection remains open;
+- selected `visual_ready` scenes still persist the actual chosen `photo|diagram|animation` through the existing `Persist Visual Result` path;
+- migration `014_reference_media_kind_lifecycle.sql` changes only the lifecycle consistency constraint so technical-reference `visual_planned` may remain unset, while technical-reference rows past planning still require a concrete kind;
+- the separate media-kind enum constraint remains unchanged, so invalid non-null values are still rejected.
+
+Regression proof before deployment:
+
+- WF04 Code-node compile PASS `14`;
+- `wf04_code_node_runtime_regression` PASS and now explicitly requires `reference_media_kind = NULL` before asset selection;
+- `wf04_assignment_regression` PASS;
+- `wf04_perceptual_assignment_regression` PASS;
+- `wf04_representation_relevance_regression` PASS after replacing its obsolete literal `mixed` expectation with the same unset-before-selection contract;
+- `wf04_download_dedupe_regression` PASS;
+- `wf04_rank_query_contract_regression` PASS at max `200` characters;
+- `visual_quality_regression` PASS;
+- `visual_discovery_regression` PASS;
+- migration 014 was exercised inside an outer production transaction and rolled back: `visual_planned + NULL` PASS, `visual_ready + NULL` rejected with expected `check_violation`, `visual_ready + photo` PASS;
+- after rollback the failed job's scene 1 was restored to `timed|NULL` and the live production constraint definition was unchanged;
+- exactly `media-worker`, `n8n`, `postgres` remained running and PostgreSQL stayed healthy.
+
+The failed job is terminal and must not be retried because it already consumed its one allowed Edge synthesis. The next action is a selective commit of WF04 + migration 014 + affected visual tests, bounded WF04/schema deploy, then a completely fresh induction job.
