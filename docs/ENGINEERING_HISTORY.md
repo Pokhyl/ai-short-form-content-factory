@@ -41,8 +41,7 @@ Provider facts:
 
 - Wikimedia Commons expanded search is usable;
 - Pixabay direct provider check works with the configured key;
-- Pexels configured key returned HTTP 403 and therefore must remain optional;
-- production compose and `.env` carry Pixabay/Pexels variables, but the currently running media-worker was created without them. Bounded deploy must recreate the container and verify the live environment without exposing secret values.
+- Pexels configured key returned HTTP 403 and therefore must remain optional.
 
 Real induction dry-run before perceptual clustering:
 
@@ -118,5 +117,21 @@ Regression proof after the correction:
 Production status at this point:
 
 - none of these rewrite changes are deployed yet;
-- production still has exactly three running services;
-- next action is exact induction dry-run through the new perceptual hash/rank contract, followed by materially different cross-topic dry-runs before commit/deploy.
+- production still has exactly three running services.
+
+## 2026-09-02 — Media-worker provider environment wiring defect
+
+Verified configuration error:
+
+- earlier diagnostics had incorrectly described rebuild compose as already passing `PIXABAY_API_KEY` and `PEXELS_API_KEY` into `media-worker`;
+- fresh exact compose inspection showed those variables existed only in the `n8n` service environment;
+- the `media-worker` service had only `PORT`, so the new discovery adapter could never use Pixabay/Pexels after a normal rebuild/deploy even though keys existed in `.env`.
+
+Systemic correction made locally:
+
+- `compose.yaml` media-worker environment now includes `PIXABAY_API_KEY: ${PIXABAY_API_KEY}` and `PEXELS_API_KEY: ${PEXELS_API_KEY}`;
+- no secret values are stored in Git;
+- Pexels remains optional because its current configured key returns HTTP 403;
+- Pixabay can now be actually available to the worker after container recreation.
+
+Production is not changed yet. Current production still has exactly three running services. The next step remains a non-production induction dry-run through the new perceptual rank/hash contract, followed by cross-topic dry-runs before commit/deploy.
