@@ -41,7 +41,7 @@ Provider facts:
 
 - Wikimedia Commons expanded search is usable;
 - Pixabay direct provider check works with the configured key;
-- Pexels configured key returned HTTP 403 and therefore must remain optional.
+- an earlier standalone Pexels check returned HTTP 403, so Pexels remains optional and may never be required for pipeline success.
 
 Real induction dry-run before perceptual clustering:
 
@@ -131,7 +131,39 @@ Systemic correction made locally:
 
 - `compose.yaml` media-worker environment now includes `PIXABAY_API_KEY: ${PIXABAY_API_KEY}` and `PEXELS_API_KEY: ${PEXELS_API_KEY}`;
 - no secret values are stored in Git;
-- Pexels remains optional because its current configured key returns HTTP 403;
+- Pexels remains optional regardless of current health;
 - Pixabay can now be actually available to the worker after container recreation.
 
-Production is not changed yet. Current production still has exactly three running services. The next step remains a non-production induction dry-run through the new perceptual rank/hash contract, followed by cross-topic dry-runs before commit/deploy.
+Production is not changed yet. Current production still has exactly three running services.
+
+## 2026-09-02 — Exact induction perceptual dry-run PASS
+
+The rewrite was tested without deploying by building a temporary rewrite media-worker image and running the actual WF04 Code-node bodies against the persisted old induction job context. The three production services remained unchanged before and after the test.
+
+Exact source job used only as immutable dry-run input:
+
+- `13f64c50-8dd5-47e4-a88f-1411d258e7c4`;
+- topic `How does induction heating work?`;
+- language `en`;
+- target `15`;
+- 6 persisted timed beats and 6 persisted evidence rows.
+
+Temporary worker proof:
+
+- `/health` PASS with `Xenova/siglip-base-patch16-224`, dtype `q4`;
+- `PIXABAY_API_KEY` and `PEXELS_API_KEY` were both actually present in the temporary worker environment without exposing values;
+- discovery provider counts: canonical article `5`, Pexels `15`, Pixabay `18`;
+- this exact adapter request reported no provider errors, so the older standalone Pexels HTTP 403 result must not be generalized into a claim that the current discovery adapter is always unhealthy; Pexels nevertheless remains optional by architecture;
+- every induction beat discovered `53–55` normalized candidates from Wikimedia/Pexels/Pixabay;
+- truth eligibility reduced each beat to a bounded pool of `10` candidates; the selected eligible pools contained Pixabay and Wikimedia candidates.
+
+Actual local SigLIP/perceptual proof:
+
+- every ranked candidate returned a valid 64-hex-character `visual_hash`;
+- the actual `Attach Rank Results` and `Choose Visual Assignment` Code-node logic executed successfully;
+- selected assets were six different induction-related Wikimedia visuals, including `Induction heating of bar`, `Stirling radioisotope generator head testing`, `Induction heating apparatus 1927`, `Silicon grown by Czochralski process 1956 closeup`, `Northup induction furnace`, and `Induction heater`;
+- final pre-render quality: version `visual-quality-v2`, 6 assets, 6 perceptual clusters, required 5, adjacent duplicate clusters `0`, max cluster-duration share `0.1813`, PASS;
+- all quality values were finite;
+- proof marker: `INDUCTION_PERCEPTUAL_DRYRUN_PASS`.
+
+This is a dry-run proof of the new sourcing/ranking/assignment contract, not a human-visible production PASS. No production workflow/container/schema was changed. The next required stage is cross-topic dry-runs on materially different topics/languages before commit/deploy.
