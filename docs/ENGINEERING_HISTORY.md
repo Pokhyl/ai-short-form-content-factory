@@ -166,4 +166,27 @@ Actual local SigLIP/perceptual proof:
 - all quality values were finite;
 - proof marker: `INDUCTION_PERCEPTUAL_DRYRUN_PASS`.
 
-This is a dry-run proof of the new sourcing/ranking/assignment contract, not a human-visible production PASS. No production workflow/container/schema was changed. The next required stage is cross-topic dry-runs on materially different topics/languages before commit/deploy.
+This is a dry-run proof of the new sourcing/ranking/assignment contract, not a human-visible production PASS. No production workflow/container/schema was changed.
+
+## 2026-09-02 — Cross-topic PL combustion-engine dry-run PASS
+
+Cross-topic fixture:
+
+- language `pl`;
+- topic `Jak działa silnik spalinowy?`;
+- canonical source `pl:Silnik spalinowy`;
+- six factual beat fragments derived from the Polish Wikipedia introduction;
+- no TTS and no production job mutation.
+
+Actual rewrite behavior:
+
+- discovery returned `52–53` normalized candidates per beat;
+- provider discovery was active, but strict truth eligibility reduced the per-beat pools to `3–4` Wikimedia candidates for this source;
+- the canonical source did not resolve an English langlink in the tested API response, so the case also exercises the non-English canonical-title fallback;
+- the actual SigLIP/perceptual/global assignment selected 5 unique assets forming 5 perceptual clusters for 6 beats;
+- one visual cluster was reused non-adjacently;
+- quality: `visual-quality-v2`, required clusters `5`, actual clusters `5`, adjacent duplicates `0`, max cluster-duration share `0.3333`, PASS;
+- proof marker: `PL_COMBUSTION_ENGINE_DRYRUN_PASS`;
+- production still had exactly `media-worker`, `n8n`, `postgres` running after the test.
+
+This cross-topic PASS does not prove production quality by itself. Next required dry-run is a materially different Russian-language refrigerator case, followed by a Ukrainian case before commit/deploy.
