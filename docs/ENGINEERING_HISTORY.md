@@ -209,4 +209,26 @@ Actual rewrite behavior:
 - proof marker: `RU_REFRIGERATOR_DRYRUN_PASS`;
 - production still had exactly `media-worker`, `n8n`, `postgres` running after the test.
 
-The next required cross-topic dry-run is Ukrainian `Вулкан`, after which the rewrite diff must be inspected before any commit/deploy.
+## 2026-09-02 — Cross-topic UK volcano dry-run PASS
+
+Cross-topic fixture:
+
+- language `uk`;
+- topic about how a volcano works;
+- canonical source `uk:Вулкан`, resolved English title `Volcano`;
+- six factual beat fragments derived from the Ukrainian Wikipedia introduction;
+- no TTS and no production job mutation.
+
+Actual rewrite behavior:
+
+- an initial attempt was interrupted by a SentinelX agent disconnect and was not counted;
+- recovery check confirmed no temporary rewrite container remained and production still had exactly `media-worker`, `n8n`, `postgres` running;
+- the repeated clean dry-run discovered `95–112` normalized candidates per beat;
+- provider discovery counts: canonical article `44`, Pexels `15`, Pixabay `18`, with no provider errors;
+- all six truth-eligible pools contained the bounded maximum `10` candidates and included Pexels, Pixabay and Wikimedia;
+- actual assignment used Wikimedia and Pexels assets;
+- quality: `visual-quality-v2`, 6 assets, 6 perceptual clusters, required `5`, adjacent duplicates `0`, max cluster-duration share `0.1667`, PASS;
+- proof marker: `UK_VOLCANO_DRYRUN_PASS`;
+- production still had exactly `media-worker`, `n8n`, `postgres` running after the test.
+
+Cross-topic pre-deploy evidence is now complete across EN induction, PL combustion engine, RU refrigerator and UK volcano. The next action is full local diff inspection, explicit separation of unrelated WF02 retrieval work, then coherent visual-rewrite commit before any production deploy.
