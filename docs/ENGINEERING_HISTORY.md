@@ -349,3 +349,31 @@ Live media-worker proof:
 - exactly `media-worker`, `n8n`, `postgres` remain running and PostgreSQL remains healthy.
 
 WF04/WF05 have not yet been imported/published at this checkpoint. The next action is regular-mode import of WF04 and WF05, publish both IDs, exactly one n8n restart, then export and compare live workflow cores against commit `f7c4096`.
+
+## 2026-09-02 — Visual-quality-v2 WF04/WF05 production publication PASS
+
+Regular-mode workflow deployment completed:
+
+- WF04 `M6VisualSourcing1` imported successfully; n8n temporarily deactivated the workflow during import as expected;
+- WF05 `M7VideoRender1` imported successfully with the same expected temporary deactivation;
+- both workflow IDs were published using `n8n publish:workflow --id=...`;
+- n8n was restarted exactly once after both publications;
+- readiness passed after restart.
+
+Exact live equality proof:
+
+- WF04 expected `nodes/connections/settings` core SHA-256 `cc09f58e9ee74c346b1270bc7d014690fdcf4e163fa8a403d8839b152384cd5f`;
+- live published WF04 core SHA-256 is exactly `cc09f58e9ee74c346b1270bc7d014690fdcf4e163fa8a403d8839b152384cd5f`, active `true`, ID `M6VisualSourcing1`, 27 nodes;
+- WF05 expected core SHA-256 `c8e5d25c7114af81ea8ea19bf41560f2d4393f5292c5416fd5b8a2455bc289e9`;
+- live published WF05 core SHA-256 is exactly `c8e5d25c7114af81ea8ea19bf41560f2d4393f5292c5416fd5b8a2455bc289e9`, active `true`, ID `M7VideoRender1`, 16 nodes;
+- proof marker `LIVE_WORKFLOW_CORE_EQUALITY_PASS`.
+
+Post-publication runtime proof:
+
+- `jobs.visual_quality` column remains present;
+- live worker still has both provider variables present without exposing values;
+- live worker `/health` is `ok` with SigLIP q4;
+- exactly `media-worker`, `n8n`, `postgres` remain running;
+- PostgreSQL remains healthy.
+
+The visual-quality-v2 rewrite is now fully deployed under rollback snapshot `/opt/ai-short-form-content-factory/rollback/20260902T175543Z-pre-visual-quality-v2`. The next required action is a completely fresh induction job through the unchanged upstream WF01/WF02/WF03 and the newly deployed WF04/WF05. The old failed job `13f64c50-8dd5-47e4-a88f-1411d258e7c4` must not be reused.
