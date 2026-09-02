@@ -1,6 +1,6 @@
 # Process Gate — Rebuild
 
-Last updated: 2026-09-01
+Last updated: 2026-09-02
 
 `docs/CURRENT_STATE.md` is the operational source of truth.
 
@@ -8,31 +8,44 @@ Last updated: 2026-09-01
 
 Before every technical action, read fresh GitHub `docs/PERMANENT_PROJECT_RULES.md` and branch `rebuild/simple-pipeline/docs/CURRENT_STATE.md`. Read additional scope docs as required there.
 
-No topic-specific hacks, acceptance bypasses, magic thresholds, query rewrites for one case, manual asset substitutions, sleeps/retries to hide provider quotas, extra keys/accounts/projects, or paid fallback.
+No topic-specific hacks, acceptance bypasses, magic thresholds, query rewrites for one case, manual asset substitutions, sleeps/retries to hide provider quotas, extra keys/accounts/projects, paid semantic fallback, or weak local-model deployment merely to remove Gemini.
 
-## Active gate — remove hosted quota dependency
+## Active gate — staged zero-quota semantic architecture
 
-Current production semantic path is blocked by Gemini Free Tier `429 RESOURCE_EXHAUSTED` and `503 UNAVAILABLE`. This is classified as an architecture reliability failure because a quota-limited hosted AI remains required.
+The old monolithic WF02 semantic boundary is rejected. Do not spend more time model-hopping against the old multi-thousand-token request.
 
-The next accepted change must remove Gemini / quota-limited hosted semantic AI from the REQUIRED generation path while preserving:
+The next accepted production architecture is:
 
-- 0 PLN per-video API cost;
-- exactly three persistent services;
-- factual grounding;
-- EN/PL/RU/UK;
-- natural Edge timing/voice;
-- current visual truth and render gates.
+`retrieval -> deterministic persisted evidence packet -> compact local narration -> natural Edge + bounded text fit -> timed beats -> compact local visual intent -> deterministic visual eligibility/ranking -> render -> review`
 
-## Required sequence
+Exactly three persistent services and 0 PLN per-video external API cost remain mandatory.
 
-1. Read-only VPS/model feasibility probes.
-2. Prove candidate local semantic engine on materially different topics and all four languages against the existing structured WF02 contract.
-3. Reject any candidate that cannot meet factual/structured quality; do not compensate with case-specific production rules.
-4. Document selected architecture decision in `ARCHITECTURE.md`, `UPSTREAM_DECISION.md`, and `CURRENT_STATE.md` before production mutation.
-5. Implement boundedly inside the existing three-service topology.
-6. Run full local static/behavior/Code-node/Studio/WF04/R8/media-worker/render/diff gates.
-7. Commit implementation and update GitHub source-of-truth.
-8. Deploy boundedly with rollback evidence and exact-published proof.
-9. Start one completely fresh frozen CASE 1: `How does a zipper work?` / `en` / `15`.
-10. CASE 1 passes only if narration facts/coherence, natural clean Edge duration, every selected visual/provenance/content check, final ffprobe and human-visible voice/render quality all pass.
-11. First real product failure stops progression and must be repaired systemically before any later case.
+## Required implementation sequence
+
+1. Add durable evidence/provenance schema.
+2. Change scene lifecycle so WF03 can create `timed` narration/timing rows before visual fields exist, while DB constraints require complete visual intent before visual-ready state.
+3. Build deterministic evidence reducer and compact narration evaluation contract. Do not feed raw source dumps to the local model.
+4. Evaluate feasible local multilingual narration candidates on materially different topics and EN/PL/RU/UK using the compact contract and unchanged factual validator principles.
+5. Implement natural Edge duration feedback: at most one evidence-grounded text-fit rewrite after a measured miss; no speed/pause manipulation and no unbounded loop.
+6. Create timed beats only from final accepted script/voice.
+7. Build compact visual-intent contract on final beats and relevant evidence only.
+8. Enforce stock/reference/exact eligibility before local ranking; truth-critical stock requires metadata-supported `concrete_subject`.
+9. Add heavyweight-compute serialization/model-lifetime controls in media-worker and prove semantic/SigLIP overlap cannot exhaust RAM/swap.
+10. Run full static/behavior/Code-node/Studio/WF04/R8/media-worker/render/diff/database migration gates.
+11. Commit implementation and update GitHub source-of-truth with exact hashes/proof.
+12. Deploy boundedly with rollback evidence and exact-published proof.
+13. Start one completely fresh frozen CASE 1: `How does a zipper work? / en / 15`.
+14. CASE 1 passes only if evidence, narration, natural clean Edge duration, timed beats, visual intent, every selected visual/provenance/content check, final ffprobe and human-visible quality all pass.
+15. First real product failure stops progression and is repaired systemically before any later case.
+
+## Explicit non-goals
+
+Do not:
+
+- add another persistent model service;
+- keep Gemini as emergency fallback;
+- preserve the old exact giant JSON/GBNF response contract just because tests already exist;
+- force visual planning before final voice duration is known;
+- keep evidence only in transient n8n execution data;
+- use SigLIP as a truth oracle before deterministic eligibility;
+- loosen acceptance to make a local model appear successful.
