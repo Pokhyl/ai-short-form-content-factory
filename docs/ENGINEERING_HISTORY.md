@@ -348,3 +348,35 @@ Human gate:
 - exact fresh video must be viewed by the user in Studio;
 - if accepted, M8 #2 becomes PASS and testing continues on materially different topics/languages;
 - if rejected, progression stops and the visible defect is fixed systemically before generating further M8 videos.
+
+## 2026-09-02 — Fresh induction human-visible PASS
+
+Exact accepted job:
+
+`2c182ff8-ea9f-4ddf-a417-b49f796d23f5`
+
+Human acceptance:
+
+- the user watched the exact fresh post-fix induction video in Studio;
+- the user responded `мне нравится`;
+- this is explicit acceptance of the visible product result after the visual-quality-v2 rewrite and reference-media lifecycle correction.
+
+Decision:
+
+- M8 #2 induction is now PASS, not merely machine PASS;
+- accepted M8 count is `2/10`;
+- the old two-state induction job remains permanently invalidated and is not reused as proof;
+- the intermediate `mixed` lifecycle failure remains part of engineering history and is not erased by the later PASS.
+
+Next independent technical task:
+
+- finish the already-separated WF02 native-Wikipedia retrieval-query correction exposed by Polish popcorn;
+- keep it in its own commit/deploy;
+- after a fresh VPS/runtime check, regression-test and boundedly deploy WF02 only;
+- then start a completely fresh Polish popcorn job as M8 #3 and require machine + human review.
+
+Operational note:
+
+- immediately after the human acceptance, fresh SentinelX runtime inspection was attempted twice;
+- both attempts returned `agent_offline` because the SentinelX hub had restarted;
+- no production mutation was performed while runtime verification was unavailable.
