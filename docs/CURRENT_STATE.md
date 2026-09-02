@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-02
 
-This file is authoritative for branch `rebuild/simple-pipeline`. Repository/runtime state overrides chat memory.
+This file is authoritative for branch `rebuild/simple-pipeline`. Repository/runtime state overrides chat memory. Detailed chronological proof is in `docs/ENGINEERING_HISTORY.md`.
 
 ## Mandatory protocol
 
@@ -15,6 +15,8 @@ Before EVERY technical response, diagnosis, recommendation, code/config change, 
 5. Upstream/provider change: also read `docs/UPSTREAM_DECISION.md`.
 6. Inspect fresh VPS/runtime state before acting.
 
+Before starting a new approach, also check `docs/ENGINEERING_HISTORY.md` for the same/equivalent failure so rejected approaches are not repeated.
+
 ## Hard invariants
 
 - exactly three persistent services: `n8n`, `postgres`, `media-worker`;
@@ -26,264 +28,233 @@ Before EVERY technical response, diagnosis, recommendation, code/config change, 
 
 Critical path:
 
-`topic -> factual evidence -> deterministic evidence-backed narration -> local duration preflight -> one natural Edge voice -> timed beats -> deterministic truthful visual eligibility -> local SigLIP ranking -> render -> human review`
+`topic -> factual evidence -> deterministic evidence-backed narration -> local duration preflight -> one natural Edge voice -> timed beats -> deterministic truthful visual eligibility -> local SigLIP ranking + perceptual identity -> global sequence assignment -> pre-render visual gate -> render -> post-render visual-state gate -> human review`
 
-## Runtime and source synchronization
+## Runtime
 
 Production:
 
 - `/opt/ai-short-form-content-factory`
 - rebuild worktree: `/opt/ai-short-form-content-factory-rebuild`
-- exactly three project containers are running; PostgreSQL is healthy.
+
+Fresh runtime inspection after the current proof:
+
+- exactly `media-worker`, `n8n`, `postgres` are running;
+- PostgreSQL is healthy;
+- rebuild HEAD: `b83bf6d48f1df259c7c6fa0136748ca10d13f1af`;
+- rebuild worktree has only the separate WF02 retrieval work dirty:
+  - modified `n8n/workflows/WF02-plan-script-and-scenes.json`;
+  - untracked `tests/wf02_fact_search_query_regression.mjs`.
 
 Published workflows:
 
 - WF02 `TJfA4ZYUEKSTad6k` — deterministic evidence/narration;
 - WF03 `UHxvCZNqaLb1RKMM` — one natural Edge voice + timed beats;
-- WF04 `M6VisualSourcing1` — current production visual sourcing;
-- WF05 `M7VideoRender1` — current production render.
+- WF04 `M6VisualSourcing1` — visual-quality-v2 sourcing/assignment;
+- WF05 `M7VideoRender1` — visual-quality-v2 render acceptance;
+- WF06 `R8ReviewApi1` — review API.
 
-Migration `db/migrations/012_staged_semantic_pipeline.sql` is applied in production.
+IMPORTANT SOURCE NOTE: production/live n8n exports are authoritative for published workflow behavior when the production filesystem export is stale. In particular, the filesystem WF03 export is historical; the live published WF03 was independently exported and contains no Gemini path.
 
-IMPORTANT SOURCE NOTE: the GitHub branch code tree is behind the VPS rebuild worktree because the VPS has no GitHub HTTPS credentials and no SSH key. Do not silently assume GitHub workflow blobs equal production or the current local rewrite. For code decisions, read this state and then inspect fresh VPS rebuild/runtime state.
+## Deployed visual-quality-v2 implementation
 
-Current local rebuild HEAD before the active rewrite commit: `99fc079baf44de28470a47f5e3101b65bd2769ad`.
+Primary visual rewrite commit:
 
-Current rebuild worktree has active uncommitted visual-pipeline rewrite changes in:
+- `f7c4096503c9620910b387129a5a06cce4d26d42`
+- `redesign: enforce perceptual visual diversity`
 
-- `n8n/workflows/WF02-plan-script-and-scenes.json`;
-- `n8n/workflows/WF04-visual-sourcing.json`;
-- `n8n/workflows/WF05-video-render.json`;
-- `services/media-worker/src/server.mjs`;
-- `services/media-worker/src/visual-framing.mjs`;
-- `db/migrations/013_visual_quality_gate.sql`;
-- `services/media-worker/src/visual-discovery.mjs`;
-- `services/media-worker/src/visual-quality.mjs`;
-- `tests/visual_discovery_regression.mjs`;
-- `tests/visual_quality_regression.mjs`;
-- `tests/wf02_fact_search_query_regression.mjs`.
+Reference-media lifecycle correction:
 
-Relevant earlier local commits:
+- `b83bf6d48f1df259c7c6fa0136748ca10d13f1af`
+- `fix: align reference media kind lifecycle`
 
-- `8af7f56` — retained Edge operating bands;
-- `3619f11` — require metadata-relevant visual representation before choosing diagram/animation;
-- `99fc079` — align WF04 SigLIP rank-query producer contract with media-worker maximum of 200 characters;
-- earlier visual commits: `0f4723a`, `f7c321a`, `954b383`.
+Applied migrations:
 
-Latest earlier rollback snapshots:
+- `012_staged_semantic_pipeline.sql`;
+- `013_visual_quality_gate.sql`;
+- `014_reference_media_kind_lifecycle.sql`.
 
-- `/opt/ai-short-form-content-factory/rollback/20260902T143632Z-pre-wf02-duration-band`
-- `/opt/ai-short-form-content-factory/rollback/20260902T144337Z-pre-wf04-representation`
-- `/opt/ai-short-form-content-factory/rollback/20260902T160102Z-pre-wf04-rank-query-contract`
+Rollback snapshots:
 
-## CASE1 — zipper — PASS
+- `/opt/ai-short-form-content-factory/rollback/20260902T175543Z-pre-visual-quality-v2`;
+- `/opt/ai-short-form-content-factory/rollback/20260902T181813Z-pre-reference-media-kind-lifecycle`.
 
-Frozen CASE1:
+Current visual architecture:
+
+`timed beat + evidence -> deterministic search intents -> multi-source candidate discovery -> metadata/provenance truth eligibility -> local SigLIP ranking + perceptual hash -> global video-level assignment -> durable sequence-quality gate -> persist -> render -> actual midpoint-frame perceptual gate -> review_ready`
+
+Discovery adapters:
+
+- canonical article media;
+- Wikimedia Commons full search;
+- Pixabay photos when healthy/configured;
+- Pexels video only as optional provider.
+
+Pexels is never required for success. No old provider retry cascade, topic mapping, or fallback-generated visual path is allowed.
+
+## Visual-quality-v2 acceptance contract
+
+Truth eligibility is before SigLIP. SigLIP is a relative ranking tool, never the truth oracle.
+
+For a 6-beat job:
+
+- all 6 beats must have persisted truth-eligible selected assets;
+- at least 5 perceptually distinct clusters are required;
+- adjacent duplicate perceptual clusters are forbidden;
+- no perceptual cluster may occupy more than `0.34` of total beat duration;
+- all metrics must be finite; missing/NaN values fail closed;
+- WF05 independently reloads and validates persisted `visual_quality`;
+- post-render midpoint frames are independently clustered from actual rendered pixels;
+- rendered state count must also meet the required state count before `review_ready`.
+
+The old failed induction sequence remains the permanent negative fixture: 6 scene rows but only 2 effective visual states, 4 adjacent repeats and about 68% duration share for one state -> MUST FAIL.
+
+Still-image motion is cosmetic only. Motion does not turn reuse of one perceptual visual into diversity. Technical/factual diagrams remain stable/readable.
+
+## CASE1 — zipper — M8 #1 PASS
+
+Topic:
 
 `How does a zipper work? / en / 15`
 
-Fresh accepted job:
+Accepted job:
 
 `227c8a50-ef1a-49e5-8d26-fdb40f663c83`
 
-Machine proof included evidence-backed narration, one Edge synthesis, measured duration in gate, six timed beats, truthful zipper visuals and valid final H.264/AAC output.
+Machine proof and user-visible review both PASS. Do not reopen CASE1 unless a later systemic change affects its contract.
 
-Human gate: PASS. On 2026-09-02 the user viewed this fresh result and explicitly accepted it as normal.
+## M8 #2 — induction heating
 
-## M8 Quality Run — active
+### Old job — PRODUCT FAIL, permanently invalidated
 
-Roadmap M8 requires at least 10 materially different videos and review of script, voice, visual relevance, subtitles, and render.
+Old job:
 
-### M8 #1 — zipper
+`13f64c50-8dd5-47e4-a88f-1411d258e7c4`
 
-PASS, including human-visible review. Job `227c8a50-ef1a-49e5-8d26-fdb40f663c83`.
+Although it had reached `review_ready`, human inspection showed only two effective visual states. This job is NOT an M8 PASS and must never be reused as acceptance evidence.
 
-### M8 #2 — induction heating — PRODUCT FAIL
+### Intermediate post-rewrite job — terminal schema/workflow failure
+
+Job:
+
+`1afc307d-aaac-4eed-8387-b05e1b6721eb`
+
+WF04 execution `9902` failed because the new planner persisted fake `reference_media_kind = mixed` while the DB only accepts actual `diagram|animation|photo` or NULL. The job had already consumed its single Edge synthesis, so it was not retried.
+
+Systemic correction is commit `b83bf6d` + migration 014:
+
+- `visual_planned + technical_reference` keeps `reference_media_kind = NULL` until asset selection;
+- `visual_ready + technical_reference` requires actual `photo|diagram|animation`;
+- invalid non-null kinds remain rejected.
+
+Regression transaction proved planned+NULL PASS, ready+NULL FAIL, ready+photo PASS.
+
+### Fresh post-fix induction — MACHINE PASS, HUMAN REVIEW PENDING
+
+Fresh job:
+
+`2c182ff8-ea9f-4ddf-a417-b49f796d23f5`
 
 Topic:
 
 `How does induction heating work? / en / 15`
 
-Job:
+Current state:
 
-`13f64c50-8dd5-47e4-a88f-1411d258e7c4`
+- `review_ready/review`;
+- final path `jobs/2c182ff8-ea9f-4ddf-a417-b49f796d23f5/render/final.mp4`;
+- no `last_error`.
 
-The previous machine state `review_ready` is NOT a valid quality pass. Human-visible inspection showed that the 14-second video had only two effective visual states: roughly the first four seconds used one image and roughly the remaining ten seconds used another. Six database scenes marked `visual_ready` therefore did not represent six useful visual states.
+Narration/evidence:
 
-This is the trigger for the active visual-pipeline rewrite below. Do not describe this induction job as a successful M8 result.
+`An induction heater consists of an electromagnet and an electronic oscillator. The rapidly alternating magnetic field penetrates the object. The eddy currents flow through the resistance of the material, and heat it by Joule heating.`
 
-## ACTIVE WORK — FULL VISUAL PIPELINE REWRITE
+- deterministic evidence compiler;
+- exact persisted source/evidence support;
+- duration preflight predicted `14.358 s` and was safe for the one-shot Edge boundary;
+- measured voice duration `13.944 s` passed the unchanged target-duration gate.
 
-This is the current task. DO NOT resume the old incremental Wikimedia-only matcher patching. DO NOT continue M8 generation until this rewrite is regression-tested and deployed boundedly.
+Exactly-one-Edge proof:
 
-### Root architectural failure
+- live WF03 `UHxvCZNqaLb1RKMM` exported from n8n: active, 15 nodes, no Gemini path;
+- one synthesis HTTP node `Generate Natural Voiceover` using the media-worker Edge route;
+- request contract includes `max_automatic_synthesis_count: 1`;
+- n8n execution `9926` decoded from `execution_data`:
+  - `Prepare Continuous Voiceover` runs = 1;
+  - `Generate Natural Voiceover` runs = 1, success, `executionTimeMs = 1084`;
+  - `Require Natural Voiceover` runs = 1;
+- persisted provider `microsoft_edge_readaloud`, model `edge_neural`, voice `en-US-AndrewNeural`.
 
-The current production visual path can truthfully assign an asset to every beat while still producing a visually degenerate video. The former acceptance contract checked per-scene asset presence but did not validate the quality of the sequence as a whole.
+Visual pre-render proof:
 
-The clean rebuild also removed the previously available multi-provider sourcing layer and effectively constrained WF04 to canonical/Wikimedia media. A max-unique matcher cannot manufacture diversity when the eligible pool itself is tiny.
+- beat count 6;
+- selected assets 6;
+- perceptual clusters 6;
+- required clusters 5;
+- adjacent duplicate clusters 0;
+- max cluster-duration share `0.1813`;
+- pre-render visual-quality-v2 PASS.
 
-### Stable parts that remain
+Selected visuals:
 
-Do not rebuild these unless a separate real defect proves it necessary:
+1. `File:Induction heating of bar.jpg`;
+2. `File:Stirling radioisotope generator head testing.jpg`;
+3. `File:Induction heating apparatus 1927.jpg`;
+4. `File:Silicon grown by Czochralski process 1956 closeup.jpg`;
+5. `File:Northup induction furnace.jpg`;
+6. `File:Induction heater.jpg`.
 
-- WF01 intake;
-- PostgreSQL durable state model, extended only where the new visual-quality contract needs durable fields;
-- persisted factual evidence/provenance;
-- deterministic evidence-backed narration architecture;
-- local duration preflight architecture;
-- exactly one natural Edge synthesis per automatic job;
-- measured voice duration as authoritative;
-- timed beats created after accepted voice;
-- exactly three persistent services;
-- 0 PLN per-video external API cost.
+Post-render proof:
 
-### New visual architecture
+- persisted rendered clusters `[[1],[2],[3],[4],[5],[6]]`;
+- rendered visual-state count 6;
+- required rendered states 5;
+- adjacent rendered duplicates 0;
+- max cluster-duration share `0.1813`;
+- independent midpoint samples at 1.1665, 3.395, 5.721, 8.145, 10.4975 and 12.817 seconds also form six separate perceptual clusters;
+- all pairwise midpoint Hamming distances are far above the threshold 18, so the former two-state degeneration did not recur.
 
-Replace the current `canonical article media -> per-beat eligibility -> rank -> assignment` bottleneck with:
+ffprobe:
 
-`timed beat + evidence -> deterministic search intents -> multi-source candidate discovery -> metadata/provenance eligibility -> local SigLIP ranking + perceptual identity -> global sequence assignment -> sequence quality gate -> persist -> render -> post-render visual-state gate -> review_ready`
+- duration `14.000000 s`;
+- H.264, 1080x1920, yuv420p, 30 fps;
+- AAC, 48 kHz, stereo;
+- size `3,767,544` bytes.
 
-#### 1. Multi-source discovery
+This is a MACHINE PASS only. It is NOT yet M8 #2 PASS until the user watches the exact fresh video and accepts script/voice/visual relevance/subtitles/render.
 
-Build one normalized candidate pool from independent zero-cost provider adapters:
+## M8 current gate
 
-- canonical article media;
-- Wikimedia Commons full search;
-- Pixabay photo search when the key is available/healthy;
-- Pexels video search only as an optional provider when authorization is healthy.
+Roadmap M8 requires at least 10 materially different videos with real review of script, voice, visual relevance, subtitles and render.
 
-Pexels MUST NOT be required for pipeline success. Current direct provider check returned HTTP 403 with the configured key.
+Current count:
 
-The production `.env` and compose contain `PIXABAY_API_KEY` and `PEXELS_API_KEY`, but the currently running media-worker was created without those environment variables. Bounded deploy must recreate media-worker and verify actual container environment/provider behavior without exposing secret values.
+- M8 #1 zipper: PASS including human review;
+- M8 #2 induction: machine PASS, human review pending.
 
-Do not restore the old 66-node provider cascade, provider retry tree, topic-specific fallback mappings, or fallback-generated visuals. Discovery belongs behind a small bounded media-worker adapter contract.
+Do not generate M8 #3 until the exact fresh induction video `2c182ff8-ea9f-4ddf-a417-b49f796d23f5` has human-visible acceptance.
 
-#### 2. Deterministic intent and truth eligibility
+If the user accepts it, record M8 #2 PASS and continue with materially different topics/languages until at least 10 human-visible reviews exist.
 
-For each beat derive multiple bounded search intents from:
+If the user rejects it, stop progression immediately and repair the visible defect systemically. No induction-specific patching and no gate weakening.
 
-- canonical title;
-- beat narration;
-- supporting evidence text;
-- named/concrete entities and mechanism terms available in evidence;
-- target-language/English source metadata when already available.
+## Separate unfinished WF02 retrieval work — DO NOT BUNDLE
 
-Truth eligibility occurs before SigLIP.
+This remains intentionally outside the visual rewrite commits:
 
-Do not use SigLIP as a truth oracle. Do not weaken factual gates merely to obtain diversity.
+- modified `n8n/workflows/WF02-plan-script-and-scenes.json`;
+- untracked `tests/wf02_fact_search_query_regression.mjs`.
 
-#### 3. Local semantic ranking
+Originating failure was Polish popcorn retrieval where a full native-Wikipedia AND-style query was too restrictive. The local systemic direction uses a bounded subject-leading retrieval query while preserving the full evidence-token set for downstream factual validation.
 
-Only truth-eligible candidates reach local SigLIP relative ranking.
+Do not silently commit/deploy this WF02 work with unrelated M8/visual changes. Handle it separately after the current induction human gate unless a new verified upstream blocker requires it first.
 
-Rank-query producer contract remains maximum 200 characters.
+## Exact next action
 
-Ranking must return enough metadata for global sequence selection, including a perceptual preview identity/hash so visually near-identical files cannot masquerade as different assets.
-
-#### 4. Global sequence assignment
-
-Assignment is a video-level optimization, not six independent choices.
-
-It must consider:
-
-- semantic relevance;
-- visual/perceptual uniqueness, not just provider asset ID;
-- no adjacent repeat cluster;
-- duration share of each visual cluster;
-- representation/media-type usefulness;
-- diversity across beats without selecting factually unsupported media.
-
-The old rule `different candidate_id == different visual` is insufficient.
-
-#### 5. Pre-render visual quality gate
-
-A job cannot reach render merely because every scene is `visual_ready`.
-
-The new gate currently targets these fail-closed properties:
-
-- every beat has one persisted truth-eligible selected asset;
-- for 6 beats, at least 5 distinct visual/perceptual clusters;
-- no adjacent duplicate visual cluster;
-- no single visual cluster may dominate more than roughly one third of total voice duration;
-- all diversity metrics must be finite numeric values; `NaN`/missing values fail closed;
-- quality metrics must be persisted durably on the job (`visual_quality`) so WF05 can independently verify them.
-
-The exact thresholds may only be changed from cross-topic evidence; do not lower them to make one topic pass.
-
-The failed induction sequence is the negative regression fixture: `2/6` unique assets, 4 adjacent repeats, one asset about 68% of duration => MUST FAIL.
-
-A representative 6-beat sequence with 5 unique assets, no adjacent duplicates and max asset share about 33% => PASS in current regression.
-
-#### 6. Render behavior
-
-Still images must not produce dead static frames by default. For normal photographic stills use deterministic subtle pan/zoom motion. Technical/factual diagrams must remain readable and must not be distorted for cosmetic movement.
-
-Motion is NOT a substitute for source diversity: reuse of the same visual cluster remains reuse and cannot satisfy the diversity gate merely because a different crop/pan is applied.
-
-#### 7. WF05 independent acceptance
-
-WF05 must load selected asset IDs/metadata and persisted `visual_quality`, validate the sequence independently, then render.
-
-`review_ready` must require both:
-
-- standard media/ffprobe/timing/subtitle checks;
-- visual-quality acceptance.
-
-#### 8. Post-render visual-state gate
-
-After rendering, inspect representative frames at beat midpoints and compute perceptual hashes/clusters from the actual rendered pixels.
-
-This catches cases where different provider IDs still render as effectively the same visual.
-
-The rendered video cannot become `review_ready` if the actual frame-state diversity is below the accepted sequence contract.
-
-### Work already completed locally for this rewrite
-
-The following is work-in-progress in `/opt/ai-short-form-content-factory-rebuild`; it is NOT yet production acceptance and MUST NOT be described as deployed:
-
-- `services/media-worker/src/visual-discovery.mjs` added;
-- multi-provider discovery endpoint integration added locally to `server.mjs`;
-- `services/media-worker/src/visual-quality.mjs` added;
-- `db/migrations/013_visual_quality_gate.sql` added;
-- WF04 rewritten locally toward 27-node multi-source discovery/rank/global-assignment flow;
-- WF05 rewritten locally to carry/validate visual quality;
-- still-image motion added locally to visual framing;
-- pre-render and post-render visual-state checks added locally to media-worker;
-- perceptual preview hashing is being integrated into `/visual/rank` and global assignment;
-- provider discovery regression PASS;
-- visual quality negative/positive regression PASS;
-- WF04 Code-node compile PASS before the latest perceptual-cluster change;
-- WF05 Code-node compile PASS before the latest perceptual-cluster change.
-
-### Real induction dry-run evidence for the new design
-
-Using the exact induction context without deploying the rewrite:
-
-- deterministic beat intents were generated for induction/electronic oscillator/alternating magnetic field/eddy currents/resistance/Joule heating;
-- expanded Wikimedia Commons discovery returned about 20-22 candidates per beat instead of the former tiny canonical-only pool;
-- eligible pools contained up to 10 candidates per beat;
-- a dry-run global assignment found six different induction-related Wikimedia assets rather than the former two repeated assets.
-
-This dry-run is evidence that the pool bottleneck can be removed, but it is NOT final acceptance. The dry-run exposed a missing `duration_seconds` propagation that produced `NaN` in one quality metric; this has been corrected locally and the quality evaluator is being made fail-closed on non-finite values.
-
-### Next actions — exact order
-
-1. Finish perceptual hash output from local SigLIP rank and cluster-aware global assignment.
-2. Re-run static compile and all visual discovery/quality/assignment regressions after that latest change.
-3. Re-run exact induction dry-run and require finite quality metrics plus perceptual-cluster diversity acceptance.
-4. Run cross-topic dry-runs on materially different topics/languages; do not optimize only for induction/zipper.
-5. Inspect complete git diff and remove accidental/unrelated changes. WF02 retrieval work must be handled explicitly, not silently bundled into visual rewrite.
-6. Commit the completed rewrite locally as a coherent systemic change.
-7. Create bounded rollback snapshot for production workflow/media-worker/database state.
-8. Apply migration `013_visual_quality_gate.sql`.
-9. Deploy media-worker, WF04 and WF05 only as required by the final diff; recreate media-worker so provider env is actually present.
-10. Verify exactly three persistent services, health, no secret leakage, live workflow code equality with the deployed local files, provider discovery behavior, SigLIP, store, render and review endpoints.
-11. Start a completely fresh induction job. Do not reuse `13f64c50-...`.
-12. Require full machine proof: evidence, one Edge synthesis, timed beats, rich candidate pools, truth eligibility, perceptual/global assignment, persisted visual_quality, render quality gate, ffprobe and post-render frame-state gate.
-13. Human-review the exact new induction video. It is not an M8 PASS until the visible result is actually acceptable.
-14. Then continue M8 with materially different topics/languages until at least 10 videos have human-visible quality review.
-15. The first real product failure stops progression and is fixed systemically. No topic-specific patching.
+1. Human-review the exact fresh induction video for job `2c182ff8-ea9f-4ddf-a417-b49f796d23f5` in Studio.
+2. If human PASS: record M8 #2 PASS in `CURRENT_STATE.md` and `ENGINEERING_HISTORY.md`, then generate the next materially different M8 topic/language.
+3. If human FAIL: record the exact visible product failure and fix the systemic cause before any M8 progression.
 
 ## Resume rule
 
-If a later chat/context loses the recent conversation, DO NOT infer the next step from memory. Read this file, inspect the current VPS rebuild worktree/runtime, and continue from `ACTIVE WORK — FULL VISUAL PIPELINE REWRITE` in the exact next-action order above.
+If chat/context is lost, do not infer or restart from memory. Read fresh `PERMANENT_PROJECT_RULES.md`, this file, `ENGINEERING_HISTORY.md`, and fresh VPS/runtime. The project is currently at the human-review gate for fresh induction job `2c182ff8-ea9f-4ddf-a417-b49f796d23f5`.
