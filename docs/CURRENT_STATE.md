@@ -20,7 +20,7 @@ Repository state overrides chat memory. Unknown state must not be guessed.
 
 Self-hosted AI Short-Form Content Factory:
 
-`topic -> evidence -> final narration -> continuous natural voice -> timed beats -> truthful/relevant visuals -> render -> human review`
+`topic -> evidence -> final narration -> local duration preflight -> one continuous natural voice -> timed beats -> truthful/relevant visuals -> render -> human review`
 
 Publishing is outside the automatic generation chain.
 
@@ -44,7 +44,7 @@ Measured VPS class:
 
 Do not add a fourth persistent service unless a separately measured blocker proves it necessary and the architecture decision is documented first.
 
-## Voice — current production
+## Voice — current production and new invariant
 
 WF03 is Edge-only continuous voice. Fixed voices:
 
@@ -57,7 +57,11 @@ Provider rate/pitch/volume remain default. No `atempo`, rate correction, pause r
 
 The destructive `silenceremove` stage was removed in implementation commit `146abeb`. Media-worker preserves provider timing and only normalizes format to 48 kHz stereo PCM WAV.
 
-Production WF02 was recalibrated against untouched/default-rate Edge timing in implementation commit `097cdb7`, but its current monolithic generation architecture is now superseded by the staged redesign below.
+New provider-budget invariant: automatic production may perform exactly ONE Edge synthesis per job. The previously proposed design that could synthesize once, rewrite text after a measured miss, and synthesize a second time is rejected because hosted TTS also has provider limits and must not be used as a duration-search loop.
+
+Duration fitting must therefore happen before Edge using a deterministic local duration estimator calibrated per fixed voice/language from clean measured production samples. Any bounded text-fit rewrite happens locally before TTS, against the same persisted evidence, and consumes no TTS request.
+
+The single Edge output is measured once. If it passes, its real duration controls beat timing. If it misses, the job fails closed; there is no automatic second synthesis or hidden TTS retry. The miss may only become calibration data for future jobs.
 
 ## Visuals — current production
 
@@ -75,7 +79,7 @@ Fresh production evidence:
 - `gemini-3.5-flash` simultaneously returned `503 UNAVAILABLE / high demand`;
 - repeated fresh attempts also produced provider `503` failures.
 
-Do not wait for quota reset and do not repair this with sleeps, retry loops, model hopping, extra keys/accounts/projects, paid fallback, or weakened acceptance.
+Do not wait for quota reset and do not repair this with sleeps, retry loops, model hopping, extra keys/accounts/projects, paid fallback, weakened acceptance, or multiplying hosted TTS requests for duration fitting.
 
 ## Rejected local-model experiment
 
@@ -99,14 +103,16 @@ The new source-of-truth architecture is defined in `docs/ARCHITECTURE.md` and `d
 6. Return/persist narration + sentence evidence references only.
 7. Do NOT create scenes and do NOT generate visual intent in WF02.
 
-### WF03 becomes final voice + timed beat creator
+### WF03 becomes local duration preflight + exactly one final voice + timed beat creator
 
-1. Synthesize one continuous default-rate Edge voice.
-2. Measured duration remains the hard gate.
-3. If the first synthesis misses the unchanged duration gate, allow at most one bounded TEXT-fit rewrite against the same persisted evidence; revalidate and synthesize once more. Never modify audio speed/pauses.
-4. If final voice still misses, fail closed.
-5. Only after final script + voice pass, deterministically create `6/10/14/18` timed beats/scenes.
-6. Visual-specific scene fields remain unset at this stage.
+1. Validate narration and estimate natural duration locally from fixed voice/language calibration.
+2. If needed, perform bounded evidence-grounded text fitting BEFORE TTS.
+3. Call Edge exactly once for the job.
+4. Provider rate/pitch/volume remain default; never manipulate audio speed/pauses.
+5. Measure the single clean Edge result.
+6. If it misses the duration gate, fail closed; do not automatically call Edge again.
+7. Only after the single voice passes, deterministically create `6/10/14/18` timed beats/scenes.
+8. Visual-specific scene fields remain unset at this stage.
 
 ### WF04 becomes visual intent + sourcing
 
@@ -133,7 +139,9 @@ Before production implementation:
 - require complete/consistent visual fields before a scene can advance to visual-ready state;
 - persist evidence references that justify fact-critical visual intent.
 
-No migration has been applied yet for this redesign.
+Migration `012_staged_semantic_pipeline.sql` has been drafted locally and proved on disposable databases both as an upgrade from the current production schema and as fresh-init compatibility. It has NOT been applied to production.
+
+The migration uses new lifecycle states `timed -> visual_planned -> visual_ready`; legacy `planned` remains available for historical rows so old data is not forced through new constraints.
 
 ## Heavy-compute invariant
 
@@ -141,11 +149,26 @@ No migration has been applied yet for this redesign.
 
 Semantic inference must release model memory after the request. SigLIP lifetime must be explicitly controlled. Concurrent-job testing must prove no RAM/swap exhaustion before production acceptance.
 
+## Real evaluation corpus
+
+The redesign is being checked against real historical production evidence, not only synthetic fixtures. Extracted materially different cases include:
+
+- zipper EN15;
+- popcorn PL15;
+- induction EN15;
+- glass RU30;
+- Poland UK15;
+- Zelensky UK30.
+
+These historical executions demonstrate why raw search output cannot be sent directly to the local narrator: for example Poland retrieval also contained Wielkopolska/Małopolska results, and popcorn retrieval contained unrelated `Genmaicha` and `V.E.T.O.` pages. The deterministic evidence reducer must remove such neighboring/noisy sources before any narration call.
+
 ## Local model selection — next phase only
 
 Do not select/deploy a model using the old giant WF02 prompt.
 
-First implement a local evaluation harness for the new compact contracts. Then evaluate feasible multilingual local candidates on materially different topics and all four languages. A weak model is rejected; Gemini is not restored as fallback.
+First implement and test the deterministic evidence reducer and compact narration contract. Then evaluate feasible multilingual local candidates on materially different topics and all four languages. A weak model is rejected; Gemini is not restored as fallback.
+
+The duration architecture must also be evaluated without multiplying TTS requests: text is pre-fitted locally, then exactly one Edge synthesis verifies the result.
 
 ## Frozen product acceptance
 
@@ -157,6 +180,8 @@ No later matrix case may be accepted before CASE 1 passes on one unchanged redes
 
 - selected evidence is relevant and persisted;
 - narration facts/coherence pass;
+- local duration preflight passes before TTS;
+- exactly one Edge synthesis occurs;
 - natural clean Edge measured duration passes;
 - timed beats exactly reconstruct the final narration/voice timeline;
 - every visual intent is evidence-consistent;
@@ -168,14 +193,15 @@ First real product failure stops progression and is repaired systemically, never
 
 ## Immediate next action
 
-Implement the redesign in a disposable/local branch surface before production mutation, in this order:
+Continue the redesign in the disposable/local branch surface before production mutation, in this order:
 
-1. schema/migration for durable evidence + timed pre-visual scenes;
-2. deterministic evidence reducer and compact narration contract/harness;
-3. evaluate local narration candidate(s) against that compact contract;
-4. voice/text-fit boundary + timed scene creation;
-5. compact visual-intent contract + stock/reference/exact eligibility changes;
-6. full local regression;
-7. document exact implementation proof;
-8. bounded deploy with rollback evidence;
-9. completely fresh CASE 1.
+1. finish deterministic evidence reducer on the real six-case corpus;
+2. add deterministic local pre-TTS duration estimator using clean fixed-voice measurements;
+3. build compact narration contract/harness;
+4. evaluate local narration candidate(s) without any hosted TTS loop;
+5. implement one-shot WF03 voice + timed scene creation;
+6. build compact visual-intent contract + stock/reference/exact eligibility changes;
+7. full local regression;
+8. document exact implementation proof;
+9. bounded deploy with rollback evidence;
+10. completely fresh CASE 1.
