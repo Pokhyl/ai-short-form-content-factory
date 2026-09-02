@@ -2,11 +2,11 @@
 
 Last updated: 2026-09-02
 
-This file is the authoritative source of truth for active branch `rebuild/simple-pipeline`. If chat memory, old branches, old workflow exports, or older docs conflict with this file, this file wins.
+This file is authoritative for branch `rebuild/simple-pipeline`. Repository state overrides chat memory.
 
 ## Mandatory protocol
 
-Before EVERY technical response, diagnosis, recommendation, code/config change, deployment, or test for this project:
+Before EVERY technical response, diagnosis, recommendation, code/config change, deployment, or test:
 
 1. Read `docs/PERMANENT_PROJECT_RULES.md` from GitHub.
 2. Read this file from GitHub branch `rebuild/simple-pipeline`.
@@ -14,144 +14,123 @@ Before EVERY technical response, diagnosis, recommendation, code/config change, 
 4. Milestone/acceptance/gate change: also read `docs/ROADMAP.md` and `docs/PROCESS_GATE.md`.
 5. Upstream/provider change: also read `docs/UPSTREAM_DECISION.md`.
 
-Repository state overrides chat memory. Unknown state must not be guessed.
-
 ## Product
 
-Self-hosted AI Short-Form Content Factory:
+`topic -> factual evidence -> deterministic evidence-backed narration -> local duration preflight -> one continuous natural voice -> timed beats -> deterministic truthful visuals -> render -> human review`
 
-`topic -> evidence -> final narration -> local duration preflight -> one continuous natural voice -> timed beats -> truthful/relevant visuals -> render -> human review`
-
-Publishing is outside the automatic generation chain.
+Publishing is outside automatic generation.
 
 ## Runtime invariants
 
-Exactly three persistent project services:
+Exactly three persistent services:
 
 - `ai-short-form-content-factory-n8n-1`
 - `ai-short-form-content-factory-postgres-1`
 - `ai-short-form-content-factory-media-worker-1`
 
-Per-video external API cost remains `0 PLN`.
+Per-video external API cost: `0 PLN`.
 
-Measured VPS class:
+Measured VPS:
 
 - 2 vCPU
 - 3.7 GiB RAM
 - 2.0 GiB swap
 - no GPU
-- constrained local disk
 
-Do not add a fourth persistent service unless a separately measured blocker proves it necessary and the architecture decision is documented first.
+## Permanent provider rule
 
-## Voice — current production and new invariant
+Production MUST NOT require a request-count/rate/quota-limited hosted semantic AI.
 
-WF03 is Edge-only continuous voice. Fixed voices:
+Fresh Gemini production evidence included both `429 RESOURCE_EXHAUSTED` and `503 UNAVAILABLE / high demand`.
+
+Do not solve this with waiting, retries, extra keys/accounts/projects, paid fallback or weaker acceptance.
+
+## Local LLM decision — rejected as required critical path
+
+The later compact-local-model direction has also been rejected after actual VPS measurements.
+
+Observed failures:
+
+- Qwen3 1.7B: grounded output possible, but narration length/contract remained unreliable;
+- Qwen2.5 3B: constrained fitting damaged natural sentence structure;
+- Qwen3 4B: grounded narration possible, but duration fitting failed and memory reached roughly 3.2-3.5 GB RSS;
+- Qwen3.5 4B IQ4_XS: roughly 2.5 GB RSS plus material swap during inference;
+- continuing to benchmark more general models is classified as model hopping, not architecture work.
+
+All current llama/Qwen benchmark processes have been stopped. Experimental Qwen GGUF files were removed from `/tmp/local-narrator-eval`; disk returned to roughly 6.3 GB free and normal service memory remained available.
+
+Do not resume general-LLM model selection unless the user explicitly reverses this architecture decision.
+
+## Selected critical path — deterministic
+
+### WF02
+
+1. Retrieve bounded factual sources, preferring the requested narration language.
+2. Split into atomic evidence units.
+3. Deterministically remove neighboring/noisy entities and persist selected evidence/provenance.
+4. Compile narration from factual evidence spans only.
+5. Allowed compiler operations: source-artifact cleanup, whitespace/punctuation normalization, removal of clearly incidental parenthetical material, linguistically safe clause splitting, evidence-span selection/order, capitalization/final punctuation.
+6. Every final narration segment keeps exact evidence IDs/source spans.
+7. No generated factual predicates, names, dates, numbers, materials or mechanisms may be added.
+8. The old exact `3/5/7/9` narration sentence-count gate is removed. Natural sentence count may vary.
+9. Generate multiple deterministic evidence-backed candidate assemblies and use local duration estimation to choose the best fitting one before TTS.
+
+### WF03
+
+Fixed Edge voices remain:
 
 - EN `en-US-AndrewNeural`
 - PL `pl-PL-MarekNeural`
 - RU `ru-RU-DmitryNeural`
 - UK `uk-UA-OstapNeural`
 
-Provider rate/pitch/volume remain default. No `atempo`, rate correction, pause rewrite, or silence-removal filter is allowed.
+Provider rate/pitch/volume remain default.
 
-The destructive `silenceremove` stage was removed in implementation commit `146abeb`. Media-worker preserves provider timing and only normalizes format to 48 kHz stereo PCM WAV.
+Automatic production performs exactly ONE Edge synthesis per job.
 
-New provider-budget invariant: automatic production may perform exactly ONE Edge synthesis per job. The previously proposed design that could synthesize once, rewrite text after a measured miss, and synthesize a second time is rejected because hosted TTS also has provider limits and must not be used as a duration-search loop.
+No `atempo`, speed correction, silence removal, pause rewrite, padding, scene-level TTS, second fitting synthesis or hidden provider retry.
 
-Duration fitting must therefore happen before Edge using a deterministic local duration estimator calibrated per fixed voice/language from clean measured production samples. Any bounded text-fit rewrite happens locally before TTS, against the same persisted evidence, and consumes no TTS request.
+Measured clean Edge duration is authoritative. A miss fails closed.
 
-The single Edge output is measured once. If it passes, its real duration controls beat timing. If it misses, the job fails closed; there is no automatic second synthesis or hidden TTS retry. The miss may only become calibration data for future jobs.
+Timed beats are created only after voice acceptance and are independent of narration sentence count.
 
-## Visuals — current production
+### Duration preflight
 
-WF04 currently preserves canonical reference provenance plus structured `reference_media_kind = diagram | animation | photo` for technical-reference beats. The repair implementation is commit `7a302ce`.
+Use only already measured clean-Edge calibration data. No new TTS calls for calibration experiments.
 
-The fresh zipper run after that repair proved reference-form selection, but also exposed a real stock semantic defect: a generic drysuit zipper photo was selected for a beat requesting continuous-coil detail. This remains an unresolved product issue and must be addressed by the redesigned visual-intent + stock eligibility boundary, not by a zipper-specific patch.
+The current simple char/sentence estimator is not accepted as final. A combined 160-sample check exposed worst-case errors around 4.5 seconds for EN/UK, which is too weak for reliable one-shot TTS.
 
-## Permanent provider rule
+Next estimator must use richer deterministic linguistic features and be evaluated out-of-sample. Final measured target gate remains unchanged.
 
-Production MUST NOT depend on request-count/rate/quota-limited hosted semantic AI as a required generation dependency.
+### WF04
 
-Fresh production evidence:
+A generative visual-planning call is no longer required.
 
-- `gemini-3.6-flash` returned `429 RESOURCE_EXHAUSTED` for Free Tier request quota;
-- `gemini-3.5-flash` simultaneously returned `503 UNAVAILABLE / high demand`;
-- repeated fresh attempts also produced provider `503` failures.
+Derive visual lane/query/eligibility from final beat text + evidence + canonical source/entity metadata.
 
-Do not wait for quota reset and do not repair this with sleeps, retry loops, model hopping, extra keys/accounts/projects, paid fallback, weakened acceptance, or multiplying hosted TTS requests for duration fitting.
+Eligibility remains before SigLIP:
 
-## Rejected local-model experiment
+- exact identity match;
+- canonical reference provenance + representation form;
+- metadata-supported concrete subject for truth-critical stock;
+- truthful contextual stock only.
 
-Do not continue benchmarking local models against the old monolithic WF02 request.
+Only eligible candidates reach local relative SigLIP ranking. Empty lane fails closed.
 
-The old zipper EN15 request was about 4.7k input tokens before generation and required one model response to contain exact narration tokens, claim/evidence links and six complete visual-scene objects. Qwen3 0.6B/1.7B fit the VPS individually but the old workload was too slow/brittle; complex JSON-schema/GBNF decoding also produced sampler/latency problems.
+## Existing redesign work on VPS
 
-This is classified as an architecture-boundary failure, not a reason to keep model hopping.
+Uncommitted local rebuild work currently includes:
 
-## Selected staged architecture — NOT YET IMPLEMENTED
+- `db/migrations/012_staged_semantic_pipeline.sql`;
+- updated `db/init/001_init.sql`;
+- `tests/staged_pipeline_core.mjs`;
+- `tests/staged_pipeline_regression.mjs`.
 
-The new source-of-truth architecture is defined in `docs/ARCHITECTURE.md` and `docs/UPSTREAM_DECISION.md`.
+Migration 012 was already proved on disposable databases both as an upgrade of the current schema and as fresh-init compatibility. It has NOT been applied to production.
 
-### WF02 becomes research + narration only
+The migration keeps legacy historical `planned` rows compatible and introduces new `timed -> visual_planned -> visual_ready` lifecycle states.
 
-1. Retrieve bounded factual sources.
-2. Split source text into deterministic evidence units.
-3. Select a compact diverse evidence packet before local inference: normally at most two evidence units per final sentence (`6/10/14/18` max selected units for `15/30/45/60` seconds).
-4. Persist selected evidence/provenance durably in PostgreSQL.
-5. Call a local semantic engine with only topic + target language + duration guidance + selected evidence.
-6. Return/persist narration + sentence evidence references only.
-7. Do NOT create scenes and do NOT generate visual intent in WF02.
-
-### WF03 becomes local duration preflight + exactly one final voice + timed beat creator
-
-1. Validate narration and estimate natural duration locally from fixed voice/language calibration.
-2. If needed, perform bounded evidence-grounded text fitting BEFORE TTS.
-3. Call Edge exactly once for the job.
-4. Provider rate/pitch/volume remain default; never manipulate audio speed/pauses.
-5. Measure the single clean Edge result.
-6. If it misses the duration gate, fail closed; do not automatically call Edge again.
-7. Only after the single voice passes, deterministically create `6/10/14/18` timed beats/scenes.
-8. Visual-specific scene fields remain unset at this stage.
-
-### WF04 becomes visual intent + sourcing
-
-1. Generate compact local visual intent only from final timed beats + relevant evidence/canonical entity context.
-2. Persist visual-support provenance for fact-critical specificity.
-3. Enforce eligibility before ranking:
-   - exact identity match;
-   - canonical reference provenance + requested representation form;
-   - metadata-supported `concrete_subject` for truth-critical stock;
-   - contextual stock only when substitution remains truthful.
-4. Only eligible candidates reach local SigLIP relative ranking.
-5. Empty eligible lanes fail closed.
-
-### WF05/WF06
-
-Render/review boundaries remain conceptually unchanged and consume only final accepted voice, timed beats and visuals.
-
-## Required database changes
-
-Before production implementation:
-
-- add durable job evidence/provenance storage (`job_evidence` or equivalent);
-- allow scene rows to exist in a pre-visual `timed` state with narration/timing present and visual fields null;
-- require complete/consistent visual fields before a scene can advance to visual-ready state;
-- persist evidence references that justify fact-critical visual intent.
-
-Migration `012_staged_semantic_pipeline.sql` has been drafted locally and proved on disposable databases both as an upgrade from the current production schema and as fresh-init compatibility. It has NOT been applied to production.
-
-The migration uses new lifecycle states `timed -> visual_planned -> visual_ready`; legacy `planned` remains available for historical rows so old data is not forced through new constraints.
-
-## Heavy-compute invariant
-
-`media-worker` must have one global heavyweight-compute boundary. Local semantic inference and SigLIP must not run concurrently or remain simultaneously resident when that exceeds measured memory.
-
-Semantic inference must release model memory after the request. SigLIP lifetime must be explicitly controlled. Concurrent-job testing must prove no RAM/swap exhaustion before production acceptance.
-
-## Real evaluation corpus
-
-The redesign is being checked against real historical production evidence, not only synthetic fixtures. Extracted materially different cases include:
+The deterministic evidence reducer has been exercised on real historical cases:
 
 - zipper EN15;
 - popcorn PL15;
@@ -160,15 +139,15 @@ The redesign is being checked against real historical production evidence, not o
 - Poland UK15;
 - Zelensky UK30.
 
-These historical executions demonstrate why raw search output cannot be sent directly to the local narrator: for example Poland retrieval also contained Wielkopolska/Małopolska results, and popcorn retrieval contained unrelated `Genmaicha` and `V.E.T.O.` pages. The deterministic evidence reducer must remove such neighboring/noisy sources before any narration call.
+It correctly removed known neighboring/noisy sources such as Quarter-zipper, Genmaicha, V.E.T.O., Wielkopolska/Małopolska where they were not the target.
 
-## Local model selection — next phase only
+## Voice issue already repaired
 
-Do not select/deploy a model using the old giant WF02 prompt.
+The destructive old `silenceremove` post-processing stage was removed. Edge output now preserves provider timing and is only normalized to 48 kHz stereo PCM WAV.
 
-First implement and test the deterministic evidence reducer and compact narration contract. Then evaluate feasible multilingual local candidates on materially different topics and all four languages. A weak model is rejected; Gemini is not restored as fallback.
+## Visual issue still unresolved
 
-The duration architecture must also be evaluated without multiplying TTS requests: text is pre-fitted locally, then exactly one Edge synthesis verifies the result.
+The old zipper run proved canonical reference-form selection, but a continuous-coil beat still received an unsupported generic drysuit zipper photo. This must be fixed by deterministic evidence/metadata eligibility, never by a zipper-specific patch.
 
 ## Frozen product acceptance
 
@@ -176,32 +155,33 @@ CASE 1 remains:
 
 `How does a zipper work? / en / 15`
 
-No later matrix case may be accepted before CASE 1 passes on one unchanged redesigned runtime:
+No later matrix case is accepted before a fresh CASE 1 passes on one unchanged redesigned runtime:
 
-- selected evidence is relevant and persisted;
-- narration facts/coherence pass;
-- local duration preflight passes before TTS;
-- exactly one Edge synthesis occurs;
-- natural clean Edge measured duration passes;
-- timed beats exactly reconstruct the final narration/voice timeline;
-- every visual intent is evidence-consistent;
-- every selected asset/provenance/content check passes;
+- relevant persisted evidence;
+- factual/coherent natural narration;
+- local pre-TTS duration candidate accepted;
+- exactly one Edge synthesis;
+- measured clean Edge duration passes;
+- timed beats exactly cover accepted voice;
+- every visual intent/provenance/content check passes;
 - final ffprobe passes;
 - human-visible voice/render quality passes.
 
-First real product failure stops progression and is repaired systemically, never with a topic-specific patch.
+First real product failure stops progression and is repaired systemically.
 
 ## Immediate next action
 
-Continue the redesign in the disposable/local branch surface before production mutation, in this order:
+Do not benchmark another LLM.
 
-1. finish deterministic evidence reducer on the real six-case corpus;
-2. add deterministic local pre-TTS duration estimator using clean fixed-voice measurements;
-3. build compact narration contract/harness;
-4. evaluate local narration candidate(s) without any hosted TTS loop;
-5. implement one-shot WF03 voice + timed scene creation;
-6. build compact visual-intent contract + stock/reference/exact eligibility changes;
+Continue local/disposable implementation in this order:
+
+1. implement deterministic provenance-preserving narration compiler on the six real cases;
+2. replace fixed sentence-count validation with natural variable sentence count;
+3. build richer clean-Edge duration estimator from existing measured corpus and prove out-of-sample false-safe behavior;
+4. combine narration candidates + estimator into a zero-TTS preflight search;
+5. implement one-shot WF03 + timed beats;
+6. implement deterministic WF04 visual intent/eligibility;
 7. full local regression;
-8. document exact implementation proof;
-9. bounded deploy with rollback evidence;
+8. commit implementation and exact proof;
+9. bounded production deploy with rollback evidence;
 10. completely fresh CASE 1.
