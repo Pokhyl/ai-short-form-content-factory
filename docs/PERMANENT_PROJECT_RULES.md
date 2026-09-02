@@ -25,3 +25,28 @@ The systemic direction is to remove quota-limited hosted semantic AI from the re
 - exactly three persistent project services unless a separately proven architectural blocker justifies a documented change.
 
 Any proposal that keeps Gemini or another quota-limited hosted AI as a required production dependency violates this rule unless the user explicitly reverses it.
+
+## 3. Durable engineering history is mandatory
+
+Every meaningful technical change and every discovered failure must be recorded in GitHub so the project does not repeat solved mistakes after a chat/context reset.
+
+`docs/CURRENT_STATE.md` is the required operational history for the active branch unless a more specific durable document is explicitly designated there.
+
+Before moving past a meaningful change or failure, record the relevant facts, including when applicable:
+
+- what changed: code, workflow, schema, configuration, provider contract, deployment, acceptance gate, or architecture;
+- why it changed and the systemic defect/root cause it addresses;
+- exact affected files/workflows/services and important job/execution IDs;
+- test/regression result and what behavior it proves;
+- production deploy/rollback state and rollback location when applicable;
+- newly discovered error/failure, including the concrete symptom and the first verified root cause;
+- rejected approaches when repeating them later would recreate the same failure;
+- unresolved blockers and the exact next action.
+
+Do not record guesses as facts. Mark hypotheses as hypotheses until verified.
+
+Do not silently overwrite or erase a previous mistake. If an earlier result was incorrectly called PASS, explicitly record that it was invalidated, why it was invalidated, and what new regression/acceptance rule prevents recurrence.
+
+A fix is not complete merely because code changed. The durable record must make it possible for a future session to understand the failure, the root cause, the implemented correction, and the proof without relying on chat memory.
+
+Before starting a new approach, check the durable history for the same or equivalent failure so previously rejected/broken approaches are not repeated.
