@@ -16,6 +16,7 @@ from .timeline_contract import validate_timeline_payload
 from .commons_media import fetch_commons_file
 from .asset_resolver import resolve_timeline_assets
 from .graphic_compiler import compile_timeline_graphics
+from .render_manifest import assemble_render_manifest
 
 VOICES = {
     "en": "en-US-AndrewNeural",
@@ -88,6 +89,12 @@ def main() -> int:
     p = sub.add_parser("compile-graphics")
     p.add_argument("--resolved-timeline", required=True)
     p.add_argument("--graphic-specs", required=True)
+    p.add_argument("--output", required=True)
+
+    p = sub.add_parser("build-render-manifest")
+    p.add_argument("--compiled-timeline", required=True)
+    p.add_argument("--whisper", required=True)
+    p.add_argument("--audio", required=True)
     p.add_argument("--output", required=True)
 
     args = parser.parse_args()
@@ -164,6 +171,18 @@ def main() -> int:
         print(
             f"V4_GRAPHICS_COMPILED constructed={info['compiled_constructed_beats']} "
             f"all={info['all_constructed_beats_compiled']} path={args.output}"
+        )
+        return 0
+    if args.cmd == "build-render-manifest":
+        manifest = assemble_render_manifest(
+            load_json(args.compiled_timeline),
+            load_json(args.whisper),
+            audio_path=args.audio,
+        )
+        dump_json(args.output, manifest)
+        print(
+            f"V4_RENDER_MANIFEST_CREATED beats={len(manifest['visual_track'])} "
+            f"captions={len(manifest['captions']['items'])} duration={manifest['duration_seconds']:.3f} path={args.output}"
         )
         return 0
     return 2
