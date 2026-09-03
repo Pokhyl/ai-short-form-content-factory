@@ -256,3 +256,28 @@ The DB lower bound is stale for the semantic-v3 selection-utility semantics. No 
 M8 remains stopped at `2/10`.
 
 Next action: add an additive migration 016 that aligns the `visual_shots.selection_score` constraint with the actual deterministic selection-utility domain; add regression covering a real negative-but-valid utility such as `-0.006621` plus out-of-domain rejection; prove migration on disposable PostgreSQL; record proof; deploy migration only with bounded rollback/schema proof; then and only then create one different fresh UK/60 job.
+
+
+## 2026-09-03 — Migration 016 local/disposable proof PASS
+
+Systemic schema correction was implemented without changing WF04 ranking, provider behavior, candidate pools, SigLIP thresholds or perceptual quality gates.
+
+Local commit `ad657994f910f4d2797688d290bd94a83de96d09` adds:
+
+- `db/migrations/016_visual_shot_selection_utility.sql`;
+- `tests/visual_shot_selection_score_regression.mjs`.
+
+Migration 016 replaces only `visual_shots_score_check` with the producer-aligned deterministic utility domain `selection_score >= -0.10 AND selection_score <= 1.09`, and documents the column semantics.
+
+Static regression PASS: `VISUAL_SHOT_SELECTION_SCORE_REGRESSION_PASS`. It verifies the exact WF04 utility formula, persistence wiring, theoretical endpoints `-0.10` and `1.09`, the real failed-job value `-0.006621`, and out-of-domain examples. `git diff --cached --check` PASS.
+
+Disposable PostgreSQL 18 proof applied `db/init/001_init.sql`, every migration 002..016 in order, and then reapplied 016. Final constraint definition was `CHECK (((selection_score >= '-0.10'::numeric) AND (selection_score <= 1.09)))`. A minimal valid semantic-v3 shot with `selection_score=-0.006621` inserted successfully and retained that value. Updates to `-0.100001` and `1.090001` were both rejected by the check constraint. Marker `VISUAL_SHOT_SELECTION_SCORE_PG18_PROOF_PASS`.
+
+The first disposable attempt observed the temporary bootstrap Postgres server and then failed during the image's normal shutdown/restart initialization phase. That result was invalid harness evidence. Corrected readiness waited for `PostgreSQL init process complete; ready for start up.` and then a successful SQL probe before executing product migrations. No production mutation occurred during either disposable attempt.
+
+GitHub synchronization preserved remote docs history via non-force fast-forward commit `3e648b5aa6f7d357e90e8e3284f5642e4c73b4da`. Exact remote blobs:
+
+- migration 016 `f03b26d3daceb741258b3a8a5291984d69ef40fe`;
+- regression `4742f563c2299a5f443971daae2602c570540cf7`.
+
+Current boundary: migration 016 is code-proven and saved in GitHub but is not yet applied to production. No new production job is allowed before bounded schema rollback capture, active-execution check, migration-only deploy, live constraint proof and GitHub state update.
