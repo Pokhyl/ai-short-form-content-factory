@@ -59,11 +59,11 @@ Local rebuild: `/opt/ai-short-form-content-factory-rebuild`, branch `rebuild/sem
 
 Current clean local fix HEAD:
 
-`12533a3b241a2901a17bb25bbee18b091f9c6eb8` — `fix: forward semantic timed beats through visual discovery HTTP adapter`.
+`ad657994f910f4d2797688d290bd94a83de96d09` — `fix: align visual shot score schema with selection utility`.
 
-Corresponding GitHub code commit:
+Corresponding latest GitHub code commit:
 
-`3dbc3610f83e5d15466d6825218e0c3ad2b69f0f`.
+`3e648b5aa6f7d357e90e8e3284f5642e4c73b4da`.
 
 Semantic-v3 is live:
 
@@ -182,36 +182,41 @@ Consumed-Edge jobs never to retry/reuse:
 - `4372be34-c417-415f-92f6-63481b3b5686`;
 - `85fcc63b-b89b-40d0-b253-6383b715f105`;
 - `e1399581-305b-4341-910e-b9477a04f499`;
-- `cb98ad2b-1aaa-4117-918d-8fef22940945`.
+- `cb98ad2b-1aaa-4117-918d-8fef22940945`;
+- `44101dd9-d7d6-4fa7-b62b-908ecfaf0f28`.
+
+## Latest production failure — STOP M8
+
+Fresh job `44101dd9-d7d6-4fa7-b62b-908ecfaf0f28`, `как работает индукционная плита / uk / 60`, was created by exactly one HTTP 201 intake call and is consumed. It must never be retried/reused.
+
+Machine facts:
+
+- exactly one Edge synthesis: `microsoft_edge_readaloud` / `edge_neural` / `uk-UA-OstapNeural`, measured `57.216 s`;
+- 18 timed beats persisted;
+- 10 semantic visual segments persisted, proving the earlier HTTP `timed_beats` adapter defect is closed;
+- WF04 execution `10856` failed while persisting visual shots;
+- final state `failed|visuals`; `visual_segments=10`, `visual_shots=0`, no video.
+
+Exact PostgreSQL error: `new row for relation "visual_shots" violates check constraint "visual_shots_score_check"`. Shot 4 carried `selection_score=-0.006621`.
+
+Verified root cause: schema/producer contract mismatch. WF04 persists deterministic `selection_utility = local_rank_score + min(metadata_overlap,5)*0.018 - representation_preference_rank*0.025`, whose current bounded producer domain is `[-0.10, 1.09]`; migration 015 incorrectly constrained persisted values to `[0,2]`. Negative utility is a valid relative assignment utility, not an invalid SigLIP score or visual-quality bypass.
+
+Migration 016 now exists and is proven locally/disposably but is NOT yet production-deployed. It changes only `visual_shots_score_check` to `[-0.10,1.09]`. Static regression and disposable PostgreSQL 18 proof PASS, including real `-0.006621` acceptance, both outside-bound rejection and repeat application. No visual quality threshold/provider/workflow behavior changed.
 
 ## Exact next action
 
-The adapter root cause is fixed, tested, saved in GitHub and deployed with live HTTP proof. No adapter work remains before product validation.
+Do not create another production job yet.
 
-Create exactly ONE completely fresh production job:
-
-- topic: `как работает индукционная плита`;
-- output language: `uk`;
-- target duration: `60`.
-
-For that exact new job require:
-
-- HTTP intake creates exactly one row;
-- factual retrieval/provenance PASS;
-- exactly one successful Edge synthesis;
-- measured duration PASS;
-- timed beats cover the accepted voice;
-- semantic visual segments and shots persist and cover the same voice;
-- truthful media eligibility PASS;
-- SigLIP/perceptual pre-render gate PASS;
-- render-v3 post-render state gate PASS;
-- ffprobe H.264 1080x1920 30fps + AAC 48kHz stereo;
-- final state `review_ready`.
-
-If any real product failure occurs after Edge is consumed, stop M8, record exact failure/root cause in GitHub and never retry that job. If machine PASS, give the user the exact video and do not increment M8 until the user watches and accepts it.
+1. Fresh-read GitHub/runtime and require zero active n8n executions.
+2. Capture bounded pre-migration-016 schema rollback evidence, including the current `visual_shots_score_check` and explicit rollback SQL restoring `[0,2]`.
+3. Apply only migration `016_visual_shot_selection_utility.sql` transactionally to production PostgreSQL. No n8n/media-worker/workflow redeploy is required.
+4. Verify live constraint `[-0.10,1.09]`, migration file equality, database health, exactly three project services and zero active executions.
+5. Record deploy/rollback proof in GitHub and update this file.
+6. Only then create exactly one completely fresh `как работает индукционная плита / uk / 60` job. Never reuse `44101dd9-d7d6-4fa7-b62b-908ecfaf0f28`.
+7. Require full machine proof through `review_ready`; any new consumed-Edge product failure stops M8 again. If machine PASS, give the exact video to the user and do not increment M8 until human acceptance.
 
 ## Resume rule
 
 If context is lost: read fresh `PERMANENT_PROJECT_RULES.md`, this file, `ENGINEERING_HISTORY.md`, and fresh runtime before acting.
 
-Current boundary: semantic-v3 + HTTP adapter fix are fully deployed with rollback/live proof; M8 remains `2/10`; immediate next action is exactly one fresh `как работает индукционная плита / uk / 60` production job and then machine/human review.
+Current boundary: semantic-v3 + HTTP adapter fix are live; fresh job `44101dd9...` exposed the verified visual-shot selection-score schema mismatch; migration 016 is locally/disposably proven and saved in GitHub but not yet deployed; M8 remains `2/10`; immediate next action is bounded production migration-016 deployment proof, not a new job.
