@@ -49,25 +49,25 @@ const Element: React.FC<{spec: MotionElement; t: number}> = ({spec, t}) => {
     scale *= 1 + Math.sin(local * Math.PI * 4) * (spec.pulse.amount ?? 0.05);
   }
   const opacity = (spec.opacity ?? 1) * ((from.opacity ?? 0) + (1 - (from.opacity ?? 0)) * enter);
-  const transform = `translate(${tx}px ${ty}px) scale(${scale})`;
-  const common = {opacity, transform, transformBox: "fill-box" as const, transformOrigin: "center"};
+  const svgTransform = `translate(${tx} ${ty})`;
+  const common = {opacity, transform: `scale(${scale})`, transformBox: "fill-box" as const, transformOrigin: "center"};
 
   if (spec.type === "rect") {
     return <rect x={spec.x} y={spec.y} width={spec.width} height={spec.height} rx={spec.rx ?? 0}
-      fill={spec.fill ?? "none"} stroke={spec.stroke} strokeWidth={spec.strokeWidth ?? 0} style={common}/>;
+      fill={spec.fill ?? "none"} stroke={spec.stroke} strokeWidth={spec.strokeWidth ?? 0} transform={svgTransform} style={common}/>;
   }
   if (spec.type === "circle") {
     return <circle cx={spec.cx} cy={spec.cy} r={spec.r} fill={spec.fill ?? "none"}
-      stroke={spec.stroke} strokeWidth={spec.strokeWidth ?? 0} style={common}/>;
+      stroke={spec.stroke} strokeWidth={spec.strokeWidth ?? 0} transform={svgTransform} style={common}/>;
   }
   if (spec.type === "polygon") {
     const points=(spec.points ?? []).map(([x,y])=>`${x},${y}`).join(" ");
     return <polygon points={points} fill={spec.fill ?? "none"} stroke={spec.stroke}
-      strokeWidth={spec.strokeWidth ?? 0} strokeLinejoin="round" style={common}/>;
+      strokeWidth={spec.strokeWidth ?? 0} strokeLinejoin="round" transform={svgTransform} style={common}/>;
   }
   if (spec.type === "text") {
     return <text x={spec.x} y={spec.y} fill={spec.fill ?? "#fff"} fontSize={spec.fontSize ?? 34}
-      fontWeight={spec.fontWeight ?? 600} fontFamily="Arial, sans-serif" textAnchor="middle" style={common}>{spec.text}</text>;
+      fontWeight={spec.fontWeight ?? 600} fontFamily="Arial, sans-serif" textAnchor="middle" transform={svgTransform} style={common}>{spec.text}</text>;
   }
   const draw = clampProgress(t, spec.draw);
   const x1=spec.x1 ?? 0, y1=spec.y1 ?? 0, x2=spec.x2 ?? x1, y2=spec.y2 ?? y1;
@@ -77,7 +77,7 @@ const Element: React.FC<{spec: MotionElement; t: number}> = ({spec, t}) => {
   const p1=[ex,ey] as const;
   const p2=[ex-size*Math.cos(angle-Math.PI/6), ey-size*Math.sin(angle-Math.PI/6)] as const;
   const p3=[ex-size*Math.cos(angle+Math.PI/6), ey-size*Math.sin(angle+Math.PI/6)] as const;
-  return <g style={common}>
+  return <g transform={svgTransform} style={common}>
     <line x1={x1} y1={y1} x2={ex} y2={ey} stroke={spec.stroke ?? "#fff"} strokeWidth={spec.strokeWidth ?? 5} strokeLinecap="round"/>
     {spec.arrow && draw > 0.03 ? <polygon points={`${p1[0]},${p1[1]} ${p2[0]},${p2[1]} ${p3[0]},${p3[1]}`} fill={spec.stroke ?? "#fff"}/> : null}
   </g>;
