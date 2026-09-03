@@ -2,270 +2,198 @@
 
 Last updated: 2026-09-03
 
-This file is authoritative for the active semantic visual rebuild on GitHub branch `rebuild/semantic-visual-segments`. Repository/runtime state overrides chat memory. Detailed chronological proof is in `docs/ENGINEERING_HISTORY.md`.
+This file is authoritative for active work on GitHub branch `rebuild/semantic-visual-segments`. Repository/runtime state overrides chat memory. Detailed chronology is in `docs/ENGINEERING_HISTORY.md`.
 
 ## Mandatory protocol
 
-Before EVERY technical response, diagnosis, recommendation, code/config change, deployment, or test:
+Before every technical response, diagnosis, recommendation, code/config change, deployment, or test:
 
-1. Read `docs/PERMANENT_PROJECT_RULES.md` fresh from GitHub.
-2. Read this file fresh from GitHub branch `rebuild/semantic-visual-segments`.
-3. Before starting a new approach, read `docs/ENGINEERING_HISTORY.md` so rejected/broken approaches are not repeated.
-4. Architecture change: also read `docs/ARCHITECTURE.md` and `docs/VISUAL_SEGMENTATION_DESIGN.md`.
-5. Milestone/acceptance/gate change: also read `docs/ROADMAP.md` and `docs/PROCESS_GATE.md`.
-6. Upstream/provider change: also read `docs/UPSTREAM_DECISION.md`.
-7. Inspect fresh VPS/runtime state before acting.
+1. read `docs/PERMANENT_PROJECT_RULES.md` fresh from GitHub;
+2. read this file fresh from GitHub branch `rebuild/semantic-visual-segments`;
+3. read `docs/ENGINEERING_HISTORY.md` before starting a new approach;
+4. architecture change: also read `docs/ARCHITECTURE.md` and `docs/VISUAL_SEGMENTATION_DESIGN.md`;
+5. milestone/gate change: also read `docs/ROADMAP.md` and `docs/PROCESS_GATE.md`;
+6. provider change: also read `docs/UPSTREAM_DECISION.md`;
+7. inspect fresh VPS/runtime state before acting.
 
 ## Hard invariants
 
 - exactly three persistent project services: `n8n`, `postgres`, `media-worker`;
 - external API cost per generated video: `0 PLN`;
-- no Gemini or other quota-limited hosted semantic AI in the required critical path;
-- no general local generative LLM in the required critical path;
-- no quota waits/retries, extra keys/accounts, paid fallback, topic-specific patches, acceptance bypasses, threshold weakening, or repeated fitting TTS;
+- no quota-limited hosted semantic AI or general local generative LLM in the required critical path;
+- no quota waits/retries, extra keys/accounts, paid fallback, topic-specific hacks, acceptance bypasses, threshold weakening, or repeated fitting TTS;
 - automatic production performs exactly ONE Edge synthesis per job;
-- meaningful failures, root causes, rejected approaches, changes, tests, deploys and rollbacks are recorded in GitHub before moving past them.
+- a job whose Edge synthesis was consumed is never retried/reused;
+- first real product failure stops M8 progression and is fixed systemically;
+- material failures, root causes, changes, tests, deploys and rollbacks are logged in GitHub before moving past them.
 
-Semantic-v3 production critical path:
+## Production architecture
 
-`topic -> factual evidence -> deterministic evidence-backed narration -> local duration preflight -> exactly one natural Edge voice -> timed beats -> deterministic semantic visual segments -> truthful media eligibility -> local SigLIP ranking + perceptual identity -> global visual-shot assignment -> pre-render visual gate -> independent subtitle/visual timelines -> render-v3 -> post-render visual-state gate -> human review`
+Semantic-v3 critical path:
 
-## Runtime — live production state
+`topic -> factual evidence -> deterministic evidence-backed narration -> local duration preflight -> exactly one natural Edge voice -> timed beats -> deterministic semantic visual segments -> truthful media eligibility -> local SigLIP + perceptual identity -> global visual-shot assignment -> pre-render gate -> independent subtitle/visual timelines -> render-v3 -> post-render state gate -> human review`
+
+Semantic segment rules:
+
+- boundaries only on existing timed-beat boundaries;
+- one visual shot per semantic segment by default;
+- no elapsed-time shot multiplication and no fixed 5-second shot rule;
+- `effective_max_segment_seconds = min(8.5, accepted_voice_duration * 0.34)`;
+- a beat itself is not split only to satisfy visuals; if it exceeds the cap, fail closed;
+- additional shot only for deterministic semantic/representation transition.
+
+Visual quality rules:
+
+- asset-file uniqueness is not product-visible diversity;
+- adjacent perceptual duplicate count must be 0;
+- max cluster occurrence = 2;
+- max cluster duration share = 0.34;
+- post-render midpoint states are independently checked;
+- missing/non-finite metrics fail closed.
+
+## Live production deployment
 
 Production root: `/opt/ai-short-form-content-factory`.
 
-Local rebuild worktree: `/opt/ai-short-form-content-factory-rebuild`.
+Local rebuild: `/opt/ai-short-form-content-factory-rebuild`, branch `rebuild/semantic-visual-segments-local`, clean implementation HEAD `2405d0431ff2007b52825b273267d07fad9f68ce`.
 
-Local rebuild branch: `rebuild/semantic-visual-segments-local`.
+Semantic-v3 is deployed:
 
-Clean local implementation HEAD:
+- migration `015_visual_segments.sql` live;
+- `visual_segments`, `visual_shots`, `media_library_assets` live;
+- WF02 `TJfA4ZYUEKSTad6k` multilingual deterministic factual path live;
+- WF03 `UHxvCZNqaLb1RKMM` exactly-one-Edge + timed beats live;
+- WF04 `M6VisualSourcing1` semantic-v3 published;
+- WF05 `M7VideoRender1` render-v3 published;
+- WF06 `R8ReviewApi1` review API live.
 
-`2405d0431ff2007b52825b273267d07fad9f68ce` — `redesign: separate semantic visual segments from timed beats`.
+WF04 deployment proof:
 
-Fresh post-deploy runtime proof:
+- active=true, 27 nodes;
+- `versionId=activeVersionId=12e0857b-3c3c-4640-b7f1-2861050038f1`;
+- source/live canonical core SHA `b6b08f21e0fe58b6661f7413e3389834b92c6142f65831a3afcae526a31b53ed`.
 
-- exactly three project containers are running: `media-worker`, `n8n`, `postgres`;
-- PostgreSQL is healthy;
-- n8n `/healthz` returns OK;
-- media-worker `/health` returns OK on bound port `3001`;
-- media-worker reports local `Xenova/siglip-base-patch16-224`, dtype `q4`, and one preview fetch attempt;
-- rebuild worktree remains clean.
+WF05 deployment proof:
 
-## Semantic-v3 is fully deployed
+- active=true, 16 nodes;
+- `versionId=activeVersionId=ae9d00c2-bd65-4d3f-a8f5-ec0bcf840a12`;
+- source/live canonical core SHA `c5595719c63eecb2680c10dbe6a63e45bb7bc4f6d12308c3b62f5f2953f9a117`.
 
-Migration `015_visual_segments.sql` is live. All three durable relations resolve in production:
+Fresh runtime after the failure still has exactly `media-worker`, `n8n`, `postgres`; PostgreSQL healthy; n8n `/healthz` OK; media-worker `/health` OK with local `Xenova/siglip-base-patch16-224`, q4, one preview attempt; no active n8n executions.
 
-- `public.visual_segments`;
-- `public.visual_shots`;
-- `public.media_library_assets`.
+## Rollback
 
-Current published workflows:
-
-- WF02 `TJfA4ZYUEKSTad6k` — multilingual deterministic factual retrieval + evidence-backed narration;
-- WF03 `UHxvCZNqaLb1RKMM` — exactly one natural Edge voice + timed beats;
-- WF04 `M6VisualSourcing1` — semantic-v3 deterministic visual segmentation/sourcing/assignment;
-- WF05 `M7VideoRender1` — semantic-v3 render-v3 acceptance with independent subtitle/visual timelines;
-- WF06 `R8ReviewApi1` — review API.
-
-WF04 live published proof:
-
-- active `true`;
-- 27 nodes;
-- current `versionId` = `activeVersionId` = `12e0857b-3c3c-4640-b7f1-2861050038f1`;
-- source/live canonical behavior core SHA-256 = `b6b08f21e0fe58b6661f7413e3389834b92c6142f65831a3afcae526a31b53ed`.
-
-WF05 live published proof:
-
-- active `true`;
-- 16 nodes;
-- current `versionId` = `activeVersionId` = `ae9d00c2-bd65-4d3f-a8f5-ec0bcf840a12`;
-- source/live canonical behavior core SHA-256 = `c5595719c63eecb2680c10dbe6a63e45bb7bc4f6d12308c3b62f5f2953f9a117`.
-
-All semantic-v3 media-worker source files used by the deployment match byte-for-byte between the production host and running `/app/src` container.
-
-Published workflow proof directory:
-
-`/opt/ai-short-form-content-factory/published-proof-semantic-v3-20260903`
-
-## Rollback boundary
-
-Bounded pre-semantic-v3 rollback snapshot:
+Pre-semantic-v3 rollback snapshot:
 
 `/opt/ai-short-form-content-factory/rollback/20260903T134851Z-pre-semantic-v3`
 
-The snapshot SHA256-verifies:
-
-- pre-deploy live published WF04/WF05;
-- pre-deploy production filesystem WF04/WF05;
-- pre-deploy media-worker source/build inputs;
-- `compose.yaml`;
-- PostgreSQL schema-only dump and DB state before migration 015;
-- runtime image IDs and health metadata.
-
-Pre-deploy media-worker image:
+Predeploy media image:
 
 `sha256:4009376d074a271aced92aa0cde159ee46bb445af6998580e088a5d23137413d`
 
-Rollback image tag:
+Rollback tag:
 
 `ai-short-form-content-factory-media-worker:rollback-20260903T134851Z`
 
-## WF02 factual + voice contract retained
+Snapshot SHA256-verifies old published WF04/WF05, production workflow files, media-worker source/build inputs, compose, PostgreSQL schema/state and runtime metadata.
 
-WF02 multilingual correction remains live from commit:
+## WF02 / voice contract retained
 
-`e4e856093fa237dab9daaa56dcf443c3b6155f93` — `fix: make factual retrieval multilingual and explanation-aware`.
+WF02 multilingual correction commit `e4e856093fa237dab9daaa56dcf443c3b6155f93`; rollback `/opt/ai-short-form-content-factory/rollback/20260903T055250Z-pre-wf02-multilingual`.
 
-Rollback:
+Retained rules:
 
-`/opt/ai-short-form-content-factory/rollback/20260903T055250Z-pre-wf02-multilingual`
+- factual probe languages exactly EN/PL/RU/UK requested-first;
+- one Wikipedia request/probe, no retry loop;
+- official language link for cross-language handoff;
+- no topic mappings/generative translation;
+- narration extractive/provenance-preserving;
+- local duration preflight;
+- one natural Edge synthesis only;
+- measured duration authoritative; miss fails closed.
 
-Contract retained:
+## M8 accepted state
 
-- bounded factual probe languages exactly EN/PL/RU/UK, requested language first;
-- exactly one Wikipedia request per probe, no retry loop;
-- official Wikipedia language link required for cross-language handoff;
-- no topic-specific mappings or generative translation;
-- extractive/provenance-preserving narration compiler;
-- local duration preflight before Edge;
-- automatic production performs exactly one Edge synthesis;
-- provider voice rate/pitch/volume remain natural defaults;
-- measured duration is authoritative; a miss fails rather than triggering another synthesis.
+M8 requires at least 10 materially different videos with human review.
 
-## Why semantic-v3 exists
+Human accepted:
 
-Fresh production job `4372be34-c417-415f-92f6-63481b3b5686`, topic `как работает индукционная плита`, output `uk`, target `60`, passed corrected WF02 and exactly one Edge synthesis but old WF04 failed with `perceptually unique truth-eligible assignment 11/12`.
+1. zipper `227c8a50-ef1a-49e5-8d26-fdb40f663c83` — HUMAN PASS;
+2. EN induction `2c182ff8-ea9f-4ddf-a417-b49f796d23f5` — HUMAN PASS.
 
-Verified root cause: timed narration/subtitle beats are transport units and must not automatically become independent semantic media-search obligations.
+Current accepted count remains `2/10`.
 
-Never return to `timed beat = independent visual obligation` without new verified evidence.
+Permanent old visual PRODUCT FAIL fixture: `13f64c50-8dd5-47e4-a88f-1411d258e7c4`.
 
-## Semantic-v3 contract
+Previously consumed jobs never to reuse: `4372be34-c417-415f-92f6-63481b3b5686`, `85fcc63b-b89b-40d0-b253-6383b715f105`, `e1399581-305b-4341-910e-b9477a04f499`.
 
-### Segmentation
+## New fresh production failure — STOP M8
 
-- segment boundaries occur only on existing timed-beat boundaries;
-- a semantic segment is one visual obligation by default;
-- elapsed time alone never creates extra shots;
-- no fixed `5 seconds = new visual` rule;
-- quality-constrained maximum:
+Exactly one fresh intake call was made after semantic-v3 deployment:
 
-`effective_max_segment_seconds = min(8.5, accepted_voice_duration * 0.34)`;
+- topic `как работает индукционная плита`;
+- output `uk`;
+- target `60`;
+- HTTP 201;
+- job `cb98ad2b-1aaa-4117-918d-8fef22940945`;
+- matching job count changed `3 -> 4`, so one new row was created.
 
-- if one timed beat itself exceeds the effective cap, fail closed rather than splitting it only to satisfy visuals;
-- additional shots may exist only for a deterministic semantic/representation transition;
-- same-duration content may produce different segment counts.
+The job is a real PRODUCT FAIL and is now consumed. Never retry/reuse it.
 
-### Visual quality
+Machine facts:
 
-Asset file uniqueness is not a product-visible diversity gate.
+- WF01 execution `10796` success;
+- exactly one Edge result persisted: `microsoft_edge_readaloud`, `edge_neural`, `uk-UA-OstapNeural`, measured `57.216 s`;
+- WF04 execution `10799` failed;
+- final state `failed|visuals`;
+- `visual_segments=0`, `visual_shots=0`;
+- no final video;
+- no active n8n executions remain.
 
-Authoritative constraints:
+Concrete error:
 
-- no adjacent duplicate perceptual cluster;
-- max cluster occurrence = `2`;
-- max cluster duration share = `0.34`;
-- required rendered state count is derived from shot count and max occurrence;
-- post-render midpoint frames are checked independently;
-- missing/non-finite quality metrics fail closed;
-- no threshold weakening.
+`Segmented visual discovery returned no visual segments [line 26]`.
 
-WF05/render-v3 consumes independent timelines:
+Execution data proved the upstream failure was HTTP 422 from `/visual/discover`:
 
-- timed beats for subtitle timing;
-- visual shots for visual timing.
+`Visual discovery failed: visual discovery requires timed_beats or beats`.
 
-Both timelines must cover the same accepted continuous voice track.
+## Verified root cause
 
-## Proven semantic-v3 pre-deploy evidence
+This is a general HTTP adapter wiring defect, not provider shortage, SigLIP, topic content or an acceptance threshold problem.
 
-Focused/static suite PASS included semantic segmentation, visual-shot quality, WF05 visual-segments contract, visual discovery compatibility, legacy visual-quality regression, WF04 runtime/global/perceptual/download regressions, rank-query contract, representation truth eligibility, 41 Code-node compiles, Studio inline JS compile and Code-node mode regression.
+- WF04 `Prepare Canonical Media Request` correctly builds `discovery_request.canonical_source` and `discovery_request.timed_beats`.
+- WF04 `Fetch Canonical Media` sends exactly `={{ $json.discovery_request }}` to `http://media-worker:3001/visual/discover`.
+- `visual-discovery.mjs::discoverVisualCandidates()` correctly accepts `{ beats, timedBeats }` and enters semantic segmented mode when `timedBeats` exists.
+- `server.mjs::discoverVisuals()` currently forwards only `beats: body?.beats`.
+- It does not forward `timedBeats: body?.timed_beats`.
+- Therefore the real HTTP semantic-v3 path discards `timed_beats` before invoking the already-proven discovery function.
+- Earlier local real-provider semantic-v3 harnesses called the function directly and therefore did not cover this HTTP adapter boundary.
 
-Real-provider read-only semantic-v3 PASS cases:
-
-1. zipper `227c8a50-ef1a-49e5-8d26-fdb40f663c83`: `15.480 s`, six beats -> five segments/shots, clusters 5/required 3, adjacent 0, max occurrence 1, max share `0.2958`, Pexels + Wikimedia, provider errors 0;
-2. EN induction `2c182ff8-ea9f-4ddf-a417-b49f796d23f5`: `13.944 s`, six beats -> four segments/shots, clusters 4/required 2, adjacent 0, max occurrence 1, max share `0.3374`, Wikimedia, provider errors 0;
-3. UK induction fixture `4372be34-c417-415f-92f6-63481b3b5686`: `57.216 s`, 18 beats -> 10 segments/shots, clusters 9/required 5, adjacent 0, max occurrence 2, max share `0.245`, Pexels + Pixabay + Wikimedia, provider errors 0.
-
-Disposable render-v3 proof PASSed with 24-second accepted audio, six subtitle beats, four visual shots of exactly 6 seconds, H.264/yuv420p 1080x1920, AAC 48 kHz stereo, and pre/post-render state count 4/required 2 with adjacent 0 and max share `0.25`.
-
-Migration 015 separately PASSed against disposable PostgreSQL 18, including repeat application, FK/cascade behavior and constraint rejection. The live deployment then applied the same migration transactionally with `ON_ERROR_STOP=1`.
-
-## Deployment diagnostics that are not product failures
-
-- direct non-sudo Docker access through SentinelX returned `/var/run/docker.sock` permission denied; allowed `sudo docker` access proved runtime healthy;
-- early snapshot shell quoting errors stopped before product mutation and were replaced by a structured script;
-- `import:workflow --activeState=fromJson` was rejected because production n8n is regular mode, not queue/multi-main; immediate re-export proved published workflows unchanged;
-- correct regular-mode workflow deployment is `import:workflow` followed by explicit `publish:workflow`, then one n8n restart after both publishes;
-- cleanup of root-owned container `/tmp` import files initially failed and was corrected with root cleanup; import/publish had already succeeded and n8n had not yet restarted.
+No threshold or provider change is justified.
 
 ## Documentation correction
 
-An earlier `docs/ENGINEERING_HISTORY.md` transcription incorrectly wrote the `docs/CURRENT_STATE.md` alignment commit as `f0f80836a666b1010625912c4ba07b8f600d8b56`. That string is incorrect. The actual CURRENT_STATE alignment commit is:
-
-`f0f80836a6666b83502f6b74163936ff1a83ad85`.
-
-Do not use the incorrect transcription as a repository fact.
-
-## M8 Quality Run
-
-Roadmap requires at least 10 materially different videos with human-visible review.
-
-### M8 #1 — zipper — HUMAN PASS
-
-- `How does a zipper work? / en / 15`;
-- accepted job `227c8a50-ef1a-49e5-8d26-fdb40f663c83`.
-
-### M8 #2 — induction heating — HUMAN PASS
-
-- `How does induction heating work? / en / 15`;
-- accepted job `2c182ff8-ea9f-4ddf-a417-b49f796d23f5`;
-- exactly one Edge synthesis;
-- measured voice `13.944 s`;
-- user watched exact video and accepted it.
-
-Current human-accepted count: `2/10`.
-
-Do not increment this count from a machine-only result.
-
-Permanent product-failure fixture:
-
-- `13f64c50-8dd5-47e4-a88f-1411d258e7c4` — old render with only two effective visible states; never use as acceptance evidence.
-
-Consumed-Edge jobs that must never be retried/reused:
-
-- `4372be34-c417-415f-92f6-63481b3b5686`;
-- `85fcc63b-b89b-40d0-b253-6383b715f105`;
-- `e1399581-305b-4341-910e-b9477a04f499`.
+The correct older CURRENT_STATE predeploy alignment commit is `f0f80836a6666b83502f6b74163936ff1a83ad85`. An earlier history transcription contained a wrong hybrid hash and is explicitly invalidated in `ENGINEERING_HISTORY.md`.
 
 ## Exact next action
 
-Semantic-v3 deployment gates are complete. The next action is one completely fresh production job:
+Do not create another production job yet.
 
-- topic: `как работает индукционная плита`;
-- output language: `uk`;
-- duration: `60`.
-
-For that exact fresh job require full machine proof:
-
-- HTTP intake creates exactly one new job;
-- corrected factual retrieval/provenance succeeds;
-- exactly one successful Edge synthesis occurs;
-- measured duration passes the unchanged gate;
-- timed beats exactly cover accepted voice;
-- semantic visual segments and visual shots persist and cover the same voice duration;
-- every selected media item passes truthful eligibility;
-- SigLIP/perceptual sequence gates pass without threshold changes;
-- render-v3 post-render frame-state gate passes;
-- ffprobe proves H.264 1080x1920 30fps + AAC 48 kHz stereo;
-- final job reaches `review_ready`.
-
-If a real product failure occurs, stop M8 progression, record it, diagnose the general root cause and repair it systemically. Never retry the same job after its Edge synthesis has been consumed.
-
-If the fresh job reaches `review_ready`, give the user the exact video for human review. Do not call PRODUCT PASS and do not change M8 accepted count until the user watches that exact video and accepts it.
+1. Fix the general media-worker HTTP adapter so `/visual/discover` forwards both:
+   - legacy `beats: body?.beats`;
+   - semantic `timedBeats: body?.timed_beats`.
+2. Add a regression specifically covering the HTTP adapter contract so function-only tests cannot miss this class of defect again.
+3. Run focused/static regressions plus a disposable HTTP `/visual/discover` semantic request; do not change thresholds/providers.
+4. Record proof in GitHub.
+5. Take a bounded pre-fix media-worker rollback snapshot/tag if needed; migration/WF04/WF05 do not require redeploy unless evidence shows otherwise.
+6. Deploy only the corrected media-worker.
+7. Verify host/container source equality, health, exactly three persistent services, and real HTTP semantic discovery response.
+8. Only then create a different completely fresh `как работает индукционная плита / uk / 60` job.
+9. Require full machine proof through `review_ready`; if it passes, give the exact video to the user for human review. Do not change M8 count until user accepts it.
 
 ## Resume rule
 
-If chat/context is lost, read fresh `PERMANENT_PROJECT_RULES.md`, this file, `ENGINEERING_HISTORY.md`, `ARCHITECTURE.md` and fresh VPS/runtime before acting.
+If context is lost: read fresh `PERMANENT_PROJECT_RULES.md`, this file, `ENGINEERING_HISTORY.md`, and fresh runtime before acting.
 
-Current boundary: semantic-v3 is fully deployed with migration 015, WF04/WF05 and media-worker live and verified; rollback snapshot exists; three services are healthy; M8 remains `2/10`; immediate next action is the single fresh RU-topic -> UK/60 induction-cooktop production job and then exact-video human review.
+Current boundary: semantic-v3 remains deployed and healthy except for the verified `/visual/discover` adapter defect; fresh job `cb98ad2b...` consumed one Edge and failed before semantic segments; M8 is stopped at `2/10`; next work is adapter fix + HTTP-boundary regression + media-worker-only redeploy, not another job.
