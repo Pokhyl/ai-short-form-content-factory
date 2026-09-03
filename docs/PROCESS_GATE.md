@@ -1,57 +1,88 @@
-# Process Gate — Rebuild
+# Process Gate — Product-First V4
 
-Last updated: 2026-09-02
+Last updated: 2026-09-03
 
-`docs/CURRENT_STATE.md` is the operational source of truth.
+`docs/CURRENT_STATE.md` is authoritative.
 
-## Mandatory process
+## Active gate
 
-Before every technical action, read fresh GitHub `docs/PERMANENT_PROJECT_RULES.md` and branch `rebuild/simple-pipeline/docs/CURRENT_STATE.md`. Read additional scope docs as required there.
+Semantic-v3 production generation is frozen after a machine `review_ready` video received explicit HUMAN FAIL.
 
-No topic-specific hacks, acceptance bypasses, manual asset substitutions, quota waits/retries, extra keys/accounts/projects, paid semantic fallback, repeated hosted TTS fitting, or model hopping.
+Do not patch or retest that architecture.
 
-## Active gate — deterministic zero-quota critical path
+The active gate is a direct product prototype outside n8n/PostgreSQL.
 
-The old monolithic Gemini WF02 is rejected.
+## Mandatory sequence
 
-The later attempt to preserve a required compact local generative LLM is also rejected after measured 3B/4B failures on the actual VPS.
+1. Read fresh `PERMANENT_PROJECT_RULES`, `CURRENT_STATE`, `PRODUCT_FIRST_V4` and V4 history.
+2. Prefer a mature upstream component before implementing a commodity subsystem.
+3. Keep MoneyPrinterTurbo pinned and verify its upstream tests before adapting its services.
+4. Produce one validated semantic director artifact containing natural spoken script and explicit scene storyboard.
+5. Reject raw written-form speech before TTS: no unspoken digits/units/abbreviations/URLs/editorial notation.
+6. Generate one continuous voice at natural rate.
+7. Derive subtitles/timing from the actual audio with Whisper/faster-whisper or equivalent alignment.
+8. Produce scene assets according to explicit representation modes; no automatic generic-stock fallback for factual/mechanism scenes.
+9. Preview scene selections before final render.
+10. Render one 9:16 artifact and perform technical checks.
+11. User watches the exact artifact. Only explicit acceptance becomes `human_approved`.
+12. Repeat on materially different topics/languages before designing n8n/DB integration.
 
-Accepted direction:
+## Upstream proof gate
 
-`retrieval -> persisted evidence -> deterministic evidence-backed narration compiler -> local duration candidate selection -> exactly one natural Edge synthesis -> timed beats -> deterministic visual intent/eligibility -> local ranking -> render -> review`
+Pinned MoneyPrinterTurbo commit:
 
-Exactly three persistent services and 0 PLN per-video external API cost remain mandatory.
+`cbbb366393105d5cefc254dc9ed492d43da0711b`
 
-## Required implementation sequence
+Focused upstream suite currently proved:
 
-1. Keep/prove durable evidence/provenance schema and staged scene lifecycle.
-2. Finish deterministic evidence reducer on materially different real topics.
-3. Implement provenance-preserving narration compiler from source sentences/clauses.
-4. Remove exact `3/5/7/9` sentence count from narration acceptance; sentence count is not a product gate.
-5. Build richer local Edge-duration estimator from already measured clean-Edge corpus only; do not generate new TTS calibration traffic.
-6. Generate multiple deterministic evidence-backed narration assemblies locally and choose the best duration-fit candidate without TTS.
-7. Require factual/mechanism coverage and exact evidence provenance for the selected narration.
-8. Automatic production may call Edge exactly once per job. No second synthesis for fitting and no hidden retry loop.
-9. A measured duration miss fails closed and becomes future calibration evidence only.
-10. Create timed beats only after accepted measured voice; beat count is independent of sentence count.
-11. Implement deterministic visual intent from beat/evidence/canonical metadata; no required generative visual-planning call.
-12. Enforce exact/reference/stock eligibility before SigLIP ranking.
-13. Truth-critical stock requires metadata support for the concrete subject; empty eligible lane fails closed.
-14. Run full database/static/behavior/Code-node/Studio/WF04/R8/media-worker/render/diff gates.
-15. Commit implementation and update GitHub source-of-truth with exact proof.
-16. Deploy boundedly with rollback evidence.
-17. Start one completely fresh frozen CASE 1: `How does a zipper work? / en / 15`.
-18. CASE 1 must pass evidence, deterministic narration, preflight, exactly one natural Edge call, measured duration, timed beats, visual provenance/content, ffprobe and human-visible quality.
-19. First real product failure stops progression and is fixed systemically.
+- 316 tests passed;
+- 69 subtests passed;
+- 7 skipped;
+- 0 failures.
 
-## Explicit non-goals
+Do not silently change the pin.
 
-Do not:
+## Product gates
 
-- benchmark more general LLMs as the main narration path;
-- add a fourth persistent model service;
-- keep Gemini as fallback;
-- restore a fixed narration sentence count merely to simplify prompting;
-- use SigLIP as a truth oracle;
-- loosen the final duration or visual gates;
-- call Edge more than once to search for a fitting script.
+### Script
+
+- conversational rather than encyclopedic;
+- facts trace to evidence;
+- no raw source-copy cadence;
+- target language natural to a human listener.
+
+### Speech
+
+- speech-ready written form;
+- no ambiguous abbreviation pronunciation;
+- natural male voice for the supported language unless a later human-approved voice profile changes it;
+- no tempo/rate fitting.
+
+### Visuals
+
+- every scene has an intentional representation mode;
+- a viewer can identify the intended subject/process from the selected asset/graphic;
+- unrelated lifestyle stock is a fail even if metadata/CLIP/diversity scores pass;
+- unresolved factual media does not get replaced by a generic joker clip.
+
+### Captions/edit
+
+- timing derives from actual voice;
+- readable short-form captions;
+- visual changes support the narration rather than arbitrary cadence.
+
+### Render
+
+- playable vertical MP4;
+- technical validation is necessary but not sufficient.
+
+## Forbidden shortcuts
+
+- no semantic-v3 fresh jobs;
+- no topic-specific pronunciation mapping;
+- no topic-specific visual blacklist;
+- no threshold tuning to rescue irrelevant stock;
+- no fixed synthetic subtitle beat count;
+- no rebuilding MoneyPrinterTurbo TTS/Whisper/material/render layers without a proven gap;
+- no n8n/DB integration before direct prototype HUMAN PASS;
+- no mandatory paid-per-video provider.
