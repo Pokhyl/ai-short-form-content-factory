@@ -103,7 +103,26 @@ Every meaningful failure, verified root cause, architectural decision, upstream 
 
 Old chronology remains in `docs/ENGINEERING_HISTORY.md`. V4-specific chronology may also be recorded in `docs/ENGINEERING_HISTORY_V4.md`, but do not erase old history.
 
-## 12. Acceptance vocabulary
+Do not rely on chat memory for project decisions. If an error, failed experiment, accepted rule or architectural conclusion can affect future work, persist it in the repository.
+
+## 12. Cross-topic anti-overfit rule
+
+Never validate or tune a general solution on one topic only.
+
+Any new visual strategy, renderer behavior, pacing rule, media-selection rule, semantic-director contract or acceptance rule must be exercised on a materially diverse validation set before it is treated as architecture.
+
+The validation set must vary the kind of visual problem, not just the wording. It should include materially different categories such as:
+
+- a technical/mechanism explainer;
+- a concrete person/place/object/history topic with exact-media needs;
+- a process/list/comparison topic suited to cards, diagrams or mixed visuals;
+- multiple languages across the V4 target set.
+
+A change that only improves the current fixture is not accepted as a project solution.
+
+When a current topic exposes a defect, extract the general defect, record it, then verify the fix on other topics before continuing production architecture work.
+
+## 13. Acceptance vocabulary
 
 Use these states clearly:
 
