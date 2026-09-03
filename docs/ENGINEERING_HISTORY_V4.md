@@ -67,8 +67,27 @@ Key reversal from semantic-v3:
 
 Full design: `docs/PRODUCT_FIRST_V4.md`.
 
+## 2026-09-03 — MoneyPrinterTurbo upstream checkout and focused suite PASS
+
+MoneyPrinterTurbo was checked out as an isolated upstream reference at `/opt/ai-short-form-v4-upstreams/MoneyPrinterTurbo`, exact upstream commit `cbbb366393105d5cefc254dc9ed492d43da0711b`, version `1.3.6`, MIT license. Production containers and the V4 project working tree were not modified.
+
+An isolated Python 3.12 virtual environment installed the upstream runtime dependencies, including Edge TTS `7.2.7`, faster-whisper `1.1.0`, MoviePy and the project's provider/material dependencies.
+
+Focused real upstream tests covered `llm`, `voice`, `subtitle`, `material`, `material_cache`, `video` and `task` services. The first sparse-checkout run produced 11 failures solely because `webui/i18n` and bundled `resource/fonts` files had intentionally not been checked out. This was incomplete test-fixture evidence, not an upstream logic failure.
+
+After expanding the same clean sparse checkout to include the upstream i18n files and bundled fonts, the unchanged upstream commit passed:
+
+- `316 passed`;
+- `69 subtests passed`;
+- `7 skipped`;
+- no test failures.
+
+The host shell warned that FFmpeg is not installed on the VPS host; the existing project media-worker already contains FFmpeg/ffprobe. This warning did not cause the focused upstream suite to fail and no production runtime was changed.
+
+Decision: V4 should reuse/adapt MoneyPrinterTurbo's proven `llm.py`, `voice.py`, `subtitle.py`, `material.py`, `material_cache.py`, `video.py` and task contracts where they fit, instead of rebuilding those subsystems. The custom V4 layer should stay thin and concentrate on factual research, structured director/storyboard, multilingual speech normalization, visual representation routing and human preview/review.
+
 ## Immediate boundary
 
 Semantic-v3 production is frozen and retained only for rollback/reference. No new production jobs.
 
-Next independent stage: build a direct V4 prototype outside n8n/DB, using mature upstream components/patterns rather than another custom workflow rewrite.
+MoneyPrinterTurbo upstream core is locally proven at its exact commit. Next independent stage: inspect the stable module interfaces and create the thin direct V4 prototype adapter outside n8n/DB.
