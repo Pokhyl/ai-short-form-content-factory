@@ -15,6 +15,7 @@ from .timeline_builder import compile_segment_timeline, sha256_file
 from .timeline_contract import validate_timeline_payload
 from .commons_media import fetch_commons_file
 from .asset_resolver import resolve_timeline_assets
+from .graphic_compiler import compile_timeline_graphics
 
 VOICES = {
     "en": "en-US-AndrewNeural",
@@ -84,6 +85,11 @@ def main() -> int:
     p.add_argument("--asset-map", required=True)
     p.add_argument("--output", required=True)
 
+    p = sub.add_parser("compile-graphics")
+    p.add_argument("--resolved-timeline", required=True)
+    p.add_argument("--graphic-specs", required=True)
+    p.add_argument("--output", required=True)
+
     args = parser.parse_args()
     if args.cmd == "verify-upstream":
         print(verify_upstream())
@@ -149,6 +155,15 @@ def main() -> int:
         print(
             f"V4_ASSETS_RESOLVED exact={info['exact_resolved']} "
             f"constructed={info['constructed_required']} path={args.output}"
+        )
+        return 0
+    if args.cmd == "compile-graphics":
+        compiled = compile_timeline_graphics(load_json(args.resolved_timeline), load_json(args.graphic_specs))
+        dump_json(args.output, compiled)
+        info = compiled['graphic_compilation']
+        print(
+            f"V4_GRAPHICS_COMPILED constructed={info['compiled_constructed_beats']} "
+            f"all={info['all_constructed_beats_compiled']} path={args.output}"
         )
         return 0
     return 2
