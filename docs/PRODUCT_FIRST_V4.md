@@ -58,7 +58,7 @@ Required top-level fields:
 - `facts[]` with source provenance
 - `scenes[]`
 
-Each scene owns:
+Each semantic scene owns:
 
 - `scene_id`
 - `narration`
@@ -69,6 +69,9 @@ Each scene owns:
 - `must_not_show[]`
 - `source_refs[]`
 - optional `on_screen_text`
+- `shots[]`
+
+`shots[]` is the editing layer inside a semantic scene. A semantic scene is not synonymous with one asset. A scene may contain several short shots, inserts, crop-safe portrait clips, diagram beats, text beats or collage beats aligned to the narration.
 
 The semantic director must output natural speech, not source prose copied verbatim.
 
@@ -104,12 +107,40 @@ Do not invent subtitle timestamps by splitting text into fixed beat counts.
 After one continuous voice track is created, run Whisper/faster-whisper/whisper.cpp on that exact audio and use its word/segment timestamps for:
 
 - captions;
-- scene timing alignment;
-- edit timing.
+- semantic scene timing alignment;
+- shot timing/edit timing.
 
 This pattern appears repeatedly in mature short-video pipelines and removes a large class of synthetic timing logic.
 
-## 5. Visual modes instead of one stock lane
+## 5. TikTok-first editing contract
+
+The product is a TikTok/Shorts/Reels-style vertical short, not a narrated slideshow or presentation.
+
+Required editing behavior:
+
+- one semantic scene may contain multiple shots;
+- visual state should change frequently enough to maintain short-form pacing rather than leaving one still image on screen for an entire sentence or paragraph;
+- the hook must contain immediate visual activity, not a static title card;
+- use real portrait footage/photos, close-ups, cutaways, diagram beats, text beats, collage beats and motion graphics as appropriate;
+- kinetic captions and on-screen emphasis may reinforce narration but must not dominate the visual field;
+- no full-screen landscape photograph as a normal TikTok photo shot.
+
+### Portrait media rule
+
+For normal full-screen `photo` or `video` shots, source media must be portrait/vertical or genuinely composed so the focal subject survives a vertical crop without losing meaning.
+
+Do not take a wide landscape photograph and treat `object-fit: cover` as proof that it is suitable for TikTok.
+
+If the only truthful exact asset is landscape/widescreen:
+
+- do not stretch it;
+- do not crop away required explanatory content;
+- route it to a representation designed for horizontal evidence, such as `diagram`, `screen/card`, `collage`, picture-in-picture or another contain-layout;
+- otherwise obtain a portrait alternative.
+
+This is a product representation rule, not a topic-specific threshold.
+
+## 6. Visual modes instead of one stock lane
 
 Every scene declares a visual mode. Stock footage is only one option.
 
@@ -130,7 +161,7 @@ For definitions, statistics, steps, UI/process diagrams and transitions.
 
 A factual mechanism scene must not silently degrade into generic cooking/lifestyle footage.
 
-## 6. Visual relevance contract
+## 7. Visual relevance contract
 
 The old rule `metadata overlap -> eligible -> SigLIP rank` is rejected.
 
@@ -142,21 +173,24 @@ For retrieved assets:
 4. negative intent (`must_not_show`) is evaluated when applicable;
 5. low-confidence assets are not forced into the video;
 6. no joker/generic fallback terms for factual scenes;
-7. if retrieval is weak, change representation mode (usually diagram/card) instead of inserting unrelated stock.
+7. if retrieval is weak, change representation mode (usually diagram/card) instead of inserting unrelated stock;
+8. full-screen photo/video assets must also satisfy the portrait-media rule above.
 
 Perceptual diversity remains useful only after relevance is established.
 
-## 7. Editing/rendering
+## 8. Editing/rendering
 
 Adopt the common split used by mature projects:
 
 - structured timeline/artifact first;
-- Remotion for captions, kinetic typography, diagrams, cards and compositing;
+- Remotion for captions, kinetic typography, diagrams, cards, collages and compositing;
 - FFmpeg for media normalization, audio mixing, final encode and ffprobe validation.
 
 Required final profile remains vertical 1080x1920, H.264 + AAC unless a later product decision changes it.
 
-## 8. Captions and sound
+Renderer input is a shot timeline, not a one-scene/one-asset slideshow.
+
+## 9. Captions and sound
 
 - word-level captions from actual audio alignment;
 - readable short-form caption style;
@@ -164,7 +198,7 @@ Required final profile remains vertical 1080x1920, H.264 + AAC unless a later pr
 - automatic ducking if music is enabled;
 - no audio speed fitting.
 
-## 9. Review model
+## 10. Review model
 
 The old machine `review_ready` meaning is retired.
 
@@ -173,9 +207,9 @@ V4 review has two levels:
 - `machine_rendered`: technical render exists and machine checks passed;
 - `human_approved`: user watched the exact artifact and accepted script, pronunciation, visual relevance and edit quality.
 
-During V4 bring-up, every scene's selected visual must be previewable/swappable before final render, following the review-dashboard pattern used by established projects.
+During V4 bring-up, every scene's selected visual and internal shot timeline must be previewable/swappable before final render, following the review-dashboard pattern used by established projects.
 
-## 10. What is retained
+## 11. What is retained
 
 Retain only components that are independently useful:
 
@@ -188,7 +222,7 @@ Retain only components that are independently useful:
 - human review requirement;
 - no topic-specific hacks.
 
-## 11. What is retired
+## 12. What is retired
 
 Do not carry these semantic-v3 concepts into the new core unless separately justified:
 
@@ -199,9 +233,11 @@ Do not carry these semantic-v3 concepts into the new core unless separately just
 - SigLIP as a substitute for semantic planning;
 - forcing every semantic interval to consume found stock;
 - elaborate perceptual thresholds before basic relevance is proven;
-- machine `review_ready` as evidence of content quality.
+- machine `review_ready` as evidence of content quality;
+- one semantic scene = one visual asset;
+- widescreen stills used as ordinary full-screen TikTok photo shots.
 
-## 12. Cost / provider boundary
+## 13. Cost / provider boundary
 
 User requirement remains: do not turn the project into a paid-per-video service.
 
@@ -209,17 +245,18 @@ The semantic director must therefore be provider-pluggable. Preferred free path 
 
 Do not repeat the old mistake of forcing a weak model onto the 2 vCPU / 3.7 GiB VPS merely to preserve an architectural rule. Product quality decides where the semantic model runs.
 
-## 13. V4 build sequence
+## 14. V4 build sequence
 
 1. Freeze production semantic-v3; no new jobs.
 2. Build a direct CLI prototype outside n8n.
-3. Director produces one complete spoken script + storyboard JSON.
+3. Director produces one complete spoken script + storyboard JSON with semantic scenes and internal `shots[]`.
 4. Add multilingual speech text normalization.
 5. Generate one continuous voice and transcribe the actual audio for timing.
 6. Implement the visual-mode router with `diagram` and `stock/exact` paths.
-7. Produce one direct 9:16 prototype and inspect it manually.
-8. Fix only product-level defects until the prototype is HUMAN PASS.
-9. Repeat on at least three materially different topics/languages.
-10. Only then design the minimal DB/n8n orchestration around the proven artifact contracts.
+7. Enforce portrait-first media for normal full-screen shots and route landscape evidence into diagram/card/collage modes.
+8. Produce a multi-shot 9:16 prototype with short-form pacing and inspect it manually.
+9. Fix only product-level defects until the prototype is HUMAN PASS.
+10. Repeat on at least three materially different topics/languages.
+11. Only then design the minimal DB/n8n orchestration around the proven artifact contracts.
 
 No production deploy is allowed before the direct prototype is human-approved.
