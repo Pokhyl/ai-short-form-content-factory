@@ -300,3 +300,30 @@ Live post-deploy constraint:
 Live column comment states the deterministic semantic-v3 selection-utility semantics and domain `[-0.10,1.09]`. PostgreSQL remained healthy; n8n `/healthz` OK; media-worker `/health` OK with local SigLIP; exactly three project services remained running; active executions remained `0`.
 
 This closes the verified `visual_shots.selection_score` schema/producer mismatch. No visual quality gate, provider behavior, candidate pool, SigLIP threshold or workflow logic changed. M8 remains `2/10` pending a completely fresh production job.
+
+
+## 2026-09-03 — Fresh UK/60 PRODUCT FAIL: segment-ready CTE snapshot defect
+
+Fresh production job `5cbe2459-291b-4aa7-b9e8-b1ed5cddac51`, `как работает индукционная плита / uk / 60`, was created by exactly one intake call (matching count `5 -> 6`). It is consumed and must never be retried/reused.
+
+Machine facts:
+
+- HTTP intake `201`;
+- exactly one Edge synthesis: `microsoft_edge_readaloud`, `edge_neural`, `uk-UA-OstapNeural`, measured `57.216 s`;
+- 18 timed beats persisted;
+- 10 semantic visual segments persisted;
+- migration 016 correction worked: all 10 visual shots persisted, including shot 4 `selection_score=-0.006621`;
+- visual sequence metrics themselves passed: 9 clusters / required 5, 10 unique assets / 10 shots, adjacent duplicates 0, max cluster occurrence 2, max cluster duration share `0.24496644295302013423`, max shot `7.278 s`;
+- WF04 execution `10881` failed at semantic completion with `segments=0/10`;
+- all 10 durable `visual_segments.status` values remained `planned`;
+- final state `failed|visuals`, no final video.
+
+Verified systemic root cause is PostgreSQL data-modifying CTE snapshot semantics in WF04 `Persist Visual Result`, not a visual-quality failure.
+
+The statement currently performs `inserted AS (INSERT INTO visual_shots ... RETURNING id)` followed by `completed AS (UPDATE visual_segments ... WHERE (SELECT count(*) FROM visual_shots WHERE visual_segment_id=vs.id)=planned_shot_count)`. The table scan inside the same statement uses the statement snapshot and does not see the row written by the sibling `inserted` CTE. Therefore for a one-shot segment the count is still `0`, the shot commits successfully, but the segment never becomes `ready`. `Require Persisted Visuals` checks shot persistence only; `Verify Visual Completion` later correctly detects `ready_segment_count=0/10` and fails closed.
+
+Disposable PostgreSQL 18 proof reproduced the exact semantic behavior: first statement reported `inserted_cte_rows=1`, `table_scan_same_statement=0`, `completed_rows=0`, then after statement `status=planned` with one visible shot. A corrected form that counts pre-statement existing rows plus rows from the `inserted ... RETURNING` CTE reported `completed_rows=1` and `status=ready`. Marker `DATA_MODIFYING_CTE_SNAPSHOT_PROOF_PASS`.
+
+Systemic correction must make `inserted` return `visual_segment_id` and mark completion only when the current insert exists and `existing snapshot rows + current inserted rows = planned_shot_count`. This also supports a future two-shot segment: first insert leaves it planned; second insert sees one prior row plus one current `RETURNING` row and marks it ready. No retry, provider change, quality-threshold change, topic hack or reuse of this consumed job is justified.
+
+M8 remains stopped at `2/10`. Next action: correct the general WF04 persistence SQL, add a regression that covers one- and two-shot lifecycle semantics plus the data-modifying-CTE contract, prove on disposable PostgreSQL, save to GitHub, deploy WF04 only with rollback/live equality, then create a completely fresh job.
