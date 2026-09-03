@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+const raw=JSON.parse(fs.readFileSync("n8n/workflows/WF05-video-render.json","utf8"));
+const w=Array.isArray(raw)?raw[0]:raw;
+const byName=new Map(w.nodes.map(n=>[n.name,n]));
+for(const name of ["Load Render Context","Require Eligible Render Job","Prepare Render Manifest","Render Video","Validate Render Result"]) assert.ok(byName.has(name),`missing ${name}`);
+const load=byName.get("Load Render Context").parameters.query;
+assert.match(load,/visual_segments/);assert.match(load,/visual_shots/);assert.match(load,/media_library_assets/);
+const requireCode=byName.get("Require Eligible Render Job").parameters.jsCode;
+assert.match(requireCode,/visual-segments-v3/);assert.match(requireCode,/s\.status!=='timed'/);assert.doesNotMatch(requireCode,/status!=='visual_ready'/);assert.doesNotMatch(requireCode,/assets\.has\(asset\)/);assert.doesNotMatch(requireCode,/dur>5\.02/);
+const manifest=byName.get("Prepare Render Manifest").parameters.jsCode;
+assert.match(manifest,/beats:/);assert.match(manifest,/shots:/);assert.doesNotMatch(manifest,/visual_path:s\.visual_path/);
+assert.equal(byName.get("Render Video").parameters.url,"http://media-worker:3001/render-v3");
+const validate=byName.get("Validate Render Result").parameters.jsCode;
+assert.match(validate,/shot_timings/);assert.match(validate,/rendered_visual_state_count/);assert.match(validate,/visual-segments-v3/);assert.doesNotMatch(validate,/reports reused visual assets/);assert.doesNotMatch(validate,/max_shot_duration_seconds\)<=5\.02/);
+console.log(JSON.stringify({pass:true,nodes:w.nodes.length,render_url:byName.get("Render Video").parameters.url}));
