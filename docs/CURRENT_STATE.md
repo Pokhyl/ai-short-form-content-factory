@@ -22,11 +22,12 @@ Before technical work read fresh:
 4. `docs/ENGINEERING_HISTORY_V4.md`;
 5. `docs/V4_RENDER_EVAL_20260903.md`;
 6. `docs/V4_TIKTOK_FORMAT_FAIL_20260903.md`;
-7. relevant upstream/reference docs.
+7. `docs/V4_MULTISHOT_HUMAN_FAIL_20260903.md`;
+8. relevant upstream/reference docs.
 
 ## Current architecture direction
 
-`topic -> factual research -> semantic director -> speech-ready script + semantic scenes + shots[] -> TTS -> actual-audio Whisper timing -> portrait-first media / diagrams / motion beats -> Remotion/FFmpeg composition -> human review`
+`topic -> factual research -> semantic director -> speech-ready script + semantic scenes + shots[] -> TTS -> actual-audio Whisper timing -> exact/relevant portrait media + diagrams/motion graphics -> continuous visual track + text overlays -> Remotion/FFmpeg composition -> human review`
 
 Critical product rules:
 
@@ -36,14 +37,21 @@ Critical product rules:
 - a semantic scene is not one visual asset;
 - each semantic scene may contain multiple `shots[]`;
 - stock is one visual mode, never a generic factual fallback;
+- portrait orientation alone does not prove semantic relevance;
+- normal full-screen factual video/photo must show the actual subject/action or clearly justified context;
+- generic kitchen/lifestyle/adjacent stock is forbidden as a fallback for factual/mechanism narration;
+- when exact moving footage is unavailable, change representation mode to exact portrait photo + motion, diagram, collage, PIP or motion graphic rather than insert generic stock;
+- normal factual shorts maintain a continuous meaningful visual track;
+- `hero_title`, `text_card`, `callout` and similar typography do not replace the primary visual by default; text normally overlays relevant visual material;
 - normal full-screen TikTok photo/video shots must use portrait/vertical or genuinely crop-safe source media;
 - widescreen exact evidence is routed to diagram/card/collage/PIP/contain treatment, not used as an ordinary full-screen photo;
 - vertical captions/key text must stay inside a TikTok-safe region rather than hugging the bottom UI area;
 - no bespoke semantic threshold maze;
 - no mandatory paid-per-video provider;
-- machine render is not human approval.
+- machine render is not human approval;
+- no architecture may be validated on one topic only.
 
-Authoritative editing contract: `docs/PRODUCT_FIRST_V4.md`, updated in commit `c48abce6f95e6af86dc7beb7afc540d054e8d683`.
+Permanent cross-topic rule is in `docs/PERMANENT_PROJECT_RULES.md`, commit `427877e12e15c4c87c8c96433abadb73a9b4a845`.
 
 ## Renderer evaluation
 
@@ -74,65 +82,60 @@ It corrected the previous stretched images/giant subtitle defects, but the user 
 - insufficient motion/cut cadence;
 - ordinary still-image treatment relied on landscape/widescreen sources rather than portrait-first TikTok media.
 
-Permanent record: `docs/V4_TIKTOK_FORMAT_FAIL_20260903.md`, commit `4f7194628314530055598dfb16fce3efcb62365d`.
+Permanent record: `docs/V4_TIKTOK_FORMAT_FAIL_20260903.md`.
 
-## Current direct prototype — portrait-first multi-shot review artifact
+## OpenMontage proof #2 — 25-cut portrait-first — HUMAN FAIL
 
-The next direct prototype reuses the existing speech-ready Ukrainian narration. No new Edge synthesis was consumed.
-
-Audio/timing:
-
-- voice duration `31.968 s`;
-- 68 actual-audio faster-whisper word timestamps;
-- same corrected speech-ready 68-word caption stream.
-
-Editing timeline:
-
-- `25` visual cuts across `31.968 s` instead of `5` long scene-assets;
-- maximum cut duration `1.6 s`;
-- timeline contract audit: `0` violations;
-- semantic scenes contain multiple visual beats;
-- ordinary full-screen source media is portrait/vertical;
-- exact horizontal mechanism evidence (coil, induction diagram, thermography) is used only in contain/highlight technical beats;
-- hook and close include active portrait video;
-- kinetic text/callout beats are short emphasis, not the main visual track.
-
-Portrait asset examples selected for this prototype:
-
-- Pexels photo `34558051` — person using a modern induction cooktop, original `4433x6650`;
-- Pexels photo `36400778` — cooking instant noodles on induction stove, original `2433x3637`;
-- Pexels photo `6755621` — pot on electric stove, original `4196x6294`;
-- Pexels photo `6938707` — brewing coffee on induction hob, original `2923x4384`;
-- Pexels photo `6755626` — induction cooking/kitchenware, original `4128x6192`;
-- Pexels portrait videos include `6822626`, `6247893`, `8094272`.
-
-Caption safe-zone change:
-
-- upstream `CaptionOverlay` default bottom offset (`80 px`) was unsuitable for a TikTok-native review render;
-- the evaluation renderer now places captions at `320 px` from the bottom and constrains them to `70%` width;
-- this is a general vertical-safe rendering requirement, not an induction-specific patch.
-
-Exact review artifact:
+Artifact:
 
 `/opt/ai-short-form-v4-upstreams/OpenMontage/remotion-composer/out/v4-induction-tiktok.mp4`
 
-Machine proof:
+SHA256:
 
-- SHA256 `dbaf1e92e3cd7fd66920520a683b403a46bb04b875a89fcbda696a2950b54af5`;
-- size `15,641,509` bytes;
-- duration `33.046 s`;
-- H.264 `1080x1920`;
-- AAC `48 kHz`, stereo;
-- nine review frames were extracted from the exact final file;
-- public temporary review endpoint returned HTTP `200` for both MP4 and contact sheet.
+`dbaf1e92e3cd7fd66920520a683b403a46bb04b875a89fcbda696a2950b54af5`
 
-State: `machine_rendered`, NOT `human_approved`.
+Machine characteristics:
 
-## Immediate next action
+- `25` visual cuts across `31.968 s`;
+- maximum cut duration `1.6 s`;
+- portrait source-media guard passed;
+- final encode `1080x1920`, H.264 + AAC;
+- TikTok caption safe-zone moved upward.
 
-1. User watches the exact portrait-first 25-cut safe-zone artifact.
-2. If HUMAN FAIL, record and fix the next general product defect; do not patch the induction fixture specifically.
-3. If HUMAN PASS, resolve renderer licensing/adoption and build materially different topic/language prototypes before orchestration.
-4. No production/n8n rebuild until direct prototypes receive HUMAN PASS across materially different topics/languages.
+Human verdict: HUMAN FAIL for the product as a whole.
+
+Verified general defects:
+
+1. standalone `hero_title`, `text_card` and `callout` cuts repeatedly replaced the meaningful visual track with text-only presentation frames;
+2. several moving stock shots were generic cooking/electric-stove footage rather than exact or clearly relevant visual evidence for the factual subject;
+3. optimizing cut frequency and portrait orientation did not create good TikTok storytelling because relevance and continuous visual meaning were still weak.
+
+Permanent record: `docs/V4_MULTISHOT_HUMAN_FAIL_20260903.md`, commit `b3935624174b97bcc0c432623406d7a71f8663be`.
+
+## Immediate next action — stop tuning one fixture
+
+Do NOT produce another induction-specific iteration now.
+
+Build a small cross-topic validation matrix before the next candidate renderer/media/director architecture is accepted. The matrix must exercise materially different visual problems, for example:
+
+1. technical/mechanism explainer — exact mechanism + diagrams/motion graphics;
+2. concrete exact-media topic — person/place/object/history where the real entity must stay visible;
+3. process/list/comparison topic — mixed real visuals + overlays/cards/diagrams;
+4. multiple target languages rather than one language only.
+
+For every matrix case, evaluate the same general contracts:
+
+- meaningful continuous visual track;
+- no standalone text substitution unless intentionally selected and justified;
+- no generic factual fallback stock;
+- portrait-first full-screen media;
+- exact horizontal evidence only in appropriate contain/PIP/diagram treatment;
+- pacing driven by meaning, not an arbitrary cut-count target;
+- captions from actual audio and inside safe zone;
+- human review of exact artifacts.
+
+Every failure, root cause, rule change and architecture decision must be written to GitHub before moving to the next independent stage.
+
+No production/n8n rebuild until direct prototypes receive HUMAN PASS across materially different topics/languages.
 
 M8 remains `2/10`.
