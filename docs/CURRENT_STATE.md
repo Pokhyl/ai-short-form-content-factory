@@ -6,9 +6,11 @@ This file is authoritative for branch `rebuild/product-first-v4`. Repository/run
 
 ## Production status
 
-Semantic-v3 is rejected as a product architecture and remains frozen. Do not create any more production jobs through it.
+Semantic-v3 is rejected as a product architecture and remains frozen. Do not create new production jobs through it.
 
-The last semantic-v3 artifact `61f662ee-565c-4dd6-8759-17a51f3e7ec3` was HUMAN FAIL despite machine `review_ready`; M8 remains `2/10`.
+The last semantic-v3 artifact `61f662ee-565c-4dd6-8759-17a51f3e7ec3` was HUMAN FAIL despite machine `review_ready`. M8 remains `2/10`.
+
+The first direct V4 custom-compositor artifact was also HUMAN FAIL. Its bespoke Python image/layout compositor is permanently retired.
 
 ## V4 source of truth
 
@@ -18,57 +20,81 @@ Before technical work read fresh:
 2. this file;
 3. `docs/PRODUCT_FIRST_V4.md`;
 4. `docs/ENGINEERING_HISTORY_V4.md`;
-5. relevant upstream/reference docs.
+5. `docs/V4_RENDER_EVAL_20260903.md`;
+6. relevant upstream/reference docs.
 
-## Selected architecture
+## Current architecture direction
 
-`topic -> factual research -> semantic director -> speech-ready script + storyboard -> TTS -> Whisper timing from actual audio -> explicit representation modes -> mature upstream render/composition -> human review`
+`topic -> factual research -> semantic director -> speech-ready script + storyboard -> TTS -> Whisper word timing from actual audio -> explicit representation modes -> mature Remotion/FFmpeg composition -> human review`
 
-Key rules remain:
+Key rules:
 
 - evidence is not final speech;
 - TTS receives speech-ready text only;
 - captions/timing come from the actual generated audio;
-- stock is only one visual mode and is never a generic factual fallback;
-- exact media / diagram / screen-card modes remain explicit;
+- stock is one visual mode, never a generic factual fallback;
+- exact media / diagram / card modes remain explicit;
+- no bespoke presentation compositor until an upstream renderer is proven;
 - machine render is not human approval;
 - no topic-specific hacks;
 - no mandatory paid-per-video provider.
 
-## Upstream foundation
+## Renderer evaluation
 
-Primary reusable engine: `harry0703/MoneyPrinterTurbo`, exact pinned commit `cbbb366393105d5cefc254dc9ed492d43da0711b`, version `1.3.6`, MIT.
+### MoneyPrinterTurbo
 
-Focused upstream suite on the VPS: `316 passed`, `69 subtests passed`, `7 skipped`, zero failures after the full upstream font/i18n fixture was present.
+Pinned upstream MPT remains useful as a source/reference for TTS, Whisper and some media contracts, but is rejected as the V4 renderer. Its clean upstream render path was too slow on the 2-vCPU VPS and the concat stage failed when a generated temp clip disappeared before FFmpeg concat. No custom workaround was accepted.
 
-V4 adapter skeleton is saved in GitHub commit `389ae8ea16df733b956e7432808776e4d088b715` under `prototype/v4/`.
+### Short Video Maker
 
-## First direct V4 prototype — HUMAN FAIL
+Rejected as the full pipeline because its normal architecture is English/Kokoro + Pexels and includes generic fallback footage behavior. Its Remotion patterns may still be referenced.
 
-Artifact:
+### OpenMontage
 
-`/opt/ai-short-form-v4-runs/induction-uk-30-v1/final-v4-ffmpeg.mp4`
+Current renderer candidate: `calesthio/OpenMontage`, commit `cd9f3c1f03368be87b140af494914b8ee4e3c7a4`.
 
-The user watched the exact artifact and rejected it. An uploaded copy was then inspected frame-by-frame.
+Important: upstream license is AGPL-3.0. The current run is an evaluation/reference prototype only. No OpenMontage code has been copied into this repository; license compatibility must be resolved before code adoption.
 
-Visible defects:
+## Current V4 review artifact
 
-- source images were severely stretched/warped into the vertical canvas;
-- giant subtitle boxes obscured most of the visual content;
-- the explanatory diagram became unreadable;
-- thermography and the final scene were dominated by subtitles instead of visual storytelling.
+Artifact on VPS:
 
-Systemic root cause:
+`/opt/ai-short-form-v4-upstreams/OpenMontage/remotion-composer/out/v4-induction.mp4`
 
-The prototype reused MPT TTS/Whisper modules but introduced a bespoke local Python scene compositor and custom image-to-vertical layout. This violated the project direction to prove mature upstream behavior before inventing a replacement presentation layer.
+Input reused the existing speech-ready Ukrainian voice track; no new Edge synthesis was consumed for this renderer comparison.
 
-This is not to be repaired with induction-specific image swaps or font-size tweaks.
+Timing/captions:
+
+- voice duration `31.968 s`;
+- 68 faster-whisper word timestamps;
+- speech-ready script also exactly 68 words;
+- script spellings replace recognition spellings one-for-one while preserving every actual timestamp.
+
+Visual path:
+
+- five exact scene assets;
+- normal photos use upstream OpenMontage `ImageScene`;
+- wide technical diagrams use upstream `ScreenshotScene` contain-layout;
+- upstream renderer code was not modified;
+- only props/assets/audio/captions were supplied.
+
+Machine proof:
+
+- SHA256 `d9b1670b6f5818036a88486582c76b5b70fe51f9b26d9e0c6a1bead638d051dc`;
+- size `12,233,895` bytes;
+- duration `33.046 s`;
+- H.264 `1080x1920`;
+- AAC `48 kHz` stereo.
+
+Pre-delivery visual inspection was performed on frames near 2 / 6 / 14 / 21 / 27 seconds. The prior gross layout failures are absent: images are not warped, wide diagrams are visible via contain-layout, the coil and thermography are visible, and captions remain a bounded bottom overlay rather than covering most of the frame.
+
+Full evaluation: `docs/V4_RENDER_EVAL_20260903.md`, commit `ad20b43111aa70a2ef7cbc16119015930ddcf0d3`.
 
 ## Immediate next action
 
-1. Retire the custom V4 scene compositor/layout path.
-2. Run a mature upstream end-to-end render flow with its normal composition/subtitle defaults and inspect the exact output before adding adapters.
-3. Preserve source aspect ratio and enforce bounded subtitle occupancy as general product requirements.
-4. Only after a clean upstream artifact exists may V4 add the minimum director/representation adapters.
+The user watches the exact OpenMontage artifact.
 
-No new production deployment, no semantic-v3 jobs, and no HUMAN PASS count change. M8 remains `2/10`.
+- If HUMAN FAIL: reject/fix the observed general defect; do not patch this induction fixture specifically.
+- If HUMAN PASS: do not deploy production yet; resolve renderer licensing/adoption and then run materially different direct prototypes before rebuilding n8n/DB orchestration.
+
+No HUMAN PASS count change yet. M8 remains `2/10`.
