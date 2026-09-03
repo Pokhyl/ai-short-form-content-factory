@@ -11,6 +11,8 @@ from .schema import parse_director_payload
 from .speech import ensure_speech_ready
 from .upstream_mpt import synthesize_edge, transcribe_whisper, verify_upstream
 from .visual_router import build_visual_manifest
+from .timeline_builder import compile_segment_timeline, sha256_file
+from .timeline_contract import validate_timeline_payload
 
 VOICES = {
     "en": "en-US-AndrewNeural",
@@ -60,6 +62,16 @@ def main() -> int:
     p.add_argument("director")
     p.add_argument("--output", required=True)
 
+    p = sub.add_parser("compile-timeline")
+    p.add_argument("--script", required=True)
+    p.add_argument("--audio", required=True)
+    p.add_argument("--whisper", required=True)
+    p.add_argument("--visual-obligations", required=True)
+    p.add_argument("--output", required=True)
+
+    p = sub.add_parser("validate-timeline")
+    p.add_argument("timeline")
+
     args = parser.parse_args()
     if args.cmd == "verify-upstream":
         print(verify_upstream())
@@ -90,6 +102,25 @@ def main() -> int:
         plan = parse_director_payload(load_json(args.director))
         dump_json(args.output, build_visual_manifest(plan))
         print(f"V4_VISUAL_MANIFEST_CREATED {args.output}")
+        return 0
+    if args.cmd == "compile-timeline":
+        script_text = Path(args.script).read_text(encoding="utf-8").strip()
+        whisper = load_json(args.whisper)
+        obligations = load_json(args.visual_obligations)
+        if not isinstance(obligations, list):
+            raise ValueError("visual obligations file must contain a JSON array")
+        timeline = compile_segment_timeline(
+            whisper_payload=whisper,
+            visual_obligations=obligations,
+            script_text=script_text,
+            audio_sha256=sha256_file(args.audio),
+        )
+        dump_json(args.output, timeline)
+        print(f"V4_TIMELINE_CREATED beats={len(timeline['beats'])} duration={timeline['duration_seconds']:.3f} path={args.output}")
+        return 0
+    if args.cmd == "validate-timeline":
+        result = validate_timeline_payload(load_json(args.timeline))
+        print(f"V4_TIMELINE_VALID beats={result['beat_count']} duration={result['duration_seconds']:.3f}")
         return 0
     return 2
 
