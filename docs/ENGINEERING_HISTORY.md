@@ -269,7 +269,7 @@ Next boundary remains pre-deploy documentation alignment and bounded deployment 
 
 `docs/ARCHITECTURE.md` was updated in commit `b71ce862a606b1010625912c4ba07b8f600d8b56` to remove the obsolete `one visual per timed beat` contract and document the proven semantic-v3 architecture: timed beats remain subtitle/voice transport units; semantic visual segments are independent meaning-based visual obligations; visual shots have their own contiguous timeline; render-v3 validates actual post-render visual states.
 
-`docs/CURRENT_STATE.md` was updated in commit `f0f80836a6666b83502f6b74163936ff1a83ad85` and now makes the deployment boundary explicit:
+`docs/CURRENT_STATE.md` was updated in commit `f0f80836a666b1010625912c4ba07b8f600d8b56` and now makes the deployment boundary explicit:
 
 - clean local semantic-v3 implementation HEAD is `2405d04`;
 - GitHub implementation synchronization is complete modulo the proven EOF newline normalization in `server.mjs`;
@@ -345,3 +345,25 @@ All seven staged files matched the clean local source. Migration 015 applied tra
 `docker compose build media-worker` succeeded before replacement. Only `media-worker` was recreated with `docker compose up -d --no-deps media-worker`; n8n and PostgreSQL were not recreated. New media-worker health returned `status=ok`, local SigLIP `Xenova/siglip-base-patch16-224`, and `preview_fetch_attempts=1`. Exactly the three project containers remained running.
 
 WF04/WF05 were deliberately not imported in this phase. The next independent step is to import and explicitly publish only WF04 and WF05, restart n8n once, then prove published workflow behavior equals the staged semantic-v3 sources before creating any new job.
+
+## 2026-09-03 — Semantic-v3 WF04/WF05 production deploy PASS
+
+The first workflow import attempt used `n8n import:workflow --activeState=fromJson`. n8n 2.33.3 rejected that option in this regular deployment mode because `--activeState=fromJson` is supported only in queue or multi-main mode. Published WF04/WF05 hashes were immediately re-exported and matched the pre-deploy rollback snapshot exactly, proving that failed attempt was a no-op for published workflows. This was a deployment-tooling error, not a product failure.
+
+Correct regular-mode deployment used `import:workflow` without `--activeState`, followed immediately by explicit `publish:workflow --id=...` for each workflow. Both WF04 and WF05 imported and published successfully. The cleanup of root-owned `/tmp` import files initially returned `Operation not permitted`; import/publish had already succeeded, and cleanup was corrected with root inside the container. No n8n restart had occurred before that cleanup failure.
+
+After both publishes, n8n was restarted exactly once as required by the CLI. Post-restart proof:
+
+- n8n `/healthz` returned OK;
+- WF04 live published active=true, 27 nodes; canonical behavior core SHA-256 source/live both `b6b08f21e0fe58b6661f7413e3389834b92c6142f65831a3afcae526a31b53ed`;
+- WF05 live published active=true, 16 nodes; canonical behavior core SHA-256 source/live both `c5595719c63eecb2680c10dbe6a63e45bb7bc4f6d12308c3b62f5f2953f9a117`;
+- workflow DB rows are active and each `versionId` equals `activeVersionId`;
+- current WF04 active version `12e0857b-3c3c-4640-b7f1-2861050038f1`;
+- current WF05 active version `ae9d00c2-bd65-4d3f-a8f5-ec0bcf840a12`;
+- all four semantic-v3 media-worker source files match byte-for-byte between production host source and running `/app/src` container source;
+- migration 015 relations all exist;
+- PostgreSQL remains healthy;
+- exactly `media-worker`, `n8n`, and `postgres` remain the three project containers;
+- media-worker `/health` remains OK with local SigLIP and one preview fetch attempt.
+
+Semantic-v3 is therefore fully deployed. The next allowed action is one completely fresh `как работает индукционная плита / uk / 60` production job; do not reuse any consumed-Edge fixture, and do not increment M8 until the user reviews the exact new video.
