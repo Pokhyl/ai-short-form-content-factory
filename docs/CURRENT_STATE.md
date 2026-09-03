@@ -38,6 +38,7 @@ Critical product rules:
 - stock is one visual mode, never a generic factual fallback;
 - normal full-screen TikTok photo/video shots must use portrait/vertical or genuinely crop-safe source media;
 - widescreen exact evidence is routed to diagram/card/collage/PIP/contain treatment, not used as an ordinary full-screen photo;
+- vertical captions/key text must stay inside a TikTok-safe region rather than hugging the bottom UI area;
 - no bespoke semantic threshold maze;
 - no mandatory paid-per-video provider;
 - machine render is not human approval.
@@ -75,9 +76,9 @@ It corrected the previous stretched images/giant subtitle defects, but the user 
 
 Permanent record: `docs/V4_TIKTOK_FORMAT_FAIL_20260903.md`, commit `4f7194628314530055598dfb16fce3efcb62365d`.
 
-## Current direct prototype — portrait-first multi-shot
+## Current direct prototype — portrait-first multi-shot review artifact
 
-The next direct prototype reuses the existing speech-ready Ukrainian narration. No new Edge synthesis is consumed.
+The next direct prototype reuses the existing speech-ready Ukrainian narration. No new Edge synthesis was consumed.
 
 Audio/timing:
 
@@ -85,13 +86,14 @@ Audio/timing:
 - 68 actual-audio faster-whisper word timestamps;
 - same corrected speech-ready 68-word caption stream.
 
-New editing timeline:
+Editing timeline:
 
 - `25` visual cuts across `31.968 s` instead of `5` long scene-assets;
+- maximum cut duration `1.6 s`;
+- timeline contract audit: `0` violations;
 - semantic scenes contain multiple visual beats;
-- portrait Pexels source assets include native vertical electric/induction stove media;
+- ordinary full-screen source media is portrait/vertical;
 - exact horizontal mechanism evidence (coil, induction diagram, thermography) is used only in contain/highlight technical beats;
-- ordinary full-screen wide photos are not used;
 - hook and close include active portrait video;
 - kinetic text/callout beats are short emphasis, not the main visual track.
 
@@ -104,21 +106,33 @@ Portrait asset examples selected for this prototype:
 - Pexels photo `6755626` — induction cooking/kitchenware, original `4128x6192`;
 - Pexels portrait videos include `6822626`, `6247893`, `8094272`.
 
-Runtime files:
+Caption safe-zone change:
 
-- assets/props: `/opt/ai-short-form-v4-upstreams/OpenMontage/remotion-composer/public/v4-induction-tiktok/`;
-- timeline contains `25` cuts, final cut ends at `31.968 s`;
-- nine Remotion still checkpoints rendered successfully before the full encode;
-- full render target: `/opt/ai-short-form-v4-upstreams/OpenMontage/remotion-composer/out/v4-induction-tiktok.mp4`.
+- upstream `CaptionOverlay` default bottom offset (`80 px`) was unsuitable for a TikTok-native review render;
+- the evaluation renderer now places captions at `320 px` from the bottom and constrains them to `70%` width;
+- this is a general vertical-safe rendering requirement, not an induction-specific patch.
 
-The full render is currently an evaluation artifact only and must not be called HUMAN PASS until the user watches the exact output.
+Exact review artifact:
+
+`/opt/ai-short-form-v4-upstreams/OpenMontage/remotion-composer/out/v4-induction-tiktok.mp4`
+
+Machine proof:
+
+- SHA256 `dbaf1e92e3cd7fd66920520a683b403a46bb04b875a89fcbda696a2950b54af5`;
+- size `15,641,509` bytes;
+- duration `33.046 s`;
+- H.264 `1080x1920`;
+- AAC `48 kHz`, stereo;
+- nine review frames were extracted from the exact final file;
+- public temporary review endpoint returned HTTP `200` for both MP4 and contact sheet.
+
+State: `machine_rendered`, NOT `human_approved`.
 
 ## Immediate next action
 
-1. Complete the 25-cut portrait-first direct render.
-2. Inspect the exact MP4 before delivery, including cadence/layout and not only ffprobe.
-3. User reviews the exact artifact.
-4. If HUMAN FAIL, fix the general observed product defect rather than this induction fixture specifically.
-5. No production/n8n rebuild until direct prototypes receive HUMAN PASS across materially different topics/languages.
+1. User watches the exact portrait-first 25-cut safe-zone artifact.
+2. If HUMAN FAIL, record and fix the next general product defect; do not patch the induction fixture specifically.
+3. If HUMAN PASS, resolve renderer licensing/adoption and build materially different topic/language prototypes before orchestration.
+4. No production/n8n rebuild until direct prototypes receive HUMAN PASS across materially different topics/languages.
 
 M8 remains `2/10`.
