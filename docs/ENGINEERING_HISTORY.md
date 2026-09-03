@@ -119,7 +119,7 @@ Local-only work extended visual discovery to segmented mode and added a separate
 
 Three test-only defects were exposed and corrected before accepting the regression gate:
 
-- the first `visual_shot_quality_regression.mjs` incorrectly expected `evaluateVisualShotSequence()` to throw on an adjacent duplicate; the evaluator intentionally returns `pass=false` for a structurally valid but rejected sequence;
+- the first `visual_shot_quality_regression.mjs` incorrectly expected `evaluateVisualShotSequence()` to throw on an adjacent duplicate; the evaluator intentionally returns `pass=false` for that valid-but-rejected sequence rather than throw;
 - an initial `wf04_assignment_regression.mjs` 10-second fixture had a single 4-second shot, which by construction exceeded the unchanged `0.34` cluster-duration share even when every asset/cluster was unique; the fixture was corrected to a 12-second / three-4-second-shot case rather than weakening the gate;
 - an initial `wf04_perceptual_assignment_regression.mjs` offered only three perceptual states for four equal-duration shots. Under the unchanged `0.34` duration-share rule no state could legally occur twice, making the declared PASS fixture mathematically impossible; a fourth genuinely distinct candidate cluster was added to the fixture.
 
@@ -161,3 +161,15 @@ Focused/static suite now PASS in the existing n8n container (Node v24.18.0):
 Fresh runtime during the gate remained exactly three project containers; n8n `/healthz` 200, media-worker `/health` 200, PostgreSQL healthy. No migration, workflow publish, container recreate, or production job was performed.
 
 Exact next stage: transactionally validate migration 015 and build/run a disposable semantic-v3 media-worker/render integration without replacing production. Only after database/render/cross-topic real-provider dry-runs pass may the implementation be synchronized to GitHub, snapshotted and deployed.
+
+## 2026-09-03 — Real-provider UK/60 dry-run invalidates duration-driven shot cardinality
+
+After migration 015 and disposable `/render-v3` validation passed, the actual failed Ukrainian induction fixture was run through the local semantic-v3 path with real provider discovery and local SigLIP ranking. Production was not mutated.
+
+The semantic segmentation itself behaved as intended: the 57.216 s / 18-timed-beat narration became 9 semantic visual segments. However, `planned_shot_count = ceil(segment_duration / 5.0)` expanded those 9 semantic segments into 17 mandatory shot slots, and `Choose Visual Assignment` additionally required globally unique candidate asset IDs. The real-provider dry-run then failed with exact error `No valid semantic visual shot assignment at shot 12/17`.
+
+This is a systemic architecture defect, not a provider shortage to patch around. The 5-second timer recreated almost the same cardinality pressure that semantic segmentation was introduced to remove: long semantic intervals again implied many nearly unique media files regardless of whether the narration meaning changed.
+
+The correction must not enlarge candidate pools, add retries, weaken the `0.34` perceptual-duration gate, or add topic-specific assets. Shot cardinality must instead be content/representation-driven. A semantic segment should normally remain one visual shot; additional shots are allowed only when a deterministic semantic/representation reason exists. Asset-file uniqueness must not be used as a proxy for product-visible diversity; perceptual cluster identity and post-render visual-state verification remain the authoritative diversity controls.
+
+Fresh runtime at this failure point remained exactly three production containers with n8n/media-worker HTTP 200 and PostgreSQL healthy. No production migration, workflow publish, container replacement, or fresh production job was performed.
