@@ -1,16 +1,14 @@
 # Engineering History — Rebuild
 
-Chronological durable record for material changes, failures, verified root causes, regressions, deploys and rollback facts. `docs/CURRENT_STATE.md` remains the operational source of truth.
-
-Compacted on 2026-09-03 while preserving every material production failure, accepted result, systemic correction, rejected approach, deployment/rollback fact and diagnostic mistake that could otherwise cause a false PASS/FAIL after context reset. Exact code history remains recoverable from listed commits and rollback snapshots.
+Chronological durable record for material changes, failures, verified root causes, rejected approaches, regressions, deployments and rollback facts. `docs/CURRENT_STATE.md` remains the operational source of truth. Exact code history is recoverable from the listed commits and rollback snapshots.
 
 ## 2026-09-02 — Old induction machine PASS invalidated
 
-Job `13f64c50-8dd5-47e4-a88f-1411d258e7c4` reached `review_ready`, but human inspection showed only two effective visual states. Previous machine PASS is permanently invalidated. Root cause: acceptance counted scene/file presence rather than actual video-level perceptual sequence quality. Never reuse this job as acceptance evidence.
+Job `13f64c50-8dd5-47e4-a88f-1411d258e7c4` reached `review_ready`, but human inspection showed only two effective visible states. The earlier machine PASS is permanently invalidated. Root cause: acceptance counted scene/file presence rather than actual video-level perceptual sequence quality. Never reuse this job as acceptance evidence.
 
 ## 2026-09-02 — Visual-quality-v2 rewrite/deploy
 
-Required visual path became:
+Visual path became:
 
 `timed beat + evidence -> deterministic search intents -> multi-source discovery -> metadata/provenance eligibility -> local SigLIP ranking + perceptual identity -> global assignment -> sequence gate -> persist -> render -> post-render pixel-state gate -> review_ready`.
 
@@ -22,7 +20,7 @@ Commit `f7c4096503c9620910b387129a5a06cce4d26d42` — `redesign: enforce percept
 Rollback `/opt/ai-short-form-content-factory/rollback/20260902T175543Z-pre-visual-quality-v2`.
 Migration 013 applied; WF04/WF05 published; exactly three project services and PostgreSQL healthy.
 
-Diagnostic mistake preserved: an early compile harness treated a top-level-array workflow export as an object. A zero-count Code-node compile can never be accepted as PASS.
+Diagnostic mistake: an early compile harness treated a top-level-array workflow export as an object. A zero-count Code-node compile can never be accepted as PASS.
 
 ## 2026-09-02 — Reference-media lifecycle failure/fix
 
@@ -38,11 +36,11 @@ Migration 014 live; WF04 live equality proved; runtime healthy.
 
 Accepted fresh job `2c182ff8-ea9f-4ddf-a417-b49f796d23f5`, `How does induction heating work? / en / 15`.
 
-Machine proof: `review_ready`; preflight `14.358 s`; execution `9926` exactly one successful Edge synthesis; measured voice `13.944 s`; six timed beats; 6/6 perceptual clusters, required 5; adjacent 0; max share `0.1813`; post-render six states; ffprobe H.264 1080x1920 30fps + AAC 48kHz stereo. User watched the exact video and said `мне нравится`. M8 accepted count became `2/10`.
+Machine proof: `review_ready`; preflight `14.358 s`; exactly one successful Edge synthesis; measured voice `13.944 s`; six timed beats; 6/6 perceptual clusters, required 5; adjacent 0; max share `0.1813`; post-render six states; ffprobe H.264 1080x1920 30fps + AAC 48kHz stereo. User watched the exact video and accepted it. M8 accepted count became `2/10`.
 
 ## 2026-09-02/03 — WF02 multilingual retrieval failure and systemic correction
 
-Observed failures:
+Observed production failures:
 
 - `Dlaczego popcorn pęka podczas podgrzewania? / pl / 15` failed because native Wikipedia query was over-constrained.
 - job `85fcc63b-b89b-40d0-b253-6383b715f105`, topic `как работает индукционная плита`, output `uk`, 60 s, failed at script because the old path issued Russian subject text against Ukrainian Wikipedia without multilingual resolution.
@@ -57,11 +55,11 @@ Systemic contract after correction:
 - no topic mapping, generative translation, provider cascade, bypass or threshold weakening;
 - how/why evidence prioritizes mechanism/principle/construction;
 - narration remains extractive/provenance-preserving;
-- duration bands unchanged.
+- duration gates unchanged.
 
-Final real-Wikipedia proof: RU-topic -> UK induction cooktop `60.106 s`; UK refrigerator `59.975 s`; PL popcorn `15.079 s`; EN induction `14.939 s`, all pre-TTS safe. Seven new regressions PASS; WF02 Code compile 8/8; staged pipeline PASS; retained duration audit 150 rows / 40 safe / 0 false-safe; CASE1 staged provenance PASS; CASE1 visual eligibility PASS.
+Real-Wikipedia proof: RU-topic -> UK induction cooktop `60.106 s`; UK refrigerator `59.975 s`; PL popcorn `15.079 s`; EN induction `14.939 s`, all pre-TTS safe. Seven regressions PASS; WF02 Code compile 8/8; staged pipeline PASS; retained duration audit 150 rows / 40 safe / 0 false-safe; CASE1 provenance and visual eligibility PASS.
 
-Diagnostic harness mistake preserved: an initial CASE1 visual invocation passed `-e never` as Node input and produced `ReferenceError`; that result was invalid. Correct invocation passed.
+Diagnostic harness mistake: an initial CASE1 visual invocation accidentally passed `-e never` as Node input and produced `ReferenceError`; that result was invalid. Correct invocation passed.
 
 Commit `e4e856093fa237dab9daaa56dcf443c3b6155f93` — `fix: make factual retrieval multilingual and explanation-aware`.
 Rollback `/opt/ai-short-form-content-factory/rollback/20260903T055250Z-pre-wf02-multilingual`.
@@ -71,40 +69,40 @@ WF02-only production deploy PASS; live core SHA `0f5893ffba59b23d181c363b26b9914
 
 Fresh real intake job `4372be34-c417-415f-92f6-63481b3b5686`, topic `как работает индукционная плита`, output `uk`, target 60, returned HTTP 201.
 
-It passed corrected WF02 and its single Edge synthesis: canonical factual title `Індукційна плита`; preflight `60.106 s`; measured voice `57.216 s`; voice `uk-UA-OstapNeural`; 18 timed beats.
+It passed corrected WF02 and its single Edge synthesis: canonical title `Індукційна плита`; preflight `60.106 s`; measured voice `57.216 s`; voice `uk-UA-OstapNeural`; 18 timed beats.
 
-Old WF04 then failed at visuals with exact error `perceptually unique truth-eligible assignment 11/12 [line 15]`. Final state `failed|visuals`. Never retry/reuse this job because its automatic Edge call was already consumed. M8 progression stopped.
+Old WF04 then failed at visuals with `perceptually unique truth-eligible assignment 11/12`. Final state `failed|visuals`. Never retry/reuse this job because its automatic Edge call was already consumed. M8 progression stopped.
 
 ## 2026-09-03 — Semantic visual segmentation selected
 
-Broader review of multiple open-source short-video architectures led to the systemic correction: timed narration/subtitle beats are transport units and must not automatically become independent semantic media-search obligations.
+Verified root cause: timed narration/subtitle beats are transport units and must not automatically become independent semantic media-search obligations.
 
 Design document `docs/VISUAL_SEGMENTATION_DESIGN.md`, initial commit `d19ff9e66f47cbadf206141d4b51bbc3d7631abc`.
 
 New path:
 
-`accepted voice -> timed beats -> deterministic semantic visual segments -> visual shots -> truth eligibility -> local SigLIP -> perceptual sequence control -> render -> post-render frame gate -> human review`.
+`accepted voice -> timed beats -> deterministic semantic visual segments -> visual shots -> truth eligibility -> local SigLIP -> perceptual sequence control -> render-v3 -> post-render frame gate -> human review`.
 
 No generative visual planner, hosted semantic dependency, paid fallback or threshold weakening. WF01-WF03 and exactly-one-Edge remain unchanged. Additive durable entities: `visual_segments`, `visual_shots`, `media_library_assets`.
 
 ## 2026-09-03 — GitHub/VPS branch divergence discovered
 
-VPS/local code and GitHub `rebuild/simple-pipeline` documentation history diverged from merge base `7d25bac1c4d1a90b2b29183d9ec3ca280d1acfc4`.
+VPS/local code and GitHub documentation history diverged from merge base `7d25bac1c4d1a90b2b29183d9ec3ca280d1acfc4`.
 
-- VPS code HEAD `e4e856093fa237dab9daaa56dcf443c3b6155f93`.
+- VPS production-code HEAD `e4e856093fa237dab9daaa56dcf443c3b6155f93`.
 - GitHub had a separate docs chain.
 - `git merge --ff-only` correctly refused.
 - VPS HTTPS push had no credentials; SSH authentication also failed.
 - no force push/destructive rewrite attempted.
 
-GitHub implementation branch `rebuild/semantic-visual-segments` was created from remote source-of-truth. VPS implementation branch `rebuild/semantic-visual-segments-local` was created from actual production-code HEAD. Final reconciliation must use GitHub connector writes while preserving remote documentation history.
+GitHub implementation branch `rebuild/semantic-visual-segments` was created from remote source-of-truth. VPS implementation branch `rebuild/semantic-visual-segments-local` was created from actual production-code HEAD. Reconciliation used GitHub connector writes while preserving remote documentation history.
 
 ## 2026-09-03 — Semantic-v3 local implementation
 
-Local-only implementation, production not mutated:
+Local-only implementation before deployment:
 
 - `services/media-worker/src/visual-segmentation.mjs` — deterministic semantic grouping;
-- `db/migrations/015_visual_segments.sql` — additive `visual_segments`, `visual_shots`, `media_library_assets`;
+- `db/migrations/015_visual_segments.sql` — additive semantic visual entities;
 - WF04 rewritten around semantic segments and shot assignment;
 - media-worker adds `/visual/store-shot` and `/render-v3` while retaining legacy routes;
 - WF05 reads independent subtitle-beat and visual-shot timelines;
@@ -112,258 +110,145 @@ Local-only implementation, production not mutated:
 
 A Code-node mode defect was caught: `Require Visual Completion` was `runOnceForEachItem` while using `$input.first()`. It was corrected to use `$json`; mode regression passed.
 
-Earlier regression-fixture mistakes preserved: one test incorrectly expected a rejected sequence evaluator to throw; another made a declared PASS impossible under `0.34`; another offered insufficient perceptual states. Fixtures were corrected; no production threshold changed.
+Regression-fixture mistakes were also caught: one test incorrectly expected a rejected sequence evaluator to throw; another declared a PASS impossible under `0.34`; another offered insufficient perceptual states. Fixtures were corrected; production thresholds were not changed.
 
 ## 2026-09-03 — Duration-driven shot cardinality rejected
 
-First semantic implementation correctly reduced the `57.216 s` / 18-beat UK fixture to 9 semantic segments, but `planned_shot_count = ceil(segment_duration / 5.0)` expanded them back to 17 mandatory shots and assignment required unique asset IDs. Real-provider dry-run failed `No valid semantic visual shot assignment at shot 12/17`.
+First semantic implementation reduced the `57.216 s` / 18-beat UK fixture to 9 semantic segments, but `planned_shot_count = ceil(segment_duration / 5.0)` expanded them back to 17 mandatory shots and assignment required unique asset IDs. Real-provider dry-run failed `No valid semantic visual shot assignment at shot 12/17`.
 
-Verified root cause: the 5-second timer recreated the old cardinality problem in another form. It was rejected systemically. A semantic segment normally becomes one shot; another shot may exist only for a deterministic semantic/representation transition. File-ID uniqueness is not a proxy for product-visible diversity. Perceptual identity and post-render states remain authoritative.
+Root cause: the 5-second timer recreated the old cardinality problem. Rejected systemically. A semantic segment normally becomes one shot; another shot may exist only for deterministic semantic/representation transition. File-ID uniqueness is not a proxy for product-visible diversity. Perceptual identity and post-render states remain authoritative.
 
 No candidate-pool inflation, retries, topic mappings, threshold changes or production writes were used.
 
 ## 2026-09-03 — Corrected UK/60 real-provider semantic dry-run PASS
 
-After removing elapsed-time shot multiplication and hard asset-uniqueness as a product gate, exact persisted job `4372be34-c417-415f-92f6-63481b3b5686` was replayed read-only through local semantic sourcing with real Wikimedia/Pixabay/Pexels plus existing local SigLIP.
+After removing elapsed-time shot multiplication and hard asset-uniqueness, persisted job `4372be34-c417-415f-92f6-63481b3b5686` was replayed read-only through local semantic sourcing with real Wikimedia/Pixabay/Pexels plus local SigLIP.
 
-PASS:
+PASS: 18 timed beats -> 10 content-derived semantic segments -> 10 shots; clusters 9/required 5; adjacent duplicates 0; max occurrence 2; max duration share `0.245`; longest shot `7.278 s`; provider errors 0; full `57.216 s` coverage; runtime remained three production services.
 
-- 18 timed beats -> 10 content-derived semantic segments -> 10 shots;
-- every segment had a 10-candidate truth-eligible pool in that run;
-- clusters 9, required 5;
-- adjacent duplicates 0;
-- max cluster occurrence 2;
-- max cluster duration share `0.245`;
-- longest semantic shot `7.278 s`;
-- provider errors 0;
-- full `57.216 s` coverage;
-- runtime remained exactly three production services.
+Diagnostic harness mistake: it initially hardcoded an expected 9 segments and falsely failed when exact persisted narration produced 10. Assertion removed because segment count is content-derived, not fixture-hardcoded.
 
-A diagnostic harness initially hardcoded an expected 9 segments and falsely failed when exact persisted narration produced 10. That assertion was removed because segment count is content-derived, not fixture-hardcoded.
+## 2026-09-03 — Short-video cross-topic failure exposes mathematical 0.34 conflict
 
-## 2026-09-03 — Short-video cross-topic failure exposes mathematical `0.34` conflict
+Accepted zipper job `227c8a50-ef1a-49e5-8d26-fdb40f663c83` initially failed semantic dry-run because its `15.480 s` voice permits one perceptual state for at most `5.2632 s` under the unchanged `0.34` share gate. Initial semantic groups `5.546 s`, `5.355 s`, `4.579 s` made the first two mathematically incapable of passing.
 
-Cross-topic real-provider testing on already accepted zipper job `227c8a50-ef1a-49e5-8d26-fdb40f663c83` initially failed `No valid semantic visual shot assignment at shot 1/3`.
-
-Exact cause was not provider shortage. Voice duration is `15.480 s`, so unchanged `0.34` permits one perceptual state for at most `5.2632 s`. Initial semantic groups were:
-
-- `5.546 s` = `35.83%`;
-- `5.355 s` = `34.59%`;
-- `4.579 s` = `29.58%`.
-
-The first two segments were mathematically incapable of passing `0.34` even with perfect distinct assets.
-
-Systemic correction: segmentation is now quality-constrained while remaining semantic and beat-boundary preserving:
+Systemic correction:
 
 `effective_max_segment_seconds = min(8.5, accepted_voice_duration * 0.34)`.
 
-A timed beat itself is never split just to make visuals pass; if one beat exceeds the effective cap, fail closed. Elapsed time still does not create extra shots. Segmenter version is now `semantic-visual-segments-v3`.
-
-Exact zipper regression now gives five semantic segments, each one shot, all below the unchanged `5.2632 s` cap. The UK/60 fixture remains nine segments/nine shots in the pure segmentation fixture because its quality cap is above the normal `8.5 s` semantic maximum.
+Boundaries remain existing timed-beat boundaries. A timed beat is never split just to pass visuals; if one beat exceeds the cap, fail closed. Elapsed time still does not create extra shots. Segmenter version became `semantic-visual-segments-v3`.
 
 ## 2026-09-03 — Quality-constrained semantic-v3 focused suite PASS
 
-After the correction, the focused/static suite PASSed:
+PASS included semantic segmentation, visual-shot quality including legal non-adjacent reuse, WF05 visual-segments contract, visual discovery compatibility, legacy visual-quality regression, WF04 Code-node runtime/global/perceptual/download regressions, rank-query contract, representation truth eligibility, Code-node compile `41` on Node v24.18.0, Studio inline JS compile and Code-node mode regression.
 
-- semantic segmentation: UK `9/9`, zipper five segments with cap `5.2632`, same-duration fixtures still produce different content-derived segment counts;
-- visual-shot quality-v3 PASS, including legal non-adjacent asset reuse;
-- WF05 visual-segments-v3 contract PASS;
-- visual discovery compatibility PASS;
-- legacy visual-quality-v2 regression PASS;
-- WF04 Code-node runtime-v3 PASS;
-- WF04 global assignment-v3 PASS;
-- WF04 perceptual assignment-v3 PASS;
-- WF04 download/store expansion-v3 PASS;
-- rank-query contract PASS at 200 chars;
-- representation relevance/truth-eligibility PASS;
-- Code-node compile `41` PASS on Node v24.18.0;
-- Studio inline JS compile PASS;
-- Code-node mode regression PASS.
+Runtime before/after remained exactly three project services; n8n/media HTTP 200 and PostgreSQL healthy.
 
-Runtime before/after remained exactly three project services, n8n/media HTTP 200 and PostgreSQL healthy.
+Diagnostic execution mistakes preserved:
 
-Diagnostic execution mistakes preserved because they could otherwise be misread as product failures:
-
-1. `docker exec ... node /project/tests/...` failed `MODULE_NOT_FOUND` because the repository is not mounted into the live n8n container.
-2. A disposable n8n image was started without overriding its entrypoint, so `node` was interpreted as an n8n command and returned `Command "node" not found`.
-3. First disposable real-provider harness mounted a mode-600 temp context file; container user got `EACCES`. Corrected to readable temp fixture.
+1. `docker exec ... node /project/tests/...` failed `MODULE_NOT_FOUND` because the repository is not mounted into live n8n.
+2. A disposable n8n image was started without overriding entrypoint, so `node` was interpreted as an n8n command.
+3. First disposable real-provider harness mounted a mode-600 temp context file and container user got `EACCES`; readable fixture corrected it.
 
 None was product/runtime evidence.
 
 ## 2026-09-03 — Real-provider cross-topic semantic-v3 gate PASS
 
-Reusable local harness `tests/semantic_visual_real_provider_dry_run.mjs` replays exact persisted contexts read-only through local discovery, current local WF04 Code nodes, real Wikimedia/Pixabay/Pexels and the existing local SigLIP endpoint.
+Reusable harness `tests/semantic_visual_real_provider_dry_run.mjs` replayed exact persisted contexts read-only through local discovery, current local WF04 Code nodes, real Wikimedia/Pixabay/Pexels and local SigLIP.
 
 PASS cases:
 
-1. accepted zipper `227c8a50-ef1a-49e5-8d26-fdb40f663c83`: `15.480 s`, six timed beats -> five segments/shots; cap `5.2632`; max shot `4.579`; clusters 5/required 3; adjacent 0; max occurrence 1; max share `0.2958`; providers Pexels + Wikimedia; provider errors 0.
-2. accepted induction `2c182ff8-ea9f-4ddf-a417-b49f796d23f5`: `13.944 s`, six beats -> four segments/shots; cap `4.741`; max shot `4.705`; clusters 4/required 2; adjacent 0; max occurrence 1; max share `0.3374`; providers Wikimedia; provider errors 0.
-3. failed old-visual UK induction `4372be34-c417-415f-92f6-63481b3b5686` used read-only as factual/timing fixture: `57.216 s`, 18 beats -> 10 segments/shots; effective cap `8.5`; max shot `7.278`; clusters 9/required 5; adjacent 0; max occurrence 2; max share `0.245`; providers Pexels + Pixabay + Wikimedia; provider errors 0.
+1. zipper `227c8a50-ef1a-49e5-8d26-fdb40f663c83`: `15.480 s`, six beats -> five shots, clusters 5/required 3, max share `0.2958`;
+2. EN induction `2c182ff8-ea9f-4ddf-a417-b49f796d23f5`: `13.944 s`, six beats -> four shots, clusters 4/required 2, max share `0.3374`;
+3. UK induction fixture `4372be34-c417-415f-92f6-63481b3b5686`: `57.216 s`, 18 beats -> 10 shots, clusters 9/required 5, max occurrence 2, max share `0.245`.
 
-No retry, threshold weakening, topic hack, candidate-pool inflation or production write occurred.
+Provider errors 0 in all three. No retry, threshold weakening, topic hack, candidate-pool inflation or production write occurred.
 
-## 2026-09-03 — Disposable render-v3 long-semantic-shot proof
+## 2026-09-03 — Disposable render-v3 proof
 
-A disposable image built from current local media-worker code was tested with a temporary DATA_ROOT and did not replace production.
+First synthetic attempt used flat solid-color images. Average-hash perceptual identity collapsed some flat colors; `/render-v3` correctly returned 422. This was an invalid synthetic fixture, not product evidence.
 
-First synthetic attempt used flat solid-color images. Average-hash perceptual identity is primarily spatial/luminance-pattern based, so some flat colors collapsed into the same rendered state. `/render-v3` correctly returned 422: `Rendered shot states failed: states=3/2, adjacent=1, max_occurrence=2, max_share=0.5`. This was an invalid synthetic fixture, not product evidence.
-
-The corrected fixture used four spatially distinct black/white patterns, a `24 s` WAV, six subtitle beats and four visual shots of exactly `6 s` each.
-
-HTTP 200 PASS:
-
-- H.264/yuv420p 1080x1920;
-- AAC 48 kHz stereo;
-- container/video/audio duration `24 s`;
-- four 6-second shot timings accepted;
-- pre-render clusters 4/required 2, adjacent 0, max share `0.25`;
-- `max_shot_duration_seconds=6`, proving there is no artificial 5-second shot-duration gate;
-- rendered states 4/required 2, adjacent 0, rendered max share `0.25`;
-- output bytes `702968`;
-- production service count remained exactly three before/after.
+Corrected fixture used four spatially distinct black/white patterns, 24-second WAV, six subtitle beats and four 6-second visual shots. HTTP 200 PASS: H.264/yuv420p 1080x1920, AAC 48 kHz stereo, all streams 24 s, pre-render clusters 4/required 2, adjacent 0, max share `0.25`, post-render states 4/required 2, adjacent 0, max share `0.25`. This also proved no artificial 5-second shot gate.
 
 ## 2026-09-03 — Semantic design documentation aligned
 
-`docs/VISUAL_SEGMENTATION_DESIGN.md` was updated to the proven contract in commit `61cfb69f4f821154cc5a47f72b8c0634b250f74c`:
+`docs/VISUAL_SEGMENTATION_DESIGN.md` aligned to the proven contract in commit `61cfb69f4f821154cc5a47f72b8c0634b250f74c`.
 
-- one shot per semantic segment by default;
-- additional shot only for deterministic semantic/representation transition;
-- quality-constrained semantic maximum `min(8.5, T*0.34)` on existing timed-beat boundaries;
-- no hard 5-second shot-duration rule;
-- asset-file uniqueness is not product-visible diversity;
-- perceptual adjacency/occurrence/duration-share and post-render state gates remain authoritative.
+`docs/ARCHITECTURE.md` aligned in commit `b71ce862a606b1010625912c4ba07b8f600d8b56` to remove obsolete `one visual per timed beat` semantics and document independent timed-beat/semantic-segment/visual-shot timelines.
 
-## Current deployment boundary
+`docs/CURRENT_STATE.md` predeploy alignment commit was `f0f80836a6666b83502f6b74163936ff1a83ad85`.
 
-Semantic-v3 is **not deployed yet**. Migration 015 is not live; WF04/WF05 semantic versions are not published; production media-worker has not been replaced. Production remains on the existing visual-quality-v2 deployment with WF02 multilingual fix. M8 remains `2/10`.
-
-Before deployment:
-
-1. synchronize all semantic-v3 implementation/tests/migration to GitHub branch `rebuild/semantic-visual-segments` while preserving the documented branch divergence;
-2. prove GitHub/local code equality;
-3. take a bounded rollback snapshot of current live WF04/WF05/media-worker/DB state;
-4. apply migration 015 and deploy only the intended semantic visual components;
-5. verify live equality and exactly three healthy services;
-6. create a completely fresh RU-topic -> UK/60 production job; never reuse `4372be34...`, `85fcc63b...` or `e1399581...`;
-7. require exactly one Edge call, semantic-v3 machine gates, ffprobe and `review_ready`;
-8. require user to watch the exact fresh video before changing M8 accepted count.
+Documentation correction: a later history transcription accidentally wrote this commit as `f0f80836a666b1010625912c4ba07b8f600d8b56`. That string was wrong and is explicitly corrected here; do not use it as a repository fact.
 
 ## 2026-09-03 — Semantic-v3 implementation synchronized to GitHub
 
-The clean local rebuild is at `2405d0431ff2007b52825b273267d07fad9f68ce` (`redesign: separate semantic visual segments from timed beats`) on `rebuild/semantic-visual-segments-local`. No force push or history rewrite was used.
+Clean local rebuild implementation: `2405d0431ff2007b52825b273267d07fad9f68ce` (`redesign: separate semantic visual segments from timed beats`) on `rebuild/semantic-visual-segments-local`.
 
-GitHub branch `rebuild/semantic-visual-segments` was completed through connector writes while preserving the remote documentation history. Material sync commits in this continuation include:
+GitHub branch `rebuild/semantic-visual-segments` received the complete implementation/migration/test set without force push/history rewrite. Material connector commits included `62fef928...` visual quality, `c62fd625...` WF05, `bc1f6515...` WF04 and `602ab214...` media-worker server.
 
-- `62fef92819b6093ec0f876e112ff44752feb9f8e` — align `visual-quality.mjs` with the local semantic-v3 evaluator;
-- `c62fd62591db6c9594066fb82881da049437a7ce` — add semantic-v3 WF05;
-- `bc1f6515eab5fc449af5b4ef6500530caca52232` — add semantic-v3 WF04;
-- `602ab214035a051e41a47394d0b0db31b6e5cc1e` — add semantic-v3 `media-worker/server.mjs`.
-
-Cross-check of all 17 semantic-v3 implementation/migration/test files against local `2405d04` found 16 exact Git blob matches. `services/media-worker/src/server.mjs` differs only by the final newline at EOF: remote blob `5898e7fb53c9c054e62c2cde0b4202be88efd2ba`; appending one `LF` to the remote bytes produces the exact local blob `a07fb3396602a0923fa081c022cd3739f6076caf`. `diff -u` reports no source-code difference beyond `No newline at end of file`.
-
-This EOF normalization difference is not a semantic implementation difference and must not be mistaken for a code divergence. Production was not changed by this GitHub synchronization. Fresh runtime inspection still showed n8n `/healthz` OK and media-worker `/health` OK on its actual bound port `3001`.
-
-Next boundary remains pre-deploy documentation alignment and bounded deployment gates; no fresh production job is allowed before those gates and rollback proof are complete.
-
-## 2026-09-03 — Semantic-v3 source-of-truth documentation aligned
-
-`docs/ARCHITECTURE.md` was updated in commit `b71ce862a606b1010625912c4ba07b8f600d8b56` to remove the obsolete `one visual per timed beat` contract and document the proven semantic-v3 architecture: timed beats remain subtitle/voice transport units; semantic visual segments are independent meaning-based visual obligations; visual shots have their own contiguous timeline; render-v3 validates actual post-render visual states.
-
-`docs/CURRENT_STATE.md` was updated in commit `f0f80836a666b1010625912c4ba07b8f600d8b56` and now makes the deployment boundary explicit:
-
-- clean local semantic-v3 implementation HEAD is `2405d04`;
-- GitHub implementation synchronization is complete modulo the proven EOF newline normalization in `server.mjs`;
-- semantic-v3 is not deployed yet;
-- migration 015 is not live;
-- production WF04/WF05/media-worker still use the old visual-quality-v2 path;
-- M8 remains `2/10` human-accepted;
-- no fresh M8 production job may start before pre-deploy proof and a bounded rollback snapshot.
-
-Fresh runtime inspection after the documentation writes still returned n8n health OK, media-worker health OK and a clean rebuild worktree. The next boundary is pre-deploy diff/migration proof; no architecture rewrite is justified by current evidence.
+Cross-check of 17 semantic-v3 files: 16 exact Git blob matches. `server.mjs` differed only by final EOF newline; adding one LF to remote bytes yields exact local Git blob `a07fb3396602a0923fa081c022cd3739f6076caf`. `diff -u` reported no code difference beyond missing final newline.
 
 ## 2026-09-03 — Pre-deploy diff and migration 015 disposable proof
 
-Full local diff review from production-code base `e4e856093fa237dab9daaa56dcf443c3b6155f93` to semantic-v3 `2405d0431ff2007b52825b273267d07fad9f68ce` found exactly the expected 17 semantic-v3 files. `git diff --check` returned 0. No `compose.yaml`, WF02 or WF03 changes are present in this implementation diff.
+Full diff from production-code base `e4e856093fa237dab9daaa56dcf443c3b6155f93` to semantic-v3 `2405d0431ff2007b52825b273267d07fad9f68ce` contained exactly the expected 17 semantic-v3 files. `git diff --check` returned 0. No compose/WF02/WF03 changes.
 
-Migration `db/migrations/015_visual_segments.sql` was then tested against a disposable `postgres:18-alpine` container; production DB was not mutated.
+Migration 015 disposable PostgreSQL 18 proof PASS: apply succeeded; second application succeeded; all three tables existed; valid job -> segment -> asset -> shot insert succeeded; job deletion cascaded segments/shots while reusable library asset remained; invalid `planned_shot_count=3` was rejected.
 
-The first disposable harness produced `psql: connection ... /var/run/postgresql/.s.PGSQL.5432 failed`. This was a diagnostic harness race, not a migration failure: the Unix-socket readiness probe could succeed against PostgreSQL's temporary init server, after which the entrypoint shuts that server down before starting the final TCP listener. The corrected harness waits for `pg_isready -h 127.0.0.1`, which cannot succeed against that temporary socket-only init server.
-
-Corrected disposable proof PASS:
-
-- migration 015 applied successfully;
-- second application also completed successfully; `CREATE TABLE/INDEX IF NOT EXISTS` operations skipped existing objects as intended;
-- `visual_segments`, `visual_shots`, `media_library_assets` all exist;
-- 11 indexes were present across the three tables;
-- valid job -> segment -> library asset -> shot insertion succeeded;
-- deleting the job cascaded `visual_segments=0` and `visual_shots=0` while the reusable `media_library_assets` row remained `1`;
-- invalid `planned_shot_count=3` was rejected with nonzero psql exit as required by the `BETWEEN 1 AND 2` constraint;
-- disposable container was removed afterward;
-- production project container count remained exactly three: media-worker, n8n, postgres;
-- n8n and media-worker health remained OK.
-
-This closes the missing migration 015 disposable proof. The next production boundary is the bounded rollback snapshot; no production mutation has occurred yet.
+First disposable harness socket failure was a readiness race against PostgreSQL's temporary init server; corrected harness waited for TCP `127.0.0.1`. Not a migration failure.
 
 ## 2026-09-03 — Bounded pre-semantic-v3 rollback snapshot complete
 
-Rollback snapshot created at `/opt/ai-short-form-content-factory/rollback/20260903T134851Z-pre-semantic-v3` before any semantic-v3 production mutation.
+Snapshot `/opt/ai-short-form-content-factory/rollback/20260903T134851Z-pre-semantic-v3` was created before semantic production mutation and SHA256-verified. It contains predeploy live published WF04/WF05, filesystem WF04/WF05, media-worker source/build inputs, compose, PostgreSQL schema-only dump/predeploy relation state, runtime image IDs and health metadata.
 
-Snapshot contains and SHA256-verifies:
+Predeploy media-worker image `sha256:4009376d074a271aced92aa0cde159ee46bb445af6998580e088a5d23137413d` tagged `ai-short-form-content-factory-media-worker:rollback-20260903T134851Z`.
 
-- live published WF04 and WF05 exports;
-- current production filesystem WF04/WF05 exports;
-- current production media-worker Dockerfile, package manifests and complete source directory;
-- `compose.yaml`;
-- PostgreSQL schema-only dump;
-- predeploy DB state showing `visual_segments`, `visual_shots`, and `media_library_assets` all absent;
-- runtime image IDs and health metadata.
-
-The pre-deploy media-worker image `sha256:4009376d074a271aced92aa0cde159ee46bb445af6998580e088a5d23137413d` was additionally tagged locally as `ai-short-form-content-factory-media-worker:rollback-20260903T134851Z` for direct rollback.
-
-Snapshot verification passed for every file in `SHA256SUMS`. At snapshot time n8n and media-worker health were OK and PostgreSQL remained healthy.
-
-Diagnostic notes: an initial direct Docker read through SentinelX failed on `/var/run/docker.sock` permissions; the allowed `sudo docker` path immediately proved the containers healthy. Two early snapshot-completion shell commands then stopped on quoting errors before any production mutation; the final structured script completed the same snapshot and verified all files. These were diagnostic/orchestration errors, not product failures.
-
-The rollback requirement is now satisfied. The next allowed step is production migration 015, followed by bounded media-worker and WF04/WF05 deployment with live equality checks before any fresh M8 job.
+Diagnostic notes: non-sudo Docker access through SentinelX failed on socket permission; allowed sudo path worked. Two snapshot shell quoting attempts stopped before product mutation; final structured script completed and verified the snapshot.
 
 ## 2026-09-03 — Production migration 015 + semantic-v3 media-worker deploy PASS
 
-Immediately before mutation, n8n had zero running/new/waiting executions. The application database still contained older stale nonterminal job rows from August 25–28, but none corresponded to a live n8n execution; they were not treated as in-flight deployment work.
+Immediately before mutation, n8n had zero running/new/waiting executions. Older August stale nonterminal application rows existed but had no live n8n execution.
 
-The exact seven proven semantic-v3 runtime files were staged from clean local `2405d0431ff2007b52825b273267d07fad9f68ce` into production and byte-compared before use:
+Seven exact runtime files were staged from clean local `2405d04` and byte-compared before use: migration 015, four semantic media-worker sources, WF04 and WF05.
 
-- `db/migrations/015_visual_segments.sql`;
-- `services/media-worker/src/server.mjs`;
-- `services/media-worker/src/visual-discovery.mjs`;
-- `services/media-worker/src/visual-quality.mjs`;
-- `services/media-worker/src/visual-segmentation.mjs`;
-- `n8n/workflows/WF04-visual-sourcing.json`;
-- `n8n/workflows/WF05-video-render.json`.
+Migration 015 applied transactionally with `ON_ERROR_STOP=1`. Live PostgreSQL resolved all three new semantic relations.
 
-All seven staged files matched the clean local source. Migration 015 applied transactionally with `ON_ERROR_STOP=1`; live PostgreSQL then resolved all three new relations: `visual_segments`, `visual_shots`, and `media_library_assets`.
-
-`docker compose build media-worker` succeeded before replacement. Only `media-worker` was recreated with `docker compose up -d --no-deps media-worker`; n8n and PostgreSQL were not recreated. New media-worker health returned `status=ok`, local SigLIP `Xenova/siglip-base-patch16-224`, and `preview_fetch_attempts=1`. Exactly the three project containers remained running.
-
-WF04/WF05 were deliberately not imported in this phase. The next independent step is to import and explicitly publish only WF04 and WF05, restart n8n once, then prove published workflow behavior equals the staged semantic-v3 sources before creating any new job.
+`docker compose build media-worker` succeeded before replacement. Only media-worker was recreated with `docker compose up -d --no-deps media-worker`; n8n/postgres were not recreated. New media-worker health PASS with local SigLIP and one preview attempt. Three project containers remained.
 
 ## 2026-09-03 — Semantic-v3 WF04/WF05 production deploy PASS
 
-The first workflow import attempt used `n8n import:workflow --activeState=fromJson`. n8n 2.33.3 rejected that option in this regular deployment mode because `--activeState=fromJson` is supported only in queue or multi-main mode. Published WF04/WF05 hashes were immediately re-exported and matched the pre-deploy rollback snapshot exactly, proving that failed attempt was a no-op for published workflows. This was a deployment-tooling error, not a product failure.
+First workflow import attempt used `--activeState=fromJson`; n8n 2.33.3 rejected it because regular mode does not support that flag. Immediate published re-export hashes matched the rollback snapshot, proving no published workflow mutation. Deployment-tooling error only.
 
-Correct regular-mode deployment used `import:workflow` without `--activeState`, followed immediately by explicit `publish:workflow --id=...` for each workflow. Both WF04 and WF05 imported and published successfully. The cleanup of root-owned `/tmp` import files initially returned `Operation not permitted`; import/publish had already succeeded, and cleanup was corrected with root inside the container. No n8n restart had occurred before that cleanup failure.
+Correct regular-mode path: `import:workflow` without activeState, then explicit `publish:workflow --id=...` for each workflow. Both imported/published successfully. Cleanup of root-owned temporary files initially failed but was corrected with root; n8n had not restarted yet.
 
-After both publishes, n8n was restarted exactly once as required by the CLI. Post-restart proof:
+After both publishes, n8n restarted exactly once. Post-restart proof:
 
-- n8n `/healthz` returned OK;
-- WF04 live published active=true, 27 nodes; canonical behavior core SHA-256 source/live both `b6b08f21e0fe58b6661f7413e3389834b92c6142f65831a3afcae526a31b53ed`;
-- WF05 live published active=true, 16 nodes; canonical behavior core SHA-256 source/live both `c5595719c63eecb2680c10dbe6a63e45bb7bc4f6d12308c3b62f5f2953f9a117`;
-- workflow DB rows are active and each `versionId` equals `activeVersionId`;
-- current WF04 active version `12e0857b-3c3c-4640-b7f1-2861050038f1`;
-- current WF05 active version `ae9d00c2-bd65-4d3f-a8f5-ec0bcf840a12`;
-- all four semantic-v3 media-worker source files match byte-for-byte between production host source and running `/app/src` container source;
-- migration 015 relations all exist;
-- PostgreSQL remains healthy;
-- exactly `media-worker`, `n8n`, and `postgres` remain the three project containers;
-- media-worker `/health` remains OK with local SigLIP and one preview fetch attempt.
+- n8n health OK;
+- WF04 active=true, 27 nodes; source/live canonical core SHA both `b6b08f21e0fe58b6661f7413e3389834b92c6142f65831a3afcae526a31b53ed`;
+- WF05 active=true, 16 nodes; source/live canonical core SHA both `c5595719c63eecb2680c10dbe6a63e45bb7bc4f6d12308c3b62f5f2953f9a117`;
+- WF04 `versionId=activeVersionId=12e0857b-3c3c-4640-b7f1-2861050038f1`;
+- WF05 `versionId=activeVersionId=ae9d00c2-bd65-4d3f-a8f5-ec0bcf840a12`;
+- all four semantic media-worker source files match running container source byte-for-byte;
+- migration 015 relations exist;
+- PostgreSQL healthy;
+- exactly three project containers;
+- media-worker health OK with local SigLIP and one preview attempt.
 
-Semantic-v3 is therefore fully deployed. The next allowed action is one completely fresh `как работает индукционная плита / uk / 60` production job; do not reuse any consumed-Edge fixture, and do not increment M8 until the user reviews the exact new video.
+Semantic-v3 became fully deployed.
+
+## 2026-09-03 — CURRENT_STATE updated to live deployed boundary
+
+`docs/CURRENT_STATE.md` was updated in commit `6feae37a56fe121a514b15acf5affc1eccb813b4` to replace the stale predeploy boundary with the actual live semantic-v3 state, rollback location, workflow versions/core hashes, migration 015 status and the next fresh-production acceptance action. The incorrect historical CURRENT_STATE hash transcription is explicitly identified there as well.
+
+## Current M8 state / next action
+
+M8 remains `2/10` human-accepted. Never increment from machine-only evidence.
+
+Next job must be completely fresh:
+
+- topic `как работает индукционная плита`;
+- output language `uk`;
+- target duration `60`.
+
+Never reuse consumed-Edge jobs `4372be34-c417-415f-92f6-63481b3b5686`, `85fcc63b-b89b-40d0-b253-6383b715f105`, or `e1399581-305b-4341-910e-b9477a04f499`.
+
+Require full machine proof through `review_ready`, exactly one Edge synthesis, measured duration, timed-beat coverage, semantic visual segments/shots, truthful eligibility, SigLIP/perceptual gates, render-v3 post-render state gate and ffprobe. First real product failure stops progression and is fixed systemically. If machine PASS, user must watch the exact fresh video before PRODUCT PASS or M8 count changes.
