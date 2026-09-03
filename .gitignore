@@ -13,3 +13,7 @@ media/
 
 # n8n local exports that may contain runtime metadata
 *.credentials.json
+
+# Remotion/webpack runtime caches
+.cache/
+.remotion/
