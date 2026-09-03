@@ -71,7 +71,7 @@ Each semantic scene owns:
 - optional `on_screen_text`
 - `shots[]`
 
-`shots[]` is the editing layer inside a semantic scene. A semantic scene is not synonymous with one asset. A scene may contain several short shots, inserts, crop-safe portrait clips, diagram beats, text beats or collage beats aligned to the narration.
+`shots[]` is the editing layer inside a semantic scene. A semantic scene is not synonymous with one asset. A scene may contain several short shots, inserts, crop-safe portrait clips, diagram beats, text beats, collage beats or motion graphics aligned to the narration.
 
 The semantic director must output natural speech, not source prose copied verbatim.
 
@@ -119,11 +119,15 @@ The product is a TikTok/Shorts/Reels-style vertical short, not a narrated slides
 Required editing behavior:
 
 - one semantic scene may contain multiple shots;
-- visual state should change frequently enough to maintain short-form pacing rather than leaving one still image on screen for an entire sentence or paragraph;
-- the hook must contain immediate visual activity, not a static title card;
+- visual state changes frequently enough to maintain short-form pacing rather than leaving one still image on screen for an entire sentence or paragraph;
+- the hook contains immediate visual activity, not a static title card;
 - use real portrait footage/photos, close-ups, cutaways, diagram beats, text beats, collage beats and motion graphics as appropriate;
+- dynamic video/motion is the primary visual language; still images are supporting beats rather than the dominant format;
 - kinetic captions and on-screen emphasis may reinforce narration but must not dominate the visual field;
-- no full-screen landscape photograph as a normal TikTok photo shot.
+- no full-screen landscape photograph as a normal TikTok photo shot;
+- important subjects, captions and overlays stay inside a TikTok-safe content area so platform UI does not cover the message.
+
+TikTok's own current creative guidance reinforces these product rules: frame content vertically at 9:16, use vertical-by-nature imagery, keep key information inside the UI safe zone and avoid relying on static imagery as the primary experience. These external rules guide product behavior; they are not substitutes for human review.
 
 ### Portrait media rule
 
@@ -139,6 +143,19 @@ If the only truthful exact asset is landscape/widescreen:
 - otherwise obtain a portrait alternative.
 
 This is a product representation rule, not a topic-specific threshold.
+
+### Safe-zone rule
+
+The renderer must expose safe-zone controls rather than hard-code one layout for every aspect ratio.
+
+For vertical TikTok review renders:
+
+- captions must be movable upward from the physical bottom edge;
+- caption width must be bounded so text does not sit under the right-side interaction controls;
+- important overlay text and focal subjects must not depend on screen areas normally occupied by platform UI;
+- safe-zone settings belong to the renderer/profile, not to individual topics.
+
+Do not certify a video as TikTok-ready merely because the encoded canvas is 1080x1920.
 
 ## 6. Visual modes instead of one stock lane
 
@@ -194,6 +211,7 @@ Renderer input is a shot timeline, not a one-scene/one-asset slideshow.
 
 - word-level captions from actual audio alignment;
 - readable short-form caption style;
+- caption placement respects the vertical platform safe zone;
 - optional music/SFX only after narration/visual quality is solved;
 - automatic ducking if music is enabled;
 - no audio speed fitting.
@@ -235,7 +253,8 @@ Do not carry these semantic-v3 concepts into the new core unless separately just
 - elaborate perceptual thresholds before basic relevance is proven;
 - machine `review_ready` as evidence of content quality;
 - one semantic scene = one visual asset;
-- widescreen stills used as ordinary full-screen TikTok photo shots.
+- widescreen stills used as ordinary full-screen TikTok photo shots;
+- hard-coded caption placement that ignores vertical platform UI.
 
 ## 13. Cost / provider boundary
 
@@ -254,9 +273,10 @@ Do not repeat the old mistake of forcing a weak model onto the 2 vCPU / 3.7 GiB 
 5. Generate one continuous voice and transcribe the actual audio for timing.
 6. Implement the visual-mode router with `diagram` and `stock/exact` paths.
 7. Enforce portrait-first media for normal full-screen shots and route landscape evidence into diagram/card/collage modes.
-8. Produce a multi-shot 9:16 prototype with short-form pacing and inspect it manually.
-9. Fix only product-level defects until the prototype is HUMAN PASS.
-10. Repeat on at least three materially different topics/languages.
-11. Only then design the minimal DB/n8n orchestration around the proven artifact contracts.
+8. Enforce renderer-level vertical safe-zone controls for captions/important overlays.
+9. Produce a multi-shot 9:16 prototype with short-form pacing and inspect it manually.
+10. Fix only product-level defects until the prototype is HUMAN PASS.
+11. Repeat on at least three materially different topics/languages.
+12. Only then design the minimal DB/n8n orchestration around the proven artifact contracts.
 
 No production deploy is allowed before the direct prototype is human-approved.
