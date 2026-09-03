@@ -63,9 +63,9 @@ Systemic retrieval contract:
 - discovery query uses at most first two meaningful subject-leading tokens;
 - bounded probes exactly EN/PL/RU/UK, requested language first;
 - one Wikipedia request per probe; old `retryOnFail=2` removed;
-- request `langlinks` to target language;
+- requests include `langlinks` to target language;
 - failed probes contribute no pages; complete lack of title-supported pages fails closed;
-- cross-language source requires official Wikipedia language link into requested language;
+- cross-language source requires official Wikipedia language link into target language;
 - no topic mapping, generative translation, retry loop, provider cascade, bypass or threshold weakening.
 
 Evidence/narration correction:
@@ -87,38 +87,47 @@ Real Wikipedia final proof:
 - PL popcorn 15 s -> `15.079 s`, safe;
 - EN induction 15 s -> `14.939 s`, safe and direct alternating-magnetic-field mechanism selected.
 
-WF02 tests: seven new regressions PASS; Code compile 8/8. Legacy proof: staged pipeline PASS; retained Edge audit 150/40 safe/0 false-safe; CASE1 staged provenance PASS; CASE1 visual eligibility PASS; unchanged duration operating bands PASS.
+WF02 tests: seven new regressions PASS; Code compile 8/8. Legacy proof: staged pipeline PASS; retained duration audit 150/40 safe/0 false-safe; CASE1 staged provenance PASS; CASE1 visual eligibility PASS; unchanged duration operating bands PASS.
 
 Diagnostic harness mistake: first CASE1 visual invocation passed `-e never` as Node input and produced `ReferenceError`; invalid harness result. Correct invocation passed.
 
 Semantic diff preserved 17 nodes/settings/meta/node names; functional changes limited to `Prepare Fact Searches`, `Search Wikipedia Facts`, `Prepare Full Fact Sources`, `Build Fact Brief`, `Build Deterministic Narration`. Search node no longer retries; bounded aggregation ends in fail-closed source validation.
 
-## 2026-09-03 — WF02 fix selectively committed
+## 2026-09-03 — WF02 fix selectively committed and deployed
 
 Commit `e4e856093fa237dab9daaa56dcf443c3b6155f93` — `fix: make factual retrieval multilingual and explanation-aware`.
 
-Commit contains exactly WF02 plus seven WF02 regression files. `git diff --cached --check` passed; no unrelated files staged; worktree clean.
+Commit contains exactly WF02 plus seven WF02 regression files; staging/check passed and worktree was clean.
 
-## 2026-09-03 — WF02 bounded rollback and production deploy PASS
+Rollback snapshot: `/opt/ai-short-form-content-factory/rollback/20260903T055250Z-pre-wf02-multilingual`.
 
-Rollback snapshot before mutation:
+WF02-only deploy proof:
 
-`/opt/ai-short-form-content-factory/rollback/20260903T055250Z-pre-wf02-multilingual`
-
-Snapshot contains authoritative live pre-deploy WF02 export, production WF02 file, runtime metadata and SHA256 checksums; checksum verification PASS; `.env`/secret values were not copied.
-
-WF02-only deployment:
-
-- exact workflow file materialized from commit `e4e856093fa237dab9daaa56dcf443c3b6155f93` and byte-copied to production;
-- imported workflow ID `TJfA4ZYUEKSTad6k` and published current version;
-- n8n CLI explicitly reported that a restart was needed for changes to take effect;
+- exact committed file copied to production;
+- workflow `TJfA4ZYUEKSTad6k` imported/published;
 - n8n restarted exactly once;
-- post-restart `/healthz` HTTP 200;
-- expected/live canonical WF02 core SHA-256 both `0f5893ffba59b23d181c363b26b991450e3fc016a52016e1ec686797dbfe23c1`;
-- live workflow active, 17 nodes;
-- live `Search Wikipedia Facts`: `retryOnFail=None`, `maxTries=None`, `onError=continueRegularOutput` for bounded probe aggregation;
-- exactly `media-worker`, `n8n`, `postgres` remain running;
-- PostgreSQL healthy;
+- health HTTP 200;
+- expected/live core SHA both `0f5893ffba59b23d181c363b26b991450e3fc016a52016e1ec686797dbfe23c1`;
+- live active with 17 nodes, no retry/maxTries;
+- three services remain running, PostgreSQL healthy;
 - rebuild HEAD `e4e856093fa237dab9daaa56dcf443c3b6155f93`, worktree clean.
 
-Next independent proof: create a completely fresh production `как работает индукционная плита / uk / 60` job through the normal intake path, never reuse old failed jobs, require one Edge synthesis + full visual/render proof, then human review. After that, run fresh PL popcorn as M8 #3.
+## 2026-09-03 — Fresh cross-language UK/60 production job reached visuals and failed sequence assignment
+
+Fresh job was created through the real WF01 intake route `/webhook/jobs`, equivalent to Studio `POST /api/jobs` after Caddy rewrite:
+
+- job `4372be34-c417-415f-92f6-63481b3b5686`;
+- topic `как работает индукционная плита`;
+- output language `uk`;
+- target duration `60`;
+- intake returned HTTP 201.
+
+Observed production state progression:
+
+- job reached `processing|visuals`, proving the prior WF02 script-retrieval blocker was passed in production;
+- after about 100 seconds it failed at `visuals`;
+- exact error: `perceptually unique truth-eligible assignment 11/12 [line 15]`;
+- final state `failed|visuals`;
+- runtime remained exactly `media-worker`, `n8n`, `postgres`; PostgreSQL healthy; n8n health 200.
+
+This job must never be retried/reused because it already passed upstream voice processing and may have consumed the one allowed Edge synthesis. The failure is currently recorded as an unresolved general 60-second visual-assignment defect; root cause is not yet claimed. M8 progression remains stopped until exact WF04 execution/scene/candidate evidence identifies and fixes the systemic cause without weakening visual gates.
