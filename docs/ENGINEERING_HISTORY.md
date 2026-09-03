@@ -113,13 +113,51 @@ Correct runtime test executed inside the existing n8n container because host Nod
 
 This proves the failed 57.216 s fixture becomes 9 semantic search segments rather than 18 independent search obligations, while preserving gapless full-duration coverage; same-duration 15 s fixtures can produce different segment counts from content, proving segment count is not duration-hardcoded.
 
-## 2026-09-03 — visual-quality-v3 work and one invalid regression assertion
+## 2026-09-03 — visual-quality-v3 work and invalid regression assertions
 
-Local-only work then extended visual discovery to segmented mode and added a separate `visual-segments-v3` shot-sequence evaluator while preserving legacy v2.
+Local-only work extended visual discovery to segmented mode and added a separate `visual-segments-v3` shot-sequence evaluator while preserving legacy v2.
 
-The first combined regression run produced:
+Three test-only defects were exposed and corrected before accepting the regression gate:
 
-- semantic segmentation regression PASS;
-- `visual_shot_quality_regression.mjs` FAIL because the test itself incorrectly expected `evaluateVisualShotSequence()` to throw on adjacent duplicates. The evaluator is designed to return `pass=false` for that valid-but-rejected sequence rather than throw. This is a diagnostic/test assertion defect, not a product/runtime failure. The incorrect assertion must be removed before any quality result is accepted.
+- the first `visual_shot_quality_regression.mjs` incorrectly expected `evaluateVisualShotSequence()` to throw on an adjacent duplicate; the evaluator intentionally returns `pass=false` for a structurally valid but rejected sequence;
+- an initial `wf04_assignment_regression.mjs` 10-second fixture had a single 4-second shot, which by construction exceeded the unchanged `0.34` cluster-duration share even when every asset/cluster was unique; the fixture was corrected to a 12-second / three-4-second-shot case rather than weakening the gate;
+- an initial `wf04_perceptual_assignment_regression.mjs` offered only three perceptual states for four equal-duration shots. Under the unchanged `0.34` duration-share rule no state could legally occur twice, making the declared PASS fixture mathematically impossible; a fourth genuinely distinct candidate cluster was added to the fixture.
 
-Production was not mutated during any of this work. At this checkpoint exactly three project containers remain running, n8n health is 200 and media-worker health is 200.
+None of these failures were production failures and no acceptance threshold was changed.
+
+## 2026-09-03 — Semantic visual v3 focused regression gate PASS
+
+WF04 and WF05 were locally rewritten around separate semantic visual segments and shot timelines. Production was not mutated.
+
+Current local contract:
+
+- timed `scenes` remain subtitle/timing beats and stay `timed`;
+- WF04 derives semantic `visual_segments`, ranks truth-eligible provider candidates per segment and assigns one or two actual `visual_shots`;
+- shot assignment uses bounded global beam search, globally unique asset IDs, no adjacent perceptual duplicate, max perceptual-cluster occurrence 2, max perceptual-cluster duration share `0.34`, and max shot duration 5 seconds;
+- migration 015 persists `visual_segments`, `visual_shots`, and `media_library_assets`;
+- media-worker adds `/visual/store-shot` and `/render-v3` while retaining legacy routes;
+- WF05 reads two independent timelines: timed beats for subtitles and visual shots for the video track;
+- render-v3 independently checks pre-render shot identity/timing/diversity and post-render midpoint-frame perceptual state diversity.
+
+A real Code-node mode defect was also caught by `code_node_mode_regression.py`: `Require Visual Completion` was configured `runOnceForEachItem` while using `$input.first()`. The implementation was corrected to use `$json` in per-item mode; the mode gate then passed.
+
+Focused/static suite now PASS in the existing n8n container (Node v24.18.0):
+
+- semantic segmentation regression PASS, including actual UK/60 57.216 s fixture -> 9 segments / 17 planned shots;
+- visual-shot-quality-v3 PASS;
+- WF05 visual-segments-v3 structural contract PASS (`/render-v3`);
+- visual discovery compatibility PASS;
+- legacy visual-quality-v2 regression remains PASS;
+- WF04 Code-node runtime-v3 PASS;
+- WF04 global assignment-v3 PASS;
+- WF04 perceptual assignment-v3 PASS;
+- WF04 download/store expansion-v3 PASS;
+- rank-query contract PASS at 200 chars;
+- representation relevance/truth-eligibility PASS;
+- Code-node compile `41` PASS;
+- Studio inline JS compile PASS;
+- Code-node mode regression PASS.
+
+Fresh runtime during the gate remained exactly three project containers; n8n `/healthz` 200, media-worker `/health` 200, PostgreSQL healthy. No migration, workflow publish, container recreate, or production job was performed.
+
+Exact next stage: transactionally validate migration 015 and build/run a disposable semantic-v3 media-worker/render integration without replacing production. Only after database/render/cross-topic real-provider dry-runs pass may the implementation be synchronized to GitHub, snapshotted and deployed.
