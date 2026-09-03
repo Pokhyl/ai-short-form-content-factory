@@ -43,7 +43,7 @@ Systemic contract: preserve full factual tokens for relevance validation; bounde
 
 Real-Wikipedia proof: RU-topic -> UK induction `60.106 s`; UK refrigerator `59.975 s`; PL popcorn `15.079 s`; EN induction `14.939 s`, all pre-TTS safe. Seven regressions PASS; WF02 Code compile 8/8; staged pipeline PASS; retained duration audit 150 rows / 40 safe / 0 false-safe; CASE1 provenance and visual eligibility PASS.
 
-Diagnostic harness mistake: an initial CASE1 invocation accidentally passed `-e never` as Node input; invalid result. Correct invocation passed.
+Diagnostic mistake: an initial CASE1 invocation accidentally passed `-e never` as Node input; invalid result. Correct invocation passed.
 
 Commit `e4e856093fa237dab9daaa56dcf443c3b6155f93`. Rollback `/opt/ai-short-form-content-factory/rollback/20260903T055250Z-pre-wf02-multilingual`. WF02-only production deploy PASS; live core SHA `0f5893ffba59b23d181c363b26b991450e3fc016a52016e1ec686797dbfe23c1`; no retry/maxTries; three services healthy.
 
@@ -221,3 +221,38 @@ This closes the verified adapter root cause without provider changes, threshold 
 M8 human accepted remains `2/10`. The HTTP adapter fix is saved in GitHub and deployed with rollback/live HTTP proof.
 
 The next allowed action is exactly one completely fresh `как работает индукционная плита / uk / 60` production job. Never reuse `cb98ad2b-1aaa-4117-918d-8fef22940945` or any earlier consumed-Edge job. Require full machine proof through `review_ready`; any new consumed-Edge product failure stops M8 again. If machine PASS, give the exact video to the user and do not increment M8 until human acceptance.
+
+## 2026-09-03 — Fresh UK/60 PRODUCT FAIL: visual_shots selection-score schema mismatch
+
+Fresh production job `44101dd9-d7d6-4fa7-b62b-908ecfaf0f28`, `как работает индукционная плита / uk / 60`, was created by exactly one intake call (matching job count `4 -> 5`). It is consumed and must never be retried/reused.
+
+Machine facts:
+
+- HTTP intake `201`;
+- exactly one Edge synthesis persisted: `microsoft_edge_readaloud`, `edge_neural`, `uk-UA-OstapNeural`, measured `57.216 s`;
+- 18 timed beats persisted;
+- semantic-v3 HTTP adapter correction was exercised successfully: 10 durable `visual_segments` were persisted, proving the earlier `timed_beats` adapter defect is closed;
+- WF04 execution `10856` failed while persisting visual shots;
+- final state `failed|visuals`;
+- `visual_segments=10`, `visual_shots=0`, no final video.
+
+Exact PostgreSQL failure from execution data:
+
+`new row for relation "visual_shots" violates check constraint "visual_shots_score_check"`.
+
+The failing shot 4 row had `selection_score=-0.006621`.
+
+Verified systemic root cause is a schema/producer contract mismatch:
+
+- migration 015 defines `visual_shots_score_check CHECK (selection_score >= 0 AND selection_score <= 2)`;
+- WF04 intentionally persists `selection_score = selection_utility`;
+- WF04 computes `selection_utility = local_rank_score + min(metadata_overlap,5)*0.018 - representation_preference_rank*0.025`;
+- `local_rank_score` is validated in `[0,1]` and `representation_preference_rank` is in `[0,4]`, so the current deterministic utility domain can legitimately extend to `-0.10`; current theoretical upper bound is `1.09`;
+- negative utility is therefore not an invalid SigLIP score and is not a visual-quality acceptance failure; it is a relative assignment utility after deterministic representation penalties;
+- the assignment beam is allowed to select such a candidate when it is the best sequence-compatible choice under unchanged perceptual diversity constraints.
+
+The DB lower bound is stale for the semantic-v3 selection-utility semantics. No provider change, candidate inflation, retry, topic hack, SigLIP threshold change, perceptual threshold weakening or reuse of this consumed job is justified.
+
+M8 remains stopped at `2/10`.
+
+Next action: add an additive migration 016 that aligns the `visual_shots.selection_score` constraint with the actual deterministic selection-utility domain; add regression covering a real negative-but-valid utility such as `-0.006621` plus out-of-domain rejection; prove migration on disposable PostgreSQL; record proof; deploy migration only with bounded rollback/schema proof; then and only then create one different fresh UK/60 job.
