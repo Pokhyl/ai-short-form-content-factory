@@ -82,6 +82,7 @@ export function clusterAverageHashes(hashes, threshold = 18) {
   return clusters;
 }
 
+
 export function requiredRenderedShotStateCount(shotCount, maxClusterOccurrences = 2) {
   const count = Number(shotCount);
   const maxOccurrences = Number(maxClusterOccurrences);
