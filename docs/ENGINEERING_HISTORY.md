@@ -2,132 +2,124 @@
 
 Chronological durable record for material changes, failures, verified root causes, regressions, deploys and rollback facts. `docs/CURRENT_STATE.md` remains the operational source of truth.
 
-This file was compacted again on 2026-09-03. The compaction preserves the material failures, decisions, commits, rollback locations, deployment facts, diagnostic mistakes and acceptance evidence needed to resume work without relying on chat memory. Exact code history remains recoverable from the listed commits and rollback snapshots.
+Compacted on 2026-09-03 while preserving the material failures, decisions, commits, rollbacks, diagnostic mistakes and acceptance evidence needed to resume without chat memory. Exact code history remains recoverable from listed commits and rollback snapshots.
 
-## 2026-09-02 — Previous induction machine PASS invalidated by human-visible failure
+## 2026-09-02 — Old induction machine PASS invalidated
 
-Job `13f64c50-8dd5-47e4-a88f-1411d258e7c4` reached `review_ready`, but human inspection showed only two effective visual states. Root cause: acceptance counted scene/file presence rather than video-level perceptual sequence quality. The old machine PASS is permanently invalidated.
+Job `13f64c50-8dd5-47e4-a88f-1411d258e7c4` reached `review_ready`, but human inspection showed only two effective visual states. Previous machine PASS is permanently invalidated. Root cause: old acceptance counted scene/file presence rather than actual video-level perceptual sequence quality.
 
-## 2026-09-02 — Visual-quality-v2 rewrite
+## 2026-09-02 — Visual-quality-v2 rewrite and deployment
 
 Required visual path became:
 
-`timed beat + evidence -> deterministic search intents -> multi-source discovery -> metadata/provenance eligibility -> local SigLIP ranking + perceptual identity -> global assignment -> sequence quality gate -> persist -> render -> post-render pixel-state gate -> review_ready`
+`timed beat + evidence -> deterministic search intents -> multi-source discovery -> metadata/provenance eligibility -> local SigLIP ranking + perceptual identity -> global assignment -> sequence gate -> persist -> render -> post-render pixel-state gate -> review_ready`.
 
-Six-beat contract: every beat truth-eligible; at least five perceptual clusters; zero adjacent duplicates; no cluster over `0.34` duration share; non-finite metrics fail closed; actual rendered midpoint frames must independently satisfy the required state count.
-
-Material fixes included perceptual hashing, global assignment, WF05 independent quality validation, post-render pixel clustering, deterministic still-image motion, provider environment wiring, and removal of file-ID-as-visual-identity semantics.
+Six-beat contract: every beat truth-eligible; at least five perceptual clusters; zero adjacent duplicates; no cluster over `0.34` duration share; non-finite metrics fail closed; rendered midpoint frames independently satisfy required state count.
 
 Cross-topic dry-runs without threshold weakening: EN induction 6 clusters/max `0.1813`; PL combustion engine 5/max `0.3333`; RU refrigerator 6/max `0.1667`; UK volcano 6/max `0.1667`.
 
-Diagnostic compile-harness mistake where top-level-array workflow exports were treated as objects was invalidated; zero-count Code-node output is never accepted as PASS.
-
-## 2026-09-02 — Visual rewrite committed/deployed
-
 Commit `f7c4096503c9620910b387129a5a06cce4d26d42` — `redesign: enforce perceptual visual diversity`.
-
 Rollback: `/opt/ai-short-form-content-factory/rollback/20260902T175543Z-pre-visual-quality-v2`.
+Migration 013 applied; WF04/WF05 published; exactly three project services and PostgreSQL healthy.
 
-Migration 013 live; media-worker recreated; local SigLIP health PASS; Wikimedia/Pexels/Pixabay discovery; valid perceptual hashes; WF04/WF05 published; live core equality PASS; exactly three services and PostgreSQL healthy.
+Diagnostic compile-harness mistake where top-level-array workflow exports were treated as objects was invalidated; zero-count Code-node output is never accepted as PASS.
 
 ## 2026-09-02 — Reference-media lifecycle failure/fix
 
-Fresh job `1afc307d-aaac-4eed-8387-b05e1b6721eb`, WF04 execution `9902`, failed after its single Edge synthesis because planner persisted fake `reference_media_kind = mixed` and violated DB constraint.
+Fresh job `1afc307d-aaac-4eed-8387-b05e1b6721eb`, WF04 execution `9902`, failed after its single Edge synthesis because planner persisted fake `reference_media_kind=mixed` and violated DB constraint.
 
-Systemic correction: `visual_planned + technical_reference` keeps NULL; `visual_ready` requires actual `photo|diagram|animation`; migration 014 aligns DB lifecycle.
+Systemic correction: `visual_planned + technical_reference` keeps `reference_media_kind=NULL`; `visual_ready` requires actual `photo|diagram|animation`.
 
 Commit `b83bf6d48f1df259c7c6fa0136748ca10d13f1af` — `fix: align reference media kind lifecycle`.
 Rollback: `/opt/ai-short-form-content-factory/rollback/20260902T181813Z-pre-reference-media-kind-lifecycle`.
+Migration 014 live; WF04 core equality proved; runtime healthy.
 
-Production proof: migration 014 live; WF04 core SHA equality `66edb387d6e0ea6ae8a9961f40c8b06e3a5ef376ea19441375beaa0c5790ef75`; n8n ready; three services; PostgreSQL healthy.
-
-## 2026-09-02 — Fresh induction MACHINE + HUMAN PASS
+## 2026-09-02 — M8 #2 induction MACHINE + HUMAN PASS
 
 Accepted job `2c182ff8-ea9f-4ddf-a417-b49f796d23f5`, `How does induction heating work? / en / 15`.
 
-Machine proof: `review_ready`; preflight `14.358 s`; execution `9926` had exactly one successful Edge synthesis; measured voice `13.944 s`; six beats; 6/6 perceptual clusters, required 5; adjacent 0; max share `0.1813`; post-render six states; ffprobe 14.000 s H.264 1080x1920 30fps + AAC 48kHz stereo. Live WF03 contained no Gemini and exactly one Edge synthesis path.
+Machine proof: `review_ready`; preflight `14.358 s`; execution `9926` exactly one successful Edge synthesis; measured voice `13.944 s`; 6 beats; 6/6 perceptual clusters, required 5; adjacent 0; max share `0.1813`; post-render six states; ffprobe 14.000 s H.264 1080x1920 30fps + AAC 48kHz stereo. User watched exact fresh video and replied `мне нравится`. M8 accepted count became 2/10. Old two-state induction remains invalidated.
 
-User watched the exact fresh video and replied `мне нравится`; M8 #2 PASS. Old two-state induction remains invalidated.
+## 2026-09-02/03 — WF02 multilingual retrieval failure and systemic correction
 
-## 2026-09-02 — Polish popcorn and RU-topic/UK-output WF02 failures
+Observed failures:
 
-- `Dlaczego popcorn pęka podczas podgrzewania? / pl / 15` failed because native Wikipedia query was over-constrained and returned no full-text pages.
-- job `85fcc63b-b89b-40d0-b253-6383b715f105`, topic `как работает индукционная плита`, requested `uk`, 60 s, failed at `script` with `Wikipedia native fact search returned no full-text pages` before voice/visual/render.
-- runtime diagnosis confirmed the old live path issued Russian subject text against requested Ukrainian Wikipedia without multilingual resolution. This is one systemic retrieval class, not a topic-specific cooktop defect.
+- `Dlaczego popcorn pęka podczas podgrzewania? / pl / 15` failed because native Wikipedia query was over-constrained.
+- job `85fcc63b-b89b-40d0-b253-6383b715f105`, topic `как работает индукционная плита`, requested `uk`, 60 s, failed at `script` before voice because old live path issued Russian subject text against Ukrainian Wikipedia without multilingual resolution.
 
-## 2026-09-03 — WF02 multilingual retrieval/explanation correction regression-proven
+Systemic contract after correction:
 
-Systemic retrieval contract:
-
-- preserve up to 10 full meaningful `fact_search_tokens` for relevance/evidence validation;
-- discovery query uses at most first two meaningful subject-leading tokens;
+- preserve full meaningful factual tokens for relevance validation;
+- bounded subject-leading discovery query;
 - bounded probes exactly EN/PL/RU/UK, requested language first;
-- one Wikipedia request per probe; old `retryOnFail=2` removed;
-- requests include `langlinks` to target language;
-- failed probes contribute no pages; complete lack of title-supported pages fails closed;
-- cross-language source requires official Wikipedia language link into target language;
-- no topic mapping, generative translation, retry loop, provider cascade, bypass or threshold weakening.
+- one Wikipedia request per probe, no retry loop;
+- official Wikipedia language link required for cross-language source handoff;
+- no topic mapping, generative translation, provider cascade, bypass or threshold weakening;
+- how/why evidence prioritizes mechanism/principle/construction;
+- extractive narration remains exact-source/provenance preserving;
+- duration operating bands unchanged.
 
-Evidence/narration correction:
+Final real-Wikipedia proof: RU-topic→UK induction cooktop `60.106 s`; UK refrigerator `59.975 s`; PL popcorn `15.079 s`; EN induction `14.939 s`, all pre-TTS safe. Seven new WF02 regressions PASS; Code compile 8/8; staged pipeline PASS; retained duration audit 150 rows / 40 safe / 0 false-safe; CASE1 staged provenance PASS; CASE1 visual eligibility PASS.
 
-- direct/compositional source coverage with full factual tokens preserved;
-- `language_link` provenance not penalized as search-rank 9999;
-- how/why mechanism/principle/construction evidence prioritized;
-- Unicode-safe EN/PL/RU/UK section classification and wiki list-marker stripping;
-- multiple strong explanatory passages allowed;
-- deterministic extractive compiler supports provenance-preserving trailing result/purpose-clause reduction for long mechanism sentences;
-- every segment remains a token subsequence of source evidence;
-- duration operating bands unchanged;
-- among already-safe explanation candidates, stronger causal/mechanism content wins before weaker duration-score ties.
-
-Real Wikipedia final proof:
-
-- RU-topic `как работает индукционная плита / uk / 60` -> `Індукційна плита`, predicted `60.106 s`, safe;
-- UK refrigerator 60 s -> `59.975 s`, safe;
-- PL popcorn 15 s -> `15.079 s`, safe;
-- EN induction 15 s -> `14.939 s`, safe and direct alternating-magnetic-field mechanism selected.
-
-WF02 tests: seven new regressions PASS; Code compile 8/8. Legacy proof: staged pipeline PASS; retained duration audit 150/40 safe/0 false-safe; CASE1 staged provenance PASS; CASE1 visual eligibility PASS; unchanged duration operating bands PASS.
-
-Diagnostic harness mistake: first CASE1 visual invocation passed `-e never` as Node input and produced `ReferenceError`; invalid harness result. Correct invocation passed.
-
-Semantic diff preserved 17 nodes/settings/meta/node names; functional changes limited to `Prepare Fact Searches`, `Search Wikipedia Facts`, `Prepare Full Fact Sources`, `Build Fact Brief`, `Build Deterministic Narration`. Search node no longer retries; bounded aggregation ends in fail-closed source validation.
-
-## 2026-09-03 — WF02 fix selectively committed and deployed
+Diagnostic harness mistake: initial CASE1 visual invocation passed `-e never` as Node input and produced `ReferenceError`; invalid harness result. Correct invocation passed.
 
 Commit `e4e856093fa237dab9daaa56dcf443c3b6155f93` — `fix: make factual retrieval multilingual and explanation-aware`.
+Rollback: `/opt/ai-short-form-content-factory/rollback/20260903T055250Z-pre-wf02-multilingual`.
+WF02-only production deploy PASS; live canonical core SHA `0f5893ffba59b23d181c363b26b991450e3fc016a52016e1ec686797dbfe23c1`; workflow active; no retry/maxTries; three project services healthy.
 
-Commit contains exactly WF02 plus seven WF02 regression files; staging/check passed and worktree was clean.
+## 2026-09-03 — Fresh UK/60 production failure exposes visual-unit mismatch
 
-Rollback snapshot: `/opt/ai-short-form-content-factory/rollback/20260903T055250Z-pre-wf02-multilingual`.
+Fresh real intake job `4372be34-c417-415f-92f6-63481b3b5686`, topic `как работает индукционная плита`, output `uk`, target 60, returned HTTP 201.
 
-WF02-only deploy proof:
+It passed corrected WF02 and the single Edge synthesis. Canonical factual title `Індукційна плита`; preflight `60.106 s`; measured voice `57.216 s`; voice `uk-UA-OstapNeural`; 18 timed beats.
 
-- exact committed file copied to production;
-- workflow `TJfA4ZYUEKSTad6k` imported/published;
-- n8n restarted exactly once;
-- health HTTP 200;
-- expected/live core SHA both `0f5893ffba59b23d181c363b26b991450e3fc016a52016e1ec686797dbfe23c1`;
-- live active with 17 nodes, no retry/maxTries;
-- three services remain running, PostgreSQL healthy;
-- rebuild HEAD `e4e856093fa237dab9daaa56dcf443c3b6155f93`, worktree clean.
+WF04 then failed at visuals with exact error `perceptually unique truth-eligible assignment 11/12 [line 15]`. Final state `failed|visuals`. This job must never be retried/reused because its one automatic Edge synthesis was already consumed.
 
-## 2026-09-03 — Fresh cross-language UK/60 production job reached visuals and failed sequence assignment
+The failure stopped M8 progression as required.
 
-Fresh job was created through the real WF01 intake route `/webhook/jobs`, equivalent to Studio `POST /api/jobs` after Caddy rewrite:
+## 2026-09-03 — Semantic visual segmentation selected instead of further matcher tuning
 
-- job `4372be34-c417-415f-92f6-63481b3b5686`;
-- topic `как работает индукционная плита`;
-- output language `uk`;
-- target duration `60`;
-- intake returned HTTP 201.
+After broader comparison with multiple open-source short-video architectures, the architectural correction was selected: timed narration/subtitle beats are transport units and must not automatically become independent semantic media-search obligations.
 
-Observed production state progression:
+New contract is documented in `docs/VISUAL_SEGMENTATION_DESIGN.md`, initial design commit `d19ff9e66f47cbadf206141d4b51bbc3d7631abc`:
 
-- job reached `processing|visuals`, proving the prior WF02 script-retrieval blocker was passed in production;
-- after about 100 seconds it failed at `visuals`;
-- exact error: `perceptually unique truth-eligible assignment 11/12 [line 15]`;
-- final state `failed|visuals`;
-- runtime remained exactly `media-worker`, `n8n`, `postgres`; PostgreSQL healthy; n8n health 200.
+`accepted voice -> timed beats -> deterministic semantic visual segments -> one or more visual shots per segment -> truth eligibility -> local SigLIP ranking -> perceptual duplicate control -> render timeline -> post-render frame gate -> human review`.
 
-This job must never be retried/reused because it already passed upstream voice processing and may have consumed the one allowed Edge synthesis. The failure is currently recorded as an unresolved general 60-second visual-assignment defect; root cause is not yet claimed. M8 progression remains stopped until exact WF04 execution/scene/candidate evidence identifies and fixes the systemic cause without weakening visual gates.
+No generative visual planner, hosted semantic dependency or threshold weakening is introduced. WF01-WF03 and one-shot Edge remain unchanged. Planned durable entities are `visual_segments`, `visual_shots`, and reusable `media_library_assets`; legacy scene visual columns remain for historical compatibility.
+
+## 2026-09-03 — GitHub/VPS branch divergence discovered before rewrite
+
+Fresh inspection found a material repository-state defect: current VPS/local code history and GitHub `rebuild/simple-pipeline` documentation history diverge from merge base `7d25bac1c4d1a90b2b29183d9ec3ca280d1acfc4`.
+
+- VPS current code HEAD: `e4e856093fa237dab9daaa56dcf443c3b6155f93`.
+- GitHub branch had a separate docs chain ending at the semantic design commit.
+- `git merge --ff-only` correctly refused the divergent histories.
+- VPS HTTPS push dry-run failed because no GitHub credentials are available there; SSH authentication also failed.
+- GitHub Contents API could not resolve local code commit `e4e8560`, proving it is not merely a stale ref display.
+
+No force push or destructive branch rewrite was attempted. GitHub implementation branch `rebuild/semantic-visual-segments` was created from the current remote source-of-truth. Local implementation branch `rebuild/semantic-visual-segments-local` was created from the actual current production-code HEAD. Final reconciliation must use GitHub connector git-object writes/PR while preserving the newer remote docs history and synchronizing the current production-critical code snapshot.
+
+## 2026-09-03 — Semantic segmentation first local proof
+
+Local implementation started without production mutation:
+
+- `services/media-worker/src/visual-segmentation.mjs` — deterministic semantic grouping of adjacent timed beats using timing, punctuation and evidence-support boundaries; no fixed duration→segment-count mapping.
+- `db/migrations/015_visual_segments.sql` — additive tables `visual_segments`, `visual_shots`, `media_library_assets`.
+- `tests/visual_segmentation_regression.mjs` — includes the actual 57.216 s / 18-beat failed Ukrainian induction fixture.
+
+Correct runtime test executed inside the existing n8n container because host Node is absent. PASS:
+
+`{"pass":true,"uk_segments":9,"uk_shots":17,"punctuation_segments":6,"continuous_segments":2}`
+
+This proves the failed 57.216 s fixture becomes 9 semantic search segments rather than 18 independent search obligations, while preserving gapless full-duration coverage; same-duration 15 s fixtures can produce different segment counts from content, proving segment count is not duration-hardcoded.
+
+## 2026-09-03 — visual-quality-v3 work and one invalid regression assertion
+
+Local-only work then extended visual discovery to segmented mode and added a separate `visual-segments-v3` shot-sequence evaluator while preserving legacy v2.
+
+The first combined regression run produced:
+
+- semantic segmentation regression PASS;
+- `visual_shot_quality_regression.mjs` FAIL because the test itself incorrectly expected `evaluateVisualShotSequence()` to throw on adjacent duplicates. The evaluator is designed to return `pass=false` for that valid-but-rejected sequence rather than throw. This is a diagnostic/test assertion defect, not a product/runtime failure. The incorrect assertion must be removed before any quality result is accepted.
+
+Production was not mutated during any of this work. At this checkpoint exactly three project containers remain running, n8n health is 200 and media-worker health is 200.
