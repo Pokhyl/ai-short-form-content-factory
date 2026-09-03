@@ -1,59 +1,114 @@
-# Permanent Project Rules
+# Permanent Project Rules — Product-First V4
 
-These rules are mandatory for all future technical work on `Pokhyl/ai-short-form-content-factory`.
+These rules are mandatory for all work on branch `rebuild/product-first-v4`.
 
-## 1. Read GitHub first, every time
+## 1. Read GitHub first
 
-Before every technical response, diagnosis, code/config change, deployment, test, or recommendation for this project, first read this file from GitHub.
+Before technical work read fresh:
 
-Then read the latest project source-of-truth for the active work. For the rebuild, `docs/CURRENT_STATE.md` is authoritative; architecture changes additionally require `docs/ARCHITECTURE.md`; milestone/acceptance/gate changes additionally require `docs/ROADMAP.md` and `docs/PROCESS_GATE.md`; upstream/provider decisions additionally require `docs/UPSTREAM_DECISION.md`.
+1. `docs/PERMANENT_PROJECT_RULES.md`;
+2. `docs/CURRENT_STATE.md`;
+3. `docs/PRODUCT_FIRST_V4.md`;
+4. relevant history/reference docs.
 
-Do not rely on chat memory as the source of truth. Repository state overrides chat memory.
+Repository/runtime state overrides chat memory.
 
-## 2. No quota-limited hosted AI in the production critical path
+## 2. Product quality outranks internal elegance
 
-Production must not depend on a request-count/rate/quota-limited hosted AI Free Tier as a required generation dependency.
+A machine-valid video that sounds bad or shows irrelevant footage is a PRODUCT FAIL.
 
-Gemini Free Tier failures such as `429 RESOURCE_EXHAUSTED`, request-per-window/day quotas, and `503 high demand` are not acceptable normal operating conditions to wait around, retry around, or design around.
+Do not certify quality from database state, diversity metrics, ffprobe, similarity scores or workflow success alone. Those are technical checks only.
 
-Do not solve quota exhaustion with sleeps, retry loops, quota-window waiting, model hopping, extra API keys/accounts/projects, paid fallback, or weaker acceptance gates.
+Human review of the exact artifact remains authoritative during V4 bring-up.
 
-The systemic direction is to remove quota-limited hosted semantic AI from the required production path while preserving:
+## 3. No more bespoke semantic-threshold maze
 
-- 0 PLN per-video API cost;
-- truthful factual narration;
-- existing quality/acceptance gates;
-- exactly three persistent project services unless a separately proven architectural blocker justifies a documented change.
+Do not rebuild semantic understanding from topic-specific mappings, narration-fragment token overlap, arbitrary threshold tuning, special retries or other hand-built approximations.
 
-Any proposal that keeps Gemini or another quota-limited hosted AI as a required production dependency violates this rule unless the user explicitly reverses it.
+Use the common architecture proven across mature open-source short-video projects: semantic script/storyboard first, actual-audio timing, scene-specific visuals, normal editing/rendering, preview/review.
 
-## 3. Durable engineering history is mandatory
+## 4. Use mature upstream patterns before inventing
 
-Every meaningful technical change and every discovered failure must be recorded in GitHub so the project does not repeat solved mistakes after a chat/context reset.
+Before adding a new subsystem, check whether mature open-source projects already solve it.
 
-`docs/CURRENT_STATE.md` remains the operational source of truth for the active branch. `docs/ENGINEERING_HISTORY.md` is the required durable chronological engineering log for detailed changes, failures, root causes, regressions, rejected approaches, deployments and rollback facts.
+Primary references include:
 
-Before moving past a meaningful change or failure, record the relevant facts, including when applicable:
+- `harry0703/MoneyPrinterTurbo`;
+- `rayventura/shortgpt`;
+- `AbdullahNaveed/ai-shorts-generator`;
+- `gyoridavid/short-video-maker`;
+- `het8802/OpenNolan`;
+- `Cstrp/vml`;
+- established Remotion/FFmpeg short-video patterns.
 
-- what changed: code, workflow, schema, configuration, provider contract, deployment, acceptance gate, or architecture;
-- why it changed and the systemic defect/root cause it addresses;
-- exact affected files/workflows/services and important job/execution IDs;
-- test/regression result and what behavior it proves;
-- production deploy/rollback state and rollback location when applicable;
-- newly discovered error/failure, including the concrete symptom and the first verified root cause;
-- rejected approaches when repeating them later would recreate the same failure;
-- unresolved blockers and the exact next action.
+Prefer adapting proven components/contracts over writing a new replacement.
 
-Do not record guesses as facts. Mark hypotheses as hypotheses until verified.
+Respect upstream licenses and preserve attribution when code is reused.
 
-Do not silently overwrite or erase a previous mistake. If an earlier result was incorrectly called PASS, explicitly record that it was invalidated, why it was invalidated, and what new regression/acceptance rule prevents recurrence.
+## 5. Cost boundary
 
-A fix is not complete merely because code changed. The durable record must make it possible for a future session to understand the failure, the root cause, the implemented correction, and the proof without relying on chat memory.
+Do not make paid per-video APIs mandatory.
 
-Before starting a new approach, check both `docs/CURRENT_STATE.md` and `docs/ENGINEERING_HISTORY.md` for the same or equivalent failure so previously rejected/broken approaches are not repeated.
+Free stock/media and local/open-source components remain preferred. A semantic model must be provider-pluggable. A capable local model may run on hardware suitable for it; do not force a weak general model onto the small VPS merely to maintain an old service-count rule.
 
-## 4. Logging cadence
+Quota-limited hosted free tiers must not be the only required production path.
 
-Do not wait until the end of a long session to write history. Record a verified root cause, a material architectural/code change, a meaningful failed test, or an accepted regression result before moving on to the next independent stage.
+## 6. Speech contract
 
-Small transient command typos do not need separate entries unless they could mislead acceptance or are likely to recur. Any diagnostic mistake that could create a false PASS/FAIL must be recorded.
+TTS receives speech-ready text, not raw source prose.
+
+General multilingual text normalization must handle units, abbreviations, symbols, ranges, punctuation and markup before synthesis. No topic-specific pronunciation patches.
+
+Captions/timing must come from the actual generated audio through Whisper/faster-whisper/whisper.cpp or equivalent forced alignment.
+
+Do not fabricate caption timing from fixed beat counts.
+
+## 7. Visual contract
+
+Stock footage is not the default answer for every scene.
+
+Every storyboard scene declares its representation mode, such as:
+
+- exact media;
+- stock;
+- diagram/motion graphic;
+- screen/text/card;
+- optional generated image.
+
+Factual/mechanism scenes must not silently degrade to generic lifestyle footage.
+
+Provider metadata alone is never proof of visible relevance. CLIP/SigLIP may rerank but are not semantic directors.
+
+If relevant footage is unavailable, change representation mode rather than insert unrelated stock.
+
+## 8. Direct prototype before orchestration
+
+Do not rebuild n8n/DB workflows first.
+
+The direct V4 CLI must make a human-approved vertical video before database/orchestration integration resumes.
+
+No production deployment until direct prototypes pass across multiple topics/languages.
+
+## 9. No hacks
+
+Permanent rule remains: no topic-specific hacks, acceptance bypasses, hidden retries, special-case blacklists, provider sleeps, threshold weakening or one-off patches that only make the current fixture pass.
+
+## 10. Production freeze
+
+The semantic-v3 production runtime is frozen as rollback/reference. Do not create new semantic-v3 jobs or consume additional Edge syntheses on it.
+
+## 11. Durable history
+
+Every meaningful failure, verified root cause, architectural decision, upstream adoption, prototype result and deployment/rollback must be recorded in GitHub before moving to the next independent stage.
+
+Old chronology remains in `docs/ENGINEERING_HISTORY.md`. V4-specific chronology may also be recorded in `docs/ENGINEERING_HISTORY_V4.md`, but do not erase old history.
+
+## 12. Acceptance vocabulary
+
+Use these states clearly:
+
+- `technical_pass` — code/render checks passed;
+- `machine_rendered` — playable output exists;
+- `human_approved` — user watched and accepted the exact artifact.
+
+Never equate `technical_pass` or `machine_rendered` with product acceptance.
