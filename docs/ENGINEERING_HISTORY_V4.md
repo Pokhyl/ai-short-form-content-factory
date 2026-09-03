@@ -86,8 +86,61 @@ The host shell warned that FFmpeg is not installed on the VPS host; the existing
 
 Decision: V4 should reuse/adapt MoneyPrinterTurbo's proven `llm.py`, `voice.py`, `subtitle.py`, `material.py`, `material_cache.py`, `video.py` and task contracts where they fit, instead of rebuilding those subsystems. The custom V4 layer should stay thin and concentrate on factual research, structured director/storyboard, multilingual speech normalization, visual representation routing and human preview/review.
 
-## Immediate boundary
+## 2026-09-03 — first direct V4 prototype MACHINE RENDERED
 
-Semantic-v3 production is frozen and retained only for rollback/reference. No new production jobs.
+A direct V4 prototype was produced outside n8n/PostgreSQL for `Як працює індукційна плита / uk / target 30 s` at `/opt/ai-short-form-v4-runs/induction-uk-30-v1`.
 
-MoneyPrinterTurbo upstream core is locally proven at its exact commit. Next independent stage: inspect the stable module interfaces and create the thin direct V4 prototype adapter outside n8n/DB.
+This run deliberately did not use semantic-v3, did not create a production job and did not mutate n8n or PostgreSQL.
+
+Director/evidence boundary:
+
+- four factual claims were grounded in U.S. Department of Energy material;
+- the run used a manually authored/reference `director.json` to prove the downstream V4 product path; this is NOT yet proof of an automatic semantic-director provider;
+- `spoken_script` contains only speech-ready Ukrainian wording: no digits, unit abbreviations, URLs or raw encyclopedic prose;
+- five explicit scenes were used: real cooktop, real internal induction coil, induction-heating diagram, induction-pan thermography and a final compatibility card;
+- no generic stock fallback was used.
+
+Speech/timing proof:
+
+- exactly one direct V4 Edge synthesis was made through MoneyPrinterTurbo `voice.tts()`;
+- voice `uk-UA-OstapNeural`, natural rate `1.0`, no rate/pitch fitting;
+- generated `voice.mp3` size `191808` bytes;
+- ffprobe duration `31.968 s`;
+- MoneyPrinterTurbo faster-whisper `small`, CPU `int8` transcribed the exact audio and detected `uk`;
+- first transcription contained ordinary recognition errors (`махніт`, etc.); MoneyPrinterTurbo `subtitle.correct()` corrected subtitle text against the speech-ready script while preserving the actual timestamps;
+- actual-audio visual boundaries used sentence starts from corrected Whisper timing: `0.0 -> 4.36 -> 11.62 -> 19.09 -> 23.70 -> 31.968`.
+
+Visual/material proof:
+
+- scene 1: `InductionsStove 1.jpg`, Arkrishna, Wikimedia Commons, CC BY-SA 3.0;
+- scene 2: `Induktionskochfeld Spule.jpg`, Wdwd, Wikimedia Commons, CC BY-SA 3.0;
+- scene 3: `Induction heating hp.jpg`, Pascalschreyer, Wikimedia Commons, public domain;
+- scene 4: `InductionPanThermography.jpg`, CharlesMJames, Wikimedia Commons, CC BY-SA 4.0;
+- scene 5: locally rendered explanatory compatibility card;
+- each source was converted to a 1080x1920 vertical scene with attribution and a mild MPT-style image zoom; exact scene durations were `4.36 / 7.26 / 7.47 / 4.61 / 8.268 s`.
+
+Render-path finding:
+
+- copying the media-worker FFmpeg executable to the host failed because it is dynamically linked to container-only libraries; invalid environment approach, no product mutation;
+- an initial frame-render command accidentally used system Python without Pillow; invalid environment invocation, then rerun in the pinned MPT virtualenv;
+- MoneyPrinterTurbo `combine_videos()` successfully produced the sequential vertical `combined.mp4` from the five timed scenes;
+- MoneyPrinterTurbo/MoviePy subtitle finalization at full 1080x1920 was technically progressing but inefficient on the 2-vCPU VPS; the orphaned direct-prototype render was stopped without touching production services;
+- final subtitle/audio mux and encode therefore used the existing media-worker FFmpeg/libass path, matching the V4 design split of structured scenes + FFmpeg finalization.
+
+Final artifact machine proof:
+
+- file: `/opt/ai-short-form-v4-runs/induction-uk-30-v1/final-v4-ffmpeg.mp4`;
+- SHA256 `a2fe175acbc35a36185d1044eb4358595bc96ec7766287d9862f59db25842d61`;
+- size `44,957,338` bytes;
+- duration `32.000000 s`;
+- video `H.264`, `1080x1920`, `yuv420p`;
+- audio `AAC`, `48000 Hz`, stereo;
+- final state is `machine_rendered`, NOT `human_approved`.
+
+A temporary read-only Cloudflare quick tunnel was created solely to transfer/review this direct prototype; it is not part of the product architecture or persistent service set.
+
+## Current boundary
+
+Semantic-v3 production remains frozen. M8 human-accepted count remains `2/10` until the user watches and explicitly accepts a V4 artifact.
+
+The immediate next action is human review of the exact first V4 direct prototype. If rejected, fix the observed product defect in the V4 path without topic-specific patches. If accepted, the next engineering task is automatic semantic-director provider integration and a materially different second direct prototype before any n8n/DB orchestration work.
