@@ -139,8 +139,32 @@ Final artifact machine proof:
 
 A temporary read-only Cloudflare quick tunnel was created solely to transfer/review this direct prototype; it is not part of the product architecture or persistent service set.
 
+## 2026-09-03 — first V4 direct prototype HUMAN FAIL
+
+The user watched the exact artifact and rejected it immediately. The uploaded copy of the exact MP4 was inspected frame-by-frame after rejection.
+
+Verified visible defects:
+
+- source still images were transformed into severely stretched/warped vertical frames rather than composed with correct aspect-ratio preservation;
+- subtitles used very large black boxes that covered most of the useful visual area;
+- the induction diagram was visually obscured by subtitles and therefore failed as an explanation;
+- the thermography and final-card scenes were similarly dominated by text rather than readable visual storytelling;
+- technical ffprobe validity had hidden an obviously bad viewing result.
+
+Verified systemic root cause:
+
+The V4 prototype reused MPT service modules for TTS/Whisper but then introduced a bespoke local Python scene compositor and custom image-to-vertical treatment. This repeated the same project mistake at a different layer: using a mature upstream only as a backend while inventing the presentation/render path instead of first proving the upstream's own normal end-to-end output and established subtitle/layout behavior.
+
+Decision:
+
+- this artifact is permanently `human_fail`;
+- do not patch these five images, this topic, or subtitle font sizes specifically;
+- retire the custom prototype scene compositor/layout path;
+- next attempt must first run a mature upstream end-to-end render path with its own normal composition/layout defaults, inspect the exact output, and only then add the minimum adapters required by V4;
+- any adaptation must preserve source aspect ratio and bound subtitle occupancy before another user review.
+
 ## Current boundary
 
-Semantic-v3 production remains frozen. M8 human-accepted count remains `2/10` until the user watches and explicitly accepts a V4 artifact.
+Semantic-v3 production remains frozen. M8 human-accepted count remains `2/10`.
 
-The immediate next action is human review of the exact first V4 direct prototype. If rejected, fix the observed product defect in the V4 path without topic-specific patches. If accepted, the next engineering task is automatic semantic-director provider integration and a materially different second direct prototype before any n8n/DB orchestration work.
+The first V4 direct prototype is also HUMAN FAIL. No new production deployment is allowed. The next independent stage is to prove a mature upstream end-to-end render artifact without the custom scene compositor before adding further V4 code.
