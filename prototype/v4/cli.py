@@ -14,6 +14,7 @@ from .visual_router import build_visual_manifest
 from .timeline_builder import compile_segment_timeline, sha256_file
 from .timeline_contract import validate_timeline_payload
 from .commons_media import fetch_commons_file
+from .asset_resolver import resolve_timeline_assets
 
 VOICES = {
     "en": "en-US-AndrewNeural",
@@ -78,6 +79,11 @@ def main() -> int:
     p.add_argument("--output-dir", required=True)
     p.add_argument("--max-width", type=int, default=1440)
 
+    p = sub.add_parser("resolve-assets")
+    p.add_argument("--timeline", required=True)
+    p.add_argument("--asset-map", required=True)
+    p.add_argument("--output", required=True)
+
     args = parser.parse_args()
     if args.cmd == "verify-upstream":
         print(verify_upstream())
@@ -134,6 +140,15 @@ def main() -> int:
             f"V4_COMMONS_FETCHED title={item['file_title']} "
             f"size={item['selected_width']}x{item['selected_height']} "
             f"license={item['license']} sha256={item['sha256']} path={item['local_path']}"
+        )
+        return 0
+    if args.cmd == "resolve-assets":
+        resolved = resolve_timeline_assets(load_json(args.timeline), load_json(args.asset_map))
+        dump_json(args.output, resolved)
+        info = resolved['asset_resolution']
+        print(
+            f"V4_ASSETS_RESOLVED exact={info['exact_resolved']} "
+            f"constructed={info['constructed_required']} path={args.output}"
         )
         return 0
     return 2
