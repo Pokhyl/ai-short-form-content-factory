@@ -264,3 +264,19 @@ Cross-check of all 17 semantic-v3 implementation/migration/test files against lo
 This EOF normalization difference is not a semantic implementation difference and must not be mistaken for a code divergence. Production was not changed by this GitHub synchronization. Fresh runtime inspection still showed n8n `/healthz` OK and media-worker `/health` OK on its actual bound port `3001`.
 
 Next boundary remains pre-deploy documentation alignment and bounded deployment gates; no fresh production job is allowed before those gates and rollback proof are complete.
+
+## 2026-09-03 — Semantic-v3 source-of-truth documentation aligned
+
+`docs/ARCHITECTURE.md` was updated in commit `b71ce862a606b1010625912c4ba07b8f600d8b56` to remove the obsolete `one visual per timed beat` contract and document the proven semantic-v3 architecture: timed beats remain subtitle/voice transport units; semantic visual segments are independent meaning-based visual obligations; visual shots have their own contiguous timeline; render-v3 validates actual post-render visual states.
+
+`docs/CURRENT_STATE.md` was updated in commit `f0f80836a6666b83502f6b74163936ff1a83ad85` and now makes the deployment boundary explicit:
+
+- clean local semantic-v3 implementation HEAD is `2405d04`;
+- GitHub implementation synchronization is complete modulo the proven EOF newline normalization in `server.mjs`;
+- semantic-v3 is not deployed yet;
+- migration 015 is not live;
+- production WF04/WF05/media-worker still use the old visual-quality-v2 path;
+- M8 remains `2/10` human-accepted;
+- no fresh M8 production job may start before pre-deploy proof and a bounded rollback snapshot.
+
+Fresh runtime inspection after the documentation writes still returned n8n health OK, media-worker health OK and a clean rebuild worktree. The next boundary is pre-deploy diff/migration proof; no architecture rewrite is justified by current evidence.
