@@ -68,6 +68,7 @@ Corresponding latest GitHub code commit:
 Semantic-v3 is live:
 
 - migration `015_visual_segments.sql` live;
+- migration `016_visual_shot_selection_utility.sql` live;
 - `visual_segments`, `visual_shots`, `media_library_assets` live;
 - WF02 `TJfA4ZYUEKSTad6k` multilingual deterministic factual path live;
 - WF03 `UHxvCZNqaLb1RKMM` exactly-one-Edge + timed beats live;
@@ -201,22 +202,24 @@ Exact PostgreSQL error: `new row for relation "visual_shots" violates check cons
 
 Verified root cause: schema/producer contract mismatch. WF04 persists deterministic `selection_utility = local_rank_score + min(metadata_overlap,5)*0.018 - representation_preference_rank*0.025`, whose current bounded producer domain is `[-0.10, 1.09]`; migration 015 incorrectly constrained persisted values to `[0,2]`. Negative utility is a valid relative assignment utility, not an invalid SigLIP score or visual-quality bypass.
 
-Migration 016 now exists and is proven locally/disposably but is NOT yet production-deployed. It changes only `visual_shots_score_check` to `[-0.10,1.09]`. Static regression and disposable PostgreSQL 18 proof PASS, including real `-0.006621` acceptance, both outside-bound rejection and repeat application. No visual quality threshold/provider/workflow behavior changed.
+Migration 016 is now production-deployed. It changes only `visual_shots_score_check` to `[-0.10,1.09]`. Static regression and disposable PostgreSQL 18 proof PASS, including real `-0.006621` acceptance, both outside-bound rejection and repeat application. Production apply was transactional; no n8n/media-worker/workflow restart occurred. No visual quality threshold/provider/workflow behavior changed.
+
+Pre-016 rollback snapshot: `/opt/ai-short-form-content-factory/rollback/20260903T150109Z-pre-visual-shot-score-016`. Live migration SHA256: `8abdfd3e882a047784af05dc6fb91b2886c1b0f143de4c218629bfd4ef122317`. Live constraint is `selection_score >= -0.10 AND selection_score <= 1.09`; exactly three services remain healthy and active executions are `0`.
 
 ## Exact next action
 
-Do not create another production job yet.
+The adapter defect and visual-shot score schema mismatch are both fixed, proven, saved in GitHub and live.
 
-1. Fresh-read GitHub/runtime and require zero active n8n executions.
-2. Capture bounded pre-migration-016 schema rollback evidence, including the current `visual_shots_score_check` and explicit rollback SQL restoring `[0,2]`.
-3. Apply only migration `016_visual_shot_selection_utility.sql` transactionally to production PostgreSQL. No n8n/media-worker/workflow redeploy is required.
-4. Verify live constraint `[-0.10,1.09]`, migration file equality, database health, exactly three project services and zero active executions.
-5. Record deploy/rollback proof in GitHub and update this file.
-6. Only then create exactly one completely fresh `как работает индукционная плита / uk / 60` job. Never reuse `44101dd9-d7d6-4fa7-b62b-908ecfaf0f28`.
-7. Require full machine proof through `review_ready`; any new consumed-Edge product failure stops M8 again. If machine PASS, give the exact video to the user and do not increment M8 until human acceptance.
+Create exactly ONE completely fresh production job:
+
+- topic: `как работает индукционная плита`;
+- output language: `uk`;
+- target duration: `60`.
+
+Never reuse `44101dd9-d7d6-4fa7-b62b-908ecfaf0f28` or any earlier consumed-Edge job. Require exactly one Edge synthesis and full machine proof through durable semantic segments/shots, pre-render visual gate, render-v3 post-render gate, ffprobe and final `review_ready`. Any new consumed-Edge product failure stops M8 and must be recorded before a new approach. If machine PASS, give the exact video to the user; M8 remains `2/10` until human acceptance.
 
 ## Resume rule
 
 If context is lost: read fresh `PERMANENT_PROJECT_RULES.md`, this file, `ENGINEERING_HISTORY.md`, and fresh runtime before acting.
 
-Current boundary: semantic-v3 + HTTP adapter fix are live; fresh job `44101dd9...` exposed the verified visual-shot selection-score schema mismatch; migration 016 is locally/disposably proven and saved in GitHub but not yet deployed; M8 remains `2/10`; immediate next action is bounded production migration-016 deployment proof, not a new job.
+Current boundary: semantic-v3, HTTP adapter fix and migration 016 selection-utility schema alignment are live with rollback/proof; M8 remains `2/10`; immediate next action is exactly one completely fresh `как работает индукционная плита / uk / 60` production job and then machine/human review.
