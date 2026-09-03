@@ -1,0 +1,42 @@
+name: Semantic code sync
+
+on:
+  push:
+    branches:
+      - rebuild/semantic-code-sync
+    paths:
+      - sync-patch/READY
+
+permissions:
+  contents: write
+
+jobs:
+  apply-code-snapshot:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reconstruct and verify patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat sync-patch/part-* > /tmp/semantic-code.patch.gz.b64
+          base64 -d /tmp/semantic-code.patch.gz.b64 > /tmp/semantic-code.patch.gz
+          echo '7aad9b48a5b1703b3d7199ecd2208aac5c24560a00b6e90b887059639af77f3e  /tmp/semantic-code.patch.gz' | sha256sum -c -
+          gzip -dc /tmp/semantic-code.patch.gz > /tmp/semantic-code.patch
+          echo '5ba89eb6c8ffa5b15179437b4c368b7ec3bce163c68aa9976c2e8db4116d420e  /tmp/semantic-code.patch' | sha256sum -c -
+          git apply --check /tmp/semantic-code.patch
+      - name: Apply exact VPS code patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply /tmp/semantic-code.patch
+          rm -rf sync-patch .github/workflows/semantic-code-sync.yml
+          git add -A
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'sync: restore current semantic visual implementation [skip ci]'
+          git push origin HEAD:rebuild/semantic-code-sync
