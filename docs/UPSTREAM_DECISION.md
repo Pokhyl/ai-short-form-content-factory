@@ -1,105 +1,83 @@
-# Upstream Decision — Deterministic Semantic Critical Path
+# Upstream Decision — Product-First V4
 
-Last updated: 2026-09-02
+Last updated: 2026-09-03
 
 ## Trigger
 
-Production Gemini Free Tier is not reliable enough for a required dependency:
+The project previously tried to replace semantic planning with deterministic evidence/visual heuristics because quota-limited hosted AI was unreliable and small local models performed poorly on the VPS.
 
-- `gemini-3.6-flash` produced `429 RESOURCE_EXHAUSTED`;
-- `gemini-3.5-flash` produced `503 UNAVAILABLE / high demand`.
+That architecture reached machine `review_ready` but failed human review badly: unnatural spoken encyclopedia text and irrelevant cooking/fire footage passed the machine gates.
 
-Quota waits, retries, extra accounts/keys, model hopping and paid fallback are forbidden.
+Therefore the next redesign must not invent another bespoke semantic approximation.
 
-## Rejected approach 1 — local model behind old WF02
+## Research decision
 
-The old request mixed research, narration, evidence linking, duration control and visual planning. It was several thousand input tokens and was too slow/brittle for small local models.
+A broad set of open-source short-video projects was reviewed before implementation, including MoneyPrinterTurbo, ShortGPT, AI Shorts Generator, Short Video Maker, OpenNolan, VML and Remotion-based faceless-video projects.
 
-## Rejected approach 2 — required compact general local LLM
+The common architecture is:
 
-The boundary was reduced to compact narration-only prompts and tested again on the real 2 vCPU / 3.7 GiB VPS.
+`semantic script/storyboard -> TTS -> actual-audio transcription/alignment -> scene-specific assets -> normal edit/render -> preview/human review`
 
-Measured results still failed the product requirement:
+V4 adopts this common pattern.
 
-- Qwen3 1.7B produced valid-looking prose but did not reliably control narration length;
-- Qwen2.5 3B broke natural sentence structure during constrained fitting;
-- Qwen3 4B produced grounded text but failed bounded duration fitting and consumed roughly 3.2-3.5 GB RSS;
-- Qwen3.5 4B IQ4_XS consumed roughly 2.5 GB RSS plus material swap during inference;
-- repeated model benchmarking did not solve the one-shot-TTS duration/reliability boundary.
+## Primary upstream foundation
 
-Therefore a general-purpose generative LLM is rejected as a REQUIRED production dependency on this VPS. Do not continue model hopping.
+MoneyPrinterTurbo is the primary commodity-video foundation.
 
-## Selected systemic direction
+Pinned upstream:
 
-Critical path:
+- repository: `harry0703/MoneyPrinterTurbo`;
+- commit: `cbbb366393105d5cefc254dc9ed492d43da0711b`;
+- version: `1.3.6`;
+- license: MIT.
 
-1. deterministic public factual retrieval;
-2. deterministic evidence reduction and durable provenance;
-3. deterministic evidence-backed narration compilation from source spans;
-4. richer local duration estimation using existing clean-Edge measurements;
-5. local candidate assembly/search with zero TTS calls;
-6. exactly one automatic Edge synthesis per video;
-7. measured duration acceptance once;
-8. deterministic timed beat creation;
-9. deterministic visual intent from beat/evidence/canonical metadata;
-10. deterministic exact/reference/stock eligibility;
-11. SigLIP relative ranking only after eligibility;
-12. render + human review.
+Focused upstream tests on the exact pin passed: 316 tests + 69 subtests, 7 skipped, 0 failures.
 
-## Narration boundary
+V4 may adapt/reuse its:
 
-Narration is not free-form generation.
+- LLM provider adapters, including Ollama/OpenAI-compatible configuration;
+- Edge TTS service;
+- faster-whisper subtitle service;
+- Pexels/Pixabay/Coverr material retrieval/cache;
+- video normalization/composition/render utilities.
 
-The compiler may only select, normalize, safely shorten and order factual source clauses/sentences while preserving exact evidence provenance. New factual predicates, identities, dates, numbers, materials and mechanisms may not be invented.
+Do not fork or rewrite these layers unless a concrete V4 product requirement proves a gap.
 
-The exact `3/5/7/9` narration sentence-count requirement is removed. It was an internal implementation constraint, not a product requirement. Natural sentence count may vary.
+## V4-owned boundary
 
-## Duration boundary
+The project-specific code should remain thin and own only what upstream projects cannot know about our product:
 
-Edge may be called exactly once automatically for a job.
+- factual research/evidence contract;
+- structured semantic director schema;
+- spoken-text safety boundary;
+- scene representation routing (`exact_media`, `stock`, `diagram`, `screen_text`, optional image generation);
+- relevance/review workflow;
+- later minimal persistence/orchestration adapter.
 
-Before Edge, candidate narration assemblies are evaluated locally against an empirical fixed-voice estimator using already measured clean-Edge samples. No new TTS calls are spent on calibration experiments.
+## Semantic model decision
 
-The estimator chooses among evidence-backed candidates; it does not rewrite audio or create a hidden provider search loop.
+A semantic director is required because the failed architecture proved that token overlap/thresholds are not a substitute for coherent script + storyboard generation.
 
-The measured Edge output is authoritative. A miss fails closed and does not trigger another synthesis.
+The provider is pluggable.
 
-## Visual boundary
+Preferred zero-variable-cost path is Ollama or another local/open-source model on hardware capable of running a sufficiently strong model. MoneyPrinterTurbo already supports Ollama through its provider layer.
 
-A generative visual-plan call is no longer required.
+Do not force a weak 1.7B/3B/4B general model onto the current 2 vCPU / 3.7 GiB VPS. Previous measurements already rejected that hardware/model combination for quality reasons.
 
-Visual lane/query/eligibility data is derived from final beat text, supporting evidence, canonical source titles/entity IDs and media metadata.
+Optional hosted/BYOK providers may be used for development comparison, but no paid-per-video provider becomes mandatory and no quota-limited free tier is the only production path.
 
-Final assets remain deterministic-eligibility-first:
+## Speech normalization decision
 
-- exact identity must match canonical identity;
-- technical/reference media must match canonical provenance and representation form;
-- truth-critical stock metadata must substantiate its concrete subject;
-- contextual stock substitutions must remain truthful.
+No single mature open-source text-normalization package was found that fully covers EN/PL/RU/UK written-form-to-spoken-form requirements.
 
-Only eligible candidates reach local SigLIP relative ranking.
+Therefore the semantic director is responsible for emitting spoken-form text in the target language. The V4 speech layer is a small safety/validation boundary using standard Unicode handling and rejecting ambiguous written forms before TTS; it is not a new topic dictionary or semantic rewriting engine.
 
-## Provider-call budget
+## Visual decision
 
-For Edge voice:
+MoneyPrinterTurbo stock retrieval is reused only for scenes explicitly marked `stock`.
 
-- maximum automatic synthesis count per job: `1`;
-- no duration-fitting retry;
-- no scene-by-scene TTS;
-- no hidden retry around provider limits.
+Technical/mechanism scenes use other explicit modes such as exact factual media or code/motion graphics. MPT material retrieval is not allowed to act as a universal fallback.
 
-## Forbidden responses to failure
+## Production decision
 
-- restore Gemini or another quota-limited semantic fallback;
-- benchmark more general LLMs as the critical narration path;
-- quota waits/retry loops;
-- extra keys/accounts/projects;
-- paid hosted fallback;
-- topic-specific mappings/prompts;
-- weakening factual/duration/visual/render gates;
-- repeated Edge synthesis;
-- adding a fourth persistent service merely to avoid fixing boundaries.
-
-## Production acceptance
-
-After deterministic narration/duration/visual planning is implemented and fully regression-tested, restart frozen CASE 1 `How does a zipper work? / en / 15` from a completely new job. It must pass factual evidence, natural narration, one-shot Edge duration, timed beats, every selected visual/provenance/content check, ffprobe and human-visible quality on one unchanged runtime.
+Semantic-v3 production remains frozen as rollback/reference. V4 must reach direct CLI `human_approved` before any production orchestration deployment.
