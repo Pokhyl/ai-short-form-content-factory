@@ -280,3 +280,26 @@ Next boundary remains pre-deploy documentation alignment and bounded deployment 
 - no fresh M8 production job may start before pre-deploy proof and a bounded rollback snapshot.
 
 Fresh runtime inspection after the documentation writes still returned n8n health OK, media-worker health OK and a clean rebuild worktree. The next boundary is pre-deploy diff/migration proof; no architecture rewrite is justified by current evidence.
+
+## 2026-09-03 — Pre-deploy diff and migration 015 disposable proof
+
+Full local diff review from production-code base `e4e856093fa237dab9daaa56dcf443c3b6155f93` to semantic-v3 `2405d0431ff2007b52825b273267d07fad9f68ce` found exactly the expected 17 semantic-v3 files. `git diff --check` returned 0. No `compose.yaml`, WF02 or WF03 changes are present in this implementation diff.
+
+Migration `db/migrations/015_visual_segments.sql` was then tested against a disposable `postgres:18-alpine` container; production DB was not mutated.
+
+The first disposable harness produced `psql: connection ... /var/run/postgresql/.s.PGSQL.5432 failed`. This was a diagnostic harness race, not a migration failure: the Unix-socket readiness probe could succeed against PostgreSQL's temporary init server, after which the entrypoint shuts that server down before starting the final TCP listener. The corrected harness waits for `pg_isready -h 127.0.0.1`, which cannot succeed against that temporary socket-only init server.
+
+Corrected disposable proof PASS:
+
+- migration 015 applied successfully;
+- second application also completed successfully; `CREATE TABLE/INDEX IF NOT EXISTS` operations skipped existing objects as intended;
+- `visual_segments`, `visual_shots`, `media_library_assets` all exist;
+- 11 indexes were present across the three tables;
+- valid job -> segment -> library asset -> shot insertion succeeded;
+- deleting the job cascaded `visual_segments=0` and `visual_shots=0` while the reusable `media_library_assets` row remained `1`;
+- invalid `planned_shot_count=3` was rejected with nonzero psql exit as required by the `BETWEEN 1 AND 2` constraint;
+- disposable container was removed afterward;
+- production project container count remained exactly three: media-worker, n8n, postgres;
+- n8n and media-worker health remained OK.
+
+This closes the missing migration 015 disposable proof. The next production boundary is the bounded rollback snapshot; no production mutation has occurred yet.
