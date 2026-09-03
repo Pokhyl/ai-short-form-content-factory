@@ -59,11 +59,11 @@ Local rebuild: `/opt/ai-short-form-content-factory-rebuild`, branch `rebuild/sem
 
 Current clean local fix HEAD:
 
-`ad657994f910f4d2797688d290bd94a83de96d09` — `fix: align visual shot score schema with selection utility`.
+`ec07952d3b807656e0ef8b7fbcde85fa9d6450c2` — `fix: complete semantic visual segments after shot insert`.
 
 Corresponding latest GitHub code commit:
 
-`3e648b5aa6f7d357e90e8e3284f5642e4c73b4da`.
+`02e1679285fb34d786a9aa3b677f3dd39bec7eea`.
 
 Semantic-v3 is live:
 
@@ -217,18 +217,26 @@ Verified root cause: WF04 `Persist Visual Result` inserts a shot and then counts
 
 This is a persistence lifecycle defect, not a provider/ranking/perceptual-quality failure. No quality threshold changes are allowed.
 
+## WF04 segment-completion correction — PROVEN, NOT YET DEPLOYED
+
+Local commit `ec07952d3b807656e0ef8b7fbcde85fa9d6450c2`; GitHub code commit `02e1679285fb34d786a9aa3b677f3dd39bec7eea`. Exact WF04 blob `9480840875fc15cff8b43a6c5e3fbf90586bec54`; regression blob `48a9957368751235ce2d470e3fbafe07a47e094e`.
+
+Focused/static suite PASS, explicit `CODE_NODE_COMPILE_PASS 41 v24.20.0`, and exact corrected WF04 persistence SQL PASSed PostgreSQL 18 one-shot / duplicate / two-shot lifecycle proof (`WF04_EXACT_PERSIST_SQL_PG18_PASS`). No production mutation occurred during proof.
+
 ## Exact next action
 
 Do not create another production job yet.
 
-1. Fix WF04 `Persist Visual Result` generally: `inserted` must return `visual_segment_id`; segment completion requires a current inserted row and `pre-statement existing shot count + current inserted RETURNING count = planned_shot_count`.
-2. Add regression/proof for one-shot and two-shot segment completion under PostgreSQL 18; no retry or threshold change.
-3. Save code/test proof in GitHub, take bounded WF04 rollback snapshot, publish only corrected WF04, and verify source/live canonical equality plus healthy three-service runtime.
-4. Only then create one completely fresh `как работает индукционная плита / uk / 60` job. Never reuse `5cbe2459-d7d6-4fa7-b62b-908ecfaf0f28`.
-5. Require full machine `review_ready`; any new consumed-Edge failure stops M8 again.
+1. Require zero active n8n executions.
+2. Capture a bounded pre-fix rollback snapshot of the currently published live WF04 export, source/core hashes, version metadata and runtime state.
+3. Publish only corrected WF04 `M6VisualSourcing1`; do not change WF02/WF03/WF05/WF06, media-worker, PostgreSQL schema or quality thresholds.
+4. Re-export live WF04 and prove canonical source/live equality plus expected active version state; verify exactly three project services and health.
+5. Record deploy/rollback proof in GitHub and update this file.
+6. Only then create exactly one completely fresh `как работает индукционная плита / uk / 60` job. Never reuse `5cbe2459-291b-4aa7-b9e8-b1ed5cddac51` or any earlier consumed-Edge job.
+7. Require full machine `review_ready`; any new consumed-Edge product failure stops M8 again. If machine PASS, give the exact video to the user; M8 remains `2/10` until human acceptance.
 
 ## Resume rule
 
 If context is lost: read fresh `PERMANENT_PROJECT_RULES.md`, this file, `ENGINEERING_HISTORY.md`, and fresh runtime before acting.
 
-Current boundary: semantic-v3, HTTP adapter fix and migration 016 are live; fresh job `5cbe2459...` proved visual shots/quality but exposed the verified WF04 segment-ready CTE snapshot defect; M8 remains `2/10`; immediate next action is systemic WF04 persistence SQL correction and proof, not a new job.
+Current boundary: semantic-v3, HTTP adapter fix and migration 016 are live; WF04 segment-completion correction is code-proven and saved in GitHub but not yet production-published; M8 remains `2/10`; immediate next action is bounded WF04-only rollback/deploy proof, not a new job.
