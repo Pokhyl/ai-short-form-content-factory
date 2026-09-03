@@ -187,8 +187,37 @@ GitHub code synchronization used Git Data objects and a non-force fast-forward. 
 
 No force push, provider change, threshold change, workflow change, DB change or production job occurred during this correction/proof stage.
 
+## 2026-09-03 — HTTP adapter media-worker-only production deploy PASS
+
+Before deployment, n8n active execution count was verified as `0`. A bounded media-worker-only rollback snapshot was created and SHA256-verified at:
+
+`/opt/ai-short-form-content-factory/rollback/20260903T143542Z-pre-visual-discovery-adapter`
+
+The snapshot contains the pre-fix media-worker source/build inputs, compose file and runtime metadata. Pre-fix running image was `sha256:36a810e87e8d62b0e24795c57be0affe43b68704a42cda24ea97143b85557a59`; rollback tag `ai-short-form-content-factory-media-worker:rollback-20260903T143542Z-pre-adapter`.
+
+Only two production source files were changed from clean local `12533a3`:
+
+- `services/media-worker/src/server.mjs`;
+- `services/media-worker/src/visual-discovery-request.mjs`.
+
+Both were byte-compared to local source before build. `docker compose build media-worker` succeeded; `docker compose up -d --no-deps media-worker` recreated only media-worker. n8n and PostgreSQL were not recreated.
+
+Post-deploy proof:
+
+- running media-worker image `sha256:1f231f47835ab95f0d5b96a8928a5a8a91f9d268758275724f952532fb560a80`;
+- host/container SHA256 `server.mjs` both `3cae11aa4ee063743b7c696ce5c2cd9b06bff72c2e2bb442a7b75a0985bd16ba`;
+- host/container SHA256 `visual-discovery-request.mjs` both `d400eeb4a0718dd1673961b44c477eb61acb9f24dd76373c92628fbe41cba45a`;
+- media-worker health OK with local `Xenova/siglip-base-patch16-224`;
+- n8n `/healthz` OK;
+- PostgreSQL healthy;
+- exactly the three project services remain running.
+
+Live production HTTP boundary proof used four contiguous `2 s` semantic timed beats and no TTS/job creation. `POST http://127.0.0.1:3001/visual/discover` returned HTTP 200, `segmentation_version=semantic-visual-segments-v3`, four visual segments, candidate counts `62/62/61/62`, provider errors `0`. Marker `LIVE_HTTP_SEMANTIC_DISCOVERY_PASS`.
+
+This closes the verified adapter root cause without provider changes, threshold weakening, workflow changes, DB changes or retries.
+
 ## Current boundary
 
-M8 human accepted remains `2/10`. The HTTP adapter fix is now code-proven and saved in GitHub, but the production media-worker still runs the pre-fix image.
+M8 human accepted remains `2/10`. The HTTP adapter fix is saved in GitHub and deployed with rollback/live HTTP proof.
 
-Next actions: fresh-read source-of-truth/runtime; take a bounded media-worker-only rollback snapshot/tag of the current semantic-v3 pre-adapter service; stage only corrected media-worker source from local `12533a3`; build and replace only media-worker; prove host/container equality, three healthy services and live production HTTP semantic discovery; record deployment in GitHub; only then create exactly one completely fresh `как работает индукционная плита / uk / 60` job. Any consumed-Edge failure stops M8 again.
+The next allowed action is exactly one completely fresh `как работает индукционная плита / uk / 60` production job. Never reuse `cb98ad2b-1aaa-4117-918d-8fef22940945` or any earlier consumed-Edge job. Require full machine proof through `review_ready`; any new consumed-Edge product failure stops M8 again. If machine PASS, give the exact video to the user and do not increment M8 until human acceptance.
