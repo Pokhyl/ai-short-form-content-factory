@@ -181,3 +181,25 @@ After the duration-driven shot-cardinality correction, the first real-context re
 The harness then stopped before ranking because it incorrectly asserted that the exact database narration must produce exactly 9 semantic segments. The current deterministic segmenter produced 10 segments from the actual persisted text/timing. This was a diagnostic harness defect and a false FAIL, not a product/runtime failure: the architecture explicitly requires segment count to be content-derived rather than fixed by duration or by an approximate regression fixture.
 
 The corrected real-provider harness must therefore require structural properties instead of an exact count: semantic segment count is positive and lower than the 18 timed-beat count for this case; default shot count equals semantic segment count after removal of elapsed-time shot multiplication; the segment/shot timelines cover the full `57.216 s`; all truth-eligibility, SigLIP, perceptual adjacency/occurrence, `0.34` duration-share and post-render gates remain unchanged. No production mutation or threshold change occurred.
+
+## 2026-09-03 — Corrected UK/60 real-provider semantic-v3 dry-run PASS
+
+The corrected local-only real-provider dry-run reloaded exact persisted job `4372be34-c417-415f-92f6-63481b3b5686` read-only and executed the current local semantic-v3 discovery/planning/ranking/assignment path with real Wikimedia, Pixabay and Pexels candidates plus the existing local SigLIP rank endpoint. Production was not mutated.
+
+PASS proof:
+
+- 18 timed beats -> 10 content-derived semantic visual segments;
+- 10 semantic segments -> exactly 10 visual shots; elapsed time no longer multiplies shot obligations;
+- every segment retained a 10-candidate truth-eligible pool containing Wikimedia, Pixabay and Pexels;
+- all 10 shot slots were assigned successfully;
+- unique assets `10/10` in this specific run, but asset uniqueness is not a required product gate;
+- perceptual visual clusters `9`, required `5`;
+- adjacent perceptual duplicates `0`;
+- maximum perceptual-cluster occurrence `2`;
+- maximum perceptual-cluster duration share `0.245`, below unchanged `0.34`;
+- longest semantic shot `7.278 s`, proving removal of the artificial 5-second file-change timer without weakening video-level diversity;
+- provider errors `0` for this run;
+- the full shot timeline covered the persisted `57.216 s` accepted voiceover;
+- runtime after the dry-run remained exactly three project containers.
+
+The selected sequence included Wikimedia, Pixabay and Pexels assets and passed without retries, candidate-pool inflation, topic-specific mappings, threshold changes, provider fallbacks outside the existing bounded multi-source contract, or production writes. This validates the systemic shot-cardinality correction for the original UK/60 failure fixture. Next gate is cross-topic real-provider dry-runs before any deployment.
