@@ -55,9 +55,17 @@ Visual quality rules:
 
 Production root: `/opt/ai-short-form-content-factory`.
 
-Local rebuild: `/opt/ai-short-form-content-factory-rebuild`, branch `rebuild/semantic-visual-segments-local`, clean implementation HEAD `2405d0431ff2007b52825b273267d07fad9f68ce`.
+Local rebuild: `/opt/ai-short-form-content-factory-rebuild`, branch `rebuild/semantic-visual-segments-local`.
 
-Semantic-v3 is deployed:
+Current clean local fix HEAD:
+
+`12533a3b241a2901a17bb25bbee18b091f9c6eb8` — `fix: forward semantic timed beats through visual discovery HTTP adapter`.
+
+Corresponding GitHub code commit:
+
+`3dbc3610f83e5d15466d6825218e0c3ad2b69f0f`.
+
+Semantic-v3 is live:
 
 - migration `015_visual_segments.sql` live;
 - `visual_segments`, `visual_shots`, `media_library_assets` live;
@@ -67,35 +75,79 @@ Semantic-v3 is deployed:
 - WF05 `M7VideoRender1` render-v3 published;
 - WF06 `R8ReviewApi1` review API live.
 
-WF04 deployment proof:
+WF04 remains active with `versionId=activeVersionId=12e0857b-3c3c-4640-b7f1-2861050038f1` and canonical behavior SHA `b6b08f21e0fe58b6661f7413e3389834b92c6142f65831a3afcae526a31b53ed`.
 
-- active=true, 27 nodes;
-- `versionId=activeVersionId=12e0857b-3c3c-4640-b7f1-2861050038f1`;
-- source/live canonical core SHA `b6b08f21e0fe58b6661f7413e3389834b92c6142f65831a3afcae526a31b53ed`.
+WF05 remains active with `versionId=activeVersionId=ae9d00c2-bd65-4d3f-a8f5-ec0bcf840a12` and canonical behavior SHA `c5595719c63eecb2680c10dbe6a63e45bb7bc4f6d12308c3b62f5f2953f9a117`.
 
-WF05 deployment proof:
+## HTTP visual-discovery adapter correction — LIVE
 
-- active=true, 16 nodes;
-- `versionId=activeVersionId=ae9d00c2-bd65-4d3f-a8f5-ec0bcf840a12`;
-- source/live canonical core SHA `c5595719c63eecb2680c10dbe6a63e45bb7bc4f6d12308c3b62f5f2953f9a117`.
+Fresh semantic-v3 production job `cb98ad2b-1aaa-4117-918d-8fef22940945` consumed exactly one Edge synthesis (`uk-UA-OstapNeural`, `57.216 s`) and then failed in WF04 execution `10799` before creating visual segments. Underlying HTTP error was:
 
-Fresh runtime after the failure still has exactly `media-worker`, `n8n`, `postgres`; PostgreSQL healthy; n8n `/healthz` OK; media-worker `/health` OK with local `Xenova/siglip-base-patch16-224`, q4, one preview attempt; no active n8n executions.
+`Visual discovery failed: visual discovery requires timed_beats or beats`.
 
-## Rollback
+Verified root cause: WF04 sent `timed_beats`; `visual-discovery.mjs` supported `timedBeats`; the `server.mjs` HTTP adapter forwarded only legacy `beats` and discarded `body.timed_beats`.
+
+Systemic fix now live:
+
+- `body.beats -> beats` retained for legacy compatibility;
+- `body.timed_beats -> timedBeats` forwarded for semantic-v3;
+- no provider, threshold, workflow or DB behavior was weakened/changed.
+
+Exact Git blobs saved in GitHub:
+
+- `server.mjs`: `4d2656e84a27d9e50f906d7360ca1c8de2c0ef30`;
+- `visual-discovery-request.mjs`: `203ca6c39f553283cd84846b438cfbd294468218`;
+- adapter regression: `a40c6b0fe6569791a3416ef2d2a9065f526667d9`.
+
+Focused/static proof PASSed: server/helper syntax, HTTP-adapter regression, legacy visual discovery, semantic segmentation, visual-shot quality, WF05 semantic contract and `git diff --check`.
+
+Disposable real HTTP `/visual/discover` proof PASSed with four contiguous 2-second semantic timed beats: HTTP 200, four visual segments, candidate counts `63/64/61/62`, provider errors `0`.
+
+## Adapter deploy / rollback proof
+
+Bounded pre-adapter media-worker rollback snapshot:
+
+`/opt/ai-short-form-content-factory/rollback/20260903T143542Z-pre-visual-discovery-adapter`
+
+Pre-fix media image:
+
+`sha256:36a810e87e8d62b0e24795c57be0affe43b68704a42cda24ea97143b85557a59`
+
+Rollback tag:
+
+`ai-short-form-content-factory-media-worker:rollback-20260903T143542Z-pre-adapter`
+
+Only `server.mjs` and `visual-discovery-request.mjs` were staged into production. Only media-worker was rebuilt/recreated; n8n and PostgreSQL were not recreated.
+
+Current running media-worker image:
+
+`sha256:1f231f47835ab95f0d5b96a8928a5a8a91f9d268758275724f952532fb560a80`
+
+Host/container SHA256 equality after deploy:
+
+- `server.mjs`: `3cae11aa4ee063743b7c696ce5c2cd9b06bff72c2e2bb442a7b75a0985bd16ba`;
+- `visual-discovery-request.mjs`: `d400eeb4a0718dd1673961b44c477eb61acb9f24dd76373c92628fbe41cba45a`.
+
+Live production HTTP proof after deploy:
+
+- POST `/visual/discover` HTTP 200;
+- `segmentation_version=semantic-visual-segments-v3`;
+- four visual segments;
+- candidate counts `62/62/61/62`;
+- provider errors `0`;
+- marker `LIVE_HTTP_SEMANTIC_DISCOVERY_PASS`.
+
+Latest verified runtime after deploy: exactly three project services; PostgreSQL healthy; n8n `/healthz` OK; media-worker `/health` OK with local `Xenova/siglip-base-patch16-224`, q4.
+
+## Rollback baseline for full semantic-v3
 
 Pre-semantic-v3 rollback snapshot:
 
 `/opt/ai-short-form-content-factory/rollback/20260903T134851Z-pre-semantic-v3`
 
-Predeploy media image:
+Rollback image tag:
 
-`sha256:4009376d074a271aced92aa0cde159ee46bb445af6998580e088a5d23137413d`
-
-Rollback tag:
-
-`ai-short-form-content-factory-media-worker:rollback-20260903T134851Z`
-
-Snapshot SHA256-verifies old published WF04/WF05, production workflow files, media-worker source/build inputs, compose, PostgreSQL schema/state and runtime metadata.
+`ai-short-form-content-factory-media-worker:rollback-20260903T134851Z`.
 
 ## WF02 / voice contract retained
 
@@ -125,75 +177,41 @@ Current accepted count remains `2/10`.
 
 Permanent old visual PRODUCT FAIL fixture: `13f64c50-8dd5-47e4-a88f-1411d258e7c4`.
 
-Previously consumed jobs never to reuse: `4372be34-c417-415f-92f6-63481b3b5686`, `85fcc63b-b89b-40d0-b253-6383b715f105`, `e1399581-305b-4341-910e-b9477a04f499`.
+Consumed-Edge jobs never to retry/reuse:
 
-## New fresh production failure — STOP M8
-
-Exactly one fresh intake call was made after semantic-v3 deployment:
-
-- topic `как работает индукционная плита`;
-- output `uk`;
-- target `60`;
-- HTTP 201;
-- job `cb98ad2b-1aaa-4117-918d-8fef22940945`;
-- matching job count changed `3 -> 4`, so one new row was created.
-
-The job is a real PRODUCT FAIL and is now consumed. Never retry/reuse it.
-
-Machine facts:
-
-- WF01 execution `10796` success;
-- exactly one Edge result persisted: `microsoft_edge_readaloud`, `edge_neural`, `uk-UA-OstapNeural`, measured `57.216 s`;
-- WF04 execution `10799` failed;
-- final state `failed|visuals`;
-- `visual_segments=0`, `visual_shots=0`;
-- no final video;
-- no active n8n executions remain.
-
-Concrete error:
-
-`Segmented visual discovery returned no visual segments [line 26]`.
-
-Execution data proved the upstream failure was HTTP 422 from `/visual/discover`:
-
-`Visual discovery failed: visual discovery requires timed_beats or beats`.
-
-## Verified root cause
-
-This is a general HTTP adapter wiring defect, not provider shortage, SigLIP, topic content or an acceptance threshold problem.
-
-- WF04 `Prepare Canonical Media Request` correctly builds `discovery_request.canonical_source` and `discovery_request.timed_beats`.
-- WF04 `Fetch Canonical Media` sends exactly `={{ $json.discovery_request }}` to `http://media-worker:3001/visual/discover`.
-- `visual-discovery.mjs::discoverVisualCandidates()` correctly accepts `{ beats, timedBeats }` and enters semantic segmented mode when `timedBeats` exists.
-- `server.mjs::discoverVisuals()` currently forwards only `beats: body?.beats`.
-- It does not forward `timedBeats: body?.timed_beats`.
-- Therefore the real HTTP semantic-v3 path discards `timed_beats` before invoking the already-proven discovery function.
-- Earlier local real-provider semantic-v3 harnesses called the function directly and therefore did not cover this HTTP adapter boundary.
-
-No threshold or provider change is justified.
-
-## Documentation correction
-
-The correct older CURRENT_STATE predeploy alignment commit is `f0f80836a6666b83502f6b74163936ff1a83ad85`. An earlier history transcription contained a wrong hybrid hash and is explicitly invalidated in `ENGINEERING_HISTORY.md`.
+- `4372be34-c417-415f-92f6-63481b3b5686`;
+- `85fcc63b-b89b-40d0-b253-6383b715f105`;
+- `e1399581-305b-4341-910e-b9477a04f499`;
+- `cb98ad2b-1aaa-4117-918d-8fef22940945`.
 
 ## Exact next action
 
-Do not create another production job yet.
+The adapter root cause is fixed, tested, saved in GitHub and deployed with live HTTP proof. No adapter work remains before product validation.
 
-1. Fix the general media-worker HTTP adapter so `/visual/discover` forwards both:
-   - legacy `beats: body?.beats`;
-   - semantic `timedBeats: body?.timed_beats`.
-2. Add a regression specifically covering the HTTP adapter contract so function-only tests cannot miss this class of defect again.
-3. Run focused/static regressions plus a disposable HTTP `/visual/discover` semantic request; do not change thresholds/providers.
-4. Record proof in GitHub.
-5. Take a bounded pre-fix media-worker rollback snapshot/tag if needed; migration/WF04/WF05 do not require redeploy unless evidence shows otherwise.
-6. Deploy only the corrected media-worker.
-7. Verify host/container source equality, health, exactly three persistent services, and real HTTP semantic discovery response.
-8. Only then create a different completely fresh `как работает индукционная плита / uk / 60` job.
-9. Require full machine proof through `review_ready`; if it passes, give the exact video to the user for human review. Do not change M8 count until user accepts it.
+Create exactly ONE completely fresh production job:
+
+- topic: `как работает индукционная плита`;
+- output language: `uk`;
+- target duration: `60`.
+
+For that exact new job require:
+
+- HTTP intake creates exactly one row;
+- factual retrieval/provenance PASS;
+- exactly one successful Edge synthesis;
+- measured duration PASS;
+- timed beats cover the accepted voice;
+- semantic visual segments and shots persist and cover the same voice;
+- truthful media eligibility PASS;
+- SigLIP/perceptual pre-render gate PASS;
+- render-v3 post-render state gate PASS;
+- ffprobe H.264 1080x1920 30fps + AAC 48kHz stereo;
+- final state `review_ready`.
+
+If any real product failure occurs after Edge is consumed, stop M8, record exact failure/root cause in GitHub and never retry that job. If machine PASS, give the user the exact video and do not increment M8 until the user watches and accepts it.
 
 ## Resume rule
 
 If context is lost: read fresh `PERMANENT_PROJECT_RULES.md`, this file, `ENGINEERING_HISTORY.md`, and fresh runtime before acting.
 
-Current boundary: semantic-v3 remains deployed and healthy except for the verified `/visual/discover` adapter defect; fresh job `cb98ad2b...` consumed one Edge and failed before semantic segments; M8 is stopped at `2/10`; next work is adapter fix + HTTP-boundary regression + media-worker-only redeploy, not another job.
+Current boundary: semantic-v3 + HTTP adapter fix are fully deployed with rollback/live proof; M8 remains `2/10`; immediate next action is exactly one fresh `как работает индукционная плита / uk / 60` production job and then machine/human review.
