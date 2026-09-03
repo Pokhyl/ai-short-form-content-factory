@@ -281,3 +281,22 @@ GitHub synchronization preserved remote docs history via non-force fast-forward 
 - regression `4742f563c2299a5f443971daae2602c570540cf7`.
 
 Current boundary: migration 016 is code-proven and saved in GitHub but is not yet applied to production. No new production job is allowed before bounded schema rollback capture, active-execution check, migration-only deploy, live constraint proof and GitHub state update.
+
+
+## 2026-09-03 — Migration 016 production deploy PASS
+
+Before production mutation, active n8n execution count was `0`; exactly three project services were running and healthy. Bounded rollback snapshot was created and SHA256-verified at:
+
+`/opt/ai-short-form-content-factory/rollback/20260903T150109Z-pre-visual-shot-score-016`
+
+Snapshot records the exact old constraint `visual_shots_score_check = CHECK (selection_score >= 0 AND selection_score <= 2)`, an empty `visual_shots` score state (`0|NULL|NULL`), table schema, runtime state, migration SHA, and guarded rollback SQL that restores `[0,2]` only when no out-of-old-domain rows exist.
+
+Production migration source SHA256 matched local: `8abdfd3e882a047784af05dc6fb91b2886c1b0f143de4c218629bfd4ef122317`. Only `db/migrations/016_visual_shot_selection_utility.sql` was staged into production and applied with `psql -v ON_ERROR_STOP=1`; transaction output was `BEGIN / ALTER TABLE / ALTER TABLE / COMMENT / COMMIT`. No n8n, media-worker or workflow restart/redeploy occurred.
+
+Live post-deploy constraint:
+
+`visual_shots_score_check|CHECK (((selection_score >= '-0.10'::numeric) AND (selection_score <= 1.09)))`
+
+Live column comment states the deterministic semantic-v3 selection-utility semantics and domain `[-0.10,1.09]`. PostgreSQL remained healthy; n8n `/healthz` OK; media-worker `/health` OK with local SigLIP; exactly three project services remained running; active executions remained `0`.
+
+This closes the verified `visual_shots.selection_score` schema/producer mismatch. No visual quality gate, provider behavior, candidate pool, SigLIP threshold or workflow logic changed. M8 remains `2/10` pending a completely fresh production job.
