@@ -303,3 +303,25 @@ Corrected disposable proof PASS:
 - n8n and media-worker health remained OK.
 
 This closes the missing migration 015 disposable proof. The next production boundary is the bounded rollback snapshot; no production mutation has occurred yet.
+
+## 2026-09-03 — Bounded pre-semantic-v3 rollback snapshot complete
+
+Rollback snapshot created at `/opt/ai-short-form-content-factory/rollback/20260903T134851Z-pre-semantic-v3` before any semantic-v3 production mutation.
+
+Snapshot contains and SHA256-verifies:
+
+- live published WF04 and WF05 exports;
+- current production filesystem WF04/WF05 exports;
+- current production media-worker Dockerfile, package manifests and complete source directory;
+- `compose.yaml`;
+- PostgreSQL schema-only dump;
+- predeploy DB state showing `visual_segments`, `visual_shots`, and `media_library_assets` all absent;
+- runtime image IDs and health metadata.
+
+The pre-deploy media-worker image `sha256:4009376d074a271aced92aa0cde159ee46bb445af6998580e088a5d23137413d` was additionally tagged locally as `ai-short-form-content-factory-media-worker:rollback-20260903T134851Z` for direct rollback.
+
+Snapshot verification passed for every file in `SHA256SUMS`. At snapshot time n8n and media-worker health were OK and PostgreSQL remained healthy.
+
+Diagnostic notes: an initial direct Docker read through SentinelX failed on `/var/run/docker.sock` permissions; the allowed `sudo docker` path immediately proved the containers healthy. Two early snapshot-completion shell commands then stopped on quoting errors before any production mutation; the final structured script completed the same snapshot and verified all files. These were diagnostic/orchestration errors, not product failures.
+
+The rollback requirement is now satisfied. The next allowed step is production migration 015, followed by bounded media-worker and WF04/WF05 deployment with live equality checks before any fresh M8 job.
