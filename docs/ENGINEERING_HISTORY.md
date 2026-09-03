@@ -164,8 +164,31 @@ During logging of the adapter failure, a connector `update_file` call accidental
 
 Recovery used the last complete pre-overwrite Git blob `d2f50deb811c80717c76126101b74856724ccfae`, then reconstructed this chronological history and appended the new production failure/root cause. The empty blob must never be treated as valid project history.
 
+## 2026-09-03 — HTTP adapter fix locally proven and synchronized to GitHub
+
+Systemic correction is isolated to the real HTTP boundary. Local commit `12533a3b241a2901a17bb25bbee18b091f9c6eb8` adds `services/media-worker/src/visual-discovery-request.mjs`, updates `server.mjs` to call `discoverVisualCandidates(buildVisualDiscoveryOptions(...))`, and adds `tests/media_worker_visual_discovery_adapter_regression.mjs`.
+
+The adapter maps both contracts without changing discovery/provider/quality behavior:
+
+- legacy `body.beats -> beats`;
+- semantic `body.timed_beats -> timedBeats`.
+
+Focused proof on the exact local commit PASSed using disposable Node 24 because the SentinelX non-login shell itself did not expose `node` in PATH. That PATH result was an execution-environment issue; the first command did not execute product tests. The corrected proof PASSed syntax checks plus adapter regression, legacy visual-discovery regression, semantic-segmentation regression, visual-shot-quality regression, WF05 semantic contract and `git diff --check`.
+
+Disposable media-worker HTTP proof then exercised the actual `/visual/discover` route. The first synthetic request contained two `3.2 s` beats over total `6.4 s`; it reached semantic segmentation and correctly returned 422 because the unchanged `0.34` quality cap permits only `2.176 s` per visual state. This was an invalid fixture, not product failure; no gate was changed.
+
+Corrected disposable HTTP fixture used four contiguous `2 s` timed beats over `8 s`. `/visual/discover` returned HTTP 200 with `segmentation_version`, four `visual_segments`, candidate counts `63/64/61/62`, and provider errors `0`. Marker: `HTTP_SEMANTIC_DISCOVERY_PASS`. No TTS and no production mutation occurred.
+
+GitHub code synchronization used Git Data objects and a non-force fast-forward. Remote commit `3dbc3610f83e5d15466d6825218e0c3ad2b69f0f` contains the exact three local files. Verified remote/local Git blob equality:
+
+- `server.mjs` = `4d2656e84a27d9e50f906d7360ca1c8de2c0ef30`;
+- `visual-discovery-request.mjs` = `203ca6c39f553283cd84846b438cfbd294468218`;
+- adapter regression = `a40c6b0fe6569791a3416ef2d2a9065f526667d9`.
+
+No force push, provider change, threshold change, workflow change, DB change or production job occurred during this correction/proof stage.
+
 ## Current boundary
 
-M8 human accepted remains `2/10`. Do not create another production job until the HTTP adapter fix is proven and deployed.
+M8 human accepted remains `2/10`. The HTTP adapter fix is now code-proven and saved in GitHub, but the production media-worker still runs the pre-fix image.
 
-Next actions: forward both legacy `beats` and semantic `timed_beats` through the real `/visual/discover` adapter; add an adapter regression; run focused/static + disposable HTTP proof; save proof in GitHub; take bounded media-worker pre-fix rollback snapshot; deploy media-worker only; verify host/container equality + three healthy services + live HTTP semantic discovery; then create a completely fresh UK/60 job. Any new consumed-Edge failure must stop progression again.
+Next actions: fresh-read source-of-truth/runtime; take a bounded media-worker-only rollback snapshot/tag of the current semantic-v3 pre-adapter service; stage only corrected media-worker source from local `12533a3`; build and replace only media-worker; prove host/container equality, three healthy services and live production HTTP semantic discovery; record deployment in GitHub; only then create exactly one completely fresh `как работает индукционная плита / uk / 60` job. Any consumed-Edge failure stops M8 again.
