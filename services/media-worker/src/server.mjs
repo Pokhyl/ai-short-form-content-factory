@@ -11,6 +11,7 @@ import { edgeProviderBudgetMilliseconds } from "./edge-provider-budget.mjs";
 import { parseSingleByteRange } from "./media-range.mjs";
 import { buildVisualBeatFilters } from "./visual-framing.mjs";
 import { discoverVisualCandidates } from "./visual-discovery.mjs";
+import { buildVisualDiscoveryOptions } from "./visual-discovery-request.mjs";
 import { clusterAverageHashes, evaluateVisualSequence, evaluateVisualShotSequence, requiredRenderedShotStateCount } from "./visual-quality.mjs";
 
 const { EdgeTTS } = edgeTtsPackage;
@@ -1273,12 +1274,10 @@ async function createVisualContactSheet(request, response) {
 async function discoverVisuals(request, response) {
   const body = await readJsonBody(request);
   try {
-    const result = await discoverVisualCandidates({
-      canonicalSource: body?.canonical_source,
-      beats: body?.beats,
+    const result = await discoverVisualCandidates(buildVisualDiscoveryOptions(body, {
       pixabayApiKey: process.env.PIXABAY_API_KEY ?? "",
       pexelsApiKey: process.env.PEXELS_API_KEY ?? "",
-    });
+    }));
     sendJson(response, 200, result);
   } catch (error) {
     throw new HttpError(422, "visual_discovery_failed", `Visual discovery failed: ${String(error?.message ?? error)}`);
