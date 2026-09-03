@@ -359,19 +359,23 @@ Exact GitHub blobs equal local commit blobs:
 No production workflow, DB, service or job was mutated during correction/proof. Active n8n executions were `0` at the predeploy boundary. Next action is bounded live-WF04 rollback capture, WF04-only publish, source/live equality and runtime proof; only after that may one completely fresh UK/60 production job be created.
 
 
-## 2026-09-03 — WF04 segment-completion predeploy rollback captured
+## 2026-09-03 — WF04 segment-completion production deploy PASS
 
-Before any workflow mutation, active n8n executions were `0`; exactly three project services were running and PostgreSQL was healthy. Bounded rollback snapshot was created and SHA256-verified at:
+WF04-only deployment used the already proven path: active executions `0`, corrected source core verified, production filesystem WF04 replaced from local clean commit `ec07952d3b807656e0ef8b7fbcde85fa9d6450c2`, `n8n import:workflow`, current-core verification before publish, `n8n publish:workflow --id=M6VisualSourcing1`, then exactly one n8n restart because the CLI explicitly reported restart was required.
 
-`/opt/ai-short-form-content-factory/rollback/20260903T155712Z-pre-wf04-segment-completion`
+Post-deploy proof:
 
-The snapshot contains the exact `--published` WF04 export, current WF04 export, production filesystem WF04, corrected expected WF04, workflow version metadata, runtime metadata, hashes and rollback instructions. Predeploy live metadata: active `true`, `versionId=activeVersionId=12e0857b-3c3c-4640-b7f1-2861050038f1`, `versionCounter=214`, 27 nodes.
+- production WF04 file SHA256 `62293e502318fab4b33895d009325632e0ca157ed3a6c963f6b8cc7a63d98442`;
+- corrected source / production file / current export / published export canonical core SHA256 all `6dbbc0558d107d2facf9bb0a84c614b926df407eb8061ac9330776fe95d31a3e`;
+- published/current workflow both active, 27 nodes, `versionId=activeVersionId=c6d2e89a-213d-4bd8-9d21-57640f066bb1`;
+- WF05 remained active at `ae9d00c2-bd65-4d3f-a8f5-ec0bcf840a12`;
+- WF02 remained active at `5885ad1b-7ce3-4244-9ac3-633fec020c73`;
+- WF03 remained active at `010fb1d6-a8cd-4ccc-8094-d6f9e61bc28d`;
+- WF06 remained active at `89d14a25-426f-47a1-832a-2a510b686144`;
+- migration 016 constraint remained `selection_score >= -0.10 AND selection_score <= 1.09`;
+- PostgreSQL healthy, n8n `/healthz` OK, media-worker `/health` OK, exactly three project services;
+- active executions after deployment `0`.
 
-Canonical core hashes using `{id,name,nodes,connections,settings}`:
+Rollback remains `/opt/ai-short-form-content-factory/rollback/20260903T155712Z-pre-wf04-segment-completion`. No WF02/WF03/WF05/WF06, media-worker, PostgreSQL schema, provider, quality threshold or candidate-pool behavior was changed.
 
-- live published/current/production before deploy: `3d6ccaf39c9f2f03836d1b63c45febce2d9b71451f2dc7374eac53bf434836d0`;
-- corrected expected WF04: `6dbbc0558d107d2facf9bb0a84c614b926df407eb8061ac9330776fe95d31a3e`.
-
-Published/current exports were byte-identical before deploy (`file_sha256=771368a7c6a2adf789e40a4aac592e4e096b6561bc147c2e40ae1d35f7d415ed`). The production filesystem workflow matched the same old live core, proving the rollback captures the actual pre-fix behavior. All snapshot files passed `sha256sum -c`.
-
-No workflow had been imported or published when this snapshot was recorded. Next action is WF04-only import/publish and source/live equality proof.
+The verified CTE snapshot root cause is now closed in production. Next allowed action is exactly one completely fresh `как работает индукционная плита / uk / 60` job.
