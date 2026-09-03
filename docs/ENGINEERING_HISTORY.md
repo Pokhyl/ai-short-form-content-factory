@@ -197,7 +197,7 @@ Reusable local harness `tests/semantic_visual_real_provider_dry_run.mjs` replays
 PASS cases:
 
 1. accepted zipper `227c8a50-ef1a-49e5-8d26-fdb40f663c83`: `15.480 s`, six timed beats -> five segments/shots; cap `5.2632`; max shot `4.579`; clusters 5/required 3; adjacent 0; max occurrence 1; max share `0.2958`; providers Pexels + Wikimedia; provider errors 0.
-2. accepted induction `2c182ff8-ea9f-4ddf-a417-b49f796d23f5`: `13.944 s`, six beats -> four segments/shots; cap `4.741`; max shot `4.705`; clusters 4/required 2; adjacent 0; max occurrence 1; max share `0.3374`; provider Wikimedia; provider errors 0.
+2. accepted induction `2c182ff8-ea9f-4ddf-a417-b49f796d23f5`: `13.944 s`, six beats -> four segments/shots; cap `4.741`; max shot `4.705`; clusters 4/required 2; adjacent 0; max occurrence 1; max share `0.3374`; providers Wikimedia; provider errors 0.
 3. failed old-visual UK induction `4372be34-c417-415f-92f6-63481b3b5686` used read-only as factual/timing fixture: `57.216 s`, 18 beats -> 10 segments/shots; effective cap `8.5`; max shot `7.278`; clusters 9/required 5; adjacent 0; max occurrence 2; max share `0.245`; providers Pexels + Pixabay + Wikimedia; provider errors 0.
 
 No retry, threshold weakening, topic hack, candidate-pool inflation or production write occurred.
@@ -247,3 +247,20 @@ Before deployment:
 6. create a completely fresh RU-topic -> UK/60 production job; never reuse `4372be34...`, `85fcc63b...` or `e1399581...`;
 7. require exactly one Edge call, semantic-v3 machine gates, ffprobe and `review_ready`;
 8. require user to watch the exact fresh video before changing M8 accepted count.
+
+## 2026-09-03 — Semantic-v3 implementation synchronized to GitHub
+
+The clean local rebuild is at `2405d0431ff2007b52825b273267d07fad9f68ce` (`redesign: separate semantic visual segments from timed beats`) on `rebuild/semantic-visual-segments-local`. No force push or history rewrite was used.
+
+GitHub branch `rebuild/semantic-visual-segments` was completed through connector writes while preserving the remote documentation history. Material sync commits in this continuation include:
+
+- `62fef92819b6093ec0f876e112ff44752feb9f8e` — align `visual-quality.mjs` with the local semantic-v3 evaluator;
+- `c62fd62591db6c9594066fb82881da049437a7ce` — add semantic-v3 WF05;
+- `bc1f6515eab5fc449af5b4ef6500530caca52232` — add semantic-v3 WF04;
+- `602ab214035a051e41a47394d0b0db31b6e5cc1e` — add semantic-v3 `media-worker/server.mjs`.
+
+Cross-check of all 17 semantic-v3 implementation/migration/test files against local `2405d04` found 16 exact Git blob matches. `services/media-worker/src/server.mjs` differs only by the final newline at EOF: remote blob `5898e7fb53c9c054e62c2cde0b4202be88efd2ba`; appending one `LF` to the remote bytes produces the exact local blob `a07fb3396602a0923fa081c022cd3739f6076caf`. `diff -u` reports no source-code difference beyond `No newline at end of file`.
+
+This EOF normalization difference is not a semantic implementation difference and must not be mistaken for a code divergence. Production was not changed by this GitHub synchronization. Fresh runtime inspection still showed n8n `/healthz` OK and media-worker `/health` OK on its actual bound port `3001`.
+
+Next boundary remains pre-deploy documentation alignment and bounded deployment gates; no fresh production job is allowed before those gates and rollback proof are complete.
