@@ -1,244 +1,80 @@
-# Current Project State — Semantic Visual Rebuild
+# Current Project State — Product-First V4
 
 Last updated: 2026-09-03
 
-This file is authoritative for active work on GitHub branch `rebuild/semantic-visual-segments`. Repository/runtime state overrides chat memory. Detailed chronology is in `docs/ENGINEERING_HISTORY.md`.
+This file is authoritative for branch `rebuild/product-first-v4`. Repository/runtime state overrides chat memory.
 
-## Mandatory protocol
+## Why this branch exists
 
-Before every technical response, diagnosis, recommendation, code/config change, deployment, or test:
+Semantic-v3 is rejected as a product architecture.
 
-1. read `docs/PERMANENT_PROJECT_RULES.md` fresh from GitHub;
-2. read this file fresh from GitHub branch `rebuild/semantic-visual-segments`;
-3. read `docs/ENGINEERING_HISTORY.md` before starting a new approach;
-4. architecture change: also read `docs/ARCHITECTURE.md` and `docs/VISUAL_SEGMENTATION_DESIGN.md`;
-5. milestone/gate change: also read `docs/ROADMAP.md` and `docs/PROCESS_GATE.md`;
-6. provider change: also read `docs/UPSTREAM_DECISION.md`;
-7. inspect fresh VPS/runtime state before acting.
+Fresh production job `61f662ee-565c-4dd6-8759-17a51f3e7ec3` reached machine `review_ready` but received explicit HUMAN FAIL. The exact video had unnatural Ukrainian narration/pronunciation and visually irrelevant footage including fried eggs, bacon and campfire material for an induction-cooking explainer.
 
-## Hard invariants
+That result proves the previous machine gates could certify a technically valid but bad video. M8 remains `2/10`. The consumed job must never be retried/reused.
 
-- exactly three persistent project services: `n8n`, `postgres`, `media-worker`;
-- external API cost per generated video: `0 PLN`;
-- no quota-limited hosted semantic AI or general local generative LLM in the required critical path;
-- no quota waits/retries, extra keys/accounts, paid fallback, topic-specific hacks, acceptance bypasses, threshold weakening, or repeated fitting TTS;
-- automatic production performs exactly ONE Edge synthesis per job;
-- a job whose Edge synthesis was consumed is never retried/reused;
-- first real product failure stops M8 progression and is fixed systemically;
-- material failures, root causes, changes, tests, deploys and rollbacks are logged in GitHub before moving past them.
+## Production freeze
 
-## Production architecture
+Do not create any more production jobs through semantic-v3.
 
-Semantic-v3 critical path:
+The currently deployed VPS stack remains untouched only as rollback/reference. Do not spend more Edge calls proving the rejected architecture.
 
-`topic -> factual evidence -> deterministic evidence-backed narration -> local duration preflight -> exactly one natural Edge voice -> timed beats -> deterministic semantic visual segments -> truthful media eligibility -> local SigLIP + perceptual identity -> global visual-shot assignment -> pre-render gate -> independent subtitle/visual timelines -> render-v3 -> post-render state gate -> human review`
+## Source of truth
 
-Semantic segment rules:
+Before technical work on V4 read fresh:
 
-- boundaries only on existing timed-beat boundaries;
-- one visual shot per semantic segment by default;
-- no elapsed-time shot multiplication and no fixed 5-second shot rule;
-- `effective_max_segment_seconds = min(8.5, accepted_voice_duration * 0.34)`;
-- a beat itself is not split only to satisfy visuals; if it exceeds the cap, fail closed;
-- additional shot only for deterministic semantic/representation transition.
+1. `docs/PERMANENT_PROJECT_RULES.md`;
+2. this file;
+3. `docs/PRODUCT_FIRST_V4.md`;
+4. `docs/ENGINEERING_HISTORY.md` for prior failures;
+5. relevant upstream/reference project docs when adapting an existing pattern.
 
-Visual quality rules:
+## V4 direction
 
-- asset-file uniqueness is not product-visible diversity;
-- adjacent perceptual duplicate count must be 0;
-- max cluster occurrence = 2;
-- max cluster duration share = 0.34;
-- post-render midpoint states are independently checked;
-- missing/non-finite metrics fail closed.
+The redesign is based on recurring patterns from mature open-source short-video projects including MoneyPrinterTurbo, ShortGPT, AI Shorts Generator, Short Video Maker, OpenNolan, VML and Remotion-based faceless-video systems.
 
-## Live production deployment
+New critical path:
 
-Production root: `/opt/ai-short-form-content-factory`.
+`topic -> factual research -> semantic director -> speech-ready script + scene storyboard -> TTS -> Whisper timing from actual audio -> scene-specific visual production -> preview QA -> Remotion/FFmpeg render -> human review`
 
-Local rebuild: `/opt/ai-short-form-content-factory-rebuild`, branch `rebuild/semantic-visual-segments-local`.
+Key product rules:
 
-Current clean local fix HEAD:
+- source text is evidence, not final narration;
+- one semantic director artifact owns the spoken script and scene visual intents;
+- TTS receives normalized speech-ready text, never raw encyclopedic prose;
+- captions/timing come from the generated audio via Whisper, not synthetic fixed beat counts;
+- stock footage is only one visual mode;
+- factual/mechanism scenes can route to exact media, diagrams/motion graphics, cards or other truthful representations instead of generic stock;
+- no generic/joker visual fallback for factual scenes;
+- SigLIP/CLIP may rerank candidates but cannot replace semantic planning/relevance;
+- final asset relevance is more important than perceptual diversity metrics;
+- `machine_rendered` is not `human_approved`.
 
-`ec07952d3b807656e0ef8b7fbcde85fa9d6450c2` — `fix: complete semantic visual segments after shot insert`.
+Full contract: `docs/PRODUCT_FIRST_V4.md`.
 
-Corresponding latest GitHub code commit:
+## Cost boundary
 
-`02e1679285fb34d786a9aa3b677f3dd39bec7eea`.
+Do not convert the project into a mandatory paid-per-video pipeline.
 
-Semantic-v3 is live:
+The semantic director is provider-pluggable. Preferred zero-variable-cost path is a capable local model on hardware that can actually run it. Do not force a weak general model onto the current 2 vCPU / 3.7 GiB VPS merely to preserve an old architecture rule.
 
-- migration `015_visual_segments.sql` live;
-- migration `016_visual_shot_selection_utility.sql` live;
-- `visual_segments`, `visual_shots`, `media_library_assets` live;
-- WF02 `TJfA4ZYUEKSTad6k` multilingual deterministic factual path live;
-- WF03 `UHxvCZNqaLb1RKMM` exactly-one-Edge + timed beats live;
-- WF04 `M6VisualSourcing1` semantic-v3 + segment-completion correction published;
-- WF05 `M7VideoRender1` render-v3 published;
-- WF06 `R8ReviewApi1` review API live.
+## Immediate build sequence
 
-WF04 is active with `versionId=activeVersionId=c6d2e89a-213d-4bd8-9d21-57640f066bb1` and canonical core SHA `6dbbc0558d107d2facf9bb0a84c614b926df407eb8061ac9330776fe95d31a3e`.
+1. Build V4 as a direct CLI prototype outside n8n and PostgreSQL orchestration.
+2. Implement a single structured director artifact (`spoken_script` + `scenes[]`).
+3. Add general multilingual speech text normalization.
+4. Produce one continuous voice track and derive real word timings from that audio.
+5. Implement visual-mode routing (`exact_media`, `stock`, `diagram`, `screen/text/card`, optional generated image).
+6. Render one complete 9:16 prototype with Remotion/FFmpeg.
+7. Human-review that direct prototype before integrating n8n/DB.
+8. Repeat across materially different topics/languages before any production deployment.
 
-WF05 remains active with `versionId=activeVersionId=ae9d00c2-bd65-4d3f-a8f5-ec0bcf840a12` and canonical behavior SHA `c5595719c63eecb2680c10dbe6a63e45bb7bc4f6d12308c3b62f5f2953f9a117`.
+## Forbidden next moves
 
-## HTTP visual-discovery adapter correction — LIVE
+- no semantic-v3 production retries;
+- no `кГц`-specific pronunciation patch;
+- no eggs/bacon/induction-specific blacklist;
+- no threshold tweaking to make the old visual gate look better;
+- no new elaborate deterministic semantic heuristics;
+- no orchestration/database work before a direct V4 video is HUMAN PASS.
 
-Fresh semantic-v3 production job `cb98ad2b-1aaa-4117-918d-8fef22940945` consumed exactly one Edge synthesis (`uk-UA-OstapNeural`, `57.216 s`) and then failed in WF04 execution `10799` before creating visual segments. Underlying HTTP error was:
-
-`Visual discovery failed: visual discovery requires timed_beats or beats`.
-
-Verified root cause: WF04 sent `timed_beats`; `visual-discovery.mjs` supported `timedBeats`; the `server.mjs` HTTP adapter forwarded only legacy `beats` and discarded `body.timed_beats`.
-
-Systemic fix now live:
-
-- `body.beats -> beats` retained for legacy compatibility;
-- `body.timed_beats -> timedBeats` forwarded for semantic-v3;
-- no provider, threshold, workflow or DB behavior was weakened/changed.
-
-Exact Git blobs saved in GitHub:
-
-- `server.mjs`: `4d2656e84a27d9e50f906d7360ca1c8de2c0ef30`;
-- `visual-discovery-request.mjs`: `203ca6c39f553283cd84846b438cfbd294468218`;
-- adapter regression: `a40c6b0fe6569791a3416ef2d2a9065f526667d9`.
-
-Focused/static proof PASSed: server/helper syntax, HTTP-adapter regression, legacy visual discovery, semantic segmentation, visual-shot quality, WF05 semantic contract and `git diff --check`.
-
-Disposable real HTTP `/visual/discover` proof PASSed with four contiguous 2-second semantic timed beats: HTTP 200, four visual segments, candidate counts `63/64/61/62`, provider errors `0`.
-
-## Adapter deploy / rollback proof
-
-Bounded pre-adapter media-worker rollback snapshot:
-
-`/opt/ai-short-form-content-factory/rollback/20260903T143542Z-pre-visual-discovery-adapter`
-
-Pre-fix media image:
-
-`sha256:36a810e87e8d62b0e24795c57be0affe43b68704a42cda24ea97143b85557a59`
-
-Rollback tag:
-
-`ai-short-form-content-factory-media-worker:rollback-20260903T143542Z-pre-adapter`
-
-Only `server.mjs` and `visual-discovery-request.mjs` were staged into production. Only media-worker was rebuilt/recreated; n8n and PostgreSQL were not recreated.
-
-Current running media-worker image:
-
-`sha256:1f231f47835ab95f0d5b96a8928a5a8a91f9d268758275724f952532fb560a80`
-
-Host/container SHA256 equality after deploy:
-
-- `server.mjs`: `3cae11aa4ee063743b7c696ce5c2cd9b06bff72c2e2bb442a7b75a0985bd16ba`;
-- `visual-discovery-request.mjs`: `d400eeb4a0718dd1673961b44c477eb61acb9f24dd76373c92628fbe41cba45a`.
-
-Live production HTTP proof after deploy:
-
-- POST `/visual/discover` HTTP 200;
-- `segmentation_version=semantic-visual-segments-v3`;
-- four visual segments;
-- candidate counts `62/62/61/62`;
-- provider errors `0`;
-- marker `LIVE_HTTP_SEMANTIC_DISCOVERY_PASS`.
-
-Latest verified runtime after deploy: exactly three project services; PostgreSQL healthy; n8n `/healthz` OK; media-worker `/health` OK with local `Xenova/siglip-base-patch16-224`, q4.
-
-## Rollback baseline for full semantic-v3
-
-Pre-semantic-v3 rollback snapshot:
-
-`/opt/ai-short-form-content-factory/rollback/20260903T134851Z-pre-semantic-v3`
-
-Rollback image tag:
-
-`ai-short-form-content-factory-media-worker:rollback-20260903T134851Z`.
-
-## WF02 / voice contract retained
-
-WF02 multilingual correction commit `e4e856093fa237dab9daaa56dcf443c3b6155f93`; rollback `/opt/ai-short-form-content-factory/rollback/20260903T055250Z-pre-wf02-multilingual`.
-
-Retained rules:
-
-- factual probe languages exactly EN/PL/RU/UK requested-first;
-- one Wikipedia request/probe, no retry loop;
-- official language link for cross-language handoff;
-- no topic mappings/generative translation;
-- narration extractive/provenance-preserving;
-- local duration preflight;
-- one natural Edge synthesis only;
-- measured duration authoritative; miss fails closed.
-
-## M8 accepted state
-
-M8 requires at least 10 materially different videos with human review.
-
-Human accepted:
-
-1. zipper `227c8a50-ef1a-49e5-8d26-fdb40f663c83` — HUMAN PASS;
-2. EN induction `2c182ff8-ea9f-4ddf-a417-b49f796d23f5` — HUMAN PASS.
-
-Current accepted count remains `2/10`.
-
-Permanent old visual PRODUCT FAIL fixture: `13f64c50-8dd5-47e4-a88f-1411d258e7c4`.
-
-Consumed-Edge jobs never to retry/reuse:
-
-- `4372be34-c417-415f-92f6-63481b3b5686`;
-- `85fcc63b-b89b-40d0-b253-6383b715f105`;
-- `e1399581-305b-4341-910e-b9477a04f499`;
-- `cb98ad2b-1aaa-4117-918d-8fef22940945`;
-- `44101dd9-d7d6-4fa7-b62b-908ecfaf0f28`;
-- `5cbe2459-291b-4aa7-b9e8-b1ed5cddac51`.
-
-## Latest production failure — STOP M8
-
-Fresh job `44101dd9-d7d6-4fa7-b62b-908ecfaf0f28`, `как работает индукционная плита / uk / 60`, was created by exactly one HTTP 201 intake call and is consumed. It must never be retried/reused.
-
-Machine facts:
-
-- exactly one Edge synthesis: `microsoft_edge_readaloud` / `edge_neural` / `uk-UA-OstapNeural`, measured `57.216 s`;
-- 18 timed beats persisted;
-- 10 semantic visual segments persisted, proving the earlier HTTP `timed_beats` adapter defect is closed;
-- WF04 execution `10856` failed while persisting visual shots;
-- final state `failed|visuals`; `visual_segments=10`, `visual_shots=0`, no video.
-
-Exact PostgreSQL error: `new row for relation "visual_shots" violates check constraint "visual_shots_score_check"`. Shot 4 carried `selection_score=-0.006621`.
-
-Verified root cause: schema/producer contract mismatch. WF04 persists deterministic `selection_utility = local_rank_score + min(metadata_overlap,5)*0.018 - representation_preference_rank*0.025`, whose current bounded producer domain is `[-0.10, 1.09]`; migration 015 incorrectly constrained persisted values to `[0,2]`. Negative utility is a valid relative assignment utility, not an invalid SigLIP score or visual-quality bypass.
-
-Migration 016 is now production-deployed. It changes only `visual_shots_score_check` to `[-0.10,1.09]`. Static regression and disposable PostgreSQL 18 proof PASS, including real `-0.006621` acceptance, both outside-bound rejection and repeat application. Production apply was transactional; no n8n/media-worker/workflow restart occurred. No visual quality threshold/provider/workflow behavior changed.
-
-Pre-016 rollback snapshot: `/opt/ai-short-form-content-factory/rollback/20260903T150109Z-pre-visual-shot-score-016`. Live migration SHA256: `8abdfd3e882a047784af05dc6fb91b2886c1b0f143de4c218629bfd4ef122317`. Live constraint is `selection_score >= -0.10 AND selection_score <= 1.09`; exactly three services remain healthy and active executions are `0`.
-
-## New fresh production failure — STOP M8
-
-Job `5cbe2459-291b-4aa7-b9e8-b1ed5cddac51`, `как работает индукционная плита / uk / 60`, is consumed and must never be retried/reused. It used exactly one Edge synthesis (`uk-UA-OstapNeural`, `57.216 s`), persisted 18 timed beats, 10 semantic segments and 10 visual shots. Migration 016 is proven effective because the negative shot utility persisted.
-
-The visual sequence itself passed: clusters `9/5`, assets `10/10`, adjacent `0`, max occurrence `2`, max duration share `0.24496644295302013423`, max shot `7.278 s`. WF04 execution `10881` nevertheless failed with `segments=0/10`; every durable segment remained `planned`.
-
-Verified root cause: WF04 `Persist Visual Result` inserts a shot and then counts `visual_shots` from a sibling data-modifying CTE in the same PostgreSQL statement. That table scan uses the statement snapshot and cannot see the current inserted row, so `completed` never marks a one-shot segment ready. Disposable PostgreSQL 18 reproduced `inserted=1`, same-statement table count `0`, completed `0`; using existing rows plus the `inserted RETURNING` rows correctly produced completed `1`.
-
-This is a persistence lifecycle defect, not a provider/ranking/perceptual-quality failure. No quality threshold changes are allowed.
-
-## WF04 segment-completion correction — LIVE
-
-Local commit `ec07952d3b807656e0ef8b7fbcde85fa9d6450c2`; GitHub code commit `02e1679285fb34d786a9aa3b677f3dd39bec7eea`. Exact WF04 blob `9480840875fc15cff8b43a6c5e3fbf90586bec54`; regression blob `48a9957368751235ce2d470e3fbafe07a47e094e`.
-
-Focused/static suite PASS, explicit `CODE_NODE_COMPILE_PASS 41 v24.20.0`, and exact corrected WF04 persistence SQL PASSed PostgreSQL 18 one-shot / duplicate / two-shot lifecycle proof (`WF04_EXACT_PERSIST_SQL_PG18_PASS`).
-
-Predeploy rollback: `/opt/ai-short-form-content-factory/rollback/20260903T155712Z-pre-wf04-segment-completion`. Live current/published core equals corrected source: `6dbbc0558d107d2facf9bb0a84c614b926df407eb8061ac9330776fe95d31a3e`; live `versionId=activeVersionId=c6d2e89a-213d-4bd8-9d21-57640f066bb1`, 27 nodes. Exactly three services healthy; active executions `0`.
-
-## Exact next action
-
-WF04 CTE lifecycle defect is fixed, proven, saved in GitHub and live.
-
-Create exactly ONE completely fresh production job:
-
-- topic: `как работает индукционная плита`;
-- output language: `uk`;
-- target duration: `60`.
-
-Never reuse `5cbe2459-291b-4aa7-b9e8-b1ed5cddac51` or any earlier consumed-Edge job. Require exactly one Edge synthesis and full machine proof through durable semantic segments in `ready`, visual shots, pre-render visual gate, render-v3 post-render gate, ffprobe and final `review_ready`. Any new consumed-Edge product failure stops M8 and must be recorded before a new approach. If machine PASS, give the exact video to the user; M8 remains `2/10` until human acceptance.
-
-## Resume rule
-
-If context is lost: read fresh `PERMANENT_PROJECT_RULES.md`, this file, `ENGINEERING_HISTORY.md`, and fresh runtime before acting.
-
-Current boundary: semantic-v3, HTTP adapter fix, migration 016 and WF04 segment-completion correction are live with rollback/equality proof; M8 remains `2/10`; immediate next action is exactly one completely fresh `как работает индукционная плита / uk / 60` production job and then machine/human review.
+Current boundary: V4 research/design branch exists, production semantic-v3 is frozen, and the next work is the direct product prototype—not another n8n workflow patch.
