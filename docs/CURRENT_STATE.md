@@ -184,7 +184,8 @@ Consumed-Edge jobs never to retry/reuse:
 - `85fcc63b-b89b-40d0-b253-6383b715f105`;
 - `e1399581-305b-4341-910e-b9477a04f499`;
 - `cb98ad2b-1aaa-4117-918d-8fef22940945`;
-- `44101dd9-d7d6-4fa7-b62b-908ecfaf0f28`.
+- `44101dd9-d7d6-4fa7-b62b-908ecfaf0f28`;
+- `5cbe2459-291b-4aa7-b9e8-b1ed5cddac51`.
 
 ## Latest production failure — STOP M8
 
@@ -206,20 +207,28 @@ Migration 016 is now production-deployed. It changes only `visual_shots_score_ch
 
 Pre-016 rollback snapshot: `/opt/ai-short-form-content-factory/rollback/20260903T150109Z-pre-visual-shot-score-016`. Live migration SHA256: `8abdfd3e882a047784af05dc6fb91b2886c1b0f143de4c218629bfd4ef122317`. Live constraint is `selection_score >= -0.10 AND selection_score <= 1.09`; exactly three services remain healthy and active executions are `0`.
 
+## New fresh production failure — STOP M8
+
+Job `5cbe2459-291b-4aa7-b9e8-b1ed5cddac51`, `как работает индукционная плита / uk / 60`, is consumed and must never be retried/reused. It used exactly one Edge synthesis (`uk-UA-OstapNeural`, `57.216 s`), persisted 18 timed beats, 10 semantic segments and 10 visual shots. Migration 016 is proven effective because the negative shot utility persisted.
+
+The visual sequence itself passed: clusters `9/5`, assets `10/10`, adjacent `0`, max occurrence `2`, max duration share `0.24496644295302013423`, max shot `7.278 s`. WF04 execution `10881` nevertheless failed with `segments=0/10`; every durable segment remained `planned`.
+
+Verified root cause: WF04 `Persist Visual Result` inserts a shot and then counts `visual_shots` from a sibling data-modifying CTE in the same PostgreSQL statement. That table scan uses the statement snapshot and cannot see the current inserted row, so `completed` never marks a one-shot segment ready. Disposable PostgreSQL 18 reproduced `inserted=1`, same-statement table count `0`, completed `0`; using existing rows plus the `inserted RETURNING` rows correctly produced completed `1`.
+
+This is a persistence lifecycle defect, not a provider/ranking/perceptual-quality failure. No quality threshold changes are allowed.
+
 ## Exact next action
 
-The adapter defect and visual-shot score schema mismatch are both fixed, proven, saved in GitHub and live.
+Do not create another production job yet.
 
-Create exactly ONE completely fresh production job:
-
-- topic: `как работает индукционная плита`;
-- output language: `uk`;
-- target duration: `60`.
-
-Never reuse `44101dd9-d7d6-4fa7-b62b-908ecfaf0f28` or any earlier consumed-Edge job. Require exactly one Edge synthesis and full machine proof through durable semantic segments/shots, pre-render visual gate, render-v3 post-render gate, ffprobe and final `review_ready`. Any new consumed-Edge product failure stops M8 and must be recorded before a new approach. If machine PASS, give the exact video to the user; M8 remains `2/10` until human acceptance.
+1. Fix WF04 `Persist Visual Result` generally: `inserted` must return `visual_segment_id`; segment completion requires a current inserted row and `pre-statement existing shot count + current inserted RETURNING count = planned_shot_count`.
+2. Add regression/proof for one-shot and two-shot segment completion under PostgreSQL 18; no retry or threshold change.
+3. Save code/test proof in GitHub, take bounded WF04 rollback snapshot, publish only corrected WF04, and verify source/live canonical equality plus healthy three-service runtime.
+4. Only then create one completely fresh `как работает индукционная плита / uk / 60` job. Never reuse `5cbe2459-d7d6-4fa7-b62b-908ecfaf0f28`.
+5. Require full machine `review_ready`; any new consumed-Edge failure stops M8 again.
 
 ## Resume rule
 
 If context is lost: read fresh `PERMANENT_PROJECT_RULES.md`, this file, `ENGINEERING_HISTORY.md`, and fresh runtime before acting.
 
-Current boundary: semantic-v3, HTTP adapter fix and migration 016 selection-utility schema alignment are live with rollback/proof; M8 remains `2/10`; immediate next action is exactly one completely fresh `как работает индукционная плита / uk / 60` production job and then machine/human review.
+Current boundary: semantic-v3, HTTP adapter fix and migration 016 are live; fresh job `5cbe2459...` proved visual shots/quality but exposed the verified WF04 segment-ready CTE snapshot defect; M8 remains `2/10`; immediate next action is systemic WF04 persistence SQL correction and proof, not a new job.
