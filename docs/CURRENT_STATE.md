@@ -6,11 +6,9 @@ This file is authoritative for branch `rebuild/product-first-v4`. Repository/run
 
 ## Production status
 
-Semantic-v3 is rejected as a product architecture and remains frozen. Do not create new production jobs through it.
+Semantic-v3 remains rejected and frozen. Do not create new production jobs through it.
 
-The last semantic-v3 artifact `61f662ee-565c-4dd6-8759-17a51f3e7ec3` was HUMAN FAIL despite machine `review_ready`. M8 remains `2/10`.
-
-No V4 artifact is human-approved yet. No production/n8n rebuild is allowed.
+No V4 artifact is human-approved yet. No production/n8n rebuild is allowed. M8 remains `2/10`.
 
 ## V4 source of truth
 
@@ -20,140 +18,58 @@ Before technical work read fresh:
 2. this file;
 3. `docs/PRODUCT_FIRST_V4.md`;
 4. `docs/ENGINEERING_HISTORY_V4.md`;
-5. `docs/V4_RENDER_EVAL_20260903.md`;
-6. `docs/V4_TIKTOK_FORMAT_FAIL_20260903.md`;
-7. `docs/V4_MULTISHOT_HUMAN_FAIL_20260903.md`;
-8. `docs/V4_CROSS_TOPIC_MATRIX.md`;
-9. `docs/V4_CROSS_TOPIC_AUDIT_20260903.md`;
-10. `docs/V4_CROSS_TOPIC_CONTRACT_IMPLEMENTATION_20260903.md`;
-11. relevant upstream/reference docs.
+5. `docs/V4_MULTISHOT_HUMAN_FAIL_20260903.md`;
+6. `docs/V4_CROSS_TOPIC_MATRIX.md`;
+7. `docs/V4_CROSS_TOPIC_AUDIT_20260903.md`;
+8. `docs/V4_CROSS_TOPIC_CONTRACT_IMPLEMENTATION_20260903.md`;
+9. `docs/V4_ACTUAL_AUDIO_CROSS_TOPIC_PROOF_20260903.md`;
+10. relevant upstream/reference docs.
 
 ## Current architecture direction
 
-`topic -> factual research -> semantic director -> speech-ready script + semantic scenes + shots[] -> TTS -> actual-audio Whisper timing -> truthful representation selection -> exact/relevant portrait media + diagrams/motion graphics -> continuous visual track + text overlays -> Remotion/FFmpeg composition -> human review`
+`topic -> factual research -> semantic director -> speech-ready script + semantic visual obligations -> TTS -> exact-audio Whisper timing -> provenance-bound timeline compiler -> truthful representation/media acquisition -> motion graphics/exact media -> vertical renderer -> complete-video human review`
 
-Critical product rules:
+Critical rules:
 
-- evidence is not final speech;
 - TTS receives speech-ready text only;
-- captions/timing come from actual generated audio;
-- a semantic scene is not one visual asset;
-- each semantic scene may contain multiple `shots[]`;
-- stock is one visual mode, never a generic factual fallback;
-- portrait orientation alone does not prove semantic relevance;
-- normal full-screen factual video/photo must show the actual subject/action or clearly justified context;
-- generic kitchen/lifestyle/adjacent stock is forbidden as a fallback for factual/mechanism narration;
-- when exact moving footage is unavailable, change representation mode to exact photo + motion, diagram, collage, PIP or motion graphic rather than insert generic stock;
-- normal factual shorts maintain a continuous meaningful visual track;
-- `hero_title`, `text_card`, `callout` and similar typography do not replace the primary visual by default; text normally overlays relevant visual material;
-- normal full-screen TikTok photo/video shots must use portrait/vertical or genuinely crop-safe source media;
-- widescreen exact evidence is routed to contain/collage/PIP/diagram treatment, not used as an ordinary full-screen photo;
-- vertical captions/key text must stay inside a TikTok-safe region;
-- pacing is driven by semantic/visual information, not an arbitrary fixed cut-count target;
-- no bespoke semantic threshold maze;
-- no mandatory paid-per-video provider;
-- machine render is not human approval;
-- no architecture may be validated on one topic only.
+- captions/timing come from the exact generated audio;
+- no generic factual fallback stock;
+- text is normally an overlay, not the primary visual;
+- portrait orientation does not prove relevance;
+- widescreen exact evidence must use contain/PIP/collage/diagram treatment;
+- factual/mechanism beats must show the actual subject/mechanism or use a truthful constructed representation;
+- pacing follows semantic/visual information, not an arbitrary cut-count target;
+- machine render is never human approval;
+- general changes must be exercised across multiple materially different topics/languages;
+- every meaningful failure/root cause/decision is recorded in GitHub.
 
 Permanent cross-topic rule: `docs/PERMANENT_PROJECT_RULES.md`, commit `427877e12e15c4c87c8c96433abadb73a9b4a845`.
 
-## Renderer evaluation
+## Human-failed artifacts retained as evidence
 
-### MoneyPrinterTurbo
+1. Custom compositor prototype — HUMAN FAIL: stretched imagery, giant subtitle blocks, unreadable diagrams.
+2. OpenMontage proof #1 — HUMAN FAIL: narrated slideshow / one asset per long scene.
+3. OpenMontage proof #2 — HUMAN FAIL: 25 fast cuts but text-only replacement frames and generic adjacent stock; portrait/cut frequency were false quality proxies.
 
-Useful as reference/source for TTS, Whisper and some media contracts, but rejected as the V4 renderer on the current VPS. Clean upstream rendering was too slow and its concat run failed after a generated temp clip disappeared. No custom workaround was accepted.
+Do not patch or retry these artifacts as fixtures.
 
-### Short Video Maker
+## Cross-topic matrix — active
 
-Rejected as the full pipeline because its normal path is English/Kokoro + Pexels and includes generic fallback footage behavior. Its Remotion patterns remain reference material only.
+1. Induction / Ukrainian — regression mechanism case only; do not tune next on this topic.
+2. Eiffel Tower construction / Polish — exact place/history.
+3. Clothing zipper mechanism / Russian — object/mechanism.
+4. OLED vs LCD / English — comparison/mechanism.
 
-### OpenMontage
-
-Evaluation/reference source: `calesthio/OpenMontage`, commit `cd9f3c1f03368be87b140af494914b8ee4e3c7a4`, AGPL-3.0.
-
-No OpenMontage source code has been copied into this repository. License compatibility must be resolved before code adoption.
-
-## Human-failed V4 artifacts
-
-### Custom compositor prototype — HUMAN FAIL
-
-Systemic defects: stretched/warped imagery, oversized subtitle boxes, unreadable diagrams. Bespoke compositor path retired.
-
-### OpenMontage proof #1 — HUMAN FAIL
-
-Artifact: `/opt/ai-short-form-v4-upstreams/OpenMontage/remotion-composer/out/v4-induction.mp4`
-
-General defect: narrated slideshow — five long scene-assets, insufficient visual change, landscape stills as ordinary vertical shots.
-
-### OpenMontage proof #2 — HUMAN FAIL
-
-Artifact: `/opt/ai-short-form-v4-upstreams/OpenMontage/remotion-composer/out/v4-induction-tiktok.mp4`
-
-SHA256: `dbaf1e92e3cd7fd66920520a683b403a46bb04b875a89fcbda696a2950b54af5`
-
-Machine characteristics:
-
-- `25` visual cuts across `31.968 s`;
-- maximum cut duration `1.6 s`;
-- portrait source-media guard passed;
-- final encode `1080x1920`, H.264 + AAC;
-- caption safe-zone moved upward.
-
-Human verdict: HUMAN FAIL for the product as a whole.
-
-Verified general defects:
-
-1. standalone typography repeatedly replaced the meaningful visual track;
-2. generic cooking/electric-stove clips were accepted even though they were not exact/relevant enough for the factual subject;
-3. high cut frequency + portrait orientation were incorrectly treated as proxies for TikTok quality.
-
-Permanent record: `docs/V4_MULTISHOT_HUMAN_FAIL_20260903.md`.
-
-## Cross-topic validation matrix — active
-
-Do not tune induction again as the next fixture.
-
-Active matrix:
-
-1. technical mechanism / Ukrainian — induction regression case;
-2. exact place/history / Polish — `Jak zbudowano Wieżę Eiffla`;
-3. object/mechanism / Russian — `Как работает молния на одежде`;
-4. comparison / English — `OLED vs LCD: what actually changes`.
-
-Matrix definition: `docs/V4_CROSS_TOPIC_MATRIX.md`, commit `328a4e5288ea14af532fb2eef31ef9debb65b927`.
-
-Evidence/representation audit: `docs/V4_CROSS_TOPIC_AUDIT_20260903.md`, commit `2e015800a4e6b5f659d697d54f9becbbf23c8c26`.
-
-Audit conclusion:
-
-- history/exact entity -> exact archive media + collage/PIP/contain;
-- physical mechanism -> macro exact media + original motion graphics;
-- display comparison -> original side-by-side mechanism graphics + exact supporting shots;
-- the shared architecture is truthful representation selection, not `find portrait stock for every beat`.
+Matrix definition: `docs/V4_CROSS_TOPIC_MATRIX.md`.
 
 ## Structural timeline contract — TECHNICAL PASS
 
-New code:
+Code:
 
 - `prototype/v4/timeline_contract.py`;
 - `prototype/v4/tests/test_timeline_contract.py`.
 
-Remote commits:
-
-- guard: `8aa5365c384a73d603a2cf072b65e51f1f5f66fb`;
-- matrix tests: `47089b7e626afd5bdfcdab23dcc46bc0f0403ed0`.
-
-Local VPS commit: `d3cfcdea7f4661bc65037aa31a0dd8001cf386a3`.
-
-Test command:
-
-`PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python3 -m unittest -v prototype.v4.tests.test_contract prototype.v4.tests.test_timeline_contract`
-
-Result: `12/12 PASS`.
-
-The same contract is exercised across induction / Eiffel / zipper / OLED fixtures.
-
-It rejects structurally:
+It rejects:
 
 - text-only primary visual;
 - generic factual fallback stock;
@@ -161,24 +77,91 @@ It rejects structurally:
 - contextual media without explicit justification;
 - timeline gaps/overlaps.
 
-It deliberately does not impose semantic similarity thresholds or a fixed maximum cut duration.
+Remote commits: `8aa5365c384a73d603a2cf072b65e51f1f5f66fb`, `47089b7e626afd5bdfcdab23dcc46bc0f0403ed0`.
 
-Implementation proof: `docs/V4_CROSS_TOPIC_CONTRACT_IMPLEMENTATION_20260903.md`, commit `567ff6f767f6ded0ffd2733ed04f4546a3b0a95e`.
+## Actual-audio cross-topic automation — TECHNICAL PASS
+
+A separate V4-only tooling environment exists at `/opt/ai-short-form-v4-tools` with `edge-tts 7.2.7`, `faster-whisper`, and `requests`. Production containers were not modified.
+
+Three non-induction fixtures now have fresh speech-ready narration, real Edge audio and Whisper timing:
+
+### Eiffel / Polish
+
+- voice `pl-PL-MarekNeural`;
+- duration `27.34 s`;
+- Whisper language probability `1.0`;
+- `5` actual-audio beats after compilation;
+- script SHA256 `3ed155f6496f912fe1b1e4e85434722746cd37662388bafb1433608d9dd960db`;
+- audio SHA256 `711d0e23b02fcd536df83da524e756f61674523403815a6b6039bc6629169ec9`.
+
+### Zipper / Russian
+
+- voice `ru-RU-DmitryNeural`;
+- duration `27.14 s`;
+- Whisper language probability `1.0`;
+- `8` actual-audio beats;
+- script SHA256 `6710dcb57cdb6c1f0ee2f6df3def6518e904bec0d49a5eb474b84c7a6a177b38`;
+- audio SHA256 `0cf7c311ca6affac26ae39eab19308ce7d6c4482dd87e0eb010593f0502d668c`.
+
+### OLED/LCD / English
+
+- voice `en-US-AndrewNeural`;
+- duration `32.34 s`;
+- Whisper language probability `1.0`;
+- `6` actual-audio beats;
+- script SHA256 `08b25e10b36cdbfc5d585d79642d3f7e818cc8f0d783bcf1e481de9a9252a15a`;
+- audio SHA256 `bd1f5b6d3401e8972134dacc7c505a692fbf65dc6737a78cc2398345d104e22b`.
+
+The English speech guard rejected raw `OLED/LCD` abbreviations; narration was corrected by using full spoken names. No acronym-specific bypass was introduced.
+
+## Stale-artifact defect — FIXED GENERALLY
+
+The matrix run directories contained older `director.json`/`timeline.json` artifacts whose narration and durations no longer matched the current script/audio. This could have produced a technically valid render from mismatched generations.
+
+General fix:
+
+- new `prototype/v4/timeline_builder.py`;
+- new tests `prototype/v4/tests/test_timeline_builder.py`;
+- new CLI commands `compile-timeline` and `validate-timeline`;
+- timing is derived from actual Whisper segment starts;
+- visual obligations carry semantic representation only, not invented timestamps;
+- timeline embeds current `script_sha256` and `audio_sha256` provenance;
+- silence between speech segments remains covered by the previous meaningful visual beat;
+- shared structural timeline contract runs before candidate timeline output.
+
+Remote commits:
+
+- builder `9c6216638639ad9b2a196cc96df978a2a382b053`;
+- tests `af4cde4c147bc4271e46d78d588dce4ae42fa86f`;
+- CLI `d9b0e342926160b152ad40336865c3a7c23fd4f3`.
+
+Local VPS commit: `f73d7cab98148e4c5c842ae03722c0f9d187d554`.
+
+Focused suite: `15/15 PASS`.
+
+The CLI independently rebuilt Eiffel, zipper and OLED timelines and byte-matched the reference compiler output for all three.
+
+Full proof: `docs/V4_ACTUAL_AUDIO_CROSS_TOPIC_PROOF_20260903.md`, commit `811aadd76c0cf82d7b9af73fb503c45e0b097f3b`.
+
+## Representation state of the three active cases
+
+- Eiffel: exact historical construction media + constructed foundation/prefabrication/rivet beats. No generic Paris/travel filler.
+- Zipper: exact portrait macro zipper media + constructed slider/channel/interlock mechanics. No generic fashion filler.
+- OLED/LCD: constructed side-by-side light-path/mechanism graphics. No random television/device filler.
+
+Evidence sources include official Eiffel Tower history, YKK zipper structure, a slider patent for channel geometry, LG OLED structure, and Samsung OLED architecture.
 
 ## Immediate next action
 
-Do NOT render another induction-specific variant.
+Do not hand-build final videos and do not return to induction.
 
-Next stage:
+Build the next reusable automation layer:
 
-1. build/direct three non-induction matrix storyboards against the same timeline contract;
-2. obtain exact/relevant media or choose truthful constructed representation per beat;
-3. validate all timelines with `timeline_contract.py` before any render;
-4. render materially different matrix cases through the same general renderer contracts;
-5. inspect exact outputs as complete videos, not only isolated frames;
-6. record every failure/root cause/rule change in GitHub before the next independent change;
-7. only HUMAN PASS artifacts count toward resuming production orchestration.
+1. exact-media acquisition with source/license/hash/dimensions provenance for declared exact-media obligations;
+2. deterministic constructed-graphic payloads for diagram/motion obligations;
+3. renderer input generated from the provenance-bound timeline;
+4. render materially different matrix cases through the same general renderer contract;
+5. inspect each complete exact video, not only frames;
+6. record every failure/root cause/rule change before the next architectural change.
 
-No production/n8n rebuild until direct prototypes receive HUMAN PASS across materially different topics/languages.
-
-M8 remains `2/10`.
+No n8n/DB rebuild until multiple materially different direct prototypes are HUMAN PASS.
