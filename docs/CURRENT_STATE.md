@@ -22,7 +22,7 @@ Before technical work read fresh:
 
 ## Selected architecture
 
-`topic -> factual research -> semantic director -> speech-ready script + storyboard -> TTS -> Whisper timing from actual audio -> explicit representation modes -> FFmpeg/Remotion render -> human review`
+`topic -> factual research -> semantic director -> speech-ready script + storyboard -> TTS -> Whisper timing from actual audio -> explicit representation modes -> mature upstream render/composition -> human review`
 
 Key rules remain:
 
@@ -43,56 +43,32 @@ Focused upstream suite on the VPS: `316 passed`, `69 subtests passed`, `7 skippe
 
 V4 adapter skeleton is saved in GitHub commit `389ae8ea16df733b956e7432808776e4d088b715` under `prototype/v4/`.
 
-## First direct V4 prototype — MACHINE RENDERED
+## First direct V4 prototype — HUMAN FAIL
 
-Run directory:
-
-`/opt/ai-short-form-v4-runs/induction-uk-30-v1`
-
-Topic/language/target:
-
-`Як працює індукційна плита / uk / 30 s`
-
-Important boundary: the first run used a manually authored/reference `director.json` to prove the downstream product path. This is not yet proof of an automatic semantic-director provider.
-
-Speech/timing:
-
-- exactly one V4 Edge synthesis via MoneyPrinterTurbo;
-- `uk-UA-OstapNeural`, rate `1.0`, no speed fitting;
-- measured voice `31.968 s`;
-- faster-whisper `small`, CPU `int8`, on the exact audio;
-- MPT subtitle correction fixed recognition spelling while preserving real timestamps;
-- scene boundaries from actual-audio sentence starts: `0.0 / 4.36 / 11.62 / 19.09 / 23.70 / 31.968`.
-
-Visuals:
-
-1. real induction cooktop;
-2. real induction coil/electronics interior;
-3. induction-heating diagram;
-4. induction-pan thermography;
-5. compatibility explanation card.
-
-No generic stock fallback was used.
-
-Final artifact:
+Artifact:
 
 `/opt/ai-short-form-v4-runs/induction-uk-30-v1/final-v4-ffmpeg.mp4`
 
-Machine proof:
+The user watched the exact artifact and rejected it. An uploaded copy was then inspected frame-by-frame.
 
-- SHA256 `a2fe175acbc35a36185d1044eb4358595bc96ec7766287d9862f59db25842d61`;
-- `32.000000 s`;
-- H.264 / 1080x1920 / yuv420p;
-- AAC / 48 kHz / stereo;
-- state `machine_rendered` only.
+Visible defects:
 
-The full proof and environment findings are recorded in `docs/ENGINEERING_HISTORY_V4.md`, commit `2418290a8589c19137bf1f33ce66bf08e412d6a6`.
+- source images were severely stretched/warped into the vertical canvas;
+- giant subtitle boxes obscured most of the visual content;
+- the explanatory diagram became unreadable;
+- thermography and the final scene were dominated by subtitles instead of visual storytelling.
+
+Systemic root cause:
+
+The prototype reused MPT TTS/Whisper modules but introduced a bespoke local Python scene compositor and custom image-to-vertical layout. This violated the project direction to prove mature upstream behavior before inventing a replacement presentation layer.
+
+This is not to be repaired with induction-specific image swaps or font-size tweaks.
 
 ## Immediate next action
 
-The user must watch the exact first V4 prototype.
+1. Retire the custom V4 scene compositor/layout path.
+2. Run a mature upstream end-to-end render flow with its normal composition/subtitle defaults and inspect the exact output before adding adapters.
+3. Preserve source aspect ratio and enforce bounded subtitle occupancy as general product requirements.
+4. Only after a clean upstream artifact exists may V4 add the minimum director/representation adapters.
 
-- If HUMAN FAIL: fix the observed general product defect in V4; do not patch the induction topic specifically.
-- If HUMAN PASS: keep production frozen, integrate an automatic provider-pluggable semantic director, then make a materially different second direct prototype before any n8n/PostgreSQL orchestration work.
-
-No production deployment is allowed yet.
+No new production deployment, no semantic-v3 jobs, and no HUMAN PASS count change. M8 remains `2/10`.
