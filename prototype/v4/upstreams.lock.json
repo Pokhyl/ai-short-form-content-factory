@@ -1,0 +1,8 @@
+{
+  "MoneyPrinterTurbo": {
+    "repository": "https://github.com/harry0703/MoneyPrinterTurbo.git",
+    "commit": "cbbb366393105d5cefc254dc9ed492d43da0711b",
+    "license": "MIT",
+    "version": "1.3.6"
+  }
+}
