@@ -325,3 +325,23 @@ Snapshot verification passed for every file in `SHA256SUMS`. At snapshot time n8
 Diagnostic notes: an initial direct Docker read through SentinelX failed on `/var/run/docker.sock` permissions; the allowed `sudo docker` path immediately proved the containers healthy. Two early snapshot-completion shell commands then stopped on quoting errors before any production mutation; the final structured script completed the same snapshot and verified all files. These were diagnostic/orchestration errors, not product failures.
 
 The rollback requirement is now satisfied. The next allowed step is production migration 015, followed by bounded media-worker and WF04/WF05 deployment with live equality checks before any fresh M8 job.
+
+## 2026-09-03 — Production migration 015 + semantic-v3 media-worker deploy PASS
+
+Immediately before mutation, n8n had zero running/new/waiting executions. The application database still contained older stale nonterminal job rows from August 25–28, but none corresponded to a live n8n execution; they were not treated as in-flight deployment work.
+
+The exact seven proven semantic-v3 runtime files were staged from clean local `2405d0431ff2007b52825b273267d07fad9f68ce` into production and byte-compared before use:
+
+- `db/migrations/015_visual_segments.sql`;
+- `services/media-worker/src/server.mjs`;
+- `services/media-worker/src/visual-discovery.mjs`;
+- `services/media-worker/src/visual-quality.mjs`;
+- `services/media-worker/src/visual-segmentation.mjs`;
+- `n8n/workflows/WF04-visual-sourcing.json`;
+- `n8n/workflows/WF05-video-render.json`.
+
+All seven staged files matched the clean local source. Migration 015 applied transactionally with `ON_ERROR_STOP=1`; live PostgreSQL then resolved all three new relations: `visual_segments`, `visual_shots`, and `media_library_assets`.
+
+`docker compose build media-worker` succeeded before replacement. Only `media-worker` was recreated with `docker compose up -d --no-deps media-worker`; n8n and PostgreSQL were not recreated. New media-worker health returned `status=ok`, local SigLIP `Xenova/siglip-base-patch16-224`, and `preview_fetch_attempts=1`. Exactly the three project containers remained running.
+
+WF04/WF05 were deliberately not imported in this phase. The next independent step is to import and explicitly publish only WF04 and WF05, restart n8n once, then prove published workflow behavior equals the staged semantic-v3 sources before creating any new job.
