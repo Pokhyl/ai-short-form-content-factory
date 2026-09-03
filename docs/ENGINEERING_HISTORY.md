@@ -2,204 +2,248 @@
 
 Chronological durable record for material changes, failures, verified root causes, regressions, deploys and rollback facts. `docs/CURRENT_STATE.md` remains the operational source of truth.
 
-Compacted on 2026-09-03 while preserving the material failures, decisions, commits, rollbacks, diagnostic mistakes and acceptance evidence needed to resume without chat memory. Exact code history remains recoverable from listed commits and rollback snapshots.
+Compacted on 2026-09-03 while preserving every material production failure, accepted result, systemic correction, rejected approach, deployment/rollback fact and diagnostic mistake that could otherwise cause a false PASS/FAIL after context reset. Exact code history remains recoverable from listed commits and rollback snapshots.
 
 ## 2026-09-02 — Old induction machine PASS invalidated
 
-Job `13f64c50-8dd5-47e4-a88f-1411d258e7c4` reached `review_ready`, but human inspection showed only two effective visual states. Previous machine PASS is permanently invalidated. Root cause: old acceptance counted scene/file presence rather than actual video-level perceptual sequence quality.
+Job `13f64c50-8dd5-47e4-a88f-1411d258e7c4` reached `review_ready`, but human inspection showed only two effective visual states. Previous machine PASS is permanently invalidated. Root cause: acceptance counted scene/file presence rather than actual video-level perceptual sequence quality. Never reuse this job as acceptance evidence.
 
-## 2026-09-02 — Visual-quality-v2 rewrite and deployment
+## 2026-09-02 — Visual-quality-v2 rewrite/deploy
 
 Required visual path became:
 
 `timed beat + evidence -> deterministic search intents -> multi-source discovery -> metadata/provenance eligibility -> local SigLIP ranking + perceptual identity -> global assignment -> sequence gate -> persist -> render -> post-render pixel-state gate -> review_ready`.
 
-Six-beat contract: every beat truth-eligible; at least five perceptual clusters; zero adjacent duplicates; no cluster over `0.34` duration share; non-finite metrics fail closed; rendered midpoint frames independently satisfy required state count.
+Six-beat contract: every beat truth-eligible; at least five perceptual clusters; zero adjacent duplicates; no cluster over `0.34` total duration share; non-finite metrics fail closed; rendered midpoint frames independently satisfy required state count.
 
 Cross-topic dry-runs without threshold weakening: EN induction 6 clusters/max `0.1813`; PL combustion engine 5/max `0.3333`; RU refrigerator 6/max `0.1667`; UK volcano 6/max `0.1667`.
 
 Commit `f7c4096503c9620910b387129a5a06cce4d26d42` — `redesign: enforce perceptual visual diversity`.
-Rollback: `/opt/ai-short-form-content-factory/rollback/20260902T175543Z-pre-visual-quality-v2`.
+Rollback `/opt/ai-short-form-content-factory/rollback/20260902T175543Z-pre-visual-quality-v2`.
 Migration 013 applied; WF04/WF05 published; exactly three project services and PostgreSQL healthy.
 
-Diagnostic compile-harness mistake where top-level-array workflow exports were treated as objects was invalidated; zero-count Code-node output is never accepted as PASS.
+Diagnostic mistake preserved: an early compile harness treated a top-level-array workflow export as an object. A zero-count Code-node compile can never be accepted as PASS.
 
 ## 2026-09-02 — Reference-media lifecycle failure/fix
 
-Fresh job `1afc307d-aaac-4eed-8387-b05e1b6721eb`, WF04 execution `9902`, failed after its single Edge synthesis because planner persisted fake `reference_media_kind=mixed` and violated DB constraint.
+Fresh job `1afc307d-aaac-4eed-8387-b05e1b6721eb`, WF04 execution `9902`, failed after its one Edge synthesis because planner persisted fake `reference_media_kind=mixed` and violated the DB constraint.
 
-Systemic correction: `visual_planned + technical_reference` keeps `reference_media_kind=NULL`; `visual_ready` requires actual `photo|diagram|animation`.
+Systemic correction: `visual_planned + technical_reference` keeps `reference_media_kind=NULL`; `visual_ready` persists actual `photo|diagram|animation`.
 
 Commit `b83bf6d48f1df259c7c6fa0136748ca10d13f1af` — `fix: align reference media kind lifecycle`.
-Rollback: `/opt/ai-short-form-content-factory/rollback/20260902T181813Z-pre-reference-media-kind-lifecycle`.
-Migration 014 live; WF04 core equality proved; runtime healthy.
+Rollback `/opt/ai-short-form-content-factory/rollback/20260902T181813Z-pre-reference-media-kind-lifecycle`.
+Migration 014 live; WF04 live equality proved; runtime healthy.
 
 ## 2026-09-02 — M8 #2 induction MACHINE + HUMAN PASS
 
-Accepted job `2c182ff8-ea9f-4ddf-a417-b49f796d23f5`, `How does induction heating work? / en / 15`.
+Accepted fresh job `2c182ff8-ea9f-4ddf-a417-b49f796d23f5`, `How does induction heating work? / en / 15`.
 
-Machine proof: `review_ready`; preflight `14.358 s`; execution `9926` exactly one successful Edge synthesis; measured voice `13.944 s`; 6 beats; 6/6 perceptual clusters, required 5; adjacent 0; max share `0.1813`; post-render six states; ffprobe 14.000 s H.264 1080x1920 30fps + AAC 48kHz stereo. User watched exact fresh video and replied `мне нравится`. M8 accepted count became 2/10. Old two-state induction remains invalidated.
+Machine proof: `review_ready`; preflight `14.358 s`; execution `9926` exactly one successful Edge synthesis; measured voice `13.944 s`; six timed beats; 6/6 perceptual clusters, required 5; adjacent 0; max share `0.1813`; post-render six states; ffprobe H.264 1080x1920 30fps + AAC 48kHz stereo. User watched the exact video and said `мне нравится`. M8 accepted count became `2/10`.
 
 ## 2026-09-02/03 — WF02 multilingual retrieval failure and systemic correction
 
 Observed failures:
 
 - `Dlaczego popcorn pęka podczas podgrzewania? / pl / 15` failed because native Wikipedia query was over-constrained.
-- job `85fcc63b-b89b-40d0-b253-6383b715f105`, topic `как работает индукционная плита`, requested `uk`, 60 s, failed at `script` before voice because old live path issued Russian subject text against Ukrainian Wikipedia without multilingual resolution.
+- job `85fcc63b-b89b-40d0-b253-6383b715f105`, topic `как работает индукционная плита`, output `uk`, 60 s, failed at script because the old path issued Russian subject text against Ukrainian Wikipedia without multilingual resolution.
 
 Systemic contract after correction:
 
-- preserve full meaningful factual tokens for relevance validation;
+- preserve full factual tokens for relevance validation;
 - bounded subject-leading discovery query;
 - bounded probes exactly EN/PL/RU/UK, requested language first;
 - one Wikipedia request per probe, no retry loop;
-- official Wikipedia language link required for cross-language source handoff;
+- official Wikipedia language link required for cross-language handoff;
 - no topic mapping, generative translation, provider cascade, bypass or threshold weakening;
 - how/why evidence prioritizes mechanism/principle/construction;
-- extractive narration remains exact-source/provenance preserving;
-- duration operating bands unchanged.
+- narration remains extractive/provenance-preserving;
+- duration bands unchanged.
 
-Final real-Wikipedia proof: RU-topic→UK induction cooktop `60.106 s`; UK refrigerator `59.975 s`; PL popcorn `15.079 s`; EN induction `14.939 s`, all pre-TTS safe. Seven new WF02 regressions PASS; Code compile 8/8; staged pipeline PASS; retained duration audit 150 rows / 40 safe / 0 false-safe; CASE1 staged provenance PASS; CASE1 visual eligibility PASS.
+Final real-Wikipedia proof: RU-topic -> UK induction cooktop `60.106 s`; UK refrigerator `59.975 s`; PL popcorn `15.079 s`; EN induction `14.939 s`, all pre-TTS safe. Seven new regressions PASS; WF02 Code compile 8/8; staged pipeline PASS; retained duration audit 150 rows / 40 safe / 0 false-safe; CASE1 staged provenance PASS; CASE1 visual eligibility PASS.
 
-Diagnostic harness mistake: initial CASE1 visual invocation passed `-e never` as Node input and produced `ReferenceError`; invalid harness result. Correct invocation passed.
+Diagnostic harness mistake preserved: an initial CASE1 visual invocation passed `-e never` as Node input and produced `ReferenceError`; that result was invalid. Correct invocation passed.
 
 Commit `e4e856093fa237dab9daaa56dcf443c3b6155f93` — `fix: make factual retrieval multilingual and explanation-aware`.
-Rollback: `/opt/ai-short-form-content-factory/rollback/20260903T055250Z-pre-wf02-multilingual`.
-WF02-only production deploy PASS; live canonical core SHA `0f5893ffba59b23d181c363b26b991450e3fc016a52016e1ec686797dbfe23c1`; workflow active; no retry/maxTries; three project services healthy.
+Rollback `/opt/ai-short-form-content-factory/rollback/20260903T055250Z-pre-wf02-multilingual`.
+WF02-only production deploy PASS; live core SHA `0f5893ffba59b23d181c363b26b991450e3fc016a52016e1ec686797dbfe23c1`; no retry/maxTries; three services healthy.
 
 ## 2026-09-03 — Fresh UK/60 production failure exposes visual-unit mismatch
 
 Fresh real intake job `4372be34-c417-415f-92f6-63481b3b5686`, topic `как работает индукционная плита`, output `uk`, target 60, returned HTTP 201.
 
-It passed corrected WF02 and the single Edge synthesis. Canonical factual title `Індукційна плита`; preflight `60.106 s`; measured voice `57.216 s`; voice `uk-UA-OstapNeural`; 18 timed beats.
+It passed corrected WF02 and its single Edge synthesis: canonical factual title `Індукційна плита`; preflight `60.106 s`; measured voice `57.216 s`; voice `uk-UA-OstapNeural`; 18 timed beats.
 
-WF04 then failed at visuals with exact error `perceptually unique truth-eligible assignment 11/12 [line 15]`. Final state `failed|visuals`. This job must never be retried/reused because its one automatic Edge synthesis was already consumed.
+Old WF04 then failed at visuals with exact error `perceptually unique truth-eligible assignment 11/12 [line 15]`. Final state `failed|visuals`. Never retry/reuse this job because its automatic Edge call was already consumed. M8 progression stopped.
 
-The failure stopped M8 progression as required.
+## 2026-09-03 — Semantic visual segmentation selected
 
-## 2026-09-03 — Semantic visual segmentation selected instead of further matcher tuning
+Broader review of multiple open-source short-video architectures led to the systemic correction: timed narration/subtitle beats are transport units and must not automatically become independent semantic media-search obligations.
 
-After broader comparison with multiple open-source short-video architectures, the architectural correction was selected: timed narration/subtitle beats are transport units and must not automatically become independent semantic media-search obligations.
+Design document `docs/VISUAL_SEGMENTATION_DESIGN.md`, initial commit `d19ff9e66f47cbadf206141d4b51bbc3d7631abc`.
 
-New contract is documented in `docs/VISUAL_SEGMENTATION_DESIGN.md`, initial design commit `d19ff9e66f47cbadf206141d4b51bbc3d7631abc`:
+New path:
 
-`accepted voice -> timed beats -> deterministic semantic visual segments -> one or more visual shots per segment -> truth eligibility -> local SigLIP ranking -> perceptual duplicate control -> render timeline -> post-render frame gate -> human review`.
+`accepted voice -> timed beats -> deterministic semantic visual segments -> visual shots -> truth eligibility -> local SigLIP -> perceptual sequence control -> render -> post-render frame gate -> human review`.
 
-No generative visual planner, hosted semantic dependency or threshold weakening is introduced. WF01-WF03 and one-shot Edge remain unchanged. Planned durable entities are `visual_segments`, `visual_shots`, and reusable `media_library_assets`; legacy scene visual columns remain for historical compatibility.
+No generative visual planner, hosted semantic dependency, paid fallback or threshold weakening. WF01-WF03 and exactly-one-Edge remain unchanged. Additive durable entities: `visual_segments`, `visual_shots`, `media_library_assets`.
 
-## 2026-09-03 — GitHub/VPS branch divergence discovered before rewrite
+## 2026-09-03 — GitHub/VPS branch divergence discovered
 
-Fresh inspection found a material repository-state defect: current VPS/local code history and GitHub `rebuild/simple-pipeline` documentation history diverge from merge base `7d25bac1c4d1a90b2b29183d9ec3ca280d1acfc4`.
+VPS/local code and GitHub `rebuild/simple-pipeline` documentation history diverged from merge base `7d25bac1c4d1a90b2b29183d9ec3ca280d1acfc4`.
 
-- VPS current code HEAD: `e4e856093fa237dab9daaa56dcf443c3b6155f93`.
-- GitHub branch had a separate docs chain ending at the semantic design commit.
-- `git merge --ff-only` correctly refused the divergent histories.
-- VPS HTTPS push dry-run failed because no GitHub credentials are available there; SSH authentication also failed.
-- GitHub Contents API could not resolve local code commit `e4e8560`, proving it is not merely a stale ref display.
+- VPS code HEAD `e4e856093fa237dab9daaa56dcf443c3b6155f93`.
+- GitHub had a separate docs chain.
+- `git merge --ff-only` correctly refused.
+- VPS HTTPS push had no credentials; SSH authentication also failed.
+- no force push/destructive rewrite attempted.
 
-No force push or destructive branch rewrite was attempted. GitHub implementation branch `rebuild/semantic-visual-segments` was created from the current remote source-of-truth. Local implementation branch `rebuild/semantic-visual-segments-local` was created from the actual current production-code HEAD. Final reconciliation must use GitHub connector git-object writes/PR while preserving the newer remote docs history and synchronizing the current production-critical code snapshot.
+GitHub implementation branch `rebuild/semantic-visual-segments` was created from remote source-of-truth. VPS implementation branch `rebuild/semantic-visual-segments-local` was created from actual production-code HEAD. Final reconciliation must use GitHub connector writes while preserving remote documentation history.
 
-## 2026-09-03 — Semantic segmentation first local proof
+## 2026-09-03 — Semantic-v3 local implementation
 
-Local implementation started without production mutation:
+Local-only implementation, production not mutated:
 
-- `services/media-worker/src/visual-segmentation.mjs` — deterministic semantic grouping of adjacent timed beats using timing, punctuation and evidence-support boundaries; no fixed duration→segment-count mapping.
-- `db/migrations/015_visual_segments.sql` — additive tables `visual_segments`, `visual_shots`, `media_library_assets`.
-- `tests/visual_segmentation_regression.mjs` — includes the actual 57.216 s / 18-beat failed Ukrainian induction fixture.
-
-Correct runtime test executed inside the existing n8n container because host Node is absent. PASS:
-
-`{"pass":true,"uk_segments":9,"uk_shots":17,"punctuation_segments":6,"continuous_segments":2}`
-
-This proves the failed 57.216 s fixture becomes 9 semantic search segments rather than 18 independent search obligations, while preserving gapless full-duration coverage; same-duration 15 s fixtures can produce different segment counts from content, proving segment count is not duration-hardcoded.
-
-## 2026-09-03 — visual-quality-v3 work and invalid regression assertions
-
-Local-only work extended visual discovery to segmented mode and added a separate `visual-segments-v3` shot-sequence evaluator while preserving legacy v2.
-
-Three test-only defects were exposed and corrected before accepting the regression gate:
-
-- the first `visual_shot_quality_regression.mjs` incorrectly expected `evaluateVisualShotSequence()` to throw on an adjacent duplicate; the evaluator intentionally returns `pass=false` for that valid-but-rejected sequence rather than throw;
-- an initial `wf04_assignment_regression.mjs` 10-second fixture had a single 4-second shot, which by construction exceeded the unchanged `0.34` cluster-duration share even when every asset/cluster was unique; the fixture was corrected to a 12-second / three-4-second-shot case rather than weakening the gate;
-- an initial `wf04_perceptual_assignment_regression.mjs` offered only three perceptual states for four equal-duration shots. Under the unchanged `0.34` duration-share rule no state could legally occur twice, making the declared PASS fixture mathematically impossible; a fourth genuinely distinct candidate cluster was added to the fixture.
-
-None of these failures were production failures and no acceptance threshold was changed.
-
-## 2026-09-03 — Semantic visual v3 focused regression gate PASS
-
-WF04 and WF05 were locally rewritten around separate semantic visual segments and shot timelines. Production was not mutated.
-
-Current local contract:
-
-- timed `scenes` remain subtitle/timing beats and stay `timed`;
-- WF04 derives semantic `visual_segments`, ranks truth-eligible provider candidates per segment and assigns one or two actual `visual_shots`;
-- shot assignment uses bounded global beam search, globally unique asset IDs, no adjacent perceptual duplicate, max perceptual-cluster occurrence 2, max perceptual-cluster duration share `0.34`, and max shot duration 5 seconds;
-- migration 015 persists `visual_segments`, `visual_shots`, and `media_library_assets`;
+- `services/media-worker/src/visual-segmentation.mjs` — deterministic semantic grouping;
+- `db/migrations/015_visual_segments.sql` — additive `visual_segments`, `visual_shots`, `media_library_assets`;
+- WF04 rewritten around semantic segments and shot assignment;
 - media-worker adds `/visual/store-shot` and `/render-v3` while retaining legacy routes;
-- WF05 reads two independent timelines: timed beats for subtitles and visual shots for the video track;
-- render-v3 independently checks pre-render shot identity/timing/diversity and post-render midpoint-frame perceptual state diversity.
+- WF05 reads independent subtitle-beat and visual-shot timelines;
+- post-render midpoint frames independently verify actual states.
 
-A real Code-node mode defect was also caught by `code_node_mode_regression.py`: `Require Visual Completion` was configured `runOnceForEachItem` while using `$input.first()`. The implementation was corrected to use `$json` in per-item mode; the mode gate then passed.
+A Code-node mode defect was caught: `Require Visual Completion` was `runOnceForEachItem` while using `$input.first()`. It was corrected to use `$json`; mode regression passed.
 
-Focused/static suite now PASS in the existing n8n container (Node v24.18.0):
+Earlier regression-fixture mistakes preserved: one test incorrectly expected a rejected sequence evaluator to throw; another made a declared PASS impossible under `0.34`; another offered insufficient perceptual states. Fixtures were corrected; no production threshold changed.
 
-- semantic segmentation regression PASS, including actual UK/60 57.216 s fixture -> 9 segments / 17 planned shots;
-- visual-shot-quality-v3 PASS;
-- WF05 visual-segments-v3 structural contract PASS (`/render-v3`);
+## 2026-09-03 — Duration-driven shot cardinality rejected
+
+First semantic implementation correctly reduced the `57.216 s` / 18-beat UK fixture to 9 semantic segments, but `planned_shot_count = ceil(segment_duration / 5.0)` expanded them back to 17 mandatory shots and assignment required unique asset IDs. Real-provider dry-run failed `No valid semantic visual shot assignment at shot 12/17`.
+
+Verified root cause: the 5-second timer recreated the old cardinality problem in another form. It was rejected systemically. A semantic segment normally becomes one shot; another shot may exist only for a deterministic semantic/representation transition. File-ID uniqueness is not a proxy for product-visible diversity. Perceptual identity and post-render states remain authoritative.
+
+No candidate-pool inflation, retries, topic mappings, threshold changes or production writes were used.
+
+## 2026-09-03 — Corrected UK/60 real-provider semantic dry-run PASS
+
+After removing elapsed-time shot multiplication and hard asset-uniqueness as a product gate, exact persisted job `4372be34-c417-415f-92f6-63481b3b5686` was replayed read-only through local semantic sourcing with real Wikimedia/Pixabay/Pexels plus existing local SigLIP.
+
+PASS:
+
+- 18 timed beats -> 10 content-derived semantic segments -> 10 shots;
+- every segment had a 10-candidate truth-eligible pool in that run;
+- clusters 9, required 5;
+- adjacent duplicates 0;
+- max cluster occurrence 2;
+- max cluster duration share `0.245`;
+- longest semantic shot `7.278 s`;
+- provider errors 0;
+- full `57.216 s` coverage;
+- runtime remained exactly three production services.
+
+A diagnostic harness initially hardcoded an expected 9 segments and falsely failed when exact persisted narration produced 10. That assertion was removed because segment count is content-derived, not fixture-hardcoded.
+
+## 2026-09-03 — Short-video cross-topic failure exposes mathematical `0.34` conflict
+
+Cross-topic real-provider testing on already accepted zipper job `227c8a50-ef1a-49e5-8d26-fdb40f663c83` initially failed `No valid semantic visual shot assignment at shot 1/3`.
+
+Exact cause was not provider shortage. Voice duration is `15.480 s`, so unchanged `0.34` permits one perceptual state for at most `5.2632 s`. Initial semantic groups were:
+
+- `5.546 s` = `35.83%`;
+- `5.355 s` = `34.59%`;
+- `4.579 s` = `29.58%`.
+
+The first two segments were mathematically incapable of passing `0.34` even with perfect distinct assets.
+
+Systemic correction: segmentation is now quality-constrained while remaining semantic and beat-boundary preserving:
+
+`effective_max_segment_seconds = min(8.5, accepted_voice_duration * 0.34)`.
+
+A timed beat itself is never split just to make visuals pass; if one beat exceeds the effective cap, fail closed. Elapsed time still does not create extra shots. Segmenter version is now `semantic-visual-segments-v3`.
+
+Exact zipper regression now gives five semantic segments, each one shot, all below the unchanged `5.2632 s` cap. The UK/60 fixture remains nine segments/nine shots in the pure segmentation fixture because its quality cap is above the normal `8.5 s` semantic maximum.
+
+## 2026-09-03 — Quality-constrained semantic-v3 focused suite PASS
+
+After the correction, the focused/static suite PASSed:
+
+- semantic segmentation: UK `9/9`, zipper five segments with cap `5.2632`, same-duration fixtures still produce different content-derived segment counts;
+- visual-shot quality-v3 PASS, including legal non-adjacent asset reuse;
+- WF05 visual-segments-v3 contract PASS;
 - visual discovery compatibility PASS;
-- legacy visual-quality-v2 regression remains PASS;
+- legacy visual-quality-v2 regression PASS;
 - WF04 Code-node runtime-v3 PASS;
 - WF04 global assignment-v3 PASS;
 - WF04 perceptual assignment-v3 PASS;
 - WF04 download/store expansion-v3 PASS;
 - rank-query contract PASS at 200 chars;
 - representation relevance/truth-eligibility PASS;
-- Code-node compile `41` PASS;
+- Code-node compile `41` PASS on Node v24.18.0;
 - Studio inline JS compile PASS;
 - Code-node mode regression PASS.
 
-Fresh runtime during the gate remained exactly three project containers; n8n `/healthz` 200, media-worker `/health` 200, PostgreSQL healthy. No migration, workflow publish, container recreate, or production job was performed.
+Runtime before/after remained exactly three project services, n8n/media HTTP 200 and PostgreSQL healthy.
 
-Exact next stage: transactionally validate migration 015 and build/run a disposable semantic-v3 media-worker/render integration without replacing production. Only after database/render/cross-topic real-provider dry-runs pass may the implementation be synchronized to GitHub, snapshotted and deployed.
+Diagnostic execution mistakes preserved because they could otherwise be misread as product failures:
 
-## 2026-09-03 — Real-provider UK/60 dry-run invalidates duration-driven shot cardinality
+1. `docker exec ... node /project/tests/...` failed `MODULE_NOT_FOUND` because the repository is not mounted into the live n8n container.
+2. A disposable n8n image was started without overriding its entrypoint, so `node` was interpreted as an n8n command and returned `Command "node" not found`.
+3. First disposable real-provider harness mounted a mode-600 temp context file; container user got `EACCES`. Corrected to readable temp fixture.
 
-After migration 015 and disposable `/render-v3` validation passed, the actual failed Ukrainian induction fixture was run through the local semantic-v3 path with real provider discovery and local SigLIP ranking. Production was not mutated.
+None was product/runtime evidence.
 
-The semantic segmentation itself behaved as intended: the 57.216 s / 18-timed-beat narration became 9 semantic visual segments. However, `planned_shot_count = ceil(segment_duration / 5.0)` expanded those 9 semantic segments into 17 mandatory shot slots, and `Choose Visual Assignment` additionally required globally unique candidate asset IDs. The real-provider dry-run then failed with exact error `No valid semantic visual shot assignment at shot 12/17`.
+## 2026-09-03 — Real-provider cross-topic semantic-v3 gate PASS
 
-This is a systemic architecture defect, not a provider shortage to patch around. The 5-second timer recreated almost the same cardinality pressure that semantic segmentation was introduced to remove: long semantic intervals again implied many nearly unique media files regardless of whether the narration meaning changed.
+Reusable local harness `tests/semantic_visual_real_provider_dry_run.mjs` replays exact persisted contexts read-only through local discovery, current local WF04 Code nodes, real Wikimedia/Pixabay/Pexels and the existing local SigLIP endpoint.
 
-The correction must not enlarge candidate pools, add retries, weaken the `0.34` perceptual-duration gate, or add topic-specific assets. Shot cardinality must instead be content/representation-driven. A semantic segment should normally remain one visual shot; additional shots are allowed only when a deterministic semantic/representation reason exists. Asset-file uniqueness must not be used as a proxy for product-visible diversity; perceptual cluster identity and post-render visual-state verification remain the authoritative diversity controls.
+PASS cases:
 
-Fresh runtime at this failure point remained exactly three production containers with n8n/media-worker HTTP 200 and PostgreSQL healthy. No production migration, workflow publish, container replacement, or fresh production job was performed.
+1. accepted zipper `227c8a50-ef1a-49e5-8d26-fdb40f663c83`: `15.480 s`, six timed beats -> five segments/shots; cap `5.2632`; max shot `4.579`; clusters 5/required 3; adjacent 0; max occurrence 1; max share `0.2958`; providers Pexels + Wikimedia; provider errors 0.
+2. accepted induction `2c182ff8-ea9f-4ddf-a417-b49f796d23f5`: `13.944 s`, six beats -> four segments/shots; cap `4.741`; max shot `4.705`; clusters 4/required 2; adjacent 0; max occurrence 1; max share `0.3374`; provider Wikimedia; provider errors 0.
+3. failed old-visual UK induction `4372be34-c417-415f-92f6-63481b3b5686` used read-only as factual/timing fixture: `57.216 s`, 18 beats -> 10 segments/shots; effective cap `8.5`; max shot `7.278`; clusters 9/required 5; adjacent 0; max occurrence 2; max share `0.245`; providers Pexels + Pixabay + Wikimedia; provider errors 0.
 
-## 2026-09-03 — Real-context dry-run harness fixed after false segment-count FAIL
+No retry, threshold weakening, topic hack, candidate-pool inflation or production write occurred.
 
-After the duration-driven shot-cardinality correction, the first real-context rerun loaded the exact persisted job `4372be34-c417-415f-92f6-63481b3b5686` read-only: 18 timed beats, 8 persisted evidence rows, accepted voice duration `57.216 s`, canonical source `uk / Індукційна плита`.
+## 2026-09-03 — Disposable render-v3 long-semantic-shot proof
 
-The harness then stopped before ranking because it incorrectly asserted that the exact database narration must produce exactly 9 semantic segments. The current deterministic segmenter produced 10 segments from the actual persisted text/timing. This was a diagnostic harness defect and a false FAIL, not a product/runtime failure: the architecture explicitly requires segment count to be content-derived rather than fixed by duration or by an approximate regression fixture.
+A disposable image built from current local media-worker code was tested with a temporary DATA_ROOT and did not replace production.
 
-The corrected real-provider harness must therefore require structural properties instead of an exact count: semantic segment count is positive and lower than the 18 timed-beat count for this case; default shot count equals semantic segment count after removal of elapsed-time shot multiplication; the segment/shot timelines cover the full `57.216 s`; all truth-eligibility, SigLIP, perceptual adjacency/occurrence, `0.34` duration-share and post-render gates remain unchanged. No production mutation or threshold change occurred.
+First synthetic attempt used flat solid-color images. Average-hash perceptual identity is primarily spatial/luminance-pattern based, so some flat colors collapsed into the same rendered state. `/render-v3` correctly returned 422: `Rendered shot states failed: states=3/2, adjacent=1, max_occurrence=2, max_share=0.5`. This was an invalid synthetic fixture, not product evidence.
 
-## 2026-09-03 — Corrected UK/60 real-provider semantic-v3 dry-run PASS
+The corrected fixture used four spatially distinct black/white patterns, a `24 s` WAV, six subtitle beats and four visual shots of exactly `6 s` each.
 
-The corrected local-only real-provider dry-run reloaded exact persisted job `4372be34-c417-415f-92f6-63481b3b5686` read-only and executed the current local semantic-v3 discovery/planning/ranking/assignment path with real Wikimedia, Pixabay and Pexels candidates plus the existing local SigLIP rank endpoint. Production was not mutated.
+HTTP 200 PASS:
 
-PASS proof:
+- H.264/yuv420p 1080x1920;
+- AAC 48 kHz stereo;
+- container/video/audio duration `24 s`;
+- four 6-second shot timings accepted;
+- pre-render clusters 4/required 2, adjacent 0, max share `0.25`;
+- `max_shot_duration_seconds=6`, proving there is no artificial 5-second shot-duration gate;
+- rendered states 4/required 2, adjacent 0, rendered max share `0.25`;
+- output bytes `702968`;
+- production service count remained exactly three before/after.
 
-- 18 timed beats -> 10 content-derived semantic visual segments;
-- 10 semantic segments -> exactly 10 visual shots; elapsed time no longer multiplies shot obligations;
-- every segment retained a 10-candidate truth-eligible pool containing Wikimedia, Pixabay and Pexels;
-- all 10 shot slots were assigned successfully;
-- unique assets `10/10` in this specific run, but asset uniqueness is not a required product gate;
-- perceptual visual clusters `9`, required `5`;
-- adjacent perceptual duplicates `0`;
-- maximum perceptual-cluster occurrence `2`;
-- maximum perceptual-cluster duration share `0.245`, below unchanged `0.34`;
-- longest semantic shot `7.278 s`, proving removal of the artificial 5-second file-change timer without weakening video-level diversity;
-- provider errors `0` for this run;
-- the full shot timeline covered the persisted `57.216 s` accepted voiceover;
-- runtime after the dry-run remained exactly three project containers.
+## 2026-09-03 — Semantic design documentation aligned
 
-The selected sequence included Wikimedia, Pixabay and Pexels assets and passed without retries, candidate-pool inflation, topic-specific mappings, threshold changes, provider fallbacks outside the existing bounded multi-source contract, or production writes. This validates the systemic shot-cardinality correction for the original UK/60 failure fixture. Next gate is cross-topic real-provider dry-runs before any deployment.
+`docs/VISUAL_SEGMENTATION_DESIGN.md` was updated to the proven contract in commit `61cfb69f4f821154cc5a47f72b8c0634b250f74c`:
+
+- one shot per semantic segment by default;
+- additional shot only for deterministic semantic/representation transition;
+- quality-constrained semantic maximum `min(8.5, T*0.34)` on existing timed-beat boundaries;
+- no hard 5-second shot-duration rule;
+- asset-file uniqueness is not product-visible diversity;
+- perceptual adjacency/occurrence/duration-share and post-render state gates remain authoritative.
+
+## Current deployment boundary
+
+Semantic-v3 is **not deployed yet**. Migration 015 is not live; WF04/WF05 semantic versions are not published; production media-worker has not been replaced. Production remains on the existing visual-quality-v2 deployment with WF02 multilingual fix. M8 remains `2/10`.
+
+Before deployment:
+
+1. synchronize all semantic-v3 implementation/tests/migration to GitHub branch `rebuild/semantic-visual-segments` while preserving the documented branch divergence;
+2. prove GitHub/local code equality;
+3. take a bounded rollback snapshot of current live WF04/WF05/media-worker/DB state;
+4. apply migration 015 and deploy only the intended semantic visual components;
+5. verify live equality and exactly three healthy services;
+6. create a completely fresh RU-topic -> UK/60 production job; never reuse `4372be34...`, `85fcc63b...` or `e1399581...`;
+7. require exactly one Edge call, semantic-v3 machine gates, ffprobe and `review_ready`;
+8. require user to watch the exact fresh video before changing M8 accepted count.
