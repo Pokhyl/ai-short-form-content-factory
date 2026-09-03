@@ -173,3 +173,11 @@ This is a systemic architecture defect, not a provider shortage to patch around.
 The correction must not enlarge candidate pools, add retries, weaken the `0.34` perceptual-duration gate, or add topic-specific assets. Shot cardinality must instead be content/representation-driven. A semantic segment should normally remain one visual shot; additional shots are allowed only when a deterministic semantic/representation reason exists. Asset-file uniqueness must not be used as a proxy for product-visible diversity; perceptual cluster identity and post-render visual-state verification remain the authoritative diversity controls.
 
 Fresh runtime at this failure point remained exactly three production containers with n8n/media-worker HTTP 200 and PostgreSQL healthy. No production migration, workflow publish, container replacement, or fresh production job was performed.
+
+## 2026-09-03 — Real-context dry-run harness fixed after false segment-count FAIL
+
+After the duration-driven shot-cardinality correction, the first real-context rerun loaded the exact persisted job `4372be34-c417-415f-92f6-63481b3b5686` read-only: 18 timed beats, 8 persisted evidence rows, accepted voice duration `57.216 s`, canonical source `uk / Індукційна плита`.
+
+The harness then stopped before ranking because it incorrectly asserted that the exact database narration must produce exactly 9 semantic segments. The current deterministic segmenter produced 10 segments from the actual persisted text/timing. This was a diagnostic harness defect and a false FAIL, not a product/runtime failure: the architecture explicitly requires segment count to be content-derived rather than fixed by duration or by an approximate regression fixture.
+
+The corrected real-provider harness must therefore require structural properties instead of an exact count: semantic segment count is positive and lower than the 18 timed-beat count for this case; default shot count equals semantic segment count after removal of elapsed-time shot multiplication; the segment/shot timelines cover the full `57.216 s`; all truth-eligibility, SigLIP, perceptual adjacency/occurrence, `0.34` duration-share and post-render gates remain unchanged. No production mutation or threshold change occurred.
