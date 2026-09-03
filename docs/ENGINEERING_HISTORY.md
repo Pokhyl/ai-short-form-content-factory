@@ -89,7 +89,7 @@ Systemic correction:
 
 `effective_max_segment_seconds = min(8.5, accepted_voice_duration * 0.34)`.
 
-Boundaries remain timed-beat boundaries. A beat is never split just to satisfy visuals; if a beat itself exceeds cap, fail closed. Elapsed time does not create extra shots. Segmenter version `semantic-visual-segments-v3`.
+Boundaries remain timed-beat boundaries. A beat is never split just to satisfy visuals; if it exceeds cap, fail closed. Elapsed time does not create extra shots. Segmenter version `semantic-visual-segments-v3`.
 
 ## 2026-09-03 — Semantic-v3 focused/static suite PASS
 
@@ -327,3 +327,33 @@ Disposable PostgreSQL 18 proof reproduced the exact semantic behavior: first sta
 Systemic correction must make `inserted` return `visual_segment_id` and mark completion only when the current insert exists and `existing snapshot rows + current inserted rows = planned_shot_count`. This also supports a future two-shot segment: first insert leaves it planned; second insert sees one prior row plus one current `RETURNING` row and marks it ready. No retry, provider change, quality-threshold change, topic hack or reuse of this consumed job is justified.
 
 M8 remains stopped at `2/10`. Next action: correct the general WF04 persistence SQL, add a regression that covers one- and two-shot lifecycle semantics plus the data-modifying-CTE contract, prove on disposable PostgreSQL, save to GitHub, deploy WF04 only with rollback/live equality, then create a completely fresh job.
+
+
+## 2026-09-03 — WF04 segment-completion fix local/GitHub proof PASS
+
+Systemic correction for the verified data-modifying-CTE snapshot defect is implemented in local commit `ec07952d3b807656e0ef8b7fbcde85fa9d6450c2` and synchronized to GitHub non-force commit `02e1679285fb34d786a9aa3b677f3dd39bec7eea`.
+
+Only two files changed:
+
+- `n8n/workflows/WF04-visual-sourcing.json`;
+- `tests/wf04_segment_completion_regression.mjs`.
+
+`Persist Visual Result` now makes `inserted` return `visual_segment_id`, requires the current insert to exist, and marks a segment ready only when `pre-statement existing shot count + current inserted RETURNING count = planned_shot_count`. Ranking, providers, media discovery, SigLIP, perceptual quality gates, migration 016 and render behavior are unchanged.
+
+Focused proof PASSed: `WF04_SEGMENT_COMPLETION_REGRESSION_PASS`, WF04 runtime-v3, assignment-v3, perceptual assignment-v3, download-v3, rank-query-v3, representation relevance-v3, final-design gate, and `git diff --check`. Explicit compile proof: `CODE_NODE_COMPILE_PASS 41 v24.20.0` and `STUDIO_JS_COMPILE_PASS`.
+
+The exact SQL string extracted from the corrected WF04 was executed on disposable PostgreSQL 18 after applying init + migrations 002..016. Results:
+
+- one-shot segment: insert `persisted=true`, `segment_completed=true`, durable state `ready|1`;
+- duplicate same shot: `persisted=false`, `segment_completed=false`;
+- two-shot segment first insert: `persisted=true`, `segment_completed=false`, durable state `planned|1`;
+- second insert: `persisted=true`, `segment_completed=true`, durable state `ready|2`.
+
+Marker: `WF04_EXACT_PERSIST_SQL_PG18_PASS`. An earlier diagnostic attempt used `PREPARE` and `EXECUTE` in separate psql sessions and failed with `prepared statement "persist" does not exist`; that was invalid harness evidence. Correct proof used one psql session.
+
+Exact GitHub blobs equal local commit blobs:
+
+- WF04 `9480840875fc15cff8b43a6c5e3fbf90586bec54`;
+- regression `48a9957368751235ce2d470e3fbafe07a47e094e`.
+
+No production workflow, DB, service or job was mutated during correction/proof. Active n8n executions were `0` at the predeploy boundary. Next action is bounded live-WF04 rollback capture, WF04-only publish, source/live equality and runtime proof; only after that may one completely fresh UK/60 production job be created.
