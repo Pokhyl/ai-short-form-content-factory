@@ -13,6 +13,7 @@ from .upstream_mpt import synthesize_edge, transcribe_whisper, verify_upstream
 from .visual_router import build_visual_manifest
 from .timeline_builder import compile_segment_timeline, sha256_file
 from .timeline_contract import validate_timeline_payload
+from .commons_media import fetch_commons_file
 
 VOICES = {
     "en": "en-US-AndrewNeural",
@@ -72,6 +73,11 @@ def main() -> int:
     p = sub.add_parser("validate-timeline")
     p.add_argument("timeline")
 
+    p = sub.add_parser("fetch-commons")
+    p.add_argument("--title", required=True)
+    p.add_argument("--output-dir", required=True)
+    p.add_argument("--max-width", type=int, default=1440)
+
     args = parser.parse_args()
     if args.cmd == "verify-upstream":
         print(verify_upstream())
@@ -121,6 +127,14 @@ def main() -> int:
     if args.cmd == "validate-timeline":
         result = validate_timeline_payload(load_json(args.timeline))
         print(f"V4_TIMELINE_VALID beats={result['beat_count']} duration={result['duration_seconds']:.3f}")
+        return 0
+    if args.cmd == "fetch-commons":
+        item = fetch_commons_file(args.title, args.output_dir, max_width=args.max_width)
+        print(
+            f"V4_COMMONS_FETCHED title={item['file_title']} "
+            f"size={item['selected_width']}x{item['selected_height']} "
+            f"license={item['license']} sha256={item['sha256']} path={item['local_path']}"
+        )
         return 0
     return 2
 
