@@ -8,7 +8,7 @@ This file is authoritative for branch `rebuild/product-first-v4`. Repository/run
 
 Semantic-v3 remains rejected and frozen. Do not create new production jobs through it.
 
-No V4 artifact is human-approved yet. No production/n8n rebuild is allowed. M8 remains `2/10`.
+V4 now has one exact `human_approved` artifact: Eiffel / Polish multishot exact-media prototype. This is still insufficient for production/n8n rebuild because the permanent cross-topic rule requires multiple materially different HUMAN PASS artifacts. M8 remains `2/10` until that broader product proof exists.
 
 ## Mandatory source of truth
 
@@ -27,7 +27,9 @@ Before technical work read fresh:
 11. `docs/V4_OLED_PREDELIVERY_REJECTION_20260904.md`;
 12. `docs/V4_ANNOTATED_MEDIA_DISCOVERY_PROOF_20260904.md`;
 13. `docs/V4_MULTISHOT_EXACT_MEDIA_RENDER_PROOF_20260904.md`;
-14. relevant upstream/reference docs.
+14. `docs/V4_EIFFEL_HUMAN_PASS_20260904.md`;
+15. `docs/V4_ZIPPER_MULTISHOT_RENDER_PROOF_20260904.md`;
+16. relevant upstream/reference docs.
 
 ## Current architecture direction
 
@@ -65,9 +67,9 @@ Do not patch/retry these artifacts as fixtures.
 ## Cross-topic matrix — active
 
 1. Induction / Ukrainian — regression only; do not tune next on this topic.
-2. Eiffel Tower construction / Polish — exact place/history; current multishot artifact is machine-rendered and awaiting human review.
-3. Clothing zipper mechanism / Russian — object/mechanism; next non-Eiffel validation target after Eiffel review.
-4. OLED vs LCD / English — comparison/mechanism; old card-primary visual path rejected, must use exact/annotated/pictorial visual basis.
+2. Eiffel Tower construction / Polish — exact place/history; multishot exact-media artifact is HUMAN PASS.
+3. Clothing zipper mechanism / Russian — object/mechanism; current multishot exact-media artifact is MACHINE RENDERED and awaiting human review.
+4. OLED vs LCD / English — comparison/mechanism; old card-primary path rejected, must use exact/annotated/pictorial visual basis if chosen as third validation class.
 
 ## Structural timeline + semantic alignment — TECHNICAL PASS
 
@@ -78,7 +80,7 @@ Code:
 - `prototype/v4/tests/test_timeline_builder.py`;
 - `prototype/v4/tests/test_timeline_contract.py`.
 
-The old assumption `Whisper segment == semantic scene` is retired. It was disproved cross-topic because zipper had five semantic scenes but eight Whisper segments, and OLED/LCD had five semantic scenes but six Whisper segments.
+The old assumption `Whisper segment == semantic scene` is retired. It was disproved cross-topic because zipper has five semantic scenes but eight Whisper segments, and OLED/LCD has five semantic scenes but six Whisper segments.
 
 Current behavior:
 
@@ -116,7 +118,7 @@ Wikimedia `429` behavior is fail-fast/cached; no provider sleep or blind retry w
 
 ## Caption alignment — TECHNICAL PASS
 
-New code:
+Code:
 
 - `prototype/v4/caption_alignment.py`;
 - `prototype/v4/tests/test_caption_alignment.py`.
@@ -126,7 +128,7 @@ Contract:
 - Whisper/ASR remains authoritative for timing;
 - speech-ready script is authoritative display text when alignment is unambiguous;
 - merged ASR words may carry combined script display text on the same real interval;
-- collapsed representations such as a spoken year recognized as `1889` retain the real ASR token/timing rather than fabricating sub-word timestamps.
+- collapsed representations retain the real ASR token/timing rather than fabricating sub-word timestamps.
 
 ## Render manifest / bundle / renderer — TECHNICAL PASS
 
@@ -141,31 +143,13 @@ A clean checkout of authoritative remote HEAD `dd8563a272178ae7a0a2cb8b86b23982f
 
 `58/58 PASS`
 
-No result from the local scratch directory is being used as substitute proof for the authoritative branch.
-
-## Eiffel / Polish multishot exact-media prototype — MACHINE RENDERED
-
-Run:
-
-`/opt/ai-short-form-v4-runs/cross-topic-20260903/eiffel-pl/multishot-v2`
-
-Timeline:
-
-- `5` semantic scenes;
-- `11` internal shots;
-- timing from exact-audio word alignment;
-- alignment coverage `0.873016`;
-- `11` exact hash-verified assets;
-- `0` constructed primary visuals;
-- `0` generic factual fallback assets.
-
-The asset set includes exact historical Eiffel construction images, foundation caissons, the actual Levallois-Perret workshops, exact Eiffel rivets and completion imagery. Landscape exact evidence uses contain treatment.
+## Eiffel / Polish multishot exact-media prototype — HUMAN APPROVED
 
 Exact artifact:
 
 `/opt/ai-short-form-v4-runs/cross-topic-20260903/eiffel-pl/multishot-v2/remotion-runtime/out/eiffel-multishot-v2.mp4`
 
-Machine proof:
+Machine identity:
 
 - SHA256 `068d43143e9db5d58370fd17300d4b169e2e32407bdda1b85ec1a637587349c3`;
 - size `55,143,502` bytes;
@@ -173,17 +157,53 @@ Machine proof:
 - H.264 `1080x1920`;
 - AAC `48 kHz` stereo.
 
-The exact final MP4 received a pre-delivery contact-sheet sanity check. It no longer contains the previous standalone text-card replacement frames or generic lifestyle stock. This does NOT make it human-approved.
+User watched this exact artifact and explicitly said `мне нравится`.
 
-Proof: `docs/V4_MULTISHOT_EXACT_MEDIA_RENDER_PROOF_20260904.md`.
+Acceptance state: `human_approved`.
 
-Current acceptance state: `machine_rendered`.
+Proof: `docs/V4_MULTISHOT_EXACT_MEDIA_RENDER_PROOF_20260904.md` and `docs/V4_EIFFEL_HUMAN_PASS_20260904.md`.
+
+## Zipper / Russian multishot exact-media prototype — MACHINE RENDERED
+
+Run:
+
+`/opt/ai-short-form-v4-runs/cross-topic-20260903/zipper-ru/multishot-v2`
+
+Timeline/render input:
+
+- `5` semantic scenes;
+- `11` internal exact-media shots;
+- exact-audio timeline duration `27.140 s`;
+- `59` caption items;
+- `11` hash-verified exact-media assignments;
+- `0` constructed primary visuals;
+- `0` generic factual fallback assets.
+
+Exact artifact:
+
+`/opt/ai-short-form-v4-runs/cross-topic-20260903/zipper-ru/multishot-v2/remotion-runtime/out/zipper-multishot-v2.mp4`
+
+Machine proof:
+
+- SHA256 `fe94b639c6822cdd339e4e5cd22927dc60821353dba290c085d45b72aa9c2027`;
+- size `59,777,504` bytes;
+- duration `27.222 s`;
+- H.264 `1080x1920`;
+- AAC `48 kHz` stereo.
+
+The Sentinel background wrapper timed out after the actual transient Remotion container had completed successfully. The render container exit code was independently observed as `0`; the final artifact was then verified by SHA256 and ffprobe. No retry/sleep workaround was added.
+
+A contact sheet was extracted from the exact final MP4 for pre-delivery review support. This does not constitute human approval.
+
+Proof: `docs/V4_ZIPPER_MULTISHOT_RENDER_PROOF_20260904.md`.
+
+Acceptance state: `machine_rendered`.
 
 ## Immediate next action
 
-1. user must watch the exact Eiffel multishot MP4;
-2. if HUMAN FAIL, record the observed general defect before any architecture change and do not tune Eiffel alone;
-3. apply the same semantic scene + internal shots + exact/annotated-media path to zipper/Russian and OLED/LCD/English;
-4. require multiple materially different HUMAN PASS artifacts before n8n/PostgreSQL orchestration resumes.
+1. user watches the exact zipper / Russian multishot MP4;
+2. if HUMAN FAIL, record the observed general defect before any architecture change and do not tune only the zipper fixture;
+3. if HUMAN PASS, record the exact SHA as `human_approved`;
+4. then validate a third materially different class, preferably comparison/technology such as OLED vs LCD / English, before n8n/PostgreSQL orchestration resumes.
 
 No n8n/DB rebuild until multiple materially different direct prototypes are HUMAN PASS.
