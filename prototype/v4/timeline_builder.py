@@ -52,8 +52,6 @@ def _scene_start_from_alignment(
 ) -> float:
     if scene_index == 0:
         return 0.0
-    # Prefer a match near the beginning of the semantic scene. This keeps a
-    # recognition error in one word from moving the entire scene boundary.
     probe_end = min(scene_end_token, scene_start_token + 5)
     candidates = [script_to_audio[i] for i in range(scene_start_token, probe_end) if i in script_to_audio]
     if not candidates:
@@ -70,13 +68,7 @@ def compile_segment_timeline(
     script_text: str,
     audio_sha256: str,
 ) -> dict[str, Any]:
-    """Compile semantic scenes against word timing from the exact audio.
-
-    Whisper segmentation is an ASR implementation detail and must not define
-    semantic visual scenes. Each visual obligation therefore owns its original
-    scene narration. Scene boundaries are recovered by aligning those narration
-    tokens to Whisper word timestamps from the exact generated audio.
-    """
+    """Compile semantic scenes and internal shots against exact-audio word timing."""
     if not isinstance(visual_obligations, list) or not visual_obligations:
         raise ValueError('visual_obligations must be a non-empty array')
     words = whisper_payload.get('words')
@@ -151,8 +143,62 @@ def compile_segment_timeline(
             'primary_visual': obligation['primary_visual'],
             'overlays': obligation.get('overlays', [{'type': 'caption'}]),
         }
-        if 'shots' in obligation:
-            beat['shots'] = obligation['shots']
+        raw_shots = obligation.get('shots')
+        if raw_shots is not None:
+            if not isinstance(raw_shots, list) or not raw_shots:
+                raise ValueError(f'visual_obligations[{index}].shots must be a non-empty array')
+            shot_narrations: list[str] = []
+            for shot_index, shot in enumerate(raw_shots, 1):
+                if not isinstance(shot, dict):
+                    raise ValueError(f'visual_obligations[{index}].shots[{shot_index}] must be an object')
+                shot_narration = str(shot.get('narration') or '').strip()
+                if not shot_narration:
+                    raise ValueError(f'visual_obligations[{index}].shots[{shot_index}] requires narration')
+                if not isinstance(shot.get('primary_visual'), dict):
+                    raise ValueError(f'visual_obligations[{index}].shots[{shot_index}] requires primary_visual')
+                shot_narrations.append(shot_narration)
+            if ' '.join(shot_narrations) != narrations[index - 1]:
+                raise ValueError(f'visual_obligations[{index}].shots narration must reconstruct scene narration exactly')
+
+            scene_token_start, _scene_token_end = scene_ranges[index - 1]
+            shot_ranges: list[tuple[int, int]] = []
+            cursor = scene_token_start
+            for shot_narration in shot_narrations:
+                shot_start_token = cursor
+                cursor += len(_text_tokens(shot_narration))
+                shot_ranges.append((shot_start_token, cursor))
+
+            shot_starts: list[float] = []
+            for shot_index, (shot_start_token, shot_end_token) in enumerate(shot_ranges):
+                if shot_index == 0:
+                    shot_start = start
+                else:
+                    shot_start = _scene_start_from_alignment(
+                        scene_start_token=shot_start_token,
+                        scene_end_token=shot_end_token,
+                        script_to_audio=script_to_audio,
+                        audio_words=words,
+                        scene_index=1,
+                    )
+                if shot_starts and shot_start <= shot_starts[-1]:
+                    raise ValueError(f'aligned shot starts must increase strictly inside beat {beat["beat_id"]}')
+                if shot_start < start - 0.001 or shot_start >= end - 0.001:
+                    raise ValueError(f'aligned shot start is outside beat {beat["beat_id"]}')
+                shot_starts.append(shot_start)
+
+            timed_shots: list[dict[str, Any]] = []
+            for shot_index, raw_shot in enumerate(raw_shots, 1):
+                shot_start = shot_starts[shot_index - 1]
+                shot_end = shot_starts[shot_index] if shot_index < len(shot_starts) else end
+                timed_shots.append({
+                    'shot_id': str(raw_shot.get('shot_id') or f'{beat["beat_id"]}-S{shot_index}'),
+                    'start_seconds': round(shot_start, 3),
+                    'end_seconds': round(shot_end, 3),
+                    'source_narration': shot_narrations[shot_index - 1],
+                    'primary_visual': raw_shot['primary_visual'],
+                    'overlays': raw_shot.get('overlays', [{'type': 'caption'}]),
+                })
+            beat['shots'] = timed_shots
         beats.append(beat)
 
     timeline: dict[str, Any] = {
