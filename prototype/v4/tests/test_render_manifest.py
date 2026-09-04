@@ -24,7 +24,7 @@ def base_payload(tmp: Path):
             {'beat_id':'A','start_seconds':0.0,'end_seconds':2.0,'primary_visual':{'source_class':'exact','layout':'fullscreen','visible_subject':'exact subject'},'overlays':[{'type':'caption'}],
              'resolved_asset':{'local_path':str(photo),'sha256':sha(photo),'width':720,'height':1280,'license':'Public domain','page_url':'https://example.test','attribution_required':False,'artist':'Test'}},
             {'beat_id':'B','start_seconds':2.0,'end_seconds':4.0,'primary_visual':{'source_class':'constructed','layout':'fullscreen','visible_subject':'mechanism'},'overlays':[{'type':'caption'}],
-             'compiled_graphic':{'durationSeconds':2.0,'elements':[{'id':'x','type':'rect'}],'source':{'beat_id':'B','compiler':'graphic_compiler_v1'}}},
+             'compiled_graphic':{'durationSeconds':2.0,'elements':[{'id':'x','type':'rect'}],'source':{'beat_id':'B','compiler':'graphic_compiler_v1','visual_basis':'pictorial_primitive'}}},
         ],
     }
     whisper={'duration':4.0,'language':'en','probability':1.0,'words':[{'start':0.0,'end':0.5,'word':'hello'},{'start':2.0,'end':2.5,'word':'world'}]}
