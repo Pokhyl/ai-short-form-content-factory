@@ -12,7 +12,7 @@ assert.match(n4.get('Require Eligible Visual Job').parameters.jsCode, /Grounded 
 assert.match(n4.get('Prepare Canonical Media Request').parameters.jsCode, /visual_queries_en:j\.visual_search_queries_en/);
 
 const expandCode = n4.get('Expand Rank Items').parameters.jsCode;
-assert.match(expandCode, /plan\.canonical_subject}\. \${plan\.visual_target/);
+assert.match(expandCode, /plan\.visual_target\|\|plan\.canonical_subject/);
 assert.doesNotMatch(expandCode, /plan\.visual_description/);
 
 const attachCode = n4.get('Attach Rank Results').parameters.jsCode;
