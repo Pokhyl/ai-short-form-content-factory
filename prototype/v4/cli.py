@@ -17,6 +17,7 @@ from .commons_media import fetch_commons_file
 from .asset_resolver import resolve_timeline_assets
 from .graphic_compiler import compile_timeline_graphics
 from .render_manifest import assemble_render_manifest
+from .render_bundle import stage_render_bundle
 
 VOICES = {
     "en": "en-US-AndrewNeural",
@@ -96,6 +97,10 @@ def main() -> int:
     p.add_argument("--whisper", required=True)
     p.add_argument("--audio", required=True)
     p.add_argument("--output", required=True)
+
+    p = sub.add_parser("stage-render-bundle")
+    p.add_argument("--manifest", required=True)
+    p.add_argument("--output-dir", required=True)
 
     args = parser.parse_args()
     if args.cmd == "verify-upstream":
@@ -183,6 +188,13 @@ def main() -> int:
         print(
             f"V4_RENDER_MANIFEST_CREATED beats={len(manifest['visual_track'])} "
             f"captions={len(manifest['captions']['items'])} duration={manifest['duration_seconds']:.3f} path={args.output}"
+        )
+        return 0
+    if args.cmd == "stage-render-bundle":
+        proof = stage_render_bundle(load_json(args.manifest), args.output_dir)
+        print(
+            f"V4_RENDER_BUNDLE_STAGED exact={proof['exact_assets']} graphics={proof['motion_graphics']} "
+            f"public={proof['public_dir']} props={proof['props_path']}"
         )
         return 0
     return 2
