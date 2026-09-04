@@ -29,7 +29,6 @@ class TimelineBuilderTest(unittest.TestCase):
     def test_semantic_scene_boundaries_ignore_whisper_segment_boundaries(self):
         whisper = {
             'duration': 4.0,
-            # Deliberately different boundaries from the two semantic scenes.
             'segments': [
                 {'start': 0.0, 'end': 1.1, 'text': 'alpha beta'},
                 {'start': 1.2, 'end': 2.4, 'text': 'gamma delta'},
@@ -77,7 +76,6 @@ class TimelineBuilderTest(unittest.TestCase):
             script_text='one two three four',
             audio_sha256='a' * 64,
         )
-        # "three" is misrecognized, but "four" still anchors semantic scene B.
         self.assertEqual(result['beats'][1]['start_seconds'], 2.5)
 
     def test_narration_must_reconstruct_script(self):
@@ -107,6 +105,33 @@ class TimelineBuilderTest(unittest.TestCase):
                 script_text='alpha beta gamma',
                 audio_sha256='a' * 64,
             )
+
+    def test_shots_are_aligned_inside_semantic_scene_from_actual_words(self):
+        whisper = {
+            'duration': 5.0,
+            'segments': [{'start':0.0,'end':5.0,'text':'alpha beta gamma delta epsilon'}],
+            'words': [
+                word(0.0,0.4,'alpha'), word(0.6,1.0,'beta'), word(1.8,2.2,'gamma'),
+                word(3.0,3.4,'delta'), word(4.0,4.4,'epsilon'),
+            ],
+        }
+        obligation = visual('A', 'alpha beta gamma delta epsilon')
+        obligation['shots'] = [
+            {'shot_id':'A1','narration':'alpha beta','primary_visual':obligation['primary_visual'],'overlays':[{'type':'caption'}]},
+            {'shot_id':'A2','narration':'gamma delta','primary_visual':obligation['primary_visual'],'overlays':[{'type':'caption'}]},
+            {'shot_id':'A3','narration':'epsilon','primary_visual':obligation['primary_visual'],'overlays':[{'type':'caption'}]},
+        ]
+        result = compile_segment_timeline(
+            whisper_payload=whisper,
+            visual_obligations=[obligation],
+            script_text='alpha beta gamma delta epsilon',
+            audio_sha256='a'*64,
+        )
+        self.assertEqual(
+            [(s['start_seconds'], s['end_seconds']) for s in result['beats'][0]['shots']],
+            [(0.0,1.8),(1.8,4.0),(4.0,5.0)],
+        )
+        self.assertEqual(result['contract']['shot_count'], 3)
 
     def test_script_provenance_changes_when_script_changes(self):
         self.assertNotEqual(sha256_text('old script'), sha256_text('new script'))
