@@ -22,6 +22,31 @@ class RenderManifestTest(unittest.TestCase):
             root=Path(td); audio=root/'voice.mp3'; photo=root/'photo.jpg'; audio.write_bytes(b'audio-bytes'); photo.write_bytes(b'photo-bytes')
             tl={'duration_seconds':2.0,'provenance':{'script_sha256':'s'*64,'audio_sha256':sha(audio),'timing_source':'actual_audio_whisper_segments'},'asset_resolution':{'all_exact_assets_hash_verified':True},'graphic_compilation':{'all_required_graphics_compiled':True,'compiler':'graphic_compiler_v1'},'beats':[{'beat_id':'A','start_seconds':0.0,'end_seconds':2.0,'primary_visual':{'source_class':'annotated_exact','layout':'fullscreen','visible_subject':'exact mechanism'},'resolved_asset':{'local_path':str(photo),'sha256':sha(photo),'width':720,'height':1280,'license':'Public domain','page_url':'https://example.test','attribution_required':False,'artist':'Test'},'compiled_graphic':{'durationSeconds':2.0,'elements':[{'id':'arrow','type':'line'}],'source':{'beat_id':'A','visual_basis':'exact_media_annotation'}}}]}
             whisper={'duration':2.0,'language':'en','probability':1.0,'words':[{'start':0.0,'end':0.5,'word':'hello'}]}; out=assemble_render_manifest(tl,whisper,audio_path=audio); self.assertEqual(out['visual_track'][0]['renderer'],'annotated_media'); self.assertIn('asset',out['visual_track'][0]); self.assertIn('graphic',out['visual_track'][0])
+
+    def test_multishot_beat_flattens_to_distinct_render_items(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); audio=root/'voice.mp3'; a=root/'a.jpg'; b=root/'b.jpg'
+            audio.write_bytes(b'audio'); a.write_bytes(b'a'); b.write_bytes(b'b')
+            tl={
+                'duration_seconds':4.0,
+                'provenance':{'script_sha256':'s'*64,'audio_sha256':sha(audio),'timing_source':'actual_audio_whisper_word_alignment'},
+                'asset_resolution':{'all_exact_assets_hash_verified':True},
+                'beats':[{
+                    'beat_id':'A','start_seconds':0.0,'end_seconds':4.0,'source_narration':'one two',
+                    'primary_visual':{'source_class':'exact','layout':'fullscreen','visible_subject':'semantic scene'},
+                    'shots':[
+                        {'shot_id':'A1','start_seconds':0.0,'end_seconds':2.0,'primary_visual':{'source_class':'exact','layout':'fullscreen','visible_subject':'first'},'resolved_asset':{'local_path':str(a),'sha256':sha(a),'width':720,'height':1280,'license':'Public domain','page_url':'x','attribution_required':False}},
+                        {'shot_id':'A2','start_seconds':2.0,'end_seconds':4.0,'primary_visual':{'source_class':'exact','layout':'fullscreen','visible_subject':'second'},'resolved_asset':{'local_path':str(b),'sha256':sha(b),'width':720,'height':1280,'license':'Public domain','page_url':'y','attribution_required':False}},
+                    ],
+                }],
+            }
+            whisper={'duration':4.0,'language':'en','probability':1.0,'words':[{'start':0.0,'end':0.5,'word':'one'},{'start':2.0,'end':2.5,'word':'two'}]}
+            out=assemble_render_manifest(tl,whisper,audio_path=audio)
+            self.assertEqual(out['manifest_version'],'v4-render-manifest-2')
+            self.assertEqual([x['visual_id'] for x in out['visual_track']],['A1','A2'])
+            self.assertEqual([x['beat_id'] for x in out['visual_track']],['A','A'])
+            self.assertEqual(out['captions']['source'],'actual_audio_whisper_timing_script_text')
+
     def test_audio_hash_mismatch_is_rejected(self):
         with tempfile.TemporaryDirectory() as td:
             audio,_,timeline,whisper=base_payload(Path(td)); audio.write_bytes(b'changed')
