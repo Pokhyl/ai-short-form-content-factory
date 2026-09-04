@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "opennolan": {
+    "repository": "https://github.com/het8802/OpenNolan.git",
+    "commit": "4457349c386ea1a89c01547f9a76fa650970c131",
+    "tag_observed": "v1.0.2",
+    "license": "AGPL-3.0",
+    "checkout": "/opt/ai-short-form-v5-upstreams/OpenNolan"
+  },
+  "runtime": {
+    "venv": "/opt/ai-short-form-v5-runtime/.venv",
+    "ffmpeg_expected_major": 6,
+    "faster_whisper": "1.2.1",
+    "edge_tts": "7.2.8"
+  }
+}
