@@ -13,7 +13,9 @@ import {MotionDiagram, MotionDiagramProps} from "./MotionDiagram";
 
 type CaptionWord = {text:string; startMs:number; endMs:number};
 type VisualItem = {
+  visual_id:string;
   beat_id:string;
+  shot_id?:string|null;
   start_seconds:number;
   end_seconds:number;
   renderer:"exact_media"|"annotated_media"|"motion_graphic";
@@ -72,7 +74,7 @@ export const VerticalShort: React.FC<VerticalShortProps> = (props) => {
     {props.visual_track.map((item)=>{
       const from=Math.round(item.start_seconds*fps);
       const duration=Math.max(1,Math.round((item.end_seconds-item.start_seconds)*fps));
-      return <Sequence key={item.beat_id} from={from} durationInFrames={duration} premountFor={fps}>
+      return <Sequence key={item.visual_id} from={from} durationInFrames={duration} premountFor={fps}>
         {item.renderer === "exact_media" ? <ExactMedia item={item}/> : item.renderer === "annotated_media" ? <AnnotatedMedia item={item}/> : item.graphic ? <MotionDiagram {...item.graphic}/> : null}
       </Sequence>;
     })}
