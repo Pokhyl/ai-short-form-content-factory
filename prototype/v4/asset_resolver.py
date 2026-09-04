@@ -35,7 +35,7 @@ def _resolve_visual_node(
 ) -> None:
     primary = node.get('primary_visual') or {}
     source_class = str(primary.get('source_class') or '').strip()
-    if source_class in {'exact', 'annotated_exact'}:
+    if source_class in {'exact', 'annotated_exact', 'contextual'}:
         counters[source_class] += 1
         if visual_id not in asset_map:
             raise ValueError(f'exact visual {visual_id} has no resolved asset')
@@ -86,8 +86,6 @@ def _resolve_visual_node(
         counters[source_class] += 1
         node['resolved_asset'] = None
         node['construction_required'] = True
-    elif source_class == 'contextual':
-        raise ValueError(f'contextual visual {visual_id} requires a separate contextual-media resolver')
     else:
         raise ValueError(f'visual {visual_id} has unsupported source_class: {source_class}')
 
@@ -103,7 +101,7 @@ def resolve_timeline_assets(timeline: dict[str, Any], asset_map: dict[str, Any])
         raise ValueError('timeline requires beats')
 
     used: set[str] = set()
-    counters = {'exact': 0, 'annotated_exact': 0, 'constructed': 0}
+    counters = {'exact': 0, 'annotated_exact': 0, 'contextual': 0, 'constructed': 0}
     shot_count = 0
     for beat in beats:
         beat_id = str(beat.get('beat_id') or '').strip()
@@ -124,6 +122,7 @@ def resolve_timeline_assets(timeline: dict[str, Any], asset_map: dict[str, Any])
     out['asset_resolution'] = {
         'exact_resolved': counters['exact'],
         'annotated_exact_resolved': counters['annotated_exact'],
+        'contextual_resolved': counters['contextual'],
         'constructed_required': counters['constructed'],
         'resolved_shots': shot_count,
         'all_exact_assets_hash_verified': True,
