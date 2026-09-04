@@ -37,13 +37,17 @@ def resolve_timeline_assets(timeline: dict[str, Any], asset_map: dict[str, Any])
 
     used: set[str] = set()
     exact_count = 0
+    annotated_exact_count = 0
     constructed_count = 0
     for beat in beats:
         beat_id = str(beat.get('beat_id') or '').strip()
         primary = beat.get('primary_visual') or {}
         source_class = str(primary.get('source_class') or '').strip()
-        if source_class == 'exact':
-            exact_count += 1
+        if source_class in {'exact', 'annotated_exact'}:
+            if source_class == 'exact':
+                exact_count += 1
+            else:
+                annotated_exact_count += 1
             if beat_id not in asset_map:
                 raise ValueError(f'exact beat {beat_id} has no resolved asset')
             metadata = _load_asset(asset_map[beat_id])
@@ -87,6 +91,8 @@ def resolve_timeline_assets(timeline: dict[str, Any], asset_map: dict[str, Any])
                 'credit': metadata.get('credit'),
                 'attribution_required': bool(metadata.get('attribution_required')),
             }
+            if source_class == 'annotated_exact':
+                beat['annotation_required'] = True
         elif source_class == 'constructed':
             constructed_count += 1
             beat['resolved_asset'] = None
@@ -101,6 +107,7 @@ def resolve_timeline_assets(timeline: dict[str, Any], asset_map: dict[str, Any])
         raise ValueError(f'asset_map contains unused beat ids: {unused}')
     out['asset_resolution'] = {
         'exact_resolved': exact_count,
+        'annotated_exact_resolved': annotated_exact_count,
         'constructed_required': constructed_count,
         'all_exact_assets_hash_verified': True,
     }
