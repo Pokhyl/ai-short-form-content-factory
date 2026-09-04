@@ -39,3 +39,19 @@ The first post-deploy job stopped safely before TTS because the new per-candidat
 The next fresh run proved that evidence prompting alone was insufficient: the comparer assigned high confidence to a longer lexical lookalike even though another candidate was the unique exact surface-form match. WF02 therefore adds a deterministic, language-general specificity guard. Unicode-normalized raw forms and generic Cyrillic transliterations are compared with candidate labels; a unique exact label outranks a longer containment lookalike unless the discovery evidence establishes an alias relationship. Ambiguities where multiple candidates share the exact label (for example company/object or planet/element names) remain with the evidence comparer. No entity names or topic aliases are encoded in production logic.
 
 The unrelated `Samsung / pl / 15` regression stopped before research because one model candidate used the semantically equivalent key `candidate_name` instead of `canonical_name`. The parser now normalizes either spelling into the canonical internal contract. This is schema tolerance only; it does not select or alter an entity.
+
+## Fresh production matrix
+
+All jobs below were created through the active n8n product webhook using only `topic + language + duration`. No script, query, media, or edit plan was repaired manually.
+
+| Job | Raw topic | Language | Resolved subject | TTS seconds | Final state |
+|---|---|---:|---|---:|---|
+| `83f47f8f-9b4b-4d2a-99eb-90b151d5e8a4` | `Ходор` | ru | `Hodor` | 31.152 | WF04 fail: no valid assignment at shot 5/6 |
+| `e2719f59-b999-4bdd-88b6-63745af8280e` | `why is the sky blue` | ru | `Rayleigh scattering` | 30.288 | `review_ready` |
+| `331f08a1-1fb7-4c39-b5ab-8e34db4a0fc1` | `how does a refrigerator work` | uk | `The vapor-compression refrigeration cycle in household appliances` | 29.208 | `review_ready` |
+| `5684a53d-a2a0-4867-8b52-673f0483c3d5` | `почему извергаются вулканы` | pl | `Przyczyny erupcji wulkanów` | 29.880 | WF04 fail: segment 2 had 0/1 truth-eligible candidates |
+| `c4bbeac2-05fd-416f-98e3-1d175e4a7598` | `Jaguar` | ru | `Jaguar (panthera onca)` | 15.576 | `review_ready` |
+| `536ea81b-d2ce-4558-b32c-7e477abfffdb` | `how do antibiotics work` | uk | `Antibiotic mechanism of action` | 16.344 | `review_ready` |
+| `c14b2f64-0a1b-4836-9933-2fb9209b48b8` | `Samsung` | pl | `Samsung Group` | 16.104 | `review_ready` |
+
+Persisted script starts verify the requested output languages. The Hodor script discusses the Game of Thrones character and contains no Khodorkovsky narration. The two WF04 failures are valid autonomous rejection outcomes and were not bypassed. The five rendered MP4s remain machine `review_ready`, not HUMAN PASS.
