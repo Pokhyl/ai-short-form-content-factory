@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS jobs (
   current_stage TEXT NOT NULL DEFAULT 'intake',
   final_video_path TEXT,
   topic_resolution JSONB,
+  visual_search_queries_en JSONB,
   last_error TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),

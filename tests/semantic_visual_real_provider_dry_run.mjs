@@ -54,6 +54,7 @@ for(const j of contexts){
  const discovery=await discoverVisualCandidates({
   canonicalSource:prepared.discovery_request.canonical_source,
   timedBeats:prepared.discovery_request.timed_beats,
+  visualQueriesEn:prepared.discovery_request.visual_queries_en,
   pixabayApiKey:process.env.PIXABAY_API_KEY||'',
   pexelsApiKey:process.env.PEXELS_API_KEY||'',
  });

@@ -12,14 +12,16 @@ const timedBeats = [
     duration_seconds: 3,
   },
 ];
+const visualQueriesEn = ['induction cooktop', 'copper induction coil', 'magnetic cookware', 'induction heating diagram'];
 
 const semantic = buildVisualDiscoveryOptions(
-  { canonical_source: canonicalSource, timed_beats: timedBeats },
+  { canonical_source: canonicalSource, timed_beats: timedBeats, visual_queries_en: visualQueriesEn },
   { pixabayApiKey: 'pix', pexelsApiKey: 'pex' },
 );
 
 assert.equal(semantic.canonicalSource, canonicalSource);
 assert.equal(semantic.timedBeats, timedBeats);
+assert.equal(semantic.visualQueriesEn, visualQueriesEn);
 assert.equal(semantic.beats, undefined);
 assert.equal(semantic.pixabayApiKey, 'pix');
 assert.equal(semantic.pexelsApiKey, 'pex');
@@ -30,5 +32,6 @@ const legacy = buildVisualDiscoveryOptions({ canonical_source: canonicalSource, 
 assert.equal(legacy.canonicalSource, canonicalSource);
 assert.equal(legacy.beats, legacyBeats);
 assert.equal(legacy.timedBeats, undefined);
+assert.equal(legacy.visualQueriesEn, undefined);
 
 console.log('MEDIA_WORKER_VISUAL_DISCOVERY_ADAPTER_REGRESSION_PASS');

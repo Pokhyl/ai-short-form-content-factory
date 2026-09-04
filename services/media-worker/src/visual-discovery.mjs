@@ -307,7 +307,7 @@ function dedupeCandidates(candidates) {
   return result;
 }
 
-export async function discoverVisualCandidates({ canonicalSource, beats, timedBeats, pixabayApiKey = "", pexelsApiKey = "", fetchImpl = fetch }) {
+export async function discoverVisualCandidates({ canonicalSource, beats, timedBeats, visualQueriesEn = [], pixabayApiKey = "", pexelsApiKey = "", fetchImpl = fetch }) {
   const language = cleanText(canonicalSource?.language).toLowerCase();
   const title = cleanText(canonicalSource?.title);
   if (!/^(?:en|pl|ru|uk)$/u.test(language) || !title) throw new Error("visual discovery requires canonical source language/title");
@@ -319,10 +319,17 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
   if (legacyMode && beats.length > 100) throw new Error("visual discovery beats exceeds 100 items");
 
   const segmentation = segmentedMode ? buildVisualSegments(timedBeats) : null;
+  const groundedQueries = Array.isArray(visualQueriesEn)
+    ? [...new Set(visualQueriesEn.map(cleanText).filter(Boolean))].slice(0, 16)
+    : [];
+  if (segmentedMode && groundedQueries.length < 4) throw new Error("visual discovery requires at least four grounded English queries");
   const searchUnits = segmentedMode
-    ? segmentation.segments.map((segment) => ({
+    ? segmentation.segments.map((segment, index) => ({
         unit_number: Number(segment.segment_number),
-        visual_target: cleanText(segment.search_terms?.[0] ?? ""),
+        visual_target: groundedQueries[Math.min(
+          groundedQueries.length - 1,
+          Math.floor(index * groundedQueries.length / segmentation.segments.length),
+        )],
         narration: cleanText(segment.narration),
       }))
     : beats.map((beat) => ({
@@ -403,7 +410,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       ...basePexels,
       ...basePixabay,
     ]);
-    unitResults.push({ unit_number: unitNumber, candidates, provider_query: hasSpecificQuery ? specificQuery : stockQuery });
+    unitResults.push({ unit_number: unitNumber, visual_target: anchor, candidates, provider_query: hasSpecificQuery ? specificQuery : stockQuery });
   }
 
   const common = {
@@ -425,6 +432,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       duration_seconds: segmentation.duration_seconds,
       visual_segments: segmentation.segments.map((segment) => ({
         ...segment,
+        search_terms: [byNumber.get(Number(segment.segment_number))?.visual_target].filter(Boolean),
         candidates: byNumber.get(Number(segment.segment_number))?.candidates ?? [],
         provider_query: byNumber.get(Number(segment.segment_number))?.provider_query ?? stockQuery,
       })),
