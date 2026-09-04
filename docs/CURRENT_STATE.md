@@ -1,6 +1,6 @@
 # Current Project State — Product-First V4
 
-Last updated: 2026-09-03
+Last updated: 2026-09-04
 
 This file is authoritative for branch `rebuild/product-first-v4`. Repository/runtime state overrides chat memory.
 
@@ -24,11 +24,12 @@ Before technical work read fresh:
 8. `docs/V4_CROSS_TOPIC_CONTRACT_IMPLEMENTATION_20260903.md`;
 9. `docs/V4_ACTUAL_AUDIO_CROSS_TOPIC_PROOF_20260903.md`;
 10. `docs/V4_EXACT_MEDIA_RESOLUTION_PROOF_20260903.md`;
-11. relevant upstream/reference docs.
+11. `docs/V4_OLED_PREDELIVERY_REJECTION_20260904.md`;
+12. relevant upstream/reference docs.
 
 ## Current architecture direction
 
-`topic -> factual research -> semantic director -> speech-ready script + semantic visual obligations -> TTS -> exact-audio Whisper timing -> provenance-bound timeline compiler -> exact-media resolver / constructed-graphic compiler -> vertical renderer -> complete-video human review`
+`topic -> factual research -> semantic director -> speech-ready script + semantic visual obligations -> TTS -> exact-audio Whisper timing -> provenance-bound timeline compiler -> exact-media resolver / pictorial-or-annotated visual compiler -> render manifest -> verified render bundle -> vertical renderer -> complete-video human review`
 
 Critical rules:
 
@@ -38,11 +39,11 @@ Critical rules:
 - text normally overlays meaningful visuals; it does not replace the primary visual;
 - portrait orientation does not prove relevance;
 - widescreen exact evidence uses contain/PIP/collage/diagram treatment;
-- factual/mechanism beats show the actual subject/mechanism or a truthful constructed representation;
+- factual/mechanism beats show the actual subject/mechanism or a truthful pictorial representation;
+- generic boxes/labels/arrows are annotation primitives, not a valid primary factual visual;
 - pacing follows semantic/visual information, not arbitrary cut-count targets;
 - exact-media identity/license/hash/dimensions are resolved before rendering;
 - a renderer may not independently replace resolved exact media;
-- constructed diagrams must be generated from a reusable semantic graphic grammar, not topic-specific raw SVG coordinate dumps;
 - machine render is never human approval;
 - general changes are exercised across materially different topics/languages;
 - every meaningful failure/root cause/decision is recorded in GitHub.
@@ -90,48 +91,19 @@ General stale-artifact fix:
 - `prototype/v4/timeline_builder.py`;
 - timeline timing derives from current exact-audio Whisper segment starts;
 - timeline embeds current script/audio SHA256 provenance;
-- CLI `compile-timeline` and `validate-timeline`;
-- focused suite at that stage: `15/15 PASS`.
-
-Remote commits: `9c6216638639ad9b2a196cc96df978a2a382b053`, `af4cde4c147bc4271e46d78d588dce4ae42fa86f`, `d9b0e342926160b152ad40336865c3a7c23fd4f3`.
+- CLI `compile-timeline` and `validate-timeline`.
 
 Proof: `docs/V4_ACTUAL_AUDIO_CROSS_TOPIC_PROOF_20260903.md`.
 
 ## Exact-media acquisition/resolution — TECHNICAL PASS
 
-New automation:
+Automation:
 
-- `prototype/v4/commons_media.py` — Commons API acquisition with license/source/dimensions/hash metadata;
+- `prototype/v4/commons_media.py` — Commons acquisition with license/source/dimensions/hash metadata;
 - `prototype/v4/asset_resolver.py` — beat-level identity + SHA + dimensions/layout validation;
 - CLI `fetch-commons` and `resolve-assets`.
 
-Real assets resolved automatically:
-
-### Eiffel E1
-
-`File:Louis-Emile Durandelle, The Eiffel Tower - State of the Construction, 1888.jpg`
-
-- `1440x1832`;
-- Public domain;
-- SHA256 `9c67de360bab67bc5de849d7846bf1f2972ca0722b6152c48ef753fa309bc784`.
-
-### Eiffel E5
-
-`File:Achèvement de la Tour Eiffel, 1889.jpg`
-
-- `1440x1956`;
-- Public domain;
-- SHA256 `45ddfb7b051fe4d3e5dbb522ba9fdf96f0701cc9480fab0b9cb999105d2594ac`.
-
-### Zipper Z1
-
-`File:Metalzipper.jpg`
-
-- `1440x2166`;
-- Public domain;
-- SHA256 `2b9f1c974e60ef7a22e55c4771126175654f75e7aa08d26240ede7cd82f18501`.
-
-Resolved matrix state:
+Resolved state before visual-adequacy guard:
 
 - Eiffel: `2 exact + 3 constructed`;
 - Zipper: `1 exact + 7 constructed`;
@@ -139,35 +111,78 @@ Resolved matrix state:
 - all exact assets hash-verified;
 - no generic fallback injected.
 
-Focused suite after resolver stage: `22/22 PASS`.
+Proof: `docs/V4_EXACT_MEDIA_RESOLUTION_PROOF_20260903.md`.
 
-Remote commits:
+## Unified render manifest / bundle / renderer — TECHNICAL PLUMBING PASS
 
-- Commons adapter/tests/CLI: `2996b3807331737fe1e70a6cf641323782a0a796`, `fe8d0397b60936c33658fe08dfe1e9c39f246a34`, `c8656b2cf576547ffbb2759ef58f73d1f2038146`;
-- resolver/tests/CLI: `ea2e35265dd9e850d38d35b9ce0b97c4bd83a00b`, `12372ee66094584089e1759e832943f8f5dfcd24`, `1d60ce70aaa01edd97c70aa46dba8e7a11d3dc9c`;
-- local VPS stage commit: `2e9375393e85e4509f3e287251d224cd867744f9`.
+Implemented:
 
-Proof: `docs/V4_EXACT_MEDIA_RESOLUTION_PROOF_20260903.md`, commit `58f61750df9316ed2b80c5e505ea368b72ab434e`.
+- `prototype/v4/render_manifest.py`;
+- `prototype/v4/render_bundle.py`;
+- `prototype/v4/remotion/VerticalShort.tsx`;
+- CLI `build-render-manifest` and `stage-render-bundle`.
+
+The bundle stage copies only hash-verified audio/assets into a separate `public/` directory and rewrites renderer props to relative staged paths. The source tree remains free of runtime media.
+
+A real OLED/LCD artifact was rendered through this plumbing:
+
+- duration `32.427 s`;
+- H.264 `1080x1920` + AAC;
+- SHA256 `e779cac7db4fc38353a0b5ad8b0f1aa463cd6e766e76c1fc62461257ea451b61`.
+
+This proves renderer plumbing only; it is not a quality pass.
+
+## OLED pre-delivery rejection — PRODUCT FAIL BEFORE USER REVIEW
+
+The OLED artifact was rejected before being promoted as a review candidate.
+
+Manifest audit showed all six primary beats were `motion_graphic` and each was dominated by generic `rect + text + line` elements with 4-5 text labels. The old semantic compiler contract only represented label boxes and relations, so the output could not become a rich factual visual.
+
+Root cause: `graphic_spec.py` / `graphic_compiler.py` v1 are structurally capable of presentation diagrams, not adequate primary factual visuals.
+
+Proof: `docs/V4_OLED_PREDELIVERY_REJECTION_20260904.md`.
+
+## Primary visual adequacy guard — TECHNICAL PASS
+
+New code:
+
+- `prototype/v4/visual_adequacy.py`;
+- `prototype/v4/tests/test_visual_adequacy.py`;
+- integrated into `prototype/v4/render_manifest.py`.
+
+Primary motion graphics now require an explicit `visual_basis` from:
+
+- `exact_media_annotation`;
+- `pictorial_primitive`;
+- `data_chart`;
+- `map`;
+- `screen_capture`.
+
+Generic boxes/labels/arrows without one of those bases fail before render-manifest generation.
+
+Cross-topic result with the new guard:
+
+- Eiffel rejects at `E2`;
+- zipper rejects at `Z2`;
+- OLED/LCD rejects at `O1`.
+
+This is intentional. Do not weaken the guard to make the old fixtures pass.
+
+Current focused V4 suite: `42/42 PASS`.
 
 ## Existing low-level motion primitive
 
-Local repo contains a reusable Remotion SVG primitive:
-
-- `prototype/v4/remotion/MotionDiagram.tsx`;
-- local commits `00c35b5` and `4391be3`.
-
-It supports basic shapes, lines/arrows, enter/draw/pulse/move animation. This is acceptable as a renderer backend, but the existing fixture JSONs contain many raw coordinates and therefore are NOT accepted as the semantic-director/automation contract.
+`prototype/v4/remotion/MotionDiagram.tsx` supports basic shapes, lines/arrows and animation. It remains acceptable as an annotation/rendering backend, but generic box/label output is no longer sufficient as a primary factual visual.
 
 ## Immediate next action
 
-Do not render hand-built fixture videos yet and do not return to induction.
+Do not render Eiffel/zipper with the rejected primary-box graphic path and do not return to induction.
 
-1. define a high-level constructed-graphic schema with reusable archetypes such as flow, merge, split, comparison, layered stack and assembly;
-2. prohibit raw x/y SVG geometry in the semantic/director-facing spec;
-3. compile the high-level spec deterministically into `MotionDiagram` geometry;
-4. exercise the same compiler on Eiffel, zipper and OLED/LCD;
-5. bind compiled graphics to the provenance-resolved timelines;
-6. only then generate renderer inputs and render materially different matrix cases;
-7. inspect complete videos and record failures before architectural changes.
+1. add a reusable annotated-media path: `hash-verified exact media/diagram -> crop/contain/zoom -> semantic motion overlays -> captions`;
+2. add Commons search/discovery so factual beats can acquire exact diagrams/images instead of defaulting to constructed cards;
+3. preserve graphic overlays as secondary explanation, not primary substitution;
+4. exercise the same annotated-media path across Eiffel, zipper and OLED/LCD;
+5. require complete-video human review for each materially different prototype;
+6. only after multiple HUMAN PASS artifacts consider n8n/DB orchestration.
 
 No n8n/DB rebuild until multiple materially different direct prototypes are HUMAN PASS.
