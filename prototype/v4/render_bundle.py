@@ -47,10 +47,11 @@ def stage_render_bundle(manifest: dict[str, Any], output_dir: str | Path) -> dic
     audio.pop('path',None)
 
     exact=0
+    annotated=0
     constructed=0
     for item in staged.get('visual_track',[]):
         renderer=item.get('renderer')
-        if renderer == 'exact_media':
+        if renderer in {'exact_media', 'annotated_media'}:
             asset=item.get('asset') or {}
             src=Path(str(asset.get('path') or ''))
             expected=str(asset.get('sha256') or '')
@@ -59,7 +60,13 @@ def stage_render_bundle(manifest: dict[str, Any], output_dir: str | Path) -> dic
             _copy_verified(src, public/rel, expected)
             asset['src']=rel
             asset.pop('path',None)
-            exact += 1
+            if renderer == 'annotated_media':
+                graphic=item.get('graphic')
+                if not isinstance(graphic,dict) or not graphic.get('elements'):
+                    raise ValueError(f"annotated media graphic missing for {item.get('beat_id')}")
+                annotated += 1
+            else:
+                exact += 1
         elif renderer == 'motion_graphic':
             graphic=item.get('graphic')
             if not isinstance(graphic,dict) or not graphic.get('elements'):
@@ -75,6 +82,7 @@ def stage_render_bundle(manifest: dict[str, Any], output_dir: str | Path) -> dic
         'props_path':str(props),
         'public_dir':str(public),
         'exact_assets':exact,
+        'annotated_media':annotated,
         'motion_graphics':constructed,
         'audio_sha256':audio_sha,
     }
