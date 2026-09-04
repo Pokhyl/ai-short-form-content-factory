@@ -1,0 +1,17 @@
+studio.hodor.com.pl {
+    route {
+        basic_auth {
+            HODOR <existing-hash-kept-in-runtime-config>
+        }
+
+        handle_path /api/v4/* {
+            reverse_proxy 172.18.0.1:8094
+        }
+
+        # Existing legacy /api/jobs semantic-v3 handlers remain outside the V4 UI path.
+        # The V4 Studio form calls only /api/v4/*.
+
+        root * /opt/ai-short-form-content-factory/studio
+        file_server
+    }
+}
