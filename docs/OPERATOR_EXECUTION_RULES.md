@@ -16,7 +16,8 @@ Repeated failure patterns already observed:
 - inventing blockers or constraints without checking real source/output data;
 - patching one topic/render instead of fixing a general system defect;
 - continuing to improve a failed candidate instead of rejecting it;
-- spending time on Studio/n8n/DB before the direct autonomous product path works.
+- replacing the actual n8n product with a separate CLI/direct-prototype product path;
+- spending time on Studio/DB before the n8n-orchestrated product path works.
 
 These patterns are forbidden.
 
@@ -32,19 +33,25 @@ Before **every** meaningful action, code change, render, test, architecture deci
 
 ## Real product goal
 
-The product input is only:
+The product is a **free/self-hosted n8n orchestrator** for automatic short-form video generation.
+
+The external product input is only:
 
 `topic + language + requested duration`
 
-After that, the system must autonomously perform:
+n8n is mandatory and remains the orchestration layer. It must coordinate the complete flow:
 
-`research -> licensed visual inventory -> visual verification/ranking -> showable story angle -> final script -> one continuous narration -> exact-audio word timing -> autonomous edit plan -> render -> QA -> exact-artifact human review`
+`input -> research -> licensed/free visual inventory -> visual verification/ranking -> showable story angle -> final script -> one continuous narration -> exact-audio word timing -> autonomous edit plan -> render -> QA -> final MP4`
 
 The target durations remain `15 / 30 / 45 / 60` seconds and the output format is vertical `9:16` short-form video.
 
+Mandatory production dependencies must not require paid per-video API usage. Prefer self-hosted/free/open-source components and genuinely free provider access.
+
+A standalone CLI may be used only as an internal diagnostic tool for one component. It must never replace n8n as the product orchestrator or become a parallel product architecture.
+
 ## What counts as a valid proof
 
-A proof is valid only when, after supplying `topic + language + duration`, there is **zero manual creative intervention**.
+A proof is valid only when, after supplying `topic + language + duration` to the n8n workflow, there is **zero manual creative intervention**.
 
 The following invalidate the proof:
 
@@ -55,6 +62,7 @@ The following invalidate the proof:
 - manually looping/reusing assets to fill duration;
 - renderer-specific one-off tuning for a proof;
 - changing speech speed to fit duration;
+- bypassing n8n with a handcrafted/direct generation path and calling that product proof;
 - calling a machine-rendered MP4 a success before user HUMAN PASS.
 
 If manual intervention is required, the autonomous test is failed.
@@ -85,9 +93,13 @@ When something fails:
 
 ## Architecture gate
 
-Do not rebuild Studio, n8n orchestration, PostgreSQL product state, or production workflow integration until the **same direct autonomous path** produces multiple materially different videos that receive explicit HUMAN PASS.
+n8n is not optional and must not be postponed as a "later wrapper". It is the required orchestrator from the product path onward.
 
-Renderer choice is replaceable implementation detail. The architecture must not be built around MoneyPrinterTurbo, HyperFrames, OpenNolan, MoviePy, FFmpeg, or any other renderer before the autonomous path is proven.
+Do not build a separate CLI product, separate custom orchestration service, or renderer-centric architecture instead of n8n.
+
+Studio UI and PostgreSQL product-state expansion may wait until the n8n-orchestrated generation path itself works reliably across materially different topics.
+
+Renderer choice remains a replaceable implementation detail. The architecture must not be built around MoneyPrinterTurbo, HyperFrames, OpenNolan, MoviePy, FFmpeg, or any other renderer.
 
 ## Source of truth order
 
