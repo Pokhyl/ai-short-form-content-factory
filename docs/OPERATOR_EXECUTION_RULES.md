@@ -67,13 +67,37 @@ The following invalidate the proof:
 
 If manual intervention is required, the autonomous test is failed.
 
+## Mandatory photo-first media policy
+
+The default visual strategy is **still-image first**, not stock-video first.
+
+Primary automatic inventory must prioritize relevant free/licensed images from sources such as:
+
+- Pexels Photos;
+- Wikimedia Commons and canonical Wikipedia media;
+- Pixabay Images;
+- other free/publicly licensed image sources added to the shared provider layer.
+
+Still images are normal production assets. They must be edited into dynamic short-form video through purposeful crop/reframe, pan/zoom, detail crops, masks, layouts, callouts, parallax, maps/documents/diagrams or other motion treatment. Do not turn the result into a static slideshow.
+
+Video clips are optional and secondary. A video candidate may be used only when:
+
+1. the narration segment actually describes visible motion/action;
+2. its metadata matches both the canonical subject and the segment-specific visual target;
+3. local visual ranking says it is more relevant than the best available still candidate for the same segment;
+4. the selected output shot is short — current maximum is four seconds.
+
+If those conditions are not met, select a relevant still image. Never choose generic video merely because it moves.
+
+Durable record: `docs/V5_N8N_PHOTO_FIRST_MEDIA_POLICY_20260904.md`.
+
 ## Media rule
 
 Do **not** claim that free visual material is the main blocker without evidence.
 
-There is a large free image/media inventory across sources such as Wikimedia Commons, Openverse, Internet Archive, Library of Congress, NASA/NARA and stock-video providers already used by the project.
+There is a large free image/media inventory across sources such as Wikimedia Commons, Openverse, Internet Archive, Library of Congress, NASA/NARA and stock providers already used by the project.
 
-The real engineering problem is automatic **selection, verification and editorial use** of relevant visuals. Images are allowed and expected when appropriate, but the result must not degrade into a static slideshow. Still images may be used through purposeful crops, details, pans, masks, layouts, maps, documents, callouts, parallax or motion graphics.
+The real engineering problem is automatic **selection, verification and editorial use** of relevant visuals.
 
 ## No-hacks rule
 
