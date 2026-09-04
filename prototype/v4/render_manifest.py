@@ -5,6 +5,8 @@ import hashlib
 from pathlib import Path
 from typing import Any
 
+from .visual_adequacy import validate_primary_motion_graphic
+
 DEFAULT_VERTICAL_PROFILE = {
     "width": 1080,
     "height": 1920,
@@ -123,6 +125,7 @@ def assemble_render_manifest(
                 raise ValueError(f"constructed beat {beat_id} has no compiled_graphic")
             if (graphic.get("source") or {}).get("beat_id") != beat_id:
                 raise ValueError(f"constructed beat {beat_id} graphic provenance mismatch")
+            validate_primary_motion_graphic(graphic, beat_id=beat_id)
             item["renderer"] = "motion_graphic"
             item["graphic"] = copy.deepcopy(graphic)
         else:
