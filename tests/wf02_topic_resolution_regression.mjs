@@ -93,4 +93,27 @@ for (const test of matrix) {
   if (test.rejected) assert.notEqual(result.json.canonical_subject, test.rejected);
 }
 
+// A unique exact label must beat a longer containment lookalike even when the
+// probabilistic comparer picked the longer name. This is generic surface-form
+// policy; it does not encode any production topic or entity alias.
+{
+  const base = {
+    raw_topic: 'Alpha', topic: 'Alpha', topic_language: 'en', topic_kind: 'entity',
+    language_code: 'en', target_duration_seconds: 30,
+    semantic_candidates: [
+      { candidate_id: 'C1', canonical_name: 'Alphabet Corporation', subject_type: 'company', context: 'business', interpretation: 'A company', discovery_query: 'Alphabet Corporation' },
+      { candidate_id: 'C2', canonical_name: 'Alpha', subject_type: 'concept', context: 'Greek letter', interpretation: 'The Greek letter alpha', discovery_query: 'Alpha Greek letter' },
+    ],
+    discovery_evidence: [
+      { evidence_id: 'D-C1-1', candidate_id: 'C1', title: 'Alphabet', snippet: 'Alphabet company', url: 'https://example.invalid/a' },
+      { evidence_id: 'D-C2-1', candidate_id: 'C2', title: 'Alpha', snippet: 'Alpha Greek letter', url: 'https://example.invalid/b' },
+    ],
+  };
+  const model = { text: JSON.stringify({ selected_candidate_id: 'C1', resolved_subject: 'Alphabet Corporation', canonical_name: 'Alphabet Corporation', subject_type: 'company', context: 'business', user_intent: 'Company', research_query_en: 'Alphabet Corporation', confidence: 0.9, runner_up_candidate_id: 'C2', score_margin: 0.4, reasoning_evidence_ids: ['D-C1-1'], resolution_reason: 'Search prominence' }) };
+  const $ = () => ({ first: () => ({ json: base }) });
+  const [result] = validate({ first: () => ({ json: model }) }, $);
+  assert.equal(result.json.topic_resolution.selected_candidate_id, 'C2');
+  assert.equal(result.json.topic_resolution.decision_policy, 'unique_exact_surface_form_over_longer_lookalike');
+}
+
 console.log('WF02_TOPIC_RESOLUTION_REGRESSION_PASS', matrix.length);
