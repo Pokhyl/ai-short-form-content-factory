@@ -196,3 +196,10 @@ The exact job matrix, consumed failures, decision contract, and deployment corre
 The user rejected all five topic-resolution `review_ready` MP4s. They are HUMAN FAIL, not quality proof. Inspection showed the runs were already image-first; the defect was acceptance of irrelevant images through metadata bonuses despite near-zero local visual scores, compounded by mixed-language visual queries because WF02's English visual concepts were not persisted.
 
 Migration 019 and the WF02/WF04/media-worker correction persist and consume grounded English visual queries, rank against a concise English subject/target, reject sub-floor semantic matches before metadata utility, and keep video secondary to an eligible still. Missing relevant media must fail closed. Durable record: `docs/V5_PHOTO_RELEVANCE_HUMAN_FAIL_20260905.md`.
+
+The correction is deployed. Fresh autonomous job
+`e3d9016d-cefc-4158-aeca-075dab852c41` (`как работает холодильник`, `ru`, `30`)
+failed closed at visual segment 6 because no candidate exceeded the `0.01`
+semantic relevance floor. It produced no `visual_shots` and no MP4. This proves the
+deployed gate blocks unrelated filler; it does not yet prove sufficient relevant-
+photo coverage or human-acceptable output.

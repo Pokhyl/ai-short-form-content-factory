@@ -31,3 +31,24 @@ WF02 already generated English story-specific visual concepts, but did not persi
 - If no relevant photo/diagram exists, the job fails instead of filling the timeline with weak media.
 
 No topic-specific media, query, alias, provider override, or acceptance bypass was added.
+
+## Production deployment and fresh proof
+
+Commit `94c3bbe` was deployed with rollback snapshot
+`/opt/ai-short-form-content-factory/rollback/20260905T_photo_relevance_predeploy`.
+Migration 019, WF02, WF04, and the media worker were the only changed production
+surfaces. After publication and restart, n8n and the media worker were healthy and
+`jobs.visual_search_queries_en` was present as `jsonb`.
+
+Exactly one fresh autonomous input was submitted: `как работает холодильник`,
+`ru`, `30`; job `e3d9016d-cefc-4158-aeca-075dab852c41`. WF02 persisted eight
+story-specific English searches, including `refrigeration cycle diagram`,
+`evaporator coils inside fridge`, and `cutaway view of a household refrigerator`.
+WF04 stopped at segment 6 with:
+
+`Visual segment 6 has no candidate above semantic relevance floor 0.01`
+
+No `visual_shots` rows and no MP4 were produced. The deployed system therefore did
+not replace the missing relevant photograph with an unrelated asset. This is a
+machine fail-closed proof, not a human-quality pass and not proof that relevant
+photo coverage is yet sufficient for production.
