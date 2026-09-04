@@ -16,7 +16,7 @@ type VisualItem = {
   beat_id:string;
   start_seconds:number;
   end_seconds:number;
-  renderer:"exact_media"|"motion_graphic";
+  renderer:"exact_media"|"annotated_media"|"motion_graphic";
   layout?:"fullscreen"|"contain"|"pip"|"collage"|string;
   visible_subject?:string;
   asset?:{src:string; width?:number; height?:number};
@@ -41,6 +41,11 @@ const ExactMedia: React.FC<{item:VisualItem}> = ({item}) => {
     <Img src={staticFile(item.asset.src)} style={{width:"100%",height:"100%",objectFit:contain?"contain":"cover",transform:`scale(${contain?1:scale})`}}/>
   </AbsoluteFill>;
 };
+
+const AnnotatedMedia: React.FC<{item:VisualItem}> = ({item}) => <AbsoluteFill>
+  <ExactMedia item={item}/>
+  {item.graphic ? <MotionDiagram {...item.graphic}/> : null}
+</AbsoluteFill>;
 
 const CaptionOverlay: React.FC<{items:CaptionWord[]; bottom:number; maxWidthRatio:number}> = ({items,bottom,maxWidthRatio}) => {
   const frame=useCurrentFrame();
@@ -68,7 +73,7 @@ export const VerticalShort: React.FC<VerticalShortProps> = (props) => {
       const from=Math.round(item.start_seconds*fps);
       const duration=Math.max(1,Math.round((item.end_seconds-item.start_seconds)*fps));
       return <Sequence key={item.beat_id} from={from} durationInFrames={duration} premountFor={fps}>
-        {item.renderer === "exact_media" ? <ExactMedia item={item}/> : item.graphic ? <MotionDiagram {...item.graphic}/> : null}
+        {item.renderer === "exact_media" ? <ExactMedia item={item}/> : item.renderer === "annotated_media" ? <AnnotatedMedia item={item}/> : item.graphic ? <MotionDiagram {...item.graphic}/> : null}
       </Sequence>;
     })}
     <Audio src={staticFile(props.audio.src)}/>
