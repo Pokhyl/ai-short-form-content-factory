@@ -67,7 +67,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const j=$input.first().json;\nconst topic=String(j.topic??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();\nconst language=String(j.language_code??'').trim().toLowerCase();\nconst names={en:'English',pl:'Polish',ru:'Russian',uk:'Ukrainian'};\nif(!topic)throw new Error('topic is empty');if(!names[language])throw new Error('unsupported language');\nconst prompt=`You are the semantic intake stage of an autonomous short-video system. Understand the user's topic by meaning, regardless of the language in which it was typed. Do not do string/entity matching.\\n\\nINPUT TOPIC: ${topic}\\nSELECTED OUTPUT LANGUAGE: ${names[language]} (${language})\\n\\nReturn ONLY valid JSON with this exact shape:\\n{\"canonical_subject\":\"...\",\"user_intent\":\"...\",\"search_query_en\":\"...\",\"search_query_target\":\"...\"}\\n\\nRules:\\n- canonical_subject must identify the intended real subject, not a lexical lookalike.\\n- search_query_en must be a precise English web-search query for factual research.\\n- search_query_target must express the same research intent in the selected output language.\\n- Do not answer the topic yet.`;\nreturn [{json:{...j,output_language_name:names[language],intent_prompt:prompt}}];"
+          "jsCode": "const j=$input.first().json;\nconst topic=String(j.topic??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();\nconst language=String(j.language_code??'').trim().toLowerCase();\nconst names={en:'English',pl:'Polish',ru:'Russian',uk:'Ukrainian'};\nif(!topic)throw new Error('topic is empty');if(!names[language])throw new Error('unsupported language');\nconst prompt=`You generate candidate interpretations for the semantic intake stage of an autonomous short-video system. The input may be a person, fictional character, company, object, event, phenomenon, question, colloquial name, transliteration, or short ambiguous term. The language of the topic is independent from the selected output language. Do not choose a winner yet.\\n\\nRAW TOPIC: ${topic}\\nSELECTED OUTPUT LANGUAGE: ${names[language]} (${language})\\n\\nReturn ONLY valid JSON with this exact shape:\\n{\"topic_language\":\"...\",\"topic_kind\":\"entity|question|concept|event|other\",\"candidates\":[{\"candidate_id\":\"C1\",\"canonical_name\":\"...\",\"subject_type\":\"...\",\"context\":\"...\",\"interpretation\":\"...\",\"discovery_query\":\"...\"}]}\\n\\nRules:\\n- Produce 2-5 genuinely distinct plausible meanings when the topic is ambiguous; for a clear question or subject, produce one primary interpretation plus any materially plausible alternative alternative, if one exists.\\n- Consider translations, transliterations, aliases, fictional and real-world meanings, and common usage.\\n- Do not promote a longer lexical lookalike merely because it contains the raw string.\\n- discovery_query must be an English web query that can independently test that candidate.\\n- candidate_id values must be C1, C2, ... and unique.\\n- Do not answer the topic and do not claim a winner without search evidence.`;\nreturn [{json:{...j,raw_topic:topic,output_language_name:names[language],intent_prompt:prompt}}];"
         },
         "id": "b6b12942-4ddd-4641-8dae-1e432dc147e7",
         "name": "Prepare Semantic Intent",
@@ -102,7 +102,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const j=$('Prepare Semantic Intent').first().json;const r=$input.first().json;let t=String(r.text??'').trim();t=t.replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{throw new Error('semantic intent model returned invalid JSON')};const clean=v=>String(v??'').replace(/\\s+/gu,' ').trim();const canonical=clean(o.canonical_subject),qen=clean(o.search_query_en),qt=clean(o.search_query_target),intent=clean(o.user_intent);if(!canonical||!qen||!intent)throw new Error('semantic intent response is incomplete');return [{json:{...j,canonical_subject:canonical,user_intent:intent,search_query_en:qen,search_query_target:qt||qen,intent_model:String(r.model??'')}}];"
+          "jsCode": "const j=$('Prepare Semantic Intent').first().json;const r=$input.first().json;let t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{throw new Error('semantic candidate model returned invalid JSON')};const clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();const raw=Array.isArray(o.candidates)?o.candidates:[];if(raw.length<1||raw.length>5)throw new Error(`semantic candidate count ${raw.length} is outside 1-5`);const ids=new Set();const candidates=raw.map((x,i)=>{const candidate_id=clean(x.candidate_id),canonical_name=clean(x.canonical_name),subject_type=clean(x.subject_type),context=clean(x.context),interpretation=clean(x.interpretation),discovery_query=clean(x.discovery_query);if(candidate_id!==`C${i+1}`||ids.has(candidate_id)||!canonical_name||!subject_type||!interpretation||!discovery_query)throw new Error(`semantic candidate ${i+1} is invalid`);ids.add(candidate_id);return {candidate_id,canonical_name,subject_type,context,interpretation,discovery_query};});const common={...j,topic_language:clean(o.topic_language)||'unknown',topic_kind:clean(o.topic_kind)||'other',semantic_candidates:candidates,candidate_model:String(r.model??'')};return candidates.map(c=>({json:{...common,candidate_id:c.candidate_id,discovery_query:c.discovery_query}}));"
         },
         "id": "897d4db5-804e-4b80-a546-10352e334f60",
         "name": "Parse Semantic Intent",
@@ -139,7 +139,7 @@
           }
         },
         "id": "ccde4eab-34b3-48d4-9b54-3608654b0123",
-        "name": "Research With SearXNG",
+        "name": "Discover Candidate Evidence",
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
@@ -150,14 +150,97 @@
       },
       {
         "parameters": {
-          "jsCode": "const j=$('Parse Semantic Intent').first().json;const r=$input.first().json;const rows=(Array.isArray(r.results)?r.results:[]).slice(0,10).map((x,i)=>({id:`S${i+1}`,title:String(x.title??'').replace(/\\s+/gu,' ').trim(),snippet:String(x.content??x.description??'').replace(/\\s+/gu,' ').trim(),url:String(x.url??'').trim()})).filter(x=>x.title&&x.snippet&&x.url);if(rows.length<2)throw new Error('web research returned fewer than two usable results');\nconst target=Number(j.target_duration_seconds);const words={15:[30,42],30:[62,82],45:[95,122],60:[128,165]}[target];if(!words)throw new Error('unsupported duration');const evidence=rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}\\n${x.url}`).join('\\n\\n');\nconst prompt=`You write natural spoken narration for a vertical short video.\\n\\nUSER TOPIC (may be in any language): ${j.topic}\\nCANONICAL SUBJECT: ${j.canonical_subject}\\nUSER INTENT: ${j.user_intent}\\nOUTPUT LANGUAGE: ${j.output_language_name} (${j.language_code})\\nTARGET DURATION: ${target} seconds\\nTARGET LENGTH: ${words[0]}-${words[1]} spoken words.\\n\\nWEB RESEARCH:\\n${evidence}\\n\\nReturn ONLY valid JSON:\\n{\"script\":\"...\",\"used_source_ids\":[\"S1\",\"S2\"],\"visual_search_queries_en\":[\"...\"],\"confidence\":\"high|medium|low\"}\\n\\nRules:\\n- script MUST be entirely in the selected output language, regardless of input-topic language or source language.\\n- Write a coherent, natural short-form narration, not an encyclopedia excerpt and not a list.\\n- Answer the actual user intent immediately; no generic intro.\\n- Use only facts supported by the supplied research snippets. If a current/uncertain number varies by source, qualify it instead of inventing precision.\\n- Never copy source artifacts, section labels, citation marks, tables, broken sentences or unrelated history.\\n- used_source_ids must contain only IDs above and at least two IDs.\\n- visual_search_queries_en must contain 6-12 concrete English image-search concepts matching the story.\\n- No markdown.`;\nreturn [{json:{...j,research_rows:rows,script_prompt:prompt,target_word_min:words[0],target_word_max:words[1]}}];"
+          "jsCode": "const candidateItems=$('Parse Semantic Intent').all().map(x=>x.json);const discoveryItems=$input.all().map(x=>x.json);if(!candidateItems.length||candidateItems.length!==discoveryItems.length)throw new Error('candidate discovery result count mismatch');const base=candidateItems[0];const candidates=base.semantic_candidates;const evidence=[];for(let i=0;i<candidateItems.length;i++){const cid=candidateItems[i].candidate_id;const rows=(Array.isArray(discoveryItems[i].results)?discoveryItems[i].results:[]).slice(0,6);for(let k=0;k<rows.length;k++){const x=rows[k];const title=String(x.title??'').replace(/\\s+/gu,' ').trim(),snippet=String(x.content??x.description??'').replace(/\\s+/gu,' ').trim(),url=String(x.url??'').trim();if(title&&snippet&&url)evidence.push({evidence_id:`D-${cid}-${k+1}`,candidate_id:cid,title,snippet,url});}}if(evidence.length<2)throw new Error('semantic discovery returned fewer than two usable results');const candidateText=candidates.map(c=>`${c.candidate_id} | ${c.canonical_name} | ${c.subject_type} | ${c.context}\\nInterpretation: ${c.interpretation}\\nQuery: ${c.discovery_query}`).join('\\n\\n');const evidenceText=evidence.map(x=>`${x.evidence_id} | candidate ${x.candidate_id} | ${x.title}\\n${x.snippet}\\n${x.url}`).join('\\n\\n');const prompt=`You resolve the intended meaning of a raw user topic for an autonomous research pipeline. Compare all candidate interpretations against the raw wording, linguistic/common-usage plausibility, and supplied independent web-search evidence. Search rank alone and lexical substring similarity are not proof of intent.\\n\\nRAW TOPIC: ${base.raw_topic}\\nTOPIC LANGUAGE (estimated): ${base.topic_language}\\nTOPIC KIND: ${base.topic_kind}\\n\\nCANDIDATES:\\n${candidateText}\\n\\nDISCOVERY EVIDENCE:\\n${evidenceText}\\n\\nReturn ONLY valid JSON with this exact shape:\\n{\"selected_candidate_id\":\"C1\",\"resolved_subject\":\"...\",\"canonical_name\":\"...\",\"subject_type\":\"...\",\"context\":\"...\",\"user_intent\":\"...\",\"research_query_en\":\"...\",\"confidence\":0.0,\"runner_up_candidate_id\":\"C2|null\",\"score_margin\":0.0,\"reasoning_evidence_ids\":[\"D-C1-1\"],\"resolution_reason\":\"...\"}\\n\\nRules:\\n- Select the meaning a reasonable user most likely intended, not merely the result with the closest spelling or largest search presence.\\n- Prefer exact/common names and direct translations or transliterations over longer lexical lookalikes.\\n- For questions, preserve the question intent rather than forcing an entity.\\n- reasoning_evidence_ids must cite 1-6 supplied evidence IDs and support the selected meaning.\\n- confidence and score_margin must be numbers from 0 to 1.\\n- research_query_en must unambiguously research the selected meaning.\\n- Do not add facts not present in the candidate/evidence inventory.`;return [{json:{...base,discovery_evidence:evidence,resolution_prompt:prompt}}];"
+        },
+        "id": "21a30d7a-6aa8-44f0-9ccf-81c5ce0b8c23",
+        "name": "Build Evidence Comparison",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1760,
+          0
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { prompt: $json.resolution_prompt, temperature: 0.05 } }}",
+          "options": {
+            "timeout": 90000
+          }
+        },
+        "id": "65c2d2d5-2560-4af0-98fc-b8bb355307a1",
+        "name": "Resolve Topic From Evidence",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2000,
+          0
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const j=$('Build Evidence Comparison').first().json;const r=$input.first().json;let t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{throw new Error('evidence-grounded topic resolver returned invalid JSON')};const clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();const ids=new Set(j.semantic_candidates.map(x=>x.candidate_id));const evidenceIds=new Set(j.discovery_evidence.map(x=>x.evidence_id));const selected=clean(o.selected_candidate_id);if(!ids.has(selected))throw new Error(`resolver selected unknown candidate ${selected}`);const reasoning=[...new Set((Array.isArray(o.reasoning_evidence_ids)?o.reasoning_evidence_ids:[]).map(clean))].filter(x=>evidenceIds.has(x));if(!reasoning.length)throw new Error('resolver cited no valid discovery evidence');const confidence=Number(o.confidence),margin=Number(o.score_margin);if(!Number.isFinite(confidence)||confidence<0||confidence>1||!Number.isFinite(margin)||margin<0||margin>1)throw new Error('resolver confidence or score margin is invalid');const chosen=j.semantic_candidates.find(x=>x.candidate_id===selected);const canonical=clean(o.canonical_name)||chosen.canonical_name,resolved=clean(o.resolved_subject)||canonical,subjectType=clean(o.subject_type)||chosen.subject_type,context=clean(o.context)||chosen.context,intent=clean(o.user_intent)||chosen.interpretation,query=clean(o.research_query_en);if(!canonical||!resolved||!subjectType||!intent||!query)throw new Error('resolved topic contract is incomplete');const topic_resolution={version:'evidence-grounded-topic-resolution-v1',raw_topic:j.raw_topic,topic_language:j.topic_language,topic_kind:j.topic_kind,resolved_subject:resolved,canonical_name:canonical,subject_type:subjectType,context,selected_candidate_id:selected,runner_up_candidate_id:clean(o.runner_up_candidate_id)==='null'?null:(clean(o.runner_up_candidate_id)||null),confidence,score_margin:margin,reasoning_evidence_ids:reasoning,resolution_reason:clean(o.resolution_reason),candidates:j.semantic_candidates,discovery_evidence:j.discovery_evidence};return [{json:{...j,canonical_subject:canonical,resolved_subject:resolved,subject_type:subjectType,subject_context:context,user_intent:intent,search_query_en:query,topic_resolution,resolution_model:String(r.model??'')}}];"
+        },
+        "id": "f29fb6be-e8f6-4fdf-94a7-34e8cf2d6951",
+        "name": "Validate Resolved Topic",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2240,
+          0
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "url": "http://ai-short-form-v4-search:8080/search",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "q",
+                "value": "={{ $json.search_query_en }}"
+              },
+              {
+                "name": "format",
+                "value": "json"
+              },
+              {
+                "name": "language",
+                "value": "all"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 30000
+          }
+        },
+        "id": "ab768c82-285d-4715-9ee1-0db7109fa55e",
+        "name": "Research Resolved Subject",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2480,
+          0
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const j=$('Validate Resolved Topic').first().json;const r=$input.first().json;const rows=(Array.isArray(r.results)?r.results:[]).slice(0,10).map((x,i)=>({id:`S${i+1}`,title:String(x.title??'').replace(/\\s+/gu,' ').trim(),snippet:String(x.content??x.description??'').replace(/\\s+/gu,' ').trim(),url:String(x.url??'').trim()})).filter(x=>x.title&&x.snippet&&x.url);if(rows.length<2)throw new Error('resolved-subject research returned fewer than two usable results');const target=Number(j.target_duration_seconds);const words={15:[30,42],30:[62,82],45:[95,122],60:[128,165]}[target];if(!words)throw new Error('unsupported duration');const evidence=rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}\\n${x.url}`).join('\\n\\n');const prompt=`You write natural spoken narration for a vertical short video.\\n\\nRAW USER TOPIC (may be in any language): ${j.topic}\\nRESOLVED SUBJECT: ${j.resolved_subject}\\nCANONICAL NAME: ${j.canonical_subject}\\nSUBJECT TYPE: ${j.subject_type}\\nCONTEXT: ${j.subject_context}\\nUSER INTENT: ${j.user_intent}\\nOUTPUT LANGUAGE: ${j.output_language_name} (${j.language_code})\\nTARGET DURATION: ${target} seconds\\nTARGET LENGTH: ${words[0]}-${words[1]} spoken words.\\n\\nWEB RESEARCH FOR RESOLVED SUBJECT:\\n${evidence}\\n\\nReturn ONLY valid JSON:\\n{\"script\":\"...\",\"used_source_ids\":[\"S1\",\"S2\"],\"visual_search_queries_en\":[\"...\"],\"confidence\":\"high|medium|low\"}\\n\\nRules:\\n- script MUST be entirely in the selected output language, regardless of input-topic language or source language.\\n- Write coherent, natural spoken narration, not an encyclopedia excerpt or list.\\n- Discuss only the resolved subject and reject unrelated lexical lookalikes.\\n- Answer the actual user intent immediately; no generic intro.\\n- Use only facts supported by supplied research snippets.\\n- used_source_ids must contain only IDs above and at least two IDs.\\n- visual_search_queries_en must contain 6-12 concrete English image-search concepts matching the resolved story.\\n- No markdown.`;return [{json:{...j,research_rows:rows,script_prompt:prompt,target_word_min:words[0],target_word_max:words[1]}}];"
         },
         "id": "30ade099-13f8-4ef6-904f-4884e9a5d9d4",
         "name": "Prepare Grounded Script Prompt",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          1760,
+          2720,
           0
         ],
         "onError": "continueErrorOutput"
@@ -220,7 +303,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const j=$('Prepare Script Validation').first().json;const r=$input.first().json;let t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{const repaired=t.replace(/(\"used_source_ids\"\\s*:\\s*\\[)([\\s\\S]*?)(\\])/u,(m,a,b,c)=>{const vals=b.split(',').map(x=>x.trim()).filter(Boolean).map(x=>/^S\\d+$/u.test(x)?`\\\"${x}\\\"`:x);return a+vals.join(',')+c});try{o=JSON.parse(repaired)}catch{throw new Error('script validator returned invalid JSON')}};const script=String(o.script??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();const rowMap=new Map(j.research_rows.map(x=>[x.id,x]));let ids=Array.isArray(o.used_source_ids)?[...new Set(o.used_source_ids.map(String))]:[];let used=ids.filter(id=>rowMap.has(id));if(used.length<2){ids=[...new Set((j.draft_source_ids??[]).map(String))];used=ids.filter(id=>rowMap.has(id));}if(used.length<2){ids=j.research_rows.slice(0,2).map(x=>String(x.id));used=ids.filter(id=>rowMap.has(id));}if(!script||used.length<2)throw new Error('validated script or research evidence is incomplete');const wc=script.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;if(wc<Math.max(18,j.target_word_min-15)||wc>j.target_word_max+20)throw new Error(`validated script length ${wc} is outside broad duration bounds`);\nconst selected_evidence=used.map((id,index)=>{const x=rowMap.get(id);return {evidence_id:id,source_id:id,source_language:'en',source_title:x.title,source_url:x.url,passage_id:'searx-snippet',section:null,evidence_text:x.snippet,selection_score:100-index,selection_rank:index+1}});\nconst sentences=script.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/gu)?.map(s=>s.trim()).filter(Boolean)??[script];const script_support=sentences.map((text,index)=>({segment_number:index+1,evidence_id:selected_evidence[index%selected_evidence.length].evidence_id,source_id:selected_evidence[index%selected_evidence.length].source_id,source_text:selected_evidence[index%selected_evidence.length].evidence_text,text,transform:'grounded_paraphrase'}));\nconst wps={en:2.55,pl:2.25,ru:2.45,uk:2.35}[j.language_code]??2.4;const predicted=wc/wps;return [{json:{job_id:j.job_id,topic:j.topic,language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds),canonical_subject:j.canonical_subject,script_text:script,script_support,selected_evidence,duration_preflight:{version:'ai-word-budget-v1',language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds),predicted_duration_seconds:Number(predicted.toFixed(3)),prediction_is_advisory:true,exact_tts_required:true},narration_engine:'grounded_ai_writer',narration_model:String(r.model??j.writer_model??'model-gateway'),narration_prompt_version:'grounded-writer-v1',script_fit_passes:0,fact_source_language:'en',fact_primary_title:j.canonical_subject,visual_search_queries_en:j.visual_search_queries_en}}];"
+          "jsCode": "const j=$('Prepare Script Validation').first().json;const r=$input.first().json;let t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{const repaired=t.replace(/(\"used_source_ids\"\\s*:\\s*\\[)([\\s\\S]*?)(\\])/u,(m,a,b,c)=>{const vals=b.split(',').map(x=>x.trim()).filter(Boolean).map(x=>/^S\\d+$/u.test(x)?`\\\"${x}\\\"`:x);return a+vals.join(',')+c});try{o=JSON.parse(repaired)}catch{throw new Error('script validator returned invalid JSON')}};const script=String(o.script??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();const rowMap=new Map(j.research_rows.map(x=>[x.id,x]));let ids=Array.isArray(o.used_source_ids)?[...new Set(o.used_source_ids.map(String))]:[];let used=ids.filter(id=>rowMap.has(id));if(used.length<2){ids=[...new Set((j.draft_source_ids??[]).map(String))];used=ids.filter(id=>rowMap.has(id));}if(used.length<2){ids=j.research_rows.slice(0,2).map(x=>String(x.id));used=ids.filter(id=>rowMap.has(id));}if(!script||used.length<2)throw new Error('validated script or research evidence is incomplete');const wc=script.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;if(wc<Math.max(18,j.target_word_min-15)||wc>j.target_word_max+20)throw new Error(`validated script length ${wc} is outside broad duration bounds`);\nconst selected_evidence=used.map((id,index)=>{const x=rowMap.get(id);return {evidence_id:id,source_id:id,source_language:'en',source_title:x.title,source_url:x.url,passage_id:'searx-snippet',section:null,evidence_text:x.snippet,selection_score:100-index,selection_rank:index+1}});\nconst sentences=script.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/gu)?.map(s=>s.trim()).filter(Boolean)??[script];const script_support=sentences.map((text,index)=>({segment_number:index+1,evidence_id:selected_evidence[index%selected_evidence.length].evidence_id,source_id:selected_evidence[index%selected_evidence.length].source_id,source_text:selected_evidence[index%selected_evidence.length].evidence_text,text,transform:'grounded_paraphrase'}));\nconst wps={en:2.55,pl:2.25,ru:2.45,uk:2.35}[j.language_code]??2.4;const predicted=wc/wps;return [{json:{job_id:j.job_id,topic:j.topic,language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds),canonical_subject:j.canonical_subject,topic_resolution:j.topic_resolution,script_text:script,script_support,selected_evidence,duration_preflight:{version:'ai-word-budget-v1',language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds),predicted_duration_seconds:Number(predicted.toFixed(3)),prediction_is_advisory:true,exact_tts_required:true},narration_engine:'grounded_ai_writer',narration_model:String(r.model??j.writer_model??'model-gateway'),narration_prompt_version:'grounded-writer-v1-topic-resolution-v1',script_fit_passes:0,fact_source_language:'en',fact_primary_title:j.canonical_subject,visual_search_queries_en:j.visual_search_queries_en}}];"
         },
         "id": "f4abf82d-748f-4f2b-86ae-64290c47705c",
         "name": "Build Final Grounded Script",
@@ -235,9 +318,9 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "WITH input AS (SELECT $1::uuid job_id,$2::text script_text,$3::jsonb script_support,$4::jsonb duration_preflight,$5::text narration_engine,$6::text narration_model,$7::text narration_prompt_version,$8::smallint script_fit_passes,$9::jsonb evidence_json,$10::text fact_source_language,$11::text fact_primary_title), locked AS (SELECT j.id FROM public.jobs j,input i WHERE j.id=i.job_id AND j.status='created' AND j.current_stage='intake' AND NOT EXISTS(SELECT 1 FROM public.scenes s WHERE s.job_id=j.id) AND NOT EXISTS(SELECT 1 FROM public.job_evidence e WHERE e.job_id=j.id) FOR UPDATE), parsed AS (SELECT x.* FROM input i CROSS JOIN LATERAL jsonb_to_recordset(i.evidence_json) AS x(evidence_id text,source_id text,source_language text,source_title text,source_url text,passage_id text,section text,evidence_text text,selection_score numeric,selection_rank integer)), valid AS (SELECT p.* FROM parsed p WHERE NULLIF(BTRIM(p.evidence_id),'') IS NOT NULL AND NULLIF(BTRIM(p.source_id),'') IS NOT NULL AND p.source_language IN('en','pl','ru','uk') AND NULLIF(BTRIM(p.source_title),'') IS NOT NULL AND NULLIF(BTRIM(p.evidence_text),'') IS NOT NULL AND p.selection_rank>0), ok AS (SELECT l.id FROM locked l,input i WHERE NULLIF(BTRIM(i.script_text),'') IS NOT NULL AND jsonb_typeof(i.script_support)='array' AND jsonb_array_length(i.script_support)>0 AND COALESCE((i.duration_preflight->>'exact_tts_required')::boolean,false)=true AND COALESCE((i.duration_preflight->>'prediction_is_advisory')::boolean,false)=true AND (SELECT count(*) FROM valid)>=2), ins AS (INSERT INTO public.job_evidence(job_id,evidence_id,source_id,source_language,source_title,source_url,passage_id,section,evidence_text,selection_score,selection_rank) SELECT o.id,v.evidence_id,v.source_id,v.source_language,v.source_title,NULLIF(v.source_url,''),v.passage_id,NULLIF(v.section,''),v.evidence_text,v.selection_score,v.selection_rank FROM ok o CROSS JOIN valid v ORDER BY v.selection_rank RETURNING job_id), upd AS (UPDATE public.jobs j SET content_model_version='staged_v1',script_text=i.script_text,script_support=i.script_support,duration_preflight=i.duration_preflight,narration_engine=i.narration_engine,narration_model=i.narration_model,narration_prompt_version=i.narration_prompt_version,script_fit_passes=i.script_fit_passes,fact_source_language=i.fact_source_language,fact_primary_title=i.fact_primary_title,status='processing',current_stage='script',last_error=NULL,updated_at=now() FROM input i,ok o WHERE j.id=o.id AND j.id=i.job_id RETURNING j.id) SELECT $1::uuid AS job_id,(SELECT count(*)::int FROM ins) inserted_evidence_count,EXISTS(SELECT 1 FROM upd) job_updated,(SELECT count(*)::int FROM public.scenes s WHERE s.job_id=$1::uuid) scene_count;",
+          "query": "WITH input AS (SELECT $1::uuid job_id,$2::text script_text,$3::jsonb script_support,$4::jsonb duration_preflight,$5::text narration_engine,$6::text narration_model,$7::text narration_prompt_version,$8::smallint script_fit_passes,$9::jsonb evidence_json,$10::text fact_source_language,$11::text fact_primary_title,$12::jsonb topic_resolution), locked AS (SELECT j.id FROM public.jobs j,input i WHERE j.id=i.job_id AND j.status='created' AND j.current_stage='intake' AND NOT EXISTS(SELECT 1 FROM public.scenes s WHERE s.job_id=j.id) AND NOT EXISTS(SELECT 1 FROM public.job_evidence e WHERE e.job_id=j.id) FOR UPDATE), parsed AS (SELECT x.* FROM input i CROSS JOIN LATERAL jsonb_to_recordset(i.evidence_json) AS x(evidence_id text,source_id text,source_language text,source_title text,source_url text,passage_id text,section text,evidence_text text,selection_score numeric,selection_rank integer)), valid AS (SELECT p.* FROM parsed p WHERE NULLIF(BTRIM(p.evidence_id),'') IS NOT NULL AND NULLIF(BTRIM(p.source_id),'') IS NOT NULL AND p.source_language IN('en','pl','ru','uk') AND NULLIF(BTRIM(p.source_title),'') IS NOT NULL AND NULLIF(BTRIM(p.evidence_text),'') IS NOT NULL AND p.selection_rank>0), ok AS (SELECT l.id FROM locked l,input i WHERE NULLIF(BTRIM(i.script_text),'') IS NOT NULL AND jsonb_typeof(i.script_support)='array' AND jsonb_array_length(i.script_support)>0 AND jsonb_typeof(i.topic_resolution)='object' AND i.topic_resolution->>'version'='evidence-grounded-topic-resolution-v1' AND NULLIF(BTRIM(i.topic_resolution->>'resolved_subject'),'') IS NOT NULL AND jsonb_array_length(i.topic_resolution->'reasoning_evidence_ids')>0 AND COALESCE((i.duration_preflight->>'exact_tts_required')::boolean,false)=true AND COALESCE((i.duration_preflight->>'prediction_is_advisory')::boolean,false)=true AND (SELECT count(*) FROM valid)>=2), ins AS (INSERT INTO public.job_evidence(job_id,evidence_id,source_id,source_language,source_title,source_url,passage_id,section,evidence_text,selection_score,selection_rank) SELECT o.id,v.evidence_id,v.source_id,v.source_language,v.source_title,NULLIF(v.source_url,''),v.passage_id,NULLIF(v.section,''),v.evidence_text,v.selection_score,v.selection_rank FROM ok o CROSS JOIN valid v ORDER BY v.selection_rank RETURNING job_id), upd AS (UPDATE public.jobs j SET content_model_version='staged_v1',topic_resolution=i.topic_resolution,script_text=i.script_text,script_support=i.script_support,duration_preflight=i.duration_preflight,narration_engine=i.narration_engine,narration_model=i.narration_model,narration_prompt_version=i.narration_prompt_version,script_fit_passes=i.script_fit_passes,fact_source_language=i.fact_source_language,fact_primary_title=i.fact_primary_title,status='processing',current_stage='script',last_error=NULL,updated_at=now() FROM input i,ok o WHERE j.id=o.id AND j.id=i.job_id RETURNING j.id) SELECT $1::uuid AS job_id,(SELECT count(*)::int FROM ins) inserted_evidence_count,EXISTS(SELECT 1 FROM upd) job_updated,(SELECT count(*)::int FROM public.scenes s WHERE s.job_id=$1::uuid) scene_count;",
           "options": {
-            "queryReplacement": "={{ [ $json.job_id, $json.script_text, JSON.stringify($json.script_support), JSON.stringify($json.duration_preflight), $json.narration_engine, $json.narration_model, $json.narration_prompt_version, $json.script_fit_passes, JSON.stringify($json.selected_evidence), $json.fact_source_language, $json.fact_primary_title ] }}"
+            "queryReplacement": "={{ [ $json.job_id, $json.script_text, JSON.stringify($json.script_support), JSON.stringify($json.duration_preflight), $json.narration_engine, $json.narration_model, $json.narration_prompt_version, $json.script_fit_passes, JSON.stringify($json.selected_evidence), $json.fact_source_language, $json.fact_primary_title, JSON.stringify($json.topic_resolution) ] }}"
           }
         },
         "type": "n8n-nodes-base.postgres",
@@ -454,7 +537,7 @@
         "main": [
           [
             {
-              "node": "Research With SearXNG",
+              "node": "Discover Candidate Evidence",
               "type": "main",
               "index": 0
             }
@@ -468,7 +551,79 @@
           ]
         ]
       },
-      "Research With SearXNG": {
+      "Discover Candidate Evidence": {
+        "main": [
+          [
+            {
+              "node": "Build Evidence Comparison",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Evidence Comparison": {
+        "main": [
+          [
+            {
+              "node": "Resolve Topic From Evidence",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Resolve Topic From Evidence": {
+        "main": [
+          [
+            {
+              "node": "Validate Resolved Topic",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate Resolved Topic": {
+        "main": [
+          [
+            {
+              "node": "Research Resolved Subject",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Research Resolved Subject": {
         "main": [
           [
             {
