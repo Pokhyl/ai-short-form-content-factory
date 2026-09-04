@@ -1,88 +1,71 @@
-# Process Gate — Product-First V4
+# Process Gate — Autonomous Product Proof
 
-Last updated: 2026-09-03
+Last updated: 2026-09-04
 
-`docs/CURRENT_STATE.md` is authoritative.
+## Mandatory first step
+
+Before doing anything meaningful in this project:
+
+1. read `docs/OPERATOR_EXECUTION_RULES.md`;
+2. read `docs/CURRENT_STATE_V5.md`;
+3. verify current runtime/output facts before acting on assumptions.
+
+No action is valid if this pre-action read was skipped.
 
 ## Active gate
 
-Semantic-v3 production generation is frozen after a machine `review_ready` video received explicit HUMAN FAIL.
+The current task is **not** renderer bake-off and **not** Studio/n8n/PostgreSQL integration.
 
-Do not patch or retest that architecture.
+The active gate is one direct autonomous prototype whose only external inputs are:
 
-The active gate is a direct product prototype outside n8n/PostgreSQL.
+`topic + language + requested duration`
 
-## Mandatory sequence
+After input, no manual creative intervention is allowed.
 
-1. Read fresh `PERMANENT_PROJECT_RULES`, `CURRENT_STATE`, `PRODUCT_FIRST_V4` and V4 history.
-2. Prefer a mature upstream component before implementing a commodity subsystem.
-3. Keep MoneyPrinterTurbo pinned and verify its upstream tests before adapting its services.
-4. Produce one validated semantic director artifact containing natural spoken script and explicit scene storyboard.
-5. Reject raw written-form speech before TTS: no unspoken digits/units/abbreviations/URLs/editorial notation.
-6. Generate one continuous voice at natural rate.
-7. Derive subtitles/timing from the actual audio with Whisper/faster-whisper or equivalent alignment.
-8. Produce scene assets according to explicit representation modes; no automatic generic-stock fallback for factual/mechanism scenes.
-9. Preview scene selections before final render.
-10. Render one 9:16 artifact and perform technical checks.
-11. User watches the exact artifact. Only explicit acceptance becomes `human_approved`.
-12. Repeat on materially different topics/languages before designing n8n/DB integration.
+Required autonomous sequence:
 
-## Upstream proof gate
+`research -> licensed media inventory -> visual verification/ranking -> showable story angle -> final script -> one continuous narration -> exact-audio timing -> autonomous edit plan -> render -> QA -> exact-artifact human review`
 
-Pinned MoneyPrinterTurbo commit:
+## Pass condition
 
-`cbbb366393105d5cefc254dc9ed492d43da0711b`
+A proof passes only when:
 
-Focused upstream suite currently proved:
+- the same autonomous path runs without manual clip/image selection;
+- no topic-specific manual scene/edit construction is added;
+- requested duration is respected without speech-speed tricks or clip looping;
+- factual visuals are relevant and licensed/provenanced;
+- output is vertical short-form MP4;
+- the user explicitly gives HUMAN PASS to the exact artifact;
+- the same path later survives materially different topics.
 
-- 316 tests passed;
-- 69 subtests passed;
-- 7 skipped;
-- 0 failures.
+Machine render success alone is not a pass.
 
-Do not silently change the pin.
+## Failure condition
 
-## Product gates
+The proof fails if the operator/assistant has to manually rescue the topic by selecting media, rewriting scene structure, inventing special search queries, tuning thresholds, looping assets, changing voice speed, or adding a one-off renderer workaround.
 
-### Script
+On failure: capture exact evidence, record the general cause in GitHub, make a systemic fix or reject the approach. Do not polish one failed proof indefinitely.
 
-- conversational rather than encyclopedic;
-- facts trace to evidence;
-- no raw source-copy cadence;
-- target language natural to a human listener.
+## Media rule
 
-### Speech
+Do not presume that free visual inventory is scarce. Use actual evidence from free/publicly licensed sources. The hard problem is autonomous relevance selection and editorial use, not simply finding any image.
 
-- speech-ready written form;
-- no ambiguous abbreviation pronunciation;
-- natural male voice for the supported language unless a later human-approved voice profile changes it;
-- no tempo/rate fitting.
-
-### Visuals
-
-- every scene has an intentional representation mode;
-- a viewer can identify the intended subject/process from the selected asset/graphic;
-- unrelated lifestyle stock is a fail even if metadata/CLIP/diversity scores pass;
-- unresolved factual media does not get replaced by a generic joker clip.
-
-### Captions/edit
-
-- timing derives from actual voice;
-- readable short-form captions;
-- visual changes support the narration rather than arbitrary cadence.
-
-### Render
-
-- playable vertical MP4;
-- technical validation is necessary but not sufficient.
+Still images are valid when the autonomous edit uses them intentionally; they must not become a repetitive static slideshow.
 
 ## Forbidden shortcuts
 
-- no semantic-v3 fresh jobs;
-- no topic-specific pronunciation mapping;
-- no topic-specific visual blacklist;
-- no threshold tuning to rescue irrelevant stock;
-- no fixed synthetic subtitle beat count;
-- no rebuilding MoneyPrinterTurbo TTS/Whisper/material/render layers without a proven gap;
-- no n8n/DB integration before direct prototype HUMAN PASS;
-- no mandatory paid-per-video provider.
+- no topic-specific fixes;
+- no arbitrary threshold rescue;
+- no blind retries/sleeps;
+- no manual clip/image selection in a product proof;
+- no manual topic-specific edit plan;
+- no renderer-centric architecture decision before autonomous proof;
+- no n8n/DB/Studio rebuild before multiple HUMAN PASS artifacts;
+- no paid-per-video dependency as a required production path.
+
+## Source of truth
+
+1. `docs/OPERATOR_EXECUTION_RULES.md`
+2. `docs/CURRENT_STATE_V5.md`
+3. current factual runtime/output evidence
+4. historical docs
