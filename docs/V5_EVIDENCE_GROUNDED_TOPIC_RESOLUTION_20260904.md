@@ -33,3 +33,5 @@ No topic-specific alias, blacklist, query, threshold, or retry was added. Output
 - known company/object ambiguity.
 
 Machine regression success is not HUMAN PASS. A fresh deployed n8n job and exact MP4 review remain required.
+
+The first post-deploy job stopped safely before TTS because the new per-candidate HTTP node still referenced the old final-research field name (`search_query_en`) instead of `discovery_query`; SearXNG returned `400 No query`. The same execution exposed an older failure-recording mismatch (`error_message` was produced while SQL read `last_error`). Both are general wiring-contract defects. They were corrected and covered by regression assertions; the consumed failed job is not retried.
