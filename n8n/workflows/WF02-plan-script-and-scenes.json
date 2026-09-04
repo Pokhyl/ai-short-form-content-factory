@@ -1,9 +1,9 @@
 [
   {
-    "updatedAt": "2026-08-23T14:27:46.147Z",
+    "updatedAt": "2026-09-01T20:02:31.938Z",
     "createdAt": "2026-08-23T09:46:09.713Z",
     "id": "TJfA4ZYUEKSTad6k",
-    "name": "WF02 — Plan Script and Scenes",
+    "name": "WF02 — Research + Grounded Script",
     "description": null,
     "active": true,
     "isArchived": false,
@@ -21,29 +21,16 @@
         "type": "n8n-nodes-base.executeWorkflowTrigger",
         "typeVersion": 1.2,
         "position": [
-          -656,
-          -32
+          0,
+          0
         ],
         "id": "234d96a0-ea7c-44ba-af76-6367bd1fb904",
         "name": "Receive Job ID"
       },
       {
         "parameters": {
-          "jsCode": "const jobId = String($json.job_id ?? '')\n  .trim()\n  .toLowerCase();\n\nconst uuidPattern =\n  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;\n\nif (!uuidPattern.test(jobId)) {\n  throw new Error(\n    'job_id must be a valid UUID'\n  );\n}\n\nreturn [\n  {\n    json: {\n      job_id: jobId,\n    },\n  },\n];"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          -432,
-          -32
-        ],
-        "id": "b44ba0d1-5563-465a-80ba-063faeded93a",
-        "name": "Normalize Job ID"
-      },
-      {
-        "parameters": {
           "operation": "executeQuery",
-          "query": "SELECT\n  input.job_id AS requested_job_id,\n  jobs.id AS job_id,\n  jobs.topic,\n  jobs.language_code,\n  jobs.target_duration_seconds,\n  jobs.status,\n  jobs.current_stage,\n  jobs.id IS NOT NULL AS job_exists,\n  (\n    jobs.status = 'created'\n    AND jobs.current_stage = 'intake'\n  ) AS eligible\nFROM (\n  SELECT $1::uuid AS job_id\n) AS input\nLEFT JOIN public.jobs\n  ON jobs.id = input.job_id;",
+          "query": "SELECT\n  i.job_id AS requested_job_id,\n  j.id AS job_id,\n  j.topic,\n  j.language_code,\n  j.target_duration_seconds,\n  j.status,\n  j.current_stage,\n  j.id IS NOT NULL AS job_exists,\n  (j.status='created' AND j.current_stage='intake') AS eligible\nFROM (SELECT $1::uuid AS job_id) i\nLEFT JOIN public.jobs j ON j.id=i.job_id;",
           "options": {
             "queryReplacement": "={{ [ $json.job_id ] }}"
           }
@@ -51,8 +38,8 @@
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.7,
         "position": [
-          -208,
-          -32
+          240,
+          0
         ],
         "id": "8b41d061-9742-4a4b-868e-2c198c7829fa",
         "name": "Load Eligible Job",
@@ -61,110 +48,326 @@
             "id": "AdVJ2zREIvjZqGH5",
             "name": "Application PostgreSQL"
           }
-        }
+        },
+        "onError": "continueErrorOutput"
       },
       {
         "parameters": {
-          "jsCode": "if (!$json.job_exists) {\n  throw new Error(\n    `Job ${$json.requested_job_id} was not found`\n  );\n}\n\nif (!$json.eligible) {\n  throw new Error(\n    `Job ${$json.job_id} is not eligible for script planning: ` +\n    `status=${$json.status}, current_stage=${$json.current_stage}`\n  );\n}\n\nreturn [\n  {\n    json: {\n      job_id: $json.job_id,\n      topic: $json.topic,\n      language_code: $json.language_code,\n      target_duration_seconds:\n        $json.target_duration_seconds,\n      status: $json.status,\n      current_stage: $json.current_stage,\n    },\n  },\n];"
+          "jsCode": "const j=$input.first().json;\nif(!j.job_exists) throw new Error(`Job ${j.requested_job_id} was not found`);\nif(!j.eligible) throw new Error(`Job ${j.job_id} is not eligible for planning: ${j.status}/${j.current_stage}`);\nconst supported=new Set(['en','pl','ru','uk']);\nif(!supported.has(j.language_code)) throw new Error(`Unsupported language: ${j.language_code}`);\nconst counts={15:6,30:10,45:14,60:18};\nif(!counts[Number(j.target_duration_seconds)]) throw new Error(`Unsupported duration: ${j.target_duration_seconds}`);\nreturn [{json:{job_id:j.job_id,topic:String(j.topic??'').trim(),language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds)}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          16,
-          -32
+          480,
+          0
         ],
         "id": "555a89b8-bf9b-4d69-a34b-c80904ffa29c",
-        "name": "Require Eligible Job"
+        "name": "Require Eligible Job",
+        "onError": "continueErrorOutput"
       },
       {
         "parameters": {
-          "jsCode": "const languageNames = {\n  en: 'English',\n  pl: 'Polish',\n  ru: 'Russian',\n  uk: 'Ukrainian',\n};\n\nconst requiredScenesByDuration = {\n  15: 4,\n  30: 8,\n  45: 12,\n  60: 15,\n};\n\nconst languageName = languageNames[$json.language_code];\n\nif (!languageName) {\n  throw new Error(\n    `Unsupported language_code: ${$json.language_code}`\n  );\n}\n\nconst targetDurationSeconds = Number(\n  $json.target_duration_seconds\n);\n\nconst requiredSceneCount =\n  requiredScenesByDuration[targetDurationSeconds];\n\nif (!requiredSceneCount) {\n  throw new Error(\n    `Unsupported target_duration_seconds: ${$json.target_duration_seconds}`\n  );\n}\n\nconst outputContract = {\n  scenes: [\n    {\n      scene_number: 1,\n      narration: `Spoken narration in ${languageName}`,\n      visual_subject_type: 'factual',\n      visual_description:\n        `Concrete visual description in ${languageName}`,\n      visual_query:\n        'English search query preserving relevant proper nouns',\n    },\n  ],\n};\n\nconst systemPrompt = [\n  'You are a short-form video script and scene planner.',\n  'Return exactly one valid JSON object.',\n  'Do not use Markdown or code fences.',\n  'The JSON must contain only the scenes property.',\n  `The scenes array must contain exactly ${requiredSceneCount} scenes.`,\n  'Every scene must contain exactly these properties: scene_number, narration, visual_subject_type, visual_description, visual_query.',\n  'Scene numbers must start at 1 and be sequential without gaps.',\n\n  `Narration and visual_description must be written in ${languageName}.`,\n  `Narration and visual_description must use natural, grammatically correct ${languageName}.`,\n  'Use complete, readable sentences and correct grammar, spelling, inflection, and punctuation.',\n\n  'All factual claims must be accurate.',\n  'Do not invent or guess mechanisms, technical details, causes, names, dates, places, measurements, statistics, or terminology.',\n  'Use only factual details that you can state with high confidence.',\n  'If a technical or factual detail is uncertain, omit it and use a simpler accurate statement instead.',\n  'Never make a specific claim merely because it sounds plausible.',\n\n  'For explanatory, scientific, historical, engineering, or technical topics, preserve causal accuracy.',\n  'Do not replace the real cause or mechanism with a simpler but false explanation.',\n  'When explaining why something works or why a mechanism is required, state the actual relevant cause rather than an unrelated correlation or superficial difference.',\n  'When describing a process, keep every cause-and-effect step internally consistent with the previous and following scenes.',\n  'Do not introduce pumps, motors, pressure systems, mechanical devices, measurements, named components, or other implementation details unless you are confident they are actually part of the described mechanism.',\n  'Prefer a conservative high-confidence explanation over a more detailed explanation that may contain an incorrect technical claim.',\n\n  'Each visual_description must directly depict the same main subject, action, mechanism, or event described in that scene narration.',\n  'Prefer the primary visual moment described by the narration, not a secondary supporting detail.',\n  'Do not describe a visual that introduces a different action or concept from the narration.',\n  'Use the correct official spelling of real names and places when applicable.',\n\n  'visual_subject_type must be exactly \"factual\" or \"generic\".',\n  'Use \"factual\" when the scene depends on an identifiable real-world subject where accurate sourcing matters, such as a named person, place, organization, event, monument, product, document, artwork, machine, structure, or other exact subject.',\n  'Use \"generic\" when a broad illustrative concept, action, setting, diagram, mood, or stock-style scene is suitable.',\n\n  'visual_query must be written in English, preserve relevant official names and proper nouns, contain no more than 100 characters, and be unique across scenes ignoring letter case.',\n  'visual_query must search for the same primary visual subject or action described by visual_description.',\n  'Do not add unrelated organizations, locations, people, brands, or technical terms to visual_query merely to make the search look more specific.',\n\n  'Every narration, visual_description, and visual_query must be non-empty.',\n  'The complete narration should fit the requested target video duration.',\n  'Do not include duration_seconds or choose a concrete visual asset/provider.',\n  'Do not include titles, explanations, comments, or additional properties.',\n].join('\\n');\n\nconst userPrompt = [\n  `Topic: ${$json.topic}`,\n  `Language: ${languageName} (${$json.language_code})`,\n  `Target video duration: ${targetDurationSeconds} seconds`,\n  `Required scene count: ${requiredSceneCount}`,\n  '',\n  `Create a coherent short-form video script divided into exactly ${requiredSceneCount} scenes.`,\n  'Each scene must introduce a meaningful visual change and remain coherent with the scenes around it.',\n  'Build the explanation in a logical order so each scene follows naturally from the previous scene.',\n  'For factual or technical topics, prioritize accuracy over extra detail.',\n  'Before finalizing the plan, internally check that each factual statement and cause-and-effect relationship is consistent with the rest of the script.',\n  'Classify each scene as factual or generic according to the system instructions.',\n  '',\n  'The JSON example below shows the shape of one scene only.',\n  `Your actual scenes array must contain exactly ${requiredSceneCount} scenes.`,\n  'The factual value in the example is only an example; choose factual or generic independently for every scene.',\n  'Required JSON structure:',\n  JSON.stringify(outputContract),\n].join('\\n');\n\nreturn [\n  {\n    json: {\n      ...$json,\n      planning_request: {\n        language_name: languageName,\n        required_scene_count: requiredSceneCount,\n        system_prompt: systemPrompt,\n        user_prompt: userPrompt,\n        output_contract: outputContract,\n      },\n    },\n  },\n];"
+          "jsCode": "const j=$input.first().json;\nconst topic=String(j.topic??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();\nconst language=String(j.language_code??'').trim().toLowerCase();\nconst names={en:'English',pl:'Polish',ru:'Russian',uk:'Ukrainian'};\nif(!topic)throw new Error('topic is empty');if(!names[language])throw new Error('unsupported language');\nconst prompt=`You are the semantic intake stage of an autonomous short-video system. Understand the user's topic by meaning, regardless of the language in which it was typed. Do not do string/entity matching.\\n\\nINPUT TOPIC: ${topic}\\nSELECTED OUTPUT LANGUAGE: ${names[language]} (${language})\\n\\nReturn ONLY valid JSON with this exact shape:\\n{\"canonical_subject\":\"...\",\"user_intent\":\"...\",\"search_query_en\":\"...\",\"search_query_target\":\"...\"}\\n\\nRules:\\n- canonical_subject must identify the intended real subject, not a lexical lookalike.\\n- search_query_en must be a precise English web-search query for factual research.\\n- search_query_target must express the same research intent in the selected output language.\\n- Do not answer the topic yet.`;\nreturn [{json:{...j,output_language_name:names[language],intent_prompt:prompt}}];"
         },
+        "id": "b6b12942-4ddd-4641-8dae-1e432dc147e7",
+        "name": "Prepare Semantic Intent",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          240,
-          -32
+          800,
+          0
         ],
-        "id": "ccd6f18d-cb4c-4993-bf42-90077c5c7a1c",
-        "name": "Build Planning Request"
+        "onError": "continueErrorOutput"
       },
       {
         "parameters": {
           "method": "POST",
-          "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
-          "authentication": "genericCredentialType",
-          "genericAuthType": "httpHeaderAuth",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{\n  {\n    systemInstruction: {\n      parts: [\n        {\n          text: $json.planning_request.system_prompt\n        }\n      ]\n    },\n    contents: [\n      {\n        role: \"user\",\n        parts: [\n          {\n            text: $json.planning_request.user_prompt\n          }\n        ]\n      }\n    ],\n    generationConfig: {\n      responseMimeType: \"application/json\",\n      responseJsonSchema: {\n        type: \"object\",\n        additionalProperties: false,\n        properties: {\n          scenes: {\n            type: \"array\",\n            minItems: $json.planning_request.required_scene_count,\n            maxItems: $json.planning_request.required_scene_count,\n            items: {\n              type: \"object\",\n              additionalProperties: false,\n              properties: {\n                scene_number: {\n                  type: \"integer\",\n                  minimum: 1,\n                  maximum: $json.planning_request.required_scene_count\n                },\n                narration: {\n                  type: \"string\"\n                },\n                visual_subject_type: {\n                  type: \"string\",\n                  enum: [\n                    \"factual\",\n                    \"generic\"\n                  ]\n                },\n                visual_description: {\n                  type: \"string\"\n                },\n                visual_query: {\n                  type: \"string\"\n                }\n              },\n              required: [\n                \"scene_number\",\n                \"narration\",\n                \"visual_subject_type\",\n                \"visual_description\",\n                \"visual_query\"\n              ]\n            }\n          }\n        },\n        required: [\n          \"scenes\"\n        ]\n      }\n    }\n  }\n}}",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.5,
-        "position": [
-          464,
-          -32
-        ],
-        "id": "a4eed681-fe7d-4051-a3fe-0b1af44bc0dd",
-        "name": "Generate Structured Plan",
-        "credentials": {
-          "httpHeaderAuth": {
-            "id": "6Vb7V9YzIwp9LS8S",
-            "name": "Google Gemini API"
+          "jsonBody": "={{ { prompt: $json.intent_prompt, temperature: 0.05 } }}",
+          "options": {
+            "timeout": 90000
           }
-        }
+        },
+        "id": "a1000c34-89e5-42a7-8c1f-6202c5a06550",
+        "name": "Resolve Topic Semantics",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1040,
+          0
+        ],
+        "onError": "continueErrorOutput"
       },
       {
         "parameters": {
-          "jsCode": "const response = $input.first().json;\nconst job = $('Build Planning Request').first().json;\n\nif (\n  !job ||\n  typeof job.job_id !== 'string' ||\n  job.job_id.trim() === ''\n) {\n  throw new Error('Original job data is unavailable');\n}\n\nconst requiredScenesByDuration = {\n  15: 4,\n  30: 8,\n  45: 12,\n  60: 15,\n};\n\nconst targetDurationSeconds = Number(\n  job.target_duration_seconds\n);\n\nconst requiredSceneCount =\n  requiredScenesByDuration[targetDurationSeconds];\n\nif (!requiredSceneCount) {\n  throw new Error(\n    `Unsupported target_duration_seconds: ${job.target_duration_seconds}`\n  );\n}\n\nif (\n  job.planning_request?.required_scene_count !==\n  requiredSceneCount\n) {\n  throw new Error(\n    `Planning request scene count mismatch: expected ${requiredSceneCount}, received ${job.planning_request?.required_scene_count}`\n  );\n}\n\nif (\n  !Array.isArray(response.candidates) ||\n  response.candidates.length !== 1\n) {\n  throw new Error(\n    'Gemini response must contain exactly one candidate'\n  );\n}\n\nconst candidate = response.candidates[0];\n\nif (candidate.finishReason !== 'STOP') {\n  throw new Error(\n    `Gemini generation did not finish normally: ${\n      candidate.finishReason ?? 'missing finishReason'\n    }`\n  );\n}\n\nconst parts = candidate.content?.parts;\n\nif (!Array.isArray(parts)) {\n  throw new Error(\n    'Gemini response does not contain content.parts'\n  );\n}\n\nconst textParts = parts.filter(\n  (part) =>\n    typeof part?.text === 'string' &&\n    part.text.trim() !== ''\n);\n\nif (textParts.length !== 1) {\n  throw new Error(\n    `Expected exactly one non-empty text part, received ${textParts.length}`\n  );\n}\n\nlet plan;\n\ntry {\n  plan = JSON.parse(textParts[0].text);\n} catch (error) {\n  throw new Error(\n    `Gemini returned invalid JSON: ${error.message}`\n  );\n}\n\nif (\n  plan === null ||\n  typeof plan !== 'object' ||\n  Array.isArray(plan)\n) {\n  throw new Error(\n    'Planning result must be a JSON object'\n  );\n}\n\nconst rootKeys = Object.keys(plan);\n\nif (\n  rootKeys.length !== 1 ||\n  !Object.prototype.hasOwnProperty.call(\n    plan,\n    'scenes'\n  )\n) {\n  throw new Error(\n    'Planning result must contain only the scenes property'\n  );\n}\n\nif (!Array.isArray(plan.scenes)) {\n  throw new Error(\n    'Planning result scenes must be an array'\n  );\n}\n\nif (plan.scenes.length !== requiredSceneCount) {\n  throw new Error(\n    `Planning result must contain exactly ${requiredSceneCount} scenes for ${targetDurationSeconds} seconds; received ${plan.scenes.length}`\n  );\n}\n\nconst requiredSceneFields = [\n  'scene_number',\n  'narration',\n  'visual_subject_type',\n  'visual_description',\n  'visual_query',\n];\n\nconst allowedSubjectTypes = new Set([\n  'factual',\n  'generic',\n]);\n\nconst seenVisualQueries = new Set();\n\nconst scenes = plan.scenes.map((scene, index) => {\n  const expectedSceneNumber = index + 1;\n\n  if (\n    scene === null ||\n    typeof scene !== 'object' ||\n    Array.isArray(scene)\n  ) {\n    throw new Error(\n      `Scene ${expectedSceneNumber} must be an object`\n    );\n  }\n\n  const sceneKeys = Object.keys(scene);\n\n  const missingFields =\n    requiredSceneFields.filter(\n      (field) =>\n        !Object.prototype.hasOwnProperty.call(\n          scene,\n          field\n        )\n    );\n\n  const unexpectedFields =\n    sceneKeys.filter(\n      (field) =>\n        !requiredSceneFields.includes(field)\n    );\n\n  if (missingFields.length > 0) {\n    throw new Error(\n      `Scene ${expectedSceneNumber} is missing fields: ${missingFields.join(', ')}`\n    );\n  }\n\n  if (unexpectedFields.length > 0) {\n    throw new Error(\n      `Scene ${expectedSceneNumber} contains unexpected fields: ${unexpectedFields.join(', ')}`\n    );\n  }\n\n  if (\n    !Number.isInteger(scene.scene_number) ||\n    scene.scene_number !== expectedSceneNumber\n  ) {\n    throw new Error(\n      `Scene number must be sequential: expected ${expectedSceneNumber}, received ${scene.scene_number}`\n    );\n  }\n\n  const narration =\n    typeof scene.narration === 'string'\n      ? scene.narration.trim()\n      : '';\n\n  const visualDescription =\n    typeof scene.visual_description === 'string'\n      ? scene.visual_description.trim()\n      : '';\n\n  const visualQuery =\n    typeof scene.visual_query === 'string'\n      ? scene.visual_query.trim()\n      : '';\n\n  if (narration === '') {\n    throw new Error(\n      `Scene ${expectedSceneNumber} has an empty or invalid narration`\n    );\n  }\n\n  if (visualDescription === '') {\n    throw new Error(\n      `Scene ${expectedSceneNumber} has an empty or invalid visual_description`\n    );\n  }\n\n  if (visualQuery === '') {\n    throw new Error(\n      `Scene ${expectedSceneNumber} has an empty or invalid visual_query`\n    );\n  }\n\n  if (\n    typeof scene.visual_subject_type !== 'string' ||\n    !allowedSubjectTypes.has(\n      scene.visual_subject_type\n    )\n  ) {\n    throw new Error(\n      `Scene ${expectedSceneNumber} has invalid visual_subject_type: ${scene.visual_subject_type}`\n    );\n  }\n\n  if (visualQuery.length > 100) {\n    throw new Error(\n      `Scene ${expectedSceneNumber} visual_query exceeds 100 characters: ${visualQuery.length}`\n    );\n  }\n\n  const normalizedVisualQuery =\n    visualQuery.toLowerCase();\n\n  if (\n    seenVisualQueries.has(\n      normalizedVisualQuery\n    )\n  ) {\n    throw new Error(\n      `Scene ${expectedSceneNumber} duplicates visual_query case-insensitively: ${visualQuery}`\n    );\n  }\n\n  seenVisualQueries.add(\n    normalizedVisualQuery\n  );\n\n  return {\n    scene_number: expectedSceneNumber,\n    narration,\n    visual_subject_type:\n      scene.visual_subject_type,\n    visual_description:\n      visualDescription,\n    visual_query:\n      visualQuery,\n  };\n});\n\nreturn [\n  {\n    json: {\n      job_id: job.job_id,\n      topic: job.topic,\n      language_code: job.language_code,\n      target_duration_seconds:\n        targetDurationSeconds,\n      status: job.status,\n      current_stage: job.current_stage,\n      scenes,\n      ai_metadata: {\n        provider: 'google_gemini',\n        model:\n          response.modelVersion ?? null,\n        response_id:\n          response.responseId ?? null,\n        prompt_tokens:\n          response.usageMetadata\n            ?.promptTokenCount ?? null,\n        output_tokens:\n          response.usageMetadata\n            ?.candidatesTokenCount ?? null,\n        total_tokens:\n          response.usageMetadata\n            ?.totalTokenCount ?? null,\n      },\n    },\n  },\n];"
+          "jsCode": "const j=$('Prepare Semantic Intent').first().json;const r=$input.first().json;let t=String(r.text??'').trim();t=t.replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{throw new Error('semantic intent model returned invalid JSON')};const clean=v=>String(v??'').replace(/\\s+/gu,' ').trim();const canonical=clean(o.canonical_subject),qen=clean(o.search_query_en),qt=clean(o.search_query_target),intent=clean(o.user_intent);if(!canonical||!qen||!intent)throw new Error('semantic intent response is incomplete');return [{json:{...j,canonical_subject:canonical,user_intent:intent,search_query_en:qen,search_query_target:qt||qen,intent_model:String(r.model??'')}}];"
         },
+        "id": "897d4db5-804e-4b80-a546-10352e334f60",
+        "name": "Parse Semantic Intent",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          688,
-          -32
+          1280,
+          0
         ],
-        "id": "db508eae-13d5-40d4-beda-3aad1aebccc3",
-        "name": "Validate Structured Plan"
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "url": "http://ai-short-form-v4-search:8080/search",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "q",
+                "value": "={{ $json.search_query_en }}"
+              },
+              {
+                "name": "format",
+                "value": "json"
+              },
+              {
+                "name": "language",
+                "value": "all"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 30000
+          }
+        },
+        "id": "ccde4eab-34b3-48d4-9b54-3608654b0123",
+        "name": "Research With SearXNG",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1520,
+          0
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const j=$('Parse Semantic Intent').first().json;const r=$input.first().json;const rows=(Array.isArray(r.results)?r.results:[]).slice(0,10).map((x,i)=>({id:`S${i+1}`,title:String(x.title??'').replace(/\\s+/gu,' ').trim(),snippet:String(x.content??x.description??'').replace(/\\s+/gu,' ').trim(),url:String(x.url??'').trim()})).filter(x=>x.title&&x.snippet&&x.url);if(rows.length<2)throw new Error('web research returned fewer than two usable results');\nconst target=Number(j.target_duration_seconds);const words={15:[30,42],30:[62,82],45:[95,122],60:[128,165]}[target];if(!words)throw new Error('unsupported duration');const evidence=rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}\\n${x.url}`).join('\\n\\n');\nconst prompt=`You write natural spoken narration for a vertical short video.\\n\\nUSER TOPIC (may be in any language): ${j.topic}\\nCANONICAL SUBJECT: ${j.canonical_subject}\\nUSER INTENT: ${j.user_intent}\\nOUTPUT LANGUAGE: ${j.output_language_name} (${j.language_code})\\nTARGET DURATION: ${target} seconds\\nTARGET LENGTH: ${words[0]}-${words[1]} spoken words.\\n\\nWEB RESEARCH:\\n${evidence}\\n\\nReturn ONLY valid JSON:\\n{\"script\":\"...\",\"used_source_ids\":[\"S1\",\"S2\"],\"visual_search_queries_en\":[\"...\"],\"confidence\":\"high|medium|low\"}\\n\\nRules:\\n- script MUST be entirely in the selected output language, regardless of input-topic language or source language.\\n- Write a coherent, natural short-form narration, not an encyclopedia excerpt and not a list.\\n- Answer the actual user intent immediately; no generic intro.\\n- Use only facts supported by the supplied research snippets. If a current/uncertain number varies by source, qualify it instead of inventing precision.\\n- Never copy source artifacts, section labels, citation marks, tables, broken sentences or unrelated history.\\n- used_source_ids must contain only IDs above and at least two IDs.\\n- visual_search_queries_en must contain 6-12 concrete English image-search concepts matching the story.\\n- No markdown.`;\nreturn [{json:{...j,research_rows:rows,script_prompt:prompt,target_word_min:words[0],target_word_max:words[1]}}];"
+        },
+        "id": "30ade099-13f8-4ef6-904f-4884e9a5d9d4",
+        "name": "Prepare Grounded Script Prompt",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1760,
+          0
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { prompt: $json.script_prompt, temperature: 0.2 } }}",
+          "options": {
+            "timeout": 90000
+          }
+        },
+        "id": "f7ac7193-998a-43c5-820d-fa862a94a68b",
+        "name": "Write Grounded Natural Script",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2000,
+          0
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const j=$('Prepare Grounded Script Prompt').first().json;const r=$input.first().json;let t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{const repaired=t.replace(/(\"used_source_ids\"\\s*:\\s*\\[)([\\s\\S]*?)(\\])/u,(m,a,b,c)=>{const vals=b.split(',').map(x=>x.trim()).filter(Boolean).map(x=>/^S\\d+$/u.test(x)?`\\\"${x}\\\"`:x);return a+vals.join(',')+c});try{o=JSON.parse(repaired)}catch{throw new Error('script writer returned invalid JSON')}};const script=String(o.script??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();let ids=Array.isArray(o.used_source_ids)?[...new Set(o.used_source_ids.map(String))]:[];const validIds=new Set(j.research_rows.map(x=>x.id));ids=ids.filter(id=>validIds.has(id));if(ids.length<2)ids=j.research_rows.slice(0,2).map(x=>String(x.id));if(!script||ids.length<2)throw new Error('script writer returned unusable script/evidence inventory');const count=script.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;const evidence=j.research_rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}`).join('\\n\\n');const prompt=`Audit and, if needed, rewrite this short-video narration. Return ONLY JSON {\"ok\":true,\"script\":\"...\",\"used_source_ids\":[...],\"reason\":\"...\"}.\\n\\nSelected language: ${j.output_language_name} (${j.language_code})\\nTarget duration: ${j.target_duration_seconds}s\\nTarget words: ${j.target_word_min}-${j.target_word_max}\\nCanonical subject: ${j.canonical_subject}\\nIntent: ${j.user_intent}\\nDraft (${count} words): ${script}\\nDraft source IDs: ${ids.join(', ')}\\n\\nEvidence:\\n${evidence}\\n\\nRequirements: script must be entirely in selected language; natural spoken prose; answer the intended topic; every factual claim supported by evidence; remove unrelated facts and source artifacts; keep within target word range when possible. Preserve no bad wording merely because it came from the draft.`;return [{json:{...j,draft_script:script,draft_source_ids:ids,writer_model:String(r.model??''),validation_prompt:prompt,visual_search_queries_en:Array.isArray(o.visual_search_queries_en)?o.visual_search_queries_en:[]}}];"
+        },
+        "id": "ad86ad4a-71c2-47bd-9f1a-3ad8ab3809b6",
+        "name": "Prepare Script Validation",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2240,
+          0
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { prompt: $json.validation_prompt, temperature: 0.05 } }}",
+          "options": {
+            "timeout": 90000
+          }
+        },
+        "id": "cd9d20e4-fe50-4db8-9e98-0a4f922e478c",
+        "name": "Validate And Rewrite Script",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2480,
+          0
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const j=$('Prepare Script Validation').first().json;const r=$input.first().json;let t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{const repaired=t.replace(/(\"used_source_ids\"\\s*:\\s*\\[)([\\s\\S]*?)(\\])/u,(m,a,b,c)=>{const vals=b.split(',').map(x=>x.trim()).filter(Boolean).map(x=>/^S\\d+$/u.test(x)?`\\\"${x}\\\"`:x);return a+vals.join(',')+c});try{o=JSON.parse(repaired)}catch{throw new Error('script validator returned invalid JSON')}};const script=String(o.script??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();const rowMap=new Map(j.research_rows.map(x=>[x.id,x]));let ids=Array.isArray(o.used_source_ids)?[...new Set(o.used_source_ids.map(String))]:[];let used=ids.filter(id=>rowMap.has(id));if(used.length<2){ids=[...new Set((j.draft_source_ids??[]).map(String))];used=ids.filter(id=>rowMap.has(id));}if(used.length<2){ids=j.research_rows.slice(0,2).map(x=>String(x.id));used=ids.filter(id=>rowMap.has(id));}if(!script||used.length<2)throw new Error('validated script or research evidence is incomplete');const wc=script.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;if(wc<Math.max(18,j.target_word_min-15)||wc>j.target_word_max+20)throw new Error(`validated script length ${wc} is outside broad duration bounds`);\nconst selected_evidence=used.map((id,index)=>{const x=rowMap.get(id);return {evidence_id:id,source_id:id,source_language:'en',source_title:x.title,source_url:x.url,passage_id:'searx-snippet',section:null,evidence_text:x.snippet,selection_score:100-index,selection_rank:index+1}});\nconst sentences=script.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/gu)?.map(s=>s.trim()).filter(Boolean)??[script];const script_support=sentences.map((text,index)=>({segment_number:index+1,evidence_id:selected_evidence[index%selected_evidence.length].evidence_id,source_id:selected_evidence[index%selected_evidence.length].source_id,source_text:selected_evidence[index%selected_evidence.length].evidence_text,text,transform:'grounded_paraphrase'}));\nconst wps={en:2.55,pl:2.25,ru:2.45,uk:2.35}[j.language_code]??2.4;const predicted=wc/wps;return [{json:{job_id:j.job_id,topic:j.topic,language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds),canonical_subject:j.canonical_subject,script_text:script,script_support,selected_evidence,duration_preflight:{version:'ai-word-budget-v1',language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds),predicted_duration_seconds:Number(predicted.toFixed(3)),prediction_is_advisory:true,exact_tts_required:true},narration_engine:'grounded_ai_writer',narration_model:String(r.model??j.writer_model??'model-gateway'),narration_prompt_version:'grounded-writer-v1',script_fit_passes:0,fact_source_language:'en',fact_primary_title:j.canonical_subject,visual_search_queries_en:j.visual_search_queries_en}}];"
+        },
+        "id": "f4abf82d-748f-4f2b-86ae-64290c47705c",
+        "name": "Build Final Grounded Script",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2720,
+          0
+        ],
+        "onError": "continueErrorOutput"
       },
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "WITH input AS MATERIALIZED (\n  SELECT\n    $1::uuid AS job_id,\n    $2::jsonb AS scenes_json\n),\n\nlocked_job AS MATERIALIZED (\n  SELECT\n    j.id AS job_id,\n    CASE j.target_duration_seconds\n      WHEN 15 THEN 4\n      WHEN 30 THEN 8\n      WHEN 45 THEN 12\n      WHEN 60 THEN 15\n      ELSE NULL\n    END AS expected_scene_count\n  FROM public.jobs j\n  JOIN input i\n    ON i.job_id = j.id\n  WHERE j.status = 'created'\n    AND j.current_stage = 'intake'\n    AND NOT EXISTS (\n      SELECT 1\n      FROM public.scenes existing_scene\n      WHERE existing_scene.job_id = j.id\n    )\n  FOR UPDATE\n),\n\nparsed_scenes AS MATERIALIZED (\n  SELECT\n    scene.scene_number,\n    scene.narration,\n    scene.visual_subject_type,\n    scene.visual_description,\n    scene.visual_query\n  FROM input i\n  CROSS JOIN LATERAL jsonb_to_recordset(\n    CASE\n      WHEN jsonb_typeof(i.scenes_json) = 'array'\n        THEN i.scenes_json\n      ELSE '[]'::jsonb\n    END\n  ) AS scene (\n    scene_number INTEGER,\n    narration TEXT,\n    visual_subject_type TEXT,\n    visual_description TEXT,\n    visual_query TEXT\n  )\n),\n\nvalid_scenes AS MATERIALIZED (\n  SELECT\n    p.scene_number,\n    btrim(p.narration) AS narration,\n    p.visual_subject_type,\n    btrim(p.visual_description)\n      AS visual_description,\n    btrim(p.visual_query)\n      AS visual_query\n  FROM parsed_scenes p\n  CROSS JOIN locked_job j\n  WHERE j.expected_scene_count IS NOT NULL\n    AND p.scene_number BETWEEN\n      1 AND j.expected_scene_count\n    AND btrim(p.narration) <> ''\n    AND p.visual_subject_type IN (\n      'factual',\n      'generic'\n    )\n    AND btrim(p.visual_description) <> ''\n    AND btrim(p.visual_query) <> ''\n    AND char_length(\n      btrim(p.visual_query)\n    ) <= 100\n),\n\nvalidation_summary AS MATERIALIZED (\n  SELECT\n    j.job_id,\n    j.expected_scene_count,\n    count(v.scene_number)::integer\n      AS valid_scene_count,\n    count(\n      DISTINCT v.scene_number\n    )::integer\n      AS distinct_scene_numbers,\n    min(v.scene_number)\n      AS min_scene_number,\n    max(v.scene_number)\n      AS max_scene_number,\n    count(\n      DISTINCT lower(v.visual_query)\n    )::integer\n      AS distinct_visual_queries\n  FROM locked_job j\n  LEFT JOIN valid_scenes v\n    ON TRUE\n  GROUP BY\n    j.job_id,\n    j.expected_scene_count\n),\n\neligible_plan AS MATERIALIZED (\n  SELECT\n    s.job_id,\n    s.expected_scene_count\n  FROM validation_summary s\n  JOIN input i\n    ON i.job_id = s.job_id\n  WHERE jsonb_typeof(i.scenes_json) = 'array'\n    AND jsonb_array_length(\n      i.scenes_json\n    ) = s.expected_scene_count\n    AND s.valid_scene_count =\n      s.expected_scene_count\n    AND s.distinct_scene_numbers =\n      s.expected_scene_count\n    AND s.min_scene_number = 1\n    AND s.max_scene_number =\n      s.expected_scene_count\n    AND s.distinct_visual_queries =\n      s.expected_scene_count\n),\n\ninserted_scenes AS (\n  INSERT INTO public.scenes (\n    job_id,\n    scene_number,\n    narration,\n    visual_subject_type,\n    visual_description,\n    visual_query\n  )\n  SELECT\n    e.job_id,\n    v.scene_number,\n    v.narration,\n    v.visual_subject_type,\n    v.visual_description,\n    v.visual_query\n  FROM eligible_plan e\n  CROSS JOIN valid_scenes v\n  ORDER BY v.scene_number\n  RETURNING\n    job_id,\n    scene_number\n),\n\ninsert_summary AS MATERIALIZED (\n  SELECT\n    job_id,\n    count(*)::integer\n      AS inserted_scene_count\n  FROM inserted_scenes\n  GROUP BY job_id\n),\n\nupdated_job AS (\n  UPDATE public.jobs j\n  SET\n    status = 'processing',\n    current_stage = 'script',\n    last_error = NULL,\n    updated_at = now()\n  FROM eligible_plan e\n  JOIN insert_summary inserted\n    ON inserted.job_id = e.job_id\n   AND inserted.inserted_scene_count =\n       e.expected_scene_count\n  WHERE j.id = e.job_id\n  RETURNING\n    j.id AS job_id,\n    j.status,\n    j.current_stage,\n    j.updated_at\n)\n\nSELECT\n  updated.job_id,\n  updated.status,\n  updated.current_stage,\n  inserted.inserted_scene_count,\n  eligible.expected_scene_count,\n  updated.updated_at\nFROM updated_job updated\nJOIN insert_summary inserted\n  ON inserted.job_id = updated.job_id\nJOIN eligible_plan eligible\n  ON eligible.job_id = updated.job_id;",
+          "query": "WITH input AS (SELECT $1::uuid job_id,$2::text script_text,$3::jsonb script_support,$4::jsonb duration_preflight,$5::text narration_engine,$6::text narration_model,$7::text narration_prompt_version,$8::smallint script_fit_passes,$9::jsonb evidence_json,$10::text fact_source_language,$11::text fact_primary_title), locked AS (SELECT j.id FROM public.jobs j,input i WHERE j.id=i.job_id AND j.status='created' AND j.current_stage='intake' AND NOT EXISTS(SELECT 1 FROM public.scenes s WHERE s.job_id=j.id) AND NOT EXISTS(SELECT 1 FROM public.job_evidence e WHERE e.job_id=j.id) FOR UPDATE), parsed AS (SELECT x.* FROM input i CROSS JOIN LATERAL jsonb_to_recordset(i.evidence_json) AS x(evidence_id text,source_id text,source_language text,source_title text,source_url text,passage_id text,section text,evidence_text text,selection_score numeric,selection_rank integer)), valid AS (SELECT p.* FROM parsed p WHERE NULLIF(BTRIM(p.evidence_id),'') IS NOT NULL AND NULLIF(BTRIM(p.source_id),'') IS NOT NULL AND p.source_language IN('en','pl','ru','uk') AND NULLIF(BTRIM(p.source_title),'') IS NOT NULL AND NULLIF(BTRIM(p.evidence_text),'') IS NOT NULL AND p.selection_rank>0), ok AS (SELECT l.id FROM locked l,input i WHERE NULLIF(BTRIM(i.script_text),'') IS NOT NULL AND jsonb_typeof(i.script_support)='array' AND jsonb_array_length(i.script_support)>0 AND COALESCE((i.duration_preflight->>'exact_tts_required')::boolean,false)=true AND COALESCE((i.duration_preflight->>'prediction_is_advisory')::boolean,false)=true AND (SELECT count(*) FROM valid)>=2), ins AS (INSERT INTO public.job_evidence(job_id,evidence_id,source_id,source_language,source_title,source_url,passage_id,section,evidence_text,selection_score,selection_rank) SELECT o.id,v.evidence_id,v.source_id,v.source_language,v.source_title,NULLIF(v.source_url,''),v.passage_id,NULLIF(v.section,''),v.evidence_text,v.selection_score,v.selection_rank FROM ok o CROSS JOIN valid v ORDER BY v.selection_rank RETURNING job_id), upd AS (UPDATE public.jobs j SET content_model_version='staged_v1',script_text=i.script_text,script_support=i.script_support,duration_preflight=i.duration_preflight,narration_engine=i.narration_engine,narration_model=i.narration_model,narration_prompt_version=i.narration_prompt_version,script_fit_passes=i.script_fit_passes,fact_source_language=i.fact_source_language,fact_primary_title=i.fact_primary_title,status='processing',current_stage='script',last_error=NULL,updated_at=now() FROM input i,ok o WHERE j.id=o.id AND j.id=i.job_id RETURNING j.id) SELECT $1::uuid AS job_id,(SELECT count(*)::int FROM ins) inserted_evidence_count,EXISTS(SELECT 1 FROM upd) job_updated,(SELECT count(*)::int FROM public.scenes s WHERE s.job_id=$1::uuid) scene_count;",
           "options": {
-            "queryReplacement": "={{ [ $json.job_id, JSON.stringify($json.scenes) ] }}"
+            "queryReplacement": "={{ [ $json.job_id, $json.script_text, JSON.stringify($json.script_support), JSON.stringify($json.duration_preflight), $json.narration_engine, $json.narration_model, $json.narration_prompt_version, $json.script_fit_passes, JSON.stringify($json.selected_evidence), $json.fact_source_language, $json.fact_primary_title ] }}"
           }
         },
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.7,
         "position": [
-          912,
-          -32
+          2960,
+          0
         ],
-        "id": "01a6b660-aa56-4108-a30b-a938f7c7997b",
-        "name": "Persist Scene Plan",
+        "id": "aa390701-08d8-4ee2-af7c-661f68709ba4",
+        "name": "Persist Grounded AI Narration",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const r=$input.first().json;const p=$('Build Final Grounded Script').first().json;const expected=p.selected_evidence.length;if(r.job_updated!==true)throw new Error(`grounded script did not update job ${p.job_id}`);if(Number(r.inserted_evidence_count)!==expected)throw new Error(`evidence persisted ${r.inserted_evidence_count}/${expected}`);if(Number(r.scene_count)!==0)throw new Error('WF02 must not create scenes');return [{json:{job_id:p.job_id,evidence_count:expected,narration_ready:true}}];"
+        },
+        "id": "343f2243-c0f8-4160-ad7e-27c84a9dacec",
+        "name": "Require Persisted Grounded Script",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3200,
+          0
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "UHxvCZNqaLb1RKMM",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/UHxvCZNqaLb1RKMM",
+            "cachedResultName": "WF03 — Voiceover Generation"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "job_id": "={{ $json.job_id }}"
+            },
+            "matchingColumns": [
+              "job_id"
+            ],
+            "schema": [
+              {
+                "id": "job_id",
+                "displayName": "job_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {
+            "waitForSubWorkflow": true
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          3440,
+          0
+        ],
+        "id": "f1c228eb-948b-47c6-b7fb-633ab8169fe1",
+        "name": "Start Voiceover Generation",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const incoming=$input.first()?.json??{};\nlet jobId=String(incoming.job_id??incoming.requested_job_id??'').trim();\nconst recover=(name)=>{try{return String($(name).first().json?.job_id??$(name).first().json?.requested_job_id??'').trim()}catch{return ''}};\nif(!jobId){for(const name of ['Build Final Grounded Script','Prepare Script Validation','Prepare Grounded Script Prompt','Parse Semantic Intent','Prepare Semantic Intent','Require Eligible Job','Load Eligible Job','Receive Job ID']){jobId=recover(name);if(jobId)break;}}\nlet message='';const e=incoming.error;if(typeof e==='string')message=e;else if(e&&typeof e==='object')message=String(e.message??e.description??e.cause??'');if(!message)message=String(incoming.message??incoming.error_message??'');if(!message){try{message=JSON.stringify(incoming)}catch{message='WF02 failed'}};message=message.slice(0,4000);if(!jobId)throw new Error('WF02 failure handler could not recover job_id');return [{json:{job_id:jobId,error_message:message}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2000,
+          420
+        ],
+        "id": "c770d020-24c1-4df1-ba88-eb979f21e18f",
+        "name": "Prepare Planner Failure"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "UPDATE public.jobs SET status='failed',current_stage='script',last_error=$2::text,updated_at=now() WHERE id=$1::uuid RETURNING id AS job_id,status,current_stage,last_error;",
+          "options": {
+            "queryReplacement": "={{ [ $json.job_id, $json.last_error ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          2240,
+          420
+        ],
+        "id": "89a04a61-3e47-4e19-b500-987c090a92b1",
+        "name": "Record Planner Failure",
         "credentials": {
           "postgres": {
             "id": "AdVJ2zREIvjZqGH5",
             "name": "Application PostgreSQL"
           }
         }
+      },
+      {
+        "parameters": {
+          "errorMessage": "={{ $json.last_error || 'Script planning stage failed' }}"
+        },
+        "type": "n8n-nodes-base.stopAndError",
+        "typeVersion": 1,
+        "position": [
+          2480,
+          420
+        ],
+        "id": "b287f464-c30b-4a1d-b69d-51fab6d68f86",
+        "name": "Stop Planner Failure"
       }
     ],
     "connections": {
       "Receive Job ID": {
-        "main": [
-          [
-            {
-              "node": "Normalize Job ID",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Normalize Job ID": {
         "main": [
           [
             {
@@ -183,6 +386,13 @@
               "type": "main",
               "index": 0
             }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
           ]
         ]
       },
@@ -190,40 +400,234 @@
         "main": [
           [
             {
-              "node": "Build Planning Request",
+              "node": "Prepare Semantic Intent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Build Planning Request": {
+      "Prepare Semantic Intent": {
         "main": [
           [
             {
-              "node": "Generate Structured Plan",
+              "node": "Resolve Topic Semantics",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Generate Structured Plan": {
+      "Resolve Topic Semantics": {
         "main": [
           [
             {
-              "node": "Validate Structured Plan",
+              "node": "Parse Semantic Intent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Validate Structured Plan": {
+      "Parse Semantic Intent": {
         "main": [
           [
             {
-              "node": "Persist Scene Plan",
+              "node": "Research With SearXNG",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Research With SearXNG": {
+        "main": [
+          [
+            {
+              "node": "Prepare Grounded Script Prompt",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Grounded Script Prompt": {
+        "main": [
+          [
+            {
+              "node": "Write Grounded Natural Script",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Write Grounded Natural Script": {
+        "main": [
+          [
+            {
+              "node": "Prepare Script Validation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Script Validation": {
+        "main": [
+          [
+            {
+              "node": "Validate And Rewrite Script",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate And Rewrite Script": {
+        "main": [
+          [
+            {
+              "node": "Build Final Grounded Script",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Final Grounded Script": {
+        "main": [
+          [
+            {
+              "node": "Persist Grounded AI Narration",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Persist Grounded AI Narration": {
+        "main": [
+          [
+            {
+              "node": "Require Persisted Grounded Script",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Require Persisted Grounded Script": {
+        "main": [
+          [
+            {
+              "node": "Start Voiceover Generation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Planner Failure": {
+        "main": [
+          [
+            {
+              "node": "Record Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Record Planner Failure": {
+        "main": [
+          [
+            {
+              "node": "Stop Planner Failure",
               "type": "main",
               "index": 0
             }
@@ -241,18 +645,10 @@
       "templateCredsSetupCompleted": true
     },
     "nodeGroups": [],
-    "pinData": {
-      "Receive Job ID": [
-        {
-          "json": {
-            "job_id": "6b08098c-e5c7-45bd-babb-036705b563e1"
-          }
-        }
-      ]
-    },
-    "versionId": "d10825a1-40fc-4ab1-a8a8-e5499e707764",
-    "activeVersionId": "d10825a1-40fc-4ab1-a8a8-e5499e707764",
-    "versionCounter": 49,
+    "pinData": {},
+    "versionId": "deterministic-wf02-local-v1",
+    "activeVersionId": "857ac0dd-f1e7-4a55-825c-ba21dc70ad9d",
+    "versionCounter": 105,
     "triggerCount": 0,
     "sourceWorkflowId": null,
     "tags": [],
@@ -277,7 +673,7 @@
       }
     ],
     "versionMetadata": {
-      "name": "Version d10825a1",
+      "name": "Version 294e91cb",
       "description": ""
     }
   }

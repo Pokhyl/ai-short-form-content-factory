@@ -116,3 +116,61 @@ Invalid proof methods include:
 4. rerun the same n8n path and repeat on materially different topics/languages after HUMAN PASS.
 
 Do not create a separate product architecture. n8n remains the orchestrator.
+
+## 2026-09-04 systemic rebuild after cross-topic failures
+
+The previous deterministic/extractive WF02 path is no longer the active narration architecture.
+
+Current n8n-controlled narration path:
+
+`topic in any input language -> semantic intent -> SearXNG research -> grounded AI narration strictly in selected output language -> structured validation -> one continuous natural-rate TTS -> exact measured duration -> bounded script rewrite/re-synthesis when needed`
+
+General fixes completed:
+
+- removed lexical/Wikipedia entity matching as the basis of topic understanding;
+- removed deterministic encyclopedia-excerpt narration as the primary writer;
+- selected output language is authoritative and independent of input-topic language;
+- research evidence supports/audits narration instead of being concatenated into narration;
+- exact TTS duration is authoritative; word-count duration prediction is advisory only;
+- natural speech rate remains unchanged; timing is corrected by rewriting the script, not tempo manipulation;
+- Edge Read Aloud transport budget was increased to a bounded 120-240 seconds and the n8n HTTP timeout aligned to 270 seconds;
+- WF02 structured-output parsing now safely tolerates the model's bounded `used_source_ids: [S1,S2]` formatting defect without evaluating arbitrary text;
+- visual candidate identity is provider-scoped (`provider + provider_asset_id`) across Pexels/Pixabay/Wikimedia-style inventories, preventing cross-provider numeric-ID collisions;
+- photo-first policy remains mandatory; video remains secondary and is admitted only for motion-led, semantically stronger matches.
+
+Latest autonomous end-to-end evidence, all launched only with `topic + language + duration`:
+
+1. job `1bf8089f-eecf-4b93-83f4-a1a5862a4044`
+   - topic input: `why is the sky blue`
+   - selected output language: `ru`
+   - requested: `30 s`
+   - measured voiceover: `27.360 s`
+   - status: `review_ready`
+   - final MP4: `jobs/1bf8089f-eecf-4b93-83f4-a1a5862a4044/render/final.mp4`
+
+2. job `6cf62378-51be-4694-9e4e-5f096a7f1769`
+   - topic input: `how does a refrigerator work`
+   - selected output language: `uk`
+   - requested: `30 s`
+   - measured voiceover: `31.152 s`
+   - status: `review_ready`
+
+3. job `656656f1-5f75-4a8e-a5ef-bf8bd1608e16`
+   - topic input: `почему извергаются вулканы`
+   - selected output language: `pl`
+   - requested: `30 s`
+   - measured voiceover: `29.160 s`
+   - status: `review_ready`
+   - final MP4: `jobs/656656f1-5f75-4a8e-a5ef-bf8bd1608e16/render/final.mp4`
+
+These are machine-rendered cross-topic proofs only. None is `human_approved` until the user watches the exact artifact and explicitly accepts it.
+
+## Current gate
+
+The user should now test the current workflow from Studio with arbitrary topics/languages/durations. Any HUMAN FAIL must be handled as a general defect from the exact artifact; no topic-specific rescue or manual media selection is allowed.
+
+## Regression gate
+
+Static workflow regression suite: `10/10 PASS` after the systemic WF02/WF03/WF04 rebuild.
+
+The suite covers cross-language semantic intake, selected output-language authority, grounded research-backed narration, advisory-only word budgeting, exact measured TTS duration, bounded natural-rate rewrite/re-synthesis, provider transport budget, short canonical titles, provider-scoped visual identity, and local media-worker module completeness. Node syntax checks also pass for the media-worker entry point and new support modules.
