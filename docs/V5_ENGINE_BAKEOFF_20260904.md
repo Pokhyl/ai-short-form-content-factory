@@ -112,17 +112,65 @@ Machine identity:
 - H.264 `1080x1920`;
 - AAC audio.
 
-Acceptance state: `machine_rendered`.
+User reaction rejected this exact artifact. Because no specific visible defect was yet decomposed, do not infer a root cause from the rejection alone.
 
-## What this proves
+Acceptance state: `human_rejected`.
 
-It proves that MoneyPrinterTurbo can execute a complete vertical video edit with continuous voice, real video clips, subtitles and transitions on the VPS.
+## MoneyPrinterTurbo editing proof #2
 
-It does **not** prove autonomous topic-to-good-video quality, because the first proof deliberately isolated editing quality by supplying a deterministic automatically acquired clip set. It also does not prove that its own search-term generation or provider ranking produces relevant footage.
+Topic:
+
+`Как извергается вулкан`
+
+This second proof deliberately changes the visual domain from an automotive mechanism to a natural-process explainer. It still isolates the editing engine rather than claiming autonomous sourcing quality.
+
+Input media were four free Wikimedia Commons video files found through ordinary topic search, with source/license pages verified before use:
+
+- `Erupción Volcánica.webm` — CC BY-SA;
+- `Overnight, USGS-Hawaiian Volcano Observatory scientists track lava flows as t....webm` — USGS public domain;
+- `Kilauea volcano eruption- Watch incredible footage of lava lake.webm` — Commons page marks the media public-domain material;
+- `Poas Volcano Eruption 2025 04 23.webm` — public-domain status documented on Commons.
+
+MoneyPrinterTurbo settings remained the same editing baseline:
+
+- local media set;
+- `9:16` cover fit;
+- sequential edit;
+- fade transition;
+- source clip cap `3 s`;
+- Russian Edge TTS voice `ru-RU-DmitryNeural`;
+- no background music;
+- burned subtitles.
+
+Exact task:
+
+`0a78c91c-db06-4a98-b123-a84a184abcb0`
+
+Published review copy:
+
+`/opt/ai-short-form-content-factory/studio/bakeoff/mpt-volcano-ru.mp4`
+
+Machine identity:
+
+- SHA256 `158fd931cbd01d112500c0ef4c24c6ea7032799c23e59723d81babe9e7d69903`;
+- size `5,253,814` bytes;
+- duration `19.466667 s`;
+- H.264 `1080x1920`;
+- AAC audio.
+
+Observed engine behavior: the narration lasted about `19.44 s`, while the four capped source clips provided about `11.50 s`, so MoneyPrinterTurbo looped three clips to fill the timeline. This is recorded as actual engine behavior, not accepted as good editing.
+
+Acceptance state: `machine_rendered` only, pending exact-artifact human review.
+
+## What the two renders prove
+
+They prove that MoneyPrinterTurbo can execute complete vertical video edits with continuous voice, moving footage, subtitles and transitions on the VPS across two different visual domains.
+
+They do **not** prove autonomous topic-to-good-video quality. Proof #1 was user-rejected, and proof #2 still uses an externally assembled free-media set. MoneyPrinterTurbo is therefore not selected as the production core.
 
 ## Next gate
 
-1. user watches the exact MoneyPrinterTurbo proof artifact;
-2. HUMAN FAIL -> record the visible general defect and reject/demote the engine rather than architecting around it;
-3. only if the editing language is acceptable, run the same candidate on unrelated topics with autonomous media sourcing;
+1. user watches the exact volcano artifact;
+2. HUMAN FAIL -> record the visible general defect and reject/demote MoneyPrinterTurbo rather than architecting around it;
+3. only if editing language survives human review, test autonomous sourcing on unrelated topics;
 4. no Studio/n8n rebuild until an engine survives cross-topic HUMAN review.
