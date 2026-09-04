@@ -161,19 +161,34 @@ def compile_timeline_graphics(resolved_timeline: dict[str, Any], spec_map: Any) 
     if not isinstance(beats, list) or not beats:
         raise ValueError("resolved timeline requires beats")
     constructed = [str(b.get("beat_id") or "") for b in beats if (b.get("primary_visual") or {}).get("source_class") == "constructed"]
-    validated = validate_graphic_spec_map(spec_map, constructed)
+    annotated = [str(b.get("beat_id") or "") for b in beats if (b.get("primary_visual") or {}).get("source_class") == "annotated_exact"]
+    required = constructed + annotated
+    validated = validate_graphic_spec_map(spec_map, required)
     compiled_count = 0
+    compiled_constructed = 0
+    compiled_annotated = 0
     for beat in beats:
         beat_id = str(beat.get("beat_id") or "")
         if beat_id not in validated:
             continue
         duration = float(beat.get("end_seconds") or 0) - float(beat.get("start_seconds") or 0)
-        beat["compiled_graphic"] = compile_graphic_spec(validated[beat_id], duration)
-        beat["construction_required"] = False
+        graphic = compile_graphic_spec(validated[beat_id], duration)
+        source_class = (beat.get("primary_visual") or {}).get("source_class")
+        if source_class == "annotated_exact":
+            graphic["background"] = "transparent"
+            graphic.setdefault("source", {})["visual_basis"] = "exact_media_annotation"
+            beat["annotation_required"] = False
+            compiled_annotated += 1
+        else:
+            beat["construction_required"] = False
+            compiled_constructed += 1
+        beat["compiled_graphic"] = graphic
         compiled_count += 1
     out["graphic_compilation"] = {
-        "compiled_constructed_beats": compiled_count,
-        "all_constructed_beats_compiled": compiled_count == len(constructed),
+        "compiled_constructed_beats": compiled_constructed,
+        "compiled_annotated_beats": compiled_annotated,
+        "all_constructed_beats_compiled": compiled_constructed == len(constructed),
+        "all_required_graphics_compiled": compiled_count == len(required),
         "compiler": "graphic_compiler_v1",
     }
     return out
