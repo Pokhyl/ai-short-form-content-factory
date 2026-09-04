@@ -20,17 +20,13 @@ This is not a V5 product acceptance document. `machine_rendered` is not `human_a
 
 ### ShortGPT — rejected at static gate
 
-Checkout used for inspection:
-
 - repository: `RayVentura/ShortGPT`;
 - commit: `3df4e0f7a422bf7386565d498bf4521a2544c614`;
 - last commit observed: 2025-02-10.
 
-Reason for rejection: the inspected short-form path is based on Bing image search/Pexels plus MoviePy and is materially older than the other candidates. It does not justify spending a render cycle before stronger current candidates.
+Reason: inspected short path is Bing-image/Pexels/MoviePy based and materially older than stronger current candidates. No render time spent.
 
 ### AutoShorts AI — rejected at static gate
-
-Checkout used for inspection:
 
 - repository: `sa-ro/AI-Youtube-Shorts-Generator`;
 - commit: `2d6f057d49dc33103fe4f5fd8ed53f279fe675e0`;
@@ -38,16 +34,38 @@ Checkout used for inspection:
 
 Positive: current, FFmpeg-based, Pexels footage, Edge TTS, two video clips per scene.
 
-Hard mismatch: `AudioEngine.process_script()` generates a separate TTS file for every scene. That violates the permanent continuous-narration contract. The project is therefore not promoted as the production core without first proving a native continuous-audio path; no patch is added just to force this fixture through.
+Hard mismatch: `AudioEngine.process_script()` generates a separate TTS file for every scene. This violates the permanent continuous-narration contract. No patch was added merely to force the candidate through.
+
+### AbdullahNaveed/ai-shorts-generator — rejected at static free-path gate
+
+- commit: `380f7db67071b7c9640fe3280b136620f23dd638`;
+- last commit observed: 2026-06-24.
+
+Positive: Pexels/Pixabay stock, FFmpeg assembly, faster-whisper word captions, local review UI.
+
+Hard mismatch: the documented normal script/voice path requires OpenAI and explicitly describes `gpt-4o-mini-tts`; the no-key mode is only an offline/silent smoke path. It therefore cannot be the required free production baseline.
+
+### mzu-2410z/yt-automation — rejected at static product-contract gate
+
+- commit: `2a2c1fb99526d0778f0d837f03cec95ba50545c7`;
+- last commit observed: 2026-03-26.
+
+Positive: free local Kokoro/Piper TTS, Pexels/Pixabay, FFmpeg, free LLM options.
+
+Hard mismatches found in source:
+
+- TTS is generated separately for intro/each point/outro rather than as one continuous narration;
+- footage acquisition is one clip per script point;
+- repository explicitly targets Windows and captions remain on its roadmap.
+
+No Linux/product patch was added just to make it a bake-off winner.
 
 ### MoneyPrinterTurbo — first executable candidate
-
-Checkout:
 
 - repository: `harry0703/MoneyPrinterTurbo`;
 - commit: `9f0b28f8e87db76feee2d49ad3d98a31b43a9532`.
 
-The current CLI supports prepared scripts, local or Pexels/Pixabay media, 9:16 output, Edge TTS, subtitles, clip-duration control, transitions and full MP4 generation.
+The current CLI supports prepared scripts, local or Pexels/Pixabay media, 9:16 output, Edge TTS, subtitles, clip-duration control, transitions and complete MP4 generation.
 
 ## MoneyPrinterTurbo editing proof #1
 
@@ -100,7 +118,7 @@ Acceptance state: `machine_rendered`.
 
 It proves that MoneyPrinterTurbo can execute a complete vertical video edit with continuous voice, real video clips, subtitles and transitions on the VPS.
 
-It does **not** prove autonomous topic-to-good-video quality, because the first proof deliberately isolated the editing engine by supplying a deterministic automatically acquired clip set. It also does not prove that its own search-term generation or provider ranking produces relevant footage.
+It does **not** prove autonomous topic-to-good-video quality, because the first proof deliberately isolated editing quality by supplying a deterministic automatically acquired clip set. It also does not prove that its own search-term generation or provider ranking produces relevant footage.
 
 ## Next gate
 
