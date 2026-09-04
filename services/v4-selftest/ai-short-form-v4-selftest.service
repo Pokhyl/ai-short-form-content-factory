@@ -1,0 +1,17 @@
+[Unit]
+Description=AI Short Form V4 Self-Test Runner
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/ai-short-form-v4-selftest
+ExecStart=/opt/ai-short-form-v4-tools/bin/python /opt/ai-short-form-v4-selftest/runner.py
+Restart=on-failure
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
