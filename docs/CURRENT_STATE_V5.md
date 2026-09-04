@@ -6,43 +6,58 @@ Branch: `rebuild/agentic-editor-v5`.
 
 ## Status
 
-V5 rebuild has started from a clean product architecture. V4 product/runtime is frozen and the old V4 Studio self-test service is stopped.
+V4 product/runtime is frozen and the old V4 Studio self-test service is stopped.
 
-No V5 video is `human_approved` yet. Do not call V5 working or production-ready.
+V5 is **not** considered a chosen production architecture yet. The project is currently in an engine bake-off stage so that no more months are spent building around an unproven editor.
+
+No V5/bake-off video is `human_approved` yet. Do not call V5 working or production-ready.
 
 ## Completed rebuild foundation
 
-- preserved the final V4 rejection/failure evidence in commit `5a38e1e` before branching;
+- preserved the final V4 rejection/failure evidence before branching;
 - created `rebuild/agentic-editor-v5`;
 - stopped `ai-short-form-v4-selftest.service`;
-- cloned current OpenNolan into an isolated upstream checkout;
-- pinned OpenNolan commit `4457349c386ea1a89c01547f9a76fa650970c131` (`v1.0.2`, AGPL-3.0);
-- created isolated Python environment `/opt/ai-short-form-v5-runtime/.venv`;
-- installed OpenNolan core Python requirements;
-- installed host FFmpeg `6.1.1` from Ubuntu noble package `7:6.1.1-3ubuntu5`;
-- installed `faster-whisper 1.2.1` and `edge-tts 7.2.8` in the V5 environment;
-- added a clean V5 pin/preflight/inventory adapter with a hard guard against V4 imports;
-- fresh preflight passes with OpenNolan `DirectClipSearch`, `VideoCompose` and `Transcriber` AVAILABLE;
-- fresh active inventory probes across mechanism/history/comparison classes returned candidates from Pexels, Pixabay Video, Wikimedia and Archive.org;
-- active probe found Coverr returns HTTP `401` despite static availability, so Coverr is excluded from the initial default source set;
-- removed frozen V4 Remotion/OpenMontage/tooling runtime bulk after preserving failure history, reclaiming disk for V5.
+- isolated V5 from V4 product code with a hard import guard;
+- pinned OpenNolan commit `4457349c386ea1a89c01547f9a76fa650970c131` for toolkit evaluation;
+- installed host FFmpeg, faster-whisper and Edge TTS;
+- verified active free-media inventory from Pexels, Pixabay Video, Wikimedia and Archive.org;
+- proved that static provider availability is insufficient: Coverr reported available but active calls returned HTTP `401`;
+- removed obsolete bulky V4 rendering/runtime material after preserving failure history.
 
-## Important upstream finding
+## Architecture hypothesis under test
 
-At the exact pinned OpenNolan commit, README/render-demo text references `remotion-composer`, but that directory is absent from the checkout. Node was also not present on the VPS at V5 start.
+If an engine survives the bake-off, the intended product order remains:
 
-Therefore the first direct V5 product proof uses the real upstream FFmpeg editing/tool path. Remotion/HyperFrames are not part of the current acceptance claim.
+`topic -> research -> actual visual inventory -> showable story angle -> script -> continuous voice -> exact-audio word timing -> concrete edit plan -> proven editor engine -> QA -> exact-artifact human review`
 
-## Architecture
+Final script freeze must occur after visual inventory discovery, not before it.
 
-`topic -> research -> actual visual inventory -> showable story angle -> script -> continuous voice -> exact-audio word timing -> concrete NLE edit plan -> OpenNolan/FFmpeg editing tools -> QA -> exact-artifact human review`
+This remains a hypothesis until a real engine produces cross-topic HUMAN PASS artifacts.
 
-Final script freeze now occurs after visual inventory discovery, not before it.
+## Engine bake-off — active
 
-## Immediate engineering gate
+Durable proof: `docs/V5_ENGINE_BAKEOFF_20260904.md`.
 
-1. build the V5 story/editor controller around actual inventory rather than post-script shot obligations;
-2. materialize and frame-sample candidate media through OpenNolan tools before final asset choice;
-3. produce direct V5 edits through OpenNolan FFmpeg editing operations, outside Studio/n8n, on unrelated topics;
-4. inspect exact artifacts before user review;
-5. require cross-topic HUMAN PASS before any new Studio service or orchestration rebuild.
+Static screening so far:
+
+- ShortGPT: rejected before render; older 2025 path and image/Pexels/MoviePy approach is a weaker fit than current candidates;
+- AutoShorts AI (`sa-ro/AI-Youtube-Shorts-Generator`): rejected before promotion because its normal path generates TTS separately per scene, violating the continuous-narration contract;
+- MoneyPrinterTurbo: first executable candidate; exact vertical MP4 produced on the VPS.
+
+MoneyPrinterTurbo proof #1:
+
+- topic: `Как работает автомобильный турбокомпрессор`;
+- review copy: `/opt/ai-short-form-content-factory/studio/bakeoff/mpt-turbo-ru-15.mp4`;
+- SHA256 `1038a41c68f397d8dd80217272fef9c9cf2c52ea2bfd0a8bdc0d4ce2340ec844`;
+- H.264 1080x1920 + AAC;
+- duration `16.566667 s`;
+- state: `machine_rendered` only.
+
+This first proof intentionally isolated editing quality by feeding a deterministic automatically acquired Pexels clip set. It does not yet prove the candidate's autonomous media ranking.
+
+## Immediate gate
+
+1. user watches the exact MoneyPrinterTurbo artifact;
+2. if HUMAN FAIL, record the visible general defect and reject/demote MoneyPrinterTurbo rather than integrating or patching it;
+3. only if its editing language is acceptable, run unrelated autonomous-sourcing proofs;
+4. no new Studio/n8n/PostgreSQL product rebuild until an engine survives multiple materially different HUMAN reviews.
