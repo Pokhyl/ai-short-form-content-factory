@@ -16,7 +16,7 @@ assert.match(expandCode, /plan\.visual_target\|\|plan\.canonical_subject/);
 assert.doesNotMatch(expandCode, /plan\.visual_description/);
 
 const attachCode = n4.get('Attach Rank Results').parameters.jsCode;
-assert.match(attachCode, /MIN_VISUAL_RELEVANCE=0\.01/);
+assert.match(attachCode, /MIN_VISUAL_RELEVANCE=0\.00000001/);
 assert.match(attachCode, /relevancePassed=rows\.filter/);
 assert.match(attachCode, /no candidate above semantic relevance floor/);
 assert.match(attachCode, /media_kind.*video.*bestStill/);
@@ -34,14 +34,14 @@ const $ = () => ({ item: { json: context } });
 const hash = character => character.repeat(64);
 const accepted = attach({ model: 'fixture', dtype: 'q4', ranked: [
   { candidate_id: 'photo:good', score: 0.4, visual_hash: hash('a') },
-  { candidate_id: 'photo:garbage', score: 0.000001, visual_hash: hash('b') },
+  { candidate_id: 'photo:garbage', score: 0.000000001, visual_hash: hash('b') },
   { candidate_id: 'video:weak', score: 0.2, visual_hash: hash('c') },
 ] }, $).json.ranked_candidates;
 assert.deepEqual(accepted.map(item => item.candidate_id), ['photo:good']);
 assert.throws(() => attach({ model: 'fixture', dtype: 'q4', ranked: [
-  { candidate_id: 'photo:good', score: 0.000001, visual_hash: hash('a') },
-  { candidate_id: 'photo:garbage', score: 0.000002, visual_hash: hash('b') },
-  { candidate_id: 'video:weak', score: 0.000003, visual_hash: hash('c') },
+  { candidate_id: 'photo:good', score: 0.000000001, visual_hash: hash('a') },
+  { candidate_id: 'photo:garbage', score: 0.000000002, visual_hash: hash('b') },
+  { candidate_id: 'video:weak', score: 0.000000003, visual_hash: hash('c') },
 ] }, $), /no candidate above semantic relevance floor/);
 
 for (const node of [...wf02.nodes, ...wf04.nodes].filter(node => node.type === 'n8n-nodes-base.code')) {
