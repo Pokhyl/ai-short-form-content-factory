@@ -4,6 +4,12 @@ Last updated: 2026-09-04
 
 Branch: `rebuild/agentic-editor-v5`.
 
+## Mandatory pre-action gate
+
+Before any meaningful action, code change, render, test, architecture decision, dependency addition, or direction change, **read `docs/OPERATOR_EXECUTION_RULES.md` first**, then read this file.
+
+The current primary project risk is operator/assistant decision drift: changing direction without proof, handcrafting proofs, inventing blockers, and fixing one topic instead of the autonomous product. Do not repeat those patterns.
+
 ## Status
 
 V4 product/runtime is frozen and the old V4 Studio self-test service is stopped.
@@ -28,18 +34,29 @@ From there the system itself must perform:
 
 Final script freeze must happen after real visual inventory is known.
 
+A valid proof has zero manual creative intervention after the input is supplied.
+
 ## Forbidden proof method
 
 Do not use any of the following as evidence that the product architecture works:
 
-- manual clip selection;
+- manual clip/image selection;
 - manually written topic-specific scene composition;
 - manually authored edit plans;
+- topic-specific search-query rescue;
 - renderer-specific tuning for one proof topic;
 - repeated fixes just to make one test render complete;
+- looping/reusing assets simply to fill duration;
+- speech-speed manipulation to force duration;
 - machine render success without user HUMAN PASS.
 
 Renderer choice is an implementation detail, not the project architecture.
+
+## Media reality
+
+Do not treat lack of free imagery as a presumed blocker. The project can draw from large free/publicly licensed inventories such as Wikimedia Commons, Openverse, Internet Archive, Library of Congress, NASA/NARA and existing stock-video sources.
+
+The actual engineering problem is autonomous relevance selection, verification and editorial use of those visuals. Still images are valid when used purposefully; the product must not collapse into a repetitive static slideshow.
 
 ## Historical renderer findings
 
@@ -57,4 +74,8 @@ HyperFrames proved only that a handcrafted composition can be rendered; that is 
 
 ## Immediate gate
 
-Build and test one minimal autonomous end-to-end path from `topic + language + duration`, with zero manual creative intervention after input. Run it across materially different topics. Do not rebuild Studio/n8n/PostgreSQL orchestration and do not promote any renderer until the same autonomous path produces multiple HUMAN PASS artifacts.
+Build and test one minimal autonomous end-to-end path from `topic + language + duration`, with zero manual creative intervention after input.
+
+The first proof must exercise the real sequence, not a handcrafted renderer demo. Then run the **same** autonomous path across materially different topics.
+
+Do not rebuild Studio/n8n/PostgreSQL orchestration and do not promote any renderer until the same autonomous path produces multiple HUMAN PASS artifacts.
