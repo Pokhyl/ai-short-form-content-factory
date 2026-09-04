@@ -28,7 +28,7 @@ Output: vertical `9:16` short-form MP4.
 
 No mandatory paid-per-video API dependency is allowed.
 
-## Current autonomous proof state
+## Human-rejected baseline
 
 First real n8n-orchestrated 60-second proof:
 
@@ -40,20 +40,21 @@ First real n8n-orchestrated 60-second proof:
 - technical state: `review_ready`;
 - human state: **HUMAN FAIL**.
 
-The result proved that the existing n8n chain can reach a final MP4 automatically, but the video is not acceptable product output.
-
-Two general defects are already visible:
+General defects found:
 
 1. **visual policy defect** — WF04/media-worker was biased toward stock video, producing long/generic moving footage instead of using the much larger relevant still-image inventory;
 2. **narration defect** — current WF02 deterministic extractive narration can sound encyclopedic and expose source artifacts instead of producing natural spoken short-form text.
 
 Neither defect may be repaired manually for one topic.
 
-## Mandatory photo-first visual policy
+## Photo-first systemic correction
 
-Durable record: `docs/V5_N8N_PHOTO_FIRST_MEDIA_POLICY_20260904.md`.
+Durable records:
 
-Default visual inventory is still-image first:
+- `docs/V5_N8N_PHOTO_FIRST_MEDIA_POLICY_20260904.md`;
+- `docs/V5_N8N_PHOTO_FIRST_PROOF_20260904.md`.
+
+Default visual inventory is now still-image first:
 
 - Pexels Photos;
 - Wikimedia Commons / canonical Wikipedia media;
@@ -65,6 +66,31 @@ Still images are normal production assets and must be turned into dynamic video 
 Video is optional and secondary. A clip may be selected only when the segment is genuinely motion-led, metadata matches both subject and segment target, local visual ranking says it is more relevant than the best still for that segment, and the selected clip is short (currently max four seconds).
 
 Generic moving footage is a fail.
+
+The first photo-first rerun, job `4f6816b2-38aa-4fe8-8e8d-fbf84a951818`, exposed a general DB schema mismatch: `visual_shots_kind_check` did not allow the new `factual_image` / `context_video` kinds. Migration `017_photo_first_visual_kinds.sql` fixed the shared schema contract.
+
+## Current exact review artifact
+
+Second photo-first n8n rerun:
+
+- job: `8d82fc3e-b8ad-4ac0-8ef5-f61190e3a904`;
+- same input: `Почему листья меняют цвет осенью`, `ru`, `60 s`;
+- status: `review_ready`;
+- rendered duration: `59.064 s`;
+- format: 1080x1920, 30 fps, H.264 + AAC;
+- exact review copy: `/opt/ai-short-form-content-factory/studio/bakeoff/n8n-photo-first-leaves-ru-60.mp4`;
+- SHA256: `0b007fdde0a15994c7df7b1de0d7054fe136755d08c21a6a03f566c3c3e13850`.
+
+Automatic selected-media composition:
+
+- Pexels Photos: 4;
+- Pixabay Images: 3;
+- Wikimedia Commons images: 3;
+- video clips: 0.
+
+No clip/image was manually selected after submission.
+
+Acceptance state: **machine_rendered / review_ready only**. This exact artifact is not `human_approved` until the user watches and explicitly accepts it.
 
 ## What counts as a valid proof
 
@@ -82,26 +108,11 @@ Invalid proof methods include:
 - bypassing n8n with a handcrafted direct/CLI path;
 - calling machine success a product success before explicit HUMAN PASS.
 
-## Historical renderer findings
-
-Renderer-centric bake-off is historical evidence only and is not the current product method.
-
-Relevant records:
-
-- `docs/V5_ENGINE_BAKEOFF_20260904.md`;
-- `docs/V5_ENGINE_BAKEOFF_ROUND2_20260904.md`;
-- `docs/V5_MONEYPRINTERTURBO_HUMAN_FAIL_20260904.md`;
-- `docs/V5_HYPERFRAMES_QR_PROOF_20260904.md`;
-- `docs/V5_BAKEOFF_METHOD_REJECTION_20260904.md`.
-
-MoneyPrinterTurbo remains HUMAN FAIL. HyperFrames proved only handcrafted rendering and is not product evidence.
-
 ## Immediate gate
 
-1. deploy the shared photo-first media policy in the existing n8n WF04/media-worker path;
-2. rerun the same n8n flow without manual visual intervention and verify selected media provenance/types;
-3. fix the general natural-narration defect in WF02 without topic-specific text;
-4. produce exact MP4 for human review;
-5. repeat the same n8n path on materially different topics/languages after HUMAN PASS.
+1. user watches exact photo-first artifact `n8n-photo-first-leaves-ru-60.mp4`;
+2. record HUMAN PASS/FAIL from that exact file;
+3. if the visual direction passes, fix the separate general natural-narration defect in WF02 without topic-specific text;
+4. rerun the same n8n path and repeat on materially different topics/languages after HUMAN PASS.
 
 Do not create a separate product architecture. n8n remains the orchestrator.
