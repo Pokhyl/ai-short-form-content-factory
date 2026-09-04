@@ -29,6 +29,7 @@ assert.match(nodes.get('Persist Grounded AI Narration').parameters.query, /reaso
 const discoveryQuery = nodes.get('Discover Candidate Evidence').parameters.queryParameters.parameters.find(item => item.name === 'q');
 assert.equal(discoveryQuery.value, '={{ $json.discovery_query }}');
 assert.match(nodes.get('Record Planner Failure').parameters.options.queryReplacement, /error_message/);
+assert.match(nodes.get('Parse Semantic Intent').parameters.jsCode, /canonical_name\?\?x\.candidate_name/);
 
 for (const node of workflow.nodes.filter(node => node.type === 'n8n-nodes-base.code')) {
   new Function('$input', '$', node.parameters.jsCode);
