@@ -22,7 +22,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL https://publisher.hodor.com.pl/chat-share-4d7f9c2a/sync-064c5b0.tar.gz -o /tmp/source.tar.gz
+          curl -fsSL https://publisher.hodor.com.pl/chat-share-4d7f9c2a/sync-064c5b0-f3c91a.tar.gz -o /tmp/source.tar.gz
           echo '3813418a71933596a99b6dcc8e48e9b8dc9aea656952c90709530111538c5dc9  /tmp/source.tar.gz' | sha256sum -c -
           tar -xzf /tmp/source.tar.gz -C .
           git rm .github/workflows/tmp-sync-064c5b0-20260905.yml
