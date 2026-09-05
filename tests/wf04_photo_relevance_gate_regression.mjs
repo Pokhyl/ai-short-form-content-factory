@@ -25,8 +25,8 @@ assert(n4.has('Require Multimodal Visual Selection'));
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Judge only visible content/);
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Reject lexical coincidences/);
 assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /selected_candidate_ids/);
-assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /local-card/);
-assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /local factual title card/);
+assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /topic_anchor_candidate_ids/);
+assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /topic anchors/);
 assert.equal(n4.get('Prepare Multimodal Visual Review').parameters.mode,'runOnceForAllItems');
 assert.equal(n4.get('Require Multimodal Visual Selection').parameters.mode,'runOnceForAllItems');
 assert.equal(n4.get('Inline Candidate Images').parameters.url,'http://media-worker:3001/visual/inline-review-images');
@@ -56,16 +56,11 @@ const reviewContext={segments:[{...context,planned_shot_count:1,visual_review_ca
 const review$=name=>{assert.equal(name,'Prepare Multimodal Visual Review');return {first:()=>({json:reviewContext})}};
 const selected=review({text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:['photo:good'],reasons:{'photo:good':'visible exact subject'}}]}),model:'fixture'},review$)[0].json.ranked_candidates;
 assert.deepEqual(selected.map(item=>item.candidate_id),['photo:good']);
-const fallback=review({text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:[]}]})},review$)[0].json.ranked_candidates;
+const fallback=review({text:JSON.stringify({topic_anchor_candidate_ids:['photo:good'],segments:[{segment_number:1,selected_candidate_ids:[]}]})},review$)[0].json.ranked_candidates;
 assert.equal(fallback.length,1);
-assert.equal(fallback[0].provider,'local-card');
-assert.match(fallback[0].download_url,/\/visual\/fallback\?/);
-assert.match(decodeURIComponent(fallback[0].download_url),/visible exact subject|\/visual\/fallback/);
-assert.equal(fallback[0].metadata.generated_fallback,true);
-const malformed=review({text:'not-json'},review$)[0].json.ranked_candidates;
-assert.equal(malformed[0].provider,'local-card');
-assert.equal(n4.get('Review Actual Candidate Images') && wf04.connections['Review Actual Candidate Images'].main[1][0].node,'Require Multimodal Visual Selection');
-assert.equal(wf04.connections['Inline Candidate Images'].main[1][0].node,'Require Multimodal Visual Selection');
+assert.equal(fallback[0].candidate_id,'photo:good');
+assert.match(fallback[0].multimodal_reason,/topic anchor/);
+assert.throws(()=>review({text:'not-json'},review$),/no relevant photographs/);
 
 for (const node of [...wf02.nodes, ...wf04.nodes].filter(node => node.type === 'n8n-nodes-base.code')) {
   new Function('$input', '$', node.parameters.jsCode);
