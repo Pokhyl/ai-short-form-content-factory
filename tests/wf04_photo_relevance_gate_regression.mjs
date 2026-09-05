@@ -16,10 +16,15 @@ assert.match(expandCode, /plan\.visual_target\|\|plan\.canonical_subject/);
 assert.doesNotMatch(expandCode, /plan\.visual_description/);
 
 const attachCode = n4.get('Attach Rank Results').parameters.jsCode;
-assert.match(attachCode, /MIN_VISUAL_RELEVANCE=0\.00000001/);
-assert.match(attachCode, /relevancePassed=rows\.filter/);
-assert.match(attachCode, /no candidate above semantic relevance floor/);
-assert.match(attachCode, /media_kind.*video.*bestStill/);
+assert.doesNotMatch(attachCode, /MIN_VISUAL_RELEVANCE|metadata_overlap.*0\.018/);
+assert.match(attachCode, /Local visual fingerprinting/);
+assert(n4.has('Prepare Multimodal Visual Review'));
+assert(n4.has('Review Actual Candidate Images'));
+assert(n4.has('Require Multimodal Visual Selection'));
+assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Judge only what is visibly present/);
+assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Reject lexical coincidences/);
+assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /selected_candidate_ids/);
+assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /rejected all relevant images/);
 
 const attach = new Function('$json', '$', attachCode);
 const context = {
@@ -37,12 +42,15 @@ const accepted = attach({ model: 'fixture', dtype: 'q4', ranked: [
   { candidate_id: 'photo:garbage', score: 0.000000001, visual_hash: hash('b') },
   { candidate_id: 'video:weak', score: 0.2, visual_hash: hash('c') },
 ] }, $).json.ranked_candidates;
-assert.deepEqual(accepted.map(item => item.candidate_id), ['photo:good']);
-assert.throws(() => attach({ model: 'fixture', dtype: 'q4', ranked: [
-  { candidate_id: 'photo:good', score: 0.000000001, visual_hash: hash('a') },
-  { candidate_id: 'photo:garbage', score: 0.000000002, visual_hash: hash('b') },
-  { candidate_id: 'video:weak', score: 0.000000003, visual_hash: hash('c') },
-] }, $), /no candidate above semantic relevance floor/);
+assert.deepEqual(accepted.map(item => item.candidate_id), ['photo:good', 'photo:garbage', 'video:weak']);
+
+const reviewCode=n4.get('Require Multimodal Visual Selection').parameters.jsCode;
+const review=new Function('$json','$',reviewCode);
+const reviewContext={...context,planned_shot_count:1,visual_review_candidates:accepted};
+const review$=name=>{assert.equal(name,'Prepare Multimodal Visual Review');return {item:{json:reviewContext}}};
+const selected=review({text:JSON.stringify({selected_candidate_ids:['photo:good'],reasons:{'photo:good':'visible exact subject'}}),model:'fixture'},review$).json.ranked_candidates;
+assert.deepEqual(selected.map(item=>item.candidate_id),['photo:good']);
+assert.throws(()=>review({text:JSON.stringify({selected_candidate_ids:[]})},review$),/rejected all relevant images/);
 
 for (const node of [...wf02.nodes, ...wf04.nodes].filter(node => node.type === 'n8n-nodes-base.code')) {
   new Function('$input', '$', node.parameters.jsCode);

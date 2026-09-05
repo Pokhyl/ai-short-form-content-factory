@@ -1,0 +1,186 @@
+[
+  {
+    "updatedAt": "2026-09-04T12:51:18.938Z",
+    "createdAt": "2026-09-04T12:09:42.484Z",
+    "id": "V4ModelGateway1",
+    "name": "V4 — Model Gateway",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "v4-model-gateway",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -520,
+          0
+        ],
+        "id": "036c2a1c-9f6c-4460-b555-1af18350cdee",
+        "name": "Webhook",
+        "webhookId": "2c17b6de-5b19-4958-a73a-b7855577c384"
+      },
+      {
+        "parameters": {
+          "jsCode": "const b=$json.body??{};\nconst prompt=String(b.prompt??'').trim();\nconst multimodal=Array.isArray(b.input)?b.input.filter(x=>x&&typeof x==='object'):[];\nif(!prompt&&!multimodal.length)throw new Error('prompt or multimodal input required');\nconst body={model:'gemini-3.1-flash-lite',input:multimodal.length?multimodal:prompt,generation_config:{thinking_level:'minimal'},store:false};\nreturn [{json:{request_body:body}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -280,
+          0
+        ],
+        "id": "83ef83b0-0981-4799-8b29-f50620b4150e",
+        "name": "Build Request"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.request_body }}",
+          "options": {
+            "timeout": 90000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          0,
+          0
+        ],
+        "id": "d794dd23-dd33-4fe1-8618-7b2a7d924d0f",
+        "name": "Gemini",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "6Vb7V9YzIwp9LS8S",
+            "name": "Google Gemini API"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const r=$json; let text=\"\"; for(const step of (r.steps??[])){ if(step?.type!==\"model_output\") continue; for(const c of (step.content??[])){ if(c?.type===\"text\") text+=String(c.text??\"\"); }} return [{json:{text:text.trim(),citations:[],model:String(r?.model??\"gemini-3.1-flash-lite\"),interaction_id:String(r?.id??\"\")}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          240,
+          0
+        ],
+        "id": "a894682b-d2bd-4228-8faa-77e6ddfe2571",
+        "name": "Normalize Response"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          480,
+          0
+        ],
+        "id": "b0b79651-c0ea-4d89-b68f-25b28f14bd20",
+        "name": "Respond"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Build Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Request": {
+        "main": [
+          [
+            {
+              "node": "Gemini",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gemini": {
+        "main": [
+          [
+            {
+              "node": "Normalize Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Response": {
+        "main": [
+          [
+            {
+              "node": "Respond",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate",
+      "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": null,
+    "nodeGroups": [],
+    "pinData": null,
+    "versionId": "2a2eae45-d4ff-4851-bbd7-fa3050292e27",
+    "activeVersionId": "2a2eae45-d4ff-4851-bbd7-fa3050292e27",
+    "versionCounter": 3,
+    "triggerCount": 1,
+    "sourceWorkflowId": null,
+    "tags": [],
+    "shared": [
+      {
+        "updatedAt": "2026-09-04T12:09:42.484Z",
+        "createdAt": "2026-09-04T12:09:42.484Z",
+        "role": "workflow:owner",
+        "workflowId": "V4ModelGateway1",
+        "projectId": "x92yC4agLVaxmmyf",
+        "project": {
+          "updatedAt": "2026-08-22T20:38:05.582Z",
+          "createdAt": "2026-08-22T18:46:49.400Z",
+          "id": "x92yC4agLVaxmmyf",
+          "name": "Vitalii Pokhyl <pokhylvitalii@gmail.com>",
+          "type": "personal",
+          "icon": null,
+          "description": null,
+          "customTelemetryTags": [],
+          "creatorId": "beb98494-dbaf-489c-9de8-6abf234326a4"
+        }
+      }
+    ],
+    "versionMetadata": {
+      "name": null,
+      "description": null
+    }
+  }
+]

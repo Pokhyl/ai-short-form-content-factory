@@ -228,7 +228,7 @@
       {
         "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "const response=$json,ctx=$('Expand Rank Items').item.json;\nconst ranked=Array.isArray(response?.ranked)?response.ranked:[];if(!ranked.length)throw new Error(`Local rank returned no candidates for visual segment ${ctx.segment_number}`);\nconst pool=new Map((ctx.candidate_pool??[]).map(c=>[String(c.candidate_id),c]));const rows=[],seen=new Set();\nfor(let i=0;i<ranked.length;i++){const id=String(ranked[i]?.candidate_id??'').trim(),score=Number(ranked[i]?.score);if(!id||seen.has(id)||!pool.has(id)||!Number.isFinite(score)||score<0||score>1)throw new Error(`Invalid local rank row for visual segment ${ctx.segment_number}`);const visualHash=String(ranked[i]?.visual_hash??'').trim().toLowerCase();if(!/^[0-9a-f]{64}$/.test(visualHash))throw new Error(`Candidate ${id} has invalid perceptual hash`);seen.add(id);const c=pool.get(id);const utility=score+(Math.min(Number(c.metadata_overlap??0),5)*0.018)-(Number(c.representation_preference_rank??4)*0.025);rows.push({...c,visual_hash:visualHash,local_rank_score:score,local_siglip_rank:i+1,selection_utility:Number(utility.toFixed(6))});}\nconst MIN_VISUAL_RELEVANCE=0.00000001;const relevancePassed=rows.filter(c=>Number(c.local_rank_score)>=MIN_VISUAL_RELEVANCE&&Number(c.target_metadata_overlap??0)>=1);if(!relevancePassed.length)throw new Error(`Visual segment ${ctx.segment_number} has no candidate above semantic relevance floor ${MIN_VISUAL_RELEVANCE}`);const stillScores=relevancePassed.filter(c=>String(c.media_kind??'').toLowerCase()!=='video').map(c=>Number(c.local_rank_score)).filter(Number.isFinite);const bestStill=stillScores.length?Math.max(...stillScores):Number.NaN;const eligibleRows=relevancePassed.filter(c=>String(c.media_kind??'').toLowerCase()!=='video'||(Number.isFinite(bestStill)&&Number(c.local_rank_score)>bestStill));if(!eligibleRows.length)throw new Error(`Visual segment ${ctx.segment_number} has no photo/diagram candidate after ranking`);eligibleRows.sort((a,b)=>b.selection_utility-a.selection_utility||b.local_rank_score-a.local_rank_score||String(a.candidate_id).localeCompare(String(b.candidate_id)));\nreturn {json:{...ctx,candidate_pool:undefined,ranked_candidates:eligibleRows,local_rank_model:String(response.model??''),local_rank_dtype:String(response.dtype??'')}};"
+          "jsCode": "const response=$json,ctx=$('Expand Rank Items').item.json;\nconst ranked=Array.isArray(response?.ranked)?response.ranked:[];\nif(!ranked.length)throw new Error(`Local visual fingerprinting returned no candidates for segment ${ctx.segment_number}`);\nconst pool=new Map((ctx.candidate_pool??[]).map(c=>[String(c.candidate_id),c]));const rows=[],seen=new Set();\nfor(let i=0;i<ranked.length;i++){const id=String(ranked[i]?.candidate_id??'').trim(),score=Number(ranked[i]?.score);if(!id||seen.has(id)||!pool.has(id)||!Number.isFinite(score)||score<0||score>1)continue;const visualHash=String(ranked[i]?.visual_hash??'').trim().toLowerCase();if(!/^[0-9a-f]{64}$/.test(visualHash))continue;seen.add(id);const c=pool.get(id);rows.push({...c,visual_hash:visualHash,local_rank_score:score,local_siglip_rank:i+1});}\nif(!rows.length)throw new Error(`Visual segment ${ctx.segment_number} has no fingerprinted candidates`);\nreturn {json:{...ctx,candidate_pool:undefined,ranked_candidates:rows,local_rank_model:String(response.model??''),local_rank_dtype:String(response.dtype??'')}};"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -538,6 +538,57 @@
         "id": "95cb5f97-2aaa-4135-a80b-799fb6bdaee5",
         "name": "Expand Stored Visual Targets",
         "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const j=$json;const rows=(j.ranked_candidates??[]).filter(c=>String(c.media_kind??'photo').toLowerCase()!=='video').slice(0,8);\nif(!rows.length)throw new Error(`Visual segment ${j.segment_number} has no still-image candidates for multimodal review`);\nconst prompt=`You are the final visual editor for one scene of a factual vertical short. Judge only what is visibly present in each supplied image, not filenames alone.\\nCanonical subject: ${j.canonical_subject}\\nExact scene target: ${j.visual_target}\\nNarration: ${j.narration}\\nChoose only images that a human viewer would immediately understand as relevant to the exact scene. Reject lexical coincidences, unrelated people, scientific figures about same-named species, generic doors/landscapes unless the target explicitly asks for them, watermarks, collages, screenshots, and low-information abstractions. For a named person or character, accept only the recognizable person/performer, an explicitly relevant licensed costume/exhibit, or a clearly identified real location/object. Return ONLY JSON: {\"selected_candidate_ids\":[\"provider:id\"],\"reasons\":{\"provider:id\":\"short visible-content reason\"}}. Return an empty array if none qualify.`;\nconst input=[{type:'text',text:prompt}];for(const [i,c] of rows.entries()){input.push({type:'text',text:`Candidate ${i+1}: ${c.candidate_id}`});input.push({type:'image',uri:String((c.preview_urls??[c.preview_url]).filter(Boolean)[0])});}\nreturn {json:{...j,visual_review_candidates:rows,visual_review_request:{input}}};"
+        },
+        "id": "c1887f51-f646-4e31-8af9-f15b96908b10",
+        "name": "Prepare Multimodal Visual Review",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1880,
+          240
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.visual_review_request }}",
+          "options": {
+            "timeout": 90000
+          }
+        },
+        "id": "80e1dc04-71ef-4355-bca4-3875685fd0dc",
+        "name": "Review Actual Candidate Images",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2100,
+          240
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const ctx=$('Prepare Multimodal Visual Review').item.json;let text=String($json.text??'').trim().replace(/^\\x60\\x60\\x60(?:json)?\\s*/i,'').replace(/\\s*\\x60\\x60\\x60$/,'');let o;try{o=JSON.parse(text)}catch{throw new Error(`Multimodal visual review returned invalid JSON for segment ${ctx.segment_number}`);}const ids=[...new Set((Array.isArray(o.selected_candidate_ids)?o.selected_candidate_ids:[]).map(String))];const byId=new Map(ctx.visual_review_candidates.map(c=>[String(c.candidate_id),c]));const selected=ids.map(id=>byId.get(id)).filter(Boolean);if(selected.length<Number(ctx.planned_shot_count))throw new Error(`Multimodal review rejected all relevant images for segment ${ctx.segment_number}`);const ranked_candidates=selected.map((c,i)=>({...c,multimodal_rank:i+1,multimodal_reason:String(o.reasons?.[c.candidate_id]??''),selection_utility:Number((1-i*0.02).toFixed(4))}));return {json:{...ctx,visual_review_request:undefined,visual_review_candidates:undefined,ranked_candidates,visual_review_model:String($json.model??'gemini-3.1-flash-lite')}};"
+        },
+        "id": "b5f24208-ed51-4adc-be57-d37130537f7f",
+        "name": "Require Multimodal Visual Selection",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2320,
+          240
+        ],
+        "onError": "continueErrorOutput"
       }
     ],
     "connections": {
@@ -740,7 +791,7 @@
         "main": [
           [
             {
-              "node": "Choose Visual Assignment",
+              "node": "Prepare Multimodal Visual Review",
               "type": "main",
               "index": 0
             }
@@ -943,6 +994,60 @@
           [
             {
               "node": "Persist Visual Result",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Multimodal Visual Review": {
+        "main": [
+          [
+            {
+              "node": "Review Actual Candidate Images",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Review Actual Candidate Images": {
+        "main": [
+          [
+            {
+              "node": "Require Multimodal Visual Selection",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Require Multimodal Visual Selection": {
+        "main": [
+          [
+            {
+              "node": "Choose Visual Assignment",
               "type": "main",
               "index": 0
             }
