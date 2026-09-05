@@ -179,9 +179,9 @@ export function buildVisualSegments(timedBeats, options = {}) {
     segment.segment_number = i + 1;
     if (Math.abs(segment.start_seconds - cursor) > 0.012) throw new Error(`visual segment ${i + 1} starts with a gap`);
     if (segment.duration_seconds > effectiveMaxSegmentSeconds + 0.02) throw new Error(`visual segment ${i + 1} exceeds quality-constrained maximum duration`);
-    // Use two distinct full-screen stills for a normal-length semantic segment.
-    // Very short segments keep one still so cuts never become unreadably fast.
-    segment.planned_shot_count = segment.duration_seconds >= 3 ? 2 : 1;
+    // Keep the screen visually fresh: every readable semantic segment receives
+    // two distinct full-screen stills. Only sub-1.8s beats keep one image.
+    segment.planned_shot_count = segment.duration_seconds >= 1.8 ? 2 : 1;
     cursor = segment.end_seconds;
   }
   if (Math.abs(cursor - previousEnd) > 0.012) throw new Error("visual segments do not cover the full timed-beat duration");

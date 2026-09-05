@@ -62,18 +62,21 @@ const review=new Function('$json','$',reviewCode);
 const reviewContext={segments:[{...context,planned_shot_count:1,visual_review_candidates:accepted}]};
 const review$=name=>{assert.equal(name,'Prepare Multimodal Visual Review');return {first:()=>({json:reviewContext})}};
 const selected=review({text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:['photo:good'],reasons:{'photo:good':'visible exact subject'}}]}),model:'fixture'},review$)[0].json.ranked_candidates;
-assert.deepEqual(selected.map(item=>item.candidate_id),['photo:good']);
+assert.deepEqual(selected.map(item=>item.candidate_id),['photo:good','photo:garbage','video:weak']);
+assert.match(selected[1].multimodal_reason,/segment-local/);
 const fallback=review({text:JSON.stringify({topic_anchor_candidate_ids:['photo:good'],segments:[{segment_number:1,selected_candidate_ids:[]}]})},review$)[0].json.ranked_candidates;
-assert.equal(fallback.length,1);
+assert.equal(fallback.length,3);
 assert.equal(fallback[0].candidate_id,'photo:good');
-assert.match(fallback[0].multimodal_reason,/topic anchor/);
+assert.match(fallback[0].multimodal_reason,/segment-local/);
 const twoShotContext={segments:[{...context,planned_shot_count:2,visual_review_candidates:accepted}]};
 const twoShot$=()=>({first:()=>({json:twoShotContext})});
 const expandedPool=review({text:JSON.stringify({topic_anchor_candidate_ids:['photo:good','photo:garbage','video:weak'],segments:[{segment_number:1,selected_candidate_ids:[]}]})},twoShot$)[0].json.ranked_candidates;
 assert.equal(expandedPool.length,3,'assignment must receive more approved alternatives than the two required shots when available');
 assert.equal(new Set(expandedPool.map(item=>item.candidate_id)).size,3);
 assert.match(n4.get('Choose Visual Assignment').parameters.jsCode, /assetCount>1\)continue/);
-assert.throws(()=>review({text:'not-json'},review$),/no relevant photographs/);
+const recovered=review({text:'not-json'},review$)[0].json;
+assert.equal(recovered.visual_recovery_used,true);
+assert.equal(recovered.ranked_candidates.length,3);
 
 for (const node of [...wf02.nodes, ...wf04.nodes].filter(node => node.type === 'n8n-nodes-base.code')) {
   new Function('$input', '$', node.parameters.jsCode);

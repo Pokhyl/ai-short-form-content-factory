@@ -25,7 +25,7 @@ for(let i=0;i<uk.segments.length;i++){
  const s=uk.segments[i];
  assert.equal(s.segment_number,i+1);
  assert.ok(s.duration_seconds<=Math.min(8.5,uk.duration_seconds*0.34)+0.02);
- assert.equal(s.planned_shot_count,s.duration_seconds>=3?2:1,'normal segments must use two stills while short segments keep one');
+ assert.equal(s.planned_shot_count,s.duration_seconds>=1.8?2:1,'every readable segment must use two distinct stills');
  if(i) assert.ok(Math.abs(s.start_seconds-uk.segments[i-1].end_seconds)<=0.012);
  assert.ok(s.support_evidence_ids.length>0);
 }
@@ -45,7 +45,7 @@ assert.equal(zipper.duration_seconds,15.48);
 assert.ok(zipper.segment_count>3,'quality-constrained segmentation must split semantic groups that would mathematically violate the unchanged 0.34 duration-share gate');
 assert.ok(zipper.segment_count<zipperDur.length,'quality-constrained segmentation must not degenerate into one search obligation per timed beat when a legal semantic grouping exists');
 assert.ok(zipper.segments.every(s=>s.duration_seconds<=zipperCap+0.02),`zipper segment exceeds 0.34 cap ${zipperCap}`);
-assert.ok(zipper.segments.every(s=>s.planned_shot_count===(s.duration_seconds>=3?2:1)));
+assert.ok(zipper.segments.every(s=>s.planned_shot_count===(s.duration_seconds>=1.8?2:1)));
 
 const d=[2.5,2.5,2.5,2.5,2.5,2.5];
 const sameSupport=Array.from({length:6},()=>['A']);
