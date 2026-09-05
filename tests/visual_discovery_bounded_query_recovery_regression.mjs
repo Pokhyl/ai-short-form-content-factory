@@ -50,9 +50,9 @@ assert.equal(person.issued.length,15,'four exact provider sets plus one bounded 
 assert.ok(person.segment.candidates.some(c=>c.metadata?.bounded_query_recovery===true&&String(c.title).toLowerCase().includes('alexander fleming')));
 assert.ok(!person.segment.provider_queries.some(q=>q==='Discovery of penicillin by Alexander Fleming'),'recovery must not fall back to generic topic query');
 
-const process=await runCase({title:'Meteorological process of cloud formation and precipitation',query:'water cycle diagram showing evaporation condensation and precipitation'});
+const process=await runCase({title:'Atmospheric water cycle',query:'schematic diagram of the global water cycle'});
 assert.equal(process.segment.bounded_query_recovery_used,true);
-assert.deepEqual(process.segment.provider_queries,['water cycle diagram showing evaporation condensation and precipitation','water cycle diagram']);
+assert.deepEqual(process.segment.provider_queries,['schematic diagram of the global water cycle','water cycle diagram']);
 assert.ok(process.issued.length>=6&&process.issued.length<=15,'cached exact searches may reduce the second call but recovery stays bounded');
 assert.ok(process.segment.candidates.some(c=>c.metadata?.bounded_query_recovery===true&&String(c.title).toLowerCase().includes('water cycle diagram')));
 for(const r of [...person.issued,...process.issued])assert.ok(r.query.length<=90);

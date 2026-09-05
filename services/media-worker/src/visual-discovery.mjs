@@ -86,13 +86,14 @@ function compactRecoveryQuery(query, canonicalTitle) {
   const exact = boundedProviderQuery(query);
   const shared = canonicalOverlapRows(query, canonicalTitle);
   const mediaCue = semanticQueryRows(query).find((row) => QUERY_MEDIA_CUES.has(row.key));
+  const canonicalMediaCue = mediaCue ? ({ schematic: "diagram", photograph: "photo" }[mediaCue.key] ?? mediaCue.key) : null;
   let rows;
   if (shared.length >= 2) {
     rows = shared.slice(0, 5);
-    if (mediaCue && !rows.some((row) => row.key === mediaCue.key)) rows.push(mediaCue);
+    if (canonicalMediaCue && !rows.some((row) => row.key === canonicalMediaCue)) rows.push({ raw: canonicalMediaCue, key: canonicalMediaCue });
   } else {
     rows = semanticQueryRows(query).slice(0, 3);
-    if (mediaCue && !rows.some((row) => row.key === mediaCue.key)) rows.push(mediaCue);
+    if (canonicalMediaCue && !rows.some((row) => row.key === canonicalMediaCue)) rows.push({ raw: canonicalMediaCue, key: canonicalMediaCue });
   }
   const compact = boundedProviderQuery(rows.map((row) => row.raw).join(" "));
   if (!compact || compact.toLocaleLowerCase() === exact.toLocaleLowerCase()) return null;

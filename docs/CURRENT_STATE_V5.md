@@ -316,3 +316,21 @@ Systemic correction now under regression/GitHub gate:
 - migration `021_expand_script_fit_pass_limit_to_three.sql` raises only the bounded persistence limit from two to three rewrites.
 
 Current static regression gate: `23/23` Node + `11/11` Python PASS, workflow JSON PASS, `git diff --check` PASS. A real-provider discovery/rank dry-run on the failed 30 s and 60 s contexts also passes with 10 ranked candidates available per exact beat. These are engineering proofs only. GitHub sync, migration/deploy, fresh autonomous 15/30/60 renders, and exact MP4 review are still required.
+
+### 2026-09-05 post-b6f299 production failures and bounded correction
+
+Fresh autonomous production matrix on `b6f299ed1af3d9e7a39bb4dedfb9efa3f2681f81` exposed two remaining general defects:
+
+- `4183cb81-c918-41a8-80ef-b68df92053d2` — hydroelectric plant / `ru` / `15`: WF03 measured `21.168 -> 13.248 -> 13.104 -> 12.816 s` and failed after the bounded third rewrite. The accepted lower floor is `13.467 s`; several attempts missed it by only fractions of a second.
+- `b338430e-b371-4ca2-a1ce-0076641aa1f6` — Fleming / `pl` / `30`: after `39.336 -> 26.856 s`, the next duration-rewrite model call was unavailable. The current result was only `0.111 s` below the accepted lower floor `26.967 s`, but deterministic textual expansion is intentionally not used when the model is unavailable.
+- `721b1fbc-226c-499c-95e1-d434dcddf13c` — clouds/rain / `uk` / `60`: voiceover passed at `58.656 s`; WF04 failed closed on beat 16. Execution evidence showed the multimodal model could identify correct `Water Cycle` diagrams, but the bounded pre-review exposure pool had shown it unrelated `cycle` matches instead because correct phrase-level candidates were displaced before review.
+
+Systemic correction now under GitHub/deploy gate:
+
+- normalized continuous voice audio may add only a bounded natural end pause, max `0.4 s`, and only when the measured narration is already within `0.4 s` below the accepted lower duration floor; speech rate/tempo remain unchanged and materially short narration still goes through rewrite/fail;
+- both Gemini-stored and Edge-fallback continuous audio use the same bounded tail-normalization helper;
+- compact visual recovery canonicalizes media cues such as `schematic` to `diagram`, so a target such as `schematic diagram of the global water cycle` reduces to a subject-preserving query such as `water cycle diagram`, never to the overall video topic;
+- WF04 bounded exposure now prioritizes exact subject/target phrase matches before multimodal review, so correct candidates are not displaced by lexical coincidences such as unrelated uses of `cycle`;
+- the actual-image reviewer remains authoritative and fail-closed; no unreviewed fallback or weakened relevance gate is reintroduced.
+
+Verification before commit: `25/25` static Node tests + `11/11` Python tests PASS, workflow JSON PASS, `git diff --check` PASS. A real-provider discovery/rank dry-run on the previously failed Fleming and cloud/rain contexts also passes with `10` ranked candidates per beat and no provider errors. Production deployment and fresh autonomous 15/30/60 MP4 review are still required.

@@ -8,6 +8,7 @@ import edgeTtsPackage from "node-edge-tts";
 import { pipeline, env, RawImage } from "@huggingface/transformers";
 import { dirname, extname, resolve, sep } from "node:path";
 import { edgeProviderBudgetMilliseconds } from "./edge-provider-budget.mjs";
+import { buildNaturalTailPadPlan } from "./audio-duration-normalization.mjs";
 import { parseSingleByteRange } from "./media-range.mjs";
 import { buildVisualBeatFilters } from "./visual-framing.mjs";
 import { discoverVisualCandidates } from "./visual-discovery.mjs";
@@ -736,10 +737,42 @@ async function storeAudio(request, response) {
   }
 }
 
+async function normalizeNaturalVoiceoverTail(wavPath, targetDurationSeconds) {
+  const sourceDurationSeconds = probeDurationSeconds(wavPath);
+  const plan = buildNaturalTailPadPlan(sourceDurationSeconds, targetDurationSeconds);
+  if (!plan.apply) {
+    return { duration_seconds: sourceDurationSeconds, tail_pad_seconds: 0, source_duration_seconds: sourceDurationSeconds };
+  }
+  const paddedPath = `${wavPath}.tailpad-${randomUUID()}.wav`;
+  try {
+    execFileSync("ffmpeg", [
+      "-v", "error", "-y", "-i", wavPath,
+      "-af", `apad=pad_dur=${plan.pad_seconds}`,
+      "-t", String(plan.final_duration_seconds),
+      "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", paddedPath,
+    ], { stdio: ["ignore", "pipe", "pipe"], maxBuffer: 16 * 1024 * 1024 });
+    const finalDurationSeconds = probeDurationSeconds(paddedPath);
+    if (!Number.isFinite(finalDurationSeconds) || finalDurationSeconds < plan.accepted_min_seconds - 0.002) {
+      throw new Error("Natural tail padding did not reach the accepted duration floor");
+    }
+    await rm(wavPath, { force: true });
+    await rename(paddedPath, wavPath);
+    return {
+      duration_seconds: finalDurationSeconds,
+      tail_pad_seconds: Number((finalDurationSeconds - sourceDurationSeconds).toFixed(6)),
+      source_duration_seconds: sourceDurationSeconds,
+    };
+  } catch (error) {
+    await rm(paddedPath, { force: true }).catch(() => {});
+    throw error;
+  }
+}
+
 async function storeContinuousVoiceover(request, response) {
   const body = await readJsonBody(request);
   const jobId = String(body.job_id ?? "").trim().toLowerCase();
   const mimeType = String(body.mime_type ?? "").trim().toLowerCase();
+  const targetDurationSeconds = Number(body.target_duration_seconds);
   const audio = decodeAudioBase64(body.audio_base64);
   if (!uuidPattern.test(jobId)) {
     throw new HttpError(400, "invalid_job_id", "job_id must be a valid UUID");
@@ -750,6 +783,9 @@ async function storeContinuousVoiceover(request, response) {
   const channels = Number(channelsMatch?.[1]);
   if (!mimeType.startsWith("audio/l16") || !Number.isInteger(rate) || rate < 8000 || rate > 96000 || !Number.isInteger(channels) || channels < 1 || channels > 2) {
     throw new HttpError(415, "unsupported_voiceover_type", `Unsupported voiceover format: ${mimeType || "missing"}`);
+  }
+  if (!Number.isFinite(targetDurationSeconds) || targetDurationSeconds <= 0 || targetDurationSeconds > 120) {
+    throw new HttpError(400, "invalid_target_duration", "target_duration_seconds must be between 1 and 120");
   }
   const { relativePath, absolutePath } = buildContinuousVoiceoverPath(jobId);
   const directoryPath = dirname(absolutePath);
@@ -763,7 +799,8 @@ async function storeContinuousVoiceover(request, response) {
       "-f", "s16le", "-ar", String(rate), "-ac", String(channels), "-i", rawPath,
       "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", wavPath,
     ], { stdio: ["ignore", "pipe", "pipe"], maxBuffer: 16 * 1024 * 1024 });
-    const durationSeconds = probeDurationSeconds(wavPath);
+    const normalizedTiming = await normalizeNaturalVoiceoverTail(wavPath, targetDurationSeconds);
+    const durationSeconds = normalizedTiming.duration_seconds;
     const outputStat = await stat(wavPath);
     await rename(wavPath, absolutePath);
     await rm(rawPath, { force: true });
@@ -775,6 +812,8 @@ async function storeContinuousVoiceover(request, response) {
       channels: 2,
       duration_seconds: durationSeconds,
       bytes: outputStat.size,
+      source_duration_seconds: normalizedTiming.source_duration_seconds,
+      tail_pad_seconds: normalizedTiming.tail_pad_seconds,
     });
   } catch (error) {
     await rm(rawPath, { force: true }).catch(() => {});
@@ -851,7 +890,8 @@ async function synthesizeFreeFallbackVoiceover(request, response) {
     ];
     execFileSync("ffmpeg", ffmpegArgs, { stdio: ["ignore", "pipe", "pipe"], maxBuffer: 16 * 1024 * 1024 });
 
-    const durationSeconds = probeDurationSeconds(wavPath);
+    const normalizedTiming = await normalizeNaturalVoiceoverTail(wavPath, targetDurationSeconds);
+    const durationSeconds = normalizedTiming.duration_seconds;
     if (!Number.isFinite(durationSeconds) || durationSeconds <= 0) {
       throw new Error("Edge Read Aloud normalized audio duration is invalid");
     }
@@ -872,7 +912,9 @@ async function synthesizeFreeFallbackVoiceover(request, response) {
       voice: voiceConfig.voice,
       rate_percent: 0,
       post_tempo_factor: 1,
-      source_duration_seconds: sourceDuration,
+      source_duration_seconds: normalizedTiming.source_duration_seconds,
+      provider_source_duration_seconds: sourceDuration,
+      tail_pad_seconds: normalizedTiming.tail_pad_seconds,
       provider_budget_ms: providerBudgetMilliseconds,
     });
   } catch (error) {

@@ -413,7 +413,7 @@
           "url": "http://media-worker:3001/audio/store-voiceover",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ ({ job_id:$('Prepare Continuous Voiceover').first().json.job_id, audio_base64:$json.audio_base64, mime_type:$json.mime_type }) }}",
+          "jsonBody": "={{ ({ job_id:$('Prepare Continuous Voiceover').first().json.job_id, audio_base64:$json.audio_base64, mime_type:$json.mime_type, target_duration_seconds:$('Prepare Continuous Voiceover').first().json.target_duration_seconds }) }}",
           "options": {
             "timeout": 120000
           }
@@ -434,7 +434,7 @@
           "url": "http://media-worker:3001/audio/store-voiceover",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ ({ job_id:$('Prepare Continuous Voiceover').first().json.job_id, audio_base64:$json.audio_base64, mime_type:$json.mime_type }) }}",
+          "jsonBody": "={{ ({ job_id:$('Prepare Continuous Voiceover').first().json.job_id, audio_base64:$json.audio_base64, mime_type:$json.mime_type, target_duration_seconds:$('Prepare Continuous Voiceover').first().json.target_duration_seconds }) }}",
           "options": {
             "timeout": 120000
           }
