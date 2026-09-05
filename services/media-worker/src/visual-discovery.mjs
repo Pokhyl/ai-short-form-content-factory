@@ -320,16 +320,13 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
 
   const segmentation = segmentedMode ? buildVisualSegments(timedBeats) : null;
   const groundedQueries = Array.isArray(visualQueriesEn)
-    ? [...new Set(visualQueriesEn.map(cleanText).filter(Boolean))].slice(0, 16)
+    ? visualQueriesEn.map(cleanText).filter(Boolean).slice(0, 18)
     : [];
-  if (segmentedMode && groundedQueries.length < 4) throw new Error("visual discovery requires at least four grounded English queries");
+  if (segmentedMode && groundedQueries.length < timedBeats.length) throw new Error("visual discovery requires one ordered English query per narration beat");
   const searchUnits = segmentedMode
-    ? segmentation.segments.map((segment, index) => ({
+    ? segmentation.segments.map((segment) => ({
         unit_number: Number(segment.segment_number),
-        visual_target: groundedQueries[Math.min(
-          groundedQueries.length - 1,
-          Math.floor(index * groundedQueries.length / segmentation.segments.length),
-        )],
+        visual_target: groundedQueries[Math.max(0, Number(segment.first_scene_number) - 1)],
         narration: cleanText(segment.narration),
       }))
     : beats.map((beat) => ({

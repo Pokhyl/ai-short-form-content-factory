@@ -9,4 +9,7 @@ assert 'Build Deterministic Narration' not in names
 assert 'Search Wikipedia Facts' not in names
 assert 'selected output language' in n['Prepare Semantic Intent']['parameters']['jsCode'].lower()
 assert 'entirely in the selected output language' in n['Prepare Grounded Script Prompt']['parameters']['jsCode']
+assert 'same chronological order as the future narration beats' in n['Prepare Grounded Script Prompt']['parameters']['jsCode']
+assert '15:6,30:10,45:14,60:18' in n['Prepare Grounded Script Prompt']['parameters']['jsCode']
+assert 'expectedVisualQueries' in n['Build Final Grounded Script']['parameters']['jsCode']
 print('WF02_GROUNDED_AI_ARCHITECTURE_REGRESSION_PASS')

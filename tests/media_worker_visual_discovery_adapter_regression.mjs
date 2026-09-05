@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { buildVisualDiscoveryOptions } from '../services/media-worker/src/visual-discovery-request.mjs';
 
 const canonicalSource = { language: 'uk', title: 'Індукційна плита' };
@@ -33,5 +34,9 @@ assert.equal(legacy.canonicalSource, canonicalSource);
 assert.equal(legacy.beats, legacyBeats);
 assert.equal(legacy.timedBeats, undefined);
 assert.equal(legacy.visualQueriesEn, undefined);
+
+const discoverySource=fs.readFileSync(new URL('../services/media-worker/src/visual-discovery.mjs',import.meta.url),'utf8');
+assert.match(discoverySource,/Number\(segment\.first_scene_number\) - 1/,'visual queries must follow narration beat indexes');
+assert.doesNotMatch(discoverySource,/index \* groundedQueries\.length \/ segmentation\.segments\.length/);
 
 console.log('MEDIA_WORKER_VISUAL_DISCOVERY_ADAPTER_REGRESSION_PASS');
