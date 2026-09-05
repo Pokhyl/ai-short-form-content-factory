@@ -5,7 +5,6 @@ import { mkdir, rename, rm, stat, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import sharp from "sharp";
 import edgeTtsPackage from "node-edge-tts";
-import { pipeline, env, RawImage } from "@huggingface/transformers";
 import { dirname, extname, resolve, sep } from "node:path";
 import { edgeProviderBudgetMilliseconds } from "./edge-provider-budget.mjs";
 import { buildNaturalTailPadPlan } from "./audio-duration-normalization.mjs";
@@ -40,12 +39,6 @@ const freeFallbackVoices = Object.freeze({
 });
 const fallbackFontPath =
   "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
-const siglipModel =
-  process.env.SIGLIP_MODEL ?? "Xenova/siglip-base-patch16-224";
-const siglipDtype = process.env.SIGLIP_DTYPE ?? "q4";
-const siglipCacheDir = resolve(
-  process.env.TRANSFORMERS_CACHE ?? `${dataRoot}/models/huggingface`,
-);
 const maxRankCandidates = 10;
 const maxRankPreviewsPerCandidate = 3;
 const maxRankPreviewImages = maxRankCandidates * maxRankPreviewsPerCandidate;
@@ -57,11 +50,7 @@ const trustedPreviewHosts = new Set([
   "thumb.wikimedia.org",
 ]);
 
-env.cacheDir = siglipCacheDir;
-env.allowRemoteModels = true;
-
-let siglipPipelinePromise = null;
-const maxConcurrentPreviewFetches = 3;
+const maxConcurrentPreviewFetches = 6;
 const previewFetchTimeoutMs = 10000;
 const previewCacheMaxEntries = 48;
 const previewCacheMaxBytes = 32 * 1024 * 1024;
@@ -71,7 +60,6 @@ const previewFetchInflight = new Map();
 let availablePreviewFetchSlots = maxConcurrentPreviewFetches;
 let wikimediaPreviewFetchTail = Promise.resolve();
 const previewFetchWaiters = [];
-let siglipInferenceTail = Promise.resolve();
 const previewUserAgent =
   "ai-short-form-content-factory/1.0 (https://github.com/Pokhyl/ai-short-form-content-factory)";
 
@@ -187,13 +175,31 @@ function rememberPreview(url, buffer) {
 
 async function fetchPreviewCached(url) {
   const cached = readCachedPreview(url);
-  if (cached) return { ok: true, status: 200, retryAfterSeconds: null, buffer: cached, cache_hit: true };
+  if (cached) return { ok: true, status: 200, retryAfterSeconds: null, buffer: cached, cache_hit: true, attempts: 0 };
   const inflight = previewFetchInflight.get(url);
   if (inflight) return inflight;
   const operation = (async () => {
-    const result = await fetchPreviewAttempt(url);
-    if (result.ok && result.buffer) rememberPreview(url, result.buffer);
-    return { ...result, cache_hit: false };
+    let lastResult = null;
+    let lastError = null;
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
+      try {
+        const result = await fetchPreviewAttempt(url);
+        lastResult = result;
+        if (result.ok && result.buffer) {
+          rememberPreview(url, result.buffer);
+          return { ...result, cache_hit: false, attempts: attempt };
+        }
+        const transient = result.status === 429 || result.status >= 500;
+        if (!transient || attempt >= 2) return { ...result, cache_hit: false, attempts: attempt };
+      } catch (error) {
+        lastError = error;
+        if (attempt >= 2) throw error;
+      }
+      const retryDelayMs = Math.min(1000, Math.max(180, Number(lastResult?.retryAfterSeconds ?? 0) * 1000 || 250));
+      await sleep(retryDelayMs);
+    }
+    if (lastError) throw lastError;
+    return { ...(lastResult ?? { ok: false, status: 0, retryAfterSeconds: null, buffer: null }), cache_hit: false, attempts: 2 };
   })();
   previewFetchInflight.set(url, operation);
   try {
@@ -247,16 +253,6 @@ async function inlineVisualReviewImages(request, response) {
   sendJson(response, 200, { input: output, image_count: imageCount, encoded_bytes: encodedBytes, dropped_images: droppedImages });
 }
 
-async function runSiglipInference(classifier, previewImages, query) {
-  const run = () => classifier(
-    previewImages,
-    [query],
-    { hypothesis_template: "{}" },
-  );
-  const queued = siglipInferenceTail.then(run, run);
-  siglipInferenceTail = queued.then(() => undefined, () => undefined);
-  return queued;
-}
 
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
   throw new Error("PORT must be a valid TCP port");
@@ -395,20 +391,6 @@ function validatePreviewUrl(value) {
   return parsed.toString();
 }
 
-function getSiglipPipeline() {
-  if (siglipPipelinePromise === null) {
-    siglipPipelinePromise = pipeline(
-      "zero-shot-image-classification",
-      siglipModel,
-      { dtype: siglipDtype },
-    ).catch((error) => {
-      siglipPipelinePromise = null;
-      throw error;
-    });
-  }
-
-  return siglipPipelinePromise;
-}
 
 function validateJobAndScene(jobId, sceneNumber) {
   if (!uuidPattern.test(jobId)) {
@@ -1042,233 +1024,104 @@ async function rankVisualCandidates(request, response) {
   const candidates = body.candidates;
 
   if (query.length === 0 || query.length > 200) {
-    throw new HttpError(
-      400,
-      "invalid_rank_query",
-      "query must contain between 1 and 200 characters",
-    );
+    throw new HttpError(400, "invalid_rank_query", "query must contain between 1 and 200 characters");
   }
-
-  if (
-    !Array.isArray(candidates) ||
-    candidates.length === 0 ||
-    candidates.length > maxRankCandidates
-  ) {
-    throw new HttpError(
-      400,
-      "invalid_rank_candidates",
-      `candidates must contain between 1 and ${maxRankCandidates} items`,
-    );
+  if (!Array.isArray(candidates) || candidates.length === 0 || candidates.length > maxRankCandidates) {
+    throw new HttpError(400, "invalid_rank_candidates", `candidates must contain between 1 and ${maxRankCandidates} items`);
   }
 
   const normalizedCandidates = candidates.map((candidate, index) => {
     if (candidate === null || typeof candidate !== "object" || Array.isArray(candidate)) {
-      throw new HttpError(
-        400,
-        "invalid_rank_candidate",
-        `candidate ${index + 1} must be an object`,
-      );
+      throw new HttpError(400, "invalid_rank_candidate", `candidate ${index + 1} must be an object`);
     }
-
     const candidateId = String(candidate.candidate_id ?? "").trim();
-
     if (candidateId.length === 0 || candidateId.length > 1000) {
-      throw new HttpError(
-        400,
-        "invalid_candidate_id",
-        `candidate ${index + 1} candidate_id is invalid`,
-      );
+      throw new HttpError(400, "invalid_candidate_id", `candidate ${index + 1} candidate_id is invalid`);
     }
-
-    const rawPreviewUrls = Array.isArray(candidate.preview_urls)
-      ? candidate.preview_urls
-      : [candidate.preview_url];
-
-    if (
-      rawPreviewUrls.length === 0 ||
-      rawPreviewUrls.length > maxRankPreviewsPerCandidate
-    ) {
-      throw new HttpError(
-        400,
-        "invalid_candidate_previews",
-        `candidate ${index + 1} must contain between 1 and ${maxRankPreviewsPerCandidate} preview URLs`,
-      );
+    const rawPreviewUrls = Array.isArray(candidate.preview_urls) ? candidate.preview_urls : [candidate.preview_url];
+    if (rawPreviewUrls.length === 0 || rawPreviewUrls.length > maxRankPreviewsPerCandidate) {
+      throw new HttpError(400, "invalid_candidate_previews", `candidate ${index + 1} must contain between 1 and ${maxRankPreviewsPerCandidate} preview URLs`);
     }
-
-    const previewUrls = [
-      ...new Set(rawPreviewUrls.map((value) => validatePreviewUrl(value))),
-    ];
-
     return {
       candidate_id: candidateId,
-      preview_urls: previewUrls,
+      preview_urls: [...new Set(rawPreviewUrls.map((value) => validatePreviewUrl(value)))],
+      input_rank: index + 1,
     };
   });
-
   if (new Set(normalizedCandidates.map((candidate) => candidate.candidate_id)).size !== normalizedCandidates.length) {
-    throw new HttpError(
-      400,
-      "duplicate_candidate_id",
-      "candidate_id values must be unique",
-    );
+    throw new HttpError(400, "duplicate_candidate_id", "candidate_id values must be unique");
   }
-
-  const requestedPreviewCount = normalizedCandidates.reduce(
-    (total, candidate) => total + candidate.preview_urls.length,
-    0,
-  );
-
+  const requestedPreviewCount = normalizedCandidates.reduce((total, candidate) => total + candidate.preview_urls.length, 0);
   if (requestedPreviewCount > maxRankPreviewImages) {
-    throw new HttpError(
-      400,
-      "too_many_rank_previews",
-      `candidate previews must contain at most ${maxRankPreviewImages} images`,
-    );
+    throw new HttpError(400, "too_many_rank_previews", `candidate previews must contain at most ${maxRankPreviewImages} images`);
   }
 
   try {
-    await mkdir(siglipCacheDir, { recursive: true });
-    const classifier = await getSiglipPipeline();
     const previewEntries = normalizedCandidates.flatMap((candidate) =>
       candidate.preview_urls.map((previewUrl, previewIndex) => ({
         candidate_id: candidate.candidate_id,
+        input_rank: candidate.input_rank,
         preview_index: previewIndex,
         preview_url: previewUrl,
       })),
     );
-    const rankablePreviewEntries = [];
-    const previewImages = [];
     const rejected = [];
+    const decoded = await Promise.all(previewEntries.map(async (entry) => {
+      try {
+        const previewResult = await fetchPreviewCached(entry.preview_url);
+        if (!previewResult.ok || !previewResult.buffer) throw new Error(`HTTP ${previewResult.status}`);
+        const visualHash = await averageHashHex(previewResult.buffer);
+        return { entry, visualHash, attempts: Number(previewResult.attempts ?? 1), rejectionReason: null };
+      } catch (error) {
+        return { entry, visualHash: null, attempts: 2, rejectionReason: String(error.message ?? error).slice(0, 300) };
+      }
+    }));
 
-    const decodedPreviews = await Promise.all(
-      previewEntries.map(async (entry) => {
-        try {
-          const previewResult = await fetchPreviewCached(entry.preview_url);
-
-          if (!previewResult.ok || !previewResult.buffer) {
-            throw new Error(`HTTP ${previewResult.status}`);
-          }
-
-          const { data, info } = await sharp(previewResult.buffer)
-            .flatten({ background: "#ffffff" })
-            .toColourspace("srgb")
-            .removeAlpha()
-            .raw()
-            .toBuffer({ resolveWithObject: true });
-
-          if (info.channels !== 3) {
-            throw new Error(`normalized channels=${info.channels}`);
-          }
-
-          const visualHash = await averageHashHex(previewResult.buffer);
-          return {
-            entry,
-            image: new RawImage(data, info.width, info.height, info.channels),
-            visualHash,
-            rejectionReason: null,
-          };
-        } catch (error) {
-          return {
-            entry,
-            image: null,
-            rejectionReason: String(error.message ?? error).slice(0, 300),
-          };
-        }
-      }),
-    );
-
-    for (const decoded of decodedPreviews) {
-      if (decoded.image) {
-        rankablePreviewEntries.push({ ...decoded.entry, visual_hash: decoded.visualHash });
-        previewImages.push(decoded.image);
-      } else {
-        rejected.push({
-          candidate_id: decoded.entry.candidate_id,
-          preview_index: decoded.entry.preview_index,
-          reason: decoded.rejectionReason,
-        });
+    const byCandidate = new Map(normalizedCandidates.map((candidate) => [candidate.candidate_id, {
+      candidate_id: candidate.candidate_id,
+      input_rank: candidate.input_rank,
+      preview_count: candidate.preview_urls.length,
+      fingerprinted_preview_count: 0,
+      best_preview_index: null,
+      visual_hash: null,
+      preview_fetch_attempts: 0,
+    }]));
+    for (const item of decoded) {
+      if (!item.visualHash) {
+        rejected.push({ candidate_id: item.entry.candidate_id, preview_index: item.entry.preview_index, reason: item.rejectionReason });
+        continue;
+      }
+      const candidate = byCandidate.get(item.entry.candidate_id);
+      candidate.fingerprinted_preview_count += 1;
+      candidate.preview_fetch_attempts = Math.max(candidate.preview_fetch_attempts, item.attempts);
+      if (candidate.visual_hash === null || item.entry.preview_index < candidate.best_preview_index) {
+        candidate.best_preview_index = item.entry.preview_index;
+        candidate.visual_hash = item.visualHash;
       }
     }
-
-    if (rankablePreviewEntries.length === 0) {
-      throw new Error("No candidate preview could be decoded for semantic ranking");
-    }
-
-    const rawOutput = await runSiglipInference(classifier, previewImages, query);
-
-    const perImageOutput =
-      rankablePreviewEntries.length === 1 &&
-      Array.isArray(rawOutput) &&
-      !Array.isArray(rawOutput[0])
-        ? [rawOutput]
-        : rawOutput;
-
-    if (!Array.isArray(perImageOutput) || perImageOutput.length !== rankablePreviewEntries.length) {
-      throw new Error("SigLIP returned an unexpected batch shape");
-    }
-
-    const aggregated = new Map(
-      normalizedCandidates.map((candidate) => [
-        candidate.candidate_id,
-        {
-          candidate_id: candidate.candidate_id,
-          score: -1,
-          preview_count: candidate.preview_urls.length,
-          ranked_preview_count: 0,
-          best_preview_index: null,
-          visual_hash: null,
-        },
-      ]),
-    );
-
-    for (let index = 0; index < rankablePreviewEntries.length; index += 1) {
-      const entry = rankablePreviewEntries[index];
-      const score = Number(perImageOutput[index]?.[0]?.score);
-
-      if (!Number.isFinite(score) || score < 0 || score > 1) {
-        throw new Error(
-          `SigLIP returned an invalid score for candidate ${entry.candidate_id}`,
-        );
-      }
-
-      const candidate = aggregated.get(entry.candidate_id);
-      candidate.ranked_preview_count += 1;
-
-      if (score > candidate.score) {
-        candidate.score = score;
-        candidate.best_preview_index = entry.preview_index;
-        candidate.visual_hash = entry.visual_hash;
-      }
-    }
-
-    const ranked = [...aggregated.values()]
-      .filter((candidate) => candidate.ranked_preview_count > 0)
-      .sort((left, right) => right.score - left.score)
+    const ranked = [...byCandidate.values()]
+      .filter((candidate) => candidate.fingerprinted_preview_count > 0)
+      .sort((left, right) => left.input_rank - right.input_rank)
       .map((candidate, index) => ({ ...candidate, rank: index + 1 }));
+    if (ranked.length === 0) throw new Error("No candidate preview could be fingerprinted");
 
     sendJson(response, 200, {
-      model: siglipModel,
-      dtype: siglipDtype,
+      model: "perceptual_hash_preordered_v1",
+      dtype: "none",
+      semantic_authority: false,
       query,
       candidate_count: ranked.length,
       requested_candidate_count: normalizedCandidates.length,
       rejected_candidate_count: normalizedCandidates.length - ranked.length,
       requested_preview_count: requestedPreviewCount,
-      ranked_preview_count: rankablePreviewEntries.length,
+      fingerprinted_preview_count: decoded.length - rejected.length,
       rejected_preview_count: rejected.length,
       rejected,
       ranked,
     });
   } catch (error) {
-    if (error instanceof HttpError) {
-      throw error;
-    }
-
-    throw new HttpError(
-      422,
-      "visual_ranking_failed",
-      `Visual candidates could not be ranked: ${error.message}`,
-    );
+    if (error instanceof HttpError) throw error;
+    throw new HttpError(422, "visual_fingerprinting_failed", `Visual candidates could not be fingerprinted: ${error.message}`);
   }
 }
 
@@ -2034,12 +1887,12 @@ const server = createServer(async (request, response) => {
         status: "ok",
         ffmpeg: ffmpegVersion,
         ffprobe: ffprobeVersion,
-        semantic_ranker: {
-          model: siglipModel,
-          dtype: siglipDtype,
+        visual_fingerprinter: {
+          model: "perceptual_hash_preordered_v1",
+          semantic_authority: false,
           preview_fetch_concurrency: maxConcurrentPreviewFetches,
           preview_fetch_timeout_ms: previewFetchTimeoutMs,
-          preview_fetch_attempts: 1,
+          preview_fetch_attempts: 2,
           preview_cache_entries: previewBufferCache.size,
           preview_cache_bytes: previewCacheBytes,
           preview_cache_max_bytes: previewCacheMaxBytes,

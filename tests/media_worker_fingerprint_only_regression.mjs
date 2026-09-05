@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const source=fs.readFileSync(new URL('../services/media-worker/src/server.mjs',import.meta.url),'utf8');
+const start=source.indexOf('async function rankVisualCandidates');
+const end=source.indexOf('async function createVisualContactSheet',start);
+assert(start>=0&&end>start);
+const rank=source.slice(start,end);
+assert(!rank.includes('getSiglipPipeline'),'local fingerprint stage must not load SigLIP');
+assert(!rank.includes('runSiglipInference'),'local fingerprint stage must not serialize semantic inference');
+assert(rank.includes('perceptual_hash_preordered_v1'));
+assert(rank.includes('semantic_authority: false'));
+assert(source.includes('const maxConcurrentPreviewFetches = 6;'));
+assert(source.includes('for (let attempt = 1; attempt <= 2; attempt += 1)'));
+console.log('MEDIA_WORKER_FINGERPRINT_ONLY_REGRESSION_PASS');
