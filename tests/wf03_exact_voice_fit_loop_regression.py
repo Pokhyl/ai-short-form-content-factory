@@ -4,6 +4,8 @@ n={x['name']:x for x in w['nodes']}
 for x in ['Evaluate Natural Voiceover','Voiceover Fits Target','Prepare Duration Rewrite','Rewrite Narration For Exact Duration','Apply Duration Rewrite','Persist Duration Rewrite','Resume Rewritten Voiceover']:
  assert x in n
 assert 'Speech-speed manipulation is forbidden' in n['Evaluate Natural Voiceover']['parameters']['jsCode']
+assert "Resume Rewritten Voiceover').all().at(-1)" in n['Evaluate Natural Voiceover']['parameters']['jsCode']
+assert "Prepare Duration Rewrite').first().json?.retry_context" not in n['Evaluate Natural Voiceover']['parameters']['jsCode']
 assert 'max_fit_passes:2' in n['Prepare Continuous Voiceover']['parameters']['jsCode']
 assert w['connections']['Voiceover Fits Target']['main'][1][0]['node']=='Prepare Duration Rewrite'
 assert w['connections']['Resume Rewritten Voiceover']['main'][0][0]['node']=='Generate Gemini Voiceover'
