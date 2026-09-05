@@ -30,7 +30,7 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "WITH input AS (SELECT $1::uuid AS job_id)\nSELECT i.job_id AS requested_job_id,j.id AS job_id,j.language_code,j.target_duration_seconds,j.content_model_version,j.script_text,j.script_support,j.duration_preflight,\n       j.status,j.current_stage,j.voiceover_path,j.voiceover_duration_seconds,j.id IS NOT NULL AS job_exists,\n       COUNT(s.id)::int AS scene_count\nFROM input i LEFT JOIN public.jobs j ON j.id=i.job_id LEFT JOIN public.scenes s ON s.job_id=j.id\nGROUP BY i.job_id,j.id,j.language_code,j.target_duration_seconds,j.content_model_version,j.script_text,j.script_support,j.duration_preflight,j.status,j.current_stage,j.voiceover_path,j.voiceover_duration_seconds;",
+          "query": "WITH input AS (SELECT $1::uuid AS job_id)\nSELECT i.job_id AS requested_job_id,j.id AS job_id,j.topic,j.fact_primary_title,j.language_code,j.target_duration_seconds,j.content_model_version,j.script_text,j.script_support,j.duration_preflight,j.visual_search_queries_en,\n       j.status,j.current_stage,j.voiceover_path,j.voiceover_duration_seconds,j.id IS NOT NULL AS job_exists,\n       COUNT(s.id)::int AS scene_count\nFROM input i LEFT JOIN public.jobs j ON j.id=i.job_id LEFT JOIN public.scenes s ON s.job_id=j.id\nGROUP BY i.job_id,j.id,j.topic,j.fact_primary_title,j.language_code,j.target_duration_seconds,j.content_model_version,j.script_text,j.script_support,j.duration_preflight,j.visual_search_queries_en,j.status,j.current_stage,j.voiceover_path,j.voiceover_duration_seconds;",
           "options": {
             "queryReplacement": "={{ [ $json.job_id ] }}"
           }
@@ -140,7 +140,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const EDGE_VOICES=Object.freeze({\n  en:\"en-US-AndrewNeural\",\n  pl:\"pl-PL-MarekNeural\",\n  ru:\"ru-RU-DmitryNeural\",\n  uk:\"uk-UA-OstapNeural\",\n});\nconst BEATS_BY_DURATION=Object.freeze({15:6,30:10,45:14,60:18});\n\nfunction cleanText(value){return String(value??\"\").normalize(\"NFKC\").replace(/\\s+/gu,\" \" ).trim();}\n\nfunction prepareOneShotEdgeRequest({job_id,language_code,target_duration_seconds,narration,duration_preflight}) {\n  const target=Number(target_duration_seconds), voice=EDGE_VOICES[language_code], text=cleanText(narration);\n  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(job_id??\"\"))) throw new Error(\"job_id must be a UUID\");\n  if(!voice) throw new Error(`Unsupported Edge language: ${language_code}`);\n  if(!BEATS_BY_DURATION[target]) throw new Error(`Unsupported target duration: ${target_duration_seconds}`);\n  if(!text) throw new Error(\"Narration is empty\");\n  if(duration_preflight?.exact_tts_required!==true||duration_preflight?.prediction_is_advisory!==true) throw new Error(\"Narration is not eligible for exact Edge measurement\");\n  if(Number(duration_preflight.target_duration_seconds)!==target) throw new Error(\"Duration preflight target mismatch\");\n  if(String(duration_preflight.language_code)!==language_code) throw new Error(\"Duration preflight language mismatch\");\n  return {endpoint:\"/audio/synthesize-free-fallback\",body:{job_id:String(job_id).toLowerCase(),text,language_code,target_duration_seconds:target},expected:{provider:\"microsoft_edge_readaloud\",model:\"edge_neural\",voice,rate_percent:0,post_tempo_factor:1},max_automatic_synthesis_count:1};\n}\n\nfunction validateOneShotEdgeResult({request,result}) {\n  if(!request?.expected||!result||typeof result!==\"object\") throw new Error(\"Invalid Edge result context\");\n  const duration=Number(result.duration_seconds), target=Number(request.body.target_duration_seconds), frameTolerance=1/30;\n  const min=(target*0.90)-frameTolerance, max=(target*1.10)+frameTolerance;\n  if(!Number.isFinite(duration)||duration<=0) throw new Error(\"Edge duration is invalid\");\n  if(duration<min-1e-9||duration>max+1e-9) throw new Error(`Measured Edge duration ${duration.toFixed(3)} is outside ${min.toFixed(3)}-${max.toFixed(3)}`);\n  for(const key of [\"provider\",\"model\",\"voice\"]) if(String(result[key]??\"\")!==String(request.expected[key])) throw new Error(`Edge ${key} contract changed`);\n  if(Number(result.rate_percent)!==0||Number(result.post_tempo_factor)!==1) throw new Error(\"Edge timing manipulation is forbidden\");\n  if(!String(result.voiceover_path??\"\").trim()) throw new Error(\"Edge voiceover_path is missing\");\n  if(Number(result.sample_rate)!==48000||Number(result.channels)!==2||String(result.codec_name)!==\"pcm_s16le\") throw new Error(\"Normalized Edge audio format changed\");\n  return {...result,duration_seconds:duration};\n}\n\nfunction tokenWeight(token){const lexical=[...token].filter((ch)=>/[\\p{L}\\p{N}]/u.test(ch)).length;return 1+Math.min(14,lexical)*0.04;}\nfunction boundaryPenalty(token){if(/[.!?…][\"»”’)]*$/u.test(token))return 0;if(/[;:][\"»”’)]*$/u.test(token))return 0.02;if(/,[\"»”’)]*$/u.test(token))return 0.05;return 0.18;}\n\nfunction partitionTokenRanges(tokens,count){\n  const n=tokens.length;if(n<count)throw new Error(`Narration has only ${n} tokens for ${count} beats`);\n  const weights=tokens.map(tokenWeight),prefix=[0];for(const w of weights)prefix.push(prefix.at(-1)+w);const target=prefix[n]/count;\n  const dp=Array.from({length:count+1},()=>Array(n+1).fill(Number.POSITIVE_INFINITY));\n  const prev=Array.from({length:count+1},()=>Array(n+1).fill(-1));dp[0][0]=0;\n  for(let k=1;k<=count;k++)for(let end=k;end<=n-(count-k);end++)for(let start=k-1;start<end;start++){\n    if(!Number.isFinite(dp[k-1][start]))continue;\n    const groupWeight=prefix[end]-prefix[start],lengthCost=((groupWeight-target)/target)**2,boundaryCost=k===count?0:boundaryPenalty(tokens[end-1]),tiny=end-start<2?0.4:0,cost=dp[k-1][start]+lengthCost+boundaryCost+tiny;\n    if(cost<dp[k][end]){dp[k][end]=cost;prev[k][end]=start;}\n  }\n  if(!Number.isFinite(dp[count][n]))throw new Error(\"Could not partition narration into beats\");\n  const ranges=[];let end=n;for(let k=count;k>=1;k--){const start=prev[k][end];if(start<0)throw new Error(\"Invalid beat partition backtrack\");ranges.push({start,end});end=start;}return ranges.reverse();\n}\n\nfunction buildSupportedTokens(text,narrationSegments){\n  if(!Array.isArray(narrationSegments)||!narrationSegments.length)throw new Error(\"Timed beats require narration provenance segments\");\n  const reconstructed=narrationSegments.map((segment)=>cleanText(segment?.text)).join(\" \");\n  if(reconstructed!==text)throw new Error(\"Narration provenance segments do not reconstruct narration\");\n  const supported=[];\n  for(let index=0;index<narrationSegments.length;index++){\n    const segment=narrationSegments[index]??{},evidenceId=cleanText(segment.evidence_id),segmentText=cleanText(segment.text);\n    if(!evidenceId||!segmentText)throw new Error(`Narration provenance segment ${index+1} is incomplete`);\n    const tokens=segmentText.split(/\\s+/u).filter(Boolean);\n    for(const token of tokens)supported.push({token,evidence_id:evidenceId,segment_number:Number(segment.segment_number??index+1)});\n  }\n  if(supported.map((item)=>item.token).join(\" \")!==text)throw new Error(\"Narration provenance token alignment failed\");\n  return supported;\n}\n\nfunction buildTimedBeats({narration,narration_segments,target_duration_seconds,measured_duration_seconds}){\n  const text=cleanText(narration),target=Number(target_duration_seconds),measured=Number(measured_duration_seconds),count=BEATS_BY_DURATION[target];\n  if(!count)throw new Error(`Unsupported beat duration target: ${target_duration_seconds}`);if(!Number.isFinite(measured)||measured<=0)throw new Error(\"Measured voice duration is invalid\");\n  const supportedTokens=buildSupportedTokens(text,narration_segments),tokens=supportedTokens.map((item)=>item.token),ranges=partitionTokenRanges(tokens,count),beatTexts=ranges.map(({start,end})=>tokens.slice(start,end).join(\" \"));\n  if(beatTexts.join(\" \")!==text)throw new Error(\"Timed beats do not reconstruct narration\");\n  const weights=beatTexts.map((beat)=>beat.split(/\\s+/u).reduce((sum,token)=>sum+tokenWeight(token),0)),total=weights.reduce((a,b)=>a+b,0),raw=weights.map((w)=>measured*w/total),minBeat=1.15,maxBeat=5.8;\n  if(raw.some((d)=>d<minBeat||d>maxBeat))throw new Error(\"Natural beat partition violates beat duration quality bounds\");\n  let cursor=0;const beats=beatTexts.map((beat,index)=>{const range=ranges[index],start=cursor,end=index===beatTexts.length-1?measured:cursor+raw[index];cursor=end;const support=[...new Set(supportedTokens.slice(range.start,range.end).map((item)=>item.evidence_id))];if(!support.length)throw new Error(`Beat ${index+1} lost narration provenance`);return{scene_number:index+1,narration:beat,narration_support_evidence_ids:support,beat_start_seconds:Number(start.toFixed(3)),beat_end_seconds:Number(end.toFixed(3)),duration_seconds:Number((end-start).toFixed(3)),status:\"timed\"};});\n  beats.at(-1).beat_end_seconds=Number(measured.toFixed(3));beats.at(-1).duration_seconds=Number((beats.at(-1).beat_end_seconds-beats.at(-1).beat_start_seconds).toFixed(3));\n  for(let i=0;i<beats.length;i++){if(i>0&&Math.abs(beats[i].beat_start_seconds-beats[i-1].beat_end_seconds)>0.001)throw new Error(\"Timed beat continuity failed\");if(beats[i].duration_seconds<minBeat-0.002||beats[i].duration_seconds>maxBeat+0.002)throw new Error(`Beat ${i+1} duration outside quality bounds`);if(!Array.isArray(beats[i].narration_support_evidence_ids)||!beats[i].narration_support_evidence_ids.length)throw new Error(`Beat ${i+1} narration provenance is empty`);}\n  if(Math.abs(beats.at(-1).beat_end_seconds-measured)>0.001)throw new Error(\"Timed beats do not cover measured voice duration\");return beats;\n}\n\n\nconst stored=$input.first().json;const job=$('Require Eligible Voiceover Job').first().json;const duration=Number(stored.duration_seconds);const finalScript=String(stored.script_text??job.script_text??'').replace(/\\s+/gu,' ').trim();const finalSupport=Array.isArray(stored.script_support)?stored.script_support:job.script_support;const beats=buildTimedBeats({narration:finalScript,narration_segments:finalSupport,target_duration_seconds:Number(job.target_duration_seconds),measured_duration_seconds:duration});if(beats.length!==Number(job.required_beat_count))throw new Error(`Timed beat planner returned ${beats.length}/${job.required_beat_count}`);return [{json:{job_id:job.job_id,voiceover_path:stored.voiceover_path,voiceover_duration_seconds:duration,voiceover_provider:stored.provider,voiceover_model:stored.model,voiceover_voice:stored.voice,beat_timings:beats,script_text:finalScript,script_support:finalSupport,script_fit_passes:Number(stored.fit_pass??job.script_fit_passes??0)}}];"
+          "jsCode": "const EDGE_VOICES=Object.freeze({\n  en:\"en-US-AndrewNeural\",\n  pl:\"pl-PL-MarekNeural\",\n  ru:\"ru-RU-DmitryNeural\",\n  uk:\"uk-UA-OstapNeural\",\n});\nconst BEATS_BY_DURATION=Object.freeze({15:6,30:10,45:14,60:18});\n\nfunction cleanText(value){return String(value??\"\").normalize(\"NFKC\").replace(/\\s+/gu,\" \" ).trim();}\n\nfunction prepareOneShotEdgeRequest({job_id,language_code,target_duration_seconds,narration,duration_preflight}) {\n  const target=Number(target_duration_seconds), voice=EDGE_VOICES[language_code], text=cleanText(narration);\n  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(job_id??\"\"))) throw new Error(\"job_id must be a UUID\");\n  if(!voice) throw new Error(`Unsupported Edge language: ${language_code}`);\n  if(!BEATS_BY_DURATION[target]) throw new Error(`Unsupported target duration: ${target_duration_seconds}`);\n  if(!text) throw new Error(\"Narration is empty\");\n  if(duration_preflight?.exact_tts_required!==true||duration_preflight?.prediction_is_advisory!==true) throw new Error(\"Narration is not eligible for exact Edge measurement\");\n  if(Number(duration_preflight.target_duration_seconds)!==target) throw new Error(\"Duration preflight target mismatch\");\n  if(String(duration_preflight.language_code)!==language_code) throw new Error(\"Duration preflight language mismatch\");\n  return {endpoint:\"/audio/synthesize-free-fallback\",body:{job_id:String(job_id).toLowerCase(),text,language_code,target_duration_seconds:target},expected:{provider:\"microsoft_edge_readaloud\",model:\"edge_neural\",voice,rate_percent:0,post_tempo_factor:1},max_automatic_synthesis_count:1};\n}\n\nfunction validateOneShotEdgeResult({request,result}) {\n  if(!request?.expected||!result||typeof result!==\"object\") throw new Error(\"Invalid Edge result context\");\n  const duration=Number(result.duration_seconds), target=Number(request.body.target_duration_seconds), frameTolerance=1/30;\n  const min=(target*0.90)-frameTolerance, max=(target*1.10)+frameTolerance;\n  if(!Number.isFinite(duration)||duration<=0) throw new Error(\"Edge duration is invalid\");\n  if(duration<min-1e-9||duration>max+1e-9) throw new Error(`Measured Edge duration ${duration.toFixed(3)} is outside ${min.toFixed(3)}-${max.toFixed(3)}`);\n  for(const key of [\"provider\",\"model\",\"voice\"]) if(String(result[key]??\"\")!==String(request.expected[key])) throw new Error(`Edge ${key} contract changed`);\n  if(Number(result.rate_percent)!==0||Number(result.post_tempo_factor)!==1) throw new Error(\"Edge timing manipulation is forbidden\");\n  if(!String(result.voiceover_path??\"\").trim()) throw new Error(\"Edge voiceover_path is missing\");\n  if(Number(result.sample_rate)!==48000||Number(result.channels)!==2||String(result.codec_name)!==\"pcm_s16le\") throw new Error(\"Normalized Edge audio format changed\");\n  return {...result,duration_seconds:duration};\n}\n\nfunction tokenWeight(token){const lexical=[...token].filter((ch)=>/[\\p{L}\\p{N}]/u.test(ch)).length;return 1+Math.min(14,lexical)*0.04;}\nfunction boundaryPenalty(token){if(/[.!?…][\"»”’)]*$/u.test(token))return 0;if(/[;:][\"»”’)]*$/u.test(token))return 0.02;if(/,[\"»”’)]*$/u.test(token))return 0.05;return 0.18;}\n\nfunction partitionTokenRanges(tokens,count){\n  const n=tokens.length;if(n<count)throw new Error(`Narration has only ${n} tokens for ${count} beats`);\n  const weights=tokens.map(tokenWeight),prefix=[0];for(const w of weights)prefix.push(prefix.at(-1)+w);const target=prefix[n]/count;\n  const dp=Array.from({length:count+1},()=>Array(n+1).fill(Number.POSITIVE_INFINITY));\n  const prev=Array.from({length:count+1},()=>Array(n+1).fill(-1));dp[0][0]=0;\n  for(let k=1;k<=count;k++)for(let end=k;end<=n-(count-k);end++)for(let start=k-1;start<end;start++){\n    if(!Number.isFinite(dp[k-1][start]))continue;\n    const groupWeight=prefix[end]-prefix[start],lengthCost=((groupWeight-target)/target)**2,boundaryCost=k===count?0:boundaryPenalty(tokens[end-1]),tiny=end-start<2?0.4:0,cost=dp[k-1][start]+lengthCost+boundaryCost+tiny;\n    if(cost<dp[k][end]){dp[k][end]=cost;prev[k][end]=start;}\n  }\n  if(!Number.isFinite(dp[count][n]))throw new Error(\"Could not partition narration into beats\");\n  const ranges=[];let end=n;for(let k=count;k>=1;k--){const start=prev[k][end];if(start<0)throw new Error(\"Invalid beat partition backtrack\");ranges.push({start,end});end=start;}return ranges.reverse();\n}\n\nfunction buildSupportedTokens(text,narrationSegments){\n  if(!Array.isArray(narrationSegments)||!narrationSegments.length)throw new Error(\"Timed beats require narration provenance segments\");\n  const reconstructed=narrationSegments.map((segment)=>cleanText(segment?.text)).join(\" \");\n  if(reconstructed!==text)throw new Error(\"Narration provenance segments do not reconstruct narration\");\n  const supported=[];\n  for(let index=0;index<narrationSegments.length;index++){\n    const segment=narrationSegments[index]??{},evidenceId=cleanText(segment.evidence_id),segmentText=cleanText(segment.text);\n    if(!evidenceId||!segmentText)throw new Error(`Narration provenance segment ${index+1} is incomplete`);\n    const tokens=segmentText.split(/\\s+/u).filter(Boolean);\n    for(const token of tokens)supported.push({token,evidence_id:evidenceId,segment_number:Number(segment.segment_number??index+1)});\n  }\n  if(supported.map((item)=>item.token).join(\" \")!==text)throw new Error(\"Narration provenance token alignment failed\");\n  return supported;\n}\n\nfunction buildTimedBeats({narration,narration_segments,target_duration_seconds,measured_duration_seconds}){\n  const text=cleanText(narration),target=Number(target_duration_seconds),measured=Number(measured_duration_seconds),count=BEATS_BY_DURATION[target];\n  if(!count)throw new Error(`Unsupported beat duration target: ${target_duration_seconds}`);if(!Number.isFinite(measured)||measured<=0)throw new Error(\"Measured voice duration is invalid\");\n  const supportedTokens=buildSupportedTokens(text,narration_segments),tokens=supportedTokens.map((item)=>item.token),ranges=partitionTokenRanges(tokens,count),beatTexts=ranges.map(({start,end})=>tokens.slice(start,end).join(\" \"));\n  if(beatTexts.join(\" \")!==text)throw new Error(\"Timed beats do not reconstruct narration\");\n  const weights=beatTexts.map((beat)=>beat.split(/\\s+/u).reduce((sum,token)=>sum+tokenWeight(token),0)),total=weights.reduce((a,b)=>a+b,0),raw=weights.map((w)=>measured*w/total),minBeat=1.15,maxBeat=5.8;\n  if(raw.some((d)=>d<minBeat||d>maxBeat))throw new Error(\"Natural beat partition violates beat duration quality bounds\");\n  let cursor=0;const beats=beatTexts.map((beat,index)=>{const range=ranges[index],start=cursor,end=index===beatTexts.length-1?measured:cursor+raw[index];cursor=end;const support=[...new Set(supportedTokens.slice(range.start,range.end).map((item)=>item.evidence_id))];if(!support.length)throw new Error(`Beat ${index+1} lost narration provenance`);return{scene_number:index+1,narration:beat,narration_support_evidence_ids:support,beat_start_seconds:Number(start.toFixed(3)),beat_end_seconds:Number(end.toFixed(3)),duration_seconds:Number((end-start).toFixed(3)),status:\"timed\"};});\n  beats.at(-1).beat_end_seconds=Number(measured.toFixed(3));beats.at(-1).duration_seconds=Number((beats.at(-1).beat_end_seconds-beats.at(-1).beat_start_seconds).toFixed(3));\n  for(let i=0;i<beats.length;i++){if(i>0&&Math.abs(beats[i].beat_start_seconds-beats[i-1].beat_end_seconds)>0.001)throw new Error(\"Timed beat continuity failed\");if(beats[i].duration_seconds<minBeat-0.002||beats[i].duration_seconds>maxBeat+0.002)throw new Error(`Beat ${i+1} duration outside quality bounds`);if(!Array.isArray(beats[i].narration_support_evidence_ids)||!beats[i].narration_support_evidence_ids.length)throw new Error(`Beat ${i+1} narration provenance is empty`);}\n  if(Math.abs(beats.at(-1).beat_end_seconds-measured)>0.001)throw new Error(\"Timed beats do not cover measured voice duration\");return beats;\n}\n\n\nconst stored=$input.first().json;const job=$('Require Eligible Voiceover Job').first().json;const duration=Number(stored.duration_seconds);const finalScript=String(stored.script_text??job.script_text??'').replace(/\\s+/gu,' ').trim();const finalSupport=Array.isArray(stored.script_support)?stored.script_support:job.script_support;const beats=buildTimedBeats({narration:finalScript,narration_segments:finalSupport,target_duration_seconds:Number(job.target_duration_seconds),measured_duration_seconds:duration});if(beats.length!==Number(job.required_beat_count))throw new Error(`Timed beat planner returned ${beats.length}/${job.required_beat_count}`);const fitPasses=Number(stored.fit_pass??job.script_fit_passes??0);const existingQueries=Array.isArray(job.visual_search_queries_en)?job.visual_search_queries_en:[];if(fitPasses===0&&(existingQueries.length!==Number(job.required_beat_count)||new Set(existingQueries.map(v=>String(v).toLocaleLowerCase())).size!==Number(job.required_beat_count)))throw new Error('Final narration has no valid c6 visual-query inventory');return [{json:{job_id:job.job_id,topic:job.topic,canonical_subject:job.fact_primary_title||job.topic,language_code:job.language_code,target_duration_seconds:Number(job.target_duration_seconds),voiceover_path:stored.voiceover_path,voiceover_duration_seconds:duration,voiceover_provider:stored.provider,voiceover_model:stored.model,voiceover_voice:stored.voice,beat_timings:beats,script_text:finalScript,script_support:finalSupport,script_fit_passes:fitPasses,visual_search_queries_en:existingQueries,needs_visual_rebind:fitPasses>0}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -155,9 +155,9 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "WITH input AS (\n SELECT $1::uuid AS job_id,$2::text AS voiceover_path,$3::numeric AS voiceover_duration,$4::text AS provider,$5::text AS model,$6::text AS voice,$7::jsonb AS timings,$8::text AS final_script,$9::jsonb AS final_support,$10::smallint AS fit_passes\n), locked AS (\n SELECT j.id,j.target_duration_seconds FROM public.jobs j,input i\n WHERE j.id=i.job_id AND j.content_model_version='staged_v1' AND j.status='processing' AND j.current_stage='voiceover'\n   AND NULLIF(BTRIM(COALESCE(j.voiceover_path,'')),'') IS NULL AND j.voiceover_duration_seconds IS NULL\n   AND NOT EXISTS(SELECT 1 FROM public.scenes s WHERE s.job_id=j.id)\n FOR UPDATE\n), parsed AS (\n SELECT x.* FROM input i CROSS JOIN LATERAL jsonb_to_recordset(i.timings) AS x(\n   scene_number integer,narration text,narration_support_evidence_ids jsonb,beat_start_seconds numeric,beat_end_seconds numeric,duration_seconds numeric,status text\n )\n), expected AS (\n SELECT id,CASE target_duration_seconds WHEN 15 THEN 6 WHEN 30 THEN 10 WHEN 45 THEN 14 WHEN 60 THEN 18 END AS beat_count FROM locked\n), valid AS (\n SELECT p.* FROM parsed p,expected e\n WHERE p.scene_number BETWEEN 1 AND e.beat_count AND NULLIF(BTRIM(p.narration),'') IS NOT NULL AND p.status='timed'\n   AND jsonb_typeof(p.narration_support_evidence_ids)='array' AND jsonb_array_length(p.narration_support_evidence_ids)>0\n   AND p.beat_start_seconds>=0 AND p.beat_end_seconds>p.beat_start_seconds AND p.duration_seconds>0\n   AND ABS((p.beat_end_seconds-p.beat_start_seconds)-p.duration_seconds)<=0.01\n   AND NOT EXISTS(\n     SELECT 1 FROM jsonb_array_elements_text(p.narration_support_evidence_ids) q(evidence_id)\n     WHERE NOT EXISTS(SELECT 1 FROM public.job_evidence je WHERE je.job_id=e.id AND je.evidence_id=q.evidence_id)\n   )\n), ok AS (\n SELECT e.id,e.beat_count FROM expected e,input i\n WHERE NULLIF(BTRIM(i.voiceover_path),'') IS NOT NULL AND i.voiceover_duration>0\n   AND (SELECT count(*) FROM valid)=e.beat_count AND (SELECT count(DISTINCT scene_number) FROM valid)=e.beat_count\n), ins AS (\n INSERT INTO public.scenes(job_id,scene_number,narration,narration_support_evidence_ids,beat_start_seconds,beat_end_seconds,duration_seconds,status)\n SELECT o.id,v.scene_number,v.narration,v.narration_support_evidence_ids,v.beat_start_seconds,v.beat_end_seconds,v.duration_seconds,'timed'\n FROM ok o CROSS JOIN valid v ORDER BY v.scene_number RETURNING job_id\n), upd AS (\n UPDATE public.jobs j SET voiceover_path=i.voiceover_path,voiceover_duration_seconds=i.voiceover_duration,voiceover_provider=i.provider,voiceover_model=i.model,voiceover_voice=i.voice,script_text=i.final_script,script_support=i.final_support,script_fit_passes=i.fit_passes,last_error=NULL,updated_at=now()\n FROM input i,ok o WHERE j.id=o.id AND j.id=i.job_id RETURNING j.id,j.status,j.current_stage\n)\nSELECT $1::uuid AS job_id,(SELECT count(*)::int FROM ins) AS beats_inserted,EXISTS(SELECT 1 FROM upd) AS job_updated,\n       (SELECT status FROM upd LIMIT 1) AS status,(SELECT current_stage FROM upd LIMIT 1) AS current_stage,$2::text AS voiceover_path,$3::numeric AS voiceover_duration_seconds;",
+          "query": "WITH input AS (\n SELECT $1::uuid AS job_id,$2::text AS voiceover_path,$3::numeric AS voiceover_duration,$4::text AS provider,$5::text AS model,$6::text AS voice,$7::jsonb AS timings,$8::text AS final_script,$9::jsonb AS final_support,$10::smallint AS fit_passes,$11::jsonb AS final_visual_queries\n), locked AS (\n SELECT j.id,j.target_duration_seconds FROM public.jobs j,input i\n WHERE j.id=i.job_id AND j.content_model_version='staged_v1' AND j.status='processing' AND j.current_stage='voiceover'\n   AND NULLIF(BTRIM(COALESCE(j.voiceover_path,'')),'') IS NULL AND j.voiceover_duration_seconds IS NULL\n   AND NOT EXISTS(SELECT 1 FROM public.scenes s WHERE s.job_id=j.id)\n FOR UPDATE\n), parsed AS (\n SELECT x.* FROM input i CROSS JOIN LATERAL jsonb_to_recordset(i.timings) AS x(\n   scene_number integer,narration text,narration_support_evidence_ids jsonb,beat_start_seconds numeric,beat_end_seconds numeric,duration_seconds numeric,status text\n )\n), expected AS (\n SELECT id,CASE target_duration_seconds WHEN 15 THEN 6 WHEN 30 THEN 10 WHEN 45 THEN 14 WHEN 60 THEN 18 END AS beat_count FROM locked\n), valid AS (\n SELECT p.* FROM parsed p,expected e\n WHERE p.scene_number BETWEEN 1 AND e.beat_count AND NULLIF(BTRIM(p.narration),'') IS NOT NULL AND p.status='timed'\n   AND jsonb_typeof(p.narration_support_evidence_ids)='array' AND jsonb_array_length(p.narration_support_evidence_ids)>0\n   AND p.beat_start_seconds>=0 AND p.beat_end_seconds>p.beat_start_seconds AND p.duration_seconds>0\n   AND ABS((p.beat_end_seconds-p.beat_start_seconds)-p.duration_seconds)<=0.01\n   AND NOT EXISTS(\n     SELECT 1 FROM jsonb_array_elements_text(p.narration_support_evidence_ids) q(evidence_id)\n     WHERE NOT EXISTS(SELECT 1 FROM public.job_evidence je WHERE je.job_id=e.id AND je.evidence_id=q.evidence_id)\n   )\n), ok AS (\n SELECT e.id,e.beat_count FROM expected e,input i\n WHERE NULLIF(BTRIM(i.voiceover_path),'') IS NOT NULL AND i.voiceover_duration>0\n   AND (SELECT count(*) FROM valid)=e.beat_count AND (SELECT count(DISTINCT scene_number) FROM valid)=e.beat_count\n), ins AS (\n INSERT INTO public.scenes(job_id,scene_number,narration,narration_support_evidence_ids,beat_start_seconds,beat_end_seconds,duration_seconds,status)\n SELECT o.id,v.scene_number,v.narration,v.narration_support_evidence_ids,v.beat_start_seconds,v.beat_end_seconds,v.duration_seconds,'timed'\n FROM ok o CROSS JOIN valid v ORDER BY v.scene_number RETURNING job_id\n), upd AS (\n UPDATE public.jobs j SET voiceover_path=i.voiceover_path,voiceover_duration_seconds=i.voiceover_duration,voiceover_provider=i.provider,voiceover_model=i.model,voiceover_voice=i.voice,script_text=i.final_script,script_support=i.final_support,script_fit_passes=i.fit_passes,visual_search_queries_en=i.final_visual_queries,last_error=NULL,updated_at=now()\n FROM input i,ok o WHERE j.id=o.id AND j.id=i.job_id RETURNING j.id,j.status,j.current_stage\n)\nSELECT $1::uuid AS job_id,(SELECT count(*)::int FROM ins) AS beats_inserted,EXISTS(SELECT 1 FROM upd) AS job_updated,\n       (SELECT status FROM upd LIMIT 1) AS status,(SELECT current_stage FROM upd LIMIT 1) AS current_stage,$2::text AS voiceover_path,$3::numeric AS voiceover_duration_seconds;",
           "options": {
-            "queryReplacement": "={{ [ $json.job_id, $json.voiceover_path, $json.voiceover_duration_seconds, $json.voiceover_provider, $json.voiceover_model, $json.voiceover_voice, JSON.stringify($json.beat_timings), $json.script_text, JSON.stringify($json.script_support), $json.script_fit_passes ] }}"
+            "queryReplacement": "={{ [ $json.job_id, $json.voiceover_path, $json.voiceover_duration_seconds, $json.voiceover_provider, $json.voiceover_model, $json.voiceover_voice, JSON.stringify($json.beat_timings), $json.script_text, JSON.stringify($json.script_support), $json.script_fit_passes, JSON.stringify($json.visual_search_queries_en) ] }}"
           }
         },
         "type": "n8n-nodes-base.postgres",
@@ -342,7 +342,7 @@
           "specifyBody": "json",
           "jsonBody": "={{ { prompt:$json.rewrite_prompt, temperature:0.05 } }}",
           "options": {
-            "timeout": 90000
+            "timeout": 180000
           }
         },
         "id": "a8ac3db2-50c4-46a7-8387-8f16e2add941",
@@ -357,7 +357,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const base=$('Prepare Duration Rewrite').first().json;const r=$input.first().json;let t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{throw new Error('duration rewrite model returned invalid JSON')};let script=String(o.script??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(!script)throw new Error('duration rewrite returned empty script');let wc=script.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;const lower=base.desired_word_min-8,upper=base.desired_word_max+8;if(wc<lower||wc>upper){const original=String(base.script_text??'').normalize('NFKC').replace(/\\s+/gu,' ').trim(),parts=original.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/gu)?.map(s=>s.trim()).filter(Boolean)??[];let best='',bestDistance=Infinity;for(let i=1;i<=parts.length;i++){const candidate=parts.slice(0,i).join(' '),count=candidate.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0,distance=count<lower?(lower-count)*4:count>upper?(count-upper)*4:Math.abs(count-(base.desired_word_min+base.desired_word_max)/2);if(distance<bestDistance){best=candidate;bestDistance=distance;}}const bestCount=best.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;if(bestCount>=lower&&bestCount<=upper){script=best;wc=bestCount;}else throw new Error(`duration rewrite word count ${wc} missed broad target ${base.desired_word_min}-${base.desired_word_max}`);}const old=Array.isArray(base.script_support)?base.script_support:[];const evidence=[...new Set(old.map(s=>String(s.evidence_id??'')).filter(Boolean))];if(!evidence.length)throw new Error('duration rewrite lost evidence provenance');const sentences=script.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/gu)?.map(s=>s.trim()).filter(Boolean)??[script];const support=sentences.map((text,i)=>({segment_number:i+1,evidence_id:evidence[i%evidence.length],source_id:evidence[i%evidence.length],source_text:'supported by preserved job evidence',text,transform:'duration_rewrite_same_facts'}));return [{json:{job_id:base.job_id,language_code:base.language_code,target_duration_seconds:Number(base.target_duration_seconds),provider:base.provider,model:base.model,voice:base.voice,edge_fallback_voice:base.edge_fallback_voice,script_text:script,script_support:support,fit_pass:Number(base.next_fit_pass),max_fit_passes:Number(base.max_fit_passes??2)}}];"
+          "jsCode": "const base=$('Prepare Duration Rewrite').first().json;\nconst r=$input.first().json;\nconst wordRx=/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu;\nconst clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();\nconst countWords=s=>clean(s).match(wordRx)?.length??0;\nconst original=clean(base.script_text);\nconst targetWords=Math.round((Number(base.desired_word_min)+Number(base.desired_word_max))/2);\n\nfunction deterministicShorten(text){\n  const tokens=clean(text).split(/\\s+/u).filter(Boolean);\n  const candidates=[];\n  for(let i=0;i<tokens.length;i++){\n    if(/[.!?…;,:—][\"»”’)]*$/u.test(tokens[i])){\n      let c=tokens.slice(0,i+1).join(' ').replace(/[;,:—][\"»”’)]*$/u,'.');\n      const wc=countWords(c);\n      candidates.push({text:c,wc,distance:Math.abs(wc-targetWords)});\n    }\n  }\n  if(!candidates.length)return null;\n  candidates.sort((a,b)=>a.distance-b.distance||b.wc-a.wc);\n  const lower=Math.max(12,Number(base.desired_word_min)-4),upper=Number(base.desired_word_max)+4;\n  return candidates.find(c=>c.wc>=lower&&c.wc<=upper)??null;\n}\n\nlet parsed=null;\nlet raw=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,'').trim();\nif(raw){try{parsed=JSON.parse(raw)}catch{parsed=null}}\nlet script=clean(parsed?.script);\nlet recoveryMode='model';\nif(!script){\n  if(Number(base.duration_seconds)<=Number(base.target_duration_seconds)){\n    throw new Error('duration rewrite model unavailable after bounded gateway recovery; deterministic expansion is unsafe');\n  }\n  const fallback=deterministicShorten(original);\n  if(!fallback)throw new Error('duration rewrite model unavailable and no safe deterministic overlength cut exists');\n  script=fallback.text;\n  recoveryMode='deterministic_overlength_fallback';\n}\n\nlet wc=countWords(script);\nconst lower=Number(base.desired_word_min)-8,upper=Number(base.desired_word_max)+8;\nif(wc<lower||wc>upper){\n  const fallback=deterministicShorten(original);\n  if(fallback){script=fallback.text;wc=fallback.wc;recoveryMode='deterministic_overlength_fallback';}\n  else throw new Error(`duration rewrite word count ${wc} missed broad target ${base.desired_word_min}-${base.desired_word_max}`);\n}\nconst old=Array.isArray(base.script_support)?base.script_support:[];\nconst evidence=[...new Set(old.map(s=>String(s.evidence_id??'')).filter(Boolean))];\nif(!evidence.length)throw new Error('duration rewrite lost evidence provenance');\nconst sentences=script.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/gu)?.map(s=>s.trim()).filter(Boolean)??[script];\nconst support=sentences.map((text,i)=>({segment_number:i+1,evidence_id:evidence[i%evidence.length],source_id:evidence[i%evidence.length],source_text:'supported by preserved job evidence',text,transform:recoveryMode==='model'?'duration_rewrite_same_facts':'duration_rewrite_deterministic_same_facts'}));\nreturn [{json:{job_id:base.job_id,language_code:base.language_code,target_duration_seconds:Number(base.target_duration_seconds),provider:base.provider,model:base.model,voice:base.voice,edge_fallback_voice:base.edge_fallback_voice,script_text:script,script_support:support,fit_pass:Number(base.next_fit_pass),max_fit_passes:Number(base.max_fit_passes??2),duration_rewrite_mode:recoveryMode}}];"
         },
         "id": "3972704e-b0e3-4fa0-803f-d44486147011",
         "name": "Apply Duration Rewrite",
@@ -548,6 +548,88 @@
         ],
         "id": "b49920b9-819b-403f-8baf-c4a9b49a93f3",
         "name": "Prepare Gemini TTS Retry",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "ca67d3e9-8d77-4d70-bde2-28eabdf47d85",
+                "leftValue": "={{ $json.needs_visual_rebind }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "a4ada2d7-571a-4827-8508-c7b54ebf24f0",
+        "name": "Final Narration Needs Visual Rebind",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1180,
+          220
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const x=$input.first().json;\nconst beats=Array.isArray(x.beat_timings)?x.beat_timings:[];\nconst expected=({15:6,30:10,45:14,60:18})[Number(x.target_duration_seconds)];\nif(!expected||beats.length!==expected)throw new Error(`final visual rebind beat count ${beats.length}/${expected}`);\nconst beatText=beats.map((b,i)=>`B${i+1} [${Number(b.beat_start_seconds).toFixed(3)}-${Number(b.beat_end_seconds).toFixed(3)}s]: ${String(b.narration??'').trim()}`).join('\\n');\nconst prompt=`Create one concrete English still-image search query for EACH exact final narration beat below. The final TTS has already been accepted, so these beats are authoritative and must not be reordered or generalized.\\n\\nTOPIC: ${x.topic}\\nCANONICAL SUBJECT: ${x.canonical_subject}\\n\\nFINAL BEATS:\\n${beatText}\\n\\nReturn ONLY valid JSON {\"visual_search_queries_en\":[\"...\"]}. Requirements: exactly ${expected} unique queries in B1..B${expected} order; query N must literally depict B${'N'} and must not anticipate another beat; prefer real relevant photographs; technical diagrams/schematics are allowed and required when the beat explains a mechanism; every query must be realistically searchable on Wikimedia Commons or stock-photo providers; no text cards, title cards, logos, abstract icons, label-dominated infographics, generic filler, or unrelated topic-level imagery.`;\nreturn [{json:{...x,final_visual_rebind_prompt:prompt,expected_visual_queries:expected}}];"
+        },
+        "id": "eb2a042f-eb03-4bb4-8c37-c90315d15c27",
+        "name": "Prepare Final Visual Rebind",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1420,
+          120
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { prompt:$json.final_visual_rebind_prompt, temperature:0.05 } }}",
+          "options": {
+            "timeout": 180000
+          }
+        },
+        "id": "7bc1dd7e-344f-4e21-9cf0-44f388fab8bf",
+        "name": "Rebind Visual Queries To Final Beats",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1660,
+          120
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const base=$('Prepare Final Visual Rebind').first().json;\nconst r=$input.first().json;\nlet t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,'').trim();\nlet o;try{o=JSON.parse(t)}catch{throw new Error('final visual rebind model unavailable or invalid after bounded gateway recovery')}\nconst expected=Number(base.expected_visual_queries);\nconst queries=(Array.isArray(o.visual_search_queries_en)?o.visual_search_queries_en:[]).map(v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim()).filter(Boolean);\nif(queries.length!==expected)throw new Error(`final visual rebind returned ${queries.length}/${expected} queries`);\nif(new Set(queries.map(v=>v.toLocaleLowerCase())).size!==expected)throw new Error('final visual rebind returned duplicate queries');\nreturn [{json:{...base,visual_search_queries_en:queries,needs_visual_rebind:false}}];"
+        },
+        "id": "a7cc7c7d-f23f-43b6-a890-cd3bfaa5a4e8",
+        "name": "Apply Final Visual Rebind",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1900,
+          120
+        ],
         "onError": "continueErrorOutput"
       }
     ],
@@ -765,7 +847,7 @@
         "main": [
           [
             {
-              "node": "Persist Voiceover Result",
+              "node": "Final Narration Needs Visual Rebind",
               "type": "main",
               "index": 0
             }
@@ -993,6 +1075,78 @@
           [
             {
               "node": "Prepare Edge Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Final Narration Needs Visual Rebind": {
+        "main": [
+          [
+            {
+              "node": "Prepare Final Visual Rebind",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Persist Voiceover Result",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Final Visual Rebind": {
+        "main": [
+          [
+            {
+              "node": "Rebind Visual Queries To Final Beats",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Voiceover Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rebind Visual Queries To Final Beats": {
+        "main": [
+          [
+            {
+              "node": "Apply Final Visual Rebind",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Voiceover Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Apply Final Visual Rebind": {
+        "main": [
+          [
+            {
+              "node": "Persist Voiceover Result",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Voiceover Failure",
               "type": "main",
               "index": 0
             }

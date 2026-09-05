@@ -87,7 +87,7 @@
           "specifyBody": "json",
           "jsonBody": "={{ { prompt: $json.intent_prompt, temperature: 0.05 } }}",
           "options": {
-            "timeout": 90000
+            "timeout": 180000
           }
         },
         "id": "a1000c34-89e5-42a7-8c1f-6202c5a06550",
@@ -162,7 +162,7 @@
           "specifyBody": "json",
           "jsonBody": "={{ { prompt: $json.resolution_prompt, temperature: 0.05 } }}",
           "options": {
-            "timeout": 90000
+            "timeout": 180000
           }
         },
         "id": "65c2d2d5-2560-4af0-98fc-b8bb355307a1",
@@ -237,7 +237,7 @@
           "specifyBody": "json",
           "jsonBody": "={{ { prompt: $json.script_prompt, temperature: 0.2 } }}",
           "options": {
-            "timeout": 90000
+            "timeout": 180000
           }
         },
         "id": "f7ac7193-998a-43c5-820d-fa862a94a68b",
@@ -272,7 +272,7 @@
           "specifyBody": "json",
           "jsonBody": "={{ { prompt: $json.validation_prompt, temperature: 0.05 } }}",
           "options": {
-            "timeout": 90000
+            "timeout": 180000
           }
         },
         "id": "cd9d20e4-fe50-4db8-9e98-0a4f922e478c",

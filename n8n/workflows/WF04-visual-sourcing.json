@@ -562,7 +562,7 @@
           "specifyBody": "json",
           "jsonBody": "={{ { input: $json.input } }}",
           "options": {
-            "timeout": 90000
+            "timeout": 180000
           }
         },
         "id": "80e1dc04-71ef-4355-bca4-3875685fd0dc",
