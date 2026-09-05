@@ -560,7 +560,7 @@
           "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ $json.visual_review_request }}",
+          "jsonBody": "={{ { input: $json.input } }}",
           "options": {
             "timeout": 90000
           }
@@ -570,7 +570,7 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
-          2100,
+          2270,
           240
         ],
         "onError": "continueErrorOutput"
@@ -585,7 +585,28 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          2320,
+          2490,
+          240
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/inline-review-images",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.visual_review_request }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "id": "be8db4cf-3fd5-4077-a142-b251b08439ab",
+        "name": "Inline Candidate Images",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2050,
           240
         ],
         "onError": "continueErrorOutput"
@@ -1011,7 +1032,7 @@
         "main": [
           [
             {
-              "node": "Review Actual Candidate Images",
+              "node": "Inline Candidate Images",
               "type": "main",
               "index": 0
             }
@@ -1048,6 +1069,24 @@
           [
             {
               "node": "Choose Visual Assignment",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Inline Candidate Images": {
+        "main": [
+          [
+            {
+              "node": "Review Actual Candidate Images",
               "type": "main",
               "index": 0
             }

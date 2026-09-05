@@ -19,6 +19,7 @@ const attachCode = n4.get('Attach Rank Results').parameters.jsCode;
 assert.doesNotMatch(attachCode, /MIN_VISUAL_RELEVANCE|metadata_overlap.*0\.018/);
 assert.match(attachCode, /Local visual fingerprinting/);
 assert(n4.has('Prepare Multimodal Visual Review'));
+assert(n4.has('Inline Candidate Images'));
 assert(n4.has('Review Actual Candidate Images'));
 assert(n4.has('Require Multimodal Visual Selection'));
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Judge only visible content/);
@@ -27,6 +28,8 @@ assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /s
 assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /rejected all relevant images/);
 assert.equal(n4.get('Prepare Multimodal Visual Review').parameters.mode,'runOnceForAllItems');
 assert.equal(n4.get('Require Multimodal Visual Selection').parameters.mode,'runOnceForAllItems');
+assert.equal(n4.get('Inline Candidate Images').parameters.url,'http://media-worker:3001/visual/inline-review-images');
+assert.match(n4.get('Review Actual Candidate Images').parameters.jsonBody,/input: \$json\.input/);
 
 const attach = new Function('$json', '$', attachCode);
 const context = {

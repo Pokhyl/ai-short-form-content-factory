@@ -202,6 +202,48 @@ async function fetchPreviewCached(url) {
   }
 }
 
+async function inlineVisualReviewImages(request, response) {
+  const body = await readJsonBody(request);
+  const input = Array.isArray(body.input) ? body.input : [];
+  if (!input.length || input.length > 80) {
+    throw new HttpError(400, "invalid_visual_review_input", "Visual review input must contain 1-80 items");
+  }
+
+  const output = [];
+  let imageCount = 0;
+  for (const item of input) {
+    if (item?.type !== "image") {
+      output.push(item);
+      continue;
+    }
+    const rawUrl = String(item.uri ?? "").trim();
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(rawUrl);
+    } catch {
+      throw new HttpError(400, "invalid_visual_review_url", "Visual review image URL is invalid");
+    }
+    if (parsedUrl.protocol !== "https:" || !trustedPreviewHosts.has(parsedUrl.hostname)) {
+      throw new HttpError(400, "untrusted_visual_review_url", `Untrusted visual review host: ${parsedUrl.hostname}`);
+    }
+    const fetched = await fetchPreviewCached(rawUrl);
+    if (!fetched.ok || !fetched.buffer) {
+      throw new HttpError(502, "visual_review_fetch_failed", `Could not fetch visual review image: ${fetched.status}`);
+    }
+    const normalized = await sharp(fetched.buffer)
+      .rotate()
+      .resize({ width: 448, height: 448, fit: "inside", withoutEnlargement: true })
+      .jpeg({ quality: 72, progressive: true })
+      .toBuffer();
+    output.push({ type: "image", data: normalized.toString("base64"), mime_type: "image/jpeg" });
+    imageCount += 1;
+  }
+  if (!imageCount) {
+    throw new HttpError(400, "visual_review_images_missing", "Visual review input contains no images");
+  }
+  sendJson(response, 200, { input: output, image_count: imageCount });
+}
+
 async function runSiglipInference(classifier, previewImages, query) {
   const run = () => classifier(
     previewImages,
@@ -1939,6 +1981,11 @@ const server = createServer(async (request, response) => {
 
     if (request.method === "POST" && requestUrl.pathname === "/visual/rank") {
       await rankVisualCandidates(request, response);
+      return;
+    }
+
+    if (request.method === "POST" && requestUrl.pathname === "/visual/inline-review-images") {
+      await inlineVisualReviewImages(request, response);
       return;
     }
 
