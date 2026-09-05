@@ -88,7 +88,7 @@ export function requiredRenderedShotStateCount(shotCount, maxClusterOccurrences 
   const maxOccurrences = Number(maxClusterOccurrences);
   if (!Number.isInteger(count) || count <= 0) throw new Error("shot count must be positive");
   if (!Number.isInteger(maxOccurrences) || maxOccurrences <= 0) throw new Error("max cluster occurrences must be positive");
-  return Math.min(count, 2);
+  return count;
 }
 
 export function evaluateVisualShotSequence(shots, options = {}) {
@@ -138,9 +138,10 @@ export function evaluateVisualShotSequence(shots, options = {}) {
   const maxShotDurationSeconds = Math.max(...shots.map((shot) => Number(shot.duration_seconds)));
   if (!Number.isFinite(maxVisualClusterDurationShare) || !Number.isFinite(maxShotDurationSeconds)) throw new Error("visual shot sequence quality metric is invalid");
   const pass =
-    (!requireUniqueAssets || uniqueAssetCount === shots.length) &&
+    uniqueAssetCount === shots.length &&
     uniqueVisualClusterCount >= requiredUniqueVisualClusterCount &&
-    adjacentClusterDuplicateCount === 0;
+    adjacentClusterDuplicateCount === 0 &&
+    maxVisualClusterOccurrenceCount === 1;
 
   return {
     version: "visual-segments-v3",

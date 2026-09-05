@@ -1619,7 +1619,7 @@ function inspectRenderedVisualShotDiversity(videoPath, shots) {
   const requiredStateCount = requiredRenderedShotStateCount(shots.length, 2);
   const maxOccurrence = Math.max(...counts.values());
   const maxShare = Math.max(...durations.values()) / totalDuration;
-  if (stateCount < requiredStateCount || adjacent !== 0 || !Number.isFinite(maxShare)) {
+  if (stateCount < requiredStateCount || adjacent !== 0 || maxOccurrence !== 1 || !Number.isFinite(maxShare)) {
     throw new HttpError(
       422,
       "render_visual_state_diversity_failed",

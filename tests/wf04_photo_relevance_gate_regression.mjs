@@ -27,6 +27,8 @@ assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Reje
 assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /selected_candidate_ids/);
 assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /topic_anchor_candidate_ids/);
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /topic anchors/);
+assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Select 6-12 topic anchors/);
+assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /slice\(0,8\)/);
 assert.equal(n4.get('Prepare Multimodal Visual Review').parameters.mode,'runOnceForAllItems');
 assert.equal(n4.get('Require Multimodal Visual Selection').parameters.mode,'runOnceForAllItems');
 assert.equal(n4.get('Inline Candidate Images').parameters.url,'http://media-worker:3001/visual/inline-review-images');
@@ -65,6 +67,7 @@ const twoShot$=()=>({first:()=>({json:twoShotContext})});
 const expandedPool=review({text:JSON.stringify({topic_anchor_candidate_ids:['photo:good','photo:garbage','video:weak'],segments:[{segment_number:1,selected_candidate_ids:[]}]})},twoShot$)[0].json.ranked_candidates;
 assert.equal(expandedPool.length,3,'assignment must receive more approved alternatives than the two required shots when available');
 assert.equal(new Set(expandedPool.map(item=>item.candidate_id)).size,3);
+assert.match(n4.get('Choose Visual Assignment').parameters.jsCode, /assetCount>1\)continue/);
 assert.throws(()=>review({text:'not-json'},review$),/no relevant photographs/);
 
 for (const node of [...wf02.nodes, ...wf04.nodes].filter(node => node.type === 'n8n-nodes-base.code')) {
