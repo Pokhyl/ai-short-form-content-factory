@@ -6,6 +6,9 @@ for x in ['Evaluate Natural Voiceover','Voiceover Fits Target','Prepare Duration
 assert 'Speech-speed manipulation is forbidden' in n['Evaluate Natural Voiceover']['parameters']['jsCode']
 assert "Resume Rewritten Voiceover').all().at(-1)" in n['Evaluate Natural Voiceover']['parameters']['jsCode']
 assert "Prepare Duration Rewrite').first().json?.retry_context" not in n['Evaluate Natural Voiceover']['parameters']['jsCode']
+assert 'edge_fallback_voice:base.edge_fallback_voice' in n['Apply Duration Rewrite']['parameters']['jsCode']
+assert "Resume Rewritten Voiceover').all().at(-1)" in n['Prepare Edge Fallback']['parameters']['jsCode']
+assert w['connections']['Store Gemini Voiceover']['main'][1][0]['node']=='Prepare Edge Fallback'
 assert 'max_fit_passes:2' in n['Prepare Continuous Voiceover']['parameters']['jsCode']
 assert w['connections']['Voiceover Fits Target']['main'][1][0]['node']=='Prepare Duration Rewrite'
 assert w['connections']['Resume Rewritten Voiceover']['main'][0][0]['node']=='Generate Gemini Voiceover'

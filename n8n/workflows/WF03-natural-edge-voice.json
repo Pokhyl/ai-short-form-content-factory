@@ -357,7 +357,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const base=$('Prepare Duration Rewrite').first().json;const r=$input.first().json;let t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{throw new Error('duration rewrite model returned invalid JSON')};const script=String(o.script??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(!script)throw new Error('duration rewrite returned empty script');const wc=script.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;if(wc<base.desired_word_min-8||wc>base.desired_word_max+8)throw new Error(`duration rewrite word count ${wc} missed broad target ${base.desired_word_min}-${base.desired_word_max}`);const old=Array.isArray(base.script_support)?base.script_support:[];const evidence=[...new Set(old.map(s=>String(s.evidence_id??'')).filter(Boolean))];if(!evidence.length)throw new Error('duration rewrite lost evidence provenance');const sentences=script.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/gu)?.map(s=>s.trim()).filter(Boolean)??[script];const support=sentences.map((text,i)=>({segment_number:i+1,evidence_id:evidence[i%evidence.length],source_id:evidence[i%evidence.length],source_text:'supported by preserved job evidence',text,transform:'duration_rewrite_same_facts'}));return [{json:{job_id:base.job_id,language_code:base.language_code,target_duration_seconds:Number(base.target_duration_seconds),provider:base.provider,model:base.model,voice:base.voice,script_text:script,script_support:support,fit_pass:Number(base.next_fit_pass),max_fit_passes:Number(base.max_fit_passes??2)}}];"
+          "jsCode": "const base=$('Prepare Duration Rewrite').first().json;const r=$input.first().json;let t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{throw new Error('duration rewrite model returned invalid JSON')};const script=String(o.script??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(!script)throw new Error('duration rewrite returned empty script');const wc=script.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;if(wc<base.desired_word_min-8||wc>base.desired_word_max+8)throw new Error(`duration rewrite word count ${wc} missed broad target ${base.desired_word_min}-${base.desired_word_max}`);const old=Array.isArray(base.script_support)?base.script_support:[];const evidence=[...new Set(old.map(s=>String(s.evidence_id??'')).filter(Boolean))];if(!evidence.length)throw new Error('duration rewrite lost evidence provenance');const sentences=script.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/gu)?.map(s=>s.trim()).filter(Boolean)??[script];const support=sentences.map((text,i)=>({segment_number:i+1,evidence_id:evidence[i%evidence.length],source_id:evidence[i%evidence.length],source_text:'supported by preserved job evidence',text,transform:'duration_rewrite_same_facts'}));return [{json:{job_id:base.job_id,language_code:base.language_code,target_duration_seconds:Number(base.target_duration_seconds),provider:base.provider,model:base.model,voice:base.voice,edge_fallback_voice:base.edge_fallback_voice,script_text:script,script_support:support,fit_pass:Number(base.next_fit_pass),max_fit_passes:Number(base.max_fit_passes??2)}}];"
         },
         "id": "3972704e-b0e3-4fa0-803f-d44486147011",
         "name": "Apply Duration Rewrite",
@@ -434,7 +434,7 @@
           "url": "http://media-worker:3001/audio/synthesize-free-fallback",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ ({ job_id:$('Prepare Continuous Voiceover').first().json.job_id, text:$('Prepare Continuous Voiceover').first().json.script_text, language_code:$('Prepare Continuous Voiceover').first().json.language_code, target_duration_seconds:$('Prepare Continuous Voiceover').first().json.target_duration_seconds }) }}",
+          "jsonBody": "={{ ({ job_id:$json.job_id, text:$json.script_text, language_code:$json.language_code, target_duration_seconds:$json.target_duration_seconds }) }}",
           "options": {
             "timeout": 270000
           }
@@ -461,6 +461,20 @@
         ],
         "id": "52a58d37-5300-410c-b80a-1fe3c1f0eda1",
         "name": "Attach Gemini Voice Metadata",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "let ctx;try{ctx=$('Resume Rewritten Voiceover').all().at(-1)?.json}catch{}if(!ctx)ctx=$('Prepare Continuous Voiceover').first().json;if(!ctx?.job_id||!ctx?.script_text)throw new Error('Edge fallback context is missing');return [{json:ctx}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          630,
+          350
+        ],
+        "id": "1dbd7f77-45b7-42e9-a50b-4b3ee3d326d3",
+        "name": "Prepare Edge Fallback",
         "onError": "continueErrorOutput"
       }
     ],
@@ -761,7 +775,7 @@
           ],
           [
             {
-              "node": "Generate Edge Fallback",
+              "node": "Prepare Edge Fallback",
               "type": "main",
               "index": 0
             }
@@ -779,7 +793,7 @@
           ],
           [
             {
-              "node": "Generate Edge Fallback",
+              "node": "Prepare Edge Fallback",
               "type": "main",
               "index": 0
             }
@@ -815,7 +829,25 @@
           ],
           [
             {
+              "node": "Prepare Edge Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Edge Fallback": {
+        "main": [
+          [
+            {
               "node": "Generate Edge Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Voiceover Failure",
               "type": "main",
               "index": 0
             }
