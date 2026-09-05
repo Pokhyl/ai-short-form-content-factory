@@ -91,7 +91,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const t=$input.first().json;const j=$('Require Eligible Voiceover Job').first().json;if(t.ready_to_run!==true)throw new Error(`Job ${j.job_id} could not enter voiceover stage`);const voices={en:'en-US-AndrewNeural',pl:'pl-PL-MarekNeural',ru:'ru-RU-DmitryNeural',uk:'uk-UA-OstapNeural'};const voice=voices[j.language_code];if(!voice)throw new Error('Unsupported language');if(j.duration_preflight?.exact_tts_required!==true)throw new Error('Exact TTS contract is missing');return [{json:{job_id:j.job_id,language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds),provider:'microsoft_edge_readaloud',model:'edge_neural',voice,script_text:j.script_text,script_support:j.script_support,fit_pass:Number(j.script_fit_passes??0),max_fit_passes:2}}];"
+          "jsCode": "const t=$input.first().json;const j=$('Require Eligible Voiceover Job').first().json;if(t.ready_to_run!==true)throw new Error(`Job ${j.job_id} could not enter voiceover stage`);const voices={en:'en-US-AndrewNeural',pl:'pl-PL-MarekNeural',ru:'ru-RU-DmitryNeural',uk:'uk-UA-OstapNeural'};const voice=voices[j.language_code];if(!voice)throw new Error('Unsupported language');if(j.duration_preflight?.exact_tts_required!==true)throw new Error('Exact TTS contract is missing');return [{json:{job_id:j.job_id,language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds),provider:'google_gemini',model:'gemini-2.5-flash-preview-tts',voice:'Kore',edge_fallback_voice:voice,script_text:j.script_text,script_support:j.script_support,fit_pass:Number(j.script_fit_passes??0),max_fit_passes:2}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -106,12 +106,12 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://media-worker:3001/audio/synthesize-free-fallback",
+          "url": "http://127.0.0.1:5678/webhook/v4-tts-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ ({ job_id:$json.job_id, text:$json.script_text, language_code:$json.language_code, target_duration_seconds:$json.target_duration_seconds }) }}",
+          "jsonBody": "={{ ({ text:$json.script_text, language_code:$json.language_code }) }}",
           "options": {
-            "timeout": 270000
+            "timeout": 180000
           }
         },
         "type": "n8n-nodes-base.httpRequest",
@@ -121,12 +121,12 @@
           0
         ],
         "id": "3b43357e-38ad-4966-842e-aee0b1475dda",
-        "name": "Generate Natural Voiceover",
+        "name": "Generate Gemini Voiceover",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
-          "jsCode": "const stored=$input.first().json;let ctx;try{ctx=$('Prepare Duration Rewrite').first().json?.retry_context}catch{}if(!ctx)ctx=$('Prepare Continuous Voiceover').first().json;const path=String(stored.voiceover_path??'').trim(),duration=Number(stored.duration_seconds),bytes=Number(stored.bytes);if(!path||!Number.isFinite(duration)||duration<=0||!Number.isFinite(bytes)||bytes<=0)throw new Error('Edge TTS returned invalid voiceover metadata');const provider=String(stored.provider??''),model=String(stored.model??''),voice=String(stored.voice??'');if(provider!=='microsoft_edge_readaloud'||model!=='edge_neural'||voice!==ctx.voice)throw new Error('Natural TTS provider/voice contract changed');if(Number(stored.rate_percent)!==0||Number(stored.post_tempo_factor)!==1)throw new Error('Speech-speed manipulation is forbidden');const target=Number(ctx.target_duration_seconds),tol=1/30,min=(target*0.90)-tol,max=(target*1.10)+tol;const duration_fit=duration>=min-1e-9&&duration<=max+1e-9;return [{json:{...ctx,voiceover_path:path,duration_seconds:duration,bytes,provider,model,voice,duration_fit,target_min_seconds:Number(min.toFixed(3)),target_max_seconds:Number(max.toFixed(3))}}];"
+          "jsCode": "const stored=$input.first().json;let ctx;try{ctx=$('Prepare Duration Rewrite').first().json?.retry_context}catch{}if(!ctx)ctx=$('Prepare Continuous Voiceover').first().json;const path=String(stored.voiceover_path??'').trim(),duration=Number(stored.duration_seconds),bytes=Number(stored.bytes);if(!path||!Number.isFinite(duration)||duration<=0||!Number.isFinite(bytes)||bytes<=0)throw new Error('Edge TTS returned invalid voiceover metadata');const provider=String(stored.provider??''),model=String(stored.model??''),voice=String(stored.voice??'');const gemini=provider==='google_gemini'&&model==='gemini-2.5-flash-preview-tts'&&voice==='Kore';const edge=provider==='microsoft_edge_readaloud'&&model==='edge_neural'&&voice===ctx.edge_fallback_voice;if(!gemini&&!edge)throw new Error('Natural TTS provider/voice contract changed');if(edge&&(Number(stored.rate_percent)!==0||Number(stored.post_tempo_factor)!==1))throw new Error('Speech-speed manipulation is forbidden');const target=Number(ctx.target_duration_seconds),tol=1/30,min=(target*0.90)-tol,max=(target*1.10)+tol;const duration_fit=duration>=min-1e-9&&duration<=max+1e-9;return [{json:{...ctx,voiceover_path:path,duration_seconds:duration,bytes,provider,model,voice,duration_fit,target_min_seconds:Number(min.toFixed(3)),target_max_seconds:Number(max.toFixed(3))}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -406,6 +406,62 @@
           220
         ],
         "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/audio/store-voiceover",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ ({ job_id:$('Prepare Continuous Voiceover').first().json.job_id, audio_base64:$json.audio_base64, mime_type:$json.mime_type }) }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          760,
+          120
+        ],
+        "id": "3c9e8263-9a45-4d8b-bc22-37b187e1833d",
+        "name": "Store Gemini Voiceover",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/audio/synthesize-free-fallback",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ ({ job_id:$('Prepare Continuous Voiceover').first().json.job_id, text:$('Prepare Continuous Voiceover').first().json.script_text, language_code:$('Prepare Continuous Voiceover').first().json.language_code, target_duration_seconds:$('Prepare Continuous Voiceover').first().json.target_duration_seconds }) }}",
+          "options": {
+            "timeout": 270000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          760,
+          320
+        ],
+        "id": "9d49a960-a515-4a25-a5b0-821b2a8908c3",
+        "name": "Generate Edge Fallback",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const stored=$input.first().json;return [{json:{...stored,provider:'google_gemini',model:'gemini-2.5-flash-preview-tts',voice:'Kore',rate_percent:0,post_tempo_factor:1}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          960,
+          120
+        ],
+        "id": "52a58d37-5300-410c-b80a-1fe3c1f0eda1",
+        "name": "Attach Gemini Voice Metadata",
+        "onError": "continueErrorOutput"
       }
     ],
     "connections": {
@@ -478,25 +534,7 @@
         "main": [
           [
             {
-              "node": "Generate Natural Voiceover",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Voiceover Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Generate Natural Voiceover": {
-        "main": [
-          [
-            {
-              "node": "Evaluate Natural Voiceover",
+              "node": "Generate Gemini Voiceover",
               "type": "main",
               "index": 0
             }
@@ -622,7 +660,7 @@
         "main": [
           [
             {
-              "node": "Generate Natural Voiceover",
+              "node": "Generate Gemini Voiceover",
               "type": "main",
               "index": 0
             }
@@ -706,6 +744,78 @@
           [
             {
               "node": "Stop Voiceover Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Gemini Voiceover": {
+        "main": [
+          [
+            {
+              "node": "Store Gemini Voiceover",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Generate Edge Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Store Gemini Voiceover": {
+        "main": [
+          [
+            {
+              "node": "Attach Gemini Voice Metadata",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Generate Edge Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Edge Fallback": {
+        "main": [
+          [
+            {
+              "node": "Evaluate Natural Voiceover",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Voiceover Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Attach Gemini Voice Metadata": {
+        "main": [
+          [
+            {
+              "node": "Evaluate Natural Voiceover",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Generate Edge Fallback",
               "type": "main",
               "index": 0
             }

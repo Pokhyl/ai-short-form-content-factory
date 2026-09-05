@@ -6,6 +6,6 @@ for x in ['Evaluate Natural Voiceover','Voiceover Fits Target','Prepare Duration
 assert 'Speech-speed manipulation is forbidden' in n['Evaluate Natural Voiceover']['parameters']['jsCode']
 assert 'max_fit_passes:2' in n['Prepare Continuous Voiceover']['parameters']['jsCode']
 assert w['connections']['Voiceover Fits Target']['main'][1][0]['node']=='Prepare Duration Rewrite'
-assert w['connections']['Resume Rewritten Voiceover']['main'][0][0]['node']=='Generate Natural Voiceover'
+assert w['connections']['Resume Rewritten Voiceover']['main'][0][0]['node']=='Generate Gemini Voiceover'
 assert 'Do not manipulate speech rate' in n['Prepare Duration Rewrite']['parameters']['jsCode']
 print('WF03_EXACT_VOICE_FIT_LOOP_REGRESSION_PASS')

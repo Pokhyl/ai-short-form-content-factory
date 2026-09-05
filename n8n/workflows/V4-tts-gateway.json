@@ -1,0 +1,186 @@
+[
+  {
+    "updatedAt": "2026-09-05T02:18:30.234Z",
+    "createdAt": "2026-09-05T02:18:30.234Z",
+    "id": "V4TtsGateway1",
+    "name": "V4 — Gemini TTS Gateway",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "v4-tts-gateway",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -520,
+          0
+        ],
+        "id": "036c2a1c-9f6c-4460-b555-1af18350cdee",
+        "name": "Webhook",
+        "webhookId": "108ded8e-288f-43e4-a86e-04b5f57682ca"
+      },
+      {
+        "parameters": {
+          "jsCode": "const b=$json.body??{};const text=String(b.text??'').replace(/\\s+/gu,' ').trim();const language=String(b.language_code??'').toLowerCase();if(!text||text.length>12000)throw new Error('text must contain 1-12000 characters');if(!['en','pl','ru','uk'].includes(language))throw new Error('unsupported TTS language');const style={en:'Speak in natural conversational English with confident documentary pacing.',pl:'Mów naturalnie po polsku, pewnym dokumentalnym tonem.',ru:'Говори естественно по-русски, уверенным документальным тоном.',uk:'Говори природно українською, впевненим документальним тоном.'}[language];return [{json:{request_body:{contents:[{parts:[{text:style+'\\n\\n'+text}]}],generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:'Kore'}}}}}}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -280,
+          0
+        ],
+        "id": "83ef83b0-0981-4799-8b29-f50620b4150e",
+        "name": "Build Request"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.request_body }}",
+          "options": {
+            "timeout": 90000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          0,
+          0
+        ],
+        "id": "d794dd23-dd33-4fe1-8618-7b2a7d924d0f",
+        "name": "Gemini",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "6Vb7V9YzIwp9LS8S",
+            "name": "Google Gemini API"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const r=$json;const part=r?.candidates?.[0]?.content?.parts?.find(x=>x?.inlineData?.data);const data=String(part?.inlineData?.data??'');const mime=String(part?.inlineData?.mimeType??'');if(!data||!mime.toLowerCase().startsWith('audio/'))throw new Error('Gemini TTS returned no audio');return [{json:{audio_base64:data,mime_type:mime,provider:'google_gemini',model:'gemini-2.5-flash-preview-tts',voice:'Kore'}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          240,
+          0
+        ],
+        "id": "a894682b-d2bd-4228-8faa-77e6ddfe2571",
+        "name": "Normalize Response"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          480,
+          0
+        ],
+        "id": "b0b79651-c0ea-4d89-b68f-25b28f14bd20",
+        "name": "Respond"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Build Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Request": {
+        "main": [
+          [
+            {
+              "node": "Gemini",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gemini": {
+        "main": [
+          [
+            {
+              "node": "Normalize Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Response": {
+        "main": [
+          [
+            {
+              "node": "Respond",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate",
+      "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": null,
+    "nodeGroups": [],
+    "pinData": null,
+    "versionId": "68c5a87a-4746-4fb1-8baf-4c2f339017e1",
+    "activeVersionId": "68c5a87a-4746-4fb1-8baf-4c2f339017e1",
+    "versionCounter": 3,
+    "triggerCount": 1,
+    "sourceWorkflowId": null,
+    "tags": [],
+    "shared": [
+      {
+        "updatedAt": "2026-09-04T12:09:42.484Z",
+        "createdAt": "2026-09-04T12:09:42.484Z",
+        "role": "workflow:owner",
+        "workflowId": "V4ModelGateway1",
+        "projectId": "x92yC4agLVaxmmyf",
+        "project": {
+          "updatedAt": "2026-08-22T20:38:05.582Z",
+          "createdAt": "2026-08-22T18:46:49.400Z",
+          "id": "x92yC4agLVaxmmyf",
+          "name": "Vitalii Pokhyl <pokhylvitalii@gmail.com>",
+          "type": "personal",
+          "icon": null,
+          "description": null,
+          "customTelemetryTags": [],
+          "creatorId": "beb98494-dbaf-489c-9de8-6abf234326a4"
+        }
+      }
+    ],
+    "versionMetadata": {
+      "name": null,
+      "description": null
+    }
+  }
+]
