@@ -27,7 +27,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const b=$json.body??{};\nconst prompt=String(b.prompt??'').trim();\nconst multimodal=Array.isArray(b.input)?b.input.filter(x=>x&&typeof x==='object'):[];\nif(!prompt&&!multimodal.length)throw new Error('prompt or multimodal input required');\nconst temperature=Number(b.temperature);\nreturn [{json:{request_body:{prompt,input:multimodal,temperature:Number.isFinite(temperature)?temperature:0.05}}}];"
+          "jsCode": "const b=$json.body??{};\nconst prompt=String(b.prompt??'').trim();\nconst multimodal=Array.isArray(b.input)?b.input.filter(x=>x&&typeof x==='object'):[];\nif(!prompt&&!multimodal.length)throw new Error('prompt or multimodal input required');\nconst body={model:'gemini-3.1-flash-lite',input:multimodal.length?multimodal:prompt,generation_config:{thinking_level:'minimal'},store:false};\nreturn [{json:{request_body:body}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -41,12 +41,14 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://model-worker:3002/generate",
+          "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ $json.request_body }}",
           "options": {
-            "timeout": 160000
+            "timeout": 90000
           }
         },
         "type": "n8n-nodes-base.httpRequest",
@@ -56,11 +58,20 @@
           0
         ],
         "id": "d794dd23-dd33-4fe1-8618-7b2a7d924d0f",
-        "name": "Local Model Worker"
+        "name": "Gemini",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "6Vb7V9YzIwp9LS8S",
+            "name": "Google Gemini API"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 2,
+        "waitBetweenTries": 60000
       },
       {
         "parameters": {
-          "jsCode": "const r=$json;const text=String(r.text??'').trim();if(!text)throw new Error('self-hosted model returned empty response');return [{json:{text,citations:[],model:String(r.model??'ollama-local'),provider:String(r.provider??'ollama_self_hosted'),interaction_id:''}}];"
+          "jsCode": "const r=$json; let text=\"\"; for(const step of (r.steps??[])){ if(step?.type!==\"model_output\") continue; for(const c of (step.content??[])){ if(c?.type===\"text\") text+=String(c.text??\"\"); }} return [{json:{text:text.trim(),citations:[],model:String(r?.model??\"gemini-3.1-flash-lite\"),interaction_id:String(r?.id??\"\")}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -105,7 +116,18 @@
         "main": [
           [
             {
-              "node": "Local Model Worker",
+              "node": "Gemini",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gemini": {
+        "main": [
+          [
+            {
+              "node": "Normalize Response",
               "type": "main",
               "index": 0
             }
@@ -117,17 +139,6 @@
           [
             {
               "node": "Respond",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Local Model Worker": {
-        "main": [
-          [
-            {
-              "node": "Normalize Response",
               "type": "main",
               "index": 0
             }

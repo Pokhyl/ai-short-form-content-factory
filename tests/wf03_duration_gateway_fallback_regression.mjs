@@ -15,13 +15,13 @@ function exercise(base, expectedRange){
 }
 exercise({
   job_id:'00000000-0000-4000-8000-000000000001',language_code:'ru',target_duration_seconds:15,
-  provider:'microsoft_edge_readaloud',model:'edge_neural',voice:'ru-RU-DmitryNeural',
+  provider:'microsoft_edge_readaloud',model:'edge_neural',voice:'ru-RU-DmitryNeural',edge_fallback_voice:'ru-RU-DmitryNeural',
   script_text:'Как работает ГЭС? Вода из водохранилища падает вниз, превращая энергию в кинетическую. Поток вращает турбину, запуская генератор. Так энергия воды становится электричеством, которое по проводам поступает в наши дома.',
   script_support:[{evidence_id:'E1'}],desired_word_min:23,desired_word_max:25,next_fit_pass:2,max_fit_passes:2,duration_seconds:17.472
 },[19,29]);
 exercise({
   job_id:'00000000-0000-4000-8000-000000000002',language_code:'uk',target_duration_seconds:60,
-  provider:'microsoft_edge_readaloud',model:'edge_neural',voice:'uk-UA-OstapNeural',
+  provider:'microsoft_edge_readaloud',model:'edge_neural',voice:'uk-UA-OstapNeural',edge_fallback_voice:'uk-UA-OstapNeural',
   script_text:'Чи замислювалися ви, як народжується дощ? Усе починається з сонячного тепла, що прогріває поверхню нашої планети. Нагріте повітря, насичене водяною парою, починає стрімко підійматися вгору. На великій висоті температура повітря суттєво знижується. У таких умовах водяна пара починає активно конденсуватися. Згодом вона перетворюється на мільярди мікроскопічних крапель води. Ці краплі групуються, формуючи видимі нам пухнасті хмари. З часом дрібні частинки всередині хмари починають постійно зливатися. Вони поступово стають занадто великими та масивними. Повітряні потоки вже не можуть утримувати цей обтяжений шар. Тоді в дію вступає неминуча земна гравітація. Важкі краплі спрямовуються вниз, випадаючи на землю дощем. Це складний фізичний цикл, що постійно живить життя на Землі. Без цього механізму наша планета стала б пустелею. Природа постійно проводить глобальне оновлення водних запасів світу. Кожен дощ є частиною цього вічного та життєдайного природного колообігу.',
   script_support:[{evidence_id:'E1'},{evidence_id:'E2'}],desired_word_min:96,desired_word_max:108,next_fit_pass:1,max_fit_passes:2,duration_seconds:76.104
 },[92,112]);

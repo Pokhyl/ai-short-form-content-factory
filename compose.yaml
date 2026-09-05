@@ -48,20 +48,6 @@ services:
         aliases:
           - content-factory-n8n
 
-
-  model-worker:
-    build:
-      context: ./services/model-worker
-    restart: unless-stopped
-    environment:
-      PORT: ${MODEL_WORKER_PORT}
-      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
-      OLLAMA_TEXT_MODEL: ${OLLAMA_TEXT_MODEL}
-      OLLAMA_VISION_MODEL: ${OLLAMA_VISION_MODEL}
-      MODEL_REQUEST_TIMEOUT_MS: ${MODEL_REQUEST_TIMEOUT_MS}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
   media-worker:
     build:
       context: ./services/media-worker

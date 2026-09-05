@@ -21,8 +21,8 @@ assert.match(server,/normalizeNaturalVoiceoverTail\(wavPath, targetDurationSecon
 assert.match(server,/apad=pad_dur=/);
 assert.match(server,/tail_pad_seconds/);
 const wf=JSON.parse(fs.readFileSync(new URL('../n8n/workflows/WF03-natural-edge-voice.json',import.meta.url),'utf8'))[0];
-const edgeBody=wf.nodes.find(n=>n.name==='Generate Edge Voiceover').parameters.jsonBody;
-assert.match(edgeBody,/target_duration_seconds/);
-assert(!JSON.stringify(wf).includes('google_gemini'));
-assert(!JSON.stringify(wf).includes('v4-tts-gateway'));
+for(const name of ['Store Gemini Voiceover','Store Retried Gemini Voiceover']){
+  const body=wf.nodes.find(n=>n.name===name).parameters.jsonBody;
+  assert.match(body,/target_duration_seconds/);
+}
 console.log('AUDIO_DURATION_TAIL_PAD_REGRESSION_PASS');

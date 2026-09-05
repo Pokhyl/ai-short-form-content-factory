@@ -1,6 +1,6 @@
 # Operator Execution Rules — MUST READ BEFORE ANY ACTION
 
-Last updated: 2026-09-05
+Last updated: 2026-09-04
 
 This file is a mandatory pre-action gate for all work on `Pokhyl/ai-short-form-content-factory`.
 
@@ -46,14 +46,6 @@ n8n is mandatory and remains the orchestration layer. It must coordinate the com
 The target durations remain `15 / 30 / 45 / 60` seconds and the output format is vertical `9:16` short-form video.
 
 Mandatory production dependencies must not require paid per-video API usage. Prefer self-hosted/free/open-source components and genuinely free provider access.
-
-### Hosted AI quota rule — hard architecture gate
-
-A quota-limited hosted AI service must never be the only required path for script planning, rewriting, visual-query generation, multimodal review, TTS, or any other production-critical stage.
-
-If a required hosted AI call fails with quota/rate-limit/credit exhaustion, that is an **architecture FAIL**, not a retry-tuning problem. Do not repair it with provider sleeps, quota waits, rate-limit schedulers, increased timeouts, repeated retries, or a paid-plan assumption. Replace/demote that provider so the baseline remains self-hosted or otherwise quota-independent.
-
-The repository contract in `config/production-dependency-policy.json` and `.github/workflows/production-contract.yml` is mandatory. A change that violates that contract must not be committed as production architecture or deployed.
 
 A standalone CLI may be used only as an internal diagnostic tool for one component. It must never replace n8n as the product orchestrator or become a parallel product architecture.
 

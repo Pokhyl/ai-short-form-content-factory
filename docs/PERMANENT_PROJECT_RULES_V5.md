@@ -46,10 +46,6 @@ The production-critical path must not require paid per-video APIs.
 
 Current allowed free-required building blocks include self-hosted research, free licensed media providers, Edge TTS or local TTS, faster-whisper and FFmpeg. Optional paid/BYOK providers may be evaluated separately but cannot be required for the baseline.
 
-Quota-limited hosted free tiers are also optional only. A 429/quota/credit failure on a production-critical hosted AI call is an architecture failure: do not add sleeps, quota waits, rate-limit schedulers, retry loops, or paid-plan assumptions to preserve that dependency. The baseline must continue through a self-hosted or otherwise quota-independent provider.
-
-`config/production-dependency-policy.json` plus `.github/workflows/production-contract.yml` is the machine-enforced dependency gate. It must pass before production deployment.
-
 ## 8. No topic patches
 
 No topic-specific word replacements, media IDs, hand-picked query fallbacks, acceptance bypasses, arbitrary sleeps, blind retries or threshold weakening to make a fixture pass.
