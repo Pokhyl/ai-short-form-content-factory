@@ -30,6 +30,11 @@ assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Topi
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Technical diagrams/);
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /maxPerSegment/);
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /input\.length>80/);
+const prepareReview=new Function('$input',n4.get('Prepare Multimodal Visual Review').parameters.jsCode);
+const longSegments=Array.from({length:10},(_,segmentIndex)=>({json:{job_id:'00000000-0000-4000-8000-000000000001',segment_number:segmentIndex+1,planned_shot_count:2,canonical_subject:'Wind turbine',visual_target:`target ${segmentIndex+1}`,narration:`narration ${segmentIndex+1}`,ranked_candidates:Array.from({length:10},(_,candidateIndex)=>({candidate_id:`photo:${segmentIndex+1}:${candidateIndex+1}`,media_kind:'photo',preview_url:`https://example.test/${segmentIndex+1}/${candidateIndex+1}.jpg`}))}}));
+const prepared=prepareReview({all:()=>longSegments})[0].json;
+assert.ok(prepared.visual_review_request.input.length<=80);
+assert.ok(prepared.segments.every(segment=>segment.visual_review_candidates.length===10),'bounded model input must not discard the full segment-local recovery pool');
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /final timeline requires/);
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /never repeat an ID/);
 assert.equal(n4.get('Prepare Multimodal Visual Review').parameters.mode,'runOnceForAllItems');
