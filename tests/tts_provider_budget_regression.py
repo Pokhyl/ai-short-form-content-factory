@@ -12,6 +12,9 @@ assert len(retry)==1
 assert w['connections']['Generate Gemini Voiceover']['main'][1][0]['node']=='Prepare Gemini TTS Retry'
 assert w['connections']['Prepare Gemini TTS Retry']['main'][0][0]['node']=='Wait Once For TTS Quota'
 assert "Resume Rewritten Voiceover').all().at(-1)" in next(x for x in w['nodes'] if x['name']=='Prepare Gemini TTS Retry')['parameters']['jsCode']
+assert w['connections']['Store Gemini Voiceover']['main'][1][0]['node']=='Prepare Gemini TTS Retry'
+assert w['connections']['Retry Gemini Voiceover Once']['main'][0][0]['node']=='Store Retried Gemini Voiceover'
+assert w['connections']['Store Retried Gemini Voiceover']['main'][1][0]['node']=='Prepare Edge Fallback'
 assert w['connections']['Retry Gemini Voiceover Once']['main'][1][0]['node']=='Prepare Edge Fallback'
 fallback=[x for x in w['nodes'] if x['name']=='Generate Edge Fallback']
 assert len(fallback)==1 and fallback[0]['parameters']['options']['timeout']==270000

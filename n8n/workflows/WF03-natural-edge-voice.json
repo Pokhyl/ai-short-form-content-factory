@@ -431,6 +431,27 @@
       {
         "parameters": {
           "method": "POST",
+          "url": "http://media-worker:3001/audio/store-voiceover",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ ({ job_id:$('Prepare Continuous Voiceover').first().json.job_id, audio_base64:$json.audio_base64, mime_type:$json.mime_type }) }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          960,
+          300
+        ],
+        "id": "3efffa3d-0b69-4486-bc8c-8264ac2ed90f",
+        "name": "Store Retried Gemini Voiceover",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
           "url": "http://media-worker:3001/audio/synthesize-free-fallback",
           "sendBody": true,
           "specifyBody": "json",
@@ -845,6 +866,24 @@
           ],
           [
             {
+              "node": "Prepare Gemini TTS Retry",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Store Retried Gemini Voiceover": {
+        "main": [
+          [
+            {
+              "node": "Attach Gemini Voice Metadata",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
               "node": "Prepare Edge Fallback",
               "type": "main",
               "index": 0
@@ -928,7 +967,7 @@
         "main": [
           [
             {
-              "node": "Store Gemini Voiceover",
+              "node": "Store Retried Gemini Voiceover",
               "type": "main",
               "index": 0
             }
