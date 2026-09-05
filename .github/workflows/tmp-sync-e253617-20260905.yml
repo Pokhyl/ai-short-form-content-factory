@@ -1,0 +1,34 @@
+name: Temporary self-hosted baseline sync
+
+on:
+  push:
+    branches:
+      - rebuild/agentic-editor-v5
+    paths:
+      - .github/workflows/tmp-sync-e253617-20260905.yml
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/agentic-editor-v5
+          fetch-depth: 1
+      - name: Apply tested source bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL 'https://publisher.hodor.com.pl/chat-share-4d7f9c2a/quota-selfhosted-e253617-1788639365.tar.gz?cb=e253617' -o /tmp/source.tar.gz
+          echo '6b46fee80936ef9cdb0cbe15826c3083f361460da4e480e52950bd35d343bad2  /tmp/source.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/source.tar.gz -C .
+          git rm .github/workflows/tmp-sync-e253617-20260905.yml
+          git config user.name 'Vitalii'
+          git config user.email '84464769+Pokhyl@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          git commit -m 'fix: remove quota-bound AI from required path'
+          git push origin HEAD:rebuild/agentic-editor-v5
