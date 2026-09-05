@@ -1,0 +1,34 @@
+name: Temporary exact visual v4 source sync
+
+on:
+  push:
+    branches:
+      - rebuild/agentic-editor-v5
+    paths:
+      - .github/workflows/tmp-sync-exact-visual-v4-20260905.yml
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/agentic-editor-v5
+          fetch-depth: 1
+      - name: Apply tested exact visual source bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://publisher.hodor.com.pl/chat-share-4d7f9c2a/sync-exact-visual-v4-20260905.tar.gz -o /tmp/source.tar.gz
+          echo 'e50ecbf157e45fdae9935ec7131675130e3f6d39b69744b70d9dee69ef31108f  /tmp/source.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/source.tar.gz -C .
+          git rm .github/workflows/tmp-sync-exact-visual-v4-20260905.yml
+          git config user.name 'Vitalii'
+          git config user.email '84464769+Pokhyl@users.noreply.github.com'
+          git add docs/CURRENT_STATE_V5.md docs/ENGINEERING_HISTORY.md n8n/workflows/WF04-visual-sourcing.json services/media-worker/src/visual-discovery.mjs tests/media_worker_visual_discovery_adapter_regression.mjs tests/wf04_photo_relevance_gate_regression.mjs tests/visual_discovery_exact_segment_query_regression.mjs
+          git diff --cached --check
+          git commit -m 'fix: bind visual discovery to exact narration beats'
+          git push origin HEAD:rebuild/agentic-editor-v5
