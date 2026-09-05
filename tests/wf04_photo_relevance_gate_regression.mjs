@@ -60,6 +60,9 @@ const fallback=review({text:JSON.stringify({topic_anchor_candidate_ids:['photo:g
 assert.equal(fallback.length,1);
 assert.equal(fallback[0].candidate_id,'photo:good');
 assert.match(fallback[0].multimodal_reason,/topic anchor/);
+const twoShotContext={segments:[{...context,planned_shot_count:2,visual_review_candidates:accepted}]};
+const twoShot$=()=>({first:()=>({json:twoShotContext})});
+assert.throws(()=>review({text:JSON.stringify({topic_anchor_candidate_ids:['photo:good'],segments:[{segment_number:1,selected_candidate_ids:[]}]})},twoShot$),/pool is too small/);
 assert.throws(()=>review({text:'not-json'},review$),/no relevant photographs/);
 
 for (const node of [...wf02.nodes, ...wf04.nodes].filter(node => node.type === 'n8n-nodes-base.code')) {

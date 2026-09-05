@@ -7,17 +7,7 @@ export function buildVisualBeatFilters({ index, duration, isImage, isFactualGrap
   const input = `[${index}:v]fps=30,${imageHold}`;
   if (!isFactualGraphic) {
     if (isImage) {
-      const progress = `min(max(t/${d},0),1)`;
-      const states = [
-        { x: `(iw-ow)*${progress}`, y: `(ih-oh)*0.15` },
-        { x: `(iw-ow)*(1-${progress})`, y: `(ih-oh)*0.85` },
-        { x: `(iw-ow)*0.15`, y: `(ih-oh)*${progress}` },
-        { x: `(iw-ow)*0.85`, y: `(ih-oh)*(1-${progress})` },
-        { x: `(iw-ow)*0.7*${progress}`, y: `(ih-oh)*0.7*${progress}` },
-        { x: `(iw-ow)*(0.3+0.7*${progress})`, y: `(ih-oh)*(0.3+0.7*(1-${progress}))` },
-      ];
-      const state = states[index % states.length];
-      return [`${input}scale=1320:2350:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920:x='${state.x}':y='${state.y}',setsar=1,trim=duration=${d},setpts=PTS-STARTPTS,format=yuv420p[v${index}]`];
+      return [`${input}scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,setsar=1,trim=duration=${d},setpts=PTS-STARTPTS,format=yuv420p[v${index}]`];
     }
     return [`${input}scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,setsar=1,trim=duration=${d},setpts=PTS-STARTPTS,format=yuv420p[v${index}]`];
   }
