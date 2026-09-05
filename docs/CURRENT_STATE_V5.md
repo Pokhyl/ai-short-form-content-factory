@@ -295,3 +295,24 @@ The failures have one general cause: one whole-video multimodal request forced c
 Correction under test: split final visual review into deterministic batches of at most six exact narration beats. A six-beat batch can show up to six actual still candidates per beat and remain within the 80-item request cap; smaller batches expose up to 7-10 candidates per beat. The model may approve up to four visibly exact candidates per beat, never fewer than the required shot count when enough exact matches exist. All approved alternatives remain model-reviewed and the global assignment still forbids asset reuse. No topic-level or unreviewed fallback is reintroduced.
 
 Static Node regression now proves 18 beats => exactly three bounded review batches, complete segment coverage, <=80 inputs per model call, multi-batch response reconstruction, fail-closed behavior, and global no-repeat assignment compatibility. Production deployment remains blocked until the full regression suite, GitHub sync, and fresh E2E reruns pass.
+
+### 2026-09-05 bounded visual-query recovery + measured duration controller under test
+
+Fresh production matrix after `820fcb4d78ebb060fb4d938ab40d51661debb5f6` exposed two separate systemic gaps rather than a reason to weaken relevance gates:
+
+- `3a4f8483-03b5-47a3-81dd-8844445157aa` (`How Alexander Fleming discovered penicillin`, `pl`, `30`) failed closed because exact stock search for `Alexander Fleming historical portrait` produced same-name but wrong entities; the actual-image reviewer correctly approved `0/2` for beat 1.
+- `310f8fae-2d74-4f54-871e-f1375fa71ea1` (`как образуются облака и дождь`, `uk`, `60`) failed closed on beat 18 because `water cycle diagram showing evaporation condensation and precipitation` produced mostly generic rain/condensation photos instead of an explanatory water-cycle diagram.
+- `c7cf63b2-3712-4c36-b375-613ad97aa8a2` (`как работает гидроэлектростанция`, `ru`, `15`) measured `20.808 s -> 11.568 s -> 13.272 s`; the final result missed the accepted lower bound by `0.195 s` and the old controller failed immediately after two rewrites.
+
+Systemic correction now under regression/GitHub gate:
+
+- timed visual discovery still searches the exact final-beat query first;
+- when exact provider results do not supply enough query-anchored candidates, discovery may issue exactly one compact recovery query that preserves the named entity/mechanism and media cue; it may not fall back to the overall video topic;
+- the recovery path remains bounded to the same free providers/timeouts and all recovered images still require actual-image multimodal approval;
+- real provider evidence for the failed classes now exposes correct Wikimedia candidates such as Alexander Fleming portraits and water-cycle diagrams instead of accepting same-name stock noise;
+- WF03 now preserves bounded measured TTS history and allows at most three rewrites;
+- when measured attempts bracket the target duration, the next requested word count is computed by interpolation between the closest measured under-target and over-target attempts instead of another blind proportional jump;
+- exact TTS measurement remains authoritative and speech rate remains unchanged;
+- migration `021_expand_script_fit_pass_limit_to_three.sql` raises only the bounded persistence limit from two to three rewrites.
+
+Current static regression gate: `23/23` Node + `11/11` Python PASS, workflow JSON PASS, `git diff --check` PASS. A real-provider discovery/rank dry-run on the failed 30 s and 60 s contexts also passes with 10 ranked candidates available per exact beat. These are engineering proofs only. GitHub sync, migration/deploy, fresh autonomous 15/30/60 renders, and exact MP4 review are still required.

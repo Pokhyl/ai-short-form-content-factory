@@ -34,6 +34,83 @@ function boundedProviderQuery(value, maxChars = PROVIDER_QUERY_MAX_CHARS) {
   return out || text.slice(0, maxChars).trim();
 }
 
+
+const QUERY_FILLER_WORDS = new Set([
+  "a", "an", "the", "and", "or", "of", "to", "in", "on", "at", "by", "for", "from", "with", "into", "over", "under", "during",
+  "show", "shows", "showing", "visible", "view", "close", "up", "detailed", "detail", "inside", "outside", "modern", "historical", "real", "actual",
+  "image", "picture", "scene", "background", "foreground",
+]);
+const QUERY_MEDIA_CUES = new Set(["portrait", "photo", "photograph", "painting", "diagram", "schematic", "map", "micrograph", "illustration", "cutaway"]);
+
+function queryWordRows(value) {
+  return cleanText(value).match(/[\p{L}\p{N}]+/gu)?.map((word) => ({ raw: word, key: word.toLocaleLowerCase() })) ?? [];
+}
+
+function semanticQueryRows(value) {
+  return queryWordRows(value).filter((row) => row.key.length >= 3 && !QUERY_FILLER_WORDS.has(row.key));
+}
+
+function canonicalOverlapRows(query, canonicalTitle) {
+  const canonical = new Set(semanticQueryRows(canonicalTitle).map((row) => row.key));
+  const seen = new Set();
+  return semanticQueryRows(query).filter((row) => canonical.has(row.key) && !seen.has(row.key) && seen.add(row.key));
+}
+
+function queryAnchorKeys(query, canonicalTitle) {
+  const shared = canonicalOverlapRows(query, canonicalTitle);
+  if (shared.length >= 2) return { keys: shared.map((row) => row.key), requireAll: true };
+  const semantic = semanticQueryRows(query);
+  return { keys: semantic.slice(0, Math.min(3, semantic.length)).map((row) => row.key), requireAll: false };
+}
+
+function candidateSearchText(candidate) {
+  return cleanText([
+    candidate?.title,
+    candidate?.description,
+    candidate?.categories,
+    candidate?.metadata?.source_title,
+    candidate?.metadata?.source_description,
+    candidate?.metadata?.source_tags,
+  ].filter(Boolean).join(" ")).toLocaleLowerCase();
+}
+
+function candidateMatchesQueryAnchor(candidate, query, canonicalTitle) {
+  const anchor = queryAnchorKeys(query, canonicalTitle);
+  if (!anchor.keys.length) return false;
+  const text = candidateSearchText(candidate);
+  const hits = anchor.keys.reduce((count, key) => count + (text.includes(key) ? 1 : 0), 0);
+  return anchor.requireAll ? hits === anchor.keys.length : hits >= Math.min(2, anchor.keys.length);
+}
+
+function compactRecoveryQuery(query, canonicalTitle) {
+  const exact = boundedProviderQuery(query);
+  const shared = canonicalOverlapRows(query, canonicalTitle);
+  const mediaCue = semanticQueryRows(query).find((row) => QUERY_MEDIA_CUES.has(row.key));
+  let rows;
+  if (shared.length >= 2) {
+    rows = shared.slice(0, 5);
+    if (mediaCue && !rows.some((row) => row.key === mediaCue.key)) rows.push(mediaCue);
+  } else {
+    rows = semanticQueryRows(query).slice(0, 3);
+    if (mediaCue && !rows.some((row) => row.key === mediaCue.key)) rows.push(mediaCue);
+  }
+  const compact = boundedProviderQuery(rows.map((row) => row.raw).join(" "));
+  if (!compact || compact.toLocaleLowerCase() === exact.toLocaleLowerCase()) return null;
+  return compact;
+}
+
+function markRecoveryCandidates(candidates, recoveryQuery) {
+  return candidates.map((candidate) => ({
+    ...candidate,
+    metadata: {
+      ...(candidate.metadata ?? {}),
+      retrieval_source: `${cleanText(candidate?.metadata?.retrieval_source) || candidate.provider || "provider"}_bounded_recovery`,
+      provider_query: recoveryQuery,
+      bounded_query_recovery: true,
+    },
+  }));
+}
+
 async function mapWithConcurrency(items, limit, worker) {
   const rows = new Array(items.length);
   let cursor = 0;
@@ -384,32 +461,30 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
         unit_number: Number(segment.segment_number),
         visual_target: groundedQueries[Math.max(0, Number(segment.segment_number) - 1)],
         narration: cleanText(segment.narration),
+        required_images: Math.max(1, Number(segment.planned_shot_count) || 1),
       }))
     : beats.map((beat) => ({
         unit_number: Number(beat?.scene_number),
         visual_target: cleanText(beat?.visual_target),
         narration: cleanText(beat?.narration),
+        required_images: 1,
       }));
 
   const providerErrors = [];
   let englishTitle = title;
   let canonicalMedia = [];
-  if (legacyMode) {
-    const [titleResult, canonicalResult] = await Promise.allSettled([
-      fetchEnglishCanonicalTitle({ language, title, fetchImpl }),
-      fetchCanonicalMedia({ language, title, fetchImpl }),
-    ]);
-    if (titleResult.status === "fulfilled") englishTitle = titleResult.value;
-    else providerErrors.push({ provider: "wikipedia_langlinks", query: title, status: Number(titleResult.reason?.status) || null, message: cleanText(titleResult.reason?.message).slice(0, 240) });
-    if (canonicalResult.status === "fulfilled") canonicalMedia = canonicalResult.value;
-    else providerErrors.push({ provider: "canonical_article", query: title, status: Number(canonicalResult.reason?.status) || null, message: cleanText(canonicalResult.reason?.message).slice(0, 240) });
-  }
+  const [titleResult, canonicalResult] = await Promise.allSettled([
+    fetchEnglishCanonicalTitle({ language, title, fetchImpl }),
+    fetchCanonicalMedia({ language, title, fetchImpl }),
+  ]);
+  if (titleResult.status === "fulfilled") englishTitle = titleResult.value;
+  else providerErrors.push({ provider: "wikipedia_langlinks", query: title, status: Number(titleResult.reason?.status) || null, message: cleanText(titleResult.reason?.message).slice(0, 240) });
+  if (canonicalResult.status === "fulfilled") canonicalMedia = canonicalResult.value;
+  else providerErrors.push({ provider: "canonical_article", query: title, status: Number(canonicalResult.reason?.status) || null, message: cleanText(canonicalResult.reason?.message).slice(0, 240) });
 
   const stockQuery = boundedProviderQuery(englishTitle || title);
   let baseCommons = [], basePixabay = [], basePexels = [];
 
-  // Legacy non-timed callers keep a bounded topic-level inventory. The production
-  // timed path deliberately does not mix topic-level stock into beat-specific pools.
   if (legacyMode) {
     const baseSpecs = [
       ["wikimedia_commons", () => fetchCommonsSearch({ query: stockQuery, fetchImpl })],
@@ -429,6 +504,23 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
     }
   }
 
+  async function fetchTimedProviderSet(query, unitNumber) {
+    const specs = [
+      ["wikimedia_commons", () => fetchCommonsSearch({ query, fetchImpl })],
+      ["pixabay", () => fetchPixabay({ query, apiKey: pixabayApiKey, fetchImpl })],
+      ["pexels", () => fetchPexels({ query, apiKey: pexelsApiKey, fetchImpl })],
+    ];
+    const settled = await Promise.allSettled(specs.map(([, load]) => load()));
+    const rows = [];
+    const errors = [];
+    for (let i = 0; i < specs.length; i += 1) {
+      const [provider] = specs[i], result = settled[i];
+      if (result.status === "fulfilled") rows.push(...result.value);
+      else errors.push({ provider, query, unit_number: unitNumber, status: Number(result.reason?.status) || null, message: cleanText(result.reason?.message).slice(0, 240) });
+    }
+    return { candidates: dedupeCandidates(rows), errors };
+  }
+
   const unitResults = await mapWithConcurrency(searchUnits, segmentedMode ? SEGMENT_SEARCH_CONCURRENCY : 1, async (unit) => {
     const unitNumber = Number(unit.unit_number);
     const anchor = cleanText(unit.visual_target);
@@ -436,32 +528,32 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
     const localErrors = [];
 
     if (segmentedMode) {
-      const specs = [
-        ["wikimedia_commons", () => fetchCommonsSearch({ query: exactQuery, fetchImpl })],
-        ["pixabay", () => fetchPixabay({ query: exactQuery, apiKey: pixabayApiKey, fetchImpl })],
-        ["pexels", () => fetchPexels({ query: exactQuery, apiKey: pexelsApiKey, fetchImpl })],
-      ];
-      const settled = await Promise.allSettled(specs.map(([, load]) => load()));
-      let specificCommons = [], specificPixabay = [], specificPexels = [];
-      for (let i = 0; i < specs.length; i += 1) {
-        const [provider] = specs[i], result = settled[i];
-        if (result.status === "fulfilled") {
-          if (provider === "wikimedia_commons") specificCommons = result.value;
-          if (provider === "pixabay") specificPixabay = result.value;
-          if (provider === "pexels") specificPexels = result.value;
-        } else {
-          localErrors.push({ provider, query: exactQuery, unit_number: unitNumber, status: Number(result.reason?.status) || null, message: cleanText(result.reason?.message).slice(0, 240) });
-        }
+      const exact = await fetchTimedProviderSet(exactQuery, unitNumber);
+      localErrors.push(...exact.errors);
+      const canonicalExact = canonicalMedia.filter((candidate) => candidateMatchesQueryAnchor(candidate, anchor, englishTitle));
+      let candidates = dedupeCandidates([...canonicalExact, ...exact.candidates]);
+      const required = Math.max(1, Number(unit.required_images) || 1);
+      const strongCount = candidates.filter((candidate) => candidateMatchesQueryAnchor(candidate, anchor, englishTitle)).length;
+      const recoveryQuery = strongCount < required ? compactRecoveryQuery(anchor, englishTitle) : null;
+      const providerQueries = [exactQuery];
+      let recoveryUsed = false;
+      if (recoveryQuery) {
+        const recovered = await fetchTimedProviderSet(recoveryQuery, unitNumber);
+        localErrors.push(...recovered.errors);
+        providerQueries.push(recoveryQuery);
+        const recoveredRows = markRecoveryCandidates(recovered.candidates, recoveryQuery);
+        candidates = dedupeCandidates([...canonicalExact, ...recoveredRows, ...candidates]);
+        recoveryUsed = true;
       }
-      // Exact beat-specific results are authoritative. Canonical article media may
-      // still provide a licensed exact reference, but generic topic-level stock is
-      // intentionally excluded from timed segments.
-      const candidates = dedupeCandidates([
-        ...specificCommons,
-        ...specificPexels,
-        ...specificPixabay,
-      ]);
-      return { unit_number: unitNumber, visual_target: anchor, candidates, provider_query: exactQuery, errors: localErrors };
+      return {
+        unit_number: unitNumber,
+        visual_target: anchor,
+        candidates,
+        provider_query: exactQuery,
+        provider_queries: providerQueries,
+        bounded_query_recovery_used: recoveryUsed,
+        errors: localErrors,
+      };
     }
 
     let specificCommons = [];
@@ -479,7 +571,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       ...basePexels,
       ...basePixabay,
     ]);
-    return { unit_number: unitNumber, visual_target: anchor, candidates, provider_query: exactQuery || stockQuery, errors: localErrors };
+    return { unit_number: unitNumber, visual_target: anchor, candidates, provider_query: exactQuery || stockQuery, provider_queries: [exactQuery || stockQuery], bounded_query_recovery_used: false, errors: localErrors };
   });
 
   for (const row of unitResults) providerErrors.push(...row.errors);
@@ -493,6 +585,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       pixabay_base: basePixabay.length,
       commons_base: baseCommons.length,
       segment_query_count: segmentedMode ? unitResults.length : 0,
+      segment_recovery_query_count: segmentedMode ? unitResults.filter((row) => row.bounded_query_recovery_used).length : 0,
     },
   };
 
@@ -507,6 +600,8 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
         search_terms: [byNumber.get(Number(segment.segment_number))?.visual_target].filter(Boolean),
         candidates: byNumber.get(Number(segment.segment_number))?.candidates ?? [],
         provider_query: byNumber.get(Number(segment.segment_number))?.provider_query ?? stockQuery,
+        provider_queries: byNumber.get(Number(segment.segment_number))?.provider_queries ?? [stockQuery],
+        bounded_query_recovery_used: byNumber.get(Number(segment.segment_number))?.bounded_query_recovery_used === true,
       })),
     };
   }

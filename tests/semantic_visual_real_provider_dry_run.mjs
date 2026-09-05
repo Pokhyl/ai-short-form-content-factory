@@ -40,11 +40,6 @@ async function attachRank(expanded){
  }
  return out;
 }
-function choose(rows){
- const code=byName.get('Choose Visual Assignment').parameters.jsCode;
- return new Function('$input',code)({all:()=>rows}).map(x=>x.json);
-}
-
 const summaries=[];
 for(const j of contexts){
  assert(Array.isArray(j.scenes)&&j.scenes.length,'scenes missing');
@@ -59,28 +54,24 @@ for(const j of contexts){
   pexelsApiKey:process.env.PEXELS_API_KEY||'',
  });
  const planned=runPlanner(j,discovery);
- assert.equal(planned.planned_shot_count,planned.visual_segment_count,'default shot cardinality must equal semantic segment cardinality');
- assert.equal(planned.segmentation_version,'semantic-visual-segments-v3');
+ assert.equal(planned.planned_shot_count,planned.plans.reduce((n,p)=>n+Number(p.planned_shot_count),0),'planned shot cardinality must equal the sum of beat-local shot requirements');
+ assert(planned.planned_shot_count>=planned.visual_segment_count,'each exact narration beat must receive at least one still');
+ assert.equal(planned.segmentation_version,'narration-beat-visual-segments-v4');
  const total=Number(j.voiceover_duration_seconds);
  const cap=Math.min(8.5,total*0.34);
  assert(planned.plans.every(p=>Number(p.duration_seconds)<=cap+0.02),`quality-constrained segment exceeds cap ${cap}`);
  const expanded=expandPlans(planned);
  assert.equal(expanded.length,planned.visual_segment_count);
  const attached=await attachRank(expanded);
- const selected=choose(attached);
- assert.equal(selected.length,planned.planned_shot_count);
- const q=selected[0]?.visual_quality_pre_render;
- assert(q?.pass===true,'pre-render visual quality did not pass');
- assert(Number(q.max_visual_cluster_duration_share)<=0.34,'duration share gate weakened');
- assert(Number(q.adjacent_visual_cluster_duplicate_count)===0,'adjacent duplicate survived');
- assert(Number(q.max_visual_cluster_occurrence_count)<=2,'cluster occurrence gate weakened');
- const providers=[...new Set(selected.map(x=>String(x.provider)))].sort();
+ const rankedCounts=attached.map(row=>Array.isArray(row.json?.ranked_candidates)?row.json.ranked_candidates.length:0);
+ assert.equal(rankedCounts.length,planned.visual_segment_count);
+ assert(rankedCounts.every(n=>n>0),'every exact beat must expose at least one ranked still to multimodal review');
+ const recoverySegments=planned.plans.filter(p=>p.bounded_query_recovery_used===true).map(p=>Number(p.segment_number));
  summaries.push({
   job_id:j.job_id,topic:j.topic,language:j.language_code,voice_seconds:total,timed_beats:j.scenes.length,
-  visual_segments:planned.visual_segment_count,shots:selected.length,cap_seconds:Number(cap.toFixed(4)),
-  max_shot_seconds:Number(q.max_shot_duration_seconds),clusters:Number(q.unique_visual_cluster_count),required_clusters:Number(q.required_unique_visual_cluster_count),
-  adjacent:Number(q.adjacent_visual_cluster_duplicate_count),max_occurrence:Number(q.max_visual_cluster_occurrence_count),max_share:Number(q.max_visual_cluster_duration_share),
-  asset_reuse_count:Number(q.asset_reuse_count),providers,provider_errors:planned.provider_errors??[],
+  visual_segments:planned.visual_segment_count,planned_shots:planned.planned_shot_count,cap_seconds:Number(cap.toFixed(4)),
+  min_ranked_candidates:Math.min(...rankedCounts),max_ranked_candidates:Math.max(...rankedCounts),
+  recovery_segments:recoverySegments,provider_errors:planned.provider_errors??[],
  });
 }
 console.log(JSON.stringify({pass:true,cases:summaries},null,2));

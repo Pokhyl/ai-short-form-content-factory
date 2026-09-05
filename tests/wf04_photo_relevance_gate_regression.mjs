@@ -95,6 +95,8 @@ const twoShot$=()=>({all:()=>[{json:twoShotContext}]});
 const approvedTwo=review({all:()=>[{json:{text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:['photo:good','photo:garbage'],reasons:{'photo:good':'visible exact subject','photo:garbage':'second visibly relevant fixture'}}]})}}]},twoShot$)[0].json.ranked_candidates;
 assert.deepEqual(approvedTwo.map(item=>item.candidate_id),['photo:good','photo:garbage']);
 assert.equal(new Set(approvedTwo.map(item=>item.candidate_id)).size,2);
+const mergedDuplicate=review({all:()=>[{json:{text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:['photo:good'],reasons:{'photo:good':'first approved'}},{segment_number:99,selected_candidate_ids:['video:weak']},{segment_number:1,selected_candidate_ids:['photo:garbage'],reasons:{'photo:garbage':'second approved'}}]})}}]},twoShot$)[0].json.ranked_candidates;
+assert.deepEqual(mergedDuplicate.map(item=>item.candidate_id),['photo:good','photo:garbage'],'duplicate in-batch decisions must merge while out-of-batch segment numbers are ignored');
 
 const multiPrepared=[
   {json:{job_id:'j',batch_number:1,batch_count:2,segments:[{...context,segment_number:1,planned_shot_count:1,visual_review_candidates:accepted}]}},
