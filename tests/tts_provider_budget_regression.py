@@ -4,8 +4,14 @@ assert 'Math.max(120000, Math.min(240000' in s
 w=json.load(open('n8n/workflows/WF03-natural-edge-voice.json'));w=w[0] if isinstance(w,list) else w
 g=[x for x in w['nodes'] if x['name']=='Generate Gemini Voiceover']
 assert len(g)==1 and g[0]['parameters']['options']['timeout']==180000
-assert g[0].get('retryOnFail') is True and g[0].get('maxTries')==2 and g[0].get('waitBetweenTries')==60000
+assert not g[0].get('retryOnFail')
+wait=[x for x in w['nodes'] if x['name']=='Wait Once For TTS Quota']
+assert len(wait)==1 and wait[0]['parameters']=={'amount':60,'unit':'seconds'}
+retry=[x for x in w['nodes'] if x['name']=='Retry Gemini Voiceover Once']
+assert len(retry)==1
+assert w['connections']['Generate Gemini Voiceover']['main'][1][0]['node']=='Wait Once For TTS Quota'
+assert w['connections']['Retry Gemini Voiceover Once']['main'][1][0]['node']=='Prepare Edge Fallback'
 fallback=[x for x in w['nodes'] if x['name']=='Generate Edge Fallback']
 assert len(fallback)==1 and fallback[0]['parameters']['options']['timeout']==270000
-assert not any('sleep' in x['name'].lower() or 'retry' in x['name'].lower() for x in w['nodes'])
+assert sum('retry gemini voiceover' in x['name'].lower() for x in w['nodes']) == 1
 print('TTS_PROVIDER_BUDGET_REGRESSION_PASS')
