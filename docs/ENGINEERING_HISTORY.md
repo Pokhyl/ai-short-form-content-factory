@@ -419,3 +419,25 @@ Focused Node regression PASSes the 18-beat/3-batch boundary, per-batch <=80 item
 
 Production failures proved that a fail-closed visual reviewer still needs bounded candidate-discovery recovery when free stock search returns same-name entities or generic imagery, and that two independent proportional duration rewrites can oscillate around the target. The general correction keeps exact beat queries authoritative, permits only one compact entity/mechanism-preserving recovery query before actual-image review, and adds a third bounded TTS rewrite driven by interpolation over real measured duration/word-count history when the target is bracketed. No topic-level visual fallback, relevance bypass, speech-speed manipulation, or unbounded retry is introduced.
 - 2026-09-05: production on `b6f299e` proved two remaining systemic gaps: near-floor natural TTS duration misses were being sent back through expensive/nondeterministic rewrites, and exact visual matches could be displaced before multimodal review by weak lexical matches. Added a <=0.4 s natural end-pause normalizer for already-near-floor audio only, subject-preserving media-cue query canonicalization, and exact phrase-priority review exposure. No speech-speed change, no topic-level fallback, and no reviewer bypass.
+
+### 2026-09-05 production rank-timeout root cause + fingerprint-only correction
+
+Fresh autonomous production matrix on commit `706d5badf7279010973506ef4705c4331e7cb715` reached exact-duration voiceover but all three jobs failed in WF04 before render:
+
+- `f94e5fd5-1b6f-4551-8a38-c0f25d745853` — transformer / ru / 15 — voice `16.392 s`; rank segment 1 timed out;
+- `d0cfdc93-508b-4490-a84f-c7ba25f735f6` — Marie Curie / pl / 30 — voice `29.808 s`; rank segments 4,6,7,8,9 timed out;
+- `592c44ea-64d9-44c7-9bb0-347b21de05f2` — aurora / uk / 60 — voice `60.288 s`; rank segments 9,13,14,18 timed out.
+
+Execution inspection proved the final `received=... expected=...` messages were secondary. `Rank Eligible Visuals` sent one HTTP request per exact beat while the media worker serialized every SigLIP inference behind one global promise chain. Later requests waited behind earlier segments until n8n's 120 s HTTP timeout. `Attach Rank Results` then routed failed items to its error output while successful items continued, so the main branch silently lost segments and only failed later with an incomplete timeline.
+
+Systemic correction under test:
+
+- local SigLIP is removed from the critical WF04 rank path; it had already been rejected as semantic relevance authority and is no longer needed there;
+- `/visual/rank` now performs only bounded preview retrieval + perceptual hashing, preserving the planner's deterministic candidate order; actual-image multimodal review remains the sole semantic approval authority;
+- preview transport has a maximum of two attempts for transient 429/5xx/transport failures, six global fetch slots, and the existing 10 s per-attempt timeout;
+- WF04 preserves expected segment cardinality on every fingerprint item and turns any remaining fingerprint failure into one explicit pre-review failure instead of silently dropping that beat;
+- the rank HTTP node itself has at most two attempts; there is no unbounded retry loop;
+- selection provenance is renamed to `multimodal_exact_beat_shot_beam_v4`;
+- the repository media-worker Docker/package build contract is synchronized with the actual production runtime so a GitHub checkout can build the worker reproducibly.
+
+Real stress proof against the exact latest 15/30/60 contexts: discovery produced `6 + 10 + 18 = 34` exact-beat fingerprint requests. All 34 were fired concurrently at the patched worker and completed in `13.228 s` total; the slowest single request was `13.218 s`, all returned at least one fingerprinted candidate, and no request approached the 120 s n8n transport bound. This is engineering evidence only; fresh production E2E MP4s and exact-artifact review remain required.

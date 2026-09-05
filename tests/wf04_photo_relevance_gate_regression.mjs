@@ -44,6 +44,7 @@ const prepareReview=new Function('$input',prepareCode);
 const longSegments=Array.from({length:18},(_,segmentIndex)=>({json:{
   job_id:'00000000-0000-4000-8000-000000000001',
   segment_number:segmentIndex+1,
+  expected_visual_segment_count:18,
   planned_shot_count:2,
   canonical_subject:'Wind turbine',
   visual_target:`target ${segmentIndex+1}`,
@@ -67,6 +68,7 @@ assert(preparedSegments.every(s=>s.visual_review_candidates.length===6),'six-seg
 const attach = new Function('$json', '$', attachCode);
 const context = {
   segment_number: 1,
+  expected_visual_segment_count: 1,
   candidate_pool: [
     { candidate_id: 'photo:good', media_kind: 'photo', metadata_overlap: 2, target_metadata_overlap: 1, representation_preference_rank: 0 },
     { candidate_id: 'photo:garbage', media_kind: 'photo', metadata_overlap: 5, target_metadata_overlap: 0, representation_preference_rank: 0 },
