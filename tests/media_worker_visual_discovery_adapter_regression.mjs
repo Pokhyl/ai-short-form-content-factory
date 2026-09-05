@@ -36,7 +36,8 @@ assert.equal(legacy.timedBeats, undefined);
 assert.equal(legacy.visualQueriesEn, undefined);
 
 const discoverySource=fs.readFileSync(new URL('../services/media-worker/src/visual-discovery.mjs',import.meta.url),'utf8');
-assert.match(discoverySource,/Number\(segment\.first_scene_number\) - 1/,'visual queries must follow narration beat indexes');
+assert.match(discoverySource,/Number\(segment\.segment_number\) - 1/,'visual queries must bind one-to-one to final narration beats');
 assert.doesNotMatch(discoverySource,/index \* groundedQueries\.length \/ segmentation\.segments\.length/);
+assert.match(discoverySource,/narration-beat-visual-segments-v4/,'timed visual segments must remain beat-aligned');
 
 console.log('MEDIA_WORKER_VISUAL_DISCOVERY_ADAPTER_REGRESSION_PASS');

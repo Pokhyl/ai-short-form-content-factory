@@ -385,3 +385,24 @@ The verified CTE snapshot root cause is now closed in production. Next allowed a
 Production evidence from jobs `043c10a6-4d9d-4948-bc0d-64237429e749` and `cc1141d8-03a3-4825-ac96-281812737a7a` proved two general acceptance defects. First, model-written slash separators leaked into persisted narration and were pronounced by TTS. Second, WF04's multimodal reviewer approved fewer images than the planned shot count, after which `Require Multimodal Visual Selection` padded the segment with local candidates that were not model-approved; the stored recovery pool could include candidates that were never shown to the multimodal reviewer. This directly produced random-looking images despite a correct semantic target.
 
 The correction removes formatting separators from spoken narration before persistence/rewrite, adds a WF03 fail-closed speech-safety gate, restricts WF04 eligibility to actually reviewed candidates, and removes unreviewed visual fallback. Insufficient multimodal approvals now fail closed. Regression gate: `20/20` Node + `11/11` Python PASS before deployment.
+
+## 2026-09-05 — exact-beat visual sourcing root cause and correction
+
+Production inspection of fresh 15 s hydro job `fd510f8e-21b3-4f2d-a992-2cc5f21e81a0` confirmed the user's report that visuals could appear random even though final visual queries existed. The final narration beat `Так сила воды питает наши дома.` had the correct stored query `modern residential house exterior at night with glowing interior lights`, but media discovery prefixed the overall canonical topic. Pixabay rejected the long combined request with HTTP 400. Because timed discovery still mixed generic topic-level candidates into each segment, hydroelectric-plant images survived into the exact homes beat and the multimodal reviewer accepted them as contextual filler.
+
+A second ordering defect was confirmed in source: the 6/10/14/18 final narration queries were passed into semantic segmentation, but a merged segment used only `groundedQueries[first_scene_number - 1]`. Therefore later beats inside that segment had no independent search target even though c6a14a7/WF03 had correctly generated one query per final beat.
+
+Systemic correction:
+
+- production timed visual segmentation becomes one-to-one with accepted final narration beats (`narration-beat-visual-segments-v4`);
+- each beat keeps its exact final English query and owns its candidate pool;
+- beats >= 1.8 s plan two distinct still shots;
+- exact beat query is sent directly to providers and bounded to a safe transport length;
+- no generic topic-level stock/canonical-media fallback is mixed into timed pools;
+- Pexels search is photo-first (`/v1/search`);
+- provider searches execute concurrently with bounded cross-beat concurrency;
+- multimodal review cannot use topic anchors or unreviewed recovery candidates and must approve the required exact-beat stills or fail closed.
+
+Automated regression after the change: 21 Node tests + 11 Python tests PASS, workflow JSON PASS and `git diff --check` PASS. New `visual_discovery_exact_segment_query_regression.mjs` verifies exact query transport, <=90-character provider query bound, no canonical-topic prefix/base stock in timed mode, Pexels photo results and concurrent search execution.
+
+A real-provider diagnostic using the exact failed 60 s cloud/rain context completed 18 Commons/Pixabay/Pexels beat searches in 5.726 s, with `narration-beat-visual-segments-v4`, 18 segments, 36 planned stills and zero provider errors. This replaces the earlier >120 s sequential discovery failure class with bounded concurrent discovery. No production workflow/service was changed by this diagnostic; deployment remains gated on GitHub synchronization and post-deploy E2E MP4 review.

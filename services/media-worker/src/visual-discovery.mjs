@@ -5,6 +5,8 @@ const MAX_RESULTS_PER_PROVIDER = 18;
 const FETCH_TIMEOUT_MS = 15000;
 const CACHE_TTL_MS = 15 * 60 * 1000;
 const CACHE_MAX_ENTRIES = 96;
+const PROVIDER_QUERY_MAX_CHARS = 90;
+const SEGMENT_SEARCH_CONCURRENCY = 4;
 const cache = new Map();
 
 function cleanText(value) {
@@ -17,6 +19,67 @@ function cleanText(value) {
 
 function cleanDescription(value) {
   return cleanText(value).slice(0, 1200);
+}
+
+function boundedProviderQuery(value, maxChars = PROVIDER_QUERY_MAX_CHARS) {
+  const text = cleanText(value);
+  if (!text || text.length <= maxChars) return text;
+  const words = text.split(/\s+/u).filter(Boolean);
+  let out = "";
+  for (const word of words) {
+    const next = out ? `${out} ${word}` : word;
+    if (next.length > maxChars) break;
+    out = next;
+  }
+  return out || text.slice(0, maxChars).trim();
+}
+
+async function mapWithConcurrency(items, limit, worker) {
+  const rows = new Array(items.length);
+  let cursor = 0;
+  async function run() {
+    while (true) {
+      const index = cursor;
+      cursor += 1;
+      if (index >= items.length) return;
+      rows[index] = await worker(items[index], index);
+    }
+  }
+  const count = Math.max(1, Math.min(Number(limit) || 1, items.length || 1));
+  await Promise.all(Array.from({ length: count }, () => run()));
+  return rows;
+}
+
+
+function buildBeatAlignedVisualSegmentation(timedBeats) {
+  const validated = buildVisualSegments(timedBeats);
+  const segments = timedBeats.map((beat, index) => {
+    const sceneNumber = Number(beat?.scene_number ?? beat?.beat_number);
+    const start = Number(beat?.beat_start_seconds ?? beat?.start_seconds);
+    const end = Number(beat?.beat_end_seconds ?? beat?.end_seconds);
+    const duration = Number(beat?.duration_seconds);
+    const narration = cleanText(beat?.narration);
+    const support = [...new Set((Array.isArray(beat?.narration_support_evidence_ids) ? beat.narration_support_evidence_ids : beat?.support_evidence_ids ?? []).map(cleanText).filter(Boolean))];
+    return {
+      segment_number: index + 1,
+      first_scene_number: sceneNumber,
+      last_scene_number: sceneNumber,
+      start_seconds: Number(start.toFixed(6)),
+      end_seconds: Number(end.toFixed(6)),
+      duration_seconds: Number(duration.toFixed(6)),
+      narration,
+      support_evidence_ids: support,
+      search_terms: [],
+      planned_shot_count: duration >= 1.8 ? 2 : 1,
+    };
+  });
+  return {
+    version: "narration-beat-visual-segments-v4",
+    source_validation_version: validated.version,
+    duration_seconds: validated.duration_seconds,
+    segment_count: segments.length,
+    segments,
+  };
 }
 
 function mediaKindFromWikimedia(title, mime, description) {
@@ -243,36 +306,30 @@ async function fetchPexels({ query, apiKey, fetchImpl }) {
   const key = `pexels:${query}`;
   const cached = cacheGet(key);
   if (cached) return cached;
-  const params = new URLSearchParams({ query, per_page: String(Math.min(15, MAX_RESULTS_PER_PROVIDER)), size: "medium" });
-  const data = await fetchJson(`https://api.pexels.com/videos/search?${params}`, {
+  const params = new URLSearchParams({ query, per_page: String(Math.min(15, MAX_RESULTS_PER_PROVIDER)) });
+  const data = await fetchJson(`https://api.pexels.com/v1/search?${params}`, {
     headers: { Authorization: apiKey },
     fetchImpl,
   });
   const value = [];
-  for (const video of Array.isArray(data?.videos) ? data.videos : []) {
-    const id = cleanText(video?.id);
-    const files = (Array.isArray(video?.video_files) ? video.video_files : [])
-      .filter((file) => cleanText(file?.file_type).toLowerCase() === "video/mp4" && cleanText(file?.link) && Number(file?.width) >= 640 && Number(file?.height) >= 360)
-      .sort((a, b) => Math.abs(Number(a.width) * Number(a.height) - 1280 * 720) - Math.abs(Number(b.width) * Number(b.height) - 1280 * 720));
-    const file = files[0];
-    if (!id || !file) continue;
-    const previewUrls = [...new Set([
-      ...(Array.isArray(video?.video_pictures) ? video.video_pictures.map((picture) => cleanText(picture?.picture)) : []),
-      cleanText(video?.image),
-    ].filter(Boolean))].slice(0, 3);
-    if (!previewUrls.length) continue;
-    const sourceUrl = cleanText(video?.url);
-    const description = pexelsSlug(sourceUrl);
+  for (const photo of Array.isArray(data?.photos) ? data.photos : []) {
+    const id = cleanText(photo?.id);
+    const width = Number(photo?.width ?? 0), height = Number(photo?.height ?? 0);
+    const downloadUrl = cleanText(photo?.src?.large2x ?? photo?.src?.large ?? photo?.src?.original);
+    const previewUrl = cleanText(photo?.src?.medium ?? photo?.src?.large ?? photo?.src?.large2x);
+    if (!id || !downloadUrl || !previewUrl || width < 320 || height < 320) continue;
+    const sourceUrl = cleanText(photo?.url);
+    const description = cleanText(photo?.alt) || pexelsSlug(sourceUrl);
     value.push({
       candidate_id: `pexels:${id}`,
       provider: "pexels",
       provider_asset_id: id,
-      media_kind: "video",
-      preview_urls: previewUrls,
-      preview_url: previewUrls[0],
-      download_url: cleanText(file.link),
+      media_kind: "photo",
+      preview_urls: [previewUrl],
+      preview_url: previewUrl,
+      download_url: downloadUrl,
       source_url: sourceUrl || null,
-      author: cleanText(video?.user?.name) || null,
+      author: cleanText(photo?.photographer) || null,
       license: "Pexels License",
       license_url: "https://www.pexels.com/license/",
       title: description || `Pexels ${id}`,
@@ -284,10 +341,9 @@ async function fetchPexels({ query, apiKey, fetchImpl }) {
         source_title: description || null,
         source_description: description || null,
         source_tags: description || null,
-        source_width: Number(file.width) || null,
-        source_height: Number(file.height) || null,
-        source_duration_seconds: Number(video?.duration) || null,
-        media_type: "video",
+        source_width: width,
+        source_height: height,
+        media_type: "image",
       },
     });
   }
@@ -318,7 +374,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
   if (segmentedMode && timedBeats.length > 100) throw new Error("visual discovery timed_beats exceeds 100 items");
   if (legacyMode && beats.length > 100) throw new Error("visual discovery beats exceeds 100 items");
 
-  const segmentation = segmentedMode ? buildVisualSegments(timedBeats) : null;
+  const segmentation = segmentedMode ? buildBeatAlignedVisualSegmentation(timedBeats) : null;
   const groundedQueries = Array.isArray(visualQueriesEn)
     ? visualQueriesEn.map(cleanText).filter(Boolean).slice(0, 18)
     : [];
@@ -326,7 +382,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
   const searchUnits = segmentedMode
     ? segmentation.segments.map((segment) => ({
         unit_number: Number(segment.segment_number),
-        visual_target: groundedQueries[Math.max(0, Number(segment.first_scene_number) - 1)],
+        visual_target: groundedQueries[Math.max(0, Number(segment.segment_number) - 1)],
         narration: cleanText(segment.narration),
       }))
     : beats.map((beat) => ({
@@ -337,78 +393,96 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
 
   const providerErrors = [];
   let englishTitle = title;
-  try {
-    englishTitle = await fetchEnglishCanonicalTitle({ language, title, fetchImpl });
-  } catch (error) {
-    providerErrors.push({ provider: "wikipedia_langlinks", query: title, status: Number(error?.status) || null, message: cleanText(error?.message).slice(0, 240) });
-  }
-
   let canonicalMedia = [];
-  try {
-    canonicalMedia = await fetchCanonicalMedia({ language, title, fetchImpl });
-  } catch (error) {
-    providerErrors.push({ provider: "canonical_article", query: title, status: Number(error?.status) || null, message: cleanText(error?.message).slice(0, 240) });
+  if (legacyMode) {
+    const [titleResult, canonicalResult] = await Promise.allSettled([
+      fetchEnglishCanonicalTitle({ language, title, fetchImpl }),
+      fetchCanonicalMedia({ language, title, fetchImpl }),
+    ]);
+    if (titleResult.status === "fulfilled") englishTitle = titleResult.value;
+    else providerErrors.push({ provider: "wikipedia_langlinks", query: title, status: Number(titleResult.reason?.status) || null, message: cleanText(titleResult.reason?.message).slice(0, 240) });
+    if (canonicalResult.status === "fulfilled") canonicalMedia = canonicalResult.value;
+    else providerErrors.push({ provider: "canonical_article", query: title, status: Number(canonicalResult.reason?.status) || null, message: cleanText(canonicalResult.reason?.message).slice(0, 240) });
   }
 
-  const stockQuery = englishTitle || title;
-  let basePixabay = [], basePexels = [];
-  try {
-    basePixabay = await fetchPixabay({ query: stockQuery, apiKey: pixabayApiKey, fetchImpl });
-  } catch (error) {
-    providerErrors.push({ provider: "pixabay", query: stockQuery, status: Number(error?.status) || null, message: cleanText(error?.message).slice(0, 240) });
-  }
-  try {
-    basePexels = await fetchPexels({ query: stockQuery, apiKey: pexelsApiKey, fetchImpl });
-  } catch (error) {
-    providerErrors.push({ provider: "pexels", query: stockQuery, status: Number(error?.status) || null, message: cleanText(error?.message).slice(0, 240) });
-  }
+  const stockQuery = boundedProviderQuery(englishTitle || title);
+  let baseCommons = [], basePixabay = [], basePexels = [];
 
-  let baseCommons = [];
-  try {
-    baseCommons = await fetchCommonsSearch({ query: stockQuery, fetchImpl });
-  } catch (error) {
-    providerErrors.push({ provider: "wikimedia_commons", query: stockQuery, unit_number: null, status: Number(error?.status) || null, message: cleanText(error?.message).slice(0, 240) });
-  }
-
-  const unitResults = [];
-  for (const unit of searchUnits) {
-    const unitNumber = Number(unit.unit_number);
-    const anchor = cleanText(unit.visual_target);
-    const specificQuery = cleanText(`${englishTitle || title} ${anchor}`);
-    const hasSpecificQuery = Boolean(anchor) && specificQuery.toLocaleLowerCase() !== stockQuery.toLocaleLowerCase();
-    let specificCommons = [], specificPixabay = [], specificPexels = [];
-
-    if (hasSpecificQuery) {
-      try {
-        specificCommons = await fetchCommonsSearch({ query: specificQuery, fetchImpl });
-      } catch (error) {
-        providerErrors.push({ provider: "wikimedia_commons", query: specificQuery, unit_number: unitNumber, status: Number(error?.status) || null, message: cleanText(error?.message).slice(0, 240) });
-      }
-      if (segmentedMode) {
-        try {
-          specificPixabay = await fetchPixabay({ query: specificQuery, apiKey: pixabayApiKey, fetchImpl });
-        } catch (error) {
-          providerErrors.push({ provider: "pixabay", query: specificQuery, unit_number: unitNumber, status: Number(error?.status) || null, message: cleanText(error?.message).slice(0, 240) });
-        }
-        try {
-          specificPexels = await fetchPexels({ query: specificQuery, apiKey: pexelsApiKey, fetchImpl });
-        } catch (error) {
-          providerErrors.push({ provider: "pexels", query: specificQuery, unit_number: unitNumber, status: Number(error?.status) || null, message: cleanText(error?.message).slice(0, 240) });
-        }
+  // Legacy non-timed callers keep a bounded topic-level inventory. The production
+  // timed path deliberately does not mix topic-level stock into beat-specific pools.
+  if (legacyMode) {
+    const baseSpecs = [
+      ["wikimedia_commons", () => fetchCommonsSearch({ query: stockQuery, fetchImpl })],
+      ["pixabay", () => fetchPixabay({ query: stockQuery, apiKey: pixabayApiKey, fetchImpl })],
+      ["pexels", () => fetchPexels({ query: stockQuery, apiKey: pexelsApiKey, fetchImpl })],
+    ];
+    const settled = await Promise.allSettled(baseSpecs.map(([, load]) => load()));
+    for (let i = 0; i < baseSpecs.length; i += 1) {
+      const [provider] = baseSpecs[i], result = settled[i];
+      if (result.status === "fulfilled") {
+        if (provider === "wikimedia_commons") baseCommons = result.value;
+        if (provider === "pixabay") basePixabay = result.value;
+        if (provider === "pexels") basePexels = result.value;
+      } else {
+        providerErrors.push({ provider, query: stockQuery, unit_number: null, status: Number(result.reason?.status) || null, message: cleanText(result.reason?.message).slice(0, 240) });
       }
     }
+  }
 
+  const unitResults = await mapWithConcurrency(searchUnits, segmentedMode ? SEGMENT_SEARCH_CONCURRENCY : 1, async (unit) => {
+    const unitNumber = Number(unit.unit_number);
+    const anchor = cleanText(unit.visual_target);
+    const exactQuery = boundedProviderQuery(anchor || stockQuery);
+    const localErrors = [];
+
+    if (segmentedMode) {
+      const specs = [
+        ["wikimedia_commons", () => fetchCommonsSearch({ query: exactQuery, fetchImpl })],
+        ["pixabay", () => fetchPixabay({ query: exactQuery, apiKey: pixabayApiKey, fetchImpl })],
+        ["pexels", () => fetchPexels({ query: exactQuery, apiKey: pexelsApiKey, fetchImpl })],
+      ];
+      const settled = await Promise.allSettled(specs.map(([, load]) => load()));
+      let specificCommons = [], specificPixabay = [], specificPexels = [];
+      for (let i = 0; i < specs.length; i += 1) {
+        const [provider] = specs[i], result = settled[i];
+        if (result.status === "fulfilled") {
+          if (provider === "wikimedia_commons") specificCommons = result.value;
+          if (provider === "pixabay") specificPixabay = result.value;
+          if (provider === "pexels") specificPexels = result.value;
+        } else {
+          localErrors.push({ provider, query: exactQuery, unit_number: unitNumber, status: Number(result.reason?.status) || null, message: cleanText(result.reason?.message).slice(0, 240) });
+        }
+      }
+      // Exact beat-specific results are authoritative. Canonical article media may
+      // still provide a licensed exact reference, but generic topic-level stock is
+      // intentionally excluded from timed segments.
+      const candidates = dedupeCandidates([
+        ...specificCommons,
+        ...specificPexels,
+        ...specificPixabay,
+      ]);
+      return { unit_number: unitNumber, visual_target: anchor, candidates, provider_query: exactQuery, errors: localErrors };
+    }
+
+    let specificCommons = [];
+    if (anchor && exactQuery.toLocaleLowerCase() !== stockQuery.toLocaleLowerCase()) {
+      try {
+        specificCommons = await fetchCommonsSearch({ query: exactQuery, fetchImpl });
+      } catch (error) {
+        localErrors.push({ provider: "wikimedia_commons", query: exactQuery, unit_number: unitNumber, status: Number(error?.status) || null, message: cleanText(error?.message).slice(0, 240) });
+      }
+    }
     const candidates = dedupeCandidates([
-      ...canonicalMedia,
       ...specificCommons,
-      ...specificPexels,
-      ...specificPixabay,
+      ...canonicalMedia,
       ...baseCommons,
       ...basePexels,
       ...basePixabay,
     ]);
-    unitResults.push({ unit_number: unitNumber, visual_target: anchor, candidates, provider_query: hasSpecificQuery ? specificQuery : stockQuery });
-  }
+    return { unit_number: unitNumber, visual_target: anchor, candidates, provider_query: exactQuery || stockQuery, errors: localErrors };
+  });
+
+  for (const row of unitResults) providerErrors.push(...row.errors);
 
   const common = {
     canonical_source: { language, title, english_title: englishTitle || title },
@@ -418,6 +492,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       pexels_base: basePexels.length,
       pixabay_base: basePixabay.length,
       commons_base: baseCommons.length,
+      segment_query_count: segmentedMode ? unitResults.length : 0,
     },
   };
 
