@@ -1,0 +1,33 @@
+name: Temporary rollback accidental Ollama architecture
+
+on:
+  push:
+    branches:
+      - rebuild/agentic-editor-v5
+    paths:
+      - .github/workflows/tmp-rollback-ollama-20260905.yml
+
+permissions:
+  contents: write
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/agentic-editor-v5
+          fetch-depth: 0
+      - name: Restore exact pre-Ollama tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          target=597972e39d5a6e50ef7fc3f97d0ca96bb5bba5c1
+          git cat-file -e "$target^{commit}"
+          tree=$(git rev-parse "$target^{tree}")
+          parent=$(git rev-parse HEAD)
+          git config user.name 'Vitalii'
+          git config user.email '84464769+Pokhyl@users.noreply.github.com'
+          commit=$(printf '%s\n' 'revert: remove accidental Ollama architecture' | git commit-tree "$tree" -p "$parent")
+          git push origin "$commit":rebuild/agentic-editor-v5
+          echo "rollback_commit=$commit"
