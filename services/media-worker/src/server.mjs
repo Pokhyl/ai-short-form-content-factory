@@ -211,6 +211,8 @@ async function inlineVisualReviewImages(request, response) {
 
   const output = [];
   let imageCount = 0;
+  let encodedBytes = 0;
+  const droppedImages = [];
   for (const item of input) {
     if (item?.type !== "image") {
       output.push(item);
@@ -220,28 +222,28 @@ async function inlineVisualReviewImages(request, response) {
     let parsedUrl;
     try {
       parsedUrl = new URL(rawUrl);
-    } catch {
-      throw new HttpError(400, "invalid_visual_review_url", "Visual review image URL is invalid");
+      if (parsedUrl.protocol !== "https:" || !trustedPreviewHosts.has(parsedUrl.hostname)) throw new Error(`untrusted host ${parsedUrl.hostname}`);
+      const fetched = await fetchPreviewCached(rawUrl);
+      if (!fetched.ok || !fetched.buffer) throw new Error(`fetch returned ${fetched.status}`);
+      const normalized = await sharp(fetched.buffer)
+        .rotate()
+        .resize({ width: 384, height: 384, fit: "inside", withoutEnlargement: true })
+        .jpeg({ quality: 68, progressive: true })
+        .toBuffer();
+      if (encodedBytes + normalized.length > 12 * 1024 * 1024) throw new Error("review image byte budget exhausted");
+      output.push({ type: "image", data: normalized.toString("base64"), mime_type: "image/jpeg" });
+      encodedBytes += normalized.length;
+      imageCount += 1;
+    } catch (error) {
+      const preceding = output.at(-1);
+      if (preceding?.type === "text" && /candidate\s+\d+\s*:/iu.test(String(preceding.text ?? ""))) output.pop();
+      droppedImages.push({ uri: rawUrl, reason: String(error?.message ?? error).slice(0, 240) });
     }
-    if (parsedUrl.protocol !== "https:" || !trustedPreviewHosts.has(parsedUrl.hostname)) {
-      throw new HttpError(400, "untrusted_visual_review_url", `Untrusted visual review host: ${parsedUrl.hostname}`);
-    }
-    const fetched = await fetchPreviewCached(rawUrl);
-    if (!fetched.ok || !fetched.buffer) {
-      throw new HttpError(502, "visual_review_fetch_failed", `Could not fetch visual review image: ${fetched.status}`);
-    }
-    const normalized = await sharp(fetched.buffer)
-      .rotate()
-      .resize({ width: 448, height: 448, fit: "inside", withoutEnlargement: true })
-      .jpeg({ quality: 72, progressive: true })
-      .toBuffer();
-    output.push({ type: "image", data: normalized.toString("base64"), mime_type: "image/jpeg" });
-    imageCount += 1;
   }
   if (!imageCount) {
     throw new HttpError(400, "visual_review_images_missing", "Visual review input contains no images");
   }
-  sendJson(response, 200, { input: output, image_count: imageCount });
+  sendJson(response, 200, { input: output, image_count: imageCount, encoded_bytes: encodedBytes, dropped_images: droppedImages });
 }
 
 async function runSiglipInference(classifier, previewImages, query) {

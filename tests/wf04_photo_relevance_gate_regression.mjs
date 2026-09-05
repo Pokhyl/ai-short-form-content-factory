@@ -26,15 +26,18 @@ assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Judg
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Reject lexical coincidences/);
 assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /selected_candidate_ids/);
 assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /topic_anchor_candidate_ids/);
-assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /topic anchors/);
-assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Select 6-12 topic anchors/);
-assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /slice\(0,10\)/);
+assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Topic anchors/i);
+assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Technical diagrams/);
+assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /maxPerSegment/);
+assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /input\.length>80/);
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /final timeline requires/);
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /never repeat an ID/);
 assert.equal(n4.get('Prepare Multimodal Visual Review').parameters.mode,'runOnceForAllItems');
 assert.equal(n4.get('Require Multimodal Visual Selection').parameters.mode,'runOnceForAllItems');
 assert.equal(n4.get('Inline Candidate Images').parameters.url,'http://media-worker:3001/visual/inline-review-images');
 assert.match(n4.get('Review Actual Candidate Images').parameters.jsonBody,/input: \$json\.input/);
+assert.equal(wf04.connections['Inline Candidate Images'].main[1][0].node,'Prepare Visual Failure');
+assert.equal(wf04.connections['Review Actual Candidate Images'].main[1][0].node,'Prepare Visual Failure');
 
 const attach = new Function('$json', '$', attachCode);
 const context = {
