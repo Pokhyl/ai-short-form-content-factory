@@ -848,7 +848,7 @@
           ],
           [
             {
-              "node": "Prepare Gemini TTS Retry",
+              "node": "Prepare Edge Fallback",
               "type": "main",
               "index": 0
             }
@@ -866,7 +866,7 @@
           ],
           [
             {
-              "node": "Prepare Gemini TTS Retry",
+              "node": "Prepare Edge Fallback",
               "type": "main",
               "index": 0
             }
