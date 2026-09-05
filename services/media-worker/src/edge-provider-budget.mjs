@@ -1,7 +1,7 @@
 export function edgeProviderBudgetMilliseconds(targetDurationSeconds) {
   const target = Number(targetDurationSeconds);
-  if (!Number.isFinite(target) || target <= 0) return 120000;
-  // One natural-rate provider call. This is a transport wall-clock budget,
-  // not a retry or speech-speed adjustment.
-  return Math.max(120000, Math.min(240000, Math.round(60000 + (target * 3000))));
+  if (!Number.isFinite(target) || target <= 0) return 30000;
+  // Bound a stalled Read Aloud websocket tightly. A fresh transport attempt is
+  // more useful than leaving the whole job apparently frozen for four minutes.
+  return Math.max(25000, Math.min(40000, Math.round(20000 + (target * 350))));
 }

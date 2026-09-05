@@ -457,7 +457,7 @@
           "specifyBody": "json",
           "jsonBody": "={{ ({ job_id:$json.job_id, text:$json.script_text, language_code:$json.language_code, target_duration_seconds:$json.target_duration_seconds }) }}",
           "options": {
-            "timeout": 270000
+            "timeout": 95000
           }
         },
         "type": "n8n-nodes-base.httpRequest",

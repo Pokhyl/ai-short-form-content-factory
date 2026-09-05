@@ -814,16 +814,31 @@ async function synthesizeFreeFallbackVoiceover(request, response) {
 
   try {
     await rm(sourcePath, { force: true }).catch(() => {});
-    const tts = new EdgeTTS({
-      voice: voiceConfig.voice,
-      lang: voiceConfig.locale,
-      outputFormat: "audio-24khz-48kbitrate-mono-mp3",
-      rate: "default",
-      pitch: "default",
-      volume: "default",
-      timeout: providerBudgetMilliseconds,
-    });
-    await tts.ttsPromise(narration, sourcePath);
+    let transportError = null;
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
+      await rm(sourcePath, { force: true }).catch(() => {});
+      try {
+        const tts = new EdgeTTS({
+          voice: voiceConfig.voice,
+          lang: voiceConfig.locale,
+          outputFormat: "audio-24khz-48kbitrate-mono-mp3",
+          rate: "default",
+          pitch: "default",
+          volume: "default",
+          timeout: providerBudgetMilliseconds,
+        });
+        await tts.ttsPromise(narration, sourcePath);
+        const attemptStat = await stat(sourcePath);
+        if (attemptStat.isFile() && attemptStat.size > 0) {
+          transportError = null;
+          break;
+        }
+        transportError = new Error("Edge Read Aloud returned an empty audio file");
+      } catch (error) {
+        transportError = error;
+      }
+    }
+    if (transportError) throw transportError;
     const sourceStat = await stat(sourcePath);
     if (!sourceStat.isFile() || sourceStat.size <= 0) {
       throw new Error("Edge Read Aloud returned an empty audio file");
