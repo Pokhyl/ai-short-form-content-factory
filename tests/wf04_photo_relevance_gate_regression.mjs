@@ -25,9 +25,9 @@ const attach = new Function('$json', '$', attachCode);
 const context = {
   segment_number: 1,
   candidate_pool: [
-    { candidate_id: 'photo:good', media_kind: 'photo', metadata_overlap: 2, representation_preference_rank: 0 },
-    { candidate_id: 'photo:garbage', media_kind: 'photo', metadata_overlap: 5, representation_preference_rank: 0 },
-    { candidate_id: 'video:weak', media_kind: 'video', metadata_overlap: 5, representation_preference_rank: 3 },
+    { candidate_id: 'photo:good', media_kind: 'photo', metadata_overlap: 2, target_metadata_overlap: 1, representation_preference_rank: 0 },
+    { candidate_id: 'photo:garbage', media_kind: 'photo', metadata_overlap: 5, target_metadata_overlap: 0, representation_preference_rank: 0 },
+    { candidate_id: 'video:weak', media_kind: 'video', metadata_overlap: 5, target_metadata_overlap: 1, representation_preference_rank: 3 },
   ],
 };
 const $ = () => ({ item: { json: context } });
