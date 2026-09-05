@@ -61,6 +61,10 @@ assert.equal(fallback.length,1);
 assert.equal(fallback[0].provider,'local-card');
 assert.match(fallback[0].download_url,/\/visual\/fallback\?/);
 assert.equal(fallback[0].metadata.generated_fallback,true);
+const malformed=review({text:'not-json'},review$)[0].json.ranked_candidates;
+assert.equal(malformed[0].provider,'local-card');
+assert.equal(n4.get('Review Actual Candidate Images') && wf04.connections['Review Actual Candidate Images'].main[1][0].node,'Require Multimodal Visual Selection');
+assert.equal(wf04.connections['Inline Candidate Images'].main[1][0].node,'Require Multimodal Visual Selection');
 
 for (const node of [...wf02.nodes, ...wf04.nodes].filter(node => node.type === 'n8n-nodes-base.code')) {
   new Function('$input', '$', node.parameters.jsCode);

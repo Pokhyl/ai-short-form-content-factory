@@ -578,7 +578,7 @@
       {
         "parameters": {
           "mode": "runOnceForAllItems",
-          "jsCode": "const ctx=$('Prepare Multimodal Visual Review').first().json;let text=String($json.text??'').trim().replace(/^\\x60\\x60\\x60(?:json)?\\s*/i,'').replace(/\\s*\\x60\\x60\\x60$/,'');let o;try{o=JSON.parse(text)}catch{throw new Error('Multimodal visual review returned invalid JSON');}const decisions=new Map((Array.isArray(o.segments)?o.segments:[]).map(x=>[Number(x.segment_number),x]));const makeHash=(segment,variant)=>{let h=2166136261;for(const ch of (segment+':'+variant)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(16).padStart(8,'0').repeat(8);};const out=[];for(const s of ctx.segments){const d=decisions.get(Number(s.segment_number));const byId=new Map(s.visual_review_candidates.map(c=>[String(c.candidate_id),c]));const ids=[...new Set((Array.isArray(d?.selected_candidate_ids)?d.selected_candidate_ids:[]).map(String))].filter(id=>byId.has(id));const selected=ids.map(id=>byId.get(id));const needed=Math.max(1,Number(s.planned_shot_count));for(let variant=1;selected.length<needed;variant++){const id='local-card:'+s.segment_number+':'+variant;selected.push({candidate_id:id,provider:'local-card',provider_asset_id:'segment-'+s.segment_number+'-'+variant,media_kind:'photo',download_url:'http://media-worker:3001/visual/fallback?title='+encodeURIComponent(String(s.visual_target||s.canonical_subject||'Key fact'))+'&subtitle='+encodeURIComponent(String(s.narration||''))+'&variant='+variant,source_url:null,author:'local renderer',license:'generated locally',license_url:null,visual_hash:makeHash(s.segment_number,variant),metadata:{media_type:'photo',generated_fallback:true}});}const ranked_candidates=selected.slice(0,needed).map((c,i)=>({...c,multimodal_rank:i+1,multimodal_reason:String(d?.reasons?.[c.candidate_id]??'local factual card: no relevant provider photo approved'),selection_utility:Number((1-i*0.02).toFixed(4))}));out.push({json:{...s,visual_review_candidates:undefined,ranked_candidates,visual_review_model:String($json.model??'gemini-3.1-flash-lite')}});}return out;"
+          "jsCode": "const ctx=$('Prepare Multimodal Visual Review').first().json;let text=String($json.text??'').trim().replace(/^\\x60\\x60\\x60(?:json)?\\s*/i,'').replace(/\\s*\\x60\\x60\\x60$/,'');let o={segments:[]};try{o=JSON.parse(text)}catch{}const decisions=new Map((Array.isArray(o.segments)?o.segments:[]).map(x=>[Number(x.segment_number),x]));const makeHash=(segment,variant)=>{let h=2166136261;for(const ch of (segment+':'+variant)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(16).padStart(8,'0').repeat(8);};const out=[];for(const s of ctx.segments){const d=decisions.get(Number(s.segment_number));const byId=new Map(s.visual_review_candidates.map(c=>[String(c.candidate_id),c]));const ids=[...new Set((Array.isArray(d?.selected_candidate_ids)?d.selected_candidate_ids:[]).map(String))].filter(id=>byId.has(id));const selected=ids.map(id=>byId.get(id));const needed=Math.max(1,Number(s.planned_shot_count));for(let variant=1;selected.length<needed;variant++){const id='local-card:'+s.segment_number+':'+variant;selected.push({candidate_id:id,provider:'local-card',provider_asset_id:'segment-'+s.segment_number+'-'+variant,media_kind:'photo',download_url:'http://media-worker:3001/visual/fallback?title='+encodeURIComponent(String(s.visual_target||s.canonical_subject||'Key fact'))+'&subtitle='+encodeURIComponent(String(s.narration||''))+'&variant='+variant,source_url:null,author:'local renderer',license:'generated locally',license_url:null,visual_hash:makeHash(s.segment_number,variant),metadata:{media_type:'photo',generated_fallback:true}});}const ranked_candidates=selected.slice(0,needed).map((c,i)=>({...c,multimodal_rank:i+1,multimodal_reason:String(d?.reasons?.[c.candidate_id]??'local factual card: no relevant provider photo approved'),selection_utility:Number((1-i*0.02).toFixed(4))}));out.push({json:{...s,visual_review_candidates:undefined,ranked_candidates,visual_review_model:String($json.model??'local-fallback-card')}});}return out;"
         },
         "id": "b5f24208-ed51-4adc-be57-d37130537f7f",
         "name": "Require Multimodal Visual Selection",
@@ -1057,7 +1057,7 @@
           ],
           [
             {
-              "node": "Prepare Visual Failure",
+              "node": "Require Multimodal Visual Selection",
               "type": "main",
               "index": 0
             }
@@ -1093,7 +1093,7 @@
           ],
           [
             {
-              "node": "Prepare Visual Failure",
+              "node": "Require Multimodal Visual Selection",
               "type": "main",
               "index": 0
             }
