@@ -1326,6 +1326,30 @@ async function discoverVisuals(request, response) {
   }
 }
 
+async function searchResearchSources(request, response, requestUrl) {
+  const query = String(requestUrl.searchParams.get("q") ?? "").replace(/\s+/gu, " ").trim();
+  if (!query || query.length > 300) throw new HttpError(400, "invalid_research_query", "q must contain 1-300 characters");
+  const endpoint = new URL("https://en.wikipedia.org/w/api.php");
+  endpoint.search = new URLSearchParams({ action: "query", list: "search", srsearch: query, srlimit: "10", format: "json", utf8: "1" }).toString();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const upstream = await fetch(endpoint, { headers: { "User-Agent": previewUserAgent, Accept: "application/json" }, signal: controller.signal });
+    if (!upstream.ok) throw new Error(`Wikipedia HTTP ${upstream.status}`);
+    const payload = await upstream.json();
+    const results = (Array.isArray(payload?.query?.search) ? payload.query.search : []).map((row) => {
+      const title = String(row?.title ?? "").trim();
+      const content = String(row?.snippet ?? "").replace(/<[^>]*>/gu, " ").replace(/&quot;/gu, '"').replace(/&#39;|&apos;/gu, "'").replace(/&amp;/gu, "&").replace(/\s+/gu, " ").trim();
+      return { title, content, url: `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /gu, "_"))}`, engine: "wikipedia" };
+    }).filter((row) => row.title && row.content);
+    sendJson(response, 200, { query, number_of_results: results.length, results });
+  } catch (error) {
+    throw new HttpError(502, "research_search_failed", `Wikipedia research failed: ${String(error?.message ?? error)}`);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function createVisualFallback(request, response, requestUrl) {
   const body = request.method === "GET" ? Object.fromEntries(requestUrl.searchParams) : await readJsonBody(request);
   const title = String(body.title ?? "").trim().slice(0, 120);
@@ -1982,6 +2006,11 @@ const server = createServer(async (request, response) => {
 
     if (request.method === "POST" && requestUrl.pathname === "/visual/discover") {
       await discoverVisuals(request, response);
+      return;
+    }
+
+    if (request.method === "GET" && requestUrl.pathname === "/research/search") {
+      await searchResearchSources(request, response, requestUrl);
       return;
     }
 

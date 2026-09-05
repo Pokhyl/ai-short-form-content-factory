@@ -116,26 +116,18 @@
       },
       {
         "parameters": {
-          "url": "http://ai-short-form-v4-search:8080/search",
+          "url": "http://media-worker:3001/research/search",
           "sendQuery": true,
           "queryParameters": {
             "parameters": [
               {
                 "name": "q",
                 "value": "={{ $json.discovery_query }}"
-              },
-              {
-                "name": "format",
-                "value": "json"
-              },
-              {
-                "name": "language",
-                "value": "all"
               }
             ]
           },
           "options": {
-            "timeout": 30000
+            "timeout": 20000
           }
         },
         "id": "ccde4eab-34b3-48d4-9b54-3608654b0123",
@@ -199,26 +191,18 @@
       },
       {
         "parameters": {
-          "url": "http://ai-short-form-v4-search:8080/search",
+          "url": "http://media-worker:3001/research/search",
           "sendQuery": true,
           "queryParameters": {
             "parameters": [
               {
                 "name": "q",
                 "value": "={{ $json.search_query_en }}"
-              },
-              {
-                "name": "format",
-                "value": "json"
-              },
-              {
-                "name": "language",
-                "value": "all"
               }
             ]
           },
           "options": {
-            "timeout": 30000
+            "timeout": 20000
           }
         },
         "id": "ab768c82-285d-4715-9ee1-0db7109fa55e",
