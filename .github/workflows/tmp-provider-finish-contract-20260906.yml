@@ -1,0 +1,36 @@
+name: Temporary provider finish-contract transport
+
+on:
+  push:
+    branches:
+      - tmp/provider-finish-contract-20260906
+
+permissions:
+  contents: write
+
+jobs:
+  transport:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/agentic-editor-v5
+          fetch-depth: 0
+      - name: Apply verified provider finish-contract patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=a5bafcd96f69936f51439b0298c23dfc9705874e
+          expected_tree=a6bfe9de9639fcac8fa840972ad283530849a97f
+          test "$(git rev-parse HEAD)" = "$expected"
+          git config user.name Vitalii
+          git config user.email 84464769+Pokhyl@users.noreply.github.com
+          cat > /tmp/fix.patch.gz.b64 <<'PATCH64'
+          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
+          PATCH64
+          base64 -d /tmp/fix.patch.gz.b64 | gzip -d > /tmp/fix.patch
+          git am /tmp/fix.patch
+          test "$(git rev-parse HEAD^{tree})" = "$expected_tree"
+          docker run --rm -v "$PWD":/repo:ro -w /repo node:22-bookworm-slim node tests/model_gateway_bounded_recovery_regression.mjs
+          git diff --check HEAD^ HEAD
+          git push origin HEAD:rebuild/agentic-editor-v5
