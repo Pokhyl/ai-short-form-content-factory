@@ -6,7 +6,7 @@ g=[x for x in w['nodes'] if x['name']=='Generate Gemini Voiceover']
 assert len(g)==1 and g[0]['parameters']['options']['timeout']==180000
 assert not g[0].get('retryOnFail')
 wait=[x for x in w['nodes'] if x['name']=='Wait Once For TTS Quota']
-assert len(wait)==1 and wait[0]['parameters']=={'amount':60,'unit':'seconds'}
+assert len(wait)==1 and wait[0]['parameters']=={'resume':'timeInterval','amount':60,'unit':'seconds'}
 retry=[x for x in w['nodes'] if x['name']=='Retry Gemini Voiceover Once']
 assert len(retry)==1
 assert w['connections']['Generate Gemini Voiceover']['main'][1][0]['node']=='Prepare Gemini TTS Retry'
