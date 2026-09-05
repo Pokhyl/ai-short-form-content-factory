@@ -379,3 +379,9 @@ Post-deploy proof:
 Rollback remains `/opt/ai-short-form-content-factory/rollback/20260903T155712Z-pre-wf04-segment-completion`. No WF02/WF03/WF05/WF06, media-worker, PostgreSQL schema, provider, quality threshold or candidate-pool behavior was changed.
 
 The verified CTE snapshot root cause is now closed in production. Next allowed action is exactly one completely fresh `как работает индукционная плита / uk / 60` job.
+
+## 2026-09-05 — spoken-separator and unreviewed-visual fallback root cause
+
+Production evidence from jobs `043c10a6-4d9d-4948-bc0d-64237429e749` and `cc1141d8-03a3-4825-ac96-281812737a7a` proved two general acceptance defects. First, model-written slash separators leaked into persisted narration and were pronounced by TTS. Second, WF04's multimodal reviewer approved fewer images than the planned shot count, after which `Require Multimodal Visual Selection` padded the segment with local candidates that were not model-approved; the stored recovery pool could include candidates that were never shown to the multimodal reviewer. This directly produced random-looking images despite a correct semantic target.
+
+The correction removes formatting separators from spoken narration before persistence/rewrite, adds a WF03 fail-closed speech-safety gate, restricts WF04 eligibility to actually reviewed candidates, and removes unreviewed visual fallback. Insufficient multimodal approvals now fail closed. Regression gate: `20/20` Node + `11/11` Python PASS before deployment.
