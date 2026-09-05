@@ -228,7 +228,7 @@
       {
         "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "const response=$json,ctx=$('Expand Rank Items').item.json;\nconst ranked=Array.isArray(response?.ranked)?response.ranked:[];\nif(!ranked.length)throw new Error(`Local visual fingerprinting returned no candidates for segment ${ctx.segment_number}`);\nconst pool=new Map((ctx.candidate_pool??[]).map(c=>[String(c.candidate_id),c]));const rows=[],seen=new Set();\nfor(let i=0;i<ranked.length;i++){const id=String(ranked[i]?.candidate_id??'').trim(),score=Number(ranked[i]?.score);if(!id||seen.has(id)||!pool.has(id)||!Number.isFinite(score)||score<0||score>1)continue;const visualHash=String(ranked[i]?.visual_hash??'').trim().toLowerCase();if(!/^[0-9a-f]{64}$/.test(visualHash))continue;seen.add(id);const c=pool.get(id);rows.push({...c,visual_hash:visualHash,local_rank_score:score,local_positive_rank:Number(ranked[i]?.positive_rank??99),local_positive_margin:Number(ranked[i]?.positive_margin??-1),local_siglip_rank:i+1});}\nif(!rows.length)throw new Error(`Visual segment ${ctx.segment_number} has no fingerprinted candidates`);\nreturn {json:{...ctx,candidate_pool:undefined,ranked_candidates:rows,local_rank_model:String(response.model??''),local_rank_dtype:String(response.dtype??'')}};"
+          "jsCode": "const response=$json,ctx=$('Expand Rank Items').item.json;\nconst ranked=Array.isArray(response?.ranked)?response.ranked:[];\nif(!ranked.length)throw new Error(`Local visual fingerprinting returned no candidates for segment ${ctx.segment_number}`);\nconst pool=new Map((ctx.candidate_pool??[]).map(c=>[String(c.candidate_id),c]));const rows=[],seen=new Set();\nfor(let i=0;i<ranked.length;i++){const id=String(ranked[i]?.candidate_id??'').trim(),score=Number(ranked[i]?.score);if(!id||seen.has(id)||!pool.has(id)||!Number.isFinite(score)||score<0||score>1)continue;const visualHash=String(ranked[i]?.visual_hash??'').trim().toLowerCase();if(!/^[0-9a-f]{64}$/.test(visualHash))continue;seen.add(id);const c=pool.get(id);rows.push({...c,visual_hash:visualHash,local_rank_score:score,local_siglip_rank:i+1});}\nif(!rows.length)throw new Error(`Visual segment ${ctx.segment_number} has no fingerprinted candidates`);\nreturn {json:{...ctx,candidate_pool:undefined,ranked_candidates:rows,local_rank_model:String(response.model??''),local_rank_dtype:String(response.dtype??'')}};"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -542,14 +542,71 @@
       {
         "parameters": {
           "mode": "runOnceForAllItems",
-          "jsCode": "const segments=$input.all().map(x=>x.json).sort((a,b)=>Number(a.segment_number)-Number(b.segment_number));const makeHash=(segment,variant)=>{let h=2166136261;for(const ch of (segment+':'+variant)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(16).padStart(8,'0').repeat(8);};const out=[];for(const s of segments){const needed=Math.max(1,Number(s.planned_shot_count));const approved=(s.ranked_candidates??[]).filter(c=>String(c.media_kind??'photo').toLowerCase()!=='video'&&Number(c.local_positive_rank)===1&&Number(c.local_positive_margin)>=0.04&&Number(c.target_metadata_overlap??0)>=1).sort((a,b)=>Number(b.local_positive_margin)-Number(a.local_positive_margin)).slice(0,needed);for(let variant=1;approved.length<needed;variant++){approved.push({candidate_id:'local-card:'+s.segment_number+':'+variant,provider:'local-card',provider_asset_id:'segment-'+s.segment_number+'-'+variant,media_kind:'photo',download_url:'http://media-worker:3001/visual/fallback?title='+encodeURIComponent(String(s.visual_target||s.canonical_subject||'Key fact'))+'&subtitle='+encodeURIComponent(String(s.narration||''))+'&variant='+variant,source_url:null,author:'local renderer',license:'generated locally',license_url:null,visual_hash:makeHash(s.segment_number,variant),local_rank_score:1,local_positive_rank:1,local_positive_margin:1,metadata:{media_type:'photo',generated_fallback:true}});}const ranked_candidates=approved.map((c,i)=>({...c,local_review_rank:i+1,local_review_reason:c.metadata?.generated_fallback?'local factual card: no provider photo passed contrastive review':'local contrastive visual match',selection_utility:Number((1-i*0.02).toFixed(4))}));out.push({json:{...s,ranked_candidates,local_review_model:String(s.local_rank_model||'siglip')}});}return out;"
+          "jsCode": "const segments=$input.all().map(x=>x.json).sort((a,b)=>Number(a.segment_number)-Number(b.segment_number));\nif(!segments.length)throw new Error('No segments supplied for multimodal visual review');\nconst prompt='You are the final visual editor for a factual vertical short. Review the actual candidate images for every segment. Judge only visible content, not filenames. Select only images a human immediately understands as relevant to that segment. Reject lexical coincidences, unrelated people, same-named animals/insects, generic objects or landscapes unless explicitly requested, scientific figures unrelated to the narration, watermarks, collages, screenshots, and low-information abstractions. For a named person or fictional character accept only a recognizable person/performer, explicitly relevant licensed costume/exhibit, or clearly identified real location/object. Return ONLY JSON: {\"segments\":[{\"segment_number\":1,\"selected_candidate_ids\":[\"provider:id\"],\"reasons\":{\"provider:id\":\"short visible-content reason\"}}]}. Include every segment. Select candidates only for the segment where they visibly fit. An empty selection is valid; the pipeline will render a local factual title card instead of using unrelated media or making another model call.';\nconst input=[{type:'text',text:prompt}],reviewSegments=[];\nfor(const s of segments){const rows=(s.ranked_candidates??[]).filter(c=>String(c.media_kind??'photo').toLowerCase()!=='video').slice(0,5);if(!rows.length)throw new Error(`Visual segment ${s.segment_number} has no still-image candidates`);reviewSegments.push({...s,visual_review_candidates:rows});input.push({type:'text',text:`SEGMENT ${s.segment_number} | canonical subject: ${s.canonical_subject} | exact target: ${s.visual_target} | narration: ${s.narration}`});for(const [i,c] of rows.entries()){input.push({type:'text',text:`Segment ${s.segment_number}, candidate ${i+1}: ${c.candidate_id}`});input.push({type:'image',uri:String((c.preview_urls??[c.preview_url]).filter(Boolean)[0])});}}\nreturn [{json:{job_id:segments[0].job_id,segments:reviewSegments,visual_review_request:{input}}}];"
+        },
+        "id": "c1887f51-f646-4e31-8af9-f15b96908b10",
+        "name": "Prepare Multimodal Visual Review",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1880,
+          240
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { input: $json.input } }}",
+          "options": {
+            "timeout": 90000
+          }
+        },
+        "id": "80e1dc04-71ef-4355-bca4-3875685fd0dc",
+        "name": "Review Actual Candidate Images",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2270,
+          240
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "const ctx=$('Prepare Multimodal Visual Review').first().json;let text=String($json.text??'').trim().replace(/^\\x60\\x60\\x60(?:json)?\\s*/i,'').replace(/\\s*\\x60\\x60\\x60$/,'');let o;try{o=JSON.parse(text)}catch{throw new Error('Multimodal visual review returned invalid JSON');}const decisions=new Map((Array.isArray(o.segments)?o.segments:[]).map(x=>[Number(x.segment_number),x]));const makeHash=(segment,variant)=>{let h=2166136261;for(const ch of (segment+':'+variant)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(16).padStart(8,'0').repeat(8);};const out=[];for(const s of ctx.segments){const d=decisions.get(Number(s.segment_number));const byId=new Map(s.visual_review_candidates.map(c=>[String(c.candidate_id),c]));const ids=[...new Set((Array.isArray(d?.selected_candidate_ids)?d.selected_candidate_ids:[]).map(String))].filter(id=>byId.has(id));const selected=ids.map(id=>byId.get(id));const needed=Math.max(1,Number(s.planned_shot_count));for(let variant=1;selected.length<needed;variant++){const id='local-card:'+s.segment_number+':'+variant;selected.push({candidate_id:id,provider:'local-card',provider_asset_id:'segment-'+s.segment_number+'-'+variant,media_kind:'photo',download_url:'http://media-worker:3001/visual/fallback?title='+encodeURIComponent(String(s.visual_target||s.canonical_subject||'Key fact'))+'&subtitle='+encodeURIComponent(String(s.narration||''))+'&variant='+variant,source_url:null,author:'local renderer',license:'generated locally',license_url:null,visual_hash:makeHash(s.segment_number,variant),metadata:{media_type:'photo',generated_fallback:true}});}const ranked_candidates=selected.slice(0,needed).map((c,i)=>({...c,multimodal_rank:i+1,multimodal_reason:String(d?.reasons?.[c.candidate_id]??'local factual card: no relevant provider photo approved'),selection_utility:Number((1-i*0.02).toFixed(4))}));out.push({json:{...s,visual_review_candidates:undefined,ranked_candidates,visual_review_model:String($json.model??'gemini-3.1-flash-lite')}});}return out;"
         },
         "id": "b5f24208-ed51-4adc-be57-d37130537f7f",
-        "name": "Select Locally Reviewed Visuals",
+        "name": "Require Multimodal Visual Selection",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
           2490,
+          240
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/inline-review-images",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.visual_review_request }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "id": "be8db4cf-3fd5-4077-a142-b251b08439ab",
+        "name": "Inline Candidate Images",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2050,
           240
         ],
         "onError": "continueErrorOutput"
@@ -755,7 +812,7 @@
         "main": [
           [
             {
-              "node": "Select Locally Reviewed Visuals",
+              "node": "Prepare Multimodal Visual Review",
               "type": "main",
               "index": 0
             }
@@ -971,11 +1028,65 @@
           ]
         ]
       },
-      "Select Locally Reviewed Visuals": {
+      "Prepare Multimodal Visual Review": {
+        "main": [
+          [
+            {
+              "node": "Inline Candidate Images",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Review Actual Candidate Images": {
+        "main": [
+          [
+            {
+              "node": "Require Multimodal Visual Selection",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Require Multimodal Visual Selection": {
         "main": [
           [
             {
               "node": "Choose Visual Assignment",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Inline Candidate Images": {
+        "main": [
+          [
+            {
+              "node": "Review Actual Candidate Images",
               "type": "main",
               "index": 0
             }
