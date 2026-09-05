@@ -21,10 +21,7 @@ const chooseAssignment = nodes.get('Choose Visual Assignment')?.parameters?.jsCo
 const expandStored = nodes.get('Expand Stored Visual Targets')?.parameters?.jsCode ?? '';
 const persistVisual = nodes.get('Persist Visual Result')?.parameters?.query ?? '';
 
-assert.match(
-  attachRank,
-  /const utility=score\+\(Math\.min\(Number\(c\.metadata_overlap\?\?0\),5\)\*0\.018\)-\(Number\(c\.representation_preference_rank\?\?4\)\*0\.025\)/,
-);
+assert.doesNotMatch(attachRank, /selection_utility/);
 assert.match(chooseAssignment, /utility=Number\(c\.selection_utility\)/);
 assert.match(expandStored, /selection_score:Number\(target\.selection_utility\)/);
 assert.match(persistVisual, /selection_score,metadata/);

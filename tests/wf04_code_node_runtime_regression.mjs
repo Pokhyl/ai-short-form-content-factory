@@ -24,5 +24,5 @@ const discovery={canonical_source:{language:'en',title:'Refrigerator',english_ti
 const $=(name)=>{if(name==='Require Eligible Visual Job')return {first:()=>({json:context})};throw new Error(`Unexpected ${name}`)};
 const out=new Function('$input','$',planner.parameters.jsCode)({first:()=>({json:discovery})},$)[0].json;
 assert.equal(out.plans.length,2);assert.equal(out.visual_segment_count,2);assert.equal(out.planned_shot_count,2);
-for(const p of out.plans){assert.equal(p.visual_lane,'reference');assert(p.segment_number>0);assert(Array.isArray(p.support_evidence_ids)&&p.support_evidence_ids.length);assert(p.candidate_pool.some(c=>c.provider==='wikimedia'));assert(p.candidate_pool.some(c=>c.provider==='pixabay'));assert(p.candidate_pool.some(c=>c.provider==='pexels'));assert(!p.candidate_pool.some(c=>c.candidate_id==='pixabay:beach'));}
+for(const p of out.plans){assert.equal(p.visual_lane,'reference');assert(p.segment_number>0);assert(Array.isArray(p.support_evidence_ids)&&p.support_evidence_ids.length);assert(p.candidate_pool.some(c=>c.provider==='wikimedia'));assert(p.candidate_pool.some(c=>c.provider==='pixabay'));assert(!p.candidate_pool.some(c=>c.provider==='pexels'));assert(!p.candidate_pool.some(c=>c.candidate_id==='pixabay:beach'));}
 console.log('WF04_CODE_NODE_RUNTIME_V3_PASS',out.plans.map(p=>p.segment_number));
