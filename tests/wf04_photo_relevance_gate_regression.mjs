@@ -18,20 +18,14 @@ assert.doesNotMatch(expandCode, /plan\.visual_description/);
 const attachCode = n4.get('Attach Rank Results').parameters.jsCode;
 assert.doesNotMatch(attachCode, /MIN_VISUAL_RELEVANCE|metadata_overlap.*0\.018/);
 assert.match(attachCode, /Local visual fingerprinting/);
-assert(n4.has('Prepare Multimodal Visual Review'));
-assert(n4.has('Inline Candidate Images'));
-assert(n4.has('Review Actual Candidate Images'));
-assert(n4.has('Require Multimodal Visual Selection'));
-assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Judge only visible content/);
-assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Reject lexical coincidences/);
-assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /selected_candidate_ids/);
-assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /local-card/);
-assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /local factual title card/);
-assert.equal(n4.get('Prepare Multimodal Visual Review').parameters.mode,'runOnceForAllItems');
-assert.equal(n4.get('Require Multimodal Visual Selection').parameters.mode,'runOnceForAllItems');
-assert.equal(n4.get('Inline Candidate Images').parameters.url,'http://media-worker:3001/visual/inline-review-images');
-assert.match(n4.get('Review Actual Candidate Images').parameters.jsonBody,/input: \$json\.input/);
-
+assert(n4.has('Select Locally Reviewed Visuals'));
+assert(!n4.has('Prepare Multimodal Visual Review'));
+assert(!n4.has('Inline Candidate Images'));
+assert(!n4.has('Review Actual Candidate Images'));
+assert(!JSON.stringify(wf04).includes('v4-model-gateway'));
+assert.match(n4.get('Select Locally Reviewed Visuals').parameters.jsCode, /local_positive_margin/);
+assert.match(n4.get('Select Locally Reviewed Visuals').parameters.jsCode, /local-card/);
+assert.equal(n4.get('Select Locally Reviewed Visuals').parameters.mode,'runOnceForAllItems');
 const attach = new Function('$json', '$', attachCode);
 const context = {
   segment_number: 1,
@@ -50,13 +44,11 @@ const accepted = attach({ model: 'fixture', dtype: 'q4', ranked: [
 ] }, $).json.ranked_candidates;
 assert.deepEqual(accepted.map(item => item.candidate_id), ['photo:good', 'photo:garbage', 'video:weak']);
 
-const reviewCode=n4.get('Require Multimodal Visual Selection').parameters.jsCode;
-const review=new Function('$json','$',reviewCode);
-const reviewContext={segments:[{...context,planned_shot_count:1,visual_review_candidates:accepted}]};
-const review$=name=>{assert.equal(name,'Prepare Multimodal Visual Review');return {first:()=>({json:reviewContext})}};
-const selected=review({text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:['photo:good'],reasons:{'photo:good':'visible exact subject'}}]}),model:'fixture'},review$)[0].json.ranked_candidates;
+const reviewCode=n4.get('Select Locally Reviewed Visuals').parameters.jsCode;
+const review=new Function('$input',reviewCode);
+const selected=review({all:()=>[{json:{...context,planned_shot_count:1,ranked_candidates:[{...accepted[0],local_positive_rank:1,local_positive_margin:0.2}]}}]})[0].json.ranked_candidates;
 assert.deepEqual(selected.map(item=>item.candidate_id),['photo:good']);
-const fallback=review({text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:[]}]})},review$)[0].json.ranked_candidates;
+const fallback=review({all:()=>[{json:{...context,planned_shot_count:1,ranked_candidates:[{...accepted[1],local_positive_rank:2,local_positive_margin:-0.1}]}}]})[0].json.ranked_candidates;
 assert.equal(fallback.length,1);
 assert.equal(fallback[0].provider,'local-card');
 assert.match(fallback[0].download_url,/\/visual\/fallback\?/);

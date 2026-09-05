@@ -245,9 +245,17 @@ async function inlineVisualReviewImages(request, response) {
 }
 
 async function runSiglipInference(classifier, previewImages, query) {
+  const labels = [
+    query,
+    "an unrelated random stock photo",
+    "a screenshot, chart, diagram, or document",
+    "an unrelated person or celebrity",
+    "an insect, animal, or microscopic specimen",
+    "a generic landscape, building, or object",
+  ];
   const run = () => classifier(
     previewImages,
-    [query],
+    labels,
     { hypothesis_template: "{}" },
   );
   const queued = siglipInferenceTail.then(run, run);
@@ -1164,7 +1172,11 @@ async function rankVisualCandidates(request, response) {
 
     for (let index = 0; index < rankablePreviewEntries.length; index += 1) {
       const entry = rankablePreviewEntries[index];
-      const score = Number(perImageOutput[index]?.[0]?.score);
+      const labels = Array.isArray(perImageOutput[index]) ? perImageOutput[index] : [];
+      const positive = labels.find((entry) => String(entry?.label ?? "") === query);
+      const score = Number(positive?.score);
+      const bestNegative = Math.max(...labels.filter((entry) => entry !== positive).map((entry) => Number(entry?.score)).filter(Number.isFinite));
+      const positiveRank = labels.findIndex((entry) => entry === positive) + 1;
 
       if (!Number.isFinite(score) || score < 0 || score > 1) {
         throw new Error(
@@ -1177,6 +1189,8 @@ async function rankVisualCandidates(request, response) {
 
       if (score > candidate.score) {
         candidate.score = score;
+        candidate.positive_rank = positiveRank;
+        candidate.positive_margin = Number((score - bestNegative).toFixed(6));
         candidate.best_preview_index = entry.preview_index;
         candidate.visual_hash = entry.visual_hash;
       }
