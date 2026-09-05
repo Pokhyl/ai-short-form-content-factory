@@ -22,8 +22,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL 'https://publisher.hodor.com.pl/chat-share-4d7f9c2a/quota-selfhosted-e253617-1788639365.tar.gz?cb=e253617' -o /tmp/source.tar.gz
-          echo '6b46fee80936ef9cdb0cbe15826c3083f361460da4e480e52950bd35d343bad2  /tmp/source.tar.gz' | sha256sum -c -
+          curl -fsSL 'https://publisher.hodor.com.pl/chat-share-4d7f9c2a/quota-selfhosted-core-e253617-1788639461.tar.gz?cb=e253617core' -o /tmp/source.tar.gz
+          echo 'c0185706671946d93279e3b32ec14a799094f2698486a2efea1586dd38f92936  /tmp/source.tar.gz' | sha256sum -c -
           tar -xzf /tmp/source.tar.gz -C .
           git rm .github/workflows/tmp-sync-e253617-20260905.yml
           git config user.name 'Vitalii'
