@@ -27,16 +27,97 @@
       },
       {
         "parameters": {
-          "jsCode": "const b=$json.body??{};\nconst prompt=String(b.prompt??'').trim();\nconst multimodal=Array.isArray(b.input)?b.input.filter(x=>x&&typeof x==='object'):[];\nif(!prompt&&!multimodal.length)throw new Error('prompt or multimodal input required');\nconst body={model:'gemini-3.1-flash-lite',input:multimodal.length?multimodal:prompt,generation_config:{thinking_level:'minimal'},store:false};\nreturn [{json:{request_body:body}}];"
+          "jsCode": "const b=$json.body??{};\nconst prompt=String(b.prompt??'').trim();\nconst multimodal=Array.isArray(b.input)?b.input.filter(x=>x&&typeof x==='object'):[];\nif(!prompt&&!multimodal.length)throw new Error('prompt or multimodal input required');\nconst toKiloItem=(item)=>{if(item?.type==='text')return {type:'text',text:String(item.text??'')};if(item?.type==='image'){const mime=String(item.mime_type??'image/jpeg').trim()||'image/jpeg';const data=String(item.data??'').trim();const uri=String(item.uri??'').trim();const url=data?`data:${mime};base64,${data}`:uri;if(!url)return null;return {type:'image_url',image_url:{url}};}return null;};\nconst kiloContent=multimodal.length?multimodal.map(toKiloItem).filter(Boolean):prompt;\nif(Array.isArray(kiloContent)&&!kiloContent.length)throw new Error('multimodal input has no supported items');\nconst kilo_request_body={model:'stepfun/step-3.7-flash:free',messages:[{role:'user',content:kiloContent}],max_tokens:4096,temperature:0.2};\nconst gemini_request_body={model:'gemini-3.1-flash-lite',input:multimodal.length?multimodal:prompt,generation_config:{thinking_level:'minimal'},store:false};\nreturn [{json:{kilo_request_body,gemini_request_body,provider_attempts:[]}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          -280,
+          -300,
           0
         ],
         "id": "83ef83b0-0981-4799-8b29-f50620b4150e",
         "name": "Build Request"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.kilo.ai/api/gateway/chat/completions",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.kilo_request_body }}",
+          "options": {
+            "timeout": 90000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          -40,
+          -120
+        ],
+        "id": "c637ff93-95d6-4429-b9fb-50b30cc2cae4",
+        "name": "Kilo Free Model",
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const r=$json,ctx=$('Build Request').first().json;const msg=(r.choices??[])[0]?.message??{};let text='';if(typeof msg.content==='string')text=msg.content.trim();else if(Array.isArray(msg.content))text=msg.content.map(x=>typeof x==='string'?x:String(x?.text??'')).join('').trim();const err=String(r?.error?.message??r?.message??'').trim();const success=Boolean(text);return [{json:{...ctx,kilo_success:success,text:success?text:'',citations:[],model:success?String(r?.model??'stepfun/step-3.7-flash:free'):'',interaction_id:success?String(r?.id??''):'',provider:success?'kilo':'',provider_attempts:[{provider:'kilo',model:'stepfun/step-3.7-flash:free',success,error:success?null:(err||'empty model output')}]}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          180,
+          -120
+        ],
+        "id": "b1e39e3f-045c-4fcb-9d0d-95d50257e362",
+        "name": "Normalize Kilo Response"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "a2c0d7ad-b4ce-43bf-854a-8f7762cc7211",
+                "leftValue": "={{ $json.kilo_success }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          400,
+          -120
+        ],
+        "id": "261d1b47-4c77-481d-b815-2a00741c812e",
+        "name": "Kilo Succeeded?"
+      },
+      {
+        "parameters": {
+          "jsCode": "return [{json:{text:String($json.text??'').trim(),citations:[],model:String($json.model??''),interaction_id:String($json.interaction_id??''),provider:'kilo',provider_attempts:$json.provider_attempts??[],provider_exhausted:false}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          620,
+          -240
+        ],
+        "id": "afa397d7-068a-41c9-87ae-523fc8ecf05b",
+        "name": "Normalize Kilo Success"
       },
       {
         "parameters": {
@@ -46,7 +127,7 @@
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ $json.request_body }}",
+          "jsonBody": "={{ $json.gemini_request_body }}",
           "options": {
             "timeout": 90000
           }
@@ -54,8 +135,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.5,
         "position": [
-          0,
-          0
+          620,
+          80
         ],
         "id": "d794dd23-dd33-4fe1-8618-7b2a7d924d0f",
         "name": "Gemini",
@@ -65,22 +146,20 @@
             "name": "Google Gemini API"
           }
         },
-        "retryOnFail": true,
-        "maxTries": 2,
-        "waitBetweenTries": 60000
+        "onError": "continueRegularOutput"
       },
       {
         "parameters": {
-          "jsCode": "const r=$json; let text=\"\"; for(const step of (r.steps??[])){ if(step?.type!==\"model_output\") continue; for(const c of (step.content??[])){ if(c?.type===\"text\") text+=String(c.text??\"\"); }} return [{json:{text:text.trim(),citations:[],model:String(r?.model??\"gemini-3.1-flash-lite\"),interaction_id:String(r?.id??\"\")}}];"
+          "jsCode": "const r=$json,ctx=$('Normalize Kilo Response').first().json;let text='';for(const step of (r.steps??[])){if(step?.type!=='model_output')continue;for(const c of (step.content??[])){if(c?.type==='text')text+=String(c.text??'');}}text=text.trim();const err=String(r?.error?.message??r?.message??'').trim();const attempts=[...(ctx.provider_attempts??[]),{provider:'google_gemini',model:String(r?.model??'gemini-3.1-flash-lite'),success:Boolean(text),error:text?null:(err||'empty model output')}];return [{json:{text,citations:[],model:text?String(r?.model??'gemini-3.1-flash-lite'):'',interaction_id:text?String(r?.id??''):'',provider:text?'google_gemini':'none',provider_attempts:attempts,provider_exhausted:!text}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          240,
-          0
+          840,
+          80
         ],
         "id": "a894682b-d2bd-4228-8faa-77e6ddfe2571",
-        "name": "Normalize Response"
+        "name": "Normalize Gemini Response"
       },
       {
         "parameters": {
@@ -93,7 +172,7 @@
         "type": "n8n-nodes-base.respondToWebhook",
         "typeVersion": 1.5,
         "position": [
-          480,
+          1080,
           0
         ],
         "id": "b0b79651-c0ea-4d89-b68f-25b28f14bd20",
@@ -116,7 +195,58 @@
         "main": [
           [
             {
+              "node": "Kilo Free Model",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Kilo Free Model": {
+        "main": [
+          [
+            {
+              "node": "Normalize Kilo Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Kilo Response": {
+        "main": [
+          [
+            {
+              "node": "Kilo Succeeded?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Kilo Succeeded?": {
+        "main": [
+          [
+            {
+              "node": "Normalize Kilo Success",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
               "node": "Gemini",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Kilo Success": {
+        "main": [
+          [
+            {
+              "node": "Respond",
               "type": "main",
               "index": 0
             }
@@ -127,14 +257,14 @@
         "main": [
           [
             {
-              "node": "Normalize Response",
+              "node": "Normalize Gemini Response",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Normalize Response": {
+      "Normalize Gemini Response": {
         "main": [
           [
             {

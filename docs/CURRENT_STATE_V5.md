@@ -356,3 +356,37 @@ Systemic correction under test:
 - the repository media-worker Docker/package build contract is synchronized with the actual production runtime so a GitHub checkout can build the worker reproducibly.
 
 Real stress proof against the exact latest 15/30/60 contexts: discovery produced `6 + 10 + 18 = 34` exact-beat fingerprint requests. All 34 were fired concurrently at the patched worker and completed in `13.228 s` total; the slowest single request was `13.218 s`, all returned at least one fingerprinted candidate, and no request approached the 120 s n8n transport bound. This is engineering evidence only; fresh production E2E MP4s and exact-artifact review remain required.
+
+
+### 2026-09-06 hosted provider failover + global no-repeat recovery under GitHub gate
+
+Fresh runtime inspection after rollback HEAD `8ed8a080f8feacedc57c351f0b127d4847045b7b` reconfirmed that production contains only PostgreSQL, n8n and media-worker; there is no Ollama/model-worker runtime. The active V4 model gateway and WF04 runtime exports were semantically equal to the GitHub HEAD before this correction.
+
+Production DB also reconfirmed the two independent blockers:
+
+- `a1155771-4a8d-4a6d-8739-806ef557340c` and `fb1267de-a814-4dd7-b4e5-b0690c6e54b7` failed because the final visual-rebind model was unavailable;
+- `7a9151e5-7064-49db-80dc-43e2ad1d8e79` reached a complete 18-beat visual review but global all-unique assignment failed at the final shot.
+
+Hosted-provider research and live VPS probes show that Kilo Gateway free models are zero-cost but limited to 200 free requests/hour/IP, and individual upstream free routes can still return their own 429/503 capacity failures. `kilo-auto/free` is text-only in the current model catalog, so it cannot replace the required multimodal path. `stepfun/step-3.7-flash:free` currently advertises `text+image -> text` and has returned successful anonymous text and real-image responses from the VPS, but also exhibited intermittent upstream capacity failures. Therefore it is not accepted as a sole production provider.
+
+Systemic provider correction now under GitHub gate:
+
+- V4 Model Gateway keeps the existing n8n webhook contract;
+- anonymous Kilo `stepfun/step-3.7-flash:free` is the first zero-cost text+vision provider;
+- Kilo failure, empty output or upstream capacity failure falls through immediately to the existing independent Gemini provider;
+- the previous 60-second sleep/retry behavior was removed; each provider attempt is time-bounded and the provider chain is finite;
+- provider provenance/attempts are returned with the normalized result;
+- no Ollama, model-worker, Mac model server or local LLM dependency is introduced.
+
+Systemic WF04 correction now under GitHub gate:
+
+- after actual-image review, a deterministic bipartite feasibility check detects whether globally unique perceptual-cluster assignment is possible before the final beam assignment;
+- only beats in the proven conflicting component enter recovery;
+- each conflicting beat receives exactly one additional exact-target provider search;
+- every candidate already considered in the first actual-image review is excluded from that search;
+- new candidates are perceptually fingerprinted, then their real images are shown to the same multimodal reviewer;
+- only newly reviewer-approved candidates are merged into the approved pool;
+- the existing global all-unique assignment is then attempted once more; if it is still impossible, WF04 fails closed;
+- no image/cluster reuse, unreviewed fallback, topic-level rescue, or SigLIP semantic authority is reintroduced.
+
+Verification before commit: workflow JSON parse PASS; Python regressions `11/11` PASS; static Node regressions `30/30` PASS including new exact conflict-search and global no-repeat recovery tests; `git diff --check` PASS; no tracked `work/`; modified runtime/workflow code contains no Ollama/model-worker dependency; media-worker builds reproducibly from this checkout; both modified workflows import successfully into a clean n8n `2.33.3` instance. The isolated built media-worker exposes `/visual/recover-conflict`; a real Wikimedia exact-target request for `Alexander Fleming portrait` returned 18 new candidates while keeping semantic approval outside discovery. Production deploy and fresh autonomous 15/30/60 E2E renders remain blocked until commit/push and GitHub-source verification complete.

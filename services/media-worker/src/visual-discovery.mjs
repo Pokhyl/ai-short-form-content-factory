@@ -441,6 +441,47 @@ function dedupeCandidates(candidates) {
   return result;
 }
 
+
+export async function recoverVisualConflictCandidates({
+  visualTarget,
+  excludeCandidateIds = [],
+  pixabayApiKey = "",
+  pexelsApiKey = "",
+  fetchImpl = fetch,
+}) {
+  const target = cleanText(visualTarget);
+  if (!target) throw new Error("visual conflict recovery requires exact visual_target");
+  const query = boundedProviderQuery(target);
+  const excluded = new Set((Array.isArray(excludeCandidateIds) ? excludeCandidateIds : []).map(cleanText).filter(Boolean));
+  const specs = [
+    ["wikimedia_commons", () => fetchCommonsSearch({ query, fetchImpl })],
+    ["pixabay", () => fetchPixabay({ query, apiKey: pixabayApiKey, fetchImpl })],
+    ["pexels", () => fetchPexels({ query, apiKey: pexelsApiKey, fetchImpl })],
+  ];
+  const settled = await Promise.allSettled(specs.map(([, load]) => load()));
+  const rows = [];
+  const providerErrors = [];
+  for (let i = 0; i < specs.length; i += 1) {
+    const [provider] = specs[i], result = settled[i];
+    if (result.status === "fulfilled") rows.push(...result.value);
+    else providerErrors.push({
+      provider,
+      query,
+      status: Number(result.reason?.status) || null,
+      message: cleanText(result.reason?.message).slice(0, 240),
+    });
+  }
+  const candidates = dedupeCandidates(rows).filter((candidate) => !excluded.has(cleanText(candidate?.candidate_id)));
+  return {
+    visual_target: target,
+    provider_query: query,
+    candidates,
+    excluded_candidate_count: excluded.size,
+    provider_errors: providerErrors,
+    bounded_global_conflict_recovery: true,
+  };
+}
+
 export async function discoverVisualCandidates({ canonicalSource, beats, timedBeats, visualQueriesEn = [], pixabayApiKey = "", pexelsApiKey = "", fetchImpl = fetch }) {
   const language = cleanText(canonicalSource?.language).toLowerCase();
   const title = cleanText(canonicalSource?.title);

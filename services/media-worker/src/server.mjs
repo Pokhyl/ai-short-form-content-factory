@@ -10,7 +10,7 @@ import { edgeProviderBudgetMilliseconds } from "./edge-provider-budget.mjs";
 import { buildNaturalTailPadPlan } from "./audio-duration-normalization.mjs";
 import { parseSingleByteRange } from "./media-range.mjs";
 import { buildVisualBeatFilters } from "./visual-framing.mjs";
-import { discoverVisualCandidates } from "./visual-discovery.mjs";
+import { discoverVisualCandidates, recoverVisualConflictCandidates } from "./visual-discovery.mjs";
 import { buildVisualDiscoveryOptions } from "./visual-discovery-request.mjs";
 import { clusterAverageHashes, evaluateVisualSequence, evaluateVisualShotSequence, requiredRenderedShotStateCount } from "./visual-quality.mjs";
 
@@ -1225,6 +1225,22 @@ async function createVisualContactSheet(request, response) {
   });
 }
 
+
+async function recoverVisualConflict(request, response) {
+  const body = await readJsonBody(request);
+  try {
+    const result = await recoverVisualConflictCandidates({
+      visualTarget: body?.visual_target,
+      excludeCandidateIds: body?.exclude_candidate_ids,
+      pixabayApiKey: process.env.PIXABAY_API_KEY ?? "",
+      pexelsApiKey: process.env.PEXELS_API_KEY ?? "",
+    });
+    sendJson(response, 200, result);
+  } catch (error) {
+    throw new HttpError(422, "visual_conflict_recovery_failed", `Visual conflict recovery failed: ${String(error?.message ?? error)}`);
+  }
+}
+
 async function discoverVisuals(request, response) {
   const body = await readJsonBody(request);
   try {
@@ -1918,6 +1934,11 @@ const server = createServer(async (request, response) => {
 
     if (request.method === "POST" && requestUrl.pathname === "/visual/discover") {
       await discoverVisuals(request, response);
+      return;
+    }
+
+    if (request.method === "POST" && requestUrl.pathname === "/visual/recover-conflict") {
+      await recoverVisualConflict(request, response);
       return;
     }
 

@@ -581,7 +581,7 @@
       {
         "parameters": {
           "mode": "runOnceForAllItems",
-          "jsCode": "const prepared=$('Prepare Multimodal Visual Review').all().map(x=>x.json),responses=$input.all().map(x=>x.json);\nif(!prepared.length||responses.length!==prepared.length)throw new Error(`Multimodal review batch set is incomplete: ${responses.length}/${prepared.length}`);\nconst out=[];\nfor(let b=0;b<prepared.length;b++){\n const ctx=prepared[b],response=responses[b];let text=String(response.text??'').trim().replace(/^\\x60\\x60\\x60(?:json)?\\s*/i,'').replace(/\\s*\\x60\\x60\\x60$/,'');let o={segments:[]};try{o=JSON.parse(text)}catch{}\n const allowed=new Set(ctx.segments.map(s=>Number(s.segment_number))),decisions=new Map();for(const raw of (Array.isArray(o.segments)?o.segments:[])){const n=Number(raw.segment_number);if(!allowed.has(n))continue;const prev=decisions.get(n)??{segment_number:n,selected_candidate_ids:[],reasons:{}};decisions.set(n,{segment_number:n,selected_candidate_ids:[...new Set([...(Array.isArray(prev.selected_candidate_ids)?prev.selected_candidate_ids:[]),...(Array.isArray(raw.selected_candidate_ids)?raw.selected_candidate_ids:[])].map(String))],reasons:{...(prev.reasons??{}),...(raw.reasons??{})}});}\n for(const s of ctx.segments){\n  const d=decisions.get(Number(s.segment_number)),own=new Map(s.visual_review_candidates.map(c=>[String(c.candidate_id),c]));\n  const approved=[...new Set((Array.isArray(d?.selected_candidate_ids)?d.selected_candidate_ids:[]).map(String))].filter(id=>own.has(id));\n  const required=Math.max(1,Number(s.planned_shot_count));if(approved.length<required)throw new Error(`Multimodal reviewer approved ${approved.length}/${required} relevant images for segment ${s.segment_number}; unreviewed fallback is forbidden`);\n  const keep=approved.slice(0,Math.max(required,4));\n  const ranked_candidates=keep.map((id,i)=>{const c=own.get(id);return {...c,multimodal_rank:i+1,multimodal_reason:String(d?.reasons?.[id]??'model-approved exact visual'),selection_utility:Number((1-i*0.015).toFixed(4))};});\n  out.push({json:{...s,visual_review_candidates:undefined,ranked_candidates,visual_review_model:String(response.model??'gemini-3.1-flash-lite'),visual_recovery_used:false,visual_review_batch:Number(ctx.batch_number)}});\n }\n}\nout.sort((a,b)=>Number(a.json.segment_number)-Number(b.json.segment_number));return out;"
+          "jsCode": "const prepared=$('Prepare Multimodal Visual Review').all().map(x=>x.json),responses=$input.all().map(x=>x.json);\nif(!prepared.length||responses.length!==prepared.length)throw new Error(`Multimodal review batch set is incomplete: ${responses.length}/${prepared.length}`);\nconst out=[];\nfor(let b=0;b<prepared.length;b++){\n const ctx=prepared[b],response=responses[b];let text=String(response.text??'').trim().replace(/^\\x60\\x60\\x60(?:json)?\\s*/i,'').replace(/\\s*\\x60\\x60\\x60$/,'');let o={segments:[]};try{o=JSON.parse(text)}catch{}\n const allowed=new Set(ctx.segments.map(s=>Number(s.segment_number))),decisions=new Map();for(const raw of (Array.isArray(o.segments)?o.segments:[])){const n=Number(raw.segment_number);if(!allowed.has(n))continue;const prev=decisions.get(n)??{segment_number:n,selected_candidate_ids:[],reasons:{}};decisions.set(n,{segment_number:n,selected_candidate_ids:[...new Set([...(Array.isArray(prev.selected_candidate_ids)?prev.selected_candidate_ids:[]),...(Array.isArray(raw.selected_candidate_ids)?raw.selected_candidate_ids:[])].map(String))],reasons:{...(prev.reasons??{}),...(raw.reasons??{})}});}\n for(const s of ctx.segments){\n  const d=decisions.get(Number(s.segment_number)),own=new Map(s.visual_review_candidates.map(c=>[String(c.candidate_id),c]));\n  const approved=[...new Set((Array.isArray(d?.selected_candidate_ids)?d.selected_candidate_ids:[]).map(String))].filter(id=>own.has(id));\n  const required=Math.max(1,Number(s.planned_shot_count));if(approved.length<required)throw new Error(`Multimodal reviewer approved ${approved.length}/${required} relevant images for segment ${s.segment_number}; unreviewed fallback is forbidden`);\n  const keep=approved.slice(0,Math.max(required,4));\n  const ranked_candidates=keep.map((id,i)=>{const c=own.get(id);return {...c,multimodal_rank:i+1,multimodal_reason:String(d?.reasons?.[id]??'model-approved exact visual'),selection_utility:Number((1-i*0.015).toFixed(4))};});\n  out.push({json:{...s,visual_review_candidates:undefined,visual_reviewed_candidate_ids:[...own.keys()],ranked_candidates,visual_review_model:String(response.model??'gemini-3.1-flash-lite'),visual_recovery_used:false,visual_review_batch:Number(ctx.batch_number)}});\n }\n}\nout.sort((a,b)=>Number(a.json.segment_number)-Number(b.json.segment_number));return out;"
         },
         "id": "b5f24208-ed51-4adc-be57-d37130537f7f",
         "name": "Require Multimodal Visual Selection",
@@ -612,6 +612,217 @@
           2050,
           240
         ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "const rows=$input.all().map(i=>i.json).sort((a,b)=>Number(a.segment_number)-Number(b.segment_number));\nif(!rows.length)throw new Error('No reviewed visual segments for global no-repeat feasibility');\nconst bitCount=[0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4];\nfunction hammingHex(a,b){if(!/^[0-9a-f]{64}$/.test(a)||!/^[0-9a-f]{64}$/.test(b))throw new Error('Invalid visual hash before global recovery');let d=0;for(let i=0;i<64;i++)d+=bitCount[parseInt(a[i],16)^parseInt(b[i],16)];return d;}\nconst candidates=new Map();\nfor(const row of rows){for(const c of (row.ranked_candidates??[])){const id=String(c.candidate_id??'').trim(),hash=String(c.visual_hash??'').trim().toLowerCase();if(id&&/^[0-9a-f]{64}$/.test(hash)&&!candidates.has(id))candidates.set(id,c);}}\nconst reps=[],clusterByCandidate=new Map();\nfor(const id of [...candidates.keys()].sort()){const c=candidates.get(id);let cluster=-1;for(let i=0;i<reps.length;i++){if(hammingHex(c.visual_hash,reps[i].hash)<=18){cluster=i;break;}}if(cluster<0){cluster=reps.length;reps.push({hash:c.visual_hash,id});}clusterByCandidate.set(id,`preview:${cluster}`);}\nconst slots=[];\nfor(const row of rows){const count=Number(row.planned_shot_count);if(!Number.isInteger(count)||count<1||count>2)throw new Error(`Visual segment ${row.segment_number} has invalid shot count before global recovery`);const clusters=[...new Set((row.ranked_candidates??[]).map(c=>clusterByCandidate.get(String(c.candidate_id??''))).filter(Boolean))];if(!clusters.length)throw new Error(`Visual segment ${row.segment_number} has no reviewed clusters before global recovery`);for(let part=0;part<count;part++)slots.push({segment_number:Number(row.segment_number),segment_shot_number:part+1,clusters});}\nconst clusterToSlot=new Map(),slotToCluster=new Array(slots.length).fill(null);\nfunction augment(slotIndex,seen){for(const cluster of slots[slotIndex].clusters){if(seen.has(cluster))continue;seen.add(cluster);const previous=clusterToSlot.get(cluster);if(previous===undefined||augment(previous,seen)){clusterToSlot.set(cluster,slotIndex);slotToCluster[slotIndex]=cluster;return true;}}return false;}\nlet matched=0;for(let i=0;i<slots.length;i++)if(augment(i,new Set()))matched++;\nlet conflicts=[];\nif(matched<slots.length){const queue=[],seenSlots=new Set(),seenClusters=new Set();for(let i=0;i<slots.length;i++){if(!slotToCluster[i]){queue.push(i);seenSlots.add(i);}}while(queue.length){const i=queue.shift();for(const cluster of slots[i].clusters){if(seenClusters.has(cluster))continue;seenClusters.add(cluster);const matchedSlot=clusterToSlot.get(cluster);if(matchedSlot!==undefined&&!seenSlots.has(matchedSlot)){seenSlots.add(matchedSlot);queue.push(matchedSlot);}}}conflicts=[...new Set([...seenSlots].map(i=>slots[i].segment_number))].sort((a,b)=>a-b);}\nconst required=conflicts.length>0;\nreturn rows.map(row=>({json:{...row,global_assignment_recovery_required:required,global_conflict_segment_numbers:conflicts,global_assignment_matching_count:matched,global_assignment_slot_count:slots.length}}));"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2700,
+          240
+        ],
+        "id": "582b44ee-4f7e-4007-8370-64d142a1fb43",
+        "name": "Detect Global No-Repeat Conflict",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "a1c6d5bf-a52f-43f8-be65-7b029915df89",
+                "leftValue": "={{ $json.global_assignment_recovery_required }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2920,
+          240
+        ],
+        "id": "9cb1ba10-6c07-497e-b738-5646d9da3fa2",
+        "name": "Global No-Repeat Recovery Required?"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "const rows=$input.all().map(i=>i.json).sort((a,b)=>Number(a.segment_number)-Number(b.segment_number));if(!rows.length)throw new Error('Global recovery received no reviewed segments');\nconst conflicts=new Set((rows[0].global_conflict_segment_numbers??[]).map(Number));if(!conflicts.size)throw new Error('Global recovery branch has no conflict segments');\nconst out=[];for(const row of rows){const n=Number(row.segment_number);if(!conflicts.has(n))continue;const reviewed=[...new Set([...(row.visual_reviewed_candidate_ids??[]),...(row.ranked_candidates??[]).map(c=>c.candidate_id)].map(x=>String(x??'').trim()).filter(Boolean))];const target=String(row.visual_target??'').replace(/\\s+/gu,' ').trim();if(!target||!reviewed.length)throw new Error(`Global recovery segment ${n} lacks exact target or reviewed asset inventory`);out.push({json:{...row,global_conflict_recovery_round:1,conflict_recovery_request:{segment_number:n,visual_target:target,exclude_candidate_ids:reviewed}}});}return out;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3140,
+          120
+        ],
+        "id": "347070f1-5287-4d7d-ba77-48cf4f6f0671",
+        "name": "Prepare Conflict Recovery Search",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/recover-conflict",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.conflict_recovery_request }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          3360,
+          120
+        ],
+        "id": "06a3ac8b-92bb-48cc-a61e-07191767c6b7",
+        "name": "Fetch Conflict Recovery Candidates",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const response=$json,ctx=$('Prepare Conflict Recovery Search').item.json;const err=String(response?.error?.message??response?.message??'').trim();if(err)throw new Error(`Global conflict recovery search failed for segment ${ctx.segment_number}: ${err}`);\nconst excluded=new Set((ctx.conflict_recovery_request?.exclude_candidate_ids??[]).map(String));const groups=new Map(),seen=new Set();\nfor(const raw of (Array.isArray(response?.candidates)?response.candidates:[])){const provider=String(raw?.provider??'').trim().toLowerCase(),rawId=String(raw?.candidate_id??'').trim();if(!provider||!rawId)continue;const id=rawId.startsWith(provider+':')?rawId:`${provider}:${rawId}`;if(excluded.has(id)||seen.has(id)||String(raw?.media_kind??'photo').toLowerCase()==='video')continue;const previews=(Array.isArray(raw?.preview_urls)?raw.preview_urls:[raw?.preview_url]).map(String).filter(Boolean).slice(0,3);if(!previews.length)continue;seen.add(id);const c={...raw,provider,candidate_id:id,provider_asset_id:String(raw?.provider_asset_id??rawId).trim(),preview_urls:previews};if(!groups.has(provider))groups.set(provider,[]);groups.get(provider).push(c);}\nconst providers=[...groups.keys()].sort(),pool=[];let depth=0;while(pool.length<10){let added=false;for(const provider of providers){const c=groups.get(provider)[depth];if(c){pool.push(c);added=true;if(pool.length>=10)break;}}if(!added)break;depth++;}\nif(!pool.length)throw new Error(`Global conflict recovery returned no new exact-target candidates for segment ${ctx.segment_number}`);\nconst query=String(ctx.visual_target||ctx.canonical_subject).replace(/\\s+/gu,' ').trim().slice(0,200);const candidates=pool.map(c=>({candidate_id:String(c.candidate_id),preview_urls:c.preview_urls}));\nreturn {json:{...ctx,conflict_recovery_candidate_pool:pool,conflict_recovery_provider_query:String(response?.provider_query??query),conflict_recovery_provider_errors:response?.provider_errors??[],local_rank_request:{query,candidates}}};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3580,
+          120
+        ],
+        "id": "1a45ba60-16cc-4bcf-8ac3-b228eb3da4a9",
+        "name": "Build Conflict Recovery Rank Items",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/rank",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.local_rank_request }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          3800,
+          120
+        ],
+        "id": "807d316c-28d0-4374-b9c5-5d3e29cd852b",
+        "name": "Fingerprint Conflict Recovery",
+        "onError": "continueErrorOutput",
+        "retryOnFail": true,
+        "maxTries": 2,
+        "waitBetweenTries": 1000
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const response=$json,ctx=$('Build Conflict Recovery Rank Items').item.json;const err=String(response?.error?.message??response?.message??'').trim();const ranked=Array.isArray(response?.ranked)?response.ranked:[];if(err||!ranked.length)throw new Error(`Global conflict recovery fingerprinting failed for segment ${ctx.segment_number}: ${err||'no ranked candidates'}`);\nconst pool=new Map((ctx.conflict_recovery_candidate_pool??[]).map(c=>[String(c.candidate_id),c])),rows=[],seen=new Set();for(let i=0;i<ranked.length;i++){const id=String(ranked[i]?.candidate_id??'').trim(),hash=String(ranked[i]?.visual_hash??'').trim().toLowerCase();if(!id||seen.has(id)||!pool.has(id)||!/^[0-9a-f]{64}$/.test(hash))continue;seen.add(id);rows.push({...pool.get(id),visual_hash:hash,local_fingerprint_rank:i+1,local_rank_score:null,local_siglip_rank:null});}if(!rows.length)throw new Error(`Global conflict recovery produced no fingerprinted candidates for segment ${ctx.segment_number}`);return {json:{...ctx,conflict_recovery_candidate_pool:undefined,local_rank_request:undefined,recovery_ranked_candidates:rows}};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4020,
+          120
+        ],
+        "id": "d611d6a3-b874-48f3-ac63-7c410a239d75",
+        "name": "Attach Conflict Recovery Fingerprints",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "const segments=$input.all().map(x=>x.json).sort((a,b)=>Number(a.segment_number)-Number(b.segment_number));if(!segments.length)throw new Error('No conflict recovery segments to review');\nconst prompt='You are the final visual editor for a factual vertical short. A previous actual-image review passed each narration beat individually, but the globally unique no-repeat assignment was impossible because approved pools overlapped. Review ONLY these newly searched exact-target images. Judge visible content only. Approve every clearly relevant NEW still candidate up to four IDs for each segment. It is valid to approve zero when none are truly relevant. Never pad with context-only imagery, lexical coincidences, unrelated people/objects/landscapes, watermarks, collages, screenshots, or plain text cards. Technical diagrams and explanatory figures are valid only when they directly explain the exact narration beat. Return ONLY JSON: {\"segments\":[{\"segment_number\":1,\"selected_candidate_ids\":[\"provider:id\"],\"reasons\":{\"provider:id\":\"short visible-content reason\"}}]}. Include every allowed segment exactly once.';\nconst batchSize=6,batchCount=Math.ceil(segments.length/batchSize),out=[];for(let offset=0;offset<segments.length;offset+=batchSize){const batch=segments.slice(offset,offset+batchSize),maxPerSegment=Math.max(2,Math.min(10,Math.floor((79-1-batch.length)/(2*batch.length))));const allowed=batch.map(s=>Number(s.segment_number));const input=[{type:'text',text:prompt+` Allowed segment numbers: ${allowed.join(', ')}. These candidates were excluded from the first review and came from one bounded additional exact-target search.`}],reviewSegments=[];for(const s of batch){const rows=(s.recovery_ranked_candidates??[]).slice(0,maxPerSegment);if(!rows.length)throw new Error(`Global conflict recovery segment ${s.segment_number} has no new images to show reviewer`);reviewSegments.push({...s,recovery_review_candidates:rows});input.push({type:'text',text:`SEGMENT ${s.segment_number} | canonical subject: ${s.canonical_subject} | exact target: ${s.visual_target} | narration: ${s.narration}`});for(const [i,c] of rows.entries()){input.push({type:'text',text:`Segment ${s.segment_number}, recovery candidate ${i+1}: ${c.candidate_id}`});input.push({type:'image',uri:String((c.preview_urls??[c.preview_url]).filter(Boolean)[0])});}}if(input.length>80)throw new Error(`Global conflict recovery review batch ${Math.floor(offset/batchSize)+1} exceeded input budget`);out.push({json:{job_id:segments[0].job_id,batch_number:Math.floor(offset/batchSize)+1,batch_count:batchCount,recovery_segments:reviewSegments,visual_recovery_request:{input}}});}return out;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4240,
+          120
+        ],
+        "id": "fc4568c3-031c-45f8-a55b-a93dc8c783c4",
+        "name": "Prepare Conflict Recovery Review",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/inline-review-images",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.visual_recovery_request }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4460,
+          120
+        ],
+        "id": "d1f44ff7-e0c0-4f8b-91a3-ad3f7559ba5f",
+        "name": "Inline Conflict Recovery Images",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { input: $json.input } }}",
+          "options": {
+            "timeout": 180000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4680,
+          120
+        ],
+        "id": "7193f3f5-6d86-4ce0-8e6c-b6dbd7fabda7",
+        "name": "Review Conflict Recovery Images",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "const prepared=$('Prepare Conflict Recovery Review').all().map(x=>x.json),responses=$input.all().map(x=>x.json);if(!prepared.length||responses.length!==prepared.length)throw new Error(`Global conflict recovery review batch set incomplete: ${responses.length}/${prepared.length}`);\nconst recoveredBySegment=new Map(),reviewedBySegment=new Map(),modelBySegment=new Map();\nfor(let b=0;b<prepared.length;b++){const ctx=prepared[b],response=responses[b];const rawText=String(response?.text??'').trim();if(!rawText)throw new Error(`Global conflict recovery reviewer unavailable for batch ${ctx.batch_number}`);let text=rawText.replace(/^\\x60\\x60\\x60(?:json)?\\s*/i,'').replace(/\\s*\\x60\\x60\\x60$/,'');let o;try{o=JSON.parse(text)}catch{throw new Error(`Global conflict recovery reviewer returned invalid JSON for batch ${ctx.batch_number}`);}\nconst allowed=new Set(ctx.recovery_segments.map(s=>Number(s.segment_number))),decisions=new Map();for(const raw of (Array.isArray(o?.segments)?o.segments:[])){const n=Number(raw?.segment_number);if(!allowed.has(n)||decisions.has(n))continue;decisions.set(n,raw);}for(const s of ctx.recovery_segments){const n=Number(s.segment_number),d=decisions.get(n);if(!d)throw new Error(`Global conflict recovery reviewer omitted segment ${n}`);const own=new Map((s.recovery_review_candidates??[]).map(c=>[String(c.candidate_id),c]));reviewedBySegment.set(n,[...own.keys()]);const approved=[...new Set((Array.isArray(d.selected_candidate_ids)?d.selected_candidate_ids:[]).map(String))].filter(id=>own.has(id)).slice(0,4);const rows=approved.map((id,i)=>({...own.get(id),multimodal_rank:5+i,conflict_recovery_multimodal_rank:i+1,multimodal_reason:String(d?.reasons?.[id]??'model-approved exact conflict recovery visual'),selection_utility:Number((0.94-i*0.015).toFixed(4)),visual_review_model:String(response.model??'')}));recoveredBySegment.set(n,rows);modelBySegment.set(n,String(response.model??''));}}\nconst original=$('Detect Global No-Repeat Conflict').all().map(x=>x.json).sort((a,b)=>Number(a.segment_number)-Number(b.segment_number));const conflicts=new Set((original[0]?.global_conflict_segment_numbers??[]).map(Number));return original.map(row=>{const n=Number(row.segment_number);if(!conflicts.has(n))return {json:{...row,global_conflict_recovery_attempted:false}};const recovered=recoveredBySegment.get(n)??[],reviewed=reviewedBySegment.get(n)??[];const seen=new Set(),merged=[];for(const c of [...(row.ranked_candidates??[]),...recovered]){const id=String(c.candidate_id??'');if(!id||seen.has(id))continue;seen.add(id);merged.push(c);}const allReviewed=[...new Set([...(row.visual_reviewed_candidate_ids??[]),...reviewed])];return {json:{...row,ranked_candidates:merged,visual_reviewed_candidate_ids:allReviewed,visual_recovery_used:true,global_conflict_recovery_attempted:true,global_conflict_recovery_round:1,global_conflict_recovery_added_count:recovered.length,global_conflict_recovery_review_model:modelBySegment.get(n)||null}};});"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4900,
+          120
+        ],
+        "id": "2c191400-868d-4dd3-bb45-2d72b2fa74dd",
+        "name": "Merge Conflict Recovery Approval",
         "onError": "continueErrorOutput"
       }
     ],
@@ -1071,7 +1282,7 @@
         "main": [
           [
             {
-              "node": "Choose Visual Assignment",
+              "node": "Detect Global No-Repeat Conflict",
               "type": "main",
               "index": 0
             }
@@ -1090,6 +1301,204 @@
           [
             {
               "node": "Review Actual Candidate Images",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Detect Global No-Repeat Conflict": {
+        "main": [
+          [
+            {
+              "node": "Global No-Repeat Recovery Required?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Global No-Repeat Recovery Required?": {
+        "main": [
+          [
+            {
+              "node": "Prepare Conflict Recovery Search",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Choose Visual Assignment",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Conflict Recovery Search": {
+        "main": [
+          [
+            {
+              "node": "Fetch Conflict Recovery Candidates",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch Conflict Recovery Candidates": {
+        "main": [
+          [
+            {
+              "node": "Build Conflict Recovery Rank Items",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Conflict Recovery Rank Items": {
+        "main": [
+          [
+            {
+              "node": "Fingerprint Conflict Recovery",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fingerprint Conflict Recovery": {
+        "main": [
+          [
+            {
+              "node": "Attach Conflict Recovery Fingerprints",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Attach Conflict Recovery Fingerprints": {
+        "main": [
+          [
+            {
+              "node": "Prepare Conflict Recovery Review",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Conflict Recovery Review": {
+        "main": [
+          [
+            {
+              "node": "Inline Conflict Recovery Images",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Inline Conflict Recovery Images": {
+        "main": [
+          [
+            {
+              "node": "Review Conflict Recovery Images",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Review Conflict Recovery Images": {
+        "main": [
+          [
+            {
+              "node": "Merge Conflict Recovery Approval",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge Conflict Recovery Approval": {
+        "main": [
+          [
+            {
+              "node": "Choose Visual Assignment",
               "type": "main",
               "index": 0
             }
