@@ -15,7 +15,7 @@ assert.equal(q.all_assets_unique,true);
 assert.equal(q.asset_reuse_count,0);
 assert.equal(q.adjacent_visual_cluster_duplicate_count,0);
 assert.equal(q.pass,true);
-assert.equal(requiredRenderedShotStateCount(9),5);
+assert.equal(requiredRenderedShotStateCount(9),2);
 
 const adjacent=evaluateVisualShotSequence([
   {shot_number:1,start_seconds:0,end_seconds:2,duration_seconds:2,asset_key:'a',visual_cluster_key:'x'},
@@ -45,4 +45,9 @@ assert.equal(repeatedAsset.pass,true,'non-adjacent asset reuse may pass when per
 assert.equal(repeatedAsset.all_assets_unique,false);
 assert.equal(repeatedAsset.asset_reuse_count,1);
 assert.equal(repeatedAsset.max_visual_cluster_duration_share,0.3333);
+const alternating=evaluateVisualShotSequence(Array.from({length:12},(_,i)=>({
+  shot_number:i+1,start_seconds:i*2,end_seconds:(i+1)*2,duration_seconds:2,
+  asset_key:i%2?'b':'a',visual_cluster_key:i%2?'y':'x',
+})));
+assert.equal(alternating.pass,true,'relevant photos may repeat in later scenes when consecutive shots remain different');
 console.log(JSON.stringify({pass:true,quality:q,reused_asset_quality:repeatedAsset}));

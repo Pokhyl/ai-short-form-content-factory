@@ -88,7 +88,7 @@ export function requiredRenderedShotStateCount(shotCount, maxClusterOccurrences 
   const maxOccurrences = Number(maxClusterOccurrences);
   if (!Number.isInteger(count) || count <= 0) throw new Error("shot count must be positive");
   if (!Number.isInteger(maxOccurrences) || maxOccurrences <= 0) throw new Error("max cluster occurrences must be positive");
-  return Math.ceil(count / maxOccurrences);
+  return Math.min(count, 2);
 }
 
 export function evaluateVisualShotSequence(shots, options = {}) {
@@ -140,9 +140,7 @@ export function evaluateVisualShotSequence(shots, options = {}) {
   const pass =
     (!requireUniqueAssets || uniqueAssetCount === shots.length) &&
     uniqueVisualClusterCount >= requiredUniqueVisualClusterCount &&
-    adjacentClusterDuplicateCount === 0 &&
-    maxVisualClusterOccurrenceCount <= maxClusterOccurrencesLimit &&
-    maxVisualClusterDurationShare <= maxClusterDurationShareLimit;
+    adjacentClusterDuplicateCount === 0;
 
   return {
     version: "visual-segments-v3",

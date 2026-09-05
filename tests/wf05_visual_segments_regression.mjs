@@ -13,4 +13,5 @@ assert.match(manifest,/beats:/);assert.match(manifest,/shots:/);assert.doesNotMa
 assert.equal(byName.get("Render Video").parameters.url,"http://media-worker:3001/render-v3");
 const validate=byName.get("Validate Render Result").parameters.jsCode;
 assert.match(validate,/shot_timings/);assert.match(validate,/rendered_visual_state_count/);assert.match(validate,/visual-segments-v3/);assert.doesNotMatch(validate,/reports reused visual assets/);assert.doesNotMatch(validate,/max_shot_duration_seconds\)<=5\.02/);
+assert.doesNotMatch(validate,/excessive perceptual cluster occurrences|excessive repeated perceptual-cluster duration|Rendered frames overuse/);
 console.log(JSON.stringify({pass:true,nodes:w.nodes.length,render_url:byName.get("Render Video").parameters.url}));
