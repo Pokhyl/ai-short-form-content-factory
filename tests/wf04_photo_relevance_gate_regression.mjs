@@ -28,7 +28,9 @@ assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /s
 assert.match(n4.get('Require Multimodal Visual Selection').parameters.jsCode, /topic_anchor_candidate_ids/);
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /topic anchors/);
 assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /Select 6-12 topic anchors/);
-assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /slice\(0,8\)/);
+assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /slice\(0,10\)/);
+assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /final timeline requires/);
+assert.match(n4.get('Prepare Multimodal Visual Review').parameters.jsCode, /never repeat an ID/);
 assert.equal(n4.get('Prepare Multimodal Visual Review').parameters.mode,'runOnceForAllItems');
 assert.equal(n4.get('Require Multimodal Visual Selection').parameters.mode,'runOnceForAllItems');
 assert.equal(n4.get('Inline Candidate Images').parameters.url,'http://media-worker:3001/visual/inline-review-images');
