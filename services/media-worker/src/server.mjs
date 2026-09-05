@@ -1326,13 +1326,34 @@ async function discoverVisuals(request, response) {
   }
 }
 
-async function createVisualFallback(request, response) {
-  await readJsonBody(request);
-  throw new HttpError(
-    409,
-    "visual_fallback_disabled",
-    "The clean rebuild does not generate descriptive or topic-specific visual fallbacks. Visual sourcing must select a trustworthy provider asset or fail closed",
-  );
+async function createVisualFallback(request, response, requestUrl) {
+  const body = request.method === "GET" ? Object.fromEntries(requestUrl.searchParams) : await readJsonBody(request);
+  const title = String(body.title ?? "").trim().slice(0, 120);
+  const subtitle = String(body.subtitle ?? "").trim().slice(0, 240);
+  const variant = Math.max(1, Math.min(9, Number(body.variant) || 1));
+  if (!title) throw new HttpError(400, "invalid_visual_fallback", "title is required");
+  const escapeXml = (value) => value.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[character]);
+  const wrap = (value, width, limit) => {
+    const words = value.split(/\s+/).filter(Boolean), lines = [];
+    let line = "";
+    for (const word of words) {
+      const next = line ? `${line} ${word}` : word;
+      if (next.length > width && line) { lines.push(line); line = word; } else line = next;
+      if (lines.length === limit) break;
+    }
+    if (line && lines.length < limit) lines.push(line);
+    return lines;
+  };
+  const titleLines = wrap(title, 22, 4);
+  const subtitleLines = wrap(subtitle, 34, 5);
+  const accent = ["#6ee7b7", "#7dd3fc", "#c4b5fd", "#fda4af", "#fde68a"][variant % 5];
+  const titleSvg = titleLines.map((line, index) => `<text x="92" y="${620 + index * 112}" font-family="DejaVu Sans" font-size="92" font-weight="700" fill="#ffffff">${escapeXml(line)}</text>`).join("");
+  const subtitleStart = 1120;
+  const subtitleSvg = subtitleLines.map((line, index) => `<text x="92" y="${subtitleStart + index * 64}" font-family="DejaVu Sans" font-size="43" fill="#d1d5db">${escapeXml(line)}</text>`).join("");
+  const svg = Buffer.from(`<svg width="1080" height="1920" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#070b14"/><stop offset="1" stop-color="#172033"/></linearGradient></defs><rect width="1080" height="1920" fill="url(#g)"/><circle cx="${160 + variant * 73}" cy="250" r="280" fill="${accent}" opacity=".13"/><rect x="92" y="468" width="150" height="14" rx="7" fill="${accent}"/>${titleSvg}${subtitleSvg}<text x="92" y="1770" font-family="DejaVu Sans" font-size="30" letter-spacing="5" fill="${accent}">FACT FRAME</text></svg>`);
+  const image = await sharp(svg).jpeg({ quality: 92, chromaSubsampling: "4:4:4" }).toBuffer();
+  response.writeHead(200, { "Content-Type": "image/jpeg", "Content-Length": image.length, "Cache-Control": "no-store" });
+  response.end(image);
 }
 
 function buildRenderPath(jobId) {
@@ -1989,8 +2010,8 @@ const server = createServer(async (request, response) => {
       return;
     }
 
-    if (request.method === "POST" && requestUrl.pathname === "/visual/fallback") {
-      await createVisualFallback(request, response);
+    if ((request.method === "GET" || request.method === "POST") && requestUrl.pathname === "/visual/fallback") {
+      await createVisualFallback(request, response, requestUrl);
       return;
     }
 
