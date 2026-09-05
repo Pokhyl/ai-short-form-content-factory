@@ -122,7 +122,10 @@
         ],
         "id": "3b43357e-38ad-4966-842e-aee0b1475dda",
         "name": "Generate Gemini Voiceover",
-        "onError": "continueErrorOutput"
+        "onError": "continueErrorOutput",
+        "retryOnFail": true,
+        "maxTries": 2,
+        "waitBetweenTries": 60000
       },
       {
         "parameters": {

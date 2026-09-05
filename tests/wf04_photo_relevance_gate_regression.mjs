@@ -60,6 +60,7 @@ const fallback=review({text:JSON.stringify({segments:[{segment_number:1,selected
 assert.equal(fallback.length,1);
 assert.equal(fallback[0].provider,'local-card');
 assert.match(fallback[0].download_url,/\/visual\/fallback\?/);
+assert.match(decodeURIComponent(fallback[0].download_url),/visible exact subject|\/visual\/fallback/);
 assert.equal(fallback[0].metadata.generated_fallback,true);
 const malformed=review({text:'not-json'},review$)[0].json.ranked_candidates;
 assert.equal(malformed[0].provider,'local-card');
