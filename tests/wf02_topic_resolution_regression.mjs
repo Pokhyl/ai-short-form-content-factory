@@ -117,4 +117,23 @@ for (const test of matrix) {
   assert.equal(result.json.topic_resolution.decision_policy, 'unique_exact_surface_form_over_longer_lookalike');
 }
 
+// An exact-looking candidate with no independent evidence must not override a
+// different candidate selected and supported by the evidence comparison.
+{
+  const base = {
+    raw_topic: 'telescope roman', topic: 'telescope roman', topic_language: 'en', topic_kind: 'entity',
+    language_code: 'en', target_duration_seconds: 30,
+    semantic_candidates: [
+      { candidate_id: 'C1', canonical_name: 'Telescope (Roman)', subject_type: 'book', context: 'literature', interpretation: 'A supposed book', discovery_query: 'Telescope Roman book' },
+      { candidate_id: 'C2', canonical_name: 'Nancy Grace Roman Space Telescope', subject_type: 'spacecraft', context: 'astronomy', interpretation: 'NASA telescope', discovery_query: 'Nancy Grace Roman Space Telescope' },
+    ],
+    discovery_evidence: [{ evidence_id: 'D-C2-1', candidate_id: 'C2', title: 'Roman Space Telescope', snippet: 'NASA infrared telescope', url: 'https://example.invalid/roman' }],
+  };
+  const model = { text: JSON.stringify({ selected_candidate_id: 'C2', resolved_subject: 'Nancy Grace Roman Space Telescope', canonical_name: 'Nancy Grace Roman Space Telescope', subject_type: 'spacecraft', context: 'astronomy', user_intent: 'NASA telescope', research_query_en: 'Nancy Grace Roman Space Telescope', confidence: 0.9, runner_up_candidate_id: 'C1', score_margin: 0.7, reasoning_evidence_ids: ['D-C2-1'], resolution_reason: 'Only independently supported interpretation' }) };
+  const $ = () => ({ first: () => ({ json: base }) });
+  const [result] = validate({ first: () => ({ json: model }) }, $);
+  assert.equal(result.json.topic_resolution.selected_candidate_id, 'C2');
+  assert.equal(result.json.topic_resolution.decision_policy, 'evidence_comparison');
+}
+
 console.log('WF02_TOPIC_RESOLUTION_REGRESSION_PASS', matrix.length);
