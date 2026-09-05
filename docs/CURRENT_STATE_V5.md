@@ -399,3 +399,14 @@ Pre-E2E reconciliation found a pre-existing source/runtime drift in WF01. The ac
 GitHub commit `a8ab5f2c984a517e9176b29dcc4bb101270355f9` still carried an older six-node WF01 core (`20d83db99524ea97550311095430c3746eee89fbe536c521b7ec4db777c73477`) that inserted and returned the job but did not invoke WF02. That GitHub file cannot represent the required autonomous `topic + language + duration` product path even though runtime had the correct handoff.
 
 Correction under GitHub gate: synchronize the already-live generic WF01 orchestration contract into repository source and add a regression requiring exactly one asynchronous WF01 -> WF02 handoff with `job_id`. This is source/runtime reconciliation, not a topic-specific behavior change. Fresh E2E remains blocked until the corrected WF01 is committed, GitHub tree is verified, and production WF01 is republished from that GitHub source.
+
+
+### 2026-09-06 fresh E2E provider completion-contract failure
+
+After GitHub commit `a5bafcd96f69936f51439b0298c23dfc9705874e` restored WF01 source/runtime orchestration and WF01 was republished from that exact GitHub tree, fresh autonomous production testing resumed strictly through the WF01 `topic + language + duration` webhook.
+
+Fresh RU/15 transformer job `a8ebade0-9657-46d5-9bfd-449ebfd6a7a9` completed autonomously to `review_ready`. Exact voiceover duration is 15.504 s. WF04 stored `visual_quality.pass=true` with 12 shots, 12 unique assets, 12 unique perceptual clusters, zero asset reuse and zero adjacent perceptual duplicates. WF05 rendered `jobs/a8ebade0-9657-46d5-9bfd-449ebfd6a7a9/render/final.mp4`; technical probe is H.264 + AAC, 1080x1920, 30 fps, 15.534 s, SHA256 `81d8b4134290ba888c80079f3e3a22cdb423b9efac71d4eacea01037f9566402`. This is machine completion only, not HUMAN PASS.
+
+Fresh PL/30 Marie Curie/radium job `c2a91275-bf29-43c0-95f6-b0f2eeb9694d` exposed a new general provider-contract defect and failed closed at `script`: `evidence-grounded topic resolver returned invalid JSON [line 1]`. WF02 execution `15582` failed after V4 executions `15583` and `15584` were marked success. Exact execution-data inspection proved V4/Kilo execution `15584` returned `finish_reason=length`; `message.content` contained only an approximately 421-character prefix of the requested JSON while the model emitted a long reasoning payload. V4 incorrectly treated any non-empty Kilo content as success, so Gemini fallback was skipped and WF02 received truncated JSON.
+
+Systemic correction under GitHub gate: Kilo output is usable only when text is non-empty and `finish_reason` is exactly `stop`. `length`, `content_filter`, tool-call or missing/nonterminal completion reasons are normalized as failed provider attempts and immediately use the existing independent Gemini fallback. The failed PL/30 job is not retried manually; a completely fresh job may be created only after this gateway correction passes regression/import/GitHub/deploy gates.
