@@ -203,3 +203,17 @@ failed closed at visual segment 6 because no candidate exceeded the `0.01`
 semantic relevance floor. It produced no `visual_shots` and no MP4. This proves the
 deployed gate blocks unrelated filler; it does not yet prove sufficient relevant-
 photo coverage or human-acceptable output.
+
+## 2026-09-05 visual selector rollback decision
+
+The lexical-metadata plus local SigLIP selector is rejected as a production visual
+quality authority. The exact Hodor render selected a random door, snow, an insect
+micrograph, an unrelated portrait, and a scientific figure. Five of eight selected
+shots had `target_metadata_overlap=0`; metadata utility overrode near-zero visual
+scores. Subsequent absolute-threshold calibration alternated between irrelevant
+media and incomplete jobs and is not a viable product mechanism.
+
+WF01 intake is paused while WF04 is replaced by multimodal review of the actual
+candidate previews. The local ranker may remain only for perceptual hashes and
+ordering; it must not independently approve semantic relevance. Production intake
+must not resume until the exact rendered MP4 is watched before delivery.
