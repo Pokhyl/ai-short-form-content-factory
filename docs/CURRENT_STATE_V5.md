@@ -390,3 +390,12 @@ Systemic WF04 correction now under GitHub gate:
 - no image/cluster reuse, unreviewed fallback, topic-level rescue, or SigLIP semantic authority is reintroduced.
 
 Verification before commit: workflow JSON parse PASS; Python regressions `11/11` PASS; static Node regressions `30/30` PASS including new exact conflict-search and global no-repeat recovery tests; `git diff --check` PASS; no tracked `work/`; modified runtime/workflow code contains no Ollama/model-worker dependency; media-worker builds reproducibly from this checkout; both modified workflows import successfully into a clean n8n `2.33.3` instance. The isolated built media-worker exposes `/visual/recover-conflict`; a real Wikimedia exact-target request for `Alexander Fleming portrait` returned 18 new candidates while keeping semantic approval outside discovery. Production deploy and fresh autonomous 15/30/60 E2E renders remain blocked until commit/push and GitHub-source verification complete.
+
+
+### 2026-09-06 WF01 GitHub/runtime orchestration drift correction
+
+Pre-E2E reconciliation found a pre-existing source/runtime drift in WF01. The active production WF01 and production filesystem both contain the same seven-node orchestration core: after the job row is inserted, `Start Script Planning` asynchronously invokes WF02 `TJfA4ZYUEKSTad6k` with only the persisted `job_id`, while the webhook returns HTTP 201 without waiting for the full generation chain. Their canonical core SHA is `065a372f16e865e502769d8bf0c344a5ad29cba1c29378bd406cbddee8239c3f`.
+
+GitHub commit `a8ab5f2c984a517e9176b29dcc4bb101270355f9` still carried an older six-node WF01 core (`20d83db99524ea97550311095430c3746eee89fbe536c521b7ec4db777c73477`) that inserted and returned the job but did not invoke WF02. That GitHub file cannot represent the required autonomous `topic + language + duration` product path even though runtime had the correct handoff.
+
+Correction under GitHub gate: synchronize the already-live generic WF01 orchestration contract into repository source and add a regression requiring exactly one asynchronous WF01 -> WF02 handoff with `job_id`. This is source/runtime reconciliation, not a topic-specific behavior change. Fresh E2E remains blocked until the corrected WF01 is committed, GitHub tree is verified, and production WF01 is republished from that GitHub source.
