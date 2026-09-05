@@ -21,7 +21,7 @@ assert.match(applyCode,/speechSafe/);
 const apply=new Function('$input','$',applyCode);
 const base={
   job_id:'00000000-0000-4000-8000-000000000001',
-  language_code:'ru',target_duration_seconds:15,provider:'google_gemini',model:'fixture',voice:'Kore',edge_fallback_voice:'ru-RU-DmitryNeural',
+  language_code:'ru',target_duration_seconds:15,provider:'microsoft_edge_readaloud',model:'edge_neural',voice:'ru-RU-DmitryNeural',
   script_text:'Как работает вода? / Поток вращает турбину / и генератор создаёт электричество.',
   script_support:[{evidence_id:'S1'}],fit_pass:0,max_fit_passes:2,duration_seconds:18,
   desired_word_min:8,desired_word_max:18,next_fit_pass:1,

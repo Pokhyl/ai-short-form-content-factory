@@ -1,6 +1,6 @@
 # Current State — V5 n8n Autonomous Video Orchestrator
 
-Last updated: 2026-09-04
+Last updated: 2026-09-05
 
 Branch: `rebuild/agentic-editor-v5`.
 
@@ -356,3 +356,26 @@ Systemic correction under test:
 - the repository media-worker Docker/package build contract is synchronized with the actual production runtime so a GitHub checkout can build the worker reproducibly.
 
 Real stress proof against the exact latest 15/30/60 contexts: discovery produced `6 + 10 + 18 = 34` exact-beat fingerprint requests. All 34 were fired concurrently at the patched worker and completed in `13.228 s` total; the slowest single request was `13.218 s`, all returned at least one fingerprinted candidate, and no request approached the 120 s n8n transport bound. This is engineering evidence only; fresh production E2E MP4s and exact-artifact review remain required.
+
+## 2026-09-05 quota-dependency violation and self-hosted baseline correction
+
+After commit `597972e39d5a6e50ef7fc3f97d0ca96bb5bba5c1`, fresh autonomous production jobs proved that the required model path still violated the free-required contract:
+
+- `a1155771-4a8d-4a6d-8739-806ef557340c` — transformer / `ru` / `15` — WF03 failed during final visual rebind; the child model-gateway execution returned Gemini HTTP 429 (`The service is receiving too many requests from you`);
+- `fb1267de-a814-4dd7-b4e5-b0690c6e54b7` — Marie Curie / `pl` / `30` — same required-provider 429 failure;
+- `7a9151e5-7064-49db-80dc-43e2ad1d8e79` — aurora / `uk` / `60` — model calls completed and WF04 reached 18/18 reviewed beats, then failed separately because approved pools for adjacent mechanism beats overlapped and the global no-repeat assignment had only 17 unique approved assets for 18 required shots in the first half.
+
+The quota failures are not being repaired with a Gemini rate limiter, quota sleep, additional retry, longer timeout, or paid tier. That entire response is now forbidden by the operator/production dependency contract.
+
+Systemic replacement now under regression only, **not deployed**:
+
+- `config/production-dependency-policy.json` defines the required baseline as `self_hosted_no_quota_ai`, forbids hosted AI fallback on the mandatory path, and explicitly rejects quota-workaround mechanisms for required AI;
+- `.github/workflows/production-contract.yml` runs the dependency contract, all static Node regressions except the explicit real-provider dry-run, all Python regressions, JSON validation, and a model-worker container build;
+- V4 model gateway is rewritten as a thin n8n-controlled adapter to internal `http://model-worker:3002/generate`; the internal worker talks only to self-hosted Ollama and has no hosted fallback/retry/sleep path;
+- WF03 removes Gemini TTS/quota-wait/retry nodes and uses the existing natural-rate Microsoft Edge Read Aloud path as the baseline TTS directly;
+- WF04 retains actual-image multimodal approval but routes those review batches through the same self-hosted model gateway; review batches are reduced to three beats / at most six stills per beat for bounded local VLM inference;
+- default development model configuration is `qwen3:14b` for text and `qwen3-vl:8b-instruct` for vision on hardware capable of running them. The 2-vCPU / 3.7-GiB VPS is intentionally **not** used for these models; the project already rejected weak 1.7B/3B/4B models on that VPS.
+
+Regression state after the migration patch: `30/30` static Node tests PASS, `11/11` Python tests PASS, workflow/policy JSON PASS, `git diff --check` PASS, model-worker Docker build PASS. A mocked Ollama integration test also passed text + one-image multimodal routing and `/health` model readiness. This proves transport/contracts only; it does **not** prove model quality.
+
+Production deployment is blocked until a private self-hosted connection from n8n/model-worker to capable Ollama hardware is verified with both configured models. The separate global no-repeat visual-assignment recovery defect also remains unresolved. No new MP4 or HUMAN PASS exists from this correction yet.

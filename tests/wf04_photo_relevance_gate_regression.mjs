@@ -26,7 +26,7 @@ const prepareCode=n4.get('Prepare Multimodal Visual Review').parameters.jsCode;
 const reviewCode=n4.get('Require Multimodal Visual Selection').parameters.jsCode;
 assert.match(prepareCode, /Judge only visible content/);
 assert.match(prepareCode, /Reject lexical coincidences/);
-assert.match(prepareCode, /batchSize=6/);
+assert.match(prepareCode, /batchSize=3/);
 assert.match(prepareCode, /input\.length>80/);
 assert.match(prepareCode, /up to four IDs/);
 assert.match(reviewCode, /selected_candidate_ids/);
@@ -56,14 +56,14 @@ const longSegments=Array.from({length:18},(_,segmentIndex)=>({json:{
   })),
 }}));
 const preparedBatches=prepareReview({all:()=>longSegments});
-assert.equal(preparedBatches.length,3,'18 final beats must be split into three bounded visual-review batches');
+assert.equal(preparedBatches.length,6,'18 final beats must be split into six bounded local-VLM review batches');
 assert(preparedBatches.every(item=>item.json.visual_review_request.input.length<=80));
-assert.deepEqual(preparedBatches.map(item=>item.json.batch_number),[1,2,3]);
-assert(preparedBatches.every(item=>item.json.batch_count===3));
+assert.deepEqual(preparedBatches.map(item=>item.json.batch_number),[1,2,3,4,5,6]);
+assert(preparedBatches.every(item=>item.json.batch_count===6));
 const preparedSegments=preparedBatches.flatMap(item=>item.json.segments);
 assert.equal(preparedSegments.length,18);
 assert.deepEqual(preparedSegments.map(s=>s.segment_number),Array.from({length:18},(_,i)=>i+1));
-assert(preparedSegments.every(s=>s.visual_review_candidates.length===6),'six-segment batches must expose six reviewed alternatives per exact beat');
+assert(preparedSegments.every(s=>s.visual_review_candidates.length===6),'three-segment local-VLM batches must expose six reviewed alternatives per exact beat');
 
 const attach = new Function('$json', '$', attachCode);
 const context = {
