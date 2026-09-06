@@ -9,17 +9,18 @@ async function fakeFetch(input){
   const query=url.searchParams.get('gsrsearch')??url.searchParams.get('q')??url.searchParams.get('query')??'';
   requests.push({host:url.hostname,path:url.pathname,query});
   if(url.hostname.endsWith('.wikipedia.org'))return ok({query:{pages:[]}});
-  const recovery=query==='Alexander Fleming portrait'||query==='water cycle diagram';
+  const recovery=query==='Alexander Fleming portrait'||query==='water cycle diagram'||query==='clock mainspring'||query==='clock pendulum';
   const stable=query.startsWith('stable exact target');
+  const recoveryDescription=query==='clock mainspring'?'clock mainspring energy release diagram':query==='clock pendulum'?'clock pendulum swinging brass motion blur':query;
   if(url.hostname==='commons.wikimedia.org'){
-    return ok({query:{pages:[(recovery||stable)?commonsPage(`relevant-${query.replaceAll(' ','-')}`,query):commonsPage('wrong-alexander','Alexander Hamilton historical monument')]}});
+    return ok({query:{pages:[(recovery||stable)?commonsPage(`relevant-${query.replaceAll(' ','-')}`,recoveryDescription):commonsPage('wrong-alexander','Alexander Hamilton historical monument')]}});
   }
   if(url.hostname==='pixabay.com'){
-    return ok({hits:[{id:recovery?101:201,largeImageURL:'https://cdn.pixabay.com/a.jpg',webformatURL:'https://cdn.pixabay.com/b.jpg',imageWidth:1600,imageHeight:1000,tags:(recovery||stable)?query:'Alexander Hamilton monument rain window',pageURL:'https://pixabay.com/photos/x',user:'fixture'}]});
+    return ok({hits:[{id:recovery?101:201,largeImageURL:'https://cdn.pixabay.com/a.jpg',webformatURL:'https://cdn.pixabay.com/b.jpg',imageWidth:1600,imageHeight:1000,tags:(recovery||stable)?recoveryDescription:'Alexander Hamilton monument rain window',pageURL:'https://pixabay.com/photos/x',user:'fixture'}]});
   }
   if(url.hostname==='api.pexels.com'){
     assert.equal(url.pathname,'/v1/search');
-    return ok({photos:[{id:recovery?301:401,width:1600,height:1000,url:'https://www.pexels.com/photo/x-1/',photographer:'fixture',alt:(recovery||stable)?query:'Alexander Hamilton statue rain on glass',src:{original:'https://images.pexels.com/x.jpg',large2x:'https://images.pexels.com/x2.jpg',medium:'https://images.pexels.com/xm.jpg'}}]});
+    return ok({photos:[{id:recovery?301:401,width:1600,height:1000,url:'https://www.pexels.com/photo/x-1/',photographer:'fixture',alt:(recovery||stable)?recoveryDescription:'Alexander Hamilton statue rain on glass',src:{original:'https://images.pexels.com/x.jpg',large2x:'https://images.pexels.com/x2.jpg',medium:'https://images.pexels.com/xm.jpg'}}]});
   }
   throw new Error(`unexpected ${url}`);
 }
@@ -56,5 +57,21 @@ assert.deepEqual(process.segment.provider_queries,['schematic diagram of the glo
 assert.ok(process.issued.length>=6&&process.issued.length<=15,'cached exact searches may reduce the second call but recovery stays bounded');
 assert.ok(process.segment.candidates.some(c=>c.metadata?.bounded_query_recovery===true&&String(c.title).toLowerCase().includes('water cycle diagram')));
 for(const r of [...person.issued,...process.issued])assert.ok(r.query.length<=90);
+
+const mechanism=await runCase({title:'Mechanical clock escapement',query:'cutaway technical diagram showing mainspring energy release in a clock'});
+assert.equal(mechanism.segment.bounded_query_recovery_used,true);
+assert.deepEqual(mechanism.segment.provider_queries,['cutaway technical diagram showing mainspring energy release in a clock','clock mainspring']);
+assert.ok(mechanism.segment.candidates.some(c=>c.metadata?.bounded_query_recovery===true&&String(c.title).toLowerCase().includes('clock mainspring')));
+assert.ok(!mechanism.segment.provider_queries.includes('cutaway technical diagram'),'recovery must retain subject/mechanism anchors instead of only media-format words');
+assert.ok(mechanism.segment.candidates.every(c=>c.target_anchor_hits>=c.target_anchor_required),'broader recovery retrieval must still pass the original strict target anchor gate');
+for(const r of mechanism.issued)assert.ok(r.query.length<=90);
+
+const pendulum=await runCase({title:'Mechanical clock escapement',query:'motion blur photography of a swinging brass clock pendulum'});
+assert.equal(pendulum.segment.bounded_query_recovery_used,true);
+assert.deepEqual(pendulum.segment.provider_queries,['motion blur photography of a swinging brass clock pendulum','clock pendulum']);
+assert.ok(pendulum.segment.candidates.some(c=>c.metadata?.bounded_query_recovery===true&&String(c.title).toLowerCase().includes('clock pendulum')));
+assert.ok(!pendulum.segment.provider_queries.includes('motion blur photography'),'recovery must not collapse to photographic style words');
+assert.ok(pendulum.segment.candidates.every(c=>c.target_anchor_hits>=c.target_anchor_required),'broad subject recovery must not bypass strict target-anchor validation');
+for(const r of pendulum.issued)assert.ok(r.query.length<=90);
 
 console.log('VISUAL_DISCOVERY_BOUNDED_QUERY_RECOVERY_REGRESSION_PASS');

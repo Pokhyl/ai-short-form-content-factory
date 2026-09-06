@@ -37,13 +37,19 @@ function boundedProviderQuery(value, maxChars = PROVIDER_QUERY_MAX_CHARS) {
 
 const QUERY_FILLER_WORDS = new Set([
   "a", "an", "the", "and", "or", "of", "to", "in", "on", "at", "by", "for", "from", "with", "into", "over", "under", "during",
-  "show", "shows", "showing", "visible", "view", "close", "up", "detailed", "detail", "inside", "outside", "modern", "historical", "real", "actual",
+  "show", "shows", "showing", "visible", "view", "close", "up", "detailed", "detail", "inside", "outside", "modern", "historical", "real", "actual", "being",
   "image", "picture", "scene", "background", "foreground", "look", "looking", "working",
 ]);
 const QUERY_MEDIA_CUES = new Set(["portrait", "photo", "photograph", "photography", "painting", "diagram", "schematic", "map", "micrograph", "illustration", "cutaway", "model"]);
 const QUERY_LOW_SIGNAL_WORDS = new Set([
   "early", "late", "century", "scientific", "science", "research", "concept", "setting", "equipment", "laboratory", "lab",
-  "experiment", "experimental", "setup", "context", "generic", "general", "representation", "representing",
+  "experiment", "experimental", "setup", "context", "generic", "general", "representation", "representing", "technical",
+]);
+const QUERY_RECOVERY_STYLE_WORDS = new Set(["motion", "blur", "macro", "traditional", "stylized", "dramatic"]);
+const QUERY_RECOVERY_ACTION_WORDS = new Set([
+  "release", "releases", "released", "releasing", "push", "pushes", "pushed", "pushing", "swing", "swings", "swinging",
+  "move", "moves", "moved", "moving", "movement", "rotate", "rotates", "rotated", "rotating", "turn", "turns", "turned", "turning",
+  "flow", "flows", "flowed", "flowing",
 ]);
 
 function queryWordRows(value) {
@@ -127,15 +133,41 @@ function compactRecoveryQuery(query, canonicalTitle) {
   const exact = boundedProviderQuery(query);
   const shared = canonicalOverlapRows(query, canonicalTitle);
   const mediaCue = semanticQueryRows(query).find((row) => QUERY_MEDIA_CUES.has(row.key));
-  const canonicalMediaCue = mediaCue ? ({ schematic: "diagram", photograph: "photo" }[mediaCue.key] ?? mediaCue.key) : null;
-  let rows;
-  if (shared.length >= 2) {
-    rows = shared.slice(0, 5);
-    if (canonicalMediaCue && !rows.some((row) => row.key === canonicalMediaCue)) rows.push({ raw: canonicalMediaCue, key: canonicalMediaCue });
-  } else {
-    rows = semanticQueryRows(query).slice(0, 3);
-    if (canonicalMediaCue && !rows.some((row) => row.key === canonicalMediaCue)) rows.push({ raw: canonicalMediaCue, key: canonicalMediaCue });
+  const canonicalMediaCue = mediaCue
+    ? ({ schematic: "diagram", cutaway: "diagram", photograph: "photo", photography: "photo" }[mediaCue.key] ?? mediaCue.key)
+    : null;
+  const sharedKeys = new Set(shared.map((row) => row.key));
+  const contentRows = anchorQueryRows(query).map((row, index) => ({ ...row, index }));
+  const rankedContentRows = contentRows
+    .filter((row) => !sharedKeys.has(row.key))
+    .sort((left, right) => {
+      const leftStyle = QUERY_RECOVERY_STYLE_WORDS.has(left.key) ? 1 : 0;
+      const rightStyle = QUERY_RECOVERY_STYLE_WORDS.has(right.key) ? 1 : 0;
+      if (leftStyle !== rightStyle) return leftStyle - rightStyle;
+      const leftAction = QUERY_RECOVERY_ACTION_WORDS.has(left.key) ? 1 : 0;
+      const rightAction = QUERY_RECOVERY_ACTION_WORDS.has(right.key) ? 1 : 0;
+      if (leftAction !== rightAction) return leftAction - rightAction;
+      const leftAcronym = /^[A-Z0-9]{2,}$/u.test(left.raw) ? 1 : 0;
+      const rightAcronym = /^[A-Z0-9]{2,}$/u.test(right.raw) ? 1 : 0;
+      if (leftAcronym !== rightAcronym) return rightAcronym - leftAcronym;
+      if (left.raw.length !== right.raw.length) return right.raw.length - left.raw.length;
+      return right.index - left.index;
+    });
+  const rows = [];
+  const seen = new Set();
+  const pushRow = (row) => {
+    const key = cleanText(row?.key ?? row?.raw).toLocaleLowerCase();
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    rows.push({ raw: cleanText(row?.raw ?? key), key });
+  };
+  for (const row of shared.slice(0, 2)) pushRow(row);
+  const desiredContentCount = 2;
+  for (const row of rankedContentRows) {
+    if (rows.length >= desiredContentCount) break;
+    pushRow(row);
   }
+  if (canonicalMediaCue && shared.length >= 2) pushRow({ raw: canonicalMediaCue, key: canonicalMediaCue });
   const compact = boundedProviderQuery(rows.map((row) => row.raw).join(" "));
   if (!compact || compact.toLocaleLowerCase() === exact.toLocaleLowerCase()) return null;
   return compact;
