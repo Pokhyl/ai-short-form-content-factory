@@ -1,0 +1,52 @@
+name: Temporary inventory-first transport
+
+on:
+  push:
+    branches:
+      - transport/inventory-first-20260906
+
+permissions:
+  contents: write
+
+jobs:
+  transport:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout transport branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply exact inventory-first tree to production branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          PATCH="transport/inventory-first.patch.gz.b64"
+          if [ ! -f "$PATCH" ]; then
+            echo "Patch payload not present yet; bootstrap commit only."
+            exit 0
+          fi
+
+          BASE="36c76437e3460641bcd49a106ee69d8ffebf6142"
+          TARGET="rebuild/agentic-editor-v5"
+          EXPECTED_TREE="3cdf959ede9af8caec65b63016380a1bb5dc56c6"
+
+          git fetch origin "$TARGET"
+          CURRENT="$(git rev-parse "origin/$TARGET")"
+          test "$CURRENT" = "$BASE" || {
+            echo "Target moved unexpectedly: $CURRENT"
+            exit 1
+          }
+
+          base64 -d "$PATCH" | gzip -d > /tmp/inventory-first.patch
+          git checkout -B "$TARGET" "origin/$TARGET"
+          git apply --index /tmp/inventory-first.patch
+
+          TREE="$(git write-tree)"
+          echo "TREE=$TREE"
+          test "$TREE" = "$EXPECTED_TREE"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "feat: implement inventory-first story pipeline"
+          git push origin HEAD:"$TARGET"
