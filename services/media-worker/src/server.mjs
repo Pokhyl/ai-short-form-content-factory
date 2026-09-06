@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { createReadStream } from "node:fs";
 import { mkdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
@@ -1035,6 +1035,51 @@ async function averageHashHex(buffer) {
   return hex;
 }
 
+async function fingerprintStoredVisual(request, response) {
+  const body = await readJsonBody(request);
+  const jobId = String(body?.job_id ?? "").trim();
+  const visualPathInput = String(body?.visual_path ?? "").trim();
+  if (!uuidPattern.test(jobId)) {
+    throw new HttpError(400, "invalid_job_id", "job_id must be a valid UUID");
+  }
+  const visualPath = resolvePersistedMediaPath(jobId, visualPathInput, "visual");
+  let buffer;
+  let mediaType = "image";
+  if (extname(visualPath.absolutePath).toLowerCase() === ".mp4") {
+    mediaType = "video";
+    try {
+      buffer = execFileSync(
+        "ffmpeg",
+        ["-v", "error", "-ss", "0", "-i", visualPath.absolutePath, "-frames:v", "1", "-f", "image2pipe", "-vcodec", "png", "pipe:1"],
+        { encoding: null, maxBuffer: 24 * 1024 * 1024 },
+      );
+    } catch (error) {
+      throw new HttpError(422, "stored_visual_fingerprint_failed", `Stored video frame could not be decoded: ${String(error?.message ?? error)}`);
+    }
+  } else {
+    try {
+      buffer = await readFile(visualPath.absolutePath);
+    } catch (error) {
+      throw new HttpError(404, "stored_visual_missing", `Stored visual could not be read: ${String(error?.message ?? error)}`);
+    }
+  }
+  if (!Buffer.isBuffer(buffer) || buffer.length === 0) {
+    throw new HttpError(422, "stored_visual_fingerprint_failed", "Stored visual produced no fingerprintable bytes");
+  }
+  let visualHash;
+  try {
+    visualHash = await averageHashHex(buffer);
+  } catch (error) {
+    throw new HttpError(422, "stored_visual_fingerprint_failed", `Stored visual could not be fingerprinted: ${String(error?.message ?? error)}`);
+  }
+  sendJson(response, 200, {
+    job_id: jobId.toLowerCase(),
+    visual_path: visualPath.relativePath,
+    media_type: mediaType,
+    visual_hash: visualHash,
+  });
+}
+
 async function rankVisualCandidates(request, response) {
   const body = await readJsonBody(request);
   const query = String(body.query ?? "").replace(/\s+/gu, " ").trim();
@@ -1275,22 +1320,48 @@ async function discoverVisuals(request, response) {
 async function searchResearchSources(request, response, requestUrl) {
   const query = String(requestUrl.searchParams.get("q") ?? "").replace(/\s+/gu, " ").trim();
   if (!query || query.length > 300) throw new HttpError(400, "invalid_research_query", "q must contain 1-300 characters");
-  const endpoint = new URL("https://en.wikipedia.org/w/api.php");
-  endpoint.search = new URLSearchParams({ action: "query", list: "search", srsearch: query, srlimit: "10", format: "json", utf8: "1" }).toString();
+
+  const configuredUrl = String(process.env.SEARXNG_URL ?? "").trim();
+  if (!configuredUrl) {
+    throw new HttpError(503, "research_provider_unconfigured", "SEARXNG_URL is not configured");
+  }
+
+  let endpoint;
+  try {
+    endpoint = new URL(configuredUrl);
+  } catch {
+    throw new HttpError(503, "research_provider_unconfigured", "SEARXNG_URL is invalid");
+  }
+  endpoint.searchParams.set("q", query);
+  endpoint.searchParams.set("format", "json");
+  endpoint.searchParams.set("language", "en");
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
   try {
-    const upstream = await fetch(endpoint, { headers: { "User-Agent": previewUserAgent, Accept: "application/json" }, signal: controller.signal });
-    if (!upstream.ok) throw new Error(`Wikipedia HTTP ${upstream.status}`);
+    const upstream = await fetch(endpoint, {
+      headers: { "User-Agent": previewUserAgent, Accept: "application/json" },
+      signal: controller.signal,
+    });
+    if (!upstream.ok) throw new Error(`SearXNG HTTP ${upstream.status}`);
     const payload = await upstream.json();
-    const results = (Array.isArray(payload?.query?.search) ? payload.query.search : []).map((row) => {
-      const title = String(row?.title ?? "").trim();
-      const content = String(row?.snippet ?? "").replace(/<[^>]*>/gu, " ").replace(/&quot;/gu, '"').replace(/&#39;|&apos;/gu, "'").replace(/&amp;/gu, "&").replace(/\s+/gu, " ").trim();
-      return { title, content, url: `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /gu, "_"))}`, engine: "wikipedia" };
-    }).filter((row) => row.title && row.content);
-    sendJson(response, 200, { query, number_of_results: results.length, results });
+    const results = (Array.isArray(payload?.results) ? payload.results : [])
+      .map((row) => ({
+        title: String(row?.title ?? "").replace(/\s+/gu, " ").trim(),
+        content: String(row?.content ?? "").replace(/<[^>]*>/gu, " ").replace(/\s+/gu, " ").trim(),
+        url: String(row?.url ?? "").trim(),
+        engine: String(row?.engine ?? (Array.isArray(row?.engines) ? row.engines[0] : "") ?? "").trim() || "searxng",
+      }))
+      .filter((row) => row.title && row.content && /^https?:\/\//iu.test(row.url))
+      .slice(0, 20);
+    sendJson(response, 200, {
+      query,
+      provider: "searxng",
+      number_of_results: results.length,
+      results,
+    });
   } catch (error) {
-    throw new HttpError(502, "research_search_failed", `Wikipedia research failed: ${String(error?.message ?? error)}`);
+    throw new HttpError(502, "research_search_failed", `SearXNG research failed: ${String(error?.message ?? error)}`);
   } finally {
     clearTimeout(timeout);
   }
@@ -1588,7 +1659,11 @@ async function renderVideoV3(request, response) {
   const jobId = String(body.job_id ?? "").trim().toLowerCase();
   const beats = body.beats;
   const shots = body.shots;
+  const visualContract = body.visual_contract;
   if (!uuidPattern.test(jobId)) throw new HttpError(400, "invalid_job_id", "job_id must be a valid UUID");
+  if (!visualContract || visualContract.version !== "inventory-first-story-v1" || visualContract.reserved_before_script !== true || visualContract.post_freeze_search_used !== false) {
+    throw new HttpError(400, "invalid_visual_contract", "render-v3 requires inventory-first reserved visuals");
+  }
   if (!Array.isArray(beats) || beats.length === 0 || beats.length > 100) throw new HttpError(400, "invalid_render_beats", "beats must contain between 1 and 100 subtitle items");
   if (!Array.isArray(shots) || shots.length === 0 || shots.length > 100) throw new HttpError(400, "invalid_render_shots", "shots must contain between 1 and 100 visual items");
   const audioPath = resolvePersistedMediaPath(jobId, body.audio_path, "audio");
@@ -1706,7 +1781,30 @@ async function renderVideoV3(request, response) {
     if (Math.abs(probe.audio_duration_seconds - measuredAudioDuration) > 0.6) throw new Error(`Rendered audio stream duration ${probe.audio_duration_seconds} differs from voiceover ${measuredAudioDuration}`);
     if (Math.abs(probe.video_duration_seconds - measuredAudioDuration) > 0.6) throw new Error(`Rendered video stream duration ${probe.video_duration_seconds} differs from voiceover ${measuredAudioDuration}`);
     const renderedQuality = inspectRenderedVisualShotDiversity(temporaryOutputPath, normalizedShots);
-    const visualQuality = { ...sequenceQuality, ...renderedQuality, pre_render_pass: true, pass: true };
+    const stillImageCount = normalizedShots.filter((shot) => shot.visual_media_type === "image").length;
+    const factualGraphicCount = normalizedShots.filter((shot) => shot.visual_kind === "factual_graphic").length;
+    const compositionQuality = {
+      version: "full-image-preserve-v1",
+      still_image_count: stillImageCount,
+      factual_graphic_count: factualGraphicCount,
+      still_image_policy: "fit-preserve-with-blurred-fill",
+      factual_graphic_policy: "fit-preserve-with-blurred-fill",
+      destructive_still_crop_count: 0,
+      pass: true,
+    };
+    const visualQuality = {
+      ...sequenceQuality,
+      ...renderedQuality,
+      version: "inventory-first-render-v1",
+      source_inventory_version: visualContract.version,
+      reserved_before_script: true,
+      post_freeze_search_used: false,
+      composition_quality: compositionQuality,
+      pre_render_pass: true,
+      pass: true,
+    };
+    const outputBytes = await readFile(temporaryOutputPath);
+    const artifactSha256 = createHash("sha256").update(outputBytes).digest("hex");
     const outputStat = await stat(temporaryOutputPath);
     await mkdir(renderDirectory, { recursive: true });
     await rename(temporaryOutputPath, absolutePath);
@@ -1715,6 +1813,7 @@ async function renderVideoV3(request, response) {
       audio_codec: probe.audio_codec, audio_sample_rate: probe.audio_sample_rate, audio_channels: probe.audio_channels, duration_seconds: probe.duration_seconds,
       video_stream_duration_seconds: probe.video_duration_seconds, audio_stream_duration_seconds: probe.audio_duration_seconds,
       expected_audio_duration_seconds: measuredAudioDuration, subtitles_burned_in: true, visual_quality: visualQuality,
+      composition_quality: compositionQuality, artifact_sha256: artifactSha256,
       beat_timings: normalizedBeats.map((beat) => ({ beat_number: beat.beat_number, start_seconds: beat.start_seconds, end_seconds: beat.end_seconds, duration_seconds: beat.duration_seconds })),
       shot_timings: normalizedShots.map((shot) => ({ shot_number: shot.shot_number, segment_number: shot.segment_number, segment_shot_number: shot.segment_shot_number, start_seconds: shot.start_seconds, end_seconds: shot.end_seconds, duration_seconds: shot.duration_seconds, media_type: shot.visual_media_type, asset_key: shot.asset_key, visual_cluster_key: shot.visual_cluster_key })),
       bytes: outputStat.size,
@@ -1919,6 +2018,11 @@ const server = createServer(async (request, response) => {
     if (request.method === "GET" && requestUrl.pathname === "/health") {
       sendJson(response, 200, {
         status: "ok",
+        providers: {
+          pexels: { configured: Boolean(String(process.env.PEXELS_API_KEY ?? "").trim()) },
+          pixabay: { configured: Boolean(String(process.env.PIXABAY_API_KEY ?? "").trim()) },
+          research: { provider: "searxng", configured: Boolean(String(process.env.SEARXNG_URL ?? "").trim()) },
+        },
         ffmpeg: ffmpegVersion,
         ffprobe: ffprobeVersion,
         visual_fingerprinter: {
@@ -1982,6 +2086,11 @@ const server = createServer(async (request, response) => {
 
     if (request.method === "POST" && requestUrl.pathname === "/visual/rank") {
       await rankVisualCandidates(request, response);
+      return;
+    }
+
+    if (request.method === "POST" && requestUrl.pathname === "/visual/fingerprint-stored") {
+      await fingerprintStoredVisual(request, response);
       return;
     }
 

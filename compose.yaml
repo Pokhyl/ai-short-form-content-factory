@@ -54,10 +54,16 @@ services:
     restart: unless-stopped
     environment:
       PORT: ${MEDIA_WORKER_PORT}
+      PEXELS_API_KEY: ${PEXELS_API_KEY:-}
+      PIXABAY_API_KEY: ${PIXABAY_API_KEY:-}
+      SEARXNG_URL: ${SEARXNG_URL:-http://ai-short-form-v4-search:8080/search}
     ports:
       - "127.0.0.1:${MEDIA_WORKER_PORT}:3001"
     volumes:
       - media_data:/data
+    networks:
+      default:
+      edge:
 
 networks:
   edge:

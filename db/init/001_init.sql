@@ -100,6 +100,7 @@ CREATE TABLE public.jobs (
     status text DEFAULT 'created'::text NOT NULL,
     current_stage text DEFAULT 'intake'::text NOT NULL,
     final_video_path text,
+    final_video_sha256 text,
     last_error text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -124,17 +125,23 @@ CREATE TABLE public.jobs (
     visual_quality jsonb,
     topic_resolution jsonb,
     visual_search_queries_en jsonb,
+    story_package jsonb,
     CONSTRAINT jobs_content_model_version_check CHECK ((content_model_version = ANY (ARRAY['scene_v1'::text, 'beat_v2'::text, 'staged_v1'::text]))),
     CONSTRAINT jobs_duration_preflight_check CHECK (((duration_preflight IS NULL) OR (jsonb_typeof(duration_preflight) = 'object'::text))),
+    CONSTRAINT jobs_final_video_sha256_check CHECK (((final_video_sha256 IS NULL) OR (final_video_sha256 ~ '^[0-9a-f]{64}$'::text))),
     CONSTRAINT jobs_fact_source_check CHECK ((((fact_source_language IS NULL) AND (fact_primary_title IS NULL)) OR ((fact_source_language IS NOT NULL) AND (fact_primary_title IS NOT NULL) AND (fact_source_language = ANY (ARRAY['en'::text, 'pl'::text, 'ru'::text, 'uk'::text])) AND (NULLIF(btrim(fact_primary_title), ''::text) IS NOT NULL)))),
     CONSTRAINT jobs_review_state_check CHECK ((((review_decision IS NULL) AND (review_notes IS NULL) AND (reviewed_at IS NULL)) OR ((review_decision = ANY (ARRAY['approved'::text, 'rejected'::text])) AND (reviewed_at IS NOT NULL)))),
     CONSTRAINT jobs_script_fit_passes_check CHECK (((script_fit_passes >= 0) AND (script_fit_passes <= 3))),
     CONSTRAINT jobs_script_support_check CHECK (((script_support IS NULL) OR (jsonb_typeof(script_support) = 'array'::text))),
+    CONSTRAINT jobs_story_package_check CHECK (((story_package IS NULL) OR ((jsonb_typeof(story_package) = 'object'::text) AND ((story_package ->> 'version'::text) = 'inventory-first-story-v1'::text) AND (jsonb_typeof((story_package -> 'units'::text)) = 'array'::text) AND (jsonb_array_length((story_package -> 'units'::text)) BETWEEN 2 AND 12) AND (jsonb_typeof((story_package -> 'assets'::text)) = 'array'::text) AND (jsonb_array_length((story_package -> 'assets'::text)) = jsonb_array_length((story_package -> 'units'::text)))))),
     CONSTRAINT jobs_topic_resolution_check CHECK (((topic_resolution IS NULL) OR ((jsonb_typeof(topic_resolution) = 'object'::text) AND ((topic_resolution ->> 'version'::text) = 'evidence-grounded-topic-resolution-v1'::text) AND (NULLIF(btrim((topic_resolution ->> 'raw_topic'::text)), ''::text) IS NOT NULL) AND (NULLIF(btrim((topic_resolution ->> 'resolved_subject'::text)), ''::text) IS NOT NULL) AND (jsonb_typeof((topic_resolution -> 'candidates'::text)) = 'array'::text) AND (jsonb_array_length((topic_resolution -> 'candidates'::text)) >= 1) AND (jsonb_typeof((topic_resolution -> 'reasoning_evidence_ids'::text)) = 'array'::text) AND (jsonb_array_length((topic_resolution -> 'reasoning_evidence_ids'::text)) >= 1)))),
     CONSTRAINT jobs_visual_quality_check CHECK (((visual_quality IS NULL) OR (jsonb_typeof(visual_quality) = 'object'::text))),
     CONSTRAINT jobs_visual_search_queries_en_check CHECK (((visual_search_queries_en IS NULL) OR ((jsonb_typeof(visual_search_queries_en) = 'array'::text) AND ((jsonb_array_length(visual_search_queries_en) >= 6) AND (jsonb_array_length(visual_search_queries_en) <= 18)))))
 );
 
+
+
+COMMENT ON COLUMN public.jobs.final_video_sha256 IS 'SHA256 of the exact final MP4 artifact presented for human review.';
 
 --
 -- Name: COLUMN jobs.topic_resolution; Type: COMMENT; Schema: public; Owner: -
@@ -148,6 +155,13 @@ COMMENT ON COLUMN public.jobs.topic_resolution IS 'Evidence-grounded semantic in
 --
 
 COMMENT ON COLUMN public.jobs.visual_search_queries_en IS 'Grounded English visual concepts authored with the script and consumed by WF04 discovery.';
+
+
+--
+-- Name: COLUMN jobs.story_package; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.jobs.story_package IS 'Inventory-first story units with explicit evidence and pre-verified visual asset bindings, frozen before TTS.';
 
 
 --

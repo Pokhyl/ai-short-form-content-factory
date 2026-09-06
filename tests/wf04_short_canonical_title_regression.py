@@ -1,7 +1,8 @@
 import json
-from pathlib import Path
-w=json.loads(Path('n8n/workflows/WF04-visual-sourcing.json').read_text())
-code=next(n for n in w[0]['nodes'] if n['name']=='Build Deterministic Visual Plans')['parameters']['jsCode']
-assert 't.length>=3' in code
-assert 't.length>=4&&!COMMON' not in code
-print('WF04_SHORT_CANONICAL_TITLE_REGRESSION_PASS')
+w=json.load(open('n8n/workflows/WF04-visual-sourcing.json'));w=w[0] if isinstance(w,list) else w
+n={x['name']:x for x in w['nodes']}
+code=n['Expand Reserved Story Assets']['parameters']['jsCode']
+assert "canonical_subject:clean(j.fact_primary_title||j.topic)" in code
+assert 'Fetch Canonical Media' not in n
+assert 'Build Deterministic Visual Plans' not in n
+print('WF04_CANONICAL_SUBJECT_EXECUTION_REGRESSION_PASS')

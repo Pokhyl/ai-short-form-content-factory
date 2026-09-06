@@ -561,15 +561,17 @@ export async function recoverVisualConflictCandidates({
   };
 }
 
-export async function discoverVisualCandidates({ canonicalSource, beats, timedBeats, visualQueriesEn = [], pixabayApiKey = "", pexelsApiKey = "", fetchImpl = fetch }) {
+export async function discoverVisualCandidates({ canonicalSource, beats, timedBeats, inventoryClaims, visualQueriesEn = [], pixabayApiKey = "", pexelsApiKey = "", fetchImpl = fetch }) {
   const language = cleanText(canonicalSource?.language).toLowerCase();
   const title = cleanText(canonicalSource?.title);
   if (!/^(?:en|pl|ru|uk)$/u.test(language) || !title) throw new Error("visual discovery requires canonical source language/title");
 
   const segmentedMode = Array.isArray(timedBeats) && timedBeats.length > 0;
-  const legacyMode = !segmentedMode && Array.isArray(beats) && beats.length > 0;
-  if (!segmentedMode && !legacyMode) throw new Error("visual discovery requires timed_beats or beats");
+  const inventoryMode = !segmentedMode && Array.isArray(inventoryClaims) && inventoryClaims.length > 0;
+  const legacyMode = !segmentedMode && !inventoryMode && Array.isArray(beats) && beats.length > 0;
+  if (!segmentedMode && !inventoryMode && !legacyMode) throw new Error("visual discovery requires timed_beats, inventory_claims or beats");
   if (segmentedMode && timedBeats.length > 100) throw new Error("visual discovery timed_beats exceeds 100 items");
+  if (inventoryMode && inventoryClaims.length > 30) throw new Error("visual discovery inventory_claims exceeds 30 items");
   if (legacyMode && beats.length > 100) throw new Error("visual discovery beats exceeds 100 items");
 
   const segmentation = segmentedMode ? buildBeatAlignedVisualSegmentation(timedBeats) : null;
@@ -577,19 +579,29 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
     ? visualQueriesEn.map(cleanText).filter(Boolean).slice(0, 18)
     : [];
   if (segmentedMode && groundedQueries.length < timedBeats.length) throw new Error("visual discovery requires one ordered English query per narration beat");
-  const searchUnits = segmentedMode
-    ? segmentation.segments.map((segment) => ({
-        unit_number: Number(segment.segment_number),
-        visual_target: groundedQueries[Math.max(0, Number(segment.segment_number) - 1)],
-        narration: cleanText(segment.narration),
-        required_images: Math.max(1, Number(segment.planned_shot_count) || 1),
-      }))
-    : beats.map((beat) => ({
-        unit_number: Number(beat?.scene_number),
-        visual_target: cleanText(beat?.visual_target),
-        narration: cleanText(beat?.narration),
+  const searchUnits = inventoryMode
+    ? inventoryClaims.map((claim, index) => ({
+        unit_number: Number(claim?.claim_number ?? index + 1),
+        visual_target: cleanText(claim?.visual_target),
+        narration: cleanText(claim?.claim),
         required_images: 1,
-      }));
+      }))
+    : segmentedMode
+      ? segmentation.segments.map((segment) => ({
+          unit_number: Number(segment.segment_number),
+          visual_target: groundedQueries[Math.max(0, Number(segment.segment_number) - 1)],
+          narration: cleanText(segment.narration),
+          required_images: Math.max(1, Number(segment.planned_shot_count) || 1),
+        }))
+      : beats.map((beat) => ({
+          unit_number: Number(beat?.scene_number),
+          visual_target: cleanText(beat?.visual_target),
+          narration: cleanText(beat?.narration),
+          required_images: 1,
+        }));
+  if (inventoryMode && searchUnits.some((unit, index) => unit.unit_number !== index + 1 || !unit.visual_target || !unit.narration)) {
+    throw new Error("visual discovery inventory_claims must be sequential complete claims");
+  }
 
   const providerErrors = [];
   let englishTitle = title;
@@ -642,13 +654,13 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
     return { candidates: dedupeCandidates(rows), errors };
   }
 
-  const unitResults = await mapWithConcurrency(searchUnits, segmentedMode ? SEGMENT_SEARCH_CONCURRENCY : 1, async (unit) => {
+  const unitResults = await mapWithConcurrency(searchUnits, (segmentedMode || inventoryMode) ? SEGMENT_SEARCH_CONCURRENCY : 1, async (unit) => {
     const unitNumber = Number(unit.unit_number);
     const anchor = cleanText(unit.visual_target);
     const exactQuery = boundedProviderQuery(anchor || stockQuery);
     const localErrors = [];
 
-    if (segmentedMode) {
+    if (segmentedMode || inventoryMode) {
       const exact = await fetchTimedProviderSet(exactQuery, unitNumber);
       localErrors.push(...exact.errors);
       const required = Math.max(1, Number(unit.required_images) || 1);
@@ -712,9 +724,32 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       pixabay_base: basePixabay.length,
       commons_base: baseCommons.length,
       segment_query_count: segmentedMode ? unitResults.length : 0,
+      inventory_query_count: inventoryMode ? unitResults.length : 0,
       segment_recovery_query_count: segmentedMode ? unitResults.filter((row) => row.bounded_query_recovery_used).length : 0,
+      inventory_recovery_query_count: inventoryMode ? unitResults.filter((row) => row.bounded_query_recovery_used).length : 0,
     },
   };
+
+
+  if (inventoryMode) {
+    const byNumber = new Map(unitResults.map((row) => [row.unit_number, row]));
+    return {
+      ...common,
+      inventory_version: "pre-script-visual-inventory-v1",
+      inventory_claims: inventoryClaims.map((claim, index) => {
+        const number = index + 1;
+        const row = byNumber.get(number);
+        return {
+          ...claim,
+          claim_number: number,
+          candidates: row?.candidates ?? [],
+          provider_query: row?.provider_query ?? cleanText(claim?.visual_target),
+          provider_queries: row?.provider_queries ?? [cleanText(claim?.visual_target)].filter(Boolean),
+          bounded_query_recovery_used: row?.bounded_query_recovery_used === true,
+        };
+      }),
+    };
+  }
 
   if (segmentedMode) {
     const byNumber = new Map(unitResults.map((row) => [row.unit_number, row]));

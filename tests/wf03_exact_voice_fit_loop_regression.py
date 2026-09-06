@@ -1,21 +1,14 @@
 import json
-from pathlib import Path
-w=json.load(open('n8n/workflows/WF03-natural-edge-voice.json',encoding='utf-8'));w=w[0] if isinstance(w,list) else w
+w=json.load(open('n8n/workflows/WF03-natural-edge-voice.json'));w=w[0] if isinstance(w,list) else w
 n={x['name']:x for x in w['nodes']}
-for x in ['Evaluate Natural Voiceover','Voiceover Fits Target','Prepare Duration Rewrite','Rewrite Narration For Exact Duration','Apply Duration Rewrite','Persist Duration Rewrite','Resume Rewritten Voiceover']:
+for x in ['Evaluate Natural Voiceover','Voiceover Fits Target','Prepare Duration Rewrite','Rewrite Narration For Exact Duration','Apply Duration Rewrite','Persist Duration Rewrite','Resume Rewritten Voiceover','Build Exact Story Unit Timings']:
  assert x in n
 assert 'Speech-speed manipulation is forbidden' in n['Evaluate Natural Voiceover']['parameters']['jsCode']
-assert "Resume Rewritten Voiceover').all().at(-1)" in n['Evaluate Natural Voiceover']['parameters']['jsCode']
-assert "Prepare Duration Rewrite').first().json?.retry_context" not in n['Evaluate Natural Voiceover']['parameters']['jsCode']
-assert 'edge_fallback_voice:base.edge_fallback_voice' in n['Apply Duration Rewrite']['parameters']['jsCode']
-assert "Resume Rewritten Voiceover').all().at(-1)" in n['Prepare Edge Fallback']['parameters']['jsCode']
-assert w['connections']['Store Gemini Voiceover']['main'][1][0]['node']=='Prepare Edge Fallback'
-assert w['connections']['Store Retried Gemini Voiceover']['main'][1][0]['node']=='Prepare Edge Fallback'
-assert 'max_fit_passes:3' in n['Prepare Continuous Voiceover']['parameters']['jsCode']
-assert 'script_fit_passes <= 3' in Path('db/migrations/021_expand_script_fit_pass_limit_to_three.sql').read_text()
+assert 'story_package' in n['Prepare Continuous Voiceover']['parameters']['jsCode']
+assert 'unit_id and claim_id must be unchanged' in n['Prepare Duration Rewrite']['parameters']['jsCode']
+assert 'story_package=$4::jsonb' in n['Persist Duration Rewrite']['parameters']['query']
+assert w['connections']['Voiceover Fits Target']['main'][0][0]['node']=='Build Exact Story Unit Timings'
 assert w['connections']['Voiceover Fits Target']['main'][1][0]['node']=='Prepare Duration Rewrite'
-assert w['connections']['Resume Rewritten Voiceover']['main'][0][0]['node']=='Generate Gemini Voiceover'
-assert 'Do not manipulate speech rate' in n['Prepare Duration Rewrite']['parameters']['jsCode']
-assert 'measured_bracket_interpolation' in n['Prepare Duration Rewrite']['parameters']['jsCode']
-assert 'fit_history' in n['Evaluate Natural Voiceover']['parameters']['jsCode']
+assert w['connections']['Resume Rewritten Voiceover']['main'][0][0]['node']=='Generate Edge Fallback'
+assert 'Final Narration Needs Visual Rebind' not in n
 print('WF03_EXACT_VOICE_FIT_LOOP_REGRESSION_PASS')

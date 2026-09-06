@@ -21,8 +21,8 @@ assert.match(server,/normalizeNaturalVoiceoverTail\(wavPath, targetDurationSecon
 assert.match(server,/apad=pad_dur=/);
 assert.match(server,/tail_pad_seconds/);
 const wf=JSON.parse(fs.readFileSync(new URL('../n8n/workflows/WF03-natural-edge-voice.json',import.meta.url),'utf8'))[0];
-for(const name of ['Store Gemini Voiceover','Store Retried Gemini Voiceover']){
-  const body=wf.nodes.find(n=>n.name===name).parameters.jsonBody;
-  assert.match(body,/target_duration_seconds/);
-}
+const edge=wf.nodes.find(n=>n.name==='Generate Edge Fallback');
+assert.ok(edge,'Edge synthesis node must exist');
+assert.match(edge.parameters.jsonBody,/target_duration_seconds/);
+assert.equal(wf.nodes.some(n=>/Gemini Voiceover/.test(n.name)),false,'Gemini TTS must not remain in the exact timing path');
 console.log('AUDIO_DURATION_TAIL_PAD_REGRESSION_PASS');

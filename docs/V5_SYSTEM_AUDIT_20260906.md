@@ -146,6 +146,44 @@ an unfinished architecture.
 No production files, DB rows, workflow versions or services were changed. No new
 product job was submitted in this session, and no existing job was repaired.
 
+## Recovery after Codex usage-limit interruption
+
+The Codex session stopped after commit `36c76437e3460641bcd49a106ee69d8ffebf6142`.
+The chat transcript described later work that was not present in that commit. A fresh
+checkout of that exact commit confirmed the missing tail instead of assuming it had
+been saved.
+
+Recovered systemic work, still outside production:
+
+- WF03 now uses the existing Edge continuous synthesis endpoint as the exact timing
+  authority. The old Gemini TTS / wait / retry / store branch is removed from the
+  product path. The final WAV must return `provider-word-timing-v1`, and beat
+  boundaries are derived from observed provider word timestamps rather than weighted
+  division of total audio duration. Speech rate remains unchanged.
+- `compose.yaml` now passes the already-existing production Pexels/Pixabay keys to
+  media-worker and attaches media-worker to the shared `n8n_default` edge network.
+  Previously the keys existed in `.env` but were absent from the running worker.
+- `/research/search` now uses the configured SearXNG JSON endpoint instead of silently
+  querying only English Wikipedia. Missing/invalid SearXNG configuration fails
+  explicitly. `/health` reports whether Pexels, Pixabay and SearXNG are configured
+  without exposing credentials.
+- `.env.example` documents the three runtime variables without real secrets.
+
+Verification of this recovered state:
+
+- 48/48 non-live static regressions PASS;
+- fresh PostgreSQL contract PASS: 22 workflow SQL statements plus staged writes;
+- actual n8n 2.33.3 import contract PASS: 8 workflows;
+- clean media-worker image build PASS;
+- isolated worker health shows Pexels/Pixabay/SearXNG configured;
+- isolated `/research/search` returned 20 SearXNG results for a mechanical-clock query;
+- isolated legacy visual-discovery probe returned provider errors `[]` and candidates
+  from Wikimedia, Pexels and Pixabay (44/15/18 appearances in the returned structure).
+
+No production workflow, container, database row or product job was changed by this
+recovery. The primary unfinished product change remains inventory-first story
+construction before final narration freeze.
+
 ## Exact continuation
 
 1. Foundation verification is complete: 46/46 static regressions, fresh PostgreSQL
@@ -179,3 +217,27 @@ outside the repository; they are not deliverables or tracked runtime data. The
 working tree is `work/repository` in the same task workspace. SSH access works.
 Docker Desktop was started for local isolated tests. No credentials were printed,
 exported decrypted, or committed.
+
+## Inventory-first implementation continuation after the audit
+
+The audit recommendation has now been implemented in the existing WF02-WF05 path on preservation branch `continuation/codex-recovery-20260906`; production remains unchanged at this checkpoint.
+
+Implemented contracts:
+
+1. WF02 now derives candidate claims from explicit research evidence, discovers actual still-image candidates before script freeze, fingerprints and reviews actual candidate images, removes perceptual duplicates, and writes the final story only from claims with a reserved verified asset. `jobs.story_package` freezes explicit claim/evidence/unit/asset identity.
+2. WF03 now uses native Edge provider word timestamps for final semantic-unit timing. Duration correction may rewrite spoken wording inside the same frozen units but cannot change unit/claim/evidence/asset identity and never changes speech rate.
+3. WF04 is now reserved-asset execution rather than post-freeze creative search. It downloads only pre-reserved assets and verifies the stored normalized file against the pre-script perceptual fingerprint before durable visual rows are accepted.
+4. WF05/render now consumes variable semantic units, requires the inventory-first reserved-visual contract, preserves complete still-image foregrounds in a 9:16 composition, and returns/persists the SHA256 of the exact rendered artifact.
+5. Candidate-claim generation, final inventory-grounded story generation and duration rewrite now request structured JSON schemas from the existing bounded model gateway. Deterministic validators remain authoritative after model output.
+6. WF02 failure branches now explicitly emit error output into the common persistence handler, which can recover `job_id` from stable upstream planner context. This fixes the observed isolated-E2E defect where an invalid model JSON response could leave a job stranded as `created/intake`.
+
+Latest verification gate after those changes:
+
+- 55/55 non-live static regressions PASS (13 Python, 42 Node);
+- fresh PostgreSQL contract PASS;
+- all 8 workflow exports import successfully into n8n 2.33.3;
+- clean media-worker Docker build PASS, image `sha256:8017fba74dadb5d0ccee338e358a2586a96a8ab088b8bd6de0bfbc5565e334b9`.
+
+The first isolated full n8n attempt used only normal product input (`How a mechanical clock escapement works`, `en`, `15`) and exposed the missing structured-output/error-persistence contract above. No manual creative rescue was performed. After the systemic fix, a second clean isolated n8n attempt could not be completed because the server-management safety layer blocks injecting an application credential into a disposable n8n instance. Static/import/fresh-DB/build verification is complete, but this harness restriction is not an E2E product PASS.
+
+Next controlled step is to preserve/push this exact source state, then deploy with an explicit production rollback capture and submit a fresh normal product job. `review_ready` is not success; the exact MP4 hash requires human viewing.

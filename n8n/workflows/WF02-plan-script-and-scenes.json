@@ -217,128 +217,6 @@
       },
       {
         "parameters": {
-          "jsCode": "const j=$('Validate Resolved Topic').first().json;const r=$input.first().json;let rows=(Array.isArray(r.results)?r.results:[]).slice(0,10).map((x,i)=>({id:`S${i+1}`,title:String(x.title??'').replace(/\\s+/gu,' ').trim(),snippet:String(x.content??x.description??'').replace(/\\s+/gu,' ').trim(),url:String(x.url??'').trim()})).filter(x=>x.title&&x.snippet&&x.url);if(rows.length<2){const seen=new Set(rows.map(x=>x.url));for(const x of (Array.isArray(j.discovery_evidence)?j.discovery_evidence:[])){const title=String(x.title??'').replace(/\\s+/gu,' ').trim(),snippet=String(x.snippet??'').replace(/\\s+/gu,' ').trim(),url=String(x.url??'').trim();if(title&&snippet&&url&&!seen.has(url)){rows.push({id:`S${rows.length+1}`,title,snippet,url});seen.add(url);}if(rows.length>=10)break;}}if(rows.length<2)throw new Error('combined research returned fewer than two usable results');const target=Number(j.target_duration_seconds);const words={15:[30,42],30:[62,82],45:[95,122],60:[128,165]}[target];if(!words)throw new Error('unsupported duration');const evidence=rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}\\n${x.url}`).join('\\n\\n');const prompt=`You write natural spoken narration for a vertical short video.\\n\\nRAW USER TOPIC (may be in any language): ${j.topic}\\nRESOLVED SUBJECT: ${j.resolved_subject}\\nCANONICAL NAME: ${j.canonical_subject}\\nSUBJECT TYPE: ${j.subject_type}\\nCONTEXT: ${j.subject_context}\\nUSER INTENT: ${j.user_intent}\\nOUTPUT LANGUAGE: ${j.output_language_name} (${j.language_code})\\nTARGET DURATION: ${target} seconds\\nTARGET LENGTH: ${words[0]}-${words[1]} spoken words.\\n\\nWEB RESEARCH FOR RESOLVED SUBJECT:\\n${evidence}\\n\\nReturn ONLY valid JSON:\\n{\"script\":\"...\",\"used_source_ids\":[\"S1\",\"S2\"],\"visual_search_queries_en\":[\"...\"],\"confidence\":\"high|medium|low\"}\\n\\nRules:\\n- script MUST be entirely in the selected output language, regardless of input-topic language or source language.\\n- Write coherent, natural spoken narration, not an encyclopedia excerpt or list.\\n- Discuss only the resolved subject and reject unrelated lexical lookalikes.\\n- Answer the actual user intent immediately; no generic intro.\\n- Use only facts supported by supplied research snippets.\\n- used_source_ids must contain only IDs above and at least two IDs.\\n- visual_search_queries_en must contain exactly ${({15:6,30:10,45:14,60:18})[target]} concrete English image-search concepts in the same chronological order as the future narration beats; query 1 depicts the opening words and the last query depicts the closing words.\\n- Every visual query must describe a realistically obtainable, copyright-safe still photo, diagram, real person, real location, object, or environment available from Wikimedia Commons or general stock-photo providers.\\n- For fictional or copyrighted subjects, do not request frames or named scenes from a film, series, or game. Use licensed photos of the actor or creator, real filming locations, public events, costumes, props, architecture, landscapes, or other literal contextual imagery supported by the story.\\n- Each query must stand alone as a literal description of what should be visible; avoid abstract plot actions that cannot be photographed.\\n- Spoken narration must not use slash separators, pipes, arrows, bullets, markdown separators, or other formatting symbols as spoken punctuation. Use normal sentence punctuation only.\\n- No markdown.`;return [{json:{...j,research_rows:rows,script_prompt:prompt,target_word_min:words[0],target_word_max:words[1]}}];"
-        },
-        "id": "30ade099-13f8-4ef6-904f-4884e9a5d9d4",
-        "name": "Prepare Grounded Script Prompt",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2720,
-          0
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ { prompt: $json.script_prompt, temperature: 0.2 } }}",
-          "options": {
-            "timeout": 180000
-          }
-        },
-        "id": "f7ac7193-998a-43c5-820d-fa862a94a68b",
-        "name": "Write Grounded Natural Script",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          2000,
-          0
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "const j=$('Prepare Grounded Script Prompt').first().json;const r=$input.first().json;let t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{const repaired=t.replace(/(\"used_source_ids\"\\s*:\\s*\\[)([\\s\\S]*?)(\\])/u,(m,a,b,c)=>{const vals=b.split(',').map(x=>x.trim()).filter(Boolean).map(x=>/^S\\d+$/u.test(x)?`\\\"${x}\\\"`:x);return a+vals.join(',')+c});try{o=JSON.parse(repaired)}catch{throw new Error('script writer returned invalid JSON')}};const script=String(o.script??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();let ids=Array.isArray(o.used_source_ids)?[...new Set(o.used_source_ids.map(String))]:[];const validIds=new Set(j.research_rows.map(x=>x.id));ids=ids.filter(id=>validIds.has(id));if(ids.length<2)ids=j.research_rows.slice(0,2).map(x=>String(x.id));if(!script||ids.length<2)throw new Error('script writer returned unusable script/evidence inventory');const count=script.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;const evidence=j.research_rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}`).join('\\n\\n');const visualCount=({15:6,30:10,45:14,60:18})[Number(j.target_duration_seconds)];const prompt=`Audit and, if needed, rewrite this short-video narration. Return ONLY JSON {\"ok\":true,\"script\":\"...\",\"used_source_ids\":[...],\"visual_search_queries_en\":[\"...\"],\"reason\":\"...\"}.\\n\\nSelected language: ${j.output_language_name} (${j.language_code})\\nTarget duration: ${j.target_duration_seconds}s\\nTarget words: ${j.target_word_min}-${j.target_word_max}\\nCanonical subject: ${j.canonical_subject}\\nIntent: ${j.user_intent}\\nDraft (${count} words): ${script}\\nDraft source IDs: ${ids.join(', ')}\\n\\nEvidence:\\n${evidence}\\n\\nRequirements: script must be entirely in selected language; natural spoken prose; answer the intended topic; every factual claim supported by evidence; remove unrelated facts and source artifacts; keep within target word range when possible. Preserve no bad wording merely because it came from the draft. Create exactly ${visualCount} unique English visual queries AFTER finalizing script. Divide the final script chronologically into ${visualCount} consecutive narration beats of equal spoken duration. Query N must literally depict what is spoken about in beat N; never anticipate a later beat and never substitute a generic topic image when the beat names a specific mechanism. Every query must be independently searchable on Wikimedia Commons or a stock-photo provider. Technical diagrams are allowed and required when they explain the spoken mechanism. Spoken narration must not use slash separators, pipes, arrows, bullets, markdown separators, or other formatting symbols as spoken punctuation; use normal sentence punctuation only. No title cards, text-only cards, abstract icons, logos, label-dominated infographics, or generic filler.`;return [{json:{...j,draft_script:script,draft_source_ids:ids,writer_model:String(r.model??''),validation_prompt:prompt}}];"
-        },
-        "id": "ad86ad4a-71c2-47bd-9f1a-3ad8ab3809b6",
-        "name": "Prepare Script Validation",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2240,
-          0
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ { prompt: $json.validation_prompt, temperature: 0.05 } }}",
-          "options": {
-            "timeout": 180000
-          }
-        },
-        "id": "cd9d20e4-fe50-4db8-9e98-0a4f922e478c",
-        "name": "Validate And Rewrite Script",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          2480,
-          0
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "const j=$('Prepare Script Validation').first().json;const r=$input.first().json;let t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'').trim();let o;try{o=JSON.parse(t)}catch{const repaired=t.replace(/(\"used_source_ids\"\\s*:\\s*\\[)([\\s\\S]*?)(\\])/u,(m,a,b,c)=>{const vals=b.split(',').map(x=>x.trim()).filter(Boolean).map(x=>/^S\\d+$/u.test(x)?`\\\"${x}\\\"`:x);return a+vals.join(',')+c});try{o=JSON.parse(repaired)}catch{throw new Error('script validator returned invalid JSON')}};const speechSafe=v=>String(v??'').normalize('NFKC').replace(/\\s+\\/\\s+/gu,' ').replace(/\\s+\\|\\s+/gu,' ').replace(/\\s+(?:→|->)\\s+/gu,' ').replace(/\\s+/gu,' ').trim();const script=speechSafe(o.script);const rowMap=new Map(j.research_rows.map(x=>[x.id,x]));let ids=Array.isArray(o.used_source_ids)?[...new Set(o.used_source_ids.map(String))]:[];let used=ids.filter(id=>rowMap.has(id));if(used.length<2){ids=[...new Set((j.draft_source_ids??[]).map(String))];used=ids.filter(id=>rowMap.has(id));}if(used.length<2){ids=j.research_rows.slice(0,2).map(x=>String(x.id));used=ids.filter(id=>rowMap.has(id));}if(!script||used.length<2)throw new Error('validated script or research evidence is incomplete');const wc=script.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;if(wc<Math.max(18,j.target_word_min-15)||wc>j.target_word_max+20)throw new Error(`validated script length ${wc} is outside broad duration bounds`);\nconst selected_evidence=used.map((id,index)=>{const x=rowMap.get(id);return {evidence_id:id,source_id:id,source_language:'en',source_title:x.title,source_url:x.url,passage_id:'searx-snippet',section:null,evidence_text:x.snippet,selection_score:100-index,selection_rank:index+1}});\nconst sentences=script.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/gu)?.map(s=>s.trim()).filter(Boolean)??[script];const script_support=sentences.map((text,index)=>({segment_number:index+1,evidence_id:selected_evidence[index%selected_evidence.length].evidence_id,source_id:selected_evidence[index%selected_evidence.length].source_id,source_text:selected_evidence[index%selected_evidence.length].evidence_text,text,transform:'grounded_paraphrase'}));\nconst expectedVisualQueries=({15:6,30:10,45:14,60:18})[Number(j.target_duration_seconds)];const visualQueries=(Array.isArray(o.visual_search_queries_en)?o.visual_search_queries_en:[]).map(v=>String(v??'').replace(/\\s+/gu,' ').trim()).filter(Boolean);if(visualQueries.length!==expectedVisualQueries||new Set(visualQueries.map(v=>v.toLocaleLowerCase())).size!==expectedVisualQueries)throw new Error(`validated visual query inventory must contain exactly ${expectedVisualQueries} ordered unique narration-beat concepts`);\nconst wps={en:2.55,pl:2.25,ru:2.45,uk:2.35}[j.language_code]??2.4;const predicted=wc/wps;return [{json:{job_id:j.job_id,topic:j.topic,language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds),canonical_subject:j.canonical_subject,topic_resolution:j.topic_resolution,script_text:script,script_support,selected_evidence,duration_preflight:{version:'ai-word-budget-v1',language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds),predicted_duration_seconds:Number(predicted.toFixed(3)),prediction_is_advisory:true,exact_tts_required:true},narration_engine:'grounded_ai_writer',narration_model:String(r.model??j.writer_model??'model-gateway'),narration_prompt_version:'grounded-writer-v1-topic-resolution-v1',script_fit_passes:0,fact_source_language:'en',fact_primary_title:j.canonical_subject,visual_search_queries_en:visualQueries}}];"
-        },
-        "id": "f4abf82d-748f-4f2b-86ae-64290c47705c",
-        "name": "Build Final Grounded Script",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2720,
-          0
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "operation": "executeQuery",
-          "query": "WITH input AS (SELECT $1::uuid job_id,$2::text script_text,$3::jsonb script_support,$4::jsonb duration_preflight,$5::text narration_engine,$6::text narration_model,$7::text narration_prompt_version,$8::smallint script_fit_passes,$9::jsonb evidence_json,$10::text fact_source_language,$11::text fact_primary_title,$12::jsonb topic_resolution,$13::jsonb visual_queries), locked AS (SELECT j.id FROM public.jobs j,input i WHERE j.id=i.job_id AND j.status='created' AND j.current_stage='intake' AND NOT EXISTS(SELECT 1 FROM public.scenes s WHERE s.job_id=j.id) AND NOT EXISTS(SELECT 1 FROM public.job_evidence e WHERE e.job_id=j.id) FOR UPDATE), parsed AS (SELECT x.* FROM input i CROSS JOIN LATERAL jsonb_to_recordset(i.evidence_json) AS x(evidence_id text,source_id text,source_language text,source_title text,source_url text,passage_id text,section text,evidence_text text,selection_score numeric,selection_rank integer)), valid AS (SELECT p.* FROM parsed p WHERE NULLIF(BTRIM(p.evidence_id),'') IS NOT NULL AND NULLIF(BTRIM(p.source_id),'') IS NOT NULL AND p.source_language IN('en','pl','ru','uk') AND NULLIF(BTRIM(p.source_title),'') IS NOT NULL AND NULLIF(BTRIM(p.evidence_text),'') IS NOT NULL AND p.selection_rank>0), ok AS (SELECT l.id FROM locked l,input i WHERE NULLIF(BTRIM(i.script_text),'') IS NOT NULL AND jsonb_typeof(i.script_support)='array' AND jsonb_array_length(i.script_support)>0 AND jsonb_typeof(i.topic_resolution)='object' AND i.topic_resolution->>'version'='evidence-grounded-topic-resolution-v1' AND NULLIF(BTRIM(i.topic_resolution->>'resolved_subject'),'') IS NOT NULL AND jsonb_array_length(i.topic_resolution->'reasoning_evidence_ids')>0 AND jsonb_typeof(i.visual_queries)='array' AND jsonb_array_length(i.visual_queries) BETWEEN 6 AND 18 AND COALESCE((i.duration_preflight->>'exact_tts_required')::boolean,false)=true AND COALESCE((i.duration_preflight->>'prediction_is_advisory')::boolean,false)=true AND (SELECT count(*) FROM valid)>=2), ins AS (INSERT INTO public.job_evidence(job_id,evidence_id,source_id,source_language,source_title,source_url,passage_id,section,evidence_text,selection_score,selection_rank) SELECT o.id,v.evidence_id,v.source_id,v.source_language,v.source_title,NULLIF(v.source_url,''),v.passage_id,NULLIF(v.section,''),v.evidence_text,v.selection_score,v.selection_rank FROM ok o CROSS JOIN valid v ORDER BY v.selection_rank RETURNING job_id), upd AS (UPDATE public.jobs j SET content_model_version='staged_v1',topic_resolution=i.topic_resolution,visual_search_queries_en=i.visual_queries,script_text=i.script_text,script_support=i.script_support,duration_preflight=i.duration_preflight,narration_engine=i.narration_engine,narration_model=i.narration_model,narration_prompt_version=i.narration_prompt_version,script_fit_passes=i.script_fit_passes,fact_source_language=i.fact_source_language,fact_primary_title=i.fact_primary_title,status='processing',current_stage='script',last_error=NULL,updated_at=now() FROM input i,ok o WHERE j.id=o.id AND j.id=i.job_id RETURNING j.id) SELECT $1::uuid AS job_id,(SELECT count(*)::int FROM ins) inserted_evidence_count,EXISTS(SELECT 1 FROM upd) job_updated,(SELECT count(*)::int FROM public.scenes s WHERE s.job_id=$1::uuid) scene_count;",
-          "options": {
-            "queryReplacement": "={{ [ $json.job_id, $json.script_text, JSON.stringify($json.script_support), JSON.stringify($json.duration_preflight), $json.narration_engine, $json.narration_model, $json.narration_prompt_version, $json.script_fit_passes, JSON.stringify($json.selected_evidence), $json.fact_source_language, $json.fact_primary_title, JSON.stringify($json.topic_resolution), JSON.stringify($json.visual_search_queries_en) ] }}"
-          }
-        },
-        "type": "n8n-nodes-base.postgres",
-        "typeVersion": 2.7,
-        "position": [
-          2960,
-          0
-        ],
-        "id": "aa390701-08d8-4ee2-af7c-661f68709ba4",
-        "name": "Persist Grounded AI Narration",
-        "credentials": {
-          "postgres": {
-            "id": "AdVJ2zREIvjZqGH5",
-            "name": "Application PostgreSQL"
-          }
-        },
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "const r=$input.first().json;const p=$('Build Final Grounded Script').first().json;const expected=p.selected_evidence.length;if(r.job_updated!==true)throw new Error(`grounded script did not update job ${p.job_id}`);if(Number(r.inserted_evidence_count)!==expected)throw new Error(`evidence persisted ${r.inserted_evidence_count}/${expected}`);if(Number(r.scene_count)!==0)throw new Error('WF02 must not create scenes');return [{json:{job_id:p.job_id,evidence_count:expected,narration_ready:true}}];"
-        },
-        "id": "343f2243-c0f8-4160-ad7e-27c84a9dacec",
-        "name": "Require Persisted Grounded Script",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          3200,
-          0
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
           "workflowId": {
             "__rl": true,
             "value": "UHxvCZNqaLb1RKMM",
@@ -385,7 +263,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const incoming=$input.first()?.json??{};\nlet jobId=String(incoming.job_id??incoming.requested_job_id??'').trim();\nconst recover=(name)=>{try{return String($(name).first().json?.job_id??$(name).first().json?.requested_job_id??'').trim()}catch{return ''}};\nif(!jobId){for(const name of ['Build Final Grounded Script','Prepare Script Validation','Prepare Grounded Script Prompt','Parse Semantic Intent','Prepare Semantic Intent','Require Eligible Job','Load Eligible Job','Receive Job ID']){jobId=recover(name);if(jobId)break;}}\nlet message='';const e=incoming.error;if(typeof e==='string')message=e;else if(e&&typeof e==='object')message=String(e.message??e.description??e.cause??'');if(!message)message=String(incoming.message??incoming.error_message??'');if(!message){try{message=JSON.stringify(incoming)}catch{message='WF02 failed'}};message=message.slice(0,4000);if(!jobId)throw new Error('WF02 failure handler could not recover job_id');return [{json:{job_id:jobId,error_message:message}}];"
+          "jsCode": "const incoming=$input.first()?.json??{};\nlet jobId=String(incoming.job_id??incoming.requested_job_id??'').trim();\nconst recover=(name)=>{try{return String($(name).first().json?.job_id??$(name).first().json?.requested_job_id??'').trim()}catch{return ''}};\nif(!jobId){for(const name of ['Build Final Inventory Story','Prepare Inventory Grounded Story','Select Verified Claim Inventory','Validate Candidate Claims','Prepare Candidate Claims','Draft Candidate Claims','Parse Semantic Intent','Prepare Semantic Intent','Require Eligible Job','Load Eligible Job','Receive Job ID']){jobId=recover(name);if(jobId)break;}}\nlet message='';const e=incoming.error;if(typeof e==='string')message=e;else if(e&&typeof e==='object')message=String(e.message??e.description??e.cause??'');if(!message)message=String(incoming.message??incoming.error_message??'');if(!message){try{message=JSON.stringify(incoming)}catch{message='WF02 failed'}};message=message.slice(0,4000);if(!jobId)throw new Error('WF02 failure handler could not recover job_id');return [{json:{job_id:jobId,error_message:message}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -431,6 +309,280 @@
         ],
         "id": "b287f464-c30b-4a1d-b69d-51fab6d68f86",
         "name": "Stop Planner Failure"
+      },
+      {
+        "parameters": {
+          "jsCode": "const j=$('Validate Resolved Topic').first().json;const r=$input.first().json;const clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();let rows=(Array.isArray(r.results)?r.results:[]).slice(0,10).map((x,i)=>({id:`S${i+1}`,title:clean(x.title),snippet:clean(x.content??x.description),url:clean(x.url)})).filter(x=>x.title&&x.snippet&&x.url);if(rows.length<2){const seen=new Set(rows.map(x=>x.url));for(const x of (Array.isArray(j.discovery_evidence)?j.discovery_evidence:[])){const title=clean(x.title),snippet=clean(x.snippet),url=clean(x.url);if(title&&snippet&&url&&!seen.has(url)){rows.push({id:`S${rows.length+1}`,title,snippet,url});seen.add(url);}if(rows.length>=10)break;}}if(rows.length<2)throw new Error('combined research returned fewer than two usable results');const target=Number(j.target_duration_seconds),range={15:[4,6],30:[6,8],45:[8,10],60:[10,12]}[target];if(!range)throw new Error('unsupported duration');const evidence=rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}\\n${x.url}`).join('\\n\\n');const prompt=`Create candidate FACTUAL CLAIMS for an autonomous short-video story. Do NOT write the final narration yet.\\n\\nRAW TOPIC: ${j.topic}\\nRESOLVED SUBJECT: ${j.resolved_subject}\\nCANONICAL NAME: ${j.canonical_subject}\\nUSER INTENT: ${j.user_intent}\\nTARGET DURATION: ${target}s\\n\\nRESEARCH:\\n${evidence}\\n\\nReturn ONLY JSON {\"claims\":[{\"claim_id\":\"C1\",\"claim\":\"one complete factual proposition in English\",\"evidence_ids\":[\"S1\"],\"visual_target\":\"one concrete English still-image target\"}]}.\\nRequirements: ${range[0]}-${range[1]} claims; claim IDs C1..Cn in order; every claim must be directly supported by every cited evidence ID and cite 1-3 IDs from the research above; do not merge unrelated facts into one claim; visual_target must literally depict the claim using a realistically obtainable photo, historical image, technical diagram, scientific illustration, real person, place, object or mechanism; avoid abstract concepts, title cards, generic filler, logos, screenshots and named copyrighted scenes; prefer a different truthful visual subject for each claim; do not invent a claim merely because an image might exist.`;return [{json:{...j,research_rows:rows,candidate_claim_range:range,claim_prompt:prompt}}];"
+        },
+        "id": "0a121d05-0140-4ea0-bc62-18a020fb2cac",
+        "name": "Prepare Candidate Claims",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2200,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { prompt: $json.claim_prompt, temperature: 0.15, response_format: 'json', response_schema: {\"type\":\"object\",\"properties\":{\"claims\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"claim_id\":{\"type\":\"string\"},\"claim\":{\"type\":\"string\"},\"evidence_ids\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"visual_target\":{\"type\":\"string\"}},\"required\":[\"claim_id\",\"claim\",\"evidence_ids\",\"visual_target\"]}}},\"required\":[\"claims\"]} } }}",
+          "options": {
+            "timeout": 180000
+          }
+        },
+        "id": "26359c48-489c-4f22-abb5-139457fa8b45",
+        "name": "Draft Candidate Claims",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2440,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const base=$('Prepare Candidate Claims').first().json,r=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();let text=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,'').trim(),o;try{o=JSON.parse(text)}catch{throw new Error('candidate claim writer returned invalid JSON')}const rows=base.research_rows,validIds=new Set(rows.map(x=>x.id)),range=base.candidate_claim_range,raw=Array.isArray(o.claims)?o.claims:[];if(raw.length<range[0]||raw.length>range[1])throw new Error(`candidate claim count ${raw.length} outside ${range[0]}-${range[1]}`);const claims=[],seenClaims=new Set(),seenTargets=new Set(),allEvidence=new Set();for(let i=0;i<raw.length;i++){const x=raw[i]??{},claim_id=clean(x.claim_id),claim=clean(x.claim),visual_target=clean(x.visual_target),evidence_ids=[...new Set((Array.isArray(x.evidence_ids)?x.evidence_ids:[]).map(clean).filter(Boolean))];if(claim_id!==`C${i+1}`||!claim||!visual_target)throw new Error(`candidate claim ${i+1} is incomplete`);if(evidence_ids.length<1||evidence_ids.length>3||evidence_ids.some(id=>!validIds.has(id)))throw new Error(`candidate claim ${claim_id} has invalid evidence IDs`);const ck=claim.toLocaleLowerCase(),vk=visual_target.toLocaleLowerCase();if(seenClaims.has(ck)||seenTargets.has(vk))throw new Error(`candidate claim ${claim_id} duplicates claim or visual target`);seenClaims.add(ck);seenTargets.add(vk);evidence_ids.forEach(id=>allEvidence.add(id));claims.push({claim_number:i+1,claim_id,claim,evidence_ids,visual_target});}if(allEvidence.size<2)throw new Error('candidate claims do not use at least two independent research rows');return [{json:{...base,candidate_claims:claims,inventory_request:{canonical_source:{language:'en',title:base.canonical_subject},inventory_claims:claims}}}];"
+        },
+        "id": "e2b0b4ab-dac3-4167-9c05-ce7240f56e7e",
+        "name": "Validate Candidate Claims",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2680,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/discover",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.inventory_request }}",
+          "options": {
+            "timeout": 180000
+          }
+        },
+        "id": "a69349b2-0ff2-4f09-bc98-c8952bc09290",
+        "name": "Discover Pre-Script Visual Inventory",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2920,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "const discovery=$input.first().json,base=$('Validate Candidate Claims').first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(discovery.inventory_version!=='pre-script-visual-inventory-v1')throw new Error('pre-script inventory contract missing');const got=Array.isArray(discovery.inventory_claims)?discovery.inventory_claims:[];if(got.length!==base.candidate_claims.length)throw new Error(`inventory claim cardinality ${got.length}/${base.candidate_claims.length}`);const out=[];for(let i=0;i<got.length;i++){const claim=base.candidate_claims[i],row=got[i];if(Number(row.claim_number)!==i+1||clean(row.claim_id)!==claim.claim_id)throw new Error(`inventory claim ${i+1} identity mismatch`);const seen=new Set(),pool=[];for(const c of (Array.isArray(row.candidates)?row.candidates:[])){const provider=clean(c.provider).toLowerCase(),provider_asset_id=clean(c.provider_asset_id??c.candidate_id),candidate_id=clean(c.candidate_id),previews=(Array.isArray(c.preview_urls)?c.preview_urls:[c.preview_url]).map(clean).filter(Boolean).slice(0,3);const mediaKind=clean(c.media_kind||c.metadata?.media_kind||'photo').toLowerCase();if(!provider||!provider_asset_id||!candidate_id||!previews.length||mediaKind==='video')continue;const identity=`${provider}:${provider_asset_id}`;if(seen.has(identity))continue;seen.add(identity);pool.push({...c,provider,provider_asset_id,candidate_id,media_kind:mediaKind,asset_identity:identity,preview_urls:previews});}pool.sort((a,b)=>(b.target_anchor_pass===true?1:0)-(a.target_anchor_pass===true?1:0));const candidates=pool.slice(0,8).map(c=>({candidate_id:c.candidate_id,preview_urls:c.preview_urls}));if(!candidates.length)continue;out.push({json:{...claim,research_rows:base.research_rows,candidate_pool:pool.slice(0,8),local_rank_request:{query:claim.visual_target,candidates}}});}return out;"
+        },
+        "id": "d78a2902-309e-48c5-88a7-d49f21447eb4",
+        "name": "Expand Inventory Fingerprint Items",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3160,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/rank",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.local_rank_request }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "id": "45cb650b-4d52-4ce6-81ac-0e537277cdd5",
+        "name": "Fingerprint Inventory Candidates",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3400,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const ctx=$('Expand Inventory Fingerprint Items').item.json;const response=$json,ranked=Array.isArray(response?.ranked)?response.ranked:[],pool=new Map((ctx.candidate_pool??[]).map(c=>[String(c.candidate_id),c])),rows=[];for(const r of ranked){const id=String(r?.candidate_id??'').trim(),hash=String(r?.visual_hash??'').trim().toLowerCase();if(!id||!/^[0-9a-f]{64}$/.test(hash)||!pool.has(id))continue;rows.push({...pool.get(id),visual_hash:hash});}return {json:{...ctx,candidate_pool:undefined,fingerprinted_candidates:rows,fingerprint_error:rows.length?null:'no fingerprinted candidates'}};"
+        },
+        "id": "5a8062c6-cc03-44ef-98e2-0c96cb3424b7",
+        "name": "Attach Inventory Fingerprints",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3640,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "const rows=$input.all().map(x=>x.json).sort((a,b)=>Number(a.claim_number)-Number(b.claim_number)),target=Number($('Validate Candidate Claims').first().json.target_duration_seconds),min={15:3,30:4,45:6,60:7}[target];if(!min)throw new Error('unsupported duration for inventory review');const eligible=rows.filter(r=>Array.isArray(r.fingerprinted_candidates)&&r.fingerprinted_candidates.length);if(eligible.length<min)throw new Error(`pre-script inventory has only ${eligible.length}/${min} claims with fingerprinted candidates`);const prompt='You are verifying images BEFORE a short-video script is written. Review each actual image independently. Candidate IDs and provider metadata are hidden. For each review_id, describe ONLY what is visibly present in at most 12 words, then relevant=true only if that visible content directly depicts the factual claim and exact visual target. Never infer identity, era, chemical, species, mechanism, event or place merely from the requested target. Generic labs, people, buildings, landscapes, molecules or equipment are not exact matches. Reject screenshots, watermarks, collages, text cards and low-information abstractions. Technical diagrams are valid only when their visible content directly explains the claim. Return every shown review_id exactly once. Return ONLY JSON with this exact shape: {\"claims\":[{\"claim_number\":1,\"verdicts\":[{\"review_id\":\"C1-I1\",\"relevant\":true,\"visible_description\":\"what is actually visible\"}]}]}.';const batchSize=6,out=[];for(let offset=0;offset<eligible.length;offset+=batchSize){const batch=eligible.slice(offset,offset+batchSize),input=[{type:'text',text:prompt}],reviewClaims=[];for(const c of batch){const candidates=c.fingerprinted_candidates.slice(0,4).map((x,i)=>({...x,review_id:`C${c.claim_number}-I${i+1}`}));reviewClaims.push({...c,review_candidates:candidates});input.push({type:'text',text:`CLAIM ${c.claim_number} | ${c.claim}\\nEXACT TARGET: ${c.visual_target}`});for(const x of candidates){input.push({type:'text',text:`REVIEW ${x.review_id}`});input.push({type:'image',uri:String(x.preview_urls?.[0]??x.preview_url)});}}if(input.length>80)throw new Error('inventory review batch exceeded image budget');out.push({json:{batch_number:Math.floor(offset/batchSize)+1,target_duration_seconds:target,min_verified_claims:min,claims:reviewClaims,visual_review_request:{input}}});}return out;"
+        },
+        "id": "b8ee04ba-0d44-4421-b7ba-44390588beb0",
+        "name": "Prepare Inventory Review Batches",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3880,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/inline-review-images",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.visual_review_request }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "id": "61da7653-f446-44f2-ab37-2b4929927a02",
+        "name": "Inline Inventory Candidate Images",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4120,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { input: $json.input, response_format: 'json', response_schema: { type: 'object', properties: { claims: { type: 'array', items: { type: 'object', properties: { claim_number: { type: 'integer' }, verdicts: { type: 'array', items: { type: 'object', properties: { review_id: { type: 'string' }, relevant: { type: 'boolean' }, visible_description: { type: 'string' } }, required: ['review_id','relevant','visible_description'] } } }, required: ['claim_number','verdicts'] } } }, required: ['claims'] } } }}",
+          "options": {
+            "timeout": 180000
+          }
+        },
+        "id": "fb0abbe6-dea8-4b7d-8af0-db6dada5ce25",
+        "name": "Review Inventory Candidate Images",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4360,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "const prepared=$('Prepare Inventory Review Batches').all().map(x=>x.json),responses=$input.all().map(x=>x.json),clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(!prepared.length||prepared.length!==responses.length)throw new Error(`inventory review batches ${responses.length}/${prepared.length}`);const STOP=new Set(['the','and','with','from','into','this','that','for','are','was','were','has','have','image','photo','picture','view','scene','showing','shows','visible']);const words=v=>clean(v).toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[],content=v=>[...new Set(words(v).filter(x=>x.length>=3&&!STOP.has(x)))],related=(a,b)=>a===b||(a.length>=5&&b.length>=5&&a.slice(0,6)===b.slice(0,6)),overlap=(a,b)=>a.reduce((n,x)=>n+(b.some(y=>related(x,y))?1:0),0),metaText=c=>[c.title,c.description,c.categories,c.metadata?.source_title,c.metadata?.source_description,c.metadata?.source_tags,c.source_url].filter(Boolean).join(' ');const bit=[0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4];function hamming(a,b){let d=0;for(let i=0;i<64;i++)d+=bit[parseInt(a[i],16)^parseInt(b[i],16)];return d;}const approvedClaims=[];let minimum=0,target=0;for(let b=0;b<prepared.length;b++){const ctx=prepared[b],response=responses[b];minimum=Number(ctx.min_verified_claims);target=Number(ctx.target_duration_seconds);let text=clean(response?.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,''),o;try{o=JSON.parse(text)}catch{throw new Error(`inventory reviewer returned invalid JSON for batch ${ctx.batch_number}`)}const decisions=new Map((Array.isArray(o.claims)?o.claims:[]).map(x=>[Number(x.claim_number),x]));for(const c of ctx.claims){const d=decisions.get(Number(c.claim_number));if(!d)continue;const own=new Map(c.review_candidates.map(x=>[String(x.review_id),x])),verdicts=new Map((Array.isArray(d.verdicts)?d.verdicts:[]).map(v=>[String(v.review_id??''),v])),approved=[];for(const x of c.review_candidates){const v=verdicts.get(String(x.review_id)),desc=clean(v?.visible_description).slice(0,300);if(v?.relevant!==true||!desc||x.target_anchor_pass!==true)continue;const vis=content(desc),meta=content(metaText(x)),hits=overlap(vis,meta),need=Math.min(2,Math.max(1,Math.min(vis.length,meta.length)));if(!vis.length||!meta.length||hits<need)continue;approved.push({...x,visible_description:desc,metadata_consistency_hits:hits});}approvedClaims.push({...c,approved_candidates:approved});}}approvedClaims.sort((a,b)=>Number(a.claim_number)-Number(b.claim_number));const selected=[],usedHashes=[];for(const c of approvedClaims){let chosen=null;for(const x of c.approved_candidates){const hash=String(x.visual_hash??'').toLowerCase();if(!/^[0-9a-f]{64}$/.test(hash))continue;if(usedHashes.some(h=>hamming(hash,h)<=18))continue;chosen=x;break;}if(!chosen)continue;usedHashes.push(chosen.visual_hash);const asset_id=`A${selected.length+1}`;selected.push({claim_number:Number(c.claim_number),claim_id:c.claim_id,claim:c.claim,evidence_ids:c.evidence_ids,visual_target:c.visual_target,asset:{asset_id,provider:chosen.provider,provider_asset_id:chosen.provider_asset_id,candidate_id:chosen.candidate_id,source_url:clean(chosen.source_url),preview_url:clean(chosen.preview_urls?.[0]??chosen.preview_url),download_url:clean(chosen.download_url),author:clean(chosen.author)||null,license:clean(chosen.license)||null,license_url:clean(chosen.license_url)||null,media_kind:clean(chosen.media_kind)||'photo',visual_hash:chosen.visual_hash,visual_cluster_key:`preview:${chosen.visual_hash}`,visible_description:chosen.visible_description,metadata:chosen.metadata??{}}});}if(selected.length<minimum)throw new Error(`pre-script verified visual inventory ${selected.length}/${minimum}`);const base=$('Validate Candidate Claims').first().json;return [{json:{...base,verified_claims:selected,verified_claim_count:selected.length,story_unit_bounds:{15:[3,4],30:[4,6],45:[6,8],60:[7,9]}[target]}}];"
+        },
+        "id": "c33205f5-6d7a-497d-bead-1feb03ad837d",
+        "name": "Select Verified Claim Inventory",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4600,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const x=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim(),bounds=x.story_unit_bounds;if(!Array.isArray(bounds)||bounds.length!==2)throw new Error('story unit bounds missing');const rowMap=new Map(x.research_rows.map(r=>[r.id,r]));const inventory=x.verified_claims.map(c=>{const evidence=c.evidence_ids.map(id=>{const r=rowMap.get(id);return `${id}: ${r?.snippet??''}`}).join(' | ');return `${c.claim_id} | FACT: ${c.claim}\\nEVIDENCE: ${evidence}\\nVISIBLE ASSET ${c.asset.asset_id}: ${c.asset.visible_description}\\nVISUAL TARGET: ${c.visual_target}`}).join('\\n\\n');const words={15:[30,42],30:[62,82],45:[95,122],60:[128,165]}[Number(x.target_duration_seconds)];const prompt=`Write the FINAL spoken short-video story using ONLY the verified claims below. Every selected unit already has a verified real image reserved before narration.\\n\\nTOPIC: ${x.topic}\\nRESOLVED SUBJECT: ${x.canonical_subject}\\nUSER INTENT: ${x.user_intent}\\nOUTPUT LANGUAGE: ${x.output_language_name} (${x.language_code})\\nTARGET: ${x.target_duration_seconds}s, approximately ${words[0]}-${words[1]} spoken words\\nSELECT ${bounds[0]}-${Math.min(bounds[1],x.verified_claims.length)} units.\\n\\nVERIFIED CLAIM + IMAGE INVENTORY:\\n${inventory}\\n\\nReturn ONLY JSON {\"units\":[{\"claim_id\":\"C1\",\"narration\":\"complete spoken sentence(s) in the selected output language\"}]}. Rules: each claim_id may appear at most once and must come from the inventory; choose a coherent truthful story, not a list; narration for a unit may paraphrase only that claim and its evidence, add no new factual assertion; each unit must be a complete semantic thought and must not end in a fragment; answer the user intent immediately; use natural spoken prose; no headings, citations, slash separators, pipes, arrows, bullets or markdown; do not mention images or sources.`;return [{json:{...x,story_prompt:prompt,target_word_min:words[0],target_word_max:words[1]}}];"
+        },
+        "id": "7e800e94-c085-48fd-9f17-6da59868bb89",
+        "name": "Prepare Inventory Grounded Story",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4840,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { prompt: $json.story_prompt, temperature: 0.15, response_format: 'json', response_schema: {\"type\":\"object\",\"properties\":{\"units\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"claim_id\":{\"type\":\"string\"},\"narration\":{\"type\":\"string\"}},\"required\":[\"claim_id\",\"narration\"]}}},\"required\":[\"units\"]} } }}",
+          "options": {
+            "timeout": 180000
+          }
+        },
+        "id": "b3d6c5e4-0a9f-4030-a75e-55ec8153e854",
+        "name": "Write Inventory Grounded Story",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          5080,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const base=$('Prepare Inventory Grounded Story').first().json,r=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim(),speech=v=>clean(v).replace(/\\s+\\/\\s+/gu,' ').replace(/\\s+\\|\\s+/gu,' ').replace(/\\s+(?:→|->)\\s+/gu,' ').trim();let text=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,''),o;try{o=JSON.parse(text)}catch{throw new Error('inventory-grounded story writer returned invalid JSON')}const raw=Array.isArray(o.units)?o.units:[],bounds=base.story_unit_bounds,max=Math.min(Number(bounds[1]),base.verified_claims.length);if(raw.length<Number(bounds[0])||raw.length>max)throw new Error(`final story unit count ${raw.length} outside ${bounds[0]}-${max}`);const claims=new Map(base.verified_claims.map(c=>[c.claim_id,c])),seen=new Set(),units=[],assets=[],evidenceIds=new Set();for(let i=0;i<raw.length;i++){const claim_id=clean(raw[i]?.claim_id),narration=speech(raw[i]?.narration),c=claims.get(claim_id);if(!c||seen.has(claim_id)||!narration)throw new Error(`final story unit ${i+1} has invalid claim or narration`);seen.add(claim_id);const asset=c.asset;if(!asset||!asset.asset_id||!asset.download_url||!/^[0-9a-f]{64}$/.test(String(asset.visual_hash??'')))throw new Error(`final story unit ${i+1} lost verified asset`);c.evidence_ids.forEach(id=>evidenceIds.add(id));units.push({unit_id:`U${i+1}`,claim_id,narration,evidence_ids:[...c.evidence_ids],asset_id:asset.asset_id,visual_target:c.visual_target,visible_description:asset.visible_description});assets.push({...asset,claim_id,visual_target:c.visual_target});}if(evidenceIds.size<2)throw new Error('final story does not retain at least two research evidence rows');if(new Set(assets.map(a=>a.asset_id)).size!==assets.length||new Set(assets.map(a=>a.visual_hash)).size!==assets.length)throw new Error('final story reused a verified visual asset');const script=units.map(u=>u.narration).join(' '),wc=script.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;if(wc<Math.max(18,base.target_word_min-15)||wc>base.target_word_max+20)throw new Error(`final story word count ${wc} outside broad duration bounds`);const rowMap=new Map(base.research_rows.map(x=>[x.id,x])),selected_evidence=[...evidenceIds].map((id,index)=>{const x=rowMap.get(id);if(!x)throw new Error(`final story cites unknown evidence ${id}`);return {evidence_id:id,source_id:id,source_language:'en',source_title:x.title,source_url:x.url,passage_id:'searx-snippet',section:null,evidence_text:x.snippet,selection_score:100-index,selection_rank:index+1}});const script_support=units.map((u,index)=>({segment_number:index+1,unit_id:u.unit_id,evidence_ids:u.evidence_ids,source_ids:u.evidence_ids,text:u.narration,transform:'inventory_grounded_paraphrase'}));const wps={en:2.55,pl:2.25,ru:2.45,uk:2.35}[base.language_code]??2.4,predicted=wc/wps,story_package={version:'inventory-first-story-v1',units,assets};return [{json:{job_id:base.job_id,topic:base.topic,language_code:base.language_code,target_duration_seconds:Number(base.target_duration_seconds),canonical_subject:base.canonical_subject,topic_resolution:base.topic_resolution,script_text:script,script_support,selected_evidence,story_package,duration_preflight:{version:'inventory-first-word-budget-v1',language_code:base.language_code,target_duration_seconds:Number(base.target_duration_seconds),predicted_duration_seconds:Number(predicted.toFixed(3)),prediction_is_advisory:true,exact_tts_required:true},narration_engine:'inventory_grounded_ai_writer',narration_model:String(r.model??'model-gateway'),narration_prompt_version:'inventory-first-story-v1',script_fit_passes:0,fact_source_language:'en',fact_primary_title:base.canonical_subject}}];"
+        },
+        "id": "eda18072-8b23-4305-970d-bec0675af41c",
+        "name": "Build Final Inventory Story",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          5320,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH input AS (SELECT $1::uuid job_id,$2::text script_text,$3::jsonb script_support,$4::jsonb duration_preflight,$5::text narration_engine,$6::text narration_model,$7::text narration_prompt_version,$8::smallint script_fit_passes,$9::jsonb evidence_json,$10::text fact_source_language,$11::text fact_primary_title,$12::jsonb topic_resolution,$13::jsonb story_package), locked AS (SELECT j.id FROM public.jobs j,input i WHERE j.id=i.job_id AND j.status='created' AND j.current_stage='intake' AND j.story_package IS NULL AND NOT EXISTS(SELECT 1 FROM public.scenes s WHERE s.job_id=j.id) AND NOT EXISTS(SELECT 1 FROM public.job_evidence e WHERE e.job_id=j.id) FOR UPDATE), parsed AS (SELECT x.* FROM input i CROSS JOIN LATERAL jsonb_to_recordset(i.evidence_json) AS x(evidence_id text,source_id text,source_language text,source_title text,source_url text,passage_id text,section text,evidence_text text,selection_score numeric,selection_rank integer)), valid AS (SELECT p.* FROM parsed p WHERE NULLIF(BTRIM(p.evidence_id),'') IS NOT NULL AND NULLIF(BTRIM(p.source_id),'') IS NOT NULL AND p.source_language IN('en','pl','ru','uk') AND NULLIF(BTRIM(p.source_title),'') IS NOT NULL AND NULLIF(BTRIM(p.evidence_text),'') IS NOT NULL AND p.selection_rank>0), ok AS (SELECT l.id FROM locked l,input i WHERE NULLIF(BTRIM(i.script_text),'') IS NOT NULL AND jsonb_typeof(i.script_support)='array' AND jsonb_array_length(i.script_support)=jsonb_array_length(i.story_package->'units') AND jsonb_typeof(i.topic_resolution)='object' AND i.topic_resolution->>'version'='evidence-grounded-topic-resolution-v1' AND jsonb_typeof(i.story_package)='object' AND i.story_package->>'version'='inventory-first-story-v1' AND jsonb_typeof(i.story_package->'units')='array' AND jsonb_array_length(i.story_package->'units') BETWEEN 2 AND 12 AND jsonb_typeof(i.story_package->'assets')='array' AND jsonb_array_length(i.story_package->'assets')=jsonb_array_length(i.story_package->'units') AND COALESCE((i.duration_preflight->>'exact_tts_required')::boolean,false)=true AND COALESCE((i.duration_preflight->>'prediction_is_advisory')::boolean,false)=true AND (SELECT count(*) FROM valid)=(SELECT jsonb_array_length(i.evidence_json))), ins AS (INSERT INTO public.job_evidence(job_id,evidence_id,source_id,source_language,source_title,source_url,passage_id,section,evidence_text,selection_score,selection_rank) SELECT o.id,v.evidence_id,v.source_id,v.source_language,v.source_title,NULLIF(v.source_url,''),v.passage_id,NULLIF(v.section,''),v.evidence_text,v.selection_score,v.selection_rank FROM ok o CROSS JOIN valid v ORDER BY v.selection_rank RETURNING job_id), upd AS (UPDATE public.jobs j SET content_model_version='staged_v1',topic_resolution=i.topic_resolution,story_package=i.story_package,visual_search_queries_en=NULL,script_text=i.script_text,script_support=i.script_support,duration_preflight=i.duration_preflight,narration_engine=i.narration_engine,narration_model=i.narration_model,narration_prompt_version=i.narration_prompt_version,script_fit_passes=i.script_fit_passes,fact_source_language=i.fact_source_language,fact_primary_title=i.fact_primary_title,status='processing',current_stage='script',last_error=NULL,updated_at=now() FROM input i,ok o WHERE j.id=o.id AND j.id=i.job_id RETURNING j.id) SELECT $1::uuid AS job_id,(SELECT count(*)::int FROM ins) inserted_evidence_count,EXISTS(SELECT 1 FROM upd) job_updated,(SELECT count(*)::int FROM public.scenes s WHERE s.job_id=$1::uuid) scene_count,(SELECT jsonb_array_length(story_package->'units') FROM public.jobs WHERE id=$1::uuid) story_unit_count;",
+          "options": {
+            "queryReplacement": "={{ [ $json.job_id, $json.script_text, JSON.stringify($json.script_support), JSON.stringify($json.duration_preflight), $json.narration_engine, $json.narration_model, $json.narration_prompt_version, $json.script_fit_passes, JSON.stringify($json.selected_evidence), $json.fact_source_language, $json.fact_primary_title, JSON.stringify($json.topic_resolution), JSON.stringify($json.story_package) ] }}"
+          }
+        },
+        "id": "92b09816-a5a0-4225-8709-65a1fef9ec97",
+        "name": "Persist Inventory First Story",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          5560,
+          300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const r=$input.first().json,p=$('Build Final Inventory Story').first().json,expected=p.selected_evidence.length,units=p.story_package.units.length;if(r.job_updated!==true)throw new Error(`inventory-first story did not update job ${p.job_id}`);if(Number(r.inserted_evidence_count)!==expected)throw new Error(`evidence persisted ${r.inserted_evidence_count}/${expected}`);if(Number(r.scene_count)!==0)throw new Error('WF02 must not create timed scenes before TTS');if(Number(r.story_unit_count)!==units)throw new Error(`story package persisted ${r.story_unit_count}/${units} units`);return [{json:{job_id:p.job_id,evidence_count:expected,story_unit_count:units,narration_ready:true}}];"
+        },
+        "id": "8e0a6763-4d9f-429d-9da1-993b2666b499",
+        "name": "Require Persisted Inventory Story",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          5800,
+          300
+        ],
+        "onError": "continueErrorOutput"
       }
     ],
     "connections": {
@@ -611,133 +763,7 @@
         "main": [
           [
             {
-              "node": "Prepare Grounded Script Prompt",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Grounded Script Prompt": {
-        "main": [
-          [
-            {
-              "node": "Write Grounded Natural Script",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Write Grounded Natural Script": {
-        "main": [
-          [
-            {
-              "node": "Prepare Script Validation",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Script Validation": {
-        "main": [
-          [
-            {
-              "node": "Validate And Rewrite Script",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Validate And Rewrite Script": {
-        "main": [
-          [
-            {
-              "node": "Build Final Grounded Script",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Build Final Grounded Script": {
-        "main": [
-          [
-            {
-              "node": "Persist Grounded AI Narration",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Persist Grounded AI Narration": {
-        "main": [
-          [
-            {
-              "node": "Require Persisted Grounded Script",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Require Persisted Grounded Script": {
-        "main": [
-          [
-            {
-              "node": "Start Voiceover Generation",
+              "node": "Prepare Candidate Claims",
               "type": "main",
               "index": 0
             }
@@ -767,6 +793,294 @@
           [
             {
               "node": "Stop Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Candidate Claims": {
+        "main": [
+          [
+            {
+              "node": "Draft Candidate Claims",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Draft Candidate Claims": {
+        "main": [
+          [
+            {
+              "node": "Validate Candidate Claims",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate Candidate Claims": {
+        "main": [
+          [
+            {
+              "node": "Discover Pre-Script Visual Inventory",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Discover Pre-Script Visual Inventory": {
+        "main": [
+          [
+            {
+              "node": "Expand Inventory Fingerprint Items",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Expand Inventory Fingerprint Items": {
+        "main": [
+          [
+            {
+              "node": "Fingerprint Inventory Candidates",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fingerprint Inventory Candidates": {
+        "main": [
+          [
+            {
+              "node": "Attach Inventory Fingerprints",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Attach Inventory Fingerprints": {
+        "main": [
+          [
+            {
+              "node": "Prepare Inventory Review Batches",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Inventory Review Batches": {
+        "main": [
+          [
+            {
+              "node": "Inline Inventory Candidate Images",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Inline Inventory Candidate Images": {
+        "main": [
+          [
+            {
+              "node": "Review Inventory Candidate Images",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Review Inventory Candidate Images": {
+        "main": [
+          [
+            {
+              "node": "Select Verified Claim Inventory",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Select Verified Claim Inventory": {
+        "main": [
+          [
+            {
+              "node": "Prepare Inventory Grounded Story",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Inventory Grounded Story": {
+        "main": [
+          [
+            {
+              "node": "Write Inventory Grounded Story",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Write Inventory Grounded Story": {
+        "main": [
+          [
+            {
+              "node": "Build Final Inventory Story",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Final Inventory Story": {
+        "main": [
+          [
+            {
+              "node": "Persist Inventory First Story",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Persist Inventory First Story": {
+        "main": [
+          [
+            {
+              "node": "Require Persisted Inventory Story",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Require Persisted Inventory Story": {
+        "main": [
+          [
+            {
+              "node": "Start Voiceover Generation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
               "type": "main",
               "index": 0
             }

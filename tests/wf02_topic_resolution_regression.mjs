@@ -12,7 +12,7 @@ const required = [
   'Resolve Topic From Evidence',
   'Validate Resolved Topic',
   'Research Resolved Subject',
-  'Prepare Grounded Script Prompt',
+  'Prepare Candidate Claims',
 ];
 for (const name of required) assert(nodes.has(name), `missing ${name}`);
 
@@ -24,8 +24,9 @@ for (let index = 0; index < required.length - 1; index++) {
 const source = fs.readFileSync(new URL('../n8n/workflows/WF02-plan-script-and-scenes.json', import.meta.url), 'utf8');
 assert(!/Ходор|Hodor|Khodorkovsky/u.test(source), 'workflow contains a topic-specific name');
 assert.match(source, /evidence-grounded-topic-resolution-v1/);
-assert.match(nodes.get('Persist Grounded AI Narration').parameters.query, /topic_resolution/);
-assert.match(nodes.get('Persist Grounded AI Narration').parameters.query, /reasoning_evidence_ids/);
+assert.match(nodes.get('Persist Inventory First Story').parameters.query, /topic_resolution/);
+assert.match(nodes.get('Persist Inventory First Story').parameters.query, /topic_resolution/);
+assert.match(nodes.get('Persist Inventory First Story').parameters.query, /story_package/);
 const discoveryQuery = nodes.get('Discover Candidate Evidence').parameters.queryParameters.parameters.find(item => item.name === 'q');
 assert.equal(discoveryQuery.value, '={{ $json.discovery_query }}');
 assert.match(nodes.get('Record Planner Failure').parameters.options.queryReplacement, /error_message/);

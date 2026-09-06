@@ -1,11 +1,12 @@
+import json
 from pathlib import Path
-
-migration = Path('db/migrations/021_expand_grounded_visual_query_inventory.sql').read_text()
-workflow = Path('n8n/workflows/WF02-plan-script-and-scenes.json').read_text()
-discovery = Path('services/media-worker/src/visual-discovery.mjs').read_text()
-
-assert 'BETWEEN 6 AND 18' in migration
-assert 'BETWEEN 6 AND 18' in workflow
-assert '15:6,30:10,45:14,60:18' in workflow
-assert 'slice(0, 18)' in discovery
-print('GROUNDED_VISUAL_QUERY_INVENTORY_SCHEMA_REGRESSION_PASS')
+schema=Path('db/init/001_init.sql').read_text()
+migration=Path('db/migrations/022_inventory_first_story_package.sql').read_text()
+wf=Path('n8n/workflows/WF02-plan-script-and-scenes.json').read_text()
+assert 'story_package jsonb' in schema
+assert "inventory-first-story-v1" in schema and "inventory-first-story-v1" in migration
+assert "jsonb_array_length(story_package->'assets') = jsonb_array_length(story_package->'units')" in migration
+assert 'visual_search_queries_en=NULL' in wf
+assert 'story_package' in wf
+assert 'BETWEEN 2 AND 12' in wf
+print('INVENTORY_FIRST_STORY_SCHEMA_REGRESSION_PASS')

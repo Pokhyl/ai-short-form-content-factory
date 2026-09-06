@@ -3,7 +3,7 @@
     "updatedAt": "2026-09-01T18:35:39.538Z",
     "createdAt": "2026-08-24T12:22:09.911Z",
     "id": "M6VisualSourcing1",
-    "name": "WF04 — Deterministic Visual Sourcing",
+    "name": "WF04 — Reserved Visual Execution",
     "description": null,
     "active": true,
     "isArchived": false,
@@ -43,7 +43,7 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "WITH i AS (SELECT $1::uuid AS job_id), j AS (\n SELECT p.* FROM public.jobs p,i WHERE p.id=i.job_id\n), scenes AS (\n SELECT COALESCE(jsonb_agg(jsonb_build_object(\n   'scene_id',s.id,'scene_number',s.scene_number,'narration',s.narration,'narration_support_evidence_ids',s.narration_support_evidence_ids,\n   'beat_start_seconds',s.beat_start_seconds,'beat_end_seconds',s.beat_end_seconds,'duration_seconds',s.duration_seconds,'status',s.status,\n   'visual_path',s.visual_path,'asset_count',(SELECT count(*)::int FROM public.assets a WHERE a.scene_id=s.id)\n ) ORDER BY s.scene_number),'[]'::jsonb) AS rows FROM public.scenes s,i WHERE s.job_id=i.job_id\n), evidence AS (\n SELECT COALESCE(jsonb_agg(jsonb_build_object(\n   'evidence_id',e.evidence_id,'source_id',e.source_id,'source_language',e.source_language,'source_title',e.source_title,\n   'source_url',e.source_url,'passage_id',e.passage_id,'section',e.section,'evidence_text',e.evidence_text,\n   'selection_score',e.selection_score,'selection_rank',e.selection_rank\n ) ORDER BY e.selection_rank),'[]'::jsonb) AS rows FROM public.job_evidence e,i WHERE e.job_id=i.job_id\n), visual_state AS (\n SELECT\n   (SELECT count(*)::int FROM public.visual_segments vs,i WHERE vs.job_id=i.job_id) AS segment_count,\n   (SELECT count(*)::int FROM public.visual_shots sh,i WHERE sh.job_id=i.job_id) AS shot_count\n)\nSELECT i.job_id AS requested_job_id,j.id AS job_id,j.topic,j.language_code,j.target_duration_seconds,j.content_model_version,j.script_text,j.script_support,j.visual_search_queries_en,\n       j.fact_source_language,j.fact_primary_title,j.voiceover_path,j.voiceover_duration_seconds,j.status,j.current_stage,j.id IS NOT NULL AS job_exists,\n       scenes.rows AS scenes,evidence.rows AS evidence,visual_state.segment_count AS existing_visual_segment_count,visual_state.shot_count AS existing_visual_shot_count\nFROM i LEFT JOIN j ON true CROSS JOIN scenes CROSS JOIN evidence CROSS JOIN visual_state;",
+          "query": "WITH i AS (SELECT $1::uuid AS job_id), j AS (\n SELECT p.* FROM public.jobs p,i WHERE p.id=i.job_id\n), scenes AS (\n SELECT COALESCE(jsonb_agg(jsonb_build_object(\n   'scene_id',s.id,'scene_number',s.scene_number,'narration',s.narration,'narration_support_evidence_ids',s.narration_support_evidence_ids,\n   'beat_start_seconds',s.beat_start_seconds,'beat_end_seconds',s.beat_end_seconds,'duration_seconds',s.duration_seconds,'status',s.status\n ) ORDER BY s.scene_number),'[]'::jsonb) AS rows FROM public.scenes s,i WHERE s.job_id=i.job_id\n), visual_state AS (\n SELECT (SELECT count(*)::int FROM public.visual_segments vs,i WHERE vs.job_id=i.job_id) AS segment_count,\n        (SELECT count(*)::int FROM public.visual_shots sh,i WHERE sh.job_id=i.job_id) AS shot_count\n)\nSELECT i.job_id AS requested_job_id,j.id AS job_id,j.topic,j.language_code,j.target_duration_seconds,j.content_model_version,j.fact_primary_title,\n       j.story_package,j.voiceover_path,j.voiceover_duration_seconds,j.status,j.current_stage,j.id IS NOT NULL AS job_exists,\n       scenes.rows AS scenes,visual_state.segment_count AS existing_visual_segment_count,visual_state.shot_count AS existing_visual_shot_count\nFROM i LEFT JOIN j ON true CROSS JOIN scenes CROSS JOIN visual_state;",
           "options": {
             "queryReplacement": "={{ [ $json.job_id ] }}"
           }
@@ -61,11 +61,12 @@
             "id": "AdVJ2zREIvjZqGH5",
             "name": "Application PostgreSQL"
           }
-        }
+        },
+        "onError": "continueErrorOutput"
       },
       {
         "parameters": {
-          "jsCode": "const j=$input.first().json;\nif(!j.job_exists)throw new Error(`Job ${j.requested_job_id} was not found`);\nif(j.content_model_version!=='staged_v1')throw new Error(`Unsupported content model: ${j.content_model_version}`);\nif(j.status!=='processing'||j.current_stage!=='voiceover')throw new Error(`Job ${j.job_id} is not eligible for semantic visuals: ${j.status}/${j.current_stage}`);\nconst expected={15:6,30:10,45:14,60:18}[Number(j.target_duration_seconds)];if(!expected)throw new Error('Unsupported target duration');\nif(!String(j.voiceover_path??'').trim()||!Number.isFinite(Number(j.voiceover_duration_seconds))||Number(j.voiceover_duration_seconds)<=0)throw new Error('Accepted voiceover is missing');\nif(!['en','pl','ru','uk'].includes(String(j.fact_source_language??''))||!String(j.fact_primary_title??'').trim())throw new Error('Canonical factual article is missing');\nif(!Array.isArray(j.script_support)||!j.script_support.length)throw new Error('Narration support is missing');\nif(!Array.isArray(j.visual_search_queries_en)||j.visual_search_queries_en.length<4)throw new Error('Grounded English visual query inventory is missing');\nif(!Array.isArray(j.evidence)||!j.evidence.length)throw new Error('Persisted evidence is missing');\nif(!Array.isArray(j.scenes)||j.scenes.length!==expected)throw new Error(`Expected ${expected} timed beats, got ${j.scenes?.length??0}`);\nif(Number(j.existing_visual_segment_count??0)!==0||Number(j.existing_visual_shot_count??0)!==0)throw new Error('Job already has semantic visual state');\nconst evidenceIds=new Set(j.evidence.map(e=>String(e.evidence_id??'').trim()).filter(Boolean));let previous=0;\nfor(let i=0;i<j.scenes.length;i++){\n const s=j.scenes[i],n=i+1,start=Number(s.beat_start_seconds),end=Number(s.beat_end_seconds),dur=Number(s.duration_seconds);\n if(Number(s.scene_number)!==n||s.status!=='timed')throw new Error(`Beat ${n} is not timed`);\n if(String(s.visual_path??'').trim()||Number(s.asset_count??0)!==0)throw new Error(`Beat ${n} already has legacy visual state`);\n if(!Number.isFinite(start)||!Number.isFinite(end)||!Number.isFinite(dur)||Math.abs(start-previous)>0.002||Math.abs((end-start)-dur)>0.012)throw new Error(`Beat ${n} timing is invalid`);\n if(!Array.isArray(s.narration_support_evidence_ids)||!s.narration_support_evidence_ids.length)throw new Error(`Beat ${n} has no narration support`);\n if(s.narration_support_evidence_ids.some(id=>!evidenceIds.has(String(id))))throw new Error(`Beat ${n} cites unknown narration evidence`);\n previous=end;\n}\nif(Math.abs(previous-Number(j.voiceover_duration_seconds))>0.01)throw new Error('Timed beats do not cover the accepted voiceover');\nreturn [{json:{...j,required_scene_count:expected}}];"
+          "jsCode": "const j=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(!j.job_exists)throw new Error(`Job ${j.requested_job_id} was not found`);if(j.content_model_version!=='staged_v1')throw new Error(`Unsupported content model: ${j.content_model_version}`);if(j.status!=='processing'||j.current_stage!=='voiceover')throw new Error(`Job ${j.job_id} is not eligible for inventory execution: ${j.status}/${j.current_stage}`);if(!clean(j.voiceover_path)||!Number.isFinite(Number(j.voiceover_duration_seconds))||Number(j.voiceover_duration_seconds)<=0)throw new Error('Accepted continuous voiceover is missing');const story=j.story_package;if(!story||story.version!=='inventory-first-story-v1'||!Array.isArray(story.units)||story.units.length<2||story.units.length>12||!Array.isArray(story.assets)||story.assets.length!==story.units.length)throw new Error('Inventory-first story package is missing');if(!Array.isArray(j.scenes)||j.scenes.length!==story.units.length)throw new Error(`Timed story unit count ${j.scenes?.length??0}/${story.units.length}`);if(Number(j.existing_visual_segment_count??0)!==0||Number(j.existing_visual_shot_count??0)!==0)throw new Error('Job already has visual execution state');const assets=new Map(story.assets.map(a=>[clean(a?.asset_id),a]));if(assets.size!==story.assets.length)throw new Error('Reserved story assets are not unique');let previous=0;for(let i=0;i<story.units.length;i++){const u=story.units[i]??{},s=j.scenes[i]??{},aid=clean(u.asset_id),a=assets.get(aid),start=Number(s.beat_start_seconds),end=Number(s.beat_end_seconds),dur=Number(s.duration_seconds);if(clean(u.unit_id)!==`U${i+1}`||Number(s.scene_number)!==i+1||clean(s.narration)!==clean(u.narration)||!a||!clean(a.download_url)||!clean(a.provider)||!clean(a.provider_asset_id)||!/^[0-9a-f]{64}$/.test(clean(a.visual_hash).toLowerCase()))throw new Error(`Story unit ${i+1} lost reserved asset/timing identity`);if(!Number.isFinite(start)||!Number.isFinite(end)||!Number.isFinite(dur)||Math.abs(start-previous)>0.002||Math.abs((end-start)-dur)>0.012)throw new Error(`Story unit ${i+1} timing is invalid`);previous=end;}if(Math.abs(previous-Number(j.voiceover_duration_seconds))>0.01)throw new Error('Story units do not cover accepted voiceover');return [{json:{...j,story_unit_count:story.units.length}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -80,7 +81,7 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "WITH u AS (\n UPDATE public.jobs j SET current_stage='visuals',last_error=NULL,updated_at=now()\n WHERE j.id=$1::uuid AND j.content_model_version='staged_v1' AND j.status='processing' AND j.current_stage='voiceover'\n   AND NOT EXISTS(SELECT 1 FROM public.scenes s WHERE s.job_id=j.id AND s.status<>'timed')\n   AND NOT EXISTS(SELECT 1 FROM public.assets a JOIN public.scenes s ON s.id=a.scene_id WHERE s.job_id=j.id)\n   AND NOT EXISTS(SELECT 1 FROM public.visual_segments vs WHERE vs.job_id=j.id)\n   AND NOT EXISTS(SELECT 1 FROM public.visual_shots sh WHERE sh.job_id=j.id)\n RETURNING j.id\n)\nSELECT $1::uuid AS job_id,EXISTS(SELECT 1 FROM u) AS ready_to_run;",
+          "query": "WITH u AS (\n UPDATE public.jobs j SET current_stage='visuals',last_error=NULL,updated_at=now()\n WHERE j.id=$1::uuid AND j.content_model_version='staged_v1' AND j.status='processing' AND j.current_stage='voiceover'\n   AND j.story_package->>'version'='inventory-first-story-v1'\n   AND NOT EXISTS(SELECT 1 FROM public.visual_segments vs WHERE vs.job_id=j.id)\n   AND NOT EXISTS(SELECT 1 FROM public.visual_shots sh WHERE sh.job_id=j.id)\n RETURNING j.id\n)\nSELECT $1::uuid AS job_id,EXISTS(SELECT 1 FROM u) AS ready_to_run;",
           "options": {
             "queryReplacement": "={{ [ $json.job_id ] }}"
           }
@@ -103,7 +104,8 @@
       },
       {
         "parameters": {
-          "jsCode": "const transition=$input.first().json;\nconst j=$('Require Eligible Visual Job').first().json;\nif(transition.ready_to_run!==true)throw new Error(`Job ${j.job_id} could not enter visuals stage`);\nconst clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();\nconst language=clean(j.fact_source_language).toLowerCase(),title=clean(j.fact_primary_title);\nif(!['en','pl','ru','uk'].includes(language)||!title)throw new Error('Canonical article provenance is invalid');\nconst timed_beats=j.scenes.map(scene=>({\n scene_number:Number(scene.scene_number),narration:clean(scene.narration),narration_support_evidence_ids:scene.narration_support_evidence_ids,\n beat_start_seconds:Number(scene.beat_start_seconds),beat_end_seconds:Number(scene.beat_end_seconds),duration_seconds:Number(scene.duration_seconds)\n}));\nreturn [{json:{job_id:j.job_id,discovery_request:{canonical_source:{language,title},timed_beats,visual_queries_en:j.visual_search_queries_en}}}];"
+          "mode": "runOnceForAllItems",
+          "jsCode": "const transition=$input.first().json,j=$('Require Eligible Visual Job').first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(transition.ready_to_run!==true)throw new Error(`Job ${j.job_id} could not enter visuals stage`);const story=j.story_package,assets=new Map(story.assets.map(a=>[clean(a.asset_id),a])),out=[];for(let i=0;i<story.units.length;i++){const u=story.units[i],s=j.scenes[i],a=assets.get(clean(u.asset_id));if(!a)throw new Error(`Reserved asset missing for story unit ${i+1}`);const evidence=[...new Set((Array.isArray(u.evidence_ids)?u.evidence_ids:[]).map(clean).filter(Boolean))];out.push({json:{job_id:j.job_id,story_unit_count:story.units.length,unit_number:i+1,unit_id:clean(u.unit_id),claim_id:clean(u.claim_id),scene_id:clean(s.scene_id),start_seconds:Number(s.beat_start_seconds),end_seconds:Number(s.beat_end_seconds),duration_seconds:Number(s.duration_seconds),narration:clean(u.narration),support_evidence_ids:evidence,canonical_subject:clean(j.fact_primary_title||j.topic),visual_target:clean(u.visual_target),visible_description:clean(u.visible_description),provider:clean(a.provider).toLowerCase(),provider_asset_id:clean(a.provider_asset_id),candidate_id:clean(a.candidate_id),source_url:clean(a.source_url)||null,download_url:clean(a.download_url),author:clean(a.author)||null,license:clean(a.license)||null,license_url:clean(a.license_url)||null,source_media_kind:clean(a.media_kind||'photo').toLowerCase(),reserved_visual_hash:clean(a.visual_hash).toLowerCase(),reserved_visual_cluster_key:clean(a.visual_cluster_key),reserved_metadata:a.metadata??{}}});}return out;"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -111,166 +113,8 @@
           1100,
           0
         ],
-        "id": "b0fdaf78-1e97-43cb-ab76-e27109e81f26",
-        "name": "Prepare Canonical Media Request",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://media-worker:3001/visual/discover",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ $json.discovery_request }}",
-          "options": {
-            "timeout": 120000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.5,
-        "position": [
-          1320,
-          0
-        ],
-        "id": "9aca8c5e-26ab-4b16-a3e4-13f9c2184f9e",
-        "name": "Fetch Canonical Media",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForAllItems",
-          "jsCode": "const discovery=$input.first().json;\nconst j=$('Require Eligible Visual Job').first().json;\nconst clean=v=>String(v??'').normalize('NFKC').replace(/<[^>]*>/gu,' ').replace(/\\s+/gu,' ').trim();\nconst COMMON=new Set([\n 'the','a','an','and','or','but','of','to','in','on','at','by','for','from','with','into','through','that','which','who','is','are','was','were','be','been','being','has','have','had','may','can','will','would','also','them','it','its','this','these','those','how','why','what','does','do','did','work','works','working',\n 'i','a','oraz','lub','albo','w','we','na','do','z','ze','przez','dla','jest','są','sa','być','byc','który','która','które','ich','ten','ta','to','jak','dlaczego','co','czy','podczas',\n 'и','а','или','в','во','на','до','из','с','со','через','для','это','есть','быть','который','которая','которые','их','его','ее','её','как','почему','что',\n 'і','та','або','в','у','на','до','із','з','зі','через','для','це','є','бути','який','яка','які','їх','його','її','як','чому','що'\n]);\nconst GENERIC=new Set(['image','photo','picture','diagram','animation','video','detail','details','example','device','object','material','part','parts','system','view','scene']);\nconst ACTION_STEMS=['mov','mesh','separat','interlock','join','flow','heat','pressur','expand','penetrat','generat','current','field','oscillat','rotate','compress','open','close','bind','cause','pęk','ciśn','rozszer','prąd','pole','нагрев','давлен','движ','ток','поле','колеб','нагрів','тиск','рух','струм','поле','колив'];\nconst STRUCTURE_STEMS=['consist','component','part','structure','assembled','mounted','skład','częś','budow','состо','компон','част','структур','склад','компон','част','структур'];\nconst tokens=v=>clean(v).toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[];\nfunction normalizeToken(t){let v=clean(t).toLocaleLowerCase();if(v.length>5&&v.endsWith('ies'))v=v.slice(0,-3)+'y';else if(v.length>5&&v.endsWith('ing'))v=v.slice(0,-3);else if(v.length>4&&v.endsWith('ed'))v=v.slice(0,-2);else if(v.length>4&&v.endsWith('es'))v=v.slice(0,-2);else if(v.length>4&&v.endsWith('s')&&!v.endsWith('ss'))v=v.slice(0,-1);return v;}\nfunction related(a,b){a=normalizeToken(a);b=normalizeToken(b);if(!a||!b)return false;if(a===b)return true;return a.length>=5&&b.length>=5&&a.slice(0,8)===b.slice(0,5);}\nfunction content(v){return [...new Set(tokens(v).filter(t=>t.length>=3&&!COMMON.has(t)&&!GENERIC.has(t)).map(normalizeToken))];}\nfunction overlap(needles,hay){return needles.reduce((n,t)=>n+(hay.some(c=>related(t,c))?1:0),0);}\nfunction candidateText(c){return clean([c.title,c.description,c.categories,c.metadata?.source_title,c.metadata?.source_description,c.metadata?.source_tags].filter(Boolean).join(' '));}\nfunction targetPhraseOverlap(target,candidate){const need=content(target),hay=candidateText(candidate).toLocaleLowerCase();let hits=0;for(let i=0;i<need.length-1;i++){const pair=`${need[i]} ${need[i+1]}`;if(hay.includes(pair))hits++;}return hits;}\nfunction canonicalTargetPhraseOverlap(target,canonical,candidate){const need=content(target),canon=content(canonical),hay=candidateText(candidate).toLocaleLowerCase();let hits=0;for(let i=0;i<need.length-1;i++){const a=need[i],b=need[i+1];if(!canon.some(c=>related(a,c))||!canon.some(c=>related(b,c)))continue;if(hay.includes(`${a} ${b}`))hits++;}return hits;}\nfunction signal(v,stems){return tokens(v).reduce((n,t)=>n+(stems.some(stem=>t.startsWith(stem))?1:0),0);}\nfunction representationOrder(segment){const mechanism=signal(segment.narration,ACTION_STEMS),structure=signal(segment.narration,STRUCTURE_STEMS);if(structure>=1)return ['diagram','photo','animation','video'];if(mechanism>=1)return ['photo','diagram','animation','video'];return ['photo','diagram','animation','video'];}\nfunction chooseAnchor(segment,supportText,candidates,hint){const unique=[...new Set([...content(hint),...content(segment.narration),...content(supportText)])],scored=[];for(const token of unique){const count=candidates.reduce((n,c)=>n+(content(candidateText(c)).some(x=>related(token,x))?1:0),0);if(!count)continue;const inHint=content(hint).some(x=>related(token,x)),inNarration=content(segment.narration).some(x=>related(token,x));scored.push({token,count,score:(inHint?6:0)+(inNarration?3:0)-Math.log2(count+1)+(token.length/20)});}scored.sort((a,b)=>b.score-a.score||a.count-b.count||b.token.length-a.token.length);return scored[0]?.token??null;}\nfunction balancedTop(rows,limit=10){const groups=new Map();for(const row of rows){const key=`${row.provider}:${clean(row.metadata?.retrieval_source)||row.provider}`;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}for(const arr of groups.values())arr.sort((a,b)=>b.pre_rank_score-a.pre_rank_score||String(a.candidate_id).localeCompare(String(b.candidate_id)));const keys=[...groups.keys()].sort(),out=[];let depth=0;while(out.length<limit){let added=false;for(const key of keys){const row=groups.get(key)[depth];if(row){out.push(row);added=true;if(out.length>=limit)break;}}if(!added)break;depth++;}return out;}\nconst evidenceById=new Map((j.evidence??[]).map(e=>[clean(e.evidence_id),e]));\nconst supportById=new Map((j.script_support??[]).map(s=>[clean(s.evidence_id),clean(s.text)]));\nconst segments=Array.isArray(discovery.visual_segments)?discovery.visual_segments:[];\nif(!segments.length)throw new Error('Segmented visual discovery returned no visual segments');\nconst englishTitle=clean(discovery.canonical_source?.english_title??discovery.canonical_source?.title??j.fact_primary_title),coreTokens=content(englishTitle);\nif(!englishTitle||!coreTokens.length)throw new Error('Visual discovery did not return a usable canonical English title');\nconst plans=[];let previousEnd=0;\nfor(let i=0;i<segments.length;i++){\n const segment=segments[i],n=i+1,start=Number(segment.start_seconds),end=Number(segment.end_seconds),dur=Number(segment.duration_seconds),plannedShots=Number(segment.planned_shot_count);\n if(Number(segment.segment_number)!==n||!Number.isFinite(start)||!Number.isFinite(end)||!Number.isFinite(dur)||Math.abs(start-previousEnd)>0.012||Math.abs((end-start)-dur)>0.012)throw new Error(`Visual segment ${n} timing is invalid`);\n if(!Number.isInteger(plannedShots)||plannedShots<1||plannedShots>2)throw new Error(`Visual segment ${n} shot count is invalid`);\n const candidates=Array.isArray(segment.candidates)?segment.candidates:[];if(!candidates.length)throw new Error(`Visual segment ${n} discovery returned no candidates`);\n const supportIds=[...new Set((segment.support_evidence_ids??[]).map(clean).filter(Boolean))];\n const supportText=supportIds.map(id=>supportById.get(id)||clean(evidenceById.get(id)?.evidence_text)).filter(Boolean).join(' ');\n if(!supportIds.length||!supportText)throw new Error(`Visual segment ${n} cannot resolve evidence support`);\n const hint=clean(segment.search_terms?.[0]??''),anchor=chooseAnchor(segment,supportText,candidates,hint),targetTokens=content(hint||anchor),segmentTokens=content(`${segment.narration} ${supportText}`),motionSignal=signal(segment.narration,ACTION_STEMS),rep=representationOrder(segment),eligible=[];\n for(const rawCandidate of candidates){const provider=clean(rawCandidate.provider).toLowerCase(),rawId=clean(rawCandidate.candidate_id);if(!provider||!rawId)continue;const candidate={...rawCandidate,provider,candidate_id:rawId.startsWith(provider+':')?rawId:`${provider}:${rawId}`,provider_asset_id:clean(rawCandidate.provider_asset_id||rawId)};const ct=content(candidateText(candidate));if(!ct.length)continue;const coreHits=overlap(coreTokens,ct),targetHits=overlap(targetTokens,ct),segmentHits=overlap(segmentTokens,ct),stock=provider==='pixabay'||provider==='pexels';if(stock&&coreHits<1&&targetHits<1)continue;if(provider==='wikimedia'&&coreHits<1&&targetHits<1&&segmentHits<1)continue;const kind=clean(candidate.media_kind).toLowerCase();if(kind==='video'&&(motionSignal<1||coreHits<1||targetHits<1))continue;const phraseHits=targetPhraseOverlap(hint,candidate),canonicalPhraseHits=canonicalTargetPhraseOverlap(hint,englishTitle,candidate),repIndex=rep.indexOf(kind),repRank=repIndex>=0?repIndex:rep.length,preRank=(coreHits*2.5)+(targetHits*3)+(Math.min(segmentHits,3)*0.8)+(phraseHits*3)+(canonicalPhraseHits*12)-repRank*0.35;eligible.push({...candidate,metadata_overlap:coreHits+targetHits+segmentHits,core_metadata_overlap:coreHits,target_metadata_overlap:targetHits,target_phrase_overlap:phraseHits,canonical_target_phrase_overlap:canonicalPhraseHits,representation_preference_rank:repRank,pre_rank_score:Number(preRank.toFixed(4))});}\n const pool=balancedTop(eligible,10);if(pool.length<plannedShots)throw new Error(`Visual segment ${n} has ${pool.length}/${plannedShots} truth-eligible candidates`);\n const visualTarget=hint||anchor||englishTitle;\n plans.push({segment_number:n,first_scene_number:Number(segment.first_scene_number),last_scene_number:Number(segment.last_scene_number),start_seconds:start,end_seconds:end,duration_seconds:dur,narration:clean(segment.narration),support_evidence_ids:supportIds,canonical_subject:englishTitle,visual_target:visualTarget,visual_lane:'reference',visual_query:clean(`${englishTitle} ${visualTarget} ${segment.narration}`).slice(0,200),visual_description:supportText.slice(0,600),planned_shot_count:plannedShots,candidate_pool:pool,provider_query:segment.provider_query||null});\n previousEnd=end;\n}\nif(Math.abs(previousEnd-Number(j.voiceover_duration_seconds))>0.012)throw new Error('Visual segments do not cover accepted voiceover');\nreturn [{json:{job_id:j.job_id,plans,visual_segment_count:plans.length,planned_shot_count:plans.reduce((n,p)=>n+p.planned_shot_count,0),canonical_english_title:englishTitle,provider_errors:discovery.provider_errors??[],segmentation_version:String(discovery.segmentation_version??'')}}];"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          1540,
-          0
-        ],
-        "id": "8587e1e7-6643-4c5c-ad63-d7fbcf9dc266",
-        "name": "Build Deterministic Visual Plans",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "operation": "executeQuery",
-          "query": "WITH input AS (SELECT $1::uuid AS job_id,$2::jsonb AS plans), parsed AS (\n SELECT x.* FROM input i CROSS JOIN LATERAL jsonb_to_recordset(i.plans) AS x(\n   segment_number integer,first_scene_number integer,last_scene_number integer,start_seconds numeric,end_seconds numeric,duration_seconds numeric,\n   narration text,support_evidence_ids jsonb,canonical_subject text,visual_target text,visual_lane text,visual_query text,visual_description text,planned_shot_count smallint\n )\n), inserted AS (\n INSERT INTO public.visual_segments(job_id,segment_number,first_scene_number,last_scene_number,start_seconds,end_seconds,duration_seconds,narration,support_evidence_ids,canonical_subject,visual_target,visual_lane,visual_query,visual_description,planned_shot_count,status)\n SELECT i.job_id,p.segment_number,p.first_scene_number,p.last_scene_number,p.start_seconds,p.end_seconds,p.duration_seconds,p.narration,p.support_evidence_ids,p.canonical_subject,p.visual_target,p.visual_lane,p.visual_query,p.visual_description,p.planned_shot_count,'planned'\n FROM parsed p CROSS JOIN input i\n WHERE NOT EXISTS(SELECT 1 FROM public.visual_segments old WHERE old.job_id=i.job_id)\n RETURNING id,segment_number\n)\nSELECT $1::uuid AS job_id,(SELECT count(*)::int FROM inserted) AS planned_count,\n COALESCE((SELECT jsonb_agg(jsonb_build_object('segment_id',id,'segment_number',segment_number) ORDER BY segment_number) FROM inserted),'[]'::jsonb) AS persisted_segments;",
-          "options": {
-            "queryReplacement": "={{ [ $json.job_id, JSON.stringify($json.plans) ] }}"
-          }
-        },
-        "type": "n8n-nodes-base.postgres",
-        "typeVersion": 2.7,
-        "position": [
-          1760,
-          0
-        ],
-        "id": "087b8ce1-6a00-4dff-bd29-6cbc9ee797c6",
-        "name": "Persist Visual Plans",
-        "credentials": {
-          "postgres": {
-            "id": "AdVJ2zREIvjZqGH5",
-            "name": "Application PostgreSQL"
-          }
-        },
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "const r=$input.first().json,ctx=$('Build Deterministic Visual Plans').first().json;\nconst expected=Number(ctx.visual_segment_count);if(!Number.isInteger(expected)||expected<=0)throw new Error('Visual segment plan count is invalid');\nif(Number(r.planned_count)!==expected)throw new Error(`Visual segments persisted ${r.planned_count}/${expected}`);\nconst ids=Array.isArray(r.persisted_segments)?r.persisted_segments:[];if(ids.length!==expected)throw new Error(`Visual segment ids persisted ${ids.length}/${expected}`);\nconst byNumber=new Map(ids.map(x=>[Number(x.segment_number),String(x.segment_id??'')]));const plans=ctx.plans.map(p=>({...p,segment_id:byNumber.get(Number(p.segment_number))}));\nif(plans.some(p=>!p.segment_id))throw new Error('Persisted visual segment id mapping is incomplete');\nreturn [{json:{job_id:ctx.job_id,plans,visual_segment_count:expected,planned_shot_count:Number(ctx.planned_shot_count),canonical_english_title:ctx.canonical_english_title,segmentation_version:ctx.segmentation_version}}];"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          1980,
-          0
-        ],
-        "id": "6c9430a9-3f13-472a-a96d-c80cca61b5c8",
-        "name": "Require Visual Plans",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForAllItems",
-          "jsCode": "const ctx=$('Require Visual Plans').first().json;\nif(!Array.isArray(ctx.plans)||!ctx.plans.length)throw new Error('No semantic visual segments to rank');\nreturn ctx.plans.map(plan=>{const pool=Array.isArray(plan.candidate_pool)?plan.candidate_pool:[];if(pool.length<Number(plan.planned_shot_count))throw new Error(`Visual segment ${plan.segment_number} has insufficient truth-eligible candidates`);const candidates=pool.map(c=>({candidate_id:String(c.candidate_id),preview_urls:(Array.isArray(c.preview_urls)?c.preview_urls:[c.preview_url]).map(String).filter(Boolean).slice(0,3)}));if(candidates.some(c=>!c.candidate_id||!c.preview_urls.length))throw new Error(`Visual segment ${plan.segment_number} has invalid rank candidate`);const query=String(plan.visual_target||plan.canonical_subject).replace(/\\s+/gu,' ').trim().slice(0,200);return {json:{...plan,job_id:ctx.job_id,expected_visual_segment_count:Number(ctx.visual_segment_count),local_rank_request:{query,candidates}}};});"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2200,
-          0
-        ],
-        "id": "c5ae8cba-0a2c-498f-9f80-8c6eb24b2983",
-        "name": "Expand Rank Items",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://media-worker:3001/visual/rank",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ $json.local_rank_request }}",
-          "options": {
-            "timeout": 120000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.5,
-        "position": [
-          2420,
-          0
-        ],
-        "id": "f1f68762-f932-4291-826e-4795df6f4585",
-        "name": "Rank Eligible Visuals",
-        "onError": "continueErrorOutput",
-        "retryOnFail": true,
-        "maxTries": 2,
-        "waitBetweenTries": 1000
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForEachItem",
-          "jsCode": "const response=$json,ctx=$('Expand Rank Items').item.json;\nconst responseError=String(response?.error?.message??response?.message??'').trim();\nconst ranked=Array.isArray(response?.ranked)?response.ranked:[];\nif(responseError||!ranked.length){return {json:{...ctx,candidate_pool:undefined,ranked_candidates:[],fingerprint_error:responseError||`Local visual fingerprinting returned no candidates for segment ${ctx.segment_number}`}};}\nconst pool=new Map((ctx.candidate_pool??[]).map(c=>[String(c.candidate_id),c]));const rows=[],seen=new Set();\nfor(let i=0;i<ranked.length;i++){const id=String(ranked[i]?.candidate_id??'').trim();if(!id||seen.has(id)||!pool.has(id))continue;const visualHash=String(ranked[i]?.visual_hash??'').trim().toLowerCase();if(!/^[0-9a-f]{64}$/.test(visualHash))continue;seen.add(id);const c=pool.get(id);rows.push({...c,visual_hash:visualHash,local_fingerprint_rank:i+1,local_rank_score:null,local_siglip_rank:null});}\nif(!rows.length){return {json:{...ctx,candidate_pool:undefined,ranked_candidates:[],fingerprint_error:`Visual segment ${ctx.segment_number} has no fingerprinted candidates`}};}\nreturn {json:{...ctx,candidate_pool:undefined,ranked_candidates:rows,fingerprint_error:null,local_rank_model:String(response.model??'perceptual_hash_preordered_v1'),local_rank_dtype:String(response.dtype??'none')}};"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2640,
-          0
-        ],
-        "id": "3f346144-b2fd-4532-b3ba-f70603dec5b9",
-        "name": "Attach Rank Results",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForAllItems",
-          "jsCode": "const rows=$input.all().map(item=>item.json).sort((a,b)=>Number(a.segment_number)-Number(b.segment_number));\nif(!rows.length)throw new Error('No ranked visual segments');\nconst expectedSegmentCount=Number($('Require Visual Plans').first().json.visual_segment_count);const receivedSegments=rows.map(r=>Number(r.segment_number));if(!Number.isInteger(expectedSegmentCount)||rows.length!==expectedSegmentCount||receivedSegments.some((n,i)=>n!==i+1))throw new Error('Ranked visual segment set is incomplete: received='+(receivedSegments.join(',')||'none')+', expected=1-'+expectedSegmentCount);\nconst bitCount=[0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4];\nfunction hammingHex(a,b){if(!/^[0-9a-f]{64}$/.test(a)||!/^[0-9a-f]{64}$/.test(b))throw new Error('Invalid visual hash');let d=0;for(let i=0;i<64;i++)d+=bitCount[parseInt(a[i],16)^parseInt(b[i],16)];return d;}\nlet previousEnd=0;const allCandidates=new Map();\nfor(let i=0;i<rows.length;i++){\n const row=rows[i],n=i+1,start=Number(row.start_seconds),end=Number(row.end_seconds),duration=Number(row.duration_seconds),count=Number(row.planned_shot_count);\n if(Number(row.segment_number)!==n||!Number.isFinite(start)||!Number.isFinite(end)||!Number.isFinite(duration)||Math.abs(start-previousEnd)>0.012||Math.abs((end-start)-duration)>0.012)throw new Error(`Visual segment ${n} timing is invalid before assignment`);\n if(!Number.isInteger(count)||count<1||count>2)throw new Error(`Visual segment ${n} shot count is invalid`);\n if(!Array.isArray(row.ranked_candidates)||row.ranked_candidates.length<count)throw new Error(`Visual segment ${n} ranked pool is insufficient`);\n for(const c of row.ranked_candidates){const id=String(c.candidate_id??'').trim(),hash=String(c.visual_hash??'').trim().toLowerCase();if(id&&/^[0-9a-f]{64}$/.test(hash)&&!allCandidates.has(id))allCandidates.set(id,c);}\n previousEnd=end;\n}\nconst clusterReps=[],clusterByCandidate=new Map();\nfor(const id of [...allCandidates.keys()].sort()){\n const c=allCandidates.get(id);let cluster=-1;\n for(let i=0;i<clusterReps.length;i++){if(hammingHex(c.visual_hash,clusterReps[i].hash)<=18){cluster=i;break;}}\n if(cluster<0){cluster=clusterReps.length;clusterReps.push({hash:c.visual_hash,id});}\n clusterByCandidate.set(id,`preview:${cluster}`);\n}\nconst slots=[];let shotNumber=0;\nfor(const row of rows){\n const count=Number(row.planned_shot_count),start=Number(row.start_seconds),end=Number(row.end_seconds),duration=end-start;\n for(let part=0;part<count;part++){\n  shotNumber++;\n  const slotStart=count===1?start:start+(duration*part/count),slotEnd=count===1?end:start+(duration*(part+1)/count),slotDuration=slotEnd-slotStart;\n  if(!Number.isFinite(slotDuration)||slotDuration<=0)throw new Error(`Shot ${shotNumber} duration is invalid`);\n  const ranked=row.ranked_candidates.map(c=>({...c,visual_cluster_key:clusterByCandidate.get(String(c.candidate_id))})).filter(c=>c.visual_cluster_key);\n  slots.push({shot_number:shotNumber,segment_shot_number:part+1,start_seconds:Number(slotStart.toFixed(6)),end_seconds:Number(slotEnd.toFixed(6)),duration_seconds:Number(slotDuration.toFixed(6)),row,ranked});\n }\n}\nconst totalDuration=slots.reduce((n,s)=>n+s.duration_seconds,0);if(!Number.isFinite(totalDuration)||totalDuration<=0)throw new Error('Semantic visual timeline duration is invalid');\nconst beamWidth=256;let states=[{choices:[],assetCounts:new Map(),counts:new Map(),durations:new Map(),score:0,lastCluster:null,signature:''}];\nfor(const slot of slots){\n const next=[];\n for(const state of states){\n  for(const c of slot.ranked){\n   const id=String(c.candidate_id),cluster=String(c.visual_cluster_key),utility=Number(c.selection_utility),mediaKind=String(c.media_kind??'photo').toLowerCase();\n   if(!id||!cluster||!Number.isFinite(utility)||cluster===state.lastCluster)continue;if(mediaKind==='video'&&slot.duration_seconds>4.0)continue;\n   const count=(state.counts.get(cluster)??0)+1;\n   const clusterDuration=(state.durations.get(cluster)??0)+slot.duration_seconds;\n   const assetCount=(state.assetCounts.get(id)??0)+1;if(assetCount>1)continue;\n   const assetCounts=new Map(state.assetCounts);assetCounts.set(id,assetCount);\n   const counts=new Map(state.counts);counts.set(cluster,count);\n   const durations=new Map(state.durations);durations.set(cluster,clusterDuration);\n   const diversityBonus=count===1?0.02:0,reusePenalty=assetCount>1?0.06*(assetCount-1):0;\n   const signature=state.signature+'|'+id;\n   next.push({choices:[...state.choices,c],assetCounts,counts,durations,score:state.score+utility+diversityBonus-reusePenalty,lastCluster:cluster,signature});\n  }\n }\n if(!next.length)throw new Error(`No valid semantic visual shot assignment at shot ${slot.shot_number}/${slots.length}`);\n next.sort((a,b)=>b.score-a.score||a.signature.localeCompare(b.signature));states=next.slice(0,beamWidth);\n}\nconst best=states[0];if(!best||best.choices.length!==slots.length)throw new Error('Semantic visual shot assignment is incomplete');\nconst clusters=best.choices.map(c=>String(c.visual_cluster_key)),ids=best.choices.map(c=>String(c.candidate_id)),uniqueClusters=new Set(clusters).size,uniqueAssets=new Set(ids).size,requiredUnique=slots.length;\nlet adjacent=0;for(let i=1;i<clusters.length;i++)if(clusters[i]===clusters[i-1])adjacent++;\nconst occurrence=new Map(),durationByCluster=new Map();for(let i=0;i<slots.length;i++){const k=clusters[i];occurrence.set(k,(occurrence.get(k)??0)+1);durationByCluster.set(k,(durationByCluster.get(k)??0)+slots[i].duration_seconds);}\nconst maxOccurrence=Math.max(...occurrence.values()),maxShare=Math.max(...durationByCluster.values())/totalDuration,maxShot=Math.max(...slots.map(s=>s.duration_seconds));\nif(uniqueClusters<requiredUnique||uniqueAssets!==slots.length||adjacent!==0||maxOccurrence>1||!Number.isFinite(maxShare)||!Number.isFinite(maxShot))throw new Error(`Semantic visual quality failed: clusters=${uniqueClusters}/${requiredUnique}, assets=${uniqueAssets}/${slots.length}, adjacent=${adjacent}, max_occurrence=${maxOccurrence}, max_share=${maxShare}, max_shot=${maxShot}`);\nconst quality={version:'visual-segments-v3',segment_count:rows.length,shot_count:slots.length,unique_asset_count:uniqueAssets,asset_reuse_count:slots.length-uniqueAssets,unique_visual_cluster_count:uniqueClusters,required_unique_visual_cluster_count:requiredUnique,adjacent_visual_cluster_duplicate_count:adjacent,max_visual_cluster_occurrence_count:maxOccurrence,max_allowed_visual_cluster_occurrence_count:1,max_visual_cluster_duration_share:Number(maxShare.toFixed(4)),max_allowed_visual_cluster_duration_share:Number((1/slots.length).toFixed(4)),max_shot_duration_seconds:Number(maxShot.toFixed(4)),all_assets_unique:uniqueAssets===slots.length,pre_render_pass:true,pass:true};\nconst seenAssets=new Set();\nreturn slots.map((slot,i)=>{const c=best.choices[i],kind=String(c.media_kind??'photo'),id=String(c.candidate_id),reused=seenAssets.has(id);seenAssets.add(id);return {json:{...slot.row,ranked_candidates:undefined,local_rank_request:undefined,...c,shot_number:slot.shot_number,segment_shot_number:slot.segment_shot_number,shot_start_seconds:slot.start_seconds,shot_end_seconds:slot.end_seconds,shot_duration_seconds:slot.duration_seconds,selection_method:'multimodal_exact_beat_shot_beam_v4',selection_reused_asset:reused,selected_visual_kind:(kind==='diagram'||kind==='animation')?'factual_graphic':(kind==='photo'?'factual_image':'context_video'),visual_quality_pre_render:quality}};});"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2860,
-          0
-        ],
-        "id": "672a319d-81c2-4a71-adc1-a1f940ee81ad",
-        "name": "Choose Visual Assignment",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForAllItems",
-          "jsCode": "const rows=$input.all().map(item=>item.json).sort((a,b)=>Number(a.shot_number)-Number(b.shot_number));if(!rows.length)throw new Error('No semantic visual shots to download');const groups=new Map();for(const row of rows){const provider=String(row.provider??'').trim().toLowerCase(),candidateId=String(row.candidate_id??'').trim(),assetId=String(row.provider_asset_id??candidateId).trim(),downloadUrl=String(row.download_url??'').trim();if(!provider||!candidateId||!assetId||!downloadUrl)throw new Error(`Shot ${row.shot_number} selected visual is incomplete`);const identity=`${provider}:${assetId}`;let group=groups.get(identity);if(!group){group={...row,targets:[],storage_shot_number:Number(row.shot_number),asset_identity:identity};groups.set(identity,group);}if(String(group.download_url)!==downloadUrl)throw new Error(`Asset ${identity} resolved to multiple download URLs`);group.targets.push(row);}return [...groups.values()].map(group=>({json:{...group,target_count:group.targets.length}}));"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          3080,
-          0
-        ],
-        "id": "634df175-c7b6-41fe-a0ba-7f03ae9ec481",
-        "name": "Prepare Selected Download",
+        "id": "83c8a1ea-b7fd-4d10-ad00-58b41996ea79",
+        "name": "Expand Reserved Story Assets",
         "onError": "continueErrorOutput"
       },
       {
@@ -302,17 +146,17 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.5,
         "position": [
-          3300,
+          1320,
           0
         ],
-        "id": "7504fffd-7c97-440f-a46c-320afd5f7efd",
-        "name": "Download Selected Visual",
+        "id": "f1c19ec3-717a-47d4-8820-9c3eabe8fb09",
+        "name": "Download Reserved Visual",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
           "method": "POST",
-          "url": "={{ 'http://media-worker:3001/visual/store-shot?job_id=' + encodeURIComponent($('Prepare Selected Download').item.json.job_id) + '&shot_number=' + $('Prepare Selected Download').item.json.storage_shot_number }}",
+          "url": "={{ 'http://media-worker:3001/visual/store-shot?job_id=' + encodeURIComponent($('Expand Reserved Story Assets').item.json.job_id) + '&shot_number=' + $('Expand Reserved Story Assets').item.json.unit_number }}",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
@@ -330,44 +174,83 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.5,
         "position": [
-          3520,
+          1540,
           0
         ],
-        "id": "60481f82-ffbe-4e3c-844c-41e4d4526f52",
-        "name": "Store Selected Visual",
+        "id": "c99a3e77-258c-4ec7-b86a-f18f2a1e83c6",
+        "name": "Store Reserved Visual",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "const stored=$json,group=$('Prepare Selected Download').item.json;const path=String(stored.visual_path??'').trim(),media=String(stored.media_type??'').trim(),w=Number(stored.width),h=Number(stored.height),bytes=Number(stored.bytes);if(!path||!['image','video'].includes(media)||!Number.isFinite(w)||w<=0||!Number.isFinite(h)||h<=0||!Number.isFinite(bytes)||bytes<=0)throw new Error(`Candidate ${group.candidate_id} media-worker returned invalid stored visual`);if(!Array.isArray(group.targets)||!group.targets.length)throw new Error(`Candidate ${group.candidate_id} lost shot targets`);return {json:{...group,stored_visual:{visual_path:path,media_type:media,width:w,height:h,bytes,duration_seconds:Number(stored.duration_seconds??0)||null}}};"
+          "jsCode": "const stored=$json,reserved=$('Expand Reserved Story Assets').item.json,path=String(stored.visual_path??'').trim(),media=String(stored.media_type??'').trim(),w=Number(stored.width),h=Number(stored.height),bytes=Number(stored.bytes);if(!path||!['image','video'].includes(media)||!Number.isFinite(w)||w<=0||!Number.isFinite(h)||h<=0||!Number.isFinite(bytes)||bytes<=0)throw new Error(`Reserved asset ${reserved.provider}:${reserved.provider_asset_id} returned invalid stored visual`);return {json:{...reserved,visual_path:path,stored_media_type:media,stored_width:w,stored_height:h,stored_bytes:bytes,stored_duration_seconds:Number(stored.duration_seconds??0)||null}};"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          3740,
+          1760,
           0
         ],
-        "id": "026c2df7-7a1c-4128-8969-e20466d456d9",
-        "name": "Validate Stored Visual",
+        "id": "371d28a3-79f0-4056-9ff8-d58192665359",
+        "name": "Validate Stored Reserved Visual",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/fingerprint-stored",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ ({ job_id:$json.job_id, visual_path:$json.visual_path }) }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          1980,
+          0
+        ],
+        "id": "0a591df3-44f8-456a-a7dd-53aa21618f61",
+        "name": "Fingerprint Stored Reserved Visual",
+        "onError": "continueErrorOutput",
+        "retryOnFail": true,
+        "maxTries": 2,
+        "waitBetweenTries": 1000
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const fp=$json,reserved=$('Validate Stored Reserved Visual').item.json,actual=String(fp.visual_hash??'').trim().toLowerCase(),expected=String(reserved.reserved_visual_hash??'').trim().toLowerCase();if(!/^[0-9a-f]{64}$/.test(actual)||!/^[0-9a-f]{64}$/.test(expected))throw new Error(`Reserved asset ${reserved.provider}:${reserved.provider_asset_id} has invalid fingerprint`);const bit=[0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4];let distance=0;for(let i=0;i<64;i++)distance+=bit[parseInt(actual[i],16)^parseInt(expected[i],16)];if(distance>18)throw new Error(`Stored asset identity diverged from reviewed preview: hamming=${distance}`);const visualKind=reserved.stored_media_type==='video'?'context_video':(['diagram','animation','illustration','schematic'].includes(reserved.source_media_kind)?'factual_graphic':'factual_image');return {json:{...reserved,actual_visual_hash:actual,preview_to_stored_hamming:distance,visual_cluster_key:`stored:${actual}`,visual_kind:visualKind}};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2200,
+          0
+        ],
+        "id": "5c301f43-1f47-4a1b-bac4-9fb07f3d3ea9",
+        "name": "Verify Reserved Visual Identity",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "WITH segment AS (\n SELECT vs.id,vs.planned_shot_count FROM public.visual_segments vs WHERE vs.id=$2::uuid AND vs.job_id=$1::uuid AND vs.status='planned' FOR UPDATE\n), library AS (\n INSERT INTO public.media_library_assets(provider,provider_asset_id,source_url,author,license,license_url,local_path,media_kind,visual_hash,canonical_subject,metadata,last_used_at)\n SELECT $7::text,$8::text,NULLIF($9::text,''),NULLIF($10::text,''),NULLIF($11::text,''),NULLIF($12::text,''),$13::text,$14::text,$15::text,$16::text,$17::jsonb,now() FROM segment\n ON CONFLICT(provider,provider_asset_id) DO UPDATE SET last_used_at=now(),metadata=public.media_library_assets.metadata||EXCLUDED.metadata\n RETURNING id\n), inserted AS (\n INSERT INTO public.visual_shots(job_id,visual_segment_id,shot_number,segment_shot_number,start_seconds,end_seconds,duration_seconds,media_library_asset_id,local_path,visual_cluster_key,visual_kind,selection_score,metadata)\n SELECT $1::uuid,$2::uuid,$3::int,$4::smallint,$5::numeric,$6::numeric,($6::numeric-$5::numeric),library.id,$13::text,$18::text,$19::text,$20::numeric,$17::jsonb FROM library\n WHERE NOT EXISTS(SELECT 1 FROM public.visual_shots old WHERE old.job_id=$1::uuid AND (old.shot_number=$3::int OR (old.visual_segment_id=$2::uuid AND old.segment_shot_number=$4::smallint)))\n RETURNING id,visual_segment_id\n), completed AS (\n UPDATE public.visual_segments vs SET status='ready',updated_at=now() FROM segment s\n WHERE vs.id=s.id\n   AND EXISTS(SELECT 1 FROM inserted i WHERE i.visual_segment_id=vs.id)\n   AND ((SELECT count(*) FROM public.visual_shots sh WHERE sh.visual_segment_id=vs.id)\n        +(SELECT count(*) FROM inserted i WHERE i.visual_segment_id=vs.id))=s.planned_shot_count\n RETURNING vs.id\n)\nSELECT $1::uuid AS job_id,$2::uuid AS segment_id,$3::int AS shot_number,EXISTS(SELECT 1 FROM inserted) AS shot_inserted,\n EXISTS(SELECT 1 FROM inserted) AS persisted,EXISTS(SELECT 1 FROM completed) AS segment_completed;",
+          "query": "WITH segment AS (\n INSERT INTO public.visual_segments(job_id,segment_number,first_scene_number,last_scene_number,start_seconds,end_seconds,duration_seconds,narration,support_evidence_ids,canonical_subject,visual_target,visual_lane,visual_query,visual_description,planned_shot_count,status)\n VALUES($1::uuid,$2::int,$2::int,$2::int,$3::numeric,$4::numeric,($4::numeric-$3::numeric),$5::text,$6::jsonb,$7::text,$8::text,'reference',$8::text,$9::text,1,'ready')\n ON CONFLICT(job_id,segment_number) DO NOTHING RETURNING id\n), library AS (\n INSERT INTO public.media_library_assets(provider,provider_asset_id,source_url,author,license,license_url,local_path,media_kind,visual_hash,canonical_subject,metadata,last_used_at)\n SELECT $10::text,$11::text,NULLIF($12::text,''),NULLIF($13::text,''),NULLIF($14::text,''),NULLIF($15::text,''),$16::text,$17::text,$18::text,$7::text,$19::jsonb,now() FROM segment\n ON CONFLICT(provider,provider_asset_id) DO UPDATE SET last_used_at=now(),metadata=public.media_library_assets.metadata||EXCLUDED.metadata\n RETURNING id\n), shot AS (\n INSERT INTO public.visual_shots(job_id,visual_segment_id,shot_number,segment_shot_number,start_seconds,end_seconds,duration_seconds,media_library_asset_id,local_path,visual_cluster_key,visual_kind,selection_score,metadata)\n SELECT $1::uuid,segment.id,$2::int,1,$3::numeric,$4::numeric,($4::numeric-$3::numeric),library.id,$16::text,$20::text,$21::text,1.0,$19::jsonb FROM segment CROSS JOIN library\n RETURNING id\n)\nSELECT $1::uuid AS job_id,$2::int AS unit_number,EXISTS(SELECT 1 FROM segment) AND EXISTS(SELECT 1 FROM shot) AS persisted;",
           "options": {
-            "queryReplacement": "={{ [ $json.job_id, $json.segment_id, $json.shot_number, $json.segment_shot_number, $json.shot_start_seconds, $json.shot_end_seconds, $json.provider, $json.provider_asset_id ?? $json.candidate_id, $json.source_url ?? '', $json.author ?? '', $json.license ?? '', $json.license_url ?? '', $json.visual_path, $json.media_kind, $json.visual_hash, $json.canonical_subject, JSON.stringify($json.metadata ?? {}), $json.visual_cluster_key, $json.visual_kind, $json.selection_score ] }}"
+            "queryReplacement": "={{ [ $json.job_id, $json.unit_number, $json.start_seconds, $json.end_seconds, $json.narration, JSON.stringify($json.support_evidence_ids), $json.canonical_subject, $json.visual_target, $json.visible_description, $json.provider, $json.provider_asset_id, $json.source_url ?? '', $json.author ?? '', $json.license ?? '', $json.license_url ?? '', $json.visual_path, $json.source_media_kind, $json.actual_visual_hash, JSON.stringify({reserved_asset:true,unit_id:$json.unit_id,claim_id:$json.claim_id,candidate_id:$json.candidate_id,reserved_preview_hash:$json.reserved_visual_hash,stored_visual_hash:$json.actual_visual_hash,preview_to_stored_hamming:$json.preview_to_stored_hamming,visible_description:$json.visible_description,visual_target:$json.visual_target,source_metadata:$json.reserved_metadata,stored_media_type:$json.stored_media_type,stored_width:$json.stored_width,stored_height:$json.stored_height,stored_bytes:$json.stored_bytes}), $json.visual_cluster_key, $json.visual_kind ] }}"
           }
         },
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.7,
         "position": [
-          3960,
+          2420,
           0
         ],
-        "id": "bd66bf4a-8444-4cb3-8f26-28ed1e751ad0",
-        "name": "Persist Visual Result",
+        "id": "d476105c-a9d3-4817-bac8-0333c984a6fc",
+        "name": "Persist Reserved Visual",
         "credentials": {
           "postgres": {
             "id": "AdVJ2zREIvjZqGH5",
@@ -379,22 +262,22 @@
       {
         "parameters": {
           "mode": "runOnceForAllItems",
-          "jsCode": "const rows=$input.all().map(i=>i.json),selected=$('Choose Visual Assignment').all().map(i=>i.json),expected=Number(selected[0]?.visual_quality_pre_render?.shot_count);if(!Number.isInteger(expected)||expected<=0)throw new Error('Selected shot count is invalid');if(rows.length!==expected)throw new Error(`Visual shot persistence returned ${rows.length}/${expected} rows`);const seen=new Set();let jobId='';for(const r of rows){if(r.persisted!==true)throw new Error(`Visual shot persistence failed for shot ${r.shot_number??'unknown'}`);const n=Number(r.shot_number);if(seen.has(n))throw new Error(`Duplicate persisted shot ${n}`);seen.add(n);const j=String(r.job_id??'');if(!jobId)jobId=j;else if(jobId!==j)throw new Error('Mixed jobs in visual shot persistence');}return [{json:{job_id:jobId,persisted_shot_count:rows.length,expected_shot_count:expected}}];"
+          "jsCode": "const rows=$input.all().map(x=>x.json),expected=$('Expand Reserved Story Assets').all().length;if(!expected||rows.length!==expected)throw new Error(`Reserved visual persistence cardinality ${rows.length}/${expected}`);const ids=new Set();for(const r of rows){if(r.persisted!==true)throw new Error(`Reserved visual unit ${r.unit_number} was not persisted`);ids.add(Number(r.unit_number));}if(ids.size!==expected||[...ids].sort((a,b)=>a-b).some((n,i)=>n!==i+1))throw new Error('Reserved visual persistence unit set is incomplete');return [{json:{job_id:rows[0].job_id,story_unit_count:expected}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          4180,
+          2640,
           0
         ],
-        "id": "238a086f-b7e0-436e-8319-3d0c7022e35e",
-        "name": "Require Persisted Visuals",
+        "id": "6e8e14f7-bc97-49f6-b98b-085a0b67c860",
+        "name": "Collect Persisted Reserved Visuals",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "WITH j AS (\n SELECT id,status,current_stage,voiceover_duration_seconds FROM public.jobs WHERE id=$1::uuid AND content_model_version='staged_v1'\n), segments AS (\n SELECT vs.*,lag(vs.end_seconds) OVER(ORDER BY vs.segment_number) AS previous_end FROM public.visual_segments vs WHERE vs.job_id=$1::uuid\n), segment_quality AS (\n SELECT count(*)::int AS segment_count,count(*) FILTER(WHERE status='ready')::int AS ready_segment_count,\n        count(*) FILTER(WHERE segment_number<>row_number_value OR abs(start_seconds-COALESCE(previous_end,0))>0.02)::int AS bad_segment_timing_count,\n        COALESCE(max(end_seconds),0)::numeric AS final_segment_end\n FROM (SELECT segments.*,row_number() OVER(ORDER BY segment_number)::int AS row_number_value FROM segments) x\n), shots AS (\n SELECT sh.*,a.provider||':'||a.provider_asset_id AS asset_key,lag(sh.end_seconds) OVER(ORDER BY sh.shot_number) AS previous_end,\n        lag(sh.visual_cluster_key) OVER(ORDER BY sh.shot_number) AS previous_cluster\n FROM public.visual_shots sh JOIN public.media_library_assets a ON a.id=sh.media_library_asset_id WHERE sh.job_id=$1::uuid\n), shot_base AS (\n SELECT count(*)::int AS shot_count,count(DISTINCT media_library_asset_id)::int AS unique_asset_count,count(DISTINCT visual_cluster_key)::int AS unique_visual_cluster_count,\n count(*) FILTER(WHERE shot_number<>row_number_value OR abs(start_seconds-COALESCE(previous_end,0))>0.02 OR abs((end_seconds-start_seconds)-duration_seconds)>0.02)::int AS bad_shot_timing_count,\n count(*) FILTER(WHERE previous_cluster IS NOT NULL AND visual_cluster_key=previous_cluster)::int AS adjacent_duplicate_count,\n COALESCE(max(duration_seconds),0)::numeric AS max_shot_duration,COALESCE(max(end_seconds),0)::numeric AS final_shot_end\n FROM (SELECT shots.*,row_number() OVER(ORDER BY shot_number)::int AS row_number_value FROM shots) x\n), occurrences AS (\n SELECT COALESCE(max(n),0)::int AS max_cluster_occurrence FROM (SELECT visual_cluster_key,count(*)::int n FROM shots GROUP BY visual_cluster_key) x\n), durations AS (\n SELECT visual_cluster_key,sum(duration_seconds)::numeric AS cluster_duration FROM shots GROUP BY visual_cluster_key\n), shares AS (\n SELECT COALESCE(max(cluster_duration),0)::numeric/NULLIF((SELECT sum(duration_seconds) FROM shots),0)::numeric AS max_cluster_duration_share FROM durations\n), quality AS (\n SELECT sq.segment_count,sq.ready_segment_count,sq.bad_segment_timing_count,sq.final_segment_end,sb.*,o.max_cluster_occurrence,COALESCE(sh.max_cluster_duration_share,0)::numeric AS max_cluster_duration_share,\n        sb.shot_count::int AS required_unique_visual_cluster_count,\n        (sq.segment_count>0 AND sq.ready_segment_count=sq.segment_count AND sq.bad_segment_timing_count=0 AND abs(sq.final_segment_end-j.voiceover_duration_seconds)<=0.02\n         AND sb.shot_count>0 AND sb.unique_visual_cluster_count>=sb.shot_count::int AND sb.bad_shot_timing_count=0\n         AND sb.unique_asset_count=sb.shot_count AND sb.adjacent_duplicate_count=0 AND o.max_cluster_occurrence<=1\n         AND abs(sb.final_shot_end-j.voiceover_duration_seconds)<=0.02) AS pass\n FROM segment_quality sq CROSS JOIN shot_base sb CROSS JOIN occurrences o CROSS JOIN shares sh CROSS JOIN j\n), persisted AS (\n UPDATE public.jobs jobs SET visual_quality=jsonb_build_object(\n   'version','visual-segments-v3','segment_count',q.segment_count,'shot_count',q.shot_count,'unique_asset_count',q.unique_asset_count,'asset_reuse_count',(q.shot_count-q.unique_asset_count),'unique_visual_cluster_count',q.unique_visual_cluster_count,\n   'required_unique_visual_cluster_count',q.required_unique_visual_cluster_count,'adjacent_visual_cluster_duplicate_count',q.adjacent_duplicate_count,\n   'max_visual_cluster_occurrence_count',q.max_cluster_occurrence,'max_allowed_visual_cluster_occurrence_count',1,'max_visual_cluster_duration_share',round(q.max_cluster_duration_share,4),\n   'max_allowed_visual_cluster_duration_share',round(1.0/NULLIF(q.shot_count,0),4),'max_shot_duration_seconds',round(q.max_shot_duration,4),\n   'all_assets_unique',(q.unique_asset_count=q.shot_count),'pre_render_pass',q.pass,'pass',q.pass\n ),updated_at=now() FROM quality q WHERE jobs.id=$1::uuid RETURNING jobs.visual_quality\n)\nSELECT $1::uuid AS job_id,j.status,j.current_stage,q.*,(SELECT visual_quality FROM persisted LIMIT 1) AS visual_quality,\n (j.status='processing' AND j.current_stage='visuals' AND q.pass) AS all_visuals_ready\nFROM j CROSS JOIN quality q;",
+          "query": "WITH j AS (SELECT id,status,current_stage,voiceover_duration_seconds,story_package FROM public.jobs WHERE id=$1::uuid AND content_model_version='staged_v1'),\nsegments AS (SELECT vs.*,lag(vs.end_seconds) OVER(ORDER BY vs.segment_number) previous_end,row_number() OVER(ORDER BY vs.segment_number)::int rn FROM public.visual_segments vs WHERE vs.job_id=$1::uuid),\nshots AS (SELECT sh.*,lag(sh.end_seconds) OVER(ORDER BY sh.shot_number) previous_end,row_number() OVER(ORDER BY sh.shot_number)::int rn FROM public.visual_shots sh WHERE sh.job_id=$1::uuid),\nq AS (\n SELECT jsonb_array_length(j.story_package->'units')::int expected_count,\n   (SELECT count(*)::int FROM segments) segment_count,(SELECT count(*)::int FROM shots) shot_count,\n   (SELECT count(DISTINCT media_library_asset_id)::int FROM shots) unique_asset_count,(SELECT count(DISTINCT visual_cluster_key)::int FROM shots) unique_cluster_count,\n   (SELECT count(*)::int FROM segments WHERE segment_number<>rn OR abs(start_seconds-COALESCE(previous_end,0))>0.02 OR abs((end_seconds-start_seconds)-duration_seconds)>0.02 OR status<>'ready') bad_segment_count,\n   (SELECT count(*)::int FROM shots WHERE shot_number<>rn OR abs(start_seconds-COALESCE(previous_end,0))>0.02 OR abs((end_seconds-start_seconds)-duration_seconds)>0.02) bad_shot_count,\n   COALESCE((SELECT max(end_seconds) FROM shots),0)::numeric final_end\n FROM j\n), persisted AS (\n UPDATE public.jobs x SET visual_quality=jsonb_build_object('version','inventory-first-story-v1','story_unit_count',q.expected_count,'segment_count',q.segment_count,'shot_count',q.shot_count,'unique_asset_count',q.unique_asset_count,'unique_visual_cluster_count',q.unique_cluster_count,'reserved_before_script',true,'post_freeze_search_used',false,'pass',(q.expected_count>0 AND q.segment_count=q.expected_count AND q.shot_count=q.expected_count AND q.unique_asset_count=q.expected_count AND q.unique_cluster_count=q.expected_count AND q.bad_segment_count=0 AND q.bad_shot_count=0 AND abs(q.final_end-j.voiceover_duration_seconds)<=0.02)),updated_at=now()\n FROM j,q WHERE x.id=j.id RETURNING x.visual_quality\n)\nSELECT $1::uuid AS job_id,j.status,j.current_stage,q.*,(SELECT visual_quality FROM persisted LIMIT 1) visual_quality,\n (j.status='processing' AND j.current_stage='visuals' AND q.expected_count>0 AND q.segment_count=q.expected_count AND q.shot_count=q.expected_count AND q.unique_asset_count=q.expected_count AND q.unique_cluster_count=q.expected_count AND q.bad_segment_count=0 AND q.bad_shot_count=0 AND abs(q.final_end-j.voiceover_duration_seconds)<=0.02) all_visuals_ready\nFROM j CROSS JOIN q;",
           "options": {
             "queryReplacement": "={{ [ $json.job_id ] }}"
           }
@@ -402,11 +285,11 @@
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.7,
         "position": [
-          4400,
+          2860,
           0
         ],
-        "id": "418e3c7f-e747-4f48-aa51-2075936037be",
-        "name": "Verify Visual Completion",
+        "id": "31dbfcef-d5e3-4532-be83-41f9033f1e9d",
+        "name": "Verify Reserved Visual Completion",
         "credentials": {
           "postgres": {
             "id": "AdVJ2zREIvjZqGH5",
@@ -418,16 +301,16 @@
       {
         "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "const r=$json;if(r.all_visuals_ready!==true)throw new Error(`Semantic visual completion failed: segments=${r.ready_segment_count}/${r.segment_count}, shots=${r.shot_count}, clusters=${r.unique_visual_cluster_count}/${r.required_unique_visual_cluster_count}, assets=${r.unique_asset_count}/${r.shot_count}, adjacent=${r.adjacent_duplicate_count}, max_occurrence=${r.max_cluster_occurrence}, max_share=${r.max_cluster_duration_share}, max_shot=${r.max_shot_duration}`);if(!r.visual_quality||r.visual_quality.version!=='visual-segments-v3'||r.visual_quality.pre_render_pass!==true)throw new Error('Durable semantic visual pre-render quality was not persisted');return [{json:{job_id:r.job_id,visuals_ready:true,visual_quality:r.visual_quality}}];"
+          "jsCode": "const r=$json;if(r.all_visuals_ready!==true)throw new Error(`Reserved visual completion failed: segments=${r.segment_count}/${r.expected_count}, shots=${r.shot_count}/${r.expected_count}, assets=${r.unique_asset_count}/${r.expected_count}, clusters=${r.unique_cluster_count}/${r.expected_count}, bad_segments=${r.bad_segment_count}, bad_shots=${r.bad_shot_count}`);if(!r.visual_quality||r.visual_quality.version!=='inventory-first-story-v1'||r.visual_quality.reserved_before_script!==true||r.visual_quality.post_freeze_search_used!==false||r.visual_quality.pass!==true)throw new Error('Durable inventory-first visual quality was not persisted');return [{json:{job_id:r.job_id,visuals_ready:true,visual_quality:r.visual_quality}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          4620,
+          3080,
           0
         ],
-        "id": "d3317620-b3dc-4bed-a41f-b3b101043bfc",
-        "name": "Require Visual Completion",
+        "id": "886d06b1-9e18-46dd-96c7-0d191b796494",
+        "name": "Require Reserved Visual Completion",
         "onError": "continueErrorOutput"
       },
       {
@@ -469,7 +352,7 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.3,
         "position": [
-          4840,
+          3300,
           0
         ],
         "id": "23f1ecd1-d676-4383-a7ad-ad1c448df26a",
@@ -484,7 +367,7 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          3080,
+          2200,
           360
         ],
         "id": "3a6ca204-e356-4dc9-bf85-a130a5df446d",
@@ -502,7 +385,7 @@
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.7,
         "position": [
-          3300,
+          2420,
           360
         ],
         "id": "29843d6b-7368-449f-9ede-9590baa65858",
@@ -521,309 +404,11 @@
         "type": "n8n-nodes-base.stopAndError",
         "typeVersion": 1,
         "position": [
-          3520,
+          2640,
           360
         ],
         "id": "6c402cc1-76fe-4007-8b00-bf5a78e25f24",
         "name": "Stop Visual Failure"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForAllItems",
-          "jsCode": "const groups=$input.all().map(item=>item.json),out=[];for(const group of groups){const stored=group.stored_visual??{};if(!String(stored.visual_path??'').trim())throw new Error(`Candidate ${group.candidate_id} stored path is missing`);if(!Array.isArray(group.targets)||!group.targets.length)throw new Error(`Candidate ${group.candidate_id} has no shot targets`);for(const target of group.targets){out.push({json:{job_id:target.job_id,segment_id:target.segment_id,segment_number:Number(target.segment_number),shot_number:Number(target.shot_number),segment_shot_number:Number(target.segment_shot_number),shot_start_seconds:Number(target.shot_start_seconds),shot_end_seconds:Number(target.shot_end_seconds),shot_duration_seconds:Number(target.shot_duration_seconds),provider:target.provider,provider_asset_id:target.provider_asset_id||null,source_url:target.source_url||null,author:target.author||null,license:target.license||null,license_url:target.license_url||null,visual_path:stored.visual_path,media_kind:target.media_kind||'photo',visual_kind:target.selected_visual_kind||'generic_broll',visual_hash:target.visual_hash,visual_cluster_key:target.visual_cluster_key,selection_score:Number(target.selection_utility),canonical_subject:target.canonical_subject,metadata:{...(target.metadata??{}),candidate_id:target.candidate_id,segment_number:Number(target.segment_number),segment_shot_number:Number(target.segment_shot_number),visual_query:target.visual_query,visual_description:target.visual_description,visual_target:target.visual_target,support_evidence_ids:target.support_evidence_ids,selection_method:target.selection_method,visual_hash:target.visual_hash,visual_cluster_key:target.visual_cluster_key,visual_quality_pre_render:target.visual_quality_pre_render,local_rank_score:Number(target.local_rank_score??0),local_siglip_rank:Number(target.local_siglip_rank??0),local_fingerprint_rank:Number(target.local_fingerprint_rank??0),local_pre_rank_score:Number(target.pre_rank_score??0),selection_utility:Number(target.selection_utility),metadata_overlap:Number(target.metadata_overlap??0),core_metadata_overlap:Number(target.core_metadata_overlap??0),target_metadata_overlap:Number(target.target_metadata_overlap??0),representation_preference_rank:Number(target.representation_preference_rank??0),multimodal_reason:target.multimodal_reason||null,multimodal_rank:Number(target.multimodal_rank??0)||null,visual_review_model:target.visual_review_model||null,visual_recovery_used:target.visual_recovery_used===true,local_rank_model:target.local_rank_model||null,local_rank_dtype:target.local_rank_dtype||null,stored_media_type:stored.media_type,normalized_width:Number(stored.width),normalized_height:Number(stored.height),normalized_bytes:Number(stored.bytes),normalized_duration_seconds:stored.duration_seconds,stored_by:'media-worker'}}});}}out.sort((a,b)=>a.json.shot_number-b.json.shot_number);return out;"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          3850,
-          0
-        ],
-        "id": "95cb5f97-2aaa-4135-a80b-799fb6bdaee5",
-        "name": "Expand Stored Visual Targets",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForAllItems",
-          "jsCode": "const segments=$input.all().map(x=>x.json).sort((a,b)=>Number(a.segment_number)-Number(b.segment_number));\nif(!segments.length)throw new Error('No segments supplied for multimodal visual review');\nconst expectedSegmentCount=Number(segments[0]?.expected_visual_segment_count);const received=segments.map(s=>Number(s.segment_number));if(!Number.isInteger(expectedSegmentCount)||segments.some(s=>Number(s.expected_visual_segment_count)!==expectedSegmentCount)||segments.length!==expectedSegmentCount||received.some((n,i)=>n!==i+1))throw new Error(`Visual fingerprint set is incomplete before review: received=${received.join(',')||'none'}, expected=1-${expectedSegmentCount}`);\nconst fingerprintFailures=segments.filter(s=>String(s.fingerprint_error??'').trim());if(fingerprintFailures.length){const detail=fingerprintFailures.map(s=>`segment ${s.segment_number}: ${String(s.fingerprint_error).slice(0,220)}`).join(' | ');throw new Error(`Visual fingerprinting failed after bounded preview recovery: ${detail}`);}\nconst prompt='You are the final visual verifier for a factual vertical short. Review every actual image independently. Candidate filenames, provider IDs and metadata are intentionally hidden from you. For each shown review_id, describe ONLY what is visibly present in at most 12 words, then set relevant=true only when that visible content directly satisfies the exact target for the current narration beat. Do not infer a person, place, chemical, species, historical era, mechanism or event merely because the target mentions it. Generic laboratory, molecule, landscape, building, person, fossil, microbe or equipment imagery is NOT an exact match unless the required visible subject itself is present. A whole-topic image is NOT acceptable for a different beat-specific target. Reject screenshots, text cards, watermarks, collages and low-information abstractions. Technical diagrams and scientific illustrations are valid only when their visible content directly explains the exact target. Return every shown review_id exactly once. Return ONLY JSON: {\"segments\":[{\"segment_number\":1,\"verdicts\":[{\"review_id\":\"S1-C1\",\"relevant\":true,\"visible_description\":\"what is actually visible\"}]}]}.';\nconst batchSize=6,batchCount=Math.ceil(segments.length/batchSize),out=[];\nfor(let offset=0;offset<segments.length;offset+=batchSize){\n const batch=segments.slice(offset,offset+batchSize),maxPerSegment=Math.max(2,Math.min(4,Math.floor((79-1-batch.length)/(2*batch.length))));\n const allowed=batch.map(s=>Number(s.segment_number));const input=[{type:'text',text:prompt+` Allowed segment numbers in this batch: ${allowed.join(', ')}. Return each allowed segment exactly once and no other segment number.`}],reviewSegments=[];\n for(const s of batch){\n  const seen=new Set(),allRows=[];\n  for(const c of (s.ranked_candidates??[])){if(String(c.media_kind??'photo').toLowerCase()==='video')continue;const id=String(c.candidate_id??'');if(!id||seen.has(id))continue;seen.add(id);allRows.push(c);}\n  const rows=allRows.slice(0,maxPerSegment).map((c,i)=>({...c,visual_review_id:`S${Number(s.segment_number)}-C${i+1}`}));if(!rows.length)throw new Error(`Visual segment ${s.segment_number} has no still-image candidates`);\n  reviewSegments.push({...s,visual_review_candidates:rows});\n  input.push({type:'text',text:`SEGMENT ${s.segment_number} | required images: ${Number(s.planned_shot_count)} | canonical subject: ${s.canonical_subject} | exact target: ${s.visual_target} | narration: ${s.narration}`});\n  for(const c of rows){input.push({type:'text',text:`REVIEW ${c.visual_review_id}`});input.push({type:'image',uri:String((c.preview_urls??[c.preview_url]).filter(Boolean)[0])});}\n }\n if(input.length>80)throw new Error(`Visual review batch ${Math.floor(offset/batchSize)+1} exceeded bounded input budget`);\n out.push({json:{job_id:segments[0].job_id,batch_number:Math.floor(offset/batchSize)+1,batch_count:batchCount,segments:reviewSegments,visual_review_request:{input}}});\n}\nreturn out;"
-        },
-        "id": "c1887f51-f646-4e31-8af9-f15b96908b10",
-        "name": "Prepare Multimodal Visual Review",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          1880,
-          240
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ { input: $json.input, response_format: 'json', response_schema: { type: 'object', properties: { segments: { type: 'array', items: { type: 'object', properties: { segment_number: { type: 'integer' }, verdicts: { type: 'array', items: { type: 'object', properties: { review_id: { type: 'string' }, relevant: { type: 'boolean' }, visible_description: { type: 'string' } }, required: ['review_id','relevant','visible_description'] } } }, required: ['segment_number','verdicts'] } } }, required: ['segments'] } } }}",
-          "options": {
-            "timeout": 180000
-          }
-        },
-        "id": "80e1dc04-71ef-4355-bca4-3875685fd0dc",
-        "name": "Review Actual Candidate Images",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          2270,
-          240
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForAllItems",
-          "jsCode": "const STOP=new Set(['the','and','with','from','into','this','that','for','are','was','were','has','have','image','photo','picture','view','close','detailed','detail','scene','showing','shows','visible','modern','historical','scientific','science','research','concept','setting','equipment','laboratory','lab','experiment','setup','context','generic','general','representation','representing']);\nconst MEDIA=new Set(['portrait','photo','photograph','photography','painting','diagram','schematic','map','micrograph','illustration','cutaway','model']);\nconst LOW=new Set(['early','late','century','scientific','science','research','concept','setting','equipment','laboratory','lab','experiment','experimental','setup','context','generic','general','representation','representing']);\nconst words=v=>String(v??'').normalize('NFKC').toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[];\nconst content=v=>[...new Set(words(v).filter(x=>x.length>=3&&!STOP.has(x)))];\nconst related=(a,b)=>a===b||(a.length>=5&&b.length>=5&&a.slice(0,6)===b.slice(0,6));\nconst overlap=(a,b)=>a.reduce((n,x)=>n+(b.some(y=>related(x,y))?1:0),0);\nconst metaText=c=>[c.title,c.description,c.categories,c.metadata?.source_title,c.metadata?.source_description,c.metadata?.source_tags,c.source_url].filter(Boolean).join(' ');\nfunction canonicalTargetAllowed(c,s){const source=String(c.metadata?.retrieval_source??'').toLowerCase();if(source!=='canonical_article')return false;const canon=content(s.canonical_subject),target=content(s.visual_target);if(!canon.length||!target.length)return false;const hits=overlap(canon,target);return hits>=Math.min(2,canon.length);}\nfunction targetPass(c,s){if(c.target_anchor_pass===true)return true;if(c.target_anchor_pass===false)return canonicalTargetAllowed(c,s);const target=content(s.visual_target).filter(x=>!MEDIA.has(x)&&!LOW.has(x)&&!/^\\d+(?:st|nd|rd|th)$/u.test(x));const meta=content(metaText(c));const hits=overlap(target,meta),need=target.length>=4?3:Math.min(2,target.length);return (need>0&&hits>=need)||canonicalTargetAllowed(c,s);}\nfunction visibleMeta(c,description){const vis=content(description),meta=content(metaText(c));if(!vis.length||!meta.length)return {pass:false,hits:0,required:1};const hits=overlap(vis,meta),required=Math.min(2,Math.max(1,Math.min(vis.length,meta.length)));return {pass:hits>=required,hits,required};}\nconst prepared=$('Prepare Multimodal Visual Review').all().map(x=>x.json),responses=$input.all().map(x=>x.json);\nif(!prepared.length||responses.length!==prepared.length)throw new Error(`Multimodal review batch set is incomplete: ${responses.length}/${prepared.length}`);\nconst out=[];\nfor(let b=0;b<prepared.length;b++){\n const ctx=prepared[b],response=responses[b];const rawText=String(response?.text??'').trim();if(!rawText)throw new Error(`Multimodal visual reviewer unavailable for batch ${ctx.batch_number}`);let text=rawText.replace(/^\\x60\\x60\\x60(?:json)?\\s*/i,'').replace(/\\s*\\x60\\x60\\x60$/,'');let o;try{o=JSON.parse(text)}catch{throw new Error(`Multimodal visual reviewer returned invalid JSON for batch ${ctx.batch_number}`);}\n const allowed=new Set(ctx.segments.map(s=>Number(s.segment_number))),decisions=new Map();for(const raw of (Array.isArray(o.segments)?o.segments:[])){const n=Number(raw.segment_number);if(!allowed.has(n)||decisions.has(n))continue;decisions.set(n,raw);}\n for(const s of ctx.segments){\n  const d=decisions.get(Number(s.segment_number));if(!d)throw new Error(`Multimodal visual reviewer omitted segment ${s.segment_number}`);\n  const own=new Map(s.visual_review_candidates.map(c=>[String(c.visual_review_id),c])),verdicts=new Map();\n  for(const raw of (Array.isArray(d.verdicts)?d.verdicts:[])){const rid=String(raw?.review_id??'').trim();if(!rid||!own.has(rid)||verdicts.has(rid))continue;verdicts.set(rid,raw);}\n  const approved=[];let modelRelevant=0,groundedRejected=0;\n  for(const c of s.visual_review_candidates){const rid=String(c.visual_review_id),v=verdicts.get(rid),description=String(v?.visible_description??'').replace(/\\s+/gu,' ').trim().slice(0,300);if(v?.relevant!==true)continue;modelRelevant++;const vm=visibleMeta(c,description),tp=targetPass(c,s);if(!description||!vm.pass||!tp){groundedRejected++;continue;}approved.push({...c,multimodal_visible_description:description,multimodal_metadata_consistency_hits:vm.hits,multimodal_metadata_consistency_required:vm.required});}\n  const required=Math.max(1,Number(s.planned_shot_count)),shortfall=approved.length<required;\n  const ranked_candidates=approved.slice(0,Math.max(required,4)).map((c,i)=>({...c,visual_review_id:undefined,multimodal_rank:i+1,multimodal_reason:c.multimodal_visible_description,selection_utility:Number((1-i*0.015).toFixed(4))}));\n  out.push({json:{...s,visual_review_candidates:undefined,visual_reviewed_candidate_ids:[...s.visual_review_candidates.map(c=>String(c.candidate_id))],ranked_candidates,visual_review_required_count:required,visual_review_approved_count:approved.length,visual_review_model_relevant_count:modelRelevant,visual_review_grounded_reject_count:groundedRejected,visual_review_shortfall:shortfall,visual_review_model:String(response.model??'gemini-3.1-flash-lite'),visual_recovery_used:false,visual_review_batch:Number(ctx.batch_number)}});\n }\n}\nout.sort((a,b)=>Number(a.json.segment_number)-Number(b.json.segment_number));return out;"
-        },
-        "id": "b5f24208-ed51-4adc-be57-d37130537f7f",
-        "name": "Require Multimodal Visual Selection",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2490,
-          240
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://media-worker:3001/visual/inline-review-images",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ $json.visual_review_request }}",
-          "options": {
-            "timeout": 120000
-          }
-        },
-        "id": "be8db4cf-3fd5-4077-a142-b251b08439ab",
-        "name": "Inline Candidate Images",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          2050,
-          240
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForAllItems",
-          "jsCode": "const rows=$input.all().map(i=>i.json).sort((a,b)=>Number(a.segment_number)-Number(b.segment_number));\nif(!rows.length)throw new Error('No reviewed visual segments for global no-repeat feasibility');\nconst bitCount=[0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4];\nfunction hammingHex(a,b){if(!/^[0-9a-f]{64}$/.test(a)||!/^[0-9a-f]{64}$/.test(b))throw new Error('Invalid visual hash before global recovery');let d=0;for(let i=0;i<64;i++)d+=bitCount[parseInt(a[i],16)^parseInt(b[i],16)];return d;}\nconst candidates=new Map();\nfor(const row of rows){for(const c of (row.ranked_candidates??[])){const id=String(c.candidate_id??'').trim(),hash=String(c.visual_hash??'').trim().toLowerCase();if(id&&/^[0-9a-f]{64}$/.test(hash)&&!candidates.has(id))candidates.set(id,c);}}\nconst reps=[],clusterByCandidate=new Map();\nfor(const id of [...candidates.keys()].sort()){const c=candidates.get(id);let cluster=-1;for(let i=0;i<reps.length;i++){if(hammingHex(c.visual_hash,reps[i].hash)<=18){cluster=i;break;}}if(cluster<0){cluster=reps.length;reps.push({hash:c.visual_hash,id});}clusterByCandidate.set(id,`preview:${cluster}`);}\nconst slots=[],shortfalls=[];\nfor(const row of rows){const count=Number(row.planned_shot_count);if(!Number.isInteger(count)||count<1||count>2)throw new Error(`Visual segment ${row.segment_number} has invalid shot count before global recovery`);const clusters=[...new Set((row.ranked_candidates??[]).map(c=>clusterByCandidate.get(String(c.candidate_id??''))).filter(Boolean))];if(Boolean(row.visual_review_shortfall)||clusters.length<count)shortfalls.push(Number(row.segment_number));for(let part=0;part<count;part++)slots.push({segment_number:Number(row.segment_number),segment_shot_number:part+1,clusters});}\nconst clusterToSlot=new Map(),slotToCluster=new Array(slots.length).fill(null);\nfunction augment(slotIndex,seen){for(const cluster of slots[slotIndex].clusters){if(seen.has(cluster))continue;seen.add(cluster);const previous=clusterToSlot.get(cluster);if(previous===undefined||augment(previous,seen)){clusterToSlot.set(cluster,slotIndex);slotToCluster[slotIndex]=cluster;return true;}}return false;}\nlet matched=0;for(let i=0;i<slots.length;i++)if(augment(i,new Set()))matched++;\nlet conflicts=[];\nif(matched<slots.length){const queue=[],seenSlots=new Set(),seenClusters=new Set();for(let i=0;i<slots.length;i++){if(!slotToCluster[i]){queue.push(i);seenSlots.add(i);}}while(queue.length){const i=queue.shift();for(const cluster of slots[i].clusters){if(seenClusters.has(cluster))continue;seenClusters.add(cluster);const matchedSlot=clusterToSlot.get(cluster);if(matchedSlot!==undefined&&!seenSlots.has(matchedSlot)){seenSlots.add(matchedSlot);queue.push(matchedSlot);}}}conflicts=[...new Set([...seenSlots].map(i=>slots[i].segment_number))].sort((a,b)=>a-b);}\nconflicts=[...new Set([...conflicts,...shortfalls])].sort((a,b)=>a-b);\nconst required=conflicts.length>0;\nreturn rows.map(row=>({json:{...row,global_assignment_recovery_required:required,global_conflict_segment_numbers:conflicts,visual_review_shortfall_segment_numbers:[...new Set(shortfalls)].sort((a,b)=>a-b),global_assignment_matching_count:matched,global_assignment_slot_count:slots.length}}));"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2700,
-          240
-        ],
-        "id": "582b44ee-4f7e-4007-8370-64d142a1fb43",
-        "name": "Detect Global No-Repeat Conflict",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "conditions": {
-            "options": {
-              "caseSensitive": true,
-              "leftValue": "",
-              "typeValidation": "strict",
-              "version": 3
-            },
-            "conditions": [
-              {
-                "id": "a1c6d5bf-a52f-43f8-be65-7b029915df89",
-                "leftValue": "={{ $json.global_assignment_recovery_required }}",
-                "rightValue": "",
-                "operator": {
-                  "type": "boolean",
-                  "operation": "true",
-                  "singleValue": true
-                }
-              }
-            ],
-            "combinator": "and"
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 2.3,
-        "position": [
-          2920,
-          240
-        ],
-        "id": "9cb1ba10-6c07-497e-b738-5646d9da3fa2",
-        "name": "Global No-Repeat Recovery Required?"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForAllItems",
-          "jsCode": "const rows=$input.all().map(i=>i.json).sort((a,b)=>Number(a.segment_number)-Number(b.segment_number));if(!rows.length)throw new Error('Global recovery received no reviewed segments');\nconst conflicts=new Set((rows[0].global_conflict_segment_numbers??[]).map(Number));if(!conflicts.size)throw new Error('Global recovery branch has no conflict segments');\nconst out=[];for(const row of rows){const n=Number(row.segment_number);if(!conflicts.has(n))continue;const reviewed=[...new Set([...(row.visual_reviewed_candidate_ids??[]),...(row.ranked_candidates??[]).map(c=>c.candidate_id)].map(x=>String(x??'').trim()).filter(Boolean))];const target=String(row.visual_target??'').replace(/\\s+/gu,' ').trim();if(!target||!reviewed.length)throw new Error(`Global recovery segment ${n} lacks exact target or reviewed asset inventory`);out.push({json:{...row,global_conflict_recovery_round:1,conflict_recovery_request:{segment_number:n,visual_target:target,exclude_candidate_ids:reviewed}}});}return out;"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          3140,
-          120
-        ],
-        "id": "347070f1-5287-4d7d-ba77-48cf4f6f0671",
-        "name": "Prepare Conflict Recovery Search",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://media-worker:3001/visual/recover-conflict",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ $json.conflict_recovery_request }}",
-          "options": {
-            "timeout": 120000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.5,
-        "position": [
-          3360,
-          120
-        ],
-        "id": "06a3ac8b-92bb-48cc-a61e-07191767c6b7",
-        "name": "Fetch Conflict Recovery Candidates",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForEachItem",
-          "jsCode": "const response=$json,ctx=$('Prepare Conflict Recovery Search').item.json;const err=String(response?.error?.message??response?.message??'').trim();if(err)throw new Error(`Global conflict recovery search failed for segment ${ctx.segment_number}: ${err}`);\nconst excluded=new Set((ctx.conflict_recovery_request?.exclude_candidate_ids??[]).map(String));const groups=new Map(),seen=new Set();\nfor(const raw of (Array.isArray(response?.candidates)?response.candidates:[])){const provider=String(raw?.provider??'').trim().toLowerCase(),rawId=String(raw?.candidate_id??'').trim();if(!provider||!rawId)continue;const id=rawId.startsWith(provider+':')?rawId:`${provider}:${rawId}`;if(excluded.has(id)||seen.has(id)||String(raw?.media_kind??'photo').toLowerCase()==='video')continue;const previews=(Array.isArray(raw?.preview_urls)?raw.preview_urls:[raw?.preview_url]).map(String).filter(Boolean).slice(0,3);if(!previews.length)continue;seen.add(id);const c={...raw,provider,candidate_id:id,provider_asset_id:String(raw?.provider_asset_id??rawId).trim(),preview_urls:previews};if(!groups.has(provider))groups.set(provider,[]);groups.get(provider).push(c);}\nconst providers=[...groups.keys()].sort(),pool=[];let depth=0;while(pool.length<10){let added=false;for(const provider of providers){const c=groups.get(provider)[depth];if(c){pool.push(c);added=true;if(pool.length>=10)break;}}if(!added)break;depth++;}\nif(!pool.length)throw new Error(`Global conflict recovery returned no new exact-target candidates for segment ${ctx.segment_number}`);\nconst query=String(ctx.visual_target||ctx.canonical_subject).replace(/\\s+/gu,' ').trim().slice(0,200);const candidates=pool.map(c=>({candidate_id:String(c.candidate_id),preview_urls:c.preview_urls}));\nreturn {json:{...ctx,conflict_recovery_candidate_pool:pool,conflict_recovery_provider_query:String(response?.provider_query??query),conflict_recovery_provider_errors:response?.provider_errors??[],local_rank_request:{query,candidates}}};"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          3580,
-          120
-        ],
-        "id": "1a45ba60-16cc-4bcf-8ac3-b228eb3da4a9",
-        "name": "Build Conflict Recovery Rank Items",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://media-worker:3001/visual/rank",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ $json.local_rank_request }}",
-          "options": {
-            "timeout": 120000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.5,
-        "position": [
-          3800,
-          120
-        ],
-        "id": "807d316c-28d0-4374-b9c5-5d3e29cd852b",
-        "name": "Fingerprint Conflict Recovery",
-        "onError": "continueErrorOutput",
-        "retryOnFail": true,
-        "maxTries": 2,
-        "waitBetweenTries": 1000
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForEachItem",
-          "jsCode": "const response=$json,ctx=$('Build Conflict Recovery Rank Items').item.json;const err=String(response?.error?.message??response?.message??'').trim();const ranked=Array.isArray(response?.ranked)?response.ranked:[];if(err||!ranked.length)throw new Error(`Global conflict recovery fingerprinting failed for segment ${ctx.segment_number}: ${err||'no ranked candidates'}`);\nconst pool=new Map((ctx.conflict_recovery_candidate_pool??[]).map(c=>[String(c.candidate_id),c])),rows=[],seen=new Set();for(let i=0;i<ranked.length;i++){const id=String(ranked[i]?.candidate_id??'').trim(),hash=String(ranked[i]?.visual_hash??'').trim().toLowerCase();if(!id||seen.has(id)||!pool.has(id)||!/^[0-9a-f]{64}$/.test(hash))continue;seen.add(id);rows.push({...pool.get(id),visual_hash:hash,local_fingerprint_rank:i+1,local_rank_score:null,local_siglip_rank:null});}if(!rows.length)throw new Error(`Global conflict recovery produced no fingerprinted candidates for segment ${ctx.segment_number}`);return {json:{...ctx,conflict_recovery_candidate_pool:undefined,local_rank_request:undefined,recovery_ranked_candidates:rows}};"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          4020,
-          120
-        ],
-        "id": "d611d6a3-b874-48f3-ac63-7c410a239d75",
-        "name": "Attach Conflict Recovery Fingerprints",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForAllItems",
-          "jsCode": "const segments=$input.all().map(x=>x.json).sort((a,b)=>Number(a.segment_number)-Number(b.segment_number));if(!segments.length)throw new Error('No conflict recovery segments to review');\nconst prompt='You are the final visual verifier for a factual vertical short. Review every newly searched image independently. Candidate filenames, provider IDs and metadata are intentionally hidden. For each shown review_id, describe ONLY what is visibly present in at most 12 words, then set relevant=true only if that visible content directly satisfies the exact narration-beat target. Do not infer identity, place, chemical, species, era, mechanism or event from the target text. Generic laboratory, molecule, landscape, building, person, fossil, microbe or equipment imagery is NOT an exact match unless the required visible subject itself is present. Return every shown review_id exactly once. Return ONLY JSON: {\"segments\":[{\"segment_number\":1,\"verdicts\":[{\"review_id\":\"R1-C1\",\"relevant\":true,\"visible_description\":\"what is actually visible\"}]}]}.';\nconst batchSize=6,batchCount=Math.ceil(segments.length/batchSize),out=[];for(let offset=0;offset<segments.length;offset+=batchSize){const batch=segments.slice(offset,offset+batchSize),maxPerSegment=Math.max(2,Math.min(4,Math.floor((79-1-batch.length)/(2*batch.length))));const allowed=batch.map(s=>Number(s.segment_number));const input=[{type:'text',text:prompt+` Allowed segment numbers: ${allowed.join(', ')}. These images came from one bounded additional exact-target search.`}],reviewSegments=[];for(const s of batch){const rows=(s.recovery_ranked_candidates??[]).slice(0,maxPerSegment).map((c,i)=>({...c,visual_review_id:`R${Number(s.segment_number)}-C${i+1}`}));if(!rows.length)throw new Error(`Global conflict recovery segment ${s.segment_number} has no new images to show reviewer`);reviewSegments.push({...s,recovery_review_candidates:rows});input.push({type:'text',text:`SEGMENT ${s.segment_number} | canonical subject: ${s.canonical_subject} | exact target: ${s.visual_target} | narration: ${s.narration}`});for(const c of rows){input.push({type:'text',text:`REVIEW ${c.visual_review_id}`});input.push({type:'image',uri:String((c.preview_urls??[c.preview_url]).filter(Boolean)[0])});}}if(input.length>80)throw new Error(`Global conflict recovery review batch ${Math.floor(offset/batchSize)+1} exceeded input budget`);out.push({json:{job_id:segments[0].job_id,batch_number:Math.floor(offset/batchSize)+1,batch_count:batchCount,recovery_segments:reviewSegments,visual_recovery_request:{input}}});}return out;"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          4240,
-          120
-        ],
-        "id": "fc4568c3-031c-45f8-a55b-a93dc8c783c4",
-        "name": "Prepare Conflict Recovery Review",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://media-worker:3001/visual/inline-review-images",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ $json.visual_recovery_request }}",
-          "options": {
-            "timeout": 120000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          4460,
-          120
-        ],
-        "id": "d1f44ff7-e0c0-4f8b-91a3-ad3f7559ba5f",
-        "name": "Inline Conflict Recovery Images",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ { input: $json.input, response_format: 'json', response_schema: { type: 'object', properties: { segments: { type: 'array', items: { type: 'object', properties: { segment_number: { type: 'integer' }, verdicts: { type: 'array', items: { type: 'object', properties: { review_id: { type: 'string' }, relevant: { type: 'boolean' }, visible_description: { type: 'string' } }, required: ['review_id','relevant','visible_description'] } } }, required: ['segment_number','verdicts'] } } }, required: ['segments'] } } }}",
-          "options": {
-            "timeout": 180000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          4680,
-          120
-        ],
-        "id": "7193f3f5-6d86-4ce0-8e6c-b6dbd7fabda7",
-        "name": "Review Conflict Recovery Images",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForAllItems",
-          "jsCode": "const STOP=new Set(['the','and','with','from','into','this','that','for','are','was','were','has','have','image','photo','picture','view','close','detailed','detail','scene','showing','shows','visible','modern','historical','scientific','science','research','concept','setting','equipment','laboratory','lab','experiment','setup','context','generic','general','representation','representing']);\nconst MEDIA=new Set(['portrait','photo','photograph','photography','painting','diagram','schematic','map','micrograph','illustration','cutaway','model']);\nconst LOW=new Set(['early','late','century','scientific','science','research','concept','setting','equipment','laboratory','lab','experiment','experimental','setup','context','generic','general','representation','representing']);\nconst words=v=>String(v??'').normalize('NFKC').toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[];\nconst content=v=>[...new Set(words(v).filter(x=>x.length>=3&&!STOP.has(x)))];\nconst related=(a,b)=>a===b||(a.length>=5&&b.length>=5&&a.slice(0,6)===b.slice(0,6));\nconst overlap=(a,b)=>a.reduce((n,x)=>n+(b.some(y=>related(x,y))?1:0),0);\nconst metaText=c=>[c.title,c.description,c.categories,c.metadata?.source_title,c.metadata?.source_description,c.metadata?.source_tags,c.source_url].filter(Boolean).join(' ');\nfunction canonicalTargetAllowed(c,s){const source=String(c.metadata?.retrieval_source??'').toLowerCase();if(source!=='canonical_article')return false;const canon=content(s.canonical_subject),target=content(s.visual_target);if(!canon.length||!target.length)return false;const hits=overlap(canon,target);return hits>=Math.min(2,canon.length);}\nfunction targetPass(c,s){if(c.target_anchor_pass===true)return true;if(c.target_anchor_pass===false)return canonicalTargetAllowed(c,s);const target=content(s.visual_target).filter(x=>!MEDIA.has(x)&&!LOW.has(x)&&!/^\\d+(?:st|nd|rd|th)$/u.test(x));const meta=content(metaText(c));const hits=overlap(target,meta),need=target.length>=4?3:Math.min(2,target.length);return (need>0&&hits>=need)||canonicalTargetAllowed(c,s);}\nfunction visibleMeta(c,description){const vis=content(description),meta=content(metaText(c));if(!vis.length||!meta.length)return {pass:false,hits:0,required:1};const hits=overlap(vis,meta),required=Math.min(2,Math.max(1,Math.min(vis.length,meta.length)));return {pass:hits>=required,hits,required};}\nconst prepared=$('Prepare Conflict Recovery Review').all().map(x=>x.json),responses=$input.all().map(x=>x.json);if(!prepared.length||responses.length!==prepared.length)throw new Error(`Global conflict recovery review batch set incomplete: ${responses.length}/${prepared.length}`);\nconst recoveredBySegment=new Map(),reviewedBySegment=new Map(),modelBySegment=new Map(),groundedRejectBySegment=new Map();\nfor(let b=0;b<prepared.length;b++){const ctx=prepared[b],response=responses[b];const rawText=String(response?.text??'').trim();if(!rawText)throw new Error(`Global conflict recovery reviewer unavailable for batch ${ctx.batch_number}`);let text=rawText.replace(/^\\x60\\x60\\x60(?:json)?\\s*/i,'').replace(/\\s*\\x60\\x60\\x60$/,'');let o;try{o=JSON.parse(text)}catch{throw new Error(`Global conflict recovery reviewer returned invalid JSON for batch ${ctx.batch_number}`);}\nconst allowed=new Set(ctx.recovery_segments.map(s=>Number(s.segment_number))),decisions=new Map();for(const raw of (Array.isArray(o?.segments)?o.segments:[])){const n=Number(raw?.segment_number);if(!allowed.has(n)||decisions.has(n))continue;decisions.set(n,raw);}for(const s of ctx.recovery_segments){const n=Number(s.segment_number),d=decisions.get(n);if(!d)throw new Error(`Global conflict recovery reviewer omitted segment ${n}`);const own=new Map((s.recovery_review_candidates??[]).map(c=>[String(c.visual_review_id),c]));reviewedBySegment.set(n,[...s.recovery_review_candidates.map(c=>String(c.candidate_id))]);const verdicts=new Map();for(const raw of (Array.isArray(d.verdicts)?d.verdicts:[])){const rid=String(raw?.review_id??'').trim();if(!rid||!own.has(rid)||verdicts.has(rid))continue;verdicts.set(rid,raw);}const rows=[];let groundedRejected=0;for(const c of s.recovery_review_candidates){const v=verdicts.get(String(c.visual_review_id)),description=String(v?.visible_description??'').replace(/\\s+/gu,' ').trim().slice(0,300);if(v?.relevant!==true)continue;const vm=visibleMeta(c,description),tp=targetPass(c,s);if(!description||!vm.pass||!tp){groundedRejected++;continue;}rows.push({...c,visual_review_id:undefined,multimodal_rank:5+rows.length,conflict_recovery_multimodal_rank:rows.length+1,multimodal_visible_description:description,multimodal_metadata_consistency_hits:vm.hits,multimodal_metadata_consistency_required:vm.required,multimodal_reason:description,selection_utility:Number((0.94-rows.length*0.015).toFixed(4)),visual_review_model:String(response.model??'')});}recoveredBySegment.set(n,rows.slice(0,4));groundedRejectBySegment.set(n,groundedRejected);modelBySegment.set(n,String(response.model??''));}}\nconst original=$('Detect Global No-Repeat Conflict').all().map(x=>x.json).sort((a,b)=>Number(a.segment_number)-Number(b.segment_number));const conflicts=new Set((original[0]?.global_conflict_segment_numbers??[]).map(Number));return original.map(row=>{const n=Number(row.segment_number);if(!conflicts.has(n))return {json:{...row,global_conflict_recovery_attempted:false}};const recovered=recoveredBySegment.get(n)??[],reviewed=reviewedBySegment.get(n)??[];const seen=new Set(),merged=[];for(const c of [...(row.ranked_candidates??[]),...recovered]){const id=String(c.candidate_id??'');if(!id||seen.has(id))continue;seen.add(id);merged.push(c);}const required=Math.max(1,Number(row.planned_shot_count));if(merged.length<required)throw new Error(`Exact-target recovery approved ${merged.length}/${required} grounded images for segment ${n}; unreviewed fallback is forbidden`);const allReviewed=[...new Set([...(row.visual_reviewed_candidate_ids??[]),...reviewed])];return {json:{...row,ranked_candidates:merged,visual_reviewed_candidate_ids:allReviewed,visual_review_approved_count:merged.length,visual_review_shortfall:false,visual_recovery_used:true,global_conflict_recovery_attempted:true,global_conflict_recovery_round:1,global_conflict_recovery_added_count:recovered.length,global_conflict_recovery_grounded_reject_count:groundedRejectBySegment.get(n)??0,global_conflict_recovery_review_model:modelBySegment.get(n)||null}};});"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          4900,
-          120
-        ],
-        "id": "2c191400-868d-4dd3-bb45-2d72b2fa74dd",
-        "name": "Merge Conflict Recovery Approval",
-        "onError": "continueErrorOutput"
       }
     ],
     "connections": {
@@ -846,6 +431,13 @@
               "type": "main",
               "index": 0
             }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
           ]
         ]
       },
@@ -854,6 +446,13 @@
           [
             {
               "node": "Require Eligible Visual Job",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
               "type": "main",
               "index": 0
             }
@@ -882,7 +481,7 @@
         "main": [
           [
             {
-              "node": "Prepare Canonical Media Request",
+              "node": "Expand Reserved Story Assets",
               "type": "main",
               "index": 0
             }
@@ -896,11 +495,11 @@
           ]
         ]
       },
-      "Prepare Canonical Media Request": {
+      "Expand Reserved Story Assets": {
         "main": [
           [
             {
-              "node": "Fetch Canonical Media",
+              "node": "Download Reserved Visual",
               "type": "main",
               "index": 0
             }
@@ -914,11 +513,11 @@
           ]
         ]
       },
-      "Fetch Canonical Media": {
+      "Download Reserved Visual": {
         "main": [
           [
             {
-              "node": "Build Deterministic Visual Plans",
+              "node": "Store Reserved Visual",
               "type": "main",
               "index": 0
             }
@@ -932,11 +531,11 @@
           ]
         ]
       },
-      "Build Deterministic Visual Plans": {
+      "Store Reserved Visual": {
         "main": [
           [
             {
-              "node": "Persist Visual Plans",
+              "node": "Validate Stored Reserved Visual",
               "type": "main",
               "index": 0
             }
@@ -950,11 +549,11 @@
           ]
         ]
       },
-      "Persist Visual Plans": {
+      "Validate Stored Reserved Visual": {
         "main": [
           [
             {
-              "node": "Require Visual Plans",
+              "node": "Fingerprint Stored Reserved Visual",
               "type": "main",
               "index": 0
             }
@@ -968,11 +567,11 @@
           ]
         ]
       },
-      "Require Visual Plans": {
+      "Fingerprint Stored Reserved Visual": {
         "main": [
           [
             {
-              "node": "Expand Rank Items",
+              "node": "Verify Reserved Visual Identity",
               "type": "main",
               "index": 0
             }
@@ -986,11 +585,11 @@
           ]
         ]
       },
-      "Expand Rank Items": {
+      "Verify Reserved Visual Identity": {
         "main": [
           [
             {
-              "node": "Rank Eligible Visuals",
+              "node": "Persist Reserved Visual",
               "type": "main",
               "index": 0
             }
@@ -1004,11 +603,11 @@
           ]
         ]
       },
-      "Rank Eligible Visuals": {
+      "Persist Reserved Visual": {
         "main": [
           [
             {
-              "node": "Attach Rank Results",
+              "node": "Collect Persisted Reserved Visuals",
               "type": "main",
               "index": 0
             }
@@ -1022,11 +621,11 @@
           ]
         ]
       },
-      "Attach Rank Results": {
+      "Collect Persisted Reserved Visuals": {
         "main": [
           [
             {
-              "node": "Prepare Multimodal Visual Review",
+              "node": "Verify Reserved Visual Completion",
               "type": "main",
               "index": 0
             }
@@ -1040,11 +639,11 @@
           ]
         ]
       },
-      "Choose Visual Assignment": {
+      "Verify Reserved Visual Completion": {
         "main": [
           [
             {
-              "node": "Prepare Selected Download",
+              "node": "Require Reserved Visual Completion",
               "type": "main",
               "index": 0
             }
@@ -1058,133 +657,7 @@
           ]
         ]
       },
-      "Prepare Selected Download": {
-        "main": [
-          [
-            {
-              "node": "Download Selected Visual",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Download Selected Visual": {
-        "main": [
-          [
-            {
-              "node": "Store Selected Visual",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Store Selected Visual": {
-        "main": [
-          [
-            {
-              "node": "Validate Stored Visual",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Validate Stored Visual": {
-        "main": [
-          [
-            {
-              "node": "Expand Stored Visual Targets",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Persist Visual Result": {
-        "main": [
-          [
-            {
-              "node": "Require Persisted Visuals",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Require Persisted Visuals": {
-        "main": [
-          [
-            {
-              "node": "Verify Visual Completion",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Verify Visual Completion": {
-        "main": [
-          [
-            {
-              "node": "Require Visual Completion",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Require Visual Completion": {
+      "Require Reserved Visual Completion": {
         "main": [
           [
             {
@@ -1201,6 +674,9 @@
             }
           ]
         ]
+      },
+      "Start Video Render": {
+        "main": []
       },
       "Prepare Visual Failure": {
         "main": [
@@ -1224,293 +700,8 @@
           ]
         ]
       },
-      "Expand Stored Visual Targets": {
-        "main": [
-          [
-            {
-              "node": "Persist Visual Result",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Multimodal Visual Review": {
-        "main": [
-          [
-            {
-              "node": "Inline Candidate Images",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Review Actual Candidate Images": {
-        "main": [
-          [
-            {
-              "node": "Require Multimodal Visual Selection",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Require Multimodal Visual Selection": {
-        "main": [
-          [
-            {
-              "node": "Detect Global No-Repeat Conflict",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Inline Candidate Images": {
-        "main": [
-          [
-            {
-              "node": "Review Actual Candidate Images",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Detect Global No-Repeat Conflict": {
-        "main": [
-          [
-            {
-              "node": "Global No-Repeat Recovery Required?",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Global No-Repeat Recovery Required?": {
-        "main": [
-          [
-            {
-              "node": "Prepare Conflict Recovery Search",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Choose Visual Assignment",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Conflict Recovery Search": {
-        "main": [
-          [
-            {
-              "node": "Fetch Conflict Recovery Candidates",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Fetch Conflict Recovery Candidates": {
-        "main": [
-          [
-            {
-              "node": "Build Conflict Recovery Rank Items",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Build Conflict Recovery Rank Items": {
-        "main": [
-          [
-            {
-              "node": "Fingerprint Conflict Recovery",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Fingerprint Conflict Recovery": {
-        "main": [
-          [
-            {
-              "node": "Attach Conflict Recovery Fingerprints",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Attach Conflict Recovery Fingerprints": {
-        "main": [
-          [
-            {
-              "node": "Prepare Conflict Recovery Review",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Conflict Recovery Review": {
-        "main": [
-          [
-            {
-              "node": "Inline Conflict Recovery Images",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Inline Conflict Recovery Images": {
-        "main": [
-          [
-            {
-              "node": "Review Conflict Recovery Images",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Review Conflict Recovery Images": {
-        "main": [
-          [
-            {
-              "node": "Merge Conflict Recovery Approval",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Merge Conflict Recovery Approval": {
-        "main": [
-          [
-            {
-              "node": "Choose Visual Assignment",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Visual Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
+      "Stop Visual Failure": {
+        "main": []
       }
     },
     "settings": {
@@ -1524,7 +715,7 @@
     },
     "nodeGroups": [],
     "pinData": {},
-    "versionId": "deterministic-wf04-local-v1",
+    "versionId": "inventory-first-wf04-local-v1",
     "activeVersionId": "772c8790-0538-4e28-9892-7f3c94ff6e66",
     "versionCounter": 213,
     "triggerCount": 0,
