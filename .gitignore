@@ -3,6 +3,9 @@
 !.env.example
 node_modules/
 coverage/
+work/
+__pycache__/
+*.pyc
 .DS_Store
 *.log
 

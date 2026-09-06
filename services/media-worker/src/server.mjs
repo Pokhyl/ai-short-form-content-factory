@@ -1,12 +1,13 @@
 import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { createReadStream } from "node:fs";
-import { mkdir, rename, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import sharp from "sharp";
 import edgeTtsPackage from "node-edge-tts";
 import { dirname, extname, resolve, sep } from "node:path";
 import { edgeProviderBudgetMilliseconds } from "./edge-provider-budget.mjs";
+import { buildVoiceoverWordTiming } from "./voiceover-word-timing.mjs";
 import { buildNaturalTailPadPlan } from "./audio-duration-normalization.mjs";
 import { parseSingleByteRange } from "./media-range.mjs";
 import { buildVisualBeatFilters } from "./visual-framing.mjs";
@@ -843,6 +844,7 @@ async function synthesizeFreeFallbackVoiceover(request, response) {
           voice: voiceConfig.voice,
           lang: voiceConfig.locale,
           outputFormat: "audio-24khz-48kbitrate-mono-mp3",
+          saveSubtitles: true,
           rate: "default",
           pitch: "default",
           volume: "default",
@@ -877,8 +879,18 @@ async function synthesizeFreeFallbackVoiceover(request, response) {
     if (!Number.isFinite(durationSeconds) || durationSeconds <= 0) {
       throw new Error("Edge Read Aloud normalized audio duration is invalid");
     }
+    const wordTiming = buildVoiceoverWordTiming({
+      narration,
+      cues: JSON.parse(await readFile(`${sourcePath}.json`, "utf8")),
+      durationSeconds,
+      audio: await readFile(wavPath),
+    });
+    const timingPath = `${absolutePath}.words.json`;
+    const temporaryTimingPath = `${wavPath}.words.json`;
+    await writeFile(temporaryTimingPath, JSON.stringify(wordTiming), { flag: "wx" });
     const outputStat = await stat(wavPath);
     await rename(wavPath, absolutePath);
+    await rename(temporaryTimingPath, timingPath);
     await rm(sourcePath, { force: true });
 
     sendJson(response, 200, {
@@ -898,12 +910,17 @@ async function synthesizeFreeFallbackVoiceover(request, response) {
       provider_source_duration_seconds: sourceDuration,
       tail_pad_seconds: normalizedTiming.tail_pad_seconds,
       provider_budget_ms: providerBudgetMilliseconds,
+      word_timing_path: `${relativePath}.words.json`,
+      word_timing: wordTiming,
     });
   } catch (error) {
     await rm(sourcePath, { force: true }).catch(() => {});
     await rm(wavPath, { force: true }).catch(() => {});
     if (error instanceof HttpError) throw error;
     throw new HttpError(502, "free_fallback_tts_failed", `Free fallback TTS failed: ${String(error?.message ?? error)}`);
+  } finally {
+    await rm(`${sourcePath}.json`, { force: true }).catch(() => {});
+    await rm(`${wavPath}.words.json`, { force: true }).catch(() => {});
   }
 }
 

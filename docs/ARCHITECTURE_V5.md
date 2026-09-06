@@ -1,64 +1,59 @@
-# Architecture V5 — Asset-First Agentic Editor
+# Architecture V5 — deployed reality and correction
 
-## Goal
+Verified against GitHub `b909a25`, n8n PostgreSQL workflow definitions and the
+running media-worker on 2026-09-06. See
+[V5_SYSTEM_AUDIT_20260906.md](V5_SYSTEM_AUDIT_20260906.md) for evidence and unfinished work.
 
-Build an automated short-form editor, not another handcrafted scene-to-image generator.
+## Deployed product path
 
-The V5 codebase is intentionally thin. The production engine is a pinned mature editing toolkit; V5 owns factual policy, free-provider policy, input/output contracts, reproducibility and human acceptance state.
+`topic + language + duration -> WF01 job intake -> WF02 research/script -> WF03
+continuous TTS and bounded script-duration rewrites -> WF04 late visual discovery,
+review and assignment -> WF05 FFmpeg render -> WF06 review API`
 
-## Critical path
+- n8n 2.33.3 orchestrates the path, and PostgreSQL persists product state.
+- WF02 resolves topic candidates using SearXNG evidence, writes narration and
+  fixed-count visual queries, then stores it before visual inventory is known.
+- WF03 tries Gemini TTS and Edge fallback at natural rate. Total audio duration is
+  measured, but internal beat boundaries are estimated from token weights.
+- WF04 searches Wikimedia/Pexels Photos/Pixabay. Metadata gates, native preview
+  hashes and hosted multimodal review feed bounded recovery and unique assignment.
+- The model gateway tries hosted Kilo free vision/text then Gemini. There is no
+  deployed local model worker in this path.
+- WF05 calls media-worker's custom FFmpeg `/render-v3`, which makes static central
+  crops for ordinary stills, separate subtitle beats, H.264/AAC 1080x1920 output,
+  and technical/diversity checks.
+- `review_ready` means machine completion only. Human acceptance is separate.
 
-1. `JobSpec`: topic, language, target duration.
-2. `Research`: gather factual sources and claims.
-3. `VisualInventory`: search actual available free/licensed video/image/evidence sources before the final script is frozen.
-4. `StoryEditor`: choose a factual angle that can be shown with that inventory; reject unshowable claims/angles rather than invent media.
-5. `Script`: write natural speech around the chosen evidence-backed/showable angle.
-6. `Voice`: one continuous narration.
-7. `Alignment`: faster-whisper word timestamps from that exact voice file.
-8. `EditPlan`: a real NLE-style plan referencing concrete assets: source in/out, duration, crop/reframe, transitions, overlays, motion ops, caption/audio decisions.
-9. `Editor`: OpenNolan/FFmpeg editing primitives execute the plan. No V5 custom renderer.
-10. `QA`: ffprobe/decode/black-frame/caption/audio checks plus contact-sheet/frame sampling.
-11. `HumanReview`: exact MP4 is the only product acceptance artifact.
+## Identified architecture defects
 
-## Upstream engine
+The current ordering commits to narration before checking what can truthfully be
+shown. Fixed beat counts and synthetic timing create phrase fragments and excessive
+visual obligations. Automatic evidence IDs and image-review booleans are not
+proof of semantic support. Source-image approval does not verify the final crop.
+These defects explain both false machine approvals and repeated fail-closed jobs.
 
-Pinned initial upstream: `het8802/OpenNolan` commit `4457349c386ea1a89c01547f9a76fa650970c131` (`v1.0.2`).
+## Correction being implemented, not yet deployed
 
-V5 initially uses the upstream FFmpeg/tooling path because it is present in the pinned source and does not require Node. The current pinned checkout references a `remotion-composer` in documentation, but that directory is not present at this exact commit. V5 therefore does not claim Remotion readiness and does not fabricate that missing runtime.
+Retain existing orchestration, provider adapters, continuous natural voice,
+persistence, encoding and human acceptance. Move discovery and verified unique
+visual-story selection before script freeze. Author complete semantic units with
+explicit claim/evidence/asset relationships. Derive editing boundaries from the
+exact accepted voiceover; preserve asset support through bounded script rewrites.
+Then execute and inspect the planned composition instead of searching for creative
+rescues after voice freeze.
 
-Relevant upstream capabilities already present at the pin include:
+No arbitrary workflow/service count or new architecture version is prescribed.
+No repeated visual, topic-specific recovery, manipulated speech rate, or machine
+promotion to HUMAN PASS is permitted.
 
-- provider-agnostic `DirectClipSearch`;
-- stock adapters including Wikimedia Commons, Archive.org, NASA, Pexels/Pixabay when configured, and others;
-- source metadata/provenance in provider candidates;
-- `Transcriber` with faster-whisper word timestamps;
-- `VideoCompose` and FFmpeg composition/editing paths;
-- motion/cut/reframe/overlay/audio tool families;
-- agent-oriented pipeline manifests such as `instagram-reels-studio` and retrieval-first `documentary-montage`.
+The additive Edge native word-timing capture is tested independently before WF03
+adopts it. Until that adoption is complete, the deployed timing remains synthetic.
 
-## What V5 does not contain
+## Historical upstream proposal
 
-- no semantic-v3 reuse;
-- no V4 scene/shot schema reuse;
-- no `VerticalShort`/`SequenceShort` reuse;
-- no custom Remotion composition as the default product core;
-- no one-asset-per-shot abstraction;
-- no fixed shot-count target as a quality gate;
-- no post-script invented exact-media obligation;
-- no automatic machine promotion to HUMAN PASS.
-
-## Provider order
-
-Provider choice is an inventory concern, not a fallback ladder that may silently insert irrelevant footage.
-
-For a factual visual need, V5 records all considered real candidates and the exact chosen asset. If inventory is weak, `StoryEditor` may change the angle before script freeze. After script freeze, factual meaning cannot be silently changed merely to fill a visual slot.
-
-## Initial runtime
-
-- upstream checkout: `/opt/ai-short-form-v5-upstreams/OpenNolan`;
-- V5 environment: `/opt/ai-short-form-v5-runtime/.venv`;
-- FFmpeg: host package;
-- speech draft/baseline: Edge TTS;
-- alignment: faster-whisper CPU int8;
-- existing self-hosted SearXNG remains available for factual research;
-- old `ai-short-form-v4-selftest.service` is stopped.
+The earlier version of this document proposed OpenNolan commit
+`4457349c386ea1a89c01547f9a76fa650970c131`, faster-whisper and an asset-first editor.
+That is historical design intent, not evidence of an active engine. The current
+worker does not call those tools; the documented V5 Python environment is absent
+on the VPS. Consult Git history for the original proposal. Choose further tooling
+only after testing a concrete need; do not revive it merely because it was pinned.

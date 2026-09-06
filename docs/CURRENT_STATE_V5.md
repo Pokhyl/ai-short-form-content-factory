@@ -1,8 +1,23 @@
 # Current State — V5 n8n Autonomous Video Orchestrator
 
-Last updated: 2026-09-04
+Last updated: 2026-09-06
 
 Branch: `rebuild/agentic-editor-v5`.
+
+
+## Current factual audit (2026-09-06; supersedes stale state claims below)
+
+Read `docs/V5_SYSTEM_AUDIT_20260906.md` for the verified runtime, systemic causes,
+completed engineering work and exact unfinished next steps. At audited HEAD
+`b909a25`, the seven main workflows and running worker files match GitHub; WF01
+is active. The actual pipeline is script-first with synthetic within-audio timing
+and static central photo crops. The former ARCHITECTURE_V5 described an intended
+asset-first path, not deployed behavior. Overall product quality remains unproven.
+
+Current work has not changed production or submitted a new product job. Fresh DB
+bootstrap, review API source and executable integration checks are being repaired
+before implementing the inventory-first causal order. Historical entries below
+are retained as evidence, not concurrent instructions or verified current state.
 
 ## Mandatory pre-action gate
 

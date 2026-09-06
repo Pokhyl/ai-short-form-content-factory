@@ -1,0 +1,531 @@
+[
+  {
+    "id": "R8ReviewApi1",
+    "name": "WF06 — Review API",
+    "active": false,
+    "versionId": "89d14a25-426f-47a1-832a-2a510b686144",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "review/jobs",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -1000,
+          -500
+        ],
+        "id": "995581c8-a250-4b0a-90d9-4671fe63eb8c",
+        "name": "Receive Recent Jobs Request",
+        "webhookId": "06491786-6c22-4f5d-b33a-c0c2aa3867aa"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT COALESCE(jsonb_agg(to_jsonb(recent) ORDER BY recent.created_at DESC),'[]'::jsonb) AS jobs\nFROM (\n SELECT id::text AS job_id,topic,language_code,target_duration_seconds,status,current_stage,final_video_path,\n        review_decision,review_notes,reviewed_at,created_at,updated_at\n FROM public.jobs ORDER BY created_at DESC LIMIT 25\n) recent;",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          -760,
+          -500
+        ],
+        "id": "ba9604b3-1d17-4ac2-afec-a9bfb1655cc1",
+        "name": "Load Recent Jobs",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ { jobs: $json.jobs } }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          -520,
+          -500
+        ],
+        "id": "1fe77ed8-4e39-479b-ba47-1404e8d05e3e",
+        "name": "Return Recent Jobs"
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "review/job",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -1000,
+          -100
+        ],
+        "id": "a18929c5-46c9-4e85-948c-019a800d221a",
+        "name": "Receive Review Job Request",
+        "webhookId": "546eb33e-24c2-4d89-ae5d-d43567be7cc0"
+      },
+      {
+        "parameters": {
+          "jsCode": "const query=$json.query??{};const raw=query.job_id;const jobId=typeof raw==='string'?raw.trim().toLowerCase():'';const rx=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;const errors=[];if(!rx.test(jobId))errors.push('job_id must be a valid UUID');return [{json:{valid:errors.length===0,job_id:jobId,errors}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -760,
+          -100
+        ],
+        "id": "028c6459-1696-4006-9cb5-31dbd289b0a9",
+        "name": "Normalize Review Job Input"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "9c33f3c4-e12d-473b-9e63-59e80f0523c6",
+                "leftValue": "={{ $json.valid }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -520,
+          -100
+        ],
+        "id": "e7683c15-4f36-4a5a-8c14-65412e3a38c8",
+        "name": "Review Job Input Valid?"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ { error: 'invalid_input', details: $json.errors } }}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          -280,
+          20
+        ],
+        "id": "f1207f55-e823-47cf-9b28-a16ba317d987",
+        "name": "Return Invalid Review Job"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH target_job AS (\n SELECT j.id,j.topic,j.language_code,j.target_duration_seconds,j.status,j.current_stage,j.final_video_path,j.last_error,\n        j.script_text,j.voiceover_duration_seconds,j.voiceover_provider,j.voiceover_model,j.voiceover_voice,\n        j.review_decision,j.review_notes,j.reviewed_at,j.created_at,j.updated_at\n FROM public.jobs j WHERE j.id=$1::uuid\n), scene_rows AS (\n SELECT s.id,s.job_id,s.scene_number,s.narration,s.visual_query,s.reference_query,s.visual_evidence_type,\n        s.exact_subject_type,s.exact_subject,s.beat_start_seconds,s.beat_end_seconds,s.duration_seconds,s.visual_path,\n        COALESCE(jsonb_agg(jsonb_build_object(\n          'provider',a.provider,'provider_asset_id',a.provider_asset_id,'source_url',a.source_url,'author',a.author,\n          'license',a.license,'license_url',a.license_url,'local_path',a.local_path,'metadata',a.metadata\n        ) ORDER BY a.created_at) FILTER (WHERE a.id IS NOT NULL),'[]'::jsonb) AS assets\n FROM public.scenes s LEFT JOIN public.assets a ON a.scene_id=s.id\n WHERE s.job_id=$1::uuid GROUP BY s.id\n), job_payload AS (\n SELECT jsonb_build_object(\n  'job_id',j.id::text,'topic',j.topic,'language_code',j.language_code,'target_duration_seconds',j.target_duration_seconds,\n  'status',j.status,'current_stage',j.current_stage,'final_video_path',j.final_video_path,'last_error',j.last_error,\n  'script_text',j.script_text,'voiceover_duration_seconds',j.voiceover_duration_seconds,'voiceover_provider',j.voiceover_provider,\n  'voiceover_model',j.voiceover_model,'voiceover_voice',j.voiceover_voice,'review_decision',j.review_decision,\n  'review_notes',j.review_notes,'reviewed_at',j.reviewed_at,'created_at',j.created_at,'updated_at',j.updated_at,\n  'scenes',COALESCE((SELECT jsonb_agg(to_jsonb(sr)-'id'-'job_id' ORDER BY sr.scene_number) FROM scene_rows sr),'[]'::jsonb)\n ) AS job FROM target_job j\n)\nSELECT EXISTS(SELECT 1 FROM target_job) AS found,(SELECT job FROM job_payload) AS job;",
+          "options": {
+            "queryReplacement": "={{ [ $('Normalize Review Job Input').first().json.job_id ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          -280,
+          -180
+        ],
+        "id": "17861f4a-2b67-4ad4-83c1-00711b65e243",
+        "name": "Load Review Job",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "55f18986-8b1c-4c5d-a22b-e9004613cfcd",
+                "leftValue": "={{ $json.found }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -40,
+          -180
+        ],
+        "id": "05d16637-8ab4-41e7-8682-bfbeff93bc04",
+        "name": "Review Job Found?"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json.job }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          200,
+          -240
+        ],
+        "id": "34cde9a0-8583-4030-8abd-e4047e7919d3",
+        "name": "Return Review Job"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ { error: 'not_found' } }}",
+          "options": {
+            "responseCode": 404
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          200,
+          -120
+        ],
+        "id": "f6c3fddf-6870-40fc-955a-76619fad91e9",
+        "name": "Return Review Job Not Found"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "review/decision",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -1000,
+          420
+        ],
+        "id": "a2ff3723-b01c-4836-9942-3990f85229e0",
+        "name": "Receive Review Decision",
+        "webhookId": "3110ec4b-708a-4c59-9a1a-060d61161aeb"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body=$json.body??{};const rawJobId=body.job_id;const rawDecision=body.decision;const rawNotes=body.notes;const jobId=typeof rawJobId==='string'?rawJobId.trim().toLowerCase():'';const decision=typeof rawDecision==='string'?rawDecision.trim().toLowerCase():'';let notes=null;let notesTypeValid=true;if(rawNotes!==undefined&&rawNotes!==null){if(typeof rawNotes!=='string'){notesTypeValid=false;}else{notes=rawNotes.trim();if(notes==='')notes=null;}}const rx=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;const errors=[];if(!rx.test(jobId))errors.push('job_id must be a valid UUID');if(!['approved','rejected'].includes(decision))errors.push('decision must be approved or rejected');if(!notesTypeValid)errors.push('notes must be a string when provided');if(typeof notes==='string'&&notes.length>4000)errors.push('notes must not exceed 4000 characters');return [{json:{valid:errors.length===0,job_id:jobId,decision,notes,errors}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -760,
+          420
+        ],
+        "id": "9ddbbfb7-e1b1-4885-989a-ee5c04c1f024",
+        "name": "Normalize Review Decision"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "8e13967b-4aae-4634-aa75-cc328475b158",
+                "leftValue": "={{ $json.valid }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -520,
+          420
+        ],
+        "id": "7c4ddc98-f9ba-49db-bd8d-f6d27a296d50",
+        "name": "Review Decision Valid?"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ { error: 'invalid_input', details: $json.errors } }}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          -280,
+          540
+        ],
+        "id": "0355a830-cff1-40b8-aec6-7b203bbeb55c",
+        "name": "Return Invalid Review Decision"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH existing AS (\n SELECT id,status,current_stage FROM public.jobs WHERE id=$1::uuid\n), updated AS (\n UPDATE public.jobs SET review_decision=$2,review_notes=NULLIF($3,''),reviewed_at=now(),updated_at=now()\n WHERE id=$1::uuid AND status='review_ready' AND current_stage='review'\n RETURNING id::text AS job_id,review_decision,review_notes,reviewed_at,updated_at\n)\nSELECT EXISTS(SELECT 1 FROM existing) AS found,EXISTS(SELECT 1 FROM updated) AS updated,\n       (SELECT status FROM existing) AS current_status,(SELECT current_stage FROM existing) AS current_stage,\n       (SELECT to_jsonb(updated) FROM updated) AS review;",
+          "options": {
+            "queryReplacement": "={{ [ $('Normalize Review Decision').first().json.job_id, $('Normalize Review Decision').first().json.decision, $('Normalize Review Decision').first().json.notes ?? '' ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          -280,
+          340
+        ],
+        "id": "21e2369a-2bdc-4887-98cf-a54c78c05117",
+        "name": "Persist Review Decision",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const row=$json;if(!row.found)return [{json:{status_code:404,response_body:{error:'not_found'}}}];if(!row.updated)return [{json:{status_code:409,response_body:{error:'not_review_ready',status:row.current_status,current_stage:row.current_stage}}}];return [{json:{status_code:200,response_body:row.review}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -40,
+          340
+        ],
+        "id": "e5c9b971-feb3-469b-b7a9-7424abb6b1f3",
+        "name": "Build Review Decision Response"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json.response_body }}",
+          "options": {
+            "responseCode": "={{ $json.status_code }}"
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          200,
+          340
+        ],
+        "id": "4aed8c74-9c1f-417a-8078-9625febe8882",
+        "name": "Return Review Decision"
+      }
+    ],
+    "connections": {
+      "Receive Recent Jobs Request": {
+        "main": [
+          [
+            {
+              "node": "Load Recent Jobs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Load Recent Jobs": {
+        "main": [
+          [
+            {
+              "node": "Return Recent Jobs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Receive Review Job Request": {
+        "main": [
+          [
+            {
+              "node": "Normalize Review Job Input",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Review Job Input": {
+        "main": [
+          [
+            {
+              "node": "Review Job Input Valid?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Review Job Input Valid?": {
+        "main": [
+          [
+            {
+              "node": "Load Review Job",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Return Invalid Review Job",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Load Review Job": {
+        "main": [
+          [
+            {
+              "node": "Review Job Found?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Review Job Found?": {
+        "main": [
+          [
+            {
+              "node": "Return Review Job",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Return Review Job Not Found",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Receive Review Decision": {
+        "main": [
+          [
+            {
+              "node": "Normalize Review Decision",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Review Decision": {
+        "main": [
+          [
+            {
+              "node": "Review Decision Valid?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Review Decision Valid?": {
+        "main": [
+          [
+            {
+              "node": "Persist Review Decision",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Return Invalid Review Decision",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Persist Review Decision": {
+        "main": [
+          [
+            {
+              "node": "Build Review Decision Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Review Decision Response": {
+        "main": [
+          [
+            {
+              "node": "Return Review Decision",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate",
+      "availableInMCP": false
+    }
+  }
+]
