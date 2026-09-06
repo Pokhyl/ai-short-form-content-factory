@@ -563,7 +563,7 @@
           "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { input: $json.input } }}",
+          "jsonBody": "={{ { input: $json.input, response_format: 'json', response_schema: { type: 'object', properties: { segments: { type: 'array', items: { type: 'object', properties: { segment_number: { type: 'integer' }, selected_candidate_ids: { type: 'array', items: { type: 'string' } }, reasons: { type: 'object' } }, required: ['segment_number','selected_candidate_ids','reasons'] } } }, required: ['segments'] } } }}",
           "options": {
             "timeout": 180000
           }
@@ -795,7 +795,7 @@
           "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { input: $json.input } }}",
+          "jsonBody": "={{ { input: $json.input, response_format: 'json', response_schema: { type: 'object', properties: { segments: { type: 'array', items: { type: 'object', properties: { segment_number: { type: 'integer' }, selected_candidate_ids: { type: 'array', items: { type: 'string' } }, reasons: { type: 'object' } }, required: ['segment_number','selected_candidate_ids','reasons'] } } }, required: ['segments'] } } }}",
           "options": {
             "timeout": 180000
           }
