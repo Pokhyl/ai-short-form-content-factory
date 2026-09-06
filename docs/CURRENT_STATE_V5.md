@@ -5,6 +5,30 @@ Last updated: 2026-09-06
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-06 pre-script retrieval correction — verified, deploy next
+
+New job `897293fa-9627-4f09-b7e0-fc9c49562ba2` failed/script in WF02 **16295**:
+`pre-script verified visual inventory 1/3`. Invocation is proven fixed: candidate
+claim gateway **16298** succeeded with valid JSON, then visual review **16299**
+succeeded and rejected irrelevant imagery. No final story/TTS/MP4 was generated.
+
+Exact execution inspection: five long visual descriptions became truncated
+90-character provider queries; claims 1–4 received mostly the same 2–3 Pixabay
+canal photos. Reviewer rejected those for diagram/gate/basin targets; only claim
+1 retained a verified visual. This is retrieval/acceptance-contract conflation,
+not a reason to weaken semantic verification or lower the required inventory.
+
+Correction: candidate claims explicitly contain a validated 2–8 word, <=90 character
+`search_query_en`; pre-script provider retrieval uses it while preserving the full
+`visual_target` and every existing reviewer/uniqueness gate. No post-script search,
+manual rescue, topic-specific query or asset reuse is introduced.
+
+Verified: 56/56 static regressions PASS, fresh PostgreSQL (21 SQL statements) PASS,
+real n8n 2.37.10 import of 8 workflows PASS, actual expression invocation regression
+PASS for all four structured calls, worker build PASS. Next: commit/push, deploy
+WF02 plus worker from the exact verified source, then create a NEW normal-input
+job. Failed `897293fa...` must remain untouched. Overall MP4 quality is unproven.
+
 ## 2026-09-06 invocation correction — deployed, fresh E2E running
 
 Continuation base: `086830485d986aa64e77af980f6ef6a4b8206de5`, tree

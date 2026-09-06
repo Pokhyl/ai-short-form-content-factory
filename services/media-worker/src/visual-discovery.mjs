@@ -583,6 +583,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
     ? inventoryClaims.map((claim, index) => ({
         unit_number: Number(claim?.claim_number ?? index + 1),
         visual_target: cleanText(claim?.visual_target),
+        search_query: cleanText(claim?.search_query_en),
         narration: cleanText(claim?.claim),
         required_images: 1,
       }))
@@ -657,7 +658,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
   const unitResults = await mapWithConcurrency(searchUnits, (segmentedMode || inventoryMode) ? SEGMENT_SEARCH_CONCURRENCY : 1, async (unit) => {
     const unitNumber = Number(unit.unit_number);
     const anchor = cleanText(unit.visual_target);
-    const exactQuery = boundedProviderQuery(anchor || stockQuery);
+    const exactQuery = boundedProviderQuery(unit.search_query || anchor || stockQuery);
     const localErrors = [];
 
     if (segmentedMode || inventoryMode) {
