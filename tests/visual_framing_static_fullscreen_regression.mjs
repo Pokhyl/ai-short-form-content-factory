@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
 import { buildVisualBeatFilters } from '../services/media-worker/src/visual-framing.mjs';
-
-const photo = buildVisualBeatFilters({ index: 0, duration: 2.5, isImage: true, isFactualGraphic: false }).join(';');
-assert.match(photo, /scale=1080:1920:force_original_aspect_ratio=increase/);
-assert.match(photo, /crop=1080:1920/);
-assert.doesNotMatch(photo, /1320:2350|\bt\//);
-
-const graphic = buildVisualBeatFilters({ index: 1, duration: 2.5, isImage: true, isFactualGraphic: true }).join(';');
-assert.match(graphic, /force_original_aspect_ratio=decrease/);
-assert.match(graphic, /boxblur/);
-
-console.log('VISUAL_FRAMING_STATIC_FULLSCREEN_PASS');
+const photo=buildVisualBeatFilters({index:0,duration:2.5,isImage:true,isFactualGraphic:false}).join(';');
+assert.match(photo,/scale=1020:1760:force_original_aspect_ratio=decrease/);
+assert.match(photo,/boxblur=22:1/);
+assert.match(photo,/overlay=/);
+assert.match(photo,/sin\(t\*0\.55/);
+const fg=photo.match(/\[fg0\]scale=1020:1760:force_original_aspect_ratio=decrease[^;]*/)?.[0]??'';assert.ok(fg,'foreground full-image chain missing');assert.doesNotMatch(fg,/crop=1080:1920/,'foreground still must not be destructively cropped');
+const graphic=buildVisualBeatFilters({index:1,duration:2.5,isImage:true,isFactualGraphic:true}).join(';');
+assert.match(graphic,/scale=1020:1760:force_original_aspect_ratio=decrease/);
+assert.match(graphic,/overlay=x='\(W-w\)\/2':y='\(H-h\)\/2'/);
+const video=buildVisualBeatFilters({index:2,duration:2.5,isImage:false,isFactualGraphic:false}).join(';');
+assert.match(video,/scale=1080:1920:force_original_aspect_ratio=increase/);assert.match(video,/crop=1080:1920/);
+console.log('VISUAL_FRAMING_FULL_IMAGE_PRESERVE_PASS');

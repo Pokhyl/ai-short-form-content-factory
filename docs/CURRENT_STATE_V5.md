@@ -5,6 +5,37 @@ Last updated: 2026-09-06
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-06 inventory-first implementation — pre-production verified
+
+The Codex audit direction has now been implemented in the existing n8n product path on preservation branch `continuation/codex-recovery-20260906`. This is not a new product or a V6 side architecture.
+
+Current implemented causal order:
+
+`topic -> evidence-grounded resolution/research -> candidate factual claims -> actual still-image discovery -> preview fingerprinting -> actual-image multimodal verification -> perceptual dedupe/reservation -> final supported story units -> one continuous Edge narration -> provider word timings -> frozen-unit duration rewrite if needed -> reserved-asset execution -> render -> exact artifact hash -> human review`
+
+Systemic changes now present in source:
+
+- WF02 reserves unique verified visual assets before final narration is authored and persists `story_package` version `inventory-first-story-v1` with explicit claim/evidence/unit/asset bindings;
+- WF03 consumes native Edge word boundaries and preserves frozen claim/evidence/asset identity across bounded duration rewrites; late visual rebind is removed;
+- WF04 no longer performs post-script visual discovery/recovery/beam assignment and instead downloads, stores and re-fingerprints only the assets reserved before narration;
+- WF05/render accepts variable semantic-unit counts, preserves the whole still image in 9:16 composition instead of destructive central foreground crop, and persists SHA256 identity of the exact final MP4;
+- media-worker exposes stored-visual fingerprint verification and inventory-first render/artifact contracts;
+- JSON-producing model calls in candidate-claim generation, final story generation and duration rewrite now explicitly request structured JSON schemas;
+- WF02 error-output routing is explicitly enabled and planner failure recovery can recover the job ID from stable upstream context, so model/validation failures must persist a failed job rather than leave `created/intake` stranded.
+
+Verification after the latest structured-output/failure-persistence correction:
+
+- 55/55 non-live static regressions PASS (13 Python + 42 Node; the explicit environment-dependent real-provider dry run is excluded from this count);
+- fresh PostgreSQL contract PASS with all current workflow SQL statements prepared and staged writes exercised;
+- actual n8n 2.33.3 import contract PASS for all 8 workflow exports;
+- clean media-worker Docker build PASS; current pre-deploy image `sha256:8017fba74dadb5d0ccee338e358a2586a96a8ab088b8bd6de0bfbc5565e334b9`;
+- component probes previously verified SearXNG research, pre-script inventory, stored-file perceptual identity and native Edge word timing.
+
+The first clean isolated n8n product-input attempt exposed the general missing structured-output/failure-persistence contract described above; that defect is fixed and regression-covered. A second fully isolated n8n E2E is currently blocked by environment credential injection restrictions in the server control layer, not by a discovered product-code failure. Do not treat that harness limitation as product acceptance.
+
+**Production has not yet been changed by this inventory-first implementation. Overall product quality remains unproven until a fresh normal production job is run with zero manual rescue and the exact resulting MP4 is watched by the user.**
+
+
 ## Current factual audit (2026-09-06; supersedes stale state claims below)
 
 Read `docs/V5_SYSTEM_AUDIT_20260906.md` for the verified runtime, systemic causes,
@@ -18,6 +49,19 @@ Current work has not changed production or submitted a new product job. Fresh DB
 bootstrap, review API source and executable integration checks are being repaired
 before implementing the inventory-first causal order. Historical entries below
 are retained as evidence, not concurrent instructions or verified current state.
+
+
+## 2026-09-06 recovered post-audit engineering state
+
+The interrupted Codex session had pushed its reproducibility/word-timing foundation
+as commit `36c76437...`, but later chat-described edits were not in GitHub. Those
+missing edits have been reconstructed in an isolated worktree and verified: WF03
+uses exact Edge provider word timestamps, media-worker receives Pexels/Pixabay
+configuration, and research uses configured SearXNG rather than a Wikipedia-only
+endpoint. Full details and verification evidence are in `docs/V5_SYSTEM_AUDIT_20260906.md`.
+Production remains unchanged. The next systemic implementation target is still the
+inventory-first story contract; do not resume late post-script visual recovery as
+the product architecture.
 
 ## Mandatory pre-action gate
 

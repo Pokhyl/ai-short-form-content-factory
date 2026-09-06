@@ -30,7 +30,7 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "WITH input AS (SELECT $1::uuid AS job_id)\nSELECT i.job_id AS requested_job_id,j.id AS job_id,j.topic,j.fact_primary_title,j.language_code,j.target_duration_seconds,j.content_model_version,j.script_text,j.script_support,j.duration_preflight,j.visual_search_queries_en,\n       j.status,j.current_stage,j.voiceover_path,j.voiceover_duration_seconds,j.id IS NOT NULL AS job_exists,\n       COUNT(s.id)::int AS scene_count\nFROM input i LEFT JOIN public.jobs j ON j.id=i.job_id LEFT JOIN public.scenes s ON s.job_id=j.id\nGROUP BY i.job_id,j.id,j.topic,j.fact_primary_title,j.language_code,j.target_duration_seconds,j.content_model_version,j.script_text,j.script_support,j.duration_preflight,j.visual_search_queries_en,j.status,j.current_stage,j.voiceover_path,j.voiceover_duration_seconds;",
+          "query": "WITH input AS (SELECT $1::uuid AS job_id)\nSELECT i.job_id AS requested_job_id,j.id AS job_id,j.topic,j.fact_primary_title,j.language_code,j.target_duration_seconds,j.content_model_version,j.script_text,j.script_support,j.story_package,j.duration_preflight,\n       j.status,j.current_stage,j.voiceover_path,j.voiceover_duration_seconds,j.script_fit_passes,j.id IS NOT NULL AS job_exists,\n       COUNT(s.id)::int AS scene_count\nFROM input i LEFT JOIN public.jobs j ON j.id=i.job_id LEFT JOIN public.scenes s ON s.job_id=j.id\nGROUP BY i.job_id,j.id,j.topic,j.fact_primary_title,j.language_code,j.target_duration_seconds,j.content_model_version,j.script_text,j.script_support,j.story_package,j.duration_preflight,j.status,j.current_stage,j.voiceover_path,j.voiceover_duration_seconds,j.script_fit_passes;",
           "options": {
             "queryReplacement": "={{ [ $json.job_id ] }}"
           }
@@ -53,7 +53,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const j=$input.first().json;\nif(!j.job_exists)throw new Error(`Job ${j.requested_job_id} was not found`);\nif(j.content_model_version!=='staged_v1')throw new Error(`Unsupported content model: ${j.content_model_version}`);\nif(j.status!=='processing'||j.current_stage!=='script')throw new Error(`Job ${j.job_id} is not eligible for one-shot voice: ${j.status}/${j.current_stage}`);\nif(Number(j.scene_count)!==0)throw new Error(`One-shot voice must start before scenes exist; found ${j.scene_count}`);\nif(String(j.voiceover_path??'').trim()||Number(j.voiceover_duration_seconds)>0)throw new Error('One-shot voice cannot run after voiceover already exists');\nconst script=String(j.script_text??'').replace(/\\s+/gu,' ').trim();if(!script)throw new Error('script_text is empty');if(/\\s(?:\\/|\\||→|->)\\s/u.test(script))throw new Error('script_text contains unsafe spoken formatting separators');\nif(!Array.isArray(j.script_support)||!j.script_support.length)throw new Error('script_support is missing');\nconst pf=j.duration_preflight;if(!pf||typeof pf!=='object'||pf.exact_tts_required!==true||pf.prediction_is_advisory!==true)throw new Error('Persisted narration is not eligible for exact TTS measurement');\nif(String(pf.language_code)!==String(j.language_code)||Number(pf.target_duration_seconds)!==Number(j.target_duration_seconds))throw new Error('Persisted duration preflight does not match job');\nconst expected={15:6,30:10,45:14,60:18}[Number(j.target_duration_seconds)];if(!expected)throw new Error('Unsupported target duration');\nreturn [{json:{...j,script_text:script,required_beat_count:expected}}];"
+          "jsCode": "const j=$input.first().json;\nconst clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();\nif(!j.job_exists)throw new Error(`Job ${j.requested_job_id} was not found`);\nif(j.content_model_version!=='staged_v1')throw new Error(`Unsupported content model: ${j.content_model_version}`);\nif(j.status!=='processing'||j.current_stage!=='script')throw new Error(`Job ${j.job_id} is not eligible for one-shot voice: ${j.status}/${j.current_stage}`);\nif(Number(j.scene_count)!==0)throw new Error(`One-shot voice must start before scenes exist; found ${j.scene_count}`);\nif(clean(j.voiceover_path)||Number(j.voiceover_duration_seconds)>0)throw new Error('One-shot voice cannot run after voiceover already exists');\nconst script=clean(j.script_text);if(!script)throw new Error('script_text is empty');if(/\\s(?:\\/|\\||→|->)\\s/u.test(script))throw new Error('script_text contains unsafe spoken formatting separators');\nconst story=j.story_package;if(!story||story.version!=='inventory-first-story-v1'||!Array.isArray(story.units)||story.units.length<2||story.units.length>12||!Array.isArray(story.assets)||story.assets.length!==story.units.length)throw new Error('Inventory-first story package is missing or invalid');\nconst assetIds=new Set(story.assets.map(a=>clean(a?.asset_id)).filter(Boolean));if(assetIds.size!==story.assets.length)throw new Error('Story package asset IDs are not unique');\nconst unitIds=new Set(),claimIds=new Set();\nfor(let i=0;i<story.units.length;i++){\n const u=story.units[i]??{},unitId=clean(u.unit_id),claimId=clean(u.claim_id),narration=clean(u.narration),assetId=clean(u.asset_id),evidence=[...new Set((Array.isArray(u.evidence_ids)?u.evidence_ids:[]).map(clean).filter(Boolean))];\n if(unitId!==`U${i+1}`||!claimId||!narration||!assetId||!assetIds.has(assetId)||!evidence.length)throw new Error(`Story unit ${i+1} is incomplete`);\n if(unitIds.has(unitId)||claimIds.has(claimId))throw new Error(`Story unit ${i+1} duplicates unit/claim identity`);unitIds.add(unitId);claimIds.add(claimId);\n}\nconst reconstructed=story.units.map(u=>clean(u.narration)).join(' ');if(reconstructed!==script)throw new Error('story_package units do not reconstruct script_text');\nif(!Array.isArray(j.script_support)||j.script_support.length!==story.units.length)throw new Error('script_support does not match story units');\nfor(let i=0;i<story.units.length;i++){const s=j.script_support[i]??{},u=story.units[i];if(clean(s.unit_id)!==clean(u.unit_id)||clean(s.text)!==clean(u.narration))throw new Error(`script_support unit ${i+1} does not match story package`);const a=[...new Set((Array.isArray(s.evidence_ids)?s.evidence_ids:[]).map(clean).filter(Boolean))].sort(),b=[...new Set(u.evidence_ids.map(clean).filter(Boolean))].sort();if(JSON.stringify(a)!==JSON.stringify(b))throw new Error(`script_support evidence ${i+1} does not match story package`);}\nconst pf=j.duration_preflight;if(!pf||typeof pf!=='object'||pf.exact_tts_required!==true||pf.prediction_is_advisory!==true)throw new Error('Persisted narration is not eligible for exact TTS measurement');\nif(String(pf.language_code)!==String(j.language_code)||Number(pf.target_duration_seconds)!==Number(j.target_duration_seconds))throw new Error('Persisted duration preflight does not match job');\nif(![15,30,45,60].includes(Number(j.target_duration_seconds)))throw new Error('Unsupported target duration');\nreturn [{json:{...j,script_text:script,story_package:story,story_unit_count:story.units.length}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -91,7 +91,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const t=$input.first().json;const j=$('Require Eligible Voiceover Job').first().json;if(t.ready_to_run!==true)throw new Error(`Job ${j.job_id} could not enter voiceover stage`);const voices={en:'en-US-AndrewNeural',pl:'pl-PL-MarekNeural',ru:'ru-RU-DmitryNeural',uk:'uk-UA-OstapNeural'};const voice=voices[j.language_code];if(!voice)throw new Error('Unsupported language');if(j.duration_preflight?.exact_tts_required!==true)throw new Error('Exact TTS contract is missing');return [{json:{job_id:j.job_id,language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds),provider:'google_gemini',model:'gemini-2.5-flash-preview-tts',voice:'Kore',edge_fallback_voice:voice,script_text:j.script_text,script_support:j.script_support,fit_pass:Number(j.script_fit_passes??0),max_fit_passes:3,fit_history:[]}}];"
+          "jsCode": "const t=$input.first().json,j=$('Require Eligible Voiceover Job').first().json;if(t.ready_to_run!==true)throw new Error(`Job ${j.job_id} could not enter voiceover stage`);const voices={en:'en-US-AndrewNeural',pl:'pl-PL-MarekNeural',ru:'ru-RU-DmitryNeural',uk:'uk-UA-OstapNeural'},voice=voices[j.language_code];if(!voice)throw new Error('Unsupported language');if(j.duration_preflight?.exact_tts_required!==true)throw new Error('Exact TTS contract is missing');return [{json:{job_id:j.job_id,language_code:j.language_code,target_duration_seconds:Number(j.target_duration_seconds),provider:'microsoft_edge_readaloud',model:'edge_neural',voice,edge_fallback_voice:voice,script_text:j.script_text,script_support:j.script_support,story_package:j.story_package,fit_pass:Number(j.script_fit_passes??0),max_fit_passes:3,fit_history:[]}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -105,28 +105,7 @@
       },
       {
         "parameters": {
-          "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-tts-gateway",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ ({ text:$json.script_text, language_code:$json.language_code }) }}",
-          "options": {
-            "timeout": 180000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          1280,
-          0
-        ],
-        "id": "3b43357e-38ad-4966-842e-aee0b1475dda",
-        "name": "Generate Gemini Voiceover",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "const stored=$input.first().json;let ctx;try{ctx=$('Resume Rewritten Voiceover').all().at(-1)?.json}catch{}if(!ctx)ctx=$('Prepare Continuous Voiceover').first().json;const path=String(stored.voiceover_path??'').trim(),duration=Number(stored.duration_seconds),bytes=Number(stored.bytes);if(!path||!Number.isFinite(duration)||duration<=0||!Number.isFinite(bytes)||bytes<=0)throw new Error('Edge TTS returned invalid voiceover metadata');const provider=String(stored.provider??''),model=String(stored.model??''),voice=String(stored.voice??'');const gemini=provider==='google_gemini'&&model==='gemini-2.5-flash-preview-tts'&&voice==='Kore';const edge=provider==='microsoft_edge_readaloud'&&model==='edge_neural'&&voice===ctx.edge_fallback_voice;if(!gemini&&!edge)throw new Error('Natural TTS provider/voice contract changed');if(edge&&(Number(stored.rate_percent)!==0||Number(stored.post_tempo_factor)!==1))throw new Error('Speech-speed manipulation is forbidden');const target=Number(ctx.target_duration_seconds),tol=1/30,min=(target*0.90)-tol,max=(target*1.10)+tol;const duration_fit=duration>=min-1e-9&&duration<=max+1e-9;const text=String(ctx.script_text??'').replace(/\\s+/gu,' ').trim();const word_count=text.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;if(!word_count)throw new Error('Measured voiceover has no script words');const previous=Array.isArray(ctx.fit_history)?ctx.fit_history:[];const fit_history=[...previous,{fit_pass:Number(ctx.fit_pass??0),duration_seconds:Number(duration.toFixed(3)),word_count,script_text:text}].slice(-4);return [{json:{...ctx,voiceover_path:path,duration_seconds:duration,bytes,provider,model,voice,duration_fit,target_min_seconds:Number(min.toFixed(3)),target_max_seconds:Number(max.toFixed(3)),fit_history}}];"
+          "jsCode": "const stored=$input.first().json;let ctx;try{ctx=$('Resume Rewritten Voiceover').all().at(-1)?.json}catch{}if(!ctx)ctx=$('Prepare Continuous Voiceover').first().json;const path=String(stored.voiceover_path??'').trim(),duration=Number(stored.duration_seconds),bytes=Number(stored.bytes);if(!path||!Number.isFinite(duration)||duration<=0||!Number.isFinite(bytes)||bytes<=0)throw new Error('Edge TTS returned invalid voiceover metadata');const provider=String(stored.provider??''),model=String(stored.model??''),voice=String(stored.voice??'');if(provider!=='microsoft_edge_readaloud'||model!=='edge_neural'||voice!==ctx.edge_fallback_voice)throw new Error('Exact Edge TTS provider/voice contract changed');if(Number(stored.rate_percent)!==0||Number(stored.post_tempo_factor)!==1)throw new Error('Speech-speed manipulation is forbidden');const wt=stored.word_timing;if(!wt||wt.version!=='provider-word-timing-v1'||wt.provider!=='microsoft_edge_readaloud'||!String(wt.audio_sha256??'').trim()||!String(wt.script_sha256??'').trim()||!Array.isArray(wt.words)||!wt.words.length)throw new Error('Exact provider word timing is missing');if(Math.abs(Number(wt.duration_seconds)-duration)>0.002)throw new Error('Word timing duration does not match final WAV');let previousEnd=0;for(let i=0;i<wt.words.length;i++){const word=wt.words[i]??{},start=Number(word.start_seconds),end=Number(word.end_seconds);if(!String(word.text??'').trim()||!Number.isFinite(start)||!Number.isFinite(end)||start<previousEnd-1e-9||end<=start||end>duration+0.002)throw new Error(`Invalid exact word timing ${i+1}`);previousEnd=end;}const target=Number(ctx.target_duration_seconds),tol=1/30,min=(target*0.90)-tol,max=(target*1.10)+tol;const duration_fit=duration>=min-1e-9&&duration<=max+1e-9;const text=String(ctx.script_text??'').replace(/\\s+/gu,' ').trim();const timedText=wt.words.map(w=>String(w.text??'').trim()).filter(Boolean).join(' ').replace(/\\s+/gu,' ').trim();if(timedText!==text)throw new Error('Exact word timing does not reconstruct final narration');const word_count=text.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;if(!word_count)throw new Error('Measured voiceover has no script words');const previous=Array.isArray(ctx.fit_history)?ctx.fit_history:[];const fit_history=[...previous,{fit_pass:Number(ctx.fit_pass??0),duration_seconds:Number(duration.toFixed(3)),word_count,script_text:text}].slice(-4);return [{json:{...ctx,voiceover_path:path,duration_seconds:duration,bytes,provider,model,voice,word_timing:wt,word_timing_path:String(stored.word_timing_path??''),duration_fit,target_min_seconds:Number(min.toFixed(3)),target_max_seconds:Number(max.toFixed(3)),fit_history}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -140,7 +119,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const EDGE_VOICES=Object.freeze({\n  en:\"en-US-AndrewNeural\",\n  pl:\"pl-PL-MarekNeural\",\n  ru:\"ru-RU-DmitryNeural\",\n  uk:\"uk-UA-OstapNeural\",\n});\nconst BEATS_BY_DURATION=Object.freeze({15:6,30:10,45:14,60:18});\n\nfunction cleanText(value){return String(value??\"\").normalize(\"NFKC\").replace(/\\s+/gu,\" \" ).trim();}\n\nfunction prepareOneShotEdgeRequest({job_id,language_code,target_duration_seconds,narration,duration_preflight}) {\n  const target=Number(target_duration_seconds), voice=EDGE_VOICES[language_code], text=cleanText(narration);\n  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(job_id??\"\"))) throw new Error(\"job_id must be a UUID\");\n  if(!voice) throw new Error(`Unsupported Edge language: ${language_code}`);\n  if(!BEATS_BY_DURATION[target]) throw new Error(`Unsupported target duration: ${target_duration_seconds}`);\n  if(!text) throw new Error(\"Narration is empty\");\n  if(duration_preflight?.exact_tts_required!==true||duration_preflight?.prediction_is_advisory!==true) throw new Error(\"Narration is not eligible for exact Edge measurement\");\n  if(Number(duration_preflight.target_duration_seconds)!==target) throw new Error(\"Duration preflight target mismatch\");\n  if(String(duration_preflight.language_code)!==language_code) throw new Error(\"Duration preflight language mismatch\");\n  return {endpoint:\"/audio/synthesize-free-fallback\",body:{job_id:String(job_id).toLowerCase(),text,language_code,target_duration_seconds:target},expected:{provider:\"microsoft_edge_readaloud\",model:\"edge_neural\",voice,rate_percent:0,post_tempo_factor:1},max_automatic_synthesis_count:1};\n}\n\nfunction validateOneShotEdgeResult({request,result}) {\n  if(!request?.expected||!result||typeof result!==\"object\") throw new Error(\"Invalid Edge result context\");\n  const duration=Number(result.duration_seconds), target=Number(request.body.target_duration_seconds), frameTolerance=1/30;\n  const min=(target*0.90)-frameTolerance, max=(target*1.10)+frameTolerance;\n  if(!Number.isFinite(duration)||duration<=0) throw new Error(\"Edge duration is invalid\");\n  if(duration<min-1e-9||duration>max+1e-9) throw new Error(`Measured Edge duration ${duration.toFixed(3)} is outside ${min.toFixed(3)}-${max.toFixed(3)}`);\n  for(const key of [\"provider\",\"model\",\"voice\"]) if(String(result[key]??\"\")!==String(request.expected[key])) throw new Error(`Edge ${key} contract changed`);\n  if(Number(result.rate_percent)!==0||Number(result.post_tempo_factor)!==1) throw new Error(\"Edge timing manipulation is forbidden\");\n  if(!String(result.voiceover_path??\"\").trim()) throw new Error(\"Edge voiceover_path is missing\");\n  if(Number(result.sample_rate)!==48000||Number(result.channels)!==2||String(result.codec_name)!==\"pcm_s16le\") throw new Error(\"Normalized Edge audio format changed\");\n  return {...result,duration_seconds:duration};\n}\n\nfunction tokenWeight(token){const lexical=[...token].filter((ch)=>/[\\p{L}\\p{N}]/u.test(ch)).length;return 1+Math.min(14,lexical)*0.04;}\nfunction boundaryPenalty(token){if(/[.!?…][\"»”’)]*$/u.test(token))return 0;if(/[;:][\"»”’)]*$/u.test(token))return 0.02;if(/,[\"»”’)]*$/u.test(token))return 0.05;return 0.18;}\n\nfunction partitionTokenRanges(tokens,count){\n  const n=tokens.length;if(n<count)throw new Error(`Narration has only ${n} tokens for ${count} beats`);\n  const weights=tokens.map(tokenWeight),prefix=[0];for(const w of weights)prefix.push(prefix.at(-1)+w);const target=prefix[n]/count;\n  const dp=Array.from({length:count+1},()=>Array(n+1).fill(Number.POSITIVE_INFINITY));\n  const prev=Array.from({length:count+1},()=>Array(n+1).fill(-1));dp[0][0]=0;\n  for(let k=1;k<=count;k++)for(let end=k;end<=n-(count-k);end++)for(let start=k-1;start<end;start++){\n    if(!Number.isFinite(dp[k-1][start]))continue;\n    const groupWeight=prefix[end]-prefix[start],lengthCost=((groupWeight-target)/target)**2,boundaryCost=k===count?0:boundaryPenalty(tokens[end-1]),tiny=end-start<2?0.4:0,cost=dp[k-1][start]+lengthCost+boundaryCost+tiny;\n    if(cost<dp[k][end]){dp[k][end]=cost;prev[k][end]=start;}\n  }\n  if(!Number.isFinite(dp[count][n]))throw new Error(\"Could not partition narration into beats\");\n  const ranges=[];let end=n;for(let k=count;k>=1;k--){const start=prev[k][end];if(start<0)throw new Error(\"Invalid beat partition backtrack\");ranges.push({start,end});end=start;}return ranges.reverse();\n}\n\nfunction buildSupportedTokens(text,narrationSegments){\n  if(!Array.isArray(narrationSegments)||!narrationSegments.length)throw new Error(\"Timed beats require narration provenance segments\");\n  const reconstructed=narrationSegments.map((segment)=>cleanText(segment?.text)).join(\" \");\n  if(reconstructed!==text)throw new Error(\"Narration provenance segments do not reconstruct narration\");\n  const supported=[];\n  for(let index=0;index<narrationSegments.length;index++){\n    const segment=narrationSegments[index]??{},evidenceId=cleanText(segment.evidence_id),segmentText=cleanText(segment.text);\n    if(!evidenceId||!segmentText)throw new Error(`Narration provenance segment ${index+1} is incomplete`);\n    const tokens=segmentText.split(/\\s+/u).filter(Boolean);\n    for(const token of tokens)supported.push({token,evidence_id:evidenceId,segment_number:Number(segment.segment_number??index+1)});\n  }\n  if(supported.map((item)=>item.token).join(\" \")!==text)throw new Error(\"Narration provenance token alignment failed\");\n  return supported;\n}\n\nfunction buildTimedBeats({narration,narration_segments,target_duration_seconds,measured_duration_seconds}){\n  const text=cleanText(narration),target=Number(target_duration_seconds),measured=Number(measured_duration_seconds),count=BEATS_BY_DURATION[target];\n  if(!count)throw new Error(`Unsupported beat duration target: ${target_duration_seconds}`);if(!Number.isFinite(measured)||measured<=0)throw new Error(\"Measured voice duration is invalid\");\n  const supportedTokens=buildSupportedTokens(text,narration_segments),tokens=supportedTokens.map((item)=>item.token),ranges=partitionTokenRanges(tokens,count),beatTexts=ranges.map(({start,end})=>tokens.slice(start,end).join(\" \"));\n  if(beatTexts.join(\" \")!==text)throw new Error(\"Timed beats do not reconstruct narration\");\n  const weights=beatTexts.map((beat)=>beat.split(/\\s+/u).reduce((sum,token)=>sum+tokenWeight(token),0)),total=weights.reduce((a,b)=>a+b,0),raw=weights.map((w)=>measured*w/total),minBeat=1.15,maxBeat=5.8;\n  if(raw.some((d)=>d<minBeat||d>maxBeat))throw new Error(\"Natural beat partition violates beat duration quality bounds\");\n  let cursor=0;const beats=beatTexts.map((beat,index)=>{const range=ranges[index],start=cursor,end=index===beatTexts.length-1?measured:cursor+raw[index];cursor=end;const support=[...new Set(supportedTokens.slice(range.start,range.end).map((item)=>item.evidence_id))];if(!support.length)throw new Error(`Beat ${index+1} lost narration provenance`);return{scene_number:index+1,narration:beat,narration_support_evidence_ids:support,beat_start_seconds:Number(start.toFixed(3)),beat_end_seconds:Number(end.toFixed(3)),duration_seconds:Number((end-start).toFixed(3)),status:\"timed\"};});\n  beats.at(-1).beat_end_seconds=Number(measured.toFixed(3));beats.at(-1).duration_seconds=Number((beats.at(-1).beat_end_seconds-beats.at(-1).beat_start_seconds).toFixed(3));\n  for(let i=0;i<beats.length;i++){if(i>0&&Math.abs(beats[i].beat_start_seconds-beats[i-1].beat_end_seconds)>0.001)throw new Error(\"Timed beat continuity failed\");if(beats[i].duration_seconds<minBeat-0.002||beats[i].duration_seconds>maxBeat+0.002)throw new Error(`Beat ${i+1} duration outside quality bounds`);if(!Array.isArray(beats[i].narration_support_evidence_ids)||!beats[i].narration_support_evidence_ids.length)throw new Error(`Beat ${i+1} narration provenance is empty`);}\n  if(Math.abs(beats.at(-1).beat_end_seconds-measured)>0.001)throw new Error(\"Timed beats do not cover measured voice duration\");return beats;\n}\n\n\nconst stored=$input.first().json;const job=$('Require Eligible Voiceover Job').first().json;const duration=Number(stored.duration_seconds);const finalScript=String(stored.script_text??job.script_text??'').replace(/\\s+/gu,' ').trim();const finalSupport=Array.isArray(stored.script_support)?stored.script_support:job.script_support;const beats=buildTimedBeats({narration:finalScript,narration_segments:finalSupport,target_duration_seconds:Number(job.target_duration_seconds),measured_duration_seconds:duration});if(beats.length!==Number(job.required_beat_count))throw new Error(`Timed beat planner returned ${beats.length}/${job.required_beat_count}`);const fitPasses=Number(stored.fit_pass??job.script_fit_passes??0);const existingQueries=Array.isArray(job.visual_search_queries_en)?job.visual_search_queries_en:[];if(fitPasses===0&&(existingQueries.length!==Number(job.required_beat_count)||new Set(existingQueries.map(v=>String(v).toLocaleLowerCase())).size!==Number(job.required_beat_count)))throw new Error('Final narration has no valid c6 visual-query inventory');return [{json:{job_id:job.job_id,topic:job.topic,canonical_subject:job.fact_primary_title||job.topic,language_code:job.language_code,target_duration_seconds:Number(job.target_duration_seconds),voiceover_path:stored.voiceover_path,voiceover_duration_seconds:duration,voiceover_provider:stored.provider,voiceover_model:stored.model,voiceover_voice:stored.voice,beat_timings:beats,script_text:finalScript,script_support:finalSupport,script_fit_passes:fitPasses,visual_search_queries_en:existingQueries,needs_visual_rebind:fitPasses>0}}];"
+          "jsCode": "const clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();\nconst stored=$input.first().json,job=$('Require Eligible Voiceover Job').first().json;\nconst story=stored.story_package??job.story_package;if(!story||story.version!=='inventory-first-story-v1'||!Array.isArray(story.units)||story.units.length<2)throw new Error('Exact timing requires inventory-first story units');\nconst finalScript=clean(stored.script_text??job.script_text),duration=Number(stored.duration_seconds),wt=stored.word_timing;\nif(!wt||wt.version!=='provider-word-timing-v1'||!Array.isArray(wt.words)||!wt.words.length||!Number.isFinite(duration)||duration<=0||Math.abs(Number(wt.duration_seconds)-duration)>0.002)throw new Error('Exact provider word timing is required for final WAV');\nconst timed=wt.words.map((w,i)=>({text:clean(w?.text),start:Number(w?.start_seconds),end:Number(w?.end_seconds),index:i}));\nif(timed.some(w=>!w.text||!Number.isFinite(w.start)||!Number.isFinite(w.end)||w.start<0||w.end<=w.start||w.end>duration+0.002))throw new Error('Provider word timing contains invalid boundaries');\nif(timed.map(w=>w.text).join(' ')!==finalScript)throw new Error('Provider words do not reconstruct final narration');\nconst storyText=story.units.map(u=>clean(u?.narration)).join(' ');if(storyText!==finalScript)throw new Error('Story units do not reconstruct final narration');\nlet cursor=0;const ranges=[];\nfor(let i=0;i<story.units.length;i++){\n const u=story.units[i]??{},unitWords=clean(u.narration).split(/\\s+/u).filter(Boolean);if(!unitWords.length)throw new Error(`Story unit ${i+1} has no spoken words`);\n const slice=timed.slice(cursor,cursor+unitWords.length);if(slice.length!==unitWords.length||slice.some((w,k)=>w.text!==unitWords[k]))throw new Error(`Provider timing diverges inside story unit ${i+1}`);\n ranges.push({start:cursor,end:cursor+unitWords.length});cursor+=unitWords.length;\n}\nif(cursor!==timed.length)throw new Error('Story-unit token count does not consume provider timing');\nconst boundaries=[0];for(let i=0;i<ranges.length-1;i++){const left=timed[ranges[i].end-1],right=timed[ranges[i].end];if(!left||!right||right.start<left.end-0.002)throw new Error(`Invalid provider boundary between story units ${i+1}/${i+2}`);boundaries.push(Number(((left.end+right.start)/2).toFixed(3)));}boundaries.push(Number(duration.toFixed(3)));\nconst units=story.units.map((u,i)=>{const start=boundaries[i],end=boundaries[i+1],d=Number((end-start).toFixed(3)),evidence=[...new Set((Array.isArray(u.evidence_ids)?u.evidence_ids:[]).map(clean).filter(Boolean))];if(!Number.isFinite(d)||d<=0||!evidence.length)throw new Error(`Exact story unit timing ${i+1} is invalid`);return{scene_number:i+1,story_unit_id:clean(u.unit_id),claim_id:clean(u.claim_id),asset_id:clean(u.asset_id),narration:clean(u.narration),narration_support_evidence_ids:evidence,beat_start_seconds:start,beat_end_seconds:end,duration_seconds:d,status:'timed'};});\nif(units.map(u=>u.narration).join(' ')!==finalScript||Math.abs(units.at(-1).beat_end_seconds-duration)>0.001)throw new Error('Exact story-unit timings do not cover final narration');\nconst finalSupport=units.map(u=>({segment_number:u.scene_number,unit_id:u.story_unit_id,evidence_ids:u.narration_support_evidence_ids,source_ids:u.narration_support_evidence_ids,text:u.narration,transform:'inventory_grounded_paraphrase'}));\nreturn [{json:{job_id:job.job_id,topic:job.topic,canonical_subject:job.fact_primary_title||job.topic,language_code:job.language_code,target_duration_seconds:Number(job.target_duration_seconds),voiceover_path:stored.voiceover_path,voiceover_duration_seconds:duration,voiceover_provider:stored.provider,voiceover_model:stored.model,voiceover_voice:stored.voice,word_timing_path:stored.word_timing_path,unit_timings:units,script_text:finalScript,script_support:finalSupport,story_package:story,script_fit_passes:Number(stored.fit_pass??job.script_fit_passes??0)}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -149,15 +128,15 @@
           -160
         ],
         "id": "9a5055b9-0979-4fee-841b-d55035feb722",
-        "name": "Prepare Beat Timings",
+        "name": "Build Exact Story Unit Timings",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "WITH input AS (\n SELECT $1::uuid AS job_id,$2::text AS voiceover_path,$3::numeric AS voiceover_duration,$4::text AS provider,$5::text AS model,$6::text AS voice,$7::jsonb AS timings,$8::text AS final_script,$9::jsonb AS final_support,$10::smallint AS fit_passes,$11::jsonb AS final_visual_queries\n), locked AS (\n SELECT j.id,j.target_duration_seconds FROM public.jobs j,input i\n WHERE j.id=i.job_id AND j.content_model_version='staged_v1' AND j.status='processing' AND j.current_stage='voiceover'\n   AND NULLIF(BTRIM(COALESCE(j.voiceover_path,'')),'') IS NULL AND j.voiceover_duration_seconds IS NULL\n   AND NOT EXISTS(SELECT 1 FROM public.scenes s WHERE s.job_id=j.id)\n FOR UPDATE\n), parsed AS (\n SELECT x.* FROM input i CROSS JOIN LATERAL jsonb_to_recordset(i.timings) AS x(\n   scene_number integer,narration text,narration_support_evidence_ids jsonb,beat_start_seconds numeric,beat_end_seconds numeric,duration_seconds numeric,status text\n )\n), expected AS (\n SELECT id,CASE target_duration_seconds WHEN 15 THEN 6 WHEN 30 THEN 10 WHEN 45 THEN 14 WHEN 60 THEN 18 END AS beat_count FROM locked\n), valid AS (\n SELECT p.* FROM parsed p,expected e\n WHERE p.scene_number BETWEEN 1 AND e.beat_count AND NULLIF(BTRIM(p.narration),'') IS NOT NULL AND p.status='timed'\n   AND jsonb_typeof(p.narration_support_evidence_ids)='array' AND jsonb_array_length(p.narration_support_evidence_ids)>0\n   AND p.beat_start_seconds>=0 AND p.beat_end_seconds>p.beat_start_seconds AND p.duration_seconds>0\n   AND ABS((p.beat_end_seconds-p.beat_start_seconds)-p.duration_seconds)<=0.01\n   AND NOT EXISTS(\n     SELECT 1 FROM jsonb_array_elements_text(p.narration_support_evidence_ids) q(evidence_id)\n     WHERE NOT EXISTS(SELECT 1 FROM public.job_evidence je WHERE je.job_id=e.id AND je.evidence_id=q.evidence_id)\n   )\n), ok AS (\n SELECT e.id,e.beat_count FROM expected e,input i\n WHERE NULLIF(BTRIM(i.voiceover_path),'') IS NOT NULL AND i.voiceover_duration>0\n   AND (SELECT count(*) FROM valid)=e.beat_count AND (SELECT count(DISTINCT scene_number) FROM valid)=e.beat_count\n), ins AS (\n INSERT INTO public.scenes(job_id,scene_number,narration,narration_support_evidence_ids,beat_start_seconds,beat_end_seconds,duration_seconds,status)\n SELECT o.id,v.scene_number,v.narration,v.narration_support_evidence_ids,v.beat_start_seconds,v.beat_end_seconds,v.duration_seconds,'timed'\n FROM ok o CROSS JOIN valid v ORDER BY v.scene_number RETURNING job_id\n), upd AS (\n UPDATE public.jobs j SET voiceover_path=i.voiceover_path,voiceover_duration_seconds=i.voiceover_duration,voiceover_provider=i.provider,voiceover_model=i.model,voiceover_voice=i.voice,script_text=i.final_script,script_support=i.final_support,script_fit_passes=i.fit_passes,visual_search_queries_en=i.final_visual_queries,last_error=NULL,updated_at=now()\n FROM input i,ok o WHERE j.id=o.id AND j.id=i.job_id RETURNING j.id,j.status,j.current_stage\n)\nSELECT $1::uuid AS job_id,(SELECT count(*)::int FROM ins) AS beats_inserted,EXISTS(SELECT 1 FROM upd) AS job_updated,\n       (SELECT status FROM upd LIMIT 1) AS status,(SELECT current_stage FROM upd LIMIT 1) AS current_stage,$2::text AS voiceover_path,$3::numeric AS voiceover_duration_seconds;",
+          "query": "WITH input AS (\n SELECT $1::uuid AS job_id,$2::text AS voiceover_path,$3::numeric AS voiceover_duration,$4::text AS provider,$5::text AS model,$6::text AS voice,$7::jsonb AS timings,$8::text AS final_script,$9::jsonb AS final_support,$10::smallint AS fit_passes,$11::jsonb AS story_package\n), locked AS (\n SELECT j.id FROM public.jobs j,input i\n WHERE j.id=i.job_id AND j.content_model_version='staged_v1' AND j.status='processing' AND j.current_stage='voiceover'\n   AND j.story_package->>'version'='inventory-first-story-v1'\n   AND NULLIF(BTRIM(COALESCE(j.voiceover_path,'')),'') IS NULL AND j.voiceover_duration_seconds IS NULL\n   AND NOT EXISTS(SELECT 1 FROM public.scenes s WHERE s.job_id=j.id)\n FOR UPDATE\n), parsed AS (\n SELECT x.* FROM input i CROSS JOIN LATERAL jsonb_to_recordset(i.timings) AS x(\n   scene_number integer,story_unit_id text,claim_id text,asset_id text,narration text,narration_support_evidence_ids jsonb,beat_start_seconds numeric,beat_end_seconds numeric,duration_seconds numeric,status text\n )\n), story_units AS (\n SELECT l.id,(u.ordinality)::int AS scene_number,u.value FROM locked l,input i\n CROSS JOIN LATERAL jsonb_array_elements(i.story_package->'units') WITH ORDINALITY u(value,ordinality)\n), valid AS (\n SELECT p.* FROM parsed p JOIN story_units s USING(scene_number)\n WHERE p.scene_number>0 AND NULLIF(BTRIM(p.narration),'') IS NOT NULL AND p.status='timed'\n   AND p.story_unit_id=s.value->>'unit_id' AND p.claim_id=s.value->>'claim_id' AND p.asset_id=s.value->>'asset_id'\n   AND p.narration=s.value->>'narration' AND p.narration_support_evidence_ids=s.value->'evidence_ids'\n   AND p.beat_start_seconds>=0 AND p.beat_end_seconds>p.beat_start_seconds AND p.duration_seconds>0\n   AND ABS((p.beat_end_seconds-p.beat_start_seconds)-p.duration_seconds)<=0.01\n   AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements_text(p.narration_support_evidence_ids) q(evidence_id)\n     WHERE NOT EXISTS(SELECT 1 FROM public.job_evidence je WHERE je.job_id=s.id AND je.evidence_id=q.evidence_id))\n), ok AS (\n SELECT l.id FROM locked l,input i\n WHERE NULLIF(BTRIM(i.voiceover_path),'') IS NOT NULL AND i.voiceover_duration>0\n   AND i.story_package->>'version'='inventory-first-story-v1'\n   AND jsonb_array_length(i.story_package->'units') BETWEEN 2 AND 12\n   AND jsonb_array_length(i.story_package->'assets')=jsonb_array_length(i.story_package->'units')\n   AND (SELECT count(*) FROM valid)=jsonb_array_length(i.story_package->'units')\n   AND (SELECT count(DISTINCT scene_number) FROM valid)=jsonb_array_length(i.story_package->'units')\n), ins AS (\n INSERT INTO public.scenes(job_id,scene_number,narration,narration_support_evidence_ids,beat_start_seconds,beat_end_seconds,duration_seconds,status)\n SELECT o.id,v.scene_number,v.narration,v.narration_support_evidence_ids,v.beat_start_seconds,v.beat_end_seconds,v.duration_seconds,'timed'\n FROM ok o CROSS JOIN valid v ORDER BY v.scene_number RETURNING job_id\n), upd AS (\n UPDATE public.jobs j SET voiceover_path=i.voiceover_path,voiceover_duration_seconds=i.voiceover_duration,voiceover_provider=i.provider,voiceover_model=i.model,voiceover_voice=i.voice,script_text=i.final_script,script_support=i.final_support,story_package=i.story_package,script_fit_passes=i.fit_passes,visual_search_queries_en=NULL,last_error=NULL,updated_at=now()\n FROM input i,ok o WHERE j.id=o.id AND j.id=i.job_id RETURNING j.id,j.status,j.current_stage\n)\nSELECT $1::uuid AS job_id,(SELECT count(*)::int FROM ins) AS units_inserted,EXISTS(SELECT 1 FROM upd) AS job_updated,\n       (SELECT status FROM upd LIMIT 1) AS status,(SELECT current_stage FROM upd LIMIT 1) AS current_stage,$2::text AS voiceover_path,$3::numeric AS voiceover_duration_seconds,\n       jsonb_array_length($11::jsonb->'units') AS story_unit_count;",
           "options": {
-            "queryReplacement": "={{ [ $json.job_id, $json.voiceover_path, $json.voiceover_duration_seconds, $json.voiceover_provider, $json.voiceover_model, $json.voiceover_voice, JSON.stringify($json.beat_timings), $json.script_text, JSON.stringify($json.script_support), $json.script_fit_passes, JSON.stringify($json.visual_search_queries_en) ] }}"
+            "queryReplacement": "={{ [ $json.job_id, $json.voiceover_path, $json.voiceover_duration_seconds, $json.voiceover_provider, $json.voiceover_model, $json.voiceover_voice, JSON.stringify($json.unit_timings), $json.script_text, JSON.stringify($json.script_support), $json.script_fit_passes, JSON.stringify($json.story_package) ] }}"
           }
         },
         "type": "n8n-nodes-base.postgres",
@@ -178,7 +157,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const r=$input.first().json;const j=$('Require Eligible Voiceover Job').first().json;\nif(r.job_updated!==true)throw new Error(`Voiceover job update failed for ${j.job_id}`);\nif(Number(r.beats_inserted)!==Number(j.required_beat_count))throw new Error(`Timed beats persisted ${r.beats_inserted}/${j.required_beat_count}`);\nif(r.status!=='processing'||r.current_stage!=='voiceover')throw new Error(`Unexpected one-shot voice state ${r.status}/${r.current_stage}`);\nconst d=Number(r.voiceover_duration_seconds);if(!String(r.voiceover_path??'').trim()||!Number.isFinite(d)||d<=0)throw new Error('Persisted voiceover metadata is invalid');\nreturn [{json:{job_id:j.job_id,voiceover_complete:true,total_audio_duration_seconds:d,beat_count:Number(j.required_beat_count)}}];"
+          "jsCode": "const r=$input.first().json,j=$('Require Eligible Voiceover Job').first().json;if(r.job_updated!==true)throw new Error(`Voiceover job update failed for ${j.job_id}`);if(Number(r.units_inserted)!==Number(r.story_unit_count)||Number(r.story_unit_count)!==Number(j.story_unit_count))throw new Error(`Timed story units persisted ${r.units_inserted}/${j.story_unit_count}`);if(r.status!=='processing'||r.current_stage!=='voiceover')throw new Error(`Unexpected one-shot voice state ${r.status}/${r.current_stage}`);const d=Number(r.voiceover_duration_seconds);if(!String(r.voiceover_path??'').trim()||!Number.isFinite(d)||d<=0)throw new Error('Persisted voiceover metadata is invalid');return [{json:{job_id:j.job_id,voiceover_complete:true,total_audio_duration_seconds:d,story_unit_count:Number(r.story_unit_count)}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -322,7 +301,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const x=$input.first().json;const pass=Number(x.fit_pass??0),maxPasses=Number(x.max_fit_passes??3);if(pass>=maxPasses)throw new Error(`Voiceover duration ${Number(x.duration_seconds).toFixed(3)}s is still outside target after ${pass} script rewrites`);const text=String(x.script_text??'').replace(/\\s+/gu,' ').trim();const wordRx=/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu;const wc=text.match(wordRx)?.length??0;if(!text||!wc)throw new Error('Duration rewrite received empty script');const target=Number(x.target_duration_seconds),measured=Number(x.duration_seconds);if(!Number.isFinite(target)||!Number.isFinite(measured)||target<=0||measured<=0)throw new Error('Duration rewrite received invalid timing');const history=(Array.isArray(x.fit_history)?x.fit_history:[]).map(h=>({fit_pass:Number(h.fit_pass),duration_seconds:Number(h.duration_seconds),word_count:Number(h.word_count),script_text:String(h.script_text??'')})).filter(h=>Number.isFinite(h.duration_seconds)&&h.duration_seconds>0&&Number.isInteger(h.word_count)&&h.word_count>0);if(!history.length||Math.abs(history.at(-1).duration_seconds-measured)>0.01||history.at(-1).word_count!==wc)history.push({fit_pass:pass,duration_seconds:measured,word_count:wc,script_text:text});let desiredRaw=wc*(target/measured),controller_mode='proportional_measured_duration';const below=history.filter(h=>h.duration_seconds<target).sort((a,b)=>b.duration_seconds-a.duration_seconds)[0];const above=history.filter(h=>h.duration_seconds>target).sort((a,b)=>a.duration_seconds-b.duration_seconds)[0];if(below&&above&&above.duration_seconds-below.duration_seconds>0.05&&above.word_count!==below.word_count){const interpolated=below.word_count+((target-below.duration_seconds)*(above.word_count-below.word_count)/(above.duration_seconds-below.duration_seconds));if(Number.isFinite(interpolated)&&interpolated>0){const loWords=Math.min(below.word_count,above.word_count),hiWords=Math.max(below.word_count,above.word_count);desiredRaw=Math.max(loWords+0.25,Math.min(hiWords-0.25,interpolated));controller_mode='measured_bracket_interpolation';}}const desired=Math.max(12,Math.round(desiredRaw));const bracketed=controller_mode==='measured_bracket_interpolation';const lo=Math.max(12,desired-(bracketed?1:Math.max(1,Math.round(desired*0.05))));const hi=desired+(bracketed?1:Math.max(1,Math.round(desired*0.05)));const lang={en:'English',pl:'Polish',ru:'Russian',uk:'Ukrainian'}[x.language_code];const timingEvidence=history.map(h=>`${h.word_count} words -> ${h.duration_seconds.toFixed(3)}s`).join('; ');const prompt=`Rewrite the narration ONLY to fit its measured spoken duration.\\nLanguage: ${lang} (${x.language_code})\\nTarget: ${target}s\\nMeasured attempts: ${timingEvidence}\\nCurrent words: ${wc}\\nController: ${controller_mode}\\nDesired words: ${lo}-${hi}\\n\\nNarration:\\n${text}\\n\\nReturn ONLY JSON {\\\"script\\\":\\\"...\\\"}. Rules: keep exactly the same topic and factual meaning; add no new facts; remove no essential explanation; natural spoken prose; entirely in the same selected language; stay inside the requested word range; no headings, citations or source artifacts; do not use slash separators, pipes, arrows, bullets, or markdown separators in spoken narration. Use normal sentence punctuation only. Do not manipulate speech rate.`;return [{json:{...x,retry_context:x,rewrite_prompt:prompt,desired_word_min:lo,desired_word_max:hi,desired_word_target:desired,duration_controller_mode:controller_mode,next_fit_pass:pass+1,max_fit_passes:maxPasses,fit_history:history}}];"
+          "jsCode": "const x=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();const pass=Number(x.fit_pass??0),maxPasses=Number(x.max_fit_passes??3);if(pass>=maxPasses)throw new Error(`Voiceover duration ${Number(x.duration_seconds).toFixed(3)}s is still outside target after ${pass} story rewrites`);const story=x.story_package;if(!story||story.version!=='inventory-first-story-v1'||!Array.isArray(story.units)||story.units.length<2)throw new Error('Duration rewrite requires inventory-first story package');const text=clean(x.script_text),wordRx=/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu,wc=text.match(wordRx)?.length??0,target=Number(x.target_duration_seconds),measured=Number(x.duration_seconds);if(!text||!wc||!Number.isFinite(target)||!Number.isFinite(measured)||target<=0||measured<=0)throw new Error('Duration rewrite received invalid story/timing');const history=(Array.isArray(x.fit_history)?x.fit_history:[]).map(h=>({fit_pass:Number(h.fit_pass),duration_seconds:Number(h.duration_seconds),word_count:Number(h.word_count)})).filter(h=>Number.isFinite(h.duration_seconds)&&h.duration_seconds>0&&Number.isInteger(h.word_count)&&h.word_count>0);if(!history.length||Math.abs(history.at(-1).duration_seconds-measured)>0.01||history.at(-1).word_count!==wc)history.push({fit_pass:pass,duration_seconds:measured,word_count:wc});let desiredRaw=wc*(target/measured),controller_mode='proportional_measured_duration';const below=history.filter(h=>h.duration_seconds<target).sort((a,b)=>b.duration_seconds-a.duration_seconds)[0],above=history.filter(h=>h.duration_seconds>target).sort((a,b)=>a.duration_seconds-b.duration_seconds)[0];if(below&&above&&above.duration_seconds-below.duration_seconds>0.05&&above.word_count!==below.word_count){const q=below.word_count+((target-below.duration_seconds)*(above.word_count-below.word_count)/(above.duration_seconds-below.duration_seconds));if(Number.isFinite(q)&&q>0){desiredRaw=q;controller_mode='measured_bracket_interpolation';}}const desired=Math.max(12,Math.round(desiredRaw)),slack=Math.max(1,Math.round(desired*0.05)),lo=Math.max(12,desired-slack),hi=desired+slack,lang={en:'English',pl:'Polish',ru:'Russian',uk:'Ukrainian'}[x.language_code],units=story.units.map(u=>({unit_id:u.unit_id,claim_id:u.claim_id,narration:clean(u.narration),evidence_ids:u.evidence_ids,asset_id:u.asset_id}));const prompt=`Rewrite ONLY the spoken narration inside the existing story units to fit measured duration.\\nLanguage: ${lang} (${x.language_code})\\nTarget: ${target}s\\nMeasured: ${measured.toFixed(3)}s for ${wc} words\\nDesired total words: ${lo}-${hi}\\n\\nFROZEN STORY UNITS:\\n${JSON.stringify(units)}\\n\\nReturn ONLY JSON {\"units\":[{\"unit_id\":\"U1\",\"claim_id\":\"...\",\"narration\":\"...\"}]}. Rules: return every unit exactly once in the same order; unit_id and claim_id must be unchanged; do not add, remove, merge or split units; preserve each unit's factual meaning; add no new fact; do not change evidence or visual/asset bindings; narration stays natural and entirely in the selected language; no headings, citations, slash separators, pipes, arrows, bullets or markdown; do not manipulate speech rate.`;return [{json:{...x,rewrite_prompt:prompt,desired_word_min:lo,desired_word_max:hi,desired_word_target:desired,duration_controller_mode:controller_mode,next_fit_pass:pass+1,max_fit_passes:maxPasses,fit_history:history}}];"
         },
         "id": "0a04c892-6294-48d1-878a-3af69ffde9ef",
         "name": "Prepare Duration Rewrite",
@@ -340,7 +319,7 @@
           "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { prompt:$json.rewrite_prompt, temperature:0.05 } }}",
+          "jsonBody": "={{ { prompt:$json.rewrite_prompt, temperature:0.05, response_format:'json', response_schema:{\"type\":\"object\",\"properties\":{\"units\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"unit_id\":{\"type\":\"string\"},\"claim_id\":{\"type\":\"string\"},\"narration\":{\"type\":\"string\"}},\"required\":[\"unit_id\",\"claim_id\",\"narration\"]}}},\"required\":[\"units\"]} } }}",
           "options": {
             "timeout": 180000
           }
@@ -357,7 +336,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const base=$('Prepare Duration Rewrite').first().json;\nconst r=$input.first().json;\nconst wordRx=/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu;\nconst clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();\nconst speechSafe=v=>clean(v).replace(/\\s+\\/\\s+/gu,' ').replace(/\\s+\\|\\s+/gu,' ').replace(/\\s+(?:→|->)\\s+/gu,' ').replace(/\\s+/gu,' ').trim();\nconst countWords=s=>speechSafe(s).match(wordRx)?.length??0;\nconst original=speechSafe(base.script_text);\nconst targetWords=Math.round((Number(base.desired_word_min)+Number(base.desired_word_max))/2);\n\nfunction deterministicShorten(text){\n  const tokens=clean(text).split(/\\s+/u).filter(Boolean);\n  const candidates=[];\n  for(let i=0;i<tokens.length;i++){\n    if(/[.!?…;,:—][\"»”’)]*$/u.test(tokens[i])){\n      let c=tokens.slice(0,i+1).join(' ').replace(/[;,:—][\"»”’)]*$/u,'.');\n      const wc=countWords(c);\n      candidates.push({text:c,wc,distance:Math.abs(wc-targetWords)});\n    }\n  }\n  if(!candidates.length)return null;\n  candidates.sort((a,b)=>a.distance-b.distance||b.wc-a.wc);\n  const lower=Math.max(12,Number(base.desired_word_min)-4),upper=Number(base.desired_word_max)+4;\n  return candidates.find(c=>c.wc>=lower&&c.wc<=upper)??null;\n}\n\nlet parsed=null;\nlet raw=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,'').trim();\nif(raw){try{parsed=JSON.parse(raw)}catch{parsed=null}}\nlet script=speechSafe(parsed?.script);\nlet recoveryMode='model';\nif(!script){\n  if(Number(base.duration_seconds)<=Number(base.target_duration_seconds)){\n    throw new Error('duration rewrite model unavailable after bounded gateway recovery; deterministic expansion is unsafe');\n  }\n  const fallback=deterministicShorten(original);\n  if(!fallback)throw new Error('duration rewrite model unavailable and no safe deterministic overlength cut exists');\n  script=fallback.text;\n  recoveryMode='deterministic_overlength_fallback';\n}\n\nlet wc=countWords(script);\nconst lower=Number(base.desired_word_min)-8,upper=Number(base.desired_word_max)+8;\nif(wc<lower||wc>upper){\n  const fallback=deterministicShorten(original);\n  if(fallback){script=fallback.text;wc=fallback.wc;recoveryMode='deterministic_overlength_fallback';}\n  else throw new Error(`duration rewrite word count ${wc} missed broad target ${base.desired_word_min}-${base.desired_word_max}`);\n}\nconst old=Array.isArray(base.script_support)?base.script_support:[];\nconst evidence=[...new Set(old.map(s=>String(s.evidence_id??'')).filter(Boolean))];\nif(!evidence.length)throw new Error('duration rewrite lost evidence provenance');\nconst sentences=script.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/gu)?.map(s=>s.trim()).filter(Boolean)??[script];\nconst support=sentences.map((text,i)=>({segment_number:i+1,evidence_id:evidence[i%evidence.length],source_id:evidence[i%evidence.length],source_text:'supported by preserved job evidence',text,transform:recoveryMode==='model'?'duration_rewrite_same_facts':'duration_rewrite_deterministic_same_facts'}));\nreturn [{json:{job_id:base.job_id,language_code:base.language_code,target_duration_seconds:Number(base.target_duration_seconds),provider:base.provider,model:base.model,voice:base.voice,edge_fallback_voice:base.edge_fallback_voice,script_text:script,script_support:support,fit_pass:Number(base.next_fit_pass),max_fit_passes:Number(base.max_fit_passes??3),fit_history:Array.isArray(base.fit_history)?base.fit_history:[],duration_controller_mode:String(base.duration_controller_mode??'proportional_measured_duration'),duration_rewrite_mode:recoveryMode}}];"
+          "jsCode": "const base=$('Prepare Duration Rewrite').first().json,r=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim(),speech=v=>clean(v).replace(/\\s+\\/\\s+/gu,' ').replace(/\\s+\\|\\s+/gu,' ').replace(/\\s+(?:→|->)\\s+/gu,' ').trim(),wordRx=/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu;let raw=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,''),o;try{o=JSON.parse(raw)}catch{throw new Error('duration story rewrite model unavailable or invalid after bounded gateway recovery')}const old=base.story_package;if(!old||old.version!=='inventory-first-story-v1'||!Array.isArray(old.units))throw new Error('duration story rewrite lost story package');const rows=Array.isArray(o.units)?o.units:[];if(rows.length!==old.units.length)throw new Error(`duration story rewrite returned ${rows.length}/${old.units.length} units`);const units=[];for(let i=0;i<old.units.length;i++){const prev=old.units[i],next=rows[i]??{},unitId=clean(next.unit_id),claimId=clean(next.claim_id),narration=speech(next.narration);if(unitId!==clean(prev.unit_id)||claimId!==clean(prev.claim_id)||!narration)throw new Error(`duration story rewrite changed frozen identity at unit ${i+1}`);units.push({...prev,narration});}const story={...old,units},script=units.map(u=>u.narration).join(' '),wc=script.match(wordRx)?.length??0,lower=Number(base.desired_word_min)-8,upper=Number(base.desired_word_max)+8;if(!wc||wc<lower||wc>upper)throw new Error(`duration story rewrite word count ${wc} missed broad target ${base.desired_word_min}-${base.desired_word_max}`);const support=units.map((u,i)=>({segment_number:i+1,unit_id:u.unit_id,evidence_ids:[...u.evidence_ids],source_ids:[...u.evidence_ids],text:u.narration,transform:'inventory_duration_rewrite_same_claim'}));return [{json:{job_id:base.job_id,language_code:base.language_code,target_duration_seconds:Number(base.target_duration_seconds),provider:base.provider,model:base.model,voice:base.voice,edge_fallback_voice:base.edge_fallback_voice,script_text:script,script_support:support,story_package:story,fit_pass:Number(base.next_fit_pass),max_fit_passes:Number(base.max_fit_passes??3),fit_history:Array.isArray(base.fit_history)?base.fit_history:[],duration_controller_mode:String(base.duration_controller_mode??'proportional_measured_duration'),duration_rewrite_mode:'inventory_units_model'}}];"
         },
         "id": "3972704e-b0e3-4fa0-803f-d44486147011",
         "name": "Apply Duration Rewrite",
@@ -372,9 +351,9 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "UPDATE public.jobs SET script_text=$2,script_support=$3::jsonb,script_fit_passes=$4,updated_at=now() WHERE id=$1::uuid AND status='processing' AND current_stage='voiceover' RETURNING id::text AS job_id,script_fit_passes;",
+          "query": "UPDATE public.jobs\nSET script_text=$2,script_support=$3::jsonb,story_package=$4::jsonb,script_fit_passes=$5,updated_at=now()\nWHERE id=$1::uuid AND status='processing' AND current_stage='voiceover'\n  AND story_package->>'version'='inventory-first-story-v1'\n  AND jsonb_array_length(story_package->'units')=jsonb_array_length($4::jsonb->'units')\nRETURNING id::text AS job_id,script_fit_passes;",
           "options": {
-            "queryReplacement": "={{ [ $json.job_id, $json.script_text, JSON.stringify($json.script_support), $json.fit_pass ] }}"
+            "queryReplacement": "={{ [ $json.job_id, $json.script_text, JSON.stringify($json.script_support), JSON.stringify($json.story_package), $json.fit_pass ] }}"
           }
         },
         "type": "n8n-nodes-base.postgres",
@@ -410,48 +389,6 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://media-worker:3001/audio/store-voiceover",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ ({ job_id:$('Prepare Continuous Voiceover').first().json.job_id, audio_base64:$json.audio_base64, mime_type:$json.mime_type, target_duration_seconds:$('Prepare Continuous Voiceover').first().json.target_duration_seconds }) }}",
-          "options": {
-            "timeout": 120000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          760,
-          120
-        ],
-        "id": "3c9e8263-9a45-4d8b-bc22-37b187e1833d",
-        "name": "Store Gemini Voiceover",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://media-worker:3001/audio/store-voiceover",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ ({ job_id:$('Prepare Continuous Voiceover').first().json.job_id, audio_base64:$json.audio_base64, mime_type:$json.mime_type, target_duration_seconds:$('Prepare Continuous Voiceover').first().json.target_duration_seconds }) }}",
-          "options": {
-            "timeout": 120000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          960,
-          300
-        ],
-        "id": "3efffa3d-0b69-4486-bc8c-8264ac2ed90f",
-        "name": "Store Retried Gemini Voiceover",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
           "url": "http://media-worker:3001/audio/synthesize-free-fallback",
           "sendBody": true,
           "specifyBody": "json",
@@ -468,168 +405,6 @@
         ],
         "id": "9d49a960-a515-4a25-a5b0-821b2a8908c3",
         "name": "Generate Edge Fallback",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "const stored=$input.first().json;return [{json:{...stored,provider:'google_gemini',model:'gemini-2.5-flash-preview-tts',voice:'Kore',rate_percent:0,post_tempo_factor:1}}];"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          960,
-          120
-        ],
-        "id": "52a58d37-5300-410c-b80a-1fe3c1f0eda1",
-        "name": "Attach Gemini Voice Metadata",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "let ctx;try{ctx=$('Resume Rewritten Voiceover').all().at(-1)?.json}catch{}if(!ctx)ctx=$('Prepare Continuous Voiceover').first().json;if(!ctx?.job_id||!ctx?.script_text)throw new Error('Edge fallback context is missing');return [{json:ctx}];"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          630,
-          350
-        ],
-        "id": "1dbd7f77-45b7-42e9-a50b-4b3ee3d326d3",
-        "name": "Prepare Edge Fallback",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "resume": "timeInterval",
-          "amount": 60,
-          "unit": "seconds"
-        },
-        "type": "n8n-nodes-base.wait",
-        "typeVersion": 1.1,
-        "position": [
-          560,
-          300
-        ],
-        "id": "73610088-6931-49a7-beb6-fb87f75939d4",
-        "name": "Wait Once For TTS Quota",
-        "webhookId": "645ad8de-7f5a-446d-a850-dd832455f9aa",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-tts-gateway",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ ({ text:$json.script_text, language_code:$json.language_code }) }}",
-          "options": {
-            "timeout": 180000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          760,
-          300
-        ],
-        "id": "d6561aa2-3329-44c3-a195-2a8580cf2652",
-        "name": "Retry Gemini Voiceover Once",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "let ctx;try{ctx=$('Resume Rewritten Voiceover').all().at(-1)?.json}catch{}if(!ctx)ctx=$('Prepare Continuous Voiceover').first().json;if(!ctx?.job_id||!ctx?.script_text)throw new Error('Gemini TTS retry context is missing');return [{json:ctx}];"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          470,
-          280
-        ],
-        "id": "b49920b9-819b-403f-8baf-c4a9b49a93f3",
-        "name": "Prepare Gemini TTS Retry",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "conditions": {
-            "options": {
-              "caseSensitive": true,
-              "leftValue": "",
-              "typeValidation": "strict",
-              "version": 3
-            },
-            "conditions": [
-              {
-                "id": "ca67d3e9-8d77-4d70-bde2-28eabdf47d85",
-                "leftValue": "={{ $json.needs_visual_rebind }}",
-                "rightValue": "",
-                "operator": {
-                  "type": "boolean",
-                  "operation": "true",
-                  "singleValue": true
-                }
-              }
-            ],
-            "combinator": "and"
-          },
-          "options": {}
-        },
-        "id": "a4ada2d7-571a-4827-8508-c7b54ebf24f0",
-        "name": "Final Narration Needs Visual Rebind",
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 2.2,
-        "position": [
-          1180,
-          220
-        ]
-      },
-      {
-        "parameters": {
-          "jsCode": "const x=$input.first().json;\nconst beats=Array.isArray(x.beat_timings)?x.beat_timings:[];\nconst expected=({15:6,30:10,45:14,60:18})[Number(x.target_duration_seconds)];\nif(!expected||beats.length!==expected)throw new Error(`final visual rebind beat count ${beats.length}/${expected}`);\nconst beatText=beats.map((b,i)=>`B${i+1} [${Number(b.beat_start_seconds).toFixed(3)}-${Number(b.beat_end_seconds).toFixed(3)}s]: ${String(b.narration??'').trim()}`).join('\\n');\nconst prompt=`Create one concrete English still-image search query for EACH exact final narration beat below. The final TTS has already been accepted, so these beats are authoritative and must not be reordered or generalized.\\n\\nTOPIC: ${x.topic}\\nCANONICAL SUBJECT: ${x.canonical_subject}\\n\\nFINAL BEATS:\\n${beatText}\\n\\nReturn ONLY valid JSON {\"visual_search_queries_en\":[\"...\"]}. Requirements: exactly ${expected} unique queries in B1..B${expected} order; query N must literally depict B${'N'} and must not anticipate another beat; prefer real relevant photographs; technical diagrams/schematics are allowed and required when the beat explains a mechanism; every query must be realistically searchable on Wikimedia Commons or stock-photo providers; no text cards, title cards, logos, abstract icons, label-dominated infographics, generic filler, or unrelated topic-level imagery.`;\nreturn [{json:{...x,final_visual_rebind_prompt:prompt,expected_visual_queries:expected}}];"
-        },
-        "id": "eb2a042f-eb03-4bb4-8c37-c90315d15c27",
-        "name": "Prepare Final Visual Rebind",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          1420,
-          120
-        ]
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ { prompt:$json.final_visual_rebind_prompt, temperature:0.05 } }}",
-          "options": {
-            "timeout": 180000
-          }
-        },
-        "id": "7bc1dd7e-344f-4e21-9cf0-44f388fab8bf",
-        "name": "Rebind Visual Queries To Final Beats",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          1660,
-          120
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "const base=$('Prepare Final Visual Rebind').first().json;\nconst r=$input.first().json;\nlet t=String(r.text??'').trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,'').trim();\nlet o;try{o=JSON.parse(t)}catch{throw new Error('final visual rebind model unavailable or invalid after bounded gateway recovery')}\nconst expected=Number(base.expected_visual_queries);\nconst queries=(Array.isArray(o.visual_search_queries_en)?o.visual_search_queries_en:[]).map(v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim()).filter(Boolean);\nif(queries.length!==expected)throw new Error(`final visual rebind returned ${queries.length}/${expected} queries`);\nif(new Set(queries.map(v=>v.toLocaleLowerCase())).size!==expected)throw new Error('final visual rebind returned duplicate queries');\nreturn [{json:{...base,visual_search_queries_en:queries,needs_visual_rebind:false}}];"
-        },
-        "id": "a7cc7c7d-f23f-43b6-a890-cd3bfaa5a4e8",
-        "name": "Apply Final Visual Rebind",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          1900,
-          120
-        ],
         "onError": "continueErrorOutput"
       }
     ],
@@ -703,7 +478,7 @@
         "main": [
           [
             {
-              "node": "Generate Gemini Voiceover",
+              "node": "Generate Edge Fallback",
               "type": "main",
               "index": 0
             }
@@ -739,7 +514,7 @@
         "main": [
           [
             {
-              "node": "Prepare Beat Timings",
+              "node": "Build Exact Story Unit Timings",
               "type": "main",
               "index": 0
             }
@@ -829,25 +604,7 @@
         "main": [
           [
             {
-              "node": "Generate Gemini Voiceover",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Voiceover Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Beat Timings": {
-        "main": [
-          [
-            {
-              "node": "Final Narration Needs Visual Rebind",
+              "node": "Generate Edge Fallback",
               "type": "main",
               "index": 0
             }
@@ -919,60 +676,6 @@
           ]
         ]
       },
-      "Generate Gemini Voiceover": {
-        "main": [
-          [
-            {
-              "node": "Store Gemini Voiceover",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Edge Fallback",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Store Gemini Voiceover": {
-        "main": [
-          [
-            {
-              "node": "Attach Gemini Voice Metadata",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Edge Fallback",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Store Retried Gemini Voiceover": {
-        "main": [
-          [
-            {
-              "node": "Attach Gemini Voice Metadata",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Edge Fallback",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
       "Generate Edge Fallback": {
         "main": [
           [
@@ -991,151 +694,7 @@
           ]
         ]
       },
-      "Attach Gemini Voice Metadata": {
-        "main": [
-          [
-            {
-              "node": "Evaluate Natural Voiceover",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Edge Fallback",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Edge Fallback": {
-        "main": [
-          [
-            {
-              "node": "Generate Edge Fallback",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Voiceover Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Wait Once For TTS Quota": {
-        "main": [
-          [
-            {
-              "node": "Retry Gemini Voiceover Once",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Edge Fallback",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Retry Gemini Voiceover Once": {
-        "main": [
-          [
-            {
-              "node": "Store Retried Gemini Voiceover",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Edge Fallback",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Gemini TTS Retry": {
-        "main": [
-          [
-            {
-              "node": "Wait Once For TTS Quota",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Edge Fallback",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Final Narration Needs Visual Rebind": {
-        "main": [
-          [
-            {
-              "node": "Prepare Final Visual Rebind",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Persist Voiceover Result",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Final Visual Rebind": {
-        "main": [
-          [
-            {
-              "node": "Rebind Visual Queries To Final Beats",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Voiceover Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Rebind Visual Queries To Final Beats": {
-        "main": [
-          [
-            {
-              "node": "Apply Final Visual Rebind",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Voiceover Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Apply Final Visual Rebind": {
+      "Build Exact Story Unit Timings": {
         "main": [
           [
             {

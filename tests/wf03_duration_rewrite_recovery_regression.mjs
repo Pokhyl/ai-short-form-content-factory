@@ -1,16 +1,4 @@
-import assert from 'node:assert/strict';
-import fs from 'node:fs';
-
-const workflow=JSON.parse(fs.readFileSync(new URL('../n8n/workflows/WF03-natural-edge-voice.json',import.meta.url),'utf8'))[0];
-const code=workflow.nodes.find(node=>node.name==='Apply Duration Rewrite').parameters.jsCode;
-const sentence=n=>Array.from({length:n},(_,i)=>`слово${i}`).join(' ')+'.';
-const original=[sentence(18),sentence(18),sentence(18),sentence(18),sentence(18),sentence(18),sentence(18)].join(' ');
-const base={job_id:'00000000-0000-4000-8000-000000000001',language_code:'ru',target_duration_seconds:60,provider:'microsoft_edge_readaloud',model:'edge_neural',voice:'ru-RU-DmitryNeural',edge_fallback_voice:'ru-RU-DmitryNeural',script_text:original,script_support:[{evidence_id:'E1'}],desired_word_min:110,desired_word_max:124,next_fit_pass:1,max_fit_passes:2};
-const short=sentence(94);
-const run=new Function('$input','$',code);
-const result=run({first:()=>({json:{text:JSON.stringify({script:short})}})},name=>{assert.equal(name,'Prepare Duration Rewrite');return{first:()=>({json:base})};})[0].json;
-const count=result.script_text.match(/[\p{L}\p{N}]+(?:[’'\-][\p{L}\p{N}]+)*/gu)?.length??0;
-assert.ok(count>=102&&count<=132,`recovered count ${count} is outside broad target`);
-assert.notEqual(result.script_text,short);
-assert.ok(result.script_support.length>0);
-console.log('WF03_DURATION_REWRITE_RECOVERY_REGRESSION_PASS');
+import assert from 'node:assert/strict';import fs from 'node:fs';const r=JSON.parse(fs.readFileSync('n8n/workflows/WF03-natural-edge-voice.json','utf8')),w=Array.isArray(r)?r[0]:r,by=new Map(w.nodes.map(n=>[n.name,n])),code=by.get('Apply Duration Rewrite').parameters.jsCode;
+const story={version:'inventory-first-story-v1',units:[{unit_id:'U1',claim_id:'C1',narration:'old words one here',evidence_ids:['S1'],asset_id:'A1',visual_target:'t1'},{unit_id:'U2',claim_id:'C2',narration:'old words two here',evidence_ids:['S2'],asset_id:'A2',visual_target:'t2'},{unit_id:'U3',claim_id:'C3',narration:'old words three here',evidence_ids:['S3'],asset_id:'A3',visual_target:'t3'}],assets:[{asset_id:'A1',visual_hash:'0'.repeat(64)},{asset_id:'A2',visual_hash:'1'.repeat(64)},{asset_id:'A3',visual_hash:'2'.repeat(64)}]};
+const base={job_id:'11111111-1111-4111-8111-111111111111',language_code:'en',target_duration_seconds:15,provider:'microsoft_edge_readaloud',model:'edge_neural',voice:'v',edge_fallback_voice:'v',story_package:story,desired_word_min:10,desired_word_max:14,next_fit_pass:1,max_fit_passes:3,fit_history:[]};const $=name=>{assert.equal(name,'Prepare Duration Rewrite');return {first:()=>({json:base})}};
+const model={text:JSON.stringify({units:[{unit_id:'U1',claim_id:'C1',narration:'new wording one here'},{unit_id:'U2',claim_id:'C2',narration:'new wording two here'},{unit_id:'U3',claim_id:'C3',narration:'new wording three here'}]})};const out=new Function('$input','$',code)({first:()=>({json:model})},$)[0].json;assert.equal(out.story_package.units[0].asset_id,'A1');assert.deepEqual(out.story_package.units[1].evidence_ids,['S2']);assert.equal(out.script_support[2].unit_id,'U3');const bad={text:JSON.stringify({units:[{unit_id:'U1',claim_id:'CHANGED',narration:'new wording one here'},{unit_id:'U2',claim_id:'C2',narration:'new wording two here'},{unit_id:'U3',claim_id:'C3',narration:'new wording three here'}]})};assert.throws(()=>new Function('$input','$',code)({first:()=>({json:bad})},$),/changed frozen identity/);console.log('WF03_DURATION_REWRITE_RECOVERY_REGRESSION_PASS');
