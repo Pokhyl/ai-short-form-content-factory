@@ -29,6 +29,7 @@ assert.match(prepareCode, /Reject lexical coincidences/);
 assert.match(prepareCode, /batchSize=6/);
 assert.match(prepareCode, /input\.length>80/);
 assert.match(prepareCode, /up to four IDs/);
+assert.match(prepareCode, /Math\.min\(4,/,'review exposure must cap candidates per segment at reviewer output capacity');
 assert.match(reviewCode, /selected_candidate_ids/);
 assert.match(reviewCode, /Multimodal review batch set is incomplete/);
 assert.match(reviewCode, /visual_review_shortfall/);
@@ -64,7 +65,8 @@ assert(preparedBatches.every(item=>item.json.batch_count===3));
 const preparedSegments=preparedBatches.flatMap(item=>item.json.segments);
 assert.equal(preparedSegments.length,18);
 assert.deepEqual(preparedSegments.map(s=>s.segment_number),Array.from({length:18},(_,i)=>i+1));
-assert(preparedSegments.every(s=>s.visual_review_candidates.length===6),'six-segment batches must expose six reviewed alternatives per exact beat');
+assert(preparedSegments.every(s=>s.visual_review_candidates.length===4),'six-segment batches must expose at most four reviewed alternatives per exact beat');
+assert(preparedBatches.every(item=>item.json.visual_review_request.input.length===55),'six-segment review batches must stay at 24 images / 55 total input items');
 
 const attach = new Function('$json', '$', attachCode);
 const context = {

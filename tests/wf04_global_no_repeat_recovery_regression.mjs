@@ -6,10 +6,12 @@ const wf=Array.isArray(raw)?raw[0]:raw;
 const node=(name)=>wf.nodes.find(n=>n.name===name);
 const detector=node('Detect Global No-Repeat Conflict');
 const prepare=node('Prepare Conflict Recovery Search');
+const prepareReview=node('Prepare Conflict Recovery Review');
 const merge=node('Merge Conflict Recovery Approval');
 const choose=node('Choose Visual Assignment');
 assert.ok(detector?.parameters?.jsCode);
 assert.ok(prepare?.parameters?.jsCode);
+assert.ok(prepareReview?.parameters?.jsCode);
 assert.ok(merge?.parameters?.jsCode);
 assert.ok(choose?.parameters?.jsCode);
 
@@ -81,6 +83,21 @@ for(const row of recoveryRequests){
   for(const id of row.ranked_candidates.map(c=>c.candidate_id))assert.ok(excluded.has(id));
   assert.equal(row.global_conflict_recovery_round,1);
 }
+
+
+const runPrepareReview=new Function('$input',prepareReview.parameters.jsCode);
+const heavyRecovery=Array.from({length:6},(_,i)=>({json:{
+  ...base(i+1,i*2,(i+1)*2,['A','B']),
+  recovery_ranked_candidates:Array.from({length:10},(_,j)=>({
+    candidate_id:`recovery:${i+1}:${j+1}`,provider:'fixture',provider_asset_id:`${i+1}:${j+1}`,media_kind:'photo',
+    preview_urls:[`https://example.test/recovery/${i+1}/${j+1}.jpg`],visual_hash:'1'.repeat(64),selection_utility:0.8,
+  })),
+}}));
+const heavyPrepared=runPrepareReview({all:()=>heavyRecovery});
+assert.equal(heavyPrepared.length,1);
+assert.equal(heavyPrepared[0].json.recovery_segments.length,6);
+assert.ok(heavyPrepared[0].json.recovery_segments.every(s=>s.recovery_review_candidates.length===4),'recovery review must cap candidate exposure at four per segment');
+assert.equal(heavyPrepared[0].json.visual_recovery_request.input.length,55,'six-segment recovery review must stay at 24 images / 55 total input items');
 
 const prepared=[{
   job_id:'fixture-job',batch_number:1,batch_count:1,
