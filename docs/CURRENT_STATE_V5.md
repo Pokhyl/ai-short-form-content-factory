@@ -5,7 +5,7 @@ Last updated: 2026-09-06
 Branch: `rebuild/agentic-editor-v5`.
 
 
-## 2026-09-06 invocation correction — verified, deployment next
+## 2026-09-06 invocation correction — deployed, fresh E2E running
 
 Continuation base: `086830485d986aa64e77af980f6ef6a4b8206de5`, tree
 `3cdf959ede9af8caec65b63016380a1bb5dc56c6`. Inventory-first is deployed; older
@@ -28,15 +28,22 @@ final story and duration rewrite share this invocation contract. Error outputs
 remain connected to their existing failure handlers. Inventory-first, reserved
 assets, native Edge timing and no-manual-rescue rules remain in force.
 
-Verification: 55 static regressions; real 2.37.10 evaluator reproduces the old
+Verification: 55/55 static regressions PASS; real 2.37.10 evaluator reproduces the old
 syntax error and resolves all four corrected request bodies; fresh PostgreSQL
-prepares 21 SQL statements and exercises staged writes; n8n import must import all
-8 workflows; media-worker build checked. Exact pass results are recorded before
-commit. No production changes from this correction yet.
+prepares 21 SQL statements and exercises staged writes; n8n 2.37.10 imported all 8 workflows; media-worker build PASS.
+Correction committed/pushed as `fae27ad` and deployed to WF02/WF03 only.
+Both current and published-history nodes/connections match that source; active
+versions match. Product n8n was restarted after publication with no running jobs.
+Worker was not replaced for this workflow-only correction.
 
-Next: commit/push the verified correction, deploy only WF02/WF03 from that exact
-commit and verify published runtime parity, then submit a NEW job through WF01
-with topic/language/duration and follow it to an exact MP4 or systemic failure.
+A NEW normal WF01 job was submitted (HTTP 201):
+`897293fa-9627-4f09-b7e0-fc9c49562ba2` — How the Panama Canal locks work / ru / 15.
+It is running autonomously; no creative intervention or old-job retry is allowed.
+Next: inspect its executions, confirm claim drafting invokes V4 Model Gateway,
+then follow through to MP4 or capture/fix a systemic failure and submit a new job.
+No final MP4 or human acceptance has been obtained for this correction yet.
+Targeted rollback export:
+`/opt/ai-short-form-content-factory-runtime-backups/pre-invocation-20260906T205157Z`.
 Production inventory-first rollback backup remains
 `/opt/ai-short-form-content-factory-runtime-backups/pre-inventory-first-20260906T194034Z`.
 
