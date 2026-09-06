@@ -1,4 +1,4 @@
-import { buildVisualSegments } from "./visual-segmentation.mjs";
+import { buildVisualSegments, plannedShotCountForDuration } from "./visual-segmentation.mjs";
 
 const USER_AGENT = "ai-short-form-content-factory/1.0 (https://github.com/Pokhyl/ai-short-form-content-factory)";
 const MAX_RESULTS_PER_PROVIDER = 18;
@@ -38,9 +38,13 @@ function boundedProviderQuery(value, maxChars = PROVIDER_QUERY_MAX_CHARS) {
 const QUERY_FILLER_WORDS = new Set([
   "a", "an", "the", "and", "or", "of", "to", "in", "on", "at", "by", "for", "from", "with", "into", "over", "under", "during",
   "show", "shows", "showing", "visible", "view", "close", "up", "detailed", "detail", "inside", "outside", "modern", "historical", "real", "actual",
-  "image", "picture", "scene", "background", "foreground",
+  "image", "picture", "scene", "background", "foreground", "look", "looking", "working",
 ]);
-const QUERY_MEDIA_CUES = new Set(["portrait", "photo", "photograph", "painting", "diagram", "schematic", "map", "micrograph", "illustration", "cutaway"]);
+const QUERY_MEDIA_CUES = new Set(["portrait", "photo", "photograph", "photography", "painting", "diagram", "schematic", "map", "micrograph", "illustration", "cutaway", "model"]);
+const QUERY_LOW_SIGNAL_WORDS = new Set([
+  "early", "late", "century", "scientific", "science", "research", "concept", "setting", "equipment", "laboratory", "lab",
+  "experiment", "experimental", "setup", "context", "generic", "general", "representation", "representing",
+]);
 
 function queryWordRows(value) {
   return cleanText(value).match(/[\p{L}\p{N}]+/gu)?.map((word) => ({ raw: word, key: word.toLocaleLowerCase() })) ?? [];
@@ -50,17 +54,25 @@ function semanticQueryRows(value) {
   return queryWordRows(value).filter((row) => row.key.length >= 3 && !QUERY_FILLER_WORDS.has(row.key));
 }
 
+function anchorQueryRows(value) {
+  return semanticQueryRows(value).filter((row) =>
+    !QUERY_MEDIA_CUES.has(row.key)
+    && !QUERY_LOW_SIGNAL_WORDS.has(row.key)
+    && !/^\d+(?:st|nd|rd|th)$/u.test(row.key),
+  );
+}
+
 function canonicalOverlapRows(query, canonicalTitle) {
-  const canonical = new Set(semanticQueryRows(canonicalTitle).map((row) => row.key));
+  const canonical = new Set(anchorQueryRows(canonicalTitle).map((row) => row.key));
   const seen = new Set();
-  return semanticQueryRows(query).filter((row) => canonical.has(row.key) && !seen.has(row.key) && seen.add(row.key));
+  return anchorQueryRows(query).filter((row) => canonical.has(row.key) && !seen.has(row.key) && seen.add(row.key));
 }
 
 function queryAnchorKeys(query, canonicalTitle) {
   const shared = canonicalOverlapRows(query, canonicalTitle);
   if (shared.length >= 2) return { keys: shared.map((row) => row.key), requireAll: true };
-  const semantic = semanticQueryRows(query);
-  return { keys: semantic.slice(0, Math.min(3, semantic.length)).map((row) => row.key), requireAll: false };
+  const semantic = anchorQueryRows(query);
+  return { keys: [...new Set(semantic.map((row) => row.key))].slice(0, 8), requireAll: false };
 }
 
 function candidateSearchText(candidate) {
@@ -71,15 +83,44 @@ function candidateSearchText(candidate) {
     candidate?.metadata?.source_title,
     candidate?.metadata?.source_description,
     candidate?.metadata?.source_tags,
+    candidate?.source_url,
   ].filter(Boolean).join(" ")).toLocaleLowerCase();
 }
 
-function candidateMatchesQueryAnchor(candidate, query, canonicalTitle) {
+function relatedAnchorKey(left, right) {
+  if (left === right) return true;
+  if (left.length < 5 || right.length < 5) return false;
+  return left.slice(0, 6) === right.slice(0, 6);
+}
+
+function candidateQueryAnchorMetrics(candidate, query, canonicalTitle) {
   const anchor = queryAnchorKeys(query, canonicalTitle);
-  if (!anchor.keys.length) return false;
-  const text = candidateSearchText(candidate);
-  const hits = anchor.keys.reduce((count, key) => count + (text.includes(key) ? 1 : 0), 0);
-  return anchor.requireAll ? hits === anchor.keys.length : hits >= Math.min(2, anchor.keys.length);
+  const words = [...new Set(queryWordRows(candidateSearchText(candidate)).map((row) => row.key))];
+  const hits = anchor.keys.filter((key) => words.some((word) => relatedAnchorKey(key, word))).length;
+  const required = anchor.requireAll ? anchor.keys.length : (anchor.keys.length <= 1 ? anchor.keys.length : Math.min(anchor.keys.length >= 4 ? 3 : 2, anchor.keys.length));
+  return {
+    keys: anchor.keys,
+    hits,
+    required,
+    pass: required > 0 && hits >= required,
+    require_all: anchor.requireAll,
+  };
+}
+
+function withCandidateAnchorMetrics(candidate, query, canonicalTitle) {
+  const metrics = candidateQueryAnchorMetrics(candidate, query, canonicalTitle);
+  return {
+    ...candidate,
+    target_anchor_keys: metrics.keys,
+    target_anchor_hits: metrics.hits,
+    target_anchor_required: metrics.required,
+    target_anchor_pass: metrics.pass,
+    target_anchor_require_all: metrics.require_all,
+  };
+}
+
+function candidateMatchesQueryAnchor(candidate, query, canonicalTitle) {
+  return candidateQueryAnchorMetrics(candidate, query, canonicalTitle).pass;
 }
 
 function compactRecoveryQuery(query, canonicalTitle) {
@@ -148,7 +189,7 @@ function buildBeatAlignedVisualSegmentation(timedBeats) {
       narration,
       support_evidence_ids: support,
       search_terms: [],
-      planned_shot_count: duration >= 1.8 ? 2 : 1,
+      planned_shot_count: plannedShotCountForDuration(duration),
     };
   });
   return {
@@ -444,6 +485,7 @@ function dedupeCandidates(candidates) {
 
 export async function recoverVisualConflictCandidates({
   visualTarget,
+  canonicalSubject = "",
   excludeCandidateIds = [],
   pixabayApiKey = "",
   pexelsApiKey = "",
@@ -471,12 +513,17 @@ export async function recoverVisualConflictCandidates({
       message: cleanText(result.reason?.message).slice(0, 240),
     });
   }
-  const candidates = dedupeCandidates(rows).filter((candidate) => !excluded.has(cleanText(candidate?.candidate_id)));
+  const canonical = cleanText(canonicalSubject) || target;
+  const deduped = dedupeCandidates(rows).filter((candidate) => !excluded.has(cleanText(candidate?.candidate_id)));
+  const annotated = deduped.map((candidate) => withCandidateAnchorMetrics(candidate, target, canonical));
+  const candidates = annotated.filter((candidate) => candidate.target_anchor_pass === true);
   return {
     visual_target: target,
+    canonical_subject: canonical,
     provider_query: query,
     candidates,
     excluded_candidate_count: excluded.size,
+    semantic_rejected_candidate_count: annotated.length - candidates.length,
     provider_errors: providerErrors,
     bounded_global_conflict_recovery: true,
   };
@@ -572,19 +619,25 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
     if (segmentedMode) {
       const exact = await fetchTimedProviderSet(exactQuery, unitNumber);
       localErrors.push(...exact.errors);
-      const canonicalExact = canonicalMedia.filter((candidate) => candidateMatchesQueryAnchor(candidate, anchor, englishTitle));
-      let candidates = dedupeCandidates([...canonicalExact, ...exact.candidates]);
       const required = Math.max(1, Number(unit.required_images) || 1);
-      const strongCount = candidates.filter((candidate) => candidateMatchesQueryAnchor(candidate, anchor, englishTitle)).length;
-      const recoveryQuery = strongCount < required ? compactRecoveryQuery(anchor, englishTitle) : null;
+      const exactAnnotated = exact.candidates.map((candidate) => withCandidateAnchorMetrics(candidate, anchor, englishTitle));
+      const exactStrong = exactAnnotated.filter((candidate) => candidate.target_anchor_pass === true);
+      const canonicalAnnotated = canonicalMedia.map((candidate) => withCandidateAnchorMetrics(candidate, anchor, englishTitle));
+      const canonicalExact = canonicalAnnotated.filter((candidate) => candidate.target_anchor_pass === true);
+      let candidates = dedupeCandidates([...canonicalExact, ...exactStrong]);
+      if (candidates.length < required) candidates = dedupeCandidates([...candidates, ...canonicalAnnotated]);
+      const recoveryQuery = candidates.length < required ? compactRecoveryQuery(anchor, englishTitle) : null;
       const providerQueries = [exactQuery];
       let recoveryUsed = false;
       if (recoveryQuery) {
         const recovered = await fetchTimedProviderSet(recoveryQuery, unitNumber);
         localErrors.push(...recovered.errors);
         providerQueries.push(recoveryQuery);
-        const recoveredRows = markRecoveryCandidates(recovered.candidates, recoveryQuery);
-        candidates = dedupeCandidates([...canonicalExact, ...recoveredRows, ...candidates]);
+        const recoveredStrong = recovered.candidates
+          .map((candidate) => withCandidateAnchorMetrics(candidate, anchor, englishTitle))
+          .filter((candidate) => candidate.target_anchor_pass === true);
+        const recoveredRows = markRecoveryCandidates(recoveredStrong, recoveryQuery);
+        candidates = dedupeCandidates([...candidates, ...recoveredRows]);
         recoveryUsed = true;
       }
       return {

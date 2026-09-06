@@ -8,7 +8,7 @@ const gateway=JSON.parse(fs.readFileSync(path.join(here,'../n8n/workflows/V4-mod
 const wf04=JSON.parse(fs.readFileSync(path.join(here,'../n8n/workflows/WF04-visual-sourcing.json'),'utf8'))[0];
 const by=Object.fromEntries((gateway.nodes??[]).map(n=>[n.name,n]));
 const buildFn=new Function('$json',String(by['Build Request'].parameters.jsCode));
-const schema={type:'object',properties:{segments:{type:'array',items:{type:'object',properties:{segment_number:{type:'integer'},selected_candidate_ids:{type:'array',items:{type:'string'}},reasons:{type:'object'}},required:['segment_number','selected_candidate_ids','reasons']}}},required:['segments']};
+const schema={type:'object',properties:{segments:{type:'array',items:{type:'object',properties:{segment_number:{type:'integer'},verdicts:{type:'array',items:{type:'object',properties:{review_id:{type:'string'},relevant:{type:'boolean'},visible_description:{type:'string'}},required:['review_id','relevant','visible_description']}}},required:['segment_number','verdicts']}}},required:['segments']};
 const structured=buildFn({body:{prompt:'Return JSON',response_format:'json',response_schema:schema}})[0].json;
 assert.equal(structured.expects_json,true);
 assert.deepEqual(structured.kilo_request_body.response_format,{type:'json_object'});
@@ -45,6 +45,7 @@ for(const name of ['Review Actual Candidate Images','Review Conflict Recovery Im
   const body=String(wf04By[name]?.parameters?.jsonBody??'');
   assert.match(body,/response_format:\s*'json'/,`${name} must opt into structured JSON`);
   assert.match(body,/response_schema/,`${name} must send a JSON schema`);
-  assert.match(body,/selected_candidate_ids/,`${name} schema must constrain selected candidate IDs`);
+  assert.match(body,/verdicts/,`${name} schema must constrain candidate verdicts`);
+  assert.match(body,/visible_description/,`${name} schema must require grounded visible descriptions`);
 }
 console.log('MODEL_GATEWAY_STRUCTURED_OUTPUT_REGRESSION_PASS');

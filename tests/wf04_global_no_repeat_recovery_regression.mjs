@@ -19,7 +19,7 @@ const H={A:'0'.repeat(64),B:'f'.repeat(64),C:'a'.repeat(64),D:'5'.repeat(64),E:'
 const c=(id,u=0.9)=>({
   candidate_id:id,provider:'fixture',provider_asset_id:id,media_kind:'photo',
   visual_hash:H[id],selection_utility:u,download_url:`https://example.test/${id}.jpg`,
-  preview_urls:[`https://example.test/${id}.jpg`],
+  preview_urls:[`https://example.test/${id}.jpg`],title:`exact target fixture ${id}`,description:`exact target fixture ${id}`,metadata:{retrieval_source:'fixture_search',source_title:`exact target fixture ${id}`},target_anchor_pass:true,
 });
 const base=(segment_number,start,end,ids)=>({
   job_id:'fixture-job',segment_id:`segment-${segment_number}`,segment_number,
@@ -102,14 +102,14 @@ assert.equal(heavyPrepared[0].json.visual_recovery_request.input.length,55,'six-
 const prepared=[{
   job_id:'fixture-job',batch_number:1,batch_count:1,
   recovery_segments:[
-    {...detected[0],recovery_review_candidates:[c('E')]},
-    {...detected[1],recovery_review_candidates:[c('D')]},
+    {...detected[0],recovery_review_candidates:[{...c('E'),visual_review_id:'R1-C1'}]},
+    {...detected[1],recovery_review_candidates:[{...c('D'),visual_review_id:'R2-C1'}]},
   ],
 }];
 const responses=[{
   text:JSON.stringify({segments:[
-    {segment_number:1,selected_candidate_ids:[],reasons:{}},
-    {segment_number:2,selected_candidate_ids:['D'],reasons:{D:'exact visible match'}},
+    {segment_number:1,verdicts:[{review_id:'R1-C1',relevant:false,visible_description:'unrelated visible object'}]},
+    {segment_number:2,verdicts:[{review_id:'R2-C1',relevant:true,visible_description:'exact target fixture D'}]},
   ]}),
   model:'fixture-vision',
 }];
@@ -125,8 +125,8 @@ assert.ok(merged[1].ranked_candidates.some(x=>x.candidate_id==='D'));
 assert.ok(!merged[0].ranked_candidates.some(x=>x.candidate_id==='E'),'unapproved recovery image must never enter the assignment pool');
 
 
-const shortPrepared=[{job_id:'fixture-job',batch_number:1,batch_count:1,recovery_segments:[{...oneApprovedDetected[0],recovery_review_candidates:[c('E')]}]}];
-const shortResponse=[{text:JSON.stringify({segments:[{segment_number:3,selected_candidate_ids:['E'],reasons:{E:'new exact visible match'}}]}),model:'fixture-vision'}];
+const shortPrepared=[{job_id:'fixture-job',batch_number:1,batch_count:1,recovery_segments:[{...oneApprovedDetected[0],recovery_review_candidates:[{...c('E'),visual_review_id:'R3-C1'}]}]}];
+const shortResponse=[{text:JSON.stringify({segments:[{segment_number:3,verdicts:[{review_id:'R3-C1',relevant:true,visible_description:'exact target fixture E'}]}]}),model:'fixture-vision'}];
 const $shortMerge=(name)=>{
   if(name==='Prepare Conflict Recovery Review')return {all:()=>shortPrepared.map(json=>({json}))};
   if(name==='Detect Global No-Repeat Conflict')return {all:()=>oneApprovedDetected.map(json=>({json}))};
@@ -136,8 +136,8 @@ const shortMerged=runMerge({all:()=>shortResponse.map(json=>({json}))},$shortMer
 assert.equal(shortMerged[0].ranked_candidates.length,2);
 assert.equal(shortMerged[0].visual_review_shortfall,false);
 assert.equal(shortMerged[0].visual_review_approved_count,2);
-const shortRejected=[{text:JSON.stringify({segments:[{segment_number:3,selected_candidate_ids:[],reasons:{}}]}),model:'fixture-vision'}];
-assert.throws(()=>runMerge({all:()=>shortRejected.map(json=>({json}))},$shortMerge),/Exact-target recovery approved 1\/2 relevant images/);
+const shortRejected=[{text:JSON.stringify({segments:[{segment_number:3,verdicts:[{review_id:'R3-C1',relevant:false,visible_description:'unrelated visible object'}]}]}),model:'fixture-vision'}];
+assert.throws(()=>runMerge({all:()=>shortRejected.map(json=>({json}))},$shortMerge),/Exact-target recovery approved 1\/2 grounded images/);
 
 const runChoose=new Function('$input','$',choose.parameters.jsCode);
 const $choose=(name)=>{
@@ -158,7 +158,9 @@ assert.ok(dests('Global No-Repeat Recovery Required?',1).includes('Choose Visual
 assert.ok(dests('Merge Conflict Recovery Approval').includes('Choose Visual Assignment'));
 assert.equal(node('Fetch Conflict Recovery Candidates')?.parameters?.url,'http://media-worker:3001/visual/recover-conflict');
 assert.match(prepare.parameters.jsCode,/exclude_candidate_ids/);
-assert.match(merge.parameters.jsCode,/filter\(id=>own\.has\(id\)\)/);
+assert.match(merge.parameters.jsCode,/visual_review_id/);
+assert.match(merge.parameters.jsCode,/visibleMeta/);
+assert.match(merge.parameters.jsCode,/targetPass/);
 assert.equal(node('Global No-Repeat Recovery Required?')?.parameters?.conditions?.conditions?.[0]?.leftValue,'={{ $json.global_assignment_recovery_required }}');
 for(const name of ['Fetch Conflict Recovery Candidates','Fingerprint Conflict Recovery','Inline Conflict Recovery Images','Review Conflict Recovery Images']){
   assert.match(String(node(name)?.parameters?.jsonBody??''),/^=\{\{/);

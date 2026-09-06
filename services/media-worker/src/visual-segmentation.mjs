@@ -1,3 +1,11 @@
+export const SECOND_SHOT_MIN_SECONDS = 3.2;
+
+export function plannedShotCountForDuration(value) {
+  const seconds = Number(value);
+  if (!Number.isFinite(seconds) || seconds <= 0) throw new Error("visual shot cadence duration must be positive");
+  return seconds >= SECOND_SHOT_MIN_SECONDS ? 2 : 1;
+}
+
 const DEFAULT_SEGMENTATION = Object.freeze({
   min_segment_seconds: 2.4,
   support_change_min_seconds: 3.2,
@@ -179,9 +187,9 @@ export function buildVisualSegments(timedBeats, options = {}) {
     segment.segment_number = i + 1;
     if (Math.abs(segment.start_seconds - cursor) > 0.012) throw new Error(`visual segment ${i + 1} starts with a gap`);
     if (segment.duration_seconds > effectiveMaxSegmentSeconds + 0.02) throw new Error(`visual segment ${i + 1} exceeds quality-constrained maximum duration`);
-    // Keep the screen visually fresh: every readable semantic segment receives
-    // two distinct full-screen stills. Only sub-1.8s beats keep one image.
-    segment.planned_shot_count = segment.duration_seconds >= 1.8 ? 2 : 1;
+    // Editorial cadence: keep one still for normal beats and use a second still
+    // only for longer beats. 3.2s is the existing meaningful support-change boundary.
+    segment.planned_shot_count = plannedShotCountForDuration(segment.duration_seconds);
     cursor = segment.end_seconds;
   }
   if (Math.abs(cursor - previousEnd) > 0.012) throw new Error("visual segments do not cover the full timed-beat duration");

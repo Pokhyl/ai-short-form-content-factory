@@ -1231,6 +1231,7 @@ async function recoverVisualConflict(request, response) {
   try {
     const result = await recoverVisualConflictCandidates({
       visualTarget: body?.visual_target,
+      canonicalSubject: body?.canonical_subject,
       excludeCandidateIds: body?.exclude_candidate_ids,
       pixabayApiKey: process.env.PIXABAY_API_KEY ?? "",
       pexelsApiKey: process.env.PEXELS_API_KEY ?? "",
