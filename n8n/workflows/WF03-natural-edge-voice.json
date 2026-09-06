@@ -319,7 +319,7 @@
           "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { prompt:$json.rewrite_prompt, temperature:0.05, response_format:'json', response_schema:{\"type\":\"object\",\"properties\":{\"units\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"unit_id\":{\"type\":\"string\"},\"claim_id\":{\"type\":\"string\"},\"narration\":{\"type\":\"string\"}},\"required\":[\"unit_id\",\"claim_id\",\"narration\"]}}},\"required\":[\"units\"]} } }}",
+          "jsonBody": "={{ $json.model_request }}",
           "options": {
             "timeout": 180000
           }
@@ -405,6 +405,21 @@
         ],
         "id": "9d49a960-a515-4a25-a5b0-821b2a8908c3",
         "name": "Generate Edge Fallback",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const item=$json;\nconst model_request={ prompt:item.rewrite_prompt, temperature:0.05, response_format:'json', response_schema:{\"type\":\"object\",\"properties\":{\"units\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"unit_id\":{\"type\":\"string\"},\"claim_id\":{\"type\":\"string\"},\"narration\":{\"type\":\"string\"}},\"required\":[\"unit_id\",\"claim_id\",\"narration\"]}}},\"required\":[\"units\"]} };\nreturn {json:{...item,model_request}};"
+        },
+        "id": "e1774e6a-9cdd-4b30-a1fc-107e2dcefa15",
+        "name": "Build Rewrite Narration For Exact Duration Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2140,
+          380
+        ],
         "onError": "continueErrorOutput"
       }
     ],
@@ -532,7 +547,7 @@
         "main": [
           [
             {
-              "node": "Rewrite Narration For Exact Duration",
+              "node": "Build Rewrite Narration For Exact Duration Request",
               "type": "main",
               "index": 0
             }
@@ -699,6 +714,24 @@
           [
             {
               "node": "Persist Voiceover Result",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Voiceover Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Rewrite Narration For Exact Duration Request": {
+        "main": [
+          [
+            {
+              "node": "Rewrite Narration For Exact Duration",
               "type": "main",
               "index": 0
             }

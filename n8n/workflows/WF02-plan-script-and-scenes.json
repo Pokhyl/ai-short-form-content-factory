@@ -330,7 +330,7 @@
           "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { prompt: $json.claim_prompt, temperature: 0.15, response_format: 'json', response_schema: {\"type\":\"object\",\"properties\":{\"claims\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"claim_id\":{\"type\":\"string\"},\"claim\":{\"type\":\"string\"},\"evidence_ids\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"visual_target\":{\"type\":\"string\"}},\"required\":[\"claim_id\",\"claim\",\"evidence_ids\",\"visual_target\"]}}},\"required\":[\"claims\"]} } }}",
+          "jsonBody": "={{ $json.model_request }}",
           "options": {
             "timeout": 180000
           }
@@ -473,7 +473,7 @@
           "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { input: $json.input, response_format: 'json', response_schema: { type: 'object', properties: { claims: { type: 'array', items: { type: 'object', properties: { claim_number: { type: 'integer' }, verdicts: { type: 'array', items: { type: 'object', properties: { review_id: { type: 'string' }, relevant: { type: 'boolean' }, visible_description: { type: 'string' } }, required: ['review_id','relevant','visible_description'] } } }, required: ['claim_number','verdicts'] } } }, required: ['claims'] } } }}",
+          "jsonBody": "={{ $json.model_request }}",
           "options": {
             "timeout": 180000
           }
@@ -523,7 +523,7 @@
           "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { prompt: $json.story_prompt, temperature: 0.15, response_format: 'json', response_schema: {\"type\":\"object\",\"properties\":{\"units\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"claim_id\":{\"type\":\"string\"},\"narration\":{\"type\":\"string\"}},\"required\":[\"claim_id\",\"narration\"]}}},\"required\":[\"units\"]} } }}",
+          "jsonBody": "={{ $json.model_request }}",
           "options": {
             "timeout": 180000
           }
@@ -581,6 +581,51 @@
         "position": [
           5800,
           300
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const item=$json;\nconst model_request={ prompt: item.claim_prompt, temperature: 0.15, response_format: 'json', response_schema: {\"type\":\"object\",\"properties\":{\"claims\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"claim_id\":{\"type\":\"string\"},\"claim\":{\"type\":\"string\"},\"evidence_ids\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"visual_target\":{\"type\":\"string\"}},\"required\":[\"claim_id\",\"claim\",\"evidence_ids\",\"visual_target\"]}}},\"required\":[\"claims\"]} };\nreturn {json:{...item,model_request}};"
+        },
+        "id": "e38b0e4d-3826-4676-89dc-102320b114d6",
+        "name": "Build Draft Candidate Claims Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2340,
+          460
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const item=$json;\nconst model_request={ input: item.input, response_format: 'json', response_schema: { type: 'object', properties: { claims: { type: 'array', items: { type: 'object', properties: { claim_number: { type: 'integer' }, verdicts: { type: 'array', items: { type: 'object', properties: { review_id: { type: 'string' }, relevant: { type: 'boolean' }, visible_description: { type: 'string' } }, required: ['review_id','relevant','visible_description'] } } }, required: ['claim_number','verdicts'] } } }, required: ['claims'] } };\nreturn {json:{...item,model_request}};"
+        },
+        "id": "c249fb0a-b0c9-4645-b2a6-5281e5e0828a",
+        "name": "Build Review Inventory Candidate Images Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4260,
+          460
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const item=$json;\nconst model_request={ prompt: item.story_prompt, temperature: 0.15, response_format: 'json', response_schema: {\"type\":\"object\",\"properties\":{\"units\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"claim_id\":{\"type\":\"string\"},\"narration\":{\"type\":\"string\"}},\"required\":[\"claim_id\",\"narration\"]}}},\"required\":[\"units\"]} };\nreturn {json:{...item,model_request}};"
+        },
+        "id": "6b2ec029-15d5-41a7-bb4c-b3ddbbe2f177",
+        "name": "Build Write Inventory Grounded Story Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4980,
+          460
         ],
         "onError": "continueErrorOutput"
       }
@@ -803,7 +848,7 @@
         "main": [
           [
             {
-              "node": "Draft Candidate Claims",
+              "node": "Build Draft Candidate Claims Request",
               "type": "main",
               "index": 0
             }
@@ -947,7 +992,7 @@
         "main": [
           [
             {
-              "node": "Review Inventory Candidate Images",
+              "node": "Build Review Inventory Candidate Images Request",
               "type": "main",
               "index": 0
             }
@@ -1001,7 +1046,7 @@
         "main": [
           [
             {
-              "node": "Write Inventory Grounded Story",
+              "node": "Build Write Inventory Grounded Story Request",
               "type": "main",
               "index": 0
             }
@@ -1074,6 +1119,60 @@
           [
             {
               "node": "Start Voiceover Generation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Draft Candidate Claims Request": {
+        "main": [
+          [
+            {
+              "node": "Draft Candidate Claims",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Review Inventory Candidate Images Request": {
+        "main": [
+          [
+            {
+              "node": "Review Inventory Candidate Images",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Write Inventory Grounded Story Request": {
+        "main": [
+          [
+            {
+              "node": "Write Inventory Grounded Story",
               "type": "main",
               "index": 0
             }

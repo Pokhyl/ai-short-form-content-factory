@@ -5,6 +5,41 @@ Last updated: 2026-09-06
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-06 invocation correction — verified, deployment next
+
+Continuation base: `086830485d986aa64e77af980f6ef6a4b8206de5`, tree
+`3cdf959ede9af8caec65b63016380a1bb5dc56c6`. Inventory-first is deployed; older
+pre-production statements below are historical. Production n8n is **2.37.10**;
+Compose and import tests are now pinned to that actual version, without downgrade.
+WF02/WF03 runtime nodes/connections/settings matched this base before correction.
+
+Latest product job `f7ef9f04-c6db-47af-b90f-1d6747ce6f2f` (Panama Canal locks,
+ru, 15) failed/script at Draft Candidate Claims in WF02 execution **16291**.
+Gateway 16292/16293 succeeded for topic resolution, but no gateway invocation
+was created for the claim draft. The failed job is not retried or manually edited.
+
+Exact cause reproduced with the live 2.37.10 Expression evaluator: compact nested
+JSON schemas contain `}}`, which the expression parser treats as the expression
+terminator. Normal JavaScript compilation and workflow import do not catch this.
+
+The four structured model calls now build their payloads in Code nodes and pass
+only `={{ $json.model_request }}` to HTTP Request. Claim generation, visual review,
+final story and duration rewrite share this invocation contract. Error outputs
+remain connected to their existing failure handlers. Inventory-first, reserved
+assets, native Edge timing and no-manual-rescue rules remain in force.
+
+Verification: 55 static regressions; real 2.37.10 evaluator reproduces the old
+syntax error and resolves all four corrected request bodies; fresh PostgreSQL
+prepares 21 SQL statements and exercises staged writes; n8n import must import all
+8 workflows; media-worker build checked. Exact pass results are recorded before
+commit. No production changes from this correction yet.
+
+Next: commit/push the verified correction, deploy only WF02/WF03 from that exact
+commit and verify published runtime parity, then submit a NEW job through WF01
+with topic/language/duration and follow it to an exact MP4 or systemic failure.
+Production inventory-first rollback backup remains
+`/opt/ai-short-form-content-factory-runtime-backups/pre-inventory-first-20260906T194034Z`.
+
 ## 2026-09-06 inventory-first implementation — pre-production verified
 
 The Codex audit direction has now been implemented in the existing n8n product path on preservation branch `continuation/codex-recovery-20260906`. This is not a new product or a V6 side architecture.

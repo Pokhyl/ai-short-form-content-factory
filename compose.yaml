@@ -16,7 +16,7 @@ services:
       - ./db/init:/docker-entrypoint-initdb.d:ro
 
   n8n:
-    image: n8nio/n8n:2.33.3
+    image: n8nio/n8n:2.37.10
     restart: unless-stopped
     depends_on:
       postgres:

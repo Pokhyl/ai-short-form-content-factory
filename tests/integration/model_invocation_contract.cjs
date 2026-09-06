@@ -1,0 +1,27 @@
+const fs=require('node:fs');
+const assert=require('node:assert/strict');
+const {Expression}=require('/usr/local/lib/node_modules/n8n/node_modules/n8n-workflow');
+const evaluator=new Expression('UTC');
+const fixture={claim_prompt:'Candidate fixture',story_prompt:'Story fixture',rewrite_prompt:'Rewrite fixture',input:[{type:'text',text:'Review fixture'}]};
+let checked=0;
+for(const file of fs.readdirSync('n8n/workflows').filter(f=>f.endsWith('.json'))){
+ const raw=JSON.parse(fs.readFileSync('n8n/workflows/'+file,'utf8'));
+ for(const w of Array.isArray(raw)?raw:[raw])for(const node of w.nodes){
+  if(node.parameters?.jsonBody!=='={{ $json.model_request }}')continue;
+  const builder=w.nodes.find(n=>n.name==='Build '+node.name+' Request');
+  assert(builder,`Missing builder for ${node.name}`);
+  const item=new Function('$json',builder.parameters.jsCode)(fixture).json;
+  const resolved=evaluator.renderExpression(node.parameters.jsonBody.slice(1),{$json:item});
+  assert.deepEqual(JSON.parse(JSON.stringify(resolved)),item.model_request);
+  assert.equal(resolved.response_format,'json');
+  assert.equal(resolved.response_schema.type,'object');
+  assert(resolved.prompt||resolved.input);
+  assert(w.connections[builder.name].main[0].some(e=>e.node===node.name));
+  // The compact schema literal reproduces the production defect on this engine.
+  const broken='{{ {response_schema:'+JSON.stringify(resolved.response_schema)+'} }}';
+  assert.throws(()=>evaluator.renderExpression(broken,{$json:fixture}),/invalid syntax/);
+  checked++;
+ }
+}
+assert.equal(checked,4,'Every structured call must be exercised');
+console.log('MODEL_INVOCATION_CONTRACT_PASS',checked);

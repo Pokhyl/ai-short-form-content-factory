@@ -14,7 +14,7 @@ with tempfile.TemporaryDirectory(prefix="content-factory-import-") as directory:
     source.write_text(json.dumps(workflows))
     result = subprocess.run([
         "docker", "run", "--rm", "--network", "none", "--entrypoint", "n8n",
-        "-v", f"{source}:/workflows.json:ro", "n8nio/n8n:2.33.3",
+        "-v", f"{source}:/workflows.json:ro", "n8nio/n8n:2.37.10",
         "import:workflow", "--input=/workflows.json",
     ], text=True, capture_output=True)
     output = result.stdout + result.stderr
@@ -22,4 +22,4 @@ with tempfile.TemporaryDirectory(prefix="content-factory-import-") as directory:
         raise RuntimeError(output)
     if "Skipping invalid workflow" in output:
         raise RuntimeError(output)
-print(f"N8N_IMPORT_CONTRACT_PASS: {len(workflows)} workflows on 2.33.3")
+print(f"N8N_IMPORT_CONTRACT_PASS: {len(workflows)} workflows on 2.37.10")
