@@ -31,7 +31,8 @@ assert.match(prepareCode, /input\.length>80/);
 assert.match(prepareCode, /up to four IDs/);
 assert.match(reviewCode, /selected_candidate_ids/);
 assert.match(reviewCode, /Multimodal review batch set is incomplete/);
-assert.match(reviewCode, /unreviewed fallback is forbidden/);
+assert.match(reviewCode, /visual_review_shortfall/);
+assert.match(n4.get('Merge Conflict Recovery Approval').parameters.jsCode, /unreviewed fallback is forbidden/);
 assert.doesNotMatch(reviewCode,/localFallback|segment-local ranked recovery candidate/);
 assert.equal(n4.get('Prepare Multimodal Visual Review').parameters.mode,'runOnceForAllItems');
 assert.equal(n4.get('Require Multimodal Visual Selection').parameters.mode,'runOnceForAllItems');
@@ -90,11 +91,22 @@ const review$=name=>{assert.equal(name,'Prepare Multimodal Visual Review');retur
 const selected=review({all:()=>[{json:{text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:['photo:good'],reasons:{'photo:good':'visible exact subject'}}]}),model:'fixture'}}]},review$)[0].json.ranked_candidates;
 assert.deepEqual(selected.map(item=>item.candidate_id),['photo:good']);
 assert.equal(selected[0].multimodal_reason,'visible exact subject');
-assert.throws(()=>review({all:()=>[{json:{text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:[]}]})}}]},review$),/approved 0\/1 relevant images/);
+const zeroApproved=review({all:()=>[{json:{text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:[]}]})}}]},review$)[0].json;
+assert.equal(zeroApproved.visual_review_shortfall,true);
+assert.equal(zeroApproved.visual_review_approved_count,0);
+assert.equal(zeroApproved.visual_review_required_count,1);
+assert.deepEqual(zeroApproved.ranked_candidates,[]);
 
 const twoShotContext={job_id:'00000000-0000-4000-8000-000000000001',batch_number:1,batch_count:1,segments:[{...context,planned_shot_count:2,visual_review_candidates:accepted}]};
 const twoShot$=()=>({all:()=>[{json:twoShotContext}]});
-const approvedTwo=review({all:()=>[{json:{text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:['photo:good','photo:garbage'],reasons:{'photo:good':'visible exact subject','photo:garbage':'second visibly relevant fixture'}}]})}}]},twoShot$)[0].json.ranked_candidates;
+const oneOfTwo=review({all:()=>[{json:{text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:['photo:good'],reasons:{'photo:good':'visible exact subject'}}]})}}]},twoShot$)[0].json;
+assert.equal(oneOfTwo.visual_review_shortfall,true);
+assert.equal(oneOfTwo.visual_review_approved_count,1);
+assert.equal(oneOfTwo.visual_review_required_count,2);
+assert.deepEqual(oneOfTwo.ranked_candidates.map(item=>item.candidate_id),['photo:good']);
+const approvedTwoRow=review({all:()=>[{json:{text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:['photo:good','photo:garbage'],reasons:{'photo:good':'visible exact subject','photo:garbage':'second visibly relevant fixture'}}]})}}]},twoShot$)[0].json;
+assert.equal(approvedTwoRow.visual_review_shortfall,false);
+const approvedTwo=approvedTwoRow.ranked_candidates;
 assert.deepEqual(approvedTwo.map(item=>item.candidate_id),['photo:good','photo:garbage']);
 assert.equal(new Set(approvedTwo.map(item=>item.candidate_id)).size,2);
 const mergedDuplicate=review({all:()=>[{json:{text:JSON.stringify({segments:[{segment_number:1,selected_candidate_ids:['photo:good'],reasons:{'photo:good':'first approved'}},{segment_number:99,selected_candidate_ids:['video:weak']},{segment_number:1,selected_candidate_ids:['photo:garbage'],reasons:{'photo:garbage':'second approved'}}]})}}]},twoShot$)[0].json.ranked_candidates;
@@ -115,7 +127,7 @@ assert.deepEqual(multiOut.map(x=>x.visual_review_batch),[1,2]);
 assert.deepEqual(multiOut.map(x=>x.ranked_candidates[0].candidate_id),['photo:good','photo:good:2']);
 
 assert.match(n4.get('Choose Visual Assignment').parameters.jsCode, /assetCount>1\)continue/);
-assert.throws(()=>review({all:()=>[{json:{text:'not-json'}}]},review$),/approved 0\/1 relevant images/);
+assert.throws(()=>review({all:()=>[{json:{text:'not-json'}}]},review$),/returned invalid JSON/);
 
 for (const node of [...wf02.nodes, ...wf04.nodes].filter(node => node.type === 'n8n-nodes-base.code')) {
   new Function('$input', '$', node.parameters.jsCode);

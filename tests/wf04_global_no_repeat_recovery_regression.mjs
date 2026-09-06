@@ -49,8 +49,30 @@ assert.ok(feasibleOut.every(x=>x.global_assignment_recovery_required===false));
 assert.deepEqual(feasibleOut[0].global_conflict_segment_numbers,[]);
 assert.equal(feasibleOut[0].global_assignment_matching_count,4);
 
+
+const oneApprovedShortfall=[{...base(3,0,4,['A']),visual_review_shortfall:true,visual_reviewed_candidate_ids:['A','B']}];
+const oneApprovedDetected=runDetector({all:()=>oneApprovedShortfall.map(json=>({json}))}).map(x=>x.json);
+assert.equal(oneApprovedDetected[0].global_assignment_recovery_required,true);
+assert.deepEqual(oneApprovedDetected[0].global_conflict_segment_numbers,[3]);
+assert.deepEqual(oneApprovedDetected[0].visual_review_shortfall_segment_numbers,[3]);
+
+const zeroApprovedShortfall=[{...base(4,0,4,[]),visual_review_shortfall:true,visual_reviewed_candidate_ids:['X','Y']}];
+const zeroApprovedDetected=runDetector({all:()=>zeroApprovedShortfall.map(json=>({json}))}).map(x=>x.json);
+assert.equal(zeroApprovedDetected[0].global_assignment_recovery_required,true);
+assert.deepEqual(zeroApprovedDetected[0].global_conflict_segment_numbers,[4]);
+assert.deepEqual(zeroApprovedDetected[0].visual_review_shortfall_segment_numbers,[4]);
+
 const runPrepare=new Function('$input',prepare.parameters.jsCode);
 const recoveryRequests=runPrepare({all:()=>detected.map(json=>({json}))}).map(x=>x.json);
+const oneApprovedRequests=runPrepare({all:()=>oneApprovedDetected.map(json=>({json}))}).map(x=>x.json);
+assert.equal(oneApprovedRequests.length,1);
+assert.equal(oneApprovedRequests[0].conflict_recovery_request.visual_target,'exact target 3');
+assert.ok(oneApprovedRequests[0].conflict_recovery_request.exclude_candidate_ids.includes('A'));
+assert.ok(oneApprovedRequests[0].conflict_recovery_request.exclude_candidate_ids.includes('B'));
+const zeroApprovedRequests=runPrepare({all:()=>zeroApprovedDetected.map(json=>({json}))}).map(x=>x.json);
+assert.equal(zeroApprovedRequests.length,1);
+assert.ok(zeroApprovedRequests[0].conflict_recovery_request.exclude_candidate_ids.includes('X'));
+assert.ok(zeroApprovedRequests[0].conflict_recovery_request.exclude_candidate_ids.includes('Y'));
 assert.equal(recoveryRequests.length,2);
 for(const row of recoveryRequests){
   assert.equal(row.conflict_recovery_request.visual_target,row.visual_target);
@@ -84,6 +106,21 @@ const merged=runMerge({all:()=>responses.map(json=>({json}))},$merge).map(x=>x.j
 assert.equal(merged[1].global_conflict_recovery_added_count,1);
 assert.ok(merged[1].ranked_candidates.some(x=>x.candidate_id==='D'));
 assert.ok(!merged[0].ranked_candidates.some(x=>x.candidate_id==='E'),'unapproved recovery image must never enter the assignment pool');
+
+
+const shortPrepared=[{job_id:'fixture-job',batch_number:1,batch_count:1,recovery_segments:[{...oneApprovedDetected[0],recovery_review_candidates:[c('E')]}]}];
+const shortResponse=[{text:JSON.stringify({segments:[{segment_number:3,selected_candidate_ids:['E'],reasons:{E:'new exact visible match'}}]}),model:'fixture-vision'}];
+const $shortMerge=(name)=>{
+  if(name==='Prepare Conflict Recovery Review')return {all:()=>shortPrepared.map(json=>({json}))};
+  if(name==='Detect Global No-Repeat Conflict')return {all:()=>oneApprovedDetected.map(json=>({json}))};
+  throw new Error(`unexpected node ${name}`);
+};
+const shortMerged=runMerge({all:()=>shortResponse.map(json=>({json}))},$shortMerge).map(x=>x.json);
+assert.equal(shortMerged[0].ranked_candidates.length,2);
+assert.equal(shortMerged[0].visual_review_shortfall,false);
+assert.equal(shortMerged[0].visual_review_approved_count,2);
+const shortRejected=[{text:JSON.stringify({segments:[{segment_number:3,selected_candidate_ids:[],reasons:{}}]}),model:'fixture-vision'}];
+assert.throws(()=>runMerge({all:()=>shortRejected.map(json=>({json}))},$shortMerge),/Exact-target recovery approved 1\/2 relevant images/);
 
 const runChoose=new Function('$input','$',choose.parameters.jsCode);
 const $choose=(name)=>{
