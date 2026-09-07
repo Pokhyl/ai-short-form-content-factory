@@ -20,9 +20,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          wc -c .transport/global-observed.patch.b64.{1,2,3,4,5}
+          sha256sum .transport/global-observed.patch.b64.{1,2,3,4,5}
           cat .transport/global-observed.patch.b64.{1,2,3,4,5} | tr -d '\n' > /tmp/global-observed.patch.b64
+          echo "B64_BYTES=$(wc -c < /tmp/global-observed.patch.b64)"
           test "$(wc -c < /tmp/global-observed.patch.b64)" = "39584"
           base64 -d /tmp/global-observed.patch.b64 > /tmp/global-observed.patch
+          sha256sum /tmp/global-observed.patch
           echo 'eb4b617b335ed132281c859a6759e49e98da094e3816361545dcffe745462b25  /tmp/global-observed.patch' | sha256sum -c -
           git fetch origin rebuild/agentic-editor-v5
           git checkout --detach origin/rebuild/agentic-editor-v5
