@@ -5,7 +5,7 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
-## 2026-09-07 flat image verdict identity — verified, pending WF02 deployment
+## 2026-09-07 flat image verdict identity — deployed, fresh normal job running
 
 Job `2fac6817-43ad-416c-a205-8f7704048f08` failed/script in WF02 **16421**:
 `pre-script verified visual inventory 1/3`. WF01 **16420** and gateways **16422–16425**
@@ -36,7 +36,16 @@ VPS isolated gate source blob SHAs matched local tested files. Worker unchanged.
 Next: push verified tree, back up/deploy WF02 only, verify current/published parity,
 then one NEW normal job. Remaining uncertainty is semantic inventory sufficiency;
 canonical article coverage is still zero for the unverified resolver phrase.
-No MP4 or HUMAN PASS yet.
+Deployed WF02 only from `79e08a6b210df9ccf69e48f5201012b713c9fae9`, exact
+tree `e1257c1adabffacdd7b3960cffa6bc1d5f2c4d68`. Rollback:
+`/opt/ai-short-form-content-factory-runtime-backups/flat-review-79e08a6-20260907T154602Z`.
+Source/current/published parity PASS; active/current version
+`1797c292-8fe2-42c3-a899-5e8f854c07eb`, 34 nodes, core SHA256
+`80d52802870139c618a471e51284f388a7091bb52ae95b400a5f6f25b3786690`.
+Health HTTP 200 after one CLI-requested n8n restart; zero active executions before
+new intake. ONE new normal POST HTTP 201: `b978e057-ab76-413d-8839-bcec6512fbe1`,
+Panama Canal / ru / 15. Next: follow this exact autonomous job to MP4 or capture the
+next demonstrated failure. No MP4 or HUMAN PASS yet.
 
 ## 2026-09-07 provider query validation — deployed, fresh normal job running
 
