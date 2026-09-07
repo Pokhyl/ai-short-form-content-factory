@@ -5,6 +5,36 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 provider query validation — verified, pending WF02-only deployment
+
+New job `2497062e-6636-4247-8e3f-5a200eaa51fe` failed/script before reaching WF03.
+WF01 **16415** succeeded; WF02 **16416** failed at Validate Candidate Claims:
+`candidate claim C2 needs a compact search_query_en`. Gateways **16417–16419**
+succeeded. Exact execution evidence is saved under
+`/opt/ai-short-form-content-factory-runtime-backups/query-contract-2497062e-20260907`.
+Execution 16416 SHA256: `76d0798d007eaa14921a40658fc39a3f33398fa557d00de764260e8e86aad613`;
+16419: `09a44dd5095ec419aeb243cfffc5a9686c1b774ccef368abfd7c587cbe8515ee`.
+
+Cause: the model returned a useful nine-word query, `Panama Canal lock chamber
+water fill cross section illustration`, well within the provider's existing
+90-character budget. An arbitrary eight-whitespace-word ceiling rejected the
+whole job. No malformed JSON, missing query or provider failure occurred.
+Correction removes the upper word-count restriction rather than raising it to
+another arbitrary number. Queries still require at least two words and <=90
+characters; the same maxLength is now explicit in the structured response schema.
+No fact, evidence, semantic, relevance, uniqueness or duration gate changed.
+
+Verification: **61/61 static regressions PASS**, including longer multiword queries
+within the character budget and rejection of empty/single-word/>90-character
+queries; fresh PostgreSQL PASS (21 workflow statements plus staged writes); actual
+n8n **2.37.10** import PASS (8 workflows); 4 actual model invocation contracts PASS.
+Integration gates used an isolated VPS staging copy whose changed blob SHAs equal
+the local tested files. Worker and all other workflows are unchanged.
+Next: push exact verified tree, back up and deploy WF02 only, verify active/current/
+published parity, then create exactly one NEW normal job. Do not resume failed
+2497062e or 66fda166. WF03 cue correction is already deployed and awaits E2E use.
+No MP4 or HUMAN PASS yet.
+
 ## 2026-09-07 provider cue mapping — exact GitHub sync and WF03-only deployment
 
 Verified VPS commit was transferred as native Git objects via SSH fetch and pushed

@@ -8,6 +8,17 @@ const base={research_rows:[{id:'S1'},{id:'S2'}],candidate_claim_range:[4,6],cano
 const run=rows=>new Function('$input','$',code)({first:()=>({json:{text:JSON.stringify({claims:rows})}})},()=>({first:()=>({json:base})}))[0].json;
 const valid=run(claims);
 assert.throws(()=>run(claims.map(c=>({...c,search_query_en:''}))),/compact search_query_en/);
+// Provider contract is a character budget, not an arbitrary word-count ceiling.
+for (const query of ['mechanical clock gear train cross section technical drawing photo', 'one two six ten red blue gear ring dial face hand stem']) {
+ const rows=claims.map(c=>({...c,search_query_en:query}));
+ assert.equal(run(rows).candidate_claims[0].search_query_en,query);
+}
+for (const query of ['singleword','word '.repeat(20).trim()]) {
+ assert.throws(()=>run(claims.map(c=>({...c,search_query_en:query}))),/compact search_query_en/);
+}
+const requestCode=w.nodes.find(n=>n.name==='Build Draft Candidate Claims Request').parameters.jsCode;
+const request=new Function('$json',requestCode)({claim_prompt:'test'}).json.model_request;
+assert.equal(request.response_schema.properties.claims.items.properties.search_query_en.maxLength,90);
 const requests=[];
 const out=await discoverVisualCandidates({canonicalSource:{language:'en',title:'Subject'},inventoryClaims:valid.candidate_claims,fetchImpl:async url=>{requests.push(String(url));return new Response(JSON.stringify({query:{pages:[]}}),{status:200});}});
 for(let i=0;i<claims.length;i++){
