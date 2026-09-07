@@ -5,7 +5,7 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
-## 2026-09-07 detail retrieval — verified, pending deployment
+## 2026-09-07 detail retrieval — deployed, fresh job running
 
 Latest completed product job `47c59975-2f39-46e4-9e54-f5816a944998`
 (Panama Canal / ru / 15) failed/script in WF02 **16301**:
@@ -37,6 +37,15 @@ workflows into actual n8n **2.37.10 PASS**; 4 real expression invocation contrac
 PASS; media-worker Docker build PASS. Next: back up and deploy this verified
 WF02/worker change, verify published/source parity and provider health, submit a
 NEW job via normal topic/language/duration. Both failed jobs remain untouched.
+Deployed verified source `bcd0788`; WF02 current/published nodes and connections
+match source. Worker image is
+`sha256:30843256898826e6f59e719c1c55a820dafb6b50f910a3f6b1006e9eded90a9d`.
+Backup: `/opt/ai-short-form-content-factory-runtime-backups/detail-bcd0788`, old
+worker image tag `pre-detail-bcd0788`. Pexels/Pixabay/SearXNG health all configured.
+n8n remains 2.37.10 and was restarted after publication with no running executions.
+NEW normal product job (HTTP 201): `9705e087-e2ee-41db-b6d5-9d9d277a089c`,
+How the Panama Canal locks work / ru / 15. Immediate next step: inspect this job's
+autonomous execution and candidate/reviewer evidence. Do not rescue it manually.
 No MP4 or HUMAN PASS yet.
 
 ## 2026-09-07 pre-script retrieval correction — deployed, fresh job running
