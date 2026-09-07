@@ -5,6 +5,43 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 observed inventory contract — verified, pending deployment
+
+Job `9705e087-e2ee-41db-b6d5-9d9d277a089c` failed/script in WF02 **16307**
+with `pre-script verified visual inventory 0/3`. Gateways **16310** (claims) and
+**16311** (review) succeeded. All five secondary detail queries ran, with no
+provider errors. New closed-gate imagery was retrieved but rejected because the
+hypothetical target additionally demanded a ship. Another target demanded hidden
+culverts; others prescribed photographic states that the results did not show.
+No final narration, voice or MP4 was generated; job remains untouched.
+
+This demonstrates a deeper contract error than search length: exact hypothetical
+composition remained frozen before inventory, so final story could not adapt to
+what could truthfully be shown. Further keyword tuning alone is insufficient.
+
+WF02 now establishes an observed image/fact pair before final narration. The
+multimodal reviewer receives the cited research snippets and returns actual visible
+content, a supported factual proposition (which may narrow the proposed claim),
+and 1–3 supplied evidence IDs. It must reject merely thematic content and exterior
+photos used to narrate invisible internals. Selection requires nonempty grounding,
+IDs within the original claim's evidence, image/metadata consistency, subject
+anchors and distinct perceptual hashes. The reserved claim and visual target use
+this observed pair; original claim/target are retained as audit fields. Final story
+can use only reserved facts/assets. This supersedes historical wording that the
+unverified proposed visual target is an immutable acceptance criterion. No
+post-script discovery, threshold reduction, duplicate visual or manual intervention.
+
+Verification: 58/58 static regressions PASS (one prompt wording assertion corrected
+in the prompt, then rechecked); fresh PostgreSQL and n8n 2.37.10 import of all 8
+workflows PASS; actual structured invocation contracts PASS. Worker is unchanged
+from the built/verified/deployed bcd0788 image. New causal tests reject unknown or
+empty evidence, empty facts and rejected images; verify cited snippets reach review
+and only the observed pair reaches final story. Semantic quality still requires
+new autonomous execution and human inspection of the final MP4.
+Next: deploy verified WF02 with backup/source-published parity; create a NEW normal
+job. Do not resume any failed job. Canonical Wikipedia title resolution remains
+an identified coverage limitation, not a proven global shortage of free media.
+
 ## 2026-09-07 detail retrieval — deployed, fresh job running
 
 Latest completed product job `47c59975-2f39-46e4-9e54-f5816a944998`

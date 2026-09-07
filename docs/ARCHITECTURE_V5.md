@@ -4,7 +4,30 @@ Verified against GitHub `b909a25`, n8n PostgreSQL workflow definitions and the
 running media-worker on 2026-09-06. See
 [V5_SYSTEM_AUDIT_20260906.md](V5_SYSTEM_AUDIT_20260906.md) for evidence and unfinished work.
 
-## Deployed product path
+## Current inventory-first path (2026-09-07)
+
+Production n8n is **2.37.10**. Do not downgrade based on the historical snapshot
+below. WF01 accepts only topic/language/duration. WF02 resolves/researches the topic,
+discovers and verifies licensed visual inventory before final narration, and
+persists a story package binding claim, research evidence, narration unit and
+reserved asset. WF03 produces one natural Edge voiceover and uses native word
+boundaries; bounded text rewrites preserve the story assets and do not alter speech
+rate. WF04 downloads and verifies the reserved assets without late discovery or
+rebind. WF05 executes variable semantic units in a full-image 9:16 composition and
+persists the final MP4 SHA256. The same existing workflows remain the product.
+
+The next verified WF02 correction treats proposed claim/visual targets as research
+hypotheses. Image review observes actual content and identifies a supported fact
+from the supplied evidence before freezing the final claim/asset pair. Selection
+checks evidence ID scope, metadata consistency and perceptual uniqueness. This
+avoids treating imagined camera arrangements as immutable image requirements.
+It does not authorize generic thematic images or facts about invisible mechanisms.
+See CURRENT_STATE_V5.md for the exact deployment status, last job and next step.
+
+These are implementation facts, not quality acceptance. No new successful MP4 has
+yet been demonstrated in this continuation; final output still requires HUMAN PASS.
+
+## Historical pre-inventory product path (superseded)
 
 `topic + language + duration -> WF01 job intake -> WF02 research/script -> WF03
 continuous TTS and bounded script-duration rewrites -> WF04 late visual discovery,
@@ -32,7 +55,7 @@ visual obligations. Automatic evidence IDs and image-review booleans are not
 proof of semantic support. Source-image approval does not verify the final crop.
 These defects explain both false machine approvals and repeated fail-closed jobs.
 
-## Correction being implemented, not yet deployed
+## Historical correction plan (inventory-first is now deployed)
 
 Retain existing orchestration, provider adapters, continuous natural voice,
 persistence, encoding and human acceptance. Move discovery and verified unique
