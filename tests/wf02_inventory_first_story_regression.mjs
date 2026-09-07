@@ -12,8 +12,13 @@ assert(!/Prepare Grounded Script Prompt|Write Grounded Natural Script|Build Fina
 assert.match(nodes.get('Prepare Candidate Claims').parameters.jsCode,/Do NOT write the final narration yet/);
 assert.match(nodes.get('Discover Pre-Script Visual Inventory').parameters.jsonBody,/inventory_request/);
 assert.match(nodes.get('Prepare Inventory Review Batches').parameters.jsCode,/BEFORE a short-video script is written/);
+assert.match(nodes.get('Prepare Inventory Review Batches').parameters.jsCode,/retrieval hypotheses only/);
+assert.match(nodes.get('Prepare Inventory Review Batches').parameters.jsCode,/FULL RESEARCH CORPUS/);
 assert.match(nodes.get('Select Verified Claim Inventory').parameters.jsCode,/target_anchor_pass.*true/);
 assert.match(nodes.get('Select Verified Claim Inventory').parameters.jsCode,/hamming\(hash,h\)<=18/);
+assert.match(nodes.get('Select Verified Claim Inventory').parameters.jsCode,/globalEvidence/);
+assert.match(nodes.get('Select Verified Claim Inventory').parameters.jsCode,/origin_claim_id/);
+assert.doesNotMatch(nodes.get('Select Verified Claim Inventory').parameters.jsCode,/c\.evidence_ids\.includes\(id\)/,'observed facts must not remain claim-local');
 assert.match(nodes.get('Prepare Inventory Grounded Story').parameters.jsCode,/verified real image reserved before narration/);
 const final=nodes.get('Build Final Inventory Story').parameters.jsCode;
 assert.match(final,/inventory-first-story-v1/);

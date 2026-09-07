@@ -5,6 +5,21 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 global observed-pair pool — verified, pending deployment
+
+The prior PostgreSQL-credential correction was committed as `dbd1567145b64836b5ce4a610b3e9e16167bcab3` and deployed to WF02 only. Production source/published parity passed with 34 nodes; n8n remained 2.37.10, worker provider health still reported Pexels, Pixabay and SearXNG configured, and rollback backup is `/opt/ai-short-form-content-factory-runtime-backups/story-persist-dbd156-20260907T050941Z`.
+
+A NEW normal product job `908621d8-9c6f-45ab-9680-6f08852c76e7` (Panama Canal / ru / 15) then failed closed in WF02 execution **16333** with `pre-script verified visual inventory 1/3`. No story package, voice or MP4 was produced. Discovery itself was not empty: real provider inventory contained ships in Panama Canal locks, a historical lock cross-section, lock photographs, Gatun/expansion imagery and other candidates. The image reviewer correctly approved a ship in a lock and a technical lock cross-section, while rejecting many mismatches.
+
+The remaining systemic defect was claim-local isolation after discovery. Each candidate image was reviewed only against the evidence IDs of the claim that happened to retrieve it, and the selector could reserve at most one approved asset from each discovery claim. Therefore a useful image retrieved under one hypothesis could not support a different research-backed fact, and two distinct truthful observed facts from one productive search bucket could not both enter the final story inventory. The discovery hypothesis had accidentally become a hard partition even after the architecture moved toward observed image/fact pairs.
+
+Correction in the current clean checkout: the reviewer receives the full research corpus for every review batch and is explicitly told that the discovery claim/target is only the retrieval origin, not the factual acceptance boundary. A reviewed image may bind to any 1–3 valid global research evidence IDs when its visible content directly supports that fact and the resolved subject/user intent. Deterministic selection validates those IDs against the global research inventory, keeps the existing target-anchor gate and image/metadata consistency check, then flattens all approved observations into one global pool. More than one distinct observed pair may come from the same discovery hypothesis. Provider identity, exact supported-fact duplicates and perceptual duplicates remain forbidden; accepted observations receive fresh sequential story claim/asset IDs while the original discovery claim, target and evidence IDs are retained as audit fields. No relevance weakening, unreviewed fallback, topic-specific query, duplicate asset or post-script rescue is introduced.
+
+Verification after the correction: **59/59 static regressions PASS** (46 Node + 13 Python); the observed-inventory regression explicitly proves cross-hypothesis evidence binding and multiple final observations from one discovery bucket while rejecting unknown/empty evidence; n8n **2.37.10** import contract PASS for all 8 workflows; fresh PostgreSQL contract PASS for 21 workflow SQL statements plus staged writes; all 4 structured model invocation contracts PASS; workflow JSON and `git diff --check` PASS. Worker code is unchanged.
+
+Next: commit/push this verified WF02-only logical correction, deploy it with rollback capture and source/published parity, then submit a completely NEW normal `topic + language + duration` job. Failed jobs are not resumed. No MP4 or HUMAN PASS yet.
+
+
 ## 2026-09-07 story persistence credential contract — verified, pending deployment
 
 New normal job `7dd0361a-916f-47d6-9263-e37f662ee443` (Panama Canal / ru / 15)
