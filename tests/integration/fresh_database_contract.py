@@ -32,6 +32,7 @@ try:
         raise RuntimeError("Disposable PostgreSQL did not become ready")
     sql((ROOT / "db/init/001_init.sql").read_text())
     statements = []
+    persist_story_query = None
     for path in sorted((ROOT / "n8n/workflows").glob("*.json")):
         raw = json.loads(path.read_text())
         for workflow in raw if isinstance(raw, list) else [raw]:
@@ -39,7 +40,37 @@ try:
                 query = node.get("parameters", {}).get("query")
                 if node["type"] == "n8n-nodes-base.postgres" and query:
                     statements.append(f"PREPARE q{len(statements)} AS {query.rstrip(';')};")
+                    if node.get("name") == "Persist Inventory First Story":
+                        persist_story_query = query.rstrip(';')
     sql("\n".join(statements))
+    if persist_story_query is None:
+        raise RuntimeError("Persist Inventory First Story SQL not found")
+
+    job_id = "44444444-4444-4444-8444-444444444444"
+    sql(f"INSERT INTO public.jobs(id,topic,language_code,target_duration_seconds) VALUES ('{job_id}','Persist contract','ru',15);")
+    args = [
+        f"'{job_id}'",
+        "'One. Two. Three.'",
+        "'[1,2,3]'::jsonb",
+        "'{\"exact_tts_required\":true,\"prediction_is_advisory\":true}'::jsonb",
+        "'edge'",
+        "'edge-tts'",
+        "'inventory-first-story-v1'",
+        "0",
+        "'[{\"evidence_id\":\"S1\",\"source_id\":\"SRC1\",\"source_language\":\"en\",\"source_title\":\"Source\",\"source_url\":\"https://example.invalid/source\",\"passage_id\":\"P1\",\"section\":\"Test\",\"evidence_text\":\"Grounded evidence\",\"selection_score\":1,\"selection_rank\":1}]'::jsonb",
+        "'en'",
+        "'Source'",
+        "'{\"version\":\"evidence-grounded-topic-resolution-v1\",\"raw_topic\":\"Persist contract\",\"resolved_subject\":\"Persist contract\",\"candidates\":[{\"candidate_id\":\"C1\"}],\"reasoning_evidence_ids\":[\"D-C1-1\"]}'::jsonb",
+        "'{\"version\":\"inventory-first-story-v1\",\"units\":[{},{},{}],\"assets\":[{},{},{}]}'::jsonb",
+    ]
+    result = sql("\\pset tuples_only on\n\\pset format unaligned\n\\pset fieldsep '|'\n"
+                 + f"PREPARE persist_story AS {persist_story_query};\n"
+                 + f"EXECUTE persist_story({','.join(args)});\n"
+                 + "DEALLOCATE persist_story;\n").stdout
+    rows = [line.strip() for line in result.splitlines() if line.strip() and '|' in line]
+    expected = f"{job_id}|1|t|0|3"
+    if expected not in rows:
+        raise RuntimeError(f"Persist Inventory First Story returned unexpected row: {rows}")
     sql("""
 BEGIN;
 INSERT INTO public.jobs(id,topic,language_code,target_duration_seconds,

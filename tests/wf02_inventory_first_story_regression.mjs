@@ -28,5 +28,8 @@ const persist=nodes.get('Persist Inventory First Story').parameters.query;
 assert.match(persist,/story_package/);
 assert.match(persist,/visual_search_queries_en=NULL/);
 assert.match(persist,/jsonb_array_length\(i\.story_package->'assets'\)=jsonb_array_length\(i\.story_package->'units'\)/);
+assert.match(persist,/RETURNING j\.id,jsonb_array_length\(j\.story_package->'units'\)::int AS story_unit_count/);
+assert.match(persist,/\(SELECT story_unit_count FROM upd\) story_unit_count/);
+assert.doesNotMatch(persist,/SELECT jsonb_array_length\(story_package->'units'\) FROM public\.jobs/,'data-modifying CTE must verify persisted story through UPDATE RETURNING, not same-snapshot table reread');
 for(const node of wf.nodes.filter(n=>n.type==='n8n-nodes-base.code')) new Function('$input','$',node.parameters.jsCode);
 console.log('WF02_INVENTORY_FIRST_STORY_REGRESSION_PASS');

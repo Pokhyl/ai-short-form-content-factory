@@ -5,6 +5,21 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 story persist return-value defect — verified, pending deployment
+
+NEW normal job `99d20c0f-b7e4-4aac-8715-680e62794f6b` (How the Panama Canal locks work / ru / 15) ran against the deployed global-unique pre-review shortlist. WF01 **16349** succeeded. WF02 **16350** completed semantic resolution, research, candidate claims, global unique review, verified inventory and final story generation; Model Gateway executions **16351–16355** all succeeded. The database contains an `inventory-first-story-v1` story package with **3 units / 3 assets**, but WF02 then failed closed with `story package persisted null/3 units [line 1]`. The failed job remains untouched; no WF03/WF04/WF05 or MP4 was produced.
+
+Exact execution data is preserved at `/opt/ai-short-form-content-factory-runtime-backups/unique-566366a-20260907T112245Z/execution-16350.json`, SHA256 `fa316ede8bbd70c24656584322d6adad2a306ede9f418275cfe6320c15e02911`.
+
+Systemic cause: `Persist Inventory First Story` performs the job update inside a PostgreSQL data-modifying CTE `upd`, then its final SELECT re-read `public.jobs.story_package` in the same SQL statement. That read uses the statement snapshot and therefore observes the pre-update `story_package = NULL`, even though the UPDATE is persisted by statement completion. `Require Persisted Inventory Story` consequently produced a false failure. This is a persistence return-value contract defect, not a story-generation or inventory failure.
+
+Correction: `upd` now returns `jsonb_array_length(j.story_package->'units')::int AS story_unit_count`, and the final SELECT reads `story_unit_count` from `upd` instead of re-reading `public.jobs`. The real fresh-PostgreSQL contract now executes this exact persist statement on a new eligible job and requires the returned row to report one inserted evidence item, `job_updated=true`, zero pre-TTS scenes and `story_unit_count=3`. Static regression also forbids the same-snapshot table re-read from returning.
+
+Verification after correction: **60/60 static regressions PASS** (47 Node + 13 Python); fresh PostgreSQL contract PASS (**21 workflow SQL statements + staged writes**, including the actual persist return-value path); real n8n **2.37.10** import PASS for **8 workflows**; structured model invocation contract PASS for **4 calls**; workflow JSON parse and `git diff --check` PASS. Worker, reviewer, semantic/evidence gates and minimum inventory are unchanged.
+
+Next: preserve the exact verified tree in GitHub, deploy **WF02 only** with rollback/source-current-published parity, then submit one NEW normal product job. Do not resume or edit `99d20c0f...`. No MP4 or HUMAN PASS yet.
+
+
 ## 2026-09-07 unique shortlist deployed — fresh job running
 
 Source commit `566366a74b3202b668bcb34b5b38794bbf8ebf72`, exact verified tree `52a6009592a1b3bf9e0279190133220a06d9d192`, is now deployed to WF02 only. Current/published nodes and connections match source; active/current version `53b3f193-faf7-4b2e-94c5-2c00216d9d43`. No active/waiting executions existed before deployment. n8n 2.37.10 restarted; worker unchanged. Rollback: `/opt/ai-short-form-content-factory-runtime-backups/unique-566366a-20260907T112245Z`.
