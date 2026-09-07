@@ -5,7 +5,7 @@ Last updated: 2026-09-06
 Branch: `rebuild/agentic-editor-v5`.
 
 
-## 2026-09-06 pre-script retrieval correction — verified, deploy next
+## 2026-09-07 pre-script retrieval correction — deployed, fresh job running
 
 New job `897293fa-9627-4f09-b7e0-fc9c49562ba2` failed/script in WF02 **16295**:
 `pre-script verified visual inventory 1/3`. Invocation is proven fixed: candidate
@@ -25,9 +25,21 @@ manual rescue, topic-specific query or asset reuse is introduced.
 
 Verified: 56/56 static regressions PASS, fresh PostgreSQL (21 SQL statements) PASS,
 real n8n 2.37.10 import of 8 workflows PASS, actual expression invocation regression
-PASS for all four structured calls, worker build PASS. Next: commit/push, deploy
-WF02 plus worker from the exact verified source, then create a NEW normal-input
-job. Failed `897293fa...` must remain untouched. Overall MP4 quality is unproven.
+PASS for all four structured calls, worker build PASS.
+Deployed source `077cc32` to WF02 and media-worker. Native VPS image:
+`sha256:a3e84a103a8cc4ec8a51cd375f1643580a7f0526f4d92f58bc1a19ba69ca8e5a`.
+WF02 current/published definitions match source; n8n remains 2.37.10.
+The existing production Compose omitted SEARXNG_URL despite the configured old
+container. Recreating worker exposed this drift before any job submission. Added
+the already-committed default SEARXNG_URL to production Compose; health now reports
+all three providers configured and a real research request returned HTTP 200 with
+20 results. Backup/source staging: `/opt/ai-short-form-content-factory-runtime-backups/query-077cc32`;
+old image retained as `ai-short-form-content-factory-media-worker:pre-query-077cc32`.
+
+NEW normal WF01 job (HTTP 201): `47c59975-2f39-46e4-9e54-f5816a944998`,
+How the Panama Canal locks work / ru / 15. Next: inspect its autonomous execution
+and actual returned inventory, then continue to exact MP4 or a systemic failure.
+Failed `897293fa...` remains untouched. Overall MP4 quality is unproven.
 
 ## 2026-09-06 invocation correction — deployed, fresh E2E running
 
