@@ -1,0 +1,39 @@
+name: Transport verified global observed inventory fix
+
+on:
+  push:
+    branches:
+      - transport/global-observed-20260907
+
+permissions:
+  contents: write
+
+jobs:
+  transport:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: transport/global-observed-20260907
+          fetch-depth: 0
+      - name: Apply exact verified patch and fast-forward product branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .transport/global-observed.patch.b64.{1,2,3,4,5} | tr -d '\n' > /tmp/global-observed.patch.b64
+          test "$(wc -c < /tmp/global-observed.patch.b64)" = "39584"
+          base64 -d /tmp/global-observed.patch.b64 > /tmp/global-observed.patch
+          echo 'eb4b617b335ed132281c859a6759e49e98da094e3816361545dcffe745462b25  /tmp/global-observed.patch' | sha256sum -c -
+          git fetch origin rebuild/agentic-editor-v5
+          git checkout --detach origin/rebuild/agentic-editor-v5
+          test "$(git rev-parse HEAD)" = "dbd1567145b64836b5ce4a610b3e9e16167bcab3"
+          git apply --index /tmp/global-observed.patch
+          git diff --cached --check
+          test "$(git write-tree)" = "e0fbd278cf092c3735832ec1cc1e3a9a165d23e5"
+          node tests/inventory_observed_claim_contract_regression.mjs
+          node tests/wf02_inventory_first_story_regression.mjs
+          git config user.name HODOR
+          git config user.email hodor@MacBook-Air-HODOR.local
+          git commit -m 'fix: globalize observed visual fact inventory'
+          test "$(git rev-parse HEAD^{tree})" = "e0fbd278cf092c3735832ec1cc1e3a9a165d23e5"
+          git push origin HEAD:rebuild/agentic-editor-v5
