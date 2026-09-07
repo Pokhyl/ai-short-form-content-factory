@@ -5,6 +5,14 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 global observed-pair pool — deployed, fresh job running
+
+Verified VPS commit `b6acede19dd2c55400cdfa92e4e25436dd71235f` was preserved through the connected GitHub API as `11d8c6a4a2d6ad632c28443cc14519d9de645731`, fast-forward from `dbd1567145b64836b5ce4a610b3e9e16167bcab3`. All four blob SHAs and exact tree `e0fbd278cf092c3735832ec1cc1e3a9a165d23e5` match the tested VPS commit. The original checkout remains clean and preserved; HTTPS git push on VPS lacks credentials, so use the connected GitHub API for continuity writes.
+
+WF02 only was imported and published on production n8n 2.37.10. Source/current/published nodes and connections match (34 nodes); current/active version `12549e8e-6fc6-4e10-9c0d-fdb5146be528`. No running/waiting executions existed before deployment/restart. Worker was unchanged. Rollback capture: `/opt/ai-short-form-content-factory-runtime-backups/global-11d8c6a-20260907T110915Z` (current and published WF02 plus exact deployed source). n8n restarted and logged activation of the product workflows.
+
+NEW normal WF01 intake returned HTTP 201, job `87af4f4b-83d8-4bdc-b110-725f1a6d6f40`: How the Panama Canal locks work / ru / 15. An earlier request during startup returned HTTP 404 and did not create a job. Failed `908621d8...` remains untouched. Next: inspect new job execution and follow autonomous WF02–WF05 to exact MP4 or capture a systemic failure. No MP4/HUMAN PASS yet.
+
 ## 2026-09-07 global observed-pair pool — verified, pending deployment
 
 The prior PostgreSQL-credential correction was committed as `dbd1567145b64836b5ce4a610b3e9e16167bcab3` and deployed to WF02 only. Production source/published parity passed with 34 nodes; n8n remained 2.37.10, worker provider health still reported Pexels, Pixabay and SearXNG configured, and rollback backup is `/opt/ai-short-form-content-factory-runtime-backups/story-persist-dbd156-20260907T050941Z`.
