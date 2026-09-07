@@ -4,6 +4,21 @@ Last updated: 2026-09-07
 
 Branch: `rebuild/agentic-editor-v5`.
 
+## 2026-09-07 Edge provider tail silence — verified, pending worker deployment
+
+The previous story-persist correction is deployed in production from GitHub commit `c6124f528a5798502567e8f4f7d7c108e46558ab`, exact tree `bfb26fd33828d327207cd0fb3260975081f3b28b`. WF02 current/active version is `750687ba-bc44-480d-b189-389029be41cf`; source/current/published core parity passed before the new run.
+
+NEW normal job `0b025bcf-00b6-4548-8cc3-80d4e0eb982b` (How the Panama Canal locks work / ru / 15) was created through WF01 HTTP 201. WF01 **16356** succeeded. WF02 **16357** succeeded end-to-end through semantic resolution, research, verified global unique inventory and final story; Model Gateway executions **16358–16362** all succeeded. WF03 **16363** then failed closed in `voiceover`: `Voiceover duration 16.704s is still outside target after 3 story rewrites`. Duration-rewrite gateways **16364–16366** all succeeded. The failed job remains immutable; no WF04/WF05 or MP4 was produced.
+
+Exact WF03 execution data is preserved at `/opt/ai-short-form-content-factory-runtime-backups/voice-duration-0b025bcf-20260907/execution-16363.json`, SHA256 `d0c8066d1393f7582bfd8d2f4c0bcaa3deeb606eb7c557339f19a6d1110b5267`. Exact execution replay showed four unchanged-speed Edge measurements: **41 words / 20.832s**, **34 / 17.784s**, **32 / 17.304s**, **32 / 16.704s**. The controller requested approximately 30, 29 and 28 words, but its broad rewrite acceptance allowed longer outputs. More importantly, every Edge synthesis contained a stable provider-added trailing gap of about **0.93–0.95s after the last exact word cue**. On the final 16.704s WAV, the last provider word ended at **15.775s**; counting the provider tail as spoken narration alone pushed the otherwise valid speech outside the existing 15s gate.
+
+Systemic correction is in the media-worker only. Before the existing natural-tail pad and exact-duration gate, the worker now uses Edge's provider word cues to trim only audio after the final exact word boundary while preserving one 30fps frame of post-roll. Spoken samples, words and provider timing are untouched; `rate_percent=0` and `post_tempo_factor=1` remain mandatory. The existing short-narration tail pad, duration thresholds, story rewrite loop, WF02/WF03 semantic contracts and all reviewer/evidence gates are unchanged. This is not speech-speed manipulation and cannot rescue narration whose actual spoken span is too long or too short.
+
+Verification: **48/48 ordinary Node static regressions PASS** (the separate real-provider dry-run intentionally requires `JOB_CONTEXT_FILE`) plus **13/13 Python regressions PASS**; fresh PostgreSQL contract PASS (**21 workflow SQL statements + staged writes**); real n8n **2.37.10** import PASS for **8 workflows**; structured model invocation contract PASS for **4 calls**; media-worker syntax, `git diff --check` and Docker build PASS. A real isolated Edge synthesis using the exact failed 32-word narration returned HTTP 200 with provider WAV **16.704s**, last word **15.775s**, provider-tail trim **0.895667s**, final WAV **15.808333s**, **32 exact word timings**, `rate_percent=0`, `post_tempo_factor=1`, and no synthetic tail pad.
+
+Next: preserve this exact verified tree in GitHub, deploy **media-worker only** with rollback/image identity and health checks, then submit one completely NEW normal product job. Do not resume or edit `0b025bcf...`. No MP4 or HUMAN PASS yet.
+
+
 
 ## 2026-09-07 story persist return-value defect — verified, pending deployment
 
