@@ -5,6 +5,14 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 global unique pre-review shortlist — verified, pending deployment
+
+Continuation from `a2ce67803d578c898d3121c8f66b9b849820e470` in `/opt/ai-short-form-content-factory-unique-review-20260907`. WF02 now builds one ranked round-robin pool across all fingerprinted discovery buckets before image review. Provider identity and perceptual duplicates (existing distance <=18) cannot consume repeated review slots; remaining unique candidates fill slots up to the unchanged total budget of four images per original retrieval hypothesis, with at most 24 images per model batch. Origin fields remain available for audit, but proposed hypothesis text is no longer shown as an acceptance cue. Full research corpus and all reviewer/final metadata/evidence/uniqueness gates remain. Minimum inventory is counted in unique assets, not productive origin buckets.
+
+Cross-topic clock/telescope regression verifies exposure diversity, budget, multi-batch splitting, one productive bucket, perceptual duplicates and target-anchor rejection. Exact failed execution 16344 replay yields **20 unique review images instead of 9**, with the same 20-slot budget; this is component evidence, not semantic/E2E acceptance. Unchanged selection replay confirms C3-I1 was rejected by metadata consistency and only C5-I4 survived, producing the recorded 1/3 failure.
+
+Verification: **60/60 static regressions PASS**, fresh PostgreSQL contract PASS (21 SQL statements plus staged writes), isolated real n8n 2.37.10 import PASS (8 workflows), structured invocation contract PASS (4 calls), git diff check PASS. Worker unchanged. Last product job remains failed `87af4f4b-83d8-4bdc-b110-725f1a6d6f40`, WF02 16344. Next: preserve exact verified tree in GitHub, deploy WF02 only with rollback/parity, and submit a NEW normal product job. No MP4 or HUMAN PASS.
+
 ## 2026-09-07 fresh global-pool execution — failed, review shortlist defect confirmed
 
 Latest job `87af4f4b-83d8-4bdc-b110-725f1a6d6f40` (How the Panama Canal locks work / ru / 15) failed/script in WF02 **16344**: `pre-script verified visual inventory 1/3`. Intake **16343** succeeded. Gateways **16345–16348** completed; candidate drafting **16347** succeeded through Kilo; actual-image reviewer **16348** fell back from Kilo length/empty output to successful Gemini JSON. No final story, voice or MP4 was produced. Failed jobs remain untouched.
