@@ -5,6 +5,18 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 fresh global-pool execution — failed, review shortlist defect confirmed
+
+Latest job `87af4f4b-83d8-4bdc-b110-725f1a6d6f40` (How the Panama Canal locks work / ru / 15) failed/script in WF02 **16344**: `pre-script verified visual inventory 1/3`. Intake **16343** succeeded. Gateways **16345–16348** completed; candidate drafting **16347** succeeded through Kilo; actual-image reviewer **16348** fell back from Kilo length/empty output to successful Gemini JSON. No final story, voice or MP4 was produced. Failed jobs remain untouched.
+
+Confirmed general defect from exact execution and source: review shortlisting is still bucket-local. `Prepare Inventory Review Batches` applies `fingerprinted_candidates.slice(0,4)` separately per origin claim, and global identity/perceptual dedupe occurs only AFTER model review. This execution had 40 fingerprinted occurrences representing **28 unique provider assets**, but **20 review image slots represented only 9 unique assets**. Three Pixabay identities occupied 14 slots (4/5/5 occurrences); **19 unique fingerprinted assets never reached the reviewer**. This proves wasted review exposure, not that omitted images would necessarily pass semantic review or provide the required three facts.
+
+The reviewer approved two occurrences; deterministic selection retained one. Reviewer output also warrants semantic scrutiny: an aerial-lock description was paired with a causal claim about ocean-level differences and the choice of canal design, while a general route-map description was paired with six lock steps. Those descriptions alone do not establish that the claimed causal/quantitative details are visible. Do not loosen reviewer or metadata gates to increase acceptance.
+
+Runtime evidence captured at `/opt/ai-short-form-content-factory-runtime-backups/global-11d8c6a-20260907T110915Z/execution-16344.json`. Deployed workflow source remains `11d8c6a4a2d6ad632c28443cc14519d9de645731`, exact tested tree `e0fbd278cf092c3735832ec1cc1e3a9a165d23e5`; deployment continuity commit `c6541a76818b5c4da0179d15c1dadf933702ab33`. No unverified product-code changes were made after this failure.
+
+Next exact engineering step: implement a global unique pre-review shortlist from the fingerprinted pool, preserving origin metadata for audit and the existing total image budget, evidence grounding, actual-image authority and final uniqueness gates. Add cross-topic regression proving duplicate retrieval buckets cannot consume repeated review slots while unique candidates remain; test a single productive discovery bucket without requiring a minimum number of origin buckets. Inspect the exact two model-approved observations through the unchanged deterministic gates. Verify the full required contracts, commit through GitHub connector, deploy only verified changes with rollback/parity, then submit a NEW normal job. Current blocker is pre-review exposure diversity and unproven semantic inventory quality. No HUMAN PASS.
+
 ## 2026-09-07 global observed-pair pool — deployed, fresh job running
 
 Verified VPS commit `b6acede19dd2c55400cdfa92e4e25436dd71235f` was preserved through the connected GitHub API as `11d8c6a4a2d6ad632c28443cc14519d9de645731`, fast-forward from `dbd1567145b64836b5ce4a610b3e9e16167bcab3`. All four blob SHAs and exact tree `e0fbd278cf092c3735832ec1cc1e3a9a165d23e5` match the tested VPS commit. The original checkout remains clean and preserved; HTTPS git push on VPS lacks credentials, so use the connected GitHub API for continuity writes.
