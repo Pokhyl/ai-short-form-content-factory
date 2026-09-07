@@ -1,9 +1,43 @@
 # Current State — V5 n8n Autonomous Video Orchestrator
 
-Last updated: 2026-09-06
+Last updated: 2026-09-07
 
 Branch: `rebuild/agentic-editor-v5`.
 
+
+## 2026-09-07 detail retrieval — verified, pending deployment
+
+Latest completed product job `47c59975-2f39-46e4-9e54-f5816a944998`
+(Panama Canal / ru / 15) failed/script in WF02 **16301**:
+`pre-script verified visual inventory 1/3`. Candidate gateway **16304** and image
+review **16305** succeeded. Short search queries reached providers correctly.
+Only C1 gained Commons images; C2–C5 again received the same three Pixabay images.
+No provider errors, zero secondary queries, zero canonical article media.
+Canonical source title was `Panama Canal lock operational mechanism`, not a
+verified Wikipedia page: this separate canonical-media coverage issue remains.
+
+Verified system defect: generic subject-anchor matches satisfied the inventory
+candidate-count condition and suppressed detail retrieval; provider order then
+controlled the four-image review shortlist. Targets also prescribed unnecessary
+camera arrangements, hidden internals and time-lapse photographs before inventory
+existed. Reviewer rejected 15/16 candidates; acceptance was not bypassed.
+
+Changes: pre-script inventory issues at most one shorter subject + detail query
+in addition to the initial query, independent of generic hit count; ranks results
+by distinguishing query terms before fingerprint/review. Existing semantic gates,
+perceptual uniqueness and minimum inventory remain. Legacy timed discovery is
+unchanged. Candidate instructions require minimal observable supporting content
+and disallow invented composition or invisible processes in a still photograph.
+This is a retrieval correction, not proof of end-to-end quality.
+
+Verification: **57/57 static regressions PASS**, including independent clock and
+radio telescope cases where generic photos cannot suppress detail retrieval;
+fresh PostgreSQL contract PASS (21 statements plus writes); import of all 8
+workflows into actual n8n **2.37.10 PASS**; 4 real expression invocation contracts
+PASS; media-worker Docker build PASS. Next: back up and deploy this verified
+WF02/worker change, verify published/source parity and provider health, submit a
+NEW job via normal topic/language/duration. Both failed jobs remain untouched.
+No MP4 or HUMAN PASS yet.
 
 ## 2026-09-07 pre-script retrieval correction — deployed, fresh job running
 

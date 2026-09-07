@@ -173,6 +173,29 @@ function compactRecoveryQuery(query, canonicalTitle) {
   return compact;
 }
 
+// Inventory retrieval is budgeted before verification. A stock provider returning
+// generic subject photos must not suppress a second, detail-bearing search.
+function inventoryDetailQuery(query, canonicalTitle) {
+  const shared = canonicalOverlapRows(query, canonicalTitle);
+  const sharedKeys = new Set(shared.map((row) => row.key));
+  const detail = semanticQueryRows(query).find((row) => !sharedKeys.has(row.key));
+  if (!shared.length || !detail) return null;
+  const value = boundedProviderQuery([...shared.map((row) => row.raw), detail.raw].join(" "));
+  return value.toLocaleLowerCase() === query.toLocaleLowerCase() ? null : value;
+}
+
+function rankInventoryCandidates(candidates, query, canonicalTitle) {
+  const shared = new Set(canonicalOverlapRows(query, canonicalTitle).map((row) => row.key));
+  const details = semanticQueryRows(query).filter((row) => !shared.has(row.key));
+  const score = (candidate) => {
+    const words = queryWordRows(candidateSearchText(candidate));
+    return details.filter((detail) => words.some((word) => relatedAnchorKey(detail.key, word.key))).length;
+  };
+  return candidates.map((candidate, index) => ({ candidate, index, score: score(candidate) }))
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map(({ candidate, score }) => ({ ...candidate, inventory_detail_hits: score }));
+}
+
 function markRecoveryCandidates(candidates, recoveryQuery) {
   return candidates.map((candidate) => ({
     ...candidate,
@@ -671,7 +694,9 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       const canonicalExact = canonicalAnnotated.filter((candidate) => candidate.target_anchor_pass === true);
       let candidates = dedupeCandidates([...canonicalExact, ...exactStrong]);
       if (candidates.length < required) candidates = dedupeCandidates([...candidates, ...canonicalAnnotated]);
-      const recoveryQuery = candidates.length < required ? compactRecoveryQuery(anchor, englishTitle) : null;
+      const recoveryQuery = inventoryMode
+        ? inventoryDetailQuery(exactQuery, englishTitle)
+        : candidates.length < required ? compactRecoveryQuery(anchor, englishTitle) : null;
       const providerQueries = [exactQuery];
       let recoveryUsed = false;
       if (recoveryQuery) {
@@ -688,7 +713,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       return {
         unit_number: unitNumber,
         visual_target: anchor,
-        candidates,
+        candidates: inventoryMode ? rankInventoryCandidates(candidates, exactQuery, englishTitle) : candidates,
         provider_query: exactQuery,
         provider_queries: providerQueries,
         bounded_query_recovery_used: recoveryUsed,
