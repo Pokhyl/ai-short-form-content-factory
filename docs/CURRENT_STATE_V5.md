@@ -5,7 +5,7 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
-## 2026-09-07 provider query validation — verified, pending WF02-only deployment
+## 2026-09-07 provider query validation — deployed, fresh normal job running
 
 New job `2497062e-6636-4247-8e3f-5a200eaa51fe` failed/script before reaching WF03.
 WF01 **16415** succeeded; WF02 **16416** failed at Validate Candidate Claims:
@@ -33,7 +33,16 @@ the local tested files. Worker and all other workflows are unchanged.
 Next: push exact verified tree, back up and deploy WF02 only, verify active/current/
 published parity, then create exactly one NEW normal job. Do not resume failed
 2497062e or 66fda166. WF03 cue correction is already deployed and awaits E2E use.
-No MP4 or HUMAN PASS yet.
+Deployed WF02 only from GitHub `01da7cad49b42fded47dafbb18ef850332ceba91`,
+exact tree `120d7337c2d8a04e722c4fff3dfa0744e673a137`. Rollback:
+`/opt/ai-short-form-content-factory-runtime-backups/query-budget-01da7ca-20260907T153710Z`.
+Source/current/published parity passed (34 nodes, connections, current settings);
+active/current version `4e7af24c-f583-4c3f-903f-aaf07538a25d`, canonical core SHA256
+`1b5aaf6173cb467d6c2f729808a14c52405166ffbae985a1fef7f1826a9985d3`.
+One CLI-requested n8n restart, health HTTP 200, zero active executions before POST.
+NEW normal job: `2fac6817-43ad-416c-a205-8f7704048f08`, Panama Canal / ru / 15,
+HTTP 201; exact response saved in rollback directory. Next: follow this job E2E.
+WF03 remains on verified cue mapping; worker remains unchanged. No MP4/HUMAN PASS.
 
 ## 2026-09-07 provider cue mapping — exact GitHub sync and WF03-only deployment
 
