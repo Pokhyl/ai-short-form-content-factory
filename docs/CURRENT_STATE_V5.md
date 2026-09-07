@@ -5,6 +5,39 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 flat image verdict identity — verified, pending WF02 deployment
+
+Job `2fac6817-43ad-416c-a205-8f7704048f08` failed/script in WF02 **16421**:
+`pre-script verified visual inventory 1/3`. WF01 **16420** and gateways **16422–16425**
+succeeded. Query validation correction worked. Exact execution backup:
+`/opt/ai-short-form-content-factory-runtime-backups/inventory-2fac6817-20260907/execution-16421.json`,
+SHA256 `41dab53ddb93f344f717ac80c9a52d939938672bd5d418d026ab0a6d711483eb`.
+Decoded evidence is alongside it. No final story/TTS/MP4; failed job untouched.
+
+The reviewer returned all 12 shown image verdicts within JSON claim_number 1,
+including accepted C1-I3 and C3-I1. Selector still indexed decisions by origin
+claim group despite global image review. Thus C3-I1 was silently ignored. Exact
+read-only replay: as returned, only Pixabay 5024962 survives; regrouping the same
+verdicts by their existing review_id yields two valid unique assets (also Commons
+Miraflores Lock Panama Canal 2006 24.JPG), each passing metadata consistency with
+3 hits. **This remains 2/3, not an accepted job or proof of sufficient inventory.**
+
+Correction simplifies the model contract to flat `verdicts[]`, addressed solely
+by the already-global `review_id`. Selector requires exactly one verdict for every
+shown ID and rejects unknown, duplicate or missing IDs explicitly. Origin groups
+remain audit data only. Structured schema and prompt match the flat contract.
+No relevance, metadata, evidence, asset uniqueness or minimum-inventory gate changed.
+
+Verification: **61/61 static regressions PASS**, including shuffled/global verdicts,
+multiple observed facts per retrieval origin, and missing/duplicate/unknown ID
+rejection; fresh PostgreSQL (21 statements plus staged writes) PASS; real n8n
+2.37.10 import (8 workflows) PASS; actual structured invocation contracts (4) PASS.
+VPS isolated gate source blob SHAs matched local tested files. Worker unchanged.
+Next: push verified tree, back up/deploy WF02 only, verify current/published parity,
+then one NEW normal job. Remaining uncertainty is semantic inventory sufficiency;
+canonical article coverage is still zero for the unverified resolver phrase.
+No MP4 or HUMAN PASS yet.
+
 ## 2026-09-07 provider query validation — deployed, fresh normal job running
 
 New job `2497062e-6636-4247-8e3f-5a200eaa51fe` failed/script before reaching WF03.

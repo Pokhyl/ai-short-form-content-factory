@@ -26,7 +26,7 @@ const decisions=[
  {claim_number:3,verdicts:[{review_id:'C3-I1',relevant:true,visible_description:'Visible component alpha',supported_claim:'Research-supported fact about alpha.',supported_evidence_ids:['S1']}]}
 ];
 const lookup=name=>name==='Prepare Inventory Review Batches'?{all:()=>batches.map(json=>({json}))}:name==='Validate Candidate Claims'?{first:()=>({json:base})}:null;
-const run=ds=>new Function('$input','$',code('Select Verified Claim Inventory'))({all:()=>[{json:{text:JSON.stringify({claims:ds})}}]},lookup)[0].json;
+const run=ds=>new Function('$input','$',code('Select Verified Claim Inventory'))({all:()=>[{json:{text:JSON.stringify({verdicts:ds.flatMap(c=>c.verdicts)})}}]},lookup)[0].json;
 const out=run(decisions);
 assert.equal(out.verified_claim_count,3,'global observed pool can reserve multiple valid observations from one discovery hypothesis');
 assert.deepEqual(out.verified_claims.map(x=>x.claim_id),['C1','C2','C3'],'observed facts receive fresh stable story identities');
@@ -39,5 +39,12 @@ for(const change of [{supported_evidence_ids:['S999']},{supported_claim:''},{sup
  assert.throws(()=>run(bad),/verified visual inventory 2\/3/,'invalid global grounding cannot reserve an asset');
 }
 const request=new Function('$json',code('Build Review Inventory Candidate Images Request'))({input:[]}).json.model_request;
-assert(request.response_schema.properties.claims.items.properties.verdicts.items.required.includes('supported_evidence_ids'));
+assert(request.response_schema.properties.verdicts.items.required.includes('supported_evidence_ids'));
 console.log('INVENTORY_OBSERVED_CLAIM_CONTRACT_PASS');
+
+assert.equal(run([{verdicts:decisions.flatMap(c=>c.verdicts).reverse()}]).verified_claim_count,3,'flat IDs must preserve observations regardless of retrieval group or response order');
+for(const [entries,error] of [
+ [decisions.flatMap(c=>c.verdicts).slice(1),/incomplete verdicts/],
+ [[...decisions.flatMap(c=>c.verdicts),decisions[0].verdicts[0]],/duplicate review_id/],
+ [[...decisions.flatMap(c=>c.verdicts),{review_id:'unknown'}],/unknown review_id/]
+])assert.throws(()=>run([{verdicts:entries}]),error);
