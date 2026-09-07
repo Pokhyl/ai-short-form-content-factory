@@ -5,6 +5,33 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 provider cue mapping — exact GitHub sync and WF03-only deployment
+
+Verified VPS commit was transferred as native Git objects via SSH fetch and pushed
+without force from the local authenticated checkout. GitHub now contains exact
+commit `5829569857d7ab61ae1be85b34e1d958726a63ed`, parent
+`a2b7c183e6c48abeef5e8f77410d700dd53c5724`, tree
+`8d0aeaf5e05f3a0262b277d1d0a559418e4a0449`. All three changed blob SHAs matched;
+post-push fetch confirmed the same parent/tree. The transport branch was not used.
+
+WF03 ONLY deployed using SentinelX sudo scripts. Zero active/running/waiting/new
+executions before mutation. Rollback current/published JSON, CLI export, verified
+source and SHA256 manifest:
+`/opt/ai-short-form-content-factory-runtime-backups/provider-cue-5829569-20260907T152925Z`.
+Current import parity passed before publishing. n8n CLI requested restart; exactly
+one restart performed. `/healthz` returned HTTP 200, status ok. WF03 active,
+current version = activeVersionId = `165590b5-43f7-4e1d-b756-966fd1152292`.
+All 21 nodes, connections and current settings equal source; published history
+nodes/connections equal source (n8n history does not store a separate settings
+field). Canonical source/current core SHA256 (sorted JSON, UTF-8, compact separators):
+`6664b28af13aef018fab473cc4f912e58ba82c83774f9f9fd9ca1fb101d8286c`.
+Zero active executions after restart. WF02/WF04/WF05, PostgreSQL and media-worker
+were not redeployed; worker remains image `fe5b0dc2da7f...`.
+
+Next exact step: submit ONE new normal Panama Canal / ru / 15 job through WF01,
+capture HTTP response, then follow WF01–WF05. Do not modify failed `66fda166...`.
+No MP4 or HUMAN PASS yet.
+
 ## 2026-09-07 provider multi-token cue unit-boundary defect — verified, pending WF03 deployment
 
 The Edge provider-tail correction is deployed in production from GitHub commit `a2b7c183e6c48abeef5e8f77410d700dd53c5724`, exact tree `516979685b2b5fcd9a2c4aac076781e13f2a291c`. Media-worker-only deployment replaced image `sha256:30843256898826e6f59e719c1c55a820dafb6b50f910a3f6b1006e9eded90a9d` with `sha256:fe5b0dc2da7fa8e1771ec032b9be77d31757b8e3b3af5909a6f4fcb3fe7a0aec`; rollback snapshot is `/opt/ai-short-form-content-factory-runtime-backups/edge-tail-a2b7c18-20260907T144148Z`. Worker health returned HTTP 200 with Pexels, Pixabay and SearXNG configured; n8n/PostgreSQL were not recreated.
