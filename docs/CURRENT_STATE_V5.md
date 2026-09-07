@@ -28,8 +28,10 @@ field). Canonical source/current core SHA256 (sorted JSON, UTF-8, compact separa
 Zero active executions after restart. WF02/WF04/WF05, PostgreSQL and media-worker
 were not redeployed; worker remains image `fe5b0dc2da7f...`.
 
-Next exact step: submit ONE new normal Panama Canal / ru / 15 job through WF01,
-capture HTTP response, then follow WF01–WF05. Do not modify failed `66fda166...`.
+ONE new normal WF01 POST returned HTTP 201: job
+`2497062e-6636-4247-8e3f-5a200eaa51fe`, Panama Canal / ru / 15. Response persisted
+in the rollback directory as `normal-job-response.json`. Next: follow WF01–WF05
+and inspect exact output/failure. Do not modify failed `66fda166...`.
 No MP4 or HUMAN PASS yet.
 
 ## 2026-09-07 provider multi-token cue unit-boundary defect — verified, pending WF03 deployment
