@@ -5,6 +5,37 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 story persistence credential contract — verified, pending deployment
+
+New normal job `7dd0361a-916f-47d6-9263-e37f662ee443` (Panama Canal / ru / 15)
+ran against deployed observed-inventory WF02. WF02 execution **16326** reached the
+new causal path successfully: candidate claims, real provider discovery, image
+review, observed facts/assets, and final inventory-grounded story all completed.
+The selected package contained three distinct observed bindings (ship-in-lock,
+visible culvert/tunnel opening, and Gatun Locks/Lake aerial view). Final story
+model execution succeeded, but the job then failed/script with
+`inventory-first story did not update job ...`.
+
+Exact cause: `Persist Inventory First Story` was a new PostgreSQL node whose source
+export omitted its `Application PostgreSQL` credential reference. n8n import and
+fresh SQL preparation did not detect that runtime credential requirement; live
+execution reported `Node does not have any credentials set`. Failure persistence
+then correctly marked the job failed; the failed job is not resumed.
+
+Systemic correction: every exported `n8n-nodes-base.postgres` node must carry an
+explicit PostgreSQL credential reference. `Persist Inventory First Story` now uses
+the same `Application PostgreSQL` credential as the existing WF02 DB nodes, and a
+cross-workflow regression checks all PostgreSQL nodes for both credential id and
+name so newly added DB nodes cannot silently import without runtime credentials.
+
+Verification after correction: **59/59 static regressions PASS** (46 Node + 13
+Python); n8n **2.37.10** import contract PASS for all 8 workflows; fresh PostgreSQL
+contract PASS (21 workflow SQL statements plus staged writes). Worker code is
+unchanged. Next: commit/push this verified logical stage, deploy WF02 only with
+rollback capture and source/published parity, then submit a NEW normal job. No MP4
+or HUMAN PASS yet.
+
+
 ## 2026-09-07 observed inventory contract — verified, pending deployment
 
 Job `9705e087-e2ee-41db-b6d5-9d9d277a089c` failed/script in WF02 **16307**

@@ -568,7 +568,13 @@
           5560,
           300
         ],
-        "onError": "continueErrorOutput"
+        "onError": "continueErrorOutput",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        }
       },
       {
         "parameters": {
