@@ -33,6 +33,7 @@ try:
     sql((ROOT / "db/init/001_init.sql").read_text())
     statements = []
     persist_story_query = None
+    planner_failure_query = None
     for path in sorted((ROOT / "n8n/workflows").glob("*.json")):
         raw = json.loads(path.read_text())
         for workflow in raw if isinstance(raw, list) else [raw]:
@@ -42,6 +43,8 @@ try:
                     statements.append(f"PREPARE q{len(statements)} AS {query.rstrip(';')};")
                     if node.get("name") == "Persist Inventory First Story":
                         persist_story_query = query.rstrip(';')
+                    if node.get("name") == "Record Planner Failure":
+                        planner_failure_query = query.rstrip(';')
     sql("\n".join(statements))
     if persist_story_query is None:
         raise RuntimeError("Persist Inventory First Story SQL not found")
@@ -71,6 +74,16 @@ try:
     expected = f"{job_id}|1|t|0|3"
     if expected not in rows:
         raise RuntimeError(f"Persist Inventory First Story returned unexpected row: {rows}")
+    # A delayed upstream error must neither overwrite nor mutate an already failed job.
+    assert planner_failure_query
+    sql(f"UPDATE public.jobs SET status='failed', current_stage='visuals', last_error='Original visual failure' WHERE id='{job_id}';")
+    snapshot_query = f"SELECT md5(row_to_json(j)::text) FROM public.jobs j WHERE id='{job_id}';"
+    before = sql(snapshot_query).stdout
+    returned = sql("\\pset tuples_only on\n\\pset format unaligned\n"
+                   + f"PREPARE planner_failure AS {planner_failure_query};\n"
+                   + f"EXECUTE planner_failure('{job_id}','Delayed planner error');\n").stdout
+    assert f"{job_id}|failed|visuals|Original visual failure" in returned, returned
+    assert sql(snapshot_query).stdout == before, "Already failed job was mutated"
     sql("""
 BEGIN;
 INSERT INTO public.jobs(id,topic,language_code,target_duration_seconds,

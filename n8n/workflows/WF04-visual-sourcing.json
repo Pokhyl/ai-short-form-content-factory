@@ -162,7 +162,7 @@
             "parameters": [
               {
                 "name": "Content-Type",
-                "value": "={{ $('Prepare Selected Download').item.json.metadata?.media_type === 'video' ? 'video/mp4' : $binary.data.mimeType }}"
+                "value": "={{ $binary.data.mimeType }}"
               }
             ]
           },

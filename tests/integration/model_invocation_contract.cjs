@@ -25,3 +25,8 @@ for(const file of fs.readdirSync('n8n/workflows').filter(f=>f.endsWith('.json'))
 }
 assert.equal(checked,4,'Every structured call must be exercised');
 console.log('MODEL_INVOCATION_CONTRACT_PASS',checked);
+
+const wf04=JSON.parse(fs.readFileSync('n8n/workflows/WF04-visual-sourcing.json'))[0];
+const storeHeader=wf04.nodes.find(n=>n.name==='Store Reserved Visual').parameters.headerParameters.parameters.find(p=>p.name==='Content-Type').value;
+for(const mime of ['image/jpeg','image/png','video/mp4'])assert.equal(evaluator.renderExpression(storeHeader.slice(1),{$binary:{data:{mimeType:mime}}}),mime);
+console.log('RESERVED_VISUAL_BINARY_HEADER_CONTRACT_PASS');

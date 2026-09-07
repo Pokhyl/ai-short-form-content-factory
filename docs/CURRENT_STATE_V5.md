@@ -5,6 +5,88 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 SAFE LIMIT CHECKPOINT — verified WF02/WF04 fixes NOT YET DEPLOYED
+
+Latest job `b978e057-ab76-413d-8839-bcec6512fbe1` is FAILED and immutable. No MP4.
+WF01 **16426** succeeded. WF02 **16427** generated/persisted a 3-unit/3-asset story.
+WF03 **16433** completed natural Edge synthesis after three bounded rewrites,
+accepted **16.020333s**, mapped exact provider cues into all three story units and
+persisted the voiceover. Thus deployed provider-cue fix passed its real product
+stage. Child WF04 **16437** then failed at Store Reserved Visual. Upstream workflows
+subsequently show error due to the child failure; do not mistake this for a fresh
+TTS timing failure. Gateways **16428–16432**, **16434–16436** completed successfully.
+
+Exact execution evidence directory:
+`/opt/ai-short-form-content-factory-runtime-backups/fingerprint-b978e057-20260907`.
+Raw SHA256s:
+- execution-16427.json: `35539cd28731f6e526dcf35fd0614879767b92b574030077253caaa8e744389e`
+- execution-16433.json: `65e82c8f764065911754b7074645d9d0ac329e38aa4ee8405ca02b36426cd84f`
+- execution-16437.json: `5c88d37b5df8851f9f99c160a2f8361d19a09dec3d252d8a81dfbac493703467`
+Decoded copies are saved alongside them as decoded-ID.json.
+
+Three proven defects, corrected in this checkpoint:
+1. WF04 Store Reserved Visual Content-Type referenced removed node
+   `Prepare Selected Download`, causing `Referenced node doesn't exist` before
+   storage. It now uses the actual downloaded binary MIME type directly.
+2. WF02 preview fingerprint requests used full visual_target as the legacy rank
+   API query. One target exceeded its 200-character limit and emitted a queued
+   error, although other candidates advanced through review/story/TTS. Fingerprint
+   requests now use the already-validated <=90-character search_query_en; full
+   visual_target is preserved untouched as acceptance context. Hashing is not
+   semantic authority and the worker itself is unchanged.
+3. After WF04 recorded failed/visuals, WF02's delayed fingerprint error overwrote
+   the job to failed/script/invalid_rank_query. Record Planner Failure now updates
+   only nonfailed jobs and returns the existing failed row without mutation via a
+   CTE fallback. First recorded failure, stage and timestamp remain immutable.
+
+Verification COMPLETE before checkpoint: **62/62 static regressions PASS**;
+fresh PostgreSQL contract PASS (**21 workflow SQL statements + staged writes**),
+including execution of the actual planner failure SQL against an already failed
+job and comparison of the whole row before/after; real n8n **2.37.10** import PASS
+for all **8 workflows**; all **4 structured invocation contracts PASS**; actual
+n8n evaluation of WF04 binary MIME header PASS for JPEG/PNG/MP4. New regression
+scans literal node references across all source workflows and exercises a long
+visual target with the bounded fingerprint query. JSON parse and git diff check
+PASS. No service changes, so no new worker build/deploy is required.
+
+Tested changed blobs (before documentation checkpoint):
+- WF02: `719a20551ef9922451ffd16c1e72b8f8d9618902`
+- WF04: `f7bb9775432c36f2a58f025e1b29a561fef7adbe`
+- fresh_database_contract.py: `c76959cf4652baf13fa6931dd4c8a696ee05e4bc`
+- model_invocation_contract.cjs: `a849130eadcc22026cd082f81c03e32df1d4c1fc`
+Isolated VPS integration staging: `/tmp/short-form-reserved-contract-20260907`;
+blob equality with the tested local files was verified before running the gate.
+
+PRODUCTION STILL uses WF02 source `79e08a6` (flat verdicts), version
+`1797c292-8fe2-42c3-a899-5e8f854c07eb`, plus the earlier unchanged WF04 with stale
+Content-Type reference. WF03 cue fix `5829569` remains deployed, version
+`165590b5-43f7-4e1d-b756-966fd1152292`. Worker remains exact image
+`sha256:fe5b0dc2da7fa8e1771ec032b9be77d31757b8e3b3af5909a6f4fcb3fe7a0aec`.
+Do NOT redeploy worker, WF03, WF05 or PostgreSQL for this checkpoint.
+
+NEXT EXACT STEP after reading mandatory docs and fetching latest GitHub:
+1. Verify checkpoint tree/blob identity and check active/running/waiting/new
+   production executions are zero. Do not overwrite newer GitHub work.
+2. With SentinelX sentinel_script_run(sudo=true), capture rollback current/
+   published JSON + CLI export + source SHA256 for WF02 and WF04.
+3. Import and publish ONLY WF02 `TJfA4ZYUEKSTad6k` and WF04 `M6VisualSourcing1`;
+   verify current core before publication, restart n8n once if CLI requires it,
+   then health and source/current/published nodes/connections/settings parity.
+4. Commit/push deployment evidence. Submit ONE new normal
+   `{"topic":"How the Panama Canal locks work","language":"ru","duration":15}`
+   via POST localhost:5678/webhook/jobs inside the n8n container. On an uncertain
+   response check PostgreSQL before considering another POST.
+5. Follow the new job autonomously through WF05. If it fails, preserve exact
+   execution evidence and fix only proven systemic defects; no manual job rescue.
+   If MP4 exists, verify DB/path/SHA256/ffprobe and deliver that exact file for
+   human review. Machine completion is not HUMAN PASS.
+
+Reliable GitHub transport in this desktop session: local authenticated git push
+works. Fetching native Git objects over SSH from the VPS also works and preserves
+exact tree/blob SHAs; VPS HTTPS push credentials are not needed. Current local
+checkout: `/Users/hodor/Documents/Codex/2026-09-06/production-github-pokhyl-ai-short-form/work/continuation`.
+No running job was submitted after b978e057. No final MP4 or HUMAN PASS yet.
+
 ## 2026-09-07 flat image verdict identity — deployed, fresh normal job running
 
 Job `2fac6817-43ad-416c-a205-8f7704048f08` failed/script in WF02 **16421**:
