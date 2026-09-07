@@ -4,6 +4,23 @@ Last updated: 2026-09-07
 
 Branch: `rebuild/agentic-editor-v5`.
 
+
+## 2026-09-07 provider multi-token cue unit-boundary defect — verified, pending WF03 deployment
+
+The Edge provider-tail correction is deployed in production from GitHub commit `a2b7c183e6c48abeef5e8f77410d700dd53c5724`, exact tree `516979685b2b5fcd9a2c4aac076781e13f2a291c`. Media-worker-only deployment replaced image `sha256:30843256898826e6f59e719c1c55a820dafb6b50f910a3f6b1006e9eded90a9d` with `sha256:fe5b0dc2da7fa8e1771ec032b9be77d31757b8e3b3af5909a6f4fcb3fe7a0aec`; rollback snapshot is `/opt/ai-short-form-content-factory-runtime-backups/edge-tail-a2b7c18-20260907T144148Z`. Worker health returned HTTP 200 with Pexels, Pixabay and SearXNG configured; n8n/PostgreSQL were not recreated.
+
+NEW normal job `66fda166-7768-46ed-b058-457ff43b7749` (How the Panama Canal locks work / ru / 15) was created once through WF01 HTTP 201. WF01 **16384** succeeded. WF02 **16385** progressed normally through model gateway executions **16386–16390**. WF03 **16391** synthesized three unchanged-speed Edge attempts after two bounded story rewrites. The final accepted-duration WAV was **16.383333s**, provider source WAV **17.208s**, final exact word cue ended at **16.350s**, provider-tail trim **0.824667s**, `rate_percent=0`, `post_tempo_factor=1`. WF03 then failed closed with `Provider timing diverges inside story unit 2 [line 13]`; no WF04/WF05 or MP4 was produced. The failed job remains immutable.
+
+Exact WF03 execution data is preserved at `/opt/ai-short-form-content-factory-runtime-backups/provider-timing-66fda166-7768-46ed-b058-457ff43b7749-20260907/execution-16391.json`, SHA256 `0b0808a464622e0b8094983da7a0fc1f477f57656d48af0d1eced15c1e836d00`.
+
+Systemic cause: `Build Exact Story Unit Timings` incorrectly assumed one Edge provider timing cue always equals one whitespace-delimited narration word. Edge can legitimately group multiple spoken words into one exact timing cue; in this execution unit 2 contained narration `...на 26 метров к...` while provider timing represented `26 метров` as one cue. The complete provider cue sequence still reconstructed the full final narration exactly, so the failure was a unit-boundary indexing defect, not a TTS/text divergence.
+
+Correction: story-unit mapping now consumes whole provider cues until their normalized text exactly equals each complete story-unit narration. A partial accumulation must remain an exact word-boundary prefix of that unit; otherwise it still fails closed. Provider cues are never split and no synthetic timestamps are created. If one cue crosses an actual story-unit boundary, or the provider text does not reconstruct the unit exactly, the same divergence gate still rejects the run.
+
+Verification: targeted story-unit timing regression now includes a multi-word provider cue (`26 meters`) and PASSes; the related exact-TTS/fit/word-timing regressions PASS. Full ordinary static suite: **48/48 Node + 13/13 Python = 61/61 PASS**; fresh PostgreSQL contract PASS (**21 workflow SQL statements + staged writes**); real n8n **2.37.10** import PASS for **8 workflows**; structured model invocation contract PASS for **4 calls**; workflow JSON parse and `git diff --check` PASS. Exact saved execution **16391** replay through the patched `Build Exact Story Unit Timings` node PASSes with duration **16.383333s** and exact unit ranges **0–5.300**, **5.300–11.149**, **11.149–16.383**.
+
+Next: preserve this exact verified tree in GitHub, deploy **WF03 only** with rollback/source-current-published parity, then submit one completely NEW normal product job. Do not resume or edit `66fda166...`. No MP4 or HUMAN PASS yet.
+
 ## 2026-09-07 Edge provider tail silence — verified, pending worker deployment
 
 The previous story-persist correction is deployed in production from GitHub commit `c6124f528a5798502567e8f4f7d7c108e46558ab`, exact tree `bfb26fd33828d327207cd0fb3260975081f3b28b`. WF02 current/active version is `750687ba-bc44-480d-b189-389029be41cf`; source/current/published core parity passed before the new run.

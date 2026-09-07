@@ -9,12 +9,12 @@ const code=by.get('Build Exact Story Unit Timings').parameters.jsCode;
 assert(!/BEATS_BY_DURATION|15:6|30:10|45:14|60:18/u.test(code),'exact timing must not use fixed beat counts');
 const story={version:'inventory-first-story-v1',units:[
  {unit_id:'U1',claim_id:'C1',narration:'Alpha beta.',evidence_ids:['S1'],asset_id:'A1'},
- {unit_id:'U2',claim_id:'C2',narration:'Gamma delta epsilon.',evidence_ids:['S2'],asset_id:'A2'},
+ {unit_id:'U2',claim_id:'C2',narration:'Gamma 26 meters delta.',evidence_ids:['S2'],asset_id:'A2'},
  {unit_id:'U3',claim_id:'C3',narration:'Zeta eta.',evidence_ids:['S3'],asset_id:'A3'},
 ],assets:[{asset_id:'A1'},{asset_id:'A2'},{asset_id:'A3'}]};
 const job={job_id:'11111111-1111-4111-8111-111111111111',topic:'x',fact_primary_title:'X',language_code:'en',target_duration_seconds:15,story_package:story,script_text:story.units.map(u=>u.narration).join(' '),script_fit_passes:0};
 const words=[
- ['Alpha',0.2,0.5],['beta.',0.55,1.0],['Gamma',1.4,1.7],['delta',1.75,2.0],['epsilon.',2.05,2.6],['Zeta',3.0,3.3],['eta.',3.35,3.9],
+ ['Alpha',0.2,0.5],['beta.',0.55,1.0],['Gamma',1.4,1.7],['26 meters',1.75,2.2],['delta.',2.25,2.6],['Zeta',3.0,3.3],['eta.',3.35,3.9],
 ].map(([text,start_seconds,end_seconds])=>({text,start_seconds,end_seconds}));
 const stored={...job,voiceover_path:'jobs/x.wav',duration_seconds:4.5,provider:'microsoft_edge_readaloud',model:'edge_neural',voice:'en-US-AndrewNeural',word_timing_path:'jobs/x.words.json',word_timing:{version:'provider-word-timing-v1',duration_seconds:4.5,words}};
 const $=name=>{assert.equal(name,'Require Eligible Voiceover Job');return {first:()=>({json:job})}};
