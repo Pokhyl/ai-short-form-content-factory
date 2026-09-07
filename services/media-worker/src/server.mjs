@@ -8,7 +8,7 @@ import edgeTtsPackage from "node-edge-tts";
 import { dirname, extname, resolve, sep } from "node:path";
 import { edgeProviderBudgetMilliseconds } from "./edge-provider-budget.mjs";
 import { buildVoiceoverWordTiming } from "./voiceover-word-timing.mjs";
-import { buildNaturalTailPadPlan } from "./audio-duration-normalization.mjs";
+import { buildNaturalTailPadPlan, buildProviderTailTrimPlan } from "./audio-duration-normalization.mjs";
 import { parseSingleByteRange } from "./media-range.mjs";
 import { buildVisualBeatFilters } from "./visual-framing.mjs";
 import { discoverVisualCandidates, recoverVisualConflictCandidates } from "./visual-discovery.mjs";
@@ -720,6 +720,46 @@ async function storeAudio(request, response) {
   }
 }
 
+async function trimProviderTrailingSilence(wavPath, cues) {
+  const sourceDurationSeconds = probeDurationSeconds(wavPath);
+  if (!Array.isArray(cues) || !cues.length) throw new Error("Provider word timing is missing before tail normalization");
+  const lastWordEndSeconds = Number(cues.at(-1)?.end) / 1000;
+  const plan = buildProviderTailTrimPlan(sourceDurationSeconds, lastWordEndSeconds);
+  if (!plan.apply) {
+    return {
+      duration_seconds: sourceDurationSeconds,
+      tail_trim_seconds: 0,
+      source_duration_seconds: sourceDurationSeconds,
+      last_word_end_seconds: plan.last_word_end_seconds,
+    };
+  }
+  const trimmedPath = `${wavPath}.tailtrim-${randomUUID()}.wav`;
+  try {
+    execFileSync("ffmpeg", [
+      "-v", "error", "-y", "-i", wavPath,
+      "-t", String(plan.final_duration_seconds),
+      "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", trimmedPath,
+    ], { stdio: ["ignore", "pipe", "pipe"], maxBuffer: 16 * 1024 * 1024 });
+    const finalDurationSeconds = probeDurationSeconds(trimmedPath);
+    if (!Number.isFinite(finalDurationSeconds)
+      || finalDurationSeconds < plan.last_word_end_seconds - 0.002
+      || finalDurationSeconds > plan.final_duration_seconds + 0.01) {
+      throw new Error("Provider tail trim violated exact word boundary");
+    }
+    await rm(wavPath, { force: true });
+    await rename(trimmedPath, wavPath);
+    return {
+      duration_seconds: finalDurationSeconds,
+      tail_trim_seconds: Number((sourceDurationSeconds - finalDurationSeconds).toFixed(6)),
+      source_duration_seconds: sourceDurationSeconds,
+      last_word_end_seconds: plan.last_word_end_seconds,
+    };
+  } catch (error) {
+    await rm(trimmedPath, { force: true }).catch(() => {});
+    throw error;
+  }
+}
+
 async function normalizeNaturalVoiceoverTail(wavPath, targetDurationSeconds) {
   const sourceDurationSeconds = probeDurationSeconds(wavPath);
   const plan = buildNaturalTailPadPlan(sourceDurationSeconds, targetDurationSeconds);
@@ -874,6 +914,8 @@ async function synthesizeFreeFallbackVoiceover(request, response) {
     ];
     execFileSync("ffmpeg", ffmpegArgs, { stdio: ["ignore", "pipe", "pipe"], maxBuffer: 16 * 1024 * 1024 });
 
+    const providerCues = JSON.parse(await readFile(`${sourcePath}.json`, "utf8"));
+    const providerTailTiming = await trimProviderTrailingSilence(wavPath, providerCues);
     const normalizedTiming = await normalizeNaturalVoiceoverTail(wavPath, targetDurationSeconds);
     const durationSeconds = normalizedTiming.duration_seconds;
     if (!Number.isFinite(durationSeconds) || durationSeconds <= 0) {
@@ -881,7 +923,7 @@ async function synthesizeFreeFallbackVoiceover(request, response) {
     }
     const wordTiming = buildVoiceoverWordTiming({
       narration,
-      cues: JSON.parse(await readFile(`${sourcePath}.json`, "utf8")),
+      cues: providerCues,
       durationSeconds,
       audio: await readFile(wavPath),
     });
@@ -908,6 +950,9 @@ async function synthesizeFreeFallbackVoiceover(request, response) {
       post_tempo_factor: 1,
       source_duration_seconds: normalizedTiming.source_duration_seconds,
       provider_source_duration_seconds: sourceDuration,
+      provider_pretrim_wav_duration_seconds: providerTailTiming.source_duration_seconds,
+      provider_last_word_end_seconds: providerTailTiming.last_word_end_seconds,
+      provider_tail_trim_seconds: providerTailTiming.tail_trim_seconds,
       tail_pad_seconds: normalizedTiming.tail_pad_seconds,
       provider_budget_ms: providerBudgetMilliseconds,
       word_timing_path: `${relativePath}.words.json`,
