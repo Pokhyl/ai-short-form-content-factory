@@ -5,6 +5,12 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 unique shortlist deployed — fresh job running
+
+Source commit `566366a74b3202b668bcb34b5b38794bbf8ebf72`, exact verified tree `52a6009592a1b3bf9e0279190133220a06d9d192`, is now deployed to WF02 only. Current/published nodes and connections match source; active/current version `53b3f193-faf7-4b2e-94c5-2c00216d9d43`. No active/waiting executions existed before deployment. n8n 2.37.10 restarted; worker unchanged. Rollback: `/opt/ai-short-form-content-factory-runtime-backups/unique-566366a-20260907T112245Z`.
+
+NEW normal job `99d20c0f-b7e4-4aac-8715-680e62794f6b` created through WF01 HTTP 201 with How the Panama Canal locks work / ru / 15. Earlier startup request returned 404 without creating a job. Next: follow exact execution through E2E; fix further demonstrated general defects autonomously, without manual rescue or gate weakening. No MP4/HUMAN PASS.
+
 ## 2026-09-07 global unique pre-review shortlist — verified, pending deployment
 
 Continuation from `a2ce67803d578c898d3121c8f66b9b849820e470` in `/opt/ai-short-form-content-factory-unique-review-20260907`. WF02 now builds one ranked round-robin pool across all fingerprinted discovery buckets before image review. Provider identity and perceptual duplicates (existing distance <=18) cannot consume repeated review slots; remaining unique candidates fill slots up to the unchanged total budget of four images per original retrieval hypothesis, with at most 24 images per model batch. Origin fields remain available for audit, but proposed hypothesis text is no longer shown as an acceptance cue. Full research corpus and all reviewer/final metadata/evidence/uniqueness gates remain. Minimum inventory is counted in unique assets, not productive origin buckets.
