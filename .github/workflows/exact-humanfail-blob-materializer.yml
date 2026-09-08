@@ -1,4 +1,4 @@
-name: Exact humanfail blob materializer
+name: Exact inventory visual fix materializer
 
 on:
   push:
@@ -15,31 +15,35 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Apply verified two-file patch and materialize exact blobs
+      - name: Apply exact verified inventory patch
         shell: bash
         run: |
           set -euo pipefail
           patch_ref="$GITHUB_SHA"
-          git show "$patch_ref:.transport/humanfail-two-blobs.patch" > /tmp/humanfail-two-blobs.patch
-          if git ls-remote --exit-code --heads origin refs/heads/transport/humanfail-result-20260908 >/dev/null 2>&1; then
+          : > /tmp/inventory.patch.gz.b64
+          for n in 00 01 02 03 04 05; do
+            git show "$patch_ref:.transport/inventory-fix/chunk-$n" >> /tmp/inventory.patch.gz.b64
+          done
+          base64 -d /tmp/inventory.patch.gz.b64 > /tmp/inventory.patch.gz
+          gzip -dc /tmp/inventory.patch.gz > /tmp/inventory.patch
+          echo 'bcc81af12a8f5f690c47b5d89569c789c0231b5fbafdfbf3dcc8578e06dde0fa  /tmp/inventory.patch' | sha256sum -c -
+          if git ls-remote --exit-code --heads origin refs/heads/transport/inventory-visual-result-20260908 >/dev/null 2>&1; then
             echo 'result branch already exists; refusing overwrite' >&2
             exit 1
           fi
-          git checkout --detach 3e84e8a748b296a3fd40ac33517efd6004de8ee0
-          git apply --check /tmp/humanfail-two-blobs.patch
-          git apply /tmp/humanfail-two-blobs.patch
-          server_blob=$(git hash-object services/media-worker/src/server.mjs)
-          state_blob=$(git hash-object docs/CURRENT_STATE_V5.md)
-          test "$server_blob" = 27fb4ae203746afab4d2c6e8a320b4205f1c5dd8
-          test "$state_blob" = aa9c9ff0e86c4148189946904c926ed2c89dd51d
+          git checkout --detach afc69ed90b67c3c83c700cb1f8c426d8cab5db0e
+          git apply --check /tmp/inventory.patch
+          git apply /tmp/inventory.patch
+          test "$(git hash-object docs/CURRENT_STATE_V5.md)" = 280e76ef64a2cb13382031f15b486ff68b70f953
+          test "$(git hash-object n8n/workflows/WF02-plan-script-and-scenes.json)" = 395d697dc81c9ae535588987153a597e314f44ab
+          test "$(git hash-object services/media-worker/src/visual-discovery.mjs)" = 8d3d8ef0694c231d23a5db3274e280794eb19bec
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add services/media-worker/src/server.mjs docs/CURRENT_STATE_V5.md
-          git commit -m 'transport: materialize exact verified humanfail blobs'
+          git add -A
+          git commit -m 'fix: stabilize pre-script visual inventory'
           result_commit=$(git rev-parse HEAD)
           result_tree=$(git rev-parse HEAD^{tree})
-          echo "server_blob=$server_blob"
-          echo "state_blob=$state_blob"
+          test "$result_tree" = c5970616887d91344a49ab21d26c616633d0c266
           echo "result_commit=$result_commit"
           echo "result_tree=$result_tree"
-          git push origin HEAD:refs/heads/transport/humanfail-result-20260908
+          git push origin HEAD:refs/heads/transport/inventory-visual-result-20260908
