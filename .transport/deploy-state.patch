@@ -1,0 +1,27 @@
+diff --git a/docs/CURRENT_STATE_V5.md b/docs/CURRENT_STATE_V5.md
+index aa9c9ff..efd06fd 100644
+--- a/docs/CURRENT_STATE_V5.md
++++ b/docs/CURRENT_STATE_V5.md
+@@ -5,4 +5,22 @@ Last updated: 2026-09-07
+ Branch: `rebuild/agentic-editor-v5`.
+ 
++## 2026-09-08 HUMAN FAIL correction — exact GitHub sync and production deployment complete
++
++The verified HUMAN FAIL correction was preserved on GitHub as commit `5716922ced66e117d89effcb0228c956c25ca5a0`, parent `3e84e8a748b296a3fd40ac33517efd6004de8ee0`, exact tree `f8adb8744cb29be7692790ad14b3142ce78a5e6e`. The preserved VPS verification commit `8480682972bb52a43dfb301c700362fe2ee48d1c` has the same exact tree. GitHub and the clean VPS worktree were fetched and compared before production mutation.
++
++Production deployment is COMPLETE for **WF02 + WF04 + WF05 + media-worker only**. Zero `new/running/waiting` n8n executions existed before mutation and after final verification. Rollback/evidence directory: `/opt/ai-short-form-content-factory-runtime-backups/humanfail-5716922-20260908T062414Z`. The prior worker image `sha256:fe5b0dc2da7fa8e1771ec032b9be77d31757b8e3b3af5909a6f4fcb3fe7a0aec` is retained under rollback tag `ai-short-form-content-factory-media-worker:rollback-humanfail-20260908T062414Z`.
++
++Deployed runtime identities:
++- WF02 `TJfA4ZYUEKSTad6k`: active/current version `d651aee0-bc60-4be7-92ff-cb8be9584138`, counter **106**, **34 nodes**, source/current core SHA256 `10ad0062b7a466314bb9a0752c25f86aeaa32f45b1cf3961bf7266482a3d51a2`; current parity PASS and published nodes/connections parity PASS.
++- WF04 `M6VisualSourcing1`: active/current version `105c934f-235b-4ea7-8e2a-bbef8976bd70`, counter **214**, **19 nodes**, source/current core SHA256 `55ec302acc7556369ca9c7632b8ee75f256d45f73b78d3e36232964360c16a52`; current parity PASS and published nodes/connections parity PASS.
++- WF05 `M7VideoRender1`: active/current version `95a87569-2e8f-457f-8563-03ff261b2d3b`, counter **6**, **16 nodes**, source/current core SHA256 `07064148dc1643ce8cf1ba613a85d89e513f5762fd263bf8f62faf8b093b1cea`; current parity PASS and published nodes/connections parity PASS.
++- media-worker runs the exact pre-verified image `sha256:94668bb03228e8fb943ce3be55a666ddad7d1b899ab0e6e2a9900989ab440ddd`; no rebuild was performed during deployment. `/health` returned status `ok` with Pexels, Pixabay and SearXNG configured.
++- n8n `2.37.10` publication explicitly required restart; all three workflows were published first and exactly one n8n restart was then performed. `/healthz` returned `{"status":"ok"}`.
++- PostgreSQL was not recreated or migrated; its container start timestamp remained unchanged. WF03 and PostgreSQL schema were not modified.
++
++Deployment operator note: the first deployment helper stopped after importing the three exact workflow sources because its parity checker incorrectly treated the one-element n8n workflow-export array as an object. This occurred **before publish, n8n restart, or worker recreation**. Active executions remained zero; a corrected read-only unwrap check proved all three imported current cores exactly matched source, after which the normal publish/restart/worker sequence completed. This was an operator verification-script defect, not a product-code failure.
++
++No new product job has been submitted after this deployment checkpoint yet. Rejected job `515408f3-0f17-4ce4-aaf5-63d709998ee9` remains immutable and HUMAN FAIL. Next exact step: after this deployment record is preserved in GitHub and the mandatory pre-action gate is reread, verify zero active executions and submit exactly ONE new normal `{"topic":"How the Panama Canal locks work","language":"ru","duration":15}` job. Follow that new job autonomously to exact MP4 HUMAN review or preserve/fix the next demonstrated systemic failure; never resume a failed/rejected job.
++
+ 
+ ## 2026-09-07 HUMAN FAIL — sparse visuals + landscape-card framing corrected, pending deployment
