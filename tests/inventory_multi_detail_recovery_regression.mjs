@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {discoverVisualCandidates} from '../services/media-worker/src/visual-discovery.mjs';
+const queries=[];
+const page=(id,desc)=>({title:`File:${id}.jpg`,imageinfo:[{mime:'image/jpeg',width:1200,height:800,url:`https://upload.wikimedia.org/${id}.jpg`,thumburl:`https://upload.wikimedia.org/${id}-thumb.jpg`,descriptionurl:`https://commons.wikimedia.org/wiki/File:${id}.jpg`,extmetadata:{ImageDescription:{value:desc},LicenseShortName:{value:'CC BY'}}}]});
+const result=await discoverVisualCandidates({canonicalSource:{language:'en',title:'Panama Canal lock mechanism operation'},inventoryClaims:[{claim_number:1,claim:'Grounded fact.',visual_target:'Close-up of the large steel miter gates of the Panama Canal',search_query_en:'Panama Canal miter gate details'}],fetchImpl:async input=>{const u=new URL(String(input));if(u.hostname.endsWith('.wikipedia.org'))return new Response(JSON.stringify({query:{pages:[]}}));const q=u.searchParams.get('gsrsearch');queries.push(q);const pages=/^Panama Canal lock gates?$/u.test(q)?[page('Gatun-lock-gate','Panama Canal lock gate'),page('Panama-lock-gate','Panama Canal steel lock gates')]:Array.from({length:3},(_,i)=>page(`generic-${i}`,'Panama Canal overview'));return new Response(JSON.stringify({query:{pages}}));}});
+const row=result.inventory_claims[0];
+assert(row.provider_queries.some(q=>/^Panama Canal miter gates?$/u.test(q)),'first recovery must preserve both distinguishing tokens');
+assert(row.provider_queries.some(q=>/^Panama Canal lock gates?$/u.test(q)),'bounded fallback must try canonical component plus the useful distinguishing token when the combined detail query has no detail-bearing assets');
+assert(row.provider_queries.length<=5,'inventory retrieval must remain bounded to exact + primary + at most three fallbacks');
+assert.deepEqual(new Set(row.candidates.slice(0,2).map(x=>x.provider_asset_id)),new Set(['File:Gatun-lock-gate.jpg','File:Panama-lock-gate.jpg']));
+assert(row.candidates.slice(0,2).every(x=>x.inventory_detail_hits>0));
+console.log('INVENTORY_MULTI_DETAIL_RECOVERY_REGRESSION_PASS');

@@ -36,20 +36,20 @@ function boundedProviderQuery(value, maxChars = PROVIDER_QUERY_MAX_CHARS) {
 
 
 const QUERY_FILLER_WORDS = new Set([
-  "a", "an", "the", "and", "or", "of", "to", "in", "on", "at", "by", "for", "from", "with", "into", "over", "under", "during",
+  "a", "an", "the", "and", "or", "of", "to", "in", "on", "at", "by", "for", "from", "with", "into", "over", "under", "during", "beside", "alongside", "near", "next", "its", "their", "his", "her", "this", "that", "these", "those",
   "show", "shows", "showing", "visible", "view", "close", "up", "detailed", "detail", "inside", "outside", "modern", "historical", "real", "actual", "being",
   "image", "picture", "scene", "background", "foreground", "look", "looking", "working",
 ]);
 const QUERY_MEDIA_CUES = new Set(["portrait", "photo", "photograph", "photography", "painting", "diagram", "schematic", "map", "micrograph", "illustration", "cutaway", "model"]);
 const QUERY_LOW_SIGNAL_WORDS = new Set([
   "early", "late", "century", "scientific", "science", "research", "concept", "setting", "equipment", "laboratory", "lab",
-  "experiment", "experimental", "setup", "context", "generic", "general", "representation", "representing", "technical",
+  "experiment", "experimental", "setup", "context", "generic", "general", "representation", "representing", "technical", "structure", "internal", "external", "system", "design", "mechanism", "operation",
 ]);
 const QUERY_RECOVERY_STYLE_WORDS = new Set(["motion", "blur", "macro", "traditional", "stylized", "dramatic"]);
 const QUERY_RECOVERY_ACTION_WORDS = new Set([
   "release", "releases", "released", "releasing", "push", "pushes", "pushed", "pushing", "swing", "swings", "swinging",
   "move", "moves", "moved", "moving", "movement", "rotate", "rotates", "rotated", "rotating", "turn", "turns", "turned", "turning",
-  "flow", "flows", "flowed", "flowing",
+  "flow", "flows", "flowed", "flowing", "tow", "tows", "towed", "towing", "guide", "guides", "guided", "guiding",
 ]);
 
 function queryWordRows(value) {
@@ -93,10 +93,31 @@ function candidateSearchText(candidate) {
   ].filter(Boolean).join(" ")).toLocaleLowerCase();
 }
 
+// Ranking must prefer what concise asset metadata says the image is, not a long
+// contextual page/book description that may mention many objects absent from the pixels.
+function candidateRankingText(candidate) {
+  const concise = (value) => {
+    const text = cleanText(value);
+    return text && text.length <= 240 ? text : "";
+  };
+  return cleanText([
+    candidate?.title,
+    concise(candidate?.description),
+    candidate?.categories,
+    candidate?.metadata?.source_title,
+    concise(candidate?.metadata?.source_description),
+    candidate?.metadata?.source_tags,
+    candidate?.source_url,
+  ].filter(Boolean).join(" ")).toLocaleLowerCase();
+}
+
 function relatedAnchorKey(left, right) {
   if (left === right) return true;
-  if (left.length < 5 || right.length < 5) return false;
-  return left.slice(0, 6) === right.slice(0, 6);
+  const singular = (value) => value.length >= 5 && value.endsWith("s") ? value.slice(0, -1) : value;
+  const a = singular(left), b = singular(right);
+  if (a === b) return true;
+  if (a.length < 5 || b.length < 5) return false;
+  return a.slice(0, 6) === b.slice(0, 6);
 }
 
 function candidateQueryAnchorMetrics(candidate, query, canonicalTitle) {
@@ -175,25 +196,104 @@ function compactRecoveryQuery(query, canonicalTitle) {
 
 // Inventory retrieval is budgeted before verification. A stock provider returning
 // generic subject photos must not suppress a second, detail-bearing search.
-function inventoryDetailQuery(query, canonicalTitle) {
+function inventoryDetailQuery(query, canonicalTitle, visualTarget = "") {
   const shared = canonicalOverlapRows(query, canonicalTitle);
   const sharedKeys = new Set(shared.map((row) => row.key));
-  const detail = semanticQueryRows(query).find((row) => !sharedKeys.has(row.key));
-  if (!shared.length || !detail) return null;
-  const value = boundedProviderQuery([...shared.map((row) => row.raw), detail.raw].join(" "));
-  return value.toLocaleLowerCase() === query.toLocaleLowerCase() ? null : value;
+  const queryDetails = anchorQueryRows(query).filter((row) => !sharedKeys.has(row.key));
+  const targetDetails = anchorQueryRows(visualTarget).filter((row) => !sharedKeys.has(row.key));
+  const matched = targetDetails.filter((row) => queryDetails.some((queryRow) => relatedAnchorKey(row.key, queryRow.key)));
+  const targetOnly = targetDetails.filter((row) => !queryDetails.some((queryRow) => relatedAnchorKey(row.key, queryRow.key)));
+  const rankRows = (rows) => rows.map((row, index) => ({ ...row, index }))
+    .sort((left, right) => {
+      const leftAction = QUERY_RECOVERY_ACTION_WORDS.has(left.key) ? 1 : 0;
+      const rightAction = QUERY_RECOVERY_ACTION_WORDS.has(right.key) ? 1 : 0;
+      if (leftAction !== rightAction) return leftAction - rightAction;
+      if (left.raw.length !== right.raw.length) return right.raw.length - left.raw.length;
+      return left.index - right.index;
+    });
+  const ranked = [...rankRows(matched), ...rankRows(targetOnly), ...rankRows(queryDetails)].filter((row, index, rows) => rows.findIndex((other) => relatedAnchorKey(row.key, other.key)) === index);
+  const mediaCue = semanticQueryRows(visualTarget || query).find((row) => QUERY_MEDIA_CUES.has(row.key));
+  const canonicalMediaCue = mediaCue
+    ? ({ schematic: "diagram", cutaway: "diagram", photograph: "photo", photography: "photo" }[mediaCue.key] ?? mediaCue.key)
+    : null;
+  if (!shared.length || (!ranked.length && !canonicalMediaCue)) return null;
+  const rows = [...shared.slice(0, 2).map((row) => row.raw), ...ranked.slice(0, 2).map((row) => row.raw)];
+  if (canonicalMediaCue && !rows.some((value) => relatedAnchorKey(cleanText(value).toLocaleLowerCase(), canonicalMediaCue))) rows.push(canonicalMediaCue);
+  const value = boundedProviderQuery(rows.join(" "));
+  return value && value.toLocaleLowerCase() !== query.toLocaleLowerCase() ? value : null;
 }
 
-function rankInventoryCandidates(candidates, query, canonicalTitle) {
-  const shared = new Set(canonicalOverlapRows(query, canonicalTitle).map((row) => row.key));
-  const details = semanticQueryRows(query).filter((row) => !shared.has(row.key));
-  const score = (candidate) => {
-    const words = queryWordRows(candidateSearchText(candidate));
-    return details.filter((detail) => words.some((word) => relatedAnchorKey(detail.key, word.key))).length;
+function inventoryFallbackQueries(query, canonicalTitle, visualTarget = "") {
+  const shared = canonicalOverlapRows(query, canonicalTitle);
+  if (!shared.length) return [];
+  const sharedKeys = new Set(shared.map((row) => row.key));
+  const canonicalRows = anchorQueryRows(canonicalTitle);
+  const canonicalComponents = canonicalRows.filter((row) => !sharedKeys.has(row.key));
+  const queryDetails = anchorQueryRows(query).filter((row) => !sharedKeys.has(row.key));
+  const targetDetails = anchorQueryRows(visualTarget).filter((row) => !sharedKeys.has(row.key));
+  const matched = targetDetails.filter((row) => queryDetails.some((queryRow) => relatedAnchorKey(row.key, queryRow.key)));
+  const targetOnly = targetDetails.filter((row) => !queryDetails.some((queryRow) => relatedAnchorKey(row.key, queryRow.key)));
+  const rankRows = (rows) => rows.map((row, index) => ({ ...row, index }))
+    .sort((left, right) => {
+      const leftAction = QUERY_RECOVERY_ACTION_WORDS.has(left.key) ? 1 : 0;
+      const rightAction = QUERY_RECOVERY_ACTION_WORDS.has(right.key) ? 1 : 0;
+      if (leftAction !== rightAction) return leftAction - rightAction;
+      if (left.raw.length !== right.raw.length) return right.raw.length - left.raw.length;
+      return left.index - right.index;
+    });
+  const matchedRanked = rankRows(matched);
+  const targetOnlyRanked = rankRows(targetOnly);
+  const details = [matchedRanked[0], targetOnlyRanked[0], ...matchedRanked.slice(1), ...targetOnlyRanked.slice(1)]
+    .filter(Boolean)
+    .filter((row, index, rows) => rows.findIndex((other) => relatedAnchorKey(row.key, other.key)) === index);
+  const subject = shared.slice(0, 2).map((row) => row.raw).join(" ");
+  const component = canonicalComponents.find((row) => !details.some((detail) => relatedAnchorKey(row.key, detail.key)));
+  const out = [];
+  const push = (value) => {
+    const bounded = boundedProviderQuery(value);
+    if (!bounded || bounded.toLocaleLowerCase() === cleanText(query).toLocaleLowerCase()) return;
+    if (!out.some((item) => item.toLocaleLowerCase() === bounded.toLocaleLowerCase())) out.push(bounded);
   };
-  return candidates.map((candidate, index) => ({ candidate, index, score: score(candidate) }))
-    .sort((a, b) => b.score - a.score || a.index - b.index)
-    .map(({ candidate, score }) => ({ ...candidate, inventory_detail_hits: score }));
+  if (component) {
+    const componentDetails = (matchedRanked.length ? matchedRanked : details).slice(0, 2);
+    for (const row of componentDetails) {
+      push(`${subject} ${component.raw} ${row.raw}`);
+      if (out.length >= 3) break;
+    }
+  }
+  for (const row of details) {
+    if (out.length >= 3) break;
+    push(`${subject} ${row.raw}`);
+  }
+  const mediaCue = semanticQueryRows(visualTarget).find((row) => QUERY_MEDIA_CUES.has(row.key));
+  if (mediaCue && out.length < 3) {
+    const cue = ({ schematic: "diagram", cutaway: "diagram", photograph: "photo", photography: "photo" }[mediaCue.key] ?? mediaCue.raw);
+    push(`${subject} ${cue}`);
+  }
+  return out.slice(0, 3);
+}
+
+function rankInventoryCandidates(candidates, query, canonicalTitle, visualTarget = "") {
+  const sharedRows = canonicalOverlapRows(query, canonicalTitle);
+  const shared = new Set(sharedRows.map((row) => row.key));
+  const identityKeys = sharedRows.slice(0, 2).map((row) => row.key);
+  const details = anchorQueryRows(visualTarget || query).filter((row) => !shared.has(row.key));
+  const score = (candidate) => {
+    const words = queryWordRows(candidateRankingText(candidate));
+    const subjectHits = identityKeys.filter((key) => words.some((word) => relatedAnchorKey(key, word.key))).length;
+    const detailHits = details.filter((detail) => words.some((word) => relatedAnchorKey(detail.key, word.key))).length;
+    return { subjectHits, detailHits };
+  };
+  return candidates.map((candidate, index) => ({ candidate, index, ...score(candidate) }))
+    .sort((a, b) => b.subjectHits - a.subjectHits || b.detailHits - a.detailHits || a.index - b.index)
+    .map(({ candidate, subjectHits, detailHits }) => ({
+      ...candidate,
+      inventory_subject_anchor_keys: identityKeys,
+      inventory_subject_anchor_hits: subjectHits,
+      inventory_subject_anchor_required: identityKeys.length,
+      inventory_subject_anchor_pass: identityKeys.length < 2 || subjectHits === identityKeys.length,
+      inventory_detail_hits: detailHits,
+    }));
 }
 
 function markRecoveryCandidates(candidates, recoveryQuery) {
@@ -608,7 +708,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
         visual_target: cleanText(claim?.visual_target),
         search_query: cleanText(claim?.search_query_en),
         narration: cleanText(claim?.claim),
-        required_images: 1,
+        required_images: 2,
       }))
     : segmentedMode
       ? segmentation.segments.map((segment) => ({
@@ -695,7 +795,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       let candidates = dedupeCandidates([...canonicalExact, ...exactStrong]);
       if (candidates.length < required) candidates = dedupeCandidates([...candidates, ...canonicalAnnotated]);
       const recoveryQuery = inventoryMode
-        ? inventoryDetailQuery(exactQuery, englishTitle)
+        ? inventoryDetailQuery(exactQuery, englishTitle, anchor)
         : candidates.length < required ? compactRecoveryQuery(anchor, englishTitle) : null;
       const providerQueries = [exactQuery];
       let recoveryUsed = false;
@@ -710,10 +810,31 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
         candidates = dedupeCandidates([...candidates, ...recoveredRows]);
         recoveryUsed = true;
       }
+      if (inventoryMode) {
+        const desiredDetailCandidates = Math.max(2, required);
+        let rankedInventory = rankInventoryCandidates(candidates, exactQuery, englishTitle, anchor);
+        const detailCount = () => rankedInventory.filter((candidate) => candidate.inventory_subject_anchor_pass === true && Number(candidate.inventory_detail_hits) > 0).length;
+        if (detailCount() < desiredDetailCandidates) {
+          for (const fallbackQuery of inventoryFallbackQueries(exactQuery, englishTitle, anchor)) {
+            if (providerQueries.some((value) => value.toLocaleLowerCase() === fallbackQuery.toLocaleLowerCase())) continue;
+            const fallback = await fetchTimedProviderSet(fallbackQuery, unitNumber);
+            localErrors.push(...fallback.errors);
+            providerQueries.push(fallbackQuery);
+            const fallbackStrong = fallback.candidates
+              .map((candidate) => withCandidateAnchorMetrics(candidate, anchor, englishTitle))
+              .filter((candidate) => candidate.target_anchor_pass === true);
+            candidates = dedupeCandidates([...candidates, ...markRecoveryCandidates(fallbackStrong, fallbackQuery)]);
+            recoveryUsed = true;
+            rankedInventory = rankInventoryCandidates(candidates, exactQuery, englishTitle, anchor);
+            if (detailCount() >= desiredDetailCandidates) break;
+          }
+        }
+        candidates = rankedInventory;
+      }
       return {
         unit_number: unitNumber,
         visual_target: anchor,
-        candidates: inventoryMode ? rankInventoryCandidates(candidates, exactQuery, englishTitle) : candidates,
+        candidates: inventoryMode ? candidates : candidates,
         provider_query: exactQuery,
         provider_queries: providerQueries,
         bounded_query_recovery_used: recoveryUsed,

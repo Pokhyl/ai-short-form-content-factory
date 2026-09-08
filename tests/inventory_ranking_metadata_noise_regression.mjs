@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+let src=fs.readFileSync('services/media-worker/src/visual-discovery.mjs','utf8');
+src += '\nexport { rankInventoryCandidates };\n';
+const tmp='/tmp/visual-discovery-ranking-test-'+process.pid+'.mjs';
+const seg='/tmp/visual-segmentation.mjs';
+fs.writeFileSync(tmp,src);fs.copyFileSync('services/media-worker/src/visual-segmentation.mjs',seg);
+const {rankInventoryCandidates}=await import('file://'+tmp+'?v='+Date.now());
+const noisy={candidate_id:'generic',title:'Panama Canal overview',categories:'Panama Canal',source_url:'https://example.invalid/generic',metadata:{source_title:'Panama Canal overview',source_tags:'Panama Canal',source_description:('Long contextual page text discussing towing locomotive mule gates culvert mechanism diagram although none are visible. ').repeat(6)}};
+const exact={candidate_id:'exact',title:'Panama Canal towing locomotive mule',categories:'Panama Canal locomotive',source_url:'https://example.invalid/exact',metadata:{source_title:'Panama Canal towing locomotive mule',source_tags:'Panama Canal locomotive'}};
+const ranked=rankInventoryCandidates([noisy,exact],'Panama Canal towing locomotive mule','Panama Canal lock mechanism operation');
+assert.equal(ranked[0].candidate_id,'exact','concise asset identity/detail metadata must outrank contextual description noise');
+fs.unlinkSync(tmp);fs.unlinkSync(seg);
+console.log('INVENTORY_RANKING_METADATA_NOISE_REGRESSION_PASS');
