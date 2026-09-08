@@ -1828,13 +1828,17 @@ async function renderVideoV3(request, response) {
     const renderedQuality = inspectRenderedVisualShotDiversity(temporaryOutputPath, normalizedShots);
     const stillImageCount = normalizedShots.filter((shot) => shot.visual_media_type === "image").length;
     const factualGraphicCount = normalizedShots.filter((shot) => shot.visual_kind === "factual_graphic").length;
+    const ordinaryPhotoCount = normalizedShots.filter((shot) => shot.visual_media_type === "image" && shot.visual_kind !== "factual_graphic").length;
     const compositionQuality = {
-      version: "full-image-preserve-v1",
+      version: "portrait-photo-frame-v1",
       still_image_count: stillImageCount,
+      ordinary_photo_count: ordinaryPhotoCount,
       factual_graphic_count: factualGraphicCount,
-      still_image_policy: "fit-preserve-with-blurred-fill",
+      still_image_policy: "fill-portrait-crop",
+      photo_motion_policy: "portrait-pan-crop",
       factual_graphic_policy: "fit-preserve-with-blurred-fill",
-      destructive_still_crop_count: 0,
+      portrait_reframe_count: ordinaryPhotoCount,
+      preserved_graphic_count: factualGraphicCount,
       pass: true,
     };
     const visualQuality = {
