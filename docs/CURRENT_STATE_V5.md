@@ -5,6 +5,42 @@ Last updated: 2026-09-07
 Branch: `rebuild/agentic-editor-v5`.
 
 
+## 2026-09-07 HUMAN FAIL — sparse visuals + landscape-card framing corrected, pending deployment
+
+Exact autonomous job `515408f3-0f17-4ce4-aaf5-63d709998ee9` reached `review_ready` after WF01 **16438**, WF02 **16439**, WF03 **16445**, WF04 **16449** and WF05 **16450** completed. Exact MP4: `jobs/515408f3-0f17-4ce4-aaf5-63d709998ee9/render/final.mp4`, SHA256 `0f765192024fb2f3cbc241b3eeac3d41509cd54fe7fd6a3745235be7ec66dae6`, H.264 + AAC, 1080x1920, 30 fps, 16.434 s. The user watched this exact artifact and rejected it. The review decision is durably `rejected`: only **3 photos across the entire ~16 s video** is too sparse, and ordinary landscape source photos were displayed as landscape cards inside the phone canvas instead of being composed as native vertical shots. This artifact is **HUMAN FAIL** and must never be treated as accepted.
+
+The defects were systemic and source-proven, not media scarcity:
+- WF02's inventory selector reduced the reviewed pool to one image per accepted fact;
+- `story_package` then carried one effective visual asset per story unit;
+- WF04 hardcoded `planned_shot_count=1`, and WF05 required shot count to equal story-unit count;
+- therefore a 3-unit story was structurally forced to contain exactly 3 visual shots;
+- the shared visual cadence code already retained the prior rule `duration >= 3.2 s -> 2 shots`, and earlier verified product runs had materially denser unique-photo cadence;
+- `services/media-worker/src/visual-framing.mjs` explicitly preserved ordinary landscape photos with a blurred 9:16 background plus a `force_original_aspect_ratio=decrease` foreground, causing the rejected horizontal-card appearance.
+
+Systemic correction prepared in the current verified tree:
+1. WF02 image review now binds each accepted image to an existing grounded `supported_claim_id`; freeform model-invented facts are not allowed. Each fact eligible for narration reserves **two distinct reviewer-approved, metadata-consistent, perceptually unique source photos before script generation**. `story_package.assets` remains one bundle per unit for compatibility, with `shot_assets[2]` inside each bundle. No post-freeze search is introduced.
+2. WF04 uses exact TTS unit duration and the existing general cadence threshold: `<3.2 s -> 1 shot`, `>=3.2 s -> 2 shots`. Extra shots use only the pre-script `shot_assets`. Global shot numbering, per-segment shot numbering, timing, source-asset identity and perceptual uniqueness are persisted durably.
+3. WF04 multi-shot SQL avoids modifying the same `visual_segments` row twice in one PostgreSQL statement. Existing segments are selected `FOR UPDATE`; new 1-shot segments are inserted directly `ready`, new 2-shot segments `planned`, and an existing 2-shot segment receives one completion UPDATE only after its second shot is inserted.
+4. WF05 accepts 1-2 shots per story unit, requires the exact ordered shot assets to match the pre-script bundle, requires all rendered source assets/clusters unique, and validates shot timings against the actual visual-shot count rather than story-unit count.
+5. Ordinary photos now use full-canvas portrait composition with overscan and restrained pan: `scale=1200:2134:force_original_aspect_ratio=increase` followed by a moving `crop=1080:1920`. They are no longer rendered as blurred landscape cards or static horizontal inserts. Factual diagrams/graphics retain full-image preservation over blurred fill so labels/edge information are not destructively cropped. New composition contract: `portrait-photo-frame-v1`, ordinary photo policy `fill-portrait-crop`, motion policy `portrait-pan-crop`, factual-graphic policy `fit-preserve-with-blurred-fill`.
+
+Exact HUMAN FAIL regression replays the rejected unit durations **4.688 / 5.918 / 5.814 s** through the patched WF04 expansion and proves **6 visual shots**, global shot numbers 1-6, two shots per unit, six distinct pre-script provider assets and six distinct preview hashes, contiguous timing ending at 16.420 s, and no post-freeze media search. Real FFmpeg component proof on a 1920x1080 landscape source produced a 1080x1920 frame using portrait overscan + crop with no ordinary-photo blur/overlay path; the filter contract includes bounded per-frame pan inside the portrait crop.
+
+Verification COMPLETE before deployment:
+- Node static regressions: **50/50 PASS**;
+- Python static regressions: **13/13 PASS**;
+- fresh PostgreSQL contract: **21 workflow SQL statements + staged writes PASS**, including real 1-shot and two-call 2-shot segment lifecycle execution;
+- real n8n **2.37.10** import: **8 workflows PASS**;
+- structured model invocation: **4/4 PASS**;
+- WF04 binary MIME expression PASS;
+- workflow JSON parse, Node syntax and `git diff --check` PASS;
+- isolated media-worker build PASS, image/source SHA equality PASS and isolated `/health` HTTP 200;
+- final post-pan isolated worker image: `sha256:94668bb03228e8fb943ce3be55a666ddad7d1b899ab0e6e2a9900989ab440ddd`; source SHA equality and isolated `/health` HTTP 200 PASS; real FFmpeg landscape-to-portrait pan proof produced `1080x1920` PASS.
+
+PRODUCTION has **not** been changed by this correction yet. Rejected job `515408f3...` is immutable except for its recorded HUMAN FAIL decision. Next exact step: preserve this verified tree in GitHub, verify zero active executions, capture rollback for WF02/WF04/WF05 and the current worker image/source/build inputs, deploy **WF02 + WF04 + WF05 + media-worker only**, verify n8n source/current/published parity and worker image/source/health, then submit exactly one NEW normal Panama/ru/15 job and follow it through exact MP4 HUMAN review. WF03 and PostgreSQL schema remain unchanged.
+
+
+
 ## 2026-09-07 SAFE LIMIT CHECKPOINT — verified WF02/WF04 fixes NOT YET DEPLOYED
 
 Latest job `b978e057-ab76-413d-8839-bcec6512fbe1` is FAILED and immutable. No MP4.

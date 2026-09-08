@@ -6,7 +6,7 @@ const wf=Array.isArray(raw)?raw[0]:raw;
 const run=new Function('$input','$',wf.nodes.find(n=>n.name==='Prepare Inventory Review Batches').parameters.jsCode);
 const asset=(id,hash)=>({asset_identity:'test:'+id,provider:'test',provider_asset_id:id,target_anchor_pass:true,visual_hash:hash??createHash('sha256').update(id).digest('hex'),preview_url:'https://example.org/'+id+'.jpg'});
 const row=(n,items)=>({claim_number:n,claim_id:'C'+n,claim:'hypothesis',evidence_ids:['S1'],fingerprinted_candidates:items});
-const prepare=(rows,target=15)=>run({all:()=>rows.map(json=>({json}))},()=>({first:()=>({json:{target_duration_seconds:target,canonical_subject:'subject',user_intent:'explain',research_rows:[{id:'S1',snippet:'fact one'},{id:'S2',snippet:'fact two'}]}})}));
+const prepare=(rows,target=15)=>run({all:()=>rows.map(json=>({json}))},()=>({first:()=>({json:{target_duration_seconds:target,canonical_subject:'subject',user_intent:'explain',research_rows:[{id:'S1',snippet:'fact one'},{id:'S2',snippet:'fact two'}],candidate_claims:rows.map((r,i)=>({claim_number:i+1,claim_id:'C'+(i+1),claim:'grounded fact '+(i+1),evidence_ids:['S1'],visual_target:'visible target '+(i+1)}))}})}));
 const exposed=out=>out.flatMap(x=>x.json.claims.flatMap(c=>c.review_candidates));
 for(const subject of ['clock','telescope']){
  const shared=[asset(subject+'a'),asset(subject+'b'),asset(subject+'c')];

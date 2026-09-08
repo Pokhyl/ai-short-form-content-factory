@@ -10,7 +10,7 @@ claim=n['Prepare Candidate Claims']['parameters']['jsCode']
 story=n['Prepare Inventory Grounded Story']['parameters']['jsCode']
 final=n['Build Final Inventory Story']['parameters']['jsCode']
 assert 'Do NOT write the final narration yet' in claim
-assert 'verified real image reserved before narration' in story
+assert 'TWO distinct reviewer-approved real images reserved before narration' in story
 assert "version:'inventory-first-story-v1'" in final
 assert 'visual_search_queries_en' not in final
 print('WF02_GROUNDED_AI_ARCHITECTURE_REGRESSION_PASS')

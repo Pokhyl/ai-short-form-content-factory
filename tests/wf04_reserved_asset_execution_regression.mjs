@@ -5,12 +5,14 @@ const wf=Array.isArray(raw)?raw[0]:raw;
 const by=new Map(wf.nodes.map(n=>[n.name,n]));
 for(const name of ['Expand Reserved Story Assets','Download Reserved Visual','Store Reserved Visual','Validate Stored Reserved Visual','Fingerprint Stored Reserved Visual','Verify Reserved Visual Identity','Persist Reserved Visual','Collect Persisted Reserved Visuals','Verify Reserved Visual Completion','Require Reserved Visual Completion']) assert(by.has(name),`missing ${name}`);
 for(const old of ['Fetch Canonical Media','Build Deterministic Visual Plans','Rank Eligible Visuals','Prepare Multimodal Visual Review','Review Actual Candidate Images','Detect Global No-Repeat Conflict','Fetch Conflict Recovery Candidates','Choose Visual Assignment']) assert(!by.has(old),`${old} must not remain in post-freeze critical path`);
+const a=(asset_id,provider,provider_asset_id,hash,letter)=>({asset_id,provider,provider_asset_id,candidate_id:`${provider}:${provider_asset_id}`,download_url:`https://example.invalid/${letter}.jpg`,source_url:`https://example.invalid/${letter}`,media_kind:'photo',visual_hash:hash,visual_cluster_key:`preview:${letter}`,visible_description:`${letter} visible`,metadata:{}});
+const a1=a('A1','wikimedia','p1','0'.repeat(64),'a'),a2=a('A2','pexels','p2','3'.repeat(64),'b'),a3=a('A3','wikimedia','p3','f'.repeat(64),'c'),a4=a('A4','pexels','p4','c'.repeat(64),'d');
 const story={version:'inventory-first-story-v1',units:[
- {unit_id:'U1',claim_id:'C1',narration:'One fact.',evidence_ids:['S1'],asset_id:'A1',visual_target:'first target',visible_description:'first visible'},
- {unit_id:'U2',claim_id:'C2',narration:'Second fact.',evidence_ids:['S2'],asset_id:'A2',visual_target:'second target',visible_description:'second visible'},
+ {unit_id:'U1',claim_id:'C1',narration:'One fact.',evidence_ids:['S1'],asset_id:'A1',asset_ids:['A1','A2'],visual_target:'first target',visible_description:'first visible'},
+ {unit_id:'U2',claim_id:'C2',narration:'Second fact.',evidence_ids:['S2'],asset_id:'A3',asset_ids:['A3','A4'],visual_target:'second target',visible_description:'second visible'},
 ],assets:[
- {asset_id:'A1',provider:'wikimedia',provider_asset_id:'p1',candidate_id:'wikimedia:p1',download_url:'https://example.invalid/a.jpg',source_url:'https://example.invalid/a',media_kind:'photo',visual_hash:'0'.repeat(64),visual_cluster_key:'preview:a',metadata:{}},
- {asset_id:'A2',provider:'pexels',provider_asset_id:'p2',candidate_id:'pexels:p2',download_url:'https://example.invalid/b.jpg',source_url:'https://example.invalid/b',media_kind:'photo',visual_hash:'f'.repeat(64),visual_cluster_key:'preview:b',metadata:{}},
+ {...a1,claim_id:'C1',visual_target:'first target',shot_assets:[a1,a2]},
+ {...a3,claim_id:'C2',visual_target:'second target',shot_assets:[a3,a4]},
 ]};
 const job={job_id:'11111111-1111-4111-8111-111111111111',topic:'x',fact_primary_title:'X',story_package:story,scenes:[
  {scene_id:'s1',scene_number:1,narration:'One fact.',narration_support_evidence_ids:['S1'],beat_start_seconds:0,beat_end_seconds:2,duration_seconds:2},
@@ -20,7 +22,8 @@ const expand=by.get('Expand Reserved Story Assets').parameters.jsCode;
 const $=name=>{assert.equal(name,'Require Eligible Visual Job');return {first:()=>({json:job})}};
 const rows=new Function('$input','$',expand)({first:()=>({json:{ready_to_run:true}})},$);
 assert.equal(rows.length,2);
-assert.deepEqual(rows.map(x=>x.json.provider_asset_id),['p1','p2']);
+assert.deepEqual(rows.map(x=>x.json.provider_asset_id),['p1','p3']);
+assert.deepEqual(rows.map(x=>x.json.planned_shot_count),[1,1]);
 assert.deepEqual(rows.map(x=>x.json.visual_target),['first target','second target']);
 const verify=by.get('Verify Reserved Visual Identity').parameters.jsCode;
 const reserved={...rows[0].json,visual_path:'jobs/11111111-1111-4111-8111-111111111111/visuals/shot-01.jpg',stored_media_type:'image'};

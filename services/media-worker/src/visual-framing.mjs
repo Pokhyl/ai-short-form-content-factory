@@ -6,22 +6,26 @@ export function buildVisualBeatFilters({ index, duration, isImage, isFactualGrap
   const imageHold = isImage ? `tpad=stop_mode=clone:stop_duration=${d},` : "";
   const input = `[${index}:v]fps=30,${imageHold}`;
 
-  // Still images are never destructively center-cropped. Preserve the complete
-  // source in a foreground layer and use a blurred fill behind it. This keeps
-  // people, diagrams, labels and edge content visible on a 9:16 canvas.
-  if (isImage) {
+  // Ordinary photos fill a portrait canvas. Keep a small overscan and move the
+  // crop window slowly inside it so landscape sources become native 9:16 shots
+  // with restrained motion instead of horizontal cards over blurred fill.
+  if (isImage && !isFactualGraphic) {
     const phase = (index % 7) * 0.41;
-    const overlayX = isFactualGraphic ? "(W-w)/2" : `(W-w)/2+8*sin(t*0.55+${phase.toFixed(2)})`;
-    const overlayY = isFactualGraphic ? "(H-h)/2" : `(H-h)/2+10*cos(t*0.43+${phase.toFixed(2)})`;
+    const x = `(in_w-out_w)/2+(in_w-out_w)*0.12*sin(n*0.018+${phase.toFixed(2)})`;
+    const y = `(in_h-out_h)/2+(in_h-out_h)*0.12*cos(n*0.015+${phase.toFixed(2)})`;
+    return [`${input}scale=1200:2134:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920:x='${x}':y='${y}',setsar=1,trim=duration=${d},setpts=PTS-STARTPTS,format=yuv420p[v${index}]`];
+  }
+
+  // Diagrams/graphics may contain labels or edge details that must remain visible.
+  // Preserve the complete graphic and use blurred fill only for this factual-graphic lane.
+  if (isImage && isFactualGraphic) {
     return [
       `${input}split=2[bg${index}][fg${index}]`,
-      `[bg${index}]scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,boxblur=22:1,setsar=1[bgfill${index}]`,
-      `[fg${index}]scale=1020:1760:force_original_aspect_ratio=decrease:flags=lanczos,setsar=1[fgfit${index}]`,
-      `[bgfill${index}][fgfit${index}]overlay=x='${overlayX}':y='${overlayY}':eval=frame:format=auto,setsar=1,trim=duration=${d},setpts=PTS-STARTPTS,format=yuv420p[v${index}]`,
+      `[bg${index}]scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,boxblur=20:1,setsar=1[bgfill${index}]`,
+      `[fg${index}]scale=1020:1840:force_original_aspect_ratio=decrease:flags=lanczos,setsar=1[fgfit${index}]`,
+      `[bgfill${index}][fgfit${index}]overlay=(W-w)/2:(H-h)/2:format=auto,setsar=1,trim=duration=${d},setpts=PTS-STARTPTS,format=yuv420p[v${index}]`,
     ];
   }
 
-  // Motion footage may fill the frame; the still-image preservation rule above
-  // is the crop-aware contract required for the default photo-first product path.
   return [`${input}scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,setsar=1,trim=duration=${d},setpts=PTS-STARTPTS,format=yuv420p[v${index}]`];
 }

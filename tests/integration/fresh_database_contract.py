@@ -34,6 +34,7 @@ try:
     statements = []
     persist_story_query = None
     planner_failure_query = None
+    persist_reserved_visual_query = None
     for path in sorted((ROOT / "n8n/workflows").glob("*.json")):
         raw = json.loads(path.read_text())
         for workflow in raw if isinstance(raw, list) else [raw]:
@@ -45,6 +46,8 @@ try:
                         persist_story_query = query.rstrip(';')
                     if node.get("name") == "Record Planner Failure":
                         planner_failure_query = query.rstrip(';')
+                    if node.get("name") == "Persist Reserved Visual":
+                        persist_reserved_visual_query = query.rstrip(';')
     sql("\n".join(statements))
     if persist_story_query is None:
         raise RuntimeError("Persist Inventory First Story SQL not found")
@@ -74,6 +77,49 @@ try:
     expected = f"{job_id}|1|t|0|3"
     if expected not in rows:
         raise RuntimeError(f"Persist Inventory First Story returned unexpected row: {rows}")
+    if persist_reserved_visual_query is None:
+        raise RuntimeError("Persist Reserved Visual SQL not found")
+    visual_job_id = "55555555-5555-4555-8555-555555555555"
+    sql(f"INSERT INTO public.jobs(id,topic,language_code,target_duration_seconds,content_model_version) VALUES ('{visual_job_id}','Two-shot contract','ru',15,'staged_v1');")
+    common = [
+        f"'{visual_job_id}'", "1", "0", "4", "'Two-shot narration.'", "'[\"S1\"]'::jsonb",
+        "'Subject'", "'Target'", "'Visible photo'", "2",
+    ]
+    def execute_reserved(provider, provider_id, path, visual_hash, cluster, shot_number, segment_part, shot_start, shot_end):
+        args = common + [
+            f"'{provider}'", f"'{provider_id}'", f"'https://example.invalid/{provider_id}'", "'Author'", "'CC BY'", "'https://example.invalid/license'",
+            f"'{path}'", "'photo'", f"'{visual_hash}'", "'{\"reserved_asset\":true}'::jsonb", f"'{cluster}'", "'factual_image'",
+            str(shot_number), str(segment_part), str(shot_start), str(shot_end),
+        ]
+        return sql("\\pset tuples_only on\n\\pset format unaligned\n\\pset fieldsep '|'\n"
+                   + f"PREPARE persist_reserved AS {persist_reserved_visual_query};\n"
+                   + f"EXECUTE persist_reserved({','.join(args)});\n"
+                   + "DEALLOCATE persist_reserved;\n").stdout
+    first = execute_reserved('wikimedia','asset-1',f'jobs/{visual_job_id}/visuals/shot-01.jpg','0'*64,'stored:cluster-1',1,1,0,2)
+    assert f"{visual_job_id}|1|1|t|f" in first, first
+    first_state = sql(f"SELECT status||'|'||planned_shot_count||'|'||(SELECT count(*) FROM public.visual_shots sh WHERE sh.visual_segment_id=vs.id) FROM public.visual_segments vs WHERE job_id='{visual_job_id}' AND segment_number=1;").stdout
+    assert "planned|2|1" in first_state, first_state
+    second = execute_reserved('pixabay','asset-2',f'jobs/{visual_job_id}/visuals/shot-02.jpg','f'*64,'stored:cluster-2',2,2,2,4)
+    assert f"{visual_job_id}|1|2|t|t" in second, second
+    final_state = sql(f"SELECT status||'|'||planned_shot_count||'|'||(SELECT count(*) FROM public.visual_shots sh WHERE sh.visual_segment_id=vs.id) FROM public.visual_segments vs WHERE job_id='{visual_job_id}' AND segment_number=1;").stdout
+    assert "ready|2|2" in final_state, final_state
+
+    one_job_id = "66666666-6666-4666-8666-666666666666"
+    sql(f"INSERT INTO public.jobs(id,topic,language_code,target_duration_seconds,content_model_version) VALUES ('{one_job_id}','One-shot contract','ru',15,'staged_v1');")
+    one_args = [
+        f"'{one_job_id}'", "1", "0", "2", "'One-shot narration.'", "'[\"S1\"]'::jsonb", "'Subject'", "'Target'", "'Visible photo'", "1",
+        "'wikimedia'", "'one-asset'", "'https://example.invalid/one-asset'", "'Author'", "'CC BY'", "'https://example.invalid/license'",
+        f"'jobs/{one_job_id}/visuals/shot-01.jpg'", "'photo'", f"'{'a'*64}'", "'{\"reserved_asset\":true}'::jsonb", "'stored:one-cluster'", "'factual_image'",
+        "1", "1", "0", "2",
+    ]
+    one = sql("\\pset tuples_only on\n\\pset format unaligned\n\\pset fieldsep '|'\n"
+              + f"PREPARE persist_reserved_one AS {persist_reserved_visual_query};\n"
+              + f"EXECUTE persist_reserved_one({','.join(one_args)});\n"
+              + "DEALLOCATE persist_reserved_one;\n").stdout
+    assert f"{one_job_id}|1|1|t|t" in one, one
+    one_state = sql(f"SELECT status||'|'||planned_shot_count||'|'||(SELECT count(*) FROM public.visual_shots sh WHERE sh.visual_segment_id=vs.id) FROM public.visual_segments vs WHERE job_id='{one_job_id}' AND segment_number=1;").stdout
+    assert "ready|1|1" in one_state, one_state
+
     # A delayed upstream error must neither overwrite nor mutate an already failed job.
     assert planner_failure_query
     sql(f"UPDATE public.jobs SET status='failed', current_stage='visuals', last_error='Original visual failure' WHERE id='{job_id}';")

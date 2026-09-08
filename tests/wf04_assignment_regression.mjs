@@ -1,1 +1,16 @@
-import assert from 'node:assert/strict';import fs from 'node:fs';const r=JSON.parse(fs.readFileSync('n8n/workflows/WF04-visual-sourcing.json','utf8')),w=Array.isArray(r)?r[0]:r,by=new Map(w.nodes.map(n=>[n.name,n]));assert(!by.has('Choose Visual Assignment'));assert(!by.has('Detect Global No-Repeat Conflict'));assert(by.has('Expand Reserved Story Assets'));assert(by.has('Verify Reserved Visual Identity'));assert.match(by.get('Verify Reserved Visual Completion').parameters.query,/shot_count=q\.expected_count/);console.log('WF04_ASSIGNMENT_RETIRED_REGRESSION_PASS');
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const r=JSON.parse(fs.readFileSync('n8n/workflows/WF04-visual-sourcing.json','utf8')),w=Array.isArray(r)?r[0]:r,by=new Map(w.nodes.map(n=>[n.name,n]));
+assert(!by.has('Choose Visual Assignment'));
+assert(!by.has('Detect Global No-Repeat Conflict'));
+assert(by.has('Expand Reserved Story Assets'));
+assert(by.has('Verify Reserved Visual Identity'));
+const expand=by.get('Expand Reserved Story Assets').parameters.jsCode;
+assert.match(expand,/duration>=3\.2\?2:1/,'inventory-first execution must use the shared 3.2s two-shot cadence');
+assert.match(expand,/shot_assets/,'extra shots must come from pre-script reserved assets');
+assert.match(expand,/shot_number/);
+const complete=by.get('Verify Reserved Visual Completion').parameters.query;
+assert.match(complete,/planned_shot_count=q\.shot_count/);
+assert.match(complete,/unique_asset_count=q\.shot_count/);
+assert.match(complete,/unique_cluster_count=q\.shot_count/);
+console.log('WF04_RESERVED_MULTISHOT_ASSIGNMENT_REGRESSION_PASS');
