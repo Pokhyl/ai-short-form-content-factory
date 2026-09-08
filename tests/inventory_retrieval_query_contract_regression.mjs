@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import {discoverVisualCandidates} from '../services/media-worker/src/visual-discovery.mjs';
 const w=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'))[0];
 const code=w.nodes.find(n=>n.name==='Validate Candidate Claims').parameters.jsCode;
-const claims=Array.from({length:4},(_,i)=>({claim_id:`C${i+1}`,claim:`Supported fact ${i+1}.`,evidence_ids:[i%2?'S2':'S1'],visual_target:`Subject component ${i+1}`,search_query_en:`subject mechanism ${i+1}`}));
+const roles=['hook','mechanism','detail','result'];const claims=Array.from({length:4},(_,i)=>({claim_id:`C${i+1}`,claim:`Supported fact ${i+1}.`,evidence_ids:[i%2?'S2':'S1'],editorial_role:roles[i],visual_form:i===1?'diagram':'photo',visual_target:`Subject component ${i+1}`,search_query_en:`subject mechanism ${i+1}`}));
 const base={research_rows:[{id:'S1'},{id:'S2'}],candidate_claim_range:[4,6],canonical_subject:'Subject'};
 const run=rows=>new Function('$input','$',code)({first:()=>({json:{text:JSON.stringify({claims:rows})}})},()=>({first:()=>({json:base})}))[0].json;
 const valid=run(claims);

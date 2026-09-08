@@ -12,12 +12,12 @@ assert.match(p,/do NOT require the still image to capture that function happenin
 assert.match(p,/cable under load/);
 assert.match(p,/numerical level difference/);
 assert.match(p,/explanatory diagram when the mechanism itself must be visible/);
-assert.match(p,/compact observable English noun phrase/);
+assert.match(p,/compact observable English noun phrase/);assert.match(p,/editorial_role must be one of/);assert.match(p,/visual_form must be one of/);assert.match(p,/at least three different editorial roles/);
 assert.deepEqual(out.candidate_claim_range,[6,6],'15s candidate stage must build six reserve claims before visual verification');
 const validate=new Map(w.nodes.map(n=>[n.name,n])).get('Validate Candidate Claims').parameters.jsCode;
-const mk=(target)=>Array.from({length:6},(_,i)=>({claim_id:`C${i+1}`,claim:`Grounded fact ${i+1}.`,evidence_ids:[i%2?'S2':'S1'],visual_target:i===0?target:`Named component ${i+1}`,search_query_en:`Named subject component ${i+1}`}));
+const roles=['hook','mechanism','detail','result','context','establish'];const mk=(target)=>Array.from({length:6},(_,i)=>({claim_id:`C${i+1}`,claim:`Grounded fact ${i+1}.`,evidence_ids:[i%2?'S2':'S1'],editorial_role:roles[i],visual_form:i===1?'diagram':'photo',visual_target:i===0?target:`Named component ${i+1}`,search_query_en:`Named subject component ${i+1}`}));
 const runValidate=(claims)=>new Function('$input','$',validate)({first:()=>({json:{text:JSON.stringify({claims})}})},name=>{assert.equal(name,'Prepare Candidate Claims');return {first:()=>({json:{...out,research_rows:[{id:'S1'},{id:'S2'}],candidate_claim_range:[6,6]}})}});
-assert.equal(runValidate(mk('steel miter lock gates'))[0].json.candidate_claims.length,6);
+const valid=runValidate(mk('steel miter lock gates'))[0].json.candidate_claims;assert.equal(valid.length,6);assert.equal(new Set(valid.map(x=>x.editorial_role)).size,6);assert.equal(valid[1].visual_form,'diagram');
 assert.throws(()=>runValidate(mk('close-up showing steel miter lock gates during operation')),/compact observable visual_target/);
 assert.throws(()=>runValidate(mk('gate')),/compact observable visual_target/);
 console.log('INVENTORY_CLAIM_VISUALIZABILITY_CONTRACT_REGRESSION_PASS');

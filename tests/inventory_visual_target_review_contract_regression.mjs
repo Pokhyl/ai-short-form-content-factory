@@ -22,5 +22,7 @@ const selector=new Map(w.nodes.map(n=>[n.name,n])).get('Select Verified Claim In
 assert.match(selector,/v\?\.relevant!==true/);
 assert.match(selector,/supported_claim_id/);
 assert.match(selector,/metadata_consistency_hits/);
-assert.match(selector,/claimAssets\.length<2/);
+assert.match(selector,/verified_visual_assets/);
+assert.match(selector,/global-reviewed-context-v1/);
+assert.doesNotMatch(selector,/claimAssets\.length<2/);
 console.log('INVENTORY_VISUAL_TARGET_REVIEW_CONTRACT_REGRESSION_PASS');

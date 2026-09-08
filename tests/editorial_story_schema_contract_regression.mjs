@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const raw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));const w=Array.isArray(raw)?raw[0]:raw;
+const code=new Map(w.nodes.map(n=>[n.name,n])).get('Build Write Inventory Grounded Story Request').parameters.jsCode;
+const run=item=>new Function('$json',code)(item).json.model_request.response_schema;
+let schema=run({story_prompt:'x',story_unit_bounds:[3,4],verified_claims:[1,2,3,4,5]});
+assert.equal(schema.properties.units.minItems,3);assert.equal(schema.properties.units.maxItems,4);assert.equal(schema.properties.units.items.properties.shot_plan.minItems,2);assert.equal(schema.properties.units.items.properties.shot_plan.maxItems,2);
+schema=run({story_prompt:'x',story_unit_bounds:[3,4],verified_claims:[1,2,3]});assert.equal(schema.properties.units.minItems,3);assert.equal(schema.properties.units.maxItems,3);
+assert.throws(()=>run({story_prompt:'x',story_unit_bounds:[4,3],verified_claims:[1,2,3,4]}),/invalid story unit bounds/);
+console.log('EDITORIAL_STORY_SCHEMA_CONTRACT_REGRESSION_PASS');
