@@ -1,0 +1,40 @@
+name: Exact deployment state materializer
+
+on:
+  push:
+    branches:
+      - transport/deploy-state-20260908
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply verified deployment state patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch_ref="$GITHUB_SHA"
+          git show "$patch_ref:.transport/deploy-state.patch" > /tmp/deploy-state.patch
+          if git ls-remote --exit-code --heads origin refs/heads/transport/deploy-state-result-20260908 >/dev/null 2>&1; then
+            echo 'result branch already exists; refusing overwrite' >&2
+            exit 1
+          fi
+          git checkout --detach 5716922ced66e117d89effcb0228c956c25ca5a0
+          git apply --check /tmp/deploy-state.patch
+          git apply /tmp/deploy-state.patch
+          state_blob=$(git hash-object docs/CURRENT_STATE_V5.md)
+          test "$state_blob" = efd06fdca68641db16516c630ce408a4955656b9
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/CURRENT_STATE_V5.md
+          git commit -m 'transport: materialize exact deployment state blob'
+          echo "state_blob=$state_blob"
+          echo "result_commit=$(git rev-parse HEAD)"
+          echo "result_tree=$(git rev-parse HEAD^{tree})"
+          git push origin HEAD:refs/heads/transport/deploy-state-result-20260908
