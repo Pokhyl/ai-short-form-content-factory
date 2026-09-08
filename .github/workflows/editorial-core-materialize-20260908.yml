@@ -1,0 +1,47 @@
+name: editorial-core-materialize-20260908
+
+on:
+  push:
+    branches:
+      - transport/editorial-core-20260908
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Materialize exact verified tree
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cat .transport/editorial-core-20260908-v2/patch.0{0,1,2,3,4,5} > /tmp/editorial.patch.b64
+          test "$(wc -c < /tmp/editorial.patch.b64 | tr -d ' ')" = "36228"
+          echo "6365c69ff97ef0bfb7c0626e45528361ecb0814a0986a935267fdf0c33c8723d  /tmp/editorial.patch.b64" | sha256sum -c -
+
+          base64 -d /tmp/editorial.patch.b64 | gzip -d > /tmp/editorial.patch
+          echo "d0e0a560da86586b26d4c634844b821b987bf7e7133060f3996fcd6e0275bb70  /tmp/editorial.patch" | sha256sum -c -
+
+          if git ls-remote --exit-code --heads origin refs/heads/rebuild/editorial-core-20260908 >/dev/null 2>&1; then
+            echo "target branch unexpectedly exists"
+            exit 1
+          fi
+
+          git reset --hard 5f3719be74a2af9245e47f141603309ccc674dc6
+          git clean -fdx
+          git apply --index /tmp/editorial.patch
+
+          actual_tree="$(git write-tree)"
+          echo "actual_tree=${actual_tree}"
+          test "${actual_tree}" = "1f1b88810fed4b708680ede32ad041cca5e2f76c"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix: preserve causal mechanisms in inventory-first stories"
+          git push origin HEAD:refs/heads/rebuild/editorial-core-20260908
