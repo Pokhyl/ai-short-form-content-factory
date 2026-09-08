@@ -15,32 +15,29 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Materialize exact verified voice-budget tree
+      - name: Materialize exact voice-budget deployment checkpoint
         shell: bash
         run: |
           set -euo pipefail
           patch_ref="$GITHUB_SHA"
-          git show "$patch_ref:.transport/deploy-state.patch" | tr -d '\r\n' | base64 -d | gzip -d > /tmp/voice-budget.patch
-          test "$(sha256sum /tmp/voice-budget.patch | awk '{print $1}')" = c590fb77da55df9bdaf9fbbc01f083b16e577bc93da2a394b5c549334845edf4
-          result_ref=refs/heads/transport/voice-budget-result-20260908
+          git show "$patch_ref:.transport/deploy-state.patch" | tr -d '\r\n' | base64 -d | gzip -d > /tmp/voice-budget-deploy-state.patch
+          test "$(sha256sum /tmp/voice-budget-deploy-state.patch | awk '{print $1}')" = 59e66c9939f7fffb49cbd90e490fd03c4088aa37bb4e94f173033d5ce89b3e13
+          result_ref=refs/heads/transport/voice-budget-deployment-result-20260908
           if git ls-remote --exit-code --heads origin "$result_ref" >/dev/null 2>&1; then
-            echo 'voice-budget result branch already exists; refusing overwrite' >&2
+            echo 'deployment result branch already exists; refusing overwrite' >&2
             exit 1
           fi
-          git checkout --detach dbfdbeef15cc8b7bcd14c0477375382a5f38baa2
-          git apply --check /tmp/voice-budget.patch
-          git apply /tmp/voice-budget.patch
-          test "$(git hash-object docs/CURRENT_STATE_V5.md)" = 6b8a2536e9366b51aa9e12bd4b524b12830a5df0
-          test "$(git hash-object n8n/workflows/WF03-natural-edge-voice.json)" = bcc093537a6ee3e523feb6d889525542a77fb13c
-          test "$(git hash-object tests/wf03_duration_bracket_controller_regression.mjs)" = b65b5b3dfe546fe5972ef819b7a8a6d5160aeafe
-          test "$(git hash-object tests/wf03_duration_rewrite_recovery_regression.mjs)" = 7756800293d113b75155b1ab5e9c445fb153c96f
-          git add docs/CURRENT_STATE_V5.md n8n/workflows/WF03-natural-edge-voice.json tests/wf03_duration_bracket_controller_regression.mjs tests/wf03_duration_rewrite_recovery_regression.mjs
-          test "$(git write-tree)" = c955d84ef1c0b788973cb5771b8d352c0622732d
+          git checkout --detach a839f9497bf794c1e74a395a155b83795ae8c5dc
+          git apply --check /tmp/voice-budget-deploy-state.patch
+          git apply /tmp/voice-budget-deploy-state.patch
+          test "$(git hash-object docs/CURRENT_STATE_V5.md)" = 443e62d13258f83ed2ad2180a1dbd8e144b5def8
+          git add docs/CURRENT_STATE_V5.md
+          test "$(git write-tree)" = 9a5f165d316bf94176d2755efbbffa8a6f8ac299
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'fix: enforce measured duration rewrite budget'
-          test "$(git rev-parse HEAD^)" = dbfdbeef15cc8b7bcd14c0477375382a5f38baa2
-          test "$(git rev-parse HEAD^{tree})" = c955d84ef1c0b788973cb5771b8d352c0622732d
+          git commit -m 'docs: record voice-budget deployment'
+          test "$(git rev-parse HEAD^)" = a839f9497bf794c1e74a395a155b83795ae8c5dc
+          test "$(git rev-parse HEAD^{tree})" = 9a5f165d316bf94176d2755efbbffa8a6f8ac299
           echo "result_commit=$(git rev-parse HEAD)"
           echo "result_tree=$(git rev-parse HEAD^{tree})"
           git push origin HEAD:"$result_ref"
