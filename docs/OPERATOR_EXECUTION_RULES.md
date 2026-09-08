@@ -1,6 +1,6 @@
 # Operator Execution Rules — MUST READ BEFORE ANY ACTION
 
-Last updated: 2026-09-04
+Last updated: 2026-09-08
 
 This file is a mandatory pre-action gate for all work on `Pokhyl/ai-short-form-content-factory`.
 
@@ -17,19 +17,22 @@ Repeated failure patterns already observed:
 - patching one topic/render instead of fixing a general system defect;
 - continuing to improve a failed candidate instead of rejecting it;
 - replacing the actual n8n product with a separate CLI/direct-prototype product path;
-- spending time on Studio/DB before the n8n-orchestrated product path works.
+- spending time on Studio/DB before the n8n-orchestrated product path works;
+- trusting machine QA, workflow success, shot-count metrics or ffprobe instead of visually inspecting the exact final MP4;
+- sending an obviously bad MP4 to the user before the assistant has inspected the exact delivered artifact.
 
 These patterns are forbidden.
 
 ## Mandatory pre-action check
 
-Before **every** meaningful action, code change, render, test, architecture decision, dependency addition, or direction change:
+Before **every** meaningful action, code change, render, test, architecture decision, dependency addition, direction change, or final-video delivery:
 
 1. Read this file.
 2. Read `docs/CURRENT_STATE_V5.md`.
-3. Confirm that the planned action directly advances the real product goal below.
-4. If the action is based on an assumption, first verify the actual output/source state.
-5. If it does not advance the product goal, do not do it.
+3. Read `docs/HUMAN_REVIEW_GATE.md`.
+4. Confirm that the planned action directly advances the real product goal below.
+5. If the action is based on an assumption, first verify the actual output/source state.
+6. If it does not advance the product goal, do not do it.
 
 ## Real product goal
 
@@ -63,9 +66,26 @@ The following invalidate the proof:
 - renderer-specific one-off tuning for a proof;
 - changing speech speed to fit duration;
 - bypassing n8n with a handcrafted/direct generation path and calling that product proof;
-- calling a machine-rendered MP4 a success before user HUMAN PASS.
+- calling a machine-rendered MP4 a success before assistant visual review of the exact artifact and user HUMAN PASS.
 
 If manual intervention is required, the autonomous test is failed.
+
+## Mandatory pre-delivery visual gate
+
+`docs/HUMAN_REVIEW_GATE.md` is part of this operator contract, not an optional QA note.
+
+Before any MP4 is presented to the user as a candidate:
+
+1. identify the exact file path and SHA256;
+2. visually inspect that exact artifact with available visual tooling across the whole timeline, including every shot/edit transition, subtitle changes, framing/crop changes, opening, middle and ending;
+3. issue an explicit `ASSISTANT VISUAL PASS` or `ASSISTANT VISUAL FAIL` for that exact SHA256;
+4. on FAIL, preserve evidence and fix the systemic cause; do not send the failed artifact as a candidate;
+5. only an assistant-visual-PASS artifact may be presented for user HUMAN review;
+6. user `HUMAN PASS` is still the final acceptance authority.
+
+Machine workflow success, `review_ready`, `machine_rendered`, ffprobe success, codecs, duration, shot count, motion score, subtitle-track presence, QA JSON or any other automated metric can never waive this gate.
+
+Past visible failures recorded in `docs/HUMAN_REVIEW_GATE.md` are permanent regression requirements. Do not rediscover them later as if they were new requirements.
 
 ## Mandatory photo-first media policy
 
@@ -115,6 +135,8 @@ When something fails:
 4. either make a systemic fix or reject/demote the approach;
 5. do not keep polishing one failed proof for hours/days.
 
+A visually bad final MP4 is a failure even when all machine stages passed. Record the visible defect before continuing.
+
 ## Architecture gate
 
 n8n is not optional and must not be postponed as a "later wrapper". It is the required orchestrator from the product path onward.
@@ -131,7 +153,8 @@ Before work, use this order:
 
 1. `docs/OPERATOR_EXECUTION_RULES.md`
 2. `docs/CURRENT_STATE_V5.md`
-3. current factual runtime/output evidence
-4. other historical docs
+3. `docs/HUMAN_REVIEW_GATE.md`
+4. current factual runtime/output evidence
+5. other historical docs
 
 Chat history must not override newer repository facts.
