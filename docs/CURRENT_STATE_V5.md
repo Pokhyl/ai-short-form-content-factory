@@ -1,8 +1,33 @@
 # Current State — V5 n8n Autonomous Video Orchestrator
 
-Last updated: 2026-09-07
+Last updated: 2026-09-08
 
 Branch: `rebuild/agentic-editor-v5`.
+
+## 2026-09-08 fresh E2E — WF03 hard duration-budget defect verified and corrected, pending deployment
+
+After the HUMAN FAIL visual-cadence/framing correction was deployed, exactly ONE new normal product job was submitted through WF01: `f7401fa2-1b25-4af9-8835-a2add047cd91` (`How the Panama Canal locks work` / `ru` / `15`). WF01 execution **16470** succeeded. WF02 execution **16471** succeeded after model gateway executions **16472–16476** all succeeded. The job then entered `processing/voiceover`; WF03 execution **16477** failed closed with `Voiceover duration 17.708s is still outside target after 3 story rewrites`. Duration-rewrite gateway executions **16478–16480** all succeeded. WF04/WF05 never ran, `visual_segments=0`, `visual_shots=0`, and no MP4 exists. The failed job is immutable and must not be resumed.
+
+Exact raw n8n execution evidence: `/opt/ai-short-form-content-factory-runtime-backups/humanfail-5716922-20260908T062414Z/failure-f7401fa2-20260908/execution-16477.json`, **228561 bytes**, SHA256 `396b598d4f9638ae80e6c41321bb74c2d8678719ebe70ebd8deea776a302740d`. Decoded duration summary: `duration-controller-summary.json`, SHA256 `1b43d50ace33442844e92d8f1b0e39cdcc735e57aeb3782a48251329c72c3964`.
+
+Exact measured unchanged-speed Edge attempts were:
+- pass 0: **45 words / 23.295333s**; controller requested **28–30** words (target 29);
+- pass 1: model returned **34 words / 19.533333s**; controller requested **25–27** (target 26);
+- pass 2: model returned **32 words / 18.858333s**; controller requested **24–26** (target 25);
+- pass 3: model returned **31 words / 17.708333s**, still above the accepted max **16.533s**.
+
+All four Edge results preserved `rate_percent=0` and `post_tempo_factor=1`. Provider-tail trimming was active and removed about **0.873–0.894s** after the last exact provider word cue on every attempt. Therefore this is not the earlier provider-tail defect and not speech-speed manipulation. The measured-duration controller itself computed progressively smaller budgets correctly.
+
+Systemic root cause was source-proven in WF03 `Apply Duration Rewrite`: a rewrite was accepted when its actual word count fell inside `desired_word_min - 8` through `desired_word_max + 8`. Thus a **34-word** rewrite was accepted for a measured **28–30** request, and a **31-word** rewrite was accepted for **24–26**. The broad acceptance window consumed all three bounded rewrite passes on scripts that were already known before TTS to violate the controller's requested budget.
+
+Systemic correction in the current verified tree:
+1. `Apply Duration Rewrite` now treats the measured `desired_word_min..desired_word_max` as a hard machine-validated contract; the legacy `±8` window is removed. Invalid/missing budgets fail closed and an out-of-budget model result is rejected before another TTS call.
+2. `Prepare Duration Rewrite` explicitly tells the model that the total word range is machine-validated and that output outside it is invalid; it also supplies per-unit target-word guidance proportional to the current frozen units, with a generic minimum of four words per frozen unit. Claim IDs, unit IDs, evidence, visual/asset bindings, unit count, language and natural-rate speech remain frozen.
+3. No deterministic truncation, speech-rate manipulation, extra retry/sleep loop, topic-specific wording, gate weakening, WF02/WF04/WF05 change, media-worker change or database change was introduced.
+
+Verification COMPLETE before deployment: **50/50 Node static regressions PASS**, including a regression that rejects the demonstrated `34 words for 28–30` class and accepts an in-budget 29-word rewrite; **13/13 Python static regressions PASS**; fresh PostgreSQL contract PASS (**21 workflow SQL statements + staged writes**); real n8n **2.37.10** import PASS (**8 workflows**); structured model invocation contract PASS (**4/4**) plus reserved-visual binary MIME contract PASS; workflow JSON and `git diff --check` PASS.
+
+PRODUCTION has not yet been changed by this WF03 correction. Next exact step: preserve the verified tree in GitHub, verify zero active executions, capture rollback for WF03 only, import/publish **WF03 only**, perform the single n8n restart only if the CLI requires it, verify source/current/published parity and health, record deployment state in GitHub, then submit exactly ONE completely NEW normal Panama/ru/15 job. Do not retry or resume `f7401fa2...`.
 
 ## 2026-09-08 HUMAN FAIL correction — exact GitHub sync and production deployment complete
 
