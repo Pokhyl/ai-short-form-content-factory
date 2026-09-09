@@ -1,8 +1,22 @@
 # Current State — V5 n8n Autonomous Video Orchestrator
 
-Last updated: 2026-09-08
+Last updated: 2026-09-09
 
-Branch: `rebuild/agentic-editor-v5`.
+Branch: `rebuild/editorial-core-20260908`.
+
+## 2026-09-09 live visual-binding reviewer ambiguity — systemic correction verified, pending GitHub/deployment
+
+After the WF03 sentence-completion correction was preserved on GitHub and deployed, exactly ONE new normal product job was submitted: `da025c06-dac9-45fc-8c10-78345b61100e` (`How the Panama Canal locks work` / `ru` / `15`). WF01 execution **16682** succeeded. WF02 execution **16683** failed closed before story generation with `pre-script global reviewed visual inventory assets=3/6, claims=1/3`. Model-gateway executions **16684–16688** all completed successfully. The failed product job is immutable and must not be resumed or repaired.
+
+Exact raw evidence is preserved at `/opt/ai-short-form-content-factory-runtime-backups/failure-da025c06-20260909T063446Z/` with SHA256 manifests for execution entity/workflow/data rows **16683–16688** and the exact job row. Live visual review exposed **33** unique images in two normal bounded batches (**24 + 9**). The live reviewer marked **5/33** relevant, all bound only to `C1`, even though its own visible descriptions correctly identified multiple later targets, including water-control culverts and Gatun Lake/canal maps.
+
+Systemic root cause was demonstrated without changing retrieval, images, thresholds, selector, metadata consistency, perceptual dedupe or the failed job. The live review contract still left `supported_claim_id` semantically ambiguous enough for the vision model to treat it as a second proof of the whole grounded FACT rather than as the intended visual TARGET/FORM binding. An exact component replay used the same **33 inline image bytes**, same claim inventory, same schema and same model gateway, changing only generic visual-binding wording. Replay result: **12** reviewer-relevant images across `C1/C3/C4/C5`; the unchanged deterministic metadata-consistency and perceptual-dedupe selector retained **11** unique assets across **4** claims, exceeding the unchanged **6 assets / 3 claims** gate. Proof file: `/opt/ai-short-form-content-factory-runtime-backups/failure-da025c06-20260909T063446Z/selector-proof-target-binding-variant.json`, SHA256 `c772a57375ebb8cc88a2425645a6ddf1ef9017fb01964c575172f2a1618fc937`.
+
+Correction in the current source is deliberately narrow and topic-generic: WF02 `Prepare Inventory Review Batches` now states explicitly that `supported_claim_id` is a TARGET/FORM binding, not a second factual-proof verdict; grounded FACT truth remains research authority; a target-matching still must not be rejected merely because pixels cannot prove function/purpose/causality/result/quantity/operation; map/diagram identity may be established by visible labels/geometry; a physical component in authentic subject context is sufficient without showing its function occurring. Wrong subjects/forms, generic lookalikes without visible subject identity, screenshots, watermarks, logos, collages, text cards, target mismatch, reviewer relevance, metadata/pixel consistency, perceptual uniqueness and minimum inventory gates remain unchanged. No topic-specific example, manual content choice, recovery loop or quality-gate weakening was introduced.
+
+Full verification on the corrected tree is COMPLETE: **61/61 Node static regressions PASS** with the explicit real-provider dry run excluded; **13/13 Python standalone regressions PASS**; fresh PostgreSQL contract PASS for **21 workflow SQL statements + staged writes**; structured model invocation **4/4 PASS** plus reserved-visual binary MIME contract PASS; real disposable `n8nio/n8n:2.37.10` import **8/8 workflows PASS**; all workflow JSON parse PASS; `git diff --check` PASS. The exact live-image component replay proof remains `selector-proof-target-binding-variant.json`, SHA256 `c772a57375ebb8cc88a2425645a6ddf1ef9017fb01964c575172f2a1618fc937`.
+
+Next: preserve this exact verified tree on GitHub, verify production idle/no newer product job, capture WF02-only rollback, deploy/publish WF02 only, restart n8n once if required, verify source/current/published parity and health, then submit exactly ONE completely NEW normal Panama/ru/15 job. Do not resume `da025c06...` or any older failed/rejected job.
 
 ## 2026-09-08 pre-script visual inventory blocker — systemic correction verified, pending WF02 + media-worker deployment
 
