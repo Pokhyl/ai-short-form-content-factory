@@ -1,0 +1,54 @@
+name: Exact WF03 sentence completion materializer
+
+on:
+  push:
+    branches:
+      - transport/wf03-sentence-completion-20260909
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply exact verified WF03 patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch_ref="$GITHUB_SHA"
+          git show "$patch_ref:.transport/wf03-sentence-fix/patch.gz.b64" > /tmp/wf03.patch.gz.b64
+          base64 -d /tmp/wf03.patch.gz.b64 > /tmp/wf03.patch.gz
+          gzip -dc /tmp/wf03.patch.gz > /tmp/wf03.patch
+          echo '7b81a578fa8b125dbf0cb96a7bf831675b2524aeacec103dba32fea4a318ef28  /tmp/wf03.patch' | sha256sum -c -
+          if git ls-remote --exit-code --heads origin refs/heads/transport/wf03-sentence-completion-result-20260909 >/dev/null 2>&1; then
+            echo 'result branch already exists; refusing overwrite' >&2
+            exit 1
+          fi
+          git checkout --detach ce0266aea817995c4b80b2fe99a8b86c594b612c
+          git apply --check /tmp/wf03.patch
+          git apply /tmp/wf03.patch
+          test "$(git hash-object docs/CURRENT_STATE_V5.md)" = 16f2358e1ce3d3fecd0a35ee15d69ef32a482e5f
+          test "$(git hash-object n8n/workflows/WF03-natural-edge-voice.json)" = 5f586c3e45ebf5fe57388fb42d2aaad91f728d84
+          test "$(git hash-object tests/integration/model_invocation_contract.cjs)" = 368027bd55fb33492ea580d4cf62269b9ae3cd68
+          test "$(git hash-object tests/wf03_duration_bracket_controller_regression.mjs)" = 1c4d787d4dbdb56a7b280da3b7ba1097daff8e5d
+          test "$(git hash-object tests/wf03_duration_rewrite_recovery_regression.mjs)" = 92ba5e16194c9bab122f55f33a075c7672846204
+          test "$(git hash-object tests/wf03_duration_token_schema_regression.mjs)" = 7ae086005ae45ba51331c914f175a53b05f4d3fd
+          test "$(git hash-object tests/wf03_exact_voice_fit_loop_regression.py)" = aec26620f9cf0ba2e217b8829e9a8bf324ef17ac
+          test "$(git hash-object tests/wf03_live_sentence_completion_regression.mjs)" = 5b29d92259d38b926a46a5397f5bbf30f812f952
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix: preserve sentence completion in duration rewrite'
+          result_commit=$(git rev-parse HEAD)
+          result_parent=$(git rev-parse HEAD^)
+          result_tree=$(git rev-parse HEAD^{tree})
+          test "$result_parent" = ce0266aea817995c4b80b2fe99a8b86c594b612c
+          test "$result_tree" = 46f1dbcde5ad2ddd6728353d5db16bd53e330696
+          echo "result_commit=$result_commit"
+          echo "result_parent=$result_parent"
+          echo "result_tree=$result_tree"
+          git push origin HEAD:refs/heads/transport/wf03-sentence-completion-result-20260909
