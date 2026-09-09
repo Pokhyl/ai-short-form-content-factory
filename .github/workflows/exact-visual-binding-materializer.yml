@@ -1,0 +1,45 @@
+name: Exact visual binding materializer
+
+on:
+  push:
+    branches:
+      - transport/visual-binding-3d36418-20260909
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply exact verified visual binding patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch_ref="$GITHUB_SHA"
+          git show "$patch_ref:.transport/visual-binding-3d36418/patch.gz.b64" | base64 -d > /tmp/visual-binding.patch.gz
+          gzip -dc /tmp/visual-binding.patch.gz > /tmp/visual-binding.patch
+          echo 'ba35bb2b411996809908edc637f3d9ed6dc22b7c19a2fe7a0f02daab20d0560e  /tmp/visual-binding.patch' | sha256sum -c -
+          if git ls-remote --exit-code --heads origin refs/heads/transport/visual-binding-result-20260909 >/dev/null 2>&1; then
+            echo 'result branch already exists; refusing overwrite' >&2
+            exit 1
+          fi
+          git checkout --detach 410d3b5be37e78da118442b9ca6938eb22a4bdd4
+          git apply --check /tmp/visual-binding.patch
+          git apply /tmp/visual-binding.patch
+          test "$(git hash-object docs/CURRENT_STATE_V5.md)" = 161075abef7c93465b65061faeb9fcfcae394018
+          test "$(git hash-object n8n/workflows/WF02-plan-script-and-scenes.json)" = 73f66f8860004bf007c16d099484ed108807ef8c
+          test "$(git hash-object tests/inventory_visual_binding_priority_regression.mjs)" = 6138ab31c69adcaed87af3bda8e908f98c06b840
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/CURRENT_STATE_V5.md n8n/workflows/WF02-plan-script-and-scenes.json tests/inventory_visual_binding_priority_regression.mjs
+          git commit -m 'fix: clarify visual target binding review'
+          result_commit=$(git rev-parse HEAD)
+          result_tree=$(git rev-parse HEAD^{tree})
+          test "$result_tree" = cbb9d3128e8787dfccfaa8b6873cbff5d0344ef7
+          echo "result_commit=$result_commit"
+          echo "result_tree=$result_tree"
+          git push origin HEAD:refs/heads/transport/visual-binding-result-20260909
