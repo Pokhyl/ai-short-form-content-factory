@@ -1,0 +1,44 @@
+name: exact mechanism visual materializer v2
+on:
+  push:
+    branches:
+      - 'transport/mechanism-visual-66a1fdb-20260909'
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Materialize verified tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat \
+            '.transport/mechanism-visual-66a1fdb/part-01.b64' \
+            '.transport/mechanism-visual-66a1fdb/part-02.b64' \
+            '.transport/mechanism-visual-66a1fdb/part-03.b64' \
+            '.transport/mechanism-visual-66a1fdb/part-04.b64' \
+            '.transport/mechanism-visual-66a1fdb/part-05.b64' > /tmp/patch.gz.b64
+          base64 -d < /tmp/patch.gz.b64 > /tmp/patch.gz
+          gzip -dc /tmp/patch.gz > /tmp/patch.diff
+          test "$(sha256sum /tmp/patch.diff | awk '{print $1}')" = '46e0d87ce64a1beab8ccec7f6275d7c686896c98d9f8e9fd2f09e7d70f7ae7cd'
+          git fetch origin 'a21a95763bd28446b4f158643c51083f49111ae1'
+          git checkout --detach 'a21a95763bd28446b4f158643c51083f49111ae1'
+          git apply --check /tmp/patch.diff
+          git apply /tmp/patch.diff
+          test "$(git hash-object docs/CURRENT_STATE_V5.md)" = 'e2af698a643ee9ba732b93972a550090305aa2b4'
+          test "$(git hash-object docs/HUMAN_REVIEW_GATE.md)" = '213091b1d32cad829e116022059d874f1a301c57'
+          test "$(git hash-object n8n/workflows/WF02-plan-script-and-scenes.json)" = '8c41f1608769a110452dc4b4448dc89bf73643bf'
+          test "$(git hash-object tests/editorial_shot_plan_contract_regression.mjs)" = 'f692c41cf9c89e7eb3c374f79be32853a2e8191a'
+          test "$(git hash-object tests/inventory_claim_visualizability_contract_regression.mjs)" = '10818118edd209465fed3512956166472f82a2a8'
+          test "$(git hash-object tests/inventory_retrieval_query_contract_regression.mjs)" = '167dba9d9b059bd9e29083c28ed548b653053d01'
+          test "$(git hash-object tests/wf02_mechanism_visual_correspondence_regression.mjs)" = '85b46d44f1665487ba71b9d74be64cdbf32d6404'
+          git add -A
+          test "$(git write-tree)" = '5de4fad4a490c2087466430c2679de5a94509eea'
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'fix: require mechanism visual correspondence'
+          test "$(git rev-parse HEAD^)" = 'a21a95763bd28446b4f158643c51083f49111ae1'
+          test "$(git rev-parse HEAD^{tree})" = '5de4fad4a490c2087466430c2679de5a94509eea'
+          git push origin HEAD:refs/heads/transport/mechanism-visual-result-20260909 --force-with-lease
