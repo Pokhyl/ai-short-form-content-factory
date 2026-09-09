@@ -5,7 +5,8 @@ for x in ['Evaluate Natural Voiceover','Voiceover Fits Target','Prepare Duration
  assert x in n
 assert 'Speech-speed manipulation is forbidden' in n['Evaluate Natural Voiceover']['parameters']['jsCode']
 assert 'story_package' in n['Prepare Continuous Voiceover']['parameters']['jsCode']
-assert 'unit_id and claim_id must be unchanged' in n['Prepare Duration Rewrite']['parameters']['jsCode']
+assert 'grounded_claim is authoritative and immutable' in n['Prepare Duration Rewrite']['parameters']['jsCode']
+assert 'unit_word_targets' in n['Prepare Duration Rewrite']['parameters']['jsCode']
 assert 'story_package=$4::jsonb' in n['Persist Duration Rewrite']['parameters']['query']
 assert w['connections']['Voiceover Fits Target']['main'][0][0]['node']=='Build Exact Story Unit Timings'
 assert w['connections']['Voiceover Fits Target']['main'][1][0]['node']=='Prepare Duration Rewrite'

@@ -5,10 +5,12 @@ def node(w,n): return next(x for x in w['nodes'] if x.get('name')==n)
 w2=one('n8n/workflows/WF02-plan-script-and-scenes.json'); w3=one('n8n/workflows/WF03-natural-edge-voice.json')
 final=node(w2,'Build Final Inventory Story')['parameters']['jsCode']
 assert 'prediction_is_advisory:true' in final and 'exact_tts_required:true' in final
+assert 'grounded_claim=clean(c.claim)' in final
 q=node(w2,'Persist Inventory First Story')['parameters']['query']
 assert 'prediction_is_advisory' in q and 'exact_tts_required' in q and 'story_package' in q
 eligible=node(w3,'Require Eligible Voiceover Job')['parameters']['jsCode']
 assert 'exact_tts_required!==true' in eligible and 'prediction_is_advisory!==true' in eligible
+assert 'groundedClaim=clean(u.grounded_claim)' in eligible
 measured=node(w3,'Evaluate Natural Voiceover')['parameters']['jsCode']
 assert 'duration>=min' in measured and 'duration<=max' in measured
 assert "Number(stored.rate_percent)!==0" in measured and "Number(stored.post_tempo_factor)!==1" in measured

@@ -25,7 +25,7 @@ const final=nodes.get('Build Final Inventory Story').parameters.jsCode;
 assert.match(final,/inventory-first-story-v1/);
 assert.match(final,/evidence_ids:u\.evidence_ids/);
 assert.match(final,/shot_assets:nested/);
-assert.match(final,/asset_ids:assetIds/);assert.match(final,/editorial_contract_version:'shot-intent-v1'/);assert.match(final,/shot_plan:plan/);assert.match(final,/editorial_role:c\.editorial_role/);assert.match(final,/visual_form:c\.visual_form/);assert.match(final,/visual_binding_mode:'global-reviewed-context-v1'/);assert.match(final,/omitted required explanatory claim/);
+assert.match(final,/asset_ids:assetIds/);assert.match(final,/grounded_claim=clean\(c\.claim\)/);assert.match(final,/editorial_contract_version:'shot-intent-v1'/);assert.match(final,/shot_plan:plan/);assert.match(final,/editorial_role:c\.editorial_role/);assert.match(final,/visual_form:c\.visual_form/);assert.match(final,/visual_binding_mode:'global-reviewed-context-v1'/);assert.match(final,/omitted required explanatory claim/);
 assert(!/index%selected_evidence|index%.*evidence|visual_search_queries_en/u.test(final),'final story must not use modulo provenance or late visual queries');
 const storyReq=nodes.get('Build Write Inventory Grounded Story Request').parameters.jsCode;assert.match(storyReq,/\"minItems\":minUnits/);assert.match(storyReq,/\"maxItems\":maxUnits/);
 const persist=nodes.get('Persist Inventory First Story').parameters.query;
