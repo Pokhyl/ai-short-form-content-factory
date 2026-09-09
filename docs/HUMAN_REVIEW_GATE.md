@@ -107,3 +107,11 @@ These requirements are already known. Do not present them later as a new archite
 Before changing architecture, adding a QA metric, adding a renderer, or starting another proof run, reread this file and verify that the proposed work addresses an actual unresolved defect rather than rediscovering a requirement already recorded here.
 
 When a new user or assistant HUMAN FAIL reveals a general defect, append that defect and exact artifact identity here (or in a linked durable regression document) before continuing development.
+
+### Assistant visual FAIL — 2026-09-09
+
+Job `386d332c-e0f9-42e8-a4c0-f7d52915ac8b`, exact MP4 SHA256 `f86dc120141cc54d431a59d8f47136760c5a0575546d55db9a2907e3b1b3514e`.
+
+Assistant pixel review rejected the exact rendered artifact before user delivery. Scene 1 narration described a ship entering and gates closing while the selected shots were mostly general lock-chamber/water views. Scene 2 narration described valves opening, chamber filling and the ship rising while both selected shots showed a container ship/general lock infrastructure without valves, filling, water-level change, explanatory diagram/callout or visible lift. Scene 3 had materially better correspondence because a locomotive/tow vehicle was actually visible beside the ship.
+
+Systemic lesson: research-grounded factual truth and pixel truth may remain separate, but explanatory mechanism narration may not be paired with generic subject/context imagery. A mechanism/detail candidate must share a mechanism-specific visible anchor with its visual target and pixel-reviewed inventory, and the final explanatory unit must retain direct reviewer-bound visual support for that same claim.
