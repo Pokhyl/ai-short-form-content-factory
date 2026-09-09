@@ -1,0 +1,39 @@
+name: availability-first-materialize-7cea9cd
+on:
+  push:
+    branches:
+      - transport/availability-first-7cea9cd
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify and materialize exact tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          PARENT=6c06cfc7e1d77d657c788c9c4410047cb683f005
+          TARGET_TREE=e25bcbfbbc5cb2f5111de0ee555c29ec641a3054
+          PACKED_SHA=134ce88bb78dab8042b00004cdbc4296b76291340e3a262326f7ba9303cffdad
+          PATCH_SHA=ea241b8d59398cba6cf236f7f96caaaa345c5acf25910a93b6cf55fc28416957
+          cat .transport/availability-first-7cea9cd/patch.0{0,1,2,3} > /tmp/patch.b64
+          test "$(wc -c < /tmp/patch.b64 | tr -d ' ')" = "25800"
+          base64 -d /tmp/patch.b64 > /tmp/patch.gz
+          echo "$PACKED_SHA  /tmp/patch.gz" | sha256sum -c -
+          gzip -dc /tmp/patch.gz > /tmp/patch.diff
+          echo "$PATCH_SHA  /tmp/patch.diff" | sha256sum -c -
+          git fetch origin refs/heads/rebuild/editorial-core-20260908
+          test "$(git rev-parse FETCH_HEAD)" = "$PARENT"
+          git checkout --detach FETCH_HEAD
+          git apply --index /tmp/patch.diff
+          test "$(git write-tree)" = "$TARGET_TREE"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat: build stories from reviewed visual availability'
+          test "$(git rev-parse HEAD^)" = "$PARENT"
+          test "$(git rev-parse HEAD^{tree})" = "$TARGET_TREE"
+          git push origin HEAD:refs/heads/rebuild/editorial-core-20260908
