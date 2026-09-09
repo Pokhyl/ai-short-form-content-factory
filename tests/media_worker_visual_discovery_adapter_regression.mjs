@@ -27,6 +27,11 @@ assert.equal(semantic.beats, undefined);
 assert.equal(semantic.pixabayApiKey, 'pix');
 assert.equal(semantic.pexelsApiKey, 'pex');
 
+const explorationQueries=[{query_number:1,search_query_en:'North Harbor lock culvert',observable_target:'North Harbor lock culvert',retrieval_rationale:'research-grounded component'}];
+const exploration=buildVisualDiscoveryOptions({canonical_source:canonicalSource,exploration_queries:explorationQueries});
+assert.equal(exploration.explorationQueries,explorationQueries);
+assert.equal(exploration.inventoryClaims,undefined);
+
 const legacyBeats = [{ scene_number: 1, visual_target: 'zipper teeth' }];
 const legacy = buildVisualDiscoveryOptions({ canonical_source: canonicalSource, beats: legacyBeats });
 

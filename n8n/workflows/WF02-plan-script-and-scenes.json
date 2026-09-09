@@ -312,7 +312,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const j=$('Validate Resolved Topic').first().json;const r=$input.first().json;const clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();let rows=(Array.isArray(r.results)?r.results:[]).slice(0,10).map((x,i)=>({id:`S${i+1}`,title:clean(x.title),snippet:clean(x.content??x.description),url:clean(x.url)})).filter(x=>x.title&&x.snippet&&x.url);if(rows.length<2){const seen=new Set(rows.map(x=>x.url));for(const x of (Array.isArray(j.discovery_evidence)?j.discovery_evidence:[])){const title=clean(x.title),snippet=clean(x.snippet),url=clean(x.url);if(title&&snippet&&url&&!seen.has(url)){rows.push({id:`S${rows.length+1}`,title,snippet,url});seen.add(url);}if(rows.length>=10)break;}}if(rows.length<2)throw new Error('combined research returned fewer than two usable results');const target=Number(j.target_duration_seconds),range={15:[6,6],30:[8,8],45:[10,10],60:[12,12]}[target];if(!range)throw new Error('unsupported duration');const evidence=rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}\\n${x.url}`).join('\\n\\n');const prompt=`Create candidate FACTUAL CLAIMS for an autonomous short-video story. Do NOT write the final narration yet.\\n\\nRAW TOPIC: ${j.topic}\\nRESOLVED SUBJECT: ${j.resolved_subject}\\nCANONICAL NAME: ${j.canonical_subject}\\nUSER INTENT: ${j.user_intent}\\nTARGET DURATION: ${target}s\\n\\nRESEARCH:\\n${evidence}\\n\\nReturn ONLY JSON {\"claims\":[{\"claim_id\":\"C1\",\"claim\":\"one complete factual proposition in English\",\"evidence_ids\":[\"S1\"],\"editorial_role\":\"mechanism\",\"visual_form\":\"diagram\",\"visual_target\":\"one concrete English still-image target\",\"search_query_en\":\"short subject and detail keywords\"}]}.\\nRequirements: ${range[0]}-${range[1]} claims; claim IDs C1..Cn in order; editorial_role must be one of hook, establish, mechanism, detail, result, context; visual_form must be one of photo, diagram, map, document, illustration; use at least three different editorial roles across the candidate set and do not let generic establish/context imagery dominate; choose roles that directly answer USER INTENT; when the resolved subject is a real physical object, machine, place, structure or person and a truthful real photograph is realistically obtainable, make the hook candidate a visual_form photo of that real subject rather than a map, diagram or document; maps/diagrams belong in establish/mechanism/detail only when they add explanatory value; when USER INTENT asks how/why/process/operation, include mechanism/detail candidates; the candidate set MUST include at least one mechanism/detail candidate with visual_form photo whose visual_target is a real observable component, assembly, machine, interface or physical part in authentic context; use diagram/map/illustration only as additional explanatory options when such licensed material is realistically obtainable, never make the whole mechanism inventory depend on rare diagrams; do not force mechanism roles for topics where they do not fit; every claim must be directly supported by every cited evidence ID and cite 1-3 IDs from the research above; do not merge unrelated facts into one claim; visual_target must be a compact observable English noun phrase naming only the minimum visible subject/component and distinguishing feature needed to illustrate the grounded claim; it must be realistically obtainable as a photo, historical image, technical diagram, scientific illustration, real person, place, object or mechanism; do not write camera directions or action instructions such as close-up, showing, under load, during operation, moving, before/after, side-by-side or exact simultaneous arrangements; the research evidence proves the factual proposition, while the image only needs to truthfully show the claim's named subject/component in the relevant real context. For a claim about an object's function, purpose, effect or operation, do NOT require the still image to capture that function happening, a cable under load, a before/after state, a numerical level difference, or multiple objects in one exact arrangement unless that visible relation itself is essential to identify the subject. Prefer a target such as the named real component/object in its authentic context, or an explanatory diagram when the mechanism itself must be visible. do not invent camera angles, background landmarks, dates, side-by-side arrangements or simultaneous actions unless they are essential to identify the claim's subject; a still photo cannot reveal hidden internals, changes over time or a numerical measurement without visible evidence: choose a supported claim about an observable component or an explanatory diagram instead; prioritize claims that answer the user intent rather than peripheral historical trivia; search_query_en must be a compact English keyword query of at least two words and at most 90 characters: preserve the named subject plus the distinguishing object, part, mechanism or media type; never send the full visual description as a search query and never use just the overall topic for every claim; visual_target remains the full acceptance criterion and must not be relaxed to match search results; avoid abstract concepts, title cards, generic filler, logos, screenshots and named copyrighted scenes; prefer a different truthful visual subject for each claim; do not invent a claim merely because an image might exist.`;return [{json:{...j,research_rows:rows,candidate_claim_range:range,claim_prompt:prompt}}];"
+          "jsCode": "const base=$('Validate Visual Exploration').first().json,inv=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(inv.preclaim_review_version!=='pre-claim-vision-reviewed-inventory-v1')throw new Error('pre-claim vision-reviewed inventory contract missing');const assets=Array.isArray(inv.available_visual_assets)?inv.available_visual_assets:[];if(assets.length<6)throw new Error(`pre-claim reviewed inventory only ${assets.length}/6 assets`);const evidence=base.research_rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}\\n${x.url}`).join('\\n\\n'),visuals=assets.map(a=>`${a.inventory_id} | ${a.provider} | FORM ${a.preclaim_visual_form} | VISIBLE: ${a.preclaim_visible_description} | SOURCE: ${clean(a.title)}`).join('\\n');const range=base.candidate_claim_range,target=Number(base.target_duration_seconds);const prompt=`Create candidate FACTUAL CLAIMS for an autonomous short-video story. Do NOT write the final narration yet. Real licensed provider images have already been visually reviewed before this step.\\n\\nRAW TOPIC: ${base.topic}\\nRESOLVED SUBJECT: ${base.resolved_subject}\\nCANONICAL NAME: ${base.canonical_subject}\\nUSER INTENT: ${base.user_intent}\\nTARGET DURATION: ${target}s\\n\\nRESEARCH:\\n${evidence}\\n\\nPIXEL-REVIEWED REAL VISUAL INVENTORY (availability evidence only; factual truth still comes only from RESEARCH):\\n${visuals}\\n\\nReturn ONLY JSON {\"claims\":[{\"claim_id\":\"C1\",\"claim\":\"one complete factual proposition in English\",\"evidence_ids\":[\"S1\"],\"editorial_role\":\"mechanism\",\"visual_form\":\"photo\",\"visual_target\":\"one compact observable English target\",\"search_query_en\":\"short subject and detail keywords\",\"inventory_asset_ids\":[\"V1\"]}]}. Requirements: ${range[0]}-${range[1]} claims C1..Cn; factual truth comes only from RESEARCH and every cited evidence ID must support the whole claim; use at least three editorial roles and answer USER INTENT; for how/why/process/operation topics include mechanism/detail candidates. AVAILABILITY IS BINDING: every visual_target must describe only what is actually present in the VISIBLE description of 1-3 listed inventory_asset_ids; do not invent a target and hope search finds it later. inventory_asset_ids are availability evidence, not factual proof and not final claim approval. visual_form must match at least one cited reviewed asset. Prefer different truthful observable targets across claims. If the research explains a hidden mechanism but the images only show its apparatus/components/context, write a grounded factual claim whose narration can explain the mechanism while the visual_target truthfully names only the visible apparatus/component/context; never pretend pixels prove hidden operation. visual_target must be 2-10 words, concrete and visible; no camera directions, actions, before/after, hidden internals, numerical proof, generic filler, logos, screenshots or title cards. search_query_en <=90 characters and must preserve the resolved subject plus distinguishing observable target.`;return [{json:{...base,available_visual_assets:assets,claim_prompt:prompt}}];"
         },
         "id": "0a121d05-0140-4ea0-bc62-18a020fb2cac",
         "name": "Prepare Candidate Claims",
@@ -347,7 +347,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const base=$('Prepare Candidate Claims').first().json,r=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();let text=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,'').trim(),o;try{o=JSON.parse(text)}catch{throw new Error('candidate claim writer returned invalid JSON')}const rows=base.research_rows,validIds=new Set(rows.map(x=>x.id)),range=base.candidate_claim_range,raw=Array.isArray(o.claims)?o.claims:[];if(raw.length<range[0]||raw.length>range[1])throw new Error(`candidate claim count ${raw.length} outside ${range[0]}-${range[1]}`);const claims=[],seenClaims=new Set(),seenTargets=new Set(),allEvidence=new Set(),roleCounts=new Map();const roles=new Set(['hook','establish','mechanism','detail','result','context']),forms=new Set(['photo','diagram','map','document','illustration']);for(let i=0;i<raw.length;i++){const x=raw[i]??{},claim_id=clean(x.claim_id),claim=clean(x.claim),editorial_role=clean(x.editorial_role).toLowerCase(),visual_form=clean(x.visual_form).toLowerCase(),visual_target=clean(x.visual_target),search_query_en=String(x.search_query_en??'').replace(/\\s+/gu,' ').trim(),evidence_ids=[...new Set((Array.isArray(x.evidence_ids)?x.evidence_ids:[]).map(clean).filter(Boolean))];if(claim_id!==`C${i+1}`||!claim||!visual_target||!roles.has(editorial_role)||!forms.has(visual_form))throw new Error(`candidate claim ${i+1} is incomplete`);roleCounts.set(editorial_role,(roleCounts.get(editorial_role)||0)+1);const visualWords=visual_target.split(/\\s+/u).filter(Boolean);if(visualWords.length<2||visualWords.length>10||/(?:\\bclose[ -]?up\\b|\\bshow(?:ing|s)?\\b|\\bunder load\\b|\\bduring (?:operation|use)\\b|\\bbefore\\s*\\/\\s*after\\b|\\bside[ -]?by[ -]?side\\b)/iu.test(visual_target))throw new Error(`candidate claim ${claim_id} needs a compact observable visual_target`);if(!search_query_en||search_query_en.length>90||search_query_en.split(/\\s+/u).length<2)throw new Error(`candidate claim ${claim_id} needs a compact search_query_en`);if(evidence_ids.length<1||evidence_ids.length>3||evidence_ids.some(id=>!validIds.has(id)))throw new Error(`candidate claim ${claim_id} has invalid evidence IDs`);const ck=claim.toLocaleLowerCase(),vk=visual_target.toLocaleLowerCase();if(seenClaims.has(ck)||seenTargets.has(vk))throw new Error(`candidate claim ${claim_id} duplicates claim or visual target`);seenClaims.add(ck);seenTargets.add(vk);evidence_ids.forEach(id=>allEvidence.add(id));claims.push({claim_number:i+1,claim_id,claim,evidence_ids,editorial_role,visual_form,visual_target,search_query_en});}if(roleCounts.size<3)throw new Error(`candidate claims need editorial role diversity; got ${roleCounts.size}`);const explainIntent=/\\b(?:how|why|work|works|working|mechanism|process|operation|explain|function)\\b/iu.test(clean(base.user_intent));if(explainIntent&&!claims.some(c=>['mechanism','detail'].includes(c.editorial_role)&&c.visual_form==='photo'))throw new Error('explanatory candidate claims need an observable mechanism/detail photo option');if([...roleCounts.values()].some(v=>v>Math.ceil(raw.length/2)))throw new Error('candidate claims are dominated by one editorial role');if(allEvidence.size<2)throw new Error('candidate claims do not use at least two independent research rows');return [{json:{...base,candidate_claims:claims,inventory_request:{canonical_source:{language:'en',title:base.canonical_subject},inventory_claims:claims}}}];"
+          "jsCode": "const base=$('Prepare Candidate Claims').first().json,r=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();let text=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,'').trim(),o;try{o=JSON.parse(text)}catch{throw new Error('candidate claim writer returned invalid JSON')}const rows=base.research_rows,validIds=new Set(rows.map(x=>x.id)),range=base.candidate_claim_range,raw=Array.isArray(o.claims)?o.claims:[];if(raw.length<range[0]||raw.length>range[1])throw new Error(`candidate claim count ${raw.length} outside ${range[0]}-${range[1]}`);const available=new Map((Array.isArray(base.available_visual_assets)?base.available_visual_assets:[]).map(a=>[clean(a.inventory_id),a]));if(available.size<6)throw new Error('candidate claims require real pre-claim visual inventory');const claims=[],seenClaims=new Set(),seenTargets=new Set(),allEvidence=new Set(),roleCounts=new Map();const roles=new Set(['hook','establish','mechanism','detail','result','context']),forms=new Set(['photo','diagram','map','document','illustration']),STOP=new Set(['the','and','with','from','into','this','that','for','are','was','were','has','have','image','photo','picture','view','scene']);const toks=v=>[...new Set((clean(v).toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[]).filter(x=>x.length>=3&&!STOP.has(x)))],related=(a,b)=>a===b||(a.length>=5&&b.length>=5&&a.slice(0,6)===b.slice(0,6));for(let i=0;i<raw.length;i++){const x=raw[i]??{},claim_id=clean(x.claim_id),claim=clean(x.claim),editorial_role=clean(x.editorial_role).toLowerCase(),visual_form=clean(x.visual_form).toLowerCase(),visual_target=clean(x.visual_target),search_query_en=String(x.search_query_en??'').replace(/\\s+/gu,' ').trim(),evidence_ids=[...new Set((Array.isArray(x.evidence_ids)?x.evidence_ids:[]).map(clean).filter(Boolean))],inventory_asset_ids=[...new Set((Array.isArray(x.inventory_asset_ids)?x.inventory_asset_ids:[]).map(clean).filter(Boolean))];if(claim_id!==`C${i+1}`||!claim||!visual_target||!roles.has(editorial_role)||!forms.has(visual_form))throw new Error(`candidate claim ${i+1} is incomplete`);roleCounts.set(editorial_role,(roleCounts.get(editorial_role)||0)+1);const visualWords=visual_target.split(/\\s+/u).filter(Boolean);if(visualWords.length<2||visualWords.length>10||/(?:\\bclose[ -]?up\\b|\\bshow(?:ing|s)?\\b|\\bunder load\\b|\\bduring (?:operation|use)\\b|\\bbefore\\s*\\/\\s*after\\b|\\bside[ -]?by[ -]?side\\b)/iu.test(visual_target))throw new Error(`candidate claim ${claim_id} needs a compact observable visual_target`);if(!search_query_en||search_query_en.length>90||search_query_en.split(/\\s+/u).length<2)throw new Error(`candidate claim ${claim_id} needs a compact search_query_en`);if(evidence_ids.length<1||evidence_ids.length>3||evidence_ids.some(id=>!validIds.has(id)))throw new Error(`candidate claim ${claim_id} has invalid evidence IDs`);if(inventory_asset_ids.length<1||inventory_asset_ids.length>3||inventory_asset_ids.some(id=>!available.has(id)))throw new Error(`candidate claim ${claim_id} has invalid availability asset IDs`);const targetTokens=toks(visual_target),assetMatches=inventory_asset_ids.map(id=>{const a=available.get(id),meta=toks([a.preclaim_visible_description,a.title,a.description,a.categories].filter(Boolean).join(' '));return clean(a.preclaim_visual_form)===visual_form&&(targetTokens.length===0||targetTokens.some(t=>meta.some(m=>related(t,m))));});if(!assetMatches.some(Boolean))throw new Error(`candidate claim ${claim_id} target is not represented in cited real inventory`);const ck=claim.toLocaleLowerCase(),vk=visual_target.toLocaleLowerCase();if(seenClaims.has(ck)||seenTargets.has(vk))throw new Error(`candidate claim ${claim_id} duplicates claim or visual target`);seenClaims.add(ck);seenTargets.add(vk);evidence_ids.forEach(id=>allEvidence.add(id));claims.push({claim_number:i+1,claim_id,claim,evidence_ids,editorial_role,visual_form,visual_target,search_query_en,inventory_asset_ids});}if(roleCounts.size<3)throw new Error(`candidate claims need editorial role diversity; got ${roleCounts.size}`);const explainIntent=/\\b(?:how|why|work|works|working|mechanism|process|operation|explain|function)\\b/iu.test(clean(base.user_intent));if(explainIntent&&!claims.some(c=>['mechanism','detail'].includes(c.editorial_role)&&c.visual_form==='photo'))throw new Error('explanatory candidate claims need an observable mechanism/detail photo option');if([...roleCounts.values()].some(v=>v>Math.ceil(raw.length/2)))throw new Error('candidate claims are dominated by one editorial role');if(allEvidence.size<2)throw new Error('candidate claims do not use at least two independent research rows');return [{json:{...base,candidate_claims:claims,inventory_request:{canonical_source:{language:'en',title:base.canonical_subject},inventory_claims:claims,preclaim_assets:base.available_visual_assets}}}];"
         },
         "id": "e2b0b4ab-dac3-4167-9c05-ce7240f56e7e",
         "name": "Validate Candidate Claims",
@@ -593,7 +593,7 @@
       {
         "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "const item=$json;\nconst model_request={ prompt: item.claim_prompt, temperature: 0.15, response_format: 'json', response_schema: {\"type\":\"object\",\"properties\":{\"claims\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"claim_id\":{\"type\":\"string\"},\"claim\":{\"type\":\"string\"},\"evidence_ids\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"editorial_role\":{\"type\":\"string\",\"enum\":[\"hook\",\"establish\",\"mechanism\",\"detail\",\"result\",\"context\"]},\"visual_form\":{\"type\":\"string\",\"enum\":[\"photo\",\"diagram\",\"map\",\"document\",\"illustration\"]},\"visual_target\":{\"type\":\"string\"},\"search_query_en\":{\"type\":\"string\",\"minLength\":3,\"maxLength\":90}},\"required\":[\"claim_id\",\"claim\",\"evidence_ids\",\"editorial_role\",\"visual_form\",\"visual_target\",\"search_query_en\"]}}},\"required\":[\"claims\"]} };\nreturn {json:{...item,model_request}};"
+          "jsCode": "const item=$json;\nconst model_request={ prompt: item.claim_prompt, temperature: 0.15, response_format: 'json', response_schema: {\"type\":\"object\",\"properties\":{\"claims\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"claim_id\":{\"type\":\"string\"},\"claim\":{\"type\":\"string\"},\"evidence_ids\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"editorial_role\":{\"type\":\"string\",\"enum\":[\"hook\",\"establish\",\"mechanism\",\"detail\",\"result\",\"context\"]},\"visual_form\":{\"type\":\"string\",\"enum\":[\"photo\",\"diagram\",\"map\",\"document\",\"illustration\"]},\"visual_target\":{\"type\":\"string\"},\"search_query_en\":{\"type\":\"string\",\"minLength\":3,\"maxLength\":90},\"inventory_asset_ids\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":1,\"maxItems\":3}},\"required\":[\"claim_id\",\"claim\",\"evidence_ids\",\"editorial_role\",\"visual_form\",\"visual_target\",\"search_query_en\",\"inventory_asset_ids\"]}}},\"required\":[\"claims\"]} };\nreturn {json:{...item,model_request}};"
         },
         "id": "e38b0e4d-3826-4676-89dc-102320b114d6",
         "name": "Build Draft Candidate Claims Request",
@@ -633,6 +633,181 @@
           4980,
           460
         ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const j=$('Validate Resolved Topic').first().json;const r=$input.first().json;const clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();let rows=(Array.isArray(r.results)?r.results:[]).slice(0,10).map((x,i)=>({id:`S${i+1}`,title:clean(x.title),snippet:clean(x.content??x.description),url:clean(x.url)})).filter(x=>x.title&&x.snippet&&x.url);if(rows.length<2){const seen=new Set(rows.map(x=>x.url));for(const x of (Array.isArray(j.discovery_evidence)?j.discovery_evidence:[])){const title=clean(x.title),snippet=clean(x.snippet),url=clean(x.url);if(title&&snippet&&url&&!seen.has(url)){rows.push({id:`S${rows.length+1}`,title,snippet,url});seen.add(url);}if(rows.length>=10)break;}}if(rows.length<2)throw new Error('combined research returned fewer than two usable results');const target=Number(j.target_duration_seconds),count={15:6,30:8,45:10,60:12}[target],range={15:[6,6],30:[8,8],45:[10,10],60:[12,12]}[target];if(!count||!range)throw new Error('unsupported duration');const evidence=rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}\\n${x.url}`).join('\\n\\n');const prompt=`Generate VISUAL EXPLORATION QUERIES for a licensed/free-media inventory. Do NOT write narration and do NOT choose final story claims. The purpose is to discover what real images actually exist before story planning.\\n\\nRAW TOPIC: ${j.topic}\\nRESOLVED SUBJECT: ${j.resolved_subject}\\nCANONICAL NAME: ${j.canonical_subject}\\nUSER INTENT: ${j.user_intent}\\nTARGET DURATION: ${target}s\\n\\nRESEARCH:\\n${evidence}\\n\\nReturn ONLY JSON {\"queries\":[{\"query_id\":\"Q1\",\"search_query_en\":\"compact English provider query\",\"observable_target\":\"compact observable noun phrase\",\"visual_form\":\"photo\",\"evidence_ids\":[\"S1\"]}]}. Requirements: exactly ${count} queries Q1..Q${count}; every query must be grounded in the cited research wording and cite 1-3 research IDs; cover materially different observable components, places, apparatus or useful factual visual forms relevant to USER INTENT; for how/why/process/operation topics, prioritize physical components/apparatus that can help explain the mechanism; search_query_en must be <=90 characters and preserve the named subject or its unambiguous proper-name core plus the distinguishing observable component/form; observable_target is retrieval guidance only, not a final story requirement; keep it 2-10 words, concrete and visible; do not encode hidden function, numerical proof, causal inference, camera directions, actions, before/after arrangements, generic filler, logos, screenshots or copyrighted scenes; use diagram/map/document/illustration only when research makes that form genuinely useful. These queries are exploration hypotheses: later vision review decides what is actually visible.`;return [{json:{...j,research_rows:rows,candidate_claim_range:range,exploration_query_count:count,exploration_prompt:prompt}}];"
+        },
+        "id": "66cb184e-f3c4-404c-a778-ba38a196054d",
+        "name": "Prepare Visual Exploration",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2720,
+          -220
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const item=$json;const model_request={prompt:item.exploration_prompt,temperature:0.1,response_format:'json',response_schema:{\"type\":\"object\",\"properties\":{\"queries\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"query_id\":{\"type\":\"string\"},\"search_query_en\":{\"type\":\"string\",\"minLength\":3,\"maxLength\":90},\"observable_target\":{\"type\":\"string\"},\"visual_form\":{\"type\":\"string\",\"enum\":[\"photo\",\"diagram\",\"map\",\"document\",\"illustration\"]},\"evidence_ids\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":1,\"maxItems\":3}},\"required\":[\"query_id\",\"search_query_en\",\"observable_target\",\"visual_form\",\"evidence_ids\"]}}},\"required\":[\"queries\"]}};return {json:{...item,model_request}};"
+        },
+        "id": "632176c5-9620-476a-abaf-d647fb75ce2c",
+        "name": "Build Draft Visual Exploration Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2960,
+          -220
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.model_request }}",
+          "options": {
+            "timeout": 180000
+          }
+        },
+        "id": "413140e3-f142-414b-9477-07d6085972eb",
+        "name": "Draft Visual Exploration",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3200,
+          -220
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const base=$('Prepare Visual Exploration').first().json,r=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();let text=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,'').trim(),o;try{o=JSON.parse(text)}catch{throw new Error('visual exploration planner returned invalid JSON')}const raw=Array.isArray(o.queries)?o.queries:[],count=Number(base.exploration_query_count);if(raw.length!==count)throw new Error(`visual exploration query count ${raw.length}/${count}`);const validEvidence=new Set(base.research_rows.map(x=>x.id)),forms=new Set(['photo','diagram','map','document','illustration']),STOP=new Set(['the','and','with','from','into','this','that','for','are','was','were','has','have','operation','system','process','working','work','works','image','photo','picture','view','scene','showing','shows','visible']);const toks=v=>[...new Set((clean(v).toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[]).filter(x=>x.length>=3&&!STOP.has(x)))],related=(a,b)=>a===b||(a.length>=5&&b.length>=5&&a.slice(0,6)===b.slice(0,6));const canonical=toks(base.canonical_subject),subjectNeed=Math.min(2,canonical.length);if(!subjectNeed)throw new Error('visual exploration canonical subject has no usable identity tokens');const queries=[],seen=new Set();for(let i=0;i<raw.length;i++){const x=raw[i]??{},query_id=clean(x.query_id),search_query_en=clean(x.search_query_en),observable_target=clean(x.observable_target),visual_form=clean(x.visual_form).toLowerCase(),evidence_ids=[...new Set((Array.isArray(x.evidence_ids)?x.evidence_ids:[]).map(clean).filter(Boolean))];if(query_id!==`Q${i+1}`||!search_query_en||search_query_en.length>90||!observable_target||!forms.has(visual_form))throw new Error(`visual exploration query ${i+1} is incomplete`);const words=observable_target.split(/\\s+/u).filter(Boolean);if(words.length<2||words.length>10||/(?:\\bclose[ -]?up\\b|\\bshow(?:ing|s)?\\b|\\bunder load\\b|\\bduring (?:operation|use)\\b|\\bbefore\\s*\\/\\s*after\\b|\\bside[ -]?by[ -]?side\\b)/iu.test(observable_target))throw new Error(`visual exploration ${query_id} needs a compact observable target`);if(evidence_ids.length<1||evidence_ids.length>3||evidence_ids.some(id=>!validEvidence.has(id)))throw new Error(`visual exploration ${query_id} has invalid evidence IDs`);const qtokens=toks(search_query_en),subjectHits=canonical.filter(c=>qtokens.some(q=>related(c,q))).length;if(subjectHits<subjectNeed)throw new Error(`visual exploration ${query_id} lost resolved-subject identity`);const key=search_query_en.toLocaleLowerCase();if(seen.has(key))throw new Error(`visual exploration duplicate query ${query_id}`);seen.add(key);queries.push({query_number:i+1,query_id,search_query_en,observable_target,visual_form,evidence_ids,retrieval_rationale:`research:${evidence_ids.join(',')}`});}return [{json:{...base,exploration_queries:queries,exploration_request:{canonical_source:{language:'en',title:base.canonical_subject},exploration_queries:queries}}}];"
+        },
+        "id": "c5e7ecb3-eb48-4fb7-956f-c35e14699ee2",
+        "name": "Validate Visual Exploration",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3440,
+          -220
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/discover",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.exploration_request }}",
+          "options": {
+            "timeout": 180000
+          }
+        },
+        "id": "7b809693-895b-41da-a43a-cacf3e639cbf",
+        "name": "Discover Pre-Claim Visual Inventory",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3680,
+          -220
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "const discovery=$input.first().json,base=$('Validate Visual Exploration').first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(discovery.exploration_version!=='pre-claim-visual-exploration-v1')throw new Error('pre-claim visual exploration contract missing');const rows=Array.isArray(discovery.exploration_queries)?discovery.exploration_queries:[];if(rows.length!==base.exploration_queries.length)throw new Error(`pre-claim exploration cardinality ${rows.length}/${base.exploration_queries.length}`);const pool=[],used=new Set(),maxRank=Math.max(0,...rows.map(r=>Array.isArray(r.candidates)?r.candidates.length:0));for(let rank=0;rank<maxRank&&pool.length<48;rank++){for(const row of rows){const x=Array.isArray(row.candidates)?row.candidates[rank]:null;if(!x||x.inventory_subject_anchor_pass!==true)continue;const provider=clean(x.provider).toLowerCase(),provider_asset_id=clean(x.provider_asset_id??x.candidate_id),identity=`${provider}:${provider_asset_id}`,preview=clean(x.preview_urls?.[0]??x.preview_url);if(!provider||!provider_asset_id||!preview||used.has(identity))continue;used.add(identity);pool.push({...x,review_id:`P${pool.length+1}`,asset_identity:identity,origin_query_id:clean(row.query_id),origin_observable_target:clean(row.observable_target),origin_visual_form:clean(row.visual_form).toLowerCase(),preview_url:preview});if(pool.length>=48)break;}}const minimum=Math.max(6,Number(base.exploration_query_count)||6);if(pool.length<minimum)throw new Error(`pre-claim exploration exposes only ${pool.length}/${minimum} unique real assets`);const prompt=`You are visually reviewing REAL provider images before story claims are chosen. This is an availability gate, not factual research. RESOLVED SUBJECT: ${base.canonical_subject}. USER INTENT: ${base.user_intent}. For each REVIEW id, describe only what is visibly present in at most 20 words. relevant=true only when the pixels genuinely show the resolved named subject itself OR a specific real component, apparatus, place, diagram, map, document, or illustration that visibly belongs to that subject and could truthfully support a story about it. The exploration query is only a retrieval hint and must not force acceptance. Reject wrong subjects, generic lookalikes without visible subject identity, unrelated stock objects, screenshots, logos, watermarks, collages, and text cards. Do not infer hidden function, purpose, causality, numbers, or mechanism from pixels. visual_form must be one of photo, diagram, map, document, illustration and describe the actual image form. Return every review_id exactly once. Return ONLY JSON {\"verdicts\":[{\"review_id\":\"P1\",\"relevant\":false,\"visible_description\":\"observed pixels\",\"visual_form\":\"photo\"}]}.`;const out=[];for(let offset=0;offset<pool.length;offset+=24){const batch=pool.slice(offset,offset+24),input=[{type:'text',text:prompt}];for(const x of batch){input.push({type:'text',text:`REVIEW ${x.review_id} | exploration ${x.origin_query_id} | retrieval hint: ${x.origin_observable_target}`});input.push({type:'image',uri:x.preview_url});}out.push({json:{batch_number:out.length+1,minimum_available_assets:minimum,candidates:batch,visual_review_request:{input}}});}return out;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3680,
+          -220
+        ],
+        "id": "7f87cc96-46de-458f-99d3-1e4347570d9c",
+        "name": "Prepare Pre-Claim Review Batches",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/inline-review-images",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.visual_review_request }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3920,
+          -220
+        ],
+        "id": "5891c1b9-baf5-449c-9bb5-7af547baecaa",
+        "name": "Inline Pre-Claim Candidate Images",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "language": "javaScript",
+          "jsCode": "const item=$json;const model_request={input:item.input,response_format:'json',response_schema:{\"type\":\"object\",\"properties\":{\"verdicts\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"review_id\":{\"type\":\"string\"},\"relevant\":{\"type\":\"boolean\"},\"visible_description\":{\"type\":\"string\"},\"visual_form\":{\"type\":\"string\",\"enum\":[\"photo\",\"diagram\",\"map\",\"document\",\"illustration\"]}},\"required\":[\"review_id\",\"relevant\",\"visible_description\",\"visual_form\"]}}},\"required\":[\"verdicts\"]}};return {json:{...item,model_request}};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4160,
+          -220
+        ],
+        "id": "ccb694f9-dcfc-4c6b-9627-14ee9069fdc1",
+        "name": "Build Review Pre-Claim Visual Inventory Request",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.model_request }}",
+          "options": {
+            "timeout": 180000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4400,
+          -220
+        ],
+        "id": "217dde3a-2a8a-43fb-b425-c807179b6554",
+        "name": "Review Pre-Claim Visual Inventory",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "const prepared=$('Prepare Pre-Claim Review Batches').all().map(x=>x.json),responses=$input.all().map(x=>x.json),base=$('Validate Visual Exploration').first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(!prepared.length||prepared.length!==responses.length)throw new Error(`pre-claim review batches ${responses.length}/${prepared.length}`);const STOP=new Set(['the','and','with','from','into','this','that','for','are','was','were','has','have','image','photo','picture','view','scene','showing','shows','visible']);const words=v=>clean(v).toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[],content=v=>[...new Set(words(v).filter(x=>x.length>=3&&!STOP.has(x)))],related=(a,b)=>a===b||(a.length>=5&&b.length>=5&&a.slice(0,6)===b.slice(0,6)),overlap=(a,b)=>a.reduce((n,x)=>n+(b.some(y=>related(x,y))?1:0),0),metaText=c=>[c.title,c.categories,c.metadata?.source_title,clean(c.description).length<=240?c.description:''].filter(Boolean).join(' ');const approved=[];let minimum=6;for(let b=0;b<prepared.length;b++){const ctx=prepared[b],response=responses[b];minimum=Math.max(minimum,Number(ctx.minimum_available_assets)||6);let text=clean(response?.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,''),o;try{o=JSON.parse(text)}catch{throw new Error(`pre-claim reviewer returned invalid JSON for batch ${ctx.batch_number}`)}const expected=new Set(ctx.candidates.map(x=>String(x.review_id))),verdicts=new Map();if(!Array.isArray(o.verdicts))throw new Error('pre-claim reviewer missing verdicts');for(const v of o.verdicts){const id=String(v?.review_id??'');if(!expected.has(id))throw new Error(`pre-claim reviewer unknown review_id ${id}`);if(verdicts.has(id))throw new Error(`pre-claim reviewer duplicate review_id ${id}`);verdicts.set(id,v);}if(verdicts.size!==expected.size)throw new Error(`pre-claim reviewer incomplete verdicts ${verdicts.size}/${expected.size}`);for(const x of ctx.candidates){const v=verdicts.get(String(x.review_id)),desc=clean(v?.visible_description).slice(0,300),form=clean(v?.visual_form).toLowerCase();if(v?.relevant!==true||!desc||!['photo','diagram','map','document','illustration'].includes(form))continue;const vis=content(desc),meta=content(metaText(x)),hits=overlap(vis,meta),need=Math.min(2,Math.max(1,Math.min(vis.length,meta.length)));if(!vis.length||!meta.length||hits<need)continue;approved.push({...x,preclaim_visible_description:desc,preclaim_visual_form:form,preclaim_metadata_consistency_hits:hits});}}const used=new Set(),assets=[];for(const x of approved){const identity=clean(x.asset_identity||`${x.provider}:${x.provider_asset_id}`);if(!identity||used.has(identity))continue;used.add(identity);assets.push({...x,inventory_id:`V${assets.length+1}`});}if(assets.length<minimum)throw new Error(`pre-claim vision-reviewed inventory only ${assets.length}/${minimum} assets`);return [{json:{...base,preclaim_review_version:'pre-claim-vision-reviewed-inventory-v1',available_visual_assets:assets,available_visual_asset_count:assets.length}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4640,
+          -220
+        ],
+        "id": "6e2dd726-9d2a-47a8-a431-a635d6dfdf3d",
+        "name": "Select Pre-Claim Visual Inventory",
         "onError": "continueErrorOutput"
       }
     ],
@@ -814,7 +989,7 @@
         "main": [
           [
             {
-              "node": "Prepare Candidate Claims",
+              "node": "Prepare Visual Exploration",
               "type": "main",
               "index": 0
             }
@@ -1179,6 +1354,186 @@
           [
             {
               "node": "Write Inventory Grounded Story",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Visual Exploration": {
+        "main": [
+          [
+            {
+              "node": "Build Draft Visual Exploration Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Draft Visual Exploration": {
+        "main": [
+          [
+            {
+              "node": "Validate Visual Exploration",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate Visual Exploration": {
+        "main": [
+          [
+            {
+              "node": "Discover Pre-Claim Visual Inventory",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Discover Pre-Claim Visual Inventory": {
+        "main": [
+          [
+            {
+              "node": "Prepare Pre-Claim Review Batches",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Draft Visual Exploration Request": {
+        "main": [
+          [
+            {
+              "node": "Draft Visual Exploration",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Pre-Claim Review Batches": {
+        "main": [
+          [
+            {
+              "node": "Inline Pre-Claim Candidate Images",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Inline Pre-Claim Candidate Images": {
+        "main": [
+          [
+            {
+              "node": "Build Review Pre-Claim Visual Inventory Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Review Pre-Claim Visual Inventory Request": {
+        "main": [
+          [
+            {
+              "node": "Review Pre-Claim Visual Inventory",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Review Pre-Claim Visual Inventory": {
+        "main": [
+          [
+            {
+              "node": "Select Pre-Claim Visual Inventory",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Select Pre-Claim Visual Inventory": {
+        "main": [
+          [
+            {
+              "node": "Prepare Candidate Claims",
               "type": "main",
               "index": 0
             }

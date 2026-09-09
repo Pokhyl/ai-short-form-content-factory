@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';
+const raw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));const w=Array.isArray(raw)?raw[0]:raw,nodes=new Map(w.nodes.map(n=>[n.name,n]));const edge=(a,b)=>w.connections[a]?.main?.[0]?.some(x=>x.node===b);
+for(const name of ['Prepare Visual Exploration','Build Draft Visual Exploration Request','Draft Visual Exploration','Validate Visual Exploration','Discover Pre-Claim Visual Inventory'])assert(nodes.has(name),`missing ${name}`);
+assert(edge('Research Resolved Subject','Prepare Visual Exploration'));assert(!edge('Research Resolved Subject','Prepare Candidate Claims'),'claims must not be authored before real provider inventory');
+assert(edge('Validate Visual Exploration','Discover Pre-Claim Visual Inventory'));assert(edge('Discover Pre-Claim Visual Inventory','Prepare Pre-Claim Review Batches'));assert(edge('Prepare Pre-Claim Review Batches','Inline Pre-Claim Candidate Images'));assert(edge('Inline Pre-Claim Candidate Images','Build Review Pre-Claim Visual Inventory Request'));assert(edge('Build Review Pre-Claim Visual Inventory Request','Review Pre-Claim Visual Inventory'));assert(edge('Review Pre-Claim Visual Inventory','Select Pre-Claim Visual Inventory'));assert(edge('Select Pre-Claim Visual Inventory','Prepare Candidate Claims'));
+assert.match(nodes.get('Prepare Visual Exploration').parameters.jsCode,/Do NOT write narration and do NOT choose final story claims/);
+assert.match(nodes.get('Prepare Visual Exploration').parameters.jsCode,/exploration hypotheses/);
+assert.match(nodes.get('Validate Visual Exploration').parameters.jsCode,/lost resolved-subject identity/);
+assert.match(nodes.get('Prepare Candidate Claims').parameters.jsCode,/PIXEL-REVIEWED REAL VISUAL INVENTORY/);
+assert.match(nodes.get('Build Draft Candidate Claims Request').parameters.jsCode,/inventory_asset_ids/);
+assert.match(nodes.get('Validate Candidate Claims').parameters.jsCode,/real pre-claim visual inventory/);
+assert.match(nodes.get('Validate Candidate Claims').parameters.jsCode,/not represented in cited real inventory/);
+console.log('WF02_AVAILABILITY_FIRST_VISUAL_EXPLORATION_REGRESSION_PASS');

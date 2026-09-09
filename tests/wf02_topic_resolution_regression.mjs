@@ -12,6 +12,16 @@ const required = [
   'Resolve Topic From Evidence',
   'Validate Resolved Topic',
   'Research Resolved Subject',
+  'Prepare Visual Exploration',
+  'Build Draft Visual Exploration Request',
+  'Draft Visual Exploration',
+  'Validate Visual Exploration',
+  'Discover Pre-Claim Visual Inventory',
+  'Prepare Pre-Claim Review Batches',
+  'Inline Pre-Claim Candidate Images',
+  'Build Review Pre-Claim Visual Inventory Request',
+  'Review Pre-Claim Visual Inventory',
+  'Select Pre-Claim Visual Inventory',
   'Prepare Candidate Claims',
 ];
 for (const name of required) assert(nodes.has(name), `missing ${name}`);

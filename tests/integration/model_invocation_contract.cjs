@@ -2,7 +2,7 @@ const fs=require('node:fs');
 const assert=require('node:assert/strict');
 const {Expression}=require('/usr/local/lib/node_modules/n8n/node_modules/n8n-workflow');
 const evaluator=new Expression('UTC');
-const fixture={claim_prompt:'Candidate fixture',story_prompt:'Story fixture',rewrite_prompt:'Rewrite fixture',unit_order:['U1','U2','U3'],desired_word_target:18,min_unit_words:6,input:[{type:'text',text:'Review fixture'}]};
+const fixture={exploration_prompt:'Exploration fixture',claim_prompt:'Candidate fixture',story_prompt:'Story fixture',rewrite_prompt:'Rewrite fixture',unit_order:['U1','U2','U3'],desired_word_target:18,min_unit_words:6,input:[{type:'text',text:'Review fixture'}]};
 let checked=0;
 for(const file of fs.readdirSync('n8n/workflows').filter(f=>f.endsWith('.json'))){
  const raw=JSON.parse(fs.readFileSync('n8n/workflows/'+file,'utf8'));
@@ -23,7 +23,7 @@ for(const file of fs.readdirSync('n8n/workflows').filter(f=>f.endsWith('.json'))
   checked++;
  }
 }
-assert.equal(checked,4,'Every structured call must be exercised');
+assert.equal(checked,6,'Every structured call must be exercised');
 console.log('MODEL_INVOCATION_CONTRACT_PASS',checked);
 
 const wf04=JSON.parse(fs.readFileSync('n8n/workflows/WF04-visual-sourcing.json'))[0];

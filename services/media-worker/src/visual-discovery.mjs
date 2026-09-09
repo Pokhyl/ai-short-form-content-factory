@@ -684,17 +684,19 @@ export async function recoverVisualConflictCandidates({
   };
 }
 
-export async function discoverVisualCandidates({ canonicalSource, beats, timedBeats, inventoryClaims, visualQueriesEn = [], pixabayApiKey = "", pexelsApiKey = "", fetchImpl = fetch }) {
+export async function discoverVisualCandidates({ canonicalSource, beats, timedBeats, inventoryClaims, explorationQueries, preclaimAssets = [], visualQueriesEn = [], pixabayApiKey = "", pexelsApiKey = "", fetchImpl = fetch }) {
   const language = cleanText(canonicalSource?.language).toLowerCase();
   const title = cleanText(canonicalSource?.title);
   if (!/^(?:en|pl|ru|uk)$/u.test(language) || !title) throw new Error("visual discovery requires canonical source language/title");
 
   const segmentedMode = Array.isArray(timedBeats) && timedBeats.length > 0;
   const inventoryMode = !segmentedMode && Array.isArray(inventoryClaims) && inventoryClaims.length > 0;
-  const legacyMode = !segmentedMode && !inventoryMode && Array.isArray(beats) && beats.length > 0;
-  if (!segmentedMode && !inventoryMode && !legacyMode) throw new Error("visual discovery requires timed_beats, inventory_claims or beats");
+  const explorationMode = !segmentedMode && !inventoryMode && Array.isArray(explorationQueries) && explorationQueries.length > 0;
+  const legacyMode = !segmentedMode && !inventoryMode && !explorationMode && Array.isArray(beats) && beats.length > 0;
+  if (!segmentedMode && !inventoryMode && !explorationMode && !legacyMode) throw new Error("visual discovery requires timed_beats, inventory_claims, exploration_queries or beats");
   if (segmentedMode && timedBeats.length > 100) throw new Error("visual discovery timed_beats exceeds 100 items");
   if (inventoryMode && inventoryClaims.length > 30) throw new Error("visual discovery inventory_claims exceeds 30 items");
+  if (explorationMode && explorationQueries.length > 30) throw new Error("visual discovery exploration_queries exceeds 30 items");
   if (legacyMode && beats.length > 100) throw new Error("visual discovery beats exceeds 100 items");
 
   const segmentation = segmentedMode ? buildBeatAlignedVisualSegmentation(timedBeats) : null;
@@ -708,8 +710,17 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
         visual_target: cleanText(claim?.visual_target),
         search_query: cleanText(claim?.search_query_en),
         narration: cleanText(claim?.claim),
+        availability_asset_ids: Array.isArray(claim?.inventory_asset_ids) ? claim.inventory_asset_ids.map(cleanText).filter(Boolean) : [],
         required_images: 2,
       }))
+    : explorationMode
+      ? explorationQueries.map((query, index) => ({
+          unit_number: Number(query?.query_number ?? index + 1),
+          visual_target: cleanText(query?.observable_target),
+          search_query: cleanText(query?.search_query_en),
+          narration: cleanText(query?.retrieval_rationale ?? query?.observable_target),
+          required_images: 1,
+        }))
     : segmentedMode
       ? segmentation.segments.map((segment) => ({
           unit_number: Number(segment.segment_number),
@@ -725,6 +736,9 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
         }));
   if (inventoryMode && searchUnits.some((unit, index) => unit.unit_number !== index + 1 || !unit.visual_target || !unit.narration)) {
     throw new Error("visual discovery inventory_claims must be sequential complete claims");
+  }
+  if (explorationMode && searchUnits.some((unit, index) => unit.unit_number !== index + 1 || !unit.visual_target || !unit.search_query)) {
+    throw new Error("visual discovery exploration_queries must be sequential complete queries");
   }
 
   const providerErrors = [];
@@ -778,11 +792,48 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
     return { candidates: dedupeCandidates(rows), errors };
   }
 
-  const unitResults = await mapWithConcurrency(searchUnits, (segmentedMode || inventoryMode) ? SEGMENT_SEARCH_CONCURRENCY : 1, async (unit) => {
+  const unitResults = await mapWithConcurrency(searchUnits, (segmentedMode || inventoryMode || explorationMode) ? SEGMENT_SEARCH_CONCURRENCY : 1, async (unit) => {
     const unitNumber = Number(unit.unit_number);
     const anchor = cleanText(unit.visual_target);
     const exactQuery = boundedProviderQuery(unit.search_query || anchor || stockQuery);
     const localErrors = [];
+
+    if (explorationMode) {
+      const exact = await fetchTimedProviderSet(exactQuery, unitNumber);
+      localErrors.push(...exact.errors);
+      const providerQueries = [exactQuery];
+      let recoveryUsed = false;
+      let candidates = dedupeCandidates([...canonicalMedia, ...exact.candidates]);
+      const rerank = () => rankInventoryCandidates(candidates, exactQuery, englishTitle, anchor)
+        .filter((candidate) => candidate.inventory_subject_anchor_pass === true);
+      let ranked = rerank();
+      const detailCount = () => ranked.filter((candidate) => Number(candidate.inventory_detail_hits) > 0).length;
+      const recovery = [inventoryDetailQuery(exactQuery, englishTitle, anchor), ...inventoryFallbackQueries(exactQuery, englishTitle, anchor)]
+        .filter(Boolean)
+        .filter((value, index, rows) => rows.findIndex((other) => other.toLocaleLowerCase() === value.toLocaleLowerCase()) === index)
+        .slice(0, 4);
+      if (ranked.length < 6 || detailCount() < 2) {
+        for (const recoveryQuery of recovery) {
+          if (providerQueries.some((value) => value.toLocaleLowerCase() === recoveryQuery.toLocaleLowerCase())) continue;
+          const recovered = await fetchTimedProviderSet(recoveryQuery, unitNumber);
+          localErrors.push(...recovered.errors);
+          providerQueries.push(recoveryQuery);
+          candidates = dedupeCandidates([...candidates, ...markRecoveryCandidates(recovered.candidates, recoveryQuery)]);
+          recoveryUsed = true;
+          ranked = rerank();
+          if (ranked.length >= 6 && detailCount() >= 2) break;
+        }
+      }
+      return {
+        unit_number: unitNumber,
+        visual_target: anchor,
+        candidates: ranked.slice(0, 12),
+        provider_query: exactQuery,
+        provider_queries: providerQueries,
+        bounded_query_recovery_used: recoveryUsed,
+        errors: localErrors,
+      };
+    }
 
     if (segmentedMode || inventoryMode) {
       const exact = await fetchTimedProviderSet(exactQuery, unitNumber);
@@ -792,7 +843,15 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       const exactStrong = exactAnnotated.filter((candidate) => candidate.target_anchor_pass === true);
       const canonicalAnnotated = canonicalMedia.map((candidate) => withCandidateAnchorMetrics(candidate, anchor, englishTitle));
       const canonicalExact = canonicalAnnotated.filter((candidate) => candidate.target_anchor_pass === true);
-      let candidates = dedupeCandidates([...canonicalExact, ...exactStrong]);
+      const availabilityIds = new Set(Array.isArray(unit.availability_asset_ids) ? unit.availability_asset_ids : []);
+      const seededAnnotated = inventoryMode && availabilityIds.size
+        ? preclaimAssets.filter((asset) => availabilityIds.has(cleanText(asset?.inventory_id))).map((asset) => withCandidateAnchorMetrics({
+            ...asset,
+            description: cleanText([asset?.preclaim_visible_description, asset?.description].filter(Boolean).join(" | ")),
+            metadata: { ...(asset?.metadata ?? {}), preclaim_visible_description: cleanText(asset?.preclaim_visible_description), preclaim_inventory_id: cleanText(asset?.inventory_id) },
+          }, anchor, englishTitle)).filter((candidate) => candidate.target_anchor_pass === true)
+        : [];
+      let candidates = dedupeCandidates([...seededAnnotated, ...canonicalExact, ...exactStrong]);
       if (candidates.length < required) candidates = dedupeCandidates([...candidates, ...canonicalAnnotated]);
       const recoveryQuery = inventoryMode
         ? inventoryDetailQuery(exactQuery, englishTitle, anchor)
@@ -872,11 +931,33 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       commons_base: baseCommons.length,
       segment_query_count: segmentedMode ? unitResults.length : 0,
       inventory_query_count: inventoryMode ? unitResults.length : 0,
+      exploration_query_count: explorationMode ? unitResults.length : 0,
       segment_recovery_query_count: segmentedMode ? unitResults.filter((row) => row.bounded_query_recovery_used).length : 0,
       inventory_recovery_query_count: inventoryMode ? unitResults.filter((row) => row.bounded_query_recovery_used).length : 0,
+      exploration_recovery_query_count: explorationMode ? unitResults.filter((row) => row.bounded_query_recovery_used).length : 0,
     },
   };
 
+
+  if (explorationMode) {
+    const byNumber = new Map(unitResults.map((row) => [row.unit_number, row]));
+    return {
+      ...common,
+      exploration_version: "pre-claim-visual-exploration-v1",
+      exploration_queries: explorationQueries.map((query, index) => {
+        const number = index + 1;
+        const row = byNumber.get(number);
+        return {
+          ...query,
+          query_number: number,
+          candidates: row?.candidates ?? [],
+          provider_query: row?.provider_query ?? cleanText(query?.search_query_en),
+          provider_queries: row?.provider_queries ?? [cleanText(query?.search_query_en)].filter(Boolean),
+          bounded_query_recovery_used: row?.bounded_query_recovery_used === true,
+        };
+      }),
+    };
+  }
 
   if (inventoryMode) {
     const byNumber = new Map(unitResults.map((row) => [row.unit_number, row]));
