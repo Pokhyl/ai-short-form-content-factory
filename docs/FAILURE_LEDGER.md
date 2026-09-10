@@ -221,3 +221,11 @@ Read-only comparison proved stage job `8985460d-4473-4111-9737-ddfa6233df60` fai
 ### 2026-09-10 V6 stage direct progress probe quoting/sudo failure
 
 A read-only progress probe for stage job `5d073afc-3733-4f7e-8288-42e58a5304fa` was mistakenly issued through direct exec without sudo and with nested shell quoting that broke the SQL command. It failed with shell `command not found` fragments and Docker socket permission denial. The job and production state were not mutated. Subsequent job-state probes must use privileged `sentinel_script_run` with standalone SQL quoting, not nested direct-exec shell composition.
+
+### 2026-09-10 V6 stage diagnostic transport interruptions
+
+A read-only SentinelX child-execution diagnostic for stage job `5d073afc-3733-4f7e-8288-42e58a5304fa` first returned connector HTTP 502 before host evidence, then a subsequent docs-checkpoint attempt was interrupted by a SentinelX hub restart (`agent_offline`) before any host action. Neither transport event changed the server, repository, job, workflow, database, container, or artifact. These are operator-tool transport failures only and must not be treated as V6 product evidence.
+
+### 2026-09-10 V6 stage cross-topic failure — Visual Facts reviewer unavailable
+
+Second real V6 stage job `5d073afc-3733-4f7e-8288-42e58a5304fa` (`Почему небо голубое?` / `ru` / `15`) is immutable FAILED at `script`. Stage WF01 execution `17460` succeeded; stage WF02 execution `17461` failed after roughly 205 seconds with exact durable error `visual fact reviewer unavailable after bounded provider failover for batch 1 [line 1]`. The earlier SearXNG network defect was already corrected: this run advanced past research into actual-image review. No voiceover, WF04/WF05 render, MP4, or HUMAN review exists. Do not resume or repair this job. Before changing source, inspect exact child V4 model-gateway executions and reviewer payload/result to distinguish provider availability, schema-output failure, or V6 reviewer-contract incompatibility.

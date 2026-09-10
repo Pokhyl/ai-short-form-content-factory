@@ -1604,3 +1604,7 @@ Stage worker network parity was incomplete: `cf-v6-stage-worker` lacked `n8n_def
 ### 2026-09-10 V6 stage progress probe tooling failure
 
 A read-only direct progress probe for `5d073afc-3733-4f7e-8288-42e58a5304fa` failed before querying state because it lacked sudo and had broken nested shell quoting. No product state changed. Monitoring continues through the existing privileged background monitor / privileged standalone scripts.
+
+### 2026-09-10 second V6 stage cross-topic job reached Visual Facts review and failed
+
+New immutable stage job `5d073afc-3733-4f7e-8288-42e58a5304fa` (`Почему небо голубое?` / `ru` / `15`) passed intake and the corrected SearXNG research path. Stage WF01 `17460` succeeded; stage WF02 `17461` failed with `visual fact reviewer unavailable after bounded provider failover for batch 1 [line 1]`. This proves the next blocker is later than retrieval. No downstream voiceover/visual execution/render artifact exists. Exact reviewer child-call evidence must be decoded before any product correction.
