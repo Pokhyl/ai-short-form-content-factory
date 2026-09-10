@@ -133,7 +133,23 @@ CREATE TABLE public.jobs (
     CONSTRAINT jobs_review_state_check CHECK ((((review_decision IS NULL) AND (review_notes IS NULL) AND (reviewed_at IS NULL)) OR ((review_decision = ANY (ARRAY['approved'::text, 'rejected'::text])) AND (reviewed_at IS NOT NULL)))),
     CONSTRAINT jobs_script_fit_passes_check CHECK (((script_fit_passes >= 0) AND (script_fit_passes <= 3))),
     CONSTRAINT jobs_script_support_check CHECK (((script_support IS NULL) OR (jsonb_typeof(script_support) = 'array'::text))),
-    CONSTRAINT jobs_story_package_check CHECK (((story_package IS NULL) OR ((jsonb_typeof(story_package) = 'object'::text) AND ((story_package ->> 'version'::text) = 'inventory-first-story-v1'::text) AND (jsonb_typeof((story_package -> 'units'::text)) = 'array'::text) AND (jsonb_array_length((story_package -> 'units'::text)) BETWEEN 2 AND 12) AND (jsonb_typeof((story_package -> 'assets'::text)) = 'array'::text) AND (jsonb_array_length((story_package -> 'assets'::text)) = jsonb_array_length((story_package -> 'units'::text)))))),
+    CONSTRAINT jobs_story_package_check CHECK (
+        story_package IS NULL OR (
+            jsonb_typeof(story_package) = 'object'::text
+            AND jsonb_typeof(story_package -> 'units'::text) = 'array'::text
+            AND jsonb_array_length(story_package -> 'units'::text) BETWEEN 2 AND 12
+            AND jsonb_typeof(story_package -> 'assets'::text) = 'array'::text
+            AND jsonb_array_length(story_package -> 'assets'::text) = jsonb_array_length(story_package -> 'units'::text)
+            AND (
+                story_package ->> 'version'::text = 'inventory-first-story-v1'::text
+                OR (
+                    story_package ->> 'version'::text = 'visual-facts-story-v1'::text
+                    AND story_package ->> 'editorial_contract_version'::text = 'storyboard-v1'::text
+                    AND story_package ->> 'visual_binding_mode'::text = 'visual-facts-first-v1'::text
+                )
+            )
+        )
+    ),
     CONSTRAINT jobs_topic_resolution_check CHECK (((topic_resolution IS NULL) OR ((jsonb_typeof(topic_resolution) = 'object'::text) AND ((topic_resolution ->> 'version'::text) = 'evidence-grounded-topic-resolution-v1'::text) AND (NULLIF(btrim((topic_resolution ->> 'raw_topic'::text)), ''::text) IS NOT NULL) AND (NULLIF(btrim((topic_resolution ->> 'resolved_subject'::text)), ''::text) IS NOT NULL) AND (jsonb_typeof((topic_resolution -> 'candidates'::text)) = 'array'::text) AND (jsonb_array_length((topic_resolution -> 'candidates'::text)) >= 1) AND (jsonb_typeof((topic_resolution -> 'reasoning_evidence_ids'::text)) = 'array'::text) AND (jsonb_array_length((topic_resolution -> 'reasoning_evidence_ids'::text)) >= 1)))),
     CONSTRAINT jobs_visual_quality_check CHECK (((visual_quality IS NULL) OR (jsonb_typeof(visual_quality) = 'object'::text))),
     CONSTRAINT jobs_visual_search_queries_en_check CHECK (((visual_search_queries_en IS NULL) OR ((jsonb_typeof(visual_search_queries_en) = 'array'::text) AND ((jsonb_array_length(visual_search_queries_en) >= 6) AND (jsonb_array_length(visual_search_queries_en) <= 18)))))
@@ -161,7 +177,7 @@ COMMENT ON COLUMN public.jobs.visual_search_queries_en IS 'Grounded English visu
 -- Name: COLUMN jobs.story_package; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.jobs.story_package IS 'Inventory-first story units with explicit evidence and pre-verified visual asset bindings, frozen before TTS.';
+COMMENT ON COLUMN public.jobs.story_package IS 'Frozen pre-TTS story package. Historical V5 inventory-first stories and V6 pixel-Visual-Facts storyboard stories are allowed by explicit versioned contracts.';
 
 
 --
@@ -281,7 +297,7 @@ CREATE TABLE public.visual_segments (
     CONSTRAINT visual_segments_lane_check CHECK ((visual_lane = ANY (ARRAY['exact'::text, 'reference'::text, 'stock'::text]))),
     CONSTRAINT visual_segments_number_check CHECK (((segment_number > 0) AND (first_scene_number > 0) AND (last_scene_number >= first_scene_number))),
     CONSTRAINT visual_segments_query_check CHECK (((NULLIF(btrim(visual_query), ''::text) IS NOT NULL) AND (NULLIF(btrim(visual_description), ''::text) IS NOT NULL))),
-    CONSTRAINT visual_segments_shot_count_check CHECK (((planned_shot_count >= 1) AND (planned_shot_count <= 2))),
+    CONSTRAINT visual_segments_shot_count_check CHECK (((planned_shot_count >= 1) AND (planned_shot_count <= 3))),
     CONSTRAINT visual_segments_status_check CHECK ((status = ANY (ARRAY['planned'::text, 'ready'::text]))),
     CONSTRAINT visual_segments_subject_check CHECK (((NULLIF(btrim(canonical_subject), ''::text) IS NOT NULL) AND (NULLIF(btrim(visual_target), ''::text) IS NOT NULL))),
     CONSTRAINT visual_segments_support_check CHECK (((jsonb_typeof(support_evidence_ids) = 'array'::text) AND (jsonb_array_length(support_evidence_ids) > 0))),
@@ -312,7 +328,7 @@ CREATE TABLE public.visual_shots (
     CONSTRAINT visual_shots_cluster_check CHECK ((NULLIF(btrim(visual_cluster_key), ''::text) IS NOT NULL)),
     CONSTRAINT visual_shots_kind_check CHECK ((visual_kind = ANY (ARRAY['generic_broll'::text, 'factual_graphic'::text, 'factual_image'::text, 'context_video'::text]))),
     CONSTRAINT visual_shots_metadata_check CHECK ((jsonb_typeof(metadata) = 'object'::text)),
-    CONSTRAINT visual_shots_number_check CHECK (((shot_number > 0) AND ((segment_shot_number >= 1) AND (segment_shot_number <= 2)))),
+    CONSTRAINT visual_shots_number_check CHECK (((shot_number > 0) AND ((segment_shot_number >= 1) AND (segment_shot_number <= 3)))),
     CONSTRAINT visual_shots_path_check CHECK ((NULLIF(btrim(local_path), ''::text) IS NOT NULL)),
     CONSTRAINT visual_shots_score_check CHECK (((selection_score >= '-0.10'::numeric) AND (selection_score <= 1.09))),
     CONSTRAINT visual_shots_timing_check CHECK (((start_seconds >= (0)::numeric) AND (end_seconds > start_seconds) AND (duration_seconds > (0)::numeric) AND (abs(((end_seconds - start_seconds) - duration_seconds)) <= 0.02)))

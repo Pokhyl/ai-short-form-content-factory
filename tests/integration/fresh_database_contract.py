@@ -67,7 +67,7 @@ try:
         "'en'",
         "'Source'",
         "'{\"version\":\"evidence-grounded-topic-resolution-v1\",\"raw_topic\":\"Persist contract\",\"resolved_subject\":\"Persist contract\",\"candidates\":[{\"candidate_id\":\"C1\"}],\"reasoning_evidence_ids\":[\"D-C1-1\"]}'::jsonb",
-        "'{\"version\":\"inventory-first-story-v1\",\"units\":[{},{},{}],\"assets\":[{},{},{}]}'::jsonb",
+        "'{\"version\":\"visual-facts-story-v1\",\"editorial_contract_version\":\"storyboard-v1\",\"visual_binding_mode\":\"visual-facts-first-v1\",\"units\":[{},{},{}],\"assets\":[{},{},{}]}'::jsonb",
     ]
     result = sql("\\pset tuples_only on\n\\pset format unaligned\n\\pset fieldsep '|'\n"
                  + f"PREPARE persist_story AS {persist_story_query};\n"
@@ -80,7 +80,7 @@ try:
     if persist_reserved_visual_query is None:
         raise RuntimeError("Persist Reserved Visual SQL not found")
     visual_job_id = "55555555-5555-4555-8555-555555555555"
-    sql(f"INSERT INTO public.jobs(id,topic,language_code,target_duration_seconds,content_model_version) VALUES ('{visual_job_id}','Two-shot contract','ru',15,'staged_v1');")
+    sql(f"INSERT INTO public.jobs(id,topic,language_code,target_duration_seconds,content_model_version) VALUES ('{visual_job_id}','Two-shot V6 contract','ru',15,'staged_v1');")
     common = [
         f"'{visual_job_id}'", "1", "0", "4", "'Two-shot narration.'", "'[\"S1\"]'::jsonb",
         "'Subject'", "'Target'", "'Visible photo'", "2",
@@ -105,7 +105,7 @@ try:
     assert "ready|2|2" in final_state, final_state
 
     one_job_id = "66666666-6666-4666-8666-666666666666"
-    sql(f"INSERT INTO public.jobs(id,topic,language_code,target_duration_seconds,content_model_version) VALUES ('{one_job_id}','One-shot contract','ru',15,'staged_v1');")
+    sql(f"INSERT INTO public.jobs(id,topic,language_code,target_duration_seconds,content_model_version) VALUES ('{one_job_id}','One-shot V6 contract','ru',15,'staged_v1');")
     one_args = [
         f"'{one_job_id}'", "1", "0", "2", "'One-shot narration.'", "'[\"S1\"]'::jsonb", "'Subject'", "'Target'", "'Visible photo'", "1",
         "'wikimedia'", "'one-asset'", "'https://example.invalid/one-asset'", "'Author'", "'CC BY'", "'https://example.invalid/license'",
@@ -119,6 +119,29 @@ try:
     assert f"{one_job_id}|1|1|t|t" in one, one
     one_state = sql(f"SELECT status||'|'||planned_shot_count||'|'||(SELECT count(*) FROM public.visual_shots sh WHERE sh.visual_segment_id=vs.id) FROM public.visual_segments vs WHERE job_id='{one_job_id}' AND segment_number=1;").stdout
     assert "ready|1|1" in one_state, one_state
+
+    three_job_id = "77777777-7777-4777-8777-777777777777"
+    sql(f"INSERT INTO public.jobs(id,topic,language_code,target_duration_seconds,content_model_version) VALUES ('{three_job_id}','Three-shot V6 contract','ru',15,'staged_v1');")
+    three_common = [
+        f"'{three_job_id}'", "1", "0", "6", "'Three-shot narration.'", "'[\"S1\"]'::jsonb",
+        "'Subject'", "'Communication goal'", "'Visible fact'", "3",
+    ]
+    def execute_three(provider, provider_id, path, visual_hash, cluster, shot_number, segment_part, shot_start, shot_end):
+        args = three_common + [
+            f"'{provider}'", f"'{provider_id}'", f"'https://example.invalid/{provider_id}'", "'Author'", "'CC BY'", "'https://example.invalid/license'",
+            f"'{path}'", "'photo'", f"'{visual_hash}'", "'{\"reserved_asset\":true,\"story_contract_version\":\"visual-facts-story-v1\"}'::jsonb", f"'{cluster}'", "'factual_image'",
+            str(shot_number), str(segment_part), str(shot_start), str(shot_end),
+        ]
+        return sql("\\pset tuples_only on\n\\pset format unaligned\n\\pset fieldsep '|'\n"
+                   + f"PREPARE persist_reserved_three AS {persist_reserved_visual_query};\n"
+                   + f"EXECUTE persist_reserved_three({','.join(args)});\n"
+                   + "DEALLOCATE persist_reserved_three;\n").stdout
+    for idx,(provider,pid) in enumerate([('wikimedia','three-1'),('pixabay','three-2'),('pexels','three-3')],start=1):
+        result = execute_three(provider,pid,f'jobs/{three_job_id}/visuals/shot-{idx:02d}.jpg',str(idx)*64,f'stored:three-{idx}',idx,idx,(idx-1)*2,idx*2)
+        expected_complete = 't' if idx == 3 else 'f'
+        assert f"{three_job_id}|1|{idx}|t|{expected_complete}" in result, result
+    three_state = sql(f"SELECT status||'|'||planned_shot_count||'|'||(SELECT count(*) FROM public.visual_shots sh WHERE sh.visual_segment_id=vs.id) FROM public.visual_segments vs WHERE job_id='{three_job_id}' AND segment_number=1;").stdout
+    assert "ready|3|3" in three_state, three_state
 
     # A delayed upstream error must neither overwrite nor mutate an already failed job.
     assert planner_failure_query

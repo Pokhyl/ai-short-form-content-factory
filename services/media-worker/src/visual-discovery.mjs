@@ -278,10 +278,11 @@ function inventoryFallbackQueries(query, canonicalTitle, visualTarget = "") {
   return out.slice(0, 3);
 }
 
-function rankInventoryCandidates(candidates, query, canonicalTitle, visualTarget = "") {
-  const sharedRows = canonicalOverlapRows(query, canonicalTitle);
+function rankInventoryCandidates(candidates, query, canonicalTitle, visualTarget = "", identityMode = "named_subject") {
+  const semanticTopic = cleanText(identityMode) === "semantic_topic";
+  const sharedRows = semanticTopic ? [] : canonicalOverlapRows(query, canonicalTitle);
   const shared = new Set(sharedRows.map((row) => row.key));
-  const identityKeys = sharedRows.slice(0, 2).map((row) => row.key);
+  const identityKeys = semanticTopic ? [] : sharedRows.slice(0, 2).map((row) => row.key);
   const details = anchorQueryRows(visualTarget || query).filter((row) => !shared.has(row.key));
   const detailRequired = Math.min(2, Math.max(1, details.length));
   const score = (candidate) => {
@@ -291,17 +292,36 @@ function rankInventoryCandidates(candidates, query, canonicalTitle, visualTarget
     return { subjectHits, detailHits };
   };
   return candidates.map((candidate, index) => ({ candidate, index, ...score(candidate) }))
-    .sort((a, b) => b.subjectHits - a.subjectHits || b.detailHits - a.detailHits || a.index - b.index)
+    .sort((a, b) => b.detailHits - a.detailHits || b.subjectHits - a.subjectHits || a.index - b.index)
     .map(({ candidate, subjectHits, detailHits }) => ({
       ...candidate,
+      inventory_identity_mode: semanticTopic ? "semantic_topic" : "named_subject",
       inventory_subject_anchor_keys: identityKeys,
       inventory_subject_anchor_hits: subjectHits,
       inventory_subject_anchor_required: identityKeys.length,
-      inventory_subject_anchor_pass: identityKeys.length < 2 || subjectHits === identityKeys.length,
+      inventory_subject_anchor_pass: semanticTopic || identityKeys.length < 2 || subjectHits === identityKeys.length,
       inventory_detail_hits: detailHits,
       inventory_detail_required: detailRequired,
       inventory_detail_anchor_count: details.length,
     }));
+}
+
+function semanticInventoryFallbackQueries(query, visualTarget = "") {
+  const out = [];
+  const push = (value) => {
+    const bounded = boundedProviderQuery(value);
+    if (!bounded || bounded.toLocaleLowerCase() === cleanText(query).toLocaleLowerCase()) return;
+    if (!out.some((item) => item.toLocaleLowerCase() === bounded.toLocaleLowerCase())) out.push(bounded);
+  };
+  const targetRows = anchorQueryRows(visualTarget);
+  const queryRows = anchorQueryRows(query);
+  if (targetRows.length) push(targetRows.slice(0, 5).map((row) => row.raw).join(" "));
+  const targetKeys = new Set(targetRows.map((row) => row.key));
+  const extra = queryRows.filter((row) => !targetKeys.has(row.key)).slice(0, 2);
+  if (targetRows.length || extra.length) push([...targetRows.slice(0, 3), ...extra].map((row) => row.raw).join(" "));
+  const mediaCue = semanticQueryRows(visualTarget).find((row) => QUERY_MEDIA_CUES.has(row.key));
+  if (mediaCue) push(`${targetRows.slice(0, 3).map((row) => row.raw).join(" ")} ${{ schematic: "diagram", cutaway: "diagram", photograph: "photo", photography: "photo" }[mediaCue.key] ?? mediaCue.raw}`);
+  return out.slice(0, 3);
 }
 
 function markRecoveryCandidates(candidates, recoveryQuery) {
@@ -727,6 +747,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
           visual_target: cleanText(query?.observable_target),
           search_query: cleanText(query?.search_query_en),
           narration: cleanText(query?.retrieval_rationale ?? query?.observable_target),
+          identity_mode: cleanText(query?.identity_mode) || "named_subject",
           required_images: 1,
         }))
     : segmentedMode
@@ -812,11 +833,14 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       const providerQueries = [exactQuery];
       let recoveryUsed = false;
       let candidates = dedupeCandidates([...canonicalMedia, ...exact.candidates]);
-      const rerank = () => rankInventoryCandidates(candidates, exactQuery, englishTitle, anchor)
+      const identityMode = cleanText(unit.identity_mode) || "named_subject";
+      const rerank = () => rankInventoryCandidates(candidates, exactQuery, englishTitle, anchor, identityMode)
         .filter((candidate) => candidate.inventory_subject_anchor_pass === true);
       let ranked = rerank();
       const detailCount = () => ranked.filter((candidate) => Number(candidate.inventory_detail_hits) >= Number(candidate.inventory_detail_required || 1)).length;
-      const recovery = [inventoryDetailQuery(exactQuery, englishTitle, anchor), ...inventoryFallbackQueries(exactQuery, englishTitle, anchor)]
+      const recovery = (identityMode === "semantic_topic"
+        ? semanticInventoryFallbackQueries(exactQuery, anchor)
+        : [inventoryDetailQuery(exactQuery, englishTitle, anchor), ...inventoryFallbackQueries(exactQuery, englishTitle, anchor)])
         .filter(Boolean)
         .filter((value, index, rows) => rows.findIndex((other) => other.toLocaleLowerCase() === value.toLocaleLowerCase()) === index)
         .slice(0, 4);

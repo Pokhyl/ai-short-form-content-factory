@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const {Expression}=require('/usr/local/lib/node_modules/n8n/node_modules/n8n-workflow');
 const evaluator=new Expression('UTC');
 const fixture={exploration_prompt:'Exploration fixture',claim_prompt:'Candidate fixture',story_prompt:'Story fixture',rewrite_prompt:'Rewrite fixture',unit_order:['U1','U2','U3'],desired_word_target:18,min_unit_words:6,input:[{type:'text',text:'Review fixture'}]};
-let checked=0;
+let checked=0;const checkedNames=[];
 for(const file of fs.readdirSync('n8n/workflows').filter(f=>f.endsWith('.json'))){
  const raw=JSON.parse(fs.readFileSync('n8n/workflows/'+file,'utf8'));
  for(const w of Array.isArray(raw)?raw:[raw])for(const node of w.nodes){
@@ -22,11 +22,13 @@ for(const file of fs.readdirSync('n8n/workflows').filter(f=>f.endsWith('.json'))
   // The compact schema literal reproduces the production defect on this engine.
   const broken='{{ {response_schema:'+JSON.stringify(resolved.response_schema)+'} }}';
   assert.throws(()=>evaluator.renderExpression(broken,{$json:fixture}),/invalid syntax/);
-  checked++;
+  checked++;checkedNames.push(node.name);
  }
 }
-assert.equal(checked,6,'Every structured call must be exercised');
-console.log('MODEL_INVOCATION_CONTRACT_PASS',checked);
+const expectedStructuredCalls=['Draft Candidate Claims','Draft Visual Exploration','Review Pre-Claim Visual Inventory','Rewrite Narration For Exact Duration','Write Inventory Grounded Story'].sort();
+assert.deepEqual(checkedNames.sort(),expectedStructuredCalls,'V6 must keep exactly the intended structured model calls; the retired second visual review must not return');
+assert.equal(checked,5,'Every V6 structured call must be exercised');
+console.log('MODEL_INVOCATION_CONTRACT_PASS',checked,checkedNames.join(','));
 
 const wf04=JSON.parse(fs.readFileSync('n8n/workflows/WF04-visual-sourcing.json'))[0];
 const storeHeader=wf04.nodes.find(n=>n.name==='Store Reserved Visual').parameters.headerParameters.parameters.find(p=>p.name==='Content-Type').value;

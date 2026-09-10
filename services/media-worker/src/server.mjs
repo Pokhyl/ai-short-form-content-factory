@@ -221,18 +221,26 @@ async function inlineVisualReviewImages(request, response) {
   let imageCount = 0;
   let encodedBytes = 0;
   const droppedImages = [];
+  const imageFingerprints = [];
+  const reviewIds = new Set();
   for (const item of input) {
     if (item?.type !== "image") {
       output.push(item);
       continue;
     }
     const rawUrl = String(item.uri ?? "").trim();
+    const reviewId = String(item.review_id ?? "").trim();
+    if (reviewId) {
+      if (reviewId.length > 120 || reviewIds.has(reviewId)) throw new HttpError(400, "invalid_visual_review_id", "image review_id values must be short and unique");
+      reviewIds.add(reviewId);
+    }
     let parsedUrl;
     try {
       parsedUrl = new URL(rawUrl);
       if (parsedUrl.protocol !== "https:" || !trustedPreviewHosts.has(parsedUrl.hostname)) throw new Error(`untrusted host ${parsedUrl.hostname}`);
       const fetched = await fetchPreviewCached(rawUrl);
       if (!fetched.ok || !fetched.buffer) throw new Error(`fetch returned ${fetched.status}`);
+      const visualHash = reviewId ? await averageHashHex(fetched.buffer) : null;
       const normalized = await sharp(fetched.buffer)
         .rotate()
         .resize({ width: 384, height: 384, fit: "inside", withoutEnlargement: true })
@@ -240,18 +248,27 @@ async function inlineVisualReviewImages(request, response) {
         .toBuffer();
       if (encodedBytes + normalized.length > 12 * 1024 * 1024) throw new Error("review image byte budget exhausted");
       output.push({ type: "image", data: normalized.toString("base64"), mime_type: "image/jpeg" });
+      if (reviewId) imageFingerprints.push({ review_id: reviewId, visual_hash: visualHash, preview_url: rawUrl });
       encodedBytes += normalized.length;
       imageCount += 1;
     } catch (error) {
       const preceding = output.at(-1);
-      if (preceding?.type === "text" && /candidate\s+\d+\s*:/iu.test(String(preceding.text ?? ""))) output.pop();
-      droppedImages.push({ uri: rawUrl, reason: String(error?.message ?? error).slice(0, 240) });
+      if (preceding?.type === "text" && /^(?:REVIEW|candidate)\s+\S+/iu.test(String(preceding.text ?? "").trim())) output.pop();
+      droppedImages.push({ review_id: reviewId || null, uri: rawUrl, reason: String(error?.message ?? error).slice(0, 240) });
     }
   }
   if (!imageCount) {
     throw new HttpError(400, "visual_review_images_missing", "Visual review input contains no images");
   }
-  sendJson(response, 200, { input: output, image_count: imageCount, encoded_bytes: encodedBytes, dropped_images: droppedImages });
+  const batchNumber = Number(body.batch_number);
+  sendJson(response, 200, {
+    input: output,
+    image_count: imageCount,
+    encoded_bytes: encodedBytes,
+    dropped_images: droppedImages,
+    image_fingerprints: imageFingerprints,
+    batch_number: Number.isInteger(batchNumber) && batchNumber > 0 ? batchNumber : null,
+  });
 }
 
 
