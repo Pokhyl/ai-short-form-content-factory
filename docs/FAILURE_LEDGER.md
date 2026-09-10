@@ -229,3 +229,7 @@ A read-only SentinelX child-execution diagnostic for stage job `5d073afc-3733-4f
 ### 2026-09-10 V6 stage cross-topic failure — Visual Facts reviewer unavailable
 
 Second real V6 stage job `5d073afc-3733-4f7e-8288-42e58a5304fa` (`Почему небо голубое?` / `ru` / `15`) is immutable FAILED at `script`. Stage WF01 execution `17460` succeeded; stage WF02 execution `17461` failed after roughly 205 seconds with exact durable error `visual fact reviewer unavailable after bounded provider failover for batch 1 [line 1]`. The earlier SearXNG network defect was already corrected: this run advanced past research into actual-image review. No voiceover, WF04/WF05 render, MP4, or HUMAN review exists. Do not resume or repair this job. Before changing source, inspect exact child V4 model-gateway executions and reviewer payload/result to distinguish provider availability, schema-output failure, or V6 reviewer-contract incompatibility.
+
+### 2026-09-10 V6 reviewer 12+12 replay harness JS failure
+
+The first component replay intended to split immutable reviewer execution `17467` from 24 images into deterministic 12+12 halves did not reach the V4 model gateway. The diagnostic Node script incorrectly called `.catch()` on the return value of `process.stdin.on(...)`, causing `TypeError: process.stdin.on(...).catch is not a function`. No provider call from this replay, product job mutation, workflow/database change, or source change occurred. Re-run using a standalone JS file with execution data passed on stdin.

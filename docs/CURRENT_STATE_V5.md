@@ -1608,3 +1608,7 @@ A read-only direct progress probe for `5d073afc-3733-4f7e-8288-42e58a5304fa` fai
 ### 2026-09-10 second V6 stage cross-topic job reached Visual Facts review and failed
 
 New immutable stage job `5d073afc-3733-4f7e-8288-42e58a5304fa` (`Почему небо голубое?` / `ru` / `15`) passed intake and the corrected SearXNG research path. Stage WF01 `17460` succeeded; stage WF02 `17461` failed with `visual fact reviewer unavailable after bounded provider failover for batch 1 [line 1]`. This proves the next blocker is later than retrieval. No downstream voiceover/visual execution/render artifact exists. Exact reviewer child-call evidence must be decoded before any product correction.
+
+### 2026-09-10 V6 reviewer split replay harness failure
+
+The first 12+12 component replay for exact reviewer execution `17467` failed before any model call because the diagnostic Node script incorrectly chained `.catch()` from `process.stdin.on(...)`. No product state changed. The replay must be repeated unchanged with a standalone script and stdin reserved for the flatted execution payload.
