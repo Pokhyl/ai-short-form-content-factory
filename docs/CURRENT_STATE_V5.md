@@ -1736,3 +1736,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-10: V6 Cohere-route regression batch stopped only because the command referenced a non-existent comparison-center test filename. Six preceding V6 regressions passed; runtime was unchanged. Inspect the test inventory and rerun with exact filenames.
 
 - 2026-09-10: Broad V6 regression found one stale test still targeting the retired pre-claim visual-review nodes. Eleven current tests passed first. Convert the stale test to assert reviewer-path retirement; do not restore old nodes.
+
+- 2026-09-10: Monitoring of fresh V6 job `4a132abd-0db9-4c73-a557-6eecdd397159` initially failed only because the query referenced non-existent `jobs.error_message`. Runtime/job processing continues independently; inspect actual jobs columns before the next poll.
