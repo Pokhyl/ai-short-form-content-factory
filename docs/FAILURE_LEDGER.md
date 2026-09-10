@@ -135,3 +135,8 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### Operator/test-harness note — wrong Remotion entry path in image gate
 
 - 2026-09-10: the exact V6 image preverify script stopped before `docker build` because it attempted `sha256sum services/media-worker/remotion/index.jsx`, which does not exist. This is a harness path mistake, not a renderer/build result. Resolve the actual Remotion entry file from the checkout and rerun the unchanged image build gate.
+
+### V6 isolated HTTP renderer integration failure — output stream contract
+
+- 2026-09-10: exact preverified media-worker image `sha256:19a0ecc304807070b037c7168d4f445b5220f47a379e9763a294529d28e5873d` passed build/content SHA checks, but the first isolated server-level `POST /render-v6` returned HTTP 422: `V6 video could not be rendered: V6 render stream format does not match H.264 yuv420p / AAC 48kHz stereo contract`. The request reached the real server route, durable job-owned audio/visual paths, exact `provider-word-timing-v1`, Remotion render and post-render stream validation. Do not weaken the stream gate. First reproduce the exact fixture at component level and inspect actual ffprobe stream fields to determine whether the defect is renderer output or the synthetic fixture.
+- The same harness then hit a separate shell/Python JSON quoting error while parsing the already-captured response. That parser error is not the product failure and must be corrected only in the test harness after preserving the HTTP 422 evidence.
