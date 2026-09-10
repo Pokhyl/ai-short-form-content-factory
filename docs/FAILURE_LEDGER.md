@@ -94,3 +94,7 @@ Before changing planning, retrieval, model contracts, TTS, visual selection, ren
 ## Raw snapshot integrity
 
 The JSONL file is a dated immutable snapshot. Future checkpoints create a new dated snapshot rather than rewriting historical evidence.
+
+### Operator/tooling note — V6 renderer dependency lookup
+
+- 2026-09-10: VPS host has no `npm`; a read-only renderer dependency lookup failed before code mutation. Use a disposable Node/project container for npm metadata instead of installing host tooling or assuming npm exists.
