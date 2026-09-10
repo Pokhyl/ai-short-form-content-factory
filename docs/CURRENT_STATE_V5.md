@@ -1472,3 +1472,7 @@ Exact post-fix media-worker image: `sha256:bd9b0f30b0cb1c39df1f91262c65336ccce58
 The remaining pre-release V6 blocker is an independent free/self-hosted TTS fallback; production V5 remains unchanged until that path and cross-topic autonomous product proofs are complete.
 
 During independent-TTS inspection, media-worker source confirmed the existing `audio/synthesize-free-fallback` implementation is not independent: it calls the same Microsoft Edge Read Aloud provider, with up to two transport attempts, then writes `provider-word-timing-v1`. The read-only script later failed because it guessed a nonexistent `WF03-voiceover.json` filename. Resolve the actual workflow filename and inspect its routing before implementing the independent fallback.
+
+### 2026-09-10 Piper alignment feasibility probe reached synthesis
+
+A disposable Python 3.11 probe installed `piper-tts[alignment]==1.8.0`, downloaded `ru_RU-dmitri-medium`, patched the ONNX model to expose alignment output, loaded it with alignment support and synthesized a complete Russian sentence in one continuous chunk. The chunk is 22050 Hz mono with 141312 PCM bytes and exposes 80 phonemes plus 80 exact sample-count alignments. The run failed only when the diagnostic printer attempted to JSON-serialize NumPy `int64`; synthesis/alignment itself completed. Repeat diagnostics with explicit primitive casts before designing word-boundary mapping.

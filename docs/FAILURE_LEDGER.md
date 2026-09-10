@@ -156,3 +156,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### Operator/test-harness note — wrong WF03 filename during TTS inspection
 
 - 2026-09-10: the read-only TTS inspection successfully proved the current media-worker `audio/synthesize-free-fallback` path is still Microsoft Edge Read Aloud with two attempts, so it is not an independent provider. The script then failed only because it referenced nonexistent `n8n/workflows/WF03-voiceover.json`. Resolve the actual WF03 filename from the checkout and continue inspection; no product code change is justified by the path error.
+
+### V6 Piper dependency probe — alignment JSON display failure
+
+- 2026-09-10: disposable `python:3.11-slim` successfully installed `piper-tts[alignment]==1.8.0`, downloaded and alignment-patched `ru_RU-dmitri-medium`, loaded it with `include_alignments=true`, and synthesized the full Russian test sentence as one continuous `AudioChunk` (`22050 Hz`, mono, 141312 PCM bytes) with 80 phonemes and 80 phoneme alignments. The probe then failed only while JSON-serializing NumPy `int64` alignment fields for display. This is not a Piper synthesis/alignment failure. Re-run with explicit primitive casts; do not change product source from this harness error.
