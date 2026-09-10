@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const gwRaw=JSON.parse(fs.readFileSync('n8n/workflows/V6-model-gateway.json','utf8'));
+const gw=Array.isArray(gwRaw)?gwRaw[0]:gwRaw;
+const by=new Map(gw.nodes.map(n=>[n.name,n]));
+const build=by.get('Build Request')?.parameters?.jsCode??'';
+assert.match(build,/poolside\/laguna-s-2\.1:free/);
+assert.match(build,/route==='storyboard'/);
+assert.ok(Number(by.get('Kilo Free Model')?.parameters?.options?.timeout)===70000);
+const wfRaw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));
+const wf=Array.isArray(wfRaw)?wfRaw[0]:wfRaw;
+const direct=wf.nodes.find(n=>n.name==='Direct Storyboard');
+assert.match(direct.parameters.jsonBody,/route: "storyboard"/);
+assert.ok(Number(direct.parameters.options.timeout)===80000);
+console.log('V6_STORYBOARD_MODEL_ROUTE_REGRESSION_PASS');

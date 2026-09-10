@@ -27,7 +27,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const b=$json.body??{};\nconst prompt=String(b.prompt??'').trim();\nconst multimodal=Array.isArray(b.input)?b.input.filter(x=>x&&typeof x==='object'):[];\nif(multimodal.length)throw new Error('V6 model gateway is text-only; multimodal review is not part of the mandatory path');\nif(!prompt)throw new Error('prompt required');\nconst responseFormat=String(b.response_format??'').trim().toLowerCase();\nconst responseSchema=b.response_schema&&typeof b.response_schema==='object'&&!Array.isArray(b.response_schema)?b.response_schema:null;\nconst expects_json=responseFormat==='json'||Boolean(responseSchema);\nconst model_request_body={model:'nvidia/nemotron-3-super-120b-a12b:free',messages:[{role:'user',content:prompt}],max_tokens:4096,temperature:Number.isFinite(Number(b.temperature))?Math.max(0,Math.min(1,Number(b.temperature))):0.2};\nif(expects_json)model_request_body.response_format={type:'json_object'};\nreturn [{json:{model_request_body,expects_json,response_schema:responseSchema,schema_contract_version:'gateway-json-schema-subset-v1'}}];"
+          "jsCode": "const b=$json.body??{};\nconst prompt=String(b.prompt??'').trim();\nconst multimodal=Array.isArray(b.input)?b.input.filter(x=>x&&typeof x==='object'):[];\nif(multimodal.length)throw new Error('V6 model gateway is text-only; multimodal review is not part of the mandatory path');\nif(!prompt)throw new Error('prompt required');\nconst responseFormat=String(b.response_format??'').trim().toLowerCase();\nconst responseSchema=b.response_schema&&typeof b.response_schema==='object'&&!Array.isArray(b.response_schema)?b.response_schema:null;\nconst expects_json=responseFormat==='json'||Boolean(responseSchema);\nconst route=String(b.route??'default').trim().toLowerCase();\nif(!['default','storyboard'].includes(route))throw new Error('unsupported V6 free-model route');\nconst selected_model=route==='storyboard'?'poolside/laguna-s-2.1:free':'nvidia/nemotron-3-super-120b-a12b:free';\nconst model_request_body={model:selected_model,messages:[{role:'user',content:prompt}],max_tokens:route==='storyboard'?16384:4096,temperature:Number.isFinite(Number(b.temperature))?Math.max(0,Math.min(1,Number(b.temperature))):0.2};\nif(expects_json)model_request_body.response_format={type:'json_object'};\nreturn [{json:{model_request_body,selected_model,route,expects_json,response_schema:responseSchema,schema_contract_version:'gateway-json-schema-subset-v1'}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -63,7 +63,7 @@
           "specifyBody": "json",
           "jsonBody": "={{ $json.model_request_body }}",
           "options": {
-            "timeout": 45000
+            "timeout": 70000
           }
         },
         "type": "n8n-nodes-base.httpRequest",
@@ -73,12 +73,12 @@
           0
         ],
         "id": "v6-nemotron-free-model",
-        "name": "Nemotron Free Model",
+        "name": "Kilo Free Model",
         "onError": "continueRegularOutput"
       },
       {
         "parameters": {
-          "jsCode": "const validateSchema=(value,schema,path='$')=>{\nconst allowed=new Set(['type','properties','required','items','enum','minItems','maxItems','minLength','maxLength','pattern']);\nif(!schema||typeof schema!=='object'||Array.isArray(schema))return {ok:false,error:`${path}: invalid schema node`};\nfor(const key of Object.keys(schema))if(!allowed.has(key))return {ok:false,error:`${path}: unsupported schema keyword ${key}`};\nif(schema.type!==undefined){const t=String(schema.type),ok=t==='object'?(value!==null&&typeof value==='object'&&!Array.isArray(value)):t==='array'?Array.isArray(value):t==='string'?typeof value==='string':t==='boolean'?typeof value==='boolean':t==='number'?(typeof value==='number'&&Number.isFinite(value)):t==='integer'?Number.isInteger(value):t==='null'?value===null:false;if(!ok)return {ok:false,error:`${path}: expected ${t}`};}\nif(schema.enum!==undefined){if(!Array.isArray(schema.enum))return {ok:false,error:`${path}: enum must be array`};const encoded=JSON.stringify(value);if(!schema.enum.some(v=>JSON.stringify(v)===encoded))return {ok:false,error:`${path}: value is outside enum`};}\nif(typeof value==='string'){const len=[...value].length;if(schema.minLength!==undefined&&len<Number(schema.minLength))return {ok:false,error:`${path}: string shorter than minLength`};if(schema.maxLength!==undefined&&len>Number(schema.maxLength))return {ok:false,error:`${path}: string longer than maxLength`};if(schema.pattern!==undefined){let re;try{re=new RegExp(String(schema.pattern));}catch{return {ok:false,error:`${path}: invalid schema pattern`};}if(!re.test(value))return {ok:false,error:`${path}: string does not match pattern`};}}\nif(Array.isArray(value)){if(schema.minItems!==undefined&&value.length<Number(schema.minItems))return {ok:false,error:`${path}: array shorter than minItems`};if(schema.maxItems!==undefined&&value.length>Number(schema.maxItems))return {ok:false,error:`${path}: array longer than maxItems`};if(schema.items!==undefined){for(let i=0;i<value.length;i++){const r=validateSchema(value[i],schema.items,`${path}[${i}]`);if(!r.ok)return r;}}}\nif(value!==null&&typeof value==='object'&&!Array.isArray(value)){if(schema.required!==undefined){if(!Array.isArray(schema.required)||schema.required.some(k=>typeof k!=='string'))return {ok:false,error:`${path}: required must be a string array`};for(const key of schema.required)if(!Object.prototype.hasOwnProperty.call(value,key))return {ok:false,error:`${path}.${key}: required property missing`};}if(schema.properties!==undefined){if(!schema.properties||typeof schema.properties!=='object'||Array.isArray(schema.properties))return {ok:false,error:`${path}: properties must be object`};for(const [key,child] of Object.entries(schema.properties))if(Object.prototype.hasOwnProperty.call(value,key)){const r=validateSchema(value[key],child,`${path}.${key}`);if(!r.ok)return r;}}}\nreturn {ok:true,error:null};};\nconst r=$json,ctx=$('Build Request').first().json;const choice=(r.choices??[])[0]??{};const msg=choice.message??{};let text='';if(typeof msg.content==='string')text=msg.content.trim();else if(Array.isArray(msg.content))text=msg.content.map(x=>typeof x==='string'?x:String(x?.text??'')).join('').trim();const finishReason=String(choice.finish_reason??'').trim();const terminal=finishReason==='stop';let parsed=null,jsonValid=true;if(ctx.expects_json&&text){try{parsed=JSON.parse(text);}catch{jsonValid=false;}}let schemaValid=true,schemaError=null;if(jsonValid&&text&&ctx.response_schema){const checked=validateSchema(parsed,ctx.response_schema);schemaValid=checked.ok;schemaError=checked.error;}const err=String(r?.error?.message??r?.message??'').trim();const success=Boolean(text)&&terminal&&jsonValid&&schemaValid;const failureReason=!text?(err||'empty model output'):(!terminal?`unusable finish_reason:${finishReason||'missing'}`:(!jsonValid?'invalid json output':(!schemaValid?`schema validation failed: ${schemaError}`:'empty model output')));return [{json:{...ctx,nemotron_success:success,text:success?text:'',citations:[],model:success?String(r?.model??'nvidia/nemotron-3-super-120b-a12b:free'):'',interaction_id:success?String(r?.id??''):'',provider:success?'kilo-nemotron':'none',provider_attempts:[{provider:'kilo-nemotron',model:'nvidia/nemotron-3-super-120b-a12b:free',success,finish_reason:finishReason||null,error:success?null:failureReason}],provider_exhausted:!success}}];"
+          "jsCode": "const validateSchema=(value,schema,path='$')=>{\nconst allowed=new Set(['type','properties','required','items','enum','minItems','maxItems','minLength','maxLength','pattern']);\nif(!schema||typeof schema!=='object'||Array.isArray(schema))return {ok:false,error:`${path}: invalid schema node`};\nfor(const key of Object.keys(schema))if(!allowed.has(key))return {ok:false,error:`${path}: unsupported schema keyword ${key}`};\nif(schema.type!==undefined){const t=String(schema.type),ok=t==='object'?(value!==null&&typeof value==='object'&&!Array.isArray(value)):t==='array'?Array.isArray(value):t==='string'?typeof value==='string':t==='boolean'?typeof value==='boolean':t==='number'?(typeof value==='number'&&Number.isFinite(value)):t==='integer'?Number.isInteger(value):t==='null'?value===null:false;if(!ok)return {ok:false,error:`${path}: expected ${t}`};}\nif(schema.enum!==undefined){if(!Array.isArray(schema.enum))return {ok:false,error:`${path}: enum must be array`};const encoded=JSON.stringify(value);if(!schema.enum.some(v=>JSON.stringify(v)===encoded))return {ok:false,error:`${path}: value is outside enum`};}\nif(typeof value==='string'){const len=[...value].length;if(schema.minLength!==undefined&&len<Number(schema.minLength))return {ok:false,error:`${path}: string shorter than minLength`};if(schema.maxLength!==undefined&&len>Number(schema.maxLength))return {ok:false,error:`${path}: string longer than maxLength`};if(schema.pattern!==undefined){let re;try{re=new RegExp(String(schema.pattern));}catch{return {ok:false,error:`${path}: invalid schema pattern`};}if(!re.test(value))return {ok:false,error:`${path}: string does not match pattern`};}}\nif(Array.isArray(value)){if(schema.minItems!==undefined&&value.length<Number(schema.minItems))return {ok:false,error:`${path}: array shorter than minItems`};if(schema.maxItems!==undefined&&value.length>Number(schema.maxItems))return {ok:false,error:`${path}: array longer than maxItems`};if(schema.items!==undefined){for(let i=0;i<value.length;i++){const r=validateSchema(value[i],schema.items,`${path}[${i}]`);if(!r.ok)return r;}}}\nif(value!==null&&typeof value==='object'&&!Array.isArray(value)){if(schema.required!==undefined){if(!Array.isArray(schema.required)||schema.required.some(k=>typeof k!=='string'))return {ok:false,error:`${path}: required must be a string array`};for(const key of schema.required)if(!Object.prototype.hasOwnProperty.call(value,key))return {ok:false,error:`${path}.${key}: required property missing`};}if(schema.properties!==undefined){if(!schema.properties||typeof schema.properties!=='object'||Array.isArray(schema.properties))return {ok:false,error:`${path}: properties must be object`};for(const [key,child] of Object.entries(schema.properties))if(Object.prototype.hasOwnProperty.call(value,key)){const r=validateSchema(value[key],child,`${path}.${key}`);if(!r.ok)return r;}}}\nreturn {ok:true,error:null};};\nconst r=$json,ctx=$('Build Request').first().json;const choice=(r.choices??[])[0]??{};const msg=choice.message??{};let text='';if(typeof msg.content==='string')text=msg.content.trim();else if(Array.isArray(msg.content))text=msg.content.map(x=>typeof x==='string'?x:String(x?.text??'')).join('').trim();const finishReason=String(choice.finish_reason??'').trim();const terminal=finishReason==='stop';let parsed=null,jsonValid=true;if(ctx.expects_json&&text){try{parsed=JSON.parse(text);}catch{jsonValid=false;}}let schemaValid=true,schemaError=null;if(jsonValid&&text&&ctx.response_schema){const checked=validateSchema(parsed,ctx.response_schema);schemaValid=checked.ok;schemaError=checked.error;}const err=String(r?.error?.message??r?.message??'').trim();const success=Boolean(text)&&terminal&&jsonValid&&schemaValid;const failureReason=!text?(err||'empty model output'):(!terminal?`unusable finish_reason:${finishReason||'missing'}`:(!jsonValid?'invalid json output':(!schemaValid?`schema validation failed: ${schemaError}`:'empty model output')));return [{json:{...ctx,free_model_success:success,text:success?text:'',citations:[],model:success?String(r?.model??ctx.selected_model):'',interaction_id:success?String(r?.id??''):'',provider:success?`kilo-${ctx.route}`:'none',provider_attempts:[{provider:`kilo-${ctx.route}`,model:ctx.selected_model,success,finish_reason:finishReason||null,error:success?null:failureReason}],provider_exhausted:!success}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -87,7 +87,7 @@
           0
         ],
         "id": "v6-normalize-nemotron",
-        "name": "Normalize Nemotron Response"
+        "name": "Normalize Free Model Response"
       }
     ],
     "connections": {
@@ -106,32 +106,32 @@
         "main": [
           [
             {
-              "node": "Nemotron Free Model",
+              "node": "Kilo Free Model",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Nemotron Free Model": {
+      "Kilo Free Model": {
         "main": [
           [
             {
-              "node": "Normalize Nemotron Response",
+              "node": "Normalize Free Model Response",
               "type": "main",
               "index": 0
             }
           ],
           [
             {
-              "node": "Normalize Nemotron Response",
+              "node": "Normalize Free Model Response",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Normalize Nemotron Response": {
+      "Normalize Free Model Response": {
         "main": [
           [
             {

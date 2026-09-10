@@ -344,9 +344,9 @@
           "url": "http://127.0.0.1:5678/webhook/v6-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ $json.model_request }}",
+          "jsonBody": "={{ { ...$json.model_request, route: \"storyboard\" } }}",
           "options": {
-            "timeout": 90000
+            "timeout": 80000
           }
         },
         "type": "n8n-nodes-base.httpRequest",
