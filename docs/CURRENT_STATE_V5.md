@@ -1644,3 +1644,6 @@ The first static planning regression found retained WF02 semantic-intake/topic-r
 
 ### 2026-09-10 V6 operator checkpoint — focused regression host-runtime mistake
 A focused V6 regression attempt after storyboard-first WF04/WF05 wiring failed before tests because the VPS host has no `node` executable. This is an operator/runtime-selection failure, not a product result. Required correction is to run Node regressions in the pinned container runtime; no workflow behavior is inferred from this failed command.
+
+### 2026-09-10 V6 operator checkpoint — n8n entrypoint regression mistake
+The first containerized retry of V6 Node regressions used the n8n image without overriding its entrypoint, so `node` was parsed as an n8n command and no regression executed. Correction: use the same pinned image with `--entrypoint node`.

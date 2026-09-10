@@ -270,3 +270,9 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - Cause: operator chose the host runtime instead of the exact Node runtime already available in the n8n/media-worker containers.
 - Product impact: none; workflow JSON parsing completed, but regression execution was not proven by that command.
 - Lesson: run V6 Node regressions inside the pinned n8n/media-worker Node 22 container/runtime; do not assume host Node exists.
+
+### 2026-09-10 — n8n image regression retry hit image entrypoint instead of Node binary
+- Engineering/test failure: retrying the V6 Node regressions with `docker run ... n8nio/n8n:2.37.10 node ...` invoked the image's n8n entrypoint, which treated `node` as an n8n command and returned `Error: Command "node" not found`.
+- Cause: container invocation did not override the image entrypoint.
+- Product impact: none; no regression body executed.
+- Lesson: invoke the pinned image with `--entrypoint node` for repository Node regressions.
