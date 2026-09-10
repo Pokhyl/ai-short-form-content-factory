@@ -1446,3 +1446,5 @@ The corrected disposable-Node deterministic gate parsed all 8 workflow JSON file
 ### 2026-09-10 V6 standard integration harness image mismatch
 
 Fresh PostgreSQL contract passed 21 workflow SQL statements plus staged writes and disposable n8n import passed all 8 workflows on n8n 2.37.10. Structured invocation then failed before product execution because it was launched in plain Node rather than the n8n image required by the fixture's `n8n-workflow` import path. Repeat the unchanged fixture in `n8nio/n8n:2.37.10`; no product correction is justified by this result.
+
+The first exact-image preverify command did not reach Docker build because the harness referenced nonexistent `services/media-worker/remotion/index.jsx`. No build PASS/FAIL is inferred. Resolve the actual entry filename from the current tree and repeat the image gate unchanged otherwise.

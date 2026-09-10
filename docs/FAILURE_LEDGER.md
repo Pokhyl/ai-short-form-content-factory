@@ -131,3 +131,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### Operator/test-harness note — structured invocation ran in wrong image
 
 - 2026-09-10: V6 standard integration gate produced `FRESH_DATABASE_CONTRACT_PASS: 21 workflow SQL statements + staged writes` and `N8N_IMPORT_CONTRACT_PASS: 8 workflows on 2.37.10`. The subsequent structured invocation fixture was mistakenly run in plain `node:22-bookworm-slim` and failed before exercising product code because `/usr/local/lib/node_modules/n8n/node_modules/n8n-workflow` does not exist there. Re-run the unchanged fixture in exact `n8nio/n8n:2.37.10`; do not modify product code from this harness failure.
+
+### Operator/test-harness note — wrong Remotion entry path in image gate
+
+- 2026-09-10: the exact V6 image preverify script stopped before `docker build` because it attempted `sha256sum services/media-worker/remotion/index.jsx`, which does not exist. This is a harness path mistake, not a renderer/build result. Resolve the actual Remotion entry file from the checkout and rerun the unchanged image build gate.
