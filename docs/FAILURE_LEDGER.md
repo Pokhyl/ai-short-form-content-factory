@@ -152,3 +152,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### V6 renderer verification closure
 
 - 2026-09-10: renderer implementation commit `6482946b1376f43b8743cb81eb33aaf648fa00e8` passed `72/72` Node regressions, `13/13` Python regressions, fresh PostgreSQL, n8n 2.37.10 import, 5 structured model invocations, exact image SHA parity and isolated `/render-v6` HTTP proof. The final proof artifact is actual H.264 `yuv420p` + AAC 48 kHz stereo and measured pixel QA passed. This closes the renderer/composition-machine-gate blocker only; HUMAN review remains mandatory and production has not been promoted.
+
+### Operator/test-harness note — wrong WF03 filename during TTS inspection
+
+- 2026-09-10: the read-only TTS inspection successfully proved the current media-worker `audio/synthesize-free-fallback` path is still Microsoft Edge Read Aloud with two attempts, so it is not an independent provider. The script then failed only because it referenced nonexistent `n8n/workflows/WF03-voiceover.json`. Resolve the actual WF03 filename from the checkout and continue inspection; no product code change is justified by the path error.
