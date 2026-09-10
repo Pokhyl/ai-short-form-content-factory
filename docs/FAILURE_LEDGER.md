@@ -168,3 +168,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### Operator/tooling note — Piper/Whisper snapshot-only mount failure
 
 - 2026-09-10: RU component proof successfully synthesized one full narration with Piper as 3 sentence chunks in ~1.5s, but faster-whisper initialization failed because only the Hugging Face `snapshots/<revision>` directory was mounted. Its `model.bin` is a symlink into sibling `blobs/`, so the target was unavailable inside the disposable container. This is a cache-mount harness failure, not a Piper or faster-whisper model failure. Repeat with the full `models--Systran--faster-whisper-small` cache root (or dereferenced files); do not change product source from this result.
+
+### V6 WF03 duration rewrite still rejects the V6 story version
+
+- 2026-09-10: source inspection during independent TTS work found a real V6 execution defect in `Apply Duration Rewrite`: it still requires `old.version === 'inventory-first-story-v1'`, while `Require Eligible Voiceover Job`, persistence, and the V6 architecture accept `visual-facts-story-v1`. Therefore any V6 narration that is outside the first exact-duration measurement and legitimately enters the single bounded rewrite would fail before the rewritten narration can be accepted. Correct the version gate to accept both explicit story contracts without weakening the one-rewrite, frozen-identity, grounding, or sentence-completion rules. Production remains unchanged.

@@ -1484,3 +1484,7 @@ A read-only search of timing/caption references used `grep | head` under `pipefa
 ### 2026-09-10 V6 Piper/Whisper component cache-mount failure
 
 A realistic RU component proof synthesized 3 frozen one-sentence story units as exactly 3 Piper chunks in roughly 1.5 seconds. The subsequent faster-whisper stage did not start because the harness mounted only the cached snapshot directory while `model.bin` resolves through Hugging Face symlinks into the sibling `blobs/` directory. No product source or production state changed. Repeat with the complete cached model root before drawing any alignment/runtime conclusion.
+
+### 2026-09-10 V6 WF03 duration-rewrite story-version defect
+
+During independent TTS integration inspection, `Apply Duration Rewrite` was found to retain a V5-only `inventory-first-story-v1` equality check even though the active V6 source uses `visual-facts-story-v1` and the surrounding WF03 nodes already accept both explicit versions. A V6 job needing its one allowed measured duration rewrite would therefore fail deterministically at this node. This is a real V6 source defect, not a provider failure. The correction must only broaden that explicit story-version check to the two supported contracts and preserve all existing rewrite/grounding/frozen-identity limits. Production is unchanged.
