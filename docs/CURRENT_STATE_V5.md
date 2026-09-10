@@ -1596,3 +1596,7 @@ Stage job `8985460d-4473-4111-9737-ddfa6233df60` (`Почему небо гол�
 ### 2026-09-10 V6 stage SearXNG root cause proved
 
 Stage worker network parity was incomplete: `cf-v6-stage-worker` lacked `n8n_default`, the network hosting `ai-short-form-v4-search`. Production worker has both required networks and returns HTTP 200 from the same SearXNG URL. Stage worker returned `fetch failed`. Correction is stage-infrastructure-only: attach `cf-v6-stage-worker` to `n8n_default`, verify search HTTP 200, then create a completely new V6 stage job. Failed `8985460d...` remains immutable.
+
+### 2026-09-10 V6 stage SearXNG network parity corrected
+
+`cf-v6-stage-worker` was attached to `n8n_default` in addition to its isolated media network. Its unchanged `SEARXNG_URL` now returns HTTP 200. Production media-worker remains on image `sha256:527c061fd7520ea2182fd9c5458d37ebc3a58686c79939bb40665a1f822b15e7`; no failed job was resumed. Next proof must create a new stage job.
