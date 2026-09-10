@@ -378,3 +378,5 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - 2026-09-10: Engineering diagnostic mistake while decoding execution 17533: invoked `docker exec ... node -` without `-i`, so the decoder script received no stdin and produced no output. Correction: rerun the same read-only decoder with `docker exec -i`.
 
 - 2026-09-10: Engineering diagnostic mistake while decoding execution 17533: copied execution payload into n8n container with permissions unreadable by the node user, causing EACCES. Correction: copy to a readable path/adjust permissions before decode.
+
+- 2026-09-10: Fresh V6 stage job `1b3090c3-083a-49ee-aa41-2010c66ffecb` failed in WF02 execution 17533 at `Freeze Storyboard Feasibility`: `no deterministic executable media for storyboard shot S4A`. The storyboard itself validated; failure occurred during deterministic media feasibility. The existing planner failure handler then also failed to recover job_id. Treat this job as immutable and do not resume/repair it.
