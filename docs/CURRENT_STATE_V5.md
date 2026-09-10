@@ -1438,3 +1438,7 @@ The first full precommit pass after wiring `/render-v6` into media-worker/WF05 p
 The docs-only commit `77643bd` initially remained local because `origin` resolved to HTTPS and non-interactive push failed asking for a GitHub username. No credential/config mutation is allowed. Continuation must push through the existing deploy key against the direct SSH repository URL without changing repository configuration.
 
 A subsequent read-only gate-discovery command failed only because host `rg` is absent. This occurred before any renderer regression result. Continue with `grep/find` or disposable tooling containers; production and product source remain unchanged by this harness failure.
+
+### 2026-09-10 V6 WF05 renderer-routing regression migration
+
+The corrected disposable-Node deterministic gate parsed all 8 workflow JSON files, passed `git diff --check` and both media-worker syntax checks, then returned `70/71` ordinary Node regressions. The only failure was `wf05_visual_segments_regression.mjs`, whose fixture still requires a literal `/render-v3` endpoint. V6 source intentionally uses conditional routing: `visual-facts-story-v1 -> /render-v6`, legacy `inventory-first-story-v1 -> /render-v3`. The test must be migrated to assert both compatibility branches; renderer source is not reverted on this evidence. Python regressions were not reached because the Node gate correctly stopped on the first failed suite.

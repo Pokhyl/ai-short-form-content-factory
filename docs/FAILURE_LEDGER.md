@@ -123,3 +123,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### Operator/tooling note — V6 host ripgrep absence
 
 - 2026-09-10: a read-only gate-discovery script failed at host `rg` because ripgrep is not installed. No product test was interpreted from that failure and no source correction is justified. Use POSIX `grep/find` on host or a disposable tooling container; do not install host packages as a workaround.
+
+### V6 WF05 regression migration — renderer endpoint routing
+
+- 2026-09-10: integrated V6 deterministic gate reached workflow JSON parse PASS, `git diff --check` PASS and Node syntax PASS, then produced exactly `70 PASS / 1 FAIL`. The sole failure was `tests/wf05_visual_segments_regression.mjs`, which still asserted the legacy literal URL `http://media-worker:3001/render-v3`. Current WF05 intentionally routes `visual-facts-story-v1` to `/render-v6` while preserving `inventory-first-story-v1` on `/render-v3`. This is a regression-fixture migration requirement, not permission to restore V5-only routing. Update the test to prove both branches explicitly.
