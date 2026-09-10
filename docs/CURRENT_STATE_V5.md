@@ -1442,3 +1442,7 @@ A subsequent read-only gate-discovery command failed only because host `rg` is a
 ### 2026-09-10 V6 WF05 renderer-routing regression migration
 
 The corrected disposable-Node deterministic gate parsed all 8 workflow JSON files, passed `git diff --check` and both media-worker syntax checks, then returned `70/71` ordinary Node regressions. The only failure was `wf05_visual_segments_regression.mjs`, whose fixture still requires a literal `/render-v3` endpoint. V6 source intentionally uses conditional routing: `visual-facts-story-v1 -> /render-v6`, legacy `inventory-first-story-v1 -> /render-v3`. The test must be migrated to assert both compatibility branches; renderer source is not reverted on this evidence. Python regressions were not reached because the Node gate correctly stopped on the first failed suite.
+
+### 2026-09-10 V6 standard integration harness image mismatch
+
+Fresh PostgreSQL contract passed 21 workflow SQL statements plus staged writes and disposable n8n import passed all 8 workflows on n8n 2.37.10. Structured invocation then failed before product execution because it was launched in plain Node rather than the n8n image required by the fixture's `n8n-workflow` import path. Repeat the unchanged fixture in `n8nio/n8n:2.37.10`; no product correction is justified by this result.

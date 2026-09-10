@@ -127,3 +127,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### V6 WF05 regression migration — renderer endpoint routing
 
 - 2026-09-10: integrated V6 deterministic gate reached workflow JSON parse PASS, `git diff --check` PASS and Node syntax PASS, then produced exactly `70 PASS / 1 FAIL`. The sole failure was `tests/wf05_visual_segments_regression.mjs`, which still asserted the legacy literal URL `http://media-worker:3001/render-v3`. Current WF05 intentionally routes `visual-facts-story-v1` to `/render-v6` while preserving `inventory-first-story-v1` on `/render-v3`. This is a regression-fixture migration requirement, not permission to restore V5-only routing. Update the test to prove both branches explicitly.
+
+### Operator/test-harness note — structured invocation ran in wrong image
+
+- 2026-09-10: V6 standard integration gate produced `FRESH_DATABASE_CONTRACT_PASS: 21 workflow SQL statements + staged writes` and `N8N_IMPORT_CONTRACT_PASS: 8 workflows on 2.37.10`. The subsequent structured invocation fixture was mistakenly run in plain `node:22-bookworm-slim` and failed before exercising product code because `/usr/local/lib/node_modules/n8n/node_modules/n8n-workflow` does not exist there. Re-run the unchanged fixture in exact `n8nio/n8n:2.37.10`; do not modify product code from this harness failure.
