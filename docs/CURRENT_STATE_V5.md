@@ -1677,3 +1677,6 @@ Fresh stage job `9bbe6a4b-70dc-46ef-98e6-d06fd15fdfb3` was created successfully 
 
 ### 2026-09-10 V6 operator checkpoint — long job-monitor timeout
 The long polling helper for fresh stage job `9bbe6a4b-70dc-46ef-98e6-d06fd15fdfb3` exceeded the remote tool execution window. The job was not modified. Monitoring must continue with short one-shot probes until the job reaches a terminal state.
+
+### 2026-09-10 V6 fresh-job observation — job remains at intake; execution lookup schema mistake
+Fresh stage job `9bbe6a4b-70dc-46ef-98e6-d06fd15fdfb3` currently remains `created/intake` with no story/voice/video fields. The same probe then failed only in an optional diagnostic query that assumed nonexistent `public.job_events.execution_id`; the job was not changed. Next investigation must use direct n8n execution history for the isolated stage workflow IDs and determine why the asynchronous WF01→WF02 handoff did not advance this new job.

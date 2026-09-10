@@ -330,3 +330,9 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - Cause: operator used one blocking multi-minute tool call instead of short bounded status probes.
 - Product impact: none; the job runs independently and was not modified by the monitor.
 - Lesson: use short one-shot DB/execution probes and repeat as needed; do not hold a SentinelX tool call open for the full product execution.
+
+### 2026-09-10 — V6 fresh-job execution lookup assumed nonexistent job_events.execution_id
+- Engineering/operator failure: a one-shot status probe successfully read fresh job `9bbe6a4b-70dc-46ef-98e6-d06fd15fdfb3` as `created/intake`, then its optional execution lookup failed because it assumed `public.job_events.execution_id` exists.
+- Cause: stale schema assumption in a read-only diagnostic query.
+- Product impact: none; the job row was not modified. The useful observation is that the job remained `created/intake`, so the stage orchestration must be inspected directly in n8n execution history.
+- Lesson: inspect known n8n stage workflow executions directly; do not infer an execution foreign key in product tables without schema evidence.
