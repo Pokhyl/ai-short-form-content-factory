@@ -82,3 +82,14 @@ Remaining Node failures are regression-migration issues, not new production/runt
 3. `wf05_visual_segments_regression.mjs` still asserts the retired V5 `[1,2].includes(count)` / old render labels instead of the V6 1-3 storyboard contract.
 
 No production mutation occurred.
+
+## First V6 integration gate
+
+After deterministic verification reached 71/71 Node and 13/13 Python PASS, the existing integration suite was run unchanged before any fixture migration.
+
+Results:
+- disposable n8n `2.37.10` import: **8/8 PASS**;
+- fresh PostgreSQL contract: FAIL in the test fixture because it still submits `inventory-first-story-v1`; current V6 persist SQL correctly requires `visual-facts-story-v1`, so the fixture returned `inserted_evidence=0`, `job_updated=false`;
+- structured model invocation contract: FAIL because the test hard-coded **6** structured calls while the V6 removal of the second semantic media-review loop intentionally leaves **5** structured calls.
+
+These failures do not authorize restoring the retired second review loop or accepting the legacy V5 story package in the V6 persist path. Integration fixtures must be migrated to the V6 story contract while retaining staged-write, exact-TTS, binary MIME and structured-call reachability checks. Production mutation: none.

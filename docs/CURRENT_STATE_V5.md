@@ -1374,3 +1374,7 @@ Regression triage proved an internal V6 inconsistency: removal of the second pos
 ### V6 second deterministic regression gate
 
 After the single-pass preview fingerprint correction and V6 regression migration, deterministic verification is at **68/71 Node PASS and 13/13 Python PASS**, with workflow JSON parse and `git diff --check` passing. Three remaining Node failures are test-migration defects (over-specific shortlist identity fixture, an insufficient-pool fixture that did not actually fall below the V6 floor, and the still-unmigrated WF05 two-shot test). Production remains unchanged.
+
+### V6 first integration gate
+
+The deterministic suite is clean at 71/71 Node and 13/13 Python. The unchanged integration suite then produced: n8n 2.37.10 import **8/8 PASS**; fresh PostgreSQL fixture FAIL because it still supplies retired `inventory-first-story-v1` to V6 persist SQL; structured invocation fixture FAIL because it hard-codes 6 model calls while V6 intentionally removed the second semantic review and now has 5. These are integration-fixture migration failures, not permission to restore V5 behavior. Production remains unchanged.
