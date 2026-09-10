@@ -1,5 +1,6 @@
 const ARCHETYPES = new Set(["flow", "merge", "split", "comparison", "layered_stack", "assembly"]);
 const ENTITY_ROLES = new Set(["input", "process", "output", "layer", "subject", "result"]);
+const ENTITY_ROLE_ALIASES = new Map([["flow","process"],["source","input"]]);
 const ENTITY_SHAPES = new Set(["box", "pill", "circle"]);
 const LANES = new Set(["left", "right", "center"]);
 const RELATION_KINDS = new Set(["flow", "joins", "splits", "emits", "blocks", "contains", "transforms"]);
@@ -33,7 +34,7 @@ export function validateDiagramSpec(input,{expectedShotId=null,allowedFactIds=nu
   input.entities.forEach((raw,index)=>{
     if(!raw||typeof raw!=="object"||Array.isArray(raw))throw new Error(`entities[${index+1}] must be an object`);
     const id=requiredText(raw.id,`entities[${index+1}].id`);if(ids.has(id))throw new Error(`duplicate entity id: ${id}`);ids.add(id);
-    const rawRole=requiredText(raw.role,`entities[${index+1}].role`),role=rawRole==="flow"?"process":rawRole;if(!ENTITY_ROLES.has(role))throw new Error(`invalid entity role: ${role}`);
+    const rawRole=requiredText(raw.role,`entities[${index+1}].role`),role=ENTITY_ROLE_ALIASES.get(rawRole)??rawRole;if(!ENTITY_ROLES.has(role))throw new Error(`invalid entity role: ${role}`);
     const shape=clean(raw.shape)||"box";if(!ENTITY_SHAPES.has(shape))throw new Error(`invalid entity shape: ${shape}`);
     const lane=clean(raw.lane)||null;if(lane!==null&&!LANES.has(lane))throw new Error(`invalid entity lane: ${lane}`);
     const order=raw.order===undefined?index:Number(raw.order);if(!Number.isInteger(order)||order<0||order>20)throw new Error(`entities[${index+1}].order is invalid`);
@@ -47,6 +48,16 @@ export function validateDiagramSpec(input,{expectedShotId=null,allowedFactIds=nu
     const kind=clean(raw.kind)||"flow";if(!RELATION_KINDS.has(kind))throw new Error(`invalid relation kind: ${kind}`);
     return {from,to,kind,label:clean(raw.label)||null,phase:phaseValue(raw.phase??index+1,`relations[${index+1}].phase`)};
   });
+  if(archetype==="comparison"){
+    const has=(lane)=>entities.some((e)=>e.lane===lane);
+    const missing=[];if(!has("left"))missing.push("left");if(!has("right"))missing.push("right");
+    if(missing.length){
+      const groups=[["subject"],["output","result"],["input"]];
+      const pool=groups.map((roles)=>entities.filter((e)=>roles.includes(e.role)&&e.lane===null)).find((xs)=>xs.length>=missing.length)??[];
+      for(let i=0;i<missing.length&&i<pool.length;i++)pool[i].lane=missing[i];
+    }
+    for(const e of entities)if(e.lane===null)e.lane="center";
+  }
   const roles=entities.map((e)=>e.role);
   if(archetype==="flow"&&entities.length<2)throw new Error("flow requires at least two entities");
   if(archetype==="merge"&&(roles.filter((x)=>x==="input").length<2||!roles.some((x)=>["output","result"].includes(x))))throw new Error("merge requires at least two inputs and one output/result");
@@ -54,7 +65,7 @@ export function validateDiagramSpec(input,{expectedShotId=null,allowedFactIds=nu
   if(archetype==="comparison"&&!(["left","right"].every((lane)=>entities.some((e)=>e.lane===lane))))throw new Error("comparison requires both lanes");
   if(archetype==="layered_stack"&&roles.filter((x)=>x==="layer").length<2)throw new Error("layered_stack requires at least two layers");
   if(archetype==="assembly"&&(roles.filter((x)=>["input","subject"].includes(x)).length<2||!roles.some((x)=>["result","output"].includes(x))))throw new Error("assembly requires at least two inputs/subjects and one result/output");
-  return {shot_id,archetype,title:clean(input.title)||null,grounded_fact_ids,entities,relations};
+  return {shot_id,archetype,title:clean(input.title??input.short_title)||null,grounded_fact_ids,entities,relations};
 }
 
 const phaseRange=(phase,maxPhase,duration)=>{if(maxPhase<=0)return [0,Math.min(duration,0.55)];const usable=Math.max(0.6,duration-0.7);const start=Math.min(duration-0.25,(phase/(maxPhase+1))*usable);const end=Math.min(duration,start+Math.min(0.65,Math.max(0.3,duration*0.12)));return [Number(start.toFixed(3)),Number(end.toFixed(3))];};
