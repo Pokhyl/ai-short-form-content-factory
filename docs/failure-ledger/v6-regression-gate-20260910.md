@@ -105,3 +105,9 @@ Correction must extend the durable PostgreSQL story-package constraint for the e
 The first implementation of V6 `jobs_story_package_check` used a manually rewritten pg_dump-style single-line CHECK expression in `db/init/001_init.sql`. Fresh PostgreSQL rejected the baseline at parse time with `syntax error at or near ','`, proving the hand-counted parenthesis form was malformed. Migration `024` itself was not applied to production; production mutation remains none.
 
 Correction: replace the baseline constraint with a readable multiline CHECK expression matching migration `024`, then rerun the actual disposable PostgreSQL bootstrap instead of relying on text inspection.
+
+## Fourth V6 integration gate — visual segment cardinality defect
+
+After correcting the bootstrap story-package syntax, the real disposable PostgreSQL test successfully passed the V6 story-package persist and the existing 1-shot/2-shot staged visual writes, then failed the new 3-shot V6 write at `visual_segments_shot_count_check`. The durable schema still restricts `planned_shot_count` to the V5 range 1-2, while V6 explicitly supports 1-3 frozen storyboard shots per semantic unit.
+
+This is a real schema/runtime incompatibility, not a reason to reduce V6 back to two shots. Correction must widen only this durable cardinality constraint from 1-2 to 1-3; global asset uniqueness, perceptual uniqueness, shot-duration limits, portrait safety and contiguous timing remain unchanged. Production mutation: none.

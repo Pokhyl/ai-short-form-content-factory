@@ -1386,3 +1386,7 @@ Fresh-database integration with an actual `visual-facts-story-v1` payload failed
 ### V6 fresh bootstrap syntax failure
 
 The first baseline update for the V6 story-package constraint failed real PostgreSQL parsing because the manually rewritten pg_dump-style one-line CHECK expression had malformed parentheses. This is recorded before correction. The fix is to use a readable multiline CHECK expression matching migration `024` and prove it with the disposable PostgreSQL integration test. Production remains unchanged.
+
+### V6 visual-segment 3-shot schema incompatibility
+
+Fresh PostgreSQL now accepts the V6 story package and existing 1/2-shot staged writes, but rejects a V6 3-shot segment at `visual_segments_shot_count_check`. The durable DB schema still encodes the retired V5 1-2 shot limit. V6 requires an explicit 1-3 upgrade while all other visual quality/identity/timing gates remain unchanged. Production remains unchanged.
