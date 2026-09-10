@@ -209,3 +209,7 @@ The first preflight for the V6 stage cross-topic run failed before any webhook P
 ### 2026-09-10 V6 stage monitor stale jobs-column name
 
 After creating the first V6 stage cross-topic job, a read-only monitor queried `public.jobs.stage`; the current durable column is `current_stage`. PostgreSQL rejected the monitor before it could report product state. The product job itself is unaffected. Monitoring scripts must inspect the current schema and use `current_stage`; do not infer job failure from this harness error.
+
+### 2026-09-10 V6 stage cross-topic failure — SearXNG fetch
+
+First real V6 stage cross-topic job `8985460d-4473-4111-9737-ddfa6233df60` (`Почему небо голубое?` / `ru` / `15`) is immutable FAILED at `script`. Stage WF01 execution `17456` succeeded; stage WF02 execution `17457` failed with exact durable error `502 - {"error":"research_search_failed","message":"SearXNG research failed: fetch failed"}`. No voiceover, visuals, render, MP4, or HUMAN review exists for this job. Do not retry/resume it. Before changing product code, prove whether this is stage network configuration or a shared media-worker research defect.

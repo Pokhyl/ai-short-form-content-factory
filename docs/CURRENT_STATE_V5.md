@@ -1588,3 +1588,7 @@ The first V6 stage cross-topic preflight stopped before POST because the harness
 ### 2026-09-10 V6 stage monitor stale jobs-column name
 
 The first monitor for stage job `8985460d-4473-4111-9737-ddfa6233df60` used obsolete `public.jobs.stage` instead of `current_stage` and failed read-only. The job was not mutated. Subsequent monitoring must use the actual current schema.
+
+### 2026-09-10 first V6 stage cross-topic job failed before story generation
+
+Stage job `8985460d-4473-4111-9737-ddfa6233df60` (`Почему небо голубое?` / `ru` / `15`) failed immutably in stage WF02 execution `17457`; WF01 `17456` succeeded. Exact error: `SearXNG research failed: fetch failed`. No downstream WF03/WF04/WF05 execution or artifact exists. Next step is read-only network/root-cause proof from the isolated V6 worker; do not resume this job.
