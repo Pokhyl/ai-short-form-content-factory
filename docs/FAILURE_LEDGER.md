@@ -205,3 +205,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### 2026-09-10 V6 stage cross-topic preflight DB-user mistake
 
 The first preflight for the V6 stage cross-topic run failed before any webhook POST because the operator harness used the disposable-test PostgreSQL user `appuser` against the production database container. PostgreSQL correctly returned `role "appuser" does not exist`. No product job, workflow execution, database mutation, media artifact, or production routing change occurred. Future production DB probes must execute `psql` using the container's own `${POSTGRES_USER}` / `${POSTGRES_DB}` environment variables without printing secret values.
+
+### 2026-09-10 V6 stage monitor stale jobs-column name
+
+After creating the first V6 stage cross-topic job, a read-only monitor queried `public.jobs.stage`; the current durable column is `current_stage`. PostgreSQL rejected the monitor before it could report product state. The product job itself is unaffected. Monitoring scripts must inspect the current schema and use `current_stage`; do not infer job failure from this harness error.

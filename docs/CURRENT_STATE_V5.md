@@ -1584,3 +1584,7 @@ An isolated stage media worker is running as `cf-v6-stage-worker` on the existin
 ### 2026-09-10 V6 stage cross-topic preflight DB-user mistake
 
 The first V6 stage cross-topic preflight stopped before POST because the harness incorrectly used disposable-test DB user `appuser`; production PostgreSQL rejected it with `role "appuser" does not exist`. No job was created and no workflow ran. Corrective preflight must use the PostgreSQL container's own environment variables without exposing their values.
+
+### 2026-09-10 V6 stage monitor stale jobs-column name
+
+The first monitor for stage job `8985460d-4473-4111-9737-ddfa6233df60` used obsolete `public.jobs.stage` instead of `current_stage` and failed read-only. The job was not mutated. Subsequent monitoring must use the actual current schema.
