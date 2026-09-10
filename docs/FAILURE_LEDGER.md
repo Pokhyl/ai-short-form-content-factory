@@ -276,3 +276,9 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - Cause: container invocation did not override the image entrypoint.
 - Product impact: none; no regression body executed.
 - Lesson: invoke the pinned image with `--entrypoint node` for repository Node regressions.
+
+### 2026-09-10 — bounded deployment-history grep included missing paths
+- Engineering/operator failure: a read-only grep for prior stage deployment commands included repository paths `scripts` / `.github` that are not present in this checkout; under `set -euo pipefail` grep returned exit code 2 after printing useful matches.
+- Cause: operator passed optional paths without checking existence.
+- Product impact: none; no runtime or source mutation occurred.
+- Lesson: search only confirmed paths or build the path list conditionally before grep.

@@ -1647,3 +1647,6 @@ A focused V6 regression attempt after storyboard-first WF04/WF05 wiring failed b
 
 ### 2026-09-10 V6 operator checkpoint — n8n entrypoint regression mistake
 The first containerized retry of V6 Node regressions used the n8n image without overriding its entrypoint, so `node` was parsed as an n8n command and no regression executed. Correction: use the same pinned image with `--entrypoint node`.
+
+### 2026-09-10 V6 operator checkpoint — deployment-history grep path mistake
+A read-only deployment-history grep exited 2 because optional paths absent from this checkout were included under pipefail. No source/runtime mutation occurred. Subsequent searches must use confirmed paths only.
