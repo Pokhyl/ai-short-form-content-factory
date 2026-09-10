@@ -1662,3 +1662,6 @@ The new stage import generator stopped before producing an import file because i
 
 ### 2026-09-10 V6 stage deployment checkpoint — health evidence filename mistake
 Six V6 workflows, including `V6ModelGatewayFreeOnly`, were imported/published and n8n restarted. DB verification showed `v6-stage/jobs` and `v6-model-gateway` registered, all six V6 workflows active with current=activeVersionId, and production WF01-WF05 version snapshot unchanged. However the health polling helper reused a root-owned fixed `/tmp/n8n-health.out`, so the printed health body from that helper is stale/untrusted. Before submitting a new product job, health must be re-proven using a unique capture path or shell variable.
+
+### 2026-09-10 V6 operator checkpoint — postdeploy verification quoting mistake
+Reverification already proved n8n health `ok`, stage-worker health `ok`, V6 stage and model-gateway webhooks registered, and zero active executions. The helper then stopped on shell quoting before the production-default snapshot diff and six-workflow current=active count. No mutation occurred; those remaining checks must be rerun with simpler quoting before a new job.

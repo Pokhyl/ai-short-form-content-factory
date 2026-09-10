@@ -306,3 +306,9 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - Cause: fixed shared `/tmp` evidence filename was reused across sudo execution contexts.
 - Product impact: workflow import/publish/restart completed; subsequent DB checks in the same run independently showed both V6 webhook rows registered and all six V6 workflows active/current, while production WF01-WF05 version snapshot remained unchanged. Health itself must be re-proven separately before a new job.
 - Lesson: use a unique evidence path under the deployment backup directory or capture health into a shell variable; never reuse fixed `/tmp` evidence files.
+
+### 2026-09-10 — postdeploy verification helper had shell quoting error after successful health checks
+- Engineering/operator failure: the V6 postdeploy verification helper successfully re-proved n8n health, stage-worker health, both V6 webhook registrations, and zero active executions, then terminated with `unexpected EOF while looking for matching quote` before completing production-default diff and six-workflow active/current count checks.
+- Cause: an over-complex nested shell/SQL quoting expression in the remaining verification block.
+- Product impact: none; no source/runtime mutation occurred in this verification helper.
+- Lesson: use Python/subprocess or simpler SQL quoting for multi-line verification; do not pack nested shell quoting into long fail-closed scripts.
