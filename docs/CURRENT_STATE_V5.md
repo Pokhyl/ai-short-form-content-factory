@@ -1554,3 +1554,7 @@ The decisive image-level proof ran the exact image with Docker networking disabl
 Final deterministic verification on this exact source tree: workflow JSON `8/8 PASS`, `git diff --check PASS`, Node regressions `74/74 PASS`, Python regressions `14/14 PASS`. Standard integration already passed on the same source change-set: fresh PostgreSQL 21 workflow SQL statements + staged writes PASS; n8n 2.37.10 import 8/8 PASS; structured model contract/import checks PASS. Production V5 remains unchanged by this verification.
 
 Disk-capacity recovery required no production-data mutation: stale test-only containers were removed and old unused media-worker/test images were deleted while preserving the running production image and immediate rollback `f7157e8366052cbdd772523a4ecf7f7c2da4e73337c71468de7f2068ee9734cd`. Root free space rose from about 324 MB to about 6.7 GB before the successful image build.
+
+### 2026-09-10 V6 schema-prep active-execution query quoting failure
+
+The first production schema-prep helper stopped before any migration or DDL because a nested shell/psql string lost SQL quotes around `new/running/waiting`, producing `column "new" does not exist`. The failure occurred immediately after creating an evidence directory and before reading or changing constraints. Production DB schema, workflows, containers and jobs remained unchanged. Repeat the same preflight by feeding SQL through stdin to psql instead of nested shell quoting; no product/schema correction is justified by this harness error.
