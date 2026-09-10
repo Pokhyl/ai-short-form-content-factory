@@ -16,9 +16,9 @@ assert.throws(()=>buildProviderTailTrimPlan(15,15.1),/exceeds measured audio dur
 
 const server=fs.readFileSync(new URL('../services/media-worker/src/server.mjs',import.meta.url),'utf8');
 assert.match(server,/providerCues = JSON\.parse/);
-assert.match(server,/trimProviderTrailingSilence\(wavPath, providerCues\)/);
-assert.match(server,/normalizeNaturalVoiceoverTail\(wavPath, targetDurationSeconds\)/);
-assert.match(server,/providerCues = JSON\.parse[\s\S]{0,900}trimProviderTrailingSilence\(wavPath, providerCues\)[\s\S]{0,500}normalizeNaturalVoiceoverTail\(wavPath, targetDurationSeconds\)/,'provider tail trim must precede duration padding/gating in the Edge synthesis path');
+assert.match(server,/trimProviderTrailingSilence\(edgeWavPath, providerCues\)/);
+assert.match(server,/normalizeNaturalVoiceoverTail\(edgeWavPath, targetDurationSeconds\)/);
+assert.match(server,/providerCues = JSON\.parse[\s\S]{0,900}trimProviderTrailingSilence\(edgeWavPath, providerCues\)[\s\S]{0,500}normalizeNaturalVoiceoverTail\(edgeWavPath, targetDurationSeconds\)/,'provider tail trim must precede duration padding/gating in the Edge synthesis path');
 assert.match(server,/provider_tail_trim_seconds/);
 assert.match(server,/provider_last_word_end_seconds/);
 console.log('AUDIO_PROVIDER_TAIL_TRIM_REGRESSION_PASS');

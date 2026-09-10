@@ -15,6 +15,7 @@ import { discoverVisualCandidates, recoverVisualConflictCandidates } from "./vis
 import { buildVisualDiscoveryOptions } from "./visual-discovery-request.mjs";
 import { clusterAverageHashes, evaluateVisualSequence, evaluateVisualShotSequence, requiredRenderedShotStateCount } from "./visual-quality.mjs";
 import { renderV6Composition, serveV6RenderAsset } from "./render-v6.mjs";
+import { PIPER_ALIGNMENT_PROVIDER, PIPER_MODEL_VERSION, WHISPER_MODEL_IDENTITY, WHISPER_RUNTIME_IDENTITY, piperVoiceForLanguage, synthesizePiperWhisper } from "./piper-whisper-fallback.mjs";
 
 const { EdgeTTS } = edgeTtsPackage;
 
@@ -870,89 +871,146 @@ async function synthesizeFreeFallbackVoiceover(request, response) {
   const languageCode = String(body.language_code ?? "").trim().toLowerCase();
   const narration = String(body.text ?? "").replace(/\s+/gu, " ").trim();
   const targetDurationSeconds = Number(body.target_duration_seconds);
+  const preferredProvider = String(body.preferred_provider ?? "microsoft_edge_readaloud").trim().toLowerCase();
 
-  if (!uuidPattern.test(jobId)) {
-    throw new HttpError(400, "invalid_job_id", "job_id must be a valid UUID");
-  }
-  const voiceConfig = freeFallbackVoices[languageCode];
-  if (!voiceConfig) {
-    throw new HttpError(400, "unsupported_fallback_language", `Unsupported fallback TTS language: ${languageCode || "missing"}`);
-  }
-  if (narration.length === 0 || narration.length > 12000) {
-    throw new HttpError(400, "invalid_fallback_narration", "text must contain between 1 and 12000 characters");
-  }
-  if (!Number.isFinite(targetDurationSeconds) || targetDurationSeconds <= 0 || targetDurationSeconds > 120) {
-    throw new HttpError(400, "invalid_target_duration", "target_duration_seconds must be between 1 and 120");
-  }
+  if (!uuidPattern.test(jobId)) throw new HttpError(400, "invalid_job_id", "job_id must be a valid UUID");
+  const edgeVoice = freeFallbackVoices[languageCode];
+  const piperVoice = piperVoiceForLanguage(languageCode);
+  if (!edgeVoice || !piperVoice) throw new HttpError(400, "unsupported_fallback_language", `Unsupported fallback TTS language: ${languageCode || "missing"}`);
+  if (narration.length === 0 || narration.length > 12000) throw new HttpError(400, "invalid_fallback_narration", "text must contain between 1 and 12000 characters");
+  if (!Number.isFinite(targetDurationSeconds) || targetDurationSeconds <= 0 || targetDurationSeconds > 120) throw new HttpError(400, "invalid_target_duration", "target_duration_seconds must be between 1 and 120");
+  if (!["microsoft_edge_readaloud", "self_hosted_piper"].includes(preferredProvider)) throw new HttpError(400, "invalid_tts_provider_preference", "preferred_provider is invalid");
 
   const providerBudgetMilliseconds = edgeProviderBudgetMilliseconds(targetDurationSeconds);
-  const { relativePath, absolutePath } = buildContinuousVoiceoverPath(jobId);
+  const {relativePath, absolutePath} = buildContinuousVoiceoverPath(jobId);
   const directoryPath = dirname(absolutePath);
-  const sourcePath = `${absolutePath}.edge-${randomUUID()}.mp3`;
-  const wavPath = `${absolutePath}.edge-${randomUUID()}.wav`;
-  await mkdir(directoryPath, { recursive: true });
+  const edgeSourcePath = `${absolutePath}.edge-${randomUUID()}.mp3`;
+  const edgeWavPath = `${absolutePath}.edge-${randomUUID()}.wav`;
+  const piperSourcePath = `${absolutePath}.piper-source-${randomUUID()}.wav`;
+  const piperWavPath = `${absolutePath}.piper-${randomUUID()}.wav`;
+  await mkdir(directoryPath, {recursive: true});
+
+  let edgeFailure = null;
+  try {
+    if (preferredProvider !== "self_hosted_piper") {
+      let transportError = null;
+      for (let attempt = 1; attempt <= 2; attempt += 1) {
+        await rm(edgeSourcePath, {force: true}).catch(() => {});
+        try {
+          const tts = new EdgeTTS({
+            voice: edgeVoice.voice,
+            lang: edgeVoice.locale,
+            outputFormat: "audio-24khz-48kbitrate-mono-mp3",
+            saveSubtitles: true,
+            rate: "default",
+            pitch: "default",
+            volume: "default",
+            timeout: providerBudgetMilliseconds,
+          });
+          await tts.ttsPromise(narration, edgeSourcePath);
+          const sourceStat = await stat(edgeSourcePath);
+          if (sourceStat.isFile() && sourceStat.size > 0) {
+            transportError = null;
+            break;
+          }
+          transportError = new Error("Edge Read Aloud returned an empty audio file");
+        } catch (error) {
+          transportError = error;
+        }
+      }
+      if (transportError) throw transportError;
+      const sourceDuration = probeDurationSeconds(edgeSourcePath);
+      execFileSync("ffmpeg", ["-v", "error", "-y", "-i", edgeSourcePath, "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", edgeWavPath], {
+        stdio: ["ignore", "pipe", "pipe"], maxBuffer: 16 * 1024 * 1024,
+      });
+      const providerCues = JSON.parse(await readFile(`${edgeSourcePath}.json`, "utf8"));
+      const providerTailTiming = await trimProviderTrailingSilence(edgeWavPath, providerCues);
+      const normalizedTiming = await normalizeNaturalVoiceoverTail(edgeWavPath, targetDurationSeconds);
+      const durationSeconds = normalizedTiming.duration_seconds;
+      const finalAudio = await readFile(edgeWavPath);
+      const wordTiming = buildVoiceoverWordTiming({narration, cues: providerCues, durationSeconds, audio: finalAudio});
+      const temporaryTimingPath = `${edgeWavPath}.words.json`;
+      await writeFile(temporaryTimingPath, JSON.stringify(wordTiming), {flag: "wx"});
+      const outputStat = await stat(edgeWavPath);
+      await rename(edgeWavPath, absolutePath);
+      await rename(temporaryTimingPath, `${absolutePath}.words.json`);
+      await rm(edgeSourcePath, {force: true});
+      sendJson(response, 200, {
+        voiceover_path: relativePath,
+        media_type: "audio",
+        codec_name: "pcm_s16le",
+        sample_rate: 48000,
+        channels: 2,
+        duration_seconds: durationSeconds,
+        bytes: outputStat.size,
+        provider: "microsoft_edge_readaloud",
+        model: "edge_neural",
+        voice: edgeVoice.voice,
+        rate_percent: 0,
+        post_tempo_factor: 1,
+        source_duration_seconds: normalizedTiming.source_duration_seconds,
+        provider_source_duration_seconds: sourceDuration,
+        provider_pretrim_wav_duration_seconds: providerTailTiming.source_duration_seconds,
+        provider_last_word_end_seconds: providerTailTiming.last_word_end_seconds,
+        provider_tail_trim_seconds: providerTailTiming.tail_trim_seconds,
+        tail_pad_seconds: normalizedTiming.tail_pad_seconds,
+        provider_budget_ms: providerBudgetMilliseconds,
+        failover_used: false,
+        word_timing_path: `${relativePath}.words.json`,
+        word_timing: wordTiming,
+      });
+      return;
+    }
+  } catch (error) {
+    edgeFailure = error;
+  } finally {
+    await rm(edgeSourcePath, {force: true}).catch(() => {});
+    await rm(edgeWavPath, {force: true}).catch(() => {});
+    await rm(`${edgeSourcePath}.json`, {force: true}).catch(() => {});
+    await rm(`${edgeWavPath}.words.json`, {force: true}).catch(() => {});
+  }
 
   try {
-    await rm(sourcePath, { force: true }).catch(() => {});
-    let transportError = null;
-    for (let attempt = 1; attempt <= 2; attempt += 1) {
-      await rm(sourcePath, { force: true }).catch(() => {});
-      try {
-        const tts = new EdgeTTS({
-          voice: voiceConfig.voice,
-          lang: voiceConfig.locale,
-          outputFormat: "audio-24khz-48kbitrate-mono-mp3",
-          saveSubtitles: true,
-          rate: "default",
-          pitch: "default",
-          volume: "default",
-          timeout: providerBudgetMilliseconds,
-        });
-        await tts.ttsPromise(narration, sourcePath);
-        const attemptStat = await stat(sourcePath);
-        if (attemptStat.isFile() && attemptStat.size > 0) {
-          transportError = null;
-          break;
-        }
-        transportError = new Error("Edge Read Aloud returned an empty audio file");
-      } catch (error) {
-        transportError = error;
-      }
-    }
-    if (transportError) throw transportError;
-    const sourceStat = await stat(sourcePath);
-    if (!sourceStat.isFile() || sourceStat.size <= 0) {
-      throw new Error("Edge Read Aloud returned an empty audio file");
-    }
-
-    const sourceDuration = probeDurationSeconds(sourcePath);
-    const ffmpegArgs = [
-      "-v", "error", "-y", "-i", sourcePath,
-      "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", wavPath,
-    ];
-    execFileSync("ffmpeg", ffmpegArgs, { stdio: ["ignore", "pipe", "pipe"], maxBuffer: 16 * 1024 * 1024 });
-
-    const providerCues = JSON.parse(await readFile(`${sourcePath}.json`, "utf8"));
-    const providerTailTiming = await trimProviderTrailingSilence(wavPath, providerCues);
-    const normalizedTiming = await normalizeNaturalVoiceoverTail(wavPath, targetDurationSeconds);
-    const durationSeconds = normalizedTiming.duration_seconds;
-    if (!Number.isFinite(durationSeconds) || durationSeconds <= 0) {
-      throw new Error("Edge Read Aloud normalized audio duration is invalid");
-    }
-    const wordTiming = buildVoiceoverWordTiming({
+    const helper = await synthesizePiperWhisper({
+      languageCode,
       narration,
-      cues: providerCues,
-      durationSeconds,
-      audio: await readFile(wavPath),
+      outputWavPath: piperSourcePath,
+      targetDurationSeconds,
     });
-    const timingPath = `${absolutePath}.words.json`;
-    const temporaryTimingPath = `${wavPath}.words.json`;
-    await writeFile(temporaryTimingPath, JSON.stringify(wordTiming), { flag: "wx" });
-    const outputStat = await stat(wavPath);
-    await rename(wavPath, absolutePath);
-    await rename(temporaryTimingPath, timingPath);
-    await rm(sourcePath, { force: true });
-
+    execFileSync("ffmpeg", ["-v", "error", "-y", "-i", piperSourcePath, "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", piperWavPath], {
+      stdio: ["ignore", "pipe", "pipe"], maxBuffer: 16 * 1024 * 1024,
+    });
+    const normalizedTiming = await normalizeNaturalVoiceoverTail(piperWavPath, targetDurationSeconds);
+    const durationSeconds = normalizedTiming.duration_seconds;
+    if (!Number.isFinite(durationSeconds) || durationSeconds <= 0) throw new Error("Piper normalized audio duration is invalid");
+    let previousEnd = 0;
+    const words = helper.words.map((word, index) => {
+      const text = String(word?.text ?? "").replace(/\s+/gu, " ").trim();
+      const start = Number(word?.start_seconds), end = Number(word?.end_seconds);
+      if (!text || !Number.isFinite(start) || !Number.isFinite(end) || start < previousEnd - 0.002 || end <= start || end > durationSeconds + 0.01) throw new Error(`Piper exact-audio timing ${index + 1} is invalid`);
+      previousEnd = end;
+      return {text, start_seconds: start, end_seconds: end};
+    });
+    if (words.map((word) => word.text).join(" ").replace(/\s+/gu, " ").trim() !== narration) throw new Error("Piper exact-audio timing does not reconstruct final narration");
+    const finalAudio = await readFile(piperWavPath);
+    const wordTiming = {
+      version: "provider-word-timing-v1",
+      provider: PIPER_ALIGNMENT_PROVIDER,
+      audio_sha256: createHash("sha256").update(finalAudio).digest("hex"),
+      script_sha256: createHash("sha256").update(narration).digest("hex"),
+      duration_seconds: durationSeconds,
+      alignment_model: WHISPER_MODEL_IDENTITY,
+      alignment_runtime: WHISPER_RUNTIME_IDENTITY,
+      detected_language: helper.detected_language,
+      detected_language_probability: Number(helper.detected_language_probability),
+      words,
+    };
+    const temporaryTimingPath = `${piperWavPath}.words.json`;
+    await writeFile(temporaryTimingPath, JSON.stringify(wordTiming), {flag: "wx"});
+    const outputStat = await stat(piperWavPath);
+    await rename(piperWavPath, absolutePath);
+    await rename(temporaryTimingPath, `${absolutePath}.words.json`);
+    await rm(piperSourcePath, {force: true});
     sendJson(response, 200, {
       voiceover_path: relativePath,
       media_type: "audio",
@@ -961,29 +1019,32 @@ async function synthesizeFreeFallbackVoiceover(request, response) {
       channels: 2,
       duration_seconds: durationSeconds,
       bytes: outputStat.size,
-      provider: "microsoft_edge_readaloud",
-      model: "edge_neural",
-      voice: voiceConfig.voice,
+      provider: "self_hosted_piper",
+      model: PIPER_MODEL_VERSION,
+      voice: piperVoice,
       rate_percent: 0,
       post_tempo_factor: 1,
       source_duration_seconds: normalizedTiming.source_duration_seconds,
-      provider_source_duration_seconds: sourceDuration,
-      provider_pretrim_wav_duration_seconds: providerTailTiming.source_duration_seconds,
-      provider_last_word_end_seconds: providerTailTiming.last_word_end_seconds,
-      provider_tail_trim_seconds: providerTailTiming.tail_trim_seconds,
+      provider_source_duration_seconds: Number(helper.source_duration_seconds),
       tail_pad_seconds: normalizedTiming.tail_pad_seconds,
-      provider_budget_ms: providerBudgetMilliseconds,
+      provider_budget_ms: Number(helper.budget_ms),
+      failover_used: preferredProvider !== "self_hosted_piper",
+      primary_provider_error: edgeFailure ? String(edgeFailure?.message ?? edgeFailure).slice(0, 500) : null,
+      alignment_provider: "faster_whisper",
+      alignment_model: WHISPER_MODEL_IDENTITY,
+      alignment_runtime: WHISPER_RUNTIME_IDENTITY,
+      synthesis_seconds: Number(helper.synthesis_seconds),
+      alignment_seconds: Number(helper.alignment_seconds),
       word_timing_path: `${relativePath}.words.json`,
       word_timing: wordTiming,
     });
-  } catch (error) {
-    await rm(sourcePath, { force: true }).catch(() => {});
-    await rm(wavPath, { force: true }).catch(() => {});
-    if (error instanceof HttpError) throw error;
-    throw new HttpError(502, "free_fallback_tts_failed", `Free fallback TTS failed: ${String(error?.message ?? error)}`);
+  } catch (piperError) {
+    const edgeMessage = edgeFailure ? `; Edge=${String(edgeFailure?.message ?? edgeFailure).slice(0, 300)}` : "";
+    throw new HttpError(502, "free_fallback_tts_failed", `Free TTS chain failed: Piper=${String(piperError?.message ?? piperError).slice(0, 600)}${edgeMessage}`);
   } finally {
-    await rm(`${sourcePath}.json`, { force: true }).catch(() => {});
-    await rm(`${wavPath}.words.json`, { force: true }).catch(() => {});
+    await rm(piperSourcePath, {force: true}).catch(() => {});
+    await rm(piperWavPath, {force: true}).catch(() => {});
+    await rm(`${piperWavPath}.words.json`, {force: true}).catch(() => {});
   }
 }
 
