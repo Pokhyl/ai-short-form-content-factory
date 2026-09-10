@@ -117,3 +117,9 @@ This is a real schema/runtime incompatibility, not a reason to reduce V6 back to
 After widening `visual_segments.planned_shot_count` to 1-3, the disposable PostgreSQL test progressed through the first two shots of a 3-shot V6 segment and rejected the third at `visual_shots_number_check`. The `visual_shots.segment_shot_number` durable constraint is also V5-specific and currently caps the per-segment shot ordinal at 2.
 
 Correction must widen only the per-segment shot ordinal contract to 1-3. Global `shot_number` sequencing, unique constraints, timing, media identity and visual quality gates remain unchanged. Production mutation: none.
+
+## Precommit migration harness race
+
+The full V6 source/tests had already passed 71/71 Node, 13/13 Python, fresh PostgreSQL contract, n8n 8/8 import, 5/5 structured invocation and MIME checks. An additional disposable migration/idempotence harness then stopped before applying migration `024` because it used `pg_isready` as the readiness condition and immediately attempted `psql -d test`; PostgreSQL was accepting connections but the requested test database had not completed creation yet (`FATAL: database "test" does not exist`).
+
+This is a test-harness readiness race, not a V6 source/database-contract failure. Correction: wait on a successful `psql -d test -c 'SELECT 1'` before applying the baseline/migrations. No production mutation occurred.

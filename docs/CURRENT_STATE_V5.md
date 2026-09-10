@@ -1394,3 +1394,7 @@ Fresh PostgreSQL now accepts the V6 story package and existing 1/2-shot staged w
 ### V6 visual-shot third ordinal schema incompatibility
 
 After the segment-level 1-3 change, fresh PostgreSQL accepted shots 1 and 2 but rejected shot 3 at `visual_shots_number_check`. The per-segment durable shot ordinal is independently capped at 2 in V5. V6 requires a specific 1-3 upgrade while retaining all uniqueness/timing/identity constraints. Production remains unchanged.
+
+### V6 precommit migration harness race
+
+The full static and standard integration gates passed, but an extra migration/idempotence harness used `pg_isready` too early and hit `database "test" does not exist` before any V6 migration was applied. This is recorded as an operator/test-harness failure. The rerun must wait for an actual successful SQL query against the target disposable database. Production remains unchanged.
