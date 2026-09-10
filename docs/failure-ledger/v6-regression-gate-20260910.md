@@ -111,3 +111,9 @@ Correction: replace the baseline constraint with a readable multiline CHECK expr
 After correcting the bootstrap story-package syntax, the real disposable PostgreSQL test successfully passed the V6 story-package persist and the existing 1-shot/2-shot staged visual writes, then failed the new 3-shot V6 write at `visual_segments_shot_count_check`. The durable schema still restricts `planned_shot_count` to the V5 range 1-2, while V6 explicitly supports 1-3 frozen storyboard shots per semantic unit.
 
 This is a real schema/runtime incompatibility, not a reason to reduce V6 back to two shots. Correction must widen only this durable cardinality constraint from 1-2 to 1-3; global asset uniqueness, perceptual uniqueness, shot-duration limits, portrait safety and contiguous timing remain unchanged. Production mutation: none.
+
+## Fifth V6 integration gate — visual shot ordinal defect
+
+After widening `visual_segments.planned_shot_count` to 1-3, the disposable PostgreSQL test progressed through the first two shots of a 3-shot V6 segment and rejected the third at `visual_shots_number_check`. The `visual_shots.segment_shot_number` durable constraint is also V5-specific and currently caps the per-segment shot ordinal at 2.
+
+Correction must widen only the per-segment shot ordinal contract to 1-3. Global `shot_number` sequencing, unique constraints, timing, media identity and visual quality gates remain unchanged. Production mutation: none.

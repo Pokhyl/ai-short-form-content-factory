@@ -1390,3 +1390,7 @@ The first baseline update for the V6 story-package constraint failed real Postgr
 ### V6 visual-segment 3-shot schema incompatibility
 
 Fresh PostgreSQL now accepts the V6 story package and existing 1/2-shot staged writes, but rejects a V6 3-shot segment at `visual_segments_shot_count_check`. The durable DB schema still encodes the retired V5 1-2 shot limit. V6 requires an explicit 1-3 upgrade while all other visual quality/identity/timing gates remain unchanged. Production remains unchanged.
+
+### V6 visual-shot third ordinal schema incompatibility
+
+After the segment-level 1-3 change, fresh PostgreSQL accepted shots 1 and 2 but rejected shot 3 at `visual_shots_number_check`. The per-segment durable shot ordinal is independently capped at 2 in V5. V6 requires a specific 1-3 upgrade while retaining all uniqueness/timing/identity constraints. Production remains unchanged.
