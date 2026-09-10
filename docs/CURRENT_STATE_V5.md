@@ -1530,3 +1530,7 @@ After reclaiming only unused Docker builder cache and proven-unused test images,
 ### 2026-09-10 V6 offline TTS proof stdin harness failure
 
 The first network-disabled `Edge -> Piper/Whisper` image-level proof started the exact V6 media-worker image and passed `/health`, but the POST body script was invoked as `docker exec ... node -` without `-i`. Docker therefore did not attach stdin, the Node heredoc never executed, no TTS request was sent, and the later ffprobe correctly found no WAV. This is a harness invocation failure, not a TTS/product failure. Repeat the unchanged proof with `docker exec -i`; do not modify provider logic from this result.
+
+### 2026-09-10 repeated docker-exec stdin mistake in offline TTS proof
+
+The first isolated no-network `Edge -> Piper` HTTP proof did not issue its intended request. The harness again used `docker exec ... node -` without `-i`, so the heredoc was not attached to container stdin; elapsed time was 1 s and `response.json` remained empty, after which the host JSON parser failed. This repeats a previously documented operator error and is not TTS evidence. No product source or production state changed. Corrective proof must use `docker exec -i ... node -` for every stdin-fed Node script; do not modify TTS code from this failure.
