@@ -217,3 +217,7 @@ First real V6 stage cross-topic job `8985460d-4473-4111-9737-ddfa6233df60` (`П�
 ### 2026-09-10 V6 stage SearXNG failure root cause — missing edge network
 
 Read-only comparison proved stage job `8985460d-4473-4111-9737-ddfa6233df60` failed because `cf-v6-stage-worker` was attached only to `ai-short-form-content-factory_default`, while shared `ai-short-form-v4-search` is reachable on `n8n_default`. Production media-worker is attached to both networks and its identical `SEARXNG_URL` returns HTTP 200; stage worker returned `fetch failed`. This is staging infrastructure parity, not a V6 research-code defect. Correct only the stage worker network attachment; do not resume the failed job and do not change product retrieval logic.
+
+### 2026-09-10 V6 stage direct progress probe quoting/sudo failure
+
+A read-only progress probe for stage job `5d073afc-3733-4f7e-8288-42e58a5304fa` was mistakenly issued through direct exec without sudo and with nested shell quoting that broke the SQL command. It failed with shell `command not found` fragments and Docker socket permission denial. The job and production state were not mutated. Subsequent job-state probes must use privileged `sentinel_script_run` with standalone SQL quoting, not nested direct-exec shell composition.

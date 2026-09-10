@@ -1600,3 +1600,7 @@ Stage worker network parity was incomplete: `cf-v6-stage-worker` lacked `n8n_def
 ### 2026-09-10 V6 stage SearXNG network parity corrected
 
 `cf-v6-stage-worker` was attached to `n8n_default` in addition to its isolated media network. Its unchanged `SEARXNG_URL` now returns HTTP 200. Production media-worker remains on image `sha256:527c061fd7520ea2182fd9c5458d37ebc3a58686c79939bb40665a1f822b15e7`; no failed job was resumed. Next proof must create a new stage job.
+
+### 2026-09-10 V6 stage progress probe tooling failure
+
+A read-only direct progress probe for `5d073afc-3733-4f7e-8288-42e58a5304fa` failed before querying state because it lacked sudo and had broken nested shell quoting. No product state changed. Monitoring continues through the existing privileged background monitor / privileged standalone scripts.
