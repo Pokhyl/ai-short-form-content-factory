@@ -1512,3 +1512,13 @@ The provider-budget correction changed the composite WF03 HTTP timeout from the 
 ### 2026-09-10 V6 integration harness n8n entrypoint mistake
 
 The standard integration gate reached real PASS for fresh PostgreSQL (`21 workflow SQL statements + staged writes`) and disposable n8n import (`8 workflows on 2.37.10`). The next structured-output regression did not execute because the disposable `n8nio/n8n:2.37.10` image was invoked as `... n8nio/n8n:2.37.10 node ...`; its default entrypoint treated `node` as an n8n CLI command and returned `Command "node" not found`. This is a harness invocation error, not a product or workflow failure. Re-run that test with `--entrypoint node`, then continue the integration gate. Production remains unchanged.
+
+
+### 2026-09-10 V6 TTS image build disk-capacity failure
+
+The exact media-worker build with pinned Piper/faster-whisper runtime progressed through Debian packages and Python dependency installation, then failed while downloading the pinned `Systran/faster-whisper-small` snapshot with `No space left on device`. No production container, workflow, database, job or artifact was changed. This is a Docker build-host capacity failure, not a TTS implementation failure. The first corrective action was limited to `docker builder prune -f`, which removed only disposable builder cache; running production images and volumes were not touched. Before retrying the image build, inspect remaining Docker image storage and remove only unreferenced/dangling objects proven unused.
+
+
+### 2026-09-10 direct Git checkpoint ownership failure during disk recovery
+
+After recording the V6 TTS image build disk-capacity failure, a direct SentinelX Git checkpoint attempted to run repository Git as the non-root agent user and was rejected with `fatal: detected dubious ownership in repository`. No git configuration is changed and no product/production state changed. The repository is root-owned and prior successful operations already used privileged Git. Corrective checkpointing must use `sudo git -C <repo> ...` plus the existing deploy key, not `safe.directory` or credential/config mutation.
