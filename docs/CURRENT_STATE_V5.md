@@ -1424,3 +1424,9 @@ A valid networked `npm audit --omit=dev` of the media-worker dependency tree rep
 ### 2026-09-10 V6 Remotion bundle-smoke stdin harness failure
 
 The first renderer component smoke verified Node syntax for `src/render-v6.mjs` and `src/server.mjs`, but the intended Remotion `bundle()` smoke did not execute because the disposable `docker run` receiving a heredoc was missing `-i`. No bundle PASS is claimed from that run and production was unchanged. Repeat the exact bundle smoke with stdin attached before correcting any renderer source.
+
+### 2026-09-10 V6 first end-to-end renderer component proof failed closed on rendered-state similarity
+
+The first true disposable image-level `Remotion -> MP4 -> pixel QA` proof used media-worker image `sha256:9f29c0767ceea4513de044e7fa44fdf1eb92b3f2ebe99cbd06ec3c706bf21ef7`, system Chromium `152.0.7977.82`, a 3-second continuous WAV, exact `provider-word-timing-v1`, and three one-second synthetic portrait-safe photo shots. Remotion reached the rendered-MP4 stage, but the new measured post-render gate correctly refused PASS: `rendered_visual_state_count=2/3`, `rendered_adjacent_visual_state_duplicate_count=2`, `black_frame_sample_count=0`, `flat_frame_sample_count=0`. The synthetic images intentionally shared the same geometry/layout and differed mostly in palette/text, so an average-hash/grayscale rendered-state metric classified them as insufficiently distinct. No production state changed and no renderer PASS is claimed. Before changing QA thresholds, first replay the same renderer with structurally distinct visual fixtures; a threshold relaxation is not authorized by this failure.
+
+The same isolated no-network proof also printed a non-fatal Remotion usage-event `fetch failed` for `www.remotion.pro`; rendering continued to completion. This is recorded separately from the actual fail-closed pixel-QA result and is not evidence of a renderer execution failure.

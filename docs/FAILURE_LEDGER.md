@@ -106,3 +106,8 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 - 2026-09-10: valid `npm audit --omit=dev` found 2 high-severity findings via `sharp 0.34.5` / libvips/libheif. `@huggingface/transformers 3.8.1` forces the vulnerable 0.34.x range but is no longer imported by production media-worker source after SigLIP removal. Required correction: remove unused Transformers and upgrade direct `sharp` to fixed 0.35.4; do not ship the V6 renderer image with the known vulnerable unused dependency.
 
 - 2026-09-10: first V6 Remotion `bundle()` smoke silently received no heredoc because `docker run` lacked `-i`; Node syntax passed, bundle was not exercised. Never treat an empty successful container exit as a bundle PASS; require the explicit `REMOTION_BUNDLE_PASS` marker.
+
+### V6 renderer component failure — rendered-state similarity
+
+- 2026-09-10: first true synthetic Remotion component run produced an MP4 but failed the new pixel gate with `states=2/3`, `adjacent=2`, `black=0`, `flat=0`. The three fixtures reused the same layout/geometry and differed mainly in palette/text, so this does **not** justify weakening the perceptual duplicate threshold. Required next proof: rerun unchanged renderer/QA using structurally distinct synthetic visuals. Production unchanged; no renderer PASS.
+- The same network-isolated run logged a non-fatal Remotion usage-event fetch failure to `www.remotion.pro`; rendering itself continued. Do not conflate that telemetry warning with the pixel-QA failure.
