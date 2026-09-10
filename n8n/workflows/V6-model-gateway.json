@@ -1,0 +1,260 @@
+[
+  {
+    "updatedAt": "2026-09-04T12:51:18.938Z",
+    "createdAt": "2026-09-04T12:09:42.484Z",
+    "id": "V6ModelGatewayFreeOnly",
+    "name": "V6 — Free-Only Text Model Gateway",
+    "description": "V6 text-only structured model gateway. Kilo free model only; fail closed with no paid provider fallback.",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "v6-model-gateway",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -520,
+          0
+        ],
+        "id": "7051d25d-a5cd-41ec-8b88-8ef9a8ec59fc",
+        "name": "Webhook",
+        "webhookId": "3c63b4c4-d2bb-4b8d-b001-a7b37d19e963"
+      },
+      {
+        "parameters": {
+          "jsCode": "const b=$json.body??{};\nconst prompt=String(b.prompt??'').trim();\nconst multimodal=Array.isArray(b.input)?b.input.filter(x=>x&&typeof x==='object'):[];\nif(multimodal.length)throw new Error('V6 model gateway is text-only; multimodal review is not part of the mandatory path');\nif(!prompt)throw new Error('prompt required');\nconst responseFormat=String(b.response_format??'').trim().toLowerCase();\nconst responseSchema=b.response_schema&&typeof b.response_schema==='object'&&!Array.isArray(b.response_schema)?b.response_schema:null;\nconst expects_json=responseFormat==='json'||Boolean(responseSchema);\nconst kilo_request_body={model:'stepfun/step-3.7-flash:free',messages:[{role:'user',content:prompt}],max_tokens:4096,temperature:Number.isFinite(Number(b.temperature))?Math.max(0,Math.min(1,Number(b.temperature))):0.2};\nif(expects_json)kilo_request_body.response_format={type:'json_object'};\nreturn [{json:{kilo_request_body,provider_attempts:[],expects_json,response_schema:responseSchema,schema_contract_version:'gateway-json-schema-subset-v1'}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -300,
+          0
+        ],
+        "id": "8e9d0371-802f-4493-ab06-0a03a44fcb21",
+        "name": "Build Request"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.kilo.ai/api/gateway/chat/completions",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.kilo_request_body }}",
+          "options": {
+            "timeout": 90000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          -40,
+          -120
+        ],
+        "id": "f08cf1ab-2682-4b09-994f-20d520312f8f",
+        "name": "Kilo Free Model",
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const validateSchema=(value,schema,path='$')=>{\nconst allowed=new Set(['type','properties','required','items','enum','minItems','maxItems','minLength','maxLength','pattern']);\nif(!schema||typeof schema!=='object'||Array.isArray(schema))return {ok:false,error:`${path}: invalid schema node`};\nfor(const key of Object.keys(schema))if(!allowed.has(key))return {ok:false,error:`${path}: unsupported schema keyword ${key}`};\nif(schema.type!==undefined){const t=String(schema.type),ok=t==='object'?(value!==null&&typeof value==='object'&&!Array.isArray(value)):t==='array'?Array.isArray(value):t==='string'?typeof value==='string':t==='boolean'?typeof value==='boolean':t==='number'?(typeof value==='number'&&Number.isFinite(value)):t==='integer'?Number.isInteger(value):t==='null'?value===null:false;if(!ok)return {ok:false,error:`${path}: expected ${t}`};}\nif(schema.enum!==undefined){if(!Array.isArray(schema.enum))return {ok:false,error:`${path}: enum must be array`};const encoded=JSON.stringify(value);if(!schema.enum.some(v=>JSON.stringify(v)===encoded))return {ok:false,error:`${path}: value is outside enum`};}\nif(typeof value==='string'){const len=[...value].length;if(schema.minLength!==undefined&&len<Number(schema.minLength))return {ok:false,error:`${path}: string shorter than minLength`};if(schema.maxLength!==undefined&&len>Number(schema.maxLength))return {ok:false,error:`${path}: string longer than maxLength`};if(schema.pattern!==undefined){let re;try{re=new RegExp(String(schema.pattern));}catch{return {ok:false,error:`${path}: invalid schema pattern`};}if(!re.test(value))return {ok:false,error:`${path}: string does not match pattern`};}}\nif(Array.isArray(value)){if(schema.minItems!==undefined&&value.length<Number(schema.minItems))return {ok:false,error:`${path}: array shorter than minItems`};if(schema.maxItems!==undefined&&value.length>Number(schema.maxItems))return {ok:false,error:`${path}: array longer than maxItems`};if(schema.items!==undefined){for(let i=0;i<value.length;i++){const r=validateSchema(value[i],schema.items,`${path}[${i}]`);if(!r.ok)return r;}}}\nif(value!==null&&typeof value==='object'&&!Array.isArray(value)){if(schema.required!==undefined){if(!Array.isArray(schema.required)||schema.required.some(k=>typeof k!=='string'))return {ok:false,error:`${path}: required must be a string array`};for(const key of schema.required)if(!Object.prototype.hasOwnProperty.call(value,key))return {ok:false,error:`${path}.${key}: required property missing`};}if(schema.properties!==undefined){if(!schema.properties||typeof schema.properties!=='object'||Array.isArray(schema.properties))return {ok:false,error:`${path}: properties must be object`};for(const [key,child] of Object.entries(schema.properties))if(Object.prototype.hasOwnProperty.call(value,key)){const r=validateSchema(value[key],child,`${path}.${key}`);if(!r.ok)return r;}}}\nreturn {ok:true,error:null};};\nconst r=$json,ctx=$('Build Request').first().json;const choice=(r.choices??[])[0]??{};const msg=choice.message??{};let text='';if(typeof msg.content==='string')text=msg.content.trim();else if(Array.isArray(msg.content))text=msg.content.map(x=>typeof x==='string'?x:String(x?.text??'')).join('').trim();const finishReason=String(choice.finish_reason??'').trim();const terminal=finishReason==='stop';let parsed=null,jsonValid=true;if(ctx.expects_json&&text){try{parsed=JSON.parse(text);}catch{jsonValid=false;}}let schemaValid=true,schemaError=null;if(jsonValid&&text&&ctx.response_schema){const checked=validateSchema(parsed,ctx.response_schema);schemaValid=checked.ok;schemaError=checked.error;}const err=String(r?.error?.message??r?.message??'').trim();const success=Boolean(text)&&terminal&&jsonValid&&schemaValid;const failureReason=!text?(err||'empty model output'):(!terminal?`unusable finish_reason:${finishReason||'missing'}`:(!jsonValid?'invalid json output':(!schemaValid?`schema validation failed: ${schemaError}`:'empty model output')));return [{json:{...ctx,kilo_success:success,text:success?text:'',citations:[],model:success?String(r?.model??'stepfun/step-3.7-flash:free'):'',interaction_id:success?String(r?.id??''):'',provider:success?'kilo':'',provider_attempts:[{provider:'kilo',model:'stepfun/step-3.7-flash:free',success,finish_reason:finishReason||null,error:success?null:failureReason}]}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          180,
+          -120
+        ],
+        "id": "8562c3f7-1dc6-4793-b00e-50cf1cc6e0e0",
+        "name": "Normalize Kilo Response"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "a2c0d7ad-b4ce-43bf-854a-8f7762cc7211",
+                "leftValue": "={{ $json.kilo_success }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          400,
+          -120
+        ],
+        "id": "8dddfbb9-4e86-4e8c-8dda-96e65373e0ea",
+        "name": "Kilo Succeeded?"
+      },
+      {
+        "parameters": {
+          "jsCode": "return [{json:{text:String($json.text??'').trim(),citations:[],model:String($json.model??''),interaction_id:String($json.interaction_id??''),provider:'kilo',provider_attempts:$json.provider_attempts??[],provider_exhausted:false}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          620,
+          -240
+        ],
+        "id": "a4f4142e-30fa-4c8b-9d64-4d865653ac00",
+        "name": "Normalize Kilo Success"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1080,
+          0
+        ],
+        "id": "d2f6a401-6788-41f0-a670-bb83f48b074e",
+        "name": "Respond"
+      },
+      {
+        "parameters": {
+          "jsCode": "return [{json:{text:'',citations:[],model:'',interaction_id:'',provider:'none',provider_attempts:$json.provider_attempts??[],provider_exhausted:true}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          620,
+          80
+        ],
+        "id": "55b11772-5623-414b-a784-e7a7f93664de",
+        "name": "Normalize Kilo Failure"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Build Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Request": {
+        "main": [
+          [
+            {
+              "node": "Kilo Free Model",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Kilo Free Model": {
+        "main": [
+          [
+            {
+              "node": "Normalize Kilo Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Kilo Response": {
+        "main": [
+          [
+            {
+              "node": "Kilo Succeeded?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Kilo Succeeded?": {
+        "main": [
+          [
+            {
+              "node": "Normalize Kilo Success",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Normalize Kilo Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Kilo Success": {
+        "main": [
+          [
+            {
+              "node": "Respond",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Kilo Failure": {
+        "main": [
+          [
+            {
+              "node": "Respond",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate",
+      "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": null,
+    "nodeGroups": [],
+    "pinData": null,
+    "versionId": "2840801c-3254-4046-8762-49e08bde2a83",
+    "activeVersionId": null,
+    "versionCounter": 3,
+    "triggerCount": 0,
+    "sourceWorkflowId": null,
+    "tags": [],
+    "shared": [],
+    "versionMetadata": {
+      "name": null,
+      "description": null
+    }
+  }
+]
