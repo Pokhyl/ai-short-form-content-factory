@@ -1671,3 +1671,6 @@ GitHub branch `rebuild/storyboard-editor-v6-20260910` now contains the storyboar
 
 ### 2026-09-10 V6 operator checkpoint — fresh-job submission stdin mistake
 The first fresh stage submission command sent no request because `docker exec ... node -` was used without stdin attachment. No job row was created and no product failure occurred. Retry must use `node -e` and verify both HTTP response and PostgreSQL row.
+
+### 2026-09-10 V6 operator checkpoint — fresh-job monitor SQL syntax mistake
+Fresh stage job `9bbe6a4b-70dc-46ef-98e6-d06fd15fdfb3` was created successfully with HTTP 201. The first read-only monitor failed before reading the row because of invalid psql variable/cast syntax. The job itself was not modified and continues independently; monitoring must resume with a simpler fixed-UUID query before any correction to product code.

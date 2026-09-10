@@ -318,3 +318,9 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - Cause: incorrect Docker stdin invocation.
 - Product impact: none; no job was created, so there is no failed/rejected product row to preserve.
 - Lesson: use `docker exec ... node -e <script>` or explicit `docker exec -i` when running inline Node through stdin; verify the HTTP status/body and resulting job row before treating a submission as created.
+
+### 2026-09-10 — fresh V6 job monitor used invalid psql variable cast syntax
+- Engineering/operator failure: monitoring fresh stage job `9bbe6a4b-70dc-46ef-98e6-d06fd15fdfb3` failed immediately because the psql query used `:'job'::uuid` in a context where the variable substitution was not parsed as intended, producing a SQL syntax error before any row was read.
+- Cause: unnecessary psql variable indirection in a fixed-UUID read-only query.
+- Product impact: none; the product job continues independently in n8n/PostgreSQL and was not modified by the failed monitor.
+- Lesson: for fixed internally generated UUIDs, use a safely embedded quoted UUID in read-only SQL or Python/subprocess parameter handling rather than fragile psql meta-variable syntax.
