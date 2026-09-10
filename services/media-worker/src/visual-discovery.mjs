@@ -233,6 +233,7 @@ function inventoryFallbackQueries(query, canonicalTitle, visualTarget = "") {
   const targetDetails = anchorQueryRows(visualTarget).filter((row) => !sharedKeys.has(row.key));
   const matched = targetDetails.filter((row) => queryDetails.some((queryRow) => relatedAnchorKey(row.key, queryRow.key)));
   const targetOnly = targetDetails.filter((row) => !queryDetails.some((queryRow) => relatedAnchorKey(row.key, queryRow.key)));
+  const queryOnly = queryDetails.filter((row) => !targetDetails.some((targetRow) => relatedAnchorKey(row.key, targetRow.key)));
   const rankRows = (rows) => rows.map((row, index) => ({ ...row, index }))
     .sort((left, right) => {
       const leftAction = QUERY_RECOVERY_ACTION_WORDS.has(left.key) ? 1 : 0;
@@ -243,12 +244,15 @@ function inventoryFallbackQueries(query, canonicalTitle, visualTarget = "") {
     });
   const matchedRanked = rankRows(matched);
   const targetOnlyRanked = rankRows(targetOnly);
+  const queryOnlyRanked = rankRows(queryOnly);
   const details = [matchedRanked[0], targetOnlyRanked[0], ...matchedRanked.slice(1), ...targetOnlyRanked.slice(1)]
     .filter(Boolean)
     .filter((row, index, rows) => rows.findIndex((other) => relatedAnchorKey(row.key, other.key)) === index);
   const subject = shared.slice(0, 2).map((row) => row.raw).join(" ");
   const component = canonicalComponents.find((row) => !details.some((detail) => relatedAnchorKey(row.key, detail.key)));
   const out = [];
+  const reservedQueryDetail = matchedRanked.length < 3 ? (queryOnlyRanked.find((row) => !QUERY_RECOVERY_ACTION_WORDS.has(row.key) && !QUERY_RECOVERY_STYLE_WORDS.has(row.key) && !new Set(['cross','section']).has(row.key)) ?? null) : null;
+  const ordinaryLimit = reservedQueryDetail ? 2 : 3;
   const push = (value) => {
     const bounded = boundedProviderQuery(value);
     if (!bounded || bounded.toLocaleLowerCase() === cleanText(query).toLocaleLowerCase()) return;
@@ -258,13 +262,14 @@ function inventoryFallbackQueries(query, canonicalTitle, visualTarget = "") {
     const componentDetails = (matchedRanked.length ? matchedRanked : details).slice(0, 2);
     for (const row of componentDetails) {
       push(`${subject} ${component.raw} ${row.raw}`);
-      if (out.length >= 3) break;
+      if (out.length >= ordinaryLimit) break;
     }
   }
   for (const row of details) {
-    if (out.length >= 3) break;
+    if (out.length >= ordinaryLimit) break;
     push(`${subject} ${row.raw}`);
   }
+  if (reservedQueryDetail && out.length < 3) push(`${subject} ${component?.raw ?? ''} ${reservedQueryDetail.raw}`);
   const mediaCue = semanticQueryRows(visualTarget).find((row) => QUERY_MEDIA_CUES.has(row.key));
   if (mediaCue && out.length < 3) {
     const cue = ({ schematic: "diagram", cutaway: "diagram", photograph: "photo", photography: "photo" }[mediaCue.key] ?? mediaCue.raw);
@@ -278,6 +283,7 @@ function rankInventoryCandidates(candidates, query, canonicalTitle, visualTarget
   const shared = new Set(sharedRows.map((row) => row.key));
   const identityKeys = sharedRows.slice(0, 2).map((row) => row.key);
   const details = anchorQueryRows(visualTarget || query).filter((row) => !shared.has(row.key));
+  const detailRequired = Math.min(2, Math.max(1, details.length));
   const score = (candidate) => {
     const words = queryWordRows(candidateRankingText(candidate));
     const subjectHits = identityKeys.filter((key) => words.some((word) => relatedAnchorKey(key, word.key))).length;
@@ -293,6 +299,8 @@ function rankInventoryCandidates(candidates, query, canonicalTitle, visualTarget
       inventory_subject_anchor_required: identityKeys.length,
       inventory_subject_anchor_pass: identityKeys.length < 2 || subjectHits === identityKeys.length,
       inventory_detail_hits: detailHits,
+      inventory_detail_required: detailRequired,
+      inventory_detail_anchor_count: details.length,
     }));
 }
 
@@ -807,7 +815,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       const rerank = () => rankInventoryCandidates(candidates, exactQuery, englishTitle, anchor)
         .filter((candidate) => candidate.inventory_subject_anchor_pass === true);
       let ranked = rerank();
-      const detailCount = () => ranked.filter((candidate) => Number(candidate.inventory_detail_hits) > 0).length;
+      const detailCount = () => ranked.filter((candidate) => Number(candidate.inventory_detail_hits) >= Number(candidate.inventory_detail_required || 1)).length;
       const recovery = [inventoryDetailQuery(exactQuery, englishTitle, anchor), ...inventoryFallbackQueries(exactQuery, englishTitle, anchor)]
         .filter(Boolean)
         .filter((value, index, rows) => rows.findIndex((other) => other.toLocaleLowerCase() === value.toLocaleLowerCase()) === index)
@@ -872,7 +880,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       if (inventoryMode) {
         const desiredDetailCandidates = Math.max(2, required);
         let rankedInventory = rankInventoryCandidates(candidates, exactQuery, englishTitle, anchor);
-        const detailCount = () => rankedInventory.filter((candidate) => candidate.inventory_subject_anchor_pass === true && Number(candidate.inventory_detail_hits) > 0).length;
+        const detailCount = () => rankedInventory.filter((candidate) => candidate.inventory_subject_anchor_pass === true && Number(candidate.inventory_detail_hits) >= Number(candidate.inventory_detail_required || 1)).length;
         if (detailCount() < desiredDetailCandidates) {
           for (const fallbackQuery of inventoryFallbackQueries(exactQuery, englishTitle, anchor)) {
             if (providerQueries.some((value) => value.toLocaleLowerCase() === fallbackQuery.toLocaleLowerCase())) continue;
