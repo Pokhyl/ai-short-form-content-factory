@@ -12,4 +12,9 @@ const wf=Array.isArray(wfRaw)?wfRaw[0]:wfRaw;
 const direct=wf.nodes.find(n=>n.name==='Direct Storyboard');
 assert.match(direct.parameters.jsonBody,/route: "storyboard"/);
 assert.ok(Number(direct.parameters.options.timeout)===80000);
+
+const finalReq=wf.nodes.find(n=>n.name==='Prepare Final Story Request');
+assert.match(finalReq.parameters.jsCode,/route:'storyboard'/);
+const finalWrite=wf.nodes.find(n=>n.name==='Write Final Story');
+assert.ok(Number(finalWrite.parameters.options.timeout)===80000);
 console.log('V6_STORYBOARD_MODEL_ROUTE_REGRESSION_PASS');
