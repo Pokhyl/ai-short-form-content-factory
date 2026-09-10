@@ -93,3 +93,9 @@ Results:
 - structured model invocation contract: FAIL because the test hard-coded **6** structured calls while the V6 removal of the second semantic media-review loop intentionally leaves **5** structured calls.
 
 These failures do not authorize restoring the retired second review loop or accepting the legacy V5 story package in the V6 persist path. Integration fixtures must be migrated to the V6 story contract while retaining staged-write, exact-TTS, binary MIME and structured-call reachability checks. Production mutation: none.
+
+## Second V6 integration gate — real database contract defect
+
+After migrating the integration fixture to submit `visual-facts-story-v1`, fresh PostgreSQL rejected the V6 row with `jobs_story_package_check`. The failing row contained a V6 `story_package`, proving the database bootstrap/check constraint still permits only the retired V5 story package shape/version. This is a real V6 source/schema incompatibility, not a test-only issue: WF02 V6 persist cannot succeed against the current database contract.
+
+Correction must extend the durable PostgreSQL story-package constraint for the explicit `visual-facts-story-v1` / `storyboard-v1` contract while retaining V5 compatibility for existing immutable historical jobs. Existing constraints on JSON type, units/assets cardinality and durable state must remain fail-closed. Production mutation: none.

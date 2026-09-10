@@ -1378,3 +1378,7 @@ After the single-pass preview fingerprint correction and V6 regression migration
 ### V6 first integration gate
 
 The deterministic suite is clean at 71/71 Node and 13/13 Python. The unchanged integration suite then produced: n8n 2.37.10 import **8/8 PASS**; fresh PostgreSQL fixture FAIL because it still supplies retired `inventory-first-story-v1` to V6 persist SQL; structured invocation fixture FAIL because it hard-codes 6 model calls while V6 intentionally removed the second semantic review and now has 5. These are integration-fixture migration failures, not permission to restore V5 behavior. Production remains unchanged.
+
+### V6 PostgreSQL story-package incompatibility found before commit
+
+Fresh-database integration with an actual `visual-facts-story-v1` payload failed at PostgreSQL constraint `jobs_story_package_check`. This proves the current DB bootstrap still encodes V5-only story-package acceptance and would make the V6 WF02 persist path impossible. The correction must explicitly support V6 `visual-facts-story-v1` / `storyboard-v1` while retaining V5 compatibility for immutable historical jobs and preserving units/assets/cardinality checks. Production remains unchanged.
