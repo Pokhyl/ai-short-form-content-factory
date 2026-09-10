@@ -1730,3 +1730,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-10: Fresh job `738b3249-07fd-40ec-bc7f-e7809871ec86` reached storyboard validation and exposed a systemic model-contract alias: entity role `flow` should canonicalize to `process` before strict validation/compilation. Execution 17541. Job is immutable.
 
 - 2026-09-10: Diagram-role-alias stage deploy did not start because active-execution SQL was malformed by shell quoting. No runtime mutation occurred; redo preflight via Python.
+
+- 2026-09-10: Fresh V6 job `29f84b1c-7a74-4077-9c1c-cbcffedc4bd6` is immutable after WF02 `17546`: the Poolside long storyboard route timed out at the bounded 70s gateway limit. Exact production-prompt comparison proved `cohere/north-mini-code:free` at 31.52s with HTTP 200, stop finish, valid JSON and 4 scenes; `kilo-auto/free` took 69.56s and resolved to Poolside. Next V6 correction is role-specific routing of long storyboard/final-story generation to Cohere, not timeout inflation.
