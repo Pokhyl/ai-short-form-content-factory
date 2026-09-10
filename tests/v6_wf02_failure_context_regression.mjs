@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const raw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));
+const wf=Array.isArray(raw)?raw[0]:raw;
+const node=wf.nodes.find((n)=>n.name==='Prepare Planner Failure');
+assert.ok(node);
+const code=node.parameters.jsCode;
+assert.equal(/for\s*\(const name/.test(code),false,'dynamic $() node lookup must not return');
+const job='11111111-1111-4111-8111-111111111111';
+const $input={first:()=>({json:{error:{message:'synthetic provider failure'}}})};
+const $=(name)=>({first:()=>({json:name==='Require Eligible Job'?{job_id:job}:{}})});
+const out=new Function('$input','$',code)($input,$);
+assert.equal(out[0].json.job_id,job);
+assert.equal(out[0].json.error_message,'synthetic provider failure');
+console.log('V6_WF02_FAILURE_CONTEXT_REGRESSION_PASS');
