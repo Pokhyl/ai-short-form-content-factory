@@ -1734,3 +1734,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-10: Fresh V6 job `29f84b1c-7a74-4077-9c1c-cbcffedc4bd6` is immutable after WF02 `17546`: the Poolside long storyboard route timed out at the bounded 70s gateway limit. Exact production-prompt comparison proved `cohere/north-mini-code:free` at 31.52s with HTTP 200, stop finish, valid JSON and 4 scenes; `kilo-auto/free` took 69.56s and resolved to Poolside. Next V6 correction is role-specific routing of long storyboard/final-story generation to Cohere, not timeout inflation.
 
 - 2026-09-10: V6 Cohere-route regression batch stopped only because the command referenced a non-existent comparison-center test filename. Six preceding V6 regressions passed; runtime was unchanged. Inspect the test inventory and rerun with exact filenames.
+
+- 2026-09-10: Broad V6 regression found one stale test still targeting the retired pre-claim visual-review nodes. Eleven current tests passed first. Convert the stale test to assert reviewer-path retirement; do not restore old nodes.
