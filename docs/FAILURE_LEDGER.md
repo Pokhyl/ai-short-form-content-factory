@@ -233,3 +233,9 @@ Second real V6 stage job `5d073afc-3733-4f7e-8288-42e58a5304fa` (`Почему �
 ### 2026-09-10 V6 reviewer 12+12 replay harness JS failure
 
 The first component replay intended to split immutable reviewer execution `17467` from 24 images into deterministic 12+12 halves did not reach the V4 model gateway. The diagnostic Node script incorrectly called `.catch()` on the return value of `process.stdin.on(...)`, causing `TypeError: process.stdin.on(...).catch is not a function`. No provider call from this replay, product job mutation, workflow/database change, or source change occurred. Re-run using a standalone JS file with execution data passed on stdin.
+
+### 2026-09-10 V6 reviewer split proof — 12-image Kilo still length-limited
+
+Exact component replay of immutable reviewer execution `17467` deterministically split its 24-image batch into two 12-image halves and sent both through the unchanged V4 model gateway. Both calls returned HTTP 200. Kilo `stepfun/step-3.7-flash:free` still failed on both halves with `finish_reason=length` (`unusable finish_reason:length` / `empty model output`), while Gemini `gemini-3.1-flash-lite` completed both halves successfully. Therefore reducing reviewer batch size only from 24 to 12 does not restore an independent Kilo reviewer fallback. No product job was resumed or mutated.
+
+The diagnostic script then returned nonzero only during cleanup because the temporary JS copied into the n8n container was root-owned and `docker exec` attempted to remove it as the default node user (`Operation not permitted`). Both model calls had already completed. Future cleanup must run as container root; this cleanup error is not product evidence.

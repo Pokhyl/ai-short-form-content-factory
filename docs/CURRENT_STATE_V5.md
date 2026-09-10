@@ -1612,3 +1612,7 @@ New immutable stage job `5d073afc-3733-4f7e-8288-42e58a5304fa` (`Почему н
 ### 2026-09-10 V6 reviewer split replay harness failure
 
 The first 12+12 component replay for exact reviewer execution `17467` failed before any model call because the diagnostic Node script incorrectly chained `.catch()` from `process.stdin.on(...)`. No product state changed. The replay must be repeated unchanged with a standalone script and stdin reserved for the flatted execution payload.
+
+### 2026-09-10 V6 reviewer 12+12 component proof
+
+The exact failed batch from execution `17467` was replayed without changing product state as deterministic 12+12 image halves. Kilo remained output-length limited on both halves; Gemini completed both. Thus 24→12 batching alone is not a sufficient reliability fix. The replay command's only nonzero exit occurred after the proofs when a root-owned temporary JS file could not be removed by the default container user. Next diagnostic: inspect Kilo output-token budget and test a smaller deterministic batch before changing source.
