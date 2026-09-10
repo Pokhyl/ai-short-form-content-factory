@@ -1476,3 +1476,7 @@ During independent-TTS inspection, media-worker source confirmed the existing `a
 ### 2026-09-10 Piper alignment feasibility probe reached synthesis
 
 A disposable Python 3.11 probe installed `piper-tts[alignment]==1.8.0`, downloaded `ru_RU-dmitri-medium`, patched the ONNX model to expose alignment output, loaded it with alignment support and synthesized a complete Russian sentence in one continuous chunk. The chunk is 22050 Hz mono with 141312 PCM bytes and exposes 80 phonemes plus 80 exact sample-count alignments. The run failed only when the diagnostic printer attempted to JSON-serialize NumPy `int64`; synthesis/alignment itself completed. Repeat diagnostics with explicit primitive casts before designing word-boundary mapping.
+
+### 2026-09-10 V6 timing-inspection SIGPIPE harness failure
+
+A read-only search of timing/caption references used `grep | head` under `pipefail`; the producer exited on SIGPIPE (141) after the consumer reached its output limit. No product/TTS/renderer conclusion is drawn from that harness failure and no product source or production state changed. Repeat without a truncating pipeline before changing timing contracts.

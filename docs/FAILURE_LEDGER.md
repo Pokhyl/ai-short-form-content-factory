@@ -160,3 +160,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### V6 Piper dependency probe — alignment JSON display failure
 
 - 2026-09-10: disposable `python:3.11-slim` successfully installed `piper-tts[alignment]==1.8.0`, downloaded and alignment-patched `ru_RU-dmitri-medium`, loaded it with `include_alignments=true`, and synthesized the full Russian test sentence as one continuous `AudioChunk` (`22050 Hz`, mono, 141312 PCM bytes) with 80 phonemes and 80 phoneme alignments. The probe then failed only while JSON-serializing NumPy `int64` alignment fields for display. This is not a Piper synthesis/alignment failure. Re-run with explicit primitive casts; do not change product source from this harness error.
+
+### Operator/tooling note — V6 timing inspection SIGPIPE
+
+- 2026-09-10: a read-only timing-contract inspection used `grep ... | head` under `set -o pipefail`; `head` closed the pipe after its limit and `grep` exited on SIGPIPE, producing return code 141 before the Remotion caption source was printed. This is not a product/TTS/renderer failure. Repeat the inspection without a truncating pipe. No product source or production state changed.
