@@ -144,3 +144,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### Operator/test-harness note — nested heredoc interpolation in V6 stream inspection
 
 - 2026-09-10: the first direct component stream-inspection harness confirmed the synthetic input WAV is `pcm_s16le`, `48000 Hz`, `2 channels`, `3.000000 s`, then failed before `renderV6Composition()` because the outer shell expanded `${job}` / `${i}` inside an embedded Node heredoc under `set -u`. No renderer conclusion is drawn. Re-run by writing a standalone `.mjs` fixture file and executing it inside the exact image; do not alter product code from this quoting failure.
+
+### V6 renderer root cause — Remotion emits full-range `yuvj420p`
+
+- 2026-09-10: exact component replay of the HTTP fixture preserved the rendered MP4 and proved the stream mismatch precisely. Input WAV is `pcm_s16le`, `48000 Hz`, `2 channels`, `3.000000 s`. Remotion output is H.264 `1080x1920`, AAC `48000 Hz`, `2 channels`, container `3.051 s`, and measured pixel QA PASS `3/3 states`, `0 adjacent`, `0 black`, `0 flat`; however ffprobe reports video `pix_fmt=yuvj420p`, not required `yuv420p`, despite `renderMedia(pixelFormat:'yuv420p')`. Do not weaken the final stream gate. Normalize the completed Remotion video deterministically to limited-range `yuv420p` before final pixel QA/hash/publish, then verify the exact normalized artifact.
