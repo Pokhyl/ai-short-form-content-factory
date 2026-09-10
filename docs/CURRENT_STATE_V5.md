@@ -1558,3 +1558,11 @@ Disk-capacity recovery required no production-data mutation: stale test-only con
 ### 2026-09-10 V6 schema-prep active-execution query quoting failure
 
 The first production schema-prep helper stopped before any migration or DDL because a nested shell/psql string lost SQL quotes around `new/running/waiting`, producing `column "new" does not exist`. The failure occurred immediately after creating an evidence directory and before reading or changing constraints. Production DB schema, workflows, containers and jobs remained unchanged. Repeat the same preflight by feeding SQL through stdin to psql instead of nested shell quoting; no product/schema correction is justified by this harness error.
+
+### 2026-09-10 V6 backward-compatible schema preparation complete
+
+Production PostgreSQL was prepared for isolated V6 staging without switching any production workflow routing. Before DDL, `n8n.execution_entity` had zero `new/running/waiting` executions. Exact pre/post constraint evidence and migration hashes are preserved under `/opt/ai-short-form-content-factory-runtime-backups/v6-schema-stage-20260910T181524Z`.
+
+Only verified backward-compatible migrations `024_visual_facts_story_package.sql`, `025_v6_visual_segment_shot_count.sql`, and `026_v6_visual_shot_ordinal.sql` were applied. `jobs_story_package_check` continues to accept historical `inventory-first-story-v1` and additionally accepts V6 only when `version=visual-facts-story-v1`, `editorial_contract_version=storyboard-v1`, and `visual_binding_mode=visual-facts-first-v1`. `visual_segments_shot_count_check` now permits 1-3 planned shots and `visual_shots_number_check` permits per-segment ordinals 1-3 while retaining positive global shot numbers. There were zero pre-existing V6 story packages before this preparation.
+
+No WF01-WF05 source/current/active routing, media-worker container, product job, or historical artifact was modified. n8n `/healthz` remained `{"status":"ok"}` and active executions remained zero after DDL. This schema preparation enables V6 stage jobs but is not V6 production promotion.
