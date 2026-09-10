@@ -1616,3 +1616,7 @@ The first 12+12 component replay for exact reviewer execution `17467` failed bef
 ### 2026-09-10 V6 reviewer 12+12 component proof
 
 The exact failed batch from execution `17467` was replayed without changing product state as deterministic 12+12 image halves. Kilo remained output-length limited on both halves; Gemini completed both. Thus 24→12 batching alone is not a sufficient reliability fix. The replay command's only nonzero exit occurred after the proofs when a root-owned temporary JS file could not be removed by the default container user. Next diagnostic: inspect Kilo output-token budget and test a smaller deterministic batch before changing source.
+
+### 2026-09-10 V6 reviewer 6-image component proof
+
+The failed Visual Facts reviewer batch from execution `17467` was replayed as four exact 6-image chunks. Kilo remained output-length limited on every chunk; Gemini completed all four. Therefore reducing 24→12 or 24→6 is not a valid systemic fix. One final one-image control should determine whether the problem is batch size at all or the Kilo reviewer contract/provider itself.
