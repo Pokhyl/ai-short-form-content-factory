@@ -192,3 +192,5 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 
 - 2026-09-10: first network-disabled Edge→Piper image proof used `docker exec ... node -` without `-i`; stdin was not attached, so no POST occurred and no WAV existed. This is a harness-only failure. Re-run unchanged with `docker exec -i`; do not alter TTS source from this result.
 - 2026-09-10: repeated known operator failure: isolated offline TTS proof used `docker exec ... node -` without `-i`, so Node received no heredoc, no HTTP request was made, and the response file was empty. This exact stdin-attachment mistake has occurred before. Mandatory lesson: any stdin-fed `docker exec` command must include `-i`; an empty response from such a harness is never product evidence.
+
+- 2026-09-10: network-disabled Edge→Piper HTTP proof itself succeeded (`200`, `self_hosted_piper`, `failover_used=true`, pinned faster-whisper timing), but the final harness ffprobe used a stale `/audio/voiceover.wav` path instead of the endpoint-returned `jobs/<id>/voiceover/full.wav`. This is a harness-path mismatch only; re-probe the exact returned durable path without changing TTS source.

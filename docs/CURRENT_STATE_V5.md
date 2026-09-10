@@ -1534,3 +1534,7 @@ The first network-disabled `Edge -> Piper/Whisper` image-level proof started the
 ### 2026-09-10 repeated docker-exec stdin mistake in offline TTS proof
 
 The first isolated no-network `Edge -> Piper` HTTP proof did not issue its intended request. The harness again used `docker exec ... node -` without `-i`, so the heredoc was not attached to container stdin; elapsed time was 1 s and `response.json` remained empty, after which the host JSON parser failed. This repeats a previously documented operator error and is not TTS evidence. No product source or production state changed. Corrective proof must use `docker exec -i ... node -` for every stdin-fed Node script; do not modify TTS code from this failure.
+
+### 2026-09-10 V6 offline TTS proof stale artifact-path probe
+
+The corrected network-disabled proof successfully exercised the actual HTTP endpoint and returned HTTP 200 from the independent fallback: `provider=self_hosted_piper`, `model=piper-tts-1.2.0`, `voice=ru_RU-dmitri-medium`, `failover_used=true`, `word_timing.provider=self_hosted_piper_faster_whisper`, pinned faster-whisper model/runtime, and 24 exact canonical timing items. The harness then failed only because its final ffprobe still assumed the retired path `/data/jobs/<id>/audio/voiceover.wav`; the endpoint explicitly returned the durable path `jobs/<id>/voiceover/full.wav`. No TTS source correction is justified. Repeat the file probe using the exact returned `voiceover_path`.
