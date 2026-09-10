@@ -1720,3 +1720,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-10: V6 final-story route deploy reached import/publish/restart; only the post-deploy SQL check failed because of quoting. Must verify active/current and webhooks before new job.
 
 - 2026-09-10: Fresh V6 submission attempt via external publisher URL returned HTTP 403; no job created. Use local registered webhook from n8n container for the next submission.
+
+- 2026-09-10: Execution 17533 still requires decoded node-level failure inspection; first flatted decoder invocation omitted docker `-i` and produced no diagnostic output.
