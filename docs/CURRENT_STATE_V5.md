@@ -1488,3 +1488,7 @@ A realistic RU component proof synthesized 3 frozen one-sentence story units as 
 ### 2026-09-10 V6 WF03 duration-rewrite story-version defect
 
 During independent TTS integration inspection, `Apply Duration Rewrite` was found to retain a V5-only `inventory-first-story-v1` equality check even though the active V6 source uses `visual-facts-story-v1` and the surrounding WF03 nodes already accept both explicit versions. A V6 job needing its one allowed measured duration rewrite would therefore fail deterministically at this node. This is a real V6 source defect, not a provider failure. The correction must only broaden that explicit story-version check to the two supported contracts and preserve all existing rewrite/grounding/frozen-identity limits. Production is unchanged.
+
+### 2026-09-10 MIT Piper 1.2.0 downloader harness mismatch
+
+The license-safe Piper compatibility check established that `piper-tts 1.2.0` is MIT-licensed and its Python 3.11 install exposes `PiperVoice`, but the probe stopped before synthesis because `python -m piper.download_voices` does not exist in that older package. This is a tooling difference, not proof of voice-model incompatibility. Repeat using pinned direct model/config downloads with exact SHA checks. Production remains unchanged.

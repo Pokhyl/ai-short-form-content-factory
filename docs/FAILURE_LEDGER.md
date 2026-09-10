@@ -172,3 +172,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### V6 WF03 duration rewrite still rejects the V6 story version
 
 - 2026-09-10: source inspection during independent TTS work found a real V6 execution defect in `Apply Duration Rewrite`: it still requires `old.version === 'inventory-first-story-v1'`, while `Require Eligible Voiceover Job`, persistence, and the V6 architecture accept `visual-facts-story-v1`. Therefore any V6 narration that is outside the first exact-duration measurement and legitimately enters the single bounded rewrite would fail before the rewritten narration can be accepted. Correct the version gate to accept both explicit story contracts without weakening the one-rewrite, frozen-identity, grounding, or sentence-completion rules. Production remains unchanged.
+
+### Operator/tooling note — MIT Piper 1.2.0 voice downloader mismatch
+
+- 2026-09-10: compatibility probe confirmed `piper-tts==1.2.0` installs on Python 3.11, reports MIT license, and exposes `PiperVoice`, but the probe then failed because this older package does not ship the newer `piper.download_voices` module. No synthesis compatibility conclusion is drawn yet. Repeat with pinned direct voice-model/config downloads and SHA verification; do not switch back to GPL solely because the helper module is absent.
