@@ -1522,3 +1522,7 @@ The exact media-worker build with pinned Piper/faster-whisper runtime progressed
 ### 2026-09-10 direct Git checkpoint ownership failure during disk recovery
 
 After recording the V6 TTS image build disk-capacity failure, a direct SentinelX Git checkpoint attempted to run repository Git as the non-root agent user and was rejected with `fatal: detected dubious ownership in repository`. No git configuration is changed and no product/production state changed. The repository is root-owned and prior successful operations already used privileged Git. Corrective checkpointing must use `sudo git -C <repo> ...` plus the existing deploy key, not `safe.directory` or credential/config mutation.
+
+### 2026-09-10 V6 TTS image verification wrapper timeout after successful build
+
+After reclaiming only unused Docker builder cache and proven-unused test images, the exact V6 TTS media-worker build was re-run. The SentinelX script wrapper reached its 600 s wall-clock timeout before returning its verification output, so no PASS was claimed from that call. Read-only inspection immediately afterward proved the Docker build itself had completed and the requested tag exists as image `sha256:921826cc6efec846e86c5089518711118201adc7382e08ad10a6c51741332b13` (size 1,558,837,082 bytes), with no build/download process still running. Do not rebuild blindly; continue source/image/checksum/health verification against this exact existing image. Production remains unchanged.
