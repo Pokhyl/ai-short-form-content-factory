@@ -59,3 +59,9 @@ The failures split into two classes and must not be treated the same:
 2. **Real V6 compatibility gaps.** Story fixtures, schema expectations, WF04 runtime fixtures and downstream render contracts still assume V5 fields or two-shot behavior. Those must be corrected in source and regression fixtures together, with no quality-gate weakening.
 
 The corrective rule is: do not make old tests green by restoring V5 architecture, and do not delete a regression unless its safety/quality invariant is represented by an explicit V6 replacement regression.
+
+## Additional source defect proven during regression triage
+
+The first V6 implementation removed the old post-claim fingerprint loop but `Select Pre-Claim Visual Inventory` still passes discovery candidates that do not contain a deterministic `visual_hash`. `Validate Candidate Claims` then materializes `verified_visual_assets.visual_hash` from that missing field, while `Build Final Inventory Story` requires visual hashes to enforce no-repeat identity. This makes the current uncommitted V6 path internally inconsistent even if obsolete V5 tests were rewritten.
+
+Correction must move deterministic preview fingerprinting into the single pre-story Visual Facts inventory path. It must not restore the retired second media-search/review loop. Pixel review remains single-pass; fingerprinting is deterministic media identity, not a second semantic review.
