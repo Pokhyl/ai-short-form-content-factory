@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {validateDiagramSpec,compileDiagramSpec} from '../services/media-worker/src/diagram-compiler.mjs';
+const spec={shot_id:'S2A',grounded_fact_ids:['S8'],archetype:'split',entities:[{id:'sun',label:'Sun',role:'input',shape:'circle',lane:'left'},{id:'white',label:'White light',role:'flow',shape:'box',lane:'center'},{id:'blue',label:'Blue',role:'output',shape:'box',lane:'right'},{id:'red',label:'Red',role:'output',shape:'box',lane:'right'}],relations:[{from:'sun',to:'white',kind:'emits',phase:1},{from:'white',to:'blue',kind:'splits',phase:2},{from:'white',to:'red',kind:'splits',phase:2}]};
+const valid=validateDiagramSpec(spec,{expectedShotId:'S2A',allowedFactIds:['S8']});
+assert.equal(valid.entities.find(e=>e.id==='white').role,'process');
+const compiled=compileDiagramSpec(spec,4,{expectedShotId:'S2A',allowedFactIds:['S8']});
+assert.equal(compiled.source.compiler,'diagram-compiler-v1');
+const wfRaw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));const wf=Array.isArray(wfRaw)?wfRaw[0]:wfRaw;const code=wf.nodes.find(n=>n.name==='Validate Storyboard').parameters.jsCode;
+assert.match(code,/rawRole==='flow'\?'process':rawRole/);
+console.log('V6_DIAGRAM_ROLE_ALIAS_REGRESSION_PASS');

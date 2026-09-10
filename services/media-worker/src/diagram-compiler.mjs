@@ -33,7 +33,7 @@ export function validateDiagramSpec(input,{expectedShotId=null,allowedFactIds=nu
   input.entities.forEach((raw,index)=>{
     if(!raw||typeof raw!=="object"||Array.isArray(raw))throw new Error(`entities[${index+1}] must be an object`);
     const id=requiredText(raw.id,`entities[${index+1}].id`);if(ids.has(id))throw new Error(`duplicate entity id: ${id}`);ids.add(id);
-    const role=requiredText(raw.role,`entities[${index+1}].role`);if(!ENTITY_ROLES.has(role))throw new Error(`invalid entity role: ${role}`);
+    const rawRole=requiredText(raw.role,`entities[${index+1}].role`),role=rawRole==="flow"?"process":rawRole;if(!ENTITY_ROLES.has(role))throw new Error(`invalid entity role: ${role}`);
     const shape=clean(raw.shape)||"box";if(!ENTITY_SHAPES.has(shape))throw new Error(`invalid entity shape: ${shape}`);
     const lane=clean(raw.lane)||null;if(lane!==null&&!LANES.has(lane))throw new Error(`invalid entity lane: ${lane}`);
     const order=raw.order===undefined?index:Number(raw.order);if(!Number.isInteger(order)||order<0||order>20)throw new Error(`entities[${index+1}].order is invalid`);
