@@ -1,7 +1,7 @@
 const ARCHETYPES = new Set(["flow", "merge", "split", "comparison", "layered_stack", "assembly"]);
 const ENTITY_ROLES = new Set(["input", "process", "output", "layer", "subject", "result"]);
 const ENTITY_SHAPES = new Set(["box", "pill", "circle"]);
-const LANES = new Set(["left", "right"]);
+const LANES = new Set(["left", "right", "center"]);
 const RELATION_KINDS = new Set(["flow", "joins", "splits", "emits", "blocks", "contains", "transforms"]);
 const FORBIDDEN_GEOMETRY_FIELDS = new Set(["x","y","x1","y1","x2","y2","cx","cy","r","width","height","points","translate","scale","rotate","path","d"]);
 
@@ -64,7 +64,7 @@ const wrapLabel=(label,maxChars=18)=>{const words=label.split(/\s+/u).filter(Boo
 function layoutPositions(spec){
   const positions=new Map(),kind=spec.archetype,entities=spec.entities;
   if(["flow","layered_stack"].includes(kind)){const ordered=[...entities].sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id)),top=280,bottom=1030,step=(bottom-top)/Math.max(1,ordered.length-1);ordered.forEach((e,i)=>positions.set(e.id,[360,top+i*step]));}
-  else if(kind==="comparison"){for(const [lane,x] of [["left",190],["right",530]]){const rows=entities.filter((e)=>e.lane===lane).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id)),top=300,bottom=1000,step=(bottom-top)/Math.max(1,rows.length-1);rows.forEach((e,i)=>positions.set(e.id,[x,top+i*step]));}}
+  else if(kind==="comparison"){for(const [lane,x] of [["left",190],["right",530]]){const rows=entities.filter((e)=>e.lane===lane).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id)),top=300,bottom=1000,step=(bottom-top)/Math.max(1,rows.length-1);rows.forEach((e,i)=>positions.set(e.id,[x,top+i*step]));}const center=entities.filter((e)=>e.lane==="center").sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id));const centerTop=520,centerBottom=780,centerStep=(centerBottom-centerTop)/Math.max(1,center.length-1);center.forEach((e,i)=>positions.set(e.id,[360,centerTop+i*centerStep]));}
   else if(["merge","assembly"].includes(kind)){const inputs=entities.filter((e)=>["input","subject"].includes(e.role)),middle=entities.filter((e)=>e.role==="process"),outputs=entities.filter((e)=>["output","result"].includes(e.role));spreadX(inputs.length).forEach((x,i)=>positions.set(inputs[i].id,[x,340]));middle.forEach((e,i)=>positions.set(e.id,[360,620+i*150]));outputs.forEach((e,i)=>positions.set(e.id,[360,980+i*130]));}
   else if(kind==="split"){const inputs=entities.filter((e)=>e.role==="input"),middle=entities.filter((e)=>e.role==="process"),outputs=entities.filter((e)=>["output","result"].includes(e.role));positions.set(inputs[0].id,[360,300]);middle.forEach((e,i)=>positions.set(e.id,[360,540+i*150]));spreadX(outputs.length).forEach((x,i)=>positions.set(outputs[i].id,[x,960]));}
   return positions;
