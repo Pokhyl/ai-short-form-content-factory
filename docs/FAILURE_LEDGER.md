@@ -247,3 +247,7 @@ Exact component replay of immutable reviewer execution `17467` split the same 24
 ### 2026-09-10 V6 reviewer one-image control — Kilo still length-limited
 
 A final control replay used only one exact image from immutable reviewer execution `17467` with the unchanged Visual Facts reviewer prompt/schema and V4 model gateway. The call returned HTTP 200 through Gemini, but Kilo `stepfun/step-3.7-flash:free` again ended with `finish_reason=length` and empty model output. Therefore reviewer batch size is conclusively not the cause: the current Kilo visual-review lane is nonfunctional even for one image. Do not spend further product iterations lowering batch cardinality. Inspect Kilo completion/reasoning usage next; if hidden reasoning consumes the 4096-token budget, disable it by provider contract, otherwise replace/demote Kilo for multimodal review with an independent free reviewer.
+
+### 2026-09-10 V4 source-inspection export-shape mistake
+
+A read-only source inspection for `V4-model-gateway.json` assumed the exported workflow file root was an object, but this file is an array containing one workflow object. The diagnostic failed with `TypeError: list indices must be integers or slices, not str`. No workflow, provider configuration, database row, container, or job was mutated. Future inspection must normalize exported workflow JSON as `array -> first workflow` before reading nodes.

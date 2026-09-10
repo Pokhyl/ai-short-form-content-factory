@@ -1624,3 +1624,7 @@ The failed Visual Facts reviewer batch from execution `17467` was replayed as fo
 ### 2026-09-10 V6 reviewer one-image control
 
 One exact image from failed review execution `17467` was replayed through the unchanged V4 gateway. Kilo still returned `finish_reason=length` / empty output; Gemini completed. Combined with 24-, 12-, and 6-image proofs, this closes batch-size investigation. Next read-only step: inspect Kilo token/reasoning usage on the one-image execution before changing provider configuration.
+
+### 2026-09-10 V4 source-inspection harness correction
+
+The first read-only inspection of `V4-model-gateway.json` used the wrong root shape (object instead of one-element array) and failed before reading the Kilo node. No product state changed. Correct inspection normalizes array exports before examining the exact Kilo request contract.
