@@ -376,3 +376,5 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - 2026-09-10: Engineering mistake during fresh V6 stage submission after final-story routing fix: attempted external POST to publisher.hodor.com.pl from the VPS host and received HTTP 403. No job was created. Correction: submit from the n8n container to the registered local webhook, as used in prior successful stage jobs.
 
 - 2026-09-10: Engineering diagnostic mistake while decoding execution 17533: invoked `docker exec ... node -` without `-i`, so the decoder script received no stdin and produced no output. Correction: rerun the same read-only decoder with `docker exec -i`.
+
+- 2026-09-10: Engineering diagnostic mistake while decoding execution 17533: copied execution payload into n8n container with permissions unreadable by the node user, causing EACCES. Correction: copy to a readable path/adjust permissions before decode.
