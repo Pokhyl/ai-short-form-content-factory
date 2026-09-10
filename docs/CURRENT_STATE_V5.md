@@ -1641,3 +1641,6 @@ A read-only schema search included nonexistent `migrations` after already locati
 ## 2026-09-10 V6 storyboard-first implementation checkpoint
 
 The first static planning regression found retained WF02 semantic-intake/topic-resolution HTTP nodes still calling `/webhook/v4-model-gateway`. New storyboard/final-story calls already use `/webhook/v6-model-gateway`; nothing was deployed. Before any V6 stage deploy, all WF02 model calls must be remapped to the separate free-only V6 text gateway while the legacy V4 gateway remains unchanged.
+
+### 2026-09-10 V6 operator checkpoint — focused regression host-runtime mistake
+A focused V6 regression attempt after storyboard-first WF04/WF05 wiring failed before tests because the VPS host has no `node` executable. This is an operator/runtime-selection failure, not a product result. Required correction is to run Node regressions in the pinned container runtime; no workflow behavior is inferred from this failed command.

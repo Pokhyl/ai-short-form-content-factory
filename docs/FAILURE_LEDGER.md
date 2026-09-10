@@ -264,3 +264,9 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 ### V6 storyboard-first planning regression — legacy model-gateway reference remained
 
 - 2026-09-10: first `v6_storyboard_first_planning_regression.mjs` run failed because `WF02-plan-script-and-scenes.json` still contained `/webhook/v4-model-gateway` in the retained semantic-intake/topic-resolution nodes. The new storyboard and final-story nodes already used `v6-model-gateway`, but the retained upstream text calls had not yet been remapped. No workflow was deployed and no product job was started. Correction must remap every V6 WF02 model call to the separate free-only V6 gateway; legacy V4 gateway remains untouched for rollback.
+
+### 2026-09-10 — V6 focused regression command used host Node that is not installed
+- Engineering/test failure: after wiring storyboard-first WF04/WF05 support, the focused regression command attempted `node ...` directly on the VPS host and failed with `node: command not found` before any Node regression executed.
+- Cause: operator chose the host runtime instead of the exact Node runtime already available in the n8n/media-worker containers.
+- Product impact: none; workflow JSON parsing completed, but regression execution was not proven by that command.
+- Lesson: run V6 Node regressions inside the pinned n8n/media-worker Node 22 container/runtime; do not assume host Node exists.
