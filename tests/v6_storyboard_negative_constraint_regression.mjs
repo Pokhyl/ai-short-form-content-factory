@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const raw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));
+const wf=Array.isArray(raw)?raw[0]:raw;
+const code=wf.nodes.find(n=>n.name==='Freeze Storyboard Feasibility').parameters.jsCode;
+assert.match(code,/forbiddenClauses/);
+assert.match(code,/clause\.every/);
+const shot={shot_id:'S4A',representation:'context_media',must_show:['clear blue daytime sky','natural clouds','peaceful horizon'],must_not_show:['storm clouds or dark skies','nighttime or sunset scenes','artificial or digitally altered skies'],search_query_en:'clear blue daytime sky with clouds natural',communication_goal:'show a peaceful blue sky',crop_policy:'portrait_required',grounded_fact_ids:['S1']};
+const base={job_id:'job-1',external_shots:[shot],storyboard_scenes:[{scene_id:'S4',purpose:'close',grounded_fact_ids:['S1'],narration_intent:'close',shots:[shot]}]};
+const candidate={candidate_id:'pexels:36700745',provider:'pexels',provider_asset_id:'36700745',download_url:'https://example.test/a.jpg',source_url:'https://example.test',author:'x',license:'Pexels License',license_url:'https://example.test/license',media_kind:'photo',title:'A serene view of the blue sky filled with scattered fluffy clouds on a clear day.',description:'Gentle clouds in a clear blue daytime sky.',categories:'sky clouds nature',metadata:{source_width:3000,source_height:4000},inventory_subject_anchor_pass:true,inventory_detail_required:2,inventory_detail_hits:5};
+const inv={exploration_version:'pre-claim-visual-exploration-v1',exploration_queries:[{query_id:'S4A',provider_query:shot.search_query_en,candidates:[candidate]}]};
+const fn=new Function('$','$input',code);
+const result=fn((name)=>({first:()=>({json:base})}),{first:()=>({json:inv})});
+assert.equal(result[0].json.feasible_storyboard[0].shots[0].asset.provider_asset_id,'36700745');
+const storm={...candidate,provider_asset_id:'storm',candidate_id:'pexels:storm',title:'Dark storm clouds over the horizon',description:'Dark storm clouds'};
+assert.throws(()=>fn((name)=>({first:()=>({json:base})}),{first:()=>({json:{...inv,exploration_queries:[{query_id:'S4A',provider_query:shot.search_query_en,candidates:[storm]}]}})}),/no deterministic executable media/);
+console.log('V6_STORYBOARD_NEGATIVE_CONSTRAINT_REGRESSION_PASS');
