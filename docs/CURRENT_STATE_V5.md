@@ -1716,3 +1716,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 2026-09-10 23:08 CEST — V6 fresh job `e8c35dd1-b742-40dc-b16a-e14a4c45b6f1` is immutable after WF02 `17527`. It passed the new storyboard-first planning and feasibility stages. Final narration failed only because gateway execution `17531` received HTTP 404 from the default Nemotron free route on the long final-story prompt. Short semantic calls on the same route had succeeded earlier. Use the proven Poolside free route for long final-story generation, with JSON parsing at the gateway and strict unit/word/scene validation remaining in WF02.
 
 - 2026-09-10: V6 implementation note: final-story route patch was written, but the first regression command failed because host `node` was unavailable. Run JS tests inside an existing Node-capable container before commit/deploy.
+
+- 2026-09-10: V6 final-story route deploy reached import/publish/restart; only the post-deploy SQL check failed because of quoting. Must verify active/current and webhooks before new job.
