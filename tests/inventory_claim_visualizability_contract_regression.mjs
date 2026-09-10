@@ -18,7 +18,7 @@ const mk=(badTarget=null)=>Array.from({length:6},(_,i)=>({claim_id:`C${i+1}`,cla
 const run=(claims)=>new Function('$input','$',validate)({first:()=>({json:{text:JSON.stringify({claims})}})},name=>{assert.equal(name,'Prepare Candidate Claims');return {first:()=>({json:out})}});
 const valid=run(mk())[0].json.candidate_claims;assert.equal(valid.length,6);assert.equal(valid[0].inventory_asset_ids[0],'V1');
 const showingTarget=mk('steel miter lock gates showing gate structure');assert.equal(run(showingTarget)[0].json.candidate_claims[0].visual_target,'steel miter lock gates showing gate structure');
-assert.throws(()=>run(mk('close-up showing steel miter lock gates during operation')),/compact observable visual_target/);
-const invented=mk();invented[0].visual_target='unrepresented quantum widget';assert.throws(()=>run(invented),/not represented in cited real inventory/);
-const badId=mk();badId[0].inventory_asset_ids=['V999'];assert.throws(()=>run(badId),/invalid availability asset IDs/);
+const badObservable=run(mk('close-up showing steel miter lock gates during operation'))[0].json;assert(!badObservable.candidate_claims.some(c=>c.claim_id==='C1'));assert.match(badObservable.candidate_rejections.find(x=>x.source_claim_id==='C1').reason,/compact observable visual_target/);
+const invented=mk();invented[0].visual_target='unrepresented quantum widget';const inventedOut=run(invented)[0].json;assert(!inventedOut.candidate_claims.some(c=>c.claim_id==='C1'));assert.match(inventedOut.candidate_rejections.find(x=>x.source_claim_id==='C1').reason,/not represented in cited real inventory/);
+const badId=mk();badId[0].inventory_asset_ids=['V999'];const badIdOut=run(badId)[0].json;assert(!badIdOut.candidate_claims.some(c=>c.claim_id==='C1'));assert.match(badIdOut.candidate_rejections.find(x=>x.source_claim_id==='C1').reason,/invalid availability asset IDs/);
 console.log('INVENTORY_CLAIM_VISUALIZABILITY_CONTRACT_REGRESSION_PASS');

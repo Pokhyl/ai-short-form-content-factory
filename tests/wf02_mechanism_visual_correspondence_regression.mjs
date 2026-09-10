@@ -11,7 +11,7 @@ const assets=[
  {inventory_id:'V5',preclaim_visual_form:'photo',preclaim_visible_description:'Transmission lines leaving a power station',title:'transmission lines',description:'power lines',categories:'hydroelectric'},
  {inventory_id:'V6',preclaim_visual_form:'photo',preclaim_visible_description:'Reservoir water behind a concrete dam',title:'reservoir dam',description:'reservoir water',categories:'hydroelectric'},
 ];
-const base={user_intent:'Explain how the hydroelectric system works',canonical_subject:'Hydroelectric plant',research_rows:[{id:'S1'},{id:'S2'}],candidate_claim_range:[6,6],available_visual_assets:assets};
+const base={target_duration_seconds:15,user_intent:'Explain how the hydroelectric system works',canonical_subject:'Hydroelectric plant',research_rows:[{id:'S1'},{id:'S2'}],candidate_claim_range:[6,6],available_visual_assets:assets};
 const roles=['hook','mechanism','detail','result','context','establish'];
 const good=[
  {claim_id:'C1',claim:'The plant stores water behind the dam.',evidence_ids:['S1'],editorial_role:'hook',visual_form:'photo',visual_target:'concrete dam reservoir',search_query_en:'hydroelectric plant dam reservoir',inventory_asset_ids:['V1']},
@@ -24,9 +24,9 @@ const good=[
 const run=claims=>new Function('$input','$',validate)({first:()=>({json:{text:JSON.stringify({claims})}})},name=>{assert.equal(name,'Prepare Candidate Claims');return {first:()=>({json:base})}});
 assert.equal(run(good)[0].json.candidate_claims.length,6);
 const contextOnly=structuredClone(good);contextOnly[1]={...contextOnly[1],claim:'Water turns hidden turbine machinery and raises electrical output.',visual_form:'photo',visual_target:'dam exterior reservoir',search_query_en:'hydroelectric plant dam exterior',inventory_asset_ids:['V1']};
-assert.throws(()=>run(contextOnly),/mechanism visual target is not claim-aligned/,'generic context must not visually stand in for a hidden mechanism');
+const contextFiltered=run(contextOnly)[0].json;assert(!contextFiltered.candidate_claims.some(c=>c.claim_id==='C2'),'generic context must not visually stand in for a hidden mechanism');assert.match(contextFiltered.candidate_rejections.find(x=>x.source_claim_id==='C2').reason,/mechanism visual target is not claim-aligned/);
 const unreviewedAnchor=structuredClone(good);unreviewedAnchor[1]={...unreviewedAnchor[1],visual_target:'turbine wicket gate assembly',search_query_en:'hydroelectric plant wicket gate assembly',inventory_asset_ids:['V2']};
-assert.throws(()=>run(unreviewedAnchor),/mechanism visual target is not claim-aligned|not represented in cited real inventory|not present in pixel-reviewed inventory/);
+const unreviewedFiltered=run(unreviewedAnchor)[0].json;assert(!unreviewedFiltered.candidate_claims.some(c=>c.claim_id==='C2'));assert.match(unreviewedFiltered.candidate_rejections.find(x=>x.source_claim_id==='C2').reason,/mechanism visual target is not claim-aligned|not represented in cited real inventory|not present in pixel-reviewed inventory/);
 
 const finalCode=nodes.get('Build Final Inventory Story').parameters.jsCode;
 const mkAsset=(id,supported,desc)=>({asset_id:id,supported_claim_id:supported,supported_editorial_role:'mechanism',supported_visual_form:'photo',visible_description:desc,visual_hash:(id.charCodeAt(1)%16).toString(16).repeat(64),provider:'fixture',provider_asset_id:id});
