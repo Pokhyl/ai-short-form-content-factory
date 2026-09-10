@@ -1592,3 +1592,7 @@ The first monitor for stage job `8985460d-4473-4111-9737-ddfa6233df60` used obso
 ### 2026-09-10 first V6 stage cross-topic job failed before story generation
 
 Stage job `8985460d-4473-4111-9737-ddfa6233df60` (`Почему небо голубое?` / `ru` / `15`) failed immutably in stage WF02 execution `17457`; WF01 `17456` succeeded. Exact error: `SearXNG research failed: fetch failed`. No downstream WF03/WF04/WF05 execution or artifact exists. Next step is read-only network/root-cause proof from the isolated V6 worker; do not resume this job.
+
+### 2026-09-10 V6 stage SearXNG root cause proved
+
+Stage worker network parity was incomplete: `cf-v6-stage-worker` lacked `n8n_default`, the network hosting `ai-short-form-v4-search`. Production worker has both required networks and returns HTTP 200 from the same SearXNG URL. Stage worker returned `fetch failed`. Correction is stage-infrastructure-only: attach `cf-v6-stage-worker` to `n8n_default`, verify search HTTP 200, then create a completely new V6 stage job. Failed `8985460d...` remains immutable.

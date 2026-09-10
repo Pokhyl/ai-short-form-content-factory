@@ -213,3 +213,7 @@ After creating the first V6 stage cross-topic job, a read-only monitor queried `
 ### 2026-09-10 V6 stage cross-topic failure — SearXNG fetch
 
 First real V6 stage cross-topic job `8985460d-4473-4111-9737-ddfa6233df60` (`Почему небо голубое?` / `ru` / `15`) is immutable FAILED at `script`. Stage WF01 execution `17456` succeeded; stage WF02 execution `17457` failed with exact durable error `502 - {"error":"research_search_failed","message":"SearXNG research failed: fetch failed"}`. No voiceover, visuals, render, MP4, or HUMAN review exists for this job. Do not retry/resume it. Before changing product code, prove whether this is stage network configuration or a shared media-worker research defect.
+
+### 2026-09-10 V6 stage SearXNG failure root cause — missing edge network
+
+Read-only comparison proved stage job `8985460d-4473-4111-9737-ddfa6233df60` failed because `cf-v6-stage-worker` was attached only to `ai-short-form-content-factory_default`, while shared `ai-short-form-v4-search` is reachable on `n8n_default`. Production media-worker is attached to both networks and its identical `SEARXNG_URL` returns HTTP 200; stage worker returned `fetch failed`. This is staging infrastructure parity, not a V6 research-code defect. Correct only the stage worker network attachment; do not resume the failed job and do not change product retrieval logic.
