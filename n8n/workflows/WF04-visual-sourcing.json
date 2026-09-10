@@ -66,7 +66,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const j=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(!j.job_exists)throw new Error(`Job ${j.requested_job_id} was not found`);if(j.content_model_version!=='staged_v1')throw new Error(`Unsupported content model: ${j.content_model_version}`);if(j.status!=='processing'||j.current_stage!=='voiceover')throw new Error(`Job ${j.job_id} is not eligible for visual execution: ${j.status}/${j.current_stage}`);if(!clean(j.voiceover_path)||!Number.isFinite(Number(j.voiceover_duration_seconds))||Number(j.voiceover_duration_seconds)<=0)throw new Error('Accepted continuous voiceover is missing');const story=j.story_package,isV6=story?.version==='visual-facts-story-v1',isV5=story?.version==='inventory-first-story-v1';if(!story||(!isV6&&!isV5)||!Array.isArray(story.units)||story.units.length<2||story.units.length>12||!Array.isArray(story.assets)||story.assets.length!==story.units.length)throw new Error('Supported story package is missing');if((isV6&&story.editorial_contract_version!=='storyboard-v1')||(isV5&&story.editorial_contract_version!=='shot-intent-v1'))throw new Error('Story editorial contract version is invalid');if(!Array.isArray(j.scenes)||j.scenes.length!==story.units.length)throw new Error(`Timed story unit count ${j.scenes?.length??0}/${story.units.length}`);if(Number(j.existing_visual_segment_count??0)!==0||Number(j.existing_visual_shot_count??0)!==0)throw new Error('Job already has visual execution state');const bundles=new Map(story.assets.map(a=>[clean(a?.asset_id),a]));if(bundles.size!==story.assets.length)throw new Error('Reserved story bundle IDs are not unique');const globalAssets=new Set(),globalHashes=new Set();let previous=0;for(let i=0;i<story.units.length;i++){const u=story.units[i]??{},s=j.scenes[i]??{},bundle=bundles.get(clean(u.asset_id)),start=Number(s.beat_start_seconds),end=Number(s.beat_end_seconds),dur=Number(s.duration_seconds);if(clean(u.unit_id)!==`U${i+1}`||Number(s.scene_number)!==i+1||clean(s.narration)!==clean(u.narration)||!bundle)throw new Error(`Story unit ${i+1} lost reserved bundle/timing identity`);const shotAssets=Array.isArray(bundle.shot_assets)?bundle.shot_assets:[],shotPlan=Array.isArray(u.shot_plan)?u.shot_plan:[],min=isV6?1:2,max=isV6?3:2;if(shotAssets.length<min||shotAssets.length>max||shotPlan.length!==shotAssets.length||clean(shotPlan[0]?.asset_id)!==clean(bundle.asset_id))throw new Error(`Story unit ${i+1} has invalid storyboard assets`);const bundleIds=new Set(shotAssets.map(a=>clean(a?.asset_id))),planIds=new Set(shotPlan.map(a=>clean(a?.asset_id)));if(bundleIds.size!==shotAssets.length||planIds.size!==shotPlan.length||[...bundleIds].some(id=>!planIds.has(id))||shotPlan.some(p=>!clean(p?.shot_intent)))throw new Error(`Story unit ${i+1} storyboard changed reserved inventory`);for(const a of shotAssets){const aid=clean(a?.asset_id),provider=clean(a?.provider),providerId=clean(a?.provider_asset_id),url=clean(a?.download_url),hash=clean(a?.visual_hash).toLowerCase(),form=clean(a?.visual_form),rep=clean(a?.representation);if(!aid||!provider||!providerId||!url||!/^[0-9a-f]{64}$/.test(hash))throw new Error(`Story unit ${i+1} has invalid reserved visual`);if(isV6){if(!['exact_media','factual_graphic'].includes(rep))throw new Error(`Story unit ${i+1} has unsupported representation ${rep}`);if(form==='photo'&&(rep!=='exact_media'||a.crop_safe_portrait!==true))throw new Error(`Story unit ${i+1} contains portrait-unsafe ordinary photo`);if(form!=='photo'&&rep!=='factual_graphic')throw new Error(`Story unit ${i+1} factual graphic representation mismatch`);}if(globalAssets.has(aid)||globalHashes.has(hash))throw new Error('Reserved storyboard repeats asset or preview hash');globalAssets.add(aid);globalHashes.add(hash);}if(!Number.isFinite(start)||!Number.isFinite(end)||!Number.isFinite(dur)||Math.abs(start-previous)>0.002||Math.abs((end-start)-dur)>0.012)throw new Error(`Story unit ${i+1} timing is invalid`);previous=end;}if(Math.abs(previous-Number(j.voiceover_duration_seconds))>0.01)throw new Error('Story units do not cover accepted voiceover');return [{json:{...j,story_unit_count:story.units.length,reserved_visual_count:globalAssets.size,story_contract_version:story.version}}];"
+          "jsCode": "const j=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();\nif(!j.job_exists)throw new Error(`Job ${j.requested_job_id} was not found`);\nif(j.content_model_version!=='staged_v1')throw new Error(`Unsupported content model: ${j.content_model_version}`);\nif(j.status!=='processing'||j.current_stage!=='voiceover')throw new Error(`Job ${j.job_id} is not eligible for visual execution: ${j.status}/${j.current_stage}`);\nif(!clean(j.voiceover_path)||!Number.isFinite(Number(j.voiceover_duration_seconds))||Number(j.voiceover_duration_seconds)<=0)throw new Error('Accepted continuous voiceover is missing');\nconst story=j.story_package,version=clean(story?.version),isLegacy=version==='inventory-first-story-v1',isVisualFacts=version==='visual-facts-story-v1',isStoryboard=version==='storyboard-first-v1';\nif(!story||(!isLegacy&&!isVisualFacts&&!isStoryboard)||!Array.isArray(story.units)||story.units.length<2||story.units.length>12||!Array.isArray(story.assets)||story.assets.length!==story.units.length)throw new Error('Supported story package is missing');\nif((isLegacy&&story.editorial_contract_version!=='shot-intent-v1')||((isVisualFacts||isStoryboard)&&story.editorial_contract_version!=='storyboard-v1'))throw new Error('Story editorial contract version is invalid');\nif(!Array.isArray(j.scenes)||j.scenes.length!==story.units.length)throw new Error(`Timed story unit count ${j.scenes?.length??0}/${story.units.length}`);\nif(Number(j.existing_visual_segment_count??0)!==0||Number(j.existing_visual_shot_count??0)!==0)throw new Error('Job already has visual execution state');\nconst bundles=new Map(story.assets.map(a=>[clean(a?.asset_id),a]));if(bundles.size!==story.assets.length)throw new Error('Reserved story bundle IDs are not unique');\nconst globalAssets=new Set();let previous=0;\nfor(let i=0;i<story.units.length;i++){\n const u=story.units[i]??{},s=j.scenes[i]??{},bundle=bundles.get(clean(u.asset_id)),start=Number(s.beat_start_seconds),end=Number(s.beat_end_seconds),dur=Number(s.duration_seconds);\n if(clean(u.unit_id)!==`U${i+1}`||Number(s.scene_number)!==i+1||clean(s.narration)!==clean(u.narration)||!bundle)throw new Error(`Story unit ${i+1} lost reserved bundle/timing identity`);\n const shotAssets=Array.isArray(bundle.shot_assets)?bundle.shot_assets:[],shotPlan=Array.isArray(u.shot_plan)?u.shot_plan:[],min=isLegacy?2:1,max=isLegacy?2:3;\n if(shotAssets.length<min||shotAssets.length>max||shotPlan.length!==shotAssets.length||clean(shotPlan[0]?.asset_id)!==clean(bundle.asset_id))throw new Error(`Story unit ${i+1} has invalid storyboard assets`);\n const bundleIds=new Set(shotAssets.map(a=>clean(a?.asset_id))),planIds=new Set(shotPlan.map(a=>clean(a?.asset_id)));\n if(bundleIds.size!==shotAssets.length||planIds.size!==shotPlan.length||[...bundleIds].some(id=>!planIds.has(id))||shotPlan.some(p=>!clean(p?.shot_intent)))throw new Error(`Story unit ${i+1} storyboard changed reserved assets`);\n for(const a of shotAssets){\n  const aid=clean(a?.asset_id),provider=clean(a?.provider).toLowerCase(),providerId=clean(a?.provider_asset_id),rep=clean(a?.representation),form=clean(a?.visual_form).toLowerCase();\n  if(!aid||!provider||!providerId||globalAssets.has(aid))throw new Error(`Story unit ${i+1} has invalid or repeated reserved asset`);globalAssets.add(aid);\n  if(isStoryboard){\n   if(!['exact_media','context_media','diagram','map','document'].includes(rep))throw new Error(`Story unit ${i+1} has unsupported storyboard representation ${rep}`);\n   if(rep==='diagram'){\n    if(provider!=='constructed'||form!=='diagram'||a.download_url!==null||!a.diagram_spec||typeof a.diagram_spec!=='object'||!Array.isArray(a.grounded_fact_ids)||!a.grounded_fact_ids.length)throw new Error(`Story unit ${i+1} has invalid constructed diagram`);\n   }else{\n    if(!clean(a.download_url)||!clean(a.license))throw new Error(`Story unit ${i+1} external storyboard asset is incomplete`);\n    if(['exact_media','context_media'].includes(rep)&&a.crop_safe_portrait!==true)throw new Error(`Story unit ${i+1} contains portrait-unsafe external media`);\n   }\n  }else{\n   const url=clean(a?.download_url),hash=clean(a?.visual_hash).toLowerCase();if(!url||!/^[0-9a-f]{64}$/.test(hash))throw new Error(`Story unit ${i+1} has invalid reserved visual`);\n   if(isVisualFacts){if(!['exact_media','factual_graphic'].includes(rep))throw new Error(`Story unit ${i+1} has unsupported representation ${rep}`);if(form==='photo'&&(rep!=='exact_media'||a.crop_safe_portrait!==true))throw new Error(`Story unit ${i+1} contains portrait-unsafe ordinary photo`);if(form!=='photo'&&rep!=='factual_graphic')throw new Error(`Story unit ${i+1} factual graphic representation mismatch`);}\n  }\n }\n if(!Number.isFinite(start)||!Number.isFinite(end)||!Number.isFinite(dur)||Math.abs(start-previous)>0.002||Math.abs((end-start)-dur)>0.012)throw new Error(`Story unit ${i+1} timing is invalid`);previous=end;\n}\nif(Math.abs(previous-Number(j.voiceover_duration_seconds))>0.01)throw new Error('Story units do not cover accepted voiceover');\nreturn [{json:{...j,story_unit_count:story.units.length,reserved_visual_count:globalAssets.size,story_contract_version:version}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -105,7 +105,7 @@
       {
         "parameters": {
           "mode": "runOnceForAllItems",
-          "jsCode": "const transition=$input.first().json,j=$('Require Eligible Visual Job').first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(transition.ready_to_run!==true)throw new Error(`Job ${j.job_id} could not enter visuals stage`);const story=j.story_package,isV6=story.version==='visual-facts-story-v1',bundles=new Map(story.assets.map(a=>[clean(a.asset_id),a])),out=[];let shotNumber=0;for(let i=0;i<story.units.length;i++){const u=story.units[i],s=j.scenes[i],bundle=bundles.get(clean(u.asset_id));if(!bundle)throw new Error(`Reserved asset bundle missing for story unit ${i+1}`);const duration=Number(s.duration_seconds),start=Number(s.beat_start_seconds),end=Number(s.beat_end_seconds),shotAssets=Array.isArray(bundle.shot_assets)?bundle.shot_assets:[],shotPlan=Array.isArray(u.shot_plan)?u.shot_plan:[],assetMap=new Map(shotAssets.map(a=>[clean(a.asset_id),a]));if(!Number.isFinite(duration)||duration<=0)throw new Error(`Story unit ${i+1} duration is invalid`);let planned;if(isV6){if(shotPlan.length<1||shotPlan.length>3||shotAssets.length!==shotPlan.length)throw new Error(`Story unit ${i+1} lost V6 storyboard`);planned=Math.min(shotPlan.length,Math.max(1,Math.ceil(duration/3.4)));while(planned>1&&duration/planned<1.15)planned-=1;if(duration/planned>4.5)throw new Error(`Story unit ${i+1} has insufficient storyboard shots for ${duration.toFixed(3)}s`);}else{if(shotPlan.length!==2||shotAssets.length!==2)throw new Error(`Story unit ${i+1} lost legacy two-shot plan`);planned=duration>=3.2?2:1;}const evidence=[...new Set((Array.isArray(u.evidence_ids)?u.evidence_ids:[]).map(clean).filter(Boolean))];for(let part=0;part<planned;part++){const plan=shotPlan[part],a=assetMap.get(clean(plan?.asset_id));if(!a||!clean(plan?.shot_intent))throw new Error(`Story unit ${i+1} planned shot ${part+1} lost reserved asset/intent`);shotNumber+=1;const shotStart=start+(duration*part/planned),shotEnd=start+(duration*(part+1)/planned),representation=clean(plan.representation??a.representation),form=clean(a.visual_form??u.visual_form),factRole=clean(plan.visual_fact_role??a.visual_fact_role),strength=clean(plan.explanation_strength??a.explanation_strength);if(isV6&&form==='photo'&&a.crop_safe_portrait!==true)throw new Error(`Story unit ${i+1} planned portrait-unsafe photo`);out.push({json:{job_id:j.job_id,story_contract_version:story.version,story_unit_count:story.units.length,unit_number:i+1,unit_id:clean(u.unit_id),claim_id:clean(u.claim_id),scene_id:clean(s.scene_id),start_seconds:start,end_seconds:end,duration_seconds:duration,planned_shot_count:planned,shot_number:shotNumber,segment_shot_number:part+1,shot_start_seconds:Number(shotStart.toFixed(6)),shot_end_seconds:Number(shotEnd.toFixed(6)),shot_duration_seconds:Number((shotEnd-shotStart).toFixed(6)),narration:clean(u.narration),support_evidence_ids:evidence,canonical_subject:clean(j.fact_primary_title||j.topic),editorial_role:clean(u.editorial_role),communication_goal:clean(u.communication_goal),visual_form:form,visual_fact_role:factRole,explanation_strength:strength,representation,shot_intent:clean(plan.shot_intent),visual_target:clean(u.communication_goal||u.visual_target),visible_description:clean(a.visible_description),crop_safe_portrait:a.crop_safe_portrait===true,provider:clean(a.provider).toLowerCase(),provider_asset_id:clean(a.provider_asset_id),candidate_id:clean(a.candidate_id),source_url:clean(a.source_url)||null,download_url:clean(a.download_url),author:clean(a.author)||null,license:clean(a.license)||null,license_url:clean(a.license_url)||null,source_media_kind:clean(a.media_kind||'photo').toLowerCase(),reserved_visual_hash:clean(a.visual_hash).toLowerCase(),reserved_visual_cluster_key:clean(a.visual_cluster_key),reserved_metadata:a.metadata??{}}});}}if(!out.length)throw new Error('Reserved story expansion produced no shots');return out;"
+          "jsCode": "const transition=$input.first().json,j=$('Require Eligible Visual Job').first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();\nif(transition.ready_to_run!==true)throw new Error(`Job ${j.job_id} could not enter visuals stage`);\nconst story=j.story_package,version=clean(story.version),isStoryboard=version==='storyboard-first-v1',isVisualFacts=version==='visual-facts-story-v1',bundles=new Map(story.assets.map(a=>[clean(a.asset_id),a])),out=[];let shotNumber=0;\nfor(let i=0;i<story.units.length;i++){\n const u=story.units[i],s=j.scenes[i],bundle=bundles.get(clean(u.asset_id));if(!bundle)throw new Error(`Reserved asset bundle missing for story unit ${i+1}`);\n const duration=Number(s.duration_seconds),start=Number(s.beat_start_seconds),end=Number(s.beat_end_seconds),shotAssets=Array.isArray(bundle.shot_assets)?bundle.shot_assets:[],shotPlan=Array.isArray(u.shot_plan)?u.shot_plan:[],assetMap=new Map(shotAssets.map(a=>[clean(a.asset_id),a]));if(!Number.isFinite(duration)||duration<=0)throw new Error(`Story unit ${i+1} duration is invalid`);\n let planned;\n if(isStoryboard){if(shotPlan.length<1||shotPlan.length>3||shotAssets.length!==shotPlan.length)throw new Error(`Story unit ${i+1} lost storyboard-first shot plan`);planned=shotPlan.length;if(duration/planned<0.85||duration/planned>5.2)throw new Error(`Story unit ${i+1} storyboard timing cannot execute ${planned} shots in ${duration.toFixed(3)}s`);}\n else if(isVisualFacts){if(shotPlan.length<1||shotPlan.length>3||shotAssets.length!==shotPlan.length)throw new Error(`Story unit ${i+1} lost V6 storyboard`);planned=Math.min(shotPlan.length,Math.max(1,Math.ceil(duration/3.4)));while(planned>1&&duration/planned<1.15)planned-=1;if(duration/planned>4.5)throw new Error(`Story unit ${i+1} has insufficient storyboard shots for ${duration.toFixed(3)}s`);}\n else{if(shotPlan.length!==2||shotAssets.length!==2)throw new Error(`Story unit ${i+1} lost legacy two-shot plan`);planned=duration>=3.2?2:1;}\n const evidence=[...new Set((Array.isArray(u.evidence_ids)?u.evidence_ids:[]).map(clean).filter(Boolean))];\n for(let part=0;part<planned;part++){\n  const plan=shotPlan[part],a=assetMap.get(clean(plan?.asset_id));if(!a||!clean(plan?.shot_intent))throw new Error(`Story unit ${i+1} planned shot ${part+1} lost reserved asset/intent`);shotNumber+=1;\n  const shotStart=start+(duration*part/planned),shotEnd=start+(duration*(part+1)/planned),representation=clean(plan.representation??a.representation),form=clean(a.visual_form??u.visual_form).toLowerCase();\n  if(isStoryboard&&representation==='diagram'&&(!a.diagram_spec||typeof a.diagram_spec!=='object'))throw new Error(`Story unit ${i+1} diagram shot lost diagram_spec`);\n  if((isVisualFacts||isStoryboard)&&['exact_media','context_media'].includes(representation)&&form==='photo'&&a.crop_safe_portrait!==true)throw new Error(`Story unit ${i+1} planned portrait-unsafe photo`);\n  out.push({json:{job_id:j.job_id,story_contract_version:version,story_unit_count:story.units.length,unit_number:i+1,unit_id:clean(u.unit_id),claim_id:clean(u.claim_id),scene_id:clean(u.scene_id??s.scene_id),start_seconds:start,end_seconds:end,duration_seconds:duration,planned_shot_count:planned,shot_number:shotNumber,segment_shot_number:part+1,shot_start_seconds:Number(shotStart.toFixed(6)),shot_end_seconds:Number(shotEnd.toFixed(6)),shot_duration_seconds:Number((shotEnd-shotStart).toFixed(6)),narration:clean(u.narration),support_evidence_ids:evidence,canonical_subject:clean(j.fact_primary_title||j.topic),editorial_role:clean(u.editorial_role),communication_goal:clean(a.communication_goal??u.communication_goal),visual_form:form,visual_fact_role:clean(a.visual_fact_role),explanation_strength:clean(a.explanation_strength),representation,shot_id:clean(a.shot_id??plan.shot_id),shot_intent:clean(plan.shot_intent),visual_target:clean(a.communication_goal??u.communication_goal),visible_description:clean((Array.isArray(a.must_show)?a.must_show:[]).join(', ')||a.visible_description||a.communication_goal),crop_safe_portrait:a.crop_safe_portrait===true,provider:clean(a.provider).toLowerCase(),provider_asset_id:clean(a.provider_asset_id),candidate_id:clean(a.candidate_id),source_url:clean(a.source_url)||null,download_url:clean(a.download_url)||null,author:clean(a.author)||null,license:clean(a.license)||null,license_url:clean(a.license_url)||null,source_media_kind:clean(a.media_kind||'photo').toLowerCase(),reserved_visual_hash:clean(a.visual_hash).toLowerCase()||null,reserved_visual_cluster_key:clean(a.visual_cluster_key),grounded_fact_ids:Array.isArray(a.grounded_fact_ids)?a.grounded_fact_ids:evidence,diagram_spec:a.diagram_spec??null,reserved_metadata:a.metadata??{}}});\n }\n}\nif(!out.length)throw new Error('Reserved story expansion produced no shots');return out;"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -223,7 +223,7 @@
       {
         "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "const fp=$json,reserved=$('Validate Stored Reserved Visual').item.json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim(),actual=clean(fp.visual_hash).toLowerCase(),expected=clean(reserved.reserved_visual_hash).toLowerCase();if(!/^[0-9a-f]{64}$/.test(actual)||!/^[0-9a-f]{64}$/.test(expected))throw new Error(`Reserved asset ${reserved.provider}:${reserved.provider_asset_id} has invalid fingerprint`);const bit=[0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4];let distance=0;for(let i=0;i<64;i++)distance+=bit[parseInt(actual[i],16)^parseInt(expected[i],16)];if(distance>18)throw new Error(`Stored asset identity diverged from reviewed preview: hamming=${distance}`);const rep=clean(reserved.representation),visualKind=reserved.stored_media_type==='video'?'context_video':rep==='factual_graphic'?'factual_graphic':'factual_image';if(reserved.story_contract_version==='visual-facts-story-v1'&&reserved.stored_media_type==='image'&&reserved.visual_form==='photo'&&(rep!=='exact_media'||reserved.crop_safe_portrait!==true))throw new Error('V6 ordinary photo lost portrait-safe exact-media contract');return {json:{...reserved,actual_visual_hash:actual,preview_to_stored_hamming:distance,visual_cluster_key:`stored:${actual}`,visual_kind:visualKind}};"
+          "jsCode": "const fp=$json,reserved=$('Expand Reserved Story Assets').item.json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim(),actual=clean(fp.visual_hash).toLowerCase(),expected=clean(reserved.reserved_visual_hash).toLowerCase(),story=clean(reserved.story_contract_version);\nif(!/^[0-9a-f]{64}$/.test(actual))throw new Error(`Stored asset ${reserved.provider}:${reserved.provider_asset_id} has invalid fingerprint`);\nlet distance=null;\nif(story!=='storyboard-first-v1'){\n if(!/^[0-9a-f]{64}$/.test(expected))throw new Error(`Reserved asset ${reserved.provider}:${reserved.provider_asset_id} has invalid preview fingerprint`);\n const bit=[0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4];distance=0;for(let i=0;i<64;i++)distance+=bit[parseInt(actual[i],16)^parseInt(expected[i],16)];if(distance>18)throw new Error(`Stored asset identity diverged from reviewed preview: hamming=${distance}`);\n}\nconst rep=clean(reserved.representation),visualKind=reserved.stored_media_type==='video'?'context_video':rep==='diagram'?'factual_graphic':rep==='factual_graphic'?'factual_graphic':'factual_image';\nif(['visual-facts-story-v1','storyboard-first-v1'].includes(story)&&reserved.stored_media_type==='image'&&['exact_media','context_media'].includes(rep)&&reserved.visual_form==='photo'&&reserved.crop_safe_portrait!==true)throw new Error('Ordinary photo lost portrait-safe contract');\nreturn {json:{...reserved,actual_visual_hash:actual,preview_to_stored_hamming:distance,visual_cluster_key:`stored:${actual}`,visual_kind:visualKind}};"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -301,7 +301,7 @@
       {
         "parameters": {
           "mode": "runOnceForEachItem",
-          "jsCode": "const r=$json;if(r.all_visuals_ready!==true)throw new Error(`Reserved visual completion failed: segments=${r.ready_segment_count}/${r.expected_count}, shots=${r.shot_count}/${r.planned_shot_count}, assets=${r.unique_asset_count}/${r.shot_count}, clusters=${r.unique_cluster_count}/${r.shot_count}, bad_segments=${r.bad_segment_count}, bad_shots=${r.bad_shot_count}, portrait_unsafe=${r.portrait_unsafe_shot_count}, shot_range=${r.min_shot_duration}-${r.max_shot_duration}`);if(!r.visual_quality||!['inventory-first-story-v1','visual-facts-story-v1'].includes(r.visual_quality.version)||r.visual_quality.reserved_before_script!==true||r.visual_quality.post_freeze_search_used!==false||r.visual_quality.pass!==true)throw new Error('Durable visual quality was not persisted');return [{json:{job_id:r.job_id,visuals_ready:true,visual_quality:r.visual_quality}}];"
+          "jsCode": "const r=$json;if(r.all_visuals_ready!==true)throw new Error(`Reserved visual completion failed: segments=${r.ready_segment_count}/${r.expected_count}, shots=${r.shot_count}/${r.planned_shot_count}, assets=${r.unique_asset_count}/${r.shot_count}, clusters=${r.unique_cluster_count}/${r.shot_count}, bad_segments=${r.bad_segment_count}, bad_shots=${r.bad_shot_count}, portrait_unsafe=${r.portrait_unsafe_shot_count}, shot_range=${r.min_shot_duration}-${r.max_shot_duration}`);if(!r.visual_quality||!['inventory-first-story-v1','visual-facts-story-v1','storyboard-first-v1'].includes(r.visual_quality.version)||r.visual_quality.reserved_before_script!==true||r.visual_quality.post_freeze_search_used!==false||r.visual_quality.pass!==true)throw new Error('Durable visual quality was not persisted');return [{json:{job_id:r.job_id,visuals_ready:true,visual_quality:r.visual_quality}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -409,6 +409,61 @@
         ],
         "id": "6c402cc1-76fe-4007-8b00-bf5a78e25f24",
         "name": "Stop Visual Failure"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "c8120bd7-ab1b-4fd7-a56c-b329714b95e1",
+                "leftValue": "={{ $json.representation === 'diagram' }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -200,
+          80
+        ],
+        "id": "bfee6e90-e4d2-48cb-900a-ff2203d2c1b8",
+        "name": "Constructed Diagram?"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://media-worker:3001/visual/construct-diagram",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ ({ job_id:$json.job_id, shot_number:$json.shot_number, shot_id:$json.shot_id, duration_seconds:$json.shot_duration_seconds, grounded_fact_ids:$json.grounded_fact_ids, diagram_spec:$json.diagram_spec }) }}",
+          "options": {
+            "timeout": 30000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          20,
+          -20
+        ],
+        "id": "d0503daf-d3c1-425e-918d-203b43fcb263",
+        "name": "Construct Diagram Visual",
+        "onError": "continueErrorOutput"
       }
     ],
     "connections": {
@@ -499,7 +554,7 @@
         "main": [
           [
             {
-              "node": "Download Reserved Visual",
+              "node": "Constructed Diagram?",
               "type": "main",
               "index": 0
             }
@@ -702,6 +757,42 @@
       },
       "Stop Visual Failure": {
         "main": []
+      },
+      "Constructed Diagram?": {
+        "main": [
+          [
+            {
+              "node": "Construct Diagram Visual",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Download Reserved Visual",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Construct Diagram Visual": {
+        "main": [
+          [
+            {
+              "node": "Validate Stored Reserved Visual",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Visual Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "settings": {

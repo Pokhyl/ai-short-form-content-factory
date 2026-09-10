@@ -15,6 +15,7 @@ import { discoverVisualCandidates, recoverVisualConflictCandidates } from "./vis
 import { buildVisualDiscoveryOptions } from "./visual-discovery-request.mjs";
 import { clusterAverageHashes, evaluateVisualSequence, evaluateVisualShotSequence, requiredRenderedShotStateCount } from "./visual-quality.mjs";
 import { renderV6Composition, serveV6RenderAsset } from "./render-v6.mjs";
+import { buildDiagramPreviewSvg } from "./diagram-preview.mjs";
 import { PIPER_ALIGNMENT_PROVIDER, PIPER_MODEL_VERSION, WHISPER_MODEL_IDENTITY, WHISPER_RUNTIME_IDENTITY, piperVoiceForLanguage, synthesizePiperWhisper } from "./piper-whisper-fallback.mjs";
 
 const { EdgeTTS } = edgeTtsPackage;
@@ -1491,6 +1492,59 @@ async function searchResearchSources(request, response, requestUrl) {
   }
 }
 
+async function constructDiagramVisual(request, response) {
+  const body = await readJsonBody(request);
+  const jobId = String(body?.job_id ?? "").trim().toLowerCase();
+  const shotNumber = Number(body?.shot_number);
+  const shotId = String(body?.shot_id ?? "").trim();
+  const durationSeconds = Number(body?.duration_seconds);
+  const groundedFactIds = [...new Set((Array.isArray(body?.grounded_fact_ids) ? body.grounded_fact_ids : []).map((value) => String(value ?? "").trim()).filter(Boolean))];
+  validateJobAndScene(jobId, shotNumber);
+  if (!shotId || !Number.isFinite(durationSeconds) || durationSeconds <= 0 || groundedFactIds.length === 0 || !body?.diagram_spec || typeof body.diagram_spec !== "object" || Array.isArray(body.diagram_spec)) {
+    throw new HttpError(400, "invalid_diagram_request", "grounded diagram request is incomplete");
+  }
+  let preview;
+  try {
+    preview = buildDiagramPreviewSvg(body.diagram_spec, durationSeconds, { expectedShotId: shotId, allowedFactIds: groundedFactIds });
+  } catch (error) {
+    throw new HttpError(422, "invalid_diagram_spec", `Grounded diagram spec is invalid: ${String(error?.message ?? error)}`);
+  }
+  const target = buildVisualPath(jobId, shotNumber, "jpg", "shot");
+  await mkdir(dirname(target.absolutePath), { recursive: true });
+  try {
+    const existing = await stat(target.absolutePath);
+    if (existing.isFile()) throw new HttpError(409, "diagram_visual_exists", `shot ${shotNumber} visual already exists`);
+  } catch (error) {
+    if (error instanceof HttpError) throw error;
+    if (error?.code !== "ENOENT") throw error;
+  }
+  const temporaryPath = `${target.absolutePath}.diagram-${randomUUID()}.jpg`;
+  try {
+    await sharp(Buffer.from(preview.svg), { density: 192 }).jpeg({ quality: 94, chromaSubsampling: "4:4:4" }).toFile(temporaryPath);
+    const probe = probeImage(temporaryPath), info = await stat(temporaryPath);
+    await rename(temporaryPath, target.absolutePath);
+    sendJson(response, 200, {
+      visual_path: target.relativePath,
+      media_type: "image",
+      source_content_type: "image/svg+xml",
+      source_width: 1080,
+      source_height: 1920,
+      source_duration_seconds: null,
+      width: probe.width,
+      height: probe.height,
+      duration_seconds: null,
+      codec_name: probe.codec_name,
+      bytes: info.size,
+      representation: "diagram",
+      diagram_compiler: preview.graphic?.source?.compiler ?? "diagram-compiler-v1",
+    });
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => {});
+    if (error instanceof HttpError) throw error;
+    throw new HttpError(422, "diagram_visual_failed", `Grounded diagram preview could not be stored: ${String(error?.message ?? error)}`);
+  }
+}
+
 async function createVisualFallback(request, response, requestUrl) {
   const body = request.method === "GET" ? Object.fromEntries(requestUrl.searchParams) : await readJsonBody(request);
   const title = String(body.title ?? "").trim().slice(0, 120);
@@ -2352,6 +2406,11 @@ const server = createServer(async (request, response) => {
 
     if (request.method === "POST" && requestUrl.pathname === "/visual/store-shot") {
       await storeVisual(request, response, requestUrl, { slotParameter: "shot_number", slotPrefix: "shot" });
+      return;
+    }
+
+    if (request.method === "POST" && requestUrl.pathname === "/visual/construct-diagram") {
+      await constructDiagramVisual(request, response);
       return;
     }
 
