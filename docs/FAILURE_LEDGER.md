@@ -176,3 +176,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### Operator/tooling note — MIT Piper 1.2.0 voice downloader mismatch
 
 - 2026-09-10: compatibility probe confirmed `piper-tts==1.2.0` installs on Python 3.11, reports MIT license, and exposes `PiperVoice`, but the probe then failed because this older package does not ship the newer `piper.download_voices` module. No synthesis compatibility conclusion is drawn yet. Repeat with pinned direct voice-model/config downloads and SHA verification; do not switch back to GPL solely because the helper module is absent.
+
+### Operator/tooling note — V6 TTS change-set Dockerfile generator syntax failure
+
+- 2026-09-10: the first source-mutation script for the Edge -> Piper/faster-whisper fallback stopped before Dockerfile/server/WF03 edits because the temporary Python string used to rewrite the Dockerfile had an unterminated quoted literal around the multiline `ENV` replacement. The standalone helper file may have been staged in the working tree before the failure, but no production state changed and no TTS implementation PASS is claimed. Preserve only this failure note, inspect the working tree, then resume from exact partial state with safer file writes.

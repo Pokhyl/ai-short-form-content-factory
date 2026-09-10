@@ -1492,3 +1492,7 @@ During independent TTS integration inspection, `Apply Duration Rewrite` was foun
 ### 2026-09-10 MIT Piper 1.2.0 downloader harness mismatch
 
 The license-safe Piper compatibility check established that `piper-tts 1.2.0` is MIT-licensed and its Python 3.11 install exposes `PiperVoice`, but the probe stopped before synthesis because `python -m piper.download_voices` does not exist in that older package. This is a tooling difference, not proof of voice-model incompatibility. Repeat using pinned direct model/config downloads with exact SHA checks. Production remains unchanged.
+
+### 2026-09-10 V6 TTS source-mutation harness syntax failure
+
+The first implementation script for the independent MIT Piper/faster-whisper fallback stopped at a Python syntax error while constructing a multiline Dockerfile replacement. It did not complete Dockerfile, media-worker server, WF03 or regression changes. A helper source file may exist uncommitted from the commands that ran before the failing generator. No production container/workflow/database/job changed and no implementation PASS is claimed. Inspect the exact working tree before resuming.
