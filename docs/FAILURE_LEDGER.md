@@ -243,3 +243,7 @@ The diagnostic script then returned nonzero only during cleanup because the temp
 ### 2026-09-10 V6 reviewer split proof — 6-image Kilo still length-limited
 
 Exact component replay of immutable reviewer execution `17467` split the same 24 reviewed images into four deterministic 6-image chunks and sent all four through the unchanged V4 model gateway. All calls returned HTTP 200. Kilo `stepfun/step-3.7-flash:free` failed all four chunks with `finish_reason=length` / empty model output; Gemini `gemini-3.1-flash-lite` completed all four. This proves reviewer batch cardinality alone is not the root cause and that Kilo is not currently a functional reviewer fallback even at six images. No product job or durable product row was resumed or mutated.
+
+### 2026-09-10 V6 reviewer one-image control — Kilo still length-limited
+
+A final control replay used only one exact image from immutable reviewer execution `17467` with the unchanged Visual Facts reviewer prompt/schema and V4 model gateway. The call returned HTTP 200 through Gemini, but Kilo `stepfun/step-3.7-flash:free` again ended with `finish_reason=length` and empty model output. Therefore reviewer batch size is conclusively not the cause: the current Kilo visual-review lane is nonfunctional even for one image. Do not spend further product iterations lowering batch cardinality. Inspect Kilo completion/reasoning usage next; if hidden reasoning consumes the 4096-token budget, disable it by provider contract, otherwise replace/demote Kilo for multimodal review with an independent free reviewer.

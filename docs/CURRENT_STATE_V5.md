@@ -1620,3 +1620,7 @@ The exact failed batch from execution `17467` was replayed without changing prod
 ### 2026-09-10 V6 reviewer 6-image component proof
 
 The failed Visual Facts reviewer batch from execution `17467` was replayed as four exact 6-image chunks. Kilo remained output-length limited on every chunk; Gemini completed all four. Therefore reducing 24→12 or 24→6 is not a valid systemic fix. One final one-image control should determine whether the problem is batch size at all or the Kilo reviewer contract/provider itself.
+
+### 2026-09-10 V6 reviewer one-image control
+
+One exact image from failed review execution `17467` was replayed through the unchanged V4 gateway. Kilo still returned `finish_reason=length` / empty output; Gemini completed. Combined with 24-, 12-, and 6-image proofs, this closes batch-size investigation. Next read-only step: inspect Kilo token/reasoning usage on the one-image execution before changing provider configuration.
