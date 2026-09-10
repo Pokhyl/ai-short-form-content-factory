@@ -148,3 +148,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### V6 renderer root cause — Remotion emits full-range `yuvj420p`
 
 - 2026-09-10: exact component replay of the HTTP fixture preserved the rendered MP4 and proved the stream mismatch precisely. Input WAV is `pcm_s16le`, `48000 Hz`, `2 channels`, `3.000000 s`. Remotion output is H.264 `1080x1920`, AAC `48000 Hz`, `2 channels`, container `3.051 s`, and measured pixel QA PASS `3/3 states`, `0 adjacent`, `0 black`, `0 flat`; however ffprobe reports video `pix_fmt=yuvj420p`, not required `yuv420p`, despite `renderMedia(pixelFormat:'yuv420p')`. Do not weaken the final stream gate. Normalize the completed Remotion video deterministically to limited-range `yuv420p` before final pixel QA/hash/publish, then verify the exact normalized artifact.
+
+### V6 renderer verification closure
+
+- 2026-09-10: renderer implementation commit `6482946b1376f43b8743cb81eb33aaf648fa00e8` passed `72/72` Node regressions, `13/13` Python regressions, fresh PostgreSQL, n8n 2.37.10 import, 5 structured model invocations, exact image SHA parity and isolated `/render-v6` HTTP proof. The final proof artifact is actual H.264 `yuv420p` + AAC 48 kHz stereo and measured pixel QA passed. This closes the renderer/composition-machine-gate blocker only; HUMAN review remains mandatory and production has not been promoted.
