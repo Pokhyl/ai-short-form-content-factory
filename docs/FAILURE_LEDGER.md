@@ -372,3 +372,5 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - 2026-09-10: Engineering mistake while routing V6 final story: attempted to run Node regression tests with host `node`, but Node is not installed/available on the host PATH. Correction must use the existing n8n/container Node runtime; no product job was created by this failed test command.
 
 - 2026-09-10: Engineering mistake during V6 final-story route deploy verification: workflow import/publish/restart completed, but the final verification SQL had malformed shell quoting around COALESCE and exited non-zero. Correction: verify state with parameter-safe SQL before creating a new job.
+
+- 2026-09-10: Engineering mistake during fresh V6 stage submission after final-story routing fix: attempted external POST to publisher.hodor.com.pl from the VPS host and received HTTP 403. No job was created. Correction: submit from the n8n container to the registered local webhook, as used in prior successful stage jobs.
