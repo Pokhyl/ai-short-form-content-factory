@@ -312,3 +312,9 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - Cause: an over-complex nested shell/SQL quoting expression in the remaining verification block.
 - Product impact: none; no source/runtime mutation occurred in this verification helper.
 - Lesson: use Python/subprocess or simpler SQL quoting for multi-line verification; do not pack nested shell quoting into long fail-closed scripts.
+
+### 2026-09-10 — first fresh V6 stage submission helper did not pass stdin into docker exec
+- Engineering/operator failure: the first attempt to POST a fresh `Почему небо голубое? / ru / 15` stage job used `docker exec ... node -` without `-i`; Node received no stdin script, exited successfully, and no HTTP request was sent.
+- Cause: incorrect Docker stdin invocation.
+- Product impact: none; no job was created, so there is no failed/rejected product row to preserve.
+- Lesson: use `docker exec ... node -e <script>` or explicit `docker exec -i` when running inline Node through stdin; verify the HTTP status/body and resulting job row before treating a submission as created.
