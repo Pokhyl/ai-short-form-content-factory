@@ -1962,8 +1962,9 @@ async function renderVideoV6(request, response) {
   const shots = body.shots;
   const visualContract = body.visual_contract;
   if (!uuidPattern.test(jobId)) throw new HttpError(400, "invalid_job_id", "job_id must be a valid UUID");
-  if (!visualContract || visualContract.version !== "visual-facts-story-v1" || visualContract.editorial_contract_version !== "storyboard-v1" || visualContract.reserved_before_script !== true || visualContract.post_freeze_search_used !== false) {
-    throw new HttpError(400, "invalid_visual_contract", "render-v6 requires the frozen visual-facts storyboard contract");
+  const v6StoryVersions = new Set(["visual-facts-story-v1", "storyboard-first-v1"]);
+  if (!visualContract || !v6StoryVersions.has(String(visualContract.version ?? "")) || visualContract.editorial_contract_version !== "storyboard-v1" || visualContract.reserved_before_script !== true || visualContract.post_freeze_search_used !== false) {
+    throw new HttpError(400, "invalid_visual_contract", "render-v6 requires a frozen V6 storyboard contract");
   }
   if (!Array.isArray(beats) || beats.length === 0 || beats.length > 100) throw new HttpError(400, "invalid_render_beats", "beats must contain between 1 and 100 timed story units");
   if (!Array.isArray(shots) || shots.length === 0 || shots.length > 100) throw new HttpError(400, "invalid_render_shots", "shots must contain between 1 and 100 frozen storyboard shots");
@@ -2004,7 +2005,7 @@ async function renderVideoV6(request, response) {
   }
   if (Math.abs(previousEnd - measuredAudioDuration) > 0.15) throw new HttpError(422, "beat_audio_duration_mismatch", `Final story unit end ${previousEnd} differs from voiceover ${measuredAudioDuration}`);
 
-  const allowedRepresentations = new Set(["exact_media", "factual_graphic"]);
+  const allowedRepresentations = new Set(["exact_media", "factual_graphic", "diagram"]);
   const allowedForms = new Set(["photo", "diagram", "map", "document", "illustration"]);
   const normalizedShots = [];
   previousEnd = 0;
@@ -2021,22 +2022,32 @@ async function renderVideoV6(request, response) {
     if (!assetKey || !visualClusterKey || !allowedRepresentations.has(representation) || !allowedForms.has(visualForm) || shotIntent.length < 8 || !communicationGoal) throw new HttpError(400, "invalid_v6_shot_contract", `shot ${shotNumber} lost frozen V6 storyboard metadata`);
     if (representation === "exact_media" && visualForm !== "photo") throw new HttpError(400, "invalid_v6_representation", `shot ${shotNumber} exact_media must be a reviewed photo`);
     if (representation === "factual_graphic" && visualForm === "photo") throw new HttpError(400, "invalid_v6_representation", `shot ${shotNumber} factual_graphic cannot be an ordinary photo`);
+    if (representation === "diagram" && visualForm !== "diagram") throw new HttpError(400, "invalid_v6_representation", `shot ${shotNumber} constructed diagram must use visual_form=diagram`);
     if (representation === "exact_media" && shot.crop_safe_portrait !== true) throw new HttpError(422, "portrait_unsafe_photo", `shot ${shotNumber} ordinary photo is not approved for portrait crop`);
-    const visualPath = resolvePersistedMediaPath(jobId, shot.visual_path, "visual");
-    try {
-      const visualStat = await stat(visualPath.absolutePath);
-      if (!visualStat.isFile()) throw new Error("visual is not a file");
-    } catch {
-      throw new HttpError(422, "render_input_missing", `shot ${shotNumber} visual file is missing`);
+    const shotId = String(shot.shot_id ?? `shot-${shotNumber}`).trim();
+    const groundedFactIds = [...new Set((Array.isArray(shot.grounded_fact_ids) ? shot.grounded_fact_ids : []).map((value) => String(value ?? "").trim()).filter(Boolean))];
+    let visualPath = null, visualMediaType = "diagram", diagramSpec = null;
+    if (representation === "diagram") {
+      if (!shotId || !shot.diagram_spec || typeof shot.diagram_spec !== "object" || Array.isArray(shot.diagram_spec) || groundedFactIds.length === 0) throw new HttpError(400, "invalid_v6_diagram_contract", `shot ${shotNumber} lost grounded diagram specification`);
+      diagramSpec = shot.diagram_spec;
+    } else {
+      visualPath = resolvePersistedMediaPath(jobId, shot.visual_path, "visual");
+      try {
+        const visualStat = await stat(visualPath.absolutePath);
+        if (!visualStat.isFile()) throw new Error("visual is not a file");
+      } catch {
+        throw new HttpError(422, "render_input_missing", `shot ${shotNumber} visual file is missing`);
+      }
+      visualMediaType = probeVisualSource(visualPath.absolutePath).media_type;
     }
-    const visualProbe = probeVisualSource(visualPath.absolutePath);
     normalizedShots.push({
-      shot_number: shotNumber, segment_number: segmentNumber, segment_shot_number: segmentShotNumber,
+      shot_number: shotNumber, shot_id: shotId, segment_number: segmentNumber, segment_shot_number: segmentShotNumber,
       visual_kind: String(shot.visual_kind ?? ""), asset_key: assetKey, visual_cluster_key: visualClusterKey,
-      visual_path: visualPath, visual_media_type: visualProbe.media_type,
+      visual_path: visualPath, visual_media_type: visualMediaType,
       start_seconds: start, end_seconds: end, duration_seconds: duration,
       representation, visual_form: visualForm, crop_safe_portrait: shot.crop_safe_portrait === true,
       shot_intent: shotIntent, communication_goal: communicationGoal,
+      grounded_fact_ids: groundedFactIds, diagram_spec: diagramSpec,
     });
     previousEnd = end;
   }
@@ -2058,14 +2069,14 @@ async function renderVideoV6(request, response) {
     if (!cq || cq.version !== "remotion-pixel-qa-v1" || cq.pass !== true || Number(cq.rendered_visual_state_count) !== normalizedShots.length || Number(cq.rendered_adjacent_visual_state_duplicate_count) !== 0 || Number(cq.black_frame_sample_count) !== 0 || Number(cq.flat_frame_sample_count) !== 0) throw new Error("V6 measured composition gate did not pass");
     const visualQuality = {
       ...sequenceQuality,
-      version: "visual-facts-render-v1", source_inventory_version: visualContract.version,
+      version: visualContract.version === "storyboard-first-v1" ? "storyboard-first-render-v1" : "visual-facts-render-v1", source_inventory_version: visualContract.version,
       reserved_before_script: true, post_freeze_search_used: false, pre_render_pass: true,
       renderer: "remotion-v6", word_timing_version: "provider-word-timing-v1",
       rendered_visual_state_count: cq.rendered_visual_state_count,
       required_rendered_visual_state_count: cq.required_rendered_visual_state_count,
       rendered_adjacent_visual_state_duplicate_count: cq.rendered_adjacent_visual_state_duplicate_count,
       black_frame_sample_count: cq.black_frame_sample_count, flat_frame_sample_count: cq.flat_frame_sample_count,
-      composition_quality: {...cq, renderer: "remotion-v6", ordinary_photo_policy: "native-portrait-cover", factual_graphic_policy: "preserve-full-vertical-compose"},
+      composition_quality: {...cq, renderer: "remotion-v6", ordinary_photo_policy: "native-portrait-cover", factual_graphic_policy: "preserve-full-vertical-compose", constructed_diagram_policy: "grounded-code-motion"},
       pass: true,
     };
     await mkdir(renderDirectory, {recursive: true});

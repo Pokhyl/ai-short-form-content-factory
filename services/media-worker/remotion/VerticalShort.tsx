@@ -9,6 +9,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import {MotionDiagram, MotionDiagramProps} from "./MotionDiagram";
 
 export type CaptionWord = {
   text: string;
@@ -20,11 +21,12 @@ export type V6VisualItem = {
   shot_number: number;
   start_seconds: number;
   end_seconds: number;
-  src: string;
-  media_type: "image" | "video";
-  representation: "exact_media" | "factual_graphic";
+  src?: string;
+  media_type?: "image" | "video";
+  representation: "exact_media" | "factual_graphic" | "diagram";
   visual_form: string;
   crop_safe_portrait: boolean;
+  graphic?: MotionDiagramProps;
 };
 
 export type V6VerticalShortProps = {
@@ -51,6 +53,7 @@ const PhotoFrame: React.FC<{item: V6VisualItem}> = ({item}) => {
     transform: `translateX(${translateX}px) scale(${scale})`,
     transformOrigin: item.shot_number % 2 === 0 ? "58% 50%" : "42% 50%",
   };
+  if (!item.src) throw new Error(`V6 media shot ${item.shot_number} has no source`);
   return <AbsoluteFill style={{backgroundColor: "#05070b", overflow: "hidden"}}>
     {item.media_type === "video" ? <OffthreadVideo src={item.src} muted style={style}/> : <Img src={item.src} style={style}/>} 
   </AbsoluteFill>;
@@ -74,12 +77,17 @@ const GraphicFrame: React.FC<{item: V6VisualItem}> = ({item}) => {
     objectFit: "contain",
     transform: `scale(${scale})`,
   };
+  if (!item.src) throw new Error(`V6 factual graphic shot ${item.shot_number} has no source`);
   return <AbsoluteFill style={{background: "linear-gradient(180deg,#070b12 0%,#0b111b 100%)", overflow: "hidden"}}>
     {item.media_type === "video" ? <OffthreadVideo src={item.src} muted style={mediaStyle}/> : <Img src={item.src} style={mediaStyle}/>} 
   </AbsoluteFill>;
 };
 
 const Visual: React.FC<{item: V6VisualItem}> = ({item}) => {
+  if (item.representation === "diagram") {
+    if (!item.graphic) throw new Error(`V6 diagram shot ${item.shot_number} has no compiled graphic`);
+    return <MotionDiagram {...item.graphic}/>;
+  }
   const ordinaryPhoto = item.representation === "exact_media" && item.visual_form === "photo";
   if (ordinaryPhoto && !item.crop_safe_portrait) {
     throw new Error(`V6 ordinary photo shot ${item.shot_number} is not portrait-safe`);

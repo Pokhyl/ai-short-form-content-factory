@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const server=fs.readFileSync('services/media-worker/src/server.mjs','utf8');
+const renderer=fs.readFileSync('services/media-worker/src/render-v6.mjs','utf8');
+const component=fs.readFileSync('services/media-worker/remotion/VerticalShort.tsx','utf8');
+assert.match(server,/new Set\(\["visual-facts-story-v1", "storyboard-first-v1"\]\)/);
+assert.match(server,/allowedRepresentations = new Set\(\["exact_media", "factual_graphic", "diagram"\]\)/);
+assert.match(server,/representation === "diagram" && visualForm !== "diagram"/);
+assert.match(server,/diagram_spec/);
+assert.match(server,/grounded_fact_ids/);
+assert.match(server,/storyboard-first-render-v1/);
+assert.match(renderer,/compileDiagramSpec/);
+assert.match(renderer,/representation === "diagram"/);
+assert.match(renderer,/allowedFactIds: shot\.grounded_fact_ids/);
+assert.match(component,/representation: "exact_media" \| "factual_graphic" \| "diagram"/);
+assert.match(component,/MotionDiagram/);
+assert.match(component,/item\.representation === "diagram"/);
+console.log('V6_CONSTRUCTED_DIAGRAM_RENDER_CONTRACT_PASS');

@@ -9,6 +9,7 @@ import {renderMedia, selectComposition} from "@remotion/renderer";
 import sharp from "sharp";
 import {clusterAverageHashes, hammingDistance} from "./visual-quality.mjs";
 import {parseSingleByteRange} from "./media-range.mjs";
+import {compileDiagramSpec} from "./diagram-compiler.mjs";
 
 const browserExecutable = "/usr/bin/chromium";
 const entryPoint = resolve(dirname(fileURLToPath(import.meta.url)), "../remotion/index.tsx");
@@ -129,15 +130,21 @@ export async function renderV6Composition({jobId, audioAbsolutePath, outputPath,
   bucket.set("audio", {path: audioAbsolutePath, mime: mimeForPath(audioAbsolutePath)});
   const visualTrack = shots.map((shot, index) => {
     const id = `shot-${index + 1}`;
-    bucket.set(id, {path: shot.visual_path.absolutePath, mime: mimeForPath(shot.visual_path.absolutePath)});
-    return {
+    const representation = String(shot.representation || (shot.visual_kind === "factual_graphic" ? "factual_graphic" : "exact_media"));
+    const base = {
       shot_number: Number(shot.shot_number), start_seconds: Number(shot.start_seconds), end_seconds: Number(shot.end_seconds),
-      src: `http://127.0.0.1:${workerPort}/internal/render-v6/${token}/${id}`,
-      media_type: shot.visual_media_type === "video" ? "video" : "image",
-      representation: String(shot.representation || (shot.visual_kind === "factual_graphic" ? "factual_graphic" : "exact_media")),
+      representation,
       visual_form: String(shot.visual_form || (shot.visual_kind === "factual_graphic" ? "diagram" : "photo")),
       crop_safe_portrait: shot.crop_safe_portrait === true,
     };
+    if (representation === "diagram") {
+      const shotId = String(shot.shot_id || `shot-${Number(shot.shot_number)}`);
+      const graphic = compileDiagramSpec(shot.diagram_spec, Number(shot.duration_seconds), {expectedShotId: shotId, allowedFactIds: shot.grounded_fact_ids});
+      return {...base, media_type: "image", graphic};
+    }
+    if (!shot.visual_path?.absolutePath) throw new Error(`V6 media shot ${shot.shot_number} has no resolved visual path`);
+    bucket.set(id, {path: shot.visual_path.absolutePath, mime: mimeForPath(shot.visual_path.absolutePath)});
+    return {...base, src: `http://127.0.0.1:${workerPort}/internal/render-v6/${token}/${id}`, media_type: shot.visual_media_type === "video" ? "video" : "image"};
   });
   activeAssets.set(token, bucket);
   try {
