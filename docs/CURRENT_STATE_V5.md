@@ -1636,3 +1636,8 @@ A read-only repository orientation attempt from the SentinelX service account st
 ## 2026-09-10 operator note — schema search path
 
 A read-only schema search included nonexistent `migrations` after already locating the relevant schema under `db/migrations`; strict grep therefore exited 2. No product state changed. Future schema inspection must use the actual repository paths only.
+
+
+## 2026-09-10 V6 storyboard-first implementation checkpoint
+
+The first static planning regression found retained WF02 semantic-intake/topic-resolution HTTP nodes still calling `/webhook/v4-model-gateway`. New storyboard/final-story calls already use `/webhook/v6-model-gateway`; nothing was deployed. Before any V6 stage deploy, all WF02 model calls must be remapped to the separate free-only V6 text gateway while the legacy V4 gateway remains unchanged.

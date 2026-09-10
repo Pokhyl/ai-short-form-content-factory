@@ -259,3 +259,8 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 ### Operator/tooling note — nonexistent migrations search path
 
 - 2026-09-10: a read-only schema search included a nonexistent top-level `migrations` path after already finding the required definitions under `db/migrations`, causing grep to exit 2. No product or repository state changed. Use the actual repository paths discovered by `find`/existing layout instead of speculative path operands in strict shell commands.
+
+
+### V6 storyboard-first planning regression — legacy model-gateway reference remained
+
+- 2026-09-10: first `v6_storyboard_first_planning_regression.mjs` run failed because `WF02-plan-script-and-scenes.json` still contained `/webhook/v4-model-gateway` in the retained semantic-intake/topic-resolution nodes. The new storyboard and final-story nodes already used `v6-model-gateway`, but the retained upstream text calls had not yet been remapped. No workflow was deployed and no product job was started. Correction must remap every V6 WF02 model call to the separate free-only V6 gateway; legacy V4 gateway remains untouched for rollback.
