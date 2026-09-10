@@ -30,9 +30,10 @@ Before **every** meaningful action, code change, render, test, architecture deci
 1. Read this file.
 2. Read `docs/CURRENT_STATE_V5.md`.
 3. Read `docs/HUMAN_REVIEW_GATE.md`.
-4. Confirm that the planned action directly advances the real product goal below.
-5. If the action is based on an assumption, first verify the actual output/source state.
-6. If it does not advance the product goal, do not do it.
+4. Read `docs/FAILURE_LEDGER.md` and search it for the failure class touched by the planned action.
+5. Confirm that the planned action directly advances the real product goal below.
+6. If the action is based on an assumption, first verify the actual output/source state.
+7. If it does not advance the product goal, do not do it.
 
 ## Real product goal
 
@@ -131,9 +132,14 @@ When something fails:
 
 1. capture the exact failure/output;
 2. identify the general cause;
-3. record it in GitHub;
-4. either make a systemic fix or reject/demote the approach;
-5. do not keep polishing one failed proof for hours/days.
+3. append/preserve it in `docs/FAILURE_LEDGER.md` and/or a dated raw snapshot under `docs/failure-ledger/`;
+4. update `docs/CURRENT_STATE_V5.md` with exact job/execution/artifact evidence when the failure changes product direction;
+5. **commit and push the failure checkpoint to GitHub before the next corrective code change**;
+6. search the ledger/history for the same failure class before designing the fix;
+7. either make a systemic fix or reject/demote the approach;
+8. do not keep polishing one failed proof for hours/days.
+
+A failure that exists only in chat, local shell history, or an unpushed working tree is not durably recorded. Every failed/rejected product job is immutable and must remain available as regression evidence.
 
 A visually bad final MP4 is a failure even when all machine stages passed. Record the visible defect before continuing.
 
@@ -154,7 +160,8 @@ Before work, use this order:
 1. `docs/OPERATOR_EXECUTION_RULES.md`
 2. `docs/CURRENT_STATE_V5.md`
 3. `docs/HUMAN_REVIEW_GATE.md`
-4. current factual runtime/output evidence
-5. other historical docs
+4. `docs/FAILURE_LEDGER.md`
+5. current factual runtime/output evidence
+6. other historical docs
 
 Chat history must not override newer repository facts.
