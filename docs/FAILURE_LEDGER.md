@@ -115,3 +115,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### Operator/tooling note — V6 host Node absence
 
 - 2026-09-10: the integrated `/render-v6 + WF05` precommit gate reached workflow JSON parse PASS, then host `node --check` failed with `node: command not found`. No renderer/source correction is justified by this result. All Node syntax/tests on this VPS must run in a disposable Node/project container; do not install host Node as a workaround. Production remained unchanged.
+
+### Operator/tooling note — GitHub push transport mismatch
+
+- 2026-09-10: docs commit `77643bd` was created locally, but `git push origin HEAD` failed because `origin` is an HTTPS URL and the non-interactive host could not provide a GitHub username. Do not modify git config or credentials. Use the existing deploy key with a direct `git@github.com:Pokhyl/ai-short-form-content-factory.git` push target for this checkout.

@@ -1434,3 +1434,5 @@ The same isolated no-network proof also printed a non-fatal Remotion usage-event
 ### 2026-09-10 integrated V6 renderer precommit host-Node harness failure
 
 The first full precommit pass after wiring `/render-v6` into media-worker/WF05 parsed all workflow JSON successfully, then the shell harness attempted host `node --check` and failed because this VPS has no host Node binary. This is an operator/test-environment failure, not a renderer result. No product code or production state was changed in response. Repeat syntax/regression checks inside a disposable Node container and require explicit PASS markers before any implementation commit.
+
+The docs-only commit `77643bd` initially remained local because `origin` resolved to HTTPS and non-interactive push failed asking for a GitHub username. No credential/config mutation is allowed. Continuation must push through the existing deploy key against the direct SSH repository URL without changing repository configuration.
