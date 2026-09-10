@@ -358,3 +358,5 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - 2026-09-10 21:53 CEST: the retry of the V6 gateway regression failed for the same obsolete 45-second assertion because my scripted text replacement did not match the exact test line, so the stale assertion remained unchanged. No runtime/job mutation occurred. Before retry, inspect the exact line and edit it by content rather than assumed wording.
 
 - 2026-09-10 21:55 CEST: after updating the timeout assertion, the V6 gateway regression exposed another stale single-model expectation: it still required the HTTP node name `Nemotron Free Model`, while the routed gateway intentionally renamed it `Kilo Free Model`. No runtime/job mutation occurred. Update the regression to the route-neutral node name before retry.
+
+- 2026-09-10 21:58 CEST: predeploy active-execution readback used broken shell/SQL quoting, so PostgreSQL parsed `running` as an identifier. The read-only check failed before any runtime mutation. Correction: pass the SQL through an environment variable to psql instead of nested shell quoting.

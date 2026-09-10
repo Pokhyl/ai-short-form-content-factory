@@ -1704,3 +1704,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 2026-09-10 21:53 CEST — V6 gateway test-edit note: attempted replacement of the obsolete 45s assertion was a no-op due to an exact-string mismatch; the regression therefore failed unchanged. Inspect the actual source line and correct that line before another test run.
 
 2026-09-10 21:55 CEST — V6 routed-gateway regression note: exact-image test now reaches the next obsolete expectation, requiring node name `Nemotron Free Model` instead of the route-neutral `Kilo Free Model`. Product source is consistent; regression must be synchronized before another test run.
+
+2026-09-10 21:58 CEST — V6 route predeploy note: active-execution readback failed only because nested shell quoting stripped SQL string literals. No runtime mutation occurred. Retry with SQL passed via an environment variable.
