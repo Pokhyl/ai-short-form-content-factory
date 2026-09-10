@@ -119,3 +119,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### Operator/tooling note — GitHub push transport mismatch
 
 - 2026-09-10: docs commit `77643bd` was created locally, but `git push origin HEAD` failed because `origin` is an HTTPS URL and the non-interactive host could not provide a GitHub username. Do not modify git config or credentials. Use the existing deploy key with a direct `git@github.com:Pokhyl/ai-short-form-content-factory.git` push target for this checkout.
+
+### Operator/tooling note — V6 host ripgrep absence
+
+- 2026-09-10: a read-only gate-discovery script failed at host `rg` because ripgrep is not installed. No product test was interpreted from that failure and no source correction is justified. Use POSIX `grep/find` on host or a disposable tooling container; do not install host packages as a workaround.
