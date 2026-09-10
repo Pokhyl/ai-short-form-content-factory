@@ -104,3 +104,5 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### Dependency/security finding — V6 media worker
 
 - 2026-09-10: valid `npm audit --omit=dev` found 2 high-severity findings via `sharp 0.34.5` / libvips/libheif. `@huggingface/transformers 3.8.1` forces the vulnerable 0.34.x range but is no longer imported by production media-worker source after SigLIP removal. Required correction: remove unused Transformers and upgrade direct `sharp` to fixed 0.35.4; do not ship the V6 renderer image with the known vulnerable unused dependency.
+
+- 2026-09-10: first V6 Remotion `bundle()` smoke silently received no heredoc because `docker run` lacked `-i`; Node syntax passed, bundle was not exercised. Never treat an empty successful container exit as a bundle PASS; require the explicit `REMOTION_BUNDLE_PASS` marker.

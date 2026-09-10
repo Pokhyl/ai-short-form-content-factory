@@ -1420,3 +1420,7 @@ A read-only `npm audit` attempt for the newly pinned Remotion dependencies was m
 ### 2026-09-10 V6 dependency audit found removable high-severity image dependency risk
 
 A valid networked `npm audit --omit=dev` of the media-worker dependency tree reported two high-severity advisories through `sharp 0.34.5` / bundled libvips/libheif. `@huggingface/transformers 3.8.1` also forces `sharp ^0.34.1`. Source inspection proves the media-worker no longer imports `@huggingface/transformers`; local SigLIP was previously removed from the critical visual path. Therefore the systemic correction is to remove the unused Transformers dependency and move the direct image library to fixed `sharp 0.35.4`, rather than carrying an unused vulnerable dependency into the V6 renderer image. Production is unchanged until the corrected dependency tree passes audit/build/regressions.
+
+### 2026-09-10 V6 Remotion bundle-smoke stdin harness failure
+
+The first renderer component smoke verified Node syntax for `src/render-v6.mjs` and `src/server.mjs`, but the intended Remotion `bundle()` smoke did not execute because the disposable `docker run` receiving a heredoc was missing `-i`. No bundle PASS is claimed from that run and production was unchanged. Repeat the exact bundle smoke with stdin attached before correcting any renderer source.
