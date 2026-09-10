@@ -1650,3 +1650,6 @@ The first containerized retry of V6 Node regressions used the n8n image without 
 
 ### 2026-09-10 V6 operator checkpoint — deployment-history grep path mistake
 A read-only deployment-history grep exited 2 because optional paths absent from this checkout were included under pipefail. No source/runtime mutation occurred. Subsequent searches must use confirmed paths only.
+
+### 2026-09-10 V6 predeploy checkpoint — free-only gateway owner ACL defect
+Predeploy inspection found the new V6 free-only model gateway source had no `shared` owner ACL. It has not been imported or published. Required correction is source-only: preserve the existing personal-project owner entry with workflowId rewritten to the V6 gateway ID and add a deployment regression.

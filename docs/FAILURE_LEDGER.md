@@ -282,3 +282,9 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - Cause: operator passed optional paths without checking existence.
 - Product impact: none; no runtime or source mutation occurred.
 - Lesson: search only confirmed paths or build the path list conditionally before grep.
+
+### 2026-09-10 — new V6 free-only gateway source omitted n8n owner ACL metadata
+- Engineering defect found before deployment: `n8n/workflows/V6-model-gateway.json` had `shared: []`, while deployable workflow sources require the personal project owner ACL used by the existing V4 gateway and stage workflows.
+- Cause: the new gateway generator intentionally stripped legacy workflow metadata but also stripped required n8n ownership metadata.
+- Product impact: none yet; the V6 gateway has not been imported or published.
+- Lesson: new standalone n8n workflow sources must preserve a valid `workflow:owner` shared entry with their own workflowId; add a regression before deployment.
