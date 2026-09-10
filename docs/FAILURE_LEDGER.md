@@ -294,3 +294,9 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - Cause: operator assumed an exact test-file line shape instead of inspecting the current file first.
 - Product impact: no runtime impact; source gateway owner ACL is corrected in the working tree, but the regression has not yet been strengthened.
 - Lesson: inspect the bounded current test content before deterministic insertion; do not couple a source mutation and an unverified marker-based test mutation in one helper.
+
+### 2026-09-10 — stage workflow generator assumed WF01 webhook node name
+- Engineering/operator failure: the storyboard-first stage import generator stopped before writing an import file because it searched WF01 for a node named exactly `Webhook`; the current WF01 webhook node has a different name.
+- Cause: generator depended on a stale node-name assumption instead of selecting the unique webhook by node type.
+- Product impact: none; no workflow import/publish/runtime mutation occurred.
+- Lesson: stage generator must identify WF01 webhook by `type=n8n-nodes-base.webhook`, assert uniqueness, then rewrite its path.

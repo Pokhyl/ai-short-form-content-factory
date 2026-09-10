@@ -1656,3 +1656,6 @@ Predeploy inspection found the new V6 free-only model gateway source had no `sha
 
 ### 2026-09-10 V6 operator checkpoint — gateway ACL test-marker mistake
 The V6 gateway owner ACL source correction was written, but the helper stopped before modifying its regression because an assumed insertion marker was absent from the current test. No deployment occurred. The source ACL change remains uncommitted while the failure is checkpointed; next correction must inspect the actual test and add the owner-ACL assertion against its real structure.
+
+### 2026-09-10 V6 operator checkpoint — stage generator WF01 webhook-name mistake
+The new stage import generator stopped before producing an import file because it assumed the WF01 webhook node is named `Webhook`. No n8n/runtime mutation occurred. Correction: resolve the unique WF01 webhook by node type, not display name.
