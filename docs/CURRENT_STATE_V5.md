@@ -1702,3 +1702,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 2026-09-10 21:51 CEST — V6 storyboard-route regression note: the free-only gateway regression still encoded the obsolete <=45s single-model timeout and failed against the new evidence-based 70s storyboard bound. The route-specific proof is 56.78s for the exact saved storyboard prompt on Poolside. Update the regression to enforce the 70s bound and preserve default/storyboard free-model identities.
 
 2026-09-10 21:53 CEST — V6 gateway test-edit note: attempted replacement of the obsolete 45s assertion was a no-op due to an exact-string mismatch; the regression therefore failed unchanged. Inspect the actual source line and correct that line before another test run.
+
+2026-09-10 21:55 CEST — V6 routed-gateway regression note: exact-image test now reaches the next obsolete expectation, requiring node name `Nemotron Free Model` instead of the route-neutral `Kilo Free Model`. Product source is consistent; regression must be synchronized before another test run.
