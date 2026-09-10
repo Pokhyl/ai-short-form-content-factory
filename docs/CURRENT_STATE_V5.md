@@ -1382,3 +1382,7 @@ The deterministic suite is clean at 71/71 Node and 13/13 Python. The unchanged i
 ### V6 PostgreSQL story-package incompatibility found before commit
 
 Fresh-database integration with an actual `visual-facts-story-v1` payload failed at PostgreSQL constraint `jobs_story_package_check`. This proves the current DB bootstrap still encodes V5-only story-package acceptance and would make the V6 WF02 persist path impossible. The correction must explicitly support V6 `visual-facts-story-v1` / `storyboard-v1` while retaining V5 compatibility for immutable historical jobs and preserving units/assets/cardinality checks. Production remains unchanged.
+
+### V6 fresh bootstrap syntax failure
+
+The first baseline update for the V6 story-package constraint failed real PostgreSQL parsing because the manually rewritten pg_dump-style one-line CHECK expression had malformed parentheses. This is recorded before correction. The fix is to use a readable multiline CHECK expression matching migration `024` and prove it with the disposable PostgreSQL integration test. Production remains unchanged.

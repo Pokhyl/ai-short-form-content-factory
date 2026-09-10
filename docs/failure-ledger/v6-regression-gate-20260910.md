@@ -99,3 +99,9 @@ These failures do not authorize restoring the retired second review loop or acce
 After migrating the integration fixture to submit `visual-facts-story-v1`, fresh PostgreSQL rejected the V6 row with `jobs_story_package_check`. The failing row contained a V6 `story_package`, proving the database bootstrap/check constraint still permits only the retired V5 story package shape/version. This is a real V6 source/schema incompatibility, not a test-only issue: WF02 V6 persist cannot succeed against the current database contract.
 
 Correction must extend the durable PostgreSQL story-package constraint for the explicit `visual-facts-story-v1` / `storyboard-v1` contract while retaining V5 compatibility for existing immutable historical jobs. Existing constraints on JSON type, units/assets cardinality and durable state must remain fail-closed. Production mutation: none.
+
+## Third V6 integration gate — bootstrap SQL syntax defect
+
+The first implementation of V6 `jobs_story_package_check` used a manually rewritten pg_dump-style single-line CHECK expression in `db/init/001_init.sql`. Fresh PostgreSQL rejected the baseline at parse time with `syntax error at or near ','`, proving the hand-counted parenthesis form was malformed. Migration `024` itself was not applied to production; production mutation remains none.
+
+Correction: replace the baseline constraint with a readable multiline CHECK expression matching migration `024`, then rerun the actual disposable PostgreSQL bootstrap instead of relying on text inspection.
