@@ -251,7 +251,26 @@
     "triggerCount": 0,
     "sourceWorkflowId": null,
     "tags": [],
-    "shared": [],
+    "shared": [
+      {
+        "updatedAt": "2026-09-04T12:09:42.484Z",
+        "createdAt": "2026-09-04T12:09:42.484Z",
+        "role": "workflow:owner",
+        "workflowId": "V6ModelGatewayFreeOnly",
+        "projectId": "x92yC4agLVaxmmyf",
+        "project": {
+          "updatedAt": "2026-08-22T20:38:05.582Z",
+          "createdAt": "2026-08-22T18:46:49.400Z",
+          "id": "x92yC4agLVaxmmyf",
+          "name": "Vitalii Pokhyl <pokhylvitalii@gmail.com>",
+          "type": "personal",
+          "icon": null,
+          "description": null,
+          "customTelemetryTags": [],
+          "creatorId": "beb98494-dbaf-489c-9de8-6abf234326a4"
+        }
+      }
+    ],
     "versionMetadata": {
       "name": null,
       "description": null
