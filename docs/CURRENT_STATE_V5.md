@@ -1674,3 +1674,6 @@ The first fresh stage submission command sent no request because `docker exec ..
 
 ### 2026-09-10 V6 operator checkpoint — fresh-job monitor SQL syntax mistake
 Fresh stage job `9bbe6a4b-70dc-46ef-98e6-d06fd15fdfb3` was created successfully with HTTP 201. The first read-only monitor failed before reading the row because of invalid psql variable/cast syntax. The job itself was not modified and continues independently; monitoring must resume with a simpler fixed-UUID query before any correction to product code.
+
+### 2026-09-10 V6 operator checkpoint — long job-monitor timeout
+The long polling helper for fresh stage job `9bbe6a4b-70dc-46ef-98e6-d06fd15fdfb3` exceeded the remote tool execution window. The job was not modified. Monitoring must continue with short one-shot probes until the job reaches a terminal state.

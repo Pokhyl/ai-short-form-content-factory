@@ -324,3 +324,9 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - Cause: unnecessary psql variable indirection in a fixed-UUID read-only query.
 - Product impact: none; the product job continues independently in n8n/PostgreSQL and was not modified by the failed monitor.
 - Lesson: for fixed internally generated UUIDs, use a safely embedded quoted UUID in read-only SQL or Python/subprocess parameter handling rather than fragile psql meta-variable syntax.
+
+### 2026-09-10 — long blocking V6 job monitor exceeded tool execution window
+- Engineering/operator failure: a long-lived Python polling helper for fresh stage job `9bbe6a4b-70dc-46ef-98e6-d06fd15fdfb3` exceeded the remote tool execution window and returned a timeout before a terminal result could be reported.
+- Cause: operator used one blocking multi-minute tool call instead of short bounded status probes.
+- Product impact: none; the job runs independently and was not modified by the monitor.
+- Lesson: use short one-shot DB/execution probes and repeat as needed; do not hold a SentinelX tool call open for the full product execution.
