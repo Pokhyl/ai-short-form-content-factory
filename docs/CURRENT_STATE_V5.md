@@ -1738,3 +1738,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-10: Broad V6 regression found one stale test still targeting the retired pre-claim visual-review nodes. Eleven current tests passed first. Convert the stale test to assert reviewer-path retirement; do not restore old nodes.
 
 - 2026-09-10: Monitoring of fresh V6 job `4a132abd-0db9-4c73-a557-6eecdd397159` initially failed only because the query referenced non-existent `jobs.error_message`. Runtime/job processing continues independently; inspect actual jobs columns before the next poll.
+
+- 2026-09-10: Fresh V6 job `4a132abd-0db9-4c73-a557-6eecdd397159` is immutable after WF02 `17554`. Cohere long generation succeeded, proving the new route, but AI→diagram normalization still lacks `source -> input`; the same output's comparison diagram has a clear two-subject comparison with omitted lanes. Add deterministic alias/lane canonicalization before strict validation and in the compiler boundary; keep unknown values fail-closed.
