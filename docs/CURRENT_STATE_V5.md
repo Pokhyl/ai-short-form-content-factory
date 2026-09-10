@@ -1370,3 +1370,7 @@ The failures are not being hidden by deleting tests. They are split into (a) reg
 ### V6 source defect found before test migration
 
 Regression triage proved an internal V6 inconsistency: removal of the second post-claim media/fingerprint loop also removed the only guaranteed preview `visual_hash` production path. The new Visual Facts selector does not synthesize hashes, but downstream V6 story assembly already requires them for global no-repeat identity. Therefore test migration is paused until deterministic preview fingerprinting is moved into the single pre-story Visual Facts path. The retired second media search/review loop must not be restored.
+
+### V6 second deterministic regression gate
+
+After the single-pass preview fingerprint correction and V6 regression migration, deterministic verification is at **68/71 Node PASS and 13/13 Python PASS**, with workflow JSON parse and `git diff --check` passing. Three remaining Node failures are test-migration defects (over-specific shortlist identity fixture, an insufficient-pool fixture that did not actually fall below the V6 floor, and the still-unmigrated WF05 two-shot test). Production remains unchanged.

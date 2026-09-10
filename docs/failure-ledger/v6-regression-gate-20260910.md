@@ -65,3 +65,20 @@ The corrective rule is: do not make old tests green by restoring V5 architecture
 The first V6 implementation removed the old post-claim fingerprint loop but `Select Pre-Claim Visual Inventory` still passes discovery candidates that do not contain a deterministic `visual_hash`. `Validate Candidate Claims` then materializes `verified_visual_assets.visual_hash` from that missing field, while `Build Final Inventory Story` requires visual hashes to enforce no-repeat identity. This makes the current uncommitted V6 path internally inconsistent even if obsolete V5 tests were rewritten.
 
 Correction must move deterministic preview fingerprinting into the single pre-story Visual Facts inventory path. It must not restore the retired second media-search/review loop. Pixel review remains single-pass; fingerprinting is deterministic media identity, not a second semantic review.
+
+## Second deterministic gate
+
+After moving preview fingerprinting into the single inline Visual Facts media pass and replacing retired V5 regressions with V6 invariants, the deterministic suite improved to:
+
+- Node: **68/71 PASS**, 3 failures;
+- Python: **13/13 PASS**;
+- workflow JSON parse: PASS;
+- `git diff --check`: PASS.
+
+Remaining Node failures are regression-migration issues, not new production/runtime failures:
+
+1. `inventory_unique_review_shortlist_regression.mjs` used one overly specific deep-candidate identity assertion even though the invariant is global unique round-robin exposure;
+2. `wf02_candidate_pool_filter_regression.mjs` attempted to create a below-floor fixture but only rejected one additional candidate, leaving the pool at the accepted minimum;
+3. `wf05_visual_segments_regression.mjs` still asserts the retired V5 `[1,2].includes(count)` / old render labels instead of the V6 1-3 storyboard contract.
+
+No production mutation occurred.
