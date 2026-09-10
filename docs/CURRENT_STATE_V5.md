@@ -1360,3 +1360,9 @@ Two materially different production requests demonstrated that current V5 is not
 The production database snapshot now contains 303 exact failed/rejected records (297 status=`failed`, 6 explicit review rejections). They are preserved in `docs/failure-ledger/production-failures-20260910.jsonl`, with an engineering index in `docs/FAILURE_LEDGER.md`. `OPERATOR_EXECUTION_RULES.md` now makes GitHub preservation mandatory before any corrective code change, so a known failure cannot remain only in chat or shell history.
 
 V6 architecture reset is documented in `docs/ARCHITECTURE_V6.md`. No production mutation is authorized merely by this documentation checkpoint. The old Panama topic is regression evidence only, not the sole proof topic.
+
+## 2026-09-10 — V6 first full regression gate failed before deployment
+
+On branch `rebuild/storyboard-editor-v6-20260910`, the first full deterministic regression run of the uncommitted Visual Facts / variable-storyboard change passed workflow JSON parsing and `git diff --check`, but failed **25/71 Node regression files** and **3/13 Python regression files**. No production mutation occurred. One of the 25 Node failures (`semantic_visual_real_provider_dry_run.mjs`) is a manual provider proof that requires `JOB_CONTEXT_FILE` and must be excluded from deterministic-suite counts in the corrected runner.
+
+The failures are not being hidden by deleting tests. They are split into (a) regressions that explicitly encode now-retired V5 nodes/contracts, which require V6 replacement tests preserving the underlying quality invariant, and (b) genuine V6 compatibility gaps in story fixtures/downstream contracts. Exact failure list and policy are recorded in `docs/failure-ledger/v6-regression-gate-20260910.md`. Production V5 remains unchanged.
