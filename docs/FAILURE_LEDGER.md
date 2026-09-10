@@ -100,3 +100,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 - 2026-09-10: VPS host has no `npm`; a read-only renderer dependency lookup failed before code mutation. Use a disposable Node/project container for npm metadata instead of installing host tooling or assuming npm exists.
 
 - 2026-09-10: V6 dependency audit harness was accidentally run with `--network none`, causing `EAI_AGAIN` against npm registry. No vulnerability conclusion is valid from that run; repeat with network access.
+
+### Dependency/security finding — V6 media worker
+
+- 2026-09-10: valid `npm audit --omit=dev` found 2 high-severity findings via `sharp 0.34.5` / libvips/libheif. `@huggingface/transformers 3.8.1` forces the vulnerable 0.34.x range but is no longer imported by production media-worker source after SigLIP removal. Required correction: remove unused Transformers and upgrade direct `sharp` to fixed 0.35.4; do not ship the V6 renderer image with the known vulnerable unused dependency.

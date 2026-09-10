@@ -1416,3 +1416,7 @@ Before the renderer implementation, a read-only dependency/version inspection at
 ### 2026-09-10 V6 npm-audit harness network mistake
 
 A read-only `npm audit` attempt for the newly pinned Remotion dependencies was mistakenly launched in a disposable Node container with `--network none`, so the npm audit endpoint failed with `getaddrinfo EAI_AGAIN registry.npmjs.org`. No audit conclusion was drawn, and no source/production state was changed. The audit must be repeated with network access before renderer implementation continues.
+
+### 2026-09-10 V6 dependency audit found removable high-severity image dependency risk
+
+A valid networked `npm audit --omit=dev` of the media-worker dependency tree reported two high-severity advisories through `sharp 0.34.5` / bundled libvips/libheif. `@huggingface/transformers 3.8.1` also forces `sharp ^0.34.1`. Source inspection proves the media-worker no longer imports `@huggingface/transformers`; local SigLIP was previously removed from the critical visual path. Therefore the systemic correction is to remove the unused Transformers dependency and move the direct image library to fixed `sharp 0.35.4`, rather than carrying an unused vulnerable dependency into the V6 renderer image. Production is unchanged until the corrected dependency tree passes audit/build/regressions.
