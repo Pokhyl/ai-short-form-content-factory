@@ -111,3 +111,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 
 - 2026-09-10: first true synthetic Remotion component run produced an MP4 but failed the new pixel gate with `states=2/3`, `adjacent=2`, `black=0`, `flat=0`. The three fixtures reused the same layout/geometry and differed mainly in palette/text, so this does **not** justify weakening the perceptual duplicate threshold. Required next proof: rerun unchanged renderer/QA using structurally distinct synthetic visuals. Production unchanged; no renderer PASS.
 - The same network-isolated run logged a non-fatal Remotion usage-event fetch failure to `www.remotion.pro`; rendering itself continued. Do not conflate that telemetry warning with the pixel-QA failure.
+
+### Operator/tooling note — V6 host Node absence
+
+- 2026-09-10: the integrated `/render-v6 + WF05` precommit gate reached workflow JSON parse PASS, then host `node --check` failed with `node: command not found`. No renderer/source correction is justified by this result. All Node syntax/tests on this VPS must run in a disposable Node/project container; do not install host Node as a workaround. Production remained unchanged.
