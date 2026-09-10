@@ -16,7 +16,9 @@ for(const file of fs.readdirSync('n8n/workflows').filter(f=>f.endsWith('.json'))
   assert.equal(resolved.response_format,'json');
   assert.equal(resolved.response_schema.type,'object');
   assert(resolved.prompt||resolved.input);
-  assert(w.connections[builder.name].main[0].some(e=>e.node===node.name));
+  const direct=(w.connections[builder.name]?.main?.[0]||[]).some(e=>e.node===node.name);
+  const serial=(w.connections[builder.name]?.main?.[0]||[]).some(e=>{const loop=w.nodes.find(n=>n.name===e.node);return loop?.type==='n8n-nodes-base.splitInBatches'&&loop.typeVersion===3&&Number(loop.parameters?.batchSize)===1&&(w.connections[loop.name]?.main?.[1]||[]).some(x=>x.node===node.name);});
+  assert(direct||serial,`Structured call ${builder.name} does not reach ${node.name} directly or through a serial review loop`);
   // The compact schema literal reproduces the production defect on this engine.
   const broken='{{ {response_schema:'+JSON.stringify(resolved.response_schema)+'} }}';
   assert.throws(()=>evaluator.renderExpression(broken,{$json:fixture}),/invalid syntax/);

@@ -20,16 +20,23 @@ const required = [
   'Prepare Pre-Claim Review Batches',
   'Inline Pre-Claim Candidate Images',
   'Build Review Pre-Claim Visual Inventory Request',
+  'Loop Pre-Claim Review Batches',
   'Review Pre-Claim Visual Inventory',
   'Select Pre-Claim Visual Inventory',
   'Prepare Candidate Claims',
 ];
 for (const name of required) assert(nodes.has(name), `missing ${name}`);
 
-const edge = (from, to) => workflow.connections[from]?.main?.[0]?.some(item => item.node === to);
+const edge = (from, to, output = 0) => workflow.connections[from]?.main?.[output]?.some(item => item.node === to);
 for (let index = 0; index < required.length - 1; index++) {
-  assert(edge(required[index], required[index + 1]), `missing edge ${required[index]} -> ${required[index + 1]}`);
+  const from=required[index],to=required[index+1];
+  if ((from==='Loop Pre-Claim Review Batches'&&to==='Review Pre-Claim Visual Inventory')||(from==='Review Pre-Claim Visual Inventory'&&to==='Select Pre-Claim Visual Inventory')) continue;
+  assert(edge(from,to), `missing edge ${from} -> ${to}`);
 }
+assert(edge('Loop Pre-Claim Review Batches','Review Pre-Claim Visual Inventory',1));
+assert(edge('Review Pre-Claim Visual Inventory','Loop Pre-Claim Review Batches'));
+assert(edge('Loop Pre-Claim Review Batches','Select Pre-Claim Visual Inventory',0));
+assert(!edge('Build Review Pre-Claim Visual Inventory Request','Review Pre-Claim Visual Inventory'),'pre-claim reviewer must not bypass the serial loop');
 
 const source = fs.readFileSync(new URL('../n8n/workflows/WF02-plan-script-and-scenes.json', import.meta.url), 'utf8');
 assert(!/Ходор|Hodor|Khodorkovsky/u.test(source), 'workflow contains a topic-specific name');

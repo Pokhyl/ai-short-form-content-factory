@@ -491,7 +491,7 @@
       {
         "parameters": {
           "mode": "runOnceForAllItems",
-          "jsCode": "const prepared=$('Prepare Inventory Review Batches').all().map(x=>x.json),responses=$input.all().map(x=>x.json),base=$('Validate Candidate Claims').first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(!prepared.length||prepared.length!==responses.length)throw new Error(`inventory review batches ${responses.length}/${prepared.length}`);const claimMap=new Map((Array.isArray(base.candidate_claims)?base.candidate_claims:[]).map(c=>[clean(c.claim_id),c]));if(!claimMap.size)throw new Error('candidate claim inventory is missing');const STOP=new Set(['the','and','with','from','into','this','that','for','are','was','were','has','have','image','photo','picture','view','scene','showing','shows','visible']);const words=v=>clean(v).toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[],content=v=>[...new Set(words(v).filter(x=>x.length>=3&&!STOP.has(x)))],related=(a,b)=>a===b||(a.length>=5&&b.length>=5&&a.slice(0,6)===b.slice(0,6)),overlap=(a,b)=>a.reduce((n,x)=>n+(b.some(y=>related(x,y))?1:0),0),metaText=c=>[c.title,c.description,c.categories,c.metadata?.source_title,c.metadata?.source_description,c.metadata?.source_tags,c.source_url].filter(Boolean).join(' ');const bit=[0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4];function hamming(a,b){let d=0;for(let i=0;i<64;i++)d+=bit[parseInt(a[i],16)^parseInt(b[i],16)];return d;}const approved=[];let minimum=0,target=0;for(let b=0;b<prepared.length;b++){const ctx=prepared[b],response=responses[b];minimum=Number(ctx.min_verified_claims);target=Number(ctx.target_duration_seconds);let text=clean(response?.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,''),o;try{o=JSON.parse(text)}catch{throw new Error(`inventory reviewer returned invalid JSON for batch ${ctx.batch_number}`)}const expected=new Set(ctx.claims.flatMap(c=>c.review_candidates.map(x=>String(x.review_id)))),verdicts=new Map();if(!Array.isArray(o.verdicts))throw new Error('inventory reviewer missing flat verdicts');for(const v of o.verdicts){const id=String(v?.review_id??'');if(!expected.has(id))throw new Error(`inventory reviewer unknown review_id ${id}`);if(verdicts.has(id))throw new Error(`inventory reviewer duplicate review_id ${id}`);verdicts.set(id,v);}if(verdicts.size!==expected.size)throw new Error(`inventory reviewer incomplete verdicts ${verdicts.size}/${expected.size}`);for(const c of ctx.claims){for(let rank=0;rank<c.review_candidates.length;rank++){const x=c.review_candidates[rank],v=verdicts.get(String(x.review_id)),desc=clean(v?.visible_description).slice(0,300),supportedId=clean(v?.supported_claim_id),supported=claimMap.get(supportedId);if(v?.relevant!==true||!desc||!supported||x.target_anchor_pass!==true)continue;const vis=content(desc),meta=content(metaText(x)),hits=overlap(vis,meta),need=Math.min(2,Math.max(1,Math.min(vis.length,meta.length)));if(!vis.length||!meta.length||hits<need)continue;approved.push({...x,visible_description:desc,supported_claim_id:supportedId,metadata_consistency_hits:hits,origin_claim_number:Number(c.claim_number),origin_claim_id:clean(c.claim_id),candidate_rank:rank});}}}approved.sort((a,b)=>a.candidate_rank-b.candidate_rank||a.origin_claim_number-b.origin_claim_number||String(a.asset_identity??'').localeCompare(String(b.asset_identity??'')));const usedHashes=[],usedAssets=new Set(),visualAssets=[],byClaim=new Map();let assetSeq=0;for(const x of approved){const hash=String(x.visual_hash??'').toLowerCase(),identity=clean(x.asset_identity||`${x.provider}:${x.provider_asset_id}`),supported=claimMap.get(x.supported_claim_id);if(!supported||!/^[0-9a-f]{64}$/.test(hash)||!identity||usedAssets.has(identity)||usedHashes.some(h=>hamming(hash,h)<=18))continue;usedAssets.add(identity);usedHashes.push(hash);assetSeq+=1;const asset={asset_id:`A${assetSeq}`,provider:x.provider,provider_asset_id:x.provider_asset_id,candidate_id:x.candidate_id,source_url:clean(x.source_url),preview_url:clean(x.preview_urls?.[0]??x.preview_url),download_url:clean(x.download_url),author:clean(x.author)||null,license:clean(x.license)||null,license_url:clean(x.license_url)||null,media_kind:clean(x.media_kind)||'photo',visual_hash:hash,visual_cluster_key:`preview:${hash}`,visible_description:x.visible_description,supported_claim_id:x.supported_claim_id,supported_editorial_role:clean(supported.editorial_role),supported_visual_form:clean(supported.visual_form),supported_visual_target:clean(supported.visual_target),metadata:{...(x.metadata??{}),review_supported_claim_id:x.supported_claim_id,metadata_consistency_hits:x.metadata_consistency_hits,origin_claim_id:x.origin_claim_id}};visualAssets.push(asset);if(!byClaim.has(x.supported_claim_id))byClaim.set(x.supported_claim_id,[]);byClaim.get(x.supported_claim_id).push(asset);}const visualClaimIds=new Set(visualAssets.map(a=>a.supported_claim_id)),requiredVisuals=minimum*2;if(visualAssets.length<requiredVisuals||visualClaimIds.size<minimum)throw new Error(`pre-script global reviewed visual inventory assets=${visualAssets.length}/${requiredVisuals}, claims=${visualClaimIds.size}/${minimum}`);const explainIntent=/\\b(?:how|why|work|works|working|mechanism|process|operation|explain|function)\\b/iu.test(clean(base.user_intent));if(explainIntent&&!visualAssets.some(a=>['mechanism','detail'].includes(a.supported_editorial_role)))throw new Error('explanatory visual inventory lacks a reviewer-approved mechanism/detail apparatus view');const grounded=base.candidate_claims.map((sourceClaim,index)=>{const sourceId=clean(sourceClaim.claim_id);return{claim_number:index+1,claim_id:sourceId,source_claim_id:sourceId,claim:clean(sourceClaim.claim),evidence_ids:[...new Set((sourceClaim.evidence_ids??[]).map(clean).filter(Boolean))],editorial_role:clean(sourceClaim.editorial_role),visual_form:clean(sourceClaim.visual_form),visual_target:clean(sourceClaim.visual_target),direct_assets:byClaim.get(sourceId)??[]};});return [{json:{...base,verified_claims:grounded,verified_claim_count:grounded.length,verified_visual_assets:visualAssets,verified_visual_asset_count:visualAssets.length,verified_visual_claim_count:visualClaimIds.size,story_unit_bounds:{15:[3,4],30:[4,6],45:[6,8],60:[7,9]}[target],visual_binding_mode:'global-reviewed-context-v1'}}];"
+          "jsCode": "const prepared=$('Prepare Inventory Review Batches').all().map(x=>x.json),responses=$input.all().map(x=>x.json),base=$('Validate Candidate Claims').first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(!prepared.length||prepared.length!==responses.length)throw new Error(`inventory review batches ${responses.length}/${prepared.length}`);const claimMap=new Map((Array.isArray(base.candidate_claims)?base.candidate_claims:[]).map(c=>[clean(c.claim_id),c]));if(!claimMap.size)throw new Error('candidate claim inventory is missing');const STOP=new Set(['the','and','with','from','into','this','that','for','are','was','were','has','have','image','photo','picture','view','scene','showing','shows','visible']);const words=v=>clean(v).toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[],content=v=>[...new Set(words(v).filter(x=>x.length>=3&&!STOP.has(x)))],related=(a,b)=>a===b||(a.length>=5&&b.length>=5&&a.slice(0,6)===b.slice(0,6)),overlap=(a,b)=>a.reduce((n,x)=>n+(b.some(y=>related(x,y))?1:0),0),metaText=c=>[c.title,c.description,c.categories,c.metadata?.source_title,c.metadata?.source_description,c.metadata?.source_tags,c.source_url].filter(Boolean).join(' ');const bit=[0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4];function hamming(a,b){let d=0;for(let i=0;i<64;i++)d+=bit[parseInt(a[i],16)^parseInt(b[i],16)];return d;}const approved=[];let minimum=0,target=0;for(let b=0;b<prepared.length;b++){const ctx=prepared[b],response=responses[b];minimum=Number(ctx.min_verified_claims);target=Number(ctx.target_duration_seconds);if(response?.provider_exhausted===true||!clean(response?.text))throw new Error(`inventory reviewer unavailable after bounded provider failover for batch ${ctx.batch_number}`);let text=clean(response?.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,''),o;try{o=JSON.parse(text)}catch{throw new Error(`inventory reviewer returned invalid JSON for batch ${ctx.batch_number}`)}const expected=new Set(ctx.claims.flatMap(c=>c.review_candidates.map(x=>String(x.review_id)))),verdicts=new Map();if(!Array.isArray(o.verdicts))throw new Error('inventory reviewer missing flat verdicts');for(const v of o.verdicts){const id=String(v?.review_id??'');if(!expected.has(id))throw new Error(`inventory reviewer unknown review_id ${id}`);if(verdicts.has(id))throw new Error(`inventory reviewer duplicate review_id ${id}`);verdicts.set(id,v);}if(verdicts.size!==expected.size)throw new Error(`inventory reviewer incomplete verdicts ${verdicts.size}/${expected.size}`);for(const c of ctx.claims){for(let rank=0;rank<c.review_candidates.length;rank++){const x=c.review_candidates[rank],v=verdicts.get(String(x.review_id)),desc=clean(v?.visible_description).slice(0,300),supportedId=clean(v?.supported_claim_id),supported=claimMap.get(supportedId);if(v?.relevant!==true||!desc||!supported||x.target_anchor_pass!==true)continue;const vis=content(desc),meta=content(metaText(x)),hits=overlap(vis,meta),need=Math.min(2,Math.max(1,Math.min(vis.length,meta.length)));if(!vis.length||!meta.length||hits<need)continue;approved.push({...x,visible_description:desc,supported_claim_id:supportedId,metadata_consistency_hits:hits,origin_claim_number:Number(c.claim_number),origin_claim_id:clean(c.claim_id),candidate_rank:rank});}}}approved.sort((a,b)=>a.candidate_rank-b.candidate_rank||a.origin_claim_number-b.origin_claim_number||String(a.asset_identity??'').localeCompare(String(b.asset_identity??'')));const usedHashes=[],usedAssets=new Set(),visualAssets=[],byClaim=new Map();let assetSeq=0;for(const x of approved){const hash=String(x.visual_hash??'').toLowerCase(),identity=clean(x.asset_identity||`${x.provider}:${x.provider_asset_id}`),supported=claimMap.get(x.supported_claim_id);if(!supported||!/^[0-9a-f]{64}$/.test(hash)||!identity||usedAssets.has(identity)||usedHashes.some(h=>hamming(hash,h)<=18))continue;usedAssets.add(identity);usedHashes.push(hash);assetSeq+=1;const asset={asset_id:`A${assetSeq}`,provider:x.provider,provider_asset_id:x.provider_asset_id,candidate_id:x.candidate_id,source_url:clean(x.source_url),preview_url:clean(x.preview_urls?.[0]??x.preview_url),download_url:clean(x.download_url),author:clean(x.author)||null,license:clean(x.license)||null,license_url:clean(x.license_url)||null,media_kind:clean(x.media_kind)||'photo',visual_hash:hash,visual_cluster_key:`preview:${hash}`,visible_description:x.visible_description,supported_claim_id:x.supported_claim_id,supported_editorial_role:clean(supported.editorial_role),supported_visual_form:clean(supported.visual_form),supported_visual_target:clean(supported.visual_target),metadata:{...(x.metadata??{}),review_supported_claim_id:x.supported_claim_id,metadata_consistency_hits:x.metadata_consistency_hits,origin_claim_id:x.origin_claim_id}};visualAssets.push(asset);if(!byClaim.has(x.supported_claim_id))byClaim.set(x.supported_claim_id,[]);byClaim.get(x.supported_claim_id).push(asset);}const visualClaimIds=new Set(visualAssets.map(a=>a.supported_claim_id)),requiredVisuals=minimum*2;if(visualAssets.length<requiredVisuals||visualClaimIds.size<minimum)throw new Error(`pre-script global reviewed visual inventory assets=${visualAssets.length}/${requiredVisuals}, claims=${visualClaimIds.size}/${minimum}`);const explainIntent=/\\b(?:how|why|work|works|working|mechanism|process|operation|explain|function)\\b/iu.test(clean(base.user_intent));if(explainIntent&&!visualAssets.some(a=>['mechanism','detail'].includes(a.supported_editorial_role)))throw new Error('explanatory visual inventory lacks a reviewer-approved mechanism/detail apparatus view');const grounded=base.candidate_claims.map((sourceClaim,index)=>{const sourceId=clean(sourceClaim.claim_id);return{claim_number:index+1,claim_id:sourceId,source_claim_id:sourceId,claim:clean(sourceClaim.claim),evidence_ids:[...new Set((sourceClaim.evidence_ids??[]).map(clean).filter(Boolean))],editorial_role:clean(sourceClaim.editorial_role),visual_form:clean(sourceClaim.visual_form),visual_target:clean(sourceClaim.visual_target),direct_assets:byClaim.get(sourceId)??[]};});return [{json:{...base,verified_claims:grounded,verified_claim_count:grounded.length,verified_visual_assets:visualAssets,verified_visual_asset_count:visualAssets.length,verified_visual_claim_count:visualClaimIds.size,story_unit_bounds:{15:[3,4],30:[4,6],45:[6,8],60:[7,9]}[target],visual_binding_mode:'global-reviewed-context-v1'}}];"
         },
         "id": "c33205f5-6d7a-497d-bead-1feb03ad837d",
         "name": "Select Verified Claim Inventory",
@@ -798,7 +798,7 @@
         "parameters": {
           "mode": "runOnceForAllItems",
           "language": "javaScript",
-          "jsCode": "const prepared=$('Prepare Pre-Claim Review Batches').all().map(x=>x.json),responses=$input.all().map(x=>x.json),base=$('Validate Visual Exploration').first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(!prepared.length||prepared.length!==responses.length)throw new Error(`pre-claim review batches ${responses.length}/${prepared.length}`);const STOP=new Set(['the','and','with','from','into','this','that','for','are','was','were','has','have','image','photo','picture','view','scene','showing','shows','visible']);const words=v=>clean(v).toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[],content=v=>[...new Set(words(v).filter(x=>x.length>=3&&!STOP.has(x)))],related=(a,b)=>a===b||(a.length>=5&&b.length>=5&&a.slice(0,6)===b.slice(0,6)),overlap=(a,b)=>a.reduce((n,x)=>n+(b.some(y=>related(x,y))?1:0),0),metaText=c=>[c.title,c.categories,c.metadata?.source_title,clean(c.description).length<=240?c.description:''].filter(Boolean).join(' ');const approved=[];let minimum=6;for(let b=0;b<prepared.length;b++){const ctx=prepared[b],response=responses[b];minimum=Math.max(minimum,Number(ctx.minimum_available_assets)||6);let text=clean(response?.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,''),o;try{o=JSON.parse(text)}catch{throw new Error(`pre-claim reviewer returned invalid JSON for batch ${ctx.batch_number}`)}const expected=new Set(ctx.candidates.map(x=>String(x.review_id))),verdicts=new Map();if(!Array.isArray(o.verdicts))throw new Error('pre-claim reviewer missing verdicts');for(const v of o.verdicts){const id=String(v?.review_id??'');if(!expected.has(id))throw new Error(`pre-claim reviewer unknown review_id ${id}`);if(verdicts.has(id))throw new Error(`pre-claim reviewer duplicate review_id ${id}`);verdicts.set(id,v);}if(verdicts.size!==expected.size)throw new Error(`pre-claim reviewer incomplete verdicts ${verdicts.size}/${expected.size}`);for(const x of ctx.candidates){const v=verdicts.get(String(x.review_id)),desc=clean(v?.visible_description).slice(0,300),form=clean(v?.visual_form).toLowerCase();if(v?.relevant!==true||!desc||!['photo','diagram','map','document','illustration'].includes(form))continue;const vis=content(desc),meta=content(metaText(x)),hits=overlap(vis,meta),need=Math.min(2,Math.max(1,Math.min(vis.length,meta.length)));if(!vis.length||!meta.length||hits<need)continue;approved.push({...x,preclaim_visible_description:desc,preclaim_visual_form:form,preclaim_metadata_consistency_hits:hits});}}const used=new Set(),assets=[];for(const x of approved){const identity=clean(x.asset_identity||`${x.provider}:${x.provider_asset_id}`);if(!identity||used.has(identity))continue;used.add(identity);assets.push({...x,inventory_id:`V${assets.length+1}`});}if(assets.length<minimum)throw new Error(`pre-claim vision-reviewed inventory only ${assets.length}/${minimum} assets`);return [{json:{...base,preclaim_review_version:'pre-claim-vision-reviewed-inventory-v1',available_visual_assets:assets,available_visual_asset_count:assets.length}}];"
+          "jsCode": "const prepared=$('Prepare Pre-Claim Review Batches').all().map(x=>x.json),responses=$input.all().map(x=>x.json),base=$('Validate Visual Exploration').first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(!prepared.length||prepared.length!==responses.length)throw new Error(`pre-claim review batches ${responses.length}/${prepared.length}`);const STOP=new Set(['the','and','with','from','into','this','that','for','are','was','were','has','have','image','photo','picture','view','scene','showing','shows','visible']);const words=v=>clean(v).toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[],content=v=>[...new Set(words(v).filter(x=>x.length>=3&&!STOP.has(x)))],related=(a,b)=>a===b||(a.length>=5&&b.length>=5&&a.slice(0,6)===b.slice(0,6)),overlap=(a,b)=>a.reduce((n,x)=>n+(b.some(y=>related(x,y))?1:0),0),metaText=c=>[c.title,c.categories,c.metadata?.source_title,clean(c.description).length<=240?c.description:''].filter(Boolean).join(' ');const approved=[];let minimum=6;for(let b=0;b<prepared.length;b++){const ctx=prepared[b],response=responses[b];minimum=Math.max(minimum,Number(ctx.minimum_available_assets)||6);if(response?.provider_exhausted===true||!clean(response?.text))throw new Error(`pre-claim reviewer unavailable after bounded provider failover for batch ${ctx.batch_number}`);let text=clean(response?.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,''),o;try{o=JSON.parse(text)}catch{throw new Error(`pre-claim reviewer returned invalid JSON for batch ${ctx.batch_number}`)}const expected=new Set(ctx.candidates.map(x=>String(x.review_id))),verdicts=new Map();if(!Array.isArray(o.verdicts))throw new Error('pre-claim reviewer missing verdicts');for(const v of o.verdicts){const id=String(v?.review_id??'');if(!expected.has(id))throw new Error(`pre-claim reviewer unknown review_id ${id}`);if(verdicts.has(id))throw new Error(`pre-claim reviewer duplicate review_id ${id}`);verdicts.set(id,v);}if(verdicts.size!==expected.size)throw new Error(`pre-claim reviewer incomplete verdicts ${verdicts.size}/${expected.size}`);for(const x of ctx.candidates){const v=verdicts.get(String(x.review_id)),desc=clean(v?.visible_description).slice(0,300),form=clean(v?.visual_form).toLowerCase();if(v?.relevant!==true||!desc||!['photo','diagram','map','document','illustration'].includes(form))continue;const vis=content(desc),meta=content(metaText(x)),hits=overlap(vis,meta),need=Math.min(2,Math.max(1,Math.min(vis.length,meta.length)));if(!vis.length||!meta.length||hits<need)continue;approved.push({...x,preclaim_visible_description:desc,preclaim_visual_form:form,preclaim_metadata_consistency_hits:hits});}}const used=new Set(),assets=[];for(const x of approved){const identity=clean(x.asset_identity||`${x.provider}:${x.provider_asset_id}`);if(!identity||used.has(identity))continue;used.add(identity);assets.push({...x,inventory_id:`V${assets.length+1}`});}if(assets.length<minimum)throw new Error(`pre-claim vision-reviewed inventory only ${assets.length}/${minimum} assets`);return [{json:{...base,preclaim_review_version:'pre-claim-vision-reviewed-inventory-v1',available_visual_assets:assets,available_visual_asset_count:assets.length}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -809,6 +809,34 @@
         "id": "6e2dd726-9d2a-47a8-a431-a635d6dfdf3d",
         "name": "Select Pre-Claim Visual Inventory",
         "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "batchSize": 1,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          4280,
+          -80
+        ],
+        "id": "6a28074d-521f-4361-87d2-5b4777813530",
+        "name": "Loop Pre-Claim Review Batches"
+      },
+      {
+        "parameters": {
+          "batchSize": 1,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          4380,
+          460
+        ],
+        "id": "ad669cbc-ec2b-4590-9c18-2e51bb3ff2b7",
+        "name": "Loop Inventory Review Batches"
       }
     ],
     "connections": {
@@ -1191,7 +1219,7 @@
         "main": [
           [
             {
-              "node": "Select Verified Claim Inventory",
+              "node": "Loop Inventory Review Batches",
               "type": "main",
               "index": 0
             }
@@ -1335,7 +1363,7 @@
         "main": [
           [
             {
-              "node": "Review Inventory Candidate Images",
+              "node": "Loop Inventory Review Batches",
               "type": "main",
               "index": 0
             }
@@ -1497,7 +1525,7 @@
         "main": [
           [
             {
-              "node": "Review Pre-Claim Visual Inventory",
+              "node": "Loop Pre-Claim Review Batches",
               "type": "main",
               "index": 0
             }
@@ -1515,7 +1543,7 @@
         "main": [
           [
             {
-              "node": "Select Pre-Claim Visual Inventory",
+              "node": "Loop Pre-Claim Review Batches",
               "type": "main",
               "index": 0
             }
@@ -1541,6 +1569,42 @@
           [
             {
               "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Pre-Claim Review Batches": {
+        "main": [
+          [
+            {
+              "node": "Select Pre-Claim Visual Inventory",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Review Pre-Claim Visual Inventory",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Inventory Review Batches": {
+        "main": [
+          [
+            {
+              "node": "Select Verified Claim Inventory",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Review Inventory Candidate Images",
               "type": "main",
               "index": 0
             }
