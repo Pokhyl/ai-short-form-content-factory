@@ -1632,3 +1632,7 @@ The first read-only inspection of `V4-model-gateway.json` used the wrong root sh
 ## 2026-09-10 operator note — SentinelX service-account Git ownership
 
 A read-only repository orientation attempt from the SentinelX service account stopped at Git safe-directory protection (`detected dubious ownership`). No repository or production state changed. This is an operator/tooling-path issue only. Do not change Git safe.directory/config; use the existing privileged checkout execution path for repository Git commands.
+
+## 2026-09-10 operator note — schema search path
+
+A read-only schema search included nonexistent `migrations` after already locating the relevant schema under `db/migrations`; strict grep therefore exited 2. No product state changed. Future schema inspection must use the actual repository paths only.
