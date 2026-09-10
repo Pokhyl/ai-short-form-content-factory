@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const source=fs.readFileSync('services/media-worker/src/render-v6.mjs','utf8');
+assert.match(source,/remotionOutputPath/,'Remotion must render to an intermediate artifact');
+assert.match(source,/scale=in_range=full:out_range=tv,format=yuv420p/,'full-range Remotion output must be normalized to limited-range yuv420p');
+assert.match(source,/"-pix_fmt", "yuv420p"/,'final ffmpeg output must request yuv420p');
+assert.match(source,/"-color_range", "tv"/,'final H.264 stream must be marked limited range');
+assert.match(source,/inspectV6RenderedPixels\(outputPath, shots\)/,'pixel QA must inspect the normalized final artifact');
+assert.match(source,/readFile\(outputPath\)/,'artifact hash must use the normalized final artifact');
+assert.match(source,/rm\(remotionOutputPath/,'intermediate Remotion artifact must be cleaned up');
+console.log('RENDER_V6_PIXEL_FORMAT_NORMALIZATION_REGRESSION_PASS');

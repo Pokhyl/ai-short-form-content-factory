@@ -14,6 +14,7 @@ import { buildVisualBeatFilters } from "./visual-framing.mjs";
 import { discoverVisualCandidates, recoverVisualConflictCandidates } from "./visual-discovery.mjs";
 import { buildVisualDiscoveryOptions } from "./visual-discovery-request.mjs";
 import { clusterAverageHashes, evaluateVisualSequence, evaluateVisualShotSequence, requiredRenderedShotStateCount } from "./visual-quality.mjs";
+import { renderV6Composition, serveV6RenderAsset } from "./render-v6.mjs";
 
 const { EdgeTTS } = edgeTtsPackage;
 
@@ -1892,6 +1893,141 @@ async function renderVideoV3(request, response) {
   }
 }
 
+
+async function renderVideoV6(request, response) {
+  const body = await readJsonBody(request);
+  const jobId = String(body.job_id ?? "").trim().toLowerCase();
+  const beats = body.beats;
+  const shots = body.shots;
+  const visualContract = body.visual_contract;
+  if (!uuidPattern.test(jobId)) throw new HttpError(400, "invalid_job_id", "job_id must be a valid UUID");
+  if (!visualContract || visualContract.version !== "visual-facts-story-v1" || visualContract.editorial_contract_version !== "storyboard-v1" || visualContract.reserved_before_script !== true || visualContract.post_freeze_search_used !== false) {
+    throw new HttpError(400, "invalid_visual_contract", "render-v6 requires the frozen visual-facts storyboard contract");
+  }
+  if (!Array.isArray(beats) || beats.length === 0 || beats.length > 100) throw new HttpError(400, "invalid_render_beats", "beats must contain between 1 and 100 timed story units");
+  if (!Array.isArray(shots) || shots.length === 0 || shots.length > 100) throw new HttpError(400, "invalid_render_shots", "shots must contain between 1 and 100 frozen storyboard shots");
+
+  const audioPath = resolvePersistedMediaPath(jobId, body.audio_path, "audio");
+  let audioBytes;
+  try {
+    const audioStat = await stat(audioPath.absolutePath);
+    if (!audioStat.isFile()) throw new Error("audio path is not a file");
+    audioBytes = await readFile(audioPath.absolutePath);
+  } catch {
+    throw new HttpError(422, "render_audio_missing", "Continuous voiceover file is missing");
+  }
+  const measuredAudioDuration = probeDurationSeconds(audioPath.absolutePath);
+  let wordTiming;
+  try {
+    wordTiming = JSON.parse(await readFile(`${audioPath.absolutePath}.words.json`, "utf8"));
+  } catch {
+    throw new HttpError(422, "render_word_timing_missing", "Exact provider word timing sidecar is missing or invalid");
+  }
+  const audioSha256 = createHash("sha256").update(audioBytes).digest("hex");
+  if (wordTiming?.version !== "provider-word-timing-v1" || String(wordTiming.audio_sha256 ?? "").toLowerCase() !== audioSha256 || Math.abs(Number(wordTiming.duration_seconds) - measuredAudioDuration) > 0.02) {
+    throw new HttpError(422, "render_word_timing_identity_mismatch", "Exact word timing does not belong to the accepted voiceover bytes");
+  }
+
+  const normalizedBeats = [];
+  let previousEnd = 0;
+  for (let index = 0; index < beats.length; index += 1) {
+    const beat = beats[index];
+    if (beat === null || typeof beat !== "object" || Array.isArray(beat)) throw new HttpError(400, "invalid_render_beat", `beat ${index + 1} must be an object`);
+    const beatNumber = Number(beat.beat_number);
+    const start = Number(beat.start_seconds), end = Number(beat.end_seconds), duration = Number(beat.duration_seconds);
+    const narration = String(beat.narration ?? "").replace(/\s+/gu, " ").trim();
+    if (!Number.isInteger(beatNumber) || beatNumber !== index + 1 || !narration || narration.length > 1200) throw new HttpError(400, "invalid_render_beat", `beat ${index + 1} identity/narration is invalid`);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || !Number.isFinite(duration) || start < 0 || end <= start || duration <= 0 || Math.abs(start - previousEnd) > 0.02 || Math.abs((end - start) - duration) > 0.02) throw new HttpError(400, "invalid_beat_timing", `beat ${beatNumber} timing is invalid`);
+    normalizedBeats.push({beat_number: beatNumber, narration, start_seconds: start, end_seconds: end, duration_seconds: duration});
+    previousEnd = end;
+  }
+  if (Math.abs(previousEnd - measuredAudioDuration) > 0.15) throw new HttpError(422, "beat_audio_duration_mismatch", `Final story unit end ${previousEnd} differs from voiceover ${measuredAudioDuration}`);
+
+  const allowedRepresentations = new Set(["exact_media", "factual_graphic"]);
+  const allowedForms = new Set(["photo", "diagram", "map", "document", "illustration"]);
+  const normalizedShots = [];
+  previousEnd = 0;
+  for (let index = 0; index < shots.length; index += 1) {
+    const shot = shots[index];
+    if (shot === null || typeof shot !== "object" || Array.isArray(shot)) throw new HttpError(400, "invalid_render_shot", `shot ${index + 1} must be an object`);
+    const shotNumber = Number(shot.shot_number), segmentNumber = Number(shot.segment_number), segmentShotNumber = Number(shot.segment_shot_number);
+    const start = Number(shot.start_seconds), end = Number(shot.end_seconds), duration = Number(shot.duration_seconds);
+    if (!Number.isInteger(shotNumber) || shotNumber !== index + 1 || !Number.isInteger(segmentNumber) || segmentNumber < 1 || !Number.isInteger(segmentShotNumber) || segmentShotNumber < 1 || segmentShotNumber > 3) throw new HttpError(400, "invalid_shot_number", `shot ${index + 1} identity is invalid`);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || !Number.isFinite(duration) || start < 0 || end <= start || duration <= 0 || Math.abs(start - previousEnd) > 0.02 || Math.abs((end - start) - duration) > 0.02) throw new HttpError(400, "invalid_shot_timing", `shot ${shotNumber} timing is invalid`);
+    const assetKey = String(shot.asset_key ?? "").trim(), visualClusterKey = String(shot.visual_cluster_key ?? "").trim();
+    const representation = String(shot.representation ?? "").trim(), visualForm = String(shot.visual_form ?? "").trim().toLowerCase();
+    const shotIntent = String(shot.shot_intent ?? "").replace(/\s+/gu, " ").trim(), communicationGoal = String(shot.communication_goal ?? "").replace(/\s+/gu, " ").trim();
+    if (!assetKey || !visualClusterKey || !allowedRepresentations.has(representation) || !allowedForms.has(visualForm) || shotIntent.length < 8 || !communicationGoal) throw new HttpError(400, "invalid_v6_shot_contract", `shot ${shotNumber} lost frozen V6 storyboard metadata`);
+    if (representation === "exact_media" && visualForm !== "photo") throw new HttpError(400, "invalid_v6_representation", `shot ${shotNumber} exact_media must be a reviewed photo`);
+    if (representation === "factual_graphic" && visualForm === "photo") throw new HttpError(400, "invalid_v6_representation", `shot ${shotNumber} factual_graphic cannot be an ordinary photo`);
+    if (representation === "exact_media" && shot.crop_safe_portrait !== true) throw new HttpError(422, "portrait_unsafe_photo", `shot ${shotNumber} ordinary photo is not approved for portrait crop`);
+    const visualPath = resolvePersistedMediaPath(jobId, shot.visual_path, "visual");
+    try {
+      const visualStat = await stat(visualPath.absolutePath);
+      if (!visualStat.isFile()) throw new Error("visual is not a file");
+    } catch {
+      throw new HttpError(422, "render_input_missing", `shot ${shotNumber} visual file is missing`);
+    }
+    const visualProbe = probeVisualSource(visualPath.absolutePath);
+    normalizedShots.push({
+      shot_number: shotNumber, segment_number: segmentNumber, segment_shot_number: segmentShotNumber,
+      visual_kind: String(shot.visual_kind ?? ""), asset_key: assetKey, visual_cluster_key: visualClusterKey,
+      visual_path: visualPath, visual_media_type: visualProbe.media_type,
+      start_seconds: start, end_seconds: end, duration_seconds: duration,
+      representation, visual_form: visualForm, crop_safe_portrait: shot.crop_safe_portrait === true,
+      shot_intent: shotIntent, communication_goal: communicationGoal,
+    });
+    previousEnd = end;
+  }
+  if (Math.abs(previousEnd - measuredAudioDuration) > 0.15) throw new HttpError(422, "shot_audio_duration_mismatch", `Final shot end ${previousEnd} differs from voiceover ${measuredAudioDuration}`);
+  let sequenceQuality;
+  try { sequenceQuality = evaluateVisualShotSequence(normalizedShots); }
+  catch (error) { throw new HttpError(422, "render_visual_sequence_invalid", `V6 visual shot sequence is invalid: ${error.message}`); }
+  if (!sequenceQuality.pass) throw new HttpError(422, "render_visual_sequence_diversity_failed", `V6 visual shots failed pre-render diversity: states=${sequenceQuality.unique_visual_cluster_count}/${sequenceQuality.required_unique_visual_cluster_count}, assets=${sequenceQuality.unique_asset_count}/${sequenceQuality.shot_count}, adjacent=${sequenceQuality.adjacent_visual_cluster_duplicate_count}`);
+
+  const {relativePath, absolutePath} = buildRenderPath(jobId);
+  const renderDirectory = dirname(absolutePath), workDirectory = `${renderDirectory}/.tmp-v6-${randomUUID()}`, temporaryOutputPath = `${workDirectory}/final.mp4`;
+  await mkdir(workDirectory, {recursive: true});
+  try {
+    const rendered = await renderV6Composition({jobId, audioAbsolutePath: audioPath.absolutePath, outputPath: temporaryOutputPath, durationSeconds: measuredAudioDuration, shots: normalizedShots, wordTiming, workerPort: port});
+    const probe = probeRenderedVideo(temporaryOutputPath);
+    if (String(probe.video_pix_fmt ?? "").toLowerCase() !== "yuv420p" || probe.audio_sample_rate !== 48000 || probe.audio_channels !== 2) throw new Error("V6 render stream format does not match H.264 yuv420p / AAC 48kHz stereo contract");
+    if (Math.abs(probe.duration_seconds - measuredAudioDuration) > 0.6 || Math.abs(probe.audio_duration_seconds - measuredAudioDuration) > 0.6 || Math.abs(probe.video_duration_seconds - measuredAudioDuration) > 0.6) throw new Error(`V6 rendered duration differs from voiceover ${measuredAudioDuration}`);
+    const cq = rendered.pixel_qa;
+    if (!cq || cq.version !== "remotion-pixel-qa-v1" || cq.pass !== true || Number(cq.rendered_visual_state_count) !== normalizedShots.length || Number(cq.rendered_adjacent_visual_state_duplicate_count) !== 0 || Number(cq.black_frame_sample_count) !== 0 || Number(cq.flat_frame_sample_count) !== 0) throw new Error("V6 measured composition gate did not pass");
+    const visualQuality = {
+      ...sequenceQuality,
+      version: "visual-facts-render-v1", source_inventory_version: visualContract.version,
+      reserved_before_script: true, post_freeze_search_used: false, pre_render_pass: true,
+      renderer: "remotion-v6", word_timing_version: "provider-word-timing-v1",
+      rendered_visual_state_count: cq.rendered_visual_state_count,
+      required_rendered_visual_state_count: cq.required_rendered_visual_state_count,
+      rendered_adjacent_visual_state_duplicate_count: cq.rendered_adjacent_visual_state_duplicate_count,
+      black_frame_sample_count: cq.black_frame_sample_count, flat_frame_sample_count: cq.flat_frame_sample_count,
+      composition_quality: {...cq, renderer: "remotion-v6", ordinary_photo_policy: "native-portrait-cover", factual_graphic_policy: "preserve-full-vertical-compose"},
+      pass: true,
+    };
+    await mkdir(renderDirectory, {recursive: true});
+    await rename(temporaryOutputPath, absolutePath);
+    sendJson(response, 200, {
+      video_path: relativePath, media_type: "video", width: probe.width, height: probe.height, video_codec: probe.video_codec, video_pix_fmt: probe.video_pix_fmt,
+      audio_codec: probe.audio_codec, audio_sample_rate: probe.audio_sample_rate, audio_channels: probe.audio_channels,
+      duration_seconds: probe.duration_seconds, video_stream_duration_seconds: probe.video_duration_seconds, audio_stream_duration_seconds: probe.audio_duration_seconds,
+      expected_audio_duration_seconds: measuredAudioDuration, subtitles_burned_in: true,
+      renderer: "remotion-v6", visual_quality: visualQuality, composition_quality: visualQuality.composition_quality,
+      artifact_sha256: rendered.artifact_sha256,
+      beat_timings: normalizedBeats.map((beat) => ({beat_number: beat.beat_number, start_seconds: beat.start_seconds, end_seconds: beat.end_seconds, duration_seconds: beat.duration_seconds})),
+      shot_timings: normalizedShots.map((shot) => ({shot_number: shot.shot_number, segment_number: shot.segment_number, segment_shot_number: shot.segment_shot_number, start_seconds: shot.start_seconds, end_seconds: shot.end_seconds, duration_seconds: shot.duration_seconds, media_type: shot.visual_media_type, asset_key: shot.asset_key, visual_cluster_key: shot.visual_cluster_key})),
+      bytes: rendered.bytes,
+    });
+  } catch (error) {
+    if (error instanceof HttpError) throw error;
+    throw new HttpError(422, "render_v6_failed", `V6 video could not be rendered: ${error.message}`);
+  } finally {
+    await rm(workDirectory, {recursive: true, force: true}).catch(() => {});
+  }
+}
+
 async function renderVideo(request, response) {
   const body = await readJsonBody(request);
   const jobId = String(body.job_id ?? "").trim().toLowerCase();
@@ -2081,6 +2217,8 @@ const server = createServer(async (request, response) => {
   try {
     const requestUrl = new URL(request.url ?? "/", "http://localhost");
 
+    if (await serveV6RenderAsset(request, response, requestUrl.pathname)) return;
+
     if (request.method === "GET" && requestUrl.pathname === "/health") {
       sendJson(response, 200, {
         status: "ok",
@@ -2173,6 +2311,11 @@ const server = createServer(async (request, response) => {
     const reviewVideoMatch = /^\/review\/video\/([^/]+)$/.exec(requestUrl.pathname);
     if ((request.method === "GET" || request.method === "HEAD") && reviewVideoMatch) {
       await serveReviewVideo(request, response, reviewVideoMatch[1]);
+      return;
+    }
+
+    if (request.method === "POST" && requestUrl.pathname === "/render-v6") {
+      await renderVideoV6(request, response);
       return;
     }
 

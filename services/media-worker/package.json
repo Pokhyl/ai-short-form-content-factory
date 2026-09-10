@@ -10,8 +10,12 @@
     "start": "node src/server.mjs"
   },
   "dependencies": {
-    "@huggingface/transformers": "3.8.1",
+    "@remotion/bundler": "4.0.523",
+    "@remotion/renderer": "4.0.523",
     "node-edge-tts": "1.2.10",
-    "sharp": "0.34.5"
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "remotion": "4.0.523",
+    "sharp": "0.35.4"
   }
 }
