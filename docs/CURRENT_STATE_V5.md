@@ -1653,3 +1653,6 @@ A read-only deployment-history grep exited 2 because optional paths absent from 
 
 ### 2026-09-10 V6 predeploy checkpoint — free-only gateway owner ACL defect
 Predeploy inspection found the new V6 free-only model gateway source had no `shared` owner ACL. It has not been imported or published. Required correction is source-only: preserve the existing personal-project owner entry with workflowId rewritten to the V6 gateway ID and add a deployment regression.
+
+### 2026-09-10 V6 operator checkpoint — gateway ACL test-marker mistake
+The V6 gateway owner ACL source correction was written, but the helper stopped before modifying its regression because an assumed insertion marker was absent from the current test. No deployment occurred. The source ACL change remains uncommitted while the failure is checkpointed; next correction must inspect the actual test and add the owner-ACL assertion against its real structure.

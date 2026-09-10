@@ -288,3 +288,9 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - Cause: the new gateway generator intentionally stripped legacy workflow metadata but also stripped required n8n ownership metadata.
 - Product impact: none yet; the V6 gateway has not been imported or published.
 - Lesson: new standalone n8n workflow sources must preserve a valid `workflow:owner` shared entry with their own workflowId; add a regression before deployment.
+
+### 2026-09-10 — V6 gateway ACL regression edit used a stale test marker
+- Engineering/edit failure: the source ACL correction was written successfully, but the same helper then failed before updating the regression because it searched for a marker string not present in the current test file (`test marker missing`).
+- Cause: operator assumed an exact test-file line shape instead of inspecting the current file first.
+- Product impact: no runtime impact; source gateway owner ACL is corrected in the working tree, but the regression has not yet been strengthened.
+- Lesson: inspect the bounded current test content before deterministic insertion; do not couple a source mutation and an unverified marker-based test mutation in one helper.
