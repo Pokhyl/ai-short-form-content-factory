@@ -201,3 +201,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 - 2026-09-10: first isolated V6 stage-workflow generator aborted before import because the post-transform guard still found production ID `TJfA4ZYUEKSTad6k`. This is a staging-harness mapping defect. Find the exact residual JSON field, fix only the stage-copy generator, and retain the fail-closed guard; do not alter source workflows or production routing from this failure.
 
 - 2026-09-10: after publishing isolated V6 stage workflows and restarting n8n, `/healthz` returned healthy before the stage webhook row was visible in `n8n.webhook_entity`. Seconds later startup logs confirmed all five stage workflows activated and the DB contained `V6SmhHfzATicrvTF|v6-stage/jobs|POST`. This is a restart-readiness race, not a workflow activation defect. Future deployment/staging readiness must require both health and the expected webhook registration before proceeding.
+
+### 2026-09-10 V6 stage cross-topic preflight DB-user mistake
+
+The first preflight for the V6 stage cross-topic run failed before any webhook POST because the operator harness used the disposable-test PostgreSQL user `appuser` against the production database container. PostgreSQL correctly returned `role "appuser" does not exist`. No product job, workflow execution, database mutation, media artifact, or production routing change occurred. Future production DB probes must execute `psql` using the container's own `${POSTGRES_USER}` / `${POSTGRES_DB}` environment variables without printing secret values.
