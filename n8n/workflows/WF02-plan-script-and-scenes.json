@@ -3,8 +3,8 @@
     "updatedAt": "2026-09-01T20:02:31.938Z",
     "createdAt": "2026-08-23T09:46:09.713Z",
     "id": "TJfA4ZYUEKSTad6k",
-    "name": "WF02 — Research + Grounded Script",
-    "description": null,
+    "name": "WF02 — Storyboard-First Planning",
+    "description": "V6 storyboard-first planning: research -> semantic director -> deterministic media/diagram feasibility -> final narration. No mandatory multimodal visual reviewer.",
     "active": true,
     "isArchived": false,
     "nodes": [
@@ -82,7 +82,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "url": "http://127.0.0.1:5678/webhook/v6-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ { prompt: $json.intent_prompt, temperature: 0.05 } }}",
@@ -157,7 +157,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "url": "http://127.0.0.1:5678/webhook/v6-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ { prompt: $json.resolution_prompt, temperature: 0.05 } }}",
@@ -254,7 +254,7 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.3,
         "position": [
-          3440,
+          5640,
           0
         ],
         "id": "f1c228eb-948b-47c6-b7fb-633ab8169fe1",
@@ -263,7 +263,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const incoming=$input.first()?.json??{};let jobId=String(incoming.job_id??incoming.requested_job_id??'').trim();const recover=(name)=>{try{return String($(name).first().json?.job_id??$(name).first().json?.requested_job_id??'').trim()}catch{return ''}};if(!jobId){for(const name of ['Build Final Inventory Story','Prepare Inventory Grounded Story','Validate Candidate Claims','Prepare Candidate Claims','Select Pre-Claim Visual Inventory','Validate Visual Exploration','Parse Semantic Intent','Prepare Semantic Intent','Require Eligible Job','Load Eligible Job','Receive Job ID']){jobId=recover(name);if(jobId)break;}}let message='';const e=incoming.error;if(typeof e==='string')message=e;else if(e&&typeof e==='object')message=String(e.message??e.description??e.cause??'');if(!message)message=String(incoming.message??incoming.error_message??'');if(!message){try{message=JSON.stringify(incoming)}catch{message='WF02 failed'}};message=message.slice(0,4000);if(!jobId)throw new Error('WF02 failure handler could not recover job_id');return [{json:{job_id:jobId,error_message:message}}];"
+          "jsCode": "const incoming=$input.first()?.json??{};let jobId=String(incoming.job_id??incoming.requested_job_id??'').trim();const recover=(name)=>{try{return String($(name).first().json?.job_id??$(name).first().json?.requested_job_id??'').trim()}catch{return ''}};if(!jobId){for(const name of ['Build Final Storyboard Story','Prepare Final Story Request','Freeze Storyboard Feasibility','Build Storyboard Discovery Request','Validate Storyboard','Prepare Storyboard Director','Validate Resolved Topic','Parse Semantic Intent','Prepare Semantic Intent','Require Eligible Job','Load Eligible Job','Receive Job ID']){jobId=recover(name);if(jobId)break;}}let message='';const e=incoming.error;if(typeof e==='string')message=e;else if(e&&typeof e==='object')message=String(e.message??e.description??e.cause??'');if(!message)message=String(incoming.message??incoming.error_message??'');if(!message){try{message=JSON.stringify(incoming)}catch{message='WF02 failed'}};message=message.slice(0,4000);if(!jobId)throw new Error('WF02 failure handler could not recover job_id');return [{json:{job_id:jobId,error_message:message}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -312,232 +312,79 @@
       },
       {
         "parameters": {
-          "jsCode": "const base=$('Validate Visual Exploration').first().json,inv=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(inv.preclaim_review_version!=='pixel-visual-facts-v1')throw new Error('pixel visual facts contract missing');const assets=Array.isArray(inv.available_visual_assets)?inv.available_visual_assets:[];if(assets.length<6)throw new Error(`pixel visual facts only ${assets.length}/6 assets`);const evidence=base.research_rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}\\n${x.url}`).join('\\n\\n'),visuals=assets.map(a=>`${a.inventory_id} | ${a.preclaim_visual_form} | ROLE ${a.visual_fact_role} | STRENGTH ${a.explanation_strength} | PORTRAIT_SAFE ${a.crop_safe_portrait===true} | VISIBLE ${a.preclaim_visible_description}`).join('\\n');const range=base.candidate_claim_range,target=Number(base.target_duration_seconds);const prompt=`Create STORY CANDIDATES only from the intersection of research evidence and the PIXEL-DERIVED VISUAL FACTS below. Do not search for new media and do not write final narration.\\n\\nTOPIC: ${base.topic}\\nRESOLVED SUBJECT: ${base.resolved_subject}\\nUSER INTENT: ${base.user_intent}\\nTARGET: ${target}s\\n\\nRESEARCH:\\n${evidence}\\n\\nVISUAL FACTS:\\n${visuals}\\n\\nReturn ONLY JSON {\"claims\":[{\"claim_id\":\"C1\",\"claim\":\"one complete factual proposition in English\",\"evidence_ids\":[\"S1\"],\"editorial_role\":\"mechanism\",\"communication_goal\":\"what the viewer should understand\",\"inventory_asset_ids\":[\"V1\",\"V2\"]}]}. Requirements: ${range[0]}-${range[1]} candidates C1..Cn; each claim must be fully supported by cited research; every asset ID must be a listed Visual Fact and must truthfully help communicate that exact claim; use 1-3 assets per candidate; do not generate search_query_en or visual_target. For mechanism/detail claims, at least one cited Visual Fact must have STRENGTH direct and ROLE process|relationship|detail|result|reference. A context_only photo cannot support a mechanism claim. Diagram/map/document/illustration/photo compete by explanatory adequacy; photo is never mandatory. Prefer candidates with distinct visual assets and at least three editorial roles. If the requested mechanism is not visually explainable by available Visual Facts, choose another evidence-backed angle that still directly answers USER INTENT rather than inventing invisible visuals.`;return [{json:{...base,available_visual_assets:assets,claim_prompt:prompt}}];"
+          "jsCode": "const j=$('Validate Resolved Topic').first().json,r=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();\nlet rows=(Array.isArray(r.results)?r.results:[]).slice(0,10).map((x,i)=>({id:`S${i+1}`,title:clean(x.title),snippet:clean(x.content??x.description),url:clean(x.url)})).filter(x=>x.title&&x.snippet&&x.url);\nif(rows.length<2){const seen=new Set(rows.map(x=>x.url));for(const x of (Array.isArray(j.discovery_evidence)?j.discovery_evidence:[])){const title=clean(x.title),snippet=clean(x.snippet),url=clean(x.url);if(title&&snippet&&url&&!seen.has(url)){rows.push({id:`S${rows.length+1}`,title,snippet,url});seen.add(url);}if(rows.length>=10)break;}}\nif(rows.length<2)throw new Error('combined research returned fewer than two usable results');\nconst target=Number(j.target_duration_seconds),sceneBounds={15:[3,5],30:[5,7],45:[7,9],60:[8,11]}[target],wordBounds={15:[30,42],30:[62,82],45:[95,122],60:[128,165]}[target];if(!sceneBounds||!wordBounds)throw new Error('unsupported duration');\nconst evidence=rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}\\n${x.url}`).join('\\n\\n');\nconst prompt=`You are the semantic director of an autonomous vertical short-video system. Build the VISUAL STORYBOARD FIRST. Do not write final narration yet.\\n\\nTOPIC: ${j.topic}\\nRESOLVED SUBJECT: ${j.resolved_subject}\\nCANONICAL NAME: ${j.canonical_subject}\\nUSER INTENT: ${j.user_intent}\\nOUTPUT LANGUAGE: ${j.output_language_name} (${j.language_code})\\nTARGET: ${target} seconds\\n\\nRESEARCH EVIDENCE:\\n${evidence}\\n\\nReturn ONLY JSON with {\"scenes\":[...]}. Create ${sceneBounds[0]}-${sceneBounds[1]} scenes. Each scene: scene_id S1..Sn, purpose hook|establish|explain|proof|example|transition|close, grounded_fact_ids with 1-3 supplied evidence IDs, narration_intent describing only the meaning to communicate, and 1-3 shots. Each shot: shot_id (S1A/S1B...), representation exact_media|context_media|diagram|map|document, must_show (1-5 concrete visible requirements), must_not_show (0-4 misleading substitutions), search_query_en, communication_goal, crop_policy portrait_required|preserve_full|not_applicable, diagram_spec.\\n\\nRepresentation rules:\\n- invisible mechanisms, causal processes, flows, comparisons and state changes MUST use diagram for the explanatory beat instead of hoping stock footage explains them;\\n- exact_media is only for a concrete named person/place/object/entity where exact real media matters;\\n- context_media is only for real-world establishing/context footage that is truthful even though it does not explain an invisible mechanism;\\n- map and document are for factual geography/source evidence that should preserve the full frame;\\n- use at least one real external-media shot when truthful material should exist, but never invent filler;\\n- search_query_en is required only for exact_media/context_media/map/document and must be compact English; diagram uses an empty query;\\n- exact_media/context_media use portrait_required; map/document use preserve_full; diagram uses not_applicable.\\n\\nFor every diagram shot, diagram_spec must be an object with shot_id equal to the shot, grounded_fact_ids copied from the scene, archetype flow|merge|split|comparison|layered_stack|assembly, optional short title in the OUTPUT LANGUAGE, entities (2-8 items with id,label,role input|process|output|layer|subject|result, optional shape box|pill|circle, optional lane left|right, optional order, phase 0-20), and relations (from,to,kind flow|joins|splits|emits|blocks|contains|transforms, optional label, phase). Do NOT output coordinates, sizes, paths or raw SVG geometry. Non-diagram shots must set diagram_spec to null.\\n\\nEvery communication_goal must state what the viewer understands from THAT shot. Every must_show and every diagram element must be grounded by the cited evidence. Do not make stock/context imagery carry explanatory claims it cannot visibly communicate. The final speech will be written only after this storyboard is executable.`;\nreturn [{json:{...j,research_rows:rows,scene_bounds:sceneBounds,target_word_min:wordBounds[0],target_word_max:wordBounds[1],storyboard_prompt:prompt}}];"
         },
-        "id": "0a121d05-0140-4ea0-bc62-18a020fb2cac",
-        "name": "Prepare Candidate Claims",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          2200,
-          300
+          2760,
+          0
         ],
+        "id": "c9770804-22c5-4818-b3f8-ef4ea9ee367a",
+        "name": "Prepare Storyboard Director",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const x=$input.first().json;const sceneSchema={type:'object',required:['scene_id','purpose','grounded_fact_ids','narration_intent','shots'],properties:{scene_id:{type:'string',minLength:2,maxLength:8},purpose:{type:'string',enum:['hook','establish','explain','proof','example','transition','close']},grounded_fact_ids:{type:'array',minItems:1,maxItems:3,items:{type:'string',minLength:2,maxLength:12}},narration_intent:{type:'string',minLength:8,maxLength:320},shots:{type:'array',minItems:1,maxItems:3,items:{type:'object',required:['shot_id','representation','must_show','must_not_show','search_query_en','communication_goal','crop_policy','diagram_spec'],properties:{shot_id:{type:'string',minLength:3,maxLength:12},representation:{type:'string',enum:['exact_media','context_media','diagram','map','document']},must_show:{type:'array',minItems:1,maxItems:5,items:{type:'string',minLength:2,maxLength:90}},must_not_show:{type:'array',minItems:0,maxItems:4,items:{type:'string',minLength:2,maxLength:90}},search_query_en:{type:'string',maxLength:100},communication_goal:{type:'string',minLength:8,maxLength:260},crop_policy:{type:'string',enum:['portrait_required','preserve_full','not_applicable']}}}}}};return [{json:{...x,model_request:{prompt:x.storyboard_prompt,response_format:'json',response_schema:{type:'object',required:['scenes'],properties:{scenes:{type:'array',minItems:Number(x.scene_bounds[0]),maxItems:Number(x.scene_bounds[1]),items:sceneSchema}}}}}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3000,
+          0
+        ],
+        "id": "ffb3686d-8e05-4598-ab64-33031e60f369",
+        "name": "Build Storyboard Director Request",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
           "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "url": "http://127.0.0.1:5678/webhook/v6-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ $json.model_request }}",
           "options": {
-            "timeout": 180000
+            "timeout": 90000
           }
         },
-        "id": "26359c48-489c-4f22-abb5-139457fa8b45",
-        "name": "Draft Candidate Claims",
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
-          2440,
-          300
+          3240,
+          0
         ],
+        "id": "7e7e8bc0-3f7b-4f40-94bb-065e45e5c66c",
+        "name": "Direct Storyboard",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
-          "jsCode": "const base=$('Prepare Candidate Claims').first().json,r=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();let text=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,'').trim(),o;try{o=JSON.parse(text)}catch{throw new Error('story candidate writer returned invalid JSON')}\nconst rows=base.research_rows,validIds=new Set(rows.map(x=>x.id)),range=base.candidate_claim_range,raw=Array.isArray(o.claims)?o.claims:[];if(raw.length<range[0]||raw.length>range[1])throw new Error(`story candidate count ${raw.length} outside ${range[0]}-${range[1]}`);const available=new Map((Array.isArray(base.available_visual_assets)?base.available_visual_assets:[]).map(a=>[clean(a.inventory_id),a]));if(available.size<6)throw new Error('story candidates require pixel visual facts');const roles=new Set(['hook','establish','mechanism','detail','result','context']),accepted=[],rejections=[],seenClaims=new Set(),allEvidence=new Set(),roleCounts=new Map();const explainIntent=/\\b(?:how|why|work|works|working|mechanism|process|operation|explain|function)\\b/iu.test(clean(base.user_intent));for(let i=0;i<raw.length;i++){const x=raw[i]??{},source_claim_number=i+1,claim_id=clean(x.claim_id),claim=clean(x.claim),editorial_role=clean(x.editorial_role).toLowerCase(),communication_goal=clean(x.communication_goal),evidence_ids=[...new Set((Array.isArray(x.evidence_ids)?x.evidence_ids:[]).map(clean).filter(Boolean))],inventory_asset_ids=[...new Set((Array.isArray(x.inventory_asset_ids)?x.inventory_asset_ids:[]).map(clean).filter(Boolean))];let reason='';if(claim_id!==`C${source_claim_number}`||!claim||!roles.has(editorial_role)||communication_goal.length<8)reason='incomplete';if(!reason&&(evidence_ids.length<1||evidence_ids.length>3||evidence_ids.some(id=>!validIds.has(id))))reason='has invalid evidence IDs';if(!reason&&(inventory_asset_ids.length<1||inventory_asset_ids.length>3||inventory_asset_ids.some(id=>!available.has(id))))reason='has invalid visual fact IDs';const cited=inventory_asset_ids.map(id=>available.get(id));if(!reason&&cited.some(a=>clean(a.preclaim_visual_form)==='photo'&&a.crop_safe_portrait!==true))reason='uses portrait-unsafe photo visual fact';if(!reason&&cited.every(a=>clean(a.explanation_strength)==='context_only'))reason='uses only context-only visual facts';if(!reason&&['mechanism','detail'].includes(editorial_role)&&!cited.some(a=>clean(a.explanation_strength)==='direct'&&['process','relationship','detail','result','reference'].includes(clean(a.visual_fact_role))))reason='lacks direct explanation-capable visual fact';const ck=claim.toLocaleLowerCase();if(!reason&&seenClaims.has(ck))reason='duplicates factual proposition';if(reason){rejections.push({source_claim_number,source_claim_id:claim_id||`C${source_claim_number}`,reason});continue;}seenClaims.add(ck);evidence_ids.forEach(id=>allEvidence.add(id));roleCounts.set(editorial_role,(roleCounts.get(editorial_role)||0)+1);accepted.push({claim_number:accepted.length+1,source_claim_number,claim_id,claim,evidence_ids,editorial_role,communication_goal,inventory_asset_ids});}\nconst target=Number(base.target_duration_seconds),bounds={15:[3,4],30:[4,6],45:[6,8],60:[7,9]}[target],candidateFloor=bounds?.[0];if(!candidateFloor)throw new Error('unsupported duration for story candidates');if(accepted.length<candidateFloor){const detail=rejections.map(x=>`${x.source_claim_id}:${x.reason}`).join('; ');throw new Error(`story candidate pool only ${accepted.length}/${candidateFloor}${detail?`: ${detail}`:''}`);}if(accepted.length>=3&&roleCounts.size<2)throw new Error('story candidates lack editorial diversity');if(allEvidence.size<2)throw new Error('story candidates use fewer than two research rows');if(explainIntent&&!accepted.some(c=>['mechanism','detail'].includes(c.editorial_role)))throw new Error('explanatory topic has no visually executable mechanism/detail story candidate');\nconst usedAssetIds=[...new Set(accepted.flatMap(c=>c.inventory_asset_ids))],assetMap=new Map(),verified_visual_assets=usedAssetIds.map((vid,index)=>{const a=available.get(vid),asset_id=`A${index+1}`;assetMap.set(vid,asset_id);return{asset_id,inventory_id:vid,provider:a.provider,provider_asset_id:a.provider_asset_id,candidate_id:a.candidate_id,source_url:clean(a.source_url),preview_url:clean(a.preview_urls?.[0]??a.preview_url),download_url:clean(a.download_url),author:clean(a.author)||null,license:clean(a.license)||null,license_url:clean(a.license_url)||null,media_kind:clean(a.media_kind)||'photo',visual_hash:clean(a.visual_hash).toLowerCase(),visual_cluster_key:`preview:${clean(a.visual_hash).toLowerCase()}`,visible_description:clean(a.preclaim_visible_description),visual_form:clean(a.preclaim_visual_form),visual_fact_role:clean(a.visual_fact_role),explanation_strength:clean(a.explanation_strength),crop_safe_portrait:a.crop_safe_portrait===true,metadata:{...(a.metadata??{}),visual_fact_role:clean(a.visual_fact_role),explanation_strength:clean(a.explanation_strength),crop_safe_portrait:a.crop_safe_portrait===true}}});\nconst verified_claims=accepted.map(c=>({...c,direct_assets:c.inventory_asset_ids.map(id=>verified_visual_assets.find(a=>a.asset_id===assetMap.get(id))).filter(Boolean),asset_ids:c.inventory_asset_ids.map(id=>assetMap.get(id))}));return [{json:{...base,candidate_claims:accepted,candidate_rejections:rejections,candidate_pool_contract:{raw_count:raw.length,accepted_count:accepted.length,rejected_count:rejections.length,minimum_accepted:candidateFloor,version:'visual-facts-story-candidates-v1'},verified_claims,verified_claim_count:verified_claims.length,verified_visual_assets,verified_visual_asset_count:verified_visual_assets.length,story_unit_bounds:bounds,visual_binding_mode:'visual-facts-first-v1'}}];"
+          "jsCode": "const base=$('Prepare Storyboard Director').first().json,r=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(r.provider_exhausted===true)throw new Error('free-only storyboard director provider exhausted');let text=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,''),o;try{o=JSON.parse(text)}catch{throw new Error('storyboard director returned invalid JSON')}\nconst scenesRaw=Array.isArray(o.scenes)?o.scenes:[],bounds=base.scene_bounds;if(scenesRaw.length<Number(bounds[0])||scenesRaw.length>Number(bounds[1]))throw new Error(`storyboard scene count ${scenesRaw.length} outside ${bounds[0]}-${bounds[1]}`);\nconst validEvidence=new Set(base.research_rows.map(x=>x.id)),purposes=new Set(['hook','establish','explain','proof','example','transition','close']),reps=new Set(['exact_media','context_media','diagram','map','document']),crops=new Set(['portrait_required','preserve_full','not_applicable']),arches=new Set(['flow','merge','split','comparison','layered_stack','assembly']),roles=new Set(['input','process','output','layer','subject','result']),shapes=new Set(['box','pill','circle']),lanes=new Set(['left','right']),relations=new Set(['flow','joins','splits','emits','blocks','contains','transforms']),geometry=new Set(['x','y','x1','y1','x2','y2','cx','cy','r','width','height','points','translate','scale','rotate','path','d']);\nconst rejectGeometry=(v,path='diagram')=>{if(Array.isArray(v)){v.forEach((c,i)=>rejectGeometry(c,`${path}[${i}]`));return;}if(!v||typeof v!=='object')return;for(const [k,c] of Object.entries(v)){if(geometry.has(k))throw new Error(`${path}.${k} raw geometry is forbidden`);rejectGeometry(c,`${path}.${k}`);}};\nconst scenes=[],external=[],seenShot=new Set();let diagramCount=0,externalCount=0;\nfor(let i=0;i<scenesRaw.length;i++){const s=scenesRaw[i]??{},scene_id=clean(s.scene_id),purpose=clean(s.purpose),narration_intent=clean(s.narration_intent),facts=[...new Set((Array.isArray(s.grounded_fact_ids)?s.grounded_fact_ids:[]).map(clean).filter(Boolean))];if(scene_id!==`S${i+1}`||!purposes.has(purpose)||narration_intent.length<8||facts.length<1||facts.length>3||facts.some(id=>!validEvidence.has(id)))throw new Error(`storyboard scene ${i+1} is invalid`);const rawShots=Array.isArray(s.shots)?s.shots:[];if(rawShots.length<1||rawShots.length>3)throw new Error(`storyboard scene ${scene_id} needs 1-3 shots`);const shots=[];\nfor(let k=0;k<rawShots.length;k++){const sh=rawShots[k]??{},shot_id=clean(sh.shot_id),expected=`${scene_id}${String.fromCharCode(65+k)}`,representation=clean(sh.representation),query=clean(sh.search_query_en),goal=clean(sh.communication_goal),crop=clean(sh.crop_policy),must_show=[...new Set((Array.isArray(sh.must_show)?sh.must_show:[]).map(clean).filter(Boolean))],must_not_show=[...new Set((Array.isArray(sh.must_not_show)?sh.must_not_show:[]).map(clean).filter(Boolean))];if(shot_id!==expected||seenShot.has(shot_id)||!reps.has(representation)||goal.length<8||must_show.length<1||must_show.length>5||must_not_show.length>4||!crops.has(crop))throw new Error(`storyboard shot ${expected} is invalid`);seenShot.add(shot_id);let diagram_spec=null;if(representation==='diagram'){diagramCount++;if(query||crop!=='not_applicable'||!sh.diagram_spec||typeof sh.diagram_spec!=='object'||Array.isArray(sh.diagram_spec))throw new Error(`diagram shot ${shot_id} contract is invalid`);rejectGeometry(sh.diagram_spec,`diagram ${shot_id}`);const d=sh.diagram_spec,dsid=clean(d.shot_id??d.beat_id),df=[...new Set((Array.isArray(d.grounded_fact_ids)?d.grounded_fact_ids:[]).map(clean).filter(Boolean))],archetype=clean(d.archetype),entities=Array.isArray(d.entities)?d.entities:[],rels=Array.isArray(d.relations)?d.relations:[];if(dsid!==shot_id||JSON.stringify([...df].sort())!==JSON.stringify([...facts].sort())||!arches.has(archetype)||entities.length<2||entities.length>8||rels.length>12)throw new Error(`diagram shot ${shot_id} grounding/spec is invalid`);const ids=new Set();for(const e of entities){const id=clean(e?.id),label=clean(e?.label),role=clean(e?.role),shape=clean(e?.shape)||'box',lane=clean(e?.lane)||null,phase=Number(e?.phase??0);if(!id||ids.has(id)||!label||!roles.has(role)||!shapes.has(shape)||(lane&&!lanes.has(lane))||!Number.isInteger(phase)||phase<0||phase>20)throw new Error(`diagram shot ${shot_id} entity is invalid`);ids.add(id);}for(const rel of rels){const from=clean(rel?.from),to=clean(rel?.to),kind=clean(rel?.kind)||'flow',phase=Number(rel?.phase??0);if(!ids.has(from)||!ids.has(to)||from===to||!relations.has(kind)||!Number.isInteger(phase)||phase<0||phase>20)throw new Error(`diagram shot ${shot_id} relation is invalid`);}diagram_spec={...d,shot_id,grounded_fact_ids:facts};}else{externalCount++;const expectedCrop=['map','document'].includes(representation)?'preserve_full':'portrait_required';if(!query||query.length>100||crop!==expectedCrop||sh.diagram_spec!==null)throw new Error(`external shot ${shot_id} retrieval contract is invalid`);external.push({shot_id,scene_id,purpose,grounded_fact_ids:facts,representation,must_show,must_not_show,search_query_en:query,communication_goal:goal,crop_policy:crop});}\nshots.push({shot_id,representation,must_show,must_not_show,search_query_en:query,communication_goal:goal,crop_policy:crop,diagram_spec});}\nscenes.push({scene_id,purpose,grounded_fact_ids:facts,narration_intent,shots});}\nif(diagramCount===0&&/(?:how|why|process|mechanism|work|works)/iu.test(`${base.user_intent} ${base.topic}`))throw new Error('process/mechanism storyboard contains no constructed diagram');if(externalCount===0)throw new Error('storyboard contains no truthful external-media establishing shot');\nreturn [{json:{...base,storyboard_scenes:scenes,external_shots:external,storyboard_model:String(r.model??''),storyboard_provider:String(r.provider??'')}}];"
         },
-        "id": "e2b0b4ab-dac3-4167-9c05-ce7240f56e7e",
-        "name": "Validate Candidate Claims",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          2680,
-          300
+          3480,
+          0
         ],
+        "id": "9e12a349-c934-46a9-9589-34594b68c1b4",
+        "name": "Validate Storyboard",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
-          "jsCode": "const x=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim(),bounds=x.story_unit_bounds;if(!Array.isArray(bounds)||bounds.length!==2)throw new Error('story unit bounds missing');const rowMap=new Map(x.research_rows.map(r=>[r.id,r]));const inventory=x.verified_claims.map(c=>{const evidence=c.evidence_ids.map(id=>{const r=rowMap.get(id);return `${id}: ${r?.snippet??''}`}).join(' | ');const direct=(Array.isArray(c.direct_assets)?c.direct_assets:[]).map(a=>`${a.asset_id} | ${a.visual_form}/${a.visual_fact_role}/${a.explanation_strength} | portrait_safe=${a.crop_safe_portrait===true} | ${a.visible_description}`).join(' ; ');return `${c.claim_id} | ROLE ${c.editorial_role} | FACT ${c.claim}\\nCOMMUNICATION GOAL ${c.communication_goal}\\nEVIDENCE ${evidence}\\nALLOWED VISUAL FACTS ${direct}`}).join('\\n\\n');const words={15:[30,42],30:[62,82],45:[95,122],60:[128,165]}[Number(x.target_duration_seconds)];const prompt=`Write the FINAL spoken story using ONLY the validated story candidates and their already-reviewed Visual Facts. No new media search exists after this point.\\n\\nTOPIC: ${x.topic}\\nUSER INTENT: ${x.user_intent}\\nOUTPUT LANGUAGE: ${x.output_language_name} (${x.language_code})\\nTARGET: ${x.target_duration_seconds}s, approximately ${words[0]}-${words[1]} spoken words\\nSELECT ${bounds[0]}-${Math.min(bounds[1],x.verified_claims.length)} units.\\n\\nVALIDATED CANDIDATES:\\n${inventory}\\n\\nReturn ONLY JSON {\"units\":[{\"claim_id\":\"C1\",\"narration\":\"complete spoken sentence(s)\",\"shot_plan\":[{\"asset_id\":\"A1\",\"shot_intent\":\"what the viewer should notice\"}]}]}. Rules: each claim at most once; every shot asset must belong to that exact candidate's ALLOWED VISUAL FACTS; use 1-3 globally unique shot assets per unit, ordered editorially; choose enough visual change to avoid a static slideshow but do not add redundant near-identical shots. For mechanism/detail units at least one chosen asset must have explanation_strength=direct. A context-only image cannot be the sole explanation of a process. Prefer diagrams/maps/documents/illustrations when they communicate an invisible relationship better than a photograph. Narration may paraphrase only the selected grounded fact; add no new factual assertion, hidden mechanism or number. Narration and shots must communicate the same idea. Use natural complete spoken prose in the requested language; no headings, citations, slashes, pipes, arrows, bullets or markdown.`;return [{json:{...x,story_prompt:prompt,target_word_min:words[0],target_word_max:words[1]}}];"
+          "jsCode": "const x=$input.first().json;const roleMap={hook:'establish',establish:'establish',explain:'process',proof:'reference',example:'context',transition:'context',close:'result'};const queries=x.external_shots.map((s,i)=>({query_number:i+1,query_id:s.shot_id,search_query_en:s.search_query_en,observable_target:s.must_show.join(' ').slice(0,180),visual_form:s.representation==='map'?'map':s.representation==='document'?'document':'photo',facet_role:roleMap[s.purpose]??'context',evidence_ids:s.grounded_fact_ids,identity_mode:s.representation==='exact_media'?'named_subject':'semantic_topic',retrieval_rationale:`storyboard:${s.shot_id}`}));return [{json:{...x,exploration_queries:queries,exploration_request:{canonical_source:{language:'en',title:x.canonical_subject},exploration_queries:queries}}}];"
         },
-        "id": "7e800e94-c085-48fd-9f17-6da59868bb89",
-        "name": "Prepare Inventory Grounded Story",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          4840,
-          300
+          3720,
+          0
         ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ $json.model_request }}",
-          "options": {
-            "timeout": 180000
-          }
-        },
-        "id": "b3d6c5e4-0a9f-4030-a75e-55ec8153e854",
-        "name": "Write Inventory Grounded Story",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          5080,
-          300
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "const base=$('Prepare Inventory Grounded Story').first().json,r=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim(),speech=v=>clean(v).replace(/\\s+\\/\\s+/gu,' ').replace(/\\s+\\|\\s+/gu,' ').replace(/\\s+(?:→|->)\\s+/gu,' ').trim();let text=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,''),o;try{o=JSON.parse(text)}catch{throw new Error('visual-facts story writer returned invalid JSON')}const raw=Array.isArray(o.units)?o.units:[],bounds=base.story_unit_bounds,max=Math.min(Number(bounds[1]),base.verified_claims.length);if(raw.length<Number(bounds[0])||raw.length>max)throw new Error(`final story unit count ${raw.length} outside ${bounds[0]}-${max}`);const claims=new Map(base.verified_claims.map(c=>[c.claim_id,c])),globalAssets=new Map(base.verified_visual_assets.map(a=>[clean(a.asset_id),a])),seenClaims=new Set(),usedAssets=new Set(),usedHashes=new Set(),units=[],bundles=[],evidenceIds=new Set();for(let i=0;i<raw.length;i++){const claim_id=clean(raw[i]?.claim_id),narration=speech(raw[i]?.narration),c=claims.get(claim_id);if(!c||seenClaims.has(claim_id)||!narration)throw new Error(`final story unit ${i+1} has invalid claim or narration`);seenClaims.add(claim_id);const allowed=new Set(c.asset_ids??[]),rawPlan=Array.isArray(raw[i]?.shot_plan)?raw[i].shot_plan:[];if(rawPlan.length<1||rawPlan.length>3)throw new Error(`final story unit ${i+1} needs 1-3 planned shots`);const plan=[],shotAssets=[];for(let k=0;k<rawPlan.length;k++){const asset_id=clean(rawPlan[k]?.asset_id),shot_intent=clean(rawPlan[k]?.shot_intent),a=globalAssets.get(asset_id);if(!a||!allowed.has(asset_id)||usedAssets.has(asset_id)||shot_intent.length<8||shot_intent.length>180)throw new Error(`final story unit ${i+1} has invalid or reused Visual Fact asset`);if(usedHashes.has(a.visual_hash))throw new Error(`final story unit ${i+1} repeats visual fingerprint`);usedAssets.add(asset_id);usedHashes.add(a.visual_hash);if(a.visual_form==='photo'&&a.crop_safe_portrait!==true)throw new Error(`final story unit ${i+1} selected portrait-unsafe photo`);const representation=a.visual_form==='photo'?'exact_media':'factual_graphic';plan.push({asset_id,shot_intent,visible_description:a.visible_description,representation,visual_fact_role:a.visual_fact_role,explanation_strength:a.explanation_strength,crop_safe_portrait:a.crop_safe_portrait===true});shotAssets.push({...a,claim_id,editorial_role:c.editorial_role,communication_goal:c.communication_goal,shot_intent,representation});}if(['mechanism','detail'].includes(clean(c.editorial_role))&&!shotAssets.some(a=>clean(a.explanation_strength)==='direct'))throw new Error(`final explanatory unit ${i+1} lacks direct explanatory Visual Fact`);c.evidence_ids.forEach(id=>evidenceIds.add(id));const assetIds=shotAssets.map(a=>a.asset_id),primary=shotAssets[0];units.push({unit_id:`U${i+1}`,claim_id,grounded_claim:clean(c.claim),narration,evidence_ids:[...c.evidence_ids],editorial_role:c.editorial_role,communication_goal:c.communication_goal,asset_id:assetIds[0],asset_ids:assetIds,visible_description:primary.visible_description,shot_plan:plan});bundles.push({...primary,shot_assets:shotAssets});}if(evidenceIds.size<2)throw new Error('final story does not retain at least two research evidence rows');const script=units.map(u=>u.narration).join(' '),wc=script.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;if(wc<Math.max(18,base.target_word_min-15)||wc>base.target_word_max+20)throw new Error(`final story word count ${wc} outside broad duration bounds`);const rowMap=new Map(base.research_rows.map(x=>[x.id,x])),selected_evidence=[...evidenceIds].map((id,index)=>{const x=rowMap.get(id);if(!x)throw new Error(`final story cites unknown evidence ${id}`);return {evidence_id:id,source_id:id,source_language:'en',source_title:x.title,source_url:x.url,passage_id:'searx-snippet',section:null,evidence_text:x.snippet,selection_score:100-index,selection_rank:index+1}});const script_support=units.map((u,index)=>({segment_number:index+1,unit_id:u.unit_id,evidence_ids:u.evidence_ids,source_ids:u.evidence_ids,text:u.narration,transform:'visual_facts_grounded_paraphrase'}));const wps={en:2.55,pl:2.25,ru:2.45,uk:2.35}[base.language_code]??2.4,predicted=wc/wps,story_package={version:'visual-facts-story-v1',editorial_contract_version:'storyboard-v1',visual_binding_mode:'visual-facts-first-v1',units,assets:bundles};return [{json:{job_id:base.job_id,topic:base.topic,language_code:base.language_code,target_duration_seconds:Number(base.target_duration_seconds),canonical_subject:base.canonical_subject,topic_resolution:base.topic_resolution,script_text:script,script_support,selected_evidence,story_package,duration_preflight:{version:'visual-facts-word-budget-v1',language_code:base.language_code,target_duration_seconds:Number(base.target_duration_seconds),target_word_min:Number(base.target_word_min),target_word_max:Number(base.target_word_max),predicted_duration_seconds:Number(predicted.toFixed(3)),prediction_is_advisory:true,exact_tts_required:true},narration_engine:'visual_facts_ai_writer',narration_model:String(r.model??'model-gateway'),narration_prompt_version:'visual-facts-editorial-story-v1',script_fit_passes:0,fact_source_language:'en',fact_primary_title:base.canonical_subject}}];"
-        },
-        "id": "eda18072-8b23-4305-970d-bec0675af41c",
-        "name": "Build Final Inventory Story",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          5320,
-          300
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "operation": "executeQuery",
-          "query": "WITH input AS (SELECT $1::uuid job_id,$2::text script_text,$3::jsonb script_support,$4::jsonb duration_preflight,$5::text narration_engine,$6::text narration_model,$7::text narration_prompt_version,$8::smallint script_fit_passes,$9::jsonb evidence_json,$10::text fact_source_language,$11::text fact_primary_title,$12::jsonb topic_resolution,$13::jsonb story_package), locked AS (SELECT j.id FROM public.jobs j,input i WHERE j.id=i.job_id AND j.status='created' AND j.current_stage='intake' AND j.story_package IS NULL AND NOT EXISTS(SELECT 1 FROM public.scenes s WHERE s.job_id=j.id) AND NOT EXISTS(SELECT 1 FROM public.job_evidence e WHERE e.job_id=j.id) FOR UPDATE), parsed AS (SELECT x.* FROM input i CROSS JOIN LATERAL jsonb_to_recordset(i.evidence_json) AS x(evidence_id text,source_id text,source_language text,source_title text,source_url text,passage_id text,section text,evidence_text text,selection_score numeric,selection_rank integer)), valid AS (SELECT p.* FROM parsed p WHERE NULLIF(BTRIM(p.evidence_id),'') IS NOT NULL AND NULLIF(BTRIM(p.source_id),'') IS NOT NULL AND p.source_language IN('en','pl','ru','uk') AND NULLIF(BTRIM(p.source_title),'') IS NOT NULL AND NULLIF(BTRIM(p.evidence_text),'') IS NOT NULL AND p.selection_rank>0), ok AS (SELECT l.id FROM locked l,input i WHERE NULLIF(BTRIM(i.script_text),'') IS NOT NULL AND jsonb_typeof(i.script_support)='array' AND jsonb_array_length(i.script_support)=jsonb_array_length(i.story_package->'units') AND jsonb_typeof(i.topic_resolution)='object' AND i.topic_resolution->>'version'='evidence-grounded-topic-resolution-v1' AND jsonb_typeof(i.story_package)='object' AND i.story_package->>'version'='visual-facts-story-v1' AND jsonb_typeof(i.story_package->'units')='array' AND jsonb_array_length(i.story_package->'units') BETWEEN 2 AND 12 AND jsonb_typeof(i.story_package->'assets')='array' AND jsonb_array_length(i.story_package->'assets')=jsonb_array_length(i.story_package->'units') AND COALESCE((i.duration_preflight->>'exact_tts_required')::boolean,false)=true AND COALESCE((i.duration_preflight->>'prediction_is_advisory')::boolean,false)=true AND (SELECT count(*) FROM valid)=(SELECT jsonb_array_length(i.evidence_json))), ins AS (INSERT INTO public.job_evidence(job_id,evidence_id,source_id,source_language,source_title,source_url,passage_id,section,evidence_text,selection_score,selection_rank) SELECT o.id,v.evidence_id,v.source_id,v.source_language,v.source_title,NULLIF(v.source_url,''),v.passage_id,NULLIF(v.section,''),v.evidence_text,v.selection_score,v.selection_rank FROM ok o CROSS JOIN valid v ORDER BY v.selection_rank RETURNING job_id), upd AS (UPDATE public.jobs j SET content_model_version='staged_v1',topic_resolution=i.topic_resolution,story_package=i.story_package,visual_search_queries_en=NULL,script_text=i.script_text,script_support=i.script_support,duration_preflight=i.duration_preflight,narration_engine=i.narration_engine,narration_model=i.narration_model,narration_prompt_version=i.narration_prompt_version,script_fit_passes=i.script_fit_passes,fact_source_language=i.fact_source_language,fact_primary_title=i.fact_primary_title,status='processing',current_stage='script',last_error=NULL,updated_at=now() FROM input i,ok o WHERE j.id=o.id AND j.id=i.job_id RETURNING j.id,jsonb_array_length(j.story_package->'units')::int AS story_unit_count) SELECT $1::uuid AS job_id,(SELECT count(*)::int FROM ins) inserted_evidence_count,EXISTS(SELECT 1 FROM upd) job_updated,(SELECT count(*)::int FROM public.scenes s WHERE s.job_id=$1::uuid) scene_count,(SELECT story_unit_count FROM upd) story_unit_count;",
-          "options": {
-            "queryReplacement": "={{ [ $json.job_id, $json.script_text, JSON.stringify($json.script_support), JSON.stringify($json.duration_preflight), $json.narration_engine, $json.narration_model, $json.narration_prompt_version, $json.script_fit_passes, JSON.stringify($json.selected_evidence), $json.fact_source_language, $json.fact_primary_title, JSON.stringify($json.topic_resolution), JSON.stringify($json.story_package) ] }}"
-          }
-        },
-        "id": "92b09816-a5a0-4225-8709-65a1fef9ec97",
-        "name": "Persist Inventory First Story",
-        "type": "n8n-nodes-base.postgres",
-        "typeVersion": 2.5,
-        "position": [
-          5560,
-          300
-        ],
-        "onError": "continueErrorOutput",
-        "credentials": {
-          "postgres": {
-            "id": "AdVJ2zREIvjZqGH5",
-            "name": "Application PostgreSQL"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "jsCode": "const r=$input.first().json,p=$('Build Final Inventory Story').first().json,expected=p.selected_evidence.length,units=p.story_package.units.length;if(r.job_updated!==true)throw new Error(`inventory-first story did not update job ${p.job_id}`);if(Number(r.inserted_evidence_count)!==expected)throw new Error(`evidence persisted ${r.inserted_evidence_count}/${expected}`);if(Number(r.scene_count)!==0)throw new Error('WF02 must not create timed scenes before TTS');if(Number(r.story_unit_count)!==units)throw new Error(`story package persisted ${r.story_unit_count}/${units} units`);return [{json:{job_id:p.job_id,evidence_count:expected,story_unit_count:units,narration_ready:true}}];"
-        },
-        "id": "8e0a6763-4d9f-429d-9da1-993b2666b499",
-        "name": "Require Persisted Inventory Story",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          5800,
-          300
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForEachItem",
-          "jsCode": "const item=$json;const model_request={prompt:item.claim_prompt,temperature:0.12,response_format:'json',response_schema:{type:'object',properties:{claims:{type:'array',items:{type:'object',properties:{claim_id:{type:'string'},claim:{type:'string'},evidence_ids:{type:'array',items:{type:'string'},minItems:1,maxItems:3},editorial_role:{type:'string',enum:['hook','establish','mechanism','detail','result','context']},communication_goal:{type:'string',minLength:8,maxLength:180},inventory_asset_ids:{type:'array',items:{type:'string'},minItems:1,maxItems:3}},required:['claim_id','claim','evidence_ids','editorial_role','communication_goal','inventory_asset_ids']}}},required:['claims']}};return {json:{...item,model_request}};"
-        },
-        "id": "e38b0e4d-3826-4676-89dc-102320b114d6",
-        "name": "Build Draft Candidate Claims Request",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2340,
-          460
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForEachItem",
-          "jsCode": "const item=$json;const bounds=Array.isArray(item.story_unit_bounds)?item.story_unit_bounds:[3,4],minUnits=Number(bounds[0]),maxUnits=Math.min(Number(bounds[1]),Array.isArray(item.verified_claims)?item.verified_claims.length:Number(bounds[1]));if(!Number.isInteger(minUnits)||!Number.isInteger(maxUnits)||minUnits<1||maxUnits<minUnits)throw new Error('invalid story unit bounds for model schema');const model_request={prompt:item.story_prompt,temperature:0.12,response_format:'json',response_schema:{type:'object',properties:{units:{type:'array',minItems:minUnits,maxItems:maxUnits,items:{type:'object',properties:{claim_id:{type:'string'},narration:{type:'string'},shot_plan:{type:'array',minItems:1,maxItems:3,items:{type:'object',properties:{asset_id:{type:'string'},shot_intent:{type:'string',minLength:8,maxLength:180}},required:['asset_id','shot_intent']}}},required:['claim_id','narration','shot_plan']}}},required:['units']}};return {json:{...item,model_request}};"
-        },
-        "id": "6b2ec029-15d5-41a7-bb4c-b3ddbbe2f177",
-        "name": "Build Write Inventory Grounded Story Request",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          4980,
-          460
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "const j=$('Validate Resolved Topic').first().json;const r=$input.first().json;const clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();\nlet rows=(Array.isArray(r.results)?r.results:[]).slice(0,10).map((x,i)=>({id:`S${i+1}`,title:clean(x.title),snippet:clean(x.content??x.description),url:clean(x.url)})).filter(x=>x.title&&x.snippet&&x.url);\nif(rows.length<2){const seen=new Set(rows.map(x=>x.url));for(const x of (Array.isArray(j.discovery_evidence)?j.discovery_evidence:[])){const title=clean(x.title),snippet=clean(x.snippet),url=clean(x.url);if(title&&snippet&&url&&!seen.has(url)){rows.push({id:`S${rows.length+1}`,title,snippet,url});seen.add(url);}if(rows.length>=10)break;}}\nif(rows.length<2)throw new Error('combined research returned fewer than two usable results');\nconst target=Number(j.target_duration_seconds),count={15:6,30:8,45:10,60:12}[target],range={15:[4,6],30:[5,8],45:[7,10],60:[8,12]}[target];if(!count||!range)throw new Error('unsupported duration');\nconst kind=clean(j.topic_kind).toLowerCase(),type=clean(j.subject_type).toLowerCase();\nconst namedType=/(?:person|people|organization|company|brand|place|location|building|product|device|vehicle|spacecraft|ship|event|film|character|book|institution|country|city|landmark)/u.test(type);\nconst identity_mode=(kind==='entity'||kind==='event'||namedType)?'named_subject':'semantic_topic';\nconst evidence=rows.map(x=>`${x.id} | ${x.title}\\n${x.snippet}\\n${x.url}`).join('\\n\\n');\nconst identityRule=identity_mode==='named_subject'?`This is a named-subject topic: provider queries must preserve the canonical subject or an unambiguous proper-name core.`:`This is a semantic question/concept/process topic: do NOT force the full canonical phrase into every provider query. Search concrete evidence-grounded phenomena, objects, stages, diagrams, places or results that can visually communicate the topic.`;\nconst prompt=`Generate VISUAL FACETS for a licensed/free-media inventory BEFORE story writing. Do not write narration or factual claims. Each facet is only a direction for finding real pixels that may later become a Visual Fact.\\n\\nRAW TOPIC: ${j.topic}\\nRESOLVED SUBJECT: ${j.resolved_subject}\\nCANONICAL NAME: ${j.canonical_subject}\\nTOPIC KIND: ${kind}\\nSUBJECT TYPE: ${type}\\nIDENTITY MODE: ${identity_mode}\\nUSER INTENT: ${j.user_intent}\\nTARGET DURATION: ${target}s\\n\\nRESEARCH:\\n${evidence}\\n\\n${identityRule}\\n\\nReturn ONLY JSON {\"queries\":[{\"query_id\":\"Q1\",\"search_query_en\":\"compact English provider query\",\"observable_target\":\"compact visible object/relationship/state\",\"visual_form\":\"photo\",\"facet_role\":\"detail\",\"evidence_ids\":[\"S1\"]}]}. Requirements: exactly ${count} queries Q1..Q${count}; every query cites 1-3 research IDs; diversify useful visual roles across establish, context, detail, process, relationship, result, reference; search_query_en <=90 chars; observable_target 2-10 words, concrete and visible; no hidden causal claim, no camera direction, no before/after instruction, no logo/screenshot/title-card request. For process/how/why topics actively seek explanatory diagrams, relationships, component views and visible result states instead of only generic photos. Later pixel review, not this model, decides what the image actually communicates.`;\nreturn [{json:{...j,research_rows:rows,candidate_claim_range:range,exploration_query_count:count,visual_identity_mode:identity_mode,exploration_prompt:prompt}}];"
-        },
-        "id": "66cb184e-f3c4-404c-a778-ba38a196054d",
-        "name": "Prepare Visual Exploration",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2720,
-          -220
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForEachItem",
-          "jsCode": "const item=$json;const model_request={prompt:item.exploration_prompt,temperature:0.1,response_format:'json',response_schema:{type:'object',properties:{queries:{type:'array',items:{type:'object',properties:{query_id:{type:'string'},search_query_en:{type:'string',minLength:3,maxLength:90},observable_target:{type:'string'},visual_form:{type:'string',enum:['photo','diagram','map','document','illustration']},facet_role:{type:'string',enum:['establish','context','detail','process','relationship','result','reference']},evidence_ids:{type:'array',items:{type:'string'},minItems:1,maxItems:3}},required:['query_id','search_query_en','observable_target','visual_form','facet_role','evidence_ids']}}},required:['queries']}};return {json:{...item,model_request}};"
-        },
-        "id": "632176c5-9620-476a-abaf-d647fb75ce2c",
-        "name": "Build Draft Visual Exploration Request",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          2960,
-          -220
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ $json.model_request }}",
-          "options": {
-            "timeout": 180000
-          }
-        },
-        "id": "413140e3-f142-414b-9477-07d6085972eb",
-        "name": "Draft Visual Exploration",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          3200,
-          -220
-        ],
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "jsCode": "const base=$('Prepare Visual Exploration').first().json,r=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();let text=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,'').trim(),o;try{o=JSON.parse(text)}catch{throw new Error('visual facet planner returned invalid JSON')}\nconst raw=Array.isArray(o.queries)?o.queries:[],count=Number(base.exploration_query_count);if(raw.length!==count)throw new Error(`visual facet count ${raw.length}/${count}`);\nconst validEvidence=new Set(base.research_rows.map(x=>x.id)),forms=new Set(['photo','diagram','map','document','illustration']),roles=new Set(['establish','context','detail','process','relationship','result','reference']),STOP=new Set(['the','and','with','from','into','this','that','for','are','was','were','has','have','operation','system','process','working','work','works','image','photo','picture','view','scene','showing','shows','visible']);\nconst toks=v=>[...new Set((clean(v).toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[]).filter(x=>x.length>=3&&!STOP.has(x)))],related=(a,b)=>a===b||(a.length>=5&&b.length>=5&&a.slice(0,6)===b.slice(0,6));\nconst canonical=toks(base.canonical_subject),identityMode=clean(base.visual_identity_mode)==='semantic_topic'?'semantic_topic':'named_subject',subjectNeed=Math.min(2,canonical.length);if(identityMode==='named_subject'&&!subjectNeed)throw new Error('named-subject visual facets have no usable identity tokens');\nconst queries=[],seen=new Set();for(let i=0;i<raw.length;i++){const x=raw[i]??{},query_id=clean(x.query_id),search_query_en=clean(x.search_query_en),observable_target=clean(x.observable_target),visual_form=clean(x.visual_form).toLowerCase(),facet_role=clean(x.facet_role).toLowerCase(),evidence_ids=[...new Set((Array.isArray(x.evidence_ids)?x.evidence_ids:[]).map(clean).filter(Boolean))];if(query_id!==`Q${i+1}`||!search_query_en||search_query_en.length>90||!observable_target||!forms.has(visual_form)||!roles.has(facet_role))throw new Error(`visual facet ${i+1} is incomplete`);const words=observable_target.split(/\\s+/u).filter(Boolean);if(words.length<2||words.length>10||/(?:\\bclose[ -]?up\\b|\\bunder load\\b|\\bduring (?:operation|use)\\b|\\bbefore\\s*\\/\\s*after\\b|\\bside[ -]?by[ -]?side\\b)/iu.test(observable_target))throw new Error(`visual facet ${query_id} needs a compact observable target`);if(evidence_ids.length<1||evidence_ids.length>3||evidence_ids.some(id=>!validEvidence.has(id)))throw new Error(`visual facet ${query_id} has invalid evidence IDs`);const qtokens=toks(search_query_en),targetTokens=toks(observable_target);if(identityMode==='named_subject'){const subjectHits=canonical.filter(c=>qtokens.some(q=>related(c,q))).length;if(subjectHits<subjectNeed)throw new Error(`visual facet ${query_id} lost named-subject identity`);}else{const targetHits=targetTokens.filter(t=>qtokens.some(q=>related(t,q))).length;if(!targetTokens.length||targetHits<1)throw new Error(`visual facet ${query_id} lost semantic target relevance`);}const key=search_query_en.toLocaleLowerCase();if(seen.has(key))throw new Error(`visual facet duplicate query ${query_id}`);seen.add(key);queries.push({query_number:i+1,query_id,search_query_en,observable_target,visual_form,facet_role,evidence_ids,identity_mode:identityMode,retrieval_rationale:`research:${evidence_ids.join(',')}`});}\nreturn [{json:{...base,exploration_queries:queries,exploration_request:{canonical_source:{language:'en',title:base.canonical_subject},exploration_queries:queries}}}];"
-        },
-        "id": "c5e7ecb3-eb48-4fb7-956f-c35e14699ee2",
-        "name": "Validate Visual Exploration",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          3440,
-          -220
-        ],
+        "id": "8529ce72-695e-4dd9-bc8c-9c961c617ce3",
+        "name": "Build Storyboard Discovery Request",
         "onError": "continueErrorOutput"
       },
       {
@@ -551,119 +398,116 @@
             "timeout": 180000
           }
         },
-        "id": "7b809693-895b-41da-a43a-cacf3e639cbf",
-        "name": "Discover Pre-Claim Visual Inventory",
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
-          3680,
-          -220
+          3960,
+          0
         ],
+        "id": "b4ff4346-d821-4592-910e-a3b781a31a6d",
+        "name": "Discover Storyboard Media",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
-          "mode": "runOnceForAllItems",
-          "language": "javaScript",
-          "jsCode": "const discovery=$input.first().json,base=$('Validate Visual Exploration').first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(discovery.exploration_version!=='pre-claim-visual-exploration-v1')throw new Error('visual facet discovery contract missing');const rows=Array.isArray(discovery.exploration_queries)?discovery.exploration_queries:[];if(rows.length!==base.exploration_queries.length)throw new Error(`visual facet discovery cardinality ${rows.length}/${base.exploration_queries.length}`);const pool=[],used=new Set(),maxRank=Math.max(0,...rows.map(r=>Array.isArray(r.candidates)?r.candidates.length:0));for(let rank=0;rank<maxRank&&pool.length<48;rank++){for(const row of rows){const x=Array.isArray(row.candidates)?row.candidates[rank]:null;if(!x||x.inventory_subject_anchor_pass!==true)continue;const provider=clean(x.provider).toLowerCase(),provider_asset_id=clean(x.provider_asset_id??x.candidate_id),identity=`${provider}:${provider_asset_id}`,preview=clean(x.preview_urls?.[0]??x.preview_url);if(!provider||!provider_asset_id||!preview||used.has(identity))continue;used.add(identity);pool.push({...x,review_id:`P${pool.length+1}`,asset_identity:identity,origin_query_id:clean(row.query_id),origin_observable_target:clean(row.observable_target),origin_visual_form:clean(row.visual_form).toLowerCase(),origin_facet_role:clean(row.facet_role).toLowerCase(),identity_mode:clean(row.identity_mode),preview_url:preview});if(pool.length>=48)break;}}\nconst minimum=Math.max(6,Number(base.exploration_query_count)||6);if(pool.length<minimum)throw new Error(`visual fact discovery exposes only ${pool.length}/${minimum} unique real assets`);\nconst identityText=base.visual_identity_mode==='named_subject'?`This is a named-subject topic: reject generic lookalikes unless the pixels/labels/context support the named identity.`:`This is a semantic topic: do not demand that pixels literally contain the full canonical topic phrase. Judge whether the image visibly matches the concrete retrieval facet and can truthfully help communicate the researched topic.`;\nconst prompt=`You are creating VISUAL FACTS from real provider images before story writing. ${identityText} For each REVIEW id: describe only visible pixels in at most 24 words; classify actual visual_form; classify communication_role as establish|context|detail|process|relationship|result|reference; classify explanation_strength as direct when the pixels themselves can communicate the facet's important relationship/process/result, supporting when they materially support it but do not explain it alone, or context_only when they merely establish subject/context. For ordinary photos set crop_safe_portrait=true only when a 9:16 crop can preserve the main subject without destroying important context; for diagrams/maps/documents/illustrations use false unless a portrait crop is genuinely safe. relevant=true only for a truthful useful visual fact. Reject wrong subjects, unrelated stock, screenshots, logos, watermarks, collages and text cards. Never infer hidden causality, numbers or function from a generic photo. Return every review_id exactly once. Return ONLY JSON {\"verdicts\":[{\"review_id\":\"P1\",\"relevant\":false,\"visible_description\":\"observed pixels\",\"visual_form\":\"photo\",\"communication_role\":\"context\",\"explanation_strength\":\"context_only\",\"crop_safe_portrait\":false}]}.`;\nconst out=[];for(let offset=0;offset<pool.length;offset+=24){const batch=pool.slice(offset,offset+24),input=[{type:'text',text:prompt}];for(const x of batch){input.push({type:'text',text:`REVIEW ${x.review_id} | facet ${x.origin_query_id} | role ${x.origin_facet_role} | target ${x.origin_observable_target}`});input.push({type:'image',uri:x.preview_url,review_id:x.review_id});}out.push({json:{batch_number:out.length+1,minimum_available_assets:minimum,candidates:batch,visual_review_request:{input}}});}return out;"
+          "jsCode": "const base=$('Build Storyboard Discovery Request').first().json,inv=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(inv.exploration_version!=='pre-claim-visual-exploration-v1'||!Array.isArray(inv.exploration_queries))throw new Error('storyboard external-media discovery contract missing');const resultById=new Map(inv.exploration_queries.map(q=>[clean(q.query_id),q])),usedProviderIds=new Set();let assetSeq=0;const assetsByShot=new Map();const badTokens=v=>new Set((clean(v).toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[]).filter(t=>t.length>=4));\nfor(const shot of base.external_shots){const row=resultById.get(shot.shot_id);if(!row)throw new Error(`external shot ${shot.shot_id} has no discovery row`);const forbidden=[...new Set(shot.must_not_show.flatMap(x=>[...badTokens(x)]))];const candidates=(Array.isArray(row.candidates)?row.candidates:[]).filter(c=>{const provider=clean(c.provider),pid=clean(c.provider_asset_id),url=clean(c.download_url),license=clean(c.license),meta=c.metadata??{},w=Number(meta.source_width??0),h=Number(meta.source_height??0),text=clean([c.title,c.description,c.categories,meta.source_title,meta.source_description,meta.source_tags].filter(Boolean).join(' ')).toLocaleLowerCase(),key=`${provider}:${pid}`;if(!provider||!pid||!url||!license||usedProviderIds.has(key)||c.inventory_subject_anchor_pass===false)return false;const need=Math.max(1,Number(c.inventory_detail_required??1)),hits=Number(c.inventory_detail_hits??0);if(hits<need)return false;if(forbidden.some(t=>text.includes(t)))return false;if(['exact_media','context_media'].includes(shot.representation)){if(c.media_kind!=='photo'||!Number.isFinite(w)||!Number.isFinite(h)||h<w*1.12)return false;}if(shot.representation==='map'&&!(/\\bmap\\b/iu.test(text)||c.media_kind==='diagram'))return false;if(shot.representation==='document'&&!(/\\b(?:document|manuscript|scan|page|letter|poster|newspaper)\\b/iu.test(text)))return false;return true;});if(!candidates.length)throw new Error(`no deterministic executable media for storyboard shot ${shot.shot_id}`);const c=candidates[0],key=`${clean(c.provider)}:${clean(c.provider_asset_id)}`;usedProviderIds.add(key);assetSeq++;assetsByShot.set(shot.shot_id,{asset_id:`A${assetSeq}`,shot_id:shot.shot_id,provider:clean(c.provider).toLowerCase(),provider_asset_id:clean(c.provider_asset_id),candidate_id:clean(c.candidate_id),source_url:clean(c.source_url)||null,download_url:clean(c.download_url),author:clean(c.author)||null,license:clean(c.license),license_url:clean(c.license_url)||null,media_kind:clean(c.media_kind)||'photo',representation:shot.representation,visual_form:shot.representation==='map'?'map':shot.representation==='document'?'document':'photo',crop_policy:shot.crop_policy,crop_safe_portrait:['exact_media','context_media'].includes(shot.representation),communication_goal:shot.communication_goal,must_show:shot.must_show,must_not_show:shot.must_not_show,grounded_fact_ids:shot.grounded_fact_ids,visual_cluster_key:`provider:${key}`,metadata:{...(c.metadata??{}),storyboard_selection:'deterministic-metadata-geometry-v1',provider_query:clean(row.provider_query),query_id:shot.shot_id}});}\nconst scenes=base.storyboard_scenes.map(scene=>({...scene,shots:scene.shots.map(shot=>{if(shot.representation==='diagram'){assetSeq++;return {...shot,asset:{asset_id:`A${assetSeq}`,shot_id:shot.shot_id,provider:'constructed',provider_asset_id:`${base.job_id}:${shot.shot_id}`,candidate_id:`constructed:${shot.shot_id}`,source_url:null,download_url:null,author:null,license:'Generated from grounded research',license_url:null,media_kind:'diagram',representation:'diagram',visual_form:'diagram',crop_policy:'not_applicable',crop_safe_portrait:false,communication_goal:shot.communication_goal,must_show:shot.must_show,must_not_show:shot.must_not_show,grounded_fact_ids:scene.grounded_fact_ids,diagram_spec:shot.diagram_spec,visual_cluster_key:`diagram:${base.job_id}:${shot.shot_id}`,metadata:{storyboard_selection:'constructed-grounded-diagram-v1'}}};}const asset=assetsByShot.get(shot.shot_id);if(!asset)throw new Error(`storyboard shot ${shot.shot_id} lost selected media`);return {...shot,asset};})}));\nreturn [{json:{...base,feasible_storyboard:scenes,storyboard_asset_count:assetSeq,feasibility_version:'storyboard-deterministic-feasibility-v1'}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          3680,
-          -220
+          4200,
+          0
         ],
-        "id": "7f87cc96-46de-458f-99d3-1e4347570d9c",
-        "name": "Prepare Pre-Claim Review Batches",
+        "id": "e92fb9ee-26c4-49a6-8307-51a5d657d001",
+        "name": "Freeze Storyboard Feasibility",
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const x=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();const rowMap=new Map(x.research_rows.map(r=>[r.id,r]));const sceneText=x.feasible_storyboard.map(s=>{const facts=s.grounded_fact_ids.map(id=>`${id}: ${rowMap.get(id)?.snippet??''}`).join(' | ');const shots=s.shots.map(sh=>`${sh.shot_id} ${sh.representation} | GOAL ${sh.communication_goal} | MUST SHOW ${sh.must_show.join(', ')}${sh.representation==='diagram'?` | DIAGRAM ${JSON.stringify(sh.diagram_spec)}`:` | SELECTED ${sh.asset.provider}:${sh.asset.provider_asset_id} ${clean(sh.asset.metadata?.source_title??sh.asset.metadata?.source_description??'')}`}`).join('\\n');return `${s.scene_id} | ${s.purpose}\\nINTENT ${s.narration_intent}\\nFACTS ${facts}\\nSHOTS\\n${shots}`}).join('\\n\\n');const prompt=`Write the FINAL speech-ready narration only AFTER the visual storyboard below has been frozen as executable.\\n\\nTOPIC: ${x.topic}\\nUSER INTENT: ${x.user_intent}\\nOUTPUT LANGUAGE: ${x.output_language_name} (${x.language_code})\\nTARGET: ${x.target_duration_seconds}s, approximately ${x.target_word_min}-${x.target_word_max} spoken words.\\n\\nFROZEN EXECUTABLE STORYBOARD:\\n${sceneText}\\n\\nReturn ONLY JSON {\"units\":[{\"scene_id\":\"S1\",\"narration\":\"...\"}]}, exactly one unit for each scene in the same order. Rules: narration may state only facts cited by that scene; it must express that scene's narration intent and must not introduce a mechanism, object, number, action or comparison that its frozen shots cannot communicate. A context_media shot is context only, never evidence for an invisible causal mechanism. Diagram shots may explain only relationships encoded in their grounded diagram_spec. Use natural complete spoken prose in the requested language. No headings, citations, bullets, slashes, pipes, arrows, URLs or markdown. All units joined with spaces form one continuous voiceover.`;const schema={type:'object',required:['units'],properties:{units:{type:'array',minItems:x.feasible_storyboard.length,maxItems:x.feasible_storyboard.length,items:{type:'object',required:['scene_id','narration'],properties:{scene_id:{type:'string',minLength:2,maxLength:8},narration:{type:'string',minLength:6,maxLength:500}}}}}};return [{json:{...x,final_story_prompt:prompt,model_request:{prompt,response_format:'json',response_schema:schema}}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4440,
+          0
+        ],
+        "id": "a3dd3348-51f0-49ea-ac96-341dcca2455e",
+        "name": "Prepare Final Story Request",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
           "method": "POST",
-          "url": "http://media-worker:3001/visual/inline-review-images",
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ ({ ...$json.visual_review_request, batch_number:$json.batch_number }) }}",
-          "options": {
-            "timeout": 120000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          3920,
-          -220
-        ],
-        "id": "5891c1b9-baf5-449c-9bb5-7af547baecaa",
-        "name": "Inline Pre-Claim Candidate Images",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "mode": "runOnceForEachItem",
-          "language": "javaScript",
-          "jsCode": "const item=$json;const model_request={input:item.input,response_format:'json',response_schema:{type:'object',properties:{verdicts:{type:'array',items:{type:'object',properties:{review_id:{type:'string'},relevant:{type:'boolean'},visible_description:{type:'string'},visual_form:{type:'string',enum:['photo','diagram','map','document','illustration']},communication_role:{type:'string',enum:['establish','context','detail','process','relationship','result','reference']},explanation_strength:{type:'string',enum:['direct','supporting','context_only']},crop_safe_portrait:{type:'boolean'}},required:['review_id','relevant','visible_description','visual_form','communication_role','explanation_strength','crop_safe_portrait']}}},required:['verdicts']}};return {json:{...item,model_request}};"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          4160,
-          -220
-        ],
-        "id": "ccb694f9-dcfc-4c6b-9627-14ee9069fdc1",
-        "name": "Build Review Pre-Claim Visual Inventory Request",
-        "onError": "continueErrorOutput"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "http://127.0.0.1:5678/webhook/v4-model-gateway",
+          "url": "http://127.0.0.1:5678/webhook/v6-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
           "jsonBody": "={{ $json.model_request }}",
           "options": {
-            "timeout": 180000
+            "timeout": 90000
           }
         },
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
-          4400,
-          -220
+          4680,
+          0
         ],
-        "id": "217dde3a-2a8a-43fb-b425-c807179b6554",
-        "name": "Review Pre-Claim Visual Inventory",
+        "id": "fd2f3d78-2883-4099-817e-9d941090a834",
+        "name": "Write Final Story",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
-          "mode": "runOnceForAllItems",
-          "language": "javaScript",
-          "jsCode": "const prepared=$('Prepare Pre-Claim Review Batches').all().map(x=>x.json),inlined=$('Inline Pre-Claim Candidate Images').all().map(x=>x.json),responses=$input.all().map(x=>x.json),base=$('Validate Visual Exploration').first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim();if(!prepared.length||prepared.length!==responses.length||prepared.length!==inlined.length)throw new Error(`visual fact review batches prepared=${prepared.length}, inlined=${inlined.length}, responses=${responses.length}`);const inlineByBatch=new Map(inlined.map(x=>[Number(x.batch_number),x]));const STOP=new Set(['the','and','with','from','into','this','that','for','are','was','were','has','have','image','photo','picture','view','scene','showing','shows','visible']);const words=v=>clean(v).toLocaleLowerCase().match(/[\\p{L}\\p{N}]+/gu)??[],content=v=>[...new Set(words(v).filter(x=>x.length>=3&&!STOP.has(x)))],related=(a,b)=>a===b||(a.length>=5&&b.length>=5&&a.slice(0,6)===b.slice(0,6)),overlap=(a,b)=>a.reduce((n,x)=>n+(b.some(y=>related(x,y))?1:0),0),metaText=c=>[c.title,c.categories,c.metadata?.source_title,clean(c.description).length<=240?c.description:''].filter(Boolean).join(' ');const roles=new Set(['establish','context','detail','process','relationship','result','reference']),strengths=new Set(['direct','supporting','context_only']);const approved=[];let minimum=6;for(let b=0;b<prepared.length;b++){const ctx=prepared[b],inline=inlineByBatch.get(Number(ctx.batch_number)),response=responses[b];minimum=Math.max(minimum,Number(ctx.minimum_available_assets)||6);if(!inline)throw new Error(`visual fact inline context missing for batch ${ctx.batch_number}`);const fingerprints=new Map((Array.isArray(inline.image_fingerprints)?inline.image_fingerprints:[]).map(x=>[clean(x.review_id),clean(x.visual_hash).toLowerCase()]));if(!fingerprints.size)throw new Error(`visual fact fingerprints missing for batch ${ctx.batch_number}`);for(const [id,hash] of fingerprints)if(!/^[0-9a-f]{64}$/.test(hash))throw new Error(`visual fact fingerprint invalid for ${id}`);if(response?.provider_exhausted===true||!clean(response?.text))throw new Error(`visual fact reviewer unavailable after bounded provider failover for batch ${ctx.batch_number}`);let text=clean(response?.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,''),o;try{o=JSON.parse(text)}catch{throw new Error(`visual fact reviewer returned invalid JSON for batch ${ctx.batch_number}`)}const expected=new Set(fingerprints.keys()),verdicts=new Map();if(!Array.isArray(o.verdicts))throw new Error('visual fact reviewer missing verdicts');for(const v of o.verdicts){const id=String(v?.review_id??'');if(!expected.has(id))throw new Error(`visual fact reviewer unknown review_id ${id}`);if(verdicts.has(id))throw new Error(`visual fact reviewer duplicate review_id ${id}`);verdicts.set(id,v);}if(verdicts.size!==expected.size)throw new Error(`visual fact reviewer incomplete verdicts ${verdicts.size}/${expected.size}`);for(const x of ctx.candidates){const reviewId=clean(x.review_id),visualHash=fingerprints.get(reviewId);if(!visualHash)continue;const v=verdicts.get(reviewId),desc=clean(v?.visible_description).slice(0,320),form=clean(v?.visual_form).toLowerCase(),role=clean(v?.communication_role).toLowerCase(),strength=clean(v?.explanation_strength).toLowerCase(),crop=v?.crop_safe_portrait===true;if(v?.relevant!==true||!desc||!['photo','diagram','map','document','illustration'].includes(form)||!roles.has(role)||!strengths.has(strength))continue;const vis=content(desc),meta=content(metaText(x)),hits=overlap(vis,meta),need=Math.min(2,Math.max(1,Math.min(vis.length,meta.length)));if(!vis.length||!meta.length||hits<need)continue;approved.push({...x,visual_hash:visualHash,preclaim_visible_description:desc,preclaim_visual_form:form,visual_fact_role:role,explanation_strength:strength,crop_safe_portrait:crop,preclaim_metadata_consistency_hits:hits});}}\nconst used=new Set(),assets=[];for(const x of approved){const identity=clean(x.asset_identity||`${x.provider}:${x.provider_asset_id}`);if(!identity||used.has(identity))continue;used.add(identity);assets.push({...x,inventory_id:`V${assets.length+1}`});}\nif(assets.length<minimum)throw new Error(`pixel visual fact inventory only ${assets.length}/${minimum} assets`);if(!assets.some(a=>a.explanation_strength==='direct')){const explanatory=/\\b(?:how|why|work|works|working|mechanism|process|operation|explain|function)\\b/iu.test(clean(base.user_intent));if(explanatory)throw new Error('explanatory topic has no direct visual fact');}\nreturn [{json:{...base,preclaim_review_version:'pixel-visual-facts-v1',available_visual_assets:assets,available_visual_asset_count:assets.length}}];"
+          "jsCode": "const base=$('Prepare Final Story Request').first().json,r=$input.first().json,clean=v=>String(v??'').normalize('NFKC').replace(/\\s+/gu,' ').trim(),speech=v=>clean(v).replace(/\\s+\\/\\s+/gu,' ').replace(/\\s+\\|\\s+/gu,' ').replace(/\\s+(?:→|->)\\s+/gu,' ').trim();if(r.provider_exhausted===true)throw new Error('free-only final story provider exhausted');let text=clean(r.text).replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/u,''),o;try{o=JSON.parse(text)}catch{throw new Error('final storyboard narration returned invalid JSON')}const raw=Array.isArray(o.units)?o.units:[];if(raw.length!==base.feasible_storyboard.length)throw new Error(`final narration unit count ${raw.length}/${base.feasible_storyboard.length}`);const units=[],bundles=[],evidenceIds=new Set(),scriptSupport=[];for(let i=0;i<raw.length;i++){const scene=base.feasible_storyboard[i],scene_id=clean(raw[i]?.scene_id),narration=speech(raw[i]?.narration);if(scene_id!==scene.scene_id||!narration)throw new Error(`final narration unit ${i+1} changed storyboard identity`);scene.grounded_fact_ids.forEach(id=>evidenceIds.add(id));const shotAssets=scene.shots.map(sh=>sh.asset),shotPlan=scene.shots.map(sh=>({asset_id:sh.asset.asset_id,shot_id:sh.shot_id,shot_intent:sh.communication_goal,representation:sh.representation,crop_policy:sh.crop_policy})),assetIds=shotAssets.map(a=>a.asset_id);units.push({unit_id:`U${i+1}`,scene_id,claim_id:scene_id,grounded_claim:scene.narration_intent,narration,evidence_ids:[...scene.grounded_fact_ids],editorial_role:scene.purpose,communication_goal:scene.narration_intent,asset_id:assetIds[0],asset_ids:assetIds,shot_plan:shotPlan});bundles.push({asset_id:assetIds[0],shot_assets:shotAssets});scriptSupport.push({segment_number:i+1,unit_id:`U${i+1}`,evidence_ids:[...scene.grounded_fact_ids],source_ids:[...scene.grounded_fact_ids],text:narration,transform:'storyboard_first_grounded_paraphrase'});}const script=units.map(u=>u.narration).join(' '),wc=script.match(/[\\p{L}\\p{N}]+(?:[’'\\-][\\p{L}\\p{N}]+)*/gu)?.length??0;if(wc<Math.max(18,Number(base.target_word_min)-12)||wc>Number(base.target_word_max)+16)throw new Error(`final storyboard word count ${wc} outside broad duration bounds`);if(evidenceIds.size<2)throw new Error('final storyboard does not retain at least two research evidence rows');const rowMap=new Map(base.research_rows.map(x=>[x.id,x])),selected_evidence=[...evidenceIds].map((id,index)=>{const x=rowMap.get(id);if(!x)throw new Error(`final storyboard cites unknown evidence ${id}`);return {evidence_id:id,source_id:id,source_language:'en',source_title:x.title,source_url:x.url,passage_id:'searx-snippet',section:null,evidence_text:x.snippet,selection_score:100-index,selection_rank:index+1}});const wps={en:2.55,pl:2.25,ru:2.45,uk:2.35}[base.language_code]??2.4,predicted=wc/wps,story_package={version:'storyboard-first-v1',editorial_contract_version:'storyboard-v1',visual_binding_mode:'representation-first-v1',units,assets:bundles,feasibility_version:base.feasibility_version};return [{json:{job_id:base.job_id,topic:base.topic,language_code:base.language_code,target_duration_seconds:Number(base.target_duration_seconds),canonical_subject:base.canonical_subject,topic_resolution:base.topic_resolution,script_text:script,script_support:scriptSupport,selected_evidence,story_package,duration_preflight:{version:'storyboard-first-word-budget-v1',language_code:base.language_code,target_duration_seconds:Number(base.target_duration_seconds),target_word_min:Number(base.target_word_min),target_word_max:Number(base.target_word_max),predicted_duration_seconds:Number(predicted.toFixed(3)),prediction_is_advisory:true,exact_tts_required:true},narration_engine:'storyboard_first_ai_writer',narration_model:String(r.model??'free-only-model-gateway'),narration_prompt_version:'storyboard-first-final-speech-v1',script_fit_passes:0,fact_source_language:'en',fact_primary_title:base.canonical_subject}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          4640,
-          -220
+          4920,
+          0
         ],
-        "id": "6e2dd726-9d2a-47a8-a431-a635d6dfdf3d",
-        "name": "Select Pre-Claim Visual Inventory",
+        "id": "9c68b549-c5a5-4150-a8bd-27745e4a2954",
+        "name": "Build Final Storyboard Story",
         "onError": "continueErrorOutput"
       },
       {
         "parameters": {
-          "batchSize": 1,
-          "options": {}
+          "operation": "executeQuery",
+          "query": "WITH input AS (SELECT $1::uuid job_id,$2::text script_text,$3::jsonb script_support,$4::jsonb duration_preflight,$5::text narration_engine,$6::text narration_model,$7::text narration_prompt_version,$8::smallint script_fit_passes,$9::jsonb evidence_json,$10::text fact_source_language,$11::text fact_primary_title,$12::jsonb topic_resolution,$13::jsonb story_package), locked AS (SELECT j.id FROM public.jobs j,input i WHERE j.id=i.job_id AND j.status='created' AND j.current_stage='intake' AND j.story_package IS NULL AND NOT EXISTS(SELECT 1 FROM public.scenes s WHERE s.job_id=j.id) AND NOT EXISTS(SELECT 1 FROM public.job_evidence e WHERE e.job_id=j.id) FOR UPDATE), parsed AS (SELECT x.* FROM input i CROSS JOIN LATERAL jsonb_to_recordset(i.evidence_json) AS x(evidence_id text,source_id text,source_language text,source_title text,source_url text,passage_id text,section text,evidence_text text,selection_score numeric,selection_rank integer)), valid AS (SELECT p.* FROM parsed p WHERE NULLIF(BTRIM(p.evidence_id),'') IS NOT NULL AND NULLIF(BTRIM(p.source_id),'') IS NOT NULL AND p.source_language IN('en','pl','ru','uk') AND NULLIF(BTRIM(p.source_title),'') IS NOT NULL AND NULLIF(BTRIM(p.evidence_text),'') IS NOT NULL AND p.selection_rank>0), ok AS (SELECT l.id FROM locked l,input i WHERE NULLIF(BTRIM(i.script_text),'') IS NOT NULL AND jsonb_typeof(i.script_support)='array' AND jsonb_array_length(i.script_support)=jsonb_array_length(i.story_package->'units') AND jsonb_typeof(i.topic_resolution)='object' AND i.topic_resolution->>'version'='evidence-grounded-topic-resolution-v1' AND jsonb_typeof(i.story_package)='object' AND i.story_package->>'version'='storyboard-first-v1' AND jsonb_typeof(i.story_package->'units')='array' AND jsonb_array_length(i.story_package->'units') BETWEEN 2 AND 12 AND jsonb_typeof(i.story_package->'assets')='array' AND jsonb_array_length(i.story_package->'assets')=jsonb_array_length(i.story_package->'units') AND COALESCE((i.duration_preflight->>'exact_tts_required')::boolean,false)=true AND COALESCE((i.duration_preflight->>'prediction_is_advisory')::boolean,false)=true AND (SELECT count(*) FROM valid)=(SELECT jsonb_array_length(i.evidence_json))), ins AS (INSERT INTO public.job_evidence(job_id,evidence_id,source_id,source_language,source_title,source_url,passage_id,section,evidence_text,selection_score,selection_rank) SELECT o.id,v.evidence_id,v.source_id,v.source_language,v.source_title,NULLIF(v.source_url,''),v.passage_id,NULLIF(v.section,''),v.evidence_text,v.selection_score,v.selection_rank FROM ok o CROSS JOIN valid v ORDER BY v.selection_rank RETURNING job_id), upd AS (UPDATE public.jobs j SET content_model_version='staged_v1',topic_resolution=i.topic_resolution,story_package=i.story_package,visual_search_queries_en=NULL,script_text=i.script_text,script_support=i.script_support,duration_preflight=i.duration_preflight,narration_engine=i.narration_engine,narration_model=i.narration_model,narration_prompt_version=i.narration_prompt_version,script_fit_passes=i.script_fit_passes,fact_source_language=i.fact_source_language,fact_primary_title=i.fact_primary_title,status='processing',current_stage='script',last_error=NULL,updated_at=now() FROM input i,ok o WHERE j.id=o.id AND j.id=i.job_id RETURNING j.id,jsonb_array_length(j.story_package->'units')::int AS story_unit_count) SELECT $1::uuid AS job_id,(SELECT count(*)::int FROM ins) inserted_evidence_count,EXISTS(SELECT 1 FROM upd) job_updated,(SELECT count(*)::int FROM public.scenes s WHERE s.job_id=$1::uuid) scene_count,(SELECT story_unit_count FROM upd) story_unit_count;",
+          "options": {
+            "queryReplacement": "={{ [ $json.job_id, $json.script_text, JSON.stringify($json.script_support), JSON.stringify($json.duration_preflight), $json.narration_engine, $json.narration_model, $json.narration_prompt_version, $json.script_fit_passes, JSON.stringify($json.selected_evidence), $json.fact_source_language, $json.fact_primary_title, JSON.stringify($json.topic_resolution), JSON.stringify($json.story_package) ] }}"
+          }
         },
-        "type": "n8n-nodes-base.splitInBatches",
-        "typeVersion": 3,
+        "id": "7dbc1482-bb0d-4b0f-b2d1-091a933802a7",
+        "name": "Persist Storyboard First Story",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
         "position": [
-          4280,
-          -80
+          5160,
+          0
         ],
-        "id": "6a28074d-521f-4361-87d2-5b4777813530",
-        "name": "Loop Pre-Claim Review Batches"
+        "onError": "continueErrorOutput",
+        "credentials": {
+          "postgres": {
+            "id": "AdVJ2zREIvjZqGH5",
+            "name": "Application PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const r=$input.first().json;if(r.job_updated!==true||Number(r.inserted_evidence_count)<2||Number(r.story_unit_count)<2)throw new Error(`Storyboard-first story persistence failed: updated=${r.job_updated}, evidence=${r.inserted_evidence_count}, units=${r.story_unit_count}`);return [{json:{job_id:r.job_id,story_unit_count:Number(r.story_unit_count)}}];"
+        },
+        "id": "f50c1391-b496-4aba-9b53-03e23a62c69a",
+        "name": "Require Persisted Storyboard Story",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          5400,
+          0
+        ],
+        "onError": "continueErrorOutput"
       }
     ],
     "connections": {
@@ -672,6 +516,13 @@
           [
             {
               "node": "Load Eligible Job",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
               "type": "main",
               "index": 0
             }
@@ -844,11 +695,239 @@
         "main": [
           [
             {
-              "node": "Prepare Visual Exploration",
+              "node": "Prepare Storyboard Director",
               "type": "main",
               "index": 0
             }
           ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Storyboard Director": {
+        "main": [
+          [
+            {
+              "node": "Build Storyboard Director Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Storyboard Director Request": {
+        "main": [
+          [
+            {
+              "node": "Direct Storyboard",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Direct Storyboard": {
+        "main": [
+          [
+            {
+              "node": "Validate Storyboard",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate Storyboard": {
+        "main": [
+          [
+            {
+              "node": "Build Storyboard Discovery Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Storyboard Discovery Request": {
+        "main": [
+          [
+            {
+              "node": "Discover Storyboard Media",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Discover Storyboard Media": {
+        "main": [
+          [
+            {
+              "node": "Freeze Storyboard Feasibility",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Freeze Storyboard Feasibility": {
+        "main": [
+          [
+            {
+              "node": "Prepare Final Story Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Final Story Request": {
+        "main": [
+          [
+            {
+              "node": "Write Final Story",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Write Final Story": {
+        "main": [
+          [
+            {
+              "node": "Build Final Storyboard Story",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Final Storyboard Story": {
+        "main": [
+          [
+            {
+              "node": "Persist Storyboard First Story",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Persist Storyboard First Story": {
+        "main": [
+          [
+            {
+              "node": "Require Persisted Storyboard Story",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Require Persisted Storyboard Story": {
+        "main": [
+          [
+            {
+              "node": "Start Voiceover Generation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare Planner Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Start Voiceover Generation": {
+        "main": [
+          [],
           [
             {
               "node": "Prepare Planner Failure",
@@ -874,384 +953,6 @@
           [
             {
               "node": "Stop Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Candidate Claims": {
-        "main": [
-          [
-            {
-              "node": "Build Draft Candidate Claims Request",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Draft Candidate Claims": {
-        "main": [
-          [
-            {
-              "node": "Validate Candidate Claims",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Validate Candidate Claims": {
-        "main": [
-          [
-            {
-              "node": "Prepare Inventory Grounded Story",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Inventory Grounded Story": {
-        "main": [
-          [
-            {
-              "node": "Build Write Inventory Grounded Story Request",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Write Inventory Grounded Story": {
-        "main": [
-          [
-            {
-              "node": "Build Final Inventory Story",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Build Final Inventory Story": {
-        "main": [
-          [
-            {
-              "node": "Persist Inventory First Story",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Persist Inventory First Story": {
-        "main": [
-          [
-            {
-              "node": "Require Persisted Inventory Story",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Require Persisted Inventory Story": {
-        "main": [
-          [
-            {
-              "node": "Start Voiceover Generation",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Build Draft Candidate Claims Request": {
-        "main": [
-          [
-            {
-              "node": "Draft Candidate Claims",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Build Write Inventory Grounded Story Request": {
-        "main": [
-          [
-            {
-              "node": "Write Inventory Grounded Story",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Visual Exploration": {
-        "main": [
-          [
-            {
-              "node": "Build Draft Visual Exploration Request",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Draft Visual Exploration": {
-        "main": [
-          [
-            {
-              "node": "Validate Visual Exploration",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Validate Visual Exploration": {
-        "main": [
-          [
-            {
-              "node": "Discover Pre-Claim Visual Inventory",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Discover Pre-Claim Visual Inventory": {
-        "main": [
-          [
-            {
-              "node": "Prepare Pre-Claim Review Batches",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Build Draft Visual Exploration Request": {
-        "main": [
-          [
-            {
-              "node": "Draft Visual Exploration",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Prepare Pre-Claim Review Batches": {
-        "main": [
-          [
-            {
-              "node": "Inline Pre-Claim Candidate Images",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Inline Pre-Claim Candidate Images": {
-        "main": [
-          [
-            {
-              "node": "Build Review Pre-Claim Visual Inventory Request",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Build Review Pre-Claim Visual Inventory Request": {
-        "main": [
-          [
-            {
-              "node": "Loop Pre-Claim Review Batches",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Review Pre-Claim Visual Inventory": {
-        "main": [
-          [
-            {
-              "node": "Loop Pre-Claim Review Batches",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Select Pre-Claim Visual Inventory": {
-        "main": [
-          [
-            {
-              "node": "Prepare Candidate Claims",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Prepare Planner Failure",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Loop Pre-Claim Review Batches": {
-        "main": [
-          [
-            {
-              "node": "Select Pre-Claim Visual Inventory",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Review Pre-Claim Visual Inventory",
               "type": "main",
               "index": 0
             }
