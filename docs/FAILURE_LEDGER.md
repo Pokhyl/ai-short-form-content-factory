@@ -251,3 +251,7 @@ A final control replay used only one exact image from immutable reviewer executi
 ### 2026-09-10 V4 source-inspection export-shape mistake
 
 A read-only source inspection for `V4-model-gateway.json` assumed the exported workflow file root was an object, but this file is an array containing one workflow object. The diagnostic failed with `TypeError: list indices must be integers or slices, not str`. No workflow, provider configuration, database row, container, or job was mutated. Future inspection must normalize exported workflow JSON as `array -> first workflow` before reading nodes.
+
+### Operator/tooling note — repository ownership under SentinelX account
+
+- 2026-09-10: a read-only repository orientation command was run as the SentinelX service account and stopped at Git safe-directory protection (`detected dubious ownership`). No repository or production state changed. Do not modify global/local Git configuration to bypass this; run repository Git operations through the existing privileged execution path that owns the checkout.

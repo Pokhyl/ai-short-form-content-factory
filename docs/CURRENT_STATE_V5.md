@@ -1628,3 +1628,7 @@ One exact image from failed review execution `17467` was replayed through the un
 ### 2026-09-10 V4 source-inspection harness correction
 
 The first read-only inspection of `V4-model-gateway.json` used the wrong root shape (object instead of one-element array) and failed before reading the Kilo node. No product state changed. Correct inspection normalizes array exports before examining the exact Kilo request contract.
+
+## 2026-09-10 operator note — SentinelX service-account Git ownership
+
+A read-only repository orientation attempt from the SentinelX service account stopped at Git safe-directory protection (`detected dubious ownership`). No repository or production state changed. This is an operator/tooling-path issue only. Do not change Git safe.directory/config; use the existing privileged checkout execution path for repository Git commands.
