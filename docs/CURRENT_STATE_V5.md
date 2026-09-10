@@ -1726,3 +1726,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-10: Execution 17533 decoder retry hit EACCES on /tmp/ex17533.txt due copied-file permissions; no product mutation occurred.
 
 - 2026-09-10: Fresh storyboard-first job `1b3090c3-083a-49ee-aa41-2010c66ffecb` reached validated storyboard and media discovery, then failed because shot S4A had no deterministic executable media. Execution 17533. Do not resume this job; inspect S4A contract/provider result and fix the systemic media-feasibility path before a new job.
+
+- 2026-09-10: Fresh job `738b3249-07fd-40ec-bc7f-e7809871ec86` reached storyboard validation and exposed a systemic model-contract alias: entity role `flow` should canonicalize to `process` before strict validation/compilation. Execution 17541. Job is immutable.
