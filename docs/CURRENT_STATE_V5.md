@@ -1480,3 +1480,7 @@ A disposable Python 3.11 probe installed `piper-tts[alignment]==1.8.0`, download
 ### 2026-09-10 V6 timing-inspection SIGPIPE harness failure
 
 A read-only search of timing/caption references used `grep | head` under `pipefail`; the producer exited on SIGPIPE (141) after the consumer reached its output limit. No product/TTS/renderer conclusion is drawn from that harness failure and no product source or production state changed. Repeat without a truncating pipeline before changing timing contracts.
+
+### 2026-09-10 V6 Piper/Whisper component cache-mount failure
+
+A realistic RU component proof synthesized 3 frozen one-sentence story units as exactly 3 Piper chunks in roughly 1.5 seconds. The subsequent faster-whisper stage did not start because the harness mounted only the cached snapshot directory while `model.bin` resolves through Hugging Face symlinks into the sibling `blobs/` directory. No product source or production state changed. Repeat with the complete cached model root before drawing any alignment/runtime conclusion.

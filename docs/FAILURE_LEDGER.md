@@ -164,3 +164,7 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### Operator/tooling note — V6 timing inspection SIGPIPE
 
 - 2026-09-10: a read-only timing-contract inspection used `grep ... | head` under `set -o pipefail`; `head` closed the pipe after its limit and `grep` exited on SIGPIPE, producing return code 141 before the Remotion caption source was printed. This is not a product/TTS/renderer failure. Repeat the inspection without a truncating pipe. No product source or production state changed.
+
+### Operator/tooling note — Piper/Whisper snapshot-only mount failure
+
+- 2026-09-10: RU component proof successfully synthesized one full narration with Piper as 3 sentence chunks in ~1.5s, but faster-whisper initialization failed because only the Hugging Face `snapshots/<revision>` directory was mounted. Its `model.bin` is a symlink into sibling `blobs/`, so the target was unavailable inside the disposable container. This is a cache-mount harness failure, not a Piper or faster-whisper model failure. Repeat with the full `models--Systran--faster-whisper-small` cache root (or dereferenced files); do not change product source from this result.
