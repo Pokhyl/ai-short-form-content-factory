@@ -1412,3 +1412,7 @@ This is not a production-release authorization and not a HUMAN PASS. V6 still re
 ### 2026-09-10 V6 renderer dependency lookup host-tooling failure
 
 Before the renderer implementation, a read-only dependency/version inspection attempted to call host `npm` from the VPS checkout and failed with `npm: command not found`. No source, production workflow, database, container, job or artifact was changed. This is an operator/tooling-environment failure, not a renderer defect. Future Node/npm metadata checks on this host must use a disposable Node container or the project build container rather than assuming host npm exists.
+
+### 2026-09-10 V6 npm-audit harness network mistake
+
+A read-only `npm audit` attempt for the newly pinned Remotion dependencies was mistakenly launched in a disposable Node container with `--network none`, so the npm audit endpoint failed with `getaddrinfo EAI_AGAIN registry.npmjs.org`. No audit conclusion was drawn, and no source/production state was changed. The audit must be repeated with network access before renderer implementation continues.

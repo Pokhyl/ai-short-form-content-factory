@@ -98,3 +98,5 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 ### Operator/tooling note — V6 renderer dependency lookup
 
 - 2026-09-10: VPS host has no `npm`; a read-only renderer dependency lookup failed before code mutation. Use a disposable Node/project container for npm metadata instead of installing host tooling or assuming npm exists.
+
+- 2026-09-10: V6 dependency audit harness was accidentally run with `--network none`, causing `EAI_AGAIN` against npm registry. No vulnerability conclusion is valid from that run; repeat with network access.
