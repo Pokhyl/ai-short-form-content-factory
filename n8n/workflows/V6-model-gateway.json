@@ -27,7 +27,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const b=$json.body??{};\nconst prompt=String(b.prompt??'').trim();\nconst multimodal=Array.isArray(b.input)?b.input.filter(x=>x&&typeof x==='object'):[];\nif(multimodal.length)throw new Error('V6 model gateway is text-only; multimodal review is not part of the mandatory path');\nif(!prompt)throw new Error('prompt required');\nconst responseFormat=String(b.response_format??'').trim().toLowerCase();\nconst responseSchema=b.response_schema&&typeof b.response_schema==='object'&&!Array.isArray(b.response_schema)?b.response_schema:null;\nconst expects_json=responseFormat==='json'||Boolean(responseSchema);\nconst route=String(b.route??'default').trim().toLowerCase();\nif(!['default','storyboard'].includes(route))throw new Error('unsupported V6 free-model route');\nconst selected_model=route==='storyboard'?'poolside/laguna-s-2.1:free':'nvidia/nemotron-3-super-120b-a12b:free';\nconst model_request_body={model:selected_model,messages:[{role:'user',content:prompt}],max_tokens:route==='storyboard'?16384:4096,temperature:Number.isFinite(Number(b.temperature))?Math.max(0,Math.min(1,Number(b.temperature))):0.2};\nif(expects_json)model_request_body.response_format={type:'json_object'};\nreturn [{json:{model_request_body,selected_model,route,expects_json,response_schema:responseSchema,schema_contract_version:'gateway-json-schema-subset-v1'}}];"
+          "jsCode": "const b=$json.body??{};\nconst prompt=String(b.prompt??'').trim();\nconst multimodal=Array.isArray(b.input)?b.input.filter(x=>x&&typeof x==='object'):[];\nif(multimodal.length)throw new Error('V6 model gateway is text-only; multimodal review is not part of the mandatory path');\nif(!prompt)throw new Error('prompt required');\nconst responseFormat=String(b.response_format??'').trim().toLowerCase();\nconst responseSchema=b.response_schema&&typeof b.response_schema==='object'&&!Array.isArray(b.response_schema)?b.response_schema:null;\nconst expects_json=responseFormat==='json'||Boolean(responseSchema);\nconst route=String(b.route??'default').trim().toLowerCase();\nif(!['default','storyboard'].includes(route))throw new Error('unsupported V6 free-model route');\nconst selected_model=route==='storyboard'?'cohere/north-mini-code:free':'nvidia/nemotron-3-super-120b-a12b:free';\nconst model_request_body={model:selected_model,messages:[{role:'user',content:prompt}],max_tokens:route==='storyboard'?16384:4096,temperature:Number.isFinite(Number(b.temperature))?Math.max(0,Math.min(1,Number(b.temperature))):0.2};\nif(expects_json)model_request_body.response_format={type:'json_object'};\nreturn [{json:{model_request_body,selected_model,route,expects_json,response_schema:responseSchema,schema_contract_version:'gateway-json-schema-subset-v1'}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -63,7 +63,7 @@
           "specifyBody": "json",
           "jsonBody": "={{ $json.model_request_body }}",
           "options": {
-            "timeout": 70000
+            "timeout": 50000
           }
         },
         "type": "n8n-nodes-base.httpRequest",

@@ -1,18 +1,15 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-const raw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));const w=Array.isArray(raw)?raw[0]:raw;const by=new Map(w.nodes.map(n=>[n.name,n]));
-const prep=by.get('Prepare Pre-Claim Review Batches').parameters.jsCode;
-assert.match(prep,/type:'image',uri:x\.preview_url,review_id:x\.review_id/,'the image sent to pixel review must carry the deterministic review identity');
-assert.match(by.get('Inline Pre-Claim Candidate Images').parameters.jsonBody,/batch_number/);
-const selector=by.get('Select Pre-Claim Visual Inventory').parameters.jsCode;
-assert.match(selector,/Inline Pre-Claim Candidate Images/);
-assert.match(selector,/image_fingerprints/);
-assert.match(selector,/\^\[0-9a-f\]\{64\}\$/);
-assert.match(selector,/visual_hash:visualHash/);
-assert.match(selector,/const expected=new Set\(fingerprints\.keys\(\)\)/,'dropped/unfingerprinted images must not be demanded from the multimodal reviewer');
-const worker=fs.readFileSync('services/media-worker/src/server.mjs','utf8');
-assert.match(worker,/const visualHash = reviewId \? await averageHashHex\(fetched\.buffer\) : null/);
-assert.match(worker,/image_fingerprints: imageFingerprints/);
-assert.match(worker,/review_id: reviewId \|\| null/);
-assert.match(worker,/\^\(\?:REVIEW\|candidate\)\\s\+\\S\+/,'dropped image must also remove its review label from model input');
-console.log('V6_VISUAL_FACTS_INLINE_FINGERPRINT_REGRESSION_PASS');
+const raw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));
+const w=Array.isArray(raw)?raw[0]:raw;
+const by=new Map(w.nodes.map(n=>[n.name,n]));
+for(const retired of ['Prepare Pre-Claim Review Batches','Inline Pre-Claim Candidate Images','Review Pre-Claim Visual Inventory','Select Pre-Claim Visual Inventory']) {
+  assert.equal(by.has(retired),false,`retired mandatory visual-review node returned: ${retired}`);
+}
+assert.ok(by.has('Prepare Storyboard Director'));
+assert.ok(by.has('Direct Storyboard'));
+assert.ok(by.has('Freeze Storyboard Feasibility'));
+const serialized=JSON.stringify(w).toLowerCase();
+assert.equal(serialized.includes('inline-review-images'),false);
+assert.equal(serialized.includes('visual fact reviewer'),false);
+console.log('V6_VISUAL_REVIEW_PATH_RETIRED_PASS');

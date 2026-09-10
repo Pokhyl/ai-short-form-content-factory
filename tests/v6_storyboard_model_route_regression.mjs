@@ -4,9 +4,9 @@ const gwRaw=JSON.parse(fs.readFileSync('n8n/workflows/V6-model-gateway.json','ut
 const gw=Array.isArray(gwRaw)?gwRaw[0]:gwRaw;
 const by=new Map(gw.nodes.map(n=>[n.name,n]));
 const build=by.get('Build Request')?.parameters?.jsCode??'';
-assert.match(build,/poolside\/laguna-s-2\.1:free/);
+assert.match(build,/cohere\/north-mini-code:free/);
 assert.match(build,/route==='storyboard'/);
-assert.ok(Number(by.get('Kilo Free Model')?.parameters?.options?.timeout)===70000);
+assert.ok(Number(by.get('Kilo Free Model')?.parameters?.options?.timeout)===50000);
 const wfRaw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));
 const wf=Array.isArray(wfRaw)?wfRaw[0]:wfRaw;
 const direct=wf.nodes.find(n=>n.name==='Direct Storyboard');
