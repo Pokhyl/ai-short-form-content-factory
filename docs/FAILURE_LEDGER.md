@@ -189,3 +189,5 @@ The JSONL file is a dated immutable snapshot. Future checkpoints create a new da
 
 - 2026-09-10: during disk-recovery checkpointing, direct non-root Git was rejected with `dubious ownership` for the root-owned repo. Do not add a `safe.directory` exception or alter git config. Use `sudo git -C` with the existing deploy key, matching prior successful repository operations.
 - 2026-09-10: the post-disk-recovery V6 TTS build/verification script hit SentinelX's 600 s wrapper timeout, but immediate read-only Docker inspection proved the requested image had already completed as `sha256:921826cc6efec846e86c5089518711118201adc7382e08ad10a6c51741332b13`; no build process remained. Treat this as an operational wrapper timeout, not an image-build failure. Do not rebuild; verify the existing exact image.
+
+- 2026-09-10: first network-disabled Edge→Piper image proof used `docker exec ... node -` without `-i`; stdin was not attached, so no POST occurred and no WAV existed. This is a harness-only failure. Re-run unchanged with `docker exec -i`; do not alter TTS source from this result.

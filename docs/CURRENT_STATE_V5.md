@@ -1526,3 +1526,7 @@ After recording the V6 TTS image build disk-capacity failure, a direct SentinelX
 ### 2026-09-10 V6 TTS image verification wrapper timeout after successful build
 
 After reclaiming only unused Docker builder cache and proven-unused test images, the exact V6 TTS media-worker build was re-run. The SentinelX script wrapper reached its 600 s wall-clock timeout before returning its verification output, so no PASS was claimed from that call. Read-only inspection immediately afterward proved the Docker build itself had completed and the requested tag exists as image `sha256:921826cc6efec846e86c5089518711118201adc7382e08ad10a6c51741332b13` (size 1,558,837,082 bytes), with no build/download process still running. Do not rebuild blindly; continue source/image/checksum/health verification against this exact existing image. Production remains unchanged.
+
+### 2026-09-10 V6 offline TTS proof stdin harness failure
+
+The first network-disabled `Edge -> Piper/Whisper` image-level proof started the exact V6 media-worker image and passed `/health`, but the POST body script was invoked as `docker exec ... node -` without `-i`. Docker therefore did not attach stdin, the Node heredoc never executed, no TTS request was sent, and the later ffprobe correctly found no WAV. This is a harness invocation failure, not a TTS/product failure. Repeat the unchanged proof with `docker exec -i`; do not modify provider logic from this result.
