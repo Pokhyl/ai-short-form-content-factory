@@ -300,3 +300,9 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 - Cause: generator depended on a stale node-name assumption instead of selecting the unique webhook by node type.
 - Product impact: none; no workflow import/publish/runtime mutation occurred.
 - Lesson: stage generator must identify WF01 webhook by `type=n8n-nodes-base.webhook`, assert uniqueness, then rewrite its path.
+
+### 2026-09-10 — V6 stage deploy health poll reused root-owned fixed /tmp file
+- Engineering/operator failure: after successful import/publish of the six V6 stage workflows and n8n restart, the bounded health loop redirected into fixed `/tmp/n8n-health.out`; an older root-owned file blocked the redirection and produced repeated `Permission denied`. The script later printed stale content from that path, so that particular health line is not valid deployment evidence.
+- Cause: fixed shared `/tmp` evidence filename was reused across sudo execution contexts.
+- Product impact: workflow import/publish/restart completed; subsequent DB checks in the same run independently showed both V6 webhook rows registered and all six V6 workflows active/current, while production WF01-WF05 version snapshot remained unchanged. Health itself must be re-proven separately before a new job.
+- Lesson: use a unique evidence path under the deployment backup directory or capture health into a shell variable; never reuse fixed `/tmp` evidence files.

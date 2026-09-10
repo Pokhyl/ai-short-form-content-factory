@@ -1659,3 +1659,6 @@ The V6 gateway owner ACL source correction was written, but the helper stopped b
 
 ### 2026-09-10 V6 operator checkpoint — stage generator WF01 webhook-name mistake
 The new stage import generator stopped before producing an import file because it assumed the WF01 webhook node is named `Webhook`. No n8n/runtime mutation occurred. Correction: resolve the unique WF01 webhook by node type, not display name.
+
+### 2026-09-10 V6 stage deployment checkpoint — health evidence filename mistake
+Six V6 workflows, including `V6ModelGatewayFreeOnly`, were imported/published and n8n restarted. DB verification showed `v6-stage/jobs` and `v6-model-gateway` registered, all six V6 workflows active with current=activeVersionId, and production WF01-WF05 version snapshot unchanged. However the health polling helper reused a root-owned fixed `/tmp/n8n-health.out`, so the printed health body from that helper is stale/untrusted. Before submitting a new product job, health must be re-proven using a unique capture path or shell variable.
