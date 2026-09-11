@@ -1,0 +1,32 @@
+name: Materialize WF03 stale regression docs
+
+on:
+  push:
+    branches:
+      - transport/v6-duration-decode-docs-20260911
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply docs checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch_ref="$GITHUB_SHA"
+          git show "$patch_ref:.transport/wf03-stale-regression-docs.patch" > /tmp/wf03-docs.patch
+          git checkout --detach 760e48175f853233bc6f67d483633010911ac4fe
+          git apply --check /tmp/wf03-docs.patch
+          git apply /tmp/wf03-docs.patch
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/CURRENT_STATE_V5.md docs/FAILURE_LEDGER.md
+          git commit -m 'docs: record stale WF03 token regression'
+          git push origin HEAD:refs/heads/transport/wf03-stale-regression-docs-result-20260911
