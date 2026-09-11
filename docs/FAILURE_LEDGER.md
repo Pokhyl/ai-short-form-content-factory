@@ -459,3 +459,6 @@ After resolving the installed `flatted` package path, the read-only decoder pipe
 
 ### 2026-09-11 — root cause of empty execution decoder input was stdin collision
 Follow-up verification showed execution 17765 has one `n8n.execution_data` row with 143,841 characters. The decoder got empty payload because `node - <<'NODE'` consumed stdin for the script itself while the same stdin was also expected to carry piped execution data. No product state changed. Lesson: when piping execution payload, run decoder code via `node -e` or a mounted script file; never combine a data pipe with a heredoc on stdin.
+
+### 2026-09-11 — operator attempted V6 Node tests on host without Node runtime
+The first test command after the portrait-discovery patch invoked `node` directly on the VPS host and failed immediately with `node: command not found`. No test body ran and no product state changed. Lesson: execute repository Node regressions in the existing stage/media-worker Node container rather than assuming host Node is installed.
