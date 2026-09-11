@@ -5,7 +5,7 @@ const ENTITY_SHAPES = new Set(["box", "pill", "circle"]);
 const ENTITY_SHAPE_ALIASES = new Map([["arrow","pill"],["bar","box"]]);
 const LANES = new Set(["left", "right", "center"]);
 const RELATION_KINDS = new Set(["flow", "joins", "splits", "emits", "blocks", "contains", "transforms"]);
-const RELATION_KIND_ALIASES = new Map([["enters","flow"],["scatters","emits"],["reaches","flow"]]);
+const RELATION_KIND_ALIASES = new Map([["enters","flow"],["scatters","emits"],["reaches","flow"],["produces","transforms"],["contributes","joins"]]);
 const OBSERVER_ENDPOINTS = new Set(["viewer","observer","audience"]);
 const FORBIDDEN_GEOMETRY_FIELDS = new Set(["x","y","x1","y1","x2","y2","cx","cy","r","width","height","points","translate","scale","rotate","path","d"]);
 

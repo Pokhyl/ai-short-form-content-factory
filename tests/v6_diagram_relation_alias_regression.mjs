@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {validateDiagramSpec,compileDiagramSpec} from '../services/media-worker/src/diagram-compiler.mjs';
+const spec={shot_id:'S3A',grounded_fact_ids:['S6','S9','S10'],archetype:'comparison',entities:[{id:'wavelength',label:'Wavelength',role:'subject',shape:'box',lane:'left',order:1,phase:0},{id:'inverse_four',label:'1/lambda^4',role:'process',shape:'pill',lane:'center',order:2,phase:5},{id:'blue',label:'Blue',role:'output',shape:'circle',lane:'left',order:3,phase:10},{id:'red',label:'Red',role:'output',shape:'circle',lane:'right',order:4,phase:10},{id:'intensity',label:'Scattering intensity',role:'result',shape:'box',lane:'center',order:5,phase:15}],relations:[{from:'wavelength',to:'inverse_four',kind:'transforms',phase:5},{from:'inverse_four',to:'intensity',kind:'produces',phase:10},{from:'blue',to:'intensity',kind:'contributes',label:'high',phase:15},{from:'red',to:'intensity',kind:'contributes',label:'low',phase:15}]};
+const v=validateDiagramSpec(spec,{expectedShotId:'S3A',allowedFactIds:['S6','S9','S10']});
+assert.deepEqual(v.relations.map(r=>r.kind),['transforms','transforms','joins','joins']);
+const c=compileDiagramSpec(spec,4,{expectedShotId:'S3A',allowedFactIds:['S6','S9','S10']});
+assert.equal(c.source.compiler,'diagram-compiler-v1');
+const raw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));const wf=Array.isArray(raw)?raw[0]:raw;const code=wf.nodes.find(n=>n.name==='Validate Storyboard').parameters.jsCode;
+assert.match(code,/rawKind==='produces'\?'transforms'/);
+assert.match(code,/rawKind==='contributes'\?'joins'/);
+console.log('V6_DIAGRAM_RELATION_ALIAS_REGRESSION_PASS');
