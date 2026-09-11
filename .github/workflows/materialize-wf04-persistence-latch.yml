@@ -1,0 +1,47 @@
+name: Materialize WF04 persistence latch
+on:
+  push:
+    branches:
+      - transport/wf04-persistence-latch-20260911
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Materialize exact WF04 fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          PATCH=.transport/wf04-persistence-latch-20260911.patch
+          PARENT=57bd6a4d35299f43a0e67c3b846a8adb53eba8ce
+          TARGET_TREE=4fa4db369816dad4e8ce812bd62dff3f09323b4c
+          RESULT=transport/wf04-persistence-latch-result-20260911
+          git show "$GITHUB_SHA:$PATCH" > /tmp/change.patch
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/change.patch')
+          b=p.read_bytes()
+          if not b.endswith(b'\n'):
+              p.write_bytes(b+b'\n')
+          PY
+          if git ls-remote --exit-code --heads origin "$RESULT" >/dev/null 2>&1; then
+            echo "result branch already exists" >&2
+            exit 1
+          fi
+          git checkout --detach "$PARENT"
+          git apply --check /tmp/change.patch
+          git apply /tmp/change.patch
+          test "$(git hash-object docs/CURRENT_STATE_V5.md)" = "407d131e12d0bde6c9c3e58a875677692717d0d5"
+          test "$(git hash-object docs/FAILURE_LEDGER.md)" = "5649df68a491b5fa9fc9ff9d30d9a281169371f1"
+          test "$(git hash-object n8n/workflows/WF04-visual-sourcing.json)" = "ef7e1e0b56df0b6d0120cefd89200e1737c6554d"
+          test "$(git hash-object tests/v6_wf04_mixed_branch_persistence_latch_regression.mjs)" = "df6615aafcec0110e832b90079cd007f43661b31"
+          git add docs/CURRENT_STATE_V5.md docs/FAILURE_LEDGER.md n8n/workflows/WF04-visual-sourcing.json tests/v6_wf04_mixed_branch_persistence_latch_regression.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix: latch WF04 mixed-branch persistence'
+          test "$(git rev-parse HEAD^{tree})" = "$TARGET_TREE"
+          git push origin "HEAD:refs/heads/$RESULT"
