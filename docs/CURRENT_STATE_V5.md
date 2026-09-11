@@ -1778,3 +1778,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11: Fresh stage job `6a4553e7-8a64-4d30-8ff5-9625a29172c7` is immutable after WF02 `17691`. Failure correlation is now proven fixed at runtime: row persisted `failed|script` with the semantic JSON error. Exact gateway execution `17692` must be inspected to determine why the new semantic route did not yield parseable JSON.
 
 - 2026-09-11: WF03 read-only inspection confirmed its rewrite node forwards `$json.model_request` to the V6 gateway; the inspector itself ended with a harmless local `NameError` from a stray `PY` token after printing the required fields.
+
+2026-09-11 — V6 storyboard-first stage evidence: fresh job `8bd618dd-bf7e-4129-80d2-5e79b813f730` is immutable after WF02 execution `17701`. Semantic intake and evidence resolution passed; storyboard generation reached strict validation. `S3A` used relation aliases `produces` and `contributes`, exposing a deterministic relation canonicalization gap. Preserve the strict internal relation vocabulary; canonicalize these two common aliases at the model→diagram boundary before another fresh run.
