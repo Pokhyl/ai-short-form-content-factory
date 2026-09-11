@@ -13,7 +13,7 @@ const serialized=JSON.stringify(wf).toLowerCase();
 for(const forbidden of ['gemini','generativelanguage.googleapis.com','google_gemini','openai/','anthropic/','stepfun/step-3.7-flash','nex-agi/']) assert.equal(serialized.includes(forbidden),false,`V6 gateway contains forbidden/unproven provider marker: ${forbidden}`);
 const build=by.get('Build Request')?.parameters?.jsCode??'';
 assert.match(build,/nvidia\/nemotron-3-super-120b-a12b:free/);
-assert.match(build,/poolside\/laguna-s-2\.1:free/);
+assert.match(build,/inclusionai\/ling-3\.0-flash-sante:free/);
 assert.match(build,/route==='storyboard'/);
 assert.match(build,/text-only/);
 const model=by.get('Kilo Free Model');

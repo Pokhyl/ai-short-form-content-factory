@@ -19,7 +19,7 @@ const payload={scenes:[
  {scene_id:'S2',purpose:'explain',grounded_fact_ids:['S1','S2','S3','S4'],narration_intent:'Explain that shorter blue wavelengths scatter more',shots:[diagram('S2A',['S1','S2','S3','S4'])]},
  {scene_id:'S3',purpose:'close',grounded_fact_ids:['S2'],narration_intent:'Connect stronger blue scattering to what viewers see',shots:[diagram('S3A',['S2'])]}
 ]};
-const $input={first:()=>({json:{provider_exhausted:false,text:JSON.stringify(payload),model:'poolside/laguna-s-2.1:free',provider:'kilo-storyboard'}})};
+const $input={first:()=>({json:{provider_exhausted:false,text:JSON.stringify(payload),model:'inclusionai/ling-3.0-flash-sante:free',provider:'kilo-storyboard'}})};
 const $=(name)=>{if(name!=='Prepare Storyboard Director')throw new Error(`unexpected node ${name}`);return {first:()=>({json:base})};};
 const out=new Function('$input','$',code)($input,$)[0].json;
 assert.deepEqual(out.storyboard_scenes[1].grounded_fact_ids,['S1','S2','S3']);
