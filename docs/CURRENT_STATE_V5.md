@@ -1766,3 +1766,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11: Full V6 test sweep after storyboard plain-JSON transport reached the evidence-canonicalization test and found a stale source-string assertion that predates `response_schema` on the storyboard request. No runtime deployment occurred from this test failure.
 
 - 2026-09-11: The storyboard evidence regression contained mutually contradictory source assertions about `response_schema`. Current architecture intentionally carries the schema while deferring storyboard validation to WF02; test cleanup is required before deployment.
+
+- 2026-09-11: V6 plain-JSON gateway source is deployed and current/active. A follow-up webhook polling shell command was invalid due quoting and cannot be used as state evidence; recheck with parameter-safe SQL before E2E.
