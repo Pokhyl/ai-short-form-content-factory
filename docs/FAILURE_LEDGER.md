@@ -453,3 +453,6 @@ Fresh immutable stage job `d9893ac3-4f92-4149-8f8e-255902b7b94d` (`Почему 
 
 ### 2026-09-11 — operator assumed `flatted` was top-level require in n8n container
 A read-only execution decoder piped execution 17765 into `node` inside the n8n container and attempted `require('flatted')`; the n8n image does not expose that package as a top-level module, so the decoder failed before reading execution data. No product state changed. Lesson: resolve the installed package path first or use a self-contained decoder; do not assume transitive pnpm dependencies are top-level requires.
+
+### 2026-09-11 — execution 17765 decoder received empty stdin
+After resolving the installed `flatted` package path, the read-only decoder pipeline for execution 17765 still failed with `Unexpected end of JSON input` because no execution-data text reached the decoder stdin. No product state changed. Lesson: verify `n8n.execution_data` row presence/length separately before piping and avoid assuming the execution-data row is directly emitted by the first query.

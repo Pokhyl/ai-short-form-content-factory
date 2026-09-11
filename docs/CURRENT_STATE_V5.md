@@ -1796,3 +1796,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 2026-09-11 V6 stage checkpoint: fresh immutable job `d9893ac3-4f92-4149-8f8e-255902b7b94d` reached storyboard media feasibility and failed in WF02 execution `17765` with `no deterministic executable media for storyboard shot S1A [line 2]`. This is after the semantic free-route and storyboard free-route changes; inspect the exact shot/discovery contract before correction, without manual asset selection or gate weakening.
 
 2026-09-11 operator note: execution 17765 inspection initially failed because the decoder assumed top-level `require('flatted')` in the n8n container. No product state changed; resolve the actual installed package path or use a self-contained decoder before retrying inspection.
+
+2026-09-11 operator note: the second read-only decoder attempt for execution 17765 resolved the actual `flatted` package but received empty stdin and failed before decoding. No product state changed. Verify execution_data row presence/length separately before the next inspection attempt.
