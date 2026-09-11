@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {validateDiagramSpec,compileDiagramSpec} from '../services/media-worker/src/diagram-compiler.mjs';
+const spec={shot_id:'S2A',grounded_fact_ids:['S1','S7','S10'],archetype:'split',entities:[{id:'sun',label:'White light',role:'input',shape:'pill',lane:'top',order:1,phase:0},{id:'air',label:'Atmosphere',role:'process',shape:'box',lane:'middle',order:2,phase:5},{id:'blue',label:'Blue light',role:'output',shape:'circle',lane:'left',order:3,phase:10},{id:'red',label:'Red light',role:'output',shape:'circle',lane:'right',order:4,phase:10}],relations:[{from:'sun',to:'air',kind:'flow',phase:0},{from:'air',to:'blue',kind:'splits',phase:5},{from:'air',to:'red',kind:'splits',phase:5}]};
+const v=validateDiagramSpec(spec,{expectedShotId:'S2A',allowedFactIds:['S1','S7','S10']});
+assert.equal(v.entities.find(e=>e.id==='sun').lane,'center');
+assert.equal(v.entities.find(e=>e.id==='air').lane,'center');
+assert.doesNotThrow(()=>compileDiagramSpec(spec,4,{expectedShotId:'S2A',allowedFactIds:['S1','S7','S10']}));
+const raw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8')); const wf=Array.isArray(raw)?raw[0]:raw;
+const code=wf.nodes.find(n=>n.name==='Validate Storyboard').parameters.jsCode;
+assert.match(code,/rawLane==='top'\|\|rawLane==='bottom'\|\|rawLane==='middle'\?'center'/);
+assert.match(code,/if\(lane!==rawLane\)e\.lane=lane/);
+console.log('V6_DIAGRAM_LANE_ALIAS_REGRESSION_PASS');

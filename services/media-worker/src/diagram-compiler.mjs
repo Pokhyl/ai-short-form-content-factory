@@ -4,6 +4,7 @@ const ENTITY_ROLE_ALIASES = new Map([["flow","process"],["source","input"]]);
 const ENTITY_SHAPES = new Set(["box", "pill", "circle"]);
 const ENTITY_SHAPE_ALIASES = new Map([["arrow","pill"],["bar","box"]]);
 const LANES = new Set(["left", "right", "center"]);
+const LANE_ALIASES = new Map([["top","center"],["bottom","center"],["middle","center"]]);
 const RELATION_KINDS = new Set(["flow", "joins", "splits", "emits", "blocks", "contains", "transforms"]);
 const RELATION_KIND_ALIASES = new Map([["enters","flow"],["scatters","emits"],["reaches","flow"],["produces","transforms"],["contributes","joins"]]);
 const OBSERVER_ENDPOINTS = new Set(["viewer","observer","audience"]);
@@ -39,7 +40,7 @@ export function validateDiagramSpec(input,{expectedShotId=null,allowedFactIds=nu
     const id=requiredText(raw.id,`entities[${index+1}].id`);if(ids.has(id))throw new Error(`duplicate entity id: ${id}`);ids.add(id);
     const rawRole=requiredText(raw.role,`entities[${index+1}].role`),role=ENTITY_ROLE_ALIASES.get(rawRole)??rawRole;if(!ENTITY_ROLES.has(role))throw new Error(`invalid entity role: ${role}`);
     const rawShape=clean(raw.shape)||"box",shape=ENTITY_SHAPE_ALIASES.get(rawShape)??rawShape;if(!ENTITY_SHAPES.has(shape))throw new Error(`invalid entity shape: ${shape}`);
-    const lane=clean(raw.lane)||null;if(lane!==null&&!LANES.has(lane))throw new Error(`invalid entity lane: ${lane}`);
+    const rawLane=clean(raw.lane)||null,lane=rawLane===null?null:(LANE_ALIASES.get(rawLane)??rawLane);if(lane!==null&&!LANES.has(lane))throw new Error(`invalid entity lane: ${lane}`);
     const order=raw.order===undefined?index:Number(raw.order);if(!Number.isInteger(order)||order<0||order>20)throw new Error(`entities[${index+1}].order is invalid`);
     entities.push({id,label:requiredText(raw.label,`entities[${index+1}].label`),role,shape,lane,order,phase:phaseValue(raw.phase??index,`entities[${index+1}].phase`)});
   });
