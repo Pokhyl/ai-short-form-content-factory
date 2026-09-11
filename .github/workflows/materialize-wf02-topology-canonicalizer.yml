@@ -1,0 +1,74 @@
+name: Materialize WF02 topology canonicalizer
+on:
+  push:
+    branches:
+      - transport/wf02-topology-canonicalizer-20260911
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Materialize exact WF02 topology canonicalizer
+        shell: bash
+        run: |
+          set -euo pipefail
+          PARENT=8e974e8ff7afddac2132fe3b70e11f93ea2e4ad2
+          RESULT=transport/wf02-topology-canonicalizer-result-20260911
+          if git ls-remote --exit-code --heads origin "$RESULT" >/dev/null 2>&1; then
+            echo "result branch already exists" >&2
+            exit 1
+          fi
+          git checkout --detach "$PARENT"
+          test "$(git hash-object n8n/workflows/WF02-plan-script-and-scenes.json)" = "fa8b0f765ecb4bde9024ccdd5ced5116cf567cd7"
+          test "$(git hash-object tests/v6_storyboard_boundary_canonicalization_regression.mjs)" = "b33b21c4b3c04460831b92ba400a25115865233d"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('n8n/workflows/WF02-plan-script-and-scenes.json')
+          o=json.loads(p.read_text()); w=o[0] if isinstance(o,list) else o
+          n=next(x for x in w['nodes'] if x['name']=='Validate Storyboard')
+          s=n['parameters']['jsCode']
+          a=s.index("if(archetype==='split'){")
+          b=s.index("if(archetype==='comparison'){",a)
+          new="""if(archetype==='split'){const incoming=new Map([...ids].map(id=>[id,0])),outgoing=new Map([...ids].map(id=>[id,[]])),byId=new Map(entities.map(e=>[clean(e?.id),e]));for(const rel of rels){const from=clean(rel?.from),to=clean(rel?.to);if(ids.has(from)&&ids.has(to)&&from!==to){incoming.set(to,(incoming.get(to)??0)+1);outgoing.get(from).push(to);}}const ordered=xs=>[...xs].sort((a,b)=>Number(a?.order??0)-Number(b?.order??0)||clean(a?.id).localeCompare(clean(b?.id))),declared=ordered(entities.filter(e=>clean(e?.role)==='input')),roots=ordered(entities.filter(e=>(incoming.get(clean(e?.id))??0)===0&&(outgoing.get(clean(e?.id))?.length??0)>0)),root=declared.find(e=>(incoming.get(clean(e?.id))??0)===0&&(outgoing.get(clean(e?.id))?.length??0)>0)??(roots.length===1?roots[0]:declared[0]??null);if(root){root.role='input';for(const e of entities){if(e===root)continue;const id=clean(e?.id),rr=clean(e?.role),outs=outgoing.get(id)??[],targets=outs.map(x=>byId.get(x)).filter(Boolean);if(rr==='input'||rr==='layer')e.role='process';else if(rr==='subject')e.role='result';else if(rr==='output'&&(outs.length>1||targets.some(t=>['process','layer'].includes(clean(t?.role)))))e.role='process';}}if(entities.filter(e=>clean(e?.role)==='input').length!==1||entities.filter(e=>['output','result'].includes(clean(e?.role))).length<2)throw new Error(`diagram shot ${shot_id} split roles are invalid`);}"""
+          n['parameters']['jsCode']=s[:a]+new+s[b:]
+          p.write_text(json.dumps(o,ensure_ascii=False,indent=2)+'\n')
+          q=Path('tests/v6_storyboard_boundary_canonicalization_regression.mjs')
+          t=q.read_text()
+          needle="console.log('V6_STORYBOARD_BOUNDARY_CANONICALIZATION_PASS');"
+          insert="""const topologySpec={shot_id:'S2A',grounded_fact_ids:['S7','S8'],archetype:'split',title:'Topology split',entities:[
+          {id:'sun',label:'Sun',role:'subject',shape:'circle',lane:'left',order:1,phase:0},
+          {id:'white',label:'White light',role:'output',shape:'pill',lane:'left',order:2,phase:2},
+          {id:'air',label:'Atmosphere',role:'layer',shape:'box',lane:'center',order:3,phase:4},
+          {id:'blue',label:'Blue scattered',role:'output',shape:'box',lane:'right',order:4,phase:6},
+          {id:'red',label:'Red passes',role:'output',shape:'box',lane:'right',order:5,phase:6},
+          {id:'eye',label:'Eye',role:'result',shape:'circle',lane:'right',order:6,phase:8}],relations:[
+          {from:'sun',to:'white',kind:'emits',phase:1},{from:'white',to:'air',kind:'flow',phase:3},{from:'air',to:'blue',kind:'splits',phase:5},{from:'air',to:'red',kind:'splits',phase:5},{from:'blue',to:'eye',kind:'flow',phase:7}]};
+          const topoPayload=structuredClone(payload);topoPayload.scenes[1].shots[0].diagram_spec=topologySpec;
+          const topoOut=new Function('$input','$',code)({first:()=>({json:{provider_exhausted:false,text:JSON.stringify(topoPayload),model:'x',provider:'x'}})},()=>({first:()=>({json:base})}))[0].json;
+          const topo=topoOut.storyboard_scenes[1].shots[0].diagram_spec;
+          assert.equal(topo.entities.find(e=>e.id==='sun').role,'input');
+          assert.equal(topo.entities.find(e=>e.id==='white').role,'process');
+          assert.equal(topo.entities.find(e=>e.id==='air').role,'process');
+          assert.equal(topo.entities.find(e=>e.id==='blue').role,'output');
+          assert.equal(topo.entities.find(e=>e.id==='red').role,'output');
+          assert.equal(topo.entities.find(e=>e.id==='eye').role,'result');
+          assert.doesNotThrow(()=>validateDiagramSpec(topo,{expectedShotId:'S2A',allowedFactIds:['S7','S8']}));
+          assert.doesNotThrow(()=>compileDiagramSpec(topo,4,{expectedShotId:'S2A',allowedFactIds:['S7','S8']}));
+          """
+          assert t.count(needle)==1
+          if insert not in t: t=t.replace(needle,insert+needle)
+          q.write_text(t)
+          PY
+          test "$(git hash-object n8n/workflows/WF02-plan-script-and-scenes.json)" = "a7ae4a720784d2cba3a9c46d576db4dc1349c6c4"
+          test "$(git hash-object tests/v6_storyboard_boundary_canonicalization_regression.mjs)" = "0c2ea7a96f30186ab06f3205217ae5ddb9b59149"
+          git add n8n/workflows/WF02-plan-script-and-scenes.json tests/v6_storyboard_boundary_canonicalization_regression.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix: canonicalize split roles from topology'
+          test "$(git diff --name-only "$PARENT" HEAD | wc -l)" -eq 2
+          git push origin "HEAD:refs/heads/$RESULT"
