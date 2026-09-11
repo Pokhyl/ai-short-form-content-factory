@@ -1764,3 +1764,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11: Storyboard transport is being changed from full tool-call schema to bounded plain JSON because exact production evidence showed tool-call latency exceeding 75s. First targeted test run exposed one stale regression expectation that still treated all long routes as tool-call; runtime has not been redeployed yet.
 
 - 2026-09-11: Full V6 test sweep after storyboard plain-JSON transport reached the evidence-canonicalization test and found a stale source-string assertion that predates `response_schema` on the storyboard request. No runtime deployment occurred from this test failure.
+
+- 2026-09-11: The storyboard evidence regression contained mutually contradictory source assertions about `response_schema`. Current architecture intentionally carries the schema while deferring storyboard validation to WF02; test cleanup is required before deployment.
