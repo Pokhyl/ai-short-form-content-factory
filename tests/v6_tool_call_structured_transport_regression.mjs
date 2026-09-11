@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const gwRaw=JSON.parse(fs.readFileSync('n8n/workflows/V6-model-gateway.json','utf8'));const gw=Array.isArray(gwRaw)?gwRaw[0]:gwRaw;const by=new Map(gw.nodes.map(n=>[n.name,n]));
+const build=by.get('Build Request').parameters.jsCode;
+assert.match(build,/structured_transport='tool_call'/);
+assert.match(build,/name:'submit_structured_output'/);
+assert.match(build,/tool_choice=\{type:'function',function:\{name:'submit_structured_output'\}\}/);
+assert.match(build,/storyboard structured route requires response_schema/);
+const norm=by.get('Normalize Free Model Response').parameters.jsCode;
+assert.match(norm,/msg\.tool_calls/);
+assert.match(norm,/required structured tool call missing/);
+assert.match(norm,/finishReason==='tool_calls'\|\|finishReason==='stop'/);
+const wfRaw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));const wf=Array.isArray(wfRaw)?wfRaw[0]:wfRaw;const req=wf.nodes.find(n=>n.name==='Build Storyboard Director Request').parameters.jsCode;
+assert.match(req,/response_schema:storyboard_response_schema/);
+const finalReq=wf.nodes.find(n=>n.name==='Prepare Final Story Request').parameters.jsCode;
+assert.match(finalReq,/response_schema:schema,route:'storyboard'/);
+console.log('V6_TOOL_CALL_STRUCTURED_TRANSPORT_PASS');
