@@ -503,3 +503,8 @@ The exact 8.6k-character final-story request from failed job `70168693-c8c9-4ec1
 - Failure: after importing/publishing the Liquid final-story gateway and restarting n8n, the deploy script did not observe the `V6ModelGatewayFreeOnly` webhook within its bounded wait and aborted before E2E.
 - Cause: not yet established at failure time; runtime state/webhook registration must be inspected before any retry or corrective action.
 - Rule: treat missing webhook registration after publish/restart as a real deploy failure; record it first, then inspect workflow active/current version and webhook_entity instead of blindly repeating import/restart.
+
+### 2026-09-11 — n8n runtime inspection SQL quoting mistake
+- Failure: the post-deploy runtime inspection command failed before reading workflow/webhook state because shell-escaped `\x27` fragments were passed literally into PostgreSQL SQL.
+- Cause: over-escaped SQL inside nested `docker exec sh -lc` quoting.
+- Rule: use Python subprocess argument lists or a simple psql heredoc for n8n schema inspection; do not build SQL quoting through nested shell escape sequences.
