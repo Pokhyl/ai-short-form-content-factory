@@ -521,3 +521,5 @@ The exact 8.6k-character final-story request from failed job `70168693-c8c9-4ec1
 - Rule: shared-provider route assertions must cover the complete current route set; when adding a route to a proven shared provider, update the transport/provider regression in the same code change.
 
 - 2026-09-11: V6 gateway resolution-route deploy imported/published successfully, but the bounded readiness probe did not observe `v6-model-gateway` registration within 60s after n8n restart. Treat as a runtime-readiness event, inspect actual workflow/webhook state before any retry; do not re-import blindly.
+
+- 2026-09-11: Fresh V6 job `bff5f27e-749a-4bc0-9be7-43b357970ac5` reached final-story persistence with Liquid output, then PostgreSQL rejected the row because `jobs_story_package_check` still allows only `inventory-first-story-v1` or `visual-facts-story-v1`; the new `storyboard-first-v1` package is not admitted by the deployed schema. Root cause is schema/code drift introduced by the storyboard-first redesign, not model failure. Job is immutable and will not be resumed.
