@@ -480,3 +480,6 @@ Fresh immutable stage job `70168693-c8c9-4ec1-8fe5-90bb43138816` (`Почему 
 
 ### 2026-09-11 — operator benchmark called V6 internal model gateway through public URL and got 403
 A read-only benchmark of the exact final-story prompt attempted `https://publisher.hodor.com.pl/webhook/v6-model-gateway` from the host and received HTTP 403 before reaching the gateway. No model request or product state change occurred. Lesson: V6 model-gateway benchmarks must use the already-established internal n8n webhook (`http://127.0.0.1:5678/webhook/v6-model-gateway`) from inside the n8n container, not the public edge URL.
+
+### 2026-09-11 — exact final-story benchmark on Poolside was provider-throttled
+The exact 8.6k-character final-story request from failed job `70168693-c8c9-4ec1-8fe5-90bb43138816` was replayed through the internal V6 gateway using the measured Poolside storyboard route. Kilo returned immediately with `Try spacing your requests out using the batching settings under 'Options'`; no model output was produced. This confirms Poolside is currently not a reliable sole final-story provider. Do not add sleep/retry hacks; evaluate the already-bounded semantic free route for the same exact request instead.

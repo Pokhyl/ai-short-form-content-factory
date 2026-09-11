@@ -1814,3 +1814,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 2026-09-11 V6 stage checkpoint: job `70168693-c8c9-4ec1-8fe5-90bb43138816` progressed beyond the prior S1A media-feasibility blocker and reached final-story generation. It failed in WF02 execution `17773` with `free-only final story provider exhausted [line 1]`. This proves the English portrait retrieval change is effective enough to pass feasibility; next inspect the exact free final-story provider failure before correction.
 
 2026-09-11 operator note: the first exact final-story benchmark used the public publisher URL and was rejected with HTTP 403 before reaching V6 model gateway. Retry only through the internal localhost webhook inside n8n; no product state changed.
+
+2026-09-11 final-story provider test: exact replay through the internal Poolside route returned immediate Kilo throttling (`Try spacing your requests out...`) with no output. No product state changed. Do not solve with sleeps/retries; next bounded check is the existing semantic free route on the same exact final-story contract.
