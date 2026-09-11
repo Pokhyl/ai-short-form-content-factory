@@ -1816,3 +1816,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 2026-09-11 operator note: the first exact final-story benchmark used the public publisher URL and was rejected with HTTP 403 before reaching V6 model gateway. Retry only through the internal localhost webhook inside n8n; no product state changed.
 
 2026-09-11 final-story provider test: exact replay through the internal Poolside route returned immediate Kilo throttling (`Try spacing your requests out...`) with no output. No product state changed. Do not solve with sleeps/retries; next bounded check is the existing semantic free route on the same exact final-story contract.
+
+- 2026-09-11 operator note: V6 regression execution must use `docker run --entrypoint node ... n8nio/n8n:2.37.10 <test>` when the host has no Node; the n8n image default entrypoint is not a generic Node runner.

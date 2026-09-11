@@ -483,3 +483,8 @@ A read-only benchmark of the exact final-story prompt attempted `https://publish
 
 ### 2026-09-11 — exact final-story benchmark on Poolside was provider-throttled
 The exact 8.6k-character final-story request from failed job `70168693-c8c9-4ec1-8fe5-90bb43138816` was replayed through the internal V6 gateway using the measured Poolside storyboard route. Kilo returned immediately with `Try spacing your requests out using the batching settings under 'Options'`; no model output was produced. This confirms Poolside is currently not a reliable sole final-story provider. Do not add sleep/retry hacks; evaluate the already-bounded semantic free route for the same exact request instead.
+
+### 2026-09-11 — V6 test runner entrypoint mistake
+- Failure: attempted to run repository Node regressions with `docker run n8nio/n8n:2.37.10 node ...` without overriding the image entrypoint; n8n CLI interpreted `node` as an n8n command and returned `Command "node" not found`.
+- Cause: reused the n8n image as a Node runtime but forgot that its default entrypoint is the n8n CLI.
+- Rule: when using the n8n image as a generic Node runtime for repo tests, invoke it with `--entrypoint node`; do not treat the n8n image default command path as a shell/Node runtime.
