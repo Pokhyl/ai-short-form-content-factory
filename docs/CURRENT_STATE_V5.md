@@ -1776,3 +1776,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11: Stage WF02 readback revealed isolation drift: `V6SXn6bN7HHPMdsJ` currently references production `media-worker` and production WF03. Restore `media-worker-v6` URLs and stage WF03 ID `V6Sbpx10h7QUc0iM` before the next stage job; source WF02 remains inactive and production V5 must stay untouched.
 
 - 2026-09-11: Fresh stage job `6a4553e7-8a64-4d30-8ff5-9625a29172c7` is immutable after WF02 `17691`. Failure correlation is now proven fixed at runtime: row persisted `failed|script` with the semantic JSON error. Exact gateway execution `17692` must be inspected to determine why the new semantic route did not yield parseable JSON.
+
+- 2026-09-11: WF03 read-only inspection confirmed its rewrite node forwards `$json.model_request` to the V6 gateway; the inspector itself ended with a harmless local `NameError` from a stray `PY` token after printing the required fields.
