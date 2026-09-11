@@ -1822,3 +1822,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11 operator note: after consolidating `semantic` and `final_story` onto Liquid free structured JSON, the stale semantic-route exact-string regression was updated; this was a test-contract drift, not a runtime failure.
 
 - 2026-09-11 operator note: storyboard Poolside regression contained a stale unrelated Cohere final-story assertion; final_story provider ownership is now covered by its dedicated Liquid-route regression.
+
+- 2026-09-11 deploy note: final-story Liquid gateway source was imported/published, but post-restart webhook readiness was not observed by the bounded deploy check. Runtime state must be inspected before retry; no E2E job launched from this deploy attempt.

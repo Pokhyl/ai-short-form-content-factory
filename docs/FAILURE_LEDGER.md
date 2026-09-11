@@ -498,3 +498,8 @@ The exact 8.6k-character final-story request from failed job `70168693-c8c9-4ec1
 - Failure: the V6 full regression suite failed in `v6_storyboard_poolside_route_regression.mjs` because it still asserted Cohere for `final_story` after the exact final-story prompt had been proven on Liquid and the gateway route was intentionally switched.
 - Cause: provider-routing regression bundled an unrelated final-story assertion with the storyboard Poolside assertion.
 - Rule: route-specific regressions must assert only their own provider contract; final-story provider ownership belongs in the dedicated final-story regression.
+
+### 2026-09-11 — V6 final-story gateway deploy readiness check failed
+- Failure: after importing/publishing the Liquid final-story gateway and restarting n8n, the deploy script did not observe the `V6ModelGatewayFreeOnly` webhook within its bounded wait and aborted before E2E.
+- Cause: not yet established at failure time; runtime state/webhook registration must be inspected before any retry or corrective action.
+- Rule: treat missing webhook registration after publish/restart as a real deploy failure; record it first, then inspect workflow active/current version and webhook_entity instead of blindly repeating import/restart.
