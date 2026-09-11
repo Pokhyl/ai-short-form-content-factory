@@ -488,3 +488,8 @@ The exact 8.6k-character final-story request from failed job `70168693-c8c9-4ec1
 - Failure: attempted to run repository Node regressions with `docker run n8nio/n8n:2.37.10 node ...` without overriding the image entrypoint; n8n CLI interpreted `node` as an n8n command and returned `Command "node" not found`.
 - Cause: reused the n8n image as a Node runtime but forgot that its default entrypoint is the n8n CLI.
 - Rule: when using the n8n image as a generic Node runtime for repo tests, invoke it with `--entrypoint node`; do not treat the n8n image default command path as a shell/Node runtime.
+
+### 2026-09-11 — stale semantic route regression after final-story consolidation
+- Failure: the V6 full regression suite failed in `v6_semantic_model_route_regression.mjs` after final_story was intentionally moved onto the same Liquid route as semantic intake.
+- Cause: the test asserted the old exact ternary fragment `route==='semantic'?...` instead of the current consolidated `(semantic || final_story)` route expression.
+- Rule: route regression tests must assert provider ownership semantically and be updated in the same change when route predicates are intentionally consolidated.
