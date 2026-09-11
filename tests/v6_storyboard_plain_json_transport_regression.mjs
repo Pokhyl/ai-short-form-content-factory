@@ -5,8 +5,9 @@ const wf=Array.isArray(raw)?raw[0]:raw;const by=new Map(wf.nodes.map(n=>[n.name,
 const build=by.get('Build Request').parameters.jsCode;
 assert.match(build,/route==='storyboard'&&expects_json/);
 assert.match(build,/structured_transport='plain_json'/);
-assert.match(build,/route==='final_story'&&expects_json/);
-assert.match(build,/structured_transport='tool_call'/);
+assert.match(build,/else if\(expects_json\)/);
+assert.match(build,/structured_transport='response_format'/);
+assert.doesNotMatch(build,/route==='final_story'&&expects_json/);
 const norm=by.get('Normalize Free Model Response').parameters.jsCode;
 assert.match(norm,/structured_transport==='plain_json'/);
 assert.match(norm,/JSON\.parse\(text\)/);

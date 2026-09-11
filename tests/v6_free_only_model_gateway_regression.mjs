@@ -14,7 +14,6 @@ for(const forbidden of ['gemini','generativelanguage.googleapis.com','google_gem
 const build=by.get('Build Request')?.parameters?.jsCode??'';
 assert.match(build,/nvidia\/nemotron-3-super-120b-a12b:free/);
 assert.match(build,/poolside\/laguna-s-2\.1:free/);
-assert.match(build,/cohere\/north-mini-code:free/);
 assert.match(build,/route==='storyboard'/);
 assert.match(build,/text-only/);
 const model=by.get('Kilo Free Model');

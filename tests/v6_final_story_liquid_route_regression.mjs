@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const raw=JSON.parse(fs.readFileSync('n8n/workflows/V6-model-gateway.json','utf8'));const wf=Array.isArray(raw)?raw[0]:raw;const by=new Map(wf.nodes.map(n=>[n.name,n]));
+const build=by.get('Build Request').parameters.jsCode;
+assert.match(build,/\(route==='semantic'\|\|route==='final_story'\)\?'liquid\/lfm-2\.5-2\.6b:free'/);
+assert.match(build,/if\(route==='semantic'\|\|route==='final_story'\)model_request_body\.include_reasoning=false/);
+assert.doesNotMatch(build,/route==='final_story'\?'cohere\/north-mini-code:free'/);
+const norm=by.get('Normalize Free Model Response').parameters.jsCode;
+assert.match(norm,/deferSchemaValidation=ctx.route==='storyboard'/);
+console.log('V6_FINAL_STORY_LIQUID_ROUTE_PASS');

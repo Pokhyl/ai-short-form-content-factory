@@ -5,7 +5,6 @@ const gw=Array.isArray(gwRaw)?gwRaw[0]:gwRaw;
 const by=new Map(gw.nodes.map(n=>[n.name,n]));
 const build=by.get('Build Request')?.parameters?.jsCode??'';
 assert.match(build,/poolside\/laguna-s-2\.1:free/);
-assert.match(build,/cohere\/north-mini-code:free/);
 assert.match(build,/route==='storyboard'/);
 assert.equal(by.get('Kilo Free Model')?.parameters?.options?.timeout,"={{ $json.route === 'storyboard' ? 65000 : 50000 }}");
 const wfRaw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));
