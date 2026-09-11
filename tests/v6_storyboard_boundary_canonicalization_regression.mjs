@@ -17,11 +17,12 @@ assert.equal(v.entities.find(e=>e.id==='e3').role,'process');
 assert.equal(v.entities.find(e=>e.id==='e7').role,'result');
 assert.equal(v.entities.find(e=>e.id==='e1').lane,'center');
 assert.doesNotThrow(()=>compileDiagramSpec(spec,4,{expectedShotId:'S2A',allowedFactIds:['S7','S8']}));
+const wfSpec=structuredClone(spec);wfSpec.relations.find(r=>r.from==='e2'&&r.to==='e4').kind='flows';
 const raw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));const wf=Array.isArray(raw)?raw[0]:raw;const code=wf.nodes.find(n=>n.name==='Validate Storyboard').parameters.jsCode;
 const base={scene_bounds:[3,5],research_rows:[{id:'S7'},{id:'S8'},{id:'S9'}],user_intent:'Explain why',topic:'Why sky blue'};
 const payload={scenes:[
 {scene_id:'S1',purpose:'establish',grounded_fact_ids:['S9'],narration_intent:'Show the visible blue sky',shots:[{shot_id:'S1A',representation:'context_media',must_show:['blue sky'],must_not_show:[],search_query_en:'blue sky daytime vertical',communication_goal:'Viewer sees the real blue sky',crop_policy:'portrait_required',diagram_spec:null}]},
-{scene_id:'S2',purpose:'explain',grounded_fact_ids:['S7','S8'],narration_intent:'Explain wavelength dependent scattering',shots:[{shot_id:'S2A',representation:'diagram',must_show:['sunlight','blue waves','red waves','atmosphere','scattered blue','direct red'],must_not_show:['dust','ocean reflection','night','fake'],search_query_en:'',communication_goal:'Viewer sees why blue scatters more',crop_policy:'not_applicable',diagram_spec:spec}]},
+{scene_id:'S2',purpose:'explain',grounded_fact_ids:['S7','S8'],narration_intent:'Explain wavelength dependent scattering',shots:[{shot_id:'S2A',representation:'diagram',must_show:['sunlight','blue waves','red waves','atmosphere','scattered blue','direct red'],must_not_show:['dust','ocean reflection','night','fake'],search_query_en:'',communication_goal:'Viewer sees why blue scatters more',crop_policy:'not_applicable',diagram_spec:wfSpec}]},
 {scene_id:'S3',purpose:'close',grounded_fact_ids:['S9'],narration_intent:'Reconnect explanation to the sky',shots:[{shot_id:'S3A',representation:'context_media',must_show:['person looking up','blue sky'],must_not_show:[],search_query_en:'person looking up blue sky vertical',communication_goal:'Viewer reconnects the mechanism to reality',crop_policy:'portrait_required',diagram_spec:null}]}
 ]};
 const out=new Function('$input','$',code)({first:()=>({json:{provider_exhausted:false,text:JSON.stringify(payload),model:'x',provider:'x'}})},()=>({first:()=>({json:base})}))[0].json;
@@ -31,4 +32,5 @@ assert.equal(shot.must_not_show.length,4);
 assert.equal(shot.diagram_spec.entities.filter(e=>e.role==='input').length,1);
 assert.equal(shot.diagram_spec.entities.find(e=>e.id==='e2').role,'process');
 assert.equal(shot.diagram_spec.entities.find(e=>e.id==='e7').role,'result');
+assert.equal(shot.diagram_spec.relations.find(r=>r.from==='e2'&&r.to==='e4').kind,'flow');
 console.log('V6_STORYBOARD_BOUNDARY_CANONICALIZATION_PASS');
