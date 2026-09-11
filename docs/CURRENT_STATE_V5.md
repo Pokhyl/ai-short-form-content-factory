@@ -1762,3 +1762,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 2026-09-11 05:08 CEST — Exact direct request using the full Cohere tool schema exceeded 75s. Tool calling is therefore not an acceptable mandatory long-storyboard transport on this route merely to force JSON. Avoid further timeout inflation; choose a current free structured-output-capable model or a bounded plain-JSON transport that still fails closed downstream.
 
 - 2026-09-11: Storyboard transport is being changed from full tool-call schema to bounded plain JSON because exact production evidence showed tool-call latency exceeding 75s. First targeted test run exposed one stale regression expectation that still treated all long routes as tool-call; runtime has not been redeployed yet.
+
+- 2026-09-11: Full V6 test sweep after storyboard plain-JSON transport reached the evidence-canonicalization test and found a stale source-string assertion that predates `response_schema` on the storyboard request. No runtime deployment occurred from this test failure.
