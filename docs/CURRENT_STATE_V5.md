@@ -1802,3 +1802,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 2026-09-11 operator correction: execution 17765 does contain 143,841 characters of execution data. Empty decoder input was caused by using a heredoc and a data pipe on the same stdin. Use `node -e`/script file for payload decoding.
 
 2026-09-11 operator note: the first portrait-discovery regression command failed before tests ran because host Node is absent. Run Node regressions in the existing stage/media-worker container; no product state changed.
+
+2026-09-11 test checkpoint: `v6_storyboard_portrait_discovery_regression`, `visual_exploration_inventory_regression`, and `visual_exploration_strong_detail_recovery_regression` passed in the stage Node container. The following full V6 loop did not run because its fixed `/tmp/t.out` redirection was not writable; use in-shell capture/unique path on retry.

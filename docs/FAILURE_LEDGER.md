@@ -462,3 +462,6 @@ Follow-up verification showed execution 17765 has one `n8n.execution_data` row w
 
 ### 2026-09-11 — operator attempted V6 Node tests on host without Node runtime
 The first test command after the portrait-discovery patch invoked `node` directly on the VPS host and failed immediately with `node: command not found`. No test body ran and no product state changed. Lesson: execute repository Node regressions in the existing stage/media-worker Node container rather than assuming host Node is installed.
+
+### 2026-09-11 — V6 container test loop used unwritable shared `/tmp/t.out`
+The portrait-discovery regression and two visual exploration regressions passed in the stage Node container, but the subsequent V6 loop stopped before executing its first test because shell redirection to `/tmp/t.out` returned `Permission denied`. No product state changed and the named test was not the cause. Lesson: avoid shared fixed `/tmp` capture files in operator loops; capture command output in-shell or use a unique writable path.
