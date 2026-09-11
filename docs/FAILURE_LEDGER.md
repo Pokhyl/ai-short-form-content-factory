@@ -514,3 +514,8 @@ The exact 8.6k-character final-story request from failed job `70168693-c8c9-4ec1
 - Failure: WF02 failed at evidence-grounded topic resolution with `evidence-grounded topic resolver returned invalid JSON [line 1]` after semantic intake had already completed.
 - Cause: not yet established at record time; exact gateway execution/output must be inspected before correction.
 - Rule: treat structured-resolution parse failure as a provider/output-contract failure; inspect the exact response before changing model, prompt, parser, budget, or timeout.
+
+### 2026-09-11 — stale final-story structured transport regression after resolution route consolidation
+- Failure: full V6 regression failed in `v6_tool_call_structured_transport_regression.mjs` because it still asserted the older `(semantic || final_story)` Liquid predicate after `resolution` was intentionally added to the same proven free route.
+- Cause: exact-string route assertion drifted behind the gateway change.
+- Rule: shared-provider route assertions must cover the complete current route set; when adding a route to a proven shared provider, update the transport/provider regression in the same code change.

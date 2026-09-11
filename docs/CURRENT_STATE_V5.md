@@ -1828,3 +1828,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11 operator note: post-deploy runtime inspection must avoid nested shell SQL escaping; the failed inspection did not change runtime state.
 
 - 2026-09-11 V6 stage job `2228e833-50ec-4d2b-9b21-d57ba6a40ae6` failed immutably in WF02 at evidence-grounded topic resolution due invalid JSON. Semantic intake completed first; exact resolution response pending inspection before correction.
+
+- 2026-09-11 operator note: resolution was intentionally added to the proven Liquid structured route; one stale exact-string final-story transport regression was found before deploy and must be updated before retry.
