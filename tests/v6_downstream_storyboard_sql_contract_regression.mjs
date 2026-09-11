@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const read=p=>{const raw=JSON.parse(fs.readFileSync(p,'utf8'));return Array.isArray(raw)?raw[0]:raw;};
+const wf04=read('n8n/workflows/WF04-visual-sourcing.json'),wf05=read('n8n/workflows/WF05-video-render.json');
+const by04=new Map(wf04.nodes.map(n=>[n.name,n])),by05=new Map(wf05.nodes.map(n=>[n.name,n]));
+const q04=by04.get('Begin Visual Stage').parameters.query;
+assert.match(q04,/IN \('inventory-first-story-v1','visual-facts-story-v1','storyboard-first-v1'\)/);
+assert.equal(q04.includes("IN ('inventory-first-story-v1','visual-facts-story-v1')"),false);
+const q05=by05.get('Persist Render Success').parameters.query;
+assert.match(q05,/story_package->>'version'='storyboard-first-v1'.*\$4::jsonb->>'version'='storyboard-first-render-v1'/s);
+assert.match(q05,/story_package->>'version'='storyboard-first-v1'.*visual_quality->>'version'='storyboard-first-render-v1'/s);
+console.log('V6_DOWNSTREAM_STORYBOARD_SQL_CONTRACT_PASS');

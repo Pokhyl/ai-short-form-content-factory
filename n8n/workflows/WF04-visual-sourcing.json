@@ -81,7 +81,7 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "WITH u AS (\n UPDATE public.jobs j SET current_stage='visuals',last_error=NULL,updated_at=now()\n WHERE j.id=$1::uuid AND j.content_model_version='staged_v1' AND j.status='processing' AND j.current_stage='voiceover'\n   AND j.story_package->>'version' IN ('inventory-first-story-v1','visual-facts-story-v1')\n   AND NOT EXISTS(SELECT 1 FROM public.visual_segments vs WHERE vs.job_id=j.id)\n   AND NOT EXISTS(SELECT 1 FROM public.visual_shots sh WHERE sh.job_id=j.id)\n RETURNING j.id\n)\nSELECT $1::uuid AS job_id,EXISTS(SELECT 1 FROM u) AS ready_to_run;",
+          "query": "WITH u AS (\n UPDATE public.jobs j SET current_stage='visuals',last_error=NULL,updated_at=now()\n WHERE j.id=$1::uuid AND j.content_model_version='staged_v1' AND j.status='processing' AND j.current_stage='voiceover'\n   AND j.story_package->>'version' IN ('inventory-first-story-v1','visual-facts-story-v1','storyboard-first-v1')\n   AND NOT EXISTS(SELECT 1 FROM public.visual_segments vs WHERE vs.job_id=j.id)\n   AND NOT EXISTS(SELECT 1 FROM public.visual_shots sh WHERE sh.job_id=j.id)\n RETURNING j.id\n)\nSELECT $1::uuid AS job_id,EXISTS(SELECT 1 FROM u) AS ready_to_run;",
           "options": {
             "queryReplacement": "={{ [ $json.job_id ] }}"
           }
