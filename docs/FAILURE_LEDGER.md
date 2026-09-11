@@ -519,3 +519,5 @@ The exact 8.6k-character final-story request from failed job `70168693-c8c9-4ec1
 - Failure: full V6 regression failed in `v6_tool_call_structured_transport_regression.mjs` because it still asserted the older `(semantic || final_story)` Liquid predicate after `resolution` was intentionally added to the same proven free route.
 - Cause: exact-string route assertion drifted behind the gateway change.
 - Rule: shared-provider route assertions must cover the complete current route set; when adding a route to a proven shared provider, update the transport/provider regression in the same code change.
+
+- 2026-09-11: V6 gateway resolution-route deploy imported/published successfully, but the bounded readiness probe did not observe `v6-model-gateway` registration within 60s after n8n restart. Treat as a runtime-readiness event, inspect actual workflow/webhook state before any retry; do not re-import blindly.
