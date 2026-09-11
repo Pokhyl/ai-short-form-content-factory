@@ -1871,3 +1871,4 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11 operator note: sudo gh is unavailable on this host, so GitHub CLI cannot be used as the corrective push transport. No state changed.
 - 2026-09-11 operator note: read-only job probe failed at Docker socket permission before PostgreSQL execution; use sudo docker for runtime inspection. No product state changed.
 - 2026-09-11 operator note: a SentinelX mandatory-read invocation was rejected before host execution due wrong `sentinel_exec.command` argument type; no server state changed.
+- 2026-09-11 operator note: bounded execution-18056 raw-data decoding was blocked before host execution by tool safety. No state changed; do not bypass it. Current durable evidence already establishes the duration-rewrite contract failure.
