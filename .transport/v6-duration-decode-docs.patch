@@ -1,0 +1,18 @@
+diff --git a/docs/CURRENT_STATE_V5.md b/docs/CURRENT_STATE_V5.md
+index 81a55824f8264440f3fef0ed7a9415a925a1942f..fc19c8b2ff7d773ccd20df8839deb83ab9330608 100644
+--- a/docs/CURRENT_STATE_V5.md
++++ b/docs/CURRENT_STATE_V5.md
+@@ -1871,3 +1871,4 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character
+ - 2026-09-11 operator note: sudo gh is unavailable on this host, so GitHub CLI cannot be used as the corrective push transport. No state changed.
+ - 2026-09-11 operator note: read-only job probe failed at Docker socket permission before PostgreSQL execution; use sudo docker for runtime inspection. No product state changed.
+ - 2026-09-11 operator note: a SentinelX mandatory-read invocation was rejected before host execution due wrong `sentinel_exec.command` argument type; no server state changed.
++- 2026-09-11 operator note: bounded execution-18056 raw-data decoding was blocked before host execution by tool safety. No state changed; do not bypass it. Current durable evidence already establishes the duration-rewrite contract failure.
+diff --git a/docs/FAILURE_LEDGER.md b/docs/FAILURE_LEDGER.md
+index ef1d67e143c2f47951242521f1cc635aa4f1d502..4a8370b48061cc554d8be799fc93071ca88e97a4 100644
+--- a/docs/FAILURE_LEDGER.md
++++ b/docs/FAILURE_LEDGER.md
+@@ -558,3 +558,4 @@ The exact 8.6k-character final-story request from failed job `70168693-c8c9-4ec1
+ - 2026-09-11 operator note: fallback check for root GitHub CLI authentication could not run because gh is not installed in the root sudo PATH on this host. No repository/runtime state changed. Do not rely on gh for VPS push transport.
+ - 2026-09-11 operator note: argv-safe read-only PostgreSQL probe for job b4bc86d3-d1cd-42a3-9548-835b433d2f81 reached Docker but failed because the SentinelX service account lacks direct access to /var/run/docker.sock. No SQL or product/runtime mutation occurred. Future container probes must use sudo docker, matching the privileged repository/runtime path.
+ - 2026-09-11 operator note: one mandatory-read call was rejected client-side before host execution because SentinelX `sentinel_exec.command` was supplied as an argv array instead of the required string. No server/product state changed. Use the documented string command shape.
++- 2026-09-11 operator note: a bounded read-only decoder request for n8n execution 18056 was blocked by OpenAI tool safety before host execution. No server/database/product state changed. Do not bypass the tool guard; continue from already-preserved exact duration-rewrite evidence and use ordinary bounded runtime/source inspection that does not request raw execution payloads.
