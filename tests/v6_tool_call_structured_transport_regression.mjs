@@ -3,7 +3,7 @@ import fs from 'node:fs';
 const gwRaw=JSON.parse(fs.readFileSync('n8n/workflows/V6-model-gateway.json','utf8'));const gw=Array.isArray(gwRaw)?gwRaw[0]:gwRaw;const by=new Map(gw.nodes.map(n=>[n.name,n]));
 const build=by.get('Build Request').parameters.jsCode;
 assert.match(build,/route==='final_story'/);
-assert.match(build,/route==='semantic'\|\|route==='final_story'/);
+assert.match(build,/route==='semantic'\|\|route==='resolution'\|\|route==='final_story'/);
 assert.match(build,/liquid\/lfm-2\.5-2\.6b:free/);
 assert.match(build,/structured_transport='response_format'/);
 assert.match(build,/response_format=\{type:'json_object'\}/);
