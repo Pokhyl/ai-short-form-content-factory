@@ -1,0 +1,50 @@
+name: Materialize WF03 duration unit fix
+on:
+  push:
+    branches:
+      - transport/wf03-duration-unit-fix-20260911
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Materialize exact WF03 source and regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          PATCH=.transport/wf03-duration-unit-fix-20260911.patch
+          EXPECTED_STORED_SHA=412f7666c8f79a16fcac8abe1570953070591c010217889efcc6b578f875c724
+          PARENT=5e1c741f1c7a28b2a39ee6d9097f6cf3ae82a9c6
+          TARGET_TREE=0f088a287a57197fc964c8ec525c0d160d59f416
+          WF03_BLOB=6bdd3d54ed66b1b396a8e1bf5f4e1dfa3cc686f6
+          T1_BLOB=35ff028567c56a68a8470a652f4248bffc40b6ab
+          T2_BLOB=7ecad32ea65a6cba2dbd289fe4c80f507f694fc2
+          T3_BLOB=1e0d780b1abab12fdf1e8b8fd5389d8a2e28dd18
+          T4_BLOB=46427338ad93a9d740d2dd082c062e5ff292ba4f
+          RESULT=transport/wf03-duration-unit-fix-result-20260911
+          git show "$GITHUB_SHA:$PATCH" > /tmp/stored.patch
+          echo "$EXPECTED_STORED_SHA  /tmp/stored.patch" | sha256sum -c -
+          cp /tmp/stored.patch /tmp/change.patch
+          printf '\n' >> /tmp/change.patch
+          if git ls-remote --exit-code --heads origin "$RESULT" >/dev/null 2>&1; then
+            echo "result branch already exists" >&2
+            exit 1
+          fi
+          git checkout --detach "$PARENT"
+          git apply --check /tmp/change.patch
+          git apply /tmp/change.patch
+          test "$(git hash-object n8n/workflows/WF03-natural-edge-voice.json)" = "$WF03_BLOB"
+          test "$(git hash-object tests/wf03_duration_bracket_controller_regression.mjs)" = "$T1_BLOB"
+          test "$(git hash-object tests/wf03_duration_rewrite_recovery_regression.mjs)" = "$T2_BLOB"
+          test "$(git hash-object tests/wf03_duration_token_schema_regression.mjs)" = "$T3_BLOB"
+          test "$(git hash-object tests/wf03_live_sentence_completion_regression.mjs)" = "$T4_BLOB"
+          git add n8n/workflows/WF03-natural-edge-voice.json tests/wf03_duration_bracket_controller_regression.mjs tests/wf03_duration_rewrite_recovery_regression.mjs tests/wf03_duration_token_schema_regression.mjs tests/wf03_live_sentence_completion_regression.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix: simplify WF03 duration rewrite transport'
+          test "$(git rev-parse HEAD^{tree})" = "$TARGET_TREE"
+          git push origin "HEAD:refs/heads/$RESULT"
