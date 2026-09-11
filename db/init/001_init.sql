@@ -147,6 +147,11 @@ CREATE TABLE public.jobs (
                     AND story_package ->> 'editorial_contract_version'::text = 'storyboard-v1'::text
                     AND story_package ->> 'visual_binding_mode'::text = 'visual-facts-first-v1'::text
                 )
+                OR (
+                    story_package ->> 'version'::text = 'storyboard-first-v1'::text
+                    AND story_package ->> 'editorial_contract_version'::text = 'storyboard-v1'::text
+                    AND story_package ->> 'visual_binding_mode'::text = 'representation-first-v1'::text
+                )
             )
         )
     ),
