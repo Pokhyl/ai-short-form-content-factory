@@ -1,0 +1,68 @@
+{
+  "name": "WF01 Render Short Video",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "short-video/render",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "5e0d80c8-6a26-4ce3-9d74-b08f049bdcd1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "8340fdb6-76f0-439a-b7d6-3d0909a62cf9"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nif (!Array.isArray(body.scenes) || body.scenes.length === 0) {\n  throw new Error('scenes must be a non-empty array');\n}\nfor (const [i, scene] of body.scenes.entries()) {\n  if (!scene || typeof scene.text !== 'string' || !scene.text.trim()) {\n    throw new Error(`scene ${i + 1}: text is required`);\n  }\n  if (!Array.isArray(scene.searchTerms) || scene.searchTerms.length === 0) {\n    throw new Error(`scene ${i + 1}: searchTerms must be a non-empty array`);\n  }\n}\nreturn [{\n  json: {\n    scenes: body.scenes,\n    config: {\n      paddingBack: Number.isFinite(body.paddingBack) ? body.paddingBack : 500,\n      music: body.music ?? 'chill',\n      captionPosition: body.captionPosition ?? 'bottom',\n      captionBackgroundColor: body.captionBackgroundColor ?? 'blue',\n      voice: body.voice ?? 'af_heart',\n      orientation: 'portrait',\n      musicVolume: body.musicVolume ?? 'low'\n    }\n  }\n}];"
+      },
+      "id": "0fb4999f-d1a0-47fb-aecd-cf61fd7f7466",
+      "name": "Validate & Normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://ai-short-form-short-video-maker:3123/api/short-video",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json) }}",
+        "options": {"timeout": 30000}
+      },
+      "id": "af2a4da2-814c-4e51-8790-8e989fb31d19",
+      "name": "Start Render",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { accepted: true, videoId: $json.videoId } }}",
+        "options": {"responseCode": 202}
+      },
+      "id": "7cf0cc1e-044d-4331-ab27-57bc54dcaa74",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [720, 0]
+    }
+  ],
+  "connections": {
+    "Webhook": {"main": [[{"node":"Validate & Normalize","type":"main","index":0}]]},
+    "Validate & Normalize": {"main": [[{"node":"Start Render","type":"main","index":0}]]},
+    "Start Render": {"main": [[{"node":"Respond","type":"main","index":0}]]}
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {"executionOrder": "v1"},
+  "tags": [],
+  "versionId": "24077c6b-9857-4ad8-b15b-b65d8bd6eaa3",
+  "id": "UPlgAclVbT5he1c0"
+}

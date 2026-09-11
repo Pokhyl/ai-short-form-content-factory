@@ -1,0 +1,40 @@
+{
+  "id": "zfjXq8l4Q5gEnqTS",
+  "name": "WF02 Video Status",
+  "active": false,
+  "versionId": "a88eba59-ad03-4604-a7e6-1457d21c4e8c",
+  "nodes": [
+    {
+      "parameters": {"httpMethod":"GET","path":"short-video/status","responseMode":"responseNode","options":{}},
+      "id": "0da1bf79-7bd2-400f-8db1-c5ed8da48238",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "5924ee0c-5475-449a-9da8-0f37213cc4a8"
+    },
+    {
+      "parameters": {"url":"={{ 'http://ai-short-form-short-video-maker:3123/api/short-video/' + $json.query.videoId + '/status' }}","options":{"timeout":10000}},
+      "id": "f8dfa876-b16b-4dfa-af1c-11ff2919b880",
+      "name": "Get Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {"respondWith":"json","responseBody":"={{ $json }}","options":{}},
+      "id": "faa36a91-f834-4f62-a70d-3f9684d0a356",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [520, 0]
+    }
+  ],
+  "connections": {
+    "Webhook":{"main":[[{"node":"Get Status","type":"main","index":0}]]},
+    "Get Status":{"main":[[{"node":"Respond","type":"main","index":0}]]}
+  },
+  "pinData": {},
+  "settings": {"executionOrder":"v1"},
+  "tags": []
+}

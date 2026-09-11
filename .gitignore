@@ -1,15 +1,5 @@
 .env
-.env.*
-!.env.example
-node_modules/
-coverage/
-.DS_Store
-*.log
-
-# Runtime/generated media
 data/
-output/
-media/
-
-# n8n local exports that may contain runtime metadata
-*.credentials.json
+studio/videos/
+*.log
+.DS_Store

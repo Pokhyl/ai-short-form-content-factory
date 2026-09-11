@@ -1,22 +1,23 @@
 services:
   postgres:
     image: postgres:18-alpine
+    container_name: ai-short-form-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data_v2:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 20
-    volumes:
-      - postgres_data:/var/lib/postgresql
-      - ./db/init:/docker-entrypoint-initdb.d:ro
 
   n8n:
-    image: n8nio/n8n:2.33.3
+    image: n8nio/n8n:2.37.10
+    container_name: ai-short-form-n8n
     restart: unless-stopped
     depends_on:
       postgres:
@@ -24,47 +25,38 @@ services:
     environment:
       DB_TYPE: postgresdb
       DB_POSTGRESDB_HOST: postgres
-      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_PORT: "5432"
       DB_POSTGRESDB_DATABASE: ${POSTGRES_DB}
       DB_POSTGRESDB_USER: ${POSTGRES_USER}
       DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
-      DB_POSTGRESDB_SCHEMA: n8n
       N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
-      N8N_HOST: ${N8N_HOST}
-      N8N_PORT: ${N8N_PORT}
-      N8N_PROTOCOL: ${N8N_PROTOCOL}
-      N8N_EDITOR_BASE_URL: ${N8N_EDITOR_BASE_URL}
-      WEBHOOK_URL: ${WEBHOOK_URL}
-      N8N_PROXY_HOPS: ${N8N_PROXY_HOPS}
-      GENERIC_TIMEZONE: ${GENERIC_TIMEZONE}
-      TZ: ${GENERIC_TIMEZONE}
+      GENERIC_TIMEZONE: Europe/Warsaw
+      TZ: Europe/Warsaw
+      N8N_HOST: 127.0.0.1
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: http
+      N8N_SECURE_COOKIE: "false"
+      WEBHOOK_URL: http://127.0.0.1:5679/
     ports:
-      - "127.0.0.1:${N8N_PORT}:5678"
+      - "127.0.0.1:5679:5678"
     volumes:
       - n8n_data:/home/node/.n8n
-    networks:
-      default:
-      edge:
-        aliases:
-          - content-factory-n8n
 
-  media-worker:
-    build:
-      context: ./services/media-worker
+  short-video-maker:
+    image: gyoridavid/short-video-maker:latest-tiny
+    container_name: ai-short-form-short-video-maker
     restart: unless-stopped
+    command: ["node", "dist/index.js"]
     environment:
-      PORT: ${MEDIA_WORKER_PORT}
+      PEXELS_API_KEY: ${PEXELS_API_KEY}
+      LOG_LEVEL: info
+      WHISPER_VERBOSE: "false"
+      PORT: "3123"
     ports:
-      - "127.0.0.1:${MEDIA_WORKER_PORT}:3001"
+      - "127.0.0.1:3123:3123"
     volumes:
-      - media_data:/data
-
-networks:
-  edge:
-    external: true
-    name: n8n_default
+      - ./data/videos:/app/data/videos
 
 volumes:
-  postgres_data:
+  postgres_data_v2:
   n8n_data:
-  media_data:
