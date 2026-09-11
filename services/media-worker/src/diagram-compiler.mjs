@@ -55,6 +55,13 @@ export function validateDiagramSpec(input,{expectedShotId=null,allowedFactIds=nu
     const rawKind=clean(raw.kind)||"flow",kind=RELATION_KIND_ALIASES.get(rawKind)??rawKind;if(!RELATION_KINDS.has(kind))throw new Error(`invalid relation kind: ${kind}`);
     relations.push({from,to,kind,label:clean(raw.label)||null,phase:phaseValue(raw.phase??index+1,`relations[${index+1}].phase`)});
   });
+  if(archetype==="split"){
+    const incoming=new Map([...ids].map((id)=>[id,0]));
+    for(const rel of relations)if(incoming.has(rel.to))incoming.set(rel.to,(incoming.get(rel.to)??0)+1);
+    const inputs=entities.filter((e)=>e.role==="input").sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id));
+    const root=inputs.find((e)=>(incoming.get(e.id)??0)===0)??inputs[0]??null;
+    if(root){for(const e of entities){if(e===root)continue;if(e.role==="input"||e.role==="layer")e.role="process";else if(e.role==="subject")e.role="result";}}
+  }
   if(archetype==="comparison"){
     const has=(lane)=>entities.some((e)=>e.lane===lane);
     const missing=[];if(!has("left"))missing.push("left");if(!has("right"))missing.push("right");
