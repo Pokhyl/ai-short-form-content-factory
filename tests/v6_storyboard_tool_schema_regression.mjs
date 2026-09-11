@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const raw=JSON.parse(fs.readFileSync('n8n/workflows/WF02-plan-script-and-scenes.json','utf8'));const wf=Array.isArray(raw)?raw[0]:raw;const by=new Map(wf.nodes.map(n=>[n.name,n]));
+const req=by.get('Build Storyboard Director Request').parameters.jsCode;
+assert.match(req,/diagramEntitySchema/);
+assert.match(req,/enum:\['input','process','output','layer','subject','result'\]/);
+assert.match(req,/enum:\['box','pill','circle'\]/);
+assert.match(req,/enum:\['flow','joins','splits','emits','blocks','contains','transforms'\]/);
+assert.match(req,/diagram_spec:diagramSpecSchema/);
+assert.match(req,/response_schema:storyboard_response_schema/);
+const prep=by.get('Prepare Storyboard Director').parameters.jsCode;
+assert.match(prep,/Every relation\.from and relation\.to MUST equal an id declared in that same diagram_spec\.entities array/);
+assert.match(prep,/declare it as an entity first/);
+console.log('V6_STORYBOARD_TOOL_SCHEMA_PASS');
