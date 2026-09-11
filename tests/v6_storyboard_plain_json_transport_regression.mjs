@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const raw=JSON.parse(fs.readFileSync('n8n/workflows/V6-model-gateway.json','utf8'));
+const wf=Array.isArray(raw)?raw[0]:raw;const by=new Map(wf.nodes.map(n=>[n.name,n]));
+const build=by.get('Build Request').parameters.jsCode;
+assert.match(build,/route==='storyboard'&&expects_json/);
+assert.match(build,/structured_transport='plain_json'/);
+assert.match(build,/route==='final_story'&&expects_json/);
+assert.match(build,/structured_transport='tool_call'/);
+const norm=by.get('Normalize Free Model Response').parameters.jsCode;
+assert.match(norm,/structured_transport==='plain_json'/);
+assert.match(norm,/JSON\.parse\(text\)/);
+assert.match(norm,/deferSchemaValidation=ctx\.route==='storyboard'/);
+console.log('V6_STORYBOARD_PLAIN_JSON_TRANSPORT_PASS');
