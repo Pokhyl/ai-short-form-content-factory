@@ -1,0 +1,43 @@
+name: Materialize exact V6 duration docs checkpoint
+
+on:
+  push:
+    branches:
+      - transport/v6-duration-docs-20260911-1432
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply exact pending docs patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch_ref="$GITHUB_SHA"
+          git show "$patch_ref:.transport/v6-duration-docs-20260911.patch" > /tmp/v6-duration-docs.patch
+          echo '716af2fb12bac29208f556191c2b774fc9678168d7ae6d3149a90834973e3eb9  /tmp/v6-duration-docs.patch' | sha256sum -c -
+          if git ls-remote --exit-code --heads origin refs/heads/transport/v6-duration-docs-result-20260911-1432 >/dev/null 2>&1; then
+            echo 'result branch already exists; refusing overwrite' >&2
+            exit 1
+          fi
+          git checkout --detach ca871ce7cfc6f9cad584ceb09e6099361347316b
+          git apply --check /tmp/v6-duration-docs.patch
+          git apply /tmp/v6-duration-docs.patch
+          test "$(git hash-object docs/CURRENT_STATE_V5.md)" = 81a55824f8264440f3fef0ed7a9415a925a1942f
+          test "$(git hash-object docs/FAILURE_LEDGER.md)" = ef1d67e143c2f47951242521f1cc635aa4f1d502
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/CURRENT_STATE_V5.md docs/FAILURE_LEDGER.md
+          git commit -m 'docs: preserve pending V6 duration checkpoints'
+          result_commit=$(git rev-parse HEAD)
+          result_tree=$(git rev-parse HEAD^{tree})
+          test "$result_tree" = bf6fc06eeee9969dfe63e93abd7d3df30f54958f
+          echo "result_commit=$result_commit"
+          echo "result_tree=$result_tree"
+          git push origin HEAD:refs/heads/transport/v6-duration-docs-result-20260911-1432
