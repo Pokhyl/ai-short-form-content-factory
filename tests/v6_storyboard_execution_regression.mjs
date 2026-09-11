@@ -19,6 +19,12 @@ assert.equal(branch?.[1]?.[0]?.node,'Download Reserved Visual','external-media b
 assert.match(String(by04['Expand Reserved Story Assets'].parameters.jsCode),/representation==='diagram'/);
 assert.match(String(by04['Verify Reserved Visual Identity'].parameters.jsCode),/story!=='storyboard-first-v1'/);
 
+const verifyStored=String(by04['Verify Reserved Visual Identity'].parameters.jsCode);
+assert.match(verifyStored,/Validate Stored Reserved Visual/,'WF04 identity verification must consume validated stored-media payload');
+assert.match(verifyStored,/reserved=stored/,'WF04 identity verification must preserve visual_path and stored media metadata');
+assert.match(String(by04['Persist Reserved Visual'].parameters.options.queryReplacement),/\$json\.visual_path/,'WF04 persistence must receive preserved visual_path');
+
+
 assert.ok(String(by05['Require Eligible Render Job'].parameters.jsCode).includes('storyboard-first-v1'),'WF05 must accept storyboard-first-v1 as V6');
 assert.match(String(by05['Render Video'].parameters.url),/storyboard-first-v1/);
 assert.match(String(by05['Render Video'].parameters.url),/render-v6/);
