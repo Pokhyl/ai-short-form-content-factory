@@ -1,0 +1,68 @@
+name: Materialize WF03 single pass boundary
+on:
+  push:
+    branches:
+      - transport/wf03-single-pass-boundary-20260911
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Materialize exact WF03 boundary target
+        shell: bash
+        run: |
+          set -euo pipefail
+          PARENT=fb0b3fb55db18e9c1779c0beec77bb063e27459a
+          RESULT=transport/wf03-single-pass-boundary-result-20260911
+          if git ls-remote --exit-code --heads origin "$RESULT" >/dev/null 2>&1; then
+            echo "result branch already exists" >&2
+            exit 1
+          fi
+          git checkout --detach "$PARENT"
+          test "$(git hash-object n8n/workflows/WF03-natural-edge-voice.json)" = "6bdd3d54ed66b1b396a8e1bf5f4e1dfa3cc686f6"
+          test "$(git hash-object tests/wf03_planned_budget_semantic_floor_regression.mjs)" = "aaa12dcda716e47b0ed7134f42c22cfbb9b3266f"
+          test "$(git hash-object tests/wf03_duration_bracket_controller_regression.mjs)" = "35ff028567c56a68a8470a652f4248bffc40b6ab"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('n8n/workflows/WF03-natural-edge-voice.json')
+          o=json.loads(p.read_text())
+          w=o[0] if isinstance(o,list) else o
+          n=next(x for x in w['nodes'] if x['name']=='Prepare Duration Rewrite')
+          s=n['parameters']['jsCode']
+          a="proportionalTarget=Math.round(desiredRaw),desired=Math.max(minimumWords,semanticFloor,proportionalTarget);if(desired===semanticFloor&&semanticFloor>proportionalTarget)"
+          b="proportionalTarget=Math.round(desiredRaw),center=Math.max(minimumWords,semanticFloor,proportionalTarget);if(center===semanticFloor&&semanticFloor>proportionalTarget)"
+          c="const slack=Math.max(1,Math.round(desired*0.05)),lo=Math.max(minimumWords,desired-slack),hi=desired+slack,lang="
+          d="const slack=Math.max(1,Math.round(center*0.05)),lo=Math.max(minimumWords,semanticFloor,center-slack),hi=center+slack,desired=measured>target?lo:measured<target?hi:center;if(desired!==center)controller_mode=`${controller_mode}_${measured>target?'overlong_lower_bound':'underlong_upper_bound'}`;const lang="
+          assert s.count(a)==1 and s.count(c)==1
+          n['parameters']['jsCode']=s.replace(a,b).replace(c,d)
+          p.write_text(json.dumps(o,ensure_ascii=False,indent=2)+'\n')
+          q=Path('tests/wf03_planned_budget_semantic_floor_regression.mjs')
+          t=q.read_text()
+          t=t.replace("assert.equal(planned.desired_word_target,32,'measured proportional target must remain reachable for the exact production class');","assert.equal(planned.desired_word_target,30,'single-pass overlong correction must target the safe lower bound');")
+          t=t.replace("assert.doesNotMatch(planned.duration_controller_mode,/semantic_floor$/);","assert.match(planned.duration_controller_mode,/overlong_lower_bound$/);")
+          needle="const legacy=run(common);"
+          insert="const skyStory={version:'storyboard-first-v1',units:[1,2,3,4].map(i=>({unit_id:`U${i}`,claim_id:`C${i}`,grounded_claim:`Claim ${i}`,narration:'Короткое полное предложение.',evidence_ids:[`S${i}`],asset_id:`A${i}`,editorial_role:'explain'})),assets:[]};\nconst sky=run({...common,story_package:skyStory,script_text:Array(37).fill('слово').join(' '),duration_seconds:18.195333,planned_word_min:30,planned_word_max:42});\nassert.equal(sky.semantic_word_floor,25);assert.equal(sky.desired_word_min,29);assert.equal(sky.desired_word_max,33);assert.equal(sky.desired_word_target,29);assert.match(sky.duration_controller_mode,/overlong_lower_bound$/);\n"
+          assert t.count(needle)==1
+          if insert not in t: t=t.replace(needle,insert+needle)
+          q.write_text(t)
+          r=Path('tests/wf03_duration_bracket_controller_regression.mjs')
+          u=r.read_text()
+          old="assert.equal(out.duration_controller_mode,'measured_bracket_interpolation');"
+          new="assert.equal(out.duration_controller_mode,'measured_bracket_interpolation_overlong_lower_bound');"
+          assert u.count(old)==1
+          r.write_text(u.replace(old,new))
+          PY
+          test "$(git hash-object n8n/workflows/WF03-natural-edge-voice.json)" = "9199ffd841b7d5948371f69fe6be150e0f57d043"
+          test "$(git hash-object tests/wf03_planned_budget_semantic_floor_regression.mjs)" = "acf30a54983d9c8b64f1f7652b9538abde68026d"
+          test "$(git hash-object tests/wf03_duration_bracket_controller_regression.mjs)" = "dd0214d79128d080bc538cac063a3a222e91befd"
+          git add n8n/workflows/WF03-natural-edge-voice.json tests/wf03_planned_budget_semantic_floor_regression.mjs tests/wf03_duration_bracket_controller_regression.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix: target single-pass duration boundary'
+          test "$(git diff --name-only "$PARENT" HEAD | wc -l)" -eq 3
+          git push origin "HEAD:refs/heads/$RESULT"
