@@ -1792,3 +1792,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 2026-09-11 — Semantic failover test note: new bounded Liquid→Cohere free failover regression itself passes, but the generic gateway regression still asserts the old direct Normalize→Respond edge. Runtime is unchanged. Synchronize that stale test with the new single-fallback topology before deploy.
 
 2026-09-11 operator note: a V6 preflight used unqualified `execution_entity`; PostgreSQL rejected it because n8n runtime tables are under schema `n8n`. No product state changed. Future operator SQL must schema-qualify n8n runtime tables.
+
+2026-09-11 V6 stage checkpoint: fresh immutable job `d9893ac3-4f92-4149-8f8e-255902b7b94d` reached storyboard media feasibility and failed in WF02 execution `17765` with `no deterministic executable media for storyboard shot S1A [line 2]`. This is after the semantic free-route and storyboard free-route changes; inspect the exact shot/discovery contract before correction, without manual asset selection or gate weakening.

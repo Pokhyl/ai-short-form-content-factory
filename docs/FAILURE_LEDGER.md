@@ -447,3 +447,6 @@ A read-only source inspection for `V4-model-gateway.json` assumed the exported w
 
 ### 2026-09-11 — operator used unqualified n8n execution table during V6 preflight
 A read-only preflight queried `execution_entity` without the `n8n.` schema and PostgreSQL rejected it because the production database keeps n8n runtime tables under schema `n8n`. No product state was changed. Lesson: qualify n8n runtime tables (`n8n.execution_entity`, `n8n.workflow_entity`) in operator SQL.
+
+### 2026-09-11 — V6 stage job d9893ac3 failed storyboard media feasibility at S1A
+Fresh immutable stage job `d9893ac3-4f92-4149-8f8e-255902b7b94d` (`Почему небо голубое?`, ru, 15s) passed semantic resolution and storyboard generation far enough to reach storyboard-media feasibility, then failed at WF02 execution `17765` with `no deterministic executable media for storyboard shot S1A [line 2]`. The job remains failed/immutable. Before any retry, inspect the exact S1A contract and discovery response; do not weaken feasibility gates or manually choose an asset.
