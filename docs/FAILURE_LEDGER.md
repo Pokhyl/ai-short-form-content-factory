@@ -465,3 +465,6 @@ The first test command after the portrait-discovery patch invoked `node` directl
 
 ### 2026-09-11 — V6 container test loop used unwritable shared `/tmp/t.out`
 The portrait-discovery regression and two visual exploration regressions passed in the stage Node container, but the subsequent V6 loop stopped before executing its first test because shell redirection to `/tmp/t.out` returned `Permission denied`. No product state changed and the named test was not the cause. Lesson: avoid shared fixed `/tmp` capture files in operator loops; capture command output in-shell or use a unique writable path.
+
+### 2026-09-11 — operator ran stage image build as a blocking SentinelX action
+The first `cf-v6-stage-worker:portrait-discovery` build was launched as a blocking script and the management agent stopped waiting after ~195 seconds. The command result was not returned, so build completion is unknown at this checkpoint; no runtime container replacement or workflow import was attempted. Lesson: long Docker builds must run detached/background and be polled with short status checks.
