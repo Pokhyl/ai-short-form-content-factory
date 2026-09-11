@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const raw=JSON.parse(fs.readFileSync('n8n/workflows/V6-model-gateway.json','utf8'));
+const wf=Array.isArray(raw)?raw[0]:raw;const by=new Map(wf.nodes.map(n=>[n.name,n]));
+const code=by.get('Build Request').parameters.jsCode;
+assert.match(code,/route==='semantic'\?'liquid\/lfm-2\.5-2\.6b:free'/);
+assert.match(code,/route==='semantic'\?2048/);
+assert.match(code,/\['default','semantic','resolution','storyboard','final_story'\]/);
+console.log('V6_SEMANTIC_MODEL_ROUTE_PASS');
