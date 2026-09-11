@@ -375,7 +375,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const x=$input.first().json;const roleMap={hook:'establish',establish:'establish',explain:'process',proof:'reference',example:'context',transition:'context',close:'result'};const queries=x.external_shots.map((s,i)=>({query_number:i+1,query_id:s.shot_id,search_query_en:s.search_query_en,observable_target:s.must_show.join(' ').slice(0,180),visual_form:s.representation==='map'?'map':s.representation==='document'?'document':'photo',facet_role:roleMap[s.purpose]??'context',evidence_ids:s.grounded_fact_ids,identity_mode:s.representation==='exact_media'?'named_subject':'semantic_topic',retrieval_rationale:`storyboard:${s.shot_id}`}));return [{json:{...x,exploration_queries:queries,exploration_request:{canonical_source:{language:'en',title:x.canonical_subject},exploration_queries:queries}}}];"
+          "jsCode": "const x=$input.first().json;const roleMap={hook:'establish',establish:'establish',explain:'process',proof:'reference',example:'context',transition:'context',close:'result'};const queries=x.external_shots.map((s,i)=>({query_number:i+1,query_id:s.shot_id,search_query_en:s.search_query_en,observable_target:s.search_query_en,visual_form:s.representation==='map'?'map':s.representation==='document'?'document':'photo',facet_role:roleMap[s.purpose]??'context',evidence_ids:s.grounded_fact_ids,identity_mode:s.representation==='exact_media'?'named_subject':'semantic_topic',crop_policy:s.crop_policy,retrieval_rationale:`storyboard:${s.shot_id}`}));return [{json:{...x,exploration_queries:queries,exploration_request:{canonical_source:{language:'en',title:x.canonical_subject},exploration_queries:queries}}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,

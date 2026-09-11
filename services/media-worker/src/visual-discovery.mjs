@@ -542,9 +542,9 @@ async function fetchCommonsSearch({ query, fetchImpl }) {
   return value;
 }
 
-async function fetchPixabay({ query, apiKey, fetchImpl }) {
+async function fetchPixabay({ query, apiKey, fetchImpl, orientation = "" }) {
   if (!apiKey) return [];
-  const key = `pixabay:${query}`;
+  const key = `pixabay:${cleanText(orientation)}:${query}`;
   const cached = cacheGet(key);
   if (cached) return cached;
   const params = new URLSearchParams({
@@ -554,6 +554,7 @@ async function fetchPixabay({ query, apiKey, fetchImpl }) {
     safesearch: "true",
     per_page: String(MAX_RESULTS_PER_PROVIDER),
   });
+  if (cleanText(orientation) === "vertical") params.set("orientation", "vertical");
   const data = await fetchJson(`https://pixabay.com/api/?${params}`, { fetchImpl });
   const value = [];
   for (const hit of Array.isArray(data?.hits) ? data.hits : []) {
@@ -603,12 +604,13 @@ function pexelsSlug(url) {
   }
 }
 
-async function fetchPexels({ query, apiKey, fetchImpl }) {
+async function fetchPexels({ query, apiKey, fetchImpl, orientation = "" }) {
   if (!apiKey) return [];
-  const key = `pexels:${query}`;
+  const key = `pexels:${cleanText(orientation)}:${query}`;
   const cached = cacheGet(key);
   if (cached) return cached;
   const params = new URLSearchParams({ query, per_page: String(Math.min(15, MAX_RESULTS_PER_PROVIDER)) });
+  if (cleanText(orientation) === "portrait") params.set("orientation", "portrait");
   const data = await fetchJson(`https://api.pexels.com/v1/search?${params}`, {
     headers: { Authorization: apiKey },
     fetchImpl,
@@ -748,6 +750,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
           search_query: cleanText(query?.search_query_en),
           narration: cleanText(query?.retrieval_rationale ?? query?.observable_target),
           identity_mode: cleanText(query?.identity_mode) || "named_subject",
+          crop_policy: cleanText(query?.crop_policy),
           required_images: 1,
         }))
     : segmentedMode
@@ -804,11 +807,11 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
     }
   }
 
-  async function fetchTimedProviderSet(query, unitNumber) {
+  async function fetchTimedProviderSet(query, unitNumber, cropPolicy = "") {
     const specs = [
       ["wikimedia_commons", () => fetchCommonsSearch({ query, fetchImpl })],
-      ["pixabay", () => fetchPixabay({ query, apiKey: pixabayApiKey, fetchImpl })],
-      ["pexels", () => fetchPexels({ query, apiKey: pexelsApiKey, fetchImpl })],
+      ["pixabay", () => fetchPixabay({ query, apiKey: pixabayApiKey, fetchImpl, orientation: cleanText(cropPolicy) === "portrait_required" ? "vertical" : "" })],
+      ["pexels", () => fetchPexels({ query, apiKey: pexelsApiKey, fetchImpl, orientation: cleanText(cropPolicy) === "portrait_required" ? "portrait" : "" })],
     ];
     const settled = await Promise.allSettled(specs.map(([, load]) => load()));
     const rows = [];
@@ -828,7 +831,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
     const localErrors = [];
 
     if (explorationMode) {
-      const exact = await fetchTimedProviderSet(exactQuery, unitNumber);
+      const exact = await fetchTimedProviderSet(exactQuery, unitNumber, unit.crop_policy);
       localErrors.push(...exact.errors);
       const providerQueries = [exactQuery];
       let recoveryUsed = false;
@@ -847,7 +850,7 @@ export async function discoverVisualCandidates({ canonicalSource, beats, timedBe
       if (ranked.length < 6 || detailCount() < 2) {
         for (const recoveryQuery of recovery) {
           if (providerQueries.some((value) => value.toLocaleLowerCase() === recoveryQuery.toLocaleLowerCase())) continue;
-          const recovered = await fetchTimedProviderSet(recoveryQuery, unitNumber);
+          const recovered = await fetchTimedProviderSet(recoveryQuery, unitNumber, unit.crop_policy);
           localErrors.push(...recovered.errors);
           providerQueries.push(recoveryQuery);
           candidates = dedupeCandidates([...candidates, ...markRecoveryCandidates(recovered.candidates, recoveryQuery)]);
