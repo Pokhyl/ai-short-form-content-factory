@@ -1,0 +1,56 @@
+name: Materialize S2A flows alias
+on:
+  push:
+    branches:
+      - transport/s2a-flows-alias-20260911
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply tested WF02 flows alias
+        shell: bash
+        run: |
+          set -euo pipefail
+          PARENT=6f7a414c143712b78b40791e9bc68f8830489a65
+          RESULT=transport/s2a-flows-alias-result-20260911
+          git checkout --detach "$PARENT"
+          test "$(git hash-object n8n/workflows/WF02-plan-script-and-scenes.json)" = "a7e0d18aad229e030833a06e506e395763745633"
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('n8n/workflows/WF02-plan-script-and-scenes.json')
+          s=p.read_text()
+          old="rawKind==='enters'?'flow':rawKind==='scatters'?'emits':rawKind==='reaches'?'flow':rawKind==='produces'?'transforms':rawKind==='contributes'?'joins':rawKind"
+          new="rawKind==='enters'?'flow':rawKind==='scatters'?'emits':rawKind==='reaches'?'flow':rawKind==='flows'?'flow':rawKind==='produces'?'transforms':rawKind==='contributes'?'joins':rawKind"
+          assert s.count(old)==1
+          p.write_text(s.replace(old,new))
+          p=Path('tests/v6_storyboard_boundary_canonicalization_regression.mjs')
+          s=p.read_text()
+          anchor="assert.doesNotThrow(()=>compileDiagramSpec(spec,4,{expectedShotId:'S2A',allowedFactIds:['S7','S8']}));\n"
+          assert s.count(anchor)==1
+          s=s.replace(anchor,anchor+"const wfSpec=structuredClone(spec);wfSpec.relations.find(r=>r.from==='e2'&&r.to==='e4').kind='flows';\n")
+          oldp="crop_policy:'not_applicable',diagram_spec:spec}]"
+          newp="crop_policy:'not_applicable',diagram_spec:wfSpec}]"
+          assert s.count(oldp)==1
+          s=s.replace(oldp,newp)
+          anchor2="assert.equal(shot.diagram_spec.entities.find(e=>e.id==='e7').role,'result');\n"
+          assert s.count(anchor2)==1
+          s=s.replace(anchor2,anchor2+"assert.equal(shot.diagram_spec.relations.find(r=>r.from==='e2'&&r.to==='e4').kind,'flow');\n")
+          p.write_text(s)
+          PY
+          node tests/v6_storyboard_boundary_canonicalization_regression.mjs
+          node tests/v6_storyboard_canonicalizer_regression.mjs
+          node tests/v6_storyboard_evidence_canonicalization_regression.mjs
+          node tests/v6_storyboard_first_planning_regression.mjs
+          node tests/v6_storyboard_execution_regression.mjs
+          git diff --check
+          test "$(git diff --name-only | sort | tr '\n' ' ')" = "n8n/workflows/WF02-plan-script-and-scenes.json tests/v6_storyboard_boundary_canonicalization_regression.mjs "
+          git add n8n/workflows/WF02-plan-script-and-scenes.json tests/v6_storyboard_boundary_canonicalization_regression.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix: canonicalize flows relation alias'
+          git push origin "HEAD:refs/heads/$RESULT"
