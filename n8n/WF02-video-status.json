@@ -2,39 +2,20 @@
   "id": "zfjXq8l4Q5gEnqTS",
   "name": "WF02 Video Status",
   "active": false,
-  "versionId": "a88eba59-ad03-4604-a7e6-1457d21c4e8c",
+  "versionId": "6ec4c54d-e26a-49db-9fb9-469ff8756a61",
   "nodes": [
-    {
-      "parameters": {"httpMethod":"GET","path":"short-video/status","responseMode":"responseNode","options":{}},
-      "id": "0da1bf79-7bd2-400f-8db1-c5ed8da48238",
-      "name": "Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [0, 0],
-      "webhookId": "5924ee0c-5475-449a-9da8-0f37213cc4a8"
-    },
-    {
-      "parameters": {"url":"={{ 'http://ai-short-form-short-video-maker:3123/api/short-video/' + $json.query.videoId + '/status' }}","options":{"timeout":10000}},
-      "id": "f8dfa876-b16b-4dfa-af1c-11ff2919b880",
-      "name": "Get Status",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [260, 0]
-    },
-    {
-      "parameters": {"respondWith":"json","responseBody":"={{ $json }}","options":{}},
-      "id": "faa36a91-f834-4f62-a70d-3f9684d0a356",
-      "name": "Respond",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [520, 0]
-    }
+    {"parameters":{"httpMethod":"GET","path":"jobs/status","responseMode":"responseNode","options":{}},"id":"ecc31755-df2c-4358-a4e4-3b18ae8346a9","name":"Webhook","type":"n8n-nodes-base.webhook","typeVersion":2,"position":[0,0],"webhookId":"706e5807-095b-4e29-bf5a-6fda61e7d679"},
+    {"parameters":{"jsCode":"const jobId = typeof $json.query?.job_id === 'string' ? $json.query.job_id.trim() : '';\nconst valid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(jobId);\nreturn [{json:{jobId,valid}}];"},"id":"a3df3a84-2da7-4a93-966b-ed5758074c29","name":"Validate Job ID","type":"n8n-nodes-base.code","typeVersion":2,"position":[240,0]},
+    {"parameters":{"conditions":{"options":{"caseSensitive":true,"leftValue":"","typeValidation":"strict","version":2},"conditions":[{"id":"1dea36d5-04e1-414a-aab3-f6e3c9eb60a6","leftValue":"={{ $json.valid }}","rightValue":true,"operator":{"type":"boolean","operation":"true","singleValue":true}}],"combinator":"and"},"options":{}},"id":"a2a15721-a919-4bf5-a4d5-eb15723a9b66","name":"Valid?","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[480,0]},
+    {"parameters":{"resource":"database","operation":"executeQuery","query":"SELECT CASE WHEN j.job_id IS NULL THEN false ELSE true END AS found, j.job_id,j.status,j.video_id,j.video_status,j.output_path,j.error_message,j.created_at,j.updated_at FROM (SELECT $1::uuid AS requested_job_id) q LEFT JOIN content_jobs j ON j.job_id=q.requested_job_id;","options":{"queryReplacement":"={{ [$json.jobId] }}"}},"id":"a01208c5-3688-44f0-84c1-834af99f2141","name":"Load Job","type":"n8n-nodes-base.postgres","typeVersion":2.6,"position":[720,-100],"credentials":{"postgres":{"id":"cfpg_a1581dfa57ce3198","name":"Content Factory PostgreSQL"}}},
+    {"parameters":{"conditions":{"options":{"caseSensitive":true,"leftValue":"","typeValidation":"strict","version":2},"conditions":[{"id":"7d6da820-f805-48e0-9200-c5158cab1e8b","leftValue":"={{ $json.found }}","rightValue":true,"operator":{"type":"boolean","operation":"true","singleValue":true}}],"combinator":"and"},"options":{}},"id":"62e1dd16-cbf2-4eca-9d12-bda5c393fc80","name":"Job Exists?","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[960,-100]},
+    {"parameters":{"conditions":{"options":{"caseSensitive":true,"leftValue":"","typeValidation":"strict","version":2},"conditions":[{"id":"837378c6-af6b-46b9-8583-816562402d84","leftValue":"={{ $json.video_id }}","rightValue":"","operator":{"type":"string","operation":"notEmpty","singleValue":true}}],"combinator":"and"},"options":{}},"id":"0100e7ed-bea2-4e0e-8e58-00e11ee2b457","name":"Has Video ID?","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[1200,-160]},
+    {"parameters":{"url":"={{ 'http://ai-short-form-short-video-maker:3123/api/short-video/' + $json.video_id + '/status' }}","options":{"timeout":10000}},"id":"95faa7e4-5585-46cd-bb4b-8ea1e9165a3b","name":"Engine Status","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[1440,-240]},
+    {"parameters":{"resource":"database","operation":"executeQuery","query":"UPDATE content_jobs SET video_status=$2, status=CASE WHEN $2='ready' THEN 'ready' WHEN $2='failed' THEN 'failed' ELSE status END, output_path=CASE WHEN $2='ready' THEN '/opt/ai-short-form-content-factory/data/videos/'||video_id||'.mp4' ELSE output_path END, error_message=CASE WHEN $2='failed' THEN 'video engine reported failed' ELSE error_message END, updated_at=now() WHERE job_id=$1::uuid RETURNING job_id,status,video_id,video_status,output_path,error_message,created_at,updated_at;","options":{"queryReplacement":"={{ [$('Validate Job ID').item.json.jobId, $json.status] }}"}},"id":"fcdf9ce9-b018-4306-a160-5199e6da8230","name":"Sync Status","type":"n8n-nodes-base.postgres","typeVersion":2.6,"position":[1680,-240],"credentials":{"postgres":{"id":"cfpg_a1581dfa57ce3198","name":"Content Factory PostgreSQL"}}},
+    {"parameters":{"respondWith":"json","responseBody":"={{ { job_id:$json.job_id,status:$json.status,video_id:$json.video_id ?? null,video_status:$json.video_status ?? null,output_path:$json.output_path ?? null,error:$json.error_message ?? null } }}","options":{}},"id":"5d0aebbd-2eb3-490a-9a4a-352bfbe80a86","name":"Respond Current","type":"n8n-nodes-base.respondToWebhook","typeVersion":1.4,"position":[1920,-160]},
+    {"parameters":{"respondWith":"json","responseBody":"={{ { error:'invalid_job_id' } }}","options":{"responseCode":400}},"id":"c2814177-af28-4ff9-b237-79204ab7e11a","name":"Respond 400","type":"n8n-nodes-base.respondToWebhook","typeVersion":1.4,"position":[720,160]},
+    {"parameters":{"respondWith":"json","responseBody":"={{ { error:'job_not_found', job_id:$('Validate Job ID').item.json.jobId } }}","options":{"responseCode":404}},"id":"28f77dfc-09c7-4749-810b-4a8d808fdaac","name":"Respond 404","type":"n8n-nodes-base.respondToWebhook","typeVersion":1.4,"position":[1200,40]}
   ],
-  "connections": {
-    "Webhook":{"main":[[{"node":"Get Status","type":"main","index":0}]]},
-    "Get Status":{"main":[[{"node":"Respond","type":"main","index":0}]]}
-  },
-  "pinData": {},
-  "settings": {"executionOrder":"v1"},
-  "tags": []
+  "connections":{"Webhook":{"main":[[{"node":"Validate Job ID","type":"main","index":0}]]},"Validate Job ID":{"main":[[{"node":"Valid?","type":"main","index":0}]]},"Valid?":{"main":[[{"node":"Load Job","type":"main","index":0}],[{"node":"Respond 400","type":"main","index":0}]]},"Load Job":{"main":[[{"node":"Job Exists?","type":"main","index":0}]]},"Job Exists?":{"main":[[{"node":"Has Video ID?","type":"main","index":0}],[{"node":"Respond 404","type":"main","index":0}]]},"Has Video ID?":{"main":[[{"node":"Engine Status","type":"main","index":0}],[{"node":"Respond Current","type":"main","index":0}]]},"Engine Status":{"main":[[{"node":"Sync Status","type":"main","index":0}]]},"Sync Status":{"main":[[{"node":"Respond Current","type":"main","index":0}]]}},
+  "pinData":{},"settings":{"executionOrder":"v1"},"tags":[]
 }

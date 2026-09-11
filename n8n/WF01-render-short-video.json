@@ -1,68 +1,22 @@
 {
+  "id": "UPlgAclVbT5he1c0",
   "name": "WF01 Render Short Video",
-  "nodes": [
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "short-video/render",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "5e0d80c8-6a26-4ce3-9d74-b08f049bdcd1",
-      "name": "Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [0, 0],
-      "webhookId": "8340fdb6-76f0-439a-b7d6-3d0909a62cf9"
-    },
-    {
-      "parameters": {
-        "jsCode": "const body = $json.body ?? $json;\nif (!Array.isArray(body.scenes) || body.scenes.length === 0) {\n  throw new Error('scenes must be a non-empty array');\n}\nfor (const [i, scene] of body.scenes.entries()) {\n  if (!scene || typeof scene.text !== 'string' || !scene.text.trim()) {\n    throw new Error(`scene ${i + 1}: text is required`);\n  }\n  if (!Array.isArray(scene.searchTerms) || scene.searchTerms.length === 0) {\n    throw new Error(`scene ${i + 1}: searchTerms must be a non-empty array`);\n  }\n}\nreturn [{\n  json: {\n    scenes: body.scenes,\n    config: {\n      paddingBack: Number.isFinite(body.paddingBack) ? body.paddingBack : 500,\n      music: body.music ?? 'chill',\n      captionPosition: body.captionPosition ?? 'bottom',\n      captionBackgroundColor: body.captionBackgroundColor ?? 'blue',\n      voice: body.voice ?? 'af_heart',\n      orientation: 'portrait',\n      musicVolume: body.musicVolume ?? 'low'\n    }\n  }\n}];"
-      },
-      "id": "0fb4999f-d1a0-47fb-aecd-cf61fd7f7466",
-      "name": "Validate & Normalize",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [240, 0]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "http://ai-short-form-short-video-maker:3123/api/short-video",
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ JSON.stringify($json) }}",
-        "options": {"timeout": 30000}
-      },
-      "id": "af2a4da2-814c-4e51-8790-8e989fb31d19",
-      "name": "Start Render",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [480, 0]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ { accepted: true, videoId: $json.videoId } }}",
-        "options": {"responseCode": 202}
-      },
-      "id": "7cf0cc1e-044d-4331-ab27-57bc54dcaa74",
-      "name": "Respond",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [720, 0]
-    }
-  ],
-  "connections": {
-    "Webhook": {"main": [[{"node":"Validate & Normalize","type":"main","index":0}]]},
-    "Validate & Normalize": {"main": [[{"node":"Start Render","type":"main","index":0}]]},
-    "Start Render": {"main": [[{"node":"Respond","type":"main","index":0}]]}
-  },
-  "pinData": {},
   "active": false,
-  "settings": {"executionOrder": "v1"},
-  "tags": [],
-  "versionId": "24077c6b-9857-4ad8-b15b-b65d8bd6eaa3",
-  "id": "UPlgAclVbT5he1c0"
+  "versionId": "9daed677-377f-487e-8db4-fa590adc66f6",
+  "nodes": [
+    {"parameters":{"httpMethod":"POST","path":"jobs/render","responseMode":"responseNode","options":{}},"id":"14fcb4ce-99e9-40f5-ab77-d3d96e7eb242","name":"Webhook","type":"n8n-nodes-base.webhook","typeVersion":2,"position":[0,0],"webhookId":"4504ea7a-8bad-4e04-aa81-27f91c926a27"},
+    {"parameters":{"jsCode":"const body = $json.body ?? $json;\nconst jobId = typeof body.job_id === 'string' ? body.job_id.trim() : '';\nconst uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;\nconst errors = [];\nif (!uuidRe.test(jobId)) errors.push('job_id must be a valid UUID v4');\nif (!Array.isArray(body.scenes) || body.scenes.length === 0) errors.push('scenes must be a non-empty array');\nif (Array.isArray(body.scenes)) {\n  for (const [i, scene] of body.scenes.entries()) {\n    if (!scene || typeof scene.text !== 'string' || !scene.text.trim()) errors.push(`scene ${i + 1}: text is required`);\n    if (!scene || !Array.isArray(scene.searchTerms) || scene.searchTerms.length === 0) errors.push(`scene ${i + 1}: searchTerms must be a non-empty array`);\n  }\n}\nreturn [{json:{valid:errors.length===0,errors,jobId,scenes:body.scenes ?? [],config:{paddingBack:Number.isFinite(body.paddingBack)?body.paddingBack:500,music:body.music??'chill',captionPosition:body.captionPosition??'bottom',captionBackgroundColor:body.captionBackgroundColor??'blue',voice:body.voice??'af_heart',orientation:'portrait',musicVolume:body.musicVolume??'low'}}}];"},"id":"3fdeac9a-1f90-41c7-863b-4328d2b8a81e","name":"Validate & Normalize","type":"n8n-nodes-base.code","typeVersion":2,"position":[240,0]},
+    {"parameters":{"conditions":{"options":{"caseSensitive":true,"leftValue":"","typeValidation":"strict","version":2},"conditions":[{"id":"6bbf5583-9784-4676-931d-b693a9644743","leftValue":"={{ $json.valid }}","rightValue":true,"operator":{"type":"boolean","operation":"true","singleValue":true}}],"combinator":"and"},"options":{}},"id":"ca72cfc2-7c6b-4f71-97ff-25ffffe81405","name":"Valid?","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[480,0]},
+    {"parameters":{"resource":"database","operation":"executeQuery","query":"SELECT CASE WHEN j.job_id IS NULL THEN false ELSE true END AS found, j.job_id, j.status, j.video_id, j.language FROM (SELECT $1::uuid AS requested_job_id) q LEFT JOIN content_jobs j ON j.job_id=q.requested_job_id;","options":{"queryReplacement":"={{ [$json.jobId] }}"}},"id":"cd4bbae4-4d4e-43ea-b570-356431749593","name":"Load Job","type":"n8n-nodes-base.postgres","typeVersion":2.6,"position":[720,-120],"credentials":{"postgres":{"id":"cfpg_a1581dfa57ce3198","name":"Content Factory PostgreSQL"}}},
+    {"parameters":{"conditions":{"options":{"caseSensitive":true,"leftValue":"","typeValidation":"strict","version":2},"conditions":[{"id":"d02e2cb7-fc07-4ed1-9919-eba8f403710f","leftValue":"={{ $json.found }}","rightValue":true,"operator":{"type":"boolean","operation":"true","singleValue":true}}],"combinator":"and"},"options":{}},"id":"64e89863-f3f7-4ae2-9736-d484a599b131","name":"Job Exists?","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[960,-120]},
+    {"parameters":{"conditions":{"options":{"caseSensitive":true,"leftValue":"","typeValidation":"strict","version":2},"conditions":[{"id":"58ba0dff-db49-41f9-9ff0-2efbd5250bdd","leftValue":"={{ $json.status }}","rightValue":"queued","operator":{"type":"string","operation":"equals","name":"filter.operator.equals"}}],"combinator":"and"},"options":{}},"id":"c0027f44-aaca-4010-a027-5edfc424d1af","name":"Queued?","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[1200,-180]},
+    {"parameters":{"method":"POST","url":"http://ai-short-form-short-video-maker:3123/api/short-video","sendBody":true,"contentType":"raw","rawContentType":"application/json","body":"={{ JSON.stringify({ scenes: $('Validate & Normalize').item.json.scenes, config: { ...$('Validate & Normalize').item.json.config, voice: ({ en:'en-US-AndrewNeural', pl:'pl-PL-MarekNeural', ru:'ru-RU-DmitryNeural', uk:'uk-UA-OstapNeural' })[$json.language] } }) }}","options":{"timeout":30000}},"id":"e8522ba6-6bd3-4844-8b7e-fe7038d498c7","name":"Start Render","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[1440,-240]},
+    {"parameters":{"resource":"database","operation":"executeQuery","query":"UPDATE content_jobs SET status='rendering', video_id=$2, video_status='processing', error_message=NULL, updated_at=now() WHERE job_id=$1::uuid RETURNING job_id,status,video_id,video_status;","options":{"queryReplacement":"={{ [$('Validate & Normalize').item.json.jobId, $json.videoId] }}"}},"id":"c1c36ef7-9120-4027-8a77-41969437c421","name":"Mark Rendering","type":"n8n-nodes-base.postgres","typeVersion":2.6,"position":[1680,-240],"credentials":{"postgres":{"id":"cfpg_a1581dfa57ce3198","name":"Content Factory PostgreSQL"}}},
+    {"parameters":{"respondWith":"json","responseBody":"={{ { job_id: $json.job_id, status: $json.status, video_id: $json.video_id } }}","options":{"responseCode":202}},"id":"65b140cc-e9d6-4d2d-a869-4fb85f6d7434","name":"Respond 202","type":"n8n-nodes-base.respondToWebhook","typeVersion":1.4,"position":[1920,-240]},
+    {"parameters":{"respondWith":"json","responseBody":"={{ { error: 'invalid_input', details: $json.errors } }}","options":{"responseCode":400}},"id":"1dff200f-62c3-4d3f-8322-5c87597bacff","name":"Respond 400","type":"n8n-nodes-base.respondToWebhook","typeVersion":1.4,"position":[720,160]},
+    {"parameters":{"respondWith":"json","responseBody":"={{ { error: 'job_not_found', job_id: $('Validate & Normalize').item.json.jobId } }}","options":{"responseCode":404}},"id":"a1984f6f-e1d6-4073-a0ef-8c896f79c2ac","name":"Respond 404","type":"n8n-nodes-base.respondToWebhook","typeVersion":1.4,"position":[1200,40]},
+    {"parameters":{"respondWith":"json","responseBody":"={{ { error: 'invalid_job_state', job_id: $json.job_id, status: $json.status, video_id: $json.video_id ?? null } }}","options":{"responseCode":409}},"id":"bb9106b0-6cb8-4818-84b3-096cf38f08b8","name":"Respond 409","type":"n8n-nodes-base.respondToWebhook","typeVersion":1.4,"position":[1440,0]}
+  ],
+  "connections":{"Webhook":{"main":[[{"node":"Validate & Normalize","type":"main","index":0}]]},"Validate & Normalize":{"main":[[{"node":"Valid?","type":"main","index":0}]]},"Valid?":{"main":[[{"node":"Load Job","type":"main","index":0}],[{"node":"Respond 400","type":"main","index":0}]]},"Load Job":{"main":[[{"node":"Job Exists?","type":"main","index":0}]]},"Job Exists?":{"main":[[{"node":"Queued?","type":"main","index":0}],[{"node":"Respond 404","type":"main","index":0}]]},"Queued?":{"main":[[{"node":"Start Render","type":"main","index":0}],[{"node":"Respond 409","type":"main","index":0}]]},"Start Render":{"main":[[{"node":"Mark Rendering","type":"main","index":0}]]},"Mark Rendering":{"main":[[{"node":"Respond 202","type":"main","index":0}]]}},
+  "pinData":{},"settings":{"executionOrder":"v1"},"tags":[]
 }

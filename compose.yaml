@@ -36,20 +36,37 @@ services:
       N8N_PORT: "5678"
       N8N_PROTOCOL: http
       N8N_SECURE_COOKIE: "false"
-      WEBHOOK_URL: http://127.0.0.1:5679/
+      N8N_WEBHOOK_URL: http://127.0.0.1:5679/
     ports:
       - "127.0.0.1:5679:5678"
     volumes:
       - n8n_data:/home/node/.n8n
 
+  edge-tts:
+    build:
+      context: ./services/edge-tts
+    image: ai-short-form-content-factory/edge-tts:7.2.8
+    container_name: ai-short-form-edge-tts
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3002/health', timeout=2).read()"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   short-video-maker:
-    image: gyoridavid/short-video-maker:latest-tiny
+    build:
+      context: ./engine-overlay
+    image: ai-short-form-content-factory/short-video-maker:edge-tts-v1
     container_name: ai-short-form-short-video-maker
     restart: unless-stopped
-    command: ["node", "dist/index.js"]
+    depends_on:
+      edge-tts:
+        condition: service_healthy
     environment:
       PEXELS_API_KEY: ${PEXELS_API_KEY}
-      LOG_LEVEL: info
+      EDGE_TTS_URL: http://edge-tts:3002
+      LOG_LEVEL: debug
       WHISPER_VERBOSE: "false"
       PORT: "3123"
     ports:

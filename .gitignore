@@ -3,3 +3,6 @@ data/
 studio/videos/
 *.log
 .DS_Store
+.last_*
+.multilang_jobs
+*.download.mp4
