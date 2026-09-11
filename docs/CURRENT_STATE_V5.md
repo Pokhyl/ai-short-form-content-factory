@@ -1768,3 +1768,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11: The storyboard evidence regression contained mutually contradictory source assertions about `response_schema`. Current architecture intentionally carries the schema while deferring storyboard validation to WF02; test cleanup is required before deployment.
 
 - 2026-09-11: V6 plain-JSON gateway source is deployed and current/active. A follow-up webhook polling shell command was invalid due quoting and cannot be used as state evidence; recheck with parameter-safe SQL before E2E.
+
+- 2026-09-11: Fresh plain-JSON stage job `e31e7b7a-3ba1-45a2-a941-b4e7591a653b` reached WF02 execution `17682` and failed. First read-only decoder invocation was invalid because stdin was consumed by the Node heredoc; exact node failure still needs extraction before any correction.
