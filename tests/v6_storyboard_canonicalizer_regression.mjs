@@ -5,7 +5,7 @@ const code=wf.nodes.find(n=>n.name==='Validate Storyboard').parameters.jsCode;
 const base={topic:'why sky blue',user_intent:'why process',scene_bounds:[3,5],research_rows:[{id:'S1'},{id:'S2'}]};
 const response={provider_exhausted:false,model:'cohere/north-mini-code:free',provider:'kilo-storyboard',text:JSON.stringify({scenes:[
  {scene_id:'SC1',purpose:'hook',grounded_fact_ids:['S1'],narration_intent:'Show the real sky first',shots:[{shot_id:'S1A',representation:'context_media',must_show:'blue sky',must_not_show:'night sky',search_query_en:'clear blue sky',communication_goal:'Viewer sees a blue sky',crop_policy:'portrait_required',diagram_spec:null}]},
- {scene_id:'SC2',purpose:'explain',grounded_fact_ids:['S1','S2'],narration_intent:'Explain the scattering process',shots:[{shot_id:'S2A',representation:'diagram',must_show:'light scatters',must_not_show:'wrong mechanism',search_query_en:'',communication_goal:'Viewer understands the mechanism',crop_policy:'not_applicable',diagram_spec:{shot_id:'S2A',grounded_fact_ids:['S1','S2'],archetype:'flow',short_title:'Scattering',entities:[{id:'sun',label:'Sun',role:'source',shape:'circle'},{id:'air',label:'Air',role:'process',shape:'box'},{id:'blue',label:'Blue',role:'output',shape:'arrow'}],relations:[{from:'sun',to:'air',kind:'enters'},{from:'air',to:'blue',kind:'scatters'},{from:'blue',to:'viewer',kind:'reaches'}]}}]},
+ {scene_id:'SC2',purpose:'explain',grounded_fact_ids:['S1','S2'],narration_intent:'Explain the scattering process',shots:[{shot_id:'S2A',representation:'diagram',must_show:'light scatters',must_not_show:'wrong mechanism',search_query_en:'',communication_goal:'Viewer understands the mechanism',crop_policy:'not_applicable',diagram_spec:{archetype:'flow',short_title:'Scattering',entities:[{id:'sun',label:'Sun',role:'source',shape:'circle'},{id:'air',label:'Air',role:'process',shape:'box'},{id:'blue',label:'Blue',role:'output',shape:'arrow'}],relations:[{from:'sun',to:'air',kind:'enters'},{from:'air',to:'blue',kind:'scatters'},{from:'blue',to:'viewer',kind:'reaches'}]}}]},
  {scene_id:'SC3',purpose:'close',grounded_fact_ids:['S2'],narration_intent:'Return to the real sky',shots:[{shot_id:'S3A',representation:'context_media',must_show:['blue daytime sky'],must_not_show:[],search_query_en:'blue daytime sky',communication_goal:'Viewer connects explanation to reality',crop_policy:'portrait_required',diagram_spec:null}]}
 ]})};
 const fn=new Function('$input','$',code);
@@ -21,4 +21,6 @@ assert.equal(d.relations.length,2);
 assert.equal(d.relations[0].kind,'flow');
 assert.equal(d.relations[1].kind,'emits');
 assert.equal(d.title,'Scattering');
+assert.equal(d.shot_id,'S2A');
+assert.deepEqual(d.grounded_fact_ids,['S1','S2']);
 console.log('V6_STORYBOARD_CANONICALIZER_REGRESSION_PASS');
