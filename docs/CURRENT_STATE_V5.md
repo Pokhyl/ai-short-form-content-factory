@@ -1840,3 +1840,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11: Storyboard-first DB migration source is drafted, but its first regression run hit a test-source regex escaping mistake before any migration dry-run or DB mutation.
 
 - 2026-09-11: Migration 027 is committed and rollback-dry-run tested, but its first production preflight stopped on a read-only GROUP BY diagnostic mistake before applying DDL. Production schema was not changed in that attempt.
+
+- 2026-09-11: Applied backward-compatible migration `027_storyboard_first_story_package.sql` at zero active executions. `jobs_story_package_check` now preserves `inventory-first-story-v1` and `visual-facts-story-v1` while admitting `storyboard-first-v1` only with `editorial_contract_version=storyboard-v1` and `visual_binding_mode=representation-first-v1`. Existing persisted story versions remained unchanged (13 inventory-first, no V6 story packages yet). Backup: `/opt/ai-short-form-content-factory-runtime-backups/v6-storyboard-first-schema-20260911T100739Z`.
