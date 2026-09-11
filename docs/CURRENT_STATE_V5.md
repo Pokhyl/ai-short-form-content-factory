@@ -1772,3 +1772,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11: Fresh plain-JSON stage job `e31e7b7a-3ba1-45a2-a941-b4e7591a653b` reached WF02 execution `17682` and failed. First read-only decoder invocation was invalid because stdin was consumed by the Node heredoc; exact node failure still needs extraction before any correction.
 
 - 2026-09-11: Fresh stage job `302d93ba-405f-4aac-a816-817615f23cd6` is immutable after WF02 execution `17688`. Root cause was deployment target drift: source WF02 ID `TJfA4ZYUEKSTad6k` was imported instead of stage ID `V6SXn6bN7HHPMdsJ`; stage runtime still had route `default` and the old failure handler. Correct the stage workflow in place by preserving its ID/stage mappings, then verify runtime text before another job.
+
+- 2026-09-11: Stage WF02 readback revealed isolation drift: `V6SXn6bN7HHPMdsJ` currently references production `media-worker` and production WF03. Restore `media-worker-v6` URLs and stage WF03 ID `V6Sbpx10h7QUc0iM` before the next stage job; source WF02 remains inactive and production V5 must stay untouched.
