@@ -85,7 +85,7 @@
           "url": "http://127.0.0.1:5678/webhook/v6-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { prompt: $json.intent_prompt, temperature: 0.05 } }}",
+          "jsonBody": "={{ { prompt: $json.intent_prompt, temperature: 0.05, route: \"semantic\", response_format: \"json\" } }}",
           "options": {
             "timeout": 180000
           }
@@ -160,7 +160,7 @@
           "url": "http://127.0.0.1:5678/webhook/v6-model-gateway",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { prompt: $json.resolution_prompt, temperature: 0.05 } }}",
+          "jsonBody": "={{ { prompt: $json.resolution_prompt, temperature: 0.05, route: \"resolution\", response_format: \"json\" } }}",
           "options": {
             "timeout": 180000
           }
@@ -263,7 +263,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const incoming=$input.first()?.json??{};\nlet jobId=String(incoming.job_id??incoming.requested_job_id??'').trim();\nif(!jobId){try{const x=$('Require Eligible Job').first().json??{};jobId=String(x.job_id??x.requested_job_id??'').trim();}catch{}}\nif(!jobId){try{const x=$('Load Eligible Job').first().json??{};jobId=String(x.job_id??x.requested_job_id??'').trim();}catch{}}\nif(!jobId){try{const x=$('Receive Job ID').first().json??{};jobId=String(x.job_id??x.requested_job_id??'').trim();}catch{}}\nlet message='';const e=incoming.error;if(typeof e==='string')message=e;else if(e&&typeof e==='object')message=String(e.message??e.description??e.cause??'');if(!message)message=String(incoming.message??incoming.error_message??'');if(!message){try{message=JSON.stringify(incoming)}catch{message='WF02 failed'}};message=message.slice(0,4000);if(!jobId)throw new Error('WF02 failure handler could not recover job_id');return [{json:{job_id:jobId,error_message:message}}];"
+          "jsCode": "const incoming=$input.first()?.json??{};\nlet jobId=String(incoming.job_id??incoming.requested_job_id??'').trim();\nif(!jobId){try{const x=$('Require Eligible Job').first().json??{};jobId=String(x.job_id??x.requested_job_id??'').trim();}catch{}}\nif(!jobId){try{const x=$('Load Eligible Job').first().json??{};jobId=String(x.job_id??x.requested_job_id??'').trim();}catch{}}\nif(!jobId){try{const x=$('Receive Job ID').first().json??{};jobId=String(x.job_id??x.requested_job_id??'').trim();}catch{}}\nif(!jobId){try{const xs=$items('Receive Job ID',0,0);const x=xs?.[0]?.json??{};jobId=String(x.job_id??x.requested_job_id??'').trim();}catch{}}\nif(!jobId){try{const xs=$items('Load Eligible Job',0,0);const x=xs?.[0]?.json??{};jobId=String(x.job_id??x.requested_job_id??'').trim();}catch{}}\nlet message='';const e=incoming.error;if(typeof e==='string')message=e;else if(e&&typeof e==='object')message=String(e.message??e.description??e.cause??'');if(!message)message=String(incoming.message??incoming.error_message??'');if(!message){try{message=JSON.stringify(incoming)}catch{message='WF02 failed'}};message=message.slice(0,4000);if(!jobId)throw new Error('WF02 failure handler could not recover job_id');return [{json:{job_id:jobId,error_message:message}}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,

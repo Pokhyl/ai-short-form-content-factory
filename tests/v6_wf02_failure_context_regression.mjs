@@ -12,4 +12,6 @@ const $=(name)=>({first:()=>({json:name==='Require Eligible Job'?{job_id:job}:{}
 const out=new Function('$input','$',code)($input,$);
 assert.equal(out[0].json.job_id,job);
 assert.equal(out[0].json.error_message,'synthetic provider failure');
+assert.match(code,/\$items\('Receive Job ID',0,0\)/);
+assert.match(code,/\$items\('Load Eligible Job',0,0\)/);
 console.log('V6_WF02_FAILURE_CONTEXT_REGRESSION_PASS');
