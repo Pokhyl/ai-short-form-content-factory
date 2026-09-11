@@ -1846,3 +1846,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11: Post-migration E2E `056c7b04-3091-48bf-874f-1f35b2cdb051` proved semantic+resolution success with Liquid, then storyboard Poolside exceeded 65s. Next action is exact-prompt alternate-free-model proof; no timeout inflation and no retry of the failed job.
 
 - 2026-09-11: Ling now returns the exact storyboard quickly enough, but E2E `d2225831-6082-43a1-aa62-75958446886d` exposed scene-label alias drift (`SC1` vs contract `S1`). Next correction is narrow canonicalization before the existing strict sequential scene check.
+
+- 2026-09-11: E2E `2f0bfb45-21b5-4d4d-808a-4aeee4bd24e0` exposed an over-strict diagram grounding rule: a shot-specific diagram subset `[S6,S7]` was rejected because its parent scene also carried contextual evidence `S4`. Correct contract is non-empty diagram evidence subset of scene evidence.
