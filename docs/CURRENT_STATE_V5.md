@@ -1834,3 +1834,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11: Latest V6 resolution-route deployment reached import+publish but the immediate bounded webhook readiness probe timed out. Runtime state must be inspected before any retry; no product job launched from this deploy attempt yet.
 
 - 2026-09-11: V6 E2E `bff5f27e-749a-4bc0-9be7-43b357970ac5` passed semantic, resolution, storyboard, media feasibility, and final-story generation, but DB persistence failed because `jobs_story_package_check` does not yet allow `storyboard-first-v1`. Next correction must be a backward-compatible schema migration plus regression, then a new job.
+
+- 2026-09-11: Migration inspection confirmed `024` and fresh bootstrap both omit `storyboard-first-v1`; the same read-only inspection command also had a harmless unmatched-glob exit that is recorded before continuing.
