@@ -1,0 +1,3 @@
+# WF02 topology materializer preflight failure — 2026-09-11
+
+GitHub Actions run `34634957862` checked out exact parent `8e974e8ff7afddac2132fe3b70e11f93ea2e4ad2` successfully, then exited with code 1 before the Python materialization block began. Therefore no product source or test file was modified and no result branch was pushed. The failure is confined to one of the two redundant preflight `git hash-object` guards executed immediately after the pinned-parent checkout. The parent commit itself is already pinned, and the GitHub Contents API separately verified the expected parent files. Correct only the transport harness by removing those redundant parent-file guards; retain exact post-materialization target blob checks and the two-file diff guard.
