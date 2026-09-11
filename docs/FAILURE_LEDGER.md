@@ -527,3 +527,5 @@ The exact 8.6k-character final-story request from failed job `70168693-c8c9-4ec1
 - 2026-09-11: Read-only migration inspection command returned exit 2 because a shell glob in the optional test listing had no match. No product/runtime mutation occurred. Use bounded `find`/Python discovery instead of failing unmatched globs.
 
 - 2026-09-11: New migration regression `v6_storyboard_first_db_contract_regression.mjs` initially failed to parse because Python materialized `\n` in a JavaScript regex as a literal newline. No runtime/database mutation occurred. Fix the test source escaping before rerunning.
+
+- 2026-09-11: Migration 027 preflight stopped before any schema mutation because the diagnostic story-version count grouped by the concatenated aggregate expression and PostgreSQL rejected it (`aggregate functions are not allowed in GROUP BY`). Correct the read-only query, then re-run the migration preflight; production schema remains unchanged by this attempt.
