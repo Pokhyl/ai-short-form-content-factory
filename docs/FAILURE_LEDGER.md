@@ -468,3 +468,6 @@ The portrait-discovery regression and two visual exploration regressions passed 
 
 ### 2026-09-11 — operator ran stage image build as a blocking SentinelX action
 The first `cf-v6-stage-worker:portrait-discovery` build was launched as a blocking script and the management agent stopped waiting after ~195 seconds. The command result was not returned, so build completion is unknown at this checkpoint; no runtime container replacement or workflow import was attempted. Lesson: long Docker builds must run detached/background and be polled with short status checks.
+
+### 2026-09-11 — portrait-discovery stage image build exhausted root filesystem
+The background-unaware build continued after the management timeout and reached Docker image unpack with `/` at 100%, leaving the build processes stuck. With no filesystem space available to stage the normal ledger write first, emergency host recovery was limited to terminating the two build processes and running `docker builder prune -af` (no volumes, no product data); this reclaimed 4.3 GB of build cache and restored ~1.2 GB free. No production container or V6 stage runtime was replaced. Lesson: never keep old 4.55 GB stage image plus a full replacement build on this disk; free the unused stage runtime image/container first or use a build/deploy path that does not require both unpacked images concurrently.
