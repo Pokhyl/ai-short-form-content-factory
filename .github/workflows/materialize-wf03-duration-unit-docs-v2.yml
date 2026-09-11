@@ -1,0 +1,42 @@
+name: Materialize WF03 duration unit docs v2
+on:
+  push:
+    branches:
+      - transport/wf03-duration-unit-docs-20260911
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Materialize exact docs checkpoint v2
+        shell: bash
+        run: |
+          set -euo pipefail
+          PATCH=.transport/wf03-duration-unit-docs-20260911.patch
+          EXPECTED_PATCH_SHA=e3bf168fd5c97eb52f12afa21b5ca1a51afd98ee007876e4d62e0e075f3b4142
+          PARENT=fadfab4b19cc3e2cbf7d0e0118c2faca9da58057
+          TARGET_TREE=03b9287d7abb62db30dfa76b63357a5239ce3de6
+          CURRENT_BLOB=2d63adf549735d0e7b12d3f1f23ef2f69ab71b71
+          LEDGER_BLOB=3f642a954819633c9cd4aa38772e3dc7172b5bbe
+          RESULT=transport/wf03-duration-unit-docs-result-v2-20260911
+          git show "$GITHUB_SHA:$PATCH" > /tmp/change.patch
+          echo "$EXPECTED_PATCH_SHA  /tmp/change.patch" | sha256sum -c -
+          if git ls-remote --exit-code --heads origin "$RESULT" >/dev/null 2>&1; then
+            echo "result branch already exists" >&2
+            exit 1
+          fi
+          git checkout --detach "$PARENT"
+          git apply --check /tmp/change.patch
+          git apply /tmp/change.patch
+          test "$(git hash-object docs/CURRENT_STATE_V5.md)" = "$CURRENT_BLOB"
+          test "$(git hash-object docs/FAILURE_LEDGER.md)" = "$LEDGER_BLOB"
+          git add docs/CURRENT_STATE_V5.md docs/FAILURE_LEDGER.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'docs: checkpoint WF03 regression scope'
+          test "$(git rev-parse HEAD^{tree})" = "$TARGET_TREE"
+          git push origin "HEAD:refs/heads/$RESULT"
