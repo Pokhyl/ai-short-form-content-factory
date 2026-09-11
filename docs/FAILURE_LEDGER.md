@@ -474,3 +474,6 @@ The background-unaware build continued after the management timeout and reached 
 
 ### 2026-09-11 — operator stage-container inspection emitted raw environment values internally
 A read-only Docker inspection included the full stage worker environment in the operator tool output while checking how to recreate the container. No credentials were written to GitHub/docs and no product state changed, but raw environment values should not be emitted during routine inspection. Lesson: inspect only environment key names or pass existing environment directly into recreation commands without printing values.
+
+### 2026-09-11 — V6 job 70168693 reached final-story generation and exhausted free provider
+Fresh immutable stage job `70168693-c8c9-4ec1-8fe5-90bb43138816` (`Почему небо голубое?`, ru, 15s) passed semantic resolution, storyboard generation, deterministic external-media feasibility and diagram planning, then failed in WF02 execution `17773` with `free-only final story provider exhausted [line 1]`. The job remains failed/immutable. Inspect the exact final-story gateway attempt before any retry; do not weaken story/grounding checks or use Gemini/paid fallback.
