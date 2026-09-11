@@ -1,0 +1,3 @@
+# WF03 bracket-controller regression expectation drift — 2026-09-11
+
+The broad current V6/WF03 regression scope reached `tests/wf03_duration_bracket_controller_regression.mjs` and failed only because the fixture still expected the old diagnostic mode string `measured_bracket_interpolation`. The intentional single-pass boundary-target correction now reports `measured_bracket_interpolation_overlong_lower_bound` for an overlong sample. This is a regression-expectation defect caused by the deliberate controller-mode refinement, not a product failure. Update only the expected mode assertion; do not change the controller behavior or weaken any duration gate.
