@@ -477,3 +477,6 @@ A read-only Docker inspection included the full stage worker environment in the 
 
 ### 2026-09-11 — V6 job 70168693 reached final-story generation and exhausted free provider
 Fresh immutable stage job `70168693-c8c9-4ec1-8fe5-90bb43138816` (`Почему небо голубое?`, ru, 15s) passed semantic resolution, storyboard generation, deterministic external-media feasibility and diagram planning, then failed in WF02 execution `17773` with `free-only final story provider exhausted [line 1]`. The job remains failed/immutable. Inspect the exact final-story gateway attempt before any retry; do not weaken story/grounding checks or use Gemini/paid fallback.
+
+### 2026-09-11 — operator benchmark called V6 internal model gateway through public URL and got 403
+A read-only benchmark of the exact final-story prompt attempted `https://publisher.hodor.com.pl/webhook/v6-model-gateway` from the host and received HTTP 403 before reaching the gateway. No model request or product state change occurred. Lesson: V6 model-gateway benchmarks must use the already-established internal n8n webhook (`http://127.0.0.1:5678/webhook/v6-model-gateway`) from inside the n8n container, not the public edge URL.

@@ -1812,3 +1812,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 2026-09-11 operator note: one internal stage-container inspection printed raw environment values while gathering recreation metadata. No values are copied into repository/docs. Future inspections must print only env keys; container recreation should transfer env without echoing it.
 
 2026-09-11 V6 stage checkpoint: job `70168693-c8c9-4ec1-8fe5-90bb43138816` progressed beyond the prior S1A media-feasibility blocker and reached final-story generation. It failed in WF02 execution `17773` with `free-only final story provider exhausted [line 1]`. This proves the English portrait retrieval change is effective enough to pass feasibility; next inspect the exact free final-story provider failure before correction.
+
+2026-09-11 operator note: the first exact final-story benchmark used the public publisher URL and was rejected with HTTP 403 before reaching V6 model gateway. Retry only through the internal localhost webhook inside n8n; no product state changed.
