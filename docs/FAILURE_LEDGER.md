@@ -456,3 +456,6 @@ A read-only execution decoder piped execution 17765 into `node` inside the n8n c
 
 ### 2026-09-11 — execution 17765 decoder received empty stdin
 After resolving the installed `flatted` package path, the read-only decoder pipeline for execution 17765 still failed with `Unexpected end of JSON input` because no execution-data text reached the decoder stdin. No product state changed. Lesson: verify `n8n.execution_data` row presence/length separately before piping and avoid assuming the execution-data row is directly emitted by the first query.
+
+### 2026-09-11 — root cause of empty execution decoder input was stdin collision
+Follow-up verification showed execution 17765 has one `n8n.execution_data` row with 143,841 characters. The decoder got empty payload because `node - <<'NODE'` consumed stdin for the script itself while the same stdin was also expected to carry piped execution data. No product state changed. Lesson: when piping execution payload, run decoder code via `node -e` or a mounted script file; never combine a data pipe with a heredoc on stdin.

@@ -1798,3 +1798,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 2026-09-11 operator note: execution 17765 inspection initially failed because the decoder assumed top-level `require('flatted')` in the n8n container. No product state changed; resolve the actual installed package path or use a self-contained decoder before retrying inspection.
 
 2026-09-11 operator note: the second read-only decoder attempt for execution 17765 resolved the actual `flatted` package but received empty stdin and failed before decoding. No product state changed. Verify execution_data row presence/length separately before the next inspection attempt.
+
+2026-09-11 operator correction: execution 17765 does contain 143,841 characters of execution data. Empty decoder input was caused by using a heredoc and a data pipe on the same stdin. Use `node -e`/script file for payload decoding.
