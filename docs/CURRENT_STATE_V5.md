@@ -1790,3 +1790,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 2026-09-11 — V6 fresh job `a9b08920-d81a-4fe9-a485-be73089ede38` is immutable after WF02 `17749`. Failure occurred before research: Kilo throttled the sole Liquid semantic route with a batching/rate-limit style upstream error. The prior 3/3 Liquid proof is therefore insufficient for provider availability. Next step is exact-prompt comparison and a single bounded free semantic failover, not sleeps or arbitrary retries.
 
 2026-09-11 — Semantic failover test note: new bounded Liquid→Cohere free failover regression itself passes, but the generic gateway regression still asserts the old direct Normalize→Respond edge. Runtime is unchanged. Synchronize that stale test with the new single-fallback topology before deploy.
+
+2026-09-11 operator note: a V6 preflight used unqualified `execution_entity`; PostgreSQL rejected it because n8n runtime tables are under schema `n8n`. No product state changed. Future operator SQL must schema-qualify n8n runtime tables.
