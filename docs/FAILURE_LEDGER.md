@@ -450,3 +450,6 @@ A read-only preflight queried `execution_entity` without the `n8n.` schema and P
 
 ### 2026-09-11 — V6 stage job d9893ac3 failed storyboard media feasibility at S1A
 Fresh immutable stage job `d9893ac3-4f92-4149-8f8e-255902b7b94d` (`Почему небо голубое?`, ru, 15s) passed semantic resolution and storyboard generation far enough to reach storyboard-media feasibility, then failed at WF02 execution `17765` with `no deterministic executable media for storyboard shot S1A [line 2]`. The job remains failed/immutable. Before any retry, inspect the exact S1A contract and discovery response; do not weaken feasibility gates or manually choose an asset.
+
+### 2026-09-11 — operator assumed `flatted` was top-level require in n8n container
+A read-only execution decoder piped execution 17765 into `node` inside the n8n container and attempted `require('flatted')`; the n8n image does not expose that package as a top-level module, so the decoder failed before reading execution data. No product state changed. Lesson: resolve the installed package path first or use a self-contained decoder; do not assume transitive pnpm dependencies are top-level requires.
