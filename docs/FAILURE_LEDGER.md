@@ -508,3 +508,9 @@ The exact 8.6k-character final-story request from failed job `70168693-c8c9-4ec1
 - Failure: the post-deploy runtime inspection command failed before reading workflow/webhook state because shell-escaped `\x27` fragments were passed literally into PostgreSQL SQL.
 - Cause: over-escaped SQL inside nested `docker exec sh -lc` quoting.
 - Rule: use Python subprocess argument lists or a simple psql heredoc for n8n schema inspection; do not build SQL quoting through nested shell escape sequences.
+
+### 2026-09-11 — V6 evidence-grounded resolution invalid JSON after final-story route fix
+- Job: `2228e833-50ec-4d2b-9b21-d57ba6a40ae6` (immutable failed product job).
+- Failure: WF02 failed at evidence-grounded topic resolution with `evidence-grounded topic resolver returned invalid JSON [line 1]` after semantic intake had already completed.
+- Cause: not yet established at record time; exact gateway execution/output must be inspected before correction.
+- Rule: treat structured-resolution parse failure as a provider/output-contract failure; inspect the exact response before changing model, prompt, parser, budget, or timeout.
