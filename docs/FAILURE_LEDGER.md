@@ -493,3 +493,8 @@ The exact 8.6k-character final-story request from failed job `70168693-c8c9-4ec1
 - Failure: the V6 full regression suite failed in `v6_semantic_model_route_regression.mjs` after final_story was intentionally moved onto the same Liquid route as semantic intake.
 - Cause: the test asserted the old exact ternary fragment `route==='semantic'?...` instead of the current consolidated `(semantic || final_story)` route expression.
 - Rule: route regression tests must assert provider ownership semantically and be updated in the same change when route predicates are intentionally consolidated.
+
+### 2026-09-11 — stale storyboard provider regression after final-story route switch
+- Failure: the V6 full regression suite failed in `v6_storyboard_poolside_route_regression.mjs` because it still asserted Cohere for `final_story` after the exact final-story prompt had been proven on Liquid and the gateway route was intentionally switched.
+- Cause: provider-routing regression bundled an unrelated final-story assertion with the storyboard Poolside assertion.
+- Rule: route-specific regressions must assert only their own provider contract; final-story provider ownership belongs in the dedicated final-story regression.

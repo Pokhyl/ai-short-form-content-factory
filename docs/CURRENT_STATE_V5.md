@@ -1820,3 +1820,5 @@ V6 exact storyboard free-model proof, 2026-09-10: on the actual 5,550-character 
 - 2026-09-11 operator note: V6 regression execution must use `docker run --entrypoint node ... n8nio/n8n:2.37.10 <test>` when the host has no Node; the n8n image default entrypoint is not a generic Node runner.
 
 - 2026-09-11 operator note: after consolidating `semantic` and `final_story` onto Liquid free structured JSON, the stale semantic-route exact-string regression was updated; this was a test-contract drift, not a runtime failure.
+
+- 2026-09-11 operator note: storyboard Poolside regression contained a stale unrelated Cohere final-story assertion; final_story provider ownership is now covered by its dedicated Liquid-route regression.
