@@ -59,7 +59,6 @@ class Kokoro {
         const detail = await response.text();
         throw new Error(`Piper TTS failed: ${response.status} ${detail}`);
       }
-
       const audioBuffer = Buffer.from(await response.arrayBuffer());
       const audioLength = wavDurationSeconds(audioBuffer);
       const audio = audioBuffer.buffer.slice(
@@ -67,10 +66,10 @@ class Kokoro {
         audioBuffer.byteOffset + audioBuffer.byteLength,
       );
       config_1.logger.debug(
-        { text, voice: "uk_UA-mykyta-high", audioLength },
+        { text, voice: "uk_UA-mykyta-high", audioLength, captionCount: 0 },
         "Audio generated with Piper TTS",
       );
-      return { audio, audioLength };
+      return { audio, audioLength, captions: [] };
     }
 
     const response = await fetch(`${this.baseUrl}/synthesize`, {
@@ -92,11 +91,26 @@ class Kokoro {
     if (!Number.isFinite(audioLength) || audioLength <= 0) {
       throw new Error("Edge TTS returned invalid audio length");
     }
+    const captions = Array.isArray(payload.word_boundaries)
+      ? payload.word_boundaries
+          .map((item) => ({
+            text: String(item.text || "").trim(),
+            startMs: Number(item.start_ms),
+            endMs: Number(item.end_ms),
+          }))
+          .filter(
+            (item) =>
+              item.text &&
+              Number.isFinite(item.startMs) &&
+              Number.isFinite(item.endMs) &&
+              item.endMs > item.startMs,
+          )
+      : [];
     config_1.logger.debug(
-      { text, voice: selectedVoice, audioLength },
+      { text, voice: selectedVoice, audioLength, captionCount: captions.length },
       "Audio generated with Edge TTS",
     );
-    return { audio, audioLength };
+    return { audio, audioLength, captions };
   }
 
   static async init(_dtype) {
@@ -110,5 +124,4 @@ class Kokoro {
     return EDGE_VOICES;
   }
 }
-
 exports.Kokoro = Kokoro;
