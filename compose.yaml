@@ -54,6 +54,18 @@ services:
       timeout: 3s
       retries: 20
 
+  piper-tts:
+    build:
+      context: ./services/piper-tts
+    image: ai-short-form-content-factory/piper-tts:uk-mykyta-high
+    container_name: ai-short-form-piper-tts
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/info', timeout=2).read()"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
   short-video-maker:
     build:
       context: ./engine-overlay
@@ -63,9 +75,12 @@ services:
     depends_on:
       edge-tts:
         condition: service_healthy
+      piper-tts:
+        condition: service_healthy
     environment:
       PEXELS_API_KEY: ${PEXELS_API_KEY}
       EDGE_TTS_URL: http://edge-tts:3002
+      PIPER_TTS_URL: http://piper-tts:5000
       LOG_LEVEL: debug
       WHISPER_VERBOSE: "false"
       PORT: "3123"
