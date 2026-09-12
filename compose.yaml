@@ -41,6 +41,9 @@ services:
       - "127.0.0.1:5679:5678"
     volumes:
       - n8n_data:/home/node/.n8n
+    networks:
+      - default
+      - caddy_shared
 
   edge-tts:
     build:
@@ -92,3 +95,8 @@ services:
 volumes:
   postgres_data_v2:
   n8n_data:
+
+networks:
+  caddy_shared:
+    external: true
+    name: n8n_default
