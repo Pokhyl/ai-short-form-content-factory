@@ -5,7 +5,7 @@ const wordsPerSecond = {
   en: 2.34,
   pl: 1.80,
   ru: 1.88,
-  uk: 1.74,
+  uk: 1.48,
 };
 
 const speechLexicon = {
@@ -18,13 +18,12 @@ const speechLexicon = {
 const normalizeForSpeech = (input, language) => {
   const lexicon = speechLexicon[language] ?? speechLexicon.en;
   return String(input ?? '')
-    .normalize('NFD')
-    .replace(/\p{M}+/gu, '')
     .normalize('NFC')
+    .replace(/[\u0301\u0341]/g, '')
     .replace(/≈/g, lexicon.approx)
     .replace(/(\d(?:[\d\s.,]*\d|\d)?)\s*%/g, `$1${lexicon.percent}`)
-    .replace(/\bмлрд\.?\b/giu, lexicon.billion)
-    .replace(/\bмлн\.?\b/giu, lexicon.million)
+    .replace(/млрд\.?/giu, lexicon.billion)
+    .replace(/млн\.?/giu, lexicon.million)
     .replace(/\(([^()]+)\)/g, ', $1,')
     .replace(/\s+[—–]\s+/g, ', ')
     .replace(/\s*;\s*/g, '. ')
