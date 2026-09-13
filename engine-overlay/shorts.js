@@ -28,9 +28,9 @@ var CaptionPositionEnum;
 })(CaptionPositionEnum || (exports.CaptionPositionEnum = CaptionPositionEnum = {}));
 exports.sceneInput = zod_1.default.object({
     text: zod_1.default.string().describe("Text to be spoken in the video"),
-    searchTerms: zod_1.default
-        .array(zod_1.default.string())
-        .describe("Search term for video, 1 word, and at least 2-3 search terms should be provided for each scene. Make sure to match the overall context with the word - regardless what the video search result would be."),
+    mediaContext: zod_1.default.string().optional().describe("Full current semantic thought used as the primary visual-resolution context."),
+    mediaHistory: zod_1.default.string().optional().describe("Immediately preceding semantic context used only as a secondary disambiguation signal."),
+    searchTerms: zod_1.default.array(zod_1.default.string()).describe("Search term for video, 1 word, and at least 2-3 search terms should be provided for each scene. Make sure to match the overall context with the word - regardless what the video search result would be."),
 });
 var VoiceEnum;
 (function (VoiceEnum) {
@@ -76,35 +76,14 @@ var MusicVolumeEnum;
     MusicVolumeEnum["high"] = "high";
 })(MusicVolumeEnum || (exports.MusicVolumeEnum = MusicVolumeEnum = {}));
 exports.renderConfig = zod_1.default.object({
-    paddingBack: zod_1.default
-        .number()
-        .optional()
-        .describe("For how long the video should be playing after the speech is done, in milliseconds. 1500 is a good value."),
-    music: zod_1.default
-        .nativeEnum(MusicMoodEnum)
-        .optional()
-        .describe("Music tag to be used to find the right music for the video"),
-    captionPosition: zod_1.default
-        .nativeEnum(CaptionPositionEnum)
-        .optional()
-        .describe("Position of the caption in the video"),
-    captionBackgroundColor: zod_1.default
-        .string()
-        .optional()
-        .describe("Background color of the caption, a valid css color, default is blue"),
-    voice: zod_1.default
-        .string()
-        .min(1)
-        .optional()
-        .describe("Voice identifier used by the configured text-to-speech adapter"),
-    orientation: zod_1.default
-        .nativeEnum(OrientationEnum)
-        .optional()
-        .describe("Orientation of the video, default is portrait"),
-    musicVolume: zod_1.default
-        .nativeEnum(MusicVolumeEnum)
-        .optional()
-        .describe("Volume of the music, default is high"),
+    paddingBack: zod_1.default.number().optional().describe("For how long the video should be playing after the speech is done, in milliseconds. 1500 is a good value."),
+    targetDurationSeconds: zod_1.default.number().positive().optional().describe("Requested final video duration in seconds."),
+    music: zod_1.default.nativeEnum(MusicMoodEnum).optional().describe("Music tag to be used to find the right music for the video"),
+    captionPosition: zod_1.default.nativeEnum(CaptionPositionEnum).optional().describe("Position of the caption in the video"),
+    captionBackgroundColor: zod_1.default.string().optional().describe("Background color of the caption, a valid css color, default is blue"),
+    voice: zod_1.default.string().min(1).optional().describe("Voice identifier used by the configured text-to-speech adapter"),
+    orientation: zod_1.default.nativeEnum(OrientationEnum).optional().describe("Orientation of the video, default is portrait"),
+    musicVolume: zod_1.default.nativeEnum(MusicVolumeEnum).optional().describe("Volume of the music, default is high"),
 });
 exports.createShortInput = zod_1.default.object({
     scenes: zod_1.default.array(exports.sceneInput).describe("Each scene to be created"),
