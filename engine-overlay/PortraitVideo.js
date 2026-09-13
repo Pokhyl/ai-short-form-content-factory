@@ -64,9 +64,9 @@ const PortraitVideo = ({ scenes, music, config }) => {
         const videoScale = 1.05 + progress * 0.08;
         const videoDrift = (i % 2 === 0 ? -1 : 1) * (2 - progress * 4);
 
-        const mediaLayer = mediaType === "image"
+        const renderVisual = (url, type) => type === "image"
           ? (0, jsx_runtime_1.jsx)(remotion_1.Img, {
-              src: video,
+              src: url,
               style: {
                 width: "100%",
                 height: "100%",
@@ -74,7 +74,7 @@ const PortraitVideo = ({ scenes, music, config }) => {
               },
             })
           : (0, jsx_runtime_1.jsx)(remotion_1.OffthreadVideo, {
-              src: video,
+              src: url,
               muted: true,
               loop: true,
               style: {
@@ -84,6 +84,14 @@ const PortraitVideo = ({ scenes, music, config }) => {
                 backgroundColor: "black",
               },
             });
+
+        const mediaLayer = scene.visuals?.length
+          ? scene.visuals.map((visual, index) => (0, jsx_runtime_1.jsx)(remotion_1.Sequence, {
+              from: Math.round(visual.startSeconds * fps),
+              durationInFrames: Math.max(1, Math.round((visual.startSeconds + visual.durationSeconds) * fps) - Math.round(visual.startSeconds * fps)),
+              children: renderVisual(visual.url, visual.mediaType),
+            }, `visual-${i}-${index}`))
+          : renderVisual(video, mediaType);
 
         return (0, jsx_runtime_1.jsxs)(remotion_1.Sequence, {
           from: startFrame,

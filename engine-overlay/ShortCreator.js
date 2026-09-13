@@ -68,7 +68,7 @@ const buildPortraitFrame = async (inputPaths, outputPath) => {
         );
     } else {
         const filters = inputPaths.map((_, index) =>
-            `[${index}:v]scale=1080:${tileHeight}:force_original_aspect_ratio=increase,crop=1080:${tileHeight},setsar=1[v${index}]`,
+            `[${index}:v]scale=1080:${tileHeight}:force_original_aspect_ratio=decrease,pad=1080:${tileHeight}:(ow-iw)/2:(oh-ih)/2:black,setsar=1[v${index}]`,
         );
         const stackInputs = inputPaths.map((_, index) => `[v${index}]`).join("");
         filters.push(`${stackInputs}vstack=inputs=${tileCount}[out]`);
@@ -293,6 +293,8 @@ class ShortCreator {
         if (!Array.isArray(inputScenes) || inputScenes.length === 0) {
             throw new Error("At least one scene is required");
         }
+        inputScenes = this.pexelsApi.prepareScenes(inputScenes);
+        const preflightMedia = await this.pexelsApi.preflightScenes(inputScenes);
         const orientation = config.orientation || shorts_1.OrientationEnum.portrait;
         const narrationText = inputScenes.map((scene) => String(scene.text || "").trim()).filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
         if (!narrationText) {
@@ -386,21 +388,7 @@ class ShortCreator {
                 }))
                 .filter((caption) => caption.endMs > caption.startMs);
             const requiredVideoDuration = sceneDuration + (isLastScene && effectivePaddingBack ? effectivePaddingBack / 1000 : 0);
-            const portraitAspect = 1080 / 1920;
-            const mediaSearchTerms = [
-                ...(Array.isArray(scene.searchTerms) ? scene.searchTerms : []),
-                `scenecontext::${encodeURIComponent(String(scene.text || "").trim())}`,
-                `semanticcontext::${encodeURIComponent(String(scene.mediaContext || scene.text || "").trim())}`,
-                `historycontext::${encodeURIComponent(String(scene.mediaHistory || "").trim())}`,
-                "mediapreference::image",
-            ];
-            const primary = await this.pexelsApi.findVideo(
-                mediaSearchTerms,
-                requiredVideoDuration,
-                excludeVideoIds,
-                orientation,
-                portraitAspect,
-            );
+            const primary = preflightMedia[index];
             let mediaType = primary.kind === "image" ? "image" : "video";
             let finalMediaFileName = null;
 
@@ -420,53 +408,37 @@ class ShortCreator {
                 }
             };
 
-            if (mediaType === "image") {
-                const extension = primary.extension || ".jpg";
-                const inputFileName = `${(0, cuid_1.default)()}${extension}`;
-                const inputPath = path_1.default.join(this.config.tempDirPath, inputFileName);
-                tempFiles.push(inputPath);
-                logger_1.logger.debug({
-                    sceneIndex: index,
-                    sceneText: scene.text,
-                    sceneStartSeconds,
-                    sceneEndSeconds,
-                    source: primary.source,
-                    title: primary.title,
-                    visualQuery: primary.visualQuery || null,
-                    groundedEntity: primary.groundedEntity || null,
-                    resolutionType: primary.resolutionType || null,
-                    confidence: primary.confidence || null,
-                    url: primary.url,
-                    width: primary.width,
-                    height: primary.height,
-                }, `Downloading scene-relevant source media to ${inputPath}`);
-                await downloadWithRetry(primary, inputPath);
-                if (String(primary.source || "").startsWith("wikipedia_")) {
-                    await new Promise((resolve) => setTimeout(resolve, 350));
+            const shots = await this.pexelsApi.planShots(primary, requiredVideoDuration);
+            const preparedFiles = new Map();
+            const visuals = [];
+            for (const shot of shots) {
+                const media = shot.media;
+                if (!preparedFiles.has(media.mediaKey)) {
+                    const inputPaths = [];
+                    for (const component of media.components || [media]) {
+                        const inputPath = path_1.default.join(this.config.tempDirPath, `${(0, cuid_1.default)()}${component.extension}`);
+                        tempFiles.push(inputPath);
+                        await downloadWithRetry(component, inputPath);
+                        inputPaths.push(inputPath);
+                    }
+                    if (media.kind === "image") {
+                        const frameName = `${(0, cuid_1.default)()}.jpg`;
+                        const framePath = path_1.default.join(this.config.tempDirPath, frameName);
+                        tempFiles.push(framePath);
+                        await buildPortraitFrame(inputPaths, framePath);
+                        preparedFiles.set(media.mediaKey, frameName);
+                    } else {
+                        preparedFiles.set(media.mediaKey, path_1.default.basename(inputPaths[0]));
+                    }
                 }
-                excludeVideoIds.push(primary.id);
-
-                finalMediaFileName = `${(0, cuid_1.default)()}.jpg`;
-                const portraitPath = path_1.default.join(this.config.tempDirPath, finalMediaFileName);
-                tempFiles.push(portraitPath);
-                await buildPortraitFrame([inputPath], portraitPath);
-                logger_1.logger.debug({
-                    sceneIndex: index,
-                    sceneText: scene.text,
-                    outputWidth: 1080,
-                    outputHeight: 1920,
-                    sourceMedia: { title: primary.title, width: primary.width, height: primary.height },
-                }, "Built single-image 1080x1920 scene frame");
+                visuals.push({
+                    url: `http://localhost:${this.config.port}/api/tmp/${preparedFiles.get(media.mediaKey)}`,
+                    mediaType: media.kind,
+                    startSeconds: shot.startSeconds,
+                    durationSeconds: shot.durationSeconds,
+                });
             }
-            else {
-                const extension = primary.extension || ".mp4";
-                finalMediaFileName = `${(0, cuid_1.default)()}${extension}`;
-                const targetPath = path_1.default.join(this.config.tempDirPath, finalMediaFileName);
-                tempFiles.push(targetPath);
-                logger_1.logger.debug({ mediaType, source: primary.source, url: primary.url }, `Downloading media to ${targetPath}`);
-                await downloadWithRetry(primary, targetPath);
-                excludeVideoIds.push(primary.id);
-            }
+            finalMediaFileName = preparedFiles.get(primary.mediaKey);
 
             sceneAudit.push({
                 sceneIndex: index,
@@ -478,6 +450,13 @@ class ShortCreator {
                 captionEndIndex,
                 boundarySource,
                 groundedEntity: primary.groundedEntity || null,
+                groundedEntityId: primary.groundedEntityId,
+                subjectEvidence: primary.subject,
+                sourceRevision: primary.sourceRevision,
+                mediaKey: primary.mediaKey,
+                reuseReason: primary.reuseReason || null,
+                components: primary.components || null,
+                visualShots: shots.map(shot => ({startSeconds: shot.startSeconds, durationSeconds: shot.durationSeconds, mediaKey: shot.media.mediaKey, title: shot.media.title, source: shot.media.source, holdReason: shot.holdReason || null})),
                 visualQuery: primary.visualQuery || null,
                 selectedMediaTitle: primary.title || null,
                 selectedMediaSource: primary.source || null,
@@ -492,6 +471,7 @@ class ShortCreator {
             scenes.push({
                 captions,
                 video: `http://localhost:${this.config.port}/api/tmp/${finalMediaFileName}`,
+                visuals,
                 mediaType,
                 audio: { url: narrationUrl, duration: sceneDuration },
             });

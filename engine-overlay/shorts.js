@@ -28,9 +28,9 @@ var CaptionPositionEnum;
 })(CaptionPositionEnum || (exports.CaptionPositionEnum = CaptionPositionEnum = {}));
 exports.sceneInput = zod_1.default.object({
     text: zod_1.default.string().describe("Text to be spoken in the video"),
-    mediaContext: zod_1.default.string().optional().describe("Full current semantic thought used as the primary visual-resolution context."),
-    mediaHistory: zod_1.default.string().optional().describe("Immediately preceding semantic context used only as a secondary disambiguation signal."),
-    searchTerms: zod_1.default.array(zod_1.default.string()).describe("Search term for video, 1 word, and at least 2-3 search terms should be provided for each scene. Make sure to match the overall context with the word - regardless what the video search result would be."),
+    mediaContext: zod_1.default.string().optional().describe("Legacy context field. Visual subjects are derived from the current scene text."),
+    mediaHistory: zod_1.default.string().optional().describe("Legacy field. Visual preflight derives history exclusively from its immediately preceding semantic scene."),
+    searchTerms: zod_1.default.array(zod_1.default.string()).describe("Include exactly one visualsource::<uk|ru|pl|en>::<URL-encoded source title>::<URL-encoded English title>. Generic searches and unverified direct media are rejected."),
 });
 var VoiceEnum;
 (function (VoiceEnum) {

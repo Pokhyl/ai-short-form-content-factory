@@ -1,0 +1,6 @@
+{
+  "name": "visual-resolver-regressions",
+  "private": true,
+  "scripts": {"test": "node --test tests/*.test.cjs", "test:mapping": "node scripts/resolver-mapping.cjs"},
+  "engines": {"node": ">=20"}
+}

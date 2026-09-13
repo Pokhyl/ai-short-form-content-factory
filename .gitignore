@@ -6,3 +6,5 @@ studio/videos/
 .last_*
 .multilang_jobs
 *.download.mp4
+.venv/
+__pycache__/
