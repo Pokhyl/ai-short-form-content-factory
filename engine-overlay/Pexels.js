@@ -100,9 +100,26 @@ class PexelsAPI {
   async ground(lang, title) {
     const key = `${lang}:${title}`;
     if (this.entities.has(key)) return this.entities.get(key);
-    const local = pageFrom(await this.query(`https://${lang}.wikipedia.org/w/api.php`, {
+    const localData = await this.query(`https://${lang}.wikipedia.org/w/api.php`, {
       action: 'query', titles: title, redirects: '1', prop: 'langlinks|pageprops', lllang: 'en', lllimit: '1', ppprop: 'wikibase_item|disambiguation',
-    }));
+    });
+    let local = pageFrom(localData);
+    const fragment = localData.query?.redirects?.find(r => r.tofragment);
+    if (fragment) {
+      // The first lookup can redirect to a section too. Its destination QID
+      // identifies the containing article, not the requested concept.
+      const exact = await this.query('https://www.wikidata.org/w/api.php', {
+        action:'wbgetentities',sites:`${lang}wiki`,titles:fragment.from,
+        props:'claims|labels|aliases|sitelinks',languages:'en',sitefilter:`${lang}wiki|enwiki`,
+      });
+      const matches = Object.values(exact.entities || {}).filter(e =>
+        /^Q\d+$/.test(e.id || '') && e.missing === undefined &&
+        normalize(e.sitelinks?.[`${lang}wiki`]?.title) === normalize(fragment.from));
+      if (matches.length !== 1) fail('exact_grounding_missing', key);
+      const wd = matches[0];
+      this.wikidata.set(wd.id, wd);
+      local = {title:fragment.from,pageprops:{wikibase_item:wd.id},langlinks:[{lang:'en','*':wd.sitelinks?.enwiki?.title}]};
+    }
     const qid = local?.pageprops?.wikibase_item;
     const englishTitle = lang === 'en' ? local?.title : local?.langlinks?.find(l => l.lang === 'en')?.['*'];
     if (!/^Q[0-9]+$/.test(qid || '') || !englishTitle) fail('exact_grounding_missing', key);
@@ -197,9 +214,18 @@ class PexelsAPI {
     const unmatched = words(subject.listText).filter(w => !candidates.some(c => w.start >= c.start && w.end <= c.end));
     if (unmatched.some(w => !/^(?:and|та|і|и|oraz|i)$/.test(w.text))) fail('unresolved_group_member', subject.listText);
     const members = new Map();
+    const spanIdentities = new Map();
+    const grounded = [];
     for (const candidate of candidates.sort((a,b) => a.start-b.start)) {
       const member = await this.ground(spec.lang, candidate.title);
+      const span = `${candidate.start}:${candidate.end}`;
+      if (spanIdentities.has(span) && spanIdentities.get(span) !== member.qid) fail('ambiguous_group_member', candidate.surface);
+      spanIdentities.set(span, member.qid);
+      grounded.push(member);
+    }
+    for (const member of grounded) {
       if (member.qid === entity.qid) continue;
+      if (members.has(member.qid)) continue;
       const media = await this.selectMedia(member, new Map());
       members.set(member.qid, {...media, groundedEntity:member.englishTitle, groundedEntityId:member.qid});
     }
@@ -211,6 +237,7 @@ class PexelsAPI {
   prepareScenes(scenes) {
     if (!Array.isArray(scenes) || !scenes.length) fail('empty_scenes', 'At least one scene is required');
     return scenes.flatMap((scene, inputSceneIndex) => {
+      if (typeof scene?.text !== 'string' || !scene.text.trim()) fail('empty_scene', `Scene ${inputSceneIndex}`);
       const spec = sourceSpec(scene.searchTerms);
       const segments = [...new Intl.Segmenter(spec.lang, {granularity: 'sentence'}).segment(String(scene.text || ''))];
       return segments.map(s => ({...scene, text: s.segment.trim(), mediaContext: s.segment.trim(), mediaHistory: undefined, inputSceneIndex})).filter(s => s.text);

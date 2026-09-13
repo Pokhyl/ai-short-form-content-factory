@@ -1,5 +1,8 @@
 # Visual resolver review — Issue #8
 
+> Current authorization update (2026-09-13): the user explicitly lifted the production deployment restriction and asked work to continue. Deploying the tested renderer and creating a NEW normal validation job are now authorized. Do not ask for deployment permission again. TTS/settings and old jobs must remain unchanged. Production validation is in progress; HUMAN PASS still requires the user to watch the resulting MP4.
+
+
 No production deployment or production job was performed. Human review of a production MP4 remains outstanding.
 
 ## Implementation

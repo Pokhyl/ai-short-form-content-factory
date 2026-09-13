@@ -129,3 +129,41 @@ test('repeated entities choose alternate exact media before reusing', async () =
   assert.notEqual(result[0].mediaKey,result[1].mediaKey);
   assert.equal(result[1].reuseReason,undefined);
 });
+
+test('a section redirect in the local lookup cannot become the containing topic', async () => {
+  const resolver=api(), fetch=resolver.fetchJson;
+  resolver.fetchJson=async url=>{
+    const p=new URL(url).searchParams;
+    if (p.get('titles')==='Inner planet') return {query:{redirects:[{from:'Inner planet',to:'Solar System',tofragment:'Inner planets'}],pages:{1:{pageid:1,title:'Solar System',pageprops:{wikibase_item:'Q544'}}}}};
+    return fetch(url);
+  };
+  await assert.rejects(resolver.ground('en','Inner planet'), /identity|grounding/);
+});
+
+test('empty intervening scenes cannot silently extend anaphora history', () => {
+  assert.throws(()=>api().prepareScenes([scene('Gas giants are massive.'),scene('   '),scene('These are large.')]), /empty_scene/);
+});
+
+test('local section redirect can ground only through its own exact sitelink', async () => {
+  const resolver=api(), fetch=resolver.fetchJson;
+  resolver.fetchJson=async url=>{
+    const p=new URL(url).searchParams;
+    if (p.get('sites')==='enwiki') return {entities:{Q3504248:{id:'Q3504248',sitelinks:{enwiki:{title:'Inner planet'}},claims:{}}}};
+    if (p.get('titles')==='Inner planet') return {query:{redirects:[{from:'Inner planet',to:'Solar System',tofragment:'Inner planets'}],pages:{1:{pageid:1,title:'Solar System',pageprops:{wikibase_item:'Q544'}}}}};
+    return fetch(url);
+  };
+  const grounded=await resolver.ground('en','Inner planet');
+  assert.equal(grounded.qid,'Q3504248');
+  assert.equal(grounded.englishTitle,'Inner planet');
+  assert.equal(grounded.page,null);
+});
+
+test('an ambiguous list-member alias cannot add an unrelated montage member', async () => {
+  const resolver=api(), fetch=resolver.fetchJson;
+  resolver.fetchJson=async url=>{
+    const data=await fetch(url);
+    if (data.parse?.wikitext) data.parse.wikitext['*']+='\n[[Earth|Mercury]]';
+    return data;
+  };
+  await assert.rejects(resolver.preflightScenes([fixture.scenes('en')[0]]), /ambiguous_group_member/);
+});
