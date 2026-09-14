@@ -57,3 +57,7 @@ Unsupported/ambiguous grammatical constructions and unavailable exact media fail
 The previous mixed-population rejection has been addressed with explicit all-member treatment of existential example lists. Quantified coordinated subjects preserve both groups; descriptive paired appositions retain the leading subject. Unknown list members still fail. An inadequate page thumbnail can use exact same-QID Wikidata P18, with unchanged media quality gates. New tests were run failing before implementation.
 
 51/51 tests pass natively. `tests/enumeration.test.cjs` includes multilingual non-astronomy cases, negative cases and exact member-media integration. Current changes are NOT deployed yet; live read-only preflight, container tests and a new normal job are still pending. Existing failed jobs stay immutable. Do not interpret the earlier 38-test checkpoint as the current implementation status.
+
+### Additional safety and exact media checkpoint
+
+54/54 native tests pass. Added rejection of unknown coordinated quantified subjects, per-member media identity/dedup, and exact Wikidata P527 all-part montages when a group has no usable page/P18/Commons image. P527 must be 2–8 unqualified, nondeprecated identities; each English sitelink must ground back to its exact QID. No generic parent-topic image is used. Live sequential preflight of the seven original production narrations is running; no failed job was changed.

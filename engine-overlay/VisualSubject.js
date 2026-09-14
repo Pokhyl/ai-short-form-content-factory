@@ -125,6 +125,8 @@ function quantifiedHead(text, candidates) {
     if (!gap.some(w => CONJUNCTION.test(w.text)) || !gap.every(w => CONJUNCTION.test(w.text) || QUANTIFIER.test(w.text))) break;
     members.push(candidate);
   }
+  const remainder = words(text.slice(members.at(-1).end));
+  if (remainder.length && CONJUNCTION.test(remainder[0].text)) fail('unresolved_group_member', text);
   if (members.length > 1) return {mode:'current_enumeration', listText:members.map(c=>c.surface).join(', ')};
   return {...members[0], mode:'current_quantified_subject'};
 }

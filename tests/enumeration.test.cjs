@@ -65,3 +65,19 @@ test('each-of subject retains the full qualified phrase',async()=>{
  const r=await resolveSubject('Кожна з зовнішніх планет оточена кільцями пилу та інших частинок.','uk',sourceLexicon('[[Outer planet|зовнішніх планет]] [[Ring|кільцями]] [[Dust|пилу]]','Reference'),dictionary);
  assert.equal(r.title,'Outer planet');
 });
+test('unknown coordinated quantified subject cannot disappear behind a known subject',async()=>{
+ await assert.rejects(resolveSubject('Six domestic cats and three mystery creatures have parasites.','en',sourceLexicon('[[Cat|domestic cats]] [[Parasite|parasites]]','Reference'),dictionary),/unresolved_group_member/);
+});
+test('missing group image can compose every exact Wikidata has-part member',async()=>{
+ const resolver=api();
+ resolver.dataEntity=async qid=>qid==='QGROUP'?{claims:{P527:['Q308','Q313'].map(id=>({mainsnak:{datavalue:{value:{id}}}}))}}:{sitelinks:{enwiki:{title:qid==='Q308'?'Mercury (planet)':'Venus'}}};
+ const result=await resolver.structuredGroupMedia({qid:'QGROUP',englishTitle:'Verified group'},new Map());
+ assert.equal(result.components.length,2);
+ assert.deepEqual(result.components.map(m=>m.groundedEntityId),['Q308','Q313']);
+ assert.equal(result.source,'exact_wikidata_parts');
+});
+test('a has-part sitelink resolving to a different identity fails closed',async()=>{
+ const resolver=api();
+ resolver.dataEntity=async qid=>qid==='QGROUP'?{claims:{P527:['Q308','Q313'].map(id=>({mainsnak:{datavalue:{value:{id}}}}))}}:{sitelinks:{enwiki:{title:'Earth'}}};
+ await assert.rejects(resolver.structuredGroupMedia({qid:'QGROUP',englishTitle:'Verified group'},new Map()),/identity_mismatch/);
+});

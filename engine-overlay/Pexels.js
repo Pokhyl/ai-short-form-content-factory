@@ -209,12 +209,40 @@ class PexelsAPI {
     if (reusable) return {...reusable, resolutionType: reusable.source, reuseReason: 'same_entity_no_alternative'};
     fail('exact_media_missing', entity.englishTitle);
   }
+  async structuredGroupMedia(entity, used) {
+    const wd = await this.dataEntity(entity.qid);
+    const claims = (wd.claims?.P527 || []).filter(c => c.rank !== 'deprecated');
+    if (claims.some(c => Object.keys(c.qualifiers || {}).length)) fail('exact_media_missing', entity.englishTitle);
+    const ids = [...new Set(claims.map(c => c.mainsnak?.datavalue?.value?.id))];
+    if (ids.length < 2 || ids.length > 8 || ids.some(id => !/^Q\d+$/.test(id || ''))) fail('exact_media_missing', entity.englishTitle);
+    const components = [], memberUsed = new Map(used);
+    for (const id of ids) {
+      const data = await this.dataEntity(id);
+      const title = data.sitelinks?.enwiki?.title;
+      if (!title) fail('exact_grounding_missing', id);
+      const member = await this.ground('en', title);
+      if (member.qid !== id) fail('entity_identity_mismatch', title);
+      const media = await this.selectMedia(member, memberUsed);
+      memberUsed.set(media.mediaKey, {qid:id});
+      components.push({...media,groundedEntity:member.englishTitle,groundedEntityId:id});
+    }
+    const mediaKey = `montage:${entity.qid}:${components.map(m=>m.mediaKey).join('|')}`;
+    return {id:mediaKey,mediaKey,kind:'image',extension:'.jpg',width:1080,height:1920,title:`${entity.englishTitle}: ${components.map(m=>m.title).join(' + ')}`,source:'exact_wikidata_parts',resolutionType:'exact_wikidata_parts',components};
+  }
+  async entityMedia(entity, used) {
+    try { return await this.selectMedia(entity, used); }
+    catch (error) {
+      if (error.code !== 'exact_media_missing') throw error;
+      return this.structuredGroupMedia(entity, used);
+    }
+  }
   async explicitGroupMedia(subject, spec, lexicon, entity, used) {
     if (!subject.listText || !/[,]|(?:\s(?:and|та|і|и|oraz|i)\s)/iu.test(subject.listText)) return null;
     const candidates = await subjectCandidates(subject.listText, spec.lang, lexicon, this.dictionary);
     const unmatched = words(subject.listText).filter(w => !candidates.some(c => w.start >= c.start && w.end <= c.end));
     if (unmatched.some(w => !/^(?:and|та|і|и|oraz|i)$/.test(w.text))) fail('unresolved_group_member', subject.listText);
     const members = new Map();
+    const memberUsed = new Map(used);
     const spanIdentities = new Map();
     const grounded = [];
     for (const candidate of candidates.sort((a,b) => a.start-b.start)) {
@@ -227,7 +255,8 @@ class PexelsAPI {
     for (const member of grounded) {
       if (member.qid === entity.qid) continue;
       if (members.has(member.qid)) continue;
-      const media = await this.selectMedia(member, new Map());
+      const media = await this.selectMedia(member, memberUsed);
+      memberUsed.set(media.mediaKey, {qid:member.qid});
       members.set(member.qid, {...media, groundedEntity:member.englishTitle, groundedEntityId:member.qid});
     }
     if (members.size < 2 || members.size > 8) fail('ambiguous_group_members', subject.listText);
@@ -256,11 +285,12 @@ class PexelsAPI {
       const entity = subject.mode === 'current_enumeration'
         ? {qid: `list:${subject.listText}`, englishTitle: subject.listText, localTitle: subject.listText}
         : await this.ground(spec.lang, subject.title);
-      const selected = await this.explicitGroupMedia(subject, spec, source.entries, entity, used) || await this.selectMedia(entity, used);
+      const selected = await this.explicitGroupMedia(subject, spec, source.entries, entity, used) || await this.entityMedia(entity, used);
       const item = {...selected, sceneIndex, narration: scene.text, subject, groundedEntity: entity.englishTitle, groundedEntityId: entity.qid, visualQuery: entity.englishTitle, confidence: 'high', sourceRevision: source.revision};
       media.push(item);
       this.plans.set(item, {entity, used});
       used.set(item.mediaKey, {qid: entity.qid, sceneIndex});
+      for (const component of item.components || []) used.set(component.mediaKey, {qid:component.groundedEntityId, sceneIndex});
       previous = subject.mode === 'current_enumeration' ? null : {...entity, lang: spec.lang, sourceTitle: spec.title, sceneIndex};
     }
     return media;
