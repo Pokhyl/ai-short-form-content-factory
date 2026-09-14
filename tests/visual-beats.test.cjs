@@ -33,3 +33,31 @@ test('direct exact photography outranks taxonomy unless claim is relational',()=
  assert.equal(rankMedia([diagram,photo],false)[0].mediaKey,'photo');
  assert.equal(rankMedia([diagram,photo],true)[0].mediaKey,'diagram');
 });
+const {PexelsAPI}=require('../engine-overlay/Pexels');
+test('seven-member strategy keeps all seven identities',()=>{
+ const resolver=new PexelsAPI('');const beats=Array.from({length:7},(_,i)=>({...media('object'+i),span:{startWord:i,endWord:i+1}}));
+ const result=resolver.planVisualBeats({beats,groupRequired:true},{sceneStartMs:0,sceneEndMs:4000},null);
+ assert.equal(result.length,1);assert.equal(result[0].components.length,7);
+});
+test('short five-name lists become a complete group instead of truncation',()=>{
+ const resolver=new PexelsAPI('');const beats=Array.from({length:5},(_,i)=>({...media('object'+i),span:{startWord:i,endWord:i+1}}));
+ const result=resolver.planVisualBeats({beats},{sceneStartMs:0,sceneEndMs:1000,wordToCaption:[0,1,2,3,4],captions:[0,100,200,300,400].map(startMs=>({startMs}))});
+ assert.equal(result[0].components.length,5);
+});
+test('low-resolution exact page image continues to full-resolution same-QID P18',async()=>{
+ const resolver=new PexelsAPI('');resolver.pageImage=async()=>({...media('small'),kind:'image',width:314,height:316});
+ resolver.dataEntity=async()=>({claims:{P18:[{mainsnak:{datavalue:{value:'Exact object photograph.jpg'}}}]}});
+ resolver.query=async()=>({query:{pages:{1:{title:'File:Exact object photograph.jpg',imageinfo:[{mime:'image/jpeg',width:1600,height:1200,url:'https://upload.wikimedia.org/exact.jpg'}]}}}});
+ resolver.commonsMedia=async()=>[];
+ const pool=await resolver.exactBeatPool({qid:'Q123'},false);
+ assert.equal(pool.length,1);assert.equal(pool[0].source,'exact_wikidata_p18');assert.equal(pool[0].width,1600);
+});
+test('density uses distinct exact alternatives within the same claim',()=>{
+ const resolver=new PexelsAPI('');const result=resolver.planVisualBeats({beats:[{...media('a'),kind:'image',span:{startWord:0,endWord:1},alternatives:[{...media('b'),kind:'image'}]}]},{sceneStartMs:0,sceneEndMs:12000});
+ assert.deepEqual(result.map(r=>r.mediaKey),['a','b','a']);assert.ok(result.every(r=>r.endMs-r.startMs<=5000));
+});
+test('non-astronomy five-name lists use the identical extraction path',async()=>{
+ const text='The largest of them are Alice, Boris, Clara, David and Elena.';
+ const spans=await focalSpans(text,'en',sourceLexicon('[[Alice]] [[Boris]] [[Clara]] [[David]] [[Elena]]','Reference'),dictionary,{mode:'previous_scene_anaphora'});
+ assert.equal(spans.length,5);assert.equal(text.slice(spans[4].startChar,spans[4].endChar),'Elena');
+});
