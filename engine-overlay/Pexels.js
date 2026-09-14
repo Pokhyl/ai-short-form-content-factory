@@ -1,5 +1,6 @@
 "use strict";
 const {DictionaryLemmas, fail, normalize, words, sourceLexicon, subjectCandidates, resolveSubject} = require('./VisualSubject');
+const {focalSpans,timeBeats,validateBeats,rankMedia,quality,MAX_STATIC_MS,MIN_BEAT_MS}=require('./VisualBeats');
 const USER_AGENT = 'ai-short-form-content-factory/1.0 (https://github.com/Pokhyl/ai-short-form-content-factory)';
 const COMMONS = 'https://commons.wikimedia.org/w/api.php';
 const encoded = value => encodeURIComponent(String(value));
@@ -294,6 +295,79 @@ class PexelsAPI {
       previous = subject.mode === 'current_enumeration' ? null : {...entity, lang: spec.lang, sourceTitle: spec.title, sceneIndex};
     }
     return media;
+  }
+  async exactBeatPool(entity, relational) {
+    const primary = await this.pageImage(entity);
+    const wd = await this.dataEntity(entity.qid);
+    const images = primary ? [primary] : [];
+    for (const claim of wd.claims?.P18 || []) {
+      const filename = claim.mainsnak?.datavalue?.value;
+      if (claim.rank === 'deprecated' || typeof filename !== 'string') continue;
+      const data = await this.query(COMMONS,{action:'query',titles:`File:${filename}`,prop:'imageinfo',iiprop:'url|mime|size|extmetadata',iiurlwidth:'1600'});
+      const page=Object.values(data.query?.pages||{})[0], info=page?.imageinfo?.[0];
+      const media=page&&mediaInfo(page.title,info,'exact_wikidata_p18');
+      if(media)images.push({...media,description:clean(info.extmetadata?.ImageDescription?.value)});
+    }
+    images.push(...await this.commonsMedia(entity,false));
+    const unique=new Map();
+    for(const image of images.filter(quality))if(!unique.has(image.mediaKey))unique.set(image.mediaKey,image);
+    const ranked=rankMedia([...unique.values()],relational);
+    if(!ranked.length)fail('exact_high_quality_media_missing',entity.englishTitle);
+    return ranked;
+  }
+  async preflightVisualBeats(scenes) {
+    const primary=await this.preflightScenes(scenes), bundles=[];
+    let previousKey=null;
+    for(const [i,scene] of scenes.entries()) {
+      const spec=sourceSpec(scene.searchTerms), lexicon=await this.lexicon(spec);
+      const spans=await focalSpans(scene.text,spec.lang,lexicon.entries,this.dictionary,primary[i].subject);
+      const beats=[], spanIds=new Map();
+      for(const span of spans) {
+        const entity=span.title?await this.ground(spec.lang,span.title):this.plans.get(primary[i]).entity;
+        // Existing explicit composite subjects retain every component as a group.
+        if(String(entity.qid).startsWith('list:')) {
+          const components=primary[i].components;
+          if(!components?.length||components.some(c=>!quality(c)))fail('exact_high_quality_media_missing',entity.englishTitle);
+          beats.push({...primary[i],span,concept:entity.englishTitle,resolutionMode:'explicit_group',alternatives:[]});continue;
+        }
+        const spanKey=`${span.startChar}:${span.endChar}`;
+        if(spanIds.has(spanKey)){if(spanIds.get(spanKey)!==entity.qid)fail('ambiguous_beat_span',scene.text);continue;}
+        spanIds.set(spanKey,entity.qid);
+        const relational=spans.length===1&&/(?<!\p{L})(?:between|між|между|między|orbit|орбіт|орбит)/iu.test(scene.text);
+        const pool=await this.exactBeatPool(entity,relational);
+        const selected=pool.find(m=>m.mediaKey!==previousKey);
+        if(!selected)fail('duplicate_visual_identity',entity.englishTitle);
+        beats.push({...selected,span,concept:entity.englishTitle,groundedEntityId:entity.qid,resolutionMode:spans.length>1?'focal_list_item':'focal_claim',alternatives:pool.filter(m=>m.mediaKey!==selected.mediaKey)});
+        previousKey=selected.mediaKey;
+      }
+      // More than six items remain visible as one deterministic all-member group.
+      // Never discard the end of a list. Timing can choose the same strategy for a short list.
+      bundles.push({primary:primary[i],beats,groupRequired:beats.length>6});
+    }
+    return bundles;
+  }
+  planVisualBeats(bundle, timeline, previousKey=null) {
+    let beats=bundle.beats;
+    const montage=()=>{
+      const components=beats.map(({alternatives,...media})=>media);
+      const mediaKey=`montage:${components.map(c=>c.mediaKey).join('|')}`;
+      return [{kind:'image',extension:'.jpg',width:1080,height:1920,components,mediaKey,id:mediaKey,title:components.map(c=>c.title).join(' + '),source:'exact_focal_group',concept:components.map(c=>c.concept).join(' + '),resolutionMode:'all_members_group',spans:components.map(c=>c.span),startMs:timeline.sceneStartMs,endMs:timeline.sceneEndMs,alternatives:[]}];
+    };
+    if(bundle.groupRequired)beats=montage();
+    else {
+      beats=timeBeats(beats,timeline);
+      if(beats.length>1&&beats.some(b=>b.endMs-b.startMs<MIN_BEAT_MS))beats=montage();
+    }
+    const dense=[];
+    for(const beat of beats){
+      const duration=beat.endMs-beat.startMs;
+      const count=beat.kind==='video'?1:Math.ceil(duration/MAX_STATIC_MS);
+      const pool=[beat,...(beat.alternatives||[])];
+      if(count>1&&pool.length<2)fail('visual_density',beat.concept);
+      for(let j=0;j<count;j++)dense.push({...beat,...pool[j%pool.length],span:beat.span,spans:beat.spans,concept:beat.concept,resolutionMode:beat.resolutionMode,startMs:beat.startMs+duration*j/count,endMs:beat.startMs+duration*(j+1)/count});
+    }
+    validateBeats(dense,timeline.sceneStartMs,timeline.sceneEndMs,previousKey);
+    return dense;
   }
   async planShots(media, durationSeconds) {
     const context = this.plans.get(media);

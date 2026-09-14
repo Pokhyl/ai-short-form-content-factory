@@ -7,7 +7,7 @@ RUN cd /app/data/libs/whisper/models && sh ./download-ggml-model.sh tiny
 COPY Kokoro.js /app/dist/short-creator/libraries/Kokoro.js
 COPY Whisper.js /app/dist/short-creator/libraries/Whisper.js
 COPY Pexels.js /app/dist/short-creator/libraries/Pexels.js
-COPY VisualSubject.js visual-lemmas.py /app/dist/short-creator/libraries/
+COPY VisualSubject.js VisualBeats.js visual-lemmas.py /app/dist/short-creator/libraries/
 COPY shorts.js /app/dist/types/shorts.js
 COPY PortraitVideo.js /app/dist/components/videos/PortraitVideo.js
 COPY ShortCreator.js /app/dist/short-creator/ShortCreator.js

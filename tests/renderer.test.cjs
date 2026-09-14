@@ -17,7 +17,7 @@ function rendererHarness(resolver, narration) {
   const childProcess={spawn:()=>{const child=new EventEmitter();child.stderr=new EventEmitter();queueMicrotask(()=>child.emit('close',0));return child;}};
   const modules={'fs-extra':files,cuid:()=>`test-${++id}`,'https':https,'child_process':childProcess,'../logger':{logger:{debug(){},warn(){},error(){}}},'./../types/shorts':{OrientationEnum:{portrait:'portrait'}}};
   vm.runInNewContext(fs.readFileSync(require.resolve('../engine-overlay/ShortCreator'),'utf8'),{exports,require:name=>modules[name]||require(name),Buffer,URL,console,setTimeout,clearTimeout});
-  const wrapped={prepareScenes:s=>resolver.prepareScenes(s),preflightScenes:async s=>{events.push('preflight');return resolver.preflightScenes(s);},planShots:(...args)=>resolver.planShots(...args)};
+  const wrapped={prepareScenes:s=>resolver.prepareScenes(s),preflightVisualBeats:async s=>{events.push('preflight');return resolver.preflightVisualBeats(s);},planShots:(...args)=>resolver.planShots(...args),planVisualBeats:(...args)=>resolver.planVisualBeats(...args)};
   const creator=new exports.ShortCreator({tempDirPath:'/tmp',videosDirPath:'/tmp',port:3123},{render:async payload=>{events.push('render');creator.payload=payload;}},{generate:async(...args)=>{events.push('tts');creator.ttsArgs=args;return narration;}},{CreateCaption:async()=>{throw Error('Unexpected Whisper');}},{saveToMp3:async()=>{}},wrapped,{});
   creator.findMusic=()=>({url:'music',start:0,end:20});
   return {creator,events};
