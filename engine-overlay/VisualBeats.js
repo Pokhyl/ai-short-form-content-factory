@@ -28,7 +28,7 @@ async function focalSpans(text,lang,lexicon,dictionary,subject){
  const match=Number.isFinite(subject.start)?subject:(await subjectCandidates(text,lang,lexicon,dictionary)).find(c=>c.title===subject.title);
  return [{title:subject.title,...(match?withSpan(match,text):{startChar:0,endChar:0,startWord:0,endWord:1}),mode:'focal_claim'}];
 }
-function quality(media){return media.kind==='video'||(Math.max(media.width||0,media.height||0)>=1000&&Math.min(media.width||0,media.height||0)>=600);}
+function quality(media){return (Math.max(media.width||0,media.height||0)>=1000&&Math.min(media.width||0,media.height||0)>=600);}
 function rankMedia(media,relational=false){
  const score=m=>{
   const text=`${m.title||''} ${m.description||''}`;

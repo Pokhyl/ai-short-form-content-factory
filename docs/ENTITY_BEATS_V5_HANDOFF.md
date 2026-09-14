@@ -26,3 +26,5 @@ Local Linux Docker build succeeded and all 70 tests passed offline. Live exact-m
 - One NEW normal public-intake job accepted: `c9e1241c-e6a5-478b-ab09-22d5db48b850` (`Сонячна система`, uk, 60s), initially queued. Inspect this job; do not submit repeat jobs to force a PASS.
 - PR: https://github.com/Pokhyl/ai-short-form-content-factory/pull/10 (stacked on PR #9).
 - No final MP4/HUMAN PASS at this checkpoint. Exact output QA and failed-row comparison are pending.
+
+A final source-quality regression closes a video-only exception: exact video must meet the same 1000px long-edge/600px short-edge threshold as still images. 72/72 tests pass natively and in the rebuilt Linux container offline. The active normal job uses still-image plans and is unaffected by this tightening; it must not be restarted. Final code rebuild/deployment will occur only after the active job finishes.

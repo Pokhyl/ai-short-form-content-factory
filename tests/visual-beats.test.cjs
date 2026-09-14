@@ -66,3 +66,8 @@ test('list lead-in does not move the first named object before its spoken source
  const result=timeBeats(beats,{sceneStartMs:0,sceneEndMs:4000,wordToCaption:[0,1,2,3],captions:[0,400,1200,2600].map(startMs=>({startMs}))});
  assert.deepEqual(result.map(b=>[b.startMs,b.endMs]),[[1200,2600],[2600,4000]]);
 });
+test('source-quality threshold applies to exact video as well as still images',()=>{
+ const {quality}=require('../engine-overlay/VisualBeats');
+ assert.equal(quality({kind:'video',width:320,height:240}),false);
+ assert.equal(quality({kind:'video',width:1920,height:1080}),true);
+});
