@@ -3,7 +3,7 @@
 > Current authorization update (2026-09-13): the user explicitly lifted the production deployment restriction and asked work to continue. Deploying the tested renderer and creating a NEW normal validation job are now authorized. Do not ask for deployment permission again. TTS/settings and old jobs must remain unchanged. Production validation is in progress; HUMAN PASS still requires the user to watch the resulting MP4.
 
 
-Release `6480f48` was deployed after tests. New normal job `aaf35d9b-db00-4fb9-a618-22e8b7a16462` failed in visual preflight on a mixed-population sentence before TTS/render. No MP4 or HUMAN PASS exists. See `VISUAL_RESOLVER_HANDOFF.md` for the exact failure and remaining work.
+Release `1a3d7cd` is deployed. 55/55 tests pass natively and in Linux Docker, including on the production host offline. All seven narrations from the original failed job now pass live preflight and deterministic replay. Two new normal jobs passed visual preflight but failed the unchanged TTS duration gate (61.320s and 63.600s versus target 60s). No MP4 or HUMAN PASS exists. See `VISUAL_RESOLVER_HANDOFF.md` and `VISUAL_RESOLVER_PRODUCTION_MAPPING.md` for evidence.
 
 ## Implementation
 

@@ -1,5 +1,7 @@
 # Visual resolver handoff
 
+> Latest state — 2026-09-14: runtime `1a3d7cd` is deployed and healthy. 55/55 tests pass natively, in local Linux Docker, and on the production host offline. All seven previously rejected narrations pass live sequential preflight and frozen replay. Two NEW normal jobs passed visual preflight but failed the unchanged narration duration gate (61.320s and 63.600s for target 60s). There is no final MP4/HUMAN PASS. Do not keep submitting identical jobs or weaken gates. The remaining observed blocker is TTS duration, outside the user's current resolver-only scope. All code and evidence are saved in this branch and PR #9.
+
 > Current authorization update (2026-09-13): the user explicitly lifted the production deployment restriction and asked work to continue. Deploying the tested renderer and creating a NEW normal validation job are now authorized. Do not ask for deployment permission again. TTS/settings and old jobs must remain unchanged. Production validation is in progress; HUMAN PASS still requires the user to watch the resulting MP4.
 
 
@@ -77,3 +79,10 @@ New normal public-intake job accepted after healthy startup: `0aa35cf7-ce87-4083
 Job `0aa35cf7-ce87-4083-8c8d-86169d5165e3` / video `cmu0shupj000001pa5n0g8o4e` is FAILED and immutable. Runtime passed visual preflight and invoked the unchanged Gemini adapter. Its logged audio duration was 61.320s for a 60s target; the unchanged ShortCreator gate permits at most 60.350s. No MP4 was produced. No TTS code/config or duration gate was changed. The adapter logged `gemini-3.1-flash-tts-preview`, Enceladus, 24kHz mono.
 
 A separate NEW normal job with the same authorized topic/language/60-second target was accepted: `2a59d41d-783b-4aab-a6be-c24f7208a726` (initially queued). Inspect this job; do not resume failed jobs or silently weaken duration gates to force an output.
+
+### Final observed validation state
+
+- Second NEW job `2a59d41d-783b-4aab-a6be-c24f7208a726`, video `cmu0slpcj000101pae7d127x7`: FAILED after visual preflight; Gemini logged 63.600 seconds for target 60. No MP4. This job is now immutable.
+- Renderer logs explicitly confirm the first new job's error: `Narration duration 61.320s is outside target 60.000s tolerance`. The second logged duration also violates the unchanged upper bound of 60.350s.
+- Both pre-deploy failed/rejected snapshots (39 original rows and 40 before the latest release) were compared in full by original IDs after deployment and remain unchanged with their documented hashes.
+- Avoid repeated identical production submissions: further successful end-to-end verification is currently blocked by one-shot TTS duration variability. The user explicitly excluded TTS modifications and quality-gate changes from this task. No audio retiming, adapter changes, gate weakening or failed-job repair was performed.
