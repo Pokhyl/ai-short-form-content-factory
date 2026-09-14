@@ -167,3 +167,14 @@ test('an ambiguous list-member alias cannot add an unrelated montage member', as
   };
   await assert.rejects(resolver.preflightScenes([fixture.scenes('en')[0]]), /ambiguous_group_member/);
 });
+
+
+test('production mixed-population narration fails closed instead of selecting dust or prior TNO', async () => {
+  const recorded = require('./fixtures/wikimedia-uk.json');
+  const source = Object.values(recorded.requests).find(data => data.parse?.wikitext).parse.wikitext['*'];
+  const text = "Додатково до тисяч малих тіл у цих двох ділянках є інші популяції різноманітних дрібних тіл, як-от комети, метеороїди та космічний пил, що рухаються навколо Сонця.";
+  await assert.rejects(subject(text, source, 'uk', {localTitle: "Транснептуновий об'єкт", sceneIndex: 2}), error => {
+    assert.equal(error.code, 'ambiguous_subject');
+    return true;
+  });
+});

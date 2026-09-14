@@ -3,7 +3,7 @@
 > Current authorization update (2026-09-13): the user explicitly lifted the production deployment restriction and asked work to continue. Deploying the tested renderer and creating a NEW normal validation job are now authorized. Do not ask for deployment permission again. TTS/settings and old jobs must remain unchanged. Production validation is in progress; HUMAN PASS still requires the user to watch the resulting MP4.
 
 
-No production deployment or production job was performed. Human review of a production MP4 remains outstanding.
+Release `6480f48` was deployed after tests. New normal job `aaf35d9b-db00-4fb9-a618-22e8b7a16462` failed in visual preflight on a mixed-population sentence before TTS/render. No MP4 or HUMAN PASS exists. See `VISUAL_RESOLVER_HANDOFF.md` for the exact failure and remaining work.
 
 ## Implementation
 
@@ -35,7 +35,7 @@ Tests cover 32 narrated acceptance cases across UK/RU/PL/EN, negative subject/me
 
 Commit `e9463e3` copies the existing production `ShortCreator.js`, `PortraitVideo.js`, `Whisper.js`, `Kokoro.js` and Dockerfile into the stale repository baseline, byte-for-byte. This prerequisite makes the actual renderer integration reviewable. Subsequent resolver changes do not modify `Kokoro.js` or `Whisper.js`. The production Gemini gateway, `gemini-3.1-flash-tts-preview`, `Enceladus`, one synthesis request, audio timing implementation, workflows, job records and Studio UI were not changed.
 
-The repository's compose/workflow files still represent its older baseline; use the existing reviewed production configuration when deployment is eventually authorized. Do not replace live configuration wholesale with these older files.
+The repository's compose/workflow files still represent its older baseline; use the existing reviewed production configuration for subsequent deployments. Do not replace live configuration wholesale with these older files.
 
 ## Data and dependencies
 
