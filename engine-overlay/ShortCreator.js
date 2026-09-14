@@ -296,6 +296,7 @@ class ShortCreator {
         }
         inputScenes = this.pexelsApi.prepareScenes(inputScenes);
         const preflightMedia = await this.pexelsApi.preflightVisualBeats(inputScenes);
+        logger_1.logger.debug({scenes:preflightMedia.map((bundle,index)=>({sceneIndex:index,beats:bundle.beats.map(beat=>({concept:beat.concept,span:beat.span,title:beat.title,source:beat.source,width:beat.width,height:beat.height,alternativeCount:beat.alternatives.length}))}))}, "Exact visual beats preflight passed before TTS");
         const orientation = config.orientation || shorts_1.OrientationEnum.portrait;
         const narrationText = inputScenes.map((scene) => String(scene.text || "").trim()).filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
         if (!narrationText) {
