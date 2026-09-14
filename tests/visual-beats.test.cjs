@@ -7,111 +7,28 @@ for(const [lang,text,names] of [
  ['ru','Крупнейшими из них являются Плутон, Седна, Хаумеа, Макемаке и Эрида.',['Плутон','Седна','Хаумеа','Макемаке','Эрида']],
  ['pl','Największymi z nich są Pluton, Sedna, Haumea, Makemake i Eris.',['Pluton','Sedna','Haumea','Makemake','Eris']],
  ['en','The largest of them are Pluto, Sedna, Haumea, Makemake and Eris.',['Pluto','Sedna','Haumea','Makemake','Eris']],
-])test(`five focal named spans retained without truncation: ${lang}`,async()=>{
- const result=await focalSpans(text,lang,sourceLexicon(names.map(n=>`[[${n}]]`).join(' '),'Source'),dictionary,{mode:'previous_scene_anaphora'});
- assert.equal(result.length,5);assert.deepEqual(result.map(r=>text.slice(r.startChar,r.endChar)),names);
- assert.ok(result.every((r,i)=>!i||r.startWord>result[i-1].startWord));
-});
-test('relation endpoints and comparison objects do not become portrait beats',async()=>{
- const text='The asteroid belt, which lies between Mars and Jupiter, is smaller than the Oort cloud.';
- const result=await focalSpans(text,'en',sourceLexicon('[[Asteroid belt|asteroid belt]] [[Mars]] [[Jupiter]] [[Oort cloud]]','Source'),dictionary,{title:'Asteroid belt',start:4,end:17,mode:'current_subject'});
- assert.equal(result.length,1);assert.equal(result[0].title,'Asteroid belt');
-});
+])test(`five focal named spans retained without truncation: ${lang}`,async()=>{const result=await focalSpans(text,lang,sourceLexicon(names.map(n=>`[[${n}]]`).join(' '),'Source'),dictionary,{mode:'previous_scene_anaphora'});assert.equal(result.length,5);assert.deepEqual(result.map(r=>text.slice(r.startChar,r.endChar)),names);assert.ok(result.every((r,i)=>!i||r.startWord>result[i-1].startWord));});
+test('relation endpoints and comparison objects do not become portrait beats',async()=>{const text='The asteroid belt, which lies between Mars and Jupiter, is smaller than the Oort cloud.';const result=await focalSpans(text,'en',sourceLexicon('[[Asteroid belt|asteroid belt]] [[Mars]] [[Jupiter]] [[Oort cloud]]','Source'),dictionary,{title:'Asteroid belt',start:4,end:17,mode:'current_subject'});assert.equal(result.length,1);assert.equal(result[0].title,'Asteroid belt');});
 const media=id=>({mediaKey:id,title:id,source:'exact_english_wikipedia',width:1080,height:1080,groundedEntity:id});
-test('real repeated word offsets map through actual captions, not unique tokens or equal slicing',()=>{
- const result=timeBeats([{...media('a'),span:{startWord:0,endWord:1}},{...media('b'),span:{startWord:4,endWord:5}}],{sceneStartMs:1000,sceneEndMs:5000,wordToCaption:[0,1,2,3,4],captions:[{startMs:1000},{startMs:1300},{startMs:1600},{startMs:2000},{startMs:3800}]});
- assert.deepEqual(result.map(b=>[b.startMs,b.endMs]),[[1000,3800],[3800,5000]]);
-});
-test('missing span alignment fails instead of equal-duration timing',()=>{
- assert.throws(()=>timeBeats([{...media('a'),span:{startWord:0,endWord:1}},{...media('b'),span:{startWord:4,endWord:5}}],{sceneStartMs:0,sceneEndMs:4000,wordToCaption:[0],captions:[{startMs:0}]}),/unaligned_beat/);
-});
-test('invalid bounds, long holds, and adjacent identity duplicates fail',()=>{
- for(const beats of [[{...media('a'),startMs:0,endMs:6000}],[{...media('a'),startMs:0,endMs:2000},{...media('a'),startMs:2000,endMs:4000}],[{...media('a'),startMs:2000,endMs:1000}]])assert.throws(()=>validateBeats(beats,0,beats.at(-1).endMs),/visual/);
-});
-test('direct exact photography outranks taxonomy unless claim is relational',()=>{
- const diagram={...media('diagram'),description:'taxonomy diagram',kind:'image'};const photo={...media('photo'),description:'scientific photograph',kind:'image'};
- assert.equal(rankMedia([diagram,photo],false)[0].mediaKey,'photo');
- assert.equal(rankMedia([diagram,photo],true)[0].mediaKey,'diagram');
-});
-const {PexelsAPI}=require('../engine-overlay/Pexels');
-test('seven-member strategy keeps all seven identities',()=>{
- const resolver=new PexelsAPI('');const beats=Array.from({length:7},(_,i)=>({...media('object'+i),span:{startWord:i,endWord:i+1}}));
- const result=resolver.planVisualBeats({beats,groupRequired:true},{sceneStartMs:0,sceneEndMs:4000},null);
- assert.equal(result.length,1);assert.equal(result[0].components.length,7);
-});
-test('short five-name lists become a complete group instead of truncation',()=>{
- const resolver=new PexelsAPI('');const beats=Array.from({length:5},(_,i)=>({...media('object'+i),span:{startWord:i,endWord:i+1}}));
- const result=resolver.planVisualBeats({beats},{sceneStartMs:0,sceneEndMs:1000,wordToCaption:[0,1,2,3,4],captions:[0,100,200,300,400].map(startMs=>({startMs}))});
- assert.equal(result[0].components.length,5);
-});
-test('low-resolution exact page image continues to full-resolution same-QID P18',async()=>{
- const resolver=new PexelsAPI('');resolver.pageImage=async()=>({...media('small'),kind:'image',width:314,height:316});
- resolver.dataEntity=async()=>({claims:{P18:[{mainsnak:{datavalue:{value:'Exact object photograph.jpg'}}}]}});
- resolver.query=async()=>({query:{pages:{1:{title:'File:Exact object photograph.jpg',imageinfo:[{mime:'image/jpeg',width:1600,height:1200,url:'https://upload.wikimedia.org/exact.jpg'}]}}}});
- resolver.commonsMedia=async()=>[];
- const pool=await resolver.exactBeatPool({qid:'Q123'},false);
- assert.equal(pool.length,1);assert.equal(pool[0].source,'exact_wikidata_p18');assert.equal(pool[0].width,1600);
-});
-test('density uses distinct exact alternatives within the same claim',()=>{
- const resolver=new PexelsAPI('');const result=resolver.planVisualBeats({beats:[{...media('a'),kind:'image',span:{startWord:0,endWord:1},alternatives:[{...media('b'),kind:'image'}]}]},{sceneStartMs:0,sceneEndMs:12000});
- assert.deepEqual(result.map(r=>r.mediaKey),['a','b','a']);assert.ok(result.every(r=>r.endMs-r.startMs<=5000));
-});
-test('non-astronomy five-name lists use the identical extraction path',async()=>{
- const text='The largest of them are Alice, Boris, Clara, David and Elena.';
- const spans=await focalSpans(text,'en',sourceLexicon('[[Alice]] [[Boris]] [[Clara]] [[David]] [[Elena]]','Reference'),dictionary,{mode:'previous_scene_anaphora'});
- assert.equal(spans.length,5);assert.equal(text.slice(spans[4].startChar,spans[4].endChar),'Elena');
-});
-test('list lead-in does not move the first named object before its spoken source span',()=>{
- const beats=[{...media('a'),span:{startWord:2,endWord:3}},{...media('b'),span:{startWord:3,endWord:4}}];
- const result=timeBeats(beats,{sceneStartMs:0,sceneEndMs:4000,wordToCaption:[0,1,2,3],captions:[0,400,1200,2600].map(startMs=>({startMs}))});
- assert.deepEqual(result.map(b=>[b.startMs,b.endMs]),[[1200,2600],[2600,4000]]);
-});
-test('source-quality threshold applies to exact video as well as still images',()=>{
- const {quality}=require('../engine-overlay/VisualBeats');
- assert.equal(quality({kind:'video',width:320,height:240}),false);
- assert.equal(quality({kind:'video',width:1920,height:1080}),true);
-});
-
-test('exact P373 Commons category supplies distinct density alternatives without generic fallback',async()=>{
- const resolver=new PexelsAPI('');
- resolver.pageImage=async()=>({...media('primary'),kind:'image',width:1080,height:1080});
- resolver.dataEntity=async()=>({claims:{P373:[{rank:'normal',mainsnak:{datavalue:{value:'Exact concept category'}}}]}});
- resolver.exactMediaTitle=async title=>title==='File:Exact concept.jpg';
- resolver.commonsMedia=async()=>[];
- resolver.query=async(_base,params)=>{
-  assert.equal(params.generator,'categorymembers');assert.equal(params.gcmtype,'file');
-  return {query:{pages:{1:{title:'File:Exact concept.jpg',imageinfo:[{mime:'image/jpeg',width:1600,height:1200,thumbwidth:1600,thumbheight:1200,thumburl:'https://upload.wikimedia.org/exact-category.jpg',url:'https://upload.wikimedia.org/exact-category.jpg',extmetadata:{}}]}}}};
- };
- const pool=await resolver.exactBeatPool({qid:'Q123',englishTitle:'Exact concept'},false);
- assert.equal(pool.length,2);assert.ok(pool.some(item=>item.source==='exact_wikidata_p373'));
-});
-
-test('possession relation object becomes a focal beat in UK RU PL EN',async()=>{
- for(const [lang,text,links,expected] of [
-  ['uk','Шість із восьми планет та три карликові планети мають природні супутники.','[[Планета|планет]] [[Карликова планета|карликові планети]] [[Природний супутник|природні супутники]]','Природний супутник'],
-  ['ru','Шесть из восьми планет и три карликовые планеты имеют естественные спутники.','[[Планета|планет]] [[Карликовая планета|карликовые планеты]] [[Естественный спутник|естественные спутники]]','Естественный спутник'],
-  ['pl','Sześć z ośmiu planet i trzy planety karłowate mają naturalne satelity.','[[Planeta|planet]] [[Planeta karłowata|planety karłowate]] [[Satelita naturalny|naturalne satelity]]','Satelita naturalny'],
-  ['en','Six of eight planets and three dwarf planets have natural satellites.','[[Planet|planets]] [[Dwarf planet|dwarf planets]] [[Natural satellite|natural satellites]]','Natural satellite'],
- ]){
-  const lexicon=sourceLexicon(links,'Reference');
-  const subject={title:expected,start:0,end:1,mode:'current_subject'};
-  const spans=await focalSpans(text,lang,lexicon,dictionary,{...subject,mode:'current_subject'});
-  assert.ok(spans.some(s=>s.title===expected&&s.mode==='focal_relation_object'),`${lang}: possession object missing`);
- }
-});
-
-test('relative contains clause does not replace the main focal claim with its object',async()=>{
- const text="За орбітою Нептуна розташовано транснептунові об'єкти, що містять багато замерзлої води, аміаку та метану.";
- const lexicon=sourceLexicon("[[Транснептуновий об'єкт|транснептунові об'єкти]] [[Метан|метану]] [[Аміак|аміаку]]",'Reference');
- const spans=await focalSpans(text,'uk',lexicon,dictionary,{title:"Транснептуновий об'єкт",start:31,end:53,mode:'current_subject'});
- assert.deepEqual(spans.map(s=>s.title),["Транснептуновий об'єкт"]);
-});
-
-test('meta list page alias cannot suppress concrete possession object',async()=>{
- const text='Шість із восьми планет та три карликові планети мають природні супутники.';
- const lexicon=sourceLexicon('[[Планета|планет]] [[Карликова планета|карликові планети]] [[Список супутників|супутники]] [[супутник|супутники]]','Reference');
- const spans=await focalSpans(text,'uk',lexicon,dictionary,{title:'Планета',start:16,end:22,mode:'current_subject'});
- const relation=spans.find(s=>s.mode==='focal_relation_object');
- assert.equal(relation?.title,'супутник');
- assert.equal(relation?.surface,'супутники');
-});
+test('real repeated word offsets map through actual captions, not unique tokens or equal slicing',()=>{const result=timeBeats([{...media('a'),span:{startWord:0,endWord:1}},{...media('b'),span:{startWord:4,endWord:5}}],{sceneStartMs:1000,sceneEndMs:5000,wordToCaption:[0,1,2,3,4],captions:[{startMs:1000},{startMs:1300},{startMs:1600},{startMs:2000},{startMs:3800}]});assert.deepEqual(result.map(b=>[b.startMs,b.endMs]),[[1000,3800],[3800,5000]]);});
+test('missing span alignment fails instead of equal-duration timing',()=>{assert.throws(()=>timeBeats([{...media('a'),span:{startWord:0,endWord:1}},{...media('b'),span:{startWord:4,endWord:5}}],{sceneStartMs:0,sceneEndMs:4000,wordToCaption:[0],captions:[{startMs:0}]}),/unaligned_beat/);});
+test('invalid bounds, long holds, and adjacent identity duplicates fail',()=>{for(const beats of [[{...media('a'),startMs:0,endMs:6000}],[{...media('a'),startMs:0,endMs:2000},{...media('a'),startMs:2000,endMs:4000}],[{...media('a'),startMs:2000,endMs:1000}]])assert.throws(()=>validateBeats(beats,0,beats.at(-1).endMs),/visual/);});
+test('direct exact photography outranks taxonomy unless claim is relational',()=>{const diagram={...media('diagram'),description:'taxonomy diagram',kind:'image'};const photo={...media('photo'),description:'scientific photograph',kind:'image'};assert.equal(rankMedia([diagram,photo],false)[0].mediaKey,'photo');assert.equal(rankMedia([diagram,photo],true)[0].mediaKey,'diagram');});
+const {PexelsAPI,keyForFile}=require('../engine-overlay/Pexels');
+test('seven-member strategy keeps all seven identities',()=>{const resolver=new PexelsAPI('');const beats=Array.from({length:7},(_,i)=>({...media('object'+i),span:{startWord:i,endWord:i+1}}));const result=resolver.planVisualBeats({beats,groupRequired:true},{sceneStartMs:0,sceneEndMs:4000},null);assert.equal(result.length,1);assert.equal(result[0].components.length,7);});
+test('short five-name lists become a complete group instead of truncation',()=>{const resolver=new PexelsAPI('');const beats=Array.from({length:5},(_,i)=>({...media('object'+i),span:{startWord:i,endWord:i+1}}));const result=resolver.planVisualBeats({beats},{sceneStartMs:0,sceneEndMs:1000,wordToCaption:[0,1,2,3,4],captions:[0,100,200,300,400].map(startMs=>({startMs}))});assert.equal(result[0].components.length,5);});
+test('low-resolution exact page image continues to full-resolution same-QID P18',async()=>{const resolver=new PexelsAPI('');resolver.pageImage=async()=>({...media('small'),kind:'image',width:314,height:316});resolver.dataEntity=async()=>({claims:{P18:[{mainsnak:{datavalue:{value:'Exact object photograph.jpg'}}}]}});resolver.query=async()=>({query:{pages:{1:{title:'File:Exact object photograph.jpg',imageinfo:[{mime:'image/jpeg',width:1600,height:1200,url:'https://upload.wikimedia.org/exact.jpg'}]}}}});resolver.commonsMedia=async()=>[];const pool=await resolver.exactBeatPool({qid:'Q123'},false);assert.equal(pool.length,1);assert.equal(pool[0].source,'exact_wikidata_p18');assert.equal(pool[0].width,1600);});
+test('density uses distinct exact alternatives within the same claim',()=>{const resolver=new PexelsAPI('');const result=resolver.planVisualBeats({beats:[{...media('a'),kind:'image',span:{startWord:0,endWord:1},alternatives:[{...media('b'),kind:'image'}]}]},{sceneStartMs:0,sceneEndMs:12000});assert.deepEqual(result.map(r=>r.mediaKey),['a','b','a']);assert.ok(result.every(r=>r.endMs-r.startMs<=5000));});
+test('non-astronomy five-name lists use the identical extraction path',async()=>{const text='The largest of them are Alice, Boris, Clara, David and Elena.';const spans=await focalSpans(text,'en',sourceLexicon('[[Alice]] [[Boris]] [[Clara]] [[David]] [[Elena]]','Reference'),dictionary,{mode:'previous_scene_anaphora'});assert.equal(spans.length,5);assert.equal(text.slice(spans[4].startChar,spans[4].endChar),'Elena');});
+test('list lead-in does not move the first named object before its spoken source span',()=>{const beats=[{...media('a'),span:{startWord:2,endWord:3}},{...media('b'),span:{startWord:3,endWord:4}}];const result=timeBeats(beats,{sceneStartMs:0,sceneEndMs:4000,wordToCaption:[0,1,2,3],captions:[0,400,1200,2600].map(startMs=>({startMs}))});assert.deepEqual(result.map(b=>[b.startMs,b.endMs]),[[1200,2600],[2600,4000]]);});
+test('source-quality threshold applies to exact video as well as still images',()=>{const {quality}=require('../engine-overlay/VisualBeats');assert.equal(quality({kind:'video',width:320,height:240}),false);assert.equal(quality({kind:'video',width:1920,height:1080}),true);});
+test('exact P373 Commons category supplies distinct density alternatives without generic fallback',async()=>{const resolver=new PexelsAPI('');resolver.pageImage=async()=>({...media('primary'),kind:'image',width:1080,height:1080});resolver.dataEntity=async()=>({claims:{P373:[{rank:'normal',mainsnak:{datavalue:{value:'Exact concept category'}}}]}});resolver.exactMediaTitle=async title=>title==='File:Exact concept.jpg';resolver.commonsMedia=async()=>[];resolver.query=async(_base,params)=>{assert.equal(params.generator,'categorymembers');assert.equal(params.gcmtype,'file');return{query:{pages:{1:{title:'File:Exact concept.jpg',imageinfo:[{mime:'image/jpeg',width:1600,height:1200,thumbwidth:1600,thumbheight:1200,thumburl:'https://upload.wikimedia.org/exact-category.jpg',url:'https://upload.wikimedia.org/exact-category.jpg',extmetadata:{}}]}}}};};const pool=await resolver.exactBeatPool({qid:'Q123',englishTitle:'Exact concept'},false);assert.equal(pool.length,2);assert.ok(pool.some(item=>item.source==='exact_wikidata_p373'));});
+test('possession relation object becomes a focal beat in UK RU PL EN',async()=>{for(const[lang,text,links,expected]of[['uk','Шість із восьми планет та три карликові планети мають природні супутники.','[[Планета|планет]] [[Карликова планета|карликові планети]] [[Природний супутник|природні супутники]]','Природний супутник'],['ru','Шесть из восьми планет и три карликовые планеты имеют естественные спутники.','[[Планета|планет]] [[Карликовая планета|карликовые планеты]] [[Естественный спутник|естественные спутники]]','Естественный спутник'],['pl','Sześć z ośmiu planet i trzy planety karłowate mają naturalne satelity.','[[Planeta|planet]] [[Planeta karłowata|planety karłowate]] [[Satelita naturalny|naturalne satelity]]','Satelita naturalny'],['en','Six of eight planets and three dwarf planets have natural satellites.','[[Planet|planets]] [[Dwarf planet|dwarf planets]] [[Natural satellite|natural satellites]]','Natural satellite']]){const lexicon=sourceLexicon(links,'Reference');const spans=await focalSpans(text,lang,lexicon,dictionary,{title:expected,start:0,end:1,mode:'current_subject'});assert.ok(spans.some(s=>s.title===expected&&s.mode==='focal_relation_object'),`${lang}: possession object missing`);}});
+test('relative contains clause does not replace the main focal claim with its object',async()=>{const text="За орбітою Нептуна розташовано транснептунові об'єкти, що містять багато замерзлої води, аміаку та метану.";const lexicon=sourceLexicon("[[Транснептуновий об'єкт|транснептунові об'єкти]] [[Метан|метану]] [[Аміак|аміаку]]",'Reference');const spans=await focalSpans(text,'uk',lexicon,dictionary,{title:"Транснептуновий об'єкт",start:31,end:53,mode:'current_subject'});assert.deepEqual(spans.map(s=>s.title),["Транснептуновий об'єкт"]);});
+test('meta list page alias cannot suppress concrete possession object',async()=>{const text='Шість із восьми планет та три карликові планети мають природні супутники.';const lexicon=sourceLexicon('[[Планета|планет]] [[Карликова планета|карликові планети]] [[Список супутників|супутники]] [[супутник|супутники]]','Reference');const spans=await focalSpans(text,'uk',lexicon,dictionary,{title:'Планета',start:16,end:22,mode:'current_subject'});const relation=spans.find(s=>s.mode==='focal_relation_object');assert.equal(relation?.title,'супутник');assert.equal(relation?.surface,'супутники');});
+test('exact Wikipedia article media keeps entity-linked visuals and rejects unrelated article images',async()=>{const resolver=new PexelsAPI('');resolver.dataEntity=async()=>({labels:{en:{value:'Celestial sphere'}},aliases:{en:[]},claims:{}});resolver.query=async(base,params)=>{if(base.includes('wikipedia.org'))return{query:{pages:{1:{title:'Celestial sphere',images:[{title:'File:Celestial sphere globe.jpg'},{title:'File:Crab Nebula.jpg'},{title:'File:Commons-logo.svg'}]}}}};return{query:{pages:{1:{title:'File:Celestial sphere globe.jpg',imageinfo:[{mime:'image/jpeg',width:1600,height:1200,thumbwidth:1600,thumbheight:1200,thumburl:'https://upload.wikimedia.org/mechanical.jpg',url:'https://upload.wikimedia.org/mechanical.jpg',extmetadata:{ImageDescription:{value:'A mechanical celestial sphere globe'}}}]},2:{title:'File:Crab Nebula.jpg',imageinfo:[{mime:'image/jpeg',width:1600,height:1200,thumbwidth:1600,thumbheight:1200,thumburl:'https://upload.wikimedia.org/crab.jpg',url:'https://upload.wikimedia.org/crab.jpg',extmetadata:{ImageDescription:{value:'A supernova remnant'}}}]}}}};};const result=await resolver.exactArticleMedia({qid:'Q12134',englishTitle:'Celestial sphere',page:{title:'Celestial sphere'}});assert.deepEqual(result.map(item=>item.title),['File:Celestial sphere globe.jpg']);assert.equal(result[0].source,'exact_wikipedia_article_media');});
+test('historical portraits outrank graves memorials plaques and books',()=>{const portrait={...media('portrait'),title:'File:Edmond Halley portrait.jpg',description:'Portrait photograph of Edmond Halley',kind:'image'};const grave={...media('grave'),title:'File:Halley grave.jpg',description:'Edmond Halley gravestone memorial',kind:'image'};const plaque={...media('plaque'),title:'File:Edmond Halley plaque.jpg',description:'Memorial plaque',kind:'image'};const book={...media('book'),title:'File:Halley treatise.jpg',description:'Book title page',kind:'image'};const ranked=rankMedia([grave,plaque,book,portrait],false);assert.equal(ranked[0].mediaKey,'portrait');assert.ok(ranked.findIndex(x=>x.mediaKey==='grave')>ranked.findIndex(x=>x.mediaKey==='portrait'));});
+test('source lexicon enriches only the exact current source entity with local Wikidata label',async()=>{const resolver=new PexelsAPI('');resolver.query=async(base,params)=>{if(base.includes('uk.wikipedia.org')&&params.action==='parse')return{parse:{revid:123,wikitext:{'*':'Текст про Альфа Центавра без self-link. [[Власний рух]]'}}};if(base.includes('uk.wikipedia.org')&&params.action==='query')return{query:{pages:{1:{title:'Толіман',pageprops:{wikibase_item:'Q12176'}}}}};if(base.includes('wikidata.org'))return{entities:{Q12176:{labels:{uk:{value:'Альфа Центавра'}},aliases:{uk:[{value:'Толіман'}]}}}};throw new Error(`unexpected ${base}`);};const lex=await resolver.lexicon({lang:'uk',title:'Толіман'});const source=lex.entries.find(e=>e.title==='Толіман'),other=lex.entries.find(e=>e.title==='Власний рух');assert.ok(source.aliases.includes('Альфа Центавра'));assert.ok(source.aliases.includes('Толіман'));assert.deepEqual(other.aliases,['Власний рух']);});
+test('Commons filenames with literal percent signs do not crash media identity normalization',()=>{assert.equal(keyForFile('File:Alpha 100% real.jpg'),'alpha 100% real.jpg');assert.equal(keyForFile('File:Alpha%20Centauri.jpg'),'alpha centauri.jpg');});
+test('article-media matcher rejects sibling entities that share only one name token',async()=>{const resolver=new PexelsAPI('');resolver.dataEntity=async()=>({labels:{en:{value:'Proxima Centauri'}},aliases:{en:[{value:'Alpha Centauri C'}]},claims:{}});resolver.query=async(base,params)=>{if(base.includes('wikipedia.org'))return{query:{pages:{1:{title:'Proxima Centauri',images:[{title:'File:New shot of Proxima Centauri.jpg'},{title:'File:Best image of Alpha Centauri A and B.jpg'}]}}}};return{query:{pages:{1:{title:'File:New shot of Proxima Centauri.jpg',imageinfo:[{mime:'image/jpeg',width:1600,height:1200,thumbwidth:1600,thumbheight:1200,thumburl:'https://upload.wikimedia.org/proxima.jpg',url:'https://upload.wikimedia.org/proxima.jpg',extmetadata:{ImageDescription:{value:'A telescope image of Proxima Centauri'}}}]},2:{title:'File:Best image of Alpha Centauri A and B.jpg',imageinfo:[{mime:'image/jpeg',width:1600,height:1200,thumbwidth:1600,thumbheight:1200,thumburl:'https://upload.wikimedia.org/alpha-ab.jpg',url:'https://upload.wikimedia.org/alpha-ab.jpg',extmetadata:{ImageDescription:{value:'Alpha Centauri A and B'}}}]}}}};};const result=await resolver.exactArticleMedia({qid:'Q14266',englishTitle:'Proxima Centauri',page:{title:'Proxima Centauri'}});assert.deepEqual(result.map(x=>x.title),['File:New shot of Proxima Centauri.jpg']);});
+test('structured P18 outranks ordinary exact article media for the same claim',()=>{const article={...media('article'),source:'exact_wikipedia_article_media',description:'scientific photograph',kind:'image'};const p18={...media('p18'),source:'exact_wikidata_p18',description:'scientific photograph',kind:'image'};assert.equal(rankMedia([article,p18],false)[0].mediaKey,'p18');});
