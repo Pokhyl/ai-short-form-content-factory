@@ -20,3 +20,19 @@ test('real Wikimedia acceptance responses replay deterministically without netwo
   assert.equal(result[7].title,'File:Solar_wind_flow.gif');
   assert.ok(result.every(m=>m.confidence==='high'));
 });
+
+test('all seven previously rejected production narrations pass sequential exact-media replay',async()=>{
+  const recording=require('./fixtures/production-uk-replay.json');
+  const resolver=new PexelsAPI('',{fetchJson:async url=>{
+    assert.ok(recording.requests[url],`Unrecorded production request: ${url}`);
+    return structuredClone(recording.requests[url]);
+  }});
+  const result=await resolver.preflightScenes(require('./fixtures/production-uk-scenes.json'));
+  assert.equal(result.length,7);
+  assert.deepEqual(result[3].components.map(m=>m.groundedEntity),['Comet','Meteoroid','Cosmic dust']);
+  assert.equal(result[4].components.length,2);
+  assert.equal(result[5].groundedEntity,'Outer planets');
+  assert.equal(result[5].source,'exact_wikidata_parts');
+  assert.equal(result[5].components.length,4);
+  assert.equal(result[6].groundedEntity,'Solar wind');
+});

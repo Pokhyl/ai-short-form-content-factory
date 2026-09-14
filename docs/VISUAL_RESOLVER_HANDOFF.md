@@ -61,3 +61,7 @@ The previous mixed-population rejection has been addressed with explicit all-mem
 ### Additional safety and exact media checkpoint
 
 54/54 native tests pass. Added rejection of unknown coordinated quantified subjects, per-member media identity/dedup, and exact Wikidata P527 all-part montages when a group has no usable page/P18/Commons image. P527 must be 2–8 unqualified, nondeprecated identities; each English sitelink must ground back to its exact QID. No generic parent-topic image is used. Live sequential preflight of the seven original production narrations is running; no failed job was changed.
+
+### Live seven-scene preflight passed
+
+All seven original production narrations now pass in sequence through live Wikimedia APIs, including exact all-member Comet/Meteoroid/Cosmic dust treatment, quantified groups, four verified Outer planets parts and Solar wind. Captured responses replay offline. See `docs/VISUAL_RESOLVER_PRODUCTION_MAPPING.md`. 55/55 native tests pass; final container run is in progress. Runtime source remains `faaa9d4`. Next: deploy this source after container checks, create a NEW normal public-intake job, inspect resulting audit and MP4. No new deployment/job has happened at this checkpoint.
