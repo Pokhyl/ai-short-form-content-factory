@@ -71,3 +71,47 @@ test('source-quality threshold applies to exact video as well as still images',(
  assert.equal(quality({kind:'video',width:320,height:240}),false);
  assert.equal(quality({kind:'video',width:1920,height:1080}),true);
 });
+
+test('exact P373 Commons category supplies distinct density alternatives without generic fallback',async()=>{
+ const resolver=new PexelsAPI('');
+ resolver.pageImage=async()=>({...media('primary'),kind:'image',width:1080,height:1080});
+ resolver.dataEntity=async()=>({claims:{P373:[{rank:'normal',mainsnak:{datavalue:{value:'Exact concept category'}}}]}});
+ resolver.exactMediaTitle=async title=>title==='File:Exact concept.jpg';
+ resolver.commonsMedia=async()=>[];
+ resolver.query=async(_base,params)=>{
+  assert.equal(params.generator,'categorymembers');assert.equal(params.gcmtype,'file');
+  return {query:{pages:{1:{title:'File:Exact concept.jpg',imageinfo:[{mime:'image/jpeg',width:1600,height:1200,thumbwidth:1600,thumbheight:1200,thumburl:'https://upload.wikimedia.org/exact-category.jpg',url:'https://upload.wikimedia.org/exact-category.jpg',extmetadata:{}}]}}}};
+ };
+ const pool=await resolver.exactBeatPool({qid:'Q123',englishTitle:'Exact concept'},false);
+ assert.equal(pool.length,2);assert.ok(pool.some(item=>item.source==='exact_wikidata_p373'));
+});
+
+test('possession relation object becomes a focal beat in UK RU PL EN',async()=>{
+ for(const [lang,text,links,expected] of [
+  ['uk','Шість із восьми планет та три карликові планети мають природні супутники.','[[Планета|планет]] [[Карликова планета|карликові планети]] [[Природний супутник|природні супутники]]','Природний супутник'],
+  ['ru','Шесть из восьми планет и три карликовые планеты имеют естественные спутники.','[[Планета|планет]] [[Карликовая планета|карликовые планеты]] [[Естественный спутник|естественные спутники]]','Естественный спутник'],
+  ['pl','Sześć z ośmiu planet i trzy planety karłowate mają naturalne satelity.','[[Planeta|planet]] [[Planeta karłowata|planety karłowate]] [[Satelita naturalny|naturalne satelity]]','Satelita naturalny'],
+  ['en','Six of eight planets and three dwarf planets have natural satellites.','[[Planet|planets]] [[Dwarf planet|dwarf planets]] [[Natural satellite|natural satellites]]','Natural satellite'],
+ ]){
+  const lexicon=sourceLexicon(links,'Reference');
+  const subject={title:expected,start:0,end:1,mode:'current_subject'};
+  const spans=await focalSpans(text,lang,lexicon,dictionary,{...subject,mode:'current_subject'});
+  assert.ok(spans.some(s=>s.title===expected&&s.mode==='focal_relation_object'),`${lang}: possession object missing`);
+ }
+});
+
+test('relative contains clause does not replace the main focal claim with its object',async()=>{
+ const text="За орбітою Нептуна розташовано транснептунові об'єкти, що містять багато замерзлої води, аміаку та метану.";
+ const lexicon=sourceLexicon("[[Транснептуновий об'єкт|транснептунові об'єкти]] [[Метан|метану]] [[Аміак|аміаку]]",'Reference');
+ const spans=await focalSpans(text,'uk',lexicon,dictionary,{title:"Транснептуновий об'єкт",start:31,end:53,mode:'current_subject'});
+ assert.deepEqual(spans.map(s=>s.title),["Транснептуновий об'єкт"]);
+});
+
+test('meta list page alias cannot suppress concrete possession object',async()=>{
+ const text='Шість із восьми планет та три карликові планети мають природні супутники.';
+ const lexicon=sourceLexicon('[[Планета|планет]] [[Карликова планета|карликові планети]] [[Список супутників|супутники]] [[супутник|супутники]]','Reference');
+ const spans=await focalSpans(text,'uk',lexicon,dictionary,{title:'Планета',start:16,end:22,mode:'current_subject'});
+ const relation=spans.find(s=>s.mode==='focal_relation_object');
+ assert.equal(relation?.title,'супутник');
+ assert.equal(relation?.surface,'супутники');
+});
