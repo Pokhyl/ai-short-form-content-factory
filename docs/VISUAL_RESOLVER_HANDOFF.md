@@ -51,3 +51,9 @@ Unsupported/ambiguous grammatical constructions and unavailable exact media fail
 - Candidate conflict: `Малі тіла Сонячної системи` / `космічний пил`. No selected media. No fallback to previous TNO. The fail-closed requirement works, but the normal production job has not succeeded.
 - 39 original failed/rejected rows compared in full by original IDs: unchanged; SHA-256 matches `3922c0d31ee56eedb1b4dce2abf6acc2fff9961579e9b5c2a688ba1e5f273623`.
 - Remaining work: general semantic treatment of mixed-population/adjunct/example-list sentences with positive and negative multilingual regressions, without arbitrarily choosing a list member or accepting an unverified group. Then use a NEW normal job for end-to-end validation. Do not weaken the existing rejection to force this job through. Successful MP4 validation and user HUMAN PASS remain outstanding.
+
+## 2026-09-14 implementation checkpoint (validation ongoing)
+
+The previous mixed-population rejection has been addressed with explicit all-member treatment of existential example lists. Quantified coordinated subjects preserve both groups; descriptive paired appositions retain the leading subject. Unknown list members still fail. An inadequate page thumbnail can use exact same-QID Wikidata P18, with unchanged media quality gates. New tests were run failing before implementation.
+
+51/51 tests pass natively. `tests/enumeration.test.cjs` includes multilingual non-astronomy cases, negative cases and exact member-media integration. Current changes are NOT deployed yet; live read-only preflight, container tests and a new normal job are still pending. Existing failed jobs stay immutable. Do not interpret the earlier 38-test checkpoint as the current implementation status.

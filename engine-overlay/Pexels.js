@@ -140,21 +140,22 @@ class PexelsAPI {
   }
   async pageImage(entity) {
     const {page} = entity;
-    if (!page) {
-      const wd = await this.dataEntity(entity.qid);
-      const filenames = (wd.claims?.P18 || []).filter(c => c.rank !== 'deprecated').map(c => c.mainsnak?.datavalue?.value).filter(f => typeof f === 'string');
-      for (const filename of filenames) {
-        const data = await this.query(COMMONS, {action:'query',titles:`File:${filename}`,prop:'imageinfo',iiprop:'url|mime|size',iiurlwidth:'1080'});
-        const p = Object.values(data.query?.pages || {})[0];
-        const media = p && mediaInfo(p.title, p.imageinfo?.[0], 'exact_wikidata_p18');
-        if (media) return media;
-      }
-      return null;
+    if (page?.pageimage && page.thumbnail) {
+      const ext = /\.(jpe?g|png|webp|gif)(?:\?|$)/i.exec(new URL(page.thumbnail.source).pathname)?.[1].toLowerCase();
+      const media = ext && mediaInfo(`File:${page.pageimage}`, {url: page.thumbnail.source, width: page.thumbnail.width, height: page.thumbnail.height, mime: `image/${ext === 'jpg' ? 'jpeg' : ext}`}, 'exact_english_wikipedia');
+      if (media) return media;
     }
-    if (!page.pageimage || !page.thumbnail) return null;
-    const ext = /\.(jpe?g|png|webp|gif)(?:\?|$)/i.exec(new URL(page.thumbnail.source).pathname)?.[1].toLowerCase();
-    if (!ext) return null;
-    return mediaInfo(`File:${page.pageimage}`, {url: page.thumbnail.source, width: page.thumbnail.width, height: page.thumbnail.height, mime: `image/${ext === 'jpg' ? 'jpeg' : ext}`}, 'exact_english_wikipedia');
+    // A missing/undersized page thumbnail does not invalidate exact P18 evidence.
+    // Every alternative still passes the same MIME, dimensions and host gates.
+    const wd = await this.dataEntity(entity.qid);
+    const filenames = (wd.claims?.P18 || []).filter(c => c.rank !== 'deprecated').map(c => c.mainsnak?.datavalue?.value).filter(f => typeof f === 'string');
+    for (const filename of filenames) {
+      const data = await this.query(COMMONS, {action:'query',titles:`File:${filename}`,prop:'imageinfo',iiprop:'url|mime|size',iiurlwidth:'1080'});
+      const p = Object.values(data.query?.pages || {})[0];
+      const media = p && mediaInfo(p.title, p.imageinfo?.[0], 'exact_wikidata_p18');
+      if (media) return media;
+    }
+    return null;
   }
   async commonsMedia(entity, preferVideo) {
     const result = await this.query(COMMONS, {action: 'query', generator: 'search', gsrsearch: `${words(entity.englishTitle).map(w => `intitle:${w.text}`).join(' ')}${preferVideo ? ' filetype:video' : ''}`, gsrnamespace: '6', gsrlimit: '24', prop: 'imageinfo', iiprop: 'url|mime|size|extmetadata', iiurlwidth: '1080'});
@@ -252,13 +253,15 @@ class PexelsAPI {
       // User-supplied mediaContext/mediaHistory cannot inject subjects or history.
       const antecedent = previous && previous.lang === spec.lang && previous.sourceTitle === spec.title ? previous : null;
       const subject = await resolveSubject(scene.text, spec.lang, source.entries, this.dictionary, antecedent, async title => (await this.ground(spec.lang, title)).qid);
-      const entity = await this.ground(spec.lang, subject.title);
+      const entity = subject.mode === 'current_enumeration'
+        ? {qid: `list:${subject.listText}`, englishTitle: subject.listText, localTitle: subject.listText}
+        : await this.ground(spec.lang, subject.title);
       const selected = await this.explicitGroupMedia(subject, spec, source.entries, entity, used) || await this.selectMedia(entity, used);
       const item = {...selected, sceneIndex, narration: scene.text, subject, groundedEntity: entity.englishTitle, groundedEntityId: entity.qid, visualQuery: entity.englishTitle, confidence: 'high', sourceRevision: source.revision};
       media.push(item);
       this.plans.set(item, {entity, used});
       used.set(item.mediaKey, {qid: entity.qid, sceneIndex});
-      previous = {...entity, lang: spec.lang, sourceTitle: spec.title, sceneIndex};
+      previous = subject.mode === 'current_enumeration' ? null : {...entity, lang: spec.lang, sourceTitle: spec.title, sceneIndex};
     }
     return media;
   }
@@ -267,6 +270,7 @@ class PexelsAPI {
     if (!context || !Number.isFinite(durationSeconds) || durationSeconds <= 0) fail('invalid_visual_plan', 'Use preflight media with a positive duration');
     if (durationSeconds <= 8) return [{startSeconds: 0, durationSeconds, media}];
     const {entity, used} = context;
+    if (media.components) return [{startSeconds: 0, durationSeconds, media, holdReason: 'explicit_members_montage'}];
     const poolKey = `${entity.qid}:false`;
     if (!this.mediaPools.has(poolKey)) this.mediaPools.set(poolKey, await this.commonsMedia(entity, false));
     const alternatives = this.mediaPools.get(poolKey).filter(m => m.mediaKey !== media.mediaKey && (!used.has(m.mediaKey) || used.get(m.mediaKey).qid === entity.qid));

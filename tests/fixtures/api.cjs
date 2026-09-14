@@ -6,6 +6,7 @@ function api() {
     const lang = url.hostname.split('.')[0], index = fixture.langs.indexOf(lang);
     if (p.get('action') === 'parse') return {parse: {revid: 123, wikitext: {'*': fixture.source(lang)}}};
     if (p.get('generator') === 'search') return {query: {pages: {}}};
+    if (p.get('action') === 'wbgetentities') return {entities:{[p.get('ids')]:{claims:{},aliases:{}}}};
     const title = p.get('titles');
     const entity = fixture.entities.find(e => [lang === 'en' ? e[0] : e[2][index], e[2][index]].some(t => t.toLowerCase() === String(title).toLowerCase()));
     if (!entity) return {query: {pages: {'-1': {missing: ''}}}};
