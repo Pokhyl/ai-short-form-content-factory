@@ -61,3 +61,8 @@ test('non-astronomy five-name lists use the identical extraction path',async()=>
  const spans=await focalSpans(text,'en',sourceLexicon('[[Alice]] [[Boris]] [[Clara]] [[David]] [[Elena]]','Reference'),dictionary,{mode:'previous_scene_anaphora'});
  assert.equal(spans.length,5);assert.equal(text.slice(spans[4].startChar,spans[4].endChar),'Elena');
 });
+test('list lead-in does not move the first named object before its spoken source span',()=>{
+ const beats=[{...media('a'),span:{startWord:2,endWord:3}},{...media('b'),span:{startWord:3,endWord:4}}];
+ const result=timeBeats(beats,{sceneStartMs:0,sceneEndMs:4000,wordToCaption:[0,1,2,3],captions:[0,400,1200,2600].map(startMs=>({startMs}))});
+ assert.deepEqual(result.map(b=>[b.startMs,b.endMs]),[[1200,2600],[2600,4000]]);
+});

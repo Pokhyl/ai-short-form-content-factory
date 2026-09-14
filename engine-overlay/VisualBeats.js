@@ -41,7 +41,7 @@ function rankMedia(media,relational=false){
 function timeBeats(beats,{sceneStartMs,sceneEndMs,wordToCaption,captions}){
  if(!beats.length)fail('empty_visual_beats','No focal visual');
  const starts=beats.map((beat,i)=>{
-  if(!i)return sceneStartMs;
+  if(!i&&(beats.length===1||beat.span?.startWord===0))return sceneStartMs;
   const span=beat.span;
   if(!span)fail('unaligned_beat',beat.title);
   let index;

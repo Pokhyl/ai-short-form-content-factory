@@ -357,6 +357,11 @@ class PexelsAPI {
     else {
       beats=timeBeats(beats,timeline);
       if(beats.length>1&&beats.some(b=>b.endMs-b.startMs<MIN_BEAT_MS))beats=montage();
+      else if(beats[0].startMs>timeline.sceneStartMs) {
+        const context=bundle.primary;
+        if(!context||!quality(context)||context.mediaKey===beats[0].mediaKey)fail('unresolved_visual_leadin','A distinct exact group visual is required before the first spoken name');
+        beats.unshift({...context,concept:context.groundedEntity,resolutionMode:'claim_leadin',span:{startChar:0,endChar:beats[0].span.startChar,startWord:0,endWord:beats[0].span.startWord},startMs:timeline.sceneStartMs,endMs:beats[0].startMs,alternatives:[]});
+      }
     }
     const dense=[];
     for(const beat of beats){
