@@ -1,9 +1,11 @@
 "use strict";
 const {DictionaryLemmas, fail, normalize, words, sourceLexicon, subjectCandidates, resolveSubject} = require('./VisualSubject');
+const {focalSpans,timeBeats,validateBeats,rankMedia,quality,MAX_STATIC_MS,MIN_BEAT_MS}=require('./VisualBeats');
 const USER_AGENT = 'ai-short-form-content-factory/1.0 (https://github.com/Pokhyl/ai-short-form-content-factory)';
 const COMMONS = 'https://commons.wikimedia.org/w/api.php';
 const encoded = value => encodeURIComponent(String(value));
-const keyForFile = title => normalize(decodeURIComponent(String(title))).replace(/^file:/, '').trim();
+const decodeFileTitle = value => { try { return decodeURIComponent(String(value)); } catch { return String(value); } };
+const keyForFile = title => normalize(decodeFileTitle(title)).replace(/^file:/, '').trim();
 const clean = value => String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
 function sourceSpec(terms) {
@@ -37,295 +39,114 @@ function mediaInfo(title, info, source) {
   const mediaKey = keyForFile(title);
   return {id: `wikimedia:${mediaKey}`, mediaKey, title, url, width, height, kind, extension: mime.includes('png') ? '.png' : mime.includes('gif') ? '.gif' : mime.includes('webp') ? '.webp' : mime.includes('mp4') ? '.mp4' : mime.includes('webm') ? '.webm' : '.jpg', source};
 }
-// Filename is only a rejection signal. Positive proof requires exact pageimage
-// provenance or a sole structured depicts (P180) statement for the chosen QID.
 function safeCommonsTitle(title, englishTitle) {
   const name = keyForFile(title).replace(/\.(jpg|jpeg|png|webp|webm|mp4)$/i, '');
   const entity = normalize(englishTitle);
   if (name === entity) return true;
+  const compact = value => normalize(value).replace(/[^\p{L}\p{N}]+/gu, '');
+  if (compact(name) === compact(entity) && compact(entity).length >= 6) return true;
   if (!name.startsWith(entity + ' ') && !name.startsWith(entity + '-')) return false;
   const suffix = name.slice(entity.length).replace(/[-_()]/g, ' ').trim();
   return /^(?:(?:diagram|illustration|animation|simulation|schematic|image|photo|photograph|comparison|size|scale|en|uk|ru|pl|[0-9]+)\s*)+$/.test(suffix);
 }
 
 class PexelsAPI {
-  constructor(_key, options = {}) {
-    this.fetchJson = options.fetchJson;
-    this.dictionary = options.dictionary || new DictionaryLemmas();
-    this.sources = new Map();
-    this.entities = new Map();
-    this.mediaPools = new Map();
-    this.plans = new WeakMap();
-    this.wikidata = new Map();
-  }
-  async _fetchJson(url) {
-    if (this.fetchJson) return this.fetchJson(url);
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const response = await fetch(url, {headers: {'User-Agent': USER_AGENT}, signal: AbortSignal.timeout(15000)});
-      if (response.ok) return response.json();
-      if (![429, 502, 503, 504].includes(response.status) || attempt === 2) fail('wiki_unavailable', `HTTP ${response.status}`);
-      await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)));
-    }
-  }
+  constructor(_key, options = {}) { this.fetchJson=options.fetchJson; this.dictionary=options.dictionary||new DictionaryLemmas(); this.sources=new Map(); this.entities=new Map(); this.mediaPools=new Map(); this.plans=new WeakMap(); this.wikidata=new Map(); }
+  async _fetchJson(url) { if(this.fetchJson) return this.fetchJson(url); for(let attempt=0;attempt<3;attempt++){ const response=await fetch(url,{headers:{'User-Agent':USER_AGENT},signal:AbortSignal.timeout(15000)}); if(response.ok)return response.json(); if(![429,502,503,504].includes(response.status)||attempt===2)fail('wiki_unavailable',`HTTP ${response.status}`); await new Promise(resolve=>setTimeout(resolve,500*(attempt+1))); } }
   async query(base, params) { return this._fetchJson(`${base}?${new URLSearchParams({...params, format: 'json'})}`); }
-  async dataEntity(qid) {
-    if (!this.wikidata.has(qid)) {
-      const data = await this.query('https://www.wikidata.org/w/api.php', {action:'wbgetentities',ids:qid,props:'claims|labels|aliases|sitelinks',languages:'en',sitefilter:'enwiki'});
-      const entity = data.entities?.[qid];
-      if (!entity || entity.missing !== undefined) fail('wikidata_unavailable', qid);
-      this.wikidata.set(qid, entity);
-    }
-    return this.wikidata.get(qid);
-  }
-  async belongsTo(qid, group, seen = new Set(), depth = 0) {
-    if (qid === group) return true;
-    if (depth >= 5 || seen.has(qid)) return false;
-    seen.add(qid);
-    const data = await this.dataEntity(qid);
-    const parents = ['P31','P279'].flatMap(p => (data.claims?.[p] || []).filter(c => c.rank !== 'deprecated').map(c => c.mainsnak?.datavalue?.value?.id)).filter(Boolean);
-    if (parents.includes(group)) return true;
-    for (const parent of parents) if (await this.belongsTo(parent, group, seen, depth + 1)) return true;
-    return false;
-  }
+  async dataEntity(qid) { if(!this.wikidata.has(qid)){ const data=await this.query('https://www.wikidata.org/w/api.php',{action:'wbgetentities',ids:qid,props:'claims|labels|aliases|sitelinks',languages:'en',sitefilter:'enwiki'}); const entity=data.entities?.[qid]; if(!entity||entity.missing!==undefined)fail('wikidata_unavailable',qid); this.wikidata.set(qid,entity);} return this.wikidata.get(qid); }
+  async belongsTo(qid,group,seen=new Set(),depth=0){ if(qid===group)return true; if(depth>=5||seen.has(qid))return false; seen.add(qid); const data=await this.dataEntity(qid); const parents=['P31','P279'].flatMap(p=>(data.claims?.[p]||[]).filter(c=>c.rank!=='deprecated').map(c=>c.mainsnak?.datavalue?.value?.id)).filter(Boolean); if(parents.includes(group))return true; for(const parent of parents)if(await this.belongsTo(parent,group,seen,depth+1))return true; return false; }
   async lexicon(spec) {
-    const key = `${spec.lang}:${spec.title}`;
-    if (!this.sources.has(key)) {
-      const data = await this.query(`https://${spec.lang}.wikipedia.org/w/api.php`, {action: 'parse', page: spec.title, prop: 'wikitext', redirects: '1'});
-      const wikitext = data.parse?.wikitext?.['*'];
-      if (!wikitext) fail('source_unavailable', key);
-      this.sources.set(key, {entries: sourceLexicon(wikitext, spec.title), revision: data.parse.revid});
+    const key=`${spec.lang}:${spec.title}`;
+    if(!this.sources.has(key)){
+      const data=await this.query(`https://${spec.lang}.wikipedia.org/w/api.php`,{action:'parse',page:spec.title,prop:'wikitext',redirects:'1'});
+      const wikitext=data.parse?.wikitext?.['*']; if(!wikitext)fail('source_unavailable',key);
+      const entries=sourceLexicon(wikitext,spec.title);
+      const identity=await this.query(`https://${spec.lang}.wikipedia.org/w/api.php`,{action:'query',titles:spec.title,redirects:'1',prop:'pageprops',ppprop:'wikibase_item'});
+      const localPage=pageFrom(identity), qid=localPage?.pageprops?.wikibase_item;
+      if(/^Q\d+$/.test(qid||'')){
+        const wdData=await this.query('https://www.wikidata.org/w/api.php',{action:'wbgetentities',ids:qid,props:'labels|aliases',languages:spec.lang});
+        const wd=wdData.entities?.[qid];
+        const aliases=[wd?.labels?.[spec.lang]?.value,...(wd?.aliases?.[spec.lang]||[]).map(a=>a.value)].filter(v=>typeof v==='string'&&v.trim());
+        const sourceEntry=entries.find(e=>normalize(e.title)===normalize(spec.title));
+        if(sourceEntry)sourceEntry.aliases=[...new Set([...sourceEntry.aliases,...aliases])];
+      }
+      this.sources.set(key,{entries,revision:data.parse.revid});
     }
     return this.sources.get(key);
   }
-  async ground(lang, title) {
-    const key = `${lang}:${title}`;
-    if (this.entities.has(key)) return this.entities.get(key);
-    const localData = await this.query(`https://${lang}.wikipedia.org/w/api.php`, {
-      action: 'query', titles: title, redirects: '1', prop: 'langlinks|pageprops', lllang: 'en', lllimit: '1', ppprop: 'wikibase_item|disambiguation',
-    });
-    let local = pageFrom(localData);
-    const fragment = localData.query?.redirects?.find(r => r.tofragment);
-    if (fragment) {
-      // The first lookup can redirect to a section too. Its destination QID
-      // identifies the containing article, not the requested concept.
-      const exact = await this.query('https://www.wikidata.org/w/api.php', {
-        action:'wbgetentities',sites:`${lang}wiki`,titles:fragment.from,
-        props:'claims|labels|aliases|sitelinks',languages:'en',sitefilter:`${lang}wiki|enwiki`,
-      });
-      const matches = Object.values(exact.entities || {}).filter(e =>
-        /^Q\d+$/.test(e.id || '') && e.missing === undefined &&
-        normalize(e.sitelinks?.[`${lang}wiki`]?.title) === normalize(fragment.from));
-      if (matches.length !== 1) fail('exact_grounding_missing', key);
-      const wd = matches[0];
-      this.wikidata.set(wd.id, wd);
-      local = {title:fragment.from,pageprops:{wikibase_item:wd.id},langlinks:[{lang:'en','*':wd.sitelinks?.enwiki?.title}]};
+  async ground(lang,title){
+    const key=`${lang}:${title}`; if(this.entities.has(key))return this.entities.get(key);
+    const localData=await this.query(`https://${lang}.wikipedia.org/w/api.php`,{action:'query',titles:title,redirects:'1',prop:'langlinks|pageprops',lllang:'en',lllimit:'1',ppprop:'wikibase_item|disambiguation'});
+    let local=pageFrom(localData); const fragment=localData.query?.redirects?.find(r=>r.tofragment);
+    if(fragment){ const exact=await this.query('https://www.wikidata.org/w/api.php',{action:'wbgetentities',sites:`${lang}wiki`,titles:fragment.from,props:'claims|labels|aliases|sitelinks',languages:'en',sitefilter:`${lang}wiki|enwiki`}); const matches=Object.values(exact.entities||{}).filter(e=>/^Q\d+$/.test(e.id||'')&&e.missing===undefined&&normalize(e.sitelinks?.[`${lang}wiki`]?.title)===normalize(fragment.from)); if(matches.length!==1)fail('exact_grounding_missing',key); const wd=matches[0]; this.wikidata.set(wd.id,wd); local={title:fragment.from,pageprops:{wikibase_item:wd.id},langlinks:[{lang:'en','*':wd.sitelinks?.enwiki?.title}]}; }
+    const qid=local?.pageprops?.wikibase_item; const englishTitle=lang==='en'?local?.title:local?.langlinks?.find(l=>l.lang==='en')?.['*']; if(!/^Q[0-9]+$/.test(qid||'')||!englishTitle)fail('exact_grounding_missing',key);
+    const enData=await this.query('https://en.wikipedia.org/w/api.php',{action:'query',titles:englishTitle,redirects:'1',prop:'pageimages|pageprops',ppprop:'wikibase_item|disambiguation',piprop:'name|thumbnail',pithumbsize:'1080'}); const en=pageFrom(enData); let entity;
+    if(en&&en.pageprops?.wikibase_item===qid)entity={localTitle:local.title,englishTitle:en.title,qid,page:en}; else if(enData.query?.redirects?.some(r=>r.tofragment&&normalize(r.from)===normalize(englishTitle))){ const wd=await this.dataEntity(qid); if(normalize(wd.sitelinks?.enwiki?.title)!==normalize(englishTitle))fail('entity_identity_mismatch',key); entity={localTitle:local.title,englishTitle,qid,page:null,sectionRedirect:enData.query.redirects}; } else fail('entity_identity_mismatch',key); this.entities.set(key,entity); return entity;
+  }
+  async pageImage(entity){ const {page}=entity; if(page?.pageimage&&page.thumbnail){ const ext=/\.(jpe?g|png|webp|gif)(?:\?|$)/i.exec(new URL(page.thumbnail.source).pathname)?.[1].toLowerCase(); const media=ext&&mediaInfo(`File:${page.pageimage}`,{url:page.thumbnail.source,width:page.thumbnail.width,height:page.thumbnail.height,mime:`image/${ext==='jpg'?'jpeg':ext}`},'exact_english_wikipedia'); if(media)return media; } const wd=await this.dataEntity(entity.qid); const filenames=(wd.claims?.P18||[]).filter(c=>c.rank!=='deprecated').map(c=>c.mainsnak?.datavalue?.value).filter(f=>typeof f==='string'); for(const filename of filenames){ const data=await this.query(COMMONS,{action:'query',titles:`File:${filename}`,prop:'imageinfo',iiprop:'url|mime|size',iiurlwidth:'1080'}); const p=Object.values(data.query?.pages||{})[0]; const media=p&&mediaInfo(p.title,p.imageinfo?.[0],'exact_wikidata_p18'); if(media)return media; } return null; }
+  async commonsMedia(entity,preferVideo){ const result=await this.query(COMMONS,{action:'query',generator:'search',gsrsearch:`${words(entity.englishTitle).map(w=>`intitle:${w.text}`).join(' ')}${preferVideo?' filetype:video':''}`,gsrnamespace:'6',gsrlimit:'24',prop:'imageinfo',iiprop:'url|mime|size|extmetadata',iiurlwidth:'1080'}); const candidates=[]; for(const p of Object.values(result.query?.pages||{}))if(await this.exactMediaTitle(p.title,entity))candidates.push(p); if(!candidates.length)return[]; const data=await this.query(COMMONS,{action:'wbgetentities',ids:candidates.map(p=>`M${p.pageid}`).join('|'),props:'claims'}); const media=[]; for(const p of candidates){ const statements=data.entities?.[`M${p.pageid}`]?.statements||data.entities?.[`M${p.pageid}`]?.claims||{}; const depicts=(statements.P180||[]).filter(c=>c.rank!=='deprecated').map(c=>c.mainsnak?.datavalue?.value?.id); if(!depicts.length||depicts.some(q=>!/^Q\d+$/.test(q||'')))continue; if(depicts.length===1&&depicts[0]!==entity.qid)continue; let relevant=true; for(const qid of depicts)if(!await this.belongsTo(qid,entity.qid)){relevant=false;break;} if(!relevant)continue; const item=mediaInfo(p.title,p.imageinfo?.[0],'exact_entity_commons'); if(!item||(preferVideo&&item.kind!=='video'))continue; const metadata=p.imageinfo[0].extmetadata||{}; item.description=clean(metadata.ImageDescription?.value); item.depicts=entity.qid; media.push(item);} return media.sort((a,b)=>a.mediaKey.localeCompare(b.mediaKey,'en')); }
+  async exactMediaTitle(title,entity){ if(safeCommonsTitle(title,entity.englishTitle))return true; const text=keyForFile(title).replace(/\.[a-z0-9]+$/i,''); const aliases=[entity.englishTitle]; const wd=await this.dataEntity(entity.qid); aliases.push(...(wd.aliases?.en||[]).map(a=>a.value)); aliases.push(...aliases.filter(a=>/^[A-Z]{2,8}$/.test(a)).map(a=>a+'s')); const matches=await subjectCandidates(text,'en',[{title:entity.englishTitle,aliases}],this.dictionary); if(!matches.length)return false; const remainder=words(text).filter(w=>!matches.some(m=>w.start>=m.start&&w.end<=m.end)); return remainder.every(w=>/^(?:\d+|largest|smallest|known|sizes?|of|the|diagram|illustration|animation|simulation|schematic|image|photo|photograph|comparison|scale|en|uk|ru|pl)$/.test(w.text)); }
+  async selectMedia(entity,used,preferVideo=false,excluded=[]){ const primary=await this.pageImage(entity); const prior=primary&&used.get(primary.mediaKey); if(primary&&!prior&&!excluded.includes(primary.id))return{...primary,resolutionType:primary.source}; const poolKey=`${entity.qid}:${preferVideo}`; if(!this.mediaPools.has(poolKey))this.mediaPools.set(poolKey,await this.commonsMedia(entity,preferVideo)); const pool=this.mediaPools.get(poolKey); const available=pool.find(m=>!used.has(m.mediaKey)&&!excluded.includes(m.id)); if(available)return{...available,resolutionType:'exact_entity_commons'}; const reusable=[primary,...pool].find(m=>m&&used.get(m.mediaKey)?.qid===entity.qid&&!excluded.includes(m.id)); if(reusable)return{...reusable,resolutionType:reusable.source,reuseReason:'same_entity_no_alternative'};
+    // Initial scene/group selection must have the same exact-source coverage as
+    // beat selection; an unusable thumbnail is not proof that no exact media exists.
+    let exact=[];try{exact=await this.exactBeatPool(entity,false);}catch(error){if(error.code!=='exact_high_quality_media_missing')throw error;}
+    const eligible=exact.filter(m=>(!preferVideo||m.kind==='video')&&!excluded.includes(m.id)&&(!used.has(m.mediaKey)||used.get(m.mediaKey).qid===entity.qid));
+    const selected=eligible.find(m=>!used.has(m.mediaKey))||eligible[0];
+    if(selected)return{...selected,resolutionType:selected.source,...(used.has(selected.mediaKey)?{reuseReason:'same_entity_no_alternative'}:{})};
+    fail('exact_media_missing',entity.englishTitle); }
+  async structuredGroupMedia(entity,used){ const wd=await this.dataEntity(entity.qid); const claims=(wd.claims?.P527||[]).filter(c=>c.rank!=='deprecated'); if(claims.some(c=>Object.keys(c.qualifiers||{}).length))fail('exact_media_missing',entity.englishTitle); const ids=[...new Set(claims.map(c=>c.mainsnak?.datavalue?.value?.id))]; if(ids.length<2||ids.length>8||ids.some(id=>!/^Q\d+$/.test(id||'')))fail('exact_media_missing',entity.englishTitle); const components=[],memberUsed=new Map(used); for(const id of ids){ const data=await this.dataEntity(id), title=data.sitelinks?.enwiki?.title; if(!title)fail('exact_grounding_missing',id); const member=await this.ground('en',title); if(member.qid!==id)fail('entity_identity_mismatch',title); const media=await this.selectMedia(member,memberUsed); memberUsed.set(media.mediaKey,{qid:id}); components.push({...media,groundedEntity:member.englishTitle,groundedEntityId:id}); } const mediaKey=`montage:${entity.qid}:${components.map(m=>m.mediaKey).join('|')}`; return{id:mediaKey,mediaKey,kind:'image',extension:'.jpg',width:1080,height:1920,title:`${entity.englishTitle}: ${components.map(m=>m.title).join(' + ')}`,source:'exact_wikidata_parts',resolutionType:'exact_wikidata_parts',components}; }
+  async entityMedia(entity,used){ try{return await this.selectMedia(entity,used);}catch(error){if(error.code!=='exact_media_missing')throw error;return this.structuredGroupMedia(entity,used);} }
+  async explicitGroupMedia(subject,spec,lexicon,entity,used){ if(!subject.listText||!/[ ,]|(?:\s(?:and|та|і|и|oraz|i)\s)/iu.test(subject.listText))return null; const candidates=await subjectCandidates(subject.listText,spec.lang,lexicon,this.dictionary); const unmatched=words(subject.listText).filter(w=>!candidates.some(c=>w.start>=c.start&&w.end<=c.end)); if(unmatched.some(w=>!/^(?:and|та|і|и|oraz|i)$/.test(w.text)))fail('unresolved_group_member',subject.listText); const members=new Map(),memberUsed=new Map(used),spanIdentities=new Map(),grounded=[]; for(const candidate of candidates.sort((a,b)=>a.start-b.start)){ const member=await this.ground(spec.lang,candidate.title), span=`${candidate.start}:${candidate.end}`; if(spanIdentities.has(span)&&spanIdentities.get(span)!==member.qid)fail('ambiguous_group_member',candidate.surface); spanIdentities.set(span,member.qid); grounded.push(member);} for(const member of grounded){ if(member.qid===entity.qid||members.has(member.qid))continue; const media=await this.selectMedia(member,memberUsed); memberUsed.set(media.mediaKey,{qid:member.qid}); members.set(member.qid,{...media,groundedEntity:member.englishTitle,groundedEntityId:member.qid}); } if(members.size<2||members.size>8)fail('ambiguous_group_members',subject.listText); const components=[...members.values()],mediaKey=`montage:${entity.qid}:${components.map(m=>m.mediaKey).join('|')}`; return{id:mediaKey,mediaKey,kind:'image',extension:'.jpg',width:1080,height:1920,title:`${entity.englishTitle}: ${components.map(m=>m.title).join(' + ')}`,source:'exact_listed_members',resolutionType:'exact_listed_members',components}; }
+  prepareScenes(scenes){ if(!Array.isArray(scenes)||!scenes.length)fail('empty_scenes','At least one scene is required'); return scenes.flatMap((scene,inputSceneIndex)=>{ if(typeof scene?.text!=='string'||!scene.text.trim())fail('empty_scene',`Scene ${inputSceneIndex}`); const spec=sourceSpec(scene.searchTerms),segments=[...new Intl.Segmenter(spec.lang,{granularity:'sentence'}).segment(String(scene.text||''))]; return segments.map(s=>({...scene,text:s.segment.trim(),mediaContext:s.segment.trim(),mediaHistory:undefined,inputSceneIndex})).filter(s=>s.text); }); }
+  async preflightScenes(scenes){ if(!Array.isArray(scenes)||!scenes.length)fail('empty_scenes','At least one scene is required'); const media=[],used=new Map(); let previous=null; for(const[sceneIndex,scene]of scenes.entries()){ const spec=sourceSpec(scene.searchTerms),source=await this.lexicon(spec); const antecedent=previous&&previous.lang===spec.lang&&previous.sourceTitle===spec.title?previous:null; const subject=await resolveSubject(scene.text,spec.lang,source.entries,this.dictionary,antecedent,async title=>(await this.ground(spec.lang,title)).qid); const entity=subject.mode==='current_enumeration'?{qid:`list:${subject.listText}`,englishTitle:subject.listText,localTitle:subject.listText}:await this.ground(spec.lang,subject.title); const selected=await this.explicitGroupMedia(subject,spec,source.entries,entity,used)||await this.entityMedia(entity,used); const item={...selected,sceneIndex,narration:scene.text,subject,groundedEntity:entity.englishTitle,groundedEntityId:entity.qid,visualQuery:entity.englishTitle,confidence:'high',sourceRevision:source.revision}; media.push(item); this.plans.set(item,{entity,used}); used.set(item.mediaKey,{qid:entity.qid,sceneIndex}); for(const component of item.components||[])used.set(component.mediaKey,{qid:component.groundedEntityId,sceneIndex}); previous=subject.mode==='current_enumeration'?null:{...entity,lang:spec.lang,sourceTitle:spec.title,sceneIndex}; } return media; }
+  async exactArticleMedia(entity){ if(!entity?.page?.title)return[]; const wd=await this.dataEntity(entity.qid); const aliases=[String(entity.englishTitle||'').replace(/\s*\([^)]*\)\s*/g,' ').trim(),wd.labels?.en?.value,...(wd.aliases?.en||[]).map(a=>a.value)].filter(Boolean); const compact=value=>normalize(value).replace(/[^\p{L}\p{N}]+/gu,''); const aliasCompacts=[...new Set(aliases.map(compact).filter(v=>v.length>=6))]; const stop=new Set(['the','a','an','of','and','for','with','from','into','onto','de','la','le','van','von','der','den','jr','sr','astronomer','scientist']); const aliasTokenSets=aliases.map(a=>[...new Set(words(a).map(w=>w.text).filter(t=>!stop.has(t)))]).filter(set=>set.length); const multiTokenSets=aliasTokenSets.filter(set=>set.length>=2); const acceptedTokenSets=multiTokenSets.length?multiTokenSets:aliasTokenSets; const listed=await this.query('https://en.wikipedia.org/w/api.php',{action:'query',titles:entity.page.title,prop:'images',imlimit:'max'}); const articlePage=Object.values(listed.query?.pages||{})[0],titles=(articlePage?.images||[]).map(x=>x.title).filter(t=>!/(?:logo|icon|edit-|placeholder|wikisource|commons-logo)/iu.test(t)).slice(0,80),result=[]; for(let i=0;i<titles.length;i+=20){ const data=await this.query(COMMONS,{action:'query',titles:titles.slice(i,i+20).join('|'),prop:'imageinfo',iiprop:'url|mime|size|extmetadata',iiurlwidth:'1600'}); for(const page of Object.values(data.query?.pages||{})){ const info=page.imageinfo?.[0],media=info&&mediaInfo(page.title,info,'exact_wikipedia_article_media'); if(!media||!quality(media))continue; const description=clean(info.extmetadata?.ImageDescription?.value),titleCompact=compact(page.title),titleWords=new Set(words(page.title).map(w=>w.text)),fullAlias=aliasCompacts.some(alias=>titleCompact.includes(alias)),tokenAlias=acceptedTokenSets.some(set=>set.every(term=>titleWords.has(term))); if(!fullAlias&&!tokenAlias)continue; result.push({...media,description}); } } return result; }
+  async exactTopicCategoryMedia(entity){ const wd=await this.dataEntity(entity.qid),categoryIds=(wd.claims?.P910||[]).filter(c=>c.rank!=='deprecated').map(c=>c.mainsnak?.datavalue?.value?.id).filter(id=>/^Q\d+$/.test(id||'')),result=[]; for(const categoryId of categoryIds){ const categoryEntity=await this.dataEntity(categoryId),topics=(categoryEntity.claims?.P301||[]).filter(c=>c.rank!=='deprecated').map(c=>c.mainsnak?.datavalue?.value?.id).filter(Boolean); if(topics.length!==1||topics[0]!==entity.qid)continue; const title=categoryEntity.sitelinks?.enwiki?.title; if(!/^Category:/iu.test(title||''))continue; const category=title.replace(/^Category:/iu,'').trim(); let continuation={},seen=0; for(let pageIndex=0;pageIndex<8&&seen<100;pageIndex++){ const data=await this.query(COMMONS,{action:'query',generator:'categorymembers',gcmtitle:`Category:${category}`,gcmtype:'file',gcmlimit:'50',prop:'imageinfo',iiprop:'url|mime|size|extmetadata',iiurlwidth:'1600',...continuation}),pages=Object.values(data.query?.pages||{}); seen+=pages.length; for(const page of pages){ if(!(await this.exactMediaTitle(page.title,entity)))continue; const info=page.imageinfo?.[0],media=info&&mediaInfo(page.title,info,'exact_topic_category'); if(media)result.push({...media,description:clean(info.extmetadata?.ImageDescription?.value)});} if(!data.continue?.gcmcontinue)break; continuation={gcmcontinue:data.continue.gcmcontinue,continue:data.continue.continue}; }} return result; }
+  async exactBeatPool(entity,relational){ const primary=await this.pageImage(entity),wd=await this.dataEntity(entity.qid),images=primary?[primary]:[]; for(const claim of wd.claims?.P18||[]){ const filename=claim.mainsnak?.datavalue?.value; if(claim.rank==='deprecated'||typeof filename!=='string')continue; const data=await this.query(COMMONS,{action:'query',titles:`File:${filename}`,prop:'imageinfo',iiprop:'url|mime|size|extmetadata',iiurlwidth:'1600'}),page=Object.values(data.query?.pages||{})[0],info=page?.imageinfo?.[0],media=page&&mediaInfo(page.title,info,'exact_wikidata_p18'); if(media)images.push({...media,description:clean(info.extmetadata?.ImageDescription?.value)});} images.push(...await this.exactArticleMedia(entity)); images.push(...await this.exactTopicCategoryMedia(entity)); const categories=(wd.claims?.P373||[]).filter(c=>c.rank!=='deprecated').map(c=>c.mainsnak?.datavalue?.value).filter(v=>typeof v==='string'&&v.trim()); for(const category of categories){ let continuation={},filePages=0; for(let categoryPage=0;categoryPage<12&&filePages<50;categoryPage++){ const data=await this.query(COMMONS,{action:'query',generator:'categorymembers',gcmtitle:`Category:${category}`,gcmtype:'file',gcmlimit:'50',prop:'imageinfo',iiprop:'url|mime|size|extmetadata',iiurlwidth:'1600',...continuation}),pages=Object.values(data.query?.pages||{}); filePages+=pages.length; for(const page of pages){ if(!(await this.exactMediaTitle(page.title,entity)))continue; const info=page.imageinfo?.[0],media=info&&mediaInfo(page.title,info,'exact_wikidata_p373'); if(media)images.push({...media,description:clean(info.extmetadata?.ImageDescription?.value)});} if(!data.continue?.gcmcontinue)break; continuation={gcmcontinue:data.continue.gcmcontinue,continue:data.continue.continue}; }} images.push(...await this.commonsMedia(entity,false)); const unique=new Map(); for(const image of images.filter(quality))if(!unique.has(image.mediaKey))unique.set(image.mediaKey,image); const ranked=rankMedia([...unique.values()],relational); if(!ranked.length)fail('exact_high_quality_media_missing',entity.englishTitle); return ranked; }
+  async preflightVisualBeats(scenes){ const primary=await this.preflightScenes(scenes),bundles=[]; let previousKey=null; for(const[i,scene]of scenes.entries()){ const spec=sourceSpec(scene.searchTerms),lexicon=await this.lexicon(spec),spans=await focalSpans(scene.text,spec.lang,lexicon.entries,this.dictionary,primary[i].subject),beats=[],spanIds=new Map(); for(const span of spans){ const entity=span.title?await this.ground(spec.lang,span.title):this.plans.get(primary[i]).entity; if(String(entity.qid).startsWith('list:')){ const components=primary[i].components; if(!components?.length||components.some(c=>!quality(c)))fail('exact_high_quality_media_missing',entity.englishTitle); beats.push({...primary[i],span,concept:entity.englishTitle,resolutionMode:'explicit_group',alternatives:[]}); continue;} const spanKey=`${span.startChar}:${span.endChar}`; if(spanIds.has(spanKey)){if(spanIds.get(spanKey)!==entity.qid)fail('ambiguous_beat_span',scene.text);continue;} spanIds.set(spanKey,entity.qid); const relational=spans.length===1&&/(?<!\p{L})(?:between|між|между|między|orbit|орбіт|орбит)/iu.test(scene.text),pool=await this.exactBeatPool(entity,relational),selected=pool.find(m=>m.mediaKey!==previousKey); if(!selected)fail('duplicate_visual_identity',entity.englishTitle); beats.push({...selected,span,concept:entity.englishTitle,groundedEntityId:entity.qid,resolutionMode:spans.length>1?'focal_list_item':'focal_claim',alternatives:pool.filter(m=>m.mediaKey!==selected.mediaKey)}); previousKey=selected.mediaKey;} let leadIn;
+      if(beats.length>1&&beats[0].span.startWord>0){
+        const group=primary[i].subject.groupSubject||(!primary[i].components?.length?primary[i].subject:null);
+        if(!group?.title)fail('unresolved_visual_leadin','No explicit grounded group before the enumeration');
+        const entity=await this.ground(spec.lang,group.title),pool=await this.exactBeatPool(entity,false);
+        leadIn={...pool[0],concept:entity.englishTitle,groundedEntityId:entity.qid,groupSourceSpan:group,alternatives:pool.slice(1)};
+      }
+      bundles.push({primary:primary[i],beats,...(leadIn?{leadIn}:{})}); } return bundles; }
+  planVisualBeats(bundle,timeline,previousKey=null){
+    const beats=timeBeats(bundle.beats,timeline);
+    if(beats.some(b=>b.components?.length))fail('unresolved_visual_group','Sequential exact members are required');
+    if(beats[0].startMs>timeline.sceneStartMs){
+      const context=bundle.leadIn||bundle.primary;
+      if(!context||context.components?.length||!quality(context))fail('unresolved_visual_leadin','A grounded non-montage group visual is required before the first spoken name');
+      beats.unshift({...context,concept:context.concept||context.groundedEntity,resolutionMode:'claim_leadin',span:{startChar:0,endChar:beats[0].span.startChar,startWord:0,endWord:beats[0].span.startWord},startMs:timeline.sceneStartMs,endMs:beats[0].startMs,timingEvidence:{alignmentSource:'grounded_claim_leadin'}});
     }
-    const qid = local?.pageprops?.wikibase_item;
-    const englishTitle = lang === 'en' ? local?.title : local?.langlinks?.find(l => l.lang === 'en')?.['*'];
-    if (!/^Q[0-9]+$/.test(qid || '') || !englishTitle) fail('exact_grounding_missing', key);
-    const enData = await this.query('https://en.wikipedia.org/w/api.php', {
-      action: 'query', titles: englishTitle, redirects: '1', prop: 'pageimages|pageprops', ppprop: 'wikibase_item|disambiguation', piprop: 'name|thumbnail', pithumbsize: '1080',
-    });
-    const en = pageFrom(enData);
-    let entity;
-    if (en && en.pageprops?.wikibase_item === qid) entity = {localTitle: local.title, englishTitle: en.title, qid, page: en};
-    else if (enData.query?.redirects?.some(r => r.tofragment && normalize(r.from) === normalize(englishTitle))) {
-      const wd = await this.dataEntity(qid);
-      if (normalize(wd.sitelinks?.enwiki?.title) !== normalize(englishTitle)) fail('entity_identity_mismatch', key);
-      // A section redirect identifies a concept, never the containing page's image.
-      entity = {localTitle:local.title, englishTitle, qid, page:null, sectionRedirect:enData.query.redirects};
-    } else fail('entity_identity_mismatch', key);
-    this.entities.set(key, entity);
-    return entity;
-  }
-  async pageImage(entity) {
-    const {page} = entity;
-    if (page?.pageimage && page.thumbnail) {
-      const ext = /\.(jpe?g|png|webp|gif)(?:\?|$)/i.exec(new URL(page.thumbnail.source).pathname)?.[1].toLowerCase();
-      const media = ext && mediaInfo(`File:${page.pageimage}`, {url: page.thumbnail.source, width: page.thumbnail.width, height: page.thumbnail.height, mime: `image/${ext === 'jpg' ? 'jpeg' : ext}`}, 'exact_english_wikipedia');
-      if (media) return media;
+    const dense=[];let lastKey=previousKey;
+    const captionBoundaries=[...new Set((timeline.captions||[]).flatMap(c=>[c.startMs,c.endMs]).filter(Number.isFinite))].sort((a,b)=>a-b);
+    for(const beat of beats){
+      const pool=[beat,...(beat.alternatives||[])].filter(m=>!m.components?.length);
+      let startMs=beat.startMs,rotation=0;
+      while(startMs<beat.endMs){
+        let endMs=beat.endMs,cutSource='focal_boundary';
+        if(beat.kind!=='video'&&endMs-startMs>MAX_STATIC_MS){
+          const remaining=Math.ceil((endMs-startMs)/MAX_STATIC_MS)-1;
+          const lower=Math.max(startMs+MIN_BEAT_MS,endMs-remaining*MAX_STATIC_MS);
+          const upper=Math.min(startMs+MAX_STATIC_MS,endMs-remaining*MIN_BEAT_MS);
+          const cut=captionBoundaries.filter(t=>t>=lower&&t<=upper).at(-1);
+          endMs=cut??upper;cutSource=cut===undefined?'static_hold_limit':'caption_boundary';
+        }
+        let selected;
+        for(let offset=0;offset<pool.length;offset++){
+          const index=(rotation+offset)%pool.length;
+          if(pool[index].mediaKey!==lastKey){selected=pool[index];rotation=(index+1)%pool.length;break;}
+        }
+        if(!selected)fail(pool.length<2&&startMs>beat.startMs?'visual_density':'duplicate_visual_identity',beat.concept);
+        dense.push({...beat,...selected,span:beat.span,spans:beat.spans,concept:beat.concept,resolutionMode:beat.resolutionMode,timingEvidence:{...beat.timingEvidence,cutSource},startMs,endMs});
+        lastKey=selected.mediaKey;startMs=endMs;
+      }
     }
-    // A missing/undersized page thumbnail does not invalidate exact P18 evidence.
-    // Every alternative still passes the same MIME, dimensions and host gates.
-    const wd = await this.dataEntity(entity.qid);
-    const filenames = (wd.claims?.P18 || []).filter(c => c.rank !== 'deprecated').map(c => c.mainsnak?.datavalue?.value).filter(f => typeof f === 'string');
-    for (const filename of filenames) {
-      const data = await this.query(COMMONS, {action:'query',titles:`File:${filename}`,prop:'imageinfo',iiprop:'url|mime|size',iiurlwidth:'1080'});
-      const p = Object.values(data.query?.pages || {})[0];
-      const media = p && mediaInfo(p.title, p.imageinfo?.[0], 'exact_wikidata_p18');
-      if (media) return media;
-    }
-    return null;
+    validateBeats(dense,timeline.sceneStartMs,timeline.sceneEndMs,previousKey);
+    return dense;
   }
-  async commonsMedia(entity, preferVideo) {
-    const result = await this.query(COMMONS, {action: 'query', generator: 'search', gsrsearch: `${words(entity.englishTitle).map(w => `intitle:${w.text}`).join(' ')}${preferVideo ? ' filetype:video' : ''}`, gsrnamespace: '6', gsrlimit: '24', prop: 'imageinfo', iiprop: 'url|mime|size|extmetadata', iiurlwidth: '1080'});
-    const candidates = [];
-    for (const p of Object.values(result.query?.pages || {})) if (await this.exactMediaTitle(p.title, entity)) candidates.push(p);
-    if (!candidates.length) return [];
-    const data = await this.query(COMMONS, {action: 'wbgetentities', ids: candidates.map(p => `M${p.pageid}`).join('|'), props: 'claims'});
-    const media = [];
-    for (const p of candidates) {
-      const statements = data.entities?.[`M${p.pageid}`]?.statements || data.entities?.[`M${p.pageid}`]?.claims || {};
-      const depicts = (statements.P180 || []).filter(c => c.rank !== 'deprecated').map(c => c.mainsnak?.datavalue?.value?.id);
-      if (!depicts.length || depicts.some(q => !/^Q\d+$/.test(q || ''))) continue;
-      if (depicts.length === 1 && depicts[0] !== entity.qid) continue;
-      let relevant = true;
-      for (const qid of depicts) if (!await this.belongsTo(qid, entity.qid)) {relevant = false; break;}
-      if (!relevant) continue;
-      const item = mediaInfo(p.title, p.imageinfo?.[0], 'exact_entity_commons');
-      if (!item || (preferVideo && item.kind !== 'video')) continue;
-      const metadata = p.imageinfo[0].extmetadata || {};
-      item.description = clean(metadata.ImageDescription?.value);
-      item.depicts = entity.qid;
-      media.push(item);
-    }
-    return media.sort((a, b) => a.mediaKey.localeCompare(b.mediaKey, 'en'));
-  }
-  async exactMediaTitle(title, entity) {
-    if (safeCommonsTitle(title, entity.englishTitle)) return true;
-    const text = keyForFile(title).replace(/\.[a-z0-9]+$/i, '');
-    const aliases = [entity.englishTitle];
-    // Dictionary-normalized whole aliases plus a closed, topic-neutral vocabulary
-    // of presentation descriptors. Extra substantive co-subjects are rejected.
-    const wd = await this.dataEntity(entity.qid);
-    aliases.push(...(wd.aliases?.en || []).map(a => a.value));
-    aliases.push(...aliases.filter(a => /^[A-Z]{2,8}$/.test(a)).map(a => a + 's'));
-    const matches = await subjectCandidates(text, 'en', [{title:entity.englishTitle,aliases}], this.dictionary);
-    if (!matches.length) return false;
-    const remainder = words(text).filter(w => !matches.some(m => w.start >= m.start && w.end <= m.end));
-    return remainder.every(w => /^(?:\d+|largest|smallest|known|sizes?|of|the|diagram|illustration|animation|simulation|schematic|image|photo|photograph|comparison|scale|en|uk|ru|pl)$/.test(w.text));
-  }
-  async selectMedia(entity, used, preferVideo = false, excluded = []) {
-    const primary = await this.pageImage(entity);
-    const prior = primary && used.get(primary.mediaKey);
-    if (primary && !prior && !excluded.includes(primary.id)) return {...primary, resolutionType: primary.source};
-    const poolKey = `${entity.qid}:${preferVideo}`;
-    if (!this.mediaPools.has(poolKey)) this.mediaPools.set(poolKey, await this.commonsMedia(entity, preferVideo));
-    const pool = this.mediaPools.get(poolKey);
-    const available = pool.find(m => !used.has(m.mediaKey) && !excluded.includes(m.id));
-    if (available) return {...available, resolutionType: 'exact_entity_commons'};
-    // Media already assigned to a different entity must never be reused.
-    const reusable = [primary, ...pool].find(m => m && used.get(m.mediaKey)?.qid === entity.qid && !excluded.includes(m.id));
-    if (reusable) return {...reusable, resolutionType: reusable.source, reuseReason: 'same_entity_no_alternative'};
-    fail('exact_media_missing', entity.englishTitle);
-  }
-  async structuredGroupMedia(entity, used) {
-    const wd = await this.dataEntity(entity.qid);
-    const claims = (wd.claims?.P527 || []).filter(c => c.rank !== 'deprecated');
-    if (claims.some(c => Object.keys(c.qualifiers || {}).length)) fail('exact_media_missing', entity.englishTitle);
-    const ids = [...new Set(claims.map(c => c.mainsnak?.datavalue?.value?.id))];
-    if (ids.length < 2 || ids.length > 8 || ids.some(id => !/^Q\d+$/.test(id || ''))) fail('exact_media_missing', entity.englishTitle);
-    const components = [], memberUsed = new Map(used);
-    for (const id of ids) {
-      const data = await this.dataEntity(id);
-      const title = data.sitelinks?.enwiki?.title;
-      if (!title) fail('exact_grounding_missing', id);
-      const member = await this.ground('en', title);
-      if (member.qid !== id) fail('entity_identity_mismatch', title);
-      const media = await this.selectMedia(member, memberUsed);
-      memberUsed.set(media.mediaKey, {qid:id});
-      components.push({...media,groundedEntity:member.englishTitle,groundedEntityId:id});
-    }
-    const mediaKey = `montage:${entity.qid}:${components.map(m=>m.mediaKey).join('|')}`;
-    return {id:mediaKey,mediaKey,kind:'image',extension:'.jpg',width:1080,height:1920,title:`${entity.englishTitle}: ${components.map(m=>m.title).join(' + ')}`,source:'exact_wikidata_parts',resolutionType:'exact_wikidata_parts',components};
-  }
-  async entityMedia(entity, used) {
-    try { return await this.selectMedia(entity, used); }
-    catch (error) {
-      if (error.code !== 'exact_media_missing') throw error;
-      return this.structuredGroupMedia(entity, used);
-    }
-  }
-  async explicitGroupMedia(subject, spec, lexicon, entity, used) {
-    if (!subject.listText || !/[,]|(?:\s(?:and|та|і|и|oraz|i)\s)/iu.test(subject.listText)) return null;
-    const candidates = await subjectCandidates(subject.listText, spec.lang, lexicon, this.dictionary);
-    const unmatched = words(subject.listText).filter(w => !candidates.some(c => w.start >= c.start && w.end <= c.end));
-    if (unmatched.some(w => !/^(?:and|та|і|и|oraz|i)$/.test(w.text))) fail('unresolved_group_member', subject.listText);
-    const members = new Map();
-    const memberUsed = new Map(used);
-    const spanIdentities = new Map();
-    const grounded = [];
-    for (const candidate of candidates.sort((a,b) => a.start-b.start)) {
-      const member = await this.ground(spec.lang, candidate.title);
-      const span = `${candidate.start}:${candidate.end}`;
-      if (spanIdentities.has(span) && spanIdentities.get(span) !== member.qid) fail('ambiguous_group_member', candidate.surface);
-      spanIdentities.set(span, member.qid);
-      grounded.push(member);
-    }
-    for (const member of grounded) {
-      if (member.qid === entity.qid) continue;
-      if (members.has(member.qid)) continue;
-      const media = await this.selectMedia(member, memberUsed);
-      memberUsed.set(media.mediaKey, {qid:member.qid});
-      members.set(member.qid, {...media, groundedEntity:member.englishTitle, groundedEntityId:member.qid});
-    }
-    if (members.size < 2 || members.size > 8) fail('ambiguous_group_members', subject.listText);
-    const components = [...members.values()];
-    const mediaKey = `montage:${entity.qid}:${components.map(m => m.mediaKey).join('|')}`;
-    return {id:mediaKey,mediaKey,kind:'image',extension:'.jpg',width:1080,height:1920,title:`${entity.englishTitle}: ${components.map(m => m.title).join(' + ')}`,source:'exact_listed_members',resolutionType:'exact_listed_members',components};
-  }
-  prepareScenes(scenes) {
-    if (!Array.isArray(scenes) || !scenes.length) fail('empty_scenes', 'At least one scene is required');
-    return scenes.flatMap((scene, inputSceneIndex) => {
-      if (typeof scene?.text !== 'string' || !scene.text.trim()) fail('empty_scene', `Scene ${inputSceneIndex}`);
-      const spec = sourceSpec(scene.searchTerms);
-      const segments = [...new Intl.Segmenter(spec.lang, {granularity: 'sentence'}).segment(String(scene.text || ''))];
-      return segments.map(s => ({...scene, text: s.segment.trim(), mediaContext: s.segment.trim(), mediaHistory: undefined, inputSceneIndex})).filter(s => s.text);
-    });
-  }
-  async preflightScenes(scenes) {
-    if (!Array.isArray(scenes) || !scenes.length) fail('empty_scenes', 'At least one scene is required');
-    const media = [], used = new Map();
-    let previous = null;
-    for (const [sceneIndex, scene] of scenes.entries()) {
-      const spec = sourceSpec(scene.searchTerms), source = await this.lexicon(spec);
-      // User-supplied mediaContext/mediaHistory cannot inject subjects or history.
-      const antecedent = previous && previous.lang === spec.lang && previous.sourceTitle === spec.title ? previous : null;
-      const subject = await resolveSubject(scene.text, spec.lang, source.entries, this.dictionary, antecedent, async title => (await this.ground(spec.lang, title)).qid);
-      const entity = subject.mode === 'current_enumeration'
-        ? {qid: `list:${subject.listText}`, englishTitle: subject.listText, localTitle: subject.listText}
-        : await this.ground(spec.lang, subject.title);
-      const selected = await this.explicitGroupMedia(subject, spec, source.entries, entity, used) || await this.entityMedia(entity, used);
-      const item = {...selected, sceneIndex, narration: scene.text, subject, groundedEntity: entity.englishTitle, groundedEntityId: entity.qid, visualQuery: entity.englishTitle, confidence: 'high', sourceRevision: source.revision};
-      media.push(item);
-      this.plans.set(item, {entity, used});
-      used.set(item.mediaKey, {qid: entity.qid, sceneIndex});
-      for (const component of item.components || []) used.set(component.mediaKey, {qid:component.groundedEntityId, sceneIndex});
-      previous = subject.mode === 'current_enumeration' ? null : {...entity, lang: spec.lang, sourceTitle: spec.title, sceneIndex};
-    }
-    return media;
-  }
-  async planShots(media, durationSeconds) {
-    const context = this.plans.get(media);
-    if (!context || !Number.isFinite(durationSeconds) || durationSeconds <= 0) fail('invalid_visual_plan', 'Use preflight media with a positive duration');
-    if (durationSeconds <= 8) return [{startSeconds: 0, durationSeconds, media}];
-    const {entity, used} = context;
-    if (media.components) return [{startSeconds: 0, durationSeconds, media, holdReason: 'explicit_members_montage'}];
-    const poolKey = `${entity.qid}:false`;
-    if (!this.mediaPools.has(poolKey)) this.mediaPools.set(poolKey, await this.commonsMedia(entity, false));
-    const alternatives = this.mediaPools.get(poolKey).filter(m => m.mediaKey !== media.mediaKey && (!used.has(m.mediaKey) || used.get(m.mediaKey).qid === entity.qid));
-    if (!alternatives.length) return [{startSeconds: 0, durationSeconds, media, holdReason: 'same_entity_no_alternative'}];
-    const pool = [media, ...alternatives];
-    const count = Math.ceil(durationSeconds / 8);
-    return Array.from({length: count}, (_, index) => {
-      const candidate = pool[index % pool.length];
-      used.set(candidate.mediaKey, {qid: entity.qid, sceneIndex: media.sceneIndex});
-      return {startSeconds: durationSeconds * index / count, durationSeconds: durationSeconds / count, media: candidate};
-    });
-  }
-  async findVideo(terms, _duration, excludeIds = []) {
-    // Legacy callers can resolve a single explicit scene, but cannot supply arbitrary
-    // direct URLs, generic queries, or unverified history to bypass preflight.
-    const spec = sourceSpec(terms);
-    const contexts = (terms || []).filter(t => t.startsWith('scenecontext::'));
-    if (contexts.length !== 1) fail('scene_required', 'Exactly one narration is required');
-    let text;
-    try { text = decodeURIComponent(contexts[0].slice('scenecontext::'.length)); } catch { fail('invalid_scene', 'Malformed context'); }
-    const source = await this.lexicon(spec);
-    const subject = await resolveSubject(text, spec.lang, source.entries, this.dictionary, null, async title => (await this.ground(spec.lang, title)).qid);
-    const entity = await this.ground(spec.lang, subject.title);
-    const selected = await this.selectMedia(entity, new Map(), false, excludeIds);
-    return {...selected, subject, groundedEntity: entity.englishTitle, groundedEntityId: entity.qid, visualQuery: entity.englishTitle, confidence: 'high'};
-  }
+  async planShots(media,durationSeconds){ const context=this.plans.get(media); if(!context||!Number.isFinite(durationSeconds)||durationSeconds<=0)fail('invalid_visual_plan','Use preflight media with a positive duration'); if(durationSeconds<=8)return[{startSeconds:0,durationSeconds,media}]; const{entity,used}=context; if(media.components)return[{startSeconds:0,durationSeconds,media,holdReason:'explicit_members_montage'}]; const poolKey=`${entity.qid}:false`; if(!this.mediaPools.has(poolKey))this.mediaPools.set(poolKey,await this.commonsMedia(entity,false)); const alternatives=this.mediaPools.get(poolKey).filter(m=>m.mediaKey!==media.mediaKey&&(!used.has(m.mediaKey)||used.get(m.mediaKey).qid===entity.qid)); if(!alternatives.length)return[{startSeconds:0,durationSeconds,media,holdReason:'same_entity_no_alternative'}]; const pool=[media,...alternatives],count=Math.ceil(durationSeconds/8); return Array.from({length:count},(_,index)=>{ const candidate=pool[index%pool.length]; used.set(candidate.mediaKey,{qid:entity.qid,sceneIndex:media.sceneIndex}); return{startSeconds:durationSeconds*index/count,durationSeconds:durationSeconds/count,media:candidate}; }); }
+  async findVideo(terms,_duration,excludeIds=[]){ const spec=sourceSpec(terms),contexts=(terms||[]).filter(t=>t.startsWith('scenecontext::')); if(contexts.length!==1)fail('scene_required','Exactly one narration is required'); let text; try{text=decodeURIComponent(contexts[0].slice('scenecontext::'.length));}catch{fail('invalid_scene','Malformed context');} const source=await this.lexicon(spec),subject=await resolveSubject(text,spec.lang,source.entries,this.dictionary,null,async title=>(await this.ground(spec.lang,title)).qid),entity=await this.ground(spec.lang,subject.title),selected=await this.selectMedia(entity,new Map(),false,excludeIds); return{...selected,subject,groundedEntity:entity.englishTitle,groundedEntityId:entity.qid,visualQuery:entity.englishTitle,confidence:'high'}; }
 }
-module.exports = {PexelsAPI, sourceSpec, pageFrom, mediaInfo, safeCommonsTitle, keyForFile};
+module.exports={PexelsAPI,sourceSpec,pageFrom,mediaInfo,safeCommonsTitle,keyForFile};

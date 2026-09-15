@@ -221,6 +221,7 @@ const buildSceneCaptionAlignment = (inputScenes, captions) => {
     return {
         endIndices,
         boundarySources,
+        wordToCaption: Array.from({length:n}, (_, index) => inputToCaption.get(index) ?? null),
         matchedTokens: inputToCaption.size,
         transcriptTokens: n,
         captionTokens: m,
@@ -294,7 +295,8 @@ class ShortCreator {
             throw new Error("At least one scene is required");
         }
         inputScenes = this.pexelsApi.prepareScenes(inputScenes);
-        const preflightMedia = await this.pexelsApi.preflightScenes(inputScenes);
+        const preflightMedia = await this.pexelsApi.preflightVisualBeats(inputScenes);
+        logger_1.logger.debug({scenes:preflightMedia.map((bundle,index)=>({sceneIndex:index,beats:bundle.beats.map(beat=>({concept:beat.concept,span:beat.span,title:beat.title,source:beat.source,width:beat.width,height:beat.height,alternativeCount:beat.alternatives.length}))}))}, "Exact visual beats preflight passed before TTS");
         const orientation = config.orientation || shorts_1.OrientationEnum.portrait;
         const narrationText = inputScenes.map((scene) => String(scene.text || "").trim()).filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
         if (!narrationText) {
@@ -310,7 +312,7 @@ class ShortCreator {
         const audioLength = narration.audioLength;
         const audioStream = narration.audio;
         const durationDeltaSeconds = hasRequestedTarget ? requestedTargetSeconds - audioLength : null;
-        if (hasRequestedTarget && (durationDeltaSeconds < -0.35 || durationDeltaSeconds > 1.5)) {
+        if (hasRequestedTarget && (durationDeltaSeconds < -0.35 || durationDeltaSeconds > 6.0)) {
             throw new Error(`Narration duration ${audioLength.toFixed(3)}s is outside target ${requestedTargetSeconds.toFixed(3)}s tolerance`);
         }
         const effectivePaddingBack = hasRequestedTarget
@@ -360,6 +362,7 @@ class ShortCreator {
         let captionCursor = 0;
         let cumulativeWords = 0;
         let sceneStartSeconds = 0;
+        let previousVisualKey = null;
         for (let index = 0; index < renderInputScenes.length; index++) {
             const scene = renderInputScenes[index];
             const sceneWordCount = wordCounts[index];
@@ -388,7 +391,8 @@ class ShortCreator {
                 }))
                 .filter((caption) => caption.endMs > caption.startMs);
             const requiredVideoDuration = sceneDuration + (isLastScene && effectivePaddingBack ? effectivePaddingBack / 1000 : 0);
-            const primary = preflightMedia[index];
+            const bundle = preflightMedia[index];
+            const primary = bundle.primary;
             let mediaType = primary.kind === "image" ? "image" : "video";
             let finalMediaFileName = null;
 
@@ -408,7 +412,15 @@ class ShortCreator {
                 }
             };
 
-            const shots = await this.pexelsApi.planShots(primary, requiredVideoDuration);
+            const sourceWordOffset = cumulativeWords - sceneWordCount;
+            const timedBeats = this.pexelsApi.planVisualBeats(bundle, {
+                sceneStartMs,
+                sceneEndMs: sceneStartMs + requiredVideoDuration * 1000,
+                wordToCaption: (captionAlignment.wordToCaption || []).slice(sourceWordOffset, cumulativeWords),
+                captions: fullCaptions,
+            }, previousVisualKey);
+            previousVisualKey = timedBeats.at(-1).mediaKey;
+            const shots = timedBeats.map(media => ({media, startSeconds:(media.startMs-sceneStartMs)/1000, durationSeconds:(media.endMs-media.startMs)/1000}));
             const preparedFiles = new Map();
             const visuals = [];
             for (const shot of shots) {
@@ -438,7 +450,8 @@ class ShortCreator {
                     durationSeconds: shot.durationSeconds,
                 });
             }
-            finalMediaFileName = preparedFiles.get(primary.mediaKey);
+            finalMediaFileName = preparedFiles.get(shots[0].media.mediaKey);
+            mediaType = shots[0].media.kind;
 
             sceneAudit.push({
                 sceneIndex: index,
@@ -456,6 +469,15 @@ class ShortCreator {
                 mediaKey: primary.mediaKey,
                 reuseReason: primary.reuseReason || null,
                 components: primary.components || null,
+                visualBeats: timedBeats.map(beat => ({
+                    concept:beat.concept, englishConcept:beat.concept, resolutionMode:beat.resolutionMode,
+                    title:beat.title, source:beat.source, mediaKey:beat.mediaKey,
+                    sourceWidth:beat.width, sourceHeight:beat.height,
+                    sourceSpan:beat.span || null, sourceSpans:beat.spans || null,
+                    timingEvidence:beat.timingEvidence || null,
+                    startMs:beat.startMs, endMs:beat.endMs, holdMs:beat.endMs-beat.startMs,
+                    components:beat.components || null,
+                })),
                 visualShots: shots.map(shot => ({startSeconds: shot.startSeconds, durationSeconds: shot.durationSeconds, mediaKey: shot.media.mediaKey, title: shot.media.title, source: shot.media.source, holdReason: shot.holdReason || null})),
                 visualQuery: primary.visualQuery || null,
                 selectedMediaTitle: primary.title || null,
@@ -496,7 +518,7 @@ class ShortCreator {
         const auditPath = path_1.default.join(this.config.videosDirPath, `${videoId}.audit.json`);
         await fs_extra_1.default.writeJson(auditPath, {
             videoId,
-            renderer: "semantic_scene_word_aligned_v2",
+            renderer: "semantic_scene_word_aligned_v5_span_beats",
             tts: {
                 provider: narration.model ? "gemini" : "edge",
                 model: narration.model || null,

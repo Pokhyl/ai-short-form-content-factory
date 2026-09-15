@@ -8,8 +8,8 @@ const fixture = require('./fixtures/scenes.cjs');
 
 function rendererHarness(resolver, narration) {
   const events=[], exports={};
-  let id=0;
-  const files={createWriteStream:()=>new EventEmitter(),unlink(){},removeSync(){},writeJson:async()=>{},existsSync:()=>false};
+  let id=0, audit=null;
+  const files={createWriteStream:()=>new EventEmitter(),unlink(){},removeSync(){},writeJson:async(_path,value)=>{audit=value;},existsSync:()=>false};
   // Downloads and FFmpeg are isolated here; successful production planning,
   // one-shot synthesis, caption mapping and Remotion payload remain unmodified.
   files.createWriteStream=()=>{const file=new EventEmitter(); file.close=fn=>fn?.(); file.destroy=()=>{}; return file;};
@@ -17,10 +17,10 @@ function rendererHarness(resolver, narration) {
   const childProcess={spawn:()=>{const child=new EventEmitter();child.stderr=new EventEmitter();queueMicrotask(()=>child.emit('close',0));return child;}};
   const modules={'fs-extra':files,cuid:()=>`test-${++id}`,'https':https,'child_process':childProcess,'../logger':{logger:{debug(){},warn(){},error(){}}},'./../types/shorts':{OrientationEnum:{portrait:'portrait'}}};
   vm.runInNewContext(fs.readFileSync(require.resolve('../engine-overlay/ShortCreator'),'utf8'),{exports,require:name=>modules[name]||require(name),Buffer,URL,console,setTimeout,clearTimeout});
-  const wrapped={prepareScenes:s=>resolver.prepareScenes(s),preflightScenes:async s=>{events.push('preflight');return resolver.preflightScenes(s);},planShots:(...args)=>resolver.planShots(...args)};
+  const wrapped={prepareScenes:s=>resolver.prepareScenes(s),preflightVisualBeats:async s=>{events.push('preflight');return resolver.preflightVisualBeats(s);},planShots:(...args)=>resolver.planShots(...args),planVisualBeats:(...args)=>resolver.planVisualBeats(...args)};
   const creator=new exports.ShortCreator({tempDirPath:'/tmp',videosDirPath:'/tmp',port:3123},{render:async payload=>{events.push('render');creator.payload=payload;}},{generate:async(...args)=>{events.push('tts');creator.ttsArgs=args;return narration;}},{CreateCaption:async()=>{throw Error('Unexpected Whisper');}},{saveToMp3:async()=>{}},wrapped,{});
   creator.findMusic=()=>({url:'music',start:0,end:20});
-  return {creator,events};
+  return {creator,events,getAudit:()=>audit};
 }
 test('failed preflight prevents BOTH TTS and render', async()=>{
   const resolver=api(), {creator,events}=rendererHarness(resolver,{});
@@ -65,4 +65,15 @@ test('long hold is permitted only with recorded absence of any exact alternative
 });
 test('raw unverified media cannot enter the timed shot planner',async()=>{
   await assert.rejects(api().planShots({groundedEntity:'Solar wind'},20),/invalid_visual_plan/);
+});
+
+test('render audit contains bounded source spans and actual per-beat milliseconds',async()=>{
+ const text='Solar wind carries plasma. The asteroid belt contains rocks.';
+ const tokens=text.split(' ');
+ const narration={audioLength:6,audio:new ArrayBuffer(1),captions:tokens.map((text,i)=>({text,startMs:i*500,endMs:(i+1)*500}))};
+ const {creator,getAudit}=rendererHarness(api(),narration);
+ await creator.createShort('audit-test',[{...fixture.scenes('en')[0],text}],{});
+ const audit=getAudit();
+ assert.ok(audit.scenes.every(s=>s.visualBeats.every(b=>b.endMs>b.startMs&&b.holdMs<=5000&&b.sourceSpan&&b.sourceWidth>=1000&&b.mediaKey)));
+ assert.equal(audit.tts.synthesisRequests,1);
 });
