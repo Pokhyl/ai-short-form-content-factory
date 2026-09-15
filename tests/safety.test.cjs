@@ -119,3 +119,7 @@ test('bare coordinated subjects retain every member and exclude predicate object
 test('an unknown trailing member cannot silently disappear from a bare enumeration',async()=>{
  await assert.rejects(subject('Marie Curie, Louis Pasteur, Unknown Researcher studied chemicals.','[[Marie Curie]] [[Louis Pasteur]]'),/unresolved_group_member/);
 });
+test('partitive group head is resolved before later class names create ambiguity',async()=>{
+ const result=await subject("Найбільшими об'єктами поясу астероїдів є карликова планета Церера та астероїди Паллада, Веста та Гігея.","[[Пояс астероїдів|поясу астероїдів]] [[Карликова планета|карликова планета]] [[Церера]] [[Астероїд|астероїди]] [[Паллада]] [[Веста]] [[Гігея]]",'uk');
+ assert.equal(result.title,'Пояс астероїдів');
+});

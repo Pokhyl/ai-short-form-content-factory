@@ -22,3 +22,5 @@ Read-only replay of its actual seven scene inputs exposed and motivated four gen
 - Initial scene/group media selection now consults the existing exact high-quality beat pool when its thumbnail/P18/search path has no usable image. It retains identity exclusions and same-entity-only reuse, and does not introduce generic source fallback.
 
 All additions have regression tests; the full native suite is 110/110 PASS. No TTS, Whisper, density, timing, audio-speed or job immutability rules were changed. The latest renderer changes require the final container/live checks and deployment; see PR #10 for the current run result.
+
+Read-only replay reached the final partitive enumeration. Its group head is now resolved before ambiguity rejection, and adjacent lower-case class labels in typed lists qualify the capitalized named members instead of becoming extra visual beats. Four-language list tests also verify exact source spans. Existing bare-list ambiguity tests are preserved. Full native suite: 112/112 PASS.

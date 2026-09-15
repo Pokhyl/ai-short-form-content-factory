@@ -42,3 +42,14 @@ test('initial scene selection can use the exact high-quality pool when its page 
  await assert.rejects(resolver.selectMedia(entity,new Map([['exact',{qid:'Q999'}]])),/exact_media_missing/);
  await assert.rejects(resolver.selectMedia(entity,new Map(),false,['exact']),/exact_media_missing/);
 });
+test('typed enumerations retain named members rather than their adjacent class labels',async()=>{
+ for(const[lang,text,links,names]of [
+  ['uk',"Найбільшими об'єктами регіону є держави Франція та Німеччина.",'[[Регіон|регіону]] [[Держава|держави]] [[Франція]] [[Німеччина]]',['Франція','Німеччина']],
+  ['ru','Крупнейшими объектами региона являются государства Франция и Германия.','[[Регион|региона]] [[Государство|государства]] [[Франция]] [[Германия]]',['Франция','Германия']],
+  ['pl','Największymi obiektami regionu są państwa Francja i Niemcy.','[[Region|regionu]] [[Państwo|państwa]] [[Francja]] [[Niemcy]]',['Francja','Niemcy']],
+  ['en','The largest objects of the region are countries France and Germany.','[[Region|region]] [[Country|countries]] [[France]] [[Germany]]',['France','Germany']],
+ ]){
+  const lexicon=sourceLexicon(links,'Reference');const {resolveSubject}=require('../engine-overlay/VisualSubject');const subject=await resolveSubject(text,lang,lexicon,dictionary);const spans=await focalSpans(text,lang,lexicon,dictionary,subject);
+  assert.deepEqual(spans.map(x=>x.title),names);assert.ok(spans.every(x=>text.slice(x.startChar,x.endChar)===x.surface));
+ }
+});
