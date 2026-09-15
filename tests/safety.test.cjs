@@ -54,3 +54,37 @@ test('reported-content clause focuses the exact subject after complement marker'
 test('all-components group possessor preserves the grouped entity in UK RU PL EN',async()=>{for(const[lang,text,links,expected]of[['uk','Усі компоненти Альфа Центавра демонструють значний власний рух.','[[Альфа Центавра]] [[Власний рух|власний рух]]','Альфа Центавра'],['ru','Все компоненты Альфа Центавра демонстрируют собственное движение.','[[Альфа Центавра]] [[Собственное движение|собственное движение]]','Альфа Центавра'],['pl','Wszystkie komponenty Alpha Centauri wykazują ruch własny.','[[Alpha Centauri]] [[Ruch własny|ruch własny]]','Alpha Centauri'],['en','All components of Alpha Centauri show proper motion.','[[Alpha Centauri]] [[Proper motion|proper motion]]','Alpha Centauri']]){const result=await subject(text,links,lang);assert.equal(result.title,expected);assert.equal(result.mode,'current_group_possessor');}});
 test('neutral demonstrative anaphora resolves only to the immediately previous scene',async()=>{for(const[lang,text]of[['uk','Протягом століть це спричиняє зміну положення.'],['ru','На протяжении веков это вызывает изменение положения.'],['pl','Przez stulecia to powoduje zmianę położenia.'],['en','Over centuries this causes a change in position.']]){const previous={localTitle:'Alpha Centauri',sceneIndex:0};const result=await resolveSubject(text,lang,[],dictionary,previous);assert.equal(result.mode,'previous_scene_anaphora');assert.equal(result.antecedentScene,0);}});
 test('temporal subject role wins over a later exact source-entity object',async()=>{const text='У 1830-х роках Томас Гендерсон виміряв відстань до Альфи Центавра.';const links='[[Томас Джеймс Гендерсон|Томас Гендерсон]] [[Толіман|Альфи Центавра]]';const result=await subject(text,links,'uk');assert.equal(result.title,'Томас Джеймс Гендерсон');assert.equal(result.mode,'current_subject_after_temporal');});
+
+const personalScenes = [
+  ['uk', 'Однак він приховав результати, після того, як Марія Кюрі дослідила хлорид натрію.', '[[Марія Кюрі]] [[Хлорид натрію|хлорид натрію]]'],
+  ['ru', 'Однако она скрыла результаты, после того, как Мария Кюри исследовала хлорид натрия.', '[[Мария Кюри]] [[Хлорид натрия|хлорид натрия]]'],
+  ['pl', 'Jednak on ukrył wyniki, gdy Maria Curie zbadała chlorek sodu.', '[[Maria Curie]] [[Chlorek sodu|chlorek sodu]]'],
+  ['en', 'However, she withheld the results, after Marie Curie studied sodium chloride.', '[[Marie Curie]] [[Sodium chloride|sodium chloride]]'],
+];
+test('leading personal subject retains immediate antecedent despite subordinate named entities', async () => {
+  for (const [lang, text, links] of personalScenes) {
+    const result = await subject(text, links, lang, {localTitle:'Previous researcher', sceneIndex:3});
+    assert.equal(result.title, 'Previous researcher');
+    assert.equal(result.mode, 'previous_scene_anaphora');
+    assert.equal(result.antecedentScene, 3);
+  }
+});
+test('orphan personal subjects fail instead of promoting subordinate named entities', async () => {
+  for (const [lang, text, links] of personalScenes)
+    await assert.rejects(subject(text, links, lang), error => error.code === 'missing_antecedent');
+});
+test('production opening personal pronoun has no supplied antecedent', async () => {
+  const text='Однак він приховав свої результати, оскільки підозрював, що вони занадто великі, щоб бути правдою, але зрештою опублікував їх у 1839 році після того, як Фрідріх Вільгельм Бессель оприлюднив точно визначений паралакс для 61 Лебедя в 1838 році.';
+  await assert.rejects(subject(text,'[[Фрідріх-Вільгельм Бессель|Фрідріх Вільгельм Бессель]] [[61 Лебедя]]','uk'), error => error.code === 'missing_antecedent');
+});
+test('personal reporting subject preserves focal reported content and property', async () => {
+  for (const [lang,text,links,expected] of [
+    ['uk','Потім він зрозумів, що ця система, ймовірно, також має високий власний рух.','[[Власний рух|власний рух]]','Власний рух'],
+    ['ru','Затем он понял, что Проксима Центавра была ближайшей звездой.','[[Проксима Центавра]]','Проксима Центавра'],
+    ['pl','Potem on zrozumiał, że Maria Curie pracowała tutaj.','[[Maria Curie]]','Maria Curie'],
+    ['en','Then she realized that Marie Curie worked here.','[[Marie Curie]]','Marie Curie'],
+  ]) assert.equal((await subject(text,links,lang,{localTitle:'Previous researcher',sceneIndex:0})).title,expected);
+});
+test('a later personal pronoun cannot replace the explicit current subject', async () => {
+  assert.equal((await subject('Marie Curie, who said she studied sodium chloride, worked here.','[[Marie Curie]] [[Sodium chloride|sodium chloride]]','en',{localTitle:'Other researcher',sceneIndex:0})).title,'Marie Curie');
+});
