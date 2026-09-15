@@ -88,3 +88,34 @@ test('personal reporting subject preserves focal reported content and property',
 test('a later personal pronoun cannot replace the explicit current subject', async () => {
   assert.equal((await subject('Marie Curie, who said she studied sodium chloride, worked here.','[[Marie Curie]] [[Sodium chloride|sodium chloride]]','en',{localTitle:'Other researcher',sceneIndex:0})).title,'Marie Curie');
 });
+test('degree modifiers preserve a leading exact entity before subordinate names in four languages',async()=>{
+ for(const[lang,text,links,expected]of [
+  ['uk','Найбільші сині кити, що мешкають біля Нової Зеландії, живляться планктоном.','[[Синій кит|сині кити]] [[Нова Зеландія|Нової Зеландії]]','Синій кит'],
+  ['ru','Крупнейшие синие киты, которые обитают возле Новой Зеландии, питаются планктоном.','[[Синий кит|синие киты]] [[Новая Зеландия|Новой Зеландии]]','Синий кит'],
+  ['pl','Największe płetwale błękitne, które żyją koło Nowej Zelandii, jedzą plankton.','[[Płetwal błękitny|płetwale błękitne]] [[Nowa Zelandia|Nowej Zelandii]]','Płetwal błękitny'],
+  ['en','The largest blue whales, which live near New Zealand, eat plankton.','[[Blue whale|blue whales]] [[New Zealand]]','Blue whale'],
+ ])assert.equal((await subject(text,links,lang)).title,expected);
+});
+test('degree head recognition does not accept an arbitrary verb or relation prefix',async()=>{
+ await assert.rejects(subject('Researchers observed blue whales.','[[Blue whale|blue whales]]'),/unresolved_subject_role/);
+ await assert.rejects(subject('The size of blue whales remains unknown.','[[Blue whale|blue whales]]'),/unresolved_subject_role/);
+});
+test('explicit classification focuses the named class rather than incidental substances',async()=>{
+ for(const[lang,text,links,expected]of [
+  ['uk','Ці організми містять кальцій і виділяються в окремий клас ссавців.','[[Кальцій|кальцій]] [[Ссавці|ссавців]]','Ссавці'],
+  ['ru','Эти организмы содержат кальций и выделяются в отдельный класс млекопитающих.','[[Кальций|кальций]] [[Млекопитающие|млекопитающих]]','Млекопитающие'],
+  ['pl','Organizmy zawierają wapń i są zaliczane do klasy ssaków.','[[Wapń|wapń]] [[Ssaki|ssaków]]','Ssaki'],
+  ['en','These organisms contain calcium and are classified as mammals.','[[Calcium|calcium]] [[Mammal|mammals]]','Mammal'],
+ ])assert.equal((await subject(text,links,lang)).title,expected);
+});
+test('bare coordinated subjects retain every member and exclude predicate objects',async()=>{
+ for(const[lang,text,links]of [
+  ['uk','Марія Кюрі, Луї Пастер та Александр Флемінг досліджували хімічні речовини.','[[Марія Кюрі]] [[Луї Пастер]] [[Александр Флемінг]] [[Хімічна речовина|хімічні речовини]]'],
+  ['ru','Мария Кюри, Луи Пастер и Александр Флеминг исследовали химические вещества.','[[Мария Кюри]] [[Луи Пастер]] [[Александр Флеминг]] [[Химическое вещество|химические вещества]]'],
+  ['pl','Maria Curie, Louis Pasteur i Alexander Fleming badali substancje chemiczne.','[[Maria Curie]] [[Louis Pasteur]] [[Alexander Fleming]] [[Substancja chemiczna|substancje chemiczne]]'],
+  ['en','Marie Curie, Louis Pasteur and Alexander Fleming studied chemical substances.','[[Marie Curie]] [[Louis Pasteur]] [[Alexander Fleming]] [[Chemical substance|chemical substances]]'],
+ ]){const result=await subject(text,links,lang);assert.equal(result.mode,'current_enumeration');assert.equal(result.listText.split(', ').length,3);assert.ok(!/chemical|хімічні|химические|chemiczne/.test(result.listText));}
+});
+test('an unknown trailing member cannot silently disappear from a bare enumeration',async()=>{
+ await assert.rejects(subject('Marie Curie, Louis Pasteur, Unknown Researcher studied chemicals.','[[Marie Curie]] [[Louis Pasteur]]'),/unresolved_group_member/);
+});
