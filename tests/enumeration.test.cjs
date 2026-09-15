@@ -81,6 +81,14 @@ test('generic classified objects with explicit examples keep the named examples 
   ['en','Other objects may be classified as countries, for example, France, Germany and Poland.','[[France]] [[Germany]] [[Poland]] [[Country|countries]]','France, Germany and Poland'],
  ]){const result=await resolveSubject(text,lang,sourceLexicon(links,'Reference'),dictionary);assert.equal(result.mode,'current_enumeration');assert.equal(result.listText,expected);}
 });
+test('example enumerations retain one explicit grounded head as lead-in evidence in UK RU PL EN',async()=>{
+ for(const[lang,text,links,group]of [
+  ['uk',"Додатково до малих тіл є інші об'єкти, як-от комети, метеороїди та космічний пил.","[[Малі тіла Сонячної системи|малих тіл]] [[Комета|комети]] [[Метеороїд|метеороїди]] [[Космічний пил|космічний пил]]",'Малі тіла Сонячної системи'],
+  ['ru','Дополнительно к малым телам есть другие объекты, например, кометы, метеороиды и космическая пыль.','[[Малое тело Солнечной системы|малым телам]] [[Комета|кометы]] [[Метеороид|метеороиды]] [[Космическая пыль|космическая пыль]]','Малое тело Солнечной системы'],
+  ['pl','Oprócz małych ciał są inne obiekty, na przykład, komety, meteoroidy i pył kosmiczny.','[[Małe ciało Układu Słonecznego|małych ciał]] [[Kometa|komety]] [[Meteoroid|meteoroidy]] [[Pył kosmiczny|pył kosmiczny]]','Małe ciało Układu Słonecznego'],
+  ['en','In addition to small bodies there are other objects, for example, comets, meteoroids and cosmic dust.','[[Small Solar System body|small bodies]] [[Comet|comets]] [[Meteoroid|meteoroids]] [[Cosmic dust|cosmic dust]]','Small Solar System body'],
+ ]){const result=await resolveSubject(text,lang,sourceLexicon(links,'Reference'),dictionary);assert.equal(result.mode,'current_enumeration');assert.equal(result.groupSubject?.title,group);assert.equal(text.slice(result.groupSubject.start,result.groupSubject.end),result.groupSubject.surface);}
+});
 test('divided-into counted enumerations keep the named categories in UK RU PL EN',async()=>{
  for(const[lang,text,links,expected]of [
   ['uk',"Усі об'єкти офіційно поділяються на три категорії, Франція, Німеччина та Польща.",'[[Франція]] [[Німеччина]] [[Польща]]','Франція, Німеччина, Польща'],

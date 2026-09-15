@@ -42,30 +42,34 @@ test('full planner selects a self-contained alternative instead of an equally ti
 });
 
 
-test('UK 60s planner reserves empirical overshoot headroom before the renderer ceiling',()=>{
- const sentence='Дослідники щороку спостерігають природні явища та ретельно записують результати для подальшого наукового аналізу в лабораторіях.';
- const sourceText=Array.from({length:10},()=>sentence).join(' ');
+test('UK 60s planner uses an empirical fast/slow character band before the one TTS request',()=>{
+ const sourceText=`У Сонячній системі є дві ділянки, заповнені малими тілами. Пояс астероїдів, що розташований між Марсом і Юпітером, за складом подібний до планет земної групи, оскільки складається переважно з силікатів і металів. Найбільшими об'єктами поясу астероїдів є Церера, Паллада та Веста. За орбітою Нептуна розташовано транснептунові об'єкти, що містять багато замерзлої води, аміаку та метану. Найбільшими з них є Плутон, Седна, Гаумеа, Макемаке та Ерида. Додатково до тисяч малих тіл у цих двох ділянках є інші популяції різноманітних дрібних тіл, як-от комети, метеороїди та космічний пил, що рухаються навколо Сонця. Шість із восьми планет та три карликові планети мають природні супутники.`;
  const result=new Function('$','$json',code)(()=>({item:{json:{job_id:'test',language:'uk',target_duration_seconds:60}}}),{sourceText})[0].json;
  const profile=result.sourceData.timing_profile;
- assert.equal(profile.overshoot_safety_seconds,1.2);
- assert.equal(profile.selection_max_narration_seconds,59.15);
- assert.equal(profile.target_narration_seconds,58.825);
- assert.ok(profile.estimated_narration_seconds<=profile.selection_max_narration_seconds);
- assert.deepEqual(profile.accepted_narration_seconds,[58.5,60.35]);
+ assert.equal(profile.model,'gemini_enceladus_uk_60s_char_band_v2');
+ assert.equal(profile.fast_chars_per_second,10.7);
+ assert.equal(profile.slow_chars_per_second,9.9);
+ assert.equal(profile.renderer_min_narration_seconds,54);
+ assert.equal(profile.selection_max_narration_seconds,60.35);
+ assert.ok(profile.estimated_fastest_narration_seconds>=54);
+ assert.ok(profile.estimated_slowest_narration_seconds<=60.35);
+ assert.ok(profile.non_space_chars>=578 && profile.non_space_chars<=597);
+ assert.deepEqual(profile.accepted_narration_seconds,[54,60.35]);
 });
 
 
-test('UK 60s estimator uses conservative character duration for long-word narration',()=>{
+test('UK 60s empirical band rejects the measured 571-char undershoot and 626-char overshoot but accepts the 587-char safe region',()=>{
  const prefix=code.slice(0,code.indexOf('const normalizedSpeechSource'));
- const h=new Function('$','$json',prefix+'\nreturn {estimateNarrationSeconds,spokenWordCount,nonSpaceCharCount,geminiUk60TimingProfile};')(
+ const h=new Function('$','$json',prefix+'\nreturn {estimateUk60NarrationBand,geminiUk60TimingProfile};')(
    ()=>({item:{json:{job_id:'test',language:'uk',target_duration_seconds:60}}}),{}
  );
- const text=Array.from({length:80},()=> 'характеристика').join(' ');
- const wordEstimate=h.spokenWordCount(text)/h.geminiUk60TimingProfile.cleanWordsPerSecond;
- const charEstimate=h.nonSpaceCharCount(text)/h.geminiUk60TimingProfile.conservativeCharsPerSecond;
- assert.ok(charEstimate>wordEstimate);
- assert.equal(h.estimateNarrationSeconds(text),charEstimate);
- assert.equal(h.geminiUk60TimingProfile.conservativeCharsPerSecond,9.7);
+ const band571=h.estimateUk60NarrationBand('а'.repeat(571));
+ const band587=h.estimateUk60NarrationBand('а'.repeat(587));
+ const band626=h.estimateUk60NarrationBand('а'.repeat(626));
+ assert.ok(band571.fastestSeconds<54);
+ assert.ok(band587.fastestSeconds>=54);
+ assert.ok(band587.slowestSeconds<=60.35);
+ assert.ok(band626.slowestSeconds>60.35);
 });
 
 
