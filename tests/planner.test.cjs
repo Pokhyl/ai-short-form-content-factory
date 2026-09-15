@@ -40,3 +40,46 @@ test('full planner selects a self-contained alternative instead of an equally ti
  assert.equal(result.script,independent);
  assert.deepEqual(result.sourceData.timing_profile.accepted_narration_seconds,[13.5,15.35]);
 });
+
+
+test('UK 60s planner reserves empirical overshoot headroom before the renderer ceiling',()=>{
+ const sentence='Дослідники щороку спостерігають природні явища та ретельно записують результати для подальшого наукового аналізу в лабораторіях.';
+ const sourceText=Array.from({length:10},()=>sentence).join(' ');
+ const result=new Function('$','$json',code)(()=>({item:{json:{job_id:'test',language:'uk',target_duration_seconds:60}}}),{sourceText})[0].json;
+ const profile=result.sourceData.timing_profile;
+ assert.equal(profile.overshoot_safety_seconds,1.2);
+ assert.equal(profile.selection_max_narration_seconds,59.15);
+ assert.equal(profile.target_narration_seconds,58.825);
+ assert.ok(profile.estimated_narration_seconds<=profile.selection_max_narration_seconds);
+ assert.deepEqual(profile.accepted_narration_seconds,[58.5,60.35]);
+});
+
+
+test('UK 60s estimator uses conservative character duration for long-word narration',()=>{
+ const prefix=code.slice(0,code.indexOf('const normalizedSpeechSource'));
+ const h=new Function('$','$json',prefix+'\nreturn {estimateNarrationSeconds,spokenWordCount,nonSpaceCharCount,geminiUk60TimingProfile};')(
+   ()=>({item:{json:{job_id:'test',language:'uk',target_duration_seconds:60}}}),{}
+ );
+ const text=Array.from({length:80},()=> 'характеристика').join(' ');
+ const wordEstimate=h.spokenWordCount(text)/h.geminiUk60TimingProfile.cleanWordsPerSecond;
+ const charEstimate=h.nonSpaceCharCount(text)/h.geminiUk60TimingProfile.conservativeCharsPerSecond;
+ assert.ok(charEstimate>wordEstimate);
+ assert.equal(h.estimateNarrationSeconds(text),charEstimate);
+ assert.equal(h.geminiUk60TimingProfile.conservativeCharsPerSecond,9.7);
+});
+
+
+test('Ukrainian copular dashes preserve an explicit semantic link across sentence boundaries',()=>{
+ const prefix=code.slice(0,code.indexOf('const speechRate'));
+ const h=new Function('$','$json',prefix+'\nreturn {normalizeForSpeech,normalizeUkrainianSpeech};')(()=>({item:{json:{job_id:'test',language:'uk',target_duration_seconds:60}}}),{});
+ const raw="Карликова планета — небесне тіло, яке обертається навколо Сонця. Інші об'єкти, що обертаються навколо Сонця, — малі тіла Сонячної системи.";
+ const normalized=h.normalizeUkrainianSpeech(h.normalizeForSpeech(raw,'uk'));
+ assert.match(normalized,/Карликова планета — це небесне тіло/);
+ assert.match(normalized,/Сонця, це малі тіла Сонячної системи/);
+});
+
+test('speech normalization keeps colon continuations inside one semantic sentence',()=>{
+ const h=helpers('uk','Система складається з двох частин: першої частини та другої частини, які працюють разом.');
+ assert.equal(h.sentences.length,1);
+ assert.match(h.sentences[0],/частин, першої частини/);
+});

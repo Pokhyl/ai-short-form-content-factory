@@ -123,3 +123,24 @@ test('partitive group head is resolved before later class names create ambiguity
  const result=await subject("Найбільшими об'єктами поясу астероїдів є карликова планета Церера та астероїди Паллада, Веста та Гігея.","[[Пояс астероїдів|поясу астероїдів]] [[Карликова планета|карликова планета]] [[Церера]] [[Астероїд|астероїди]] [[Паллада]] [[Веста]] [[Гігея]]",'uk');
  assert.equal(result.title,'Пояс астероїдів');
 });
+
+
+test('single descriptive modifier before an exact relative-clause subject is retained in UK RU PL EN',async()=>{
+ for(const[lang,text,links,expected]of [
+  ['uk','Гіпотетична хмара Оорта, що служить джерелом довгоперіодичних комет, простягається далеко від Сонця.','[[Хмара Оорта|хмара Оорта]] [[Комета|комет]] [[Сонце|Сонця]]','Хмара Оорта'],
+  ['ru','Гипотетическое облако Оорта, которое служит источником долгопериодических комет, простирается далеко от Солнца.','[[Облако Оорта|облако Оорта]] [[Комета|комет]] [[Солнце|Солнца]]','Облако Оорта'],
+  ['pl','Hipotetyczny Obłok Oorta, który jest źródłem komet długookresowych, rozciąga się daleko od Słońca.','[[Obłok Oorta]] [[Kometa|komet]] [[Słońce|Słońca]]','Obłok Oorta'],
+  ['en','Hypothetical Oort cloud, which is a source of long-period comets, extends far from the Sun.','[[Oort cloud]] [[Comet|comets]] [[Sun]]','Oort cloud'],
+ ]){const result=await subject(text,links,lang);assert.equal(result.title,expected);assert.equal(result.mode,'current_descriptive_subject');}
+});
+
+
+test('leading exact subject before a later predicate object wins without collapsing coordinated lists',async()=>{
+ for(const[lang,text,links,expected]of [
+  ['uk',"Сонячна система складається з астрономічних об'єктів.","[[Сонячна система]] [[Астрономічний об'єкт|астрономічних об'єктів]]",'Сонячна система'],
+  ['ru','Солнечная система состоит из астрономических объектов.','[[Солнечная система]] [[Астрономический объект|астрономических объектов]]','Солнечная система'],
+  ['pl','Układ Słoneczny składa się z obiektów astronomicznych.','[[Układ Słoneczny]] [[Obiekt astronomiczny|obiektów astronomicznych]]','Układ Słoneczny'],
+  ['en','The Solar System contains astronomical objects.','[[Solar System]] [[Astronomical object|astronomical objects]]','Solar System'],
+ ]){const result=await subject(text,links,lang);assert.equal(result.title,expected);assert.ok(['current_leading_subject','current_quantified_subject'].includes(result.mode));}
+ await assert.rejects(subject('Marie Curie, Louis Pasteur and Alexander Fleming.','[[Marie Curie]] [[Louis Pasteur]] [[Alexander Fleming]]'),/ambiguous_subject/);
+});

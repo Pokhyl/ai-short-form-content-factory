@@ -25,6 +25,10 @@ const geminiUk60TimingProfile = {
   cleanWordsPerSecond: 1.78,
   numericComplexitySeconds: -0.35,
   numericSelectionUncertaintySeconds: 0.10,
+  // Measured 60s Enceladus jobs range from ~9.97 to ~10.45 non-space chars/sec.
+  // Use a slower floor so long names/lists are rejected before the single TTS request.
+  conservativeCharsPerSecond: 9.70,
+  overshootSafetySeconds: 1.20,
 };
 
 const speechLexicon = {
@@ -44,10 +48,10 @@ const normalizeForSpeech = (input, language) => {
     .replace(/млрд\.?/giu, lexicon.billion)
     .replace(/млн\.?/giu, lexicon.million)
     .replace(/\(([^()]+)\)/g, ', $1,')
-    .replace(/\s+[—–]\s+/g, ', ')
+    .replace(/\s+[—–]\s+/g, language === 'uk' ? ' — ' : ', ')
     .replace(/[«»“”„"]/g, '')
     .replace(/\s*;\s*/g, '. ')
-    .replace(/\s*:\s*/g, '. ')
+    .replace(/\s*:\s*/g, language === 'uk' ? ' : ' : ', ')
     .replace(/\s*,\s*,+/g, ', ')
     .replace(/\s+/g, ' ')
     .replace(/\s+([,.!?])/g, '$1')
@@ -57,8 +61,13 @@ const normalizeForSpeech = (input, language) => {
 const normalizeUkrainianSpeech = (input) => {
   let text = String(input ?? '');
   text = text.replace(
-    /^([^,.!?]{2,60}),\s+([^,.!?]{2,60}),\s+(що|яка|який|яке|які)\s+/iu,
-    '$1 — це $2, $3 ',
+    /(^|(?<=[.!?])\s+)([^,.!?]{2,80})\s+[—–]\s+/gu,
+    '$1$2 — це ',
+  );
+  text = text.replace(/,\s*[—–]\s+/g, ', це ');
+  text = text.replace(
+    /(^|(?<=[.!?])\s+)([^,.!?]{2,60}),\s+([^,.!?]{2,60}),\s+(що|яка|який|яке|які)\s+/giu,
+    '$1$2 — це $3, $4 ',
   );
   text = text.replace(/\b(\d{1,3})[,.](\d{2,})\b/g, (match, whole, fraction) => {
     const value = Number(`${whole}.${fraction}`);
@@ -67,6 +76,7 @@ const normalizeUkrainianSpeech = (input) => {
     return String(rounded).replace('.', ',');
   });
   return text
+    .replace(/\s*:\s*/g, ', ')
     .replace(/\b(\d+),0\b/g, '$1')
     .replace(/\s+([,.!?])/g, '$1')
     .replace(/\s+/g, ' ')
@@ -79,7 +89,11 @@ if (!speechRate) throw new Error(`missing speech timing profile for ${job.langua
 const targetDurationSeconds = Number(job.target_duration_seconds);
 const minAcceptedNarrationSeconds = Math.max(1, targetDurationSeconds - 1.5);
 const maxAcceptedNarrationSeconds = targetDurationSeconds + 0.35;
-const targetNarrationSeconds = (minAcceptedNarrationSeconds + maxAcceptedNarrationSeconds) / 2;
+const overshootSafetySeconds = job.language === 'uk' && targetDurationSeconds === 60
+  ? geminiUk60TimingProfile.overshootSafetySeconds
+  : 0;
+const selectionMaxNarrationSeconds = maxAcceptedNarrationSeconds - overshootSafetySeconds;
+const targetNarrationSeconds = (minAcceptedNarrationSeconds + selectionMaxNarrationSeconds) / 2;
 const targetWords = Math.max(8, Math.round(targetNarrationSeconds * speechRate));
 const minWords = Math.max(6, Math.floor(targetWords * 0.82));
 const maxWords = Math.ceil(targetWords * 1.18);
@@ -128,11 +142,12 @@ const estimateNarrationSeconds = (text) => {
   if (job.language === 'uk' && targetDurationSeconds === 60) {
     const spokenWords = spokenWordCount(text);
     const complexity = numericComplexity(text);
-    return Math.max(
-      0.1,
+    const wordEstimate =
       spokenWords / geminiUk60TimingProfile.cleanWordsPerSecond +
-        complexity * geminiUk60TimingProfile.numericComplexitySeconds,
-    );
+      complexity * geminiUk60TimingProfile.numericComplexitySeconds;
+    const characterEstimate =
+      nonSpaceCharCount(text) / geminiUk60TimingProfile.conservativeCharsPerSecond;
+    return Math.max(0.1, wordEstimate, characterEstimate);
   }
   if (job.language === 'uk') {
     const lexicalWords = wordCount(text);
@@ -220,8 +235,8 @@ for (let start = 0; start < sentences.length; start++) {
     if (!hasCoherentContext(indexes)) continue;
     const candidate = buildCandidate(indexes);
     if (candidate.spokenWords < minWords) continue;
-    if (candidate.spokenWords > maxWords && candidate.estimatedSeconds > maxAcceptedNarrationSeconds + 3) break;
-    if (candidate.estimatedSeconds < minAcceptedNarrationSeconds || candidate.estimatedSeconds > maxAcceptedNarrationSeconds) continue;
+    if (candidate.spokenWords > maxWords && candidate.estimatedSeconds > selectionMaxNarrationSeconds + 3) break;
+    if (candidate.estimatedSeconds < minAcceptedNarrationSeconds || candidate.estimatedSeconds > selectionMaxNarrationSeconds) continue;
     const score = candidateScore(candidate, 0);
     if (scoreLess(score, best?.score)) best = { ...candidate, score };
   }
@@ -245,7 +260,7 @@ if (!best) {
     if (sum < minWords || sum > maxWords || indexes.length < 2) continue;
     if (!hasCoherentContext(indexes)) continue;
     const candidate = buildCandidate(indexes);
-    if (candidate.estimatedSeconds < minAcceptedNarrationSeconds || candidate.estimatedSeconds > maxAcceptedNarrationSeconds) continue;
+    if (candidate.estimatedSeconds < minAcceptedNarrationSeconds || candidate.estimatedSeconds > selectionMaxNarrationSeconds) continue;
     let gaps = 0;
     for (let i = 1; i < indexes.length; i++) {
       if (indexes[i] !== indexes[i - 1] + 1) gaps++;
@@ -258,7 +273,7 @@ if (!best) {
 if (!best) {
   throw new Error(
     `localized source cannot pre-plan ${job.target_duration_seconds}s narration inside ` +
-      `${minAcceptedNarrationSeconds.toFixed(2)}-${maxAcceptedNarrationSeconds.toFixed(2)}s`,
+      `${minAcceptedNarrationSeconds.toFixed(2)}-${selectionMaxNarrationSeconds.toFixed(2)}s pre-TTS selection window`,
   );
 }
 
@@ -326,6 +341,8 @@ return [{
         punctuation_marks: best.punctuationMarks,
         estimated_narration_seconds: Number(best.estimatedSeconds.toFixed(3)),
         target_narration_seconds: Number(targetNarrationSeconds.toFixed(3)),
+        selection_max_narration_seconds: Number(selectionMaxNarrationSeconds.toFixed(3)),
+        overshoot_safety_seconds: Number(overshootSafetySeconds.toFixed(3)),
         accepted_narration_seconds: [
           Number(minAcceptedNarrationSeconds.toFixed(3)),
           Number(maxAcceptedNarrationSeconds.toFixed(3)),

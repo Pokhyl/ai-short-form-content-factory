@@ -42,6 +42,61 @@ test('descriptive apposition and a later location cannot replace the leading sub
   ['pl','Płetwale błękitne, wielkie zwierzęta oceanu, przemierzają wody przybrzeżne.','[[Blue whale|Płetwale błękitne]] [[Ocean|oceanu]] [[Coastal waters|wody przybrzeżne]]'],
  ]) assert.equal((await resolveSubject(text,lang,sourceLexicon(links,'Reference'),dictionary)).title,'Blue whale');
 });
+test('two multiword class phrases before a relative clause are treated as apposition, not an enumeration',async()=>{
+ const result=await resolveSubject('Карликова планета, небесне тіло, яке обертається навколо Сонця.','uk',sourceLexicon('[[Карликова планета]] [[Астрономічний об’єкт|небесне тіло]] [[Сонце|Сонця]]','Reference'),dictionary);
+ assert.equal(result.title,'Карликова планета');
+ assert.notEqual(result.mode,'current_enumeration');
+});
+test('scene-start relative pronouns inherit only the immediate previous semantic scene',async()=>{
+ for(const[lang,text]of [
+  ['uk','Яке є достатньо масивним, щоб підтримувати кулясту форму.'],
+  ['uk','Але яке не очистило простір своєї орбіти від планетозималей.'],
+  ['ru','Которое является достаточно массивным, чтобы поддерживать сферическую форму.'],
+  ['pl','Które jest wystarczająco masywne, aby zachować kulisty kształt.'],
+  ['en','Which is massive enough to maintain a spherical shape.'],
+ ]){
+  const previous={localTitle:'Карликова планета',sceneIndex:3};
+  const result=await resolveSubject(text,lang,sourceLexicon('[[Карликова планета]]','Reference'),dictionary,previous);
+  assert.equal(result.title,'Карликова планета');
+  assert.equal(result.mode,'previous_scene_relative_subject');
+  assert.equal(result.antecedentScene,3);
+ }
+});
+test('scene-start relative pronoun without an immediate antecedent fails closed',async()=>{
+ await assert.rejects(resolveSubject('Яке є достатньо масивним, щоб підтримувати кулясту форму.','uk',sourceLexicon('[[Карликова планета]]','Reference'),dictionary),/missing_antecedent/);
+});
+test('leading discovery context cannot displace the later main-clause entity in UK RU PL EN',async()=>{
+ for(const[lang,text,links,expected]of [
+  ['uk','Після відкриття Плутона зовнішня частина Сонячної системи стала відомою.','[[Плутон|Плутона]] [[Сонячна система|Сонячної системи]]','Сонячна система'],
+  ['ru','После открытия Плутона внешняя часть Солнечной системы стала известной.','[[Плутон|Плутона]] [[Солнечная система|Солнечной системы]]','Солнечная система'],
+  ['pl','Po odkryciu Plutona zewnętrzna część Układu Słonecznego stała się znana.','[[Pluton|Plutona]] [[Układ Słoneczny|Układu Słonecznego]]','Układ Słoneczny'],
+  ['en','After the discovery of Pluto the outer part of the Solar System became known.','[[Pluto]] [[Solar System|Solar System]]','Solar System'],
+ ]){const result=await resolveSubject(text,lang,sourceLexicon(links,'Reference'),dictionary);assert.equal(result.title,expected);assert.equal(result.mode,'current_subject_after_event_context');}
+});
+test('generic classified objects with explicit examples keep the named examples in UK RU PL EN',async()=>{
+ for(const[lang,text,links,expected]of [
+  ['uk',"Інші об'єкти можуть бути класифіковані як держави, наприклад, Франція, Німеччина та Польща.",'[[Франція]] [[Німеччина]] [[Польща]] [[Держава|держави]]','Франція, Німеччина та Польща'],
+  ['ru','Другие объекты могут быть классифицированы как государства, например, Франция, Германия и Польша.','[[Франция]] [[Германия]] [[Польша]] [[Государство|государства]]','Франция, Германия и Польша'],
+  ['pl','Inne obiekty mogą być klasyfikowane jako państwa, na przykład, Francja, Niemcy i Polska.','[[Francja]] [[Niemcy]] [[Polska]] [[Państwo|państwa]]','Francja, Niemcy i Polska'],
+  ['en','Other objects may be classified as countries, for example, France, Germany and Poland.','[[France]] [[Germany]] [[Poland]] [[Country|countries]]','France, Germany and Poland'],
+ ]){const result=await resolveSubject(text,lang,sourceLexicon(links,'Reference'),dictionary);assert.equal(result.mode,'current_enumeration');assert.equal(result.listText,expected);}
+});
+test('divided-into counted enumerations keep the named categories in UK RU PL EN',async()=>{
+ for(const[lang,text,links,expected]of [
+  ['uk',"Усі об'єкти офіційно поділяються на три категорії, Франція, Німеччина та Польща.",'[[Франція]] [[Німеччина]] [[Польща]]','Франція, Німеччина, Польща'],
+  ['ru','Все объекты официально разделяются на три категории, Франция, Германия и Польша.','[[Франция]] [[Германия]] [[Польша]]','Франция, Германия, Польша'],
+  ['pl','Wszystkie obiekty oficjalnie dzielą się na trzy kategorie, Francja, Niemcy i Polska.','[[Francja]] [[Niemcy]] [[Polska]]','Francja, Niemcy, Polska'],
+  ['en','All objects are officially divided into three categories, France, Germany and Poland.','[[France]] [[Germany]] [[Poland]]','France, Germany, Poland'],
+ ]){const result=await resolveSubject(text,lang,sourceLexicon(links,'Reference'),dictionary);assert.equal(result.mode,'current_enumeration');assert.equal(result.listText,expected);}
+});
+test('counted typed enumerations keep only the named members in UK RU PL EN',async()=>{
+ for(const[lang,text,links,expected]of [
+  ['uk','За цим визначенням є три держави, Франція, Німеччина та Польща.','[[Франція]] [[Німеччина]] [[Польща]] [[Держава|держави]]',['Франція','Німеччина','Польща']],
+  ['ru','По этому определению есть три государства, Франция, Германия и Польша.','[[Франция]] [[Германия]] [[Польша]] [[Государство|государства]]',['Франция','Германия','Польша']],
+  ['pl','Według tej definicji są trzy państwa, Francja, Niemcy i Polska.','[[Francja]] [[Niemcy]] [[Polska]] [[Państwo|państwa]]',['Francja','Niemcy','Polska']],
+  ['en','By this definition there are three countries, France, Germany and Poland.','[[France]] [[Germany]] [[Poland]] [[Country|countries]]',['France','Germany','Poland']],
+ ]){const result=await resolveSubject(text,lang,sourceLexicon(links,'Reference'),dictionary);assert.equal(result.mode,'current_enumeration');assert.deepEqual(result.listText.split(', '),expected);}
+});
 test('a comma-separated list of known phrases remains ambiguous',async()=>{
  await assert.rejects(resolveSubject('Blue whales, domestic cats, river otters.','en',sourceLexicon(cases[0][2],'Reference'),dictionary),/ambiguous_subject/);
 });
@@ -80,4 +135,17 @@ test('a has-part sitelink resolving to a different identity fails closed',async(
  const resolver=api();
  resolver.dataEntity=async qid=>qid==='QGROUP'?{claims:{P527:['Q308','Q313'].map(id=>({mainsnak:{datavalue:{value:{id}}}}))}}:{sitelinks:{enwiki:{title:'Earth'}}};
  await assert.rejects(resolver.structuredGroupMedia({qid:'QGROUP',englishTitle:'Verified group'},new Map()),/identity_mismatch/);
+});
+
+test('explicit copular subjects outrank anaphoric copula tokens in UK RU PL EN',async()=>{
+ for(const [lang,text,links,expected] of [
+  ['uk','Планета — це будь-яке тіло на орбіті.','[[Планета]]','Планета'],
+  ['ru','Планета — это любое тело на орбите.','[[Планета]]','Планета'],
+  ['pl','Planeta to dowolne ciało na orbicie.','[[Planeta]]','Planeta'],
+  ['en','Planet is any body in orbit.','[[Planet]]','Planet'],
+ ]){
+  const result=await resolveSubject(text,lang,sourceLexicon(links,'Reference'),dictionary);
+  assert.equal(result.title,expected);
+  assert.equal(result.mode,'current_copular_subject');
+ }
 });

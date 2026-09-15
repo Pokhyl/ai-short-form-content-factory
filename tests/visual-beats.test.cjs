@@ -53,3 +53,21 @@ test('typed enumerations retain named members rather than their adjacent class l
   assert.deepEqual(spans.map(x=>x.title),names);assert.ok(spans.every(x=>text.slice(x.startChar,x.endChar)===x.surface));
  }
 });
+
+
+test('exact topic category supplies compact-named high-quality media when the concept has no P18/P373',async()=>{
+ const resolver=new PexelsAPI('');
+ resolver.pageImage=async()=>null;
+ resolver.dataEntity=async qid=>qid==='Q123'
+  ?{claims:{P910:[{rank:'normal',mainsnak:{datavalue:{value:{id:'Q456'}}}}]},labels:{en:{value:'Ice giant'}},aliases:{en:[]}}
+  :{claims:{P301:[{rank:'normal',mainsnak:{datavalue:{value:{id:'Q123'}}}}]},sitelinks:{enwiki:{title:'Category:Ice giants'}}};
+ resolver.query=async(_base,params)=>{
+  if(params.generator==='categorymembers')return {query:{pages:{1:{title:'File:Icegiant.jpg',imageinfo:[{mime:'image/jpeg',width:1600,height:1200,thumbwidth:1600,thumbheight:1200,thumburl:'https://upload.wikimedia.org/icegiant.jpg',url:'https://upload.wikimedia.org/icegiant.jpg',extmetadata:{}}]}}}};
+  if(params.generator==='search')return {query:{pages:{}}};
+  throw new Error(`unexpected query ${JSON.stringify(params)}`);
+ };
+ const pool=await resolver.exactBeatPool({qid:'Q123',englishTitle:'Ice giant',page:null},false);
+ assert.equal(pool.length,1);
+ assert.equal(pool[0].source,'exact_topic_category');
+ assert.equal(pool[0].title,'File:Icegiant.jpg');
+});
