@@ -33,9 +33,13 @@ function timeBeats(beats,{sceneStartMs,sceneEndMs,wordToCaption=[],captions=[]})
     const span=beat.span;
     if(!span||!Number.isInteger(span.startWord)||!Number.isInteger(span.endWord)||span.endWord<=span.startWord)fail('unaligned_beat',beat.title);
     if(i&&span.startWord<beats[i-1].span.endWord)fail('unaligned_beat','Overlapping or unordered source spans');
-    const indices=[];let gap=false;
+    const indices=[];let gap=false,envelope=false;
     for(let w=span.startWord;w<span.endWord;w++){
-      const index=mapping[w];if(!Number.isInteger(index)||!Number.isFinite(captions[index]?.startMs))fail('unaligned_beat',beat.title);
+      const index=mapping[w];
+      if(!Number.isInteger(index)||!Number.isFinite(captions[index]?.startMs)){
+        if(w>span.startWord&&w<span.endWord-1){envelope=true;continue;}
+        fail('unaligned_beat',beat.title);
+      }
       if(indices.length&&index<indices.at(-1))fail('unaligned_beat','Non-monotonic captions');
       indices.push(index);gap ||= recovered.has(w);
     }
@@ -43,7 +47,7 @@ function timeBeats(beats,{sceneStartMs,sceneEndMs,wordToCaption=[],captions=[]})
     if(i){const previous=beats[i-1].span;const previousLast=mapping[previous.endWord-1];if(first<=previousLast)fail('unaligned_beat','Distinct names share a caption interval');}
     const spokenEndMs=captions[last].endMs??captions[last+1]?.startMs??sceneEndMs;
     const anchor=!i&&span.startWord===0?sceneStartMs:spokenStartMs;
-    return{...beat,startMs:anchor,timingEvidence:{alignmentSource:gap?'bounded_caption_gap':'direct_caption',captionStartIndex:first,captionEndIndex:last,spokenStartMs,spokenEndMs,startAdjustmentMs:0}};
+    return{...beat,startMs:anchor,timingEvidence:{alignmentSource:envelope?'caption_span_envelope':gap?'bounded_caption_gap':'direct_caption',captionStartIndex:first,captionEndIndex:last,spokenStartMs,spokenEndMs,startAdjustmentMs:0}};
   });
   // Keep exact onsets whenever possible. A short name can borrow only the
   // beginning of the following name's spoken interval to satisfy readability.

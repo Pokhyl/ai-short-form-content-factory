@@ -98,3 +98,8 @@ test('long exact holds use caption boundaries and hard hold limits, not equal sl
  const result=new PexelsAPI('').planVisualBeats({beats:[{...media('a'),kind:'image',alternatives:[{...media('b'),kind:'image'}]}]},{sceneStartMs:0,sceneEndMs:12000,captions:[{startMs:0,endMs:4700},{startMs:4700,endMs:9400}]});
  assert.deepEqual(result.map(b=>[b.startMs,b.endMs]),[[0,4700],[4700,9400],[9400,12000]]);
 });
+test('a merged internal word within one exact multiword span uses its real outer caption bounds',()=>{
+ const beats=[{...media('group'),span:{startWord:0,endWord:4}},{...media('next'),span:{startWord:4,endWord:5}}];
+ const result=timeBeats(beats,{sceneStartMs:0,sceneEndMs:3000,wordToCaption:[0,null,1,2,3],captions:[{startMs:0,endMs:800},{startMs:800,endMs:1300},{startMs:1300,endMs:1900},{startMs:1900,endMs:3000}]});
+ assert.deepEqual(result.map(b=>[b.startMs,b.endMs]),[[0,1900],[1900,3000]]);assert.equal(result[0].timingEvidence.alignmentSource,'caption_span_envelope');
+});
