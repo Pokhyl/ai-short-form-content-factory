@@ -149,3 +149,11 @@ test('explicit copular subjects outrank anaphoric copula tokens in UK RU PL EN',
   assert.equal(result.mode,'current_copular_subject');
  }
 });
+test('counted enumeration keeps its explicit class as lead-in evidence, not a topic fallback',async()=>{
+ for(const[lang,text,links,group]of [
+  ['uk','У регіоні є дві держави, Франція та Німеччина.','[[Регіон|регіоні]] [[Держава|держави]] [[Франція]] [[Німеччина]]','Держава'],
+  ['ru','В регионе есть две страны, Франция и Германия.','[[Регион|регионе]] [[Страна|страны]] [[Франция]] [[Германия]]','Страна'],
+  ['pl','W regionie są dwa państwa, Francja i Niemcy.','[[Region|regionie]] [[Państwo|państwa]] [[Francja]] [[Niemcy]]','Państwo'],
+  ['en','In the region there are two countries, France and Germany.','[[Region|region]] [[Country|countries]] [[France]] [[Germany]]','Country'],
+ ]){const result=await resolveSubject(text,lang,sourceLexicon(links,'Reference'),dictionary);assert.equal(result.groupSubject.title,group);assert.equal(text.slice(result.groupSubject.start,result.groupSubject.end),result.groupSubject.surface);}
+});

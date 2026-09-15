@@ -474,6 +474,7 @@ class ShortCreator {
                     title:beat.title, source:beat.source, mediaKey:beat.mediaKey,
                     sourceWidth:beat.width, sourceHeight:beat.height,
                     sourceSpan:beat.span || null, sourceSpans:beat.spans || null,
+                    timingEvidence:beat.timingEvidence || null,
                     startMs:beat.startMs, endMs:beat.endMs, holdMs:beat.endMs-beat.startMs,
                     components:beat.components || null,
                 })),

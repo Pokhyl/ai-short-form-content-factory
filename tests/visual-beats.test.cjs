@@ -15,8 +15,8 @@ test('missing span alignment fails instead of equal-duration timing',()=>{assert
 test('invalid bounds, long holds, and adjacent identity duplicates fail',()=>{for(const beats of [[{...media('a'),startMs:0,endMs:6000}],[{...media('a'),startMs:0,endMs:2000},{...media('a'),startMs:2000,endMs:4000}],[{...media('a'),startMs:2000,endMs:1000}]])assert.throws(()=>validateBeats(beats,0,beats.at(-1).endMs),/visual/);});
 test('direct exact photography outranks taxonomy unless claim is relational',()=>{const diagram={...media('diagram'),description:'taxonomy diagram',kind:'image'};const photo={...media('photo'),description:'scientific photograph',kind:'image'};assert.equal(rankMedia([diagram,photo],false)[0].mediaKey,'photo');assert.equal(rankMedia([diagram,photo],true)[0].mediaKey,'diagram');});
 const {PexelsAPI,keyForFile}=require('../engine-overlay/Pexels');
-test('seven-member strategy keeps all seven identities',()=>{const resolver=new PexelsAPI('');const beats=Array.from({length:7},(_,i)=>({...media('object'+i),span:{startWord:i,endWord:i+1}}));const result=resolver.planVisualBeats({beats,groupRequired:true},{sceneStartMs:0,sceneEndMs:4000},null);assert.equal(result.length,1);assert.equal(result[0].components.length,7);});
-test('short five-name lists become a complete group instead of truncation',()=>{const resolver=new PexelsAPI('');const beats=Array.from({length:5},(_,i)=>({...media('object'+i),span:{startWord:i,endWord:i+1}}));const result=resolver.planVisualBeats({beats},{sceneStartMs:0,sceneEndMs:1000,wordToCaption:[0,1,2,3,4],captions:[0,100,200,300,400].map(startMs=>({startMs}))});assert.equal(result[0].components.length,5);});
+test('seven-member strategy preserves sequential caption-timed identities without a collage',()=>{const resolver=new PexelsAPI('');const beats=Array.from({length:7},(_,i)=>({...media('object'+i),span:{startWord:i,endWord:i+1}}));const starts=[0,430,980,1560,2030,2750,3330];const result=resolver.planVisualBeats({beats,groupRequired:true},{sceneStartMs:0,sceneEndMs:4000,wordToCaption:starts.map((_,i)=>i),captions:starts.map((startMs,i)=>({startMs,endMs:starts[i+1]||4000}))},null);assert.equal(result.length,7);assert.deepEqual(result.map(x=>x.startMs),starts);assert.ok(result.every(x=>!x.components));});
+test('an impossibly short list fails without entity removal or collage',()=>{const resolver=new PexelsAPI('');const beats=Array.from({length:5},(_,i)=>({...media('object'+i),span:{startWord:i,endWord:i+1}}));assert.throws(()=>resolver.planVisualBeats({beats},{sceneStartMs:0,sceneEndMs:1000,wordToCaption:[0,1,2,3,4],captions:[0,100,200,300,400].map(startMs=>({startMs,endMs:startMs+100}))}),/visual_timing_capacity/);});
 test('low-resolution exact page image continues to full-resolution same-QID P18',async()=>{const resolver=new PexelsAPI('');resolver.pageImage=async()=>({...media('small'),kind:'image',width:314,height:316});resolver.dataEntity=async()=>({claims:{P18:[{mainsnak:{datavalue:{value:'Exact object photograph.jpg'}}}]}});resolver.query=async()=>({query:{pages:{1:{title:'File:Exact object photograph.jpg',imageinfo:[{mime:'image/jpeg',width:1600,height:1200,url:'https://upload.wikimedia.org/exact.jpg'}]}}}});resolver.commonsMedia=async()=>[];const pool=await resolver.exactBeatPool({qid:'Q123'},false);assert.equal(pool.length,1);assert.equal(pool[0].source,'exact_wikidata_p18');assert.equal(pool[0].width,1600);});
 test('density uses distinct exact alternatives within the same claim',()=>{const resolver=new PexelsAPI('');const result=resolver.planVisualBeats({beats:[{...media('a'),kind:'image',span:{startWord:0,endWord:1},alternatives:[{...media('b'),kind:'image'}]}]},{sceneStartMs:0,sceneEndMs:12000});assert.deepEqual(result.map(r=>r.mediaKey),['a','b','a']);assert.ok(result.every(r=>r.endMs-r.startMs<=5000));});
 test('non-astronomy five-name lists use the identical extraction path',async()=>{const text='The largest of them are Alice, Boris, Clara, David and Elena.';const spans=await focalSpans(text,'en',sourceLexicon('[[Alice]] [[Boris]] [[Clara]] [[David]] [[Elena]]','Reference'),dictionary,{mode:'previous_scene_anaphora'});assert.equal(spans.length,5);assert.equal(text.slice(spans[4].startChar,spans[4].endChar),'Elena');});
@@ -70,4 +70,31 @@ test('exact topic category supplies compact-named high-quality media when the co
  assert.equal(pool.length,1);
  assert.equal(pool[0].source,'exact_topic_category');
  assert.equal(pool[0].title,'File:Icegiant.jpg');
+});
+test('actual eight-name audio timeline preserves order, source spans and readable sequential beats',()=>{
+ const fixture=require('./fixtures/fast-enumeration-timing.json');const {words}=require('../engine-overlay/VisualSubject');const tokens=words(fixture.text);
+ const names=['Mercury (planet)','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune'];const offsets=[11,12,13,14,15,16,17,19];
+ const beats=names.map((concept,i)=>({...media('exact-'+i),kind:'image',concept,resolutionMode:'focal_list_item',span:{startWord:offsets[i],endWord:offsets[i]+1,startChar:tokens[offsets[i]].start,endChar:tokens[offsets[i]].end,surface:fixture.text.slice(tokens[offsets[i]].start,tokens[offsets[i]].end)},alternatives:[{...media('alternate-'+i),kind:'image'}]}));
+ const leadIn={...media('exact-class'),kind:'image',concept:'Planet',resolutionMode:'claim_leadin',alternatives:[{...media('exact-class-alternate'),kind:'image'}]};
+ const plan=new PexelsAPI('').planVisualBeats({beats,groupRequired:true,leadIn},fixture.timeline);
+ const focal=plan.filter(b=>b.resolutionMode==='focal_list_item');const first=names.map(name=>focal.find(b=>b.concept===name));
+ assert.deepEqual([...new Set(focal.map(b=>b.concept))],names);
+ assert.deepEqual(first.map(b=>b.startMs),[46730,47670,48680,49680,50030,51440,52590,53440]);
+ assert.ok(plan.every(b=>!b.components&&b.endMs-b.startMs>=350&&b.endMs-b.startMs<=5000));
+ assert.equal(first[0].timingEvidence.alignmentSource,'bounded_caption_gap');assert.equal(first[4].timingEvidence.startAdjustmentMs,120);
+ assert.ok(first.every(b=>fixture.text.slice(b.span.startChar,b.span.endChar)===b.span.surface));
+ assert.equal(plan[0].startMs,fixture.timeline.sceneStartMs);assert.equal(plan.at(-1).endMs,60000);
+ assert.ok(first.every((b,i)=>b.startMs<fixture.timeline.captions[[85,86,87,88,89,90,91,93][i]].endMs));
+});
+test('ambiguous unmatched caption gaps fail rather than receiving invented equal timestamps',()=>{
+ const resolver=new PexelsAPI('');const beats=[{...media('a'),span:{startWord:1,endWord:2}},{...media('b'),span:{startWord:2,endWord:3}}];
+ assert.throws(()=>resolver.planVisualBeats({beats},{sceneStartMs:0,sceneEndMs:4000,wordToCaption:[0,null,3],captions:[0,500,1000,2000].map(startMs=>({startMs,endMs:startMs+400}))}),/unaligned_beat/);
+});
+test('different list members sharing one caption cannot receive fabricated sub-caption timing',()=>{
+ const beats=[{...media('first'),span:{startWord:0,endWord:1}},{...media('second'),span:{startWord:1,endWord:2}}];
+ assert.throws(()=>new PexelsAPI('').planVisualBeats({beats},{sceneStartMs:0,sceneEndMs:3000,wordToCaption:[0,0],captions:[{startMs:0,endMs:3000}]}),/unaligned_beat/);
+});
+test('long exact holds use caption boundaries and hard hold limits, not equal slicing',()=>{
+ const result=new PexelsAPI('').planVisualBeats({beats:[{...media('a'),kind:'image',alternatives:[{...media('b'),kind:'image'}]}]},{sceneStartMs:0,sceneEndMs:12000,captions:[{startMs:0,endMs:4700},{startMs:4700,endMs:9400}]});
+ assert.deepEqual(result.map(b=>[b.startMs,b.endMs]),[[0,4700],[4700,9400],[9400,12000]]);
 });

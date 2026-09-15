@@ -1,0 +1,509 @@
+{
+  "provenance": {
+    "jobId": "be51fab6-fd30-44de-a250-6cb9d3f6f7b9",
+    "videoId": "cmu2pekb5000001s8bzetbylx",
+    "audioDurationMs": 54320,
+    "captions": "Whisper timing extraction from a scratch copy of the immutable job audio",
+    "source": "runtime scene input and captionAlignment log"
+  },
+  "text": "Згідно з цим визначенням у Сонячній системі є вісім відомих планет, Меркурій, Венера, Земля, Марс, Юпітер, Сатурн, Уран та Нептун.",
+  "timeline": {
+    "sceneStartMs": 40220,
+    "sceneEndMs": 60000,
+    "audioEndMs": 54320,
+    "wordToCaption": [
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      null,
+      86,
+      87,
+      88,
+      null,
+      90,
+      91,
+      92,
+      93
+    ],
+    "captions": [
+      {
+        "text": "Після",
+        "startMs": 10,
+        "endMs": 450
+      },
+      {
+        "text": "відкриття",
+        "startMs": 450,
+        "endMs": 1300
+      },
+      {
+        "text": "поясу",
+        "startMs": 1300,
+        "endMs": 1750
+      },
+      {
+        "text": "койпера,",
+        "startMs": 1750,
+        "endMs": 2520
+      },
+      {
+        "text": "найвіддали",
+        "startMs": 2520,
+        "endMs": 3280
+      },
+      {
+        "text": "нішою",
+        "startMs": 3280,
+        "endMs": 3720
+      },
+      {
+        "text": "частиною",
+        "startMs": 3720,
+        "endMs": 4340
+      },
+      {
+        "text": "сонячої",
+        "startMs": 4340,
+        "endMs": 4890
+      },
+      {
+        "text": "системи,",
+        "startMs": 4890,
+        "endMs": 5520
+      },
+      {
+        "text": "вважають",
+        "startMs": 5520,
+        "endMs": 6120
+      },
+      {
+        "text": "регіон,",
+        "startMs": 6120,
+        "endMs": 6640
+      },
+      {
+        "text": "що",
+        "startMs": 6640,
+        "endMs": 6790
+      },
+      {
+        "text": "складається",
+        "startMs": 6790,
+        "endMs": 7640
+      },
+      {
+        "text": "з",
+        "startMs": 7640,
+        "endMs": 7710
+      },
+      {
+        "text": "об'єктів",
+        "startMs": 7710,
+        "endMs": 8440
+      },
+      {
+        "text": "розташованих",
+        "startMs": 8440,
+        "endMs": 9420
+      },
+      {
+        "text": "далі",
+        "startMs": 9420,
+        "endMs": 9760
+      },
+      {
+        "text": "нічне",
+        "startMs": 9760,
+        "endMs": 10180
+      },
+      {
+        "text": "птун.",
+        "startMs": 10180,
+        "endMs": 10920
+      },
+      {
+        "text": "Усі",
+        "startMs": 10920,
+        "endMs": 11190
+      },
+      {
+        "text": "об'єкти",
+        "startMs": 11190,
+        "endMs": 11770
+      },
+      {
+        "text": "сонячої",
+        "startMs": 11770,
+        "endMs": 12400
+      },
+      {
+        "text": "системи,",
+        "startMs": 12400,
+        "endMs": 13140
+      },
+      {
+        "text": "які",
+        "startMs": 13140,
+        "endMs": 13470
+      },
+      {
+        "text": "обертаються",
+        "startMs": 13470,
+        "endMs": 14430
+      },
+      {
+        "text": "на",
+        "startMs": 14430,
+        "endMs": 14600
+      },
+      {
+        "text": "вколосонця,",
+        "startMs": 14600,
+        "endMs": 15760
+      },
+      {
+        "text": "офіційно",
+        "startMs": 15760,
+        "endMs": 16430
+      },
+      {
+        "text": "поділяються",
+        "startMs": 16430,
+        "endMs": 17350
+      },
+      {
+        "text": "на",
+        "startMs": 17350,
+        "endMs": 17520
+      },
+      {
+        "text": "три",
+        "startMs": 17520,
+        "endMs": 17770
+      },
+      {
+        "text": "катихорії.",
+        "startMs": 17770,
+        "endMs": 18720
+      },
+      {
+        "text": "планеты,",
+        "startMs": 18720,
+        "endMs": 19820
+      },
+      {
+        "text": "карликові",
+        "startMs": 19820,
+        "endMs": 20420
+      },
+      {
+        "text": "планеты,",
+        "startMs": 20420,
+        "endMs": 21390
+      },
+      {
+        "text": "і",
+        "startMs": 21390,
+        "endMs": 21450
+      },
+      {
+        "text": "малітіла",
+        "startMs": 21450,
+        "endMs": 22270
+      },
+      {
+        "text": "сонячної",
+        "startMs": 22270,
+        "endMs": 23150
+      },
+      {
+        "text": "системи.",
+        "startMs": 23150,
+        "endMs": 24160
+      },
+      {
+        "text": "планета,",
+        "startMs": 24160,
+        "endMs": 24900
+      },
+      {
+        "text": "це",
+        "startMs": 24900,
+        "endMs": 25080
+      },
+      {
+        "text": "будь,",
+        "startMs": 25080,
+        "endMs": 25630
+      },
+      {
+        "text": "який",
+        "startMs": 25630,
+        "endMs": 25910
+      },
+      {
+        "text": "тіло",
+        "startMs": 25910,
+        "endMs": 26290
+      },
+      {
+        "text": "на",
+        "startMs": 26290,
+        "endMs": 26500
+      },
+      {
+        "text": "орбіті",
+        "startMs": 26500,
+        "endMs": 26990
+      },
+      {
+        "text": "на",
+        "startMs": 26990,
+        "endMs": 27230
+      },
+      {
+        "text": "вколосонця,",
+        "startMs": 27230,
+        "endMs": 28320
+      },
+      {
+        "text": "який",
+        "startMs": 28320,
+        "endMs": 28640
+      },
+      {
+        "text": "є",
+        "startMs": 28640,
+        "endMs": 28740
+      },
+      {
+        "text": "достатньо",
+        "startMs": 28740,
+        "endMs": 29440
+      },
+      {
+        "text": "масивним,",
+        "startMs": 29440,
+        "endMs": 30250
+      },
+      {
+        "text": "щоб",
+        "startMs": 30250,
+        "endMs": 30450
+      },
+      {
+        "text": "набути",
+        "startMs": 30450,
+        "endMs": 30950
+      },
+      {
+        "text": "сверичної",
+        "startMs": 30950,
+        "endMs": 31710
+      },
+      {
+        "text": "форми,",
+        "startMs": 31710,
+        "endMs": 32160
+      },
+      {
+        "text": "але",
+        "startMs": 32160,
+        "endMs": 32390
+      },
+      {
+        "text": "не",
+        "startMs": 32390,
+        "endMs": 32540
+      },
+      {
+        "text": "достатньо",
+        "startMs": 32540,
+        "endMs": 33210
+      },
+      {
+        "text": "масивне",
+        "startMs": 33210,
+        "endMs": 33730
+      },
+      {
+        "text": "для",
+        "startMs": 33730,
+        "endMs": 33990
+      },
+      {
+        "text": "початку",
+        "startMs": 33990,
+        "endMs": 34520
+      },
+      {
+        "text": "термоядерного",
+        "startMs": 34520,
+        "endMs": 35470
+      },
+      {
+        "text": "синтизу.",
+        "startMs": 35470,
+        "endMs": 36080
+      },
+      {
+        "text": "І",
+        "startMs": 36080,
+        "endMs": 36260
+      },
+      {
+        "text": "яке",
+        "startMs": 36260,
+        "endMs": 36440
+      },
+      {
+        "text": "змогло",
+        "startMs": 36440,
+        "endMs": 36980
+      },
+      {
+        "text": "очистити",
+        "startMs": 36980,
+        "endMs": 37730
+      },
+      {
+        "text": "околиці",
+        "startMs": 37730,
+        "endMs": 38330
+      },
+      {
+        "text": "своїї",
+        "startMs": 38330,
+        "endMs": 38780
+      },
+      {
+        "text": "орбіти",
+        "startMs": 38780,
+        "endMs": 39320
+      },
+      {
+        "text": "від",
+        "startMs": 39320,
+        "endMs": 39590
+      },
+      {
+        "text": "планеты",
+        "startMs": 39590,
+        "endMs": 40220
+      },
+      {
+        "text": "зималий.",
+        "startMs": 40220,
+        "endMs": 41080
+      },
+      {
+        "text": "Згідно",
+        "startMs": 41080,
+        "endMs": 41780
+      },
+      {
+        "text": "з",
+        "startMs": 41780,
+        "endMs": 41850
+      },
+      {
+        "text": "цим",
+        "startMs": 41850,
+        "endMs": 42080
+      },
+      {
+        "text": "визначенням,",
+        "startMs": 42080,
+        "endMs": 43430
+      },
+      {
+        "text": "у",
+        "startMs": 43430,
+        "endMs": 43500
+      },
+      {
+        "text": "сонячній",
+        "startMs": 43500,
+        "endMs": 43990
+      },
+      {
+        "text": "системі",
+        "startMs": 43990,
+        "endMs": 44480
+      },
+      {
+        "text": "є",
+        "startMs": 44480,
+        "endMs": 44560
+      },
+      {
+        "text": "вісім",
+        "startMs": 44560,
+        "endMs": 45030
+      },
+      {
+        "text": "відомих",
+        "startMs": 45030,
+        "endMs": 45690
+      },
+      {
+        "text": "планет.",
+        "startMs": 45690,
+        "endMs": 46400
+      },
+      {
+        "text": "Маркурі,",
+        "startMs": 46730,
+        "endMs": 47670
+      },
+      {
+        "text": "венера,",
+        "startMs": 47670,
+        "endMs": 48680
+      },
+      {
+        "text": "земля,",
+        "startMs": 48680,
+        "endMs": 49680
+      },
+      {
+        "text": "Марс,",
+        "startMs": 49680,
+        "endMs": 49910
+      },
+      {
+        "text": "Юпідер,",
+        "startMs": 49910,
+        "endMs": 51440
+      },
+      {
+        "text": "Сатурн,",
+        "startMs": 51440,
+        "endMs": 52590
+      },
+      {
+        "text": "Уран",
+        "startMs": 52590,
+        "endMs": 53370
+      },
+      {
+        "text": "та",
+        "startMs": 53370,
+        "endMs": 53440
+      },
+      {
+        "text": "Нептун.",
+        "startMs": 53440,
+        "endMs": 54560
+      }
+    ]
+  }
+}
