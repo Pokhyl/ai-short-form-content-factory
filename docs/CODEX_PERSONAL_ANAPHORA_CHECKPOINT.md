@@ -14,3 +14,16 @@ The earlier `ambiguous_subject` diagnostic obscured the missing antecedent. Lead
 Native full suite: 97/97 PASS, zero skips. Linux amd64 renderer image built successfully; full offline container suite: 97/97 PASS, zero skips. The original source Wikidata fixtures and resolver mechanisms remain intact. TTS, timing gates, n8n, and existing jobs were not edited.
 
 This change does not make the invalid opening narration renderable. Do not attach an antecedent from the source article or manufacture history to force a pass. A future normal input must begin with a self-contained semantic scene. Live planner calibration resides outside GitHub; do not overwrite it with the older repository workflow. No deployment or new job was performed for this diagnostic correction. Production remains on `bb562e1371d8522914bafcce5504cdb24397877f` from the preceding validation.
+
+## Current-head live Alpha acceptance
+
+All eight scenes passed live preflight in the rebuilt renderer image (no TTS/render).
+
+1. Proxima Centauri → `File:New shot of Proxima Centauri, our nearest neighbour.jpg` (exact_wikidata_p18).
+2. Alpha Centauri → `File:Best image of Alpha Centauri A and B.jpg` (exact_wikidata_p18).
+3. Alpha Centauri → `File:The_sky_around_Alpha_Centauri_and_Proxima_Centauri_(eso1629i).jpg` (exact_english_wikipedia).
+4. Proper motion → `File:Proper Motion.png` (exact_wikidata_p18).
+5. Celestial sphere → `File:Celestial Sphere - Earth Stars.png` (exact_wikidata_p18).
+6. Edmond Halley → `File:Edmond Halley Royal Greenwich Observatory Museum.jpg` (exact_wikidata_p18).
+7. Thomas Henderson (astronomer) → `File:Thomas James Henderson, 1798-1844 Henderson-01r.jpg` (exact_wikidata_p18).
+8. Proper motion → `File:Proper Motion.png` (exact_wikidata_p18).
