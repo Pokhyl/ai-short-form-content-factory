@@ -52,7 +52,7 @@ Status: DONE
 - Minimal `jobs` table.
 
 ### M2 — Gemini access
-Status: NEXT
+Status: BLOCKED — dedicated project API key required
 
 Goal: connect Gemini to the isolated n8n without reusing or exposing secrets from other projects.
 
@@ -62,7 +62,7 @@ Acceptance:
 - no other AI provider exists in production path.
 
 ### M3 — Intake
-Status: TODO
+Status: DONE
 
 Implement one webhook:
 `topic + language + duration -> job_id`
@@ -71,6 +71,8 @@ Acceptance:
 - strict validation;
 - one DB row;
 - no AI call during intake.
+
+Verified on 2026-09-18 with one invalid request (HTTP 400, no row) and one valid request (HTTP 201, exactly one queued job row).
 
 ### M4 — Script
 Status: TODO
