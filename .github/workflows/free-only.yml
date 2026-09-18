@@ -1,0 +1,14 @@
+name: Free-only policy
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce free-only production policy
+        run: python3 scripts/check-free-only.py
