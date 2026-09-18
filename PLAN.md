@@ -1,8 +1,6 @@
 # AI Short-Form Content Factory — Production Plan
 
-## Goal
-
-Build the project again from a clean repository.
+## 1. Product contract
 
 Input:
 
@@ -10,73 +8,174 @@ Input:
 topic + language + duration
 ```
 
+Supported languages:
+
+```text
+en / pl / ru / uk
+```
+
+Supported durations:
+
+```text
+15 / 30 / 45 / 60 seconds
+```
+
 Output:
 
 ```text
-one finished 9:16 MP4
+one finished 1080×1920 H.264/AAC MP4
 ```
 
-Target pipeline:
+Production path:
 
 ```text
-topic
-→ research
-→ script / storyboard
-→ one continuous voiceover
-→ speech timing
-→ relevant visuals
+intake
+→ web research
+→ evidence set
+→ script + storyboard
+→ one continuous final voiceover
+→ local speech alignment
+→ multi-source visual discovery
+→ deterministic visual selection
 → local render
 → machine QA
-→ human review
+→ HUMAN PASS
 → only then Studio / publishing
 ```
 
-The previous implementation is not a baseline and must not be restored.
+The deleted legacy implementation is not a baseline and must not be restored.
 
 ---
 
-## Non-negotiable product constraints
+## 2. Hard rules
 
-- n8n is mandatory and is the orchestrator.
-- PostgreSQL is the source of truth for production state.
-- Inputs are only:
-  - `topic`
-  - `language`
-  - `duration`
-- Supported languages:
-  - `en`
-  - `pl`
-  - `ru`
-  - `uk`
-- Supported target durations:
-  - `15`
-  - `30`
-  - `45`
-  - `60` seconds.
-- Production must remain free-only.
+- n8n is the orchestrator.
+- PostgreSQL is the production source of truth.
+- Production is free-only.
 - No paid fallback.
-- Do not use:
-  - OpenAI
-  - Anthropic
-  - OpenRouter
-  - Groq
-  - ElevenLabs
-  - FAL
-- Gemini may be used only for functions that have been verified to be available under the approved free tier.
-- No Ollama/local LLM/model-worker.
-- No external transcription API.
-- No external AI visual-verification API.
-- Rendering and speech alignment run locally.
-- Never speed up, slow down, or trim narration to force duration.
-- Never synthesize narration a second time during render.
-- Failed/rejected production jobs are immutable. A new test means a new job.
-- Credentials and secrets must never be committed to Git.
+- No OpenAI, Anthropic, OpenRouter, Groq, ElevenLabs or FAL.
+- No Ollama, local LLM or model-worker.
+- No external transcription service.
+- No external AI visual-verification service.
+- Credentials never go to Git.
+- Failed/rejected product jobs are immutable.
+- A new test always creates a new job.
+- One final TTS synthesis per job.
+- Never speed up, slow down or trim narration to force duration.
+- Never re-synthesize narration during render.
+- Never hard-code topic-specific assets or fixes.
+- Never weaken QA to make a test pass.
+- Never touch another project, database, workflow, credential, container, repository or domain.
+- Do not replace a working component unless evidence identifies it as the defect.
+- Two failures from the same approach require root-cause re-evaluation, not another blind retry.
+- Machine PASS is not final PASS. Only explicit HUMAN PASS accepts the product pipeline.
 
 ---
 
-## Voiceover
+## 3. Runtime architecture
 
-Voiceover is one continuous narration for the whole video.
+Use one isolated Docker Compose project for this repository.
+
+Minimum services:
+
+```text
+n8n
+postgres
+media-worker
+searxng
+```
+
+Responsibilities:
+
+### n8n
+- workflow orchestration;
+- state transitions;
+- provider calls;
+- retries only where explicitly allowed;
+- no heavy media processing.
+
+### PostgreSQL
+- jobs;
+- evidence;
+- scenes/shots;
+- external-operation ledger;
+- media metadata;
+- QA results;
+- immutable failure history.
+
+### media-worker
+- download/store media;
+- ffprobe/ffmpeg;
+- local speech alignment;
+- image/video normalization;
+- local deterministic visual checks;
+- render;
+- machine media QA.
+
+### SearXNG
+- self-hosted web-search layer for research;
+- JSON API;
+- broad web search across configured engines;
+- not limited to Wikipedia/Wikimedia.
+
+Do not add Redis/queue mode until measured load requires it.
+
+---
+
+## 4. Research architecture
+
+Research must search the web, not only Wikipedia.
+
+Flow:
+
+```text
+topic
+→ SearXNG search queries
+→ ranked search results
+→ fetch selected public pages
+→ extract readable text
+→ deduplicate sources
+→ evidence rows
+→ Gemini synthesis from evidence only
+```
+
+### Research search
+Use self-hosted SearXNG.
+
+Requirements:
+- JSON Search API enabled;
+- multiple general-web engines configured;
+- English search queries by default for broad coverage;
+- additional local-language query when topic requires it;
+- source URL, title, snippet and retrieval timestamp persisted;
+- no scraping of search result pages from ad-hoc unofficial endpoints when an API/result endpoint exists.
+
+### Evidence fetch
+For top search results:
+- request the source page directly;
+- follow redirects;
+- reject unsupported/binary pages unless explicitly handled;
+- extract main readable text;
+- cap per-source text;
+- hash normalized content;
+- deduplicate near-identical URLs/content.
+
+### Script model
+Use Gemini Developer API only after the exact model and current free-tier quota are verified in M2.
+
+Current intended text model:
+
+```text
+gemini-3.5-flash-lite
+```
+
+The model receives the collected evidence, not unrestricted hidden web access.
+
+Every factual narration unit must point to evidence IDs.
+
+---
+
+## 5. Voiceover architecture
 
 Provider:
 
@@ -87,7 +186,13 @@ OAuth2
 MP3
 ```
 
-Locked voice profile: `google-selected-v1`
+Locked profile:
+
+```text
+google-selected-v1
+```
+
+Voices:
 
 | Language | Voice |
 |---|---|
@@ -97,114 +202,254 @@ Locked voice profile: `google-selected-v1`
 | Ukrainian | `uk-UA-Chirp3-HD-Enceladus` |
 
 Rules:
+- one continuous narration for the whole video;
+- one synthesis after the final script is frozen;
+- MP3 stored durably;
+- voice name, locale, provider response metadata and audio hash persisted;
+- actual audio duration measured from the exact stored file;
+- later stages use this exact file;
+- no re-TTS;
+- no time-stretch or speech-rate correction.
 
-- exactly one final TTS synthesis per job;
-- narration is synthesized only after the final script is accepted by validation;
-- use the real audio duration returned by the final voiceover;
-- all visual timing is derived from that exact audio;
-- no speech-rate manipulation.
-
-Do not replace these voices merely to simplify implementation.
-
----
-
-## Visuals
-
-Visuals must match the actual narration, not merely the general topic.
-
-Initial source:
-
-```text
-Wikimedia Commons
-```
-
-Only free sources may be added later and only after their terms, API limits, and production usefulness are verified.
-
-Rules:
-
-- research/script decides what must be shown;
-- resolver chooses assets only after the visual intent is known;
-- no manually selected topic-specific assets in production logic;
-- no topic-specific hacks;
-- every visual must have source/license metadata;
-- avoid one or two generic images stretched across the whole video;
-- use enough visual changes to follow the narration naturally;
-- a visual must support the exact scene/shot meaning;
-- reject obviously irrelevant results instead of filling the timeline with them.
-
-The planner chooses visual intent, not a hard-coded asset.
+M2 must verify all four voices with the real OAuth credential before production workflow development continues.
 
 ---
 
-## Timing and alignment
+## 6. Speech alignment
 
-Timing is created from the exact final voiceover.
+Alignment runs locally from the exact final voiceover.
 
-Pipeline:
+Flow:
 
 ```text
-final voiceover
-→ local decode when required
-→ local speech alignment
+final MP3
+→ local decode
+→ local speech recognizer/alignment
 → timed words/tokens
-→ map narration units to speech timestamps
-→ visual shot boundaries
+→ map exact narration units to timestamps
+→ scene/shot timing
 ```
 
 Requirements:
+- multilingual en/pl/ru/uk;
+- timestamps originate from actual audio;
+- script-to-transcript coverage gate;
+- per-scene coverage gate;
+- no proportional timing fallback when alignment fails;
+- fail closed on insufficient coverage;
+- final render uses the same voiceover that was aligned.
 
-- local transcription/alignment only;
-- no proportional timing fallback when reliable speech timestamps are unavailable;
-- fail closed if narration coverage is insufficient;
-- render the same narration that was aligned;
-- no second TTS call.
+The exact aligner implementation is selected and pinned in M2 after a four-language smoke test.
 
 ---
 
-## Render
+## 7. Visual architecture
 
-Rendering is local using FFmpeg/Remotion-compatible local tooling.
+There is no single visual provider.
 
-Final media requirements:
+The resolver queries all enabled free sources for every shot and ranks the combined candidate pool.
 
-- portrait `1080×1920`;
+### Production visual adapters
+
+#### Wikimedia Commons
+Use for:
+- historical material;
+- people/events/places with encyclopedic media;
+- diagrams;
+- public-domain/CC material.
+
+#### Pixabay
+Use official API for:
+- stock photos;
+- stock video;
+- generic but concrete real-world visuals.
+
+Current documented default API limit: 100 requests / 60 seconds per API key.
+
+#### Openverse
+Use official API for:
+- openly licensed images from multiple upstream collections;
+- additional candidates not present in Wikimedia/Pixabay.
+
+Only licenses permitted by project policy may pass selection.
+
+#### Unsplash
+Adapter may be enabled only after M2 compliance verification.
+
+Reason:
+- free demo access exists;
+- official API requires hotlinked image URLs;
+- download-like use requires calling the supplied download endpoint;
+- attribution/API-guideline requirements must be satisfied.
+
+Do not silently treat Unsplash as an unrestricted file CDN.
+
+### License policy
+
+Accept only assets whose use/derivative requirements are compatible with the final video.
+
+Default accepted families:
+
+```text
+Public Domain / PDM
+CC0
+CC BY
+CC BY-SA
+Pixabay Content License
+```
+
+Do not automatically accept:
+- CC BY-NC;
+- CC BY-ND;
+- unknown license;
+- missing attribution metadata;
+- provider terms incompatible with local rendering.
+
+### Candidate generation
+
+For each shot, the storyboard must contain:
+- exact visual intent;
+- concrete subject/entities;
+- action/mechanism/event if required;
+- must-show concepts;
+- must-not-show conflicts;
+- 2–4 concise English search queries;
+- preferred media type: photo / video / diagram / map / document.
+
+Every enabled provider is queried with the same shot intent.
+
+### Candidate normalization
+
+All provider results normalize to one schema:
+
+```text
+provider
+provider_asset_id
+source_url
+download_url / media_url
+title
+description
+tags
+author
+license
+license_url
+media_type
+width
+height
+duration
+query_id
+```
+
+### Deterministic ranking
+
+No remote AI decides which image is correct.
+
+Rank candidates using:
+- exact entity/title match;
+- query token overlap;
+- required-concept coverage;
+- media-type fit;
+- portrait crop viability;
+- resolution;
+- duplicate/near-duplicate penalty;
+- forbidden-context penalty;
+- repeated-asset penalty across the video.
+
+If no candidate clears the relevance threshold, fail that shot instead of filling it with generic media.
+
+### Visual density
+
+Do not use one or two images for an entire video by default.
+
+Shot count is derived from:
+- narration duration;
+- semantic transitions;
+- available relevant assets.
+
+A visual can remain longer only when the narration genuinely continues to describe the same visible subject.
+
+---
+
+## 8. Storyboard contract
+
+The script model produces a machine-validated storyboard before TTS.
+
+Each narration unit contains:
+
+```json
+{
+  "scene_id": "S1",
+  "narration": "...",
+  "evidence_ids": ["E1", "E2"],
+  "shots": [
+    {
+      "shot_id": "S1-A",
+      "visual_intent": "...",
+      "must_show": ["..."],
+      "must_not_show": ["..."],
+      "queries_en": ["...", "..."],
+      "preferred_media_type": "photo"
+    }
+  ]
+}
+```
+
+The storyboard describes what should be visible; it never names a preselected asset.
+
+Assets are resolved only after the storyboard is frozen.
+
+---
+
+## 9. Render
+
+Render locally.
+
+Final requirements:
+- 1080×1920 portrait;
 - H.264 video;
 - AAC audio;
-- continuous narration;
-- valid MP4;
-- no stretched/distorted source media;
-- visuals aligned to narration;
-- target duration handled by visual pacing, not voice manipulation.
+- MP4;
+- exact accepted voiceover;
+- no stretched visuals;
+- no voice speed manipulation;
+- shot boundaries derived from speech timing;
+- deterministic crop/fit rules;
+- transitions must not conceal irrelevant or missing media.
+
+Still images may use restrained local pan/zoom/crop motion; source geometry must remain valid.
 
 ---
 
-## Machine QA
+## 10. Machine QA
 
-A job may reach review only after automated checks pass.
+A product job reaches review only when all mandatory checks pass.
 
-Minimum checks:
-
-- output file exists;
+Checks:
+- file exists and is readable;
 - MP4 container valid;
-- `1080×1920`;
-- H.264 video;
-- AAC audio;
+- 1080×1920;
+- H.264;
+- AAC;
 - audio present;
-- duration within the agreed tolerance;
-- every planned visual exists;
-- no missing render segment;
-- speech alignment coverage passes;
-- no narration speed manipulation;
-- exactly one TTS synthesis;
-- visual/source metadata preserved.
+- duration inside agreed tolerance;
+- exactly one final TTS synthesis;
+- voiceover hash matches aligned/rendered audio source;
+- speech global coverage passes;
+- every scene coverage passes;
+- every planned shot has a selected stored asset;
+- visual asset source/license metadata present;
+- no duplicate abuse;
+- no missing segment;
+- no forbidden provider;
+- no speech speed modification.
 
-Machine PASS is not final PASS.
+QA failure is terminal for that product job.
 
 ---
 
-## Human review
+## 11. Human review
 
-The exact produced MP4 must be reviewed by the user.
+The exact final MP4 must be shown to the user.
 
 Only explicit:
 
@@ -212,261 +457,126 @@ Only explicit:
 HUMAN PASS
 ```
 
-means the production pipeline is accepted.
+accepts the production pipeline.
 
-If the user rejects the video, diagnose the systemic cause and create a new job after the fix.
+A rejection creates a systemic defect investigation followed by a fresh job after the fix.
 
-Do not manually repair the failed/rejected production job.
+Never manually repair the rejected product job.
 
 ---
 
 # Delivery milestones
 
-## M0 — Empty clean repository
+## M0 — Clean repository
+Status: DONE
 
 Acceptance:
-
-- repository contains only the new project;
-- no old workflows;
-- no old DB dump;
-- no recovery code;
-- no legacy runtime copied into the project;
+- only new files;
+- no legacy workflow/database/runtime copied back;
 - no secrets.
 
-Status: current starting point.
-
----
-
 ## M1 — Minimal isolated runtime
-
-Create only what the first E2E requires:
-
+Build:
 - Docker Compose;
 - n8n;
 - PostgreSQL;
-- media worker;
-- persistent media storage;
+- media-worker;
+- SearXNG;
+- persistent media volume;
 - health checks.
 
-Do not build a large workflow catalog in advance.
-
 Acceptance:
+- isolated project starts cleanly;
+- all services healthy;
+- restart preserves state;
+- unrelated projects untouched.
 
-- runtime starts cleanly;
-- isolated from unrelated projects;
-- restart preserves production state;
-- no dependency on old project containers.
+## M2 — Dependency proof before production workflows
+Verify independently:
+1. SearXNG JSON search returns useful general-web results.
+2. Selected public pages can be fetched and converted to evidence.
+3. Gemini text model works under current free tier.
+4. Google Cloud TTS OAuth works.
+5. All four locked TTS voices work.
+6. Wikimedia search/download works.
+7. Pixabay search/download works.
+8. Openverse search/download + license metadata works.
+9. Unsplash compliance/technical path is either verified and enabled or explicitly disabled.
+10. Local alignment works for en/pl/ru/uk.
+11. Local FFmpeg render works.
 
----
+Do not build the production pipeline around a dependency that has not passed M2.
 
-## M2 — Verify dependencies before architecture
-
-Before integrating a provider or library, verify it in isolation.
-
-Verify:
-
-1. text/research model actually works under the approved free tier;
-2. Google Cloud TTS OAuth works;
-3. all four locked voices synthesize correctly;
-4. Wikimedia retrieval works;
-5. local alignment works for `en/pl/ru/uk`;
-6. local rendering works.
-
-No production workflow should be built around an unverified provider.
-
-Acceptance:
-
-- one small proof for every external dependency;
-- real returned data/audio inspected;
-- limits documented.
-
----
-
-## M3 — Job intake
-
-Implement one n8n entrypoint:
-
+## M3 — Intake
 ```text
-topic + language + duration → job_id
+POST topic + language + duration → job_id
 ```
 
-Validation:
-
-- topic non-empty;
-- language in `en/pl/ru/uk`;
-- duration in `15/30/45/60`.
-
 Acceptance:
+- strict validation;
+- one durable DB row;
+- invalid input creates no row;
+- no AI/TTS call.
 
-- exactly one durable DB row;
-- invalid request creates no job;
-- intake itself calls no AI/TTS provider.
-
----
-
-## M4 — Research and script
-
-Generate a grounded short-form story.
-
-The result must contain:
-
-- final narration text;
-- narration units/scenes;
-- visual intent for each unit;
-- English search queries for asset discovery;
-- evidence/source references where factual claims require them.
-
-Narration and visual description use the video language.
-
-Search query remains concise English suitable for media discovery.
-
+## M4 — Research + evidence
 Acceptance:
+- broad web search through SearXNG;
+- multiple independent sources when available;
+- evidence persisted;
+- duplicate sources removed;
+- no script yet if evidence is inadequate.
 
-- coherent continuous narration;
-- no unsupported factual claims;
-- no generic visual plan when the narration requires a specific object/event/mechanism;
-- script is ready before TTS is called.
-
----
-
-## M5 — One continuous final voiceover
-
-Use the locked Google Cloud TTS voice for the selected language.
-
+## M5 — Script + storyboard
 Acceptance:
-
-- one synthesis;
-- MP3 stored durably;
-- actual audio duration measured;
-- voice/language recorded in DB;
-- no re-TTS in later stages.
-
----
-
-## M6 — Local speech alignment
-
-Align the exact final voiceover locally.
-
-Acceptance:
-
-- timestamps come from actual speech;
-- narration-unit coverage passes;
-- no external transcription API;
-- no proportional fallback hiding alignment failure.
-
----
-
-## M7 — Visual discovery and selection
-
-For every narration unit/shot:
-
-1. derive the exact visual intent;
-2. query Wikimedia;
-3. collect multiple candidates where possible;
-4. score relevance deterministically;
-5. reject conflicts/irrelevant candidates;
-6. persist source/license metadata.
-
-Acceptance:
-
-- visuals visibly correspond to narration;
-- sufficient visual variety;
-- no manual per-topic choices;
-- no generic “same subject” substitution when the narration requires something specific.
-
----
-
-## M8 — Local render
-
-Render one complete MP4 from the accepted voiceover, aligned timings, and selected visuals.
-
-Acceptance:
-
-- `1080×1920`;
-- H.264/AAC;
 - continuous narration;
-- correct timing;
-- no voice speed changes;
-- no missing visual segment.
+- each factual unit cites evidence IDs;
+- each scene contains executable visual intent and search queries;
+- no asset is manually selected in script logic.
 
----
-
-## M9 — Full fresh E2E
-
-Create a completely new normal job through the real intake.
-
-Do not use diagnostic fixtures as final proof.
-
-Required path:
-
-```text
-intake
-→ research
-→ script
-→ one TTS
-→ local alignment
-→ visuals
-→ render
-→ machine QA
-```
-
+## M6 — One final voiceover
 Acceptance:
+- one Google Cloud TTS synthesis;
+- correct locked voice;
+- MP3 stored;
+- real duration measured;
+- no later TTS.
 
-- fresh production job reaches machine QA PASS;
-- exact MP4 is delivered for human review.
+## M7 — Local alignment
+Acceptance:
+- exact final audio aligned locally;
+- global and per-scene coverage pass;
+- no proportional fallback.
 
----
+## M8 — Multi-source visuals
+Acceptance:
+- query every enabled provider;
+- normalize candidates;
+- deterministic combined ranking;
+- license policy enforced;
+- irrelevant shots fail closed;
+- enough distinct relevant visuals for narration.
 
-## M10 — Human PASS
+## M9 — Render + machine QA
+Acceptance:
+- fresh normal job;
+- 1080×1920 H.264/AAC MP4;
+- complete narration and visuals;
+- all machine gates PASS.
 
-Stop feature expansion until the real MP4 receives explicit HUMAN PASS.
+## M10 — HUMAN PASS
+Deliver the exact MP4.
 
-After HUMAN PASS only:
-
-- Studio UI;
-- draft publishing;
-- TikTok integration;
-- additional free visual providers;
-- throughput/queue optimisation.
-
----
-
-# Engineering rules
-
-1. Inspect before changing.
-2. Never replace a working component unless it is the proven cause of a defect.
-3. Keep a working baseline before every meaningful change.
-4. Change one subsystem at a time.
-5. After every change, test the complete affected path.
-6. Do not invent new architecture to solve a local defect.
-7. No hacks or topic-specific exceptions.
-8. No silent fallback to another provider/model.
-9. Do not weaken QA to make a test pass.
-10. Do not claim completion from unit tests alone.
-11. A machine PASS is provisional until the exact MP4 receives HUMAN PASS.
-12. Never touch unrelated projects, databases, credentials, containers, domains, repositories, or workflows.
-13. If an approach fails twice for the same reason, stop repeating it and re-evaluate the root cause.
-14. Preserve proven working choices such as selected voices unless evidence shows they are the defect.
+No Studio, TikTok publishing, queue optimization or feature expansion before explicit HUMAN PASS.
 
 ---
 
-# Repository policy
+## Current verified external facts — 2026-09-18
 
-The repository starts clean.
+- Gemini 3.5 Flash-Lite currently has a free tier for text input/output.
+- Google Cloud Text-to-Speech currently lists up to 1,000,000 free characters for Chirp 3 HD and a larger free allowance for legacy WaveNet; billing/free-tier behavior must still be guarded operationally.
+- Pixabay official API documents a default limit of 100 requests per 60 seconds.
+- Unsplash demo mode documents 50 requests/hour and specific hotlink/download tracking rules.
+- Openverse exposes an official API, supports authenticated/unauthenticated use with throttling, and requires respecting upstream content licenses.
+- SearXNG is self-hostable and exposes JSON search endpoints.
 
-Initial implementation should remain deliberately small:
-
-```text
-PLAN.md
-compose.yaml
-config/
-db/
-n8n/
-services/media-worker/
-tests/
-docs/
-```
-
-Add a component only when its milestone requires it.
-
-Do not restore deleted legacy project files merely because they existed before.
+These facts must be rechecked before changing providers or quota assumptions.
