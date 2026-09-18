@@ -1,13 +1,9 @@
-FROM python:3.12-slim
+FROM ghcr.io/ggml-org/whisper.cpp:main-da54572229bcf64ba367d96c7ef15770376c4280@sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-COPY server.py /app/server.py
+WORKDIR /worker
+COPY server.py /worker/server.py
 
 USER 1000:1000
 
 EXPOSE 3001
-CMD ["python", "/app/server.py"]
+ENTRYPOINT ["python3", "/worker/server.py"]

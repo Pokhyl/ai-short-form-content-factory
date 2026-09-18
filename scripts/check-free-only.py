@@ -23,6 +23,13 @@ scan_roots = [
     ROOT / "services",
 ]
 
+# These references are implementation details of explicitly local-only code.
+# Keep this narrow: it permits the word "transcription" only inside the local
+# media worker; it does not permit any external transcription provider.
+local_purpose_reference_allowlist = {
+    ROOT / "services" / "media-worker" / "server.py": {"transcription"},
+}
+
 files = []
 for root in scan_roots:
     if not root.exists():
@@ -51,7 +58,10 @@ for path in files:
         if re.search(pattern, low):
             violations.append(f"{rel}: forbidden external provider reference: {provider}")
 
+    allowed_local_purposes = local_purpose_reference_allowlist.get(path, set())
     for purpose in forbidden_purposes:
+        if purpose in allowed_local_purposes:
+            continue
         candidates = {purpose, purpose.replace("-", "_"), purpose.replace("-", " ")}
         if any(c in low for c in candidates):
             violations.append(f"{rel}: forbidden external purpose reference: {purpose}")

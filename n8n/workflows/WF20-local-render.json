@@ -37,7 +37,7 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "SELECT id AS job_id, target_duration_seconds, script_json, audio_path,\n       audio_sample_rate, audio_channels, audio_mime_type, tts_synthesis_count\nFROM public.jobs\nWHERE id=$1\n  AND status='voice_ready'\n  AND tts_synthesis_count=1;",
+          "query": "SELECT id AS job_id, language, target_duration_seconds, script_json, audio_path,\n       audio_sample_rate, audio_channels, audio_mime_type, tts_synthesis_count\nFROM public.jobs\nWHERE id=$1\n  AND status='voice_ready'\n  AND tts_synthesis_count=1;",
           "options": {
             "queryReplacement": "={{ [ $json.job_id ] }}"
           }
@@ -63,7 +63,7 @@
           "method": "POST",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ ({ job_id: $json.job_id, target_duration_seconds: $json.target_duration_seconds, script_json: $json.script_json, audio_path: $json.audio_path, audio_sample_rate: $json.audio_sample_rate, audio_channels: $json.audio_channels, audio_mime_type: $json.audio_mime_type }) }}",
+          "jsonBody": "={{ ({ job_id: $json.job_id, language: $json.language, target_duration_seconds: $json.target_duration_seconds, script_json: $json.script_json, audio_path: $json.audio_path, audio_sample_rate: $json.audio_sample_rate, audio_channels: $json.audio_channels, audio_mime_type: $json.audio_mime_type }) }}",
           "options": {
             "timeout": 600000
           }

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+import difflib
 import html
+import hashlib
 import json
 import math
 import os
@@ -7,6 +9,7 @@ import re
 import shutil
 import subprocess
 import sys
+import unicodedata
 import urllib.parse
 import urllib.request
 import uuid
@@ -20,6 +23,15 @@ USER_AGENT = os.environ.get(
     "AIShortFormContentFactory/2.0 (https://publisher.hodor.com.pl)",
 )
 COMMONS_API = "https://commons.wikimedia.org/w/api.php"
+
+WHISPER_CLI = Path(os.environ.get("WHISPER_CLI", "/app/build/bin/whisper-cli"))
+WHISPER_MODEL = Path(os.environ.get("WHISPER_MODEL", "/data/models/ggml-base.bin"))
+WHISPER_THREADS = max(1, int(os.environ.get("WHISPER_THREADS", "2")))
+WHISPER_MODEL_SHA256 = "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe"
+ALIGNMENT_MIN_GLOBAL_COVERAGE = 0.80
+ALIGNMENT_MIN_SCENE_COVERAGE = 0.65
+ALIGNMENT_MAX_BOUNDARY_SEARCH_CHARS = 80
+SUPPORTED_LANGUAGES = {"en", "pl", "ru", "uk"}
 
 STOPWORDS = {
     "the","and","for","with","from","into","that","this","these","those","why","how",
@@ -178,22 +190,43 @@ def search_query_variants(query):
             out.append(value.strip())
     return out
 
+def visual_rank(candidate, query):
+    query_set = query_tokens(query)
+    title_set = query_tokens(candidate.get("title", ""))
+    title_overlap = len(query_set & title_set)
+    title_precision = title_overlap / max(1, len(title_set))
+    unmatched_title_terms = len(title_set - query_set)
+    pixels = int(candidate.get("width") or 0) * int(candidate.get("height") or 0)
+    pageid = int(candidate.get("pageid") or 0)
+    return (
+        float(candidate.get("score") or 0),
+        title_precision,
+        title_overlap,
+        -unmatched_title_terms,
+        pixels,
+        -pageid,
+    )
+
 def choose_visual(query, used_ids):
     attempted = []
+    candidates_by_page = {}
+
     for search_query in search_query_variants(query):
         attempted.append(search_query)
-        candidates = commons_candidates(search_query)
-        ranked = []
-        for c in candidates:
-            if c["pageid"] in used_ids:
+        for raw_candidate in commons_candidates(search_query):
+            pageid = raw_candidate["pageid"]
+            if pageid in used_ids or pageid in candidates_by_page:
                 continue
-            c = dict(c)
-            c["score"] = visual_score(c, query)
-            c["resolved_query"] = search_query
-            ranked.append(c)
-        ranked.sort(key=lambda x: x["score"], reverse=True)
-        if ranked:
-            return ranked[0]
+            candidate = dict(raw_candidate)
+            candidate["score"] = visual_score(candidate, query)
+            candidate["resolved_query"] = search_query
+            candidates_by_page[pageid] = candidate
+
+    if candidates_by_page:
+        return max(
+            candidates_by_page.values(),
+            key=lambda candidate: visual_rank(candidate, query),
+        )
 
     raise BuildError(
         "visual_not_found",
@@ -209,46 +242,66 @@ def download(url, path):
     except Exception as e:
         raise BuildError("visual_download_failed", str(e), 502)
 
-def detect_pause_midpoints(audio_path, sample_rate, channels):
-    cmd = [
-        "ffmpeg", "-hide_banner", "-nostats",
-        "-f", "s16be", "-ar", str(sample_rate), "-ac", str(channels),
+def file_sha256(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+def ensure_aligner_ready():
+    if not WHISPER_CLI.is_file() or not os.access(WHISPER_CLI, os.X_OK):
+        raise BuildError("alignment_runtime_missing", f"whisper-cli not executable: {WHISPER_CLI}", 500)
+    if not WHISPER_MODEL.is_file():
+        raise BuildError("alignment_model_missing", f"Whisper model missing: {WHISPER_MODEL}", 500)
+    actual = file_sha256(WHISPER_MODEL)
+    if actual != WHISPER_MODEL_SHA256:
+        raise BuildError(
+            "alignment_model_invalid",
+            f"Whisper model sha256 mismatch: expected {WHISPER_MODEL_SHA256}, got {actual}",
+            500,
+        )
+
+def alignment_text(value):
+    normalized = unicodedata.normalize("NFKC", str(value or "")).casefold()
+    return "".join(ch for ch in normalized if ch.isalnum())
+
+def whisper_alignment(script_text, audio_path, sample_rate, channels, language, work_dir):
+    ensure_aligner_ready()
+
+    wav_path = work_dir / "alignment.wav"
+    run([
+        "ffmpeg", "-y", "-loglevel", "error",
+        "-f", "s16le", "-ar", str(sample_rate), "-ac", str(channels),
         "-i", str(audio_path),
-        "-af", "silencedetect=noise=-25dB:d=0.08",
-        "-f", "null", "-"
-    ]
-    p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    if p.returncode != 0:
-        return []
+        "-ar", "16000", "-ac", "1", "-c:a", "pcm_s16le",
+        str(wav_path),
+    ])
 
-    starts = []
-    intervals = []
-    for line in p.stderr.splitlines():
-        m = re.search(r"silence_start:\s*([0-9.]+)", line)
-        if m:
-            starts.append(float(m.group(1)))
-            continue
-        m = re.search(r"silence_end:\s*([0-9.]+)", line)
-        if m and starts:
-            start = starts.pop(0)
-            end = float(m.group(1))
-            if end > start:
-                intervals.append([start, end])
+    output_prefix = work_dir / "alignment"
+    run([
+        str(WHISPER_CLI),
+        "-m", str(WHISPER_MODEL),
+        "-f", str(wav_path),
+        "-l", language,
+        "-t", str(WHISPER_THREADS),
+        "-p", "1",
+        "-ng",
+        "-dtw", "base",
+        "-ojf",
+        "--prompt", script_text,
+        "-of", str(output_prefix),
+    ])
 
-    merged = []
-    for start, end in intervals:
-        if merged and start - merged[-1][1] <= 0.08:
-            merged[-1][1] = max(merged[-1][1], end)
-        else:
-            merged.append([start, end])
+    json_path = Path(str(output_prefix) + ".json")
+    if not json_path.is_file():
+        raise BuildError("alignment_failed", "whisper-cli produced no JSON output", 500)
+    try:
+        return json.loads(json_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        raise BuildError("alignment_failed", f"invalid Whisper JSON: {e}", 500)
 
-    return [
-        round((start + end) / 2.0, 4)
-        for start, end in merged
-        if end - start >= 0.10
-    ]
-
-def allocate_timing(scenes, audio_path, sample_rate, channels, audio_duration, target_duration):
+def allocate_timing(script_json, audio_path, sample_rate, channels, audio_duration, target_duration, language, work_dir):
     if audio_duration > target_duration + 0.05:
         raise BuildError(
             "voice_too_long",
@@ -256,41 +309,133 @@ def allocate_timing(scenes, audio_path, sample_rate, channels, audio_duration, t
             422,
         )
 
-    counts = [max(1, len(words(s.get("narration", "")))) for s in scenes]
-    total = sum(counts)
-    expected = []
-    running = 0
-    for count in counts[:-1]:
-        running += count
-        expected.append(audio_duration * running / total)
+    if language not in SUPPORTED_LANGUAGES:
+        raise BuildError("invalid_language", "language must be en/pl/ru/uk")
 
-    pauses = [
-        p for p in detect_pause_midpoints(audio_path, sample_rate, channels)
-        if 0.30 < p < audio_duration - 0.20
-    ]
+    scenes = script_json.get("scenes") if isinstance(script_json, dict) else None
+    if not isinstance(scenes, list) or not scenes:
+        raise BuildError("invalid_script", "script_json.scenes is required")
+
+    scene_norms = [alignment_text(scene.get("narration", "")) for scene in scenes]
+    if any(not value for value in scene_norms):
+        raise BuildError("alignment_failed", "scene narration normalizes to empty text", 422)
+
+    joined_script = " ".join(str(scene.get("narration", "")).strip() for scene in scenes)
+    script_text = str(script_json.get("script") or joined_script).strip()
+    script_norm = alignment_text(script_text)
+    joined_norm = "".join(scene_norms)
+    if script_norm != joined_norm:
+        raise BuildError("alignment_failed", "script text does not match scene narration sequence", 422)
+
+    result = whisper_alignment(
+        script_text,
+        audio_path,
+        sample_rate,
+        channels,
+        language,
+        work_dir,
+    )
+
+    tokens = []
+    for segment in result.get("transcription", []):
+        for token in segment.get("tokens", []):
+            token_text = str(token.get("text") or "")
+            token_norm = alignment_text(token_text)
+            offsets = token.get("offsets") or {}
+            start_ms = offsets.get("from")
+            end_ms = offsets.get("to")
+            if not token_norm or token_text.startswith("[_"):
+                continue
+            if not isinstance(start_ms, (int, float)) or not isinstance(end_ms, (int, float)):
+                continue
+            if end_ms < start_ms:
+                continue
+            tokens.append({
+                "text": token_text,
+                "norm": token_norm,
+                "start_ms": float(start_ms),
+                "end_ms": float(end_ms),
+            })
+
+    if not tokens:
+        raise BuildError("alignment_failed", "Whisper returned no timed speech tokens", 422)
+
+    asr_norm = "".join(token["norm"] for token in tokens)
+    asr_char_token = []
+    for token_index, token in enumerate(tokens):
+        asr_char_token.extend([token_index] * len(token["norm"]))
+
+    matcher = difflib.SequenceMatcher(a=script_norm, b=asr_norm, autojunk=False)
+    script_to_asr = {}
+    for block in matcher.get_matching_blocks():
+        for offset in range(block.size):
+            script_to_asr[block.a + offset] = block.b + offset
+
+    global_coverage = len(script_to_asr) / max(1, len(script_norm))
+    if global_coverage < ALIGNMENT_MIN_GLOBAL_COVERAGE:
+        raise BuildError(
+            "alignment_failed",
+            f"global transcript coverage {global_coverage:.3f} below {ALIGNMENT_MIN_GLOBAL_COVERAGE:.3f}",
+            422,
+        )
+
+    scene_spans = []
+    scene_coverages = []
+    cursor = 0
+    for scene_norm in scene_norms:
+        start = cursor
+        end = cursor + len(scene_norm)
+        coverage = sum(i in script_to_asr for i in range(start, end)) / max(1, end - start)
+        if coverage < ALIGNMENT_MIN_SCENE_COVERAGE:
+            raise BuildError(
+                "alignment_failed",
+                f"scene transcript coverage {coverage:.3f} below {ALIGNMENT_MIN_SCENE_COVERAGE:.3f}",
+                422,
+            )
+        scene_spans.append((start, end))
+        scene_coverages.append(coverage)
+        cursor = end
 
     boundaries = []
-    boundary_sources = []
     previous = 0.0
-    for exp in expected:
-        candidates = [p for p in pauses if p > previous + 0.25]
-        if candidates:
-            nearest = min(candidates, key=lambda p: abs(p - exp))
-            max_distance = max(1.25, audio_duration * 0.12)
-            if abs(nearest - exp) <= max_distance:
-                boundary = nearest
-                source = "local_silence_alignment"
-                pauses.remove(nearest)
-            else:
-                boundary = exp
-                source = "proportional_fallback"
-        else:
-            boundary = exp
-            source = "proportional_fallback"
+    for _, boundary_char in scene_spans[:-1]:
+        left = next(
+            (
+                idx
+                for idx in range(
+                    boundary_char - 1,
+                    max(-1, boundary_char - ALIGNMENT_MAX_BOUNDARY_SEARCH_CHARS - 1),
+                    -1,
+                )
+                if idx in script_to_asr
+            ),
+            None,
+        )
+        right = next(
+            (
+                idx
+                for idx in range(
+                    boundary_char,
+                    min(len(script_norm), boundary_char + ALIGNMENT_MAX_BOUNDARY_SEARCH_CHARS),
+                )
+                if idx in script_to_asr
+            ),
+            None,
+        )
+        if left is None or right is None:
+            raise BuildError("alignment_failed", "unable to map a scene boundary to speech tokens", 422)
 
-        boundary = max(previous + 0.25, min(boundary, audio_duration - 0.20))
+        left_token = tokens[asr_char_token[script_to_asr[left]]]
+        right_token = tokens[asr_char_token[script_to_asr[right]]]
+        left_end = left_token["end_ms"] / 1000.0
+        right_start = right_token["start_ms"] / 1000.0
+        if right_start < left_end - 0.25:
+            raise BuildError("alignment_failed", "overlapping token timestamps at scene boundary", 422)
+
+        boundary = (left_end + right_start) / 2.0
+        if boundary <= previous + 0.10 or boundary >= audio_duration - 0.10:
+            raise BuildError("alignment_failed", "non-monotonic or out-of-range scene boundary", 422)
         boundaries.append(boundary)
-        boundary_sources.append(source)
         previous = boundary
 
     timing = []
@@ -307,15 +452,29 @@ def allocate_timing(scenes, audio_path, sample_rate, channels, audio_duration, t
             "end": round(end, 3),
             "duration": round(end - start, 3),
             "voice_end": round(voice_end, 3),
-            "alignment_source": (
-                "audio_end"
-                if idx == len(scenes) - 1
-                else boundary_sources[idx]
-            ),
+            "alignment_source": "audio_end" if idx == len(scenes) - 1 else "local_whisper_token_alignment",
+            "alignment_coverage": round(scene_coverages[idx], 4),
             "narration": scene.get("narration", ""),
             "visual_query": scene.get("visual_query", ""),
         })
-    return timing
+
+    transcript = " ".join(
+        str(segment.get("text") or "").strip()
+        for segment in result.get("transcription", [])
+        if str(segment.get("text") or "").strip()
+    )
+    alignment = {
+        "engine": "whisper.cpp",
+        "model": "ggml-base",
+        "language": language,
+        "global_coverage": round(global_coverage, 4),
+        "scene_coverages": [round(value, 4) for value in scene_coverages],
+        "boundaries_seconds": [round(value, 3) for value in boundaries],
+        "timed_token_count": len(tokens),
+        "transcript": transcript,
+        "fallback_used": False,
+    }
+    return timing, alignment
 
 def render_segment(image_path, duration, out_path):
     filt = (
@@ -357,6 +516,10 @@ def build(payload):
     if not isinstance(scenes, list) or not scenes:
         raise BuildError("invalid_script", "script_json.scenes is required")
 
+    language = str(payload.get("language") or "").strip()
+    if language not in SUPPORTED_LANGUAGES:
+        raise BuildError("invalid_language", "language must be en/pl/ru/uk")
+
     audio_path = safe_data_path(payload.get("audio_path") or "")
     if not audio_path.is_file():
         raise BuildError("audio_missing", "voice PCM file not found")
@@ -368,20 +531,23 @@ def build(payload):
 
     bytes_per_sample = 2
     audio_duration = audio_path.stat().st_size / (sample_rate * channels * bytes_per_sample)
-    timing = allocate_timing(
-        scenes,
-        audio_path,
-        sample_rate,
-        channels,
-        audio_duration,
-        float(target),
-    )
 
     job_dir = DATA_DIR / job_id
     assets_dir = job_dir / "assets"
     work_dir = job_dir / "work"
     assets_dir.mkdir(parents=True, exist_ok=True)
     work_dir.mkdir(parents=True, exist_ok=True)
+
+    timing, alignment = allocate_timing(
+        script_json,
+        audio_path,
+        sample_rate,
+        channels,
+        audio_duration,
+        float(target),
+        language,
+        work_dir,
+    )
 
     used = set()
     visuals = []
@@ -434,7 +600,7 @@ def build(payload):
     ])
 
     padded_audio = work_dir / "voice.m4a"
-    pcm_format = "s16be"
+    pcm_format = "s16le"
     run([
         "ffmpeg","-y","-loglevel","error",
         "-f",pcm_format,"-ar",str(sample_rate),"-ac",str(channels),"-i",str(audio_path),
@@ -463,6 +629,7 @@ def build(payload):
         "video_codec": (video_stream or {}).get("codec_name"),
         "audio_codec": (audio_stream or {}).get("codec_name"),
         "audio_present": audio_stream is not None,
+        "alignment": alignment,
     }
     qa["pass"] = (
         qa["width"] == 1080

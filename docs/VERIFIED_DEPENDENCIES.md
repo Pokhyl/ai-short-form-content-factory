@@ -37,6 +37,27 @@ Only official vendor documentation is accepted for provider/model eligibility.
 - On 2026-09-18 the current Gemini TTS credential/model returned HTTP 429 with: `limit: 10 requests per day on Free Tier`. This is observed runtime evidence for the current credential/model, not a universal quota claim.
 - There is no paid fallback. A TTS-quota failure marks the product job failed; the same job is not retried or resumed.
 
+## Local speech alignment — whisper.cpp
+
+- Alignment is local; there is no external transcription API call or per-job API charge.
+- Runtime is pinned to the official `ggml-org/whisper.cpp` container:
+  - tag: `main-da54572229bcf64ba367d96c7ef15770376c4280`
+  - image digest: `sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11`
+- The upstream project is MIT-licensed.
+- Upstream documents the multilingual `base` model at about 142 MiB on disk and about 388 MB memory.
+- Runtime model:
+  - `ggml-base.bin`
+  - observed size: 147951465 bytes
+  - observed SHA-256: `60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe`
+- The deployed worker verifies the model SHA-256 before alignment.
+- Current project diagnostic evidence is English exact PCM/AAC. A fresh normal product E2E for all supported product languages has not been completed with this implementation because approved Gemini TTS quota is currently unavailable.
+- Official references:
+  - https://github.com/ggml-org/whisper.cpp
+  - https://github.com/ggml-org/whisper.cpp/blob/master/README.md
+  - https://github.com/ggml-org/whisper.cpp/pkgs/container/whisper.cpp
+  - https://github.com/openai/whisper
+- The container also includes FFmpeg; FFmpeg licensing remains a separate build-component consideration covered below.
+
 ## Wikimedia Commons
 
 - Visual source: Wikimedia Commons through the MediaWiki Action API.

@@ -60,6 +60,9 @@ services:
       DATA_DIR: /data
       PORT: 3001
       WIKIMEDIA_USER_AGENT: AIShortFormContentFactory/2.0 (https://publisher.hodor.com.pl)
+      WHISPER_CLI: /app/build/bin/whisper-cli
+      WHISPER_MODEL: /data/models/ggml-base.bin
+      WHISPER_THREADS: "2"
     volumes:
       - ./data:/data
     networks:
@@ -67,7 +70,7 @@ services:
         aliases:
           - shorts-v2-media-worker
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3001/health', timeout=3).read()"]
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3001/health', timeout=3).read()"]
       interval: 10s
       timeout: 5s
       retries: 10

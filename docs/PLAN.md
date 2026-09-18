@@ -102,18 +102,45 @@ Acceptance:
 - no speech speed-up or time-stretch.
 
 ### M6 — Local timing
-Status: DONE for scene-level alignment — exact final PCM is analyzed locally with FFmpeg silence detection; scene boundaries use detected pauses when available and proportional fallback otherwise. No external transcription. This is not word-level ASR alignment.
+Status: DONE for current local scene alignment implementation.
 
-Derive speech timing locally from the exact final audio.
+Implementation:
+- exact final PCM is treated as signed 16-bit little-endian PCM;
+- local `whisper.cpp` with multilingual `ggml-base` produces timed speech tokens from that exact PCM;
+- scene boundaries are mapped from the exact script/scenes to timed local speech tokens;
+- no proportional timing fallback remains in the production media worker;
+- low transcript/scene coverage fails closed with `alignment_failed`;
+- no external transcription API and no second TTS call are used.
+
+Diagnostic evidence on 2026-09-18 with exact PCM from product job `d3acb20c-f6eb-4bf4-918d-4e35fcef0c93`:
+- non-product fixture `33333333-4444-4555-8666-777777777777`;
+- audio duration: 13.120 s;
+- global transcript coverage: 1.0000;
+- scene coverages: 1.0000 / 1.0000 / 1.0000;
+- speech-derived boundaries: 5.820 s and 10.280 s;
+- `fallback_used=false`;
+- final rendered AAC was decoded locally and matched the expected narration with normalized similarity 1.0000.
 
 Acceptance:
 - zero external transcription calls;
-- timestamps belong to the exact audio that will be rendered.
+- timestamps belong to the exact audio that is rendered;
+- no narration speed change, trim, or second TTS synthesis.
 
 ### M7 — Visual sourcing
-Status: IMPLEMENTED — Wikimedia resolver uses semantic queries, deterministic scoring, context-conflict penalties, and deterministic query fallback. Latest resolver was validated with a non-product fixture; a fresh full E2E with the latest resolver is pending only because the Gemini TTS Free Tier quota is currently exhausted.
+Status: IMPLEMENTED and latest resolver diagnostic PASS.
 
-Resolve visuals from Wikimedia Commons using scene semantics.
+Implementation:
+- Wikimedia Commons remains the only visual source;
+- semantic scoring and context-conflict penalties remain deterministic;
+- all deterministic query variants are now compared instead of stopping at the first non-empty Wikimedia result set;
+- score remains the primary rank; deterministic title-match precision breaks equal-score cases.
+
+Latest non-product diagnostic `33333333-4444-4555-8666-777777777777` selected:
+- scene 1: `File:Sunlight Spectrum.JPG`;
+- scene 2: `File:Angular dependence of Rayleigh Scattering.jpg`;
+- scene 3: `File:Blue clear sky.jpg`.
+
+The contact sheet was inspected after render; scene 3 is now sky-dominant instead of the earlier hill/tree-dominant result.
 
 Acceptance:
 - multiple relevant visuals where needed;
@@ -122,7 +149,17 @@ Acceptance:
 - no remote AI visual verification.
 
 ### M8 — Render
-Status: IMPLEMENTED — local FFmpeg render has produced machine-verified 1080x1920 H.264/AAC MP4 at exactly 15.000 s. Latest media-worker code was also validated with a non-product fixture using exact previously generated PCM.
+Status: IMPLEMENTED — current media worker diagnostic PASS.
+
+Latest non-product diagnostic `33333333-4444-4555-8666-777777777777` using exact previously generated PCM:
+- machine QA: PASS;
+- 1080x1920;
+- H.264 video;
+- AAC audio;
+- container duration: 15.035 s, within the existing ±0.08 s machine-QA tolerance;
+- audio stream duration: 15.000 s;
+- narration was neither sped up nor trimmed;
+- final AAC transcript matched the expected narration locally with similarity 1.0000.
 
 Render locally to vertical MP4.
 
@@ -134,20 +171,21 @@ Acceptance:
 - valid H.264/AAC MP4.
 
 ### M9 — Machine QA + human review
-Status: MACHINE QA PASS for first E2E; HUMAN REVIEW PENDING
+Status: CURRENT MEDIA DIAGNOSTIC MACHINE QA PASS; FRESH PRODUCT E2E + HUMAN REVIEW PENDING
 
 Machine checks:
 - dimensions;
 - codec/container;
 - duration;
 - audio present;
-- no missing visual assets.
+- no missing visual assets;
+- local alignment metadata.
 
-Then inspect the exact MP4.
+A fresh normal product E2E with the current M6/M7 implementation has not been run because the approved Gemini TTS Free Tier credential is currently quota-limited. Failed quota jobs remain immutable and must not be retried.
 
 Success is only:
-- machine QA PASS;
-- human review PASS.
+- a fresh normal product job reaches machine QA PASS with the current code;
+- the exact final MP4 receives explicit human review PASS.
 
 ### M10 — Only after M9 PASS
 Status: BLOCKED
