@@ -47,7 +47,8 @@ for path in files:
     rel = path.relative_to(ROOT)
 
     for provider in forbidden_providers:
-        if provider in low:
+        pattern = rf"(?<![a-z0-9]){re.escape(provider)}(?![a-z0-9])"
+        if re.search(pattern, low):
             violations.append(f"{rel}: forbidden external provider reference: {provider}")
 
     for purpose in forbidden_purposes:
