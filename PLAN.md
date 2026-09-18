@@ -500,18 +500,26 @@ Verified:
 Acceptance: PASS.
 
 ## M2 — Dependency proof before production workflows
-Verify independently:
-1. SearXNG JSON search returns useful general-web results.
-2. Selected public pages can be fetched and converted to evidence.
-3. Gemini text model works under current free tier.
-4. Google Cloud TTS OAuth works.
-5. All four locked TTS voices work.
-6. Wikimedia search/download works.
-7. Pixabay search/download works.
-8. Openverse search/download + license metadata works.
-9. Unsplash compliance/technical path is either verified and enabled or explicitly disabled.
-10. Local alignment works for en/pl/ru/uk.
-11. Local FFmpeg render works.
+Status: PARTIAL — verified no-secret dependencies; credential-gated providers remain pending.
+
+Verified:
+1. SearXNG JSON general-web search — PASS.
+2. Direct public source-page fetch — PASS.
+3. Wikimedia Commons API — PASS.
+4. Local 1080×1920 H.264/AAC FFmpeg render — PASS.
+5. Local whisper.cpp CPU runtime + multilingual token timestamps — PARTIAL PASS; final quality must be tested on exact Google TTS audio.
+
+Pending credentials / provider proof:
+6. Gemini text model from isolated runtime.
+7. Google Cloud TTS OAuth.
+8. All four locked Google TTS voices.
+9. Pixabay official API.
+10. Unsplash API + compliance proof.
+
+Blocked:
+11. Openverse API currently returns a Cloudflare HTTP 403 browser challenge from this VPS; it is disabled unless that changes through an official API-compatible path.
+
+Evidence and exact observations are recorded in `docs/M2_DEPENDENCIES.md`.
 
 Do not build the production pipeline around a dependency that has not passed M2.
 
