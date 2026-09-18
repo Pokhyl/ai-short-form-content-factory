@@ -171,7 +171,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const audio = $json?.steps?.flatMap(s=>Array.isArray(s.content)?s.content:[]).find(x=>x?.type==='audio');\nif (!audio || typeof audio.data !== 'string' || !audio.data) throw new Error('Gemini TTS returned no audio');\nconst reserved = $('Reserve Single TTS').item.json;\nconst sampleRate = Number(audio.sample_rate);\nconst channels = Number(audio.channels);\nif (!Number.isInteger(sampleRate) || sampleRate <= 0) throw new Error('invalid sample rate');\nif (!Number.isInteger(channels) || channels <= 0) throw new Error('invalid channels');\nconst path = '/data/' + reserved.job_id + '-voice.pcm';\nreturn [{\n  json:{\n    job_id:reserved.job_id,\n    audio_path:path,\n    audio_sample_rate:sampleRate,\n    audio_channels:channels,\n    audio_mime_type:String(audio.mime_type || 'audio/l16')\n  },\n  binary:{\n    data:{\n      data:audio.data,\n      mimeType:'application/octet-stream',\n      fileName:reserved.job_id+'-voice.pcm'\n    }\n  }\n}];"
+          "jsCode": "const reserved = $('Reserve Single TTS').item.json;\nconst audio = $json?.steps?.flatMap(s => Array.isArray(s.content) ? s.content : []).find(x => x?.type === 'audio');\n\nif (!audio || typeof audio.data !== 'string' || !audio.data) {\n  const raw = JSON.stringify($json ?? {});\n  const sourceMessage =\n    $json?.error?.message ??\n    $json?.error ??\n    $json?.message ??\n    raw ??\n    'Gemini TTS returned no audio';\n  const errorMessage = String(sourceMessage).slice(0, 1500);\n  const rateLimited = /rate limit|too many requests|429/i.test(errorMessage);\n  return [{\n    json: {\n      ok: false,\n      job_id: reserved.job_id,\n      error_code: rateLimited ? 'tts_rate_limited' : 'tts_no_audio',\n      error_message: errorMessage,\n    },\n  }];\n}\n\nconst sampleRate = Number(audio.sample_rate);\nconst channels = Number(audio.channels);\nif (!Number.isInteger(sampleRate) || sampleRate <= 0) throw new Error('invalid sample rate');\nif (!Number.isInteger(channels) || channels <= 0) throw new Error('invalid channels');\n\nconst path = '/data/' + reserved.job_id + '-voice.pcm';\n\nreturn [{\n  json: {\n    ok: true,\n    job_id: reserved.job_id,\n    audio_path: path,\n    audio_sample_rate: sampleRate,\n    audio_channels: channels,\n    audio_mime_type: String(audio.mime_type || 'audio/l16'),\n  },\n  binary: {\n    data: {\n      data: audio.data,\n      mimeType: 'application/octet-stream',\n      fileName: reserved.job_id + '-voice.pcm',\n    },\n  },\n}];"
         },
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
@@ -191,8 +191,8 @@
         "type": "n8n-nodes-base.writeBinaryFile",
         "typeVersion": 1,
         "position": [
-          980,
-          0
+          1200,
+          -120
         ],
         "id": "9cb6b69e-fce0-42f2-bae9-0c3259ae2011",
         "name": "Write Voice PCM"
@@ -208,8 +208,8 @@
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.7,
         "position": [
-          1200,
-          0
+          1420,
+          -120
         ],
         "id": "82819265-02d4-48d1-8895-efc4743b2012",
         "name": "Save Voice",
@@ -231,11 +231,85 @@
         "type": "n8n-nodes-base.respondToWebhook",
         "typeVersion": 1.5,
         "position": [
-          1420,
-          0
+          1640,
+          -120
         ],
         "id": "438b4346-3bda-45a4-a296-b3d56b342013",
         "name": "Return Voice Ready"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "6e6cfb67-9241-41c5-9bcc-9d742e672101",
+                "leftValue": "={{ $json.ok }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          980,
+          0
+        ],
+        "id": "e1724783-4c2f-4a3b-a86b-55df6e212102",
+        "name": "TTS OK?"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "UPDATE public.jobs\nSET status='failed',\n    error_message=$2,\n    updated_at=now()\nWHERE id=$1\n  AND status='tts_in_progress'\n  AND tts_synthesis_count=1\nRETURNING id AS job_id, status, error_message;",
+          "options": {
+            "queryReplacement": "={{ [ $json.job_id, $json.error_code + ': ' + $json.error_message ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          1200,
+          120
+        ],
+        "id": "cb8c5ca7-130d-4f70-a04a-99dfc1792103",
+        "name": "Mark TTS Failed",
+        "credentials": {
+          "postgres": {
+            "id": "ShortsV2Postgres001",
+            "name": "Shorts V2 PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ { job_id: $json.job_id, status: $json.status, error: 'tts_failed', details: $json.error_message } }}",
+          "options": {
+            "responseCode": 503
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1420,
+          120
+        ],
+        "id": "6ef06f2d-bfe8-492a-8b67-96e24f372104",
+        "name": "Return TTS Failed"
       }
     ],
     "connections": {
@@ -342,7 +416,7 @@
         "main": [
           [
             {
-              "node": "Write Voice PCM",
+              "node": "TTS OK?",
               "type": "main",
               "index": 0
             }
@@ -365,6 +439,35 @@
           [
             {
               "node": "Return Voice Ready",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "TTS OK?": {
+        "main": [
+          [
+            {
+              "node": "Write Voice PCM",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Mark TTS Failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mark TTS Failed": {
+        "main": [
+          [
+            {
+              "node": "Return TTS Failed",
               "type": "main",
               "index": 0
             }
