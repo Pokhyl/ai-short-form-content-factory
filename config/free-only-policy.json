@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "updated_at": "2026-09-18",
+  "production": {
+    "input": {
+      "languages": [
+        "en",
+        "pl",
+        "ru",
+        "uk"
+      ],
+      "durations_seconds": [
+        15,
+        30,
+        45,
+        60
+      ]
+    },
+    "external_ai": {
+      "text": {
+        "provider": "google-gemini-api",
+        "model": "gemini-3.5-flash-lite",
+        "billing_requirement": "free-tier-only"
+      },
+      "tts": {
+        "provider": "google-gemini-api",
+        "model": "gemini-3.1-flash-tts-preview",
+        "voice": "Enceladus",
+        "billing_requirement": "free-tier-only",
+        "max_successful_syntheses_per_job": 1
+      }
+    },
+    "local_only": [
+      "speech_timing_alignment",
+      "visual_verification",
+      "rendering"
+    ],
+    "visual_sources": [
+      "wikimedia-commons"
+    ],
+    "forbidden_external_providers": [
+      "openai",
+      "anthropic",
+      "openrouter",
+      "groq",
+      "elevenlabs",
+      "fal"
+    ],
+    "forbidden_external_purposes": [
+      "transcription",
+      "visual_verification",
+      "image_generation",
+      "video_generation"
+    ],
+    "paid_fallbacks": false
+  }
+}
