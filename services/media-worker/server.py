@@ -119,20 +119,41 @@ def commons_candidates(query):
 
 def visual_score(candidate, query):
     q = query_tokens(query)
-    hay = query_tokens(candidate["title"] + " " + candidate["description"])
-    overlap = len(q & hay)
-    score = overlap * 20
+    title_tokens = query_tokens(candidate["title"])
+    desc_tokens = query_tokens(candidate["description"])
+    hay = title_tokens | desc_tokens
+
+    title_overlap = len(q & title_tokens)
+    total_overlap = len(q & hay)
+    score = title_overlap * 24 + max(0, total_overlap - title_overlap) * 10
+
     if candidate["mime"] == "image/jpeg":
         score += 6
     if candidate["width"] >= 1200:
         score += 3
     if candidate["height"] >= 800:
         score += 2
-    title_low = candidate["title"].lower()
+
+    candidate_low = (candidate["title"] + " " + candidate["description"]).lower()
     query_low = query.lower()
+
     for term in BAD_VISUAL_TERMS:
-        if term in title_low and term not in query_low:
-            score -= 20
+        if term in candidate_low and term not in query_low:
+            score -= 24
+
+    context_conflicts = {
+        "sunrise", "sunset", "night", "orange", "red", "storm", "rain",
+        "snow", "fog", "indoor", "portrait", "selfie", "illustration",
+    }
+    for term in context_conflicts:
+        if term in candidate_low and term not in query_low:
+            score -= 22
+
+    if total_overlap == 0:
+        score -= 80
+    elif len(q) >= 3 and total_overlap == 1:
+        score -= 20
+
     score += min(5.0, math.log10(max(1, candidate["width"] * candidate["height"])))
     return score
 
@@ -158,28 +179,109 @@ def download(url, path):
     except Exception as e:
         raise BuildError("visual_download_failed", str(e), 502)
 
-def allocate_timing(scenes, audio_duration, target_duration):
+def detect_pause_midpoints(audio_path, sample_rate, channels):
+    cmd = [
+        "ffmpeg", "-hide_banner", "-nostats",
+        "-f", "s16be", "-ar", str(sample_rate), "-ac", str(channels),
+        "-i", str(audio_path),
+        "-af", "silencedetect=noise=-25dB:d=0.08",
+        "-f", "null", "-"
+    ]
+    p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if p.returncode != 0:
+        return []
+
+    starts = []
+    intervals = []
+    for line in p.stderr.splitlines():
+        m = re.search(r"silence_start:\s*([0-9.]+)", line)
+        if m:
+            starts.append(float(m.group(1)))
+            continue
+        m = re.search(r"silence_end:\s*([0-9.]+)", line)
+        if m and starts:
+            start = starts.pop(0)
+            end = float(m.group(1))
+            if end > start:
+                intervals.append([start, end])
+
+    merged = []
+    for start, end in intervals:
+        if merged and start - merged[-1][1] <= 0.08:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+
+    return [
+        round((start + end) / 2.0, 4)
+        for start, end in merged
+        if end - start >= 0.10
+    ]
+
+def allocate_timing(scenes, audio_path, sample_rate, channels, audio_duration, target_duration):
     if audio_duration > target_duration + 0.05:
         raise BuildError(
             "voice_too_long",
             f"voice is {audio_duration:.3f}s, target is {target_duration}s; speech will not be cut or sped up",
             422,
         )
+
     counts = [max(1, len(words(s.get("narration", "")))) for s in scenes]
     total = sum(counts)
-    voice_cursor = 0.0
+    expected = []
+    running = 0
+    for count in counts[:-1]:
+        running += count
+        expected.append(audio_duration * running / total)
+
+    pauses = [
+        p for p in detect_pause_midpoints(audio_path, sample_rate, channels)
+        if 0.30 < p < audio_duration - 0.20
+    ]
+
+    boundaries = []
+    boundary_sources = []
+    previous = 0.0
+    for exp in expected:
+        candidates = [p for p in pauses if p > previous + 0.25]
+        if candidates:
+            nearest = min(candidates, key=lambda p: abs(p - exp))
+            max_distance = max(1.25, audio_duration * 0.12)
+            if abs(nearest - exp) <= max_distance:
+                boundary = nearest
+                source = "local_silence_alignment"
+                pauses.remove(nearest)
+            else:
+                boundary = exp
+                source = "proportional_fallback"
+        else:
+            boundary = exp
+            source = "proportional_fallback"
+
+        boundary = max(previous + 0.25, min(boundary, audio_duration - 0.20))
+        boundaries.append(boundary)
+        boundary_sources.append(source)
+        previous = boundary
+
     timing = []
-    for idx, (scene, count) in enumerate(zip(scenes, counts)):
-        voice_part = audio_duration * count / total
-        start = voice_cursor
-        voice_cursor += voice_part
-        end = target_duration if idx == len(scenes) - 1 else voice_cursor
+    starts = [0.0] + boundaries
+    voice_ends = boundaries + [audio_duration]
+
+    for idx, scene in enumerate(scenes):
+        start = starts[idx]
+        voice_end = voice_ends[idx]
+        end = target_duration if idx == len(scenes) - 1 else voice_end
         timing.append({
             "scene": idx + 1,
             "start": round(start, 3),
             "end": round(end, 3),
             "duration": round(end - start, 3),
-            "voice_end": round(voice_cursor, 3),
+            "voice_end": round(voice_end, 3),
+            "alignment_source": (
+                "audio_end"
+                if idx == len(scenes) - 1
+                else boundary_sources[idx]
+            ),
             "narration": scene.get("narration", ""),
             "visual_query": scene.get("visual_query", ""),
         })
@@ -236,7 +338,14 @@ def build(payload):
 
     bytes_per_sample = 2
     audio_duration = audio_path.stat().st_size / (sample_rate * channels * bytes_per_sample)
-    timing = allocate_timing(scenes, audio_duration, float(target))
+    timing = allocate_timing(
+        scenes,
+        audio_path,
+        sample_rate,
+        channels,
+        audio_duration,
+        float(target),
+    )
 
     job_dir = DATA_DIR / job_id
     assets_dir = job_dir / "assets"
