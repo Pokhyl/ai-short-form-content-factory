@@ -81,7 +81,7 @@ Acceptance:
 Verified on 2026-09-18 with one invalid request (HTTP 400, no row) and one valid request (HTTP 201, exactly one queued job row).
 
 ### M4 — Script
-Status: TODO
+Status: DONE — verified on job d3acb20c-f6eb-4bf4-918d-4e35fcef0c93
 
 Generate the complete narration/script with Gemini text.
 
@@ -92,7 +92,7 @@ Acceptance:
 - one production text path only.
 
 ### M5 — Final voice
-Status: TODO
+Status: DONE — exactly one TTS synthesis verified on job d3acb20c-f6eb-4bf4-918d-4e35fcef0c93
 
 Generate one continuous narration with Gemini TTS.
 
@@ -102,7 +102,7 @@ Acceptance:
 - no speech speed-up or time-stretch.
 
 ### M6 — Local timing
-Status: TODO
+Status: TODO — current render uses proportional scene timing from the exact audio duration; true local speech alignment is not implemented yet
 
 Derive speech timing locally from the exact final audio.
 
@@ -111,7 +111,7 @@ Acceptance:
 - timestamps belong to the exact audio that will be rendered.
 
 ### M7 — Visual sourcing
-Status: TODO
+Status: DONE for first E2E — Wikimedia assets resolved and retained with metadata
 
 Resolve visuals from Wikimedia Commons using scene semantics.
 
@@ -122,7 +122,7 @@ Acceptance:
 - no remote AI visual verification.
 
 ### M8 — Render
-Status: TODO
+Status: DONE for first E2E — machine-verified 1080x1920 H.264/AAC, exactly 15.000 s
 
 Render locally to vertical MP4.
 
@@ -134,7 +134,7 @@ Acceptance:
 - valid H.264/AAC MP4.
 
 ### M9 — Machine QA + human review
-Status: TODO
+Status: MACHINE QA PASS for first E2E; HUMAN REVIEW PENDING
 
 Machine checks:
 - dimensions;
