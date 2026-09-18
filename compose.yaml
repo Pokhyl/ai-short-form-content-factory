@@ -35,6 +35,8 @@ services:
       TZ: ${GENERIC_TIMEZONE}
       N8N_DIAGNOSTICS_ENABLED: "false"
       N8N_PERSONALIZATION_ENABLED: "false"
+      CREDENTIALS_OVERWRITE_DATA: >-
+        {"postgres":{"host":"postgres","database":"${POSTGRES_DB}","user":"${POSTGRES_USER}","password":"${POSTGRES_PASSWORD}","port":5432,"ssl":"disable","maxConnections":20,"allowUnauthorizedCerts":false}}
     ports:
       - "127.0.0.1:${N8N_PORT}:5678"
     volumes:
