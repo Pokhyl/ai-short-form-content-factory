@@ -144,6 +144,7 @@ def visual_score(candidate, query):
     context_conflicts = {
         "sunrise", "sunset", "night", "orange", "red", "storm", "rain",
         "snow", "fog", "indoor", "portrait", "selfie", "illustration",
+        "eclipse", "solar eclipse", "lunar eclipse",
     }
     for term in context_conflicts:
         if term in candidate_low and term not in query_low:
