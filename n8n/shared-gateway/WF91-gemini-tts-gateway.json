@@ -69,7 +69,8 @@
             "id": "j85tL2x55mGJhKNt",
             "name": "Google Gemini(PaLM) Api account 2"
           }
-        }
+        },
+        "onError": "continueRegularOutput"
       },
       {
         "parameters": {
