@@ -158,19 +158,48 @@ def visual_score(candidate, query):
     score += min(5.0, math.log10(max(1, candidate["width"] * candidate["height"])))
     return score
 
+def search_query_variants(query):
+    raw = " ".join(str(query).split())
+    tokens = [w for w in words(raw) if w not in STOPWORDS]
+    variants = [raw]
+
+    for size in range(len(tokens) - 1, 1, -1):
+        variants.append(" ".join(tokens[:size]))
+
+    if len(tokens) >= 2:
+        variants.append(" ".join(tokens[:2]))
+
+    seen = set()
+    out = []
+    for value in variants:
+        key = value.lower().strip()
+        if key and key not in seen:
+            seen.add(key)
+            out.append(value.strip())
+    return out
+
 def choose_visual(query, used_ids):
-    candidates = commons_candidates(query)
-    ranked = []
-    for c in candidates:
-        if c["pageid"] in used_ids:
-            continue
-        c = dict(c)
-        c["score"] = visual_score(c, query)
-        ranked.append(c)
-    ranked.sort(key=lambda x: x["score"], reverse=True)
-    if not ranked:
-        raise BuildError("visual_not_found", f"No usable Wikimedia image for query: {query}", 422)
-    return ranked[0]
+    attempted = []
+    for search_query in search_query_variants(query):
+        attempted.append(search_query)
+        candidates = commons_candidates(search_query)
+        ranked = []
+        for c in candidates:
+            if c["pageid"] in used_ids:
+                continue
+            c = dict(c)
+            c["score"] = visual_score(c, query)
+            c["resolved_query"] = search_query
+            ranked.append(c)
+        ranked.sort(key=lambda x: x["score"], reverse=True)
+        if ranked:
+            return ranked[0]
+
+    raise BuildError(
+        "visual_not_found",
+        "No usable Wikimedia image after query fallback: " + " -> ".join(attempted),
+        422,
+    )
 
 def download(url, path):
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
@@ -372,6 +401,7 @@ def build(payload):
         visual = {
             "scene": idx,
             "query": query,
+            "resolved_query": selected.get("resolved_query", query),
             "title": selected["title"],
             "page_url": page_url,
             "source_url": selected["original_url"],
