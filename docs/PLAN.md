@@ -102,7 +102,7 @@ Acceptance:
 - no speech speed-up or time-stretch.
 
 ### M6 — Local timing
-Status: TODO — current render uses proportional scene timing from the exact audio duration; true local speech alignment is not implemented yet
+Status: DONE for scene-level alignment — exact final PCM is analyzed locally with FFmpeg silence detection; scene boundaries use detected pauses when available and proportional fallback otherwise. No external transcription. This is not word-level ASR alignment.
 
 Derive speech timing locally from the exact final audio.
 
@@ -111,7 +111,7 @@ Acceptance:
 - timestamps belong to the exact audio that will be rendered.
 
 ### M7 — Visual sourcing
-Status: DONE for first E2E — Wikimedia assets resolved and retained with metadata
+Status: IMPLEMENTED — Wikimedia resolver uses semantic queries, deterministic scoring, context-conflict penalties, and deterministic query fallback. Latest resolver was validated with a non-product fixture; a fresh full E2E with the latest resolver is pending only because the Gemini TTS Free Tier quota is currently exhausted.
 
 Resolve visuals from Wikimedia Commons using scene semantics.
 
@@ -122,7 +122,7 @@ Acceptance:
 - no remote AI visual verification.
 
 ### M8 — Render
-Status: DONE for first E2E — machine-verified 1080x1920 H.264/AAC, exactly 15.000 s
+Status: IMPLEMENTED — local FFmpeg render has produced machine-verified 1080x1920 H.264/AAC MP4 at exactly 15.000 s. Latest media-worker code was also validated with a non-product fixture using exact previously generated PCM.
 
 Render locally to vertical MP4.
 
