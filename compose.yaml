@@ -14,6 +14,10 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
       - ./db/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      default:
+        aliases:
+          - shorts-v2-postgres
 
   n8n:
     image: n8nio/n8n:2.37.10
@@ -23,7 +27,7 @@ services:
         condition: service_healthy
     environment:
       DB_TYPE: postgresdb
-      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_HOST: shorts-v2-postgres
       DB_POSTGRESDB_PORT: 5432
       DB_POSTGRESDB_DATABASE: ${POSTGRES_DB}
       DB_POSTGRESDB_USER: ${POSTGRES_USER}
@@ -36,7 +40,7 @@ services:
       N8N_DIAGNOSTICS_ENABLED: "false"
       N8N_PERSONALIZATION_ENABLED: "false"
       CREDENTIALS_OVERWRITE_DATA: >-
-        {"postgres":{"host":"postgres","database":"${POSTGRES_DB}","user":"${POSTGRES_USER}","password":"${POSTGRES_PASSWORD}","port":5432,"ssl":"disable","maxConnections":20,"allowUnauthorizedCerts":false}}
+        {"postgres":{"host":"shorts-v2-postgres","database":"${POSTGRES_DB}","user":"${POSTGRES_USER}","password":"${POSTGRES_PASSWORD}","port":5432,"ssl":"disable","maxConnections":20,"allowUnauthorizedCerts":false}}
     ports:
       - "127.0.0.1:${N8N_PORT}:5678"
     volumes:
