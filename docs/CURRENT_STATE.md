@@ -94,8 +94,18 @@ Do not add a paid fallback and do not retry the same failed job.
 
 The next full fresh E2E must use a new job only when the approved Free Tier TTS call is available again.
 
+A controlled fresh-job retry was made after the provider-supplied retry window on 2026-09-18 and still failed with the same Free Tier TTS quota condition. No further TTS attempts should be made until the quota is available again.
+
 ## Human review
 
 HUMAN PASS has not been recorded.
 
 Machine QA or a contact sheet is not sufficient to mark M9 complete. The exact final MP4 must be reviewed before M10 (Studio/UI/publishing) is unblocked.
+
+## Latest quota-failure evidence
+
+Fresh immutable jobs:
+- `af60238e-a6a0-44ce-9f8f-9bb272c99fdd` — failed, TTS count 1.
+- `1ab7cce1-5b53-4fd6-a3b5-6b106c55a0ec` — failed after one controlled retry following the provider retry window, TTS count 1.
+
+The corresponding shared Gemini gateway returned HTTP 429 with the Free Tier TTS limit message. These jobs must not be retried or resumed.
