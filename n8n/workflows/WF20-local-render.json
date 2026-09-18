@@ -1,0 +1,188 @@
+[
+  {
+    "id": "ShortsV2Render001",
+    "name": "WF20 — Local Visuals + Render",
+    "active": true,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "shorts-v2-render",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -760,
+          0
+        ],
+        "id": "8f50b079-2ba5-4fa0-ad77-8a6727b13001",
+        "name": "Receive Render Request",
+        "webhookId": "ffda9be5-eb63-4264-b6cc-a4fa6c0c3001"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body = $json.body ?? {};\nconst jobId = typeof body.job_id === 'string' ? body.job_id.trim() : '';\nif (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(jobId)) {\n  throw new Error('job_id must be a UUID v4');\n}\nreturn [{json:{job_id:jobId}}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -540,
+          0
+        ],
+        "id": "40f788f0-6ab5-42f7-a582-5d0ed90a3002",
+        "name": "Validate Job ID"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT id AS job_id, target_duration_seconds, script_json, audio_path,\n       audio_sample_rate, audio_channels, audio_mime_type, tts_synthesis_count\nFROM public.jobs\nWHERE id=$1\n  AND status='voice_ready'\n  AND tts_synthesis_count=1;",
+          "options": {
+            "queryReplacement": "={{ [ $json.job_id ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          -320,
+          0
+        ],
+        "id": "6621f306-dcf7-4c2b-8bf7-b965e30d3003",
+        "name": "Load Voice Ready Job",
+        "credentials": {
+          "postgres": {
+            "id": "ShortsV2Postgres001",
+            "name": "Shorts V2 PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "http://shorts-v2-media-worker:3001/build",
+          "method": "POST",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ ({ job_id: $json.job_id, target_duration_seconds: $json.target_duration_seconds, script_json: $json.script_json, audio_path: $json.audio_path, audio_sample_rate: $json.audio_sample_rate, audio_channels: $json.audio_channels, audio_mime_type: $json.audio_mime_type }) }}",
+          "options": {
+            "timeout": 600000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -100,
+          0
+        ],
+        "id": "32ab0e7d-3ba7-403a-8af4-75685a393004",
+        "name": "Build Local Video"
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "UPDATE public.jobs\nSET status='rendered',\n    video_path=$2,\n    audio_duration_seconds=$3,\n    video_duration_seconds=$4,\n    visual_assets=$5::jsonb,\n    timing_json=$6::jsonb,\n    render_qa=$7::jsonb,\n    updated_at=now()\nWHERE id=$1\nRETURNING id AS job_id, status, video_path, audio_duration_seconds, video_duration_seconds, render_qa;",
+          "options": {
+            "queryReplacement": "={{ [ $json.job_id, $json.video_path, $json.audio_duration_seconds, $json.video_duration_seconds, JSON.stringify($json.visual_assets), JSON.stringify($json.timing), JSON.stringify($json.qa) ] }}"
+          }
+        },
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.7,
+        "position": [
+          120,
+          0
+        ],
+        "id": "cb1a2b64-32b6-413a-a047-e9c6e9353005",
+        "name": "Save Render",
+        "credentials": {
+          "postgres": {
+            "id": "ShortsV2Postgres001",
+            "name": "Shorts V2 PostgreSQL"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          340,
+          0
+        ],
+        "id": "bc00c148-e38a-4463-8ea8-4a72f5613006",
+        "name": "Return Rendered"
+      }
+    ],
+    "connections": {
+      "Receive Render Request": {
+        "main": [
+          [
+            {
+              "node": "Validate Job ID",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate Job ID": {
+        "main": [
+          [
+            {
+              "node": "Load Voice Ready Job",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Load Voice Ready Job": {
+        "main": [
+          [
+            {
+              "node": "Build Local Video",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Local Video": {
+        "main": [
+          [
+            {
+              "node": "Save Render",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Save Render": {
+        "main": [
+          [
+            {
+              "node": "Return Rendered",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "tags": []
+  }
+]
