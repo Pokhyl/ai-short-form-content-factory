@@ -123,13 +123,24 @@ Required before enabling:
 - confirm local render workflow complies with current Unsplash API terms.
 
 ### Local speech alignment
-Status: PENDING
+Status: PARTIAL — runtime/timestamps verified; production-audio quality pending
 
-Required proof:
-- selected local aligner pinned;
-- en/pl/ru/uk audio tests;
-- actual word/token timestamps;
-- script coverage thresholds validated.
+Selected CPU-compatible dependency:
+- official `ggml-org/whisper.cpp` CPU image;
+- pinned image digest: `sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11`;
+- multilingual `ggml-base.bin`;
+- model SHA256: `60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe`.
+
+Observed:
+- CPU binary starts correctly on the VPS;
+- en/pl/ru/uk fixtures all produce JSON transcription;
+- token timestamps are present;
+- synthetic eSpeak fixtures are not accurate enough, especially RU/UK, to use as a production-quality acceptance test.
+
+Decision:
+- implementation mechanism is viable;
+- final alignment quality gate remains pending until the exact Google Cloud TTS voices are available;
+- production acceptance must use the exact final TTS audio, not synthetic test speech.
 
 ## Gate
 
