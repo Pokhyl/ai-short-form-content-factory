@@ -51,11 +51,6 @@ services:
       default:
       edge:
 
-networks:
-  edge:
-    external: true
-    name: n8n_default
-
   media-worker:
     build:
       context: ./services/media-worker
@@ -76,6 +71,11 @@ networks:
       interval: 10s
       timeout: 5s
       retries: 10
+
+networks:
+  edge:
+    external: true
+    name: n8n_default
 
 volumes:
   postgres_data:
