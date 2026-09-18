@@ -41,6 +41,14 @@ services:
       - "127.0.0.1:${N8N_PORT}:5678"
     volumes:
       - n8n_data:/home/node/.n8n
+    networks:
+      default:
+      edge:
+
+networks:
+  edge:
+    external: true
+    name: n8n_default
 
 volumes:
   postgres_data:
