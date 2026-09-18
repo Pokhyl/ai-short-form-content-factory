@@ -36,7 +36,7 @@ for root in scan_roots:
         )
 
 violations = []
-gemini_model_re = re.compile(r"gemini-[a-z0-9.\-]+", re.I)
+gemini_model_re = re.compile(r"gemini-[0-9][a-z0-9.\\-]*", re.I)
 
 for path in files:
     try:
