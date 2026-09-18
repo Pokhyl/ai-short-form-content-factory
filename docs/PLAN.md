@@ -52,13 +52,19 @@ Status: DONE
 - Minimal `jobs` table.
 
 ### M2 — Gemini access
-Status: BLOCKED — dedicated project API key required
+Status: DONE
 
-Goal: connect Gemini to the isolated n8n without reusing or exposing secrets from other projects.
+Goal: use the already-existing Gemini credential without exposing or copying the API key.
+
+Implementation:
+- the secret remains in the existing shared n8n credential store;
+- two project-owned internal-only gateway workflows expose only the approved text and TTS operations;
+- the isolated shorts-v2 n8n calls those gateways over the private Docker network;
+- no unrelated shared workflow is modified.
 
 Acceptance:
-- text model call succeeds;
-- TTS model call succeeds;
+- text model call succeeds — VERIFIED 2026-09-18;
+- TTS model call succeeds — VERIFIED 2026-09-18;
 - no other AI provider exists in production path.
 
 ### M3 — Intake
