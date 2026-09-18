@@ -476,20 +476,28 @@ Acceptance:
 - no secrets.
 
 ## M1 — Minimal isolated runtime
-Build:
-- Docker Compose;
-- n8n;
-- PostgreSQL;
-- media-worker;
-- SearXNG;
-- persistent media volume;
-- health checks.
+Status: DONE — verified 2026-09-18.
 
-Acceptance:
-- isolated project starts cleanly;
-- all services healthy;
-- restart preserves state;
-- unrelated projects untouched.
+Implemented:
+- isolated Docker Compose project `shorts-v2`;
+- n8n `2.37.10`, pinned by digest;
+- PostgreSQL 18 Alpine, pinned by digest;
+- local media-worker with FFmpeg, pinned Python base image;
+- SearXNG, pinned by digest;
+- persistent PostgreSQL, n8n, media and SearXNG volumes;
+- health checks for every service;
+- real secrets only in local `.env`, excluded from Git.
+
+Verified:
+- all four services healthy;
+- n8n health endpoint PASS;
+- media-worker health + FFmpeg PASS;
+- SearXNG JSON search PASS with 30 results;
+- PostgreSQL `n8n` schema created;
+- full service restart preserved PostgreSQL data and media-volume data;
+- unrelated projects were not modified.
+
+Acceptance: PASS.
 
 ## M2 — Dependency proof before production workflows
 Verify independently:
