@@ -101,3 +101,13 @@ Prevention:
 - inspect live DB tables/functions and publisher workflow rows first;
 - preserve stronger existing invariants instead of replacing them with a newly improvised contract;
 - only apply a migration after confirming whether its objects already exist.
+
+
+20. Never rely on the repository directory name for the Compose project identity.
+During M7 a bare `docker compose` command briefly created a new empty `ai-short-form-content-factory-media-worker-1` and `ai-short-form-content-factory_media_data` instead of targeting the existing `shorts-v2` project. The accidental resources were identified as new/empty and deleted immediately; the production `shorts-v2_media_data` volume and container were not modified.
+
+Prevention:
+- `compose.yaml` now declares top-level `name: shorts-v2`;
+- verify `docker compose config --format json` reports `name=shorts-v2` before service changes;
+- inspect exact container/volume names before cleanup;
+- never use `--remove-orphans` here because unrelated recovery containers can exist on the host.
