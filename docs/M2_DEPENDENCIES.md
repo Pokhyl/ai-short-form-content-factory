@@ -223,10 +223,11 @@ The live structured-output call remains PENDING until it succeeds through the pr
 
 ## Free-only TTS budget guard — 2026-09-19
 
-Status: PASS for local budget-control infrastructure.
+Status: PASS for local budget-control infrastructure and enabled production safety policy.
 
 Implemented:
 - db/02-provider-budget.sql;
+- db/03-provider-budget-policy.sql;
 - factory.provider_budget_limits;
 - factory.provider_usage_ledger;
 - factory.provider_budget_status;
@@ -235,13 +236,20 @@ Implemented:
 - idempotent release_provider_usage().
 
 Verified on shorts-v2 PostgreSQL:
-- Chirp 3 HD provider free limit seeded as 1,000,000 characters/month;
-- WaveNet provider free limit seeded as 4,000,000 characters/month;
-- internal production limits are intentionally NULL and disabled by default;
-- reservation fails closed while internal limit is unset/disabled;
+- Chirp 3 HD provider free limit: 1,000,000 characters/month;
+- WaveNet provider free limit: 4,000,000 characters/month;
+- internal Chirp 3 HD ceiling enabled at 900,000 characters/month;
+- internal WaveNet ceiling enabled at 3,600,000 characters/month;
+- the 90% ceilings are project engineering safety settings, not Google recommendations;
+- reservation fails closed while a budget is unset/disabled;
+- enabled in-limit reservation succeeds;
+- a 900,001-character Chirp reservation is rejected against the 900,000 internal ceiling;
 - same idempotency key returns the same reservation;
 - concurrent-style allocation cannot exceed the configured internal limit;
 - committed/reserved amounts calculate correctly;
-- test transaction rolled back with zero test ledger rows remaining.
+- smoke transactions rolled back with zero test ledger rows remaining.
+
+Rollback snapshot:
+- .backups/provider-budget-before-enable-20260919.sql
 
 This closes the application-level free-only budget-control mechanism. It does not close the live Google Cloud TTS credential/voice gate.
