@@ -36,7 +36,9 @@ Free-only enforcement:
 - use a dedicated Google Cloud project for this pipeline;
 - record every TTS operation and exact input character count in PostgreSQL;
 - keep separate monthly counters for Chirp 3 HD and WaveNet;
-- configure an explicit internal safety ceiling below the provider free limit;
+- production internal ceiling is 900,000 characters/month for Chirp 3 HD;
+- production internal ceiling is 3,600,000 characters/month for WaveNet;
+- these 90% ceilings are project engineering safety settings, not Google recommendations;
 - fail closed when the internal ceiling is reached;
 - no paid fallback;
 - one final TTS synthesis per job only.
