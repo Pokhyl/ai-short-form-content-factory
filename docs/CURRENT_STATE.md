@@ -59,7 +59,7 @@ Rollback backup before cleanup:
 .backups/publisher-before-video-cleanup-20260919.dump
 
 Recovered credential count in restored publisher DB: 9.
-Current publisher credential count: 10 after the user added `Gemini Text` on 2026-09-19.
+Current publisher credential count: 11 after adding `Gemini Text` and `Video Factory Postgres` on 2026-09-19.
 
 Owner/auth state verified live on 2026-09-19:
 - user-management:reset had previously been run;
@@ -128,39 +128,44 @@ Cleanup/accounting:
 - Openverse remains disabled but is not required for the visual-source gate.
 
 ## M3
-PARTIAL on 2026-09-19.
+PASS on 2026-09-19.
 
-Completed:
+Verified:
 - `db/04-jobs.sql` created and applied to `shorts-v2` PostgreSQL;
 - `factory.jobs` exists with DB-level constraints for topic, language and duration;
 - `factory.create_job(text,text,integer)` inserts one job atomically and rejects invalid input;
-- transactional DB smoke test: valid request creates exactly one row, rollback leaves zero rows;
-- invalid DB input fails and leaves zero rows;
 - production `publisher` container is connected to `shorts-v2_default`;
 - real TCP connectivity from publisher to PostgreSQL 5432, media-worker 3001 and SearXNG 8080 is verified;
-- existing legacy credential `Postgres - TikTok Pipeline v2` was inspected and deliberately not reused because it points to the old `tiktok_pipeline_v2` database;
-- import-ready workflow file `workflows/VIDEO-M3-Intake.json` created for `POST /webhook/jobs`;
-- intake validation test suite: 10/10 cases PASS;
-- workflow contains no Gemini or TTS nodes.
+- legacy `Postgres - TikTok Pipeline v2` was not reused because it points to the old `tiktok_pipeline_v2` database;
+- dedicated `Video Factory Postgres` credential ID `gQ3TDSsTe7Tn2X8B` exists and its connection test succeeds;
+- `VIDEO — M3 Intake` ID `VideoM3Intake001` is published and active;
+- production endpoint is `POST /webhook/jobs`;
+- validation suite: 10/10 local cases PASS;
+- live valid request returned HTTP 201 and job ID `685031de-e7c8-48c1-a456-62b4ad66ae7e`;
+- that valid request created exactly one durable `factory.jobs` row with topic `Why is the sky blue?`, language `en`, duration 15 and status `created`;
+- four live invalid requests returned HTTP 400 for invalid language, invalid duration, string duration and unexpected field;
+- invalid requests created zero additional job rows;
+- provider usage ledger remained unchanged during intake testing;
+- workflow node set contains only webhook, validation, routing, PostgreSQL and response nodes; no Gemini or TTS nodes are present;
+- after deployment publisher contains 23 workflows / 7 active: the original 22 protected MCP/ADMIN workflows plus the new M3 video workflow.
 
-Current blocker:
-- production n8n still needs a dedicated `Video Factory Postgres` credential for `shorts-v2-postgres-1 / shorts_factory / shorts`;
-- automated secret transfer into n8n credential storage is blocked by the execution safety layer, so the DB password must be entered manually in n8n;
-- the workflow is intentionally not imported/activated with a missing credential.
+Test note:
+- direct VPS-to-public-domain self-call is blocked by Cloudflare with HTTP 403 / error code 1010;
+- live webhook tests therefore used local Caddy with `publisher.hodor.com.pl` Host/SNI via 127.0.0.1, without changing production routing.
 
 ## Immediate next work
-1. Create `Video Factory Postgres` in `publisher.hodor.com.pl` using the existing `POSTGRES_PASSWORD` from the project-local `.env`.
-2. Replace the workflow credential placeholder with the created credential ID.
-3. Import/publish/activate `VIDEO — M3 Intake`.
-4. Run live valid and invalid `POST /webhook/jobs` tests.
-5. Verify valid request adds exactly one durable row, invalid requests add zero rows, and no Gemini/TTS executions occur.
+1. Implement M4 research/evidence persistence.
+2. Add broad SearXNG research through the existing supporting service.
+3. Fetch selected public source pages and persist normalized evidence with source URL/title/retrieval metadata.
+4. Deduplicate sources/content and fail closed when evidence is inadequate.
+5. Do not invoke Gemini script generation until evidence is persisted and M4 acceptance passes.
 
 
 ## Production orchestration lock — 2026-09-19
 - Production video workflows run in `publisher.hodor.com.pl`.
 - `publisher.hodor.com.pl` is the single production n8n for both MCP/ADMIN and the video project.
 - 22 existing MCP/ADMIN workflows are protected.
-- 9 restored credentials stay in `publisher.hodor.com.pl` and are used by the video project there.
+- the original 9 restored credentials remain in `publisher.hodor.com.pl`; video-specific credentials added afterward are `Gemini Text` and `Video Factory Postgres`.
 - No new public n8n domain.
 - No second production n8n.
 - `tiktok-n8n.hodor.com.pl` is not part of this project.
