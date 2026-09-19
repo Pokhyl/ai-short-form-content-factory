@@ -644,10 +644,20 @@ Verified:
 Acceptance: PASS.
 
 ## M7 — Local alignment
-Acceptance:
-- exact final audio aligned locally;
-- global and per-scene coverage pass;
-- no proportional fallback.
+Status: PASS — verified live on 2026-09-19.
+
+Verified:
+- exact immutable M6 `final.mp3` is the only alignment input;
+- pinned local `whisper.cpp` image and exact `ggml-base.bin` SHA-256 are enforced;
+- normalized Whisper transcript must exactly equal the final narration;
+- lexical token timestamps must reconstruct the normalized transcript;
+- every scene receives real monotonic token-derived timings;
+- global coverage and every scene coverage must equal 1.0;
+- audio/model/image hashes and storage paths are persisted and cross-checked;
+- no proportional timing fallback exists;
+- failed alignment attempts are terminal and immutable.
+
+Acceptance: PASS.
 
 ## M8 — Multi-source visuals
 Acceptance:
