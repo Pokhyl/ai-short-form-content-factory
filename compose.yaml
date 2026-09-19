@@ -1,3 +1,5 @@
+name: shorts-v2
+
 services:
   postgres:
     image: postgres:18-alpine@sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd
@@ -15,6 +17,7 @@ services:
       - ./db/05-research-evidence.sql:/docker-entrypoint-initdb.d/05-research-evidence.sql:ro
       - ./db/06-script-storyboard.sql:/docker-entrypoint-initdb.d/06-script-storyboard.sql:ro
       - ./db/07-voiceover.sql:/docker-entrypoint-initdb.d/07-voiceover.sql:ro
+      - ./db/08-alignment.sql:/docker-entrypoint-initdb.d/08-alignment.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U shorts -d shorts_factory"]
       interval: 5s
@@ -27,6 +30,7 @@ services:
       context: ./services/media-worker
     volumes:
       - media_data:/data
+      - ./.cache/whisper/ggml-base.bin:/models/ggml-base.bin:ro
     healthcheck:
       test:
         [
