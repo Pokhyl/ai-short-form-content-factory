@@ -1,0 +1,506 @@
+{
+  "id": "VideoM6Voiceover001",
+  "name": "VIDEO — M6 One Final Voiceover",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "job_id"
+            }
+          ]
+        }
+      },
+      "id": "video-m6-trigger",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  voiceover_run_id::text AS voiceover_run_id,\n  script_version_id::text AS script_version_id,\n  narration,\n  language_code,\n  target_duration_seconds,\n  locale,\n  voice_name,\n  sku_family,\n  character_count,\n  usage_idempotency_key\nFROM factory.begin_voiceover($1::uuid);",
+        "options": {
+          "queryReplacement": "={{ [ $json.job_id ] }}"
+        }
+      },
+      "id": "video-m6-begin",
+      "name": "Begin Voiceover",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        240,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://texttospeech.googleapis.com/v1/text:synthesize",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ input: { text: $json.narration }, voice: { languageCode: $json.locale, name: $json.voice_name }, audioConfig: { audioEncoding: 'MP3' } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-tts",
+      "name": "Google Cloud TTS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        480,
+        0
+      ],
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "8KbFC6GBZOd18bzG",
+          "name": "Google account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Voiceover').first().json;\nconst trigger = $('When Executed by Another Workflow').first().json;\nconst response = $json ?? {};\n\nconst body =\n  response.body && typeof response.body === 'object'\n    ? response.body\n    : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nconst audioBase64 =\n  typeof body.audioContent === 'string'\n    ? body.audioContent.trim()\n    : '';\n\nif (!statusCode && audioBase64) {\n  statusCode = 200;\n}\n\nconst ttsConsumed = statusCode >= 200 && statusCode <= 299;\nconst base64Shape =\n  audioBase64.length > 100 &&\n  /^[A-Za-z0-9+/]+={0,2}$/.test(audioBase64);\n\nconst ttsSuccess = ttsConsumed && base64Shape;\n\nconst providerMessage =\n  body?.error?.message ??\n  response?.error?.message ??\n  response?.message ??\n  (ttsConsumed\n    ? 'Google Cloud TTS returned no valid MP3 audioContent'\n    : 'Google Cloud TTS request failed');\n\nreturn {\n  json: {\n    job_id: String(trigger.job_id ?? '').trim(),\n    voiceover_run_id: String(ctx.voiceover_run_id ?? '').trim(),\n    script_version_id: String(ctx.script_version_id ?? '').trim(),\n    target_duration_seconds: Number(ctx.target_duration_seconds),\n    locale: String(ctx.locale ?? ''),\n    voice_name: String(ctx.voice_name ?? ''),\n    sku_family: String(ctx.sku_family ?? ''),\n    character_count: Number(ctx.character_count),\n    usage_idempotency_key: String(ctx.usage_idempotency_key ?? ''),\n    tts_http_status: statusCode,\n    tts_consumed: ttsConsumed,\n    tts_success: ttsSuccess,\n    audio_base64: ttsSuccess ? audioBase64 : '',\n    error_message: ttsSuccess ? '' : String(providerMessage).slice(0, 3000),\n  },\n};"
+      },
+      "id": "video-m6-normalize-tts",
+      "name": "Normalize TTS Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-tts-success-condition",
+              "leftValue": "={{ $json.tts_success }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-tts",
+      "name": "Route TTS Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT usage_state, usage_idempotency_key\nFROM factory.mark_tts_consumed($1::uuid);",
+        "options": {
+          "queryReplacement": "={{ [ $json.voiceover_run_id ] }}"
+        }
+      },
+      "id": "video-m6-commit-usage",
+      "name": "Commit TTS Usage",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1200,
+        -120
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://shorts-v2-media-worker-1:3001/voiceovers/' + $('Normalize TTS Response').first().json.job_id }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ audio_base64: $('Normalize TTS Response').first().json.audio_base64 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-store",
+      "name": "Store Voiceover",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1440,
+        -120
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Normalize TTS Response').first().json;\nconst response = $json ?? {};\n\nconst body =\n  response.body && typeof response.body === 'object'\n    ? response.body\n    : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') {\n  statusCode = 201;\n}\n\nconst durationMs = Number(body.duration_ms);\nconst bytes = Number(body.bytes);\nconst sampleRate = Number(body.sample_rate);\nconst channels = Number(body.channels);\nconst sha256 = String(body.sha256 ?? '').trim().toLowerCase();\nconst codec = String(body.codec ?? '').trim().toLowerCase();\nconst storagePath = String(body.storage_path ?? '').trim();\nconst returnedJobId = String(body.job_id ?? '').trim();\n\nconst expectedPath =\n  '/data/voiceovers/' + ctx.job_id + '/final.mp3';\n\nconst storeSuccess =\n  statusCode === 201 &&\n  body.status === 'ready' &&\n  returnedJobId === ctx.job_id &&\n  storagePath === expectedPath &&\n  /^[0-9a-f]{64}$/.test(sha256) &&\n  Number.isInteger(bytes) && bytes > 0 &&\n  Number.isInteger(durationMs) && durationMs > 0 &&\n  Number.isInteger(sampleRate) && sampleRate > 0 &&\n  Number.isInteger(channels) && channels > 0 &&\n  codec === 'mp3';\n\nconst errorMessage =\n  body?.message ??\n  body?.error ??\n  response?.error?.message ??\n  response?.message ??\n  'media-worker voiceover storage failed';\n\nreturn {\n  json: {\n    job_id: ctx.job_id,\n    voiceover_run_id: ctx.voiceover_run_id,\n    target_duration_seconds: ctx.target_duration_seconds,\n    store_success: storeSuccess,\n    storage_http_status: statusCode,\n    storage_path: storagePath,\n    audio_sha256: sha256,\n    bytes,\n    duration_ms: durationMs,\n    sample_rate: sampleRate,\n    channels,\n    codec,\n    tts_consumed: true,\n    error_message: storeSuccess ? '' : String(errorMessage).slice(0, 3000),\n  },\n};"
+      },
+      "id": "video-m6-normalize-store",
+      "name": "Normalize Stored Voiceover",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        -120
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-store-success-condition",
+              "leftValue": "={{ $json.store_success }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-store",
+      "name": "Route Storage Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1920,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  voiceover_id::text AS voiceover_id,\n  duration_ms,\n  audio_sha256\nFROM factory.complete_voiceover(\n  $1::uuid,\n  $2::text,\n  $3::text,\n  $4::bigint,\n  $5::integer,\n  $6::integer,\n  $7::integer,\n  $8::text\n);",
+        "options": {
+          "queryReplacement": "={{ [ $json.voiceover_run_id, $json.storage_path, $json.audio_sha256, $json.bytes, $json.duration_ms, $json.sample_rate, $json.channels, $json.codec ] }}"
+        }
+      },
+      "id": "video-m6-complete",
+      "name": "Complete Voiceover",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        2160,
+        -240
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Voiceover').first().json;\nconst source = $json ?? {};\nconst errorObject =\n  source.error && typeof source.error === 'object' && !Array.isArray(source.error)\n    ? source.error\n    : {};\n\nconst candidates = [\n  source.error_message,\n  errorObject.message,\n  source.message,\n  source.description,\n  typeof source.error === 'string' ? source.error : null,\n];\n\nconst message = candidates.find(\n  (value) => typeof value === 'string' && value.trim().length > 0\n) ?? 'unspecified pre-storage M6 failure';\n\nreturn {\n  json: {\n    voiceover_run_id: String(ctx.voiceover_run_id ?? '').trim(),\n    error_message: ('M6 voiceover failed: ' + message.trim()).slice(0, 4000),\n    tts_consumed: source.tts_consumed === true,\n  },\n};"
+      },
+      "id": "video-m6-pre-failure",
+      "name": "Prepare Pre-TTS Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Voiceover').first().json;\nconst source = $json ?? {};\nconst errorObject =\n  source.error && typeof source.error === 'object' && !Array.isArray(source.error)\n    ? source.error\n    : {};\n\nconst candidates = [\n  source.error_message,\n  errorObject.message,\n  source.message,\n  source.description,\n  typeof source.error === 'string' ? source.error : null,\n];\n\nconst message = candidates.find(\n  (value) => typeof value === 'string' && value.trim().length > 0\n) ?? 'unspecified post-TTS M6 failure';\n\nreturn {\n  json: {\n    voiceover_run_id: String(ctx.voiceover_run_id ?? '').trim(),\n    error_message: ('M6 voiceover failed after TTS: ' + message.trim()).slice(0, 4000),\n    tts_consumed: true,\n  },\n};"
+      },
+      "id": "video-m6-post-failure",
+      "name": "Prepare Post-TTS Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT voiceover_status, job_status, usage_state\nFROM factory.fail_voiceover($1::uuid, $2::text, $3::boolean);",
+        "options": {
+          "queryReplacement": "={{ [ $json.voiceover_run_id, $json.error_message, $json.tts_consumed ] }}"
+        }
+      },
+      "id": "video-m6-fail",
+      "name": "Fail Voiceover",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        2400,
+        160
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const pre = $('Prepare Pre-TTS Failure').all();\nconst post = $('Prepare Post-TTS Failure').all();\nconst item = post.length ? post[0].json : (pre.length ? pre[0].json : {});\nthrow new Error(String(item.error_message ?? 'M6 voiceover failed'));"
+      },
+      "id": "video-m6-raise",
+      "name": "Raise Voiceover Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        160
+      ]
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Begin Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Begin Voiceover": {
+      "main": [
+        [
+          {
+            "node": "Google Cloud TTS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Cloud TTS": {
+      "main": [
+        [
+          {
+            "node": "Normalize TTS Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize TTS Response": {
+      "main": [
+        [
+          {
+            "node": "Route TTS Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Pre-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route TTS Success": {
+      "main": [
+        [
+          {
+            "node": "Commit TTS Usage",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Pre-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit TTS Usage": {
+      "main": [
+        [
+          {
+            "node": "Store Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Voiceover": {
+      "main": [
+        [
+          {
+            "node": "Normalize Stored Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Stored Voiceover": {
+      "main": [
+        [
+          {
+            "node": "Route Storage Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Storage Success": {
+      "main": [
+        [
+          {
+            "node": "Complete Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complete Voiceover": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Pre-TTS Failure": {
+      "main": [
+        [
+          {
+            "node": "Fail Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Post-TTS Failure": {
+      "main": [
+        [
+          {
+            "node": "Fail Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Voiceover": {
+      "main": [
+        [
+          {
+            "node": "Raise Voiceover Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
