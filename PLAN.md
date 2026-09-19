@@ -677,14 +677,26 @@ Verified:
 Acceptance: PASS.
 
 ## M9 — Render + machine QA
-Acceptance:
-- fresh normal job;
-- 1080×1920 H.264/AAC MP4;
-- complete narration and visuals;
-- all machine gates PASS.
+Status: PASS — verified live on 2026-09-19.
+
+Verified:
+- deterministic assembly uses the exact immutable M6 narration, M7 scene timings and M8 local selected assets;
+- every source-video audio track is excluded before final mux;
+- still images and landscape media preserve the full frame with a centered foreground over a blurred fill background;
+- final output is exactly 1080×1920 H.264/AAC, yuv420p, 30 fps;
+- the final duration is matched to the immutable voiceover with a machine gate of <=100 ms delta;
+- 7/7 render segments are persisted with source asset SHA-256 provenance;
+- machine QA verifies dimensions, codecs, stream counts, duration, complete scene coverage, distinct asset hashes and source-audio exclusion;
+- normal product job `6974c0e6-9261-495d-b885-0db5a2ae4cd6` passed M9;
+- exact product render SHA-256 is `262941d27a00ac4fe5e8a754d3a459c29e3b75298928fc76322b149bd9e9b178`;
+- exact product render is 10,347,458 bytes and 30.533333 seconds; immutable voiceover is 30.528 seconds, delta 5 ms.
+
+Acceptance: PASS.
 
 ## M10 — HUMAN PASS
-Deliver the exact MP4.
+Status: PENDING HUMAN REVIEW.
+
+Deliver the exact MP4 produced by M9. Machine PASS is not final product acceptance.
 
 No Studio, TikTok publishing, queue optimization or feature expansion before explicit HUMAN PASS.
 
