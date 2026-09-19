@@ -576,15 +576,21 @@ Evidence and exact observations are recorded in `docs/M2_DEPENDENCIES.md`.
 Do not build the production pipeline around a dependency that has not passed M2.
 
 ## M3 — Intake
+Status: PASS — verified live on 2026-09-19.
+
 ```text
 POST topic + language + duration → job_id
 ```
 
-Acceptance:
+Verified:
 - strict validation;
-- one durable DB row;
-- invalid input creates no row;
-- no AI/TTS call.
+- valid request returns HTTP 201 + job_id;
+- exactly one durable DB row is created for the valid request;
+- invalid requests return HTTP 400 and create no rows;
+- workflow contains no Gemini or TTS nodes;
+- provider usage ledger is unchanged by intake execution.
+
+Acceptance: PASS.
 
 ## M4 — Research + evidence
 Acceptance:
