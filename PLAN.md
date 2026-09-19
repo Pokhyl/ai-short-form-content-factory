@@ -72,14 +72,57 @@ The deleted legacy implementation is not a baseline and must not be restored.
 
 ---
 
-## 3. Runtime architecture
+## 2.1 Production n8n architecture lock — 2026-09-19
 
-Use one isolated Docker Compose project for this repository.
+This decision overrides any earlier assumption that the clean rebuild needs a separate production n8n instance or a new public n8n domain.
 
-Minimum services:
+Production orchestration is hosted in the existing n8n instance:
 
 ```text
-n8n
+https://publisher.hodor.com.pl
+```
+
+Rules:
+- `publisher.hodor.com.pl` is the single production n8n for both existing MCP/ADMIN automation and the new video project.
+- The existing 22 MCP/ADMIN workflows are protected and must not be deleted, renamed, repurposed, disabled, or modified unless the user explicitly asks for that exact workflow.
+- The 9 restored credentials in `publisher.hodor.com.pl` are the credential base for the video project.
+- New video workflows are created in the same n8n instance with a video-specific naming prefix so they remain separate from MCP/ADMIN workflows.
+- Do not create a second production n8n instance for this project.
+- Do not create or repurpose a new public n8n domain for this project.
+- Do not route the video project through `tiktok-n8n.hodor.com.pl`.
+- Do not move the video project back to `n8n.hodor.com.pl`.
+- `n8n.hodor.com.pl` is unrelated and must remain untouched.
+- OAuth callbacks and public webhooks must use the existing `publisher.hodor.com.pl` n8n unless a concrete technical requirement later proves a separate endpoint is mandatory.
+- A separate endpoint/domain may be introduced only after a documented technical blocker is proven and the user explicitly agrees.
+
+Supporting runtime remains isolated from n8n orchestration:
+- project PostgreSQL;
+- media-worker;
+- SearXNG;
+- local media/alignment tooling.
+
+The bootstrap `shorts-v2` n8n container was removed on 2026-09-19 after its temporary M2 workflows/credentials were backed up and deleted. The supporting Compose stack now contains only PostgreSQL, media-worker and SearXNG.
+
+Reason for this lock:
+- credentials were restored into `publisher.hodor.com.pl` specifically so the video project can use them there;
+- introducing another n8n/domain creates unnecessary credential migration, OAuth, routing, authentication and state-consistency problems;
+- the attempted `tiktok-n8n.hodor.com.pl` detour was unnecessary and was rolled back.
+
+---
+
+## 3. Runtime architecture
+
+Use `publisher.hodor.com.pl` as the production n8n orchestrator. Keep only the project-supporting services isolated in this repository.
+
+Production n8n:
+
+```text
+publisher.hodor.com.pl
+```
+
+Supporting services:
+
+```text
 postgres
 media-worker
 searxng
@@ -87,12 +130,13 @@ searxng
 
 Responsibilities:
 
-### n8n
-- workflow orchestration;
+### publisher.hodor.com.pl / n8n
+- production workflow orchestration for the video project;
 - state transitions;
 - provider calls;
 - retries only where explicitly allowed;
-- no heavy media processing.
+- no heavy media processing;
+- existing MCP/ADMIN workflows remain protected and separate from video workflows.
 
 ### PostgreSQL
 - jobs;
@@ -475,26 +519,31 @@ Acceptance:
 - no legacy workflow/database/runtime copied back;
 - no secrets.
 
-## M1 — Minimal isolated runtime
-Status: DONE — verified 2026-09-18.
+## M1 — Supporting runtime foundation
+Status: DONE — verified 2026-09-18; production n8n architecture corrected 2026-09-19.
 
-Implemented:
-- isolated Docker Compose project `shorts-v2`;
-- n8n `2.37.10`, pinned by digest;
-- PostgreSQL 18 Alpine, pinned by digest;
+Historical bootstrap validation:
+- isolated Docker Compose project `shorts-v2` was used to verify the clean supporting runtime;
+- a temporary isolated n8n container was verified during bootstrap and then removed on 2026-09-19; production credentials were not retained there;
+- PostgreSQL 18 Alpine pinned by digest;
 - local media-worker with FFmpeg, pinned Python base image;
-- SearXNG, pinned by digest;
-- persistent PostgreSQL, n8n, media and SearXNG volumes;
-- health checks for every service;
+- SearXNG pinned by digest;
+- persistent PostgreSQL, media and SearXNG storage;
+- health checks for supporting services;
 - real secrets only in local `.env`, excluded from Git.
 
+Current production architecture:
+- n8n orchestration runs only in `publisher.hodor.com.pl`;
+- `shorts-v2` is supporting infrastructure only;
+- no new n8n domain;
+- no parallel production n8n.
+
 Verified:
-- all four services healthy;
-- n8n health endpoint PASS;
+- supporting services healthy;
 - media-worker health + FFmpeg PASS;
 - SearXNG JSON search PASS with 30 results;
-- PostgreSQL `n8n` schema created;
-- full service restart preserved PostgreSQL data and media-volume data;
+- PostgreSQL persistence PASS;
+- full supporting-service restart preserved PostgreSQL data and media-volume data;
 - unrelated projects were not modified.
 
 Acceptance: PASS.
@@ -510,14 +559,15 @@ Verified:
 5. Local whisper.cpp CPU runtime + multilingual token timestamps — PARTIAL PASS; final quality must be tested on exact Google TTS audio.
 
 Pending credentials / provider proof:
-6. Gemini text model from isolated runtime.
-7. Google Cloud TTS OAuth.
-8. All four locked Google TTS voices.
-9. Pixabay official API.
-10. Unsplash API + compliance proof.
+6. Gemini text model through the production n8n at `publisher.hodor.com.pl`.
+7. Google Cloud TTS OAuth through the production n8n at `publisher.hodor.com.pl`.
+8. All four locked Google TTS voices through the same restored Google OAuth credential after reconnect.
+9. Pixabay official API through `publisher.hodor.com.pl` using the restored credential after live validation.
+10. Pexels official API through `publisher.hodor.com.pl` using the restored credential after live validation.
+11. Unsplash remains optional and disabled until API/compliance proof.
 
 Blocked:
-11. Openverse API currently returns a Cloudflare HTTP 403 browser challenge from this VPS; it is disabled unless that changes through an official API-compatible path.
+12. Openverse API currently returns a Cloudflare HTTP 403 browser challenge from this VPS; it is disabled unless that changes through an official API-compatible path.
 
 Evidence and exact observations are recorded in `docs/M2_DEPENDENCIES.md`.
 
