@@ -26,8 +26,8 @@ A heredoc sent to docker exec without -i did not reach psql. Always verify post-
 8. Do not touch unrelated n8n.
 n8n.hodor.com.pl is unrelated. publisher.hodor.com.pl contains MCP/business workflows that must remain intact.
 
-9. Google Cloud TTS historically worked.
-The August backup proves repeated successful Cloud TTS executions with the selected voices. The restored OAuth is currently expired and needs reconnect; that is a credential-validity issue, not proof the provider never worked.
+9. Google Cloud TTS historically worked, and restored OAuth status must be verified by a live provider call.
+The August backup proves repeated successful Cloud TTS executions with the selected voices. On 2026-09-19 the restored OAuth initially failed live refresh despite the UI showing `Account connected`; reconnecting the same credential fixed it and all four locked voices passed.
 
 10. Gemini TTS is not production TTS.
 Production narration remains Google Cloud Text-to-Speech.
@@ -56,3 +56,13 @@ Prevention:
 - preserve the matching n8n encryption key whenever encrypted credential exports are retained;
 - never treat credential presence in an encrypted export as proof that the secret is recoverable;
 - do not copy encryption keys from unrelated n8n instances as a shortcut.
+
+
+15. Do not double-escape executable strings when generating n8n workflow JSON.
+The first M3 Postgres node stored literal `\\n` sequences inside SQL. n8n passed the backslashes to PostgreSQL, which failed with a syntax error near `\`.
+
+Prevention:
+- generate executable SQL/code as the actual runtime string, then JSON-serialize it exactly once;
+- after importing a generated workflow, read the stored node parameter back from the n8n database before publishing;
+- run a real workflow execution, not only a JSON/schema validation;
+- treat a successful credential connection as separate from query correctness.
