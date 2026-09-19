@@ -559,15 +559,19 @@ Verified:
 5. Local whisper.cpp CPU runtime + multilingual token timestamps — PARTIAL PASS; final quality must be tested on exact Google TTS audio.
 
 Pending credentials / provider proof:
-6. Gemini text model through the production n8n at `publisher.hodor.com.pl`.
-7. Google Cloud TTS OAuth through the production n8n at `publisher.hodor.com.pl`.
-8. All four locked Google TTS voices through the same restored Google OAuth credential after reconnect.
-9. Pixabay official API through `publisher.hodor.com.pl` using the restored credential after live validation.
-10. Pexels official API through `publisher.hodor.com.pl` using the restored credential after live validation.
-11. Unsplash remains optional and disabled until API/compliance proof.
+6. Gemini text live proof through the production n8n at `publisher.hodor.com.pl` — BLOCKED because no Gemini credential currently exists there.
+7. Google Cloud TTS OAuth reconnect in `publisher.hodor.com.pl` — BLOCKED because the restored `Google account` credential returns 401 / needs to be reconnected.
+8. All four locked Google TTS voices — pending immediately after OAuth reconnect.
+9. Four-language local alignment quality on the exact final Cloud TTS audio — pending after item 8.
 
-Blocked:
-12. Openverse API currently returns a Cloudflare HTTP 403 browser challenge from this VPS; it is disabled unless that changes through an official API-compatible path.
+Verified visual providers:
+- Wikimedia Commons API — PASS.
+- Pixabay image search, video search, metadata, rate-limit headers and real image download — PASS.
+- Pexels photo search, video search, metadata, rate-limit headers and real image download — PASS.
+
+Optional/disabled:
+- Unsplash remains optional and disabled until API/compliance proof.
+- Openverse remains disabled while the official API returns a Cloudflare HTTP 403 challenge from this VPS.
 
 Evidence and exact observations are recorded in `docs/M2_DEPENDENCIES.md`.
 
