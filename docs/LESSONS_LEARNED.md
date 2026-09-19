@@ -81,3 +81,13 @@ Prevention:
 - use structured provider fields when available;
 - never hide every parse failure behind a catch that converts the entire candidate pool to empty;
 - unit-check candidate counts on retained real provider output before consuming another product test job.
+
+
+18. A scene-count range plus a separate shot-count floor does not reliably produce the required visual density.
+The first M5 live output was otherwise valid, but Gemini chose 5 scenes and one shot per scene, producing 5 shots when a 30-second job required at least 7. The validator correctly rejected it and the job remained immutable.
+
+Prevention:
+- do not weaken the visual-density gate after underproduction;
+- use a deterministic generic density contract by duration;
+- M5 now requires exactly 4/7/10/13 scenes and exactly one shot per scene for 15/30/45/60 seconds;
+- test fixes only on a fresh job after a terminal failure.
