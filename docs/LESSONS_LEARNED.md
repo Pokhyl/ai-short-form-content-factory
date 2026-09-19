@@ -66,3 +66,18 @@ Prevention:
 - after importing a generated workflow, read the stored node parameter back from the n8n database before publishing;
 - run a real workflow execution, not only a JSON/schema validation;
 - treat a successful credential connection as separate from query correctness.
+
+16. A Code node returning multiple items must use Run Once for All Items.
+The first M4 execution used Run Once for Each Item but returned an array of items, so n8n rejected the output before search.
+
+Prevention:
+- when a Code node fan-outs one input into multiple items, use `runOnceForAllItems`;
+- test node execution semantics, not only JavaScript syntax.
+
+17. Prefer provider-parsed URL metadata over browser globals inside the n8n Code sandbox.
+SearXNG already returns `parsed_url`. The first M4 candidate normalizer wrapped `new URL(...)` in a catch; every candidate was silently discarded in the Code sandbox. Rebuilding canonical URLs from SearXNG `parsed_url` produced the expected 10 independent candidates.
+
+Prevention:
+- use structured provider fields when available;
+- never hide every parse failure behind a catch that converts the entire candidate pool to empty;
+- unit-check candidate counts on retained real provider output before consuming another product test job.
