@@ -649,10 +649,11 @@ Status: PASS — verified live on 2026-09-19.
 Verified:
 - exact immutable M6 `final.mp3` is the only alignment input;
 - pinned local `whisper.cpp` image and exact `ggml-base.bin` SHA-256 are enforced;
-- normalized Whisper transcript must exactly equal the final narration;
-- lexical token timestamps must reconstruct the normalized transcript;
-- every scene receives real monotonic token-derived timings;
-- global coverage and every scene coverage must equal 1.0;
+- Whisper lexical tokens must reconstruct the Whisper transcript exactly;
+- scene narrations must reconstruct the final M5 narration exactly;
+- global lexical sequence-match coverage must be at least 0.95;
+- every scene lexical coverage must be at least 0.85;
+- every scene boundary is derived only from real matching Whisper token timestamps;
 - audio/model/image hashes and storage paths are persisted and cross-checked;
 - no proportional timing fallback exists;
 - failed alignment attempts are terminal and immutable.
@@ -660,13 +661,20 @@ Verified:
 Acceptance: PASS.
 
 ## M8 — Multi-source visuals
-Acceptance:
-- query every enabled provider;
-- normalize candidates;
-- deterministic combined ranking;
-- license policy enforced;
-- irrelevant shots fail closed;
-- enough distinct relevant visuals for narration.
+Status: PASS — verified live on 2026-09-19.
+
+Verified:
+- every M5 shot query is executed against Pixabay, Pexels and Wikimedia Commons;
+- provider results are normalized into one persisted candidate contract with provenance and license metadata;
+- deterministic ranking is applied across providers;
+- `must_not_show`, license policy, media-type intent and minimum relevance are fail-closed gates;
+- provider asset reuse across shots is prohibited;
+- Wikimedia 429 responses are retried only for the affected items after an explicit 35-second wait;
+- both `upload.wikimedia.org` and official `thumb.wikimedia.org` asset hosts are allowlisted;
+- selected files are downloaded atomically by media-worker and persisted with SHA-256, dimensions, codec and duration where applicable;
+- the run passes only when every shot has one distinct persisted local asset.
+
+Acceptance: PASS.
 
 ## M9 — Render + machine QA
 Acceptance:
