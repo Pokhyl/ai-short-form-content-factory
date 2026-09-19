@@ -249,12 +249,51 @@ Verified live:
 - temporary M6 public test caller was backed up, deleted, and its random endpoint returns 404;
 - publisher post-state is 26 workflows / 10 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6.
 
+## M7
+PASS on 2026-09-19.
+
+Verified live:
+- production workflow `VIDEO — M7 Local Alignment` ID `VideoM7Alignment001` is published and active;
+- M7 is an internal sub-workflow with input `job_id`;
+- `factory.alignment_runs`, `factory.alignments`, and `factory.scene_timings` are deployed;
+- `begin_alignment()`, `complete_alignment()`, and `fail_alignment()` are deployed;
+- only `voiceover_ready` jobs can start alignment;
+- the media-worker contains the pinned `whisper.cpp` binary copied from image digest `sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11`;
+- the exact multilingual model is mounted read-only and verified at startup with SHA-256 `60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe`;
+- alignment input is only the immutable M6 file `/data/voiceovers/<job_id>/final.mp3`;
+- media-worker verifies the exact audio SHA-256 and duration before alignment;
+- MP3 is decoded only to temporary 16 kHz mono PCM for local Whisper analysis; the original MP3 is never modified;
+- normalized Whisper transcript must exactly match the final M5 narration;
+- lexical Whisper tokens must reconstruct the normalized transcript exactly;
+- scene narrations must reconstruct the final narration exactly;
+- per-scene boundaries are derived only from real Whisper lexical token timestamps; no proportional timing fallback exists;
+- successful product test used job `e4bc4b8b-dcf5-4c81-9193-5db297c528d7`;
+- M7 execution `7762` succeeded;
+- alignment ID is `6f34156f-216d-4abb-8937-9355745cd186`;
+- global coverage is 1.000 and all 7 scene coverage values are 1.000;
+- 72 lexical tokens were retained;
+- lexical speech span is 40–26,260 ms within the immutable 26,568 ms audio;
+- scene timings are:
+  - S1 40–4,850 ms;
+  - S2 5,000–8,480 ms;
+  - S3 8,840–10,270 ms;
+  - S4 10,500–13,330 ms;
+  - S5 14,100–18,680 ms;
+  - S6 19,230–22,220 ms;
+  - S7 22,350–26,260 ms;
+- immutable alignment artifacts exist at `/data/alignments/<job_id>/final.json` and `whisper.json`;
+- stored audio/model/image hashes match the expected pinned values;
+- TTS ledger remained unchanged and no new M6/TTS execution occurred;
+- job state is `alignment_ready`;
+- temporary M7 public test caller was backed up, deleted, and its random endpoint returns 404;
+- publisher post-state is 27 workflows / 11 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7.
+
 ## Immediate next work
-1. Implement M7 local alignment against the exact stored M6 MP3.
-2. Run pinned local `whisper.cpp` on that exact SHA-256 file; do not synthesize or modify audio.
-3. Persist word/token timing output and alignment metadata.
-4. Verify global narration coverage and per-scene coverage against the exact final M5 narration.
-5. Fail closed if alignment quality is inadequate; do not use proportional timing fallback.
+1. Implement M8 multi-source visual candidate persistence and deterministic selection.
+2. Load only `alignment_ready` jobs and use the executable M5 shot queries.
+3. Query every enabled visual provider for every shot, normalize provider metadata, and preserve licensing/source provenance.
+4. Rank candidates deterministically across providers; enforce relevance/must-show/must-not-show and cross-shot reuse constraints.
+5. Fail closed if any shot lacks a sufficiently relevant compliant visual; do not render before M8 passes.
 
 
 ## Production orchestration lock — 2026-09-19
