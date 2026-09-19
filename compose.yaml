@@ -18,6 +18,7 @@ services:
       - ./db/06-script-storyboard.sql:/docker-entrypoint-initdb.d/06-script-storyboard.sql:ro
       - ./db/07-voiceover.sql:/docker-entrypoint-initdb.d/07-voiceover.sql:ro
       - ./db/08-alignment.sql:/docker-entrypoint-initdb.d/08-alignment.sql:ro
+      - ./db/09-visuals.sql:/docker-entrypoint-initdb.d/09-visuals.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U shorts -d shorts_factory"]
       interval: 5s
