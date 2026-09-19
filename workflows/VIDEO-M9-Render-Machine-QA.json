@@ -1,0 +1,308 @@
+{
+  "id": "VideoM9RenderQa001",
+  "name": "VIDEO — M9 Render + Machine QA",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "job_id"
+            }
+          ]
+        }
+      },
+      "id": "video-m9-trigger",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT render_run_id::text AS render_run_id, voiceover_path, audio_sha256, audio_duration_ms, expected_scene_count, scenes_json\nFROM factory.begin_render($1::uuid);",
+        "options": {
+          "queryReplacement": "={{ [ $json.job_id ] }}"
+        }
+      },
+      "id": "video-m9-begin",
+      "name": "Begin Render",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        240,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://shorts-v2-media-worker-1:3001/renders/' + $('When Executed by Another Workflow').first().json.job_id }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ input_audio_sha256: $json.audio_sha256, audio_duration_ms: Number($json.audio_duration_ms), scenes: (typeof $json.scenes_json === 'string' ? JSON.parse($json.scenes_json) : $json.scenes_json) }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 900000
+        }
+      },
+      "id": "video-m9-render",
+      "name": "Run Deterministic Render",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        480,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Render').first().json;\nconst trigger = $('When Executed by Another Workflow').first().json;\nconst response = $json ?? {};\n\nconst body =\n  response.body && typeof response.body === 'object' && !Array.isArray(response.body)\n    ? response.body\n    : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') statusCode = 201;\n\nconst jobId = String(trigger.job_id ?? '').trim();\nconst runId = String(ctx.render_run_id ?? '').trim();\nconst expectedAudioSha = String(ctx.audio_sha256 ?? '').trim().toLowerCase();\nconst expectedDuration = Number(ctx.audio_duration_ms);\nconst expectedSceneCount = Number(ctx.expected_scene_count);\nconst expectedStorage = '/data/renders/' + jobId + '/final.mp4';\nconst expectedManifest = '/data/renders/' + jobId + '/manifest.json';\n\nlet expectedScenes = ctx.scenes_json;\nif (typeof expectedScenes === 'string') {\n  try { expectedScenes = JSON.parse(expectedScenes); } catch { expectedScenes = []; }\n}\nif (!Array.isArray(expectedScenes)) expectedScenes = [];\n\nconst expectedByScene = new Map();\nfor (const scene of expectedScenes) {\n  const sceneId = String(scene?.scene_uuid ?? '').trim().toLowerCase();\n  expectedByScene.set(sceneId, scene);\n}\n\nconst segments = Array.isArray(body.segments) ? body.segments : [];\nconst seenScenes = new Set();\nlet segmentsValid =\n  expectedScenes.length === expectedSceneCount &&\n  segments.length === expectedSceneCount &&\n  expectedSceneCount > 0;\n\nlet previousEnd = 0;\nfor (let i = 0; i < segments.length; i++) {\n  const segment = segments[i] ?? {};\n  const sceneId = String(segment.scene_uuid ?? '').trim().toLowerCase();\n  const expected = expectedByScene.get(sceneId);\n\n  const shotId = String(segment.shot_uuid ?? '').trim().toLowerCase();\n  const assetId = String(segment.visual_asset_id ?? '').trim().toLowerCase();\n  const assetSha = String(segment.asset_sha256 ?? '').trim().toLowerCase();\n  const order = Number(segment.segment_order);\n  const startMs = Number(segment.start_ms);\n  const endMs = Number(segment.end_ms);\n  const durationMs = Number(segment.duration_ms);\n\n  if (\n    !expected ||\n    seenScenes.has(sceneId) ||\n    order !== i + 1 ||\n    shotId !== String(expected.shot_uuid ?? '').trim().toLowerCase() ||\n    assetId !== String(expected.visual_asset_id ?? '').trim().toLowerCase() ||\n    assetSha !== String(expected.asset_sha256 ?? '').trim().toLowerCase() ||\n    startMs !== Number(expected.segment_start_ms) ||\n    endMs !== Number(expected.segment_end_ms) ||\n    durationMs !== endMs - startMs ||\n    startMs !== previousEnd ||\n    endMs <= startMs ||\n    endMs > expectedDuration\n  ) {\n    segmentsValid = false;\n    break;\n  }\n\n  seenScenes.add(sceneId);\n  previousEnd = endMs;\n}\n\nif (\n  seenScenes.size !== expectedSceneCount ||\n  previousEnd !== expectedDuration\n) {\n  segmentsValid = false;\n}\n\nconst gates = body.qa_gates && typeof body.qa_gates === 'object'\n  ? body.qa_gates\n  : {};\nconst gatesValid =\n  gates.video_dimensions === true &&\n  gates.video_codec === true &&\n  gates.audio_codec === true &&\n  gates.stream_counts === true &&\n  gates.duration_match === true &&\n  gates.scene_coverage === true &&\n  gates.asset_hashes === true &&\n  gates.source_audio_excluded === true;\n\nconst durationMs = Number(body.duration_ms);\nconst durationDelta = Number(body.duration_delta_ms);\n\nconst renderSuccess =\n  statusCode === 201 &&\n  body.status === 'ready' &&\n  String(body.job_id ?? '').trim() === jobId &&\n  String(body.storage_path ?? '').trim() === expectedStorage &&\n  String(body.manifest_path ?? '').trim() === expectedManifest &&\n  /^[0-9a-f]{64}$/.test(String(body.sha256 ?? '').trim().toLowerCase()) &&\n  Number(body.bytes) > 0 &&\n  Number(body.width) === 1080 &&\n  Number(body.height) === 1920 &&\n  String(body.video_codec ?? '').trim().toLowerCase() === 'h264' &&\n  String(body.audio_codec ?? '').trim().toLowerCase() === 'aac' &&\n  String(body.pix_fmt ?? '').trim().toLowerCase() === 'yuv420p' &&\n  Number(body.fps_num) === 30 &&\n  Number(body.fps_den) === 1 &&\n  Number(body.video_stream_count) === 1 &&\n  Number(body.audio_stream_count) === 1 &&\n  Number(body.audio_duration_ms) === expectedDuration &&\n  Number.isInteger(durationMs) &&\n  durationMs > 0 &&\n  Number.isInteger(durationDelta) &&\n  durationDelta === Math.abs(durationMs - expectedDuration) &&\n  durationDelta <= 100 &&\n  String(body.input_audio_sha256 ?? '').trim().toLowerCase() === expectedAudioSha &&\n  body.qa_passed === true &&\n  gatesValid &&\n  segmentsValid;\n\nconst providerMessage =\n  body?.message ??\n  body?.error ??\n  response?.error?.message ??\n  response?.message ??\n  'render result failed validation';\n\nreturn {\n  json: {\n    job_id: jobId,\n    render_run_id: runId,\n    render_success: renderSuccess,\n    result: renderSuccess ? body : {},\n    error_message: renderSuccess ? '' : String(providerMessage).slice(0, 3500),\n  },\n};"
+      },
+      "id": "video-m9-validate",
+      "name": "Validate Render Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "m9-render-pass",
+              "leftValue": "={{ $json.render_success }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m9-route",
+      "name": "Route Render PASS",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT render_id::text AS render_id, render_sha256, render_duration_ms, machine_qa_passed\nFROM factory.complete_render($1::uuid, $2::jsonb);",
+        "options": {
+          "queryReplacement": "={{ [ $json.render_run_id, JSON.stringify($json.result) ] }}"
+        }
+      },
+      "id": "video-m9-complete",
+      "name": "Complete Render",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1200,
+        -120
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Render').first().json;\nconst source = $json ?? {};\nconst errorObject =\n  source.error && typeof source.error === 'object' && !Array.isArray(source.error)\n    ? source.error\n    : {};\n\nconst message = [\n  source.error_message,\n  errorObject.message,\n  source.message,\n  source.description,\n  typeof source.error === 'string' ? source.error : null,\n].find((value) => typeof value === 'string' && value.trim().length > 0)\n  ?? 'unspecified M9 render failure';\n\nreturn {\n  json: {\n    render_run_id: String(ctx.render_run_id ?? '').trim(),\n    error_message: ('M9 render/QA failed: ' + message.trim()).slice(0, 4000),\n  },\n};"
+      },
+      "id": "video-m9-prepare-failure",
+      "name": "Prepare Render Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT render_status, job_status\nFROM factory.fail_render($1::uuid, $2::text);",
+        "options": {
+          "queryReplacement": "={{ [ $json.render_run_id, $json.error_message ] }}"
+        }
+      },
+      "id": "video-m9-fail",
+      "name": "Fail Render",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1440,
+        160
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const failure = $('Prepare Render Failure').first().json;\nthrow new Error(String(failure.error_message ?? 'M9 render failed'));"
+      },
+      "id": "video-m9-raise",
+      "name": "Raise Render Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        160
+      ]
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Begin Render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Begin Render": {
+      "main": [
+        [
+          {
+            "node": "Run Deterministic Render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Deterministic Render": {
+      "main": [
+        [
+          {
+            "node": "Validate Render Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Render Result": {
+      "main": [
+        [
+          {
+            "node": "Route Render PASS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Render Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Render PASS": {
+      "main": [
+        [
+          {
+            "node": "Complete Render",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Render Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complete Render": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Prepare Render Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Render Failure": {
+      "main": [
+        [
+          {
+            "node": "Fail Render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Render": {
+      "main": [
+        [
+          {
+            "node": "Raise Render Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
