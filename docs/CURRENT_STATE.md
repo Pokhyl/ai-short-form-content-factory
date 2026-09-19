@@ -197,9 +197,10 @@ Verified live:
 - Gemini receives only persisted M4 evidence, capped to 6,000 characters per evidence row for prompt construction;
 - structured JSON is validated before DB commit;
 - every scene requires 1–4 valid evidence IDs and those IDs are mapped to same-job evidence UUIDs before persistence;
-- narration must equal scene narrations joined in order;
-- narration word range is derived from target duration;
+- scene narrations are authoritative; the persisted continuous narration is canonicalized as those scene narrations joined in order;
+- narration word range is validated against that canonical narration;
 - deterministic visual density is 4/7/10/13 scenes and shots for 15/30/45/60 seconds respectively;
+- if the first Gemini JSON is structurally valid but fails deterministic storyboard validation, M5 allows exactly one repair-call inside the same immutable script run; the repair receives the same evidence plus the failed output and must return a complete replacement JSON object;
 - every scene contains exactly one shot;
 - every shot requires concrete visual intent, at least one must-show concept, 2–4 distinct English factual queries and an allowed media type;
 - provider names, URLs and manual asset preselection are rejected;
@@ -211,8 +212,11 @@ Verified live:
 - M4 execution `7757` and M5 execution `7758` succeeded for the fresh job;
 - successful job state is `storyboard_ready`;
 - provider TTS ledger remained unchanged; M5 made no TTS call;
+- later production hardening proved two recurring model-format failures without weakening the gate: one output returned 5 scenes instead of 7, and a repaired output returned a redundant root narration that differed from the scene narration join;
+- M5 now repairs the first deterministic validation failure once, then canonicalizes the persisted narration from validated scene narrations rather than trusting the redundant root narration field;
+- final successful M5 on job `6974c0e6-9261-495d-b885-0db5a2ae4cd6` produced 70 words / 7 scenes / 7 shots and execution `7820` succeeded;
 - temporary M5 public test caller was backed up, deleted, and its random endpoint now returns 404;
-- publisher post-state is 25 workflows / 9 active: 22 protected MCP/ADMIN + M3 + M4 + M5.
+- publisher M5 remains the same production workflow ID; no duplicate M5 workflow was created.
 
 ## M6
 PASS on 2026-09-19.
@@ -263,10 +267,10 @@ Verified live:
 - alignment input is only the immutable M6 file `/data/voiceovers/<job_id>/final.mp3`;
 - media-worker verifies the exact audio SHA-256 and duration before alignment;
 - MP3 is decoded only to temporary 16 kHz mono PCM for local Whisper analysis; the original MP3 is never modified;
-- normalized Whisper transcript must exactly match the final M5 narration;
-- lexical Whisper tokens must reconstruct the normalized transcript exactly;
-- scene narrations must reconstruct the final narration exactly;
-- per-scene boundaries are derived only from real Whisper lexical token timestamps; no proportional timing fallback exists;
+- lexical Whisper tokens must reconstruct the Whisper transcript exactly;
+- scene narrations must reconstruct the final M5 narration exactly;
+- alignment uses `whisper_token_sequence_match`: global normalized character coverage must be at least 0.95 and every scene coverage at least 0.85;
+- per-scene boundaries are derived only from real matching Whisper lexical token timestamps; no proportional timing fallback exists;
 - successful product test used job `e4bc4b8b-dcf5-4c81-9193-5db297c528d7`;
 - M7 execution `7762` succeeded;
 - alignment ID is `6f34156f-216d-4abb-8937-9355745cd186`;
@@ -284,16 +288,50 @@ Verified live:
 - immutable alignment artifacts exist at `/data/alignments/<job_id>/final.json` and `whisper.json`;
 - stored audio/model/image hashes match the expected pinned values;
 - TTS ledger remained unchanged and no new M6/TTS execution occurred;
-- job state is `alignment_ready`;
+- a later real TTS sample exposed a normal Whisper ASR substitution (`abscission` → `obsidian`): global coverage was 0.981675 and the lowest scene coverage was 0.883721;
+- the original exact-string gate was therefore replaced by bounded lexical coverage without introducing proportional timing; the same failed terminal job was not reused;
+- final successful product job `6974c0e6-9261-495d-b885-0db5a2ae4cd6` passed M7 with normalized_match=true, global coverage 1.000, 7/7 scene timings and execution `7822` success;
+- job state is `alignment_ready` before M8;
 - temporary M7 public test caller was backed up, deleted, and its random endpoint returns 404;
-- publisher post-state is 27 workflows / 11 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7.
+- publisher M7 remains the same production workflow ID; no duplicate M7 workflow was created.
+
+## M8
+PASS on 2026-09-19.
+
+Verified live:
+- production workflow `VIDEO — M8 Multi-Source Visuals` ID `VideoM8Visuals001` is published and active;
+- M8 is an internal sub-workflow with input `job_id`;
+- `factory.visual_runs`, `factory.visual_searches`, `factory.visual_candidates`, `factory.visual_selections`, `factory.visual_assets`, and the visual query cache are deployed;
+- only `alignment_ready` jobs can start M8;
+- every storyboard search query is executed against all three enabled providers: Pixabay, Pexels and Wikimedia Commons;
+- candidates are normalized with provider/source/license metadata before deterministic ranking;
+- Pixabay and Pexels license names are enforced exactly; Wikimedia accepts only the configured CC0 / CC BY / CC BY-SA / public-domain families;
+- `must_not_show`, media-type compatibility, minimum relevance and per-run provider-asset reuse are fail-closed gates;
+- Wikimedia Commons rate limiting was reproduced as HTTP 429 with `Retry-After` values around 23–27 seconds after ten requests;
+- M8 now retries only affected Wikimedia items through explicit 35-second wait nodes; the final successful run reached complete provider coverage;
+- Wikimedia photos from Commons use the official `thumb.wikimedia.org` host while videos commonly use `upload.wikimedia.org`; media-worker allowlists both exact official hosts and still rejects arbitrary hosts;
+- selected assets are downloaded atomically into `/data/visuals/<job_id>/<shot_id>/selected.<ext>` and persisted with SHA-256, bytes, dimensions, codec and video duration where applicable;
+- successful product test job is `6974c0e6-9261-495d-b885-0db5a2ae4cd6`;
+- M8 execution `7823` succeeded and the job state is `visuals_ready`;
+- this 30-second storyboard contained 7 shots with 3 queries each, therefore expected provider-search coverage was 63 searches total;
+- verified coverage was 21/21 Pixabay, 21/21 Pexels and 21/21 Wikimedia;
+- provider result totals were 168 Pixabay, 168 Pexels and 71 Wikimedia candidate rows before normalization/ranking filters;
+- exactly 7 selections were persisted and all 7 provider+asset identities were unique;
+- exactly 7 local assets were persisted and all 7 SHA-256 hashes were distinct;
+- total persisted visual bytes were 65,286,389;
+- the selected set contained 3 videos and 4 photos from Pixabay/Pexels; no duplicate file hash was accepted;
+- all persisted candidates passed the configured license policy;
+- media-worker file-side SHA-256 and ffprobe checks independently confirmed all 7 files;
+- failed product jobs from earlier M8/M7/M5 diagnostics remain terminal and were not reused;
+- temporary M8 caller was backed up, deleted, and its random endpoint returns 404;
+- publisher post-state is 28 workflows / 12 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7 + M8.
 
 ## Immediate next work
-1. Implement M8 multi-source visual candidate persistence and deterministic selection.
-2. Load only `alignment_ready` jobs and use the executable M5 shot queries.
-3. Query every enabled visual provider for every shot, normalize provider metadata, and preserve licensing/source provenance.
-4. Rank candidates deterministically across providers; enforce relevance/must-show/must-not-show and cross-shot reuse constraints.
-5. Fail closed if any shot lacks a sufficiently relevant compliant visual; do not render before M8 passes.
+1. Implement M9 deterministic render assembly from the exact M6 narration, M7 scene timings and M8 selected local assets.
+2. Render a fresh normal job to 1080×1920 H.264/AAC without regenerating narration or visuals.
+3. Run machine QA on exact duration, audio presence, video stream, 9:16 dimensions, scene coverage and asset usage.
+4. Persist render/QA provenance and fail closed on any machine gate.
+5. Deliver the exact MP4 only after M9 PASS; HUMAN PASS remains the final acceptance gate.
 
 
 ## Production orchestration lock — 2026-09-19
