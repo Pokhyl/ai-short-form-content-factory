@@ -593,12 +593,20 @@ Verified:
 Acceptance: PASS.
 
 ## M4 — Research + evidence
-Acceptance:
+Status: PASS — verified live on 2026-09-19.
+
+Verified:
 - broad web search through SearXNG;
-- multiple independent sources when available;
-- evidence persisted;
-- duplicate sources removed;
-- no script yet if evidence is inadequate.
+- multiple independent sources collected;
+- direct source pages fetched and HTML text extracted locally in n8n;
+- selected evidence persisted in PostgreSQL with URL/title/snippet/query/retrieval metadata;
+- canonical URL and SHA-256 deduplication enforced;
+- minimum gate is 3 evidence rows from 3 independent domains;
+- insufficient evidence marks the job `research_failed`;
+- technical errors after research start also mark the job terminal instead of leaving it stuck;
+- Gemini is not called in M4.
+
+Acceptance: PASS.
 
 ## M5 — Script + storyboard
 Acceptance:
