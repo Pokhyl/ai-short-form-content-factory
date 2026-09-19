@@ -47,3 +47,12 @@ Prevention:
 - MCP/ADMIN workflows remain protected by exact identity;
 - supporting services may be isolated, but production n8n/credentials stay in publisher;
 - no new n8n domain or second production n8n without a proven technical blocker and explicit user approval.
+
+
+14. An encrypted n8n credential export is not a usable recovery source without its original encryption key.
+The related recovery export still contains the old Google Gemini API credential metadata, but the source encryption key is not preserved in the project/recovery files and the available recovery key does not decrypt it.
+
+Prevention:
+- preserve the matching n8n encryption key whenever encrypted credential exports are retained;
+- never treat credential presence in an encrypted export as proof that the secret is recoverable;
+- do not copy encryption keys from unrelated n8n instances as a shortcut.
