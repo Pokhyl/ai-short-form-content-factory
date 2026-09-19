@@ -350,10 +350,23 @@ Verified live:
 - publisher post-state is 29 workflows / 13 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7 + M8 + M9;
 - `ai-short-form-n8n` restart-manager corruption was recovered by recreating only the stateless n8n container from the same image/env/networks; publisher DB, workflows and credentials remained intact; final restart count is 0.
 
+## M10 delivery — PENDING HUMAN PASS
+
+Verified:
+- exact product MP4 is exposed only through a temporary random-path n8n review webhook;
+- the review webhook proxies the immutable M9 file from the internal media-worker and does not regenerate or modify it;
+- an external download through `publisher.hodor.com.pl` was verified byte-for-byte against the product render;
+- external review bytes: 10,347,458;
+- external review SHA-256: `262941d27a00ac4fe5e8a754d3a459c29e3b75298928fc76322b149bd9e9b178`;
+- external ffprobe confirms 1080×1920 H.264/yuv420p at 30 fps plus AAC audio, duration 30.533333 s;
+- temporary workflow `M10 TMP — Human Review MP4` ID `M10TempReview001` remains active only while HUMAN PASS is pending;
+- no Studio or TikTok publishing changes were made;
+- `ai-short-form-n8n` remains stable with restart count 0.
+
 ## Immediate next work
-1. Deliver the exact M9 MP4 for human review.
+1. Human reviews the exact M9 MP4.
 2. Do not regenerate, replace, publish or mark the product accepted before explicit HUMAN PASS.
-3. After explicit HUMAN PASS, proceed only with the next plan stage approved by the user.
+3. After explicit HUMAN PASS, remove the temporary M10 review workflow/endpoint and proceed only with the next approved stage.
 
 
 ## Production orchestration lock — 2026-09-19
