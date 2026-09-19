@@ -99,7 +99,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const ctx = $('Build Script Prompt').first().json;\nconst response = $json ?? {};\n\nconst statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (statusCode < 200 || statusCode > 299) {\n  const providerMessage =\n    response.body?.error?.message ??\n    response.error?.message ??\n    response.message ??\n    'Gemini request failed';\n  throw new Error('Gemini HTTP ' + statusCode + ': ' + String(providerMessage));\n}\n\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nconst candidate = Array.isArray(body.candidates) ? body.candidates[0] : null;\nconst parts = Array.isArray(candidate?.content?.parts) ? candidate.content.parts : [];\nconst rawText = parts\n  .filter((part) => part && typeof part.text === 'string')\n  .map((part) => part.text)\n  .join('')\n  .trim();\n\nif (!rawText) {\n  throw new Error('Gemini returned no text content');\n}\n\nlet parsed;\ntry {\n  parsed = JSON.parse(rawText);\n} catch (error) {\n  throw new Error('Gemini returned invalid JSON: ' + error.message);\n}\n\nif (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {\n  throw new Error('Gemini storyboard root must be an object');\n}\nif (parsed.error) {\n  throw new Error('Gemini could not build storyboard: ' + String(parsed.error));\n}\n\nconst clean = (value) => String(value ?? '').replace(/\\s+/g, ' ').trim();\nconst narration = clean(parsed.narration);\nconst scenes = Array.isArray(parsed.scenes) ? parsed.scenes : [];\n\nif (!narration) throw new Error('storyboard narration is empty');\nif (scenes.length !== Number(ctx.target_scenes)) {\n  throw new Error(\n    'scene count mismatch: ' + scenes.length +\n    ', required exactly ' + ctx.target_scenes\n  );\n}\n\nconst words = narration.split(/\\s+/u).filter(Boolean);\nif (\n  words.length < Number(ctx.word_min) ||\n  words.length > Number(ctx.word_max)\n) {\n  throw new Error(\n    'narration word count out of range: ' + words.length +\n    ', required ' + ctx.word_min + '-' + ctx.word_max\n  );\n}\n\nconst evidenceMap = ctx.evidence_map && typeof ctx.evidence_map === 'object'\n  ? ctx.evidence_map\n  : {};\nconst allowedEvidence = new Set(Object.keys(evidenceMap));\nconst allowedMedia = new Set(['photo','video','diagram','map','document']);\nconst providerPattern = /\\b(pexels|pixabay|wikimedia|unsplash|openverse)\\b|https?:\\/\\//i;\n\nconst sanitizedScenes = [];\nconst globalShotIds = new Set();\nlet totalShots = 0;\n\nfor (let i = 0; i < scenes.length; i++) {\n  const scene = scenes[i];\n  if (!scene || typeof scene !== 'object' || Array.isArray(scene)) {\n    throw new Error('scene ' + (i + 1) + ' must be an object');\n  }\n\n  const expectedSceneId = 'S' + (i + 1);\n  const sceneId = clean(scene.scene_id);\n  if (sceneId !== expectedSceneId) {\n    throw new Error('scene_id must be sequential: expected ' + expectedSceneId);\n  }\n\n  const sceneNarration = clean(scene.narration);\n  if (!sceneNarration) {\n    throw new Error(sceneId + ' narration is empty');\n  }\n\n  const evidenceIds = Array.isArray(scene.evidence_ids)\n    ? scene.evidence_ids.map(clean)\n    : [];\n  const uniqueEvidence = [...new Set(evidenceIds)];\n  if (\n    uniqueEvidence.length < 1 ||\n    uniqueEvidence.length > 4 ||\n    uniqueEvidence.length !== evidenceIds.length ||\n    uniqueEvidence.some((id) => !allowedEvidence.has(id))\n  ) {\n    throw new Error(sceneId + ' has invalid evidence_ids');\n  }\n\n  const shots = Array.isArray(scene.shots) ? scene.shots : [];\n  if (shots.length !== 1) {\n    throw new Error(sceneId + ' must contain exactly 1 shot');\n  }\n\n  const sanitizedShots = [];\n  for (let j = 0; j < shots.length; j++) {\n    const shot = shots[j];\n    if (!shot || typeof shot !== 'object' || Array.isArray(shot)) {\n      throw new Error(sceneId + ' shot ' + (j + 1) + ' must be an object');\n    }\n\n    const shotId = clean(shot.shot_id);\n    const expectedSuffix = String.fromCharCode(65 + j);\n    const expectedShotId = sceneId + '-' + expectedSuffix;\n    if (shotId !== expectedShotId || globalShotIds.has(shotId)) {\n      throw new Error('invalid or duplicate shot_id: ' + shotId);\n    }\n    globalShotIds.add(shotId);\n\n    const visualIntent = clean(shot.visual_intent);\n    if (visualIntent.length < 12 || visualIntent.length > 400) {\n      throw new Error(shotId + ' visual_intent is invalid');\n    }\n\n    const mustShow = Array.isArray(shot.must_show)\n      ? shot.must_show.map(clean).filter(Boolean)\n      : [];\n    const mustNotShow = Array.isArray(shot.must_not_show)\n      ? shot.must_not_show.map(clean).filter(Boolean)\n      : [];\n    if (mustShow.length < 1 || mustShow.length > 6 || mustNotShow.length > 6) {\n      throw new Error(shotId + ' must_show/must_not_show is invalid');\n    }\n\n    const queries = Array.isArray(shot.queries_en)\n      ? shot.queries_en.map(clean).filter(Boolean)\n      : [];\n    const queryKeys = queries.map((q) => q.toLowerCase());\n    if (\n      queries.length < 2 ||\n      queries.length > 4 ||\n      new Set(queryKeys).size !== queries.length ||\n      queries.some((query) => {\n        const count = query.split(/\\s+/u).filter(Boolean).length;\n        return count < 2 || count > 10 || query.length > 120;\n      })\n    ) {\n      throw new Error(shotId + ' queries_en is invalid');\n    }\n\n    const preferredMediaType = clean(shot.preferred_media_type).toLowerCase();\n    if (!allowedMedia.has(preferredMediaType)) {\n      throw new Error(shotId + ' preferred_media_type is invalid');\n    }\n\n    const antiSelectionText = [\n      visualIntent,\n      ...mustShow,\n      ...mustNotShow,\n      ...queries,\n    ].join(' ');\n    if (providerPattern.test(antiSelectionText)) {\n      throw new Error(shotId + ' contains provider/URL preselection');\n    }\n\n    sanitizedShots.push({\n      shot_id: shotId,\n      visual_intent: visualIntent,\n      must_show: mustShow,\n      must_not_show: mustNotShow,\n      queries_en: queries,\n      preferred_media_type: preferredMediaType,\n    });\n  }\n\n  totalShots += sanitizedShots.length;\n\n  sanitizedScenes.push({\n    scene_id: sceneId,\n    narration: sceneNarration,\n    evidence_ids: uniqueEvidence,\n    evidence_uuids: uniqueEvidence.map((id) => evidenceMap[id]),\n    shots: sanitizedShots,\n  });\n}\n\nif (totalShots !== Number(ctx.target_shots)) {\n  throw new Error(\n    'total shot count mismatch: ' + totalShots +\n    ', required exactly ' + ctx.target_shots\n  );\n}\n\nconst joinedNarration = clean(\n  sanitizedScenes.map((scene) => scene.narration).join(' ')\n);\nif (joinedNarration !== narration) {\n  throw new Error('root narration must exactly equal joined scene narration');\n}\n\nconst usage = body.usageMetadata && typeof body.usageMetadata === 'object'\n  ? body.usageMetadata\n  : {};\n\nreturn {\n  json: {\n    script_run_id: ctx.script_run_id,\n    model: ctx.model,\n    storyboard: {\n      narration,\n      scenes: sanitizedScenes,\n    },\n    narration_word_count: words.length,\n    scene_count: sanitizedScenes.length,\n    shot_count: totalShots,\n    usage,\n  },\n};"
+        "jsCode": "const ctx = $('Build Script Prompt').first().json;\nconst response = $json ?? {};\n\nconst statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (statusCode < 200 || statusCode > 299) {\n  const providerMessage =\n    response.body?.error?.message ??\n    response.error?.message ??\n    response.message ??\n    'Gemini request failed';\n  throw new Error('Gemini HTTP ' + statusCode + ': ' + String(providerMessage));\n}\n\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nconst candidate = Array.isArray(body.candidates) ? body.candidates[0] : null;\nconst parts = Array.isArray(candidate?.content?.parts) ? candidate.content.parts : [];\nconst rawText = parts\n  .filter((part) => part && typeof part.text === 'string')\n  .map((part) => part.text)\n  .join('')\n  .trim();\n\nif (!rawText) {\n  throw new Error('Gemini returned no text content');\n}\n\nlet parsed;\ntry {\n  parsed = JSON.parse(rawText);\n} catch (error) {\n  throw new Error('Gemini returned invalid JSON: ' + error.message);\n}\n\nif (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {\n  throw new Error('Gemini storyboard root must be an object');\n}\nif (parsed.error) {\n  throw new Error('Gemini could not build storyboard: ' + String(parsed.error));\n}\n\nconst clean = (value) => String(value ?? '').replace(/\\s+/g, ' ').trim();\nconst narration = clean(parsed.narration);\nconst scenes = Array.isArray(parsed.scenes) ? parsed.scenes : [];\n\nif (scenes.length !== Number(ctx.target_scenes)) {\n  throw new Error(\n    'scene count mismatch: ' + scenes.length +\n    ', required exactly ' + ctx.target_scenes\n  );\n}\n\nconst evidenceMap = ctx.evidence_map && typeof ctx.evidence_map === 'object'\n  ? ctx.evidence_map\n  : {};\nconst allowedEvidence = new Set(Object.keys(evidenceMap));\nconst allowedMedia = new Set(['photo','video','diagram','map','document']);\nconst providerPattern = /\\b(pexels|pixabay|wikimedia|unsplash|openverse)\\b|https?:\\/\\//i;\n\nconst sanitizedScenes = [];\nconst globalShotIds = new Set();\nlet totalShots = 0;\n\nfor (let i = 0; i < scenes.length; i++) {\n  const scene = scenes[i];\n  if (!scene || typeof scene !== 'object' || Array.isArray(scene)) {\n    throw new Error('scene ' + (i + 1) + ' must be an object');\n  }\n\n  const expectedSceneId = 'S' + (i + 1);\n  const sceneId = clean(scene.scene_id);\n  if (sceneId !== expectedSceneId) {\n    throw new Error('scene_id must be sequential: expected ' + expectedSceneId);\n  }\n\n  const sceneNarration = clean(scene.narration);\n  if (!sceneNarration) {\n    throw new Error(sceneId + ' narration is empty');\n  }\n\n  const evidenceIds = Array.isArray(scene.evidence_ids)\n    ? scene.evidence_ids.map(clean)\n    : [];\n  const uniqueEvidence = [...new Set(evidenceIds)];\n  if (\n    uniqueEvidence.length < 1 ||\n    uniqueEvidence.length > 4 ||\n    uniqueEvidence.length !== evidenceIds.length ||\n    uniqueEvidence.some((id) => !allowedEvidence.has(id))\n  ) {\n    throw new Error(sceneId + ' has invalid evidence_ids');\n  }\n\n  const shots = Array.isArray(scene.shots) ? scene.shots : [];\n  if (shots.length !== 1) {\n    throw new Error(sceneId + ' must contain exactly 1 shot');\n  }\n\n  const sanitizedShots = [];\n  for (let j = 0; j < shots.length; j++) {\n    const shot = shots[j];\n    if (!shot || typeof shot !== 'object' || Array.isArray(shot)) {\n      throw new Error(sceneId + ' shot ' + (j + 1) + ' must be an object');\n    }\n\n    const shotId = clean(shot.shot_id);\n    const expectedSuffix = String.fromCharCode(65 + j);\n    const expectedShotId = sceneId + '-' + expectedSuffix;\n    if (shotId !== expectedShotId || globalShotIds.has(shotId)) {\n      throw new Error('invalid or duplicate shot_id: ' + shotId);\n    }\n    globalShotIds.add(shotId);\n\n    const visualIntent = clean(shot.visual_intent);\n    if (visualIntent.length < 12 || visualIntent.length > 400) {\n      throw new Error(shotId + ' visual_intent is invalid');\n    }\n\n    const mustShow = Array.isArray(shot.must_show)\n      ? shot.must_show.map(clean).filter(Boolean)\n      : [];\n    const mustNotShow = Array.isArray(shot.must_not_show)\n      ? shot.must_not_show.map(clean).filter(Boolean)\n      : [];\n    if (mustShow.length < 1 || mustShow.length > 6 || mustNotShow.length > 6) {\n      throw new Error(shotId + ' must_show/must_not_show is invalid');\n    }\n\n    const queries = Array.isArray(shot.queries_en)\n      ? shot.queries_en.map(clean).filter(Boolean)\n      : [];\n    const queryKeys = queries.map((q) => q.toLowerCase());\n    if (\n      queries.length < 2 ||\n      queries.length > 4 ||\n      new Set(queryKeys).size !== queries.length ||\n      queries.some((query) => {\n        const count = query.split(/\\s+/u).filter(Boolean).length;\n        return count < 2 || count > 10 || query.length > 120;\n      })\n    ) {\n      throw new Error(shotId + ' queries_en is invalid');\n    }\n\n    const preferredMediaType = clean(shot.preferred_media_type).toLowerCase();\n    if (!allowedMedia.has(preferredMediaType)) {\n      throw new Error(shotId + ' preferred_media_type is invalid');\n    }\n\n    const antiSelectionText = [\n      visualIntent,\n      ...mustShow,\n      ...mustNotShow,\n      ...queries,\n    ].join(' ');\n    if (providerPattern.test(antiSelectionText)) {\n      throw new Error(shotId + ' contains provider/URL preselection');\n    }\n\n    sanitizedShots.push({\n      shot_id: shotId,\n      visual_intent: visualIntent,\n      must_show: mustShow,\n      must_not_show: mustNotShow,\n      queries_en: queries,\n      preferred_media_type: preferredMediaType,\n    });\n  }\n\n  totalShots += sanitizedShots.length;\n\n  sanitizedScenes.push({\n    scene_id: sceneId,\n    narration: sceneNarration,\n    evidence_ids: uniqueEvidence,\n    evidence_uuids: uniqueEvidence.map((id) => evidenceMap[id]),\n    shots: sanitizedShots,\n  });\n}\n\nif (totalShots !== Number(ctx.target_shots)) {\n  throw new Error(\n    'total shot count mismatch: ' + totalShots +\n    ', required exactly ' + ctx.target_shots\n  );\n}\n\nconst joinedNarration = clean(\n  sanitizedScenes.map((scene) => scene.narration).join(' ')\n);\nif (!joinedNarration) {\n  throw new Error('canonical narration is empty');\n}\n\nconst words = joinedNarration.split(/\\s+/u).filter(Boolean);\nif (\n  words.length < Number(ctx.word_min) ||\n  words.length > Number(ctx.word_max)\n) {\n  throw new Error(\n    'canonical narration word count out of range: ' + words.length +\n    ', required ' + ctx.word_min + '-' + ctx.word_max\n  );\n}\n\nconst usage = body.usageMetadata && typeof body.usageMetadata === 'object'\n  ? body.usageMetadata\n  : {};\n\nreturn {\n  json: {\n    script_run_id: ctx.script_run_id,\n    model: ctx.model,\n    storyboard: {\n      narration: joinedNarration,\n      scenes: sanitizedScenes,\n    },\n    narration_word_count: words.length,\n    scene_count: sanitizedScenes.length,\n    shot_count: totalShots,\n    usage,\n  },\n};"
       },
       "id": "video-m5-validate",
       "name": "Validate Storyboard",
@@ -124,7 +124,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        1200,
+        1920,
         0
       ],
       "credentials": {
@@ -145,8 +145,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1200,
-        240
+        1920,
+        300
       ]
     },
     {
@@ -162,8 +162,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        1440,
-        240
+        2160,
+        300
       ],
       "credentials": {
         "postgres": {
@@ -182,9 +182,75 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1680,
-        240
+        2400,
+        300
       ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Build Script Prompt').first().json;\nconst firstResponse = $('Generate Storyboard').first().json;\nconst source = $json ?? {};\nconst errorObject =\n  source.error && typeof source.error === 'object' && !Array.isArray(source.error)\n    ? source.error\n    : {};\n\nconst validationError = [\n  errorObject.message,\n  source.message,\n  source.description,\n  typeof source.error === 'string' ? source.error : null,\n].find((value) => typeof value === 'string' && value.trim().length > 0)\n  ?? 'first storyboard failed validation';\n\nconst firstBody =\n  firstResponse.body && typeof firstResponse.body === 'object'\n    ? firstResponse.body\n    : firstResponse;\nconst candidate = Array.isArray(firstBody.candidates)\n  ? firstBody.candidates[0]\n  : null;\nconst parts = Array.isArray(candidate?.content?.parts)\n  ? candidate.content.parts\n  : [];\nconst previousOutput = parts\n  .filter((part) => part && typeof part.text === 'string')\n  .map((part) => part.text)\n  .join('')\n  .trim();\n\nif (!previousOutput) {\n  throw new Error('cannot repair storyboard: first Gemini output is empty');\n}\n\nconst systemMessage = [\n  ctx.system_message,\n  'You are repairing a previous JSON storyboard that failed deterministic validation.',\n  'Return a complete replacement JSON object only.',\n  'Do not explain the repair.',\n].join(' ');\n\nconst userMessage = [\n  ctx.user_message,\n  '',\n  'PREVIOUS OUTPUT FAILED VALIDATION:',\n  validationError,\n  '',\n  'PREVIOUS OUTPUT:',\n  previousOutput,\n  '',\n  'REPAIR REQUIREMENTS:',\n  '- return a complete replacement object, not a patch;',\n  '- preserve only facts supported by the supplied evidence;',\n  '- EXACT scene count must be ' + ctx.target_scenes + ';',\n  '- EXACT total shot count must be ' + ctx.target_shots + ';',\n  '- every scene must contain exactly one shot;',\n  '- narration must remain within ' + ctx.word_min + '-' + ctx.word_max + ' words;',\n  '- scene IDs must be sequential S1..S' + ctx.target_scenes + ';',\n  '- each shot ID must be the matching scene ID plus -A;',\n  '- narration must exactly equal scene narrations joined with one space;',\n  '- every scene must cite valid supplied evidence IDs;',\n  '- every shot must keep 2-4 concise English search queries;',\n  '- do not include provider names, URLs, asset IDs, or filenames in shot fields;',\n  '- output valid JSON only.',\n].join('\\n');\n\nreturn {\n  json: {\n    script_run_id: ctx.script_run_id,\n    model: ctx.model,\n    system_message: systemMessage,\n    user_message: userMessage,\n  },\n};"
+      },
+      "id": "video-m5-build-repair",
+      "name": "Build Storyboard Repair",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        220
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ systemInstruction: { parts: [{ text: $json.system_message }] }, contents: [{ role: 'user', parts: [{ text: $json.user_message }] }], generationConfig: { responseMimeType: 'application/json', candidateCount: 1, temperature: 0, topP: 0.8, maxOutputTokens: 6144 } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m5-repair-gemini",
+      "name": "Repair Storyboard",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1440,
+        220
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zsRz2tvE57EKe8zy",
+          "name": "Gemini Text"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Build Script Prompt').first().json;\nconst response = $json ?? {};\n\nconst statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (statusCode < 200 || statusCode > 299) {\n  const providerMessage =\n    response.body?.error?.message ??\n    response.error?.message ??\n    response.message ??\n    'Gemini request failed';\n  throw new Error('Gemini HTTP ' + statusCode + ': ' + String(providerMessage));\n}\n\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nconst candidate = Array.isArray(body.candidates) ? body.candidates[0] : null;\nconst parts = Array.isArray(candidate?.content?.parts) ? candidate.content.parts : [];\nconst rawText = parts\n  .filter((part) => part && typeof part.text === 'string')\n  .map((part) => part.text)\n  .join('')\n  .trim();\n\nif (!rawText) {\n  throw new Error('Gemini returned no text content');\n}\n\nlet parsed;\ntry {\n  parsed = JSON.parse(rawText);\n} catch (error) {\n  throw new Error('Gemini returned invalid JSON: ' + error.message);\n}\n\nif (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {\n  throw new Error('Gemini storyboard root must be an object');\n}\nif (parsed.error) {\n  throw new Error('Gemini could not build storyboard: ' + String(parsed.error));\n}\n\nconst clean = (value) => String(value ?? '').replace(/\\s+/g, ' ').trim();\nconst narration = clean(parsed.narration);\nconst scenes = Array.isArray(parsed.scenes) ? parsed.scenes : [];\n\nif (scenes.length !== Number(ctx.target_scenes)) {\n  throw new Error(\n    'scene count mismatch: ' + scenes.length +\n    ', required exactly ' + ctx.target_scenes\n  );\n}\n\nconst evidenceMap = ctx.evidence_map && typeof ctx.evidence_map === 'object'\n  ? ctx.evidence_map\n  : {};\nconst allowedEvidence = new Set(Object.keys(evidenceMap));\nconst allowedMedia = new Set(['photo','video','diagram','map','document']);\nconst providerPattern = /\\b(pexels|pixabay|wikimedia|unsplash|openverse)\\b|https?:\\/\\//i;\n\nconst sanitizedScenes = [];\nconst globalShotIds = new Set();\nlet totalShots = 0;\n\nfor (let i = 0; i < scenes.length; i++) {\n  const scene = scenes[i];\n  if (!scene || typeof scene !== 'object' || Array.isArray(scene)) {\n    throw new Error('scene ' + (i + 1) + ' must be an object');\n  }\n\n  const expectedSceneId = 'S' + (i + 1);\n  const sceneId = clean(scene.scene_id);\n  if (sceneId !== expectedSceneId) {\n    throw new Error('scene_id must be sequential: expected ' + expectedSceneId);\n  }\n\n  const sceneNarration = clean(scene.narration);\n  if (!sceneNarration) {\n    throw new Error(sceneId + ' narration is empty');\n  }\n\n  const evidenceIds = Array.isArray(scene.evidence_ids)\n    ? scene.evidence_ids.map(clean)\n    : [];\n  const uniqueEvidence = [...new Set(evidenceIds)];\n  if (\n    uniqueEvidence.length < 1 ||\n    uniqueEvidence.length > 4 ||\n    uniqueEvidence.length !== evidenceIds.length ||\n    uniqueEvidence.some((id) => !allowedEvidence.has(id))\n  ) {\n    throw new Error(sceneId + ' has invalid evidence_ids');\n  }\n\n  const shots = Array.isArray(scene.shots) ? scene.shots : [];\n  if (shots.length !== 1) {\n    throw new Error(sceneId + ' must contain exactly 1 shot');\n  }\n\n  const sanitizedShots = [];\n  for (let j = 0; j < shots.length; j++) {\n    const shot = shots[j];\n    if (!shot || typeof shot !== 'object' || Array.isArray(shot)) {\n      throw new Error(sceneId + ' shot ' + (j + 1) + ' must be an object');\n    }\n\n    const shotId = clean(shot.shot_id);\n    const expectedSuffix = String.fromCharCode(65 + j);\n    const expectedShotId = sceneId + '-' + expectedSuffix;\n    if (shotId !== expectedShotId || globalShotIds.has(shotId)) {\n      throw new Error('invalid or duplicate shot_id: ' + shotId);\n    }\n    globalShotIds.add(shotId);\n\n    const visualIntent = clean(shot.visual_intent);\n    if (visualIntent.length < 12 || visualIntent.length > 400) {\n      throw new Error(shotId + ' visual_intent is invalid');\n    }\n\n    const mustShow = Array.isArray(shot.must_show)\n      ? shot.must_show.map(clean).filter(Boolean)\n      : [];\n    const mustNotShow = Array.isArray(shot.must_not_show)\n      ? shot.must_not_show.map(clean).filter(Boolean)\n      : [];\n    if (mustShow.length < 1 || mustShow.length > 6 || mustNotShow.length > 6) {\n      throw new Error(shotId + ' must_show/must_not_show is invalid');\n    }\n\n    const queries = Array.isArray(shot.queries_en)\n      ? shot.queries_en.map(clean).filter(Boolean)\n      : [];\n    const queryKeys = queries.map((q) => q.toLowerCase());\n    if (\n      queries.length < 2 ||\n      queries.length > 4 ||\n      new Set(queryKeys).size !== queries.length ||\n      queries.some((query) => {\n        const count = query.split(/\\s+/u).filter(Boolean).length;\n        return count < 2 || count > 10 || query.length > 120;\n      })\n    ) {\n      throw new Error(shotId + ' queries_en is invalid');\n    }\n\n    const preferredMediaType = clean(shot.preferred_media_type).toLowerCase();\n    if (!allowedMedia.has(preferredMediaType)) {\n      throw new Error(shotId + ' preferred_media_type is invalid');\n    }\n\n    const antiSelectionText = [\n      visualIntent,\n      ...mustShow,\n      ...mustNotShow,\n      ...queries,\n    ].join(' ');\n    if (providerPattern.test(antiSelectionText)) {\n      throw new Error(shotId + ' contains provider/URL preselection');\n    }\n\n    sanitizedShots.push({\n      shot_id: shotId,\n      visual_intent: visualIntent,\n      must_show: mustShow,\n      must_not_show: mustNotShow,\n      queries_en: queries,\n      preferred_media_type: preferredMediaType,\n    });\n  }\n\n  totalShots += sanitizedShots.length;\n\n  sanitizedScenes.push({\n    scene_id: sceneId,\n    narration: sceneNarration,\n    evidence_ids: uniqueEvidence,\n    evidence_uuids: uniqueEvidence.map((id) => evidenceMap[id]),\n    shots: sanitizedShots,\n  });\n}\n\nif (totalShots !== Number(ctx.target_shots)) {\n  throw new Error(\n    'total shot count mismatch: ' + totalShots +\n    ', required exactly ' + ctx.target_shots\n  );\n}\n\nconst joinedNarration = clean(\n  sanitizedScenes.map((scene) => scene.narration).join(' ')\n);\nif (!joinedNarration) {\n  throw new Error('canonical narration is empty');\n}\n\nconst words = joinedNarration.split(/\\s+/u).filter(Boolean);\nif (\n  words.length < Number(ctx.word_min) ||\n  words.length > Number(ctx.word_max)\n) {\n  throw new Error(\n    'canonical narration word count out of range: ' + words.length +\n    ', required ' + ctx.word_min + '-' + ctx.word_max\n  );\n}\n\nconst repairUsage = body.usageMetadata && typeof body.usageMetadata === 'object'\n  ? body.usageMetadata\n  : {};\nconst firstResponse = $('Generate Storyboard').first().json;\nconst firstBody = firstResponse.body && typeof firstResponse.body === 'object'\n  ? firstResponse.body\n  : firstResponse;\nconst firstUsage = firstBody.usageMetadata && typeof firstBody.usageMetadata === 'object'\n  ? firstBody.usageMetadata\n  : {};\nconst toCount = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;\nconst usage = {\n  promptTokenCount:\n    toCount(firstUsage.promptTokenCount) + toCount(repairUsage.promptTokenCount),\n  candidatesTokenCount:\n    toCount(firstUsage.candidatesTokenCount) + toCount(repairUsage.candidatesTokenCount),\n  totalTokenCount:\n    toCount(firstUsage.totalTokenCount) + toCount(repairUsage.totalTokenCount),\n};\n\nreturn {\n  json: {\n    script_run_id: ctx.script_run_id,\n    model: ctx.model,\n    storyboard: {\n      narration: joinedNarration,\n      scenes: sanitizedScenes,\n    },\n    narration_word_count: words.length,\n    scene_count: sanitizedScenes.length,\n    shot_count: totalShots,\n    usage,\n  },\n};"
+      },
+      "id": "video-m5-validate-repair",
+      "name": "Validate Repaired Storyboard",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        220
+      ],
+      "onError": "continueErrorOutput"
     }
   ],
   "connections": {
@@ -257,7 +323,7 @@
         ],
         [
           {
-            "node": "Prepare Script Failure",
+            "node": "Build Storyboard Repair",
             "type": "main",
             "index": 0
           }
@@ -292,6 +358,60 @@
         [
           {
             "node": "Raise Script Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Storyboard Repair": {
+      "main": [
+        [
+          {
+            "node": "Repair Storyboard",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Script Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Repair Storyboard": {
+      "main": [
+        [
+          {
+            "node": "Validate Repaired Storyboard",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Script Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Repaired Storyboard": {
+      "main": [
+        [
+          {
+            "node": "Commit Storyboard",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Script Failure",
             "type": "main",
             "index": 0
           }
