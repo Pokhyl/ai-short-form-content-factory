@@ -107,9 +107,13 @@ Historical proof:
 
 Current blockers:
 - restored `Google account` OAuth in `publisher.hodor.com.pl` returns 401 and needs reconnect;
+- credential metadata confirms `Google account` has not been updated since 2026-08-14, so reconnect has not yet occurred;
 - all-four-voice Google Cloud TTS live proof is pending immediately after reconnect;
 - no Gemini credential currently exists in `publisher.hodor.com.pl`;
-- Gemini free-tier structured-output live proof is pending after that credential is added;
+- related recovery export contains encrypted `Google Gemini API` credential ID `6Vb7V9YzIwp9LS8S`, but the source encryption key is not present in the project/recovery files;
+- the only related recovery encryption key found is the previously tested mismatching key, so the old Gemini secret cannot be safely recovered from that export;
+- project-local `.env` contains no Gemini/API key;
+- Gemini free-tier structured-output live proof is pending after a valid credential is added;
 - four-language alignment quality must be tested against exact Google Cloud TTS output after TTS passes;
 - Openverse remains disabled but is not required for the visual-source gate.
 
