@@ -326,12 +326,34 @@ Verified live:
 - temporary M8 caller was backed up, deleted, and its random endpoint returns 404;
 - publisher post-state is 28 workflows / 12 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7 + M8.
 
+## M9 render + machine QA — PASS
+
+Verified live:
+- production workflow `VIDEO — M9 Render + Machine QA` ID `VideoM9RenderQa001` is published and active;
+- `factory.render_runs`, `factory.renders`, `factory.render_segments` and `factory.machine_qa` are deployed;
+- only `visuals_ready` jobs can begin M9;
+- render inputs are the exact immutable M6 voiceover, M7 scene timings and M8 selected local assets;
+- render segments are contiguous from 0 ms through the immutable voiceover duration;
+- source-video audio is always excluded; the only final audio stream is the M6 narration;
+- photos and non-9:16 media preserve the full foreground and use a blurred fill background rather than a hard crop;
+- machine QA requires exactly one H.264 video stream and one AAC audio stream, 1080×1920, yuv420p, 30 fps, <=100 ms duration delta, complete scene coverage and exact asset SHA-256 provenance;
+- dedicated M9 integration fixture passed with 7/7 render segments and all machine gates true;
+- normal product job `6974c0e6-9261-495d-b885-0db5a2ae4cd6` reached `machine_qa_passed`;
+- product M9 execution `7837` succeeded;
+- exact product render path is `/data/renders/6974c0e6-9261-495d-b885-0db5a2ae4cd6/final.mp4`;
+- exact product render SHA-256 is `262941d27a00ac4fe5e8a754d3a459c29e3b75298928fc76322b149bd9e9b178`;
+- exact product render size is 10,347,458 bytes;
+- ffprobe independently confirms 1080×1920 H.264/yuv420p video at 30 fps plus AAC audio;
+- rendered duration is 30.533333 s against immutable voiceover 30.528 s, delta 5 ms;
+- exactly 7 render segments and one passed machine-QA row are persisted;
+- temporary M9 caller was backed up, deleted, and its random endpoint returns 404;
+- publisher post-state is 29 workflows / 13 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7 + M8 + M9;
+- `ai-short-form-n8n` restart-manager corruption was recovered by recreating only the stateless n8n container from the same image/env/networks; publisher DB, workflows and credentials remained intact; final restart count is 0.
+
 ## Immediate next work
-1. Implement M9 deterministic render assembly from the exact M6 narration, M7 scene timings and M8 selected local assets.
-2. Render a fresh normal job to 1080×1920 H.264/AAC without regenerating narration or visuals.
-3. Run machine QA on exact duration, audio presence, video stream, 9:16 dimensions, scene coverage and asset usage.
-4. Persist render/QA provenance and fail closed on any machine gate.
-5. Deliver the exact MP4 only after M9 PASS; HUMAN PASS remains the final acceptance gate.
+1. Deliver the exact M9 MP4 for human review.
+2. Do not regenerate, replace, publish or mark the product accepted before explicit HUMAN PASS.
+3. After explicit HUMAN PASS, proceed only with the next plan stage approved by the user.
 
 
 ## Production orchestration lock — 2026-09-19
