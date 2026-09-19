@@ -1,0 +1,305 @@
+{
+  "id": "VideoM5Storyboard001",
+  "name": "VIDEO — M5 Script + Storyboard",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "job_id"
+            }
+          ]
+        }
+      },
+      "id": "video-m5-trigger",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT script_run_id::text AS script_run_id, topic, language_code, target_duration_seconds, evidence_json\nFROM factory.begin_script($1::uuid, $2::text);",
+        "options": {
+          "queryReplacement": "={{ [ $json.job_id, 'gemini-3.5-flash-lite' ] }}"
+        }
+      },
+      "id": "video-m5-begin",
+      "name": "Begin Script",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        240,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const row = $json;\n\nconst scriptRunId = String(row.script_run_id ?? '').trim();\nconst topic = String(row.topic ?? '').trim();\nconst languageCode = String(row.language_code ?? '').trim();\nconst duration = Number(row.target_duration_seconds);\n\nlet evidence = row.evidence_json;\nif (typeof evidence === 'string') {\n  evidence = JSON.parse(evidence);\n}\n\nif (\n  !scriptRunId ||\n  !topic ||\n  !['en','pl','ru','uk'].includes(languageCode) ||\n  ![15,30,45,60].includes(duration) ||\n  !Array.isArray(evidence) ||\n  evidence.length < 3\n) {\n  throw new Error('begin_script returned invalid context');\n}\n\nconst languageNames = {\n  en: 'English',\n  pl: 'Polish',\n  ru: 'Russian',\n  uk: 'Ukrainian',\n};\n\nconst wps = languageCode === 'en'\n  ? { min: 1.8, max: 2.5 }\n  : { min: 1.7, max: 2.4 };\n\nconst wordMin = Math.ceil(duration * wps.min);\nconst wordMax = Math.floor(duration * wps.max);\n\nconst targetSegments = {\n  15: 4,\n  30: 7,\n  45: 10,\n  60: 13,\n}[duration];\n\nconst density = {\n  targetScenes: targetSegments,\n  targetShots: targetSegments,\n};\n\nconst evidenceMap = {};\nconst promptEvidence = evidence.map((entry) => {\n  const ref = String(entry.evidence_ref ?? '').trim();\n  const uuid = String(entry.evidence_uuid ?? '').trim();\n  if (!/^E[1-9][0-9]*$/.test(ref) || !/^[0-9a-f-]{36}$/i.test(uuid)) {\n    throw new Error('invalid evidence reference from database');\n  }\n  evidenceMap[ref] = uuid;\n  return {\n    id: ref,\n    source_domain: String(entry.source_domain ?? ''),\n    title: String(entry.title ?? ''),\n    source_url: String(entry.source_url ?? ''),\n    snippet: String(entry.snippet ?? ''),\n    content: String(entry.content ?? ''),\n  };\n});\n\nconst systemMessage = [\n  'You create factual short-form video scripts and executable visual storyboards.',\n  'Use ONLY the evidence provided in the user message.',\n  'Do not use outside knowledge, hidden memory, Google Search, URL fetching, or assumptions.',\n  'Every scene narration must be supported by one or more evidence IDs from the supplied evidence list.',\n  'If the supplied evidence cannot support a complete factual script, return JSON object {\"error\":\"INSUFFICIENT_EVIDENCE\"} and nothing else.',\n  'Return valid JSON only. No markdown, comments, or prose outside JSON.',\n].join(' ');\n\nconst contract = {\n  narration: 'continuous narration in the requested output language',\n  scenes: [\n    {\n      scene_id: 'S1',\n      narration: 'exact contiguous narration segment',\n      evidence_ids: ['E1'],\n      shots: [\n        {\n          shot_id: 'S1-A',\n          visual_intent: 'concrete visible subject/action/mechanism in English',\n          must_show: ['concrete required visual concept'],\n          must_not_show: ['specific conflicting visual if relevant'],\n          queries_en: ['2 to 10 word factual English search query', 'second distinct query'],\n          preferred_media_type: 'photo | video | diagram | map | document',\n        },\n      ],\n    },\n  ],\n};\n\nconst userMessage = [\n  'TOPIC: ' + topic,\n  'OUTPUT LANGUAGE: ' + languageNames[languageCode] + ' (' + languageCode + ')',\n  'TARGET DURATION: ' + duration + ' seconds',\n  'NARRATION WORD RANGE: ' + wordMin + '-' + wordMax + ' words',\n  'EXACT SCENE COUNT: ' + density.targetScenes,\n  'EXACT TOTAL SHOT COUNT: ' + density.targetShots,\n  '',\n  'OUTPUT CONTRACT:',\n  JSON.stringify(contract),\n  '',\n  'RULES:',\n  '- narration must equal all scene narration strings joined in scene order with one space;',\n  '- scene_id values must be sequential S1, S2, S3...;',\n  '- every scene must cite 1-4 valid evidence_ids from the supplied list;',\n  '- each scene must contain exactly 1 shot;',\n  '- shot_id must start with its scene_id, for example S2-A or S2-B;',\n  '- each shot must have a concrete visual_intent, at least one must_show concept, and 2-4 distinct English queries;',\n  '- each English query must be concise, factual, concrete, and 2-10 words;',\n  '- never name a media provider, asset ID, URL, filename, or preselected image/video in a shot;',\n  '- preferred_media_type must be exactly photo, video, diagram, map, or document;',\n  '- do not add facts that are not supported by the cited evidence IDs;',\n  '- do not mention evidence IDs in the spoken narration;',\n  '- make narration natural for one continuous voiceover, not a list of disconnected captions;',\n  '',\n  'EVIDENCE:',\n  JSON.stringify(promptEvidence),\n].join('\\n');\n\nreturn {\n  json: {\n    script_run_id: scriptRunId,\n    model: 'gemini-3.5-flash-lite',\n    topic,\n    language_code: languageCode,\n    target_duration_seconds: duration,\n    word_min: wordMin,\n    word_max: wordMax,\n    target_scenes: density.targetScenes,\n    target_shots: density.targetShots,\n    evidence_map: evidenceMap,\n    system_message: systemMessage,\n    user_message: userMessage,\n  },\n};"
+      },
+      "id": "video-m5-prompt",
+      "name": "Build Script Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ systemInstruction: { parts: [{ text: $json.system_message }] }, contents: [{ role: 'user', parts: [{ text: $json.user_message }] }], generationConfig: { responseMimeType: 'application/json', candidateCount: 1, temperature: 0.2, topP: 0.9, maxOutputTokens: 4096 } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m5-gemini",
+      "name": "Generate Storyboard",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        720,
+        0
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zsRz2tvE57EKe8zy",
+          "name": "Gemini Text"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Build Script Prompt').first().json;\nconst response = $json ?? {};\n\nconst statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (statusCode < 200 || statusCode > 299) {\n  const providerMessage =\n    response.body?.error?.message ??\n    response.error?.message ??\n    response.message ??\n    'Gemini request failed';\n  throw new Error('Gemini HTTP ' + statusCode + ': ' + String(providerMessage));\n}\n\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nconst candidate = Array.isArray(body.candidates) ? body.candidates[0] : null;\nconst parts = Array.isArray(candidate?.content?.parts) ? candidate.content.parts : [];\nconst rawText = parts\n  .filter((part) => part && typeof part.text === 'string')\n  .map((part) => part.text)\n  .join('')\n  .trim();\n\nif (!rawText) {\n  throw new Error('Gemini returned no text content');\n}\n\nlet parsed;\ntry {\n  parsed = JSON.parse(rawText);\n} catch (error) {\n  throw new Error('Gemini returned invalid JSON: ' + error.message);\n}\n\nif (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {\n  throw new Error('Gemini storyboard root must be an object');\n}\nif (parsed.error) {\n  throw new Error('Gemini could not build storyboard: ' + String(parsed.error));\n}\n\nconst clean = (value) => String(value ?? '').replace(/\\s+/g, ' ').trim();\nconst narration = clean(parsed.narration);\nconst scenes = Array.isArray(parsed.scenes) ? parsed.scenes : [];\n\nif (!narration) throw new Error('storyboard narration is empty');\nif (scenes.length !== Number(ctx.target_scenes)) {\n  throw new Error(\n    'scene count mismatch: ' + scenes.length +\n    ', required exactly ' + ctx.target_scenes\n  );\n}\n\nconst words = narration.split(/\\s+/u).filter(Boolean);\nif (\n  words.length < Number(ctx.word_min) ||\n  words.length > Number(ctx.word_max)\n) {\n  throw new Error(\n    'narration word count out of range: ' + words.length +\n    ', required ' + ctx.word_min + '-' + ctx.word_max\n  );\n}\n\nconst evidenceMap = ctx.evidence_map && typeof ctx.evidence_map === 'object'\n  ? ctx.evidence_map\n  : {};\nconst allowedEvidence = new Set(Object.keys(evidenceMap));\nconst allowedMedia = new Set(['photo','video','diagram','map','document']);\nconst providerPattern = /\\b(pexels|pixabay|wikimedia|unsplash|openverse)\\b|https?:\\/\\//i;\n\nconst sanitizedScenes = [];\nconst globalShotIds = new Set();\nlet totalShots = 0;\n\nfor (let i = 0; i < scenes.length; i++) {\n  const scene = scenes[i];\n  if (!scene || typeof scene !== 'object' || Array.isArray(scene)) {\n    throw new Error('scene ' + (i + 1) + ' must be an object');\n  }\n\n  const expectedSceneId = 'S' + (i + 1);\n  const sceneId = clean(scene.scene_id);\n  if (sceneId !== expectedSceneId) {\n    throw new Error('scene_id must be sequential: expected ' + expectedSceneId);\n  }\n\n  const sceneNarration = clean(scene.narration);\n  if (!sceneNarration) {\n    throw new Error(sceneId + ' narration is empty');\n  }\n\n  const evidenceIds = Array.isArray(scene.evidence_ids)\n    ? scene.evidence_ids.map(clean)\n    : [];\n  const uniqueEvidence = [...new Set(evidenceIds)];\n  if (\n    uniqueEvidence.length < 1 ||\n    uniqueEvidence.length > 4 ||\n    uniqueEvidence.length !== evidenceIds.length ||\n    uniqueEvidence.some((id) => !allowedEvidence.has(id))\n  ) {\n    throw new Error(sceneId + ' has invalid evidence_ids');\n  }\n\n  const shots = Array.isArray(scene.shots) ? scene.shots : [];\n  if (shots.length !== 1) {\n    throw new Error(sceneId + ' must contain exactly 1 shot');\n  }\n\n  const sanitizedShots = [];\n  for (let j = 0; j < shots.length; j++) {\n    const shot = shots[j];\n    if (!shot || typeof shot !== 'object' || Array.isArray(shot)) {\n      throw new Error(sceneId + ' shot ' + (j + 1) + ' must be an object');\n    }\n\n    const shotId = clean(shot.shot_id);\n    const expectedSuffix = String.fromCharCode(65 + j);\n    const expectedShotId = sceneId + '-' + expectedSuffix;\n    if (shotId !== expectedShotId || globalShotIds.has(shotId)) {\n      throw new Error('invalid or duplicate shot_id: ' + shotId);\n    }\n    globalShotIds.add(shotId);\n\n    const visualIntent = clean(shot.visual_intent);\n    if (visualIntent.length < 12 || visualIntent.length > 400) {\n      throw new Error(shotId + ' visual_intent is invalid');\n    }\n\n    const mustShow = Array.isArray(shot.must_show)\n      ? shot.must_show.map(clean).filter(Boolean)\n      : [];\n    const mustNotShow = Array.isArray(shot.must_not_show)\n      ? shot.must_not_show.map(clean).filter(Boolean)\n      : [];\n    if (mustShow.length < 1 || mustShow.length > 6 || mustNotShow.length > 6) {\n      throw new Error(shotId + ' must_show/must_not_show is invalid');\n    }\n\n    const queries = Array.isArray(shot.queries_en)\n      ? shot.queries_en.map(clean).filter(Boolean)\n      : [];\n    const queryKeys = queries.map((q) => q.toLowerCase());\n    if (\n      queries.length < 2 ||\n      queries.length > 4 ||\n      new Set(queryKeys).size !== queries.length ||\n      queries.some((query) => {\n        const count = query.split(/\\s+/u).filter(Boolean).length;\n        return count < 2 || count > 10 || query.length > 120;\n      })\n    ) {\n      throw new Error(shotId + ' queries_en is invalid');\n    }\n\n    const preferredMediaType = clean(shot.preferred_media_type).toLowerCase();\n    if (!allowedMedia.has(preferredMediaType)) {\n      throw new Error(shotId + ' preferred_media_type is invalid');\n    }\n\n    const antiSelectionText = [\n      visualIntent,\n      ...mustShow,\n      ...mustNotShow,\n      ...queries,\n    ].join(' ');\n    if (providerPattern.test(antiSelectionText)) {\n      throw new Error(shotId + ' contains provider/URL preselection');\n    }\n\n    sanitizedShots.push({\n      shot_id: shotId,\n      visual_intent: visualIntent,\n      must_show: mustShow,\n      must_not_show: mustNotShow,\n      queries_en: queries,\n      preferred_media_type: preferredMediaType,\n    });\n  }\n\n  totalShots += sanitizedShots.length;\n\n  sanitizedScenes.push({\n    scene_id: sceneId,\n    narration: sceneNarration,\n    evidence_ids: uniqueEvidence,\n    evidence_uuids: uniqueEvidence.map((id) => evidenceMap[id]),\n    shots: sanitizedShots,\n  });\n}\n\nif (totalShots !== Number(ctx.target_shots)) {\n  throw new Error(\n    'total shot count mismatch: ' + totalShots +\n    ', required exactly ' + ctx.target_shots\n  );\n}\n\nconst joinedNarration = clean(\n  sanitizedScenes.map((scene) => scene.narration).join(' ')\n);\nif (joinedNarration !== narration) {\n  throw new Error('root narration must exactly equal joined scene narration');\n}\n\nconst usage = body.usageMetadata && typeof body.usageMetadata === 'object'\n  ? body.usageMetadata\n  : {};\n\nreturn {\n  json: {\n    script_run_id: ctx.script_run_id,\n    model: ctx.model,\n    storyboard: {\n      narration,\n      scenes: sanitizedScenes,\n    },\n    narration_word_count: words.length,\n    scene_count: sanitizedScenes.length,\n    shot_count: totalShots,\n    usage,\n  },\n};"
+      },
+      "id": "video-m5-validate",
+      "name": "Validate Storyboard",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT script_version_id::text AS script_version_id, scene_count, shot_count, narration_word_count\nFROM factory.commit_storyboard($1::uuid, $2::text, $3::jsonb, $4::jsonb);",
+        "options": {
+          "queryReplacement": "={{ [ $json.script_run_id, $json.model, JSON.stringify($json.storyboard), JSON.stringify($json.usage) ] }}"
+        }
+      },
+      "id": "video-m5-commit",
+      "name": "Commit Storyboard",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1200,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Script').first().json;\nconst runId = String(ctx.script_run_id ?? '').trim();\nif (!runId) {\n  throw new Error('cannot record script failure: script_run_id missing');\n}\n\nconst errorObject =\n  $json.error && typeof $json.error === 'object' && !Array.isArray($json.error)\n    ? $json.error\n    : {};\n\nconst candidates = [\n  errorObject.message,\n  $json.message,\n  $json.description,\n  typeof $json.error === 'string' ? $json.error : null,\n];\n\nconst message = candidates.find(\n  (value) => typeof value === 'string' && value.trim().length > 0\n) ?? 'unspecified M5 workflow failure';\n\nreturn {\n  json: {\n    script_run_id: runId,\n    error_message: ('M5 script workflow failed: ' + message.trim()).slice(0, 4000),\n  },\n};"
+      },
+      "id": "video-m5-prepare-failure",
+      "name": "Prepare Script Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT script_status, job_status\nFROM factory.fail_script($1::uuid, $2::text);",
+        "options": {
+          "queryReplacement": "={{ [ $json.script_run_id, $json.error_message ] }}"
+        }
+      },
+      "id": "video-m5-fail",
+      "name": "Fail Script",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1440,
+        240
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const failure = $('Prepare Script Failure').first().json;\nthrow new Error(String(failure.error_message ?? 'M5 script failed'));"
+      },
+      "id": "video-m5-raise",
+      "name": "Raise Script Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        240
+      ]
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Begin Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Begin Script": {
+      "main": [
+        [
+          {
+            "node": "Build Script Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Script Prompt": {
+      "main": [
+        [
+          {
+            "node": "Generate Storyboard",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Script Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Storyboard": {
+      "main": [
+        [
+          {
+            "node": "Validate Storyboard",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Script Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Storyboard": {
+      "main": [
+        [
+          {
+            "node": "Commit Storyboard",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Script Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit Storyboard": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Prepare Script Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Script Failure": {
+      "main": [
+        [
+          {
+            "node": "Fail Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Script": {
+      "main": [
+        [
+          {
+            "node": "Raise Script Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
