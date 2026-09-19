@@ -42,7 +42,7 @@ Status: PASS
 Observed:
 - HTTP 200;
 - 5 image candidates returned for a Rayleigh-scattering query;
-- image metadata endpoint is reachable from the isolated runtime.
+- image metadata endpoint is reachable from the project server runtime.
 
 Conclusion:
 - Wikimedia adapter can proceed to implementation.
@@ -76,22 +76,21 @@ Decision:
 - do not bypass Cloudflare or scrape the website.
 
 ### Gemini text
-Status: PENDING CREDENTIAL IN ISOLATED RUNTIME
+Status: PENDING LIVE PROOF THROUGH PRODUCTION N8N
 
-Current isolated n8n has no Gemini credential.
-
-Shared n8n contains Gemini credentials, but the clean-rebuild isolation rule forbids copying secrets out of another runtime or creating a hidden shared-runtime dependency.
+Production provider calls must run through `publisher.hodor.com.pl`.
 
 Required proof:
-- current approved free-tier model call from isolated runtime;
+- current approved free-tier model call through `publisher.hodor.com.pl`;
 - structured JSON response;
 - no paid fallback.
 
 ### Google Cloud Text-to-Speech
-Status: PENDING OAUTH CREDENTIAL IN ISOLATED RUNTIME
+Status: PENDING OAUTH RECONNECT + LIVE PROOF THROUGH PRODUCTION N8N
 
 Required proof:
-- real OAuth authentication from isolated runtime;
+- reconnect the restored Google OAuth credential in `publisher.hodor.com.pl`;
+- real OAuth authentication through `publisher.hodor.com.pl`;
 - one MP3 synthesis for each locked voice:
   - `en-US-Chirp3-HD-Algenib`;
   - `pl-PL-Chirp3-HD-Enceladus`;
@@ -153,3 +152,68 @@ Mandatory to unblock M3:
 4. local four-language speech alignment.
 
 Wikimedia currently counts as one visual source. Pixabay is the intended second source once its API key is connected.
+
+
+## Recovery findings — 2026-09-19
+
+Historical Google Cloud TTS proof:
+- the August backup contains a real Google OAuth credential named Google account;
+- WF03 called the Google Cloud text:synthesize endpoint;
+- all four selected voices were present;
+- August execution history contains repeated successful executions.
+
+Current status differs:
+- the restored OAuth credential can be read by n8n;
+- a current live call reaches Google but reports that the credential needs reconnect;
+- production status therefore remains PENDING until OAuth is reconnected and all four voices pass again.
+
+Recovered visual credentials:
+- historical Pexels and Pixabay credentials exist in the restored publisher database;
+- credential presence is not a current live validity proof;
+- do not mark either provider production-ready until a current API call succeeds and metadata/license handling is verified.
+
+Production credential boundary:
+- production credentials stay in `publisher.hodor.com.pl`;
+- the bootstrap `shorts-v2` n8n container was removed on 2026-09-19;
+- supporting Postgres/media-worker/SearXNG remain isolated without moving production n8n credentials.
+
+
+## Gemini model verification — 2026-09-19
+
+Official Google documentation verified:
+- stable production model: gemini-3.5-flash-lite;
+- status: GA;
+- text output supported;
+- structured outputs supported;
+- standard Developer API Free Tier lists text input and output as free of charge;
+- active rate limits are project-specific and must be checked in AI Studio for the connected project.
+
+This closes model-selection uncertainty only. It does NOT close the M2 live-provider gate.
+
+The live structured-output call remains PENDING until it succeeds through the production n8n at `publisher.hodor.com.pl`. The bootstrap `shorts-v2` n8n has been removed.
+
+
+## Free-only TTS budget guard — 2026-09-19
+
+Status: PASS for local budget-control infrastructure.
+
+Implemented:
+- db/02-provider-budget.sql;
+- factory.provider_budget_limits;
+- factory.provider_usage_ledger;
+- factory.provider_budget_status;
+- atomic reserve_provider_usage();
+- idempotent commit_provider_usage();
+- idempotent release_provider_usage().
+
+Verified on shorts-v2 PostgreSQL:
+- Chirp 3 HD provider free limit seeded as 1,000,000 characters/month;
+- WaveNet provider free limit seeded as 4,000,000 characters/month;
+- internal production limits are intentionally NULL and disabled by default;
+- reservation fails closed while internal limit is unset/disabled;
+- same idempotency key returns the same reservation;
+- concurrent-style allocation cannot exceed the configured internal limit;
+- committed/reserved amounts calculate correctly;
+- test transaction rolled back with zero test ledger rows remaining.
+
+This closes the application-level free-only budget-control mechanism. It does not close the live Google Cloud TTS credential/voice gate.
