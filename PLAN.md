@@ -628,12 +628,20 @@ Verified:
 Acceptance: PASS.
 
 ## M6 — One final voiceover
-Acceptance:
-- one Google Cloud TTS synthesis;
-- correct locked voice;
-- MP3 stored;
-- real duration measured;
-- no later TTS.
+Status: PASS — verified live on 2026-09-19.
+
+Verified:
+- only `storyboard_ready` jobs can begin voiceover generation;
+- provider budget is reserved before synthesis and committed only after provider consumption;
+- exactly one Google Cloud TTS synthesis is allowed per job;
+- locked language-to-voice mapping is enforced in PostgreSQL;
+- exact MP3 is stored atomically as `/data/voiceovers/<job_id>/final.mp3`;
+- a second storage attempt for the same job is rejected by the media-worker;
+- SHA-256, byte size, codec, sample rate, channel count and real ffprobe duration are persisted;
+- failed product jobs cannot re-enter TTS;
+- no later stage may synthesize another narration.
+
+Acceptance: PASS.
 
 ## M7 — Local alignment
 Acceptance:
