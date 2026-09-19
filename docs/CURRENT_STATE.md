@@ -214,12 +214,47 @@ Verified live:
 - temporary M5 public test caller was backed up, deleted, and its random endpoint now returns 404;
 - publisher post-state is 25 workflows / 9 active: 22 protected MCP/ADMIN + M3 + M4 + M5.
 
+## M6
+PASS on 2026-09-19.
+
+Verified live:
+- production workflow `VIDEO — M6 One Final Voiceover` ID `VideoM6Voiceover001` is published and active;
+- M6 is an internal sub-workflow with input `job_id`;
+- `factory.voiceover_runs` and `factory.voiceovers` are deployed;
+- `begin_voiceover()`, `mark_tts_consumed()`, `complete_voiceover()`, and `fail_voiceover()` are deployed;
+- only `storyboard_ready` jobs can start M6;
+- each job and script version can have only one immutable voiceover run;
+- locked voices are enforced by language in PostgreSQL:
+  - EN `en-US-Chirp3-HD-Algenib`;
+  - PL `pl-PL-Chirp3-HD-Enceladus`;
+  - RU `ru-RU-Wavenet-D`;
+  - UK `uk-UA-Chirp3-HD-Enceladus`;
+- free-only provider usage is reserved before TTS using idempotency key `m6-tts:<job_id>`;
+- a successful provider response commits the usage ledger before storage;
+- pre-provider failures release the reservation; post-provider failures keep usage committed;
+- media-worker atomically stores exactly one `final.mp3` and rejects a second create;
+- successful M6 test used job `e4bc4b8b-dcf5-4c81-9193-5db297c528d7`;
+- exact TTS input was the 418-character final M5 narration;
+- one Google Cloud TTS request used `en-US-Chirp3-HD-Algenib`;
+- M6 execution `7760` succeeded;
+- output voiceover ID is `b0390ff7-2ec8-498f-8910-37fcdcf4c689`;
+- exact stored file is `/data/voiceovers/e4bc4b8b-dcf5-4c81-9193-5db297c528d7/final.mp3`;
+- stored file is 106,272 bytes, mono 24 kHz MP3;
+- measured duration is 26,568 ms;
+- exact SHA-256 is `5b9d89a80c1765a3bebd8b192fac267156a703ab298d40df4bfa549d4521e180`;
+- independent container-side SHA-256 and ffprobe output match the persisted DB values;
+- M6 usage ledger row is committed for exactly 418 Chirp3 HD characters;
+- Chirp3 HD monthly internal allocation after M6 is 526 characters with 899,474 remaining under the 900,000 internal ceiling;
+- job state is `voiceover_ready`;
+- temporary M6 public test caller was backed up, deleted, and its random endpoint returns 404;
+- publisher post-state is 26 workflows / 10 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6.
+
 ## Immediate next work
-1. Implement M6 one-final-voiceover persistence and production workflow.
-2. Load only `storyboard_ready` jobs.
-3. Reserve the correct free-only Google Cloud TTS character budget before synthesis.
-4. Perform exactly one final Google Cloud TTS synthesis using the locked language voice.
-5. Store the exact MP3 durably, persist its SHA-256 and measured duration, then prohibit all later re-TTS.
+1. Implement M7 local alignment against the exact stored M6 MP3.
+2. Run pinned local `whisper.cpp` on that exact SHA-256 file; do not synthesize or modify audio.
+3. Persist word/token timing output and alignment metadata.
+4. Verify global narration coverage and per-scene coverage against the exact final M5 narration.
+5. Fail closed if alignment quality is inadequate; do not use proportional timing fallback.
 
 
 ## Production orchestration lock — 2026-09-19
