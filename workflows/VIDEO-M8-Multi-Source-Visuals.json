@@ -1,0 +1,1394 @@
+{
+  "id": "VideoM8Visuals001",
+  "name": "VIDEO — M8 Multi-Source Visuals",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "job_id"
+            }
+          ]
+        }
+      },
+      "id": "m8-trigger",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT visual_run_id::text AS visual_run_id, alignment_id::text AS alignment_id, shot_count, expected_search_count, shots_json\nFROM factory.begin_visuals($1::uuid);",
+        "options": {
+          "queryReplacement": "={{ [ $json.job_id ] }}"
+        }
+      },
+      "id": "m8-begin",
+      "name": "Begin Visuals",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        220,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "\nconst begin = $('Begin Visuals').first().json;\nlet shots = begin.shots_json;\nif (typeof shots === 'string') shots = JSON.parse(shots);\nif (!Array.isArray(shots) || !shots.length) throw new Error('M8 shots_json is empty');\n\nconst out = [];\nfor (const shot of shots) {\n  const queries = Array.isArray(shot.queries_en) ? shot.queries_en : [];\n  if (!queries.length) throw new Error('M8 shot has no visual queries: ' + String(shot.shot_key || 'unknown'));\n\n  for (let i=0;i<queries.length;i++) {\n    const query = String(queries[i] || '').trim();\n    if (!query) throw new Error('M8 empty visual query');\n\n    out.push({\n      json:{\n        visual_run_id:String(begin.visual_run_id),\n        shot_uuid:String(shot.shot_uuid),\n        shot_key:String(shot.shot_key),\n        scene_order:Number(shot.scene_order),\n        query_index:i+1,\n        query,\n        provider:'pixabay',\n        endpoint_kind:String(shot.preferred_media_type) === 'video' ? 'video' : 'photo',\n        preferred_media_type:String(shot.preferred_media_type),\n        visual_intent:String(shot.visual_intent || ''),\n        must_show:Array.isArray(shot.must_show) ? shot.must_show : [],\n        must_not_show:Array.isArray(shot.must_not_show) ? shot.must_not_show : [],\n      }\n    });\n  }\n}\nreturn out;\n"
+      },
+      "id": "m8-build-pixabay",
+      "name": "Build Pixabay Requests",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.endpoint_kind === 'video' ? 'https://pixabay.com/api/videos/' : 'https://pixabay.com/api/' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.query }}"
+            },
+            {
+              "name": "per_page",
+              "value": "8"
+            },
+            {
+              "name": "safesearch",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 60000,
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 700
+            }
+          }
+        }
+      },
+      "id": "m8-pixabay-search",
+      "name": "Pixabay Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        660,
+        0
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "Z61TBglXcV08CRbT",
+          "name": "Pixabay API"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "\nconst STOP = new Set([\n  'the','and','for','with','from','into','onto','over','under','this','that','these','those',\n  'show','showing','display','displaying','view','close','macro','image','photo','video','scene',\n  'a','an','of','to','in','on','at','as','by','is','are','be','or'\n]);\nconst SPECIAL = {\n  leaves:'leaf', trees:'tree', branches:'branch', colors:'color', colours:'color',\n  falling:'fall', fallen:'fall', seasonal:'season', sunlight:'sunlight'\n};\nfunction stem(token) {\n  let t = String(token || '').toLowerCase();\n  if (SPECIAL[t]) return SPECIAL[t];\n  if (t.endsWith('ies') && t.length > 5) return t.slice(0,-3) + 'y';\n  if (t.endsWith('ing') && t.length > 6) return t.slice(0,-3);\n  if (t.endsWith('es') && t.length > 5) return t.slice(0,-2);\n  if (t.endsWith('s') && t.length > 4) return t.slice(0,-1);\n  return t;\n}\nfunction terms(value) {\n  return [...new Set(\n    String(value || '')\n      .toLowerCase()\n      .replace(/[^a-z0-9]+/g,' ')\n      .split(/\\s+/)\n      .map(stem)\n      .filter((t) => t.length >= 2 && !STOP.has(t))\n  )];\n}\nfunction ratioAgainst(value,set) {\n  const ts = terms(value);\n  if (!ts.length) return 0;\n  let matched = 0;\n  for (const t of ts) if (set.has(t)) matched++;\n  return matched / ts.length;\n}\nfunction average(values) {\n  if (!values.length) return 0;\n  return values.reduce((a,b) => a+b,0) / values.length;\n}\nfunction scoreCandidate(ctx, metadataText, mediaType, width, height, providerRank, extraReject='') {\n  const metaSet = new Set(terms(metadataText));\n  const querySet = new Set(terms(ctx.query));\n  const mustShow = Array.isArray(ctx.must_show) ? ctx.must_show.map(String) : [];\n  const mustNot = Array.isArray(ctx.must_not_show) ? ctx.must_not_show.map(String) : [];\n\n  const mustMeta = average(mustShow.map((x) => ratioAgainst(x,metaSet)));\n  const queryMeta = ratioAgainst(ctx.query,metaSet);\n  const intentMeta = ratioAgainst(ctx.visual_intent,metaSet);\n  const queryMust = average(mustShow.map((x) => ratioAgainst(x,querySet)));\n\n  let rejected = false;\n  const reasons = [];\n\n  for (const forbidden of mustNot) {\n    const ft = terms(forbidden);\n    if (!ft.length) continue;\n    const r = ratioAgainst(forbidden,metaSet);\n    const threshold = ft.length === 1 ? 1 : 0.67;\n    if (r >= threshold) {\n      rejected = true;\n      reasons.push('must_not_show:' + forbidden);\n    }\n  }\n\n  if (mustShow.length && mustMeta < 0.20 && queryMeta < 0.20) {\n    rejected = true;\n    reasons.push('insufficient_returned_metadata_match');\n  } else if (!mustShow.length && queryMeta < 0.20 && intentMeta < 0.20) {\n    rejected = true;\n    reasons.push('insufficient_returned_metadata_match');\n  }\n\n  if (extraReject) {\n    rejected = true;\n    reasons.push(extraReject);\n  }\n\n  let score =\n    15 +\n    Math.round(40 * mustMeta) +\n    Math.round(20 * queryMeta) +\n    Math.round(15 * intentMeta) +\n    Math.round(5 * queryMust) +\n    Math.max(0,11 - Number(providerRank || 99));\n\n  if (String(ctx.preferred_media_type) === mediaType) score += 10;\n  else if (String(ctx.preferred_media_type) === 'diagram' && mediaType === 'photo') score += 2;\n\n  if (Number(height) >= Number(width)) score += 3;\n\n  score = Math.max(0,Math.min(100,score));\n\n  return {\n    relevance_score: score,\n    rejected,\n    rejection_reason: reasons.join('; ') || null,\n  };\n}\n\nconst ctx = $('Build Pixabay Requests').item.json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object' ? response.body : {};\nconst status = Number(response.statusCode ?? response.status ?? 0);\nif (status !== 200) throw new Error('Pixabay search HTTP ' + status);\nconst headers = response.headers && typeof response.headers === 'object' ? response.headers : {};\nconst hits = Array.isArray(body.hits) ? body.hits : [];\nconst candidates = [];\n\nfunction chooseVideoVariant(videos) {\n  const variants = Object.entries(videos || {})\n    .map(([name,v]) => ({name,...(v || {})}))\n    .filter((v) =>\n      typeof v.url === 'string' && v.url.startsWith('https://') &&\n      Number(v.width) > 0 && Number(v.height) > 0 &&\n      (!Number(v.size) || Number(v.size) <= 80*1024*1024)\n    );\n\n  variants.sort((a,b) => {\n    const da = Math.abs(Math.max(Number(a.width),Number(a.height)) - 1920);\n    const db = Math.abs(Math.max(Number(b.width),Number(b.height)) - 1920);\n    if (da !== db) return da-db;\n    const pa = Number(a.width)*Number(a.height);\n    const pb = Number(b.width)*Number(b.height);\n    if (pa !== pb) return pb-pa;\n    return Number(a.size || 0)-Number(b.size || 0);\n  });\n  return variants[0] || null;\n}\n\nfor (let i=0;i<hits.length;i++) {\n  const h = hits[i] || {};\n  let mediaType;\n  let downloadUrl;\n  let previewUrl;\n  let width;\n  let height;\n  let durationMs = null;\n\n  if (ctx.endpoint_kind === 'video') {\n    const v = chooseVideoVariant(h.videos);\n    if (!v) continue;\n    mediaType = 'video';\n    downloadUrl = String(v.url);\n    previewUrl = String(v.thumbnail || '');\n    width = Number(v.width);\n    height = Number(v.height);\n    durationMs = Math.round(Number(h.duration || 0)*1000);\n    if (!(durationMs > 0)) continue;\n  } else {\n    downloadUrl = String(h.largeImageURL || h.webformatURL || '');\n    previewUrl = String(h.webformatURL || h.previewURL || '');\n    width = Number(h.imageWidth || h.webformatWidth || 0);\n    height = Number(h.imageHeight || h.webformatHeight || 0);\n    if (!downloadUrl.startsWith('https://') || !(width > 0 && height > 0)) continue;\n\n    const type = String(h.type || '').toLowerCase();\n    mediaType =\n      ctx.preferred_media_type === 'diagram' && (type === 'illustration' || type === 'vector')\n        ? 'diagram'\n        : 'photo';\n  }\n\n  const metadataText = [\n    h.tags,\n    h.name,\n    h.type,\n    h.user,\n    h.pageURL,\n  ].filter(Boolean).join(' ');\n\n  const scored = scoreCandidate(\n    ctx,\n    metadataText,\n    mediaType,\n    width,\n    height,\n    i+1,\n    h.isAiGenerated === true ? 'pixabay_ai_generated' : ''\n  );\n\n  candidates.push({\n    provider_asset_id:String(h.id),\n    provider_rank:i+1,\n    media_type:mediaType,\n    source_url:String(h.pageURL || ''),\n    download_url:downloadUrl,\n    preview_url:previewUrl || null,\n    author:String(h.user || h.name || '') || null,\n    author_url:String(h.userURL || '') || null,\n    license_name:'Pixabay Content License',\n    license_url:'https://pixabay.com/service/license-summary/',\n    width,\n    height,\n    duration_ms:durationMs,\n    metadata_text:metadataText,\n    relevance_score:scored.relevance_score,\n    rejected:scored.rejected,\n    rejection_reason:scored.rejection_reason,\n    metadata:{\n      tags:h.tags ?? null,\n      provider_type:h.type ?? null,\n      views:h.views ?? null,\n      downloads:h.downloads ?? null,\n      no_ai_training:h.noAiTraining ?? null,\n      is_ai_generated:h.isAiGenerated ?? null,\n      query:ctx.query,\n    },\n  });\n}\n\nreturn {json:{\n  visual_run_id:ctx.visual_run_id,\n  shot_uuid:ctx.shot_uuid,\n  provider:'pixabay',\n  query_index:ctx.query_index,\n  query_text:ctx.query,\n  endpoint_kind:ctx.endpoint_kind,\n  http_status:status,\n  response_headers:{\n    'x-ratelimit-limit':headers['x-ratelimit-limit'] ?? null,\n    'x-ratelimit-remaining':headers['x-ratelimit-remaining'] ?? null,\n    'x-ratelimit-reset':headers['x-ratelimit-reset'] ?? null,\n    'cache-control':headers['cache-control'] ?? null,\n    'date':headers.date ?? null,\n    'content-type':headers['content-type'] ?? null,\n  },\n  candidates,\n}};"
+      },
+      "id": "m8-normalize-pixabay",
+      "name": "Normalize Pixabay",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT search_id::text AS search_id,candidate_count\nFROM factory.record_live_visual_search_v2(\n  $1::uuid,$2::uuid,$3::text,$4::integer,$5::text,$6::text,\n  $7::integer,$8::jsonb,$9::jsonb,$10::jsonb\n);",
+        "options": {
+          "queryReplacement": "={{ [ $json.visual_run_id, $json.shot_uuid, $json.provider, $json.query_index, $json.query_text, $json.endpoint_kind, $json.http_status, JSON.stringify($json.response_headers || {}), JSON.stringify($json.candidates || []), JSON.stringify($json.candidates || []) ] }}"
+        }
+      },
+      "id": "m8-persist-pixabay",
+      "name": "Persist Pixabay Searches",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1100,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "\nconst begin = $('Begin Visuals').first().json;\nlet shots = begin.shots_json;\nif (typeof shots === 'string') shots = JSON.parse(shots);\nif (!Array.isArray(shots) || !shots.length) throw new Error('M8 shots_json is empty');\n\nconst out = [];\nfor (const shot of shots) {\n  const queries = Array.isArray(shot.queries_en) ? shot.queries_en : [];\n  if (!queries.length) throw new Error('M8 shot has no visual queries: ' + String(shot.shot_key || 'unknown'));\n\n  for (let i=0;i<queries.length;i++) {\n    const query = String(queries[i] || '').trim();\n    if (!query) throw new Error('M8 empty visual query');\n\n    out.push({\n      json:{\n        visual_run_id:String(begin.visual_run_id),\n        shot_uuid:String(shot.shot_uuid),\n        shot_key:String(shot.shot_key),\n        scene_order:Number(shot.scene_order),\n        query_index:i+1,\n        query,\n        provider:'pexels',\n        endpoint_kind:String(shot.preferred_media_type) === 'video' ? 'video' : 'photo',\n        preferred_media_type:String(shot.preferred_media_type),\n        visual_intent:String(shot.visual_intent || ''),\n        must_show:Array.isArray(shot.must_show) ? shot.must_show : [],\n        must_not_show:Array.isArray(shot.must_not_show) ? shot.must_not_show : [],\n      }\n    });\n  }\n}\nreturn out;\n"
+      },
+      "id": "m8-build-pexels",
+      "name": "Build Pexels Requests",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.endpoint_kind === 'video' ? 'https://api.pexels.com/videos/search' : 'https://api.pexels.com/v1/search' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json.query }}"
+            },
+            {
+              "name": "per_page",
+              "value": "8"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 60000,
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 250
+            }
+          }
+        }
+      },
+      "id": "m8-pexels-search",
+      "name": "Pexels Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1540,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "l6QGoHtq4KUiMaWe",
+          "name": "Pexels API"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "\nconst STOP = new Set([\n  'the','and','for','with','from','into','onto','over','under','this','that','these','those',\n  'show','showing','display','displaying','view','close','macro','image','photo','video','scene',\n  'a','an','of','to','in','on','at','as','by','is','are','be','or'\n]);\nconst SPECIAL = {\n  leaves:'leaf', trees:'tree', branches:'branch', colors:'color', colours:'color',\n  falling:'fall', fallen:'fall', seasonal:'season', sunlight:'sunlight'\n};\nfunction stem(token) {\n  let t = String(token || '').toLowerCase();\n  if (SPECIAL[t]) return SPECIAL[t];\n  if (t.endsWith('ies') && t.length > 5) return t.slice(0,-3) + 'y';\n  if (t.endsWith('ing') && t.length > 6) return t.slice(0,-3);\n  if (t.endsWith('es') && t.length > 5) return t.slice(0,-2);\n  if (t.endsWith('s') && t.length > 4) return t.slice(0,-1);\n  return t;\n}\nfunction terms(value) {\n  return [...new Set(\n    String(value || '')\n      .toLowerCase()\n      .replace(/[^a-z0-9]+/g,' ')\n      .split(/\\s+/)\n      .map(stem)\n      .filter((t) => t.length >= 2 && !STOP.has(t))\n  )];\n}\nfunction ratioAgainst(value,set) {\n  const ts = terms(value);\n  if (!ts.length) return 0;\n  let matched = 0;\n  for (const t of ts) if (set.has(t)) matched++;\n  return matched / ts.length;\n}\nfunction average(values) {\n  if (!values.length) return 0;\n  return values.reduce((a,b) => a+b,0) / values.length;\n}\nfunction scoreCandidate(ctx, metadataText, mediaType, width, height, providerRank, extraReject='') {\n  const metaSet = new Set(terms(metadataText));\n  const querySet = new Set(terms(ctx.query));\n  const mustShow = Array.isArray(ctx.must_show) ? ctx.must_show.map(String) : [];\n  const mustNot = Array.isArray(ctx.must_not_show) ? ctx.must_not_show.map(String) : [];\n\n  const mustMeta = average(mustShow.map((x) => ratioAgainst(x,metaSet)));\n  const queryMeta = ratioAgainst(ctx.query,metaSet);\n  const intentMeta = ratioAgainst(ctx.visual_intent,metaSet);\n  const queryMust = average(mustShow.map((x) => ratioAgainst(x,querySet)));\n\n  let rejected = false;\n  const reasons = [];\n\n  for (const forbidden of mustNot) {\n    const ft = terms(forbidden);\n    if (!ft.length) continue;\n    const r = ratioAgainst(forbidden,metaSet);\n    const threshold = ft.length === 1 ? 1 : 0.67;\n    if (r >= threshold) {\n      rejected = true;\n      reasons.push('must_not_show:' + forbidden);\n    }\n  }\n\n  if (mustShow.length && mustMeta < 0.20 && queryMeta < 0.20) {\n    rejected = true;\n    reasons.push('insufficient_returned_metadata_match');\n  } else if (!mustShow.length && queryMeta < 0.20 && intentMeta < 0.20) {\n    rejected = true;\n    reasons.push('insufficient_returned_metadata_match');\n  }\n\n  if (extraReject) {\n    rejected = true;\n    reasons.push(extraReject);\n  }\n\n  let score =\n    15 +\n    Math.round(40 * mustMeta) +\n    Math.round(20 * queryMeta) +\n    Math.round(15 * intentMeta) +\n    Math.round(5 * queryMust) +\n    Math.max(0,11 - Number(providerRank || 99));\n\n  if (String(ctx.preferred_media_type) === mediaType) score += 10;\n  else if (String(ctx.preferred_media_type) === 'diagram' && mediaType === 'photo') score += 2;\n\n  if (Number(height) >= Number(width)) score += 3;\n\n  score = Math.max(0,Math.min(100,score));\n\n  return {\n    relevance_score: score,\n    rejected,\n    rejection_reason: reasons.join('; ') || null,\n  };\n}\n\nconst ctx = $('Build Pexels Requests').item.json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object' ? response.body : {};\nconst status = Number(response.statusCode ?? response.status ?? 0);\nif (status !== 200) throw new Error('Pexels search HTTP ' + status);\nconst headers = response.headers && typeof response.headers === 'object' ? response.headers : {};\nconst rows = ctx.endpoint_kind === 'video'\n  ? (Array.isArray(body.videos) ? body.videos : [])\n  : (Array.isArray(body.photos) ? body.photos : []);\nconst candidates = [];\n\nfunction chooseVideoFile(files) {\n  const variants = (Array.isArray(files) ? files : [])\n    .filter((v) =>\n      String(v?.file_type || '').toLowerCase() === 'video/mp4' &&\n      typeof v?.link === 'string' && v.link.startsWith('https://') &&\n      Number(v?.width) > 0 && Number(v?.height) > 0 &&\n      (!Number(v?.size) || Number(v.size) <= 80*1024*1024)\n    );\n\n  variants.sort((a,b) => {\n    const da = Math.abs(Math.max(Number(a.width),Number(a.height)) - 1920);\n    const db = Math.abs(Math.max(Number(b.width),Number(b.height)) - 1920);\n    if (da !== db) return da-db;\n    const qa = String(a.quality || '') === 'hd' ? 0 : 1;\n    const qb = String(b.quality || '') === 'hd' ? 0 : 1;\n    if (qa !== qb) return qa-qb;\n    const pa = Number(a.width)*Number(a.height);\n    const pb = Number(b.width)*Number(b.height);\n    if (pa !== pb) return pb-pa;\n    return Number(a.id || 0)-Number(b.id || 0);\n  });\n  return variants[0] || null;\n}\n\nfor (let i=0;i<rows.length;i++) {\n  const h = rows[i] || {};\n  let mediaType = 'photo';\n  let downloadUrl = '';\n  let previewUrl = '';\n  let width = 0;\n  let height = 0;\n  let durationMs = null;\n  let metadataText = '';\n\n  if (ctx.endpoint_kind === 'video') {\n    const v = chooseVideoFile(h.video_files);\n    if (!v) continue;\n    mediaType = 'video';\n    downloadUrl = String(v.link);\n    previewUrl = String(h.image || '');\n    width = Number(v.width);\n    height = Number(v.height);\n    durationMs = Math.round(Number(h.duration || 0)*1000);\n    if (!(durationMs > 0)) continue;\n    metadataText = [\n      h.url,\n      Array.isArray(h.tags) ? h.tags.join(' ') : h.tags,\n      h.user?.name,\n    ].filter(Boolean).join(' ');\n  } else {\n    const src = h.src && typeof h.src === 'object' ? h.src : {};\n    downloadUrl = String(src.large2x || src.large || src.original || '');\n    previewUrl = String(src.medium || src.small || src.tiny || '');\n    width = Number(h.width || 0);\n    height = Number(h.height || 0);\n    if (!downloadUrl.startsWith('https://') || !(width > 0 && height > 0)) continue;\n    metadataText = [h.alt,h.url,h.photographer].filter(Boolean).join(' ');\n  }\n\n  const scored = scoreCandidate(\n    ctx,\n    metadataText,\n    mediaType,\n    width,\n    height,\n    i+1,\n    ''\n  );\n\n  candidates.push({\n    provider_asset_id:String(h.id),\n    provider_rank:i+1,\n    media_type:mediaType,\n    source_url:String(h.url || ''),\n    download_url:downloadUrl,\n    preview_url:previewUrl || null,\n    author:String(ctx.endpoint_kind === 'video' ? (h.user?.name || '') : (h.photographer || '')) || null,\n    author_url:String(ctx.endpoint_kind === 'video' ? (h.user?.url || '') : (h.photographer_url || '')) || null,\n    license_name:'Pexels License',\n    license_url:'https://www.pexels.com/license/',\n    width,\n    height,\n    duration_ms:durationMs,\n    metadata_text:metadataText,\n    relevance_score:scored.relevance_score,\n    rejected:scored.rejected,\n    rejection_reason:scored.rejection_reason,\n    metadata:{\n      alt:h.alt ?? null,\n      avg_color:h.avg_color ?? null,\n      tags:h.tags ?? null,\n      query:ctx.query,\n    },\n  });\n}\n\nreturn {json:{\n  visual_run_id:ctx.visual_run_id,\n  shot_uuid:ctx.shot_uuid,\n  provider:'pexels',\n  query_index:ctx.query_index,\n  query_text:ctx.query,\n  endpoint_kind:ctx.endpoint_kind,\n  http_status:status,\n  response_headers:{\n    'x-ratelimit-limit':headers['x-ratelimit-limit'] ?? null,\n    'x-ratelimit-remaining':headers['x-ratelimit-remaining'] ?? null,\n    'x-ratelimit-reset':headers['x-ratelimit-reset'] ?? null,\n    'cache-control':headers['cache-control'] ?? null,\n    'date':headers.date ?? null,\n    'content-type':headers['content-type'] ?? null,\n  },\n  candidates,\n}};"
+      },
+      "id": "m8-normalize-pexels",
+      "name": "Normalize Pexels",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT search_id::text AS search_id,candidate_count\nFROM factory.record_live_visual_search_v2(\n  $1::uuid,$2::uuid,$3::text,$4::integer,$5::text,$6::text,\n  $7::integer,$8::jsonb,$9::jsonb,$10::jsonb\n);",
+        "options": {
+          "queryReplacement": "={{ [ $json.visual_run_id, $json.shot_uuid, $json.provider, $json.query_index, $json.query_text, $json.endpoint_kind, $json.http_status, JSON.stringify($json.response_headers || {}), JSON.stringify($json.candidates || []), JSON.stringify($json.candidates || []) ] }}"
+        }
+      },
+      "id": "m8-persist-pexels",
+      "name": "Persist Pexels Searches",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1980,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "\nconst begin = $('Begin Visuals').first().json;\nlet shots = begin.shots_json;\nif (typeof shots === 'string') shots = JSON.parse(shots);\nif (!Array.isArray(shots) || !shots.length) throw new Error('M8 shots_json is empty');\n\nconst out = [];\nfor (const shot of shots) {\n  const queries = Array.isArray(shot.queries_en) ? shot.queries_en : [];\n  if (!queries.length) throw new Error('M8 shot has no visual queries: ' + String(shot.shot_key || 'unknown'));\n\n  for (let i=0;i<queries.length;i++) {\n    const query = String(queries[i] || '').trim();\n    if (!query) throw new Error('M8 empty visual query');\n\n    out.push({\n      json:{\n        visual_run_id:String(begin.visual_run_id),\n        shot_uuid:String(shot.shot_uuid),\n        shot_key:String(shot.shot_key),\n        scene_order:Number(shot.scene_order),\n        query_index:i+1,\n        query,\n        provider:'wikimedia',\n        endpoint_kind:String(shot.preferred_media_type) === 'video' ? 'video' : 'photo',\n        preferred_media_type:String(shot.preferred_media_type),\n        visual_intent:String(shot.visual_intent || ''),\n        must_show:Array.isArray(shot.must_show) ? shot.must_show : [],\n        must_not_show:Array.isArray(shot.must_not_show) ? shot.must_not_show : [],\n      }\n    });\n  }\n}\nreturn out;\n"
+      },
+      "id": "m8-build-wikimedia",
+      "name": "Build Wikimedia Requests",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2200,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://commons.wikimedia.org/w/api.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "query"
+            },
+            {
+              "name": "generator",
+              "value": "search"
+            },
+            {
+              "name": "gsrsearch",
+              "value": "={{ $json.query + ($json.endpoint_kind === 'video' ? ' filetype:video' : ' filetype:bitmap') }}"
+            },
+            {
+              "name": "gsrnamespace",
+              "value": "6"
+            },
+            {
+              "name": "gsrlimit",
+              "value": "8"
+            },
+            {
+              "name": "prop",
+              "value": "imageinfo"
+            },
+            {
+              "name": "iiprop",
+              "value": "url|size|mime|extmetadata"
+            },
+            {
+              "name": "iiurlwidth",
+              "value": "1600"
+            },
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          },
+          "timeout": 60000,
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 1200
+            }
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "ai-short-form-content-factory/1.0"
+            }
+          ]
+        }
+      },
+      "id": "m8-wikimedia-search",
+      "name": "Wikimedia Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2420,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "\nconst STOP = new Set([\n  'the','and','for','with','from','into','onto','over','under','this','that','these','those',\n  'show','showing','display','displaying','view','close','macro','image','photo','video','scene',\n  'a','an','of','to','in','on','at','as','by','is','are','be','or'\n]);\nconst SPECIAL = {\n  leaves:'leaf', trees:'tree', branches:'branch', colors:'color', colours:'color',\n  falling:'fall', fallen:'fall', seasonal:'season', sunlight:'sunlight'\n};\nfunction stem(token) {\n  let t = String(token || '').toLowerCase();\n  if (SPECIAL[t]) return SPECIAL[t];\n  if (t.endsWith('ies') && t.length > 5) return t.slice(0,-3) + 'y';\n  if (t.endsWith('ing') && t.length > 6) return t.slice(0,-3);\n  if (t.endsWith('es') && t.length > 5) return t.slice(0,-2);\n  if (t.endsWith('s') && t.length > 4) return t.slice(0,-1);\n  return t;\n}\nfunction terms(value) {\n  return [...new Set(\n    String(value || '')\n      .toLowerCase()\n      .replace(/[^a-z0-9]+/g,' ')\n      .split(/\\s+/)\n      .map(stem)\n      .filter((t) => t.length >= 2 && !STOP.has(t))\n  )];\n}\nfunction ratioAgainst(value,set) {\n  const ts = terms(value);\n  if (!ts.length) return 0;\n  let matched = 0;\n  for (const t of ts) if (set.has(t)) matched++;\n  return matched / ts.length;\n}\nfunction average(values) {\n  if (!values.length) return 0;\n  return values.reduce((a,b) => a+b,0) / values.length;\n}\nfunction scoreCandidate(ctx, metadataText, mediaType, width, height, providerRank, extraReject='') {\n  const metaSet = new Set(terms(metadataText));\n  const querySet = new Set(terms(ctx.query));\n  const mustShow = Array.isArray(ctx.must_show) ? ctx.must_show.map(String) : [];\n  const mustNot = Array.isArray(ctx.must_not_show) ? ctx.must_not_show.map(String) : [];\n\n  const mustMeta = average(mustShow.map((x) => ratioAgainst(x,metaSet)));\n  const queryMeta = ratioAgainst(ctx.query,metaSet);\n  const intentMeta = ratioAgainst(ctx.visual_intent,metaSet);\n  const queryMust = average(mustShow.map((x) => ratioAgainst(x,querySet)));\n\n  let rejected = false;\n  const reasons = [];\n\n  for (const forbidden of mustNot) {\n    const ft = terms(forbidden);\n    if (!ft.length) continue;\n    const r = ratioAgainst(forbidden,metaSet);\n    const threshold = ft.length === 1 ? 1 : 0.67;\n    if (r >= threshold) {\n      rejected = true;\n      reasons.push('must_not_show:' + forbidden);\n    }\n  }\n\n  if (mustShow.length && mustMeta < 0.20 && queryMeta < 0.20) {\n    rejected = true;\n    reasons.push('insufficient_returned_metadata_match');\n  } else if (!mustShow.length && queryMeta < 0.20 && intentMeta < 0.20) {\n    rejected = true;\n    reasons.push('insufficient_returned_metadata_match');\n  }\n\n  if (extraReject) {\n    rejected = true;\n    reasons.push(extraReject);\n  }\n\n  let score =\n    15 +\n    Math.round(40 * mustMeta) +\n    Math.round(20 * queryMeta) +\n    Math.round(15 * intentMeta) +\n    Math.round(5 * queryMust) +\n    Math.max(0,11 - Number(providerRank || 99));\n\n  if (String(ctx.preferred_media_type) === mediaType) score += 10;\n  else if (String(ctx.preferred_media_type) === 'diagram' && mediaType === 'photo') score += 2;\n\n  if (Number(height) >= Number(width)) score += 3;\n\n  score = Math.max(0,Math.min(100,score));\n\n  return {\n    relevance_score: score,\n    rejected,\n    rejection_reason: reasons.join('; ') || null,\n  };\n}\n\nconst ctx = $('Build Wikimedia Requests').item.json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object' ? response.body : {};\nconst status = Number(response.statusCode ?? response.status ?? 0);\nif (status !== 200) throw new Error('Wikimedia search HTTP ' + status);\nconst headers = response.headers && typeof response.headers === 'object' ? response.headers : {};\nconst pagesObj = body?.query?.pages && typeof body.query.pages === 'object' ? body.query.pages : {};\nconst pages = Object.values(pagesObj).sort((a,b) => Number(a?.index || 999)-Number(b?.index || 999));\nconst candidates = [];\n\nfunction stripHtml(value) {\n  return String(value || '').replace(/<[^>]*>/g,' ').replace(/&[^;]+;/g,' ');\n}\nfunction metaValue(meta,key) {\n  return meta?.[key]?.value ?? '';\n}\nfunction acceptedLicense(name) {\n  return /^(CC0|CC BY([ -]|$)|CC BY-SA([ -]|$)|Public domain|PDM)/i.test(String(name || '').trim());\n}\nfunction licenseFallback(name) {\n  const n=String(name || '').trim();\n  if (/^CC0/i.test(n)) return 'https://creativecommons.org/publicdomain/zero/1.0/';\n  if (/^CC BY-SA 4\\.0/i.test(n)) return 'https://creativecommons.org/licenses/by-sa/4.0/';\n  if (/^CC BY 4\\.0/i.test(n)) return 'https://creativecommons.org/licenses/by/4.0/';\n  if (/^Public domain/i.test(n) || /^PDM/i.test(n)) return 'https://commons.wikimedia.org/wiki/Commons:Public_domain';\n  return 'https://commons.wikimedia.org/wiki/Commons:Licensing';\n}\n\nfor (let i=0;i<pages.length;i++) {\n  const p = pages[i] || {};\n  const info = Array.isArray(p.imageinfo) ? p.imageinfo[0] : null;\n  if (!info) continue;\n\n  const mime = String(info.mime || '').toLowerCase();\n  if (ctx.endpoint_kind === 'video' && !mime.startsWith('video/')) continue;\n  if (ctx.endpoint_kind !== 'video' && !mime.startsWith('image/')) continue;\n\n  const ext = info.extmetadata && typeof info.extmetadata === 'object' ? info.extmetadata : {};\n  const licenseName = String(metaValue(ext,'LicenseShortName') || '').trim();\n  if (!acceptedLicense(licenseName)) continue;\n  const licenseUrl = String(metaValue(ext,'LicenseUrl') || licenseFallback(licenseName)).trim();\n\n  const description = stripHtml(metaValue(ext,'ImageDescription'));\n  const objectName = stripHtml(metaValue(ext,'ObjectName'));\n  const categories = stripHtml(metaValue(ext,'Categories'));\n  const artist = stripHtml(metaValue(ext,'Artist')).trim();\n  const metadataText = [p.title,objectName,description,categories].filter(Boolean).join(' ');\n\n  let mediaType;\n  let downloadUrl;\n  let previewUrl = String(info.thumburl || '');\n  let width;\n  let height;\n  let durationMs = null;\n  let extraReject = '';\n\n  if (ctx.endpoint_kind === 'video') {\n    mediaType='video';\n    downloadUrl=String(info.url || '');\n    width=Number(info.width || 0);\n    height=Number(info.height || 0);\n    durationMs=Math.round(Number(info.duration || 0)*1000);\n    if (!(durationMs > 0)) continue;\n    if (Number(info.size || 0) > 80*1024*1024) extraReject='wikimedia_video_over_80mb';\n  } else {\n    downloadUrl=String(info.thumburl || info.url || '');\n    width=Number(info.thumbwidth || info.width || 0);\n    height=Number(info.thumbheight || info.height || 0);\n    const diagramWords = /diagram|illustration|schematic|anatomy|cross.?section|cell|layer|pigment|chlorophyll|abscission/i;\n    mediaType =\n      ctx.preferred_media_type === 'diagram' && diagramWords.test(metadataText)\n        ? 'diagram'\n        : 'photo';\n  }\n\n  if (!downloadUrl.startsWith('https://') || !(width > 0 && height > 0)) continue;\n\n  const scored = scoreCandidate(\n    ctx,\n    metadataText,\n    mediaType,\n    width,\n    height,\n    i+1,\n    extraReject\n  );\n\n  candidates.push({\n    provider_asset_id:String(p.pageid),\n    provider_rank:i+1,\n    media_type:mediaType,\n    source_url:String(info.descriptionurl || info.descriptionshorturl || ''),\n    download_url:downloadUrl,\n    preview_url:previewUrl || null,\n    author:artist || null,\n    author_url:String(info.descriptionurl || '') || null,\n    license_name:licenseName,\n    license_url:licenseUrl,\n    width,\n    height,\n    duration_ms:durationMs,\n    metadata_text:metadataText,\n    relevance_score:scored.relevance_score,\n    rejected:scored.rejected,\n    rejection_reason:scored.rejection_reason,\n    metadata:{\n      title:p.title ?? null,\n      mime,\n      original_bytes:info.size ?? null,\n      credit:stripHtml(metaValue(ext,'Credit')) || null,\n      attribution_required:metaValue(ext,'AttributionRequired') || null,\n      query:ctx.query,\n    },\n  });\n}\n\nreturn {json:{\n  visual_run_id:ctx.visual_run_id,\n  shot_uuid:ctx.shot_uuid,\n  provider:'wikimedia',\n  query_index:ctx.query_index,\n  query_text:ctx.query,\n  endpoint_kind:ctx.endpoint_kind,\n  http_status:status,\n  response_headers:{\n    'retry-after':headers['retry-after'] ?? null,\n    'cache-control':headers['cache-control'] ?? null,\n    'date':headers.date ?? null,\n    'content-type':headers['content-type'] ?? null,\n  },\n  candidates,\n}};"
+      },
+      "id": "m8-normalize-wikimedia",
+      "name": "Normalize Wikimedia",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT search_id::text AS search_id,candidate_count\nFROM factory.record_live_visual_search_v2(\n  $1::uuid,$2::uuid,$3::text,$4::integer,$5::text,$6::text,\n  $7::integer,$8::jsonb,$9::jsonb,$10::jsonb\n);",
+        "options": {
+          "queryReplacement": "={{ [ $json.visual_run_id, $json.shot_uuid, $json.provider, $json.query_index, $json.query_text, $json.endpoint_kind, $json.http_status, JSON.stringify($json.response_headers || {}), JSON.stringify($json.candidates || []), JSON.stringify($json.candidates || []) ] }}"
+        }
+      },
+      "id": "m8-persist-wikimedia",
+      "name": "Persist Wikimedia Searches",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        2860,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT selection_count,selections_json\nFROM factory.select_visuals($1::uuid,35);",
+        "options": {
+          "queryReplacement": "={{ [ $json.visual_run_id ] }}"
+        }
+      },
+      "id": "m8-select",
+      "name": "Select Visuals",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        3740,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const row=$input.first().json;\nlet selections=row.selections_json;\nif(typeof selections==='string') selections=JSON.parse(selections);\nif(!Array.isArray(selections) || !selections.length) throw new Error('M8 selections_json is empty');\nreturn selections.map((s)=>({json:s}));"
+      },
+      "id": "m8-expand-selections",
+      "name": "Expand Selected Visuals",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3960,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://shorts-v2-media-worker-1:3001/visuals/' + $('When Executed by Another Workflow').first().json.job_id + '/' + $json.shot_uuid }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ provider: $json.provider, provider_asset_id: $json.provider_asset_id, media_type: $json.media_type, download_url: $json.download_url }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "m8-download",
+      "name": "Download Selected Visual",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        4180,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx=$('Expand Selected Visuals').item.json;\nconst begin=$('Begin Visuals').first().json;\nconst response=$json??{};\nconst body=response.body&&typeof response.body==='object'?response.body:response;\nlet status=Number(response.statusCode??response.status??0);\nif(!status&&body.status==='ready') status=201;\nconst prefix='/data/visuals/' + $('When Executed by Another Workflow').first().json.job_id + '/' + ctx.shot_uuid + '/selected.';\nconst ok=\n  status===201 &&\n  body.status==='ready' &&\n  String(body.shot_id||'')===String(ctx.shot_uuid) &&\n  String(body.provider||'')===String(ctx.provider) &&\n  String(body.provider_asset_id||'')===String(ctx.provider_asset_id) &&\n  String(body.media_type||'')===String(ctx.media_type) &&\n  String(body.storage_path||'').startsWith(prefix) &&\n  /^[0-9a-f]{64}$/.test(String(body.sha256||'')) &&\n  Number(body.bytes)>0 &&\n  Number(body.width)>0 &&\n  Number(body.height)>0 &&\n  typeof body.mime_type==='string' && body.mime_type.length>0 &&\n  typeof body.codec==='string' && body.codec.length>0 &&\n  (ctx.media_type!=='video' || Number(body.duration_ms)>0);\nconst message=body?.message??body?.error??response?.error?.message??response?.message??'selected visual download failed validation';\nreturn {json:{\n  visual_run_id:String(begin.visual_run_id),\n  selection_id:String(ctx.selection_id),\n  download_success:ok,\n  asset:ok?body:{},\n  error_message:ok?'':String(message).slice(0,3500),\n}};"
+      },
+      "id": "m8-normalize-download",
+      "name": "Validate Downloaded Visual",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4400,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "m8-download-pass",
+              "leftValue": "={{ $json.download_success }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "m8-route-download",
+      "name": "Route Download PASS",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4620,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT visual_asset_id::text AS visual_asset_id\nFROM factory.record_visual_asset($1::uuid,$2::uuid,$3::jsonb);",
+        "options": {
+          "queryReplacement": "={{ [ $json.visual_run_id, $json.selection_id, JSON.stringify($json.asset) ] }}"
+        }
+      },
+      "id": "m8-persist-asset",
+      "name": "Persist Visual Asset",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        4840,
+        -120
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT $1::text AS visual_run_id, factory.claim_visual_completion($1::uuid) AS claimed;",
+        "options": {
+          "queryReplacement": "={{ [ $('Begin Visuals').first().json.visual_run_id ] }}"
+        }
+      },
+      "id": "m8-claim-completion",
+      "name": "Claim Visual Completion",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        5060,
+        -120
+      ],
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT visual_count\nFROM factory.complete_visuals($1::uuid);",
+        "options": {
+          "queryReplacement": "={{ [ $json.visual_run_id ] }}"
+        }
+      },
+      "id": "m8-complete",
+      "name": "Complete Visuals",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        5500,
+        -120
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "\nconst begin = $('Begin Visuals').first().json;\nconst source = $json ?? {};\nconst errorObject =\n  source.error && typeof source.error === 'object' && !Array.isArray(source.error)\n    ? source.error\n    : {};\nconst message = [\n  source.error_message,\n  errorObject.message,\n  source.message,\n  source.description,\n  typeof source.error === 'string' ? source.error : null,\n].find((v) => typeof v === 'string' && v.trim().length > 0)\n  ?? 'unspecified M8 visual failure';\n\nreturn {json:{\n  visual_run_id:String(begin.visual_run_id || ''),\n  error_message:('M8 visuals failed: ' + message.trim()).slice(0,4000),\n}};"
+      },
+      "id": "m8-prepare-failure",
+      "name": "Prepare Visual Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5060,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT visual_status,job_status\nFROM factory.fail_visuals($1::uuid,$2::text);",
+        "options": {
+          "queryReplacement": "={{ [ $json.visual_run_id, $json.error_message ] }}"
+        }
+      },
+      "id": "m8-fail",
+      "name": "Fail Visuals",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        5280,
+        320
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const f=$('Prepare Visual Failure').first().json; throw new Error(String(f.error_message||'M8 visuals failed'));"
+      },
+      "id": "m8-raise",
+      "name": "Raise Visual Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5500,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 35,
+        "unit": "seconds"
+      },
+      "id": "m8-wiki-wait-1",
+      "name": "Wait Wikimedia Retry 1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2640,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://commons.wikimedia.org/w/api.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "query"
+            },
+            {
+              "name": "generator",
+              "value": "search"
+            },
+            {
+              "name": "gsrsearch",
+              "value": "={{ $json.query + ($json.endpoint_kind === 'video' ? ' filetype:video' : ' filetype:bitmap') }}"
+            },
+            {
+              "name": "gsrnamespace",
+              "value": "6"
+            },
+            {
+              "name": "gsrlimit",
+              "value": "8"
+            },
+            {
+              "name": "prop",
+              "value": "imageinfo"
+            },
+            {
+              "name": "iiprop",
+              "value": "url|size|mime|extmetadata"
+            },
+            {
+              "name": "iiurlwidth",
+              "value": "1600"
+            },
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          },
+          "timeout": 60000,
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 1200
+            }
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "ai-short-form-content-factory/1.0"
+            }
+          ]
+        }
+      },
+      "id": "m8-wiki-retry-1",
+      "name": "Wikimedia Retry 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2860,
+        180
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "amount": 35,
+        "unit": "seconds"
+      },
+      "id": "m8-wiki-wait-2",
+      "name": "Wait Wikimedia Retry 2",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3080,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://commons.wikimedia.org/w/api.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "query"
+            },
+            {
+              "name": "generator",
+              "value": "search"
+            },
+            {
+              "name": "gsrsearch",
+              "value": "={{ $json.query + ($json.endpoint_kind === 'video' ? ' filetype:video' : ' filetype:bitmap') }}"
+            },
+            {
+              "name": "gsrnamespace",
+              "value": "6"
+            },
+            {
+              "name": "gsrlimit",
+              "value": "8"
+            },
+            {
+              "name": "prop",
+              "value": "imageinfo"
+            },
+            {
+              "name": "iiprop",
+              "value": "url|size|mime|extmetadata"
+            },
+            {
+              "name": "iiurlwidth",
+              "value": "1600"
+            },
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          },
+          "timeout": 60000,
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 1200
+            }
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "ai-short-form-content-factory/1.0"
+            }
+          ]
+        }
+      },
+      "id": "m8-wiki-retry-2",
+      "name": "Wikimedia Retry 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3300,
+        260
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT $1::text AS visual_run_id, factory.claim_visual_selection($1::uuid) AS claimed;",
+        "options": {
+          "queryReplacement": "={{ [ $('Begin Visuals').first().json.visual_run_id ] }}"
+        }
+      },
+      "id": "m8-claim-selection",
+      "name": "Claim Visual Selection",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        3300,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "m8-selection-claim-pass",
+              "leftValue": "={{ $json.claimed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "m8-route-selection-claim",
+      "name": "Route Selection Claim",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "m8-completion-claim-pass",
+              "leftValue": "={{ $json.claimed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "m8-route-completion-claim",
+      "name": "Route Completion Claim",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        5280,
+        -120
+      ]
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Begin Visuals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Begin Visuals": {
+      "main": [
+        [
+          {
+            "node": "Build Pixabay Requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Pixabay Requests": {
+      "main": [
+        [
+          {
+            "node": "Pixabay Search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pixabay Search": {
+      "main": [
+        [
+          {
+            "node": "Normalize Pixabay",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Pixabay": {
+      "main": [
+        [
+          {
+            "node": "Persist Pixabay Searches",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist Pixabay Searches": {
+      "main": [
+        [
+          {
+            "node": "Build Pexels Requests",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Pexels Requests": {
+      "main": [
+        [
+          {
+            "node": "Pexels Search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pexels Search": {
+      "main": [
+        [
+          {
+            "node": "Normalize Pexels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Pexels": {
+      "main": [
+        [
+          {
+            "node": "Persist Pexels Searches",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist Pexels Searches": {
+      "main": [
+        [
+          {
+            "node": "Build Wikimedia Requests",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Wikimedia Requests": {
+      "main": [
+        [
+          {
+            "node": "Wikimedia Search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikimedia Search": {
+      "main": [
+        [
+          {
+            "node": "Normalize Wikimedia",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait Wikimedia Retry 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Wikimedia": {
+      "main": [
+        [
+          {
+            "node": "Persist Wikimedia Searches",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist Wikimedia Searches": {
+      "main": [
+        [
+          {
+            "node": "Claim Visual Selection",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Visuals": {
+      "main": [
+        [
+          {
+            "node": "Expand Selected Visuals",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expand Selected Visuals": {
+      "main": [
+        [
+          {
+            "node": "Download Selected Visual",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Selected Visual": {
+      "main": [
+        [
+          {
+            "node": "Validate Downloaded Visual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Downloaded Visual": {
+      "main": [
+        [
+          {
+            "node": "Route Download PASS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Download PASS": {
+      "main": [
+        [
+          {
+            "node": "Persist Visual Asset",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist Visual Asset": {
+      "main": [
+        [
+          {
+            "node": "Claim Visual Completion",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complete Visuals": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Visual Failure": {
+      "main": [
+        [
+          {
+            "node": "Fail Visuals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Visuals": {
+      "main": [
+        [
+          {
+            "node": "Raise Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Wikimedia Retry 1": {
+      "main": [
+        [
+          {
+            "node": "Wikimedia Retry 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikimedia Retry 1": {
+      "main": [
+        [
+          {
+            "node": "Normalize Wikimedia",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait Wikimedia Retry 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Wikimedia Retry 2": {
+      "main": [
+        [
+          {
+            "node": "Wikimedia Retry 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikimedia Retry 2": {
+      "main": [
+        [
+          {
+            "node": "Normalize Wikimedia",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim Visual Selection": {
+      "main": [
+        [
+          {
+            "node": "Route Selection Claim",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Selection Claim": {
+      "main": [
+        [
+          {
+            "node": "Select Visuals",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Claim Visual Completion": {
+      "main": [
+        [
+          {
+            "node": "Route Completion Claim",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Completion Claim": {
+      "main": [
+        [
+          {
+            "node": "Complete Visuals",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
