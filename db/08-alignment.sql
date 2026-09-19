@@ -449,3 +449,262 @@ BEGIN
     SELECT 'failed'::text,v_job_status;
 END;
 $$;
+
+-- M7 robustness update: allow bounded Whisper ASR differences while keeping
+-- all scene boundaries derived from real Whisper token timestamps.
+ALTER TABLE factory.alignments
+    DROP CONSTRAINT IF EXISTS alignments_match_true;
+
+ALTER TABLE factory.alignments
+    DROP CONSTRAINT IF EXISTS alignments_global_coverage;
+
+ALTER TABLE factory.alignments
+    ADD CONSTRAINT alignments_global_coverage
+        CHECK (global_coverage BETWEEN 0.950 AND 1.000);
+
+ALTER TABLE factory.alignments
+    ADD COLUMN IF NOT EXISTS alignment_method text NOT NULL
+        DEFAULT 'whisper_token_sequence_match';
+
+ALTER TABLE factory.alignments
+    DROP CONSTRAINT IF EXISTS alignments_method;
+
+ALTER TABLE factory.alignments
+    ADD CONSTRAINT alignments_method
+        CHECK (alignment_method = 'whisper_token_sequence_match');
+
+ALTER TABLE factory.scene_timings
+    DROP CONSTRAINT IF EXISTS scene_timings_coverage;
+
+ALTER TABLE factory.scene_timings
+    ADD CONSTRAINT scene_timings_coverage
+        CHECK (coverage BETWEEN 0.850 AND 1.000);
+
+CREATE OR REPLACE FUNCTION factory.complete_alignment(
+    p_alignment_run_id uuid,
+    p_result jsonb
+)
+RETURNS TABLE (
+    alignment_id uuid,
+    scene_timing_count integer,
+    lexical_end_ms integer
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_run factory.alignment_runs%ROWTYPE;
+    v_voiceover factory.voiceovers%ROWTYPE;
+    v_job factory.jobs%ROWTYPE;
+    v_alignment_id uuid;
+    v_expected_alignment_path text;
+    v_expected_raw_path text;
+    v_model_sha constant text :=
+        '60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe';
+    v_image_digest constant text :=
+        'sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11';
+    v_alignment_method constant text :=
+        'whisper_token_sequence_match';
+    v_timing jsonb;
+    v_scene_id uuid;
+    v_start integer;
+    v_end integer;
+    v_coverage numeric(4,3);
+    v_global_coverage numeric(4,3);
+    v_normalized_match boolean;
+    v_count integer := 0;
+    v_expected_scene_count integer;
+    v_previous_end integer := 0;
+    v_lexical_end integer;
+BEGIN
+    SELECT *
+      INTO v_run
+      FROM factory.alignment_runs
+     WHERE id=p_alignment_run_id
+     FOR UPDATE;
+
+    IF NOT FOUND OR v_run.status <> 'running' THEN
+        RAISE EXCEPTION 'alignment run is not active'
+            USING ERRCODE='22023';
+    END IF;
+
+    SELECT *
+      INTO v_voiceover
+      FROM factory.voiceovers
+     WHERE id=v_run.voiceover_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'voiceover not found'
+            USING ERRCODE='22023';
+    END IF;
+
+    SELECT *
+      INTO v_job
+      FROM factory.jobs
+     WHERE id=v_run.job_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'job not found'
+            USING ERRCODE='22023';
+    END IF;
+
+    v_global_coverage :=
+        COALESCE((p_result->>'global_coverage')::numeric,0);
+    v_normalized_match :=
+        COALESCE((p_result->>'normalized_match')::boolean,false);
+
+    IF COALESCE(p_result->>'status','') <> 'ready'
+       OR COALESCE(p_result->>'alignment_method','') <> v_alignment_method
+       OR v_global_coverage < 0.950
+       OR v_global_coverage > 1.000 THEN
+        RAISE EXCEPTION 'alignment result did not pass lexical coverage gates'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF lower(COALESCE(p_result->>'audio_sha256','')) <> v_voiceover.audio_sha256
+       OR COALESCE((p_result->>'audio_duration_ms')::integer,0) <> v_voiceover.duration_ms THEN
+        RAISE EXCEPTION 'alignment audio does not match immutable voiceover'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF lower(COALESCE(p_result->>'model_sha256','')) <> v_model_sha
+       OR COALESCE(p_result->>'whisper_image_digest','') <> v_image_digest THEN
+        RAISE EXCEPTION 'alignment runtime/model mismatch'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF COALESCE(p_result->>'language_code','') <> v_job.language_code THEN
+        RAISE EXCEPTION 'alignment language mismatch'
+            USING ERRCODE='22023';
+    END IF;
+
+    v_expected_alignment_path :=
+        '/data/alignments/' || v_run.job_id::text || '/final.json';
+    v_expected_raw_path :=
+        '/data/alignments/' || v_run.job_id::text || '/whisper.json';
+
+    IF COALESCE(p_result->>'alignment_path','') <> v_expected_alignment_path
+       OR COALESCE(p_result->>'raw_whisper_path','') <> v_expected_raw_path THEN
+        RAISE EXCEPTION 'unexpected alignment storage path'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF btrim(COALESCE(p_result->>'transcript','')) = '' THEN
+        RAISE EXCEPTION 'alignment transcript is empty'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF COALESCE((p_result->>'lexical_token_count')::integer,0) <= 0
+       OR COALESCE((p_result->>'lexical_start_ms')::integer,-1) < 0 THEN
+        RAISE EXCEPTION 'invalid lexical timing metadata'
+            USING ERRCODE='22023';
+    END IF;
+
+    v_lexical_end := COALESCE((p_result->>'lexical_end_ms')::integer,0);
+    IF v_lexical_end <= 0 OR v_lexical_end > v_voiceover.duration_ms THEN
+        RAISE EXCEPTION 'invalid lexical end timing'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF jsonb_typeof(p_result->'scene_timings') <> 'array' THEN
+        RAISE EXCEPTION 'scene_timings must be an array'
+            USING ERRCODE='22023';
+    END IF;
+
+    SELECT count(*)
+      INTO v_expected_scene_count
+      FROM factory.scenes
+     WHERE job_id=v_run.job_id;
+
+    IF jsonb_array_length(p_result->'scene_timings') <> v_expected_scene_count THEN
+        RAISE EXCEPTION 'scene timing count mismatch'
+            USING ERRCODE='22023';
+    END IF;
+
+    INSERT INTO factory.alignments (
+        job_id,alignment_run_id,voiceover_id,language_code,
+        alignment_path,raw_whisper_path,audio_sha256,audio_duration_ms,
+        model_sha256,whisper_image_digest,transcript,normalized_match,
+        global_coverage,alignment_method,lexical_token_count,
+        lexical_start_ms,lexical_end_ms
+    )
+    VALUES (
+        v_run.job_id,v_run.id,v_voiceover.id,v_job.language_code,
+        v_expected_alignment_path,v_expected_raw_path,v_voiceover.audio_sha256,
+        v_voiceover.duration_ms,v_model_sha,v_image_digest,
+        btrim(p_result->>'transcript'),v_normalized_match,
+        v_global_coverage,v_alignment_method,
+        (p_result->>'lexical_token_count')::integer,
+        (p_result->>'lexical_start_ms')::integer,
+        v_lexical_end
+    )
+    RETURNING id INTO v_alignment_id;
+
+    FOR v_timing IN
+        SELECT value
+        FROM jsonb_array_elements(p_result->'scene_timings')
+    LOOP
+        v_scene_id := NULLIF(btrim(v_timing->>'scene_uuid'),'')::uuid;
+        v_start := NULLIF(v_timing->>'start_ms','')::integer;
+        v_end := NULLIF(v_timing->>'end_ms','')::integer;
+        v_coverage := NULLIF(v_timing->>'coverage','')::numeric(4,3);
+
+        IF NOT EXISTS (
+            SELECT 1
+            FROM factory.scenes s
+            WHERE s.id=v_scene_id
+              AND s.job_id=v_run.job_id
+        ) THEN
+            RAISE EXCEPTION 'scene timing references a scene outside this job'
+                USING ERRCODE='22023';
+        END IF;
+
+        IF EXISTS (
+            SELECT 1
+            FROM factory.scene_timings st
+            WHERE st.scene_id=v_scene_id
+        ) THEN
+            RAISE EXCEPTION 'duplicate scene timing'
+                USING ERRCODE='22023';
+        END IF;
+
+        IF v_start IS NULL OR v_end IS NULL
+           OR v_start < v_previous_end
+           OR v_end <= v_start
+           OR v_end > v_voiceover.duration_ms
+           OR v_coverage < 0.850
+           OR v_coverage > 1.000 THEN
+            RAISE EXCEPTION 'invalid scene timing'
+                USING ERRCODE='22023';
+        END IF;
+
+        INSERT INTO factory.scene_timings (
+            scene_id,alignment_id,job_id,start_ms,end_ms,coverage
+        )
+        VALUES (
+            v_scene_id,v_alignment_id,v_run.job_id,v_start,v_end,v_coverage
+        );
+
+        v_previous_end := v_end;
+        v_count := v_count + 1;
+    END LOOP;
+
+    IF v_count <> v_expected_scene_count THEN
+        RAISE EXCEPTION 'scene timing persistence count mismatch'
+            USING ERRCODE='22023';
+    END IF;
+
+    UPDATE factory.alignment_runs
+       SET status='passed',
+           completed_at=now(),
+           failure_reason=NULL
+     WHERE id=v_run.id;
+
+    UPDATE factory.jobs
+       SET status='alignment_ready',
+           updated_at=now()
+     WHERE id=v_run.job_id;
+
+    RETURN QUERY
+    SELECT v_alignment_id,v_count,v_lexical_end;
+END;
+$$;
