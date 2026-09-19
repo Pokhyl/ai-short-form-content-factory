@@ -1159,6 +1159,33 @@ class Handler(BaseHTTPRequestHandler):
             **probe,
         }
 
+    def _send_mp4_file(self, path: Path):
+        if not path.is_file():
+            self._json(404, {"error": "render_file_not_found"})
+            return
+
+        size = path.stat().st_size
+        self.send_response(200)
+        self.send_header("Content-Type", "video/mp4")
+        self.send_header("Content-Length", str(size))
+        self.send_header(
+            "Content-Disposition",
+            'inline; filename="final.mp4"',
+        )
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.end_headers()
+
+        try:
+            with path.open("rb") as handle:
+                while True:
+                    chunk = handle.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
+        except (BrokenPipeError, ConnectionResetError):
+            return
+
     def do_GET(self):
         if self.path == "/healthz":
             try:
@@ -1285,6 +1312,12 @@ class Handler(BaseHTTPRequestHandler):
                 return
 
             self._json(404, {"error": "visual_not_found"})
+            return
+
+        job_id = self._render_job_id("/file")
+        if job_id is not None:
+            final_path = RENDER_ROOT / job_id / "final.mp4"
+            self._send_mp4_file(final_path)
             return
 
         job_id = self._render_job_id("/metadata")
