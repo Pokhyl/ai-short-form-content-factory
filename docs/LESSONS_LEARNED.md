@@ -91,3 +91,13 @@ Prevention:
 - use a deterministic generic density contract by duration;
 - M5 now requires exactly 4/7/10/13 scenes and exactly one shot per scene for 15/30/45/60 seconds;
 - test fixes only on a fresh job after a terminal failure.
+
+
+19. Before modifying the next milestone, inspect existing local stage files and the live database state.
+M6 already had a local migration, production workflow and applied DB schema from the immediately preceding work. Rebuilding the stage from memory would have duplicated or weakened already-established invariants.
+
+Prevention:
+- before creating a new milestone file, search the project for that milestone/workflow name;
+- inspect live DB tables/functions and publisher workflow rows first;
+- preserve stronger existing invariants instead of replacing them with a newly improvised contract;
+- only apply a migration after confirming whether its objects already exist.
