@@ -1,0 +1,596 @@
+{
+  "id": "VideoM4Research001",
+  "name": "VIDEO — M4 Research",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "job_id"
+            }
+          ]
+        }
+      },
+      "id": "video-m4-trigger",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT research_run_id::text AS research_run_id, topic, language_code\nFROM factory.begin_research($1::uuid);",
+        "options": {
+          "queryReplacement": "={{ [ $json.job_id ] }}"
+        }
+      },
+      "id": "video-m4-begin",
+      "name": "Begin Research",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        240,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const row = $input.first().json;\nconst topic = String(row.topic ?? '').trim();\nconst languageCode = String(row.language_code ?? '').trim();\nconst researchRunId = String(row.research_run_id ?? '').trim();\n\nif (!researchRunId || !topic || !['en','pl','ru','uk'].includes(languageCode)) {\n  throw new Error('begin_research returned invalid context');\n}\n\nconst queries = [\n  {\n    query_kind: 'english_primary',\n    search_query: topic,\n    search_language: 'en',\n  },\n  {\n    query_kind: 'english_context',\n    search_query: topic + ' explained facts',\n    search_language: 'en',\n  },\n];\n\nif (languageCode !== 'en') {\n  queries.push({\n    query_kind: 'local_primary',\n    search_query: topic,\n    search_language: languageCode,\n  });\n}\n\nreturn queries.map((q, index) => ({\n  json: {\n    research_run_id: researchRunId,\n    topic,\n    language_code: languageCode,\n    query_index: index + 1,\n    ...q,\n  },\n}));"
+      },
+      "id": "video-m4-queries",
+      "name": "Build Search Queries",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "http://shorts-v2-searxng-1:8080/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.search_query }}"
+            },
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "language",
+              "value": "={{ $json.search_language }}"
+            },
+            {
+              "name": "categories",
+              "value": "general"
+            },
+            {
+              "name": "safesearch",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "video-m4-search",
+      "name": "Search Web",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        720,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const responses = $input.all().map((item) => item.json);\nconst queryInputs = $('Build Search Queries').all().map((item) => item.json);\n\nconst denyDomains = new Set([\n  'facebook.com','instagram.com','tiktok.com','x.com','twitter.com',\n  'pinterest.com','reddit.com','youtube.com','youtu.be'\n]);\n\nfunction canonicalize(result) {\n  const raw = String(result?.url ?? '').trim();\n  const parsed = Array.isArray(result?.parsed_url) ? result.parsed_url : [];\n\n  let scheme = String(parsed[0] ?? '').trim().toLowerCase();\n  let authority = String(parsed[1] ?? '').trim();\n  let path = String(parsed[2] ?? '').trim();\n  let query = String(parsed[4] ?? '').trim();\n\n  if (!scheme || !authority) {\n    const match = raw.match(/^(https?):\\/\\/([^\\/?#]+)([^?#]*)(?:\\?([^#]*))?/i);\n    if (!match) return null;\n    scheme = String(match[1] ?? '').toLowerCase();\n    authority = String(match[2] ?? '');\n    path = String(match[3] ?? '');\n    query = String(match[4] ?? '');\n  }\n\n  if (!['http','https'].includes(scheme)) return null;\n\n  const authorityNoUser = authority.split('@').pop() ?? '';\n  const host = authorityNoUser\n    .replace(/:\\d+$/, '')\n    .replace(/^www\\./i, '')\n    .toLowerCase();\n\n  if (!host || host === 'localhost' || host.endsWith('.local')) return null;\n  if (/^(127\\.|10\\.|192\\.168\\.|169\\.254\\.)/.test(host)) return null;\n  const private172 = host.match(/^172\\.(\\d+)\\./);\n  if (\n    private172 &&\n    Number(private172[1]) >= 16 &&\n    Number(private172[1]) <= 31\n  ) return null;\n  if (host === '::1' || host === '0.0.0.0') return null;\n\n  if ([...denyDomains].some((d) => host === d || host.endsWith('.' + d))) {\n    return null;\n  }\n\n  if (/\\.(pdf|jpe?g|png|gif|webp|svg|mp4|mov|avi|zip|gz)$/i.test(path)) {\n    return null;\n  }\n\n  path = path || '/';\n  if (path !== '/') path = path.replace(/\\/+$/, '');\n\n  const cleanQueryParts = query\n    ? query\n        .split('&')\n        .filter(Boolean)\n        .filter((part) => {\n          const rawKey = part.split('=', 1)[0] ?? '';\n          let key = rawKey;\n          try { key = decodeURIComponent(rawKey); } catch {}\n          key = key.toLowerCase();\n          return !(\n            key.startsWith('utm_') ||\n            ['fbclid','gclid','dclid','msclkid'].includes(key)\n          );\n        })\n        .sort()\n    : [];\n\n  const normalizedAuthority = authority.toLowerCase();\n  const canonical =\n    scheme + '://' + normalizedAuthority + path +\n    (cleanQueryParts.length ? '?' + cleanQueryParts.join('&') : '');\n\n  return {\n    canonical_url: canonical,\n    source_domain: host,\n  };\n}\n\nfunction cleanSnippet(value) {\n  return String(value ?? '')\n    .replace(/<[^>]+>/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim()\n    .slice(0, 2000);\n}\n\nconst raw = [];\nfor (let responseIndex = 0; responseIndex < responses.length; responseIndex += 1) {\n  const response = responses[responseIndex] ?? {};\n  const q = queryInputs[responseIndex] ?? {};\n  const results = Array.isArray(response.results) ? response.results : [];\n\n  for (let resultIndex = 0; resultIndex < Math.min(results.length, 12); resultIndex += 1) {\n    const result = results[resultIndex] ?? {};\n    const normalized = canonicalize(result);\n    if (!normalized) continue;\n\n    raw.push({\n      research_run_id: q.research_run_id,\n      search_query: q.search_query,\n      query_kind: q.query_kind,\n      query_index: Number(q.query_index ?? responseIndex + 1),\n      search_rank: resultIndex + 1,\n      search_engines: Array.isArray(result.engines) ? result.engines : [],\n      source_url: String(result.url ?? '').trim(),\n      canonical_url: normalized.canonical_url,\n      source_domain: normalized.source_domain,\n      title: String(result.title ?? normalized.source_domain).trim().slice(0, 1000),\n      snippet: cleanSnippet(result.content ?? result.snippet),\n    });\n  }\n}\n\nconst seenUrl = new Set();\nconst selected = [];\nconst domainCount = new Map();\n\nfunction add(candidate, maxPerDomain) {\n  if (!candidate || selected.length >= 10) return;\n  if (seenUrl.has(candidate.canonical_url)) return;\n  const used = domainCount.get(candidate.source_domain) ?? 0;\n  if (used >= maxPerDomain) return;\n  seenUrl.add(candidate.canonical_url);\n  domainCount.set(candidate.source_domain, used + 1);\n  selected.push(candidate);\n}\n\nraw.forEach((candidate) => add(candidate, 1));\nif (selected.length < 10) {\n  raw.forEach((candidate) => add(candidate, 2));\n}\n\nif (selected.length === 0) {\n  const ctx = queryInputs[0] ?? {};\n  return [{\n    json: {\n      research_run_id: ctx.research_run_id,\n      candidate_valid: false,\n      reason: 'no_fetch_candidates',\n    },\n  }];\n}\n\nreturn selected.map((candidate) => ({\n  json: {\n    ...candidate,\n    candidate_valid: true,\n  },\n}));"
+      },
+      "id": "video-m4-candidates",
+      "name": "Build Fetch Candidates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m4-fetchable-condition",
+              "leftValue": "={{ $json.candidate_valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m4-route-fetch",
+      "name": "Route Fetch Candidates",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.canonical_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "AIShortFormContentFactory/1.0 (+https://publisher.hodor.com.pl/)"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 250
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text",
+              "outputPropertyName": "body"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "video-m4-fetch",
+      "name": "Fetch Source Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1440,
+        -120
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "sourceData": "json",
+        "dataPropertyName": "body",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "page_title",
+              "cssSelector": "title",
+              "returnValue": "text",
+              "returnArray": false
+            },
+            {
+              "key": "body_text",
+              "cssSelector": "body",
+              "returnValue": "text",
+              "skipSelectors": "script,style,noscript,nav,footer,header,form,svg,canvas,aside",
+              "returnArray": false
+            }
+          ]
+        },
+        "options": {
+          "trimValues": true,
+          "cleanUpText": true
+        }
+      },
+      "id": "video-m4-html",
+      "name": "Extract HTML Content",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        1680,
+        -120
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const candidate = $('Build Fetch Candidates').item.json;\nconst fetch = $('Fetch Source Page').item.json;\nconst extracted = $json ?? {};\n\nconst statusCode = Number(fetch.statusCode ?? fetch.status ?? 0);\nconst headers = fetch.headers && typeof fetch.headers === 'object' ? fetch.headers : {};\nconst contentTypeRaw =\n  headers['content-type'] ??\n  headers['Content-Type'] ??\n  '';\nconst contentType = Array.isArray(contentTypeRaw)\n  ? String(contentTypeRaw[0] ?? '')\n  : String(contentTypeRaw ?? '');\n\nconst isHtml =\n  contentType.toLowerCase().includes('text/html') ||\n  contentType === '';\n\nlet text = typeof extracted.body_text === 'string'\n  ? extracted.body_text\n  : '';\ntext = text.replace(/\\s+/g, ' ').trim();\n\nif (!isHtml || statusCode < 200 || statusCode > 299) {\n  text = '';\n}\n\nconst MAX_SOURCE_CHARS = 12000;\nif (text.length > MAX_SOURCE_CHARS) {\n  text = text.slice(0, MAX_SOURCE_CHARS);\n}\n\nconst extractedTitle =\n  typeof extracted.page_title === 'string'\n    ? extracted.page_title.replace(/\\s+/g, ' ').trim()\n    : '';\n\nreturn {\n  json: {\n    research_run_id: candidate.research_run_id,\n    search_query: candidate.search_query,\n    search_rank: candidate.search_rank,\n    search_engines: candidate.search_engines,\n    source_url: candidate.source_url,\n    canonical_url: candidate.canonical_url,\n    source_domain: candidate.source_domain,\n    title: (extractedTitle || candidate.title || candidate.source_domain).slice(0, 1000),\n    snippet: String(candidate.snippet ?? '').slice(0, 2000),\n    content_text: text,\n    source_http_status: statusCode,\n    source_content_type: contentType || 'unknown',\n    extracted_chars: text.length,\n  },\n};"
+      },
+      "id": "video-m4-normalize",
+      "name": "Normalize Evidence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        -120
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT evidence_id::text AS evidence_id, inserted\nFROM factory.store_evidence(\n  $1::uuid,\n  $2::text,\n  $3::integer,\n  $4::jsonb,\n  $5::text,\n  $6::text,\n  $7::text,\n  $8::text,\n  $9::text,\n  $10::text,\n  $11::integer,\n  $12::text\n);",
+        "options": {
+          "queryReplacement": "={{ [ $json.research_run_id, $json.search_query, $json.search_rank, JSON.stringify($json.search_engines), $json.source_url, $json.canonical_url, $json.source_domain, $json.title, $json.snippet, $json.content_text, $json.source_http_status, $json.source_content_type ] }}"
+        }
+      },
+      "id": "video-m4-store",
+      "name": "Store Evidence",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        2160,
+        -120
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const ctx = $('Begin Research').first().json;\nconst runId = String(ctx.research_run_id ?? '').trim();\nif (!runId) throw new Error('research_run_id missing after evidence storage');\nconst rows = $input.all().map((item) => item.json);\nreturn [{\n  json: {\n    research_run_id: runId,\n    store_attempts: rows.length,\n    inserted_count: rows.filter((r) => r.inserted === true).length,\n  },\n}];"
+      },
+      "id": "video-m4-collapse",
+      "name": "Collapse Evidence Writes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        -120
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT research_status, evidence_count, independent_domain_count\nFROM factory.finalize_research($1::uuid, 3, 3);",
+        "options": {
+          "queryReplacement": "={{ [ $json.research_run_id ] }}"
+        }
+      },
+      "id": "video-m4-finalize",
+      "name": "Finalize Research",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        2640,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "if ($json.research_status !== 'passed') {\n  throw new Error(\n    'M4 research failed closed: evidence=' +\n    String($json.evidence_count ?? 0) +\n    ', domains=' +\n    String($json.independent_domain_count ?? 0)\n  );\n}\nreturn {\n  json: {\n    research_status: $json.research_status,\n    evidence_count: Number($json.evidence_count),\n    independent_domain_count: Number($json.independent_domain_count),\n  },\n};"
+      },
+      "id": "video-m4-require-pass",
+      "name": "Require Research PASS",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2880,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Research').first().json;\nconst runId = String(ctx.research_run_id ?? '').trim();\nif (!runId) throw new Error('cannot record research failure: research_run_id missing');\n\nconst errorObject =\n  $json.error && typeof $json.error === 'object' && !Array.isArray($json.error)\n    ? $json.error\n    : {};\n\nconst candidates = [\n  errorObject.message,\n  $json.message,\n  $json.description,\n  typeof $json.error === 'string' ? $json.error : null,\n];\n\nconst message = candidates.find(\n  (value) => typeof value === 'string' && value.trim().length > 0\n) ?? 'unspecified M4 workflow failure';\n\nreturn {\n  json: {\n    research_run_id: runId,\n    error_message: ('M4 research workflow failed: ' + message.trim()).slice(0, 4000),\n  },\n};"
+      },
+      "id": "video-m4-prepare-failure",
+      "name": "Prepare Research Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT research_status, job_status\nFROM factory.fail_research($1::uuid, $2::text);",
+        "options": {
+          "queryReplacement": "={{ [ $json.research_run_id, $json.error_message ] }}"
+        }
+      },
+      "id": "video-m4-fail-research",
+      "name": "Fail Research",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        2640,
+        240
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const failure = $('Prepare Research Failure').first().json;\nthrow new Error(String(failure.error_message ?? 'M4 research failed'));"
+      },
+      "id": "video-m4-raise-failure",
+      "name": "Raise Research Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2880,
+        240
+      ]
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Begin Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Begin Research": {
+      "main": [
+        [
+          {
+            "node": "Build Search Queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Search Queries": {
+      "main": [
+        [
+          {
+            "node": "Search Web",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Web": {
+      "main": [
+        [
+          {
+            "node": "Build Fetch Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Fetch Candidates": {
+      "main": [
+        [
+          {
+            "node": "Route Fetch Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Fetch Candidates": {
+      "main": [
+        [
+          {
+            "node": "Fetch Source Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Finalize Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Source Page": {
+      "main": [
+        [
+          {
+            "node": "Extract HTML Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract HTML Content": {
+      "main": [
+        [
+          {
+            "node": "Normalize Evidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Evidence": {
+      "main": [
+        [
+          {
+            "node": "Store Evidence",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Evidence": {
+      "main": [
+        [
+          {
+            "node": "Collapse Evidence Writes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collapse Evidence Writes": {
+      "main": [
+        [
+          {
+            "node": "Finalize Research",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize Research": {
+      "main": [
+        [
+          {
+            "node": "Require Research PASS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Require Research PASS": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Prepare Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Research Failure": {
+      "main": [
+        [
+          {
+            "node": "Fail Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Research": {
+      "main": [
+        [
+          {
+            "node": "Raise Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
