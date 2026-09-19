@@ -76,20 +76,29 @@ Decision:
 - do not bypass Cloudflare or scrape the website.
 
 ### Gemini text
-Status: PENDING LIVE PROOF THROUGH PRODUCTION N8N
+Status: BLOCKED — credential missing in production n8n.
 
-Production provider calls must run through `publisher.hodor.com.pl`.
+Verified 2026-09-19:
+- `publisher.hodor.com.pl` has no Gemini/PaLM credential;
+- its container environment exposes no Gemini/API-key variable;
+- model selection and Free Tier were verified separately from official Google documentation.
 
-Required proof:
+Required proof after credential is added:
 - current approved free-tier model call through `publisher.hodor.com.pl`;
 - structured JSON response;
 - no paid fallback.
 
 ### Google Cloud Text-to-Speech
-Status: PENDING OAUTH RECONNECT + LIVE PROOF THROUGH PRODUCTION N8N
+Status: BLOCKED — restored OAuth requires reconnect.
 
-Required proof:
-- reconnect the restored Google OAuth credential in `publisher.hodor.com.pl`;
+Verified 2026-09-19 in production `publisher.hodor.com.pl` using the exact historical working node configuration:
+- endpoint: Google Cloud `text:synthesize`;
+- credential: restored `Google account`;
+- test voice: `en-US-Chirp3-HD-Algenib`;
+- request failed before synthesis with HTTP 401;
+- n8n reports: the credential needs to be reconnected.
+
+Required proof after reconnect:
 - real OAuth authentication through `publisher.hodor.com.pl`;
 - one MP3 synthesis for each locked voice:
   - `en-US-Chirp3-HD-Algenib`;
@@ -100,16 +109,35 @@ Required proof:
 - no Gemini TTS substitution.
 
 ### Pixabay
-Status: PENDING API KEY
+Status: PASS — live credential verified through `publisher.hodor.com.pl` on 2026-09-19.
 
-Official API requires an API key.
+Observed:
+- image search HTTP 200;
+- video search HTTP 200;
+- image result metadata included provider asset ID, source page URL, user/author metadata, dimensions and media URLs;
+- video search returned real video candidates;
+- rate-limit headers observed: limit 100, remaining 99, reset 60 seconds;
+- response cache policy exposed `max-age=86400`;
+- one returned JPEG was downloaded by media-worker and verified by ffprobe;
+- downloaded Pixabay test image: JPEG/MJPEG, 640×427.
 
-Required proof:
-- image search;
-- video search;
-- download of one result;
-- source/author/license metadata capture;
-- rate-limit headers captured.
+Conclusion:
+- Pixabay is production-ready as an independent visual discovery source subject to the provider/license policy in `docs/PROVIDER_POLICY.md`.
+
+### Pexels
+Status: PASS — live credential verified through `publisher.hodor.com.pl` on 2026-09-19.
+
+Observed:
+- photo search HTTP 200;
+- video search HTTP 200;
+- photo result metadata included source page URL, photographer, photographer URL, dimensions and multiple media URLs;
+- video search returned a real video candidate;
+- live account rate-limit headers observed: limit 25000, remaining 24248 after the video smoke test;
+- one returned JPEG was downloaded by media-worker and verified by ffprobe;
+- downloaded Pexels test image: JPEG/MJPEG, 5472×3648.
+
+Conclusion:
+- Pexels is production-ready as an independent visual discovery source subject to the provider/attribution policy in `docs/PROVIDER_POLICY.md`.
 
 ### Unsplash
 Status: PENDING API KEY + COMPLIANCE PROOF
@@ -151,7 +179,7 @@ Mandatory to unblock M3:
 3. at least two independent production-ready visual sources;
 4. local four-language speech alignment.
 
-Wikimedia currently counts as one visual source. Pixabay is the intended second source once its API key is connected.
+Visual-source gate is PASS: Wikimedia Commons, Pixabay and Pexels are independently verified. Openverse remains disabled; Unsplash is optional and not required to unblock M3.
 
 
 ## Recovery findings — 2026-09-19
