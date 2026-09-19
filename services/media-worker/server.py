@@ -18,6 +18,7 @@ DATA_ROOT = Path("/data")
 VOICEOVER_ROOT = DATA_ROOT / "voiceovers"
 ALIGNMENT_ROOT = DATA_ROOT / "alignments"
 VISUAL_ROOT = DATA_ROOT / "visuals"
+RENDER_ROOT = DATA_ROOT / "renders"
 WHISPER_CLI = Path("/opt/whisper/whisper-cli")
 WHISPER_MODEL = Path("/models/ggml-base.bin")
 WHISPER_IMAGE_DIGEST = (
@@ -651,6 +652,432 @@ def download_visual_asset(
     }
 
 
+
+def ffprobe_render(path: Path):
+    result = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-show_entries",
+            (
+                "format=duration,size:"
+                "stream=codec_type,codec_name,width,height,pix_fmt,"
+                "r_frame_rate,duration,channels,sample_rate"
+            ),
+            "-of",
+            "json",
+            str(path),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+    payload = json.loads(result.stdout)
+    streams = payload.get("streams") or []
+    video_streams = [
+        stream for stream in streams
+        if stream.get("codec_type") == "video"
+    ]
+    audio_streams = [
+        stream for stream in streams
+        if stream.get("codec_type") == "audio"
+    ]
+
+    if len(video_streams) != 1 or len(audio_streams) != 1:
+        raise ValueError("render must contain exactly one video and one audio stream")
+
+    video = video_streams[0]
+    audio = audio_streams[0]
+
+    try:
+        width = int(video.get("width") or 0)
+        height = int(video.get("height") or 0)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("render dimensions are invalid") from exc
+
+    rate = str(video.get("r_frame_rate") or "0/1")
+    match = re.fullmatch(r"([0-9]+)/([0-9]+)", rate)
+    if not match:
+        raise ValueError("render frame rate is invalid")
+
+    fps_num = int(match.group(1))
+    fps_den = int(match.group(2))
+    if fps_den <= 0:
+        raise ValueError("render frame-rate denominator is invalid")
+
+    try:
+        duration_ms = round(
+            float((payload.get("format") or {}).get("duration") or 0) * 1000
+        )
+    except (TypeError, ValueError) as exc:
+        raise ValueError("render duration is invalid") from exc
+
+    if duration_ms <= 0:
+        raise ValueError("render duration must be positive")
+
+    return {
+        "width": width,
+        "height": height,
+        "video_codec": str(video.get("codec_name") or "").lower(),
+        "audio_codec": str(audio.get("codec_name") or "").lower(),
+        "pix_fmt": str(video.get("pix_fmt") or "").lower(),
+        "fps_num": fps_num,
+        "fps_den": fps_den,
+        "duration_ms": duration_ms,
+        "video_stream_count": len(video_streams),
+        "audio_stream_count": len(audio_streams),
+    }
+
+
+def _safe_render_asset_path(job_id, shot_id, path_value):
+    path = Path(str(path_value or "").strip())
+    if not path.is_absolute():
+        raise ValueError("render asset path must be absolute")
+
+    expected_dir = (VISUAL_ROOT / job_id / shot_id).resolve()
+    resolved = path.resolve()
+
+    if resolved.parent != expected_dir:
+        raise ValueError("render asset path is outside the selected shot directory")
+    if not resolved.name.startswith("selected."):
+        raise ValueError("render asset filename is not a selected asset")
+    if not resolved.is_file():
+        raise ValueError("render asset file is missing")
+
+    return resolved
+
+
+def _render_segment(asset_path, media_type, duration_ms, output_path):
+    if media_type not in VISUAL_MEDIA_TYPES:
+        raise ValueError("unsupported render media type")
+    if duration_ms <= 0:
+        raise ValueError("render segment duration must be positive")
+
+    duration_seconds = duration_ms / 1000.0
+    final_range_filter = (
+        "scale=1080:1920:in_range=full:out_range=tv,"
+        if media_type != "video"
+        else ""
+    )
+    filter_graph = (
+        "[0:v]split=2[bg][fg];"
+        "[bg]scale=1080:1920:force_original_aspect_ratio=increase,"
+        "crop=1080:1920,boxblur=20:1[bg2];"
+        "[fg]scale=1080:1920:force_original_aspect_ratio=decrease[fg2];"
+        "[bg2][fg2]overlay=(W-w)/2:(H-h)/2,"
+        "fps=30,"
+        + final_range_filter
+        + "format=yuv420p,setsar=1[v]"
+    )
+
+    command = ["ffmpeg", "-nostdin", "-y"]
+
+    if media_type == "video":
+        command.extend(["-stream_loop", "-1", "-i", str(asset_path)])
+    else:
+        command.extend(
+            ["-loop", "1", "-framerate", "30", "-i", str(asset_path)]
+        )
+
+    command.extend(
+        [
+            "-filter_complex",
+            filter_graph,
+            "-map",
+            "[v]",
+            "-an",
+            "-c:v",
+            "libx264",
+            "-pix_fmt",
+            "yuv420p",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "18",
+            "-fps_mode",
+            "cfr",
+            "-t",
+            f"{duration_seconds:.3f}",
+            "-movflags",
+            "+faststart",
+            str(output_path),
+        ]
+    )
+
+    subprocess.run(
+        command,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=180,
+    )
+
+
+def render_final_video(
+    job_id,
+    input_audio_sha256,
+    audio_duration_ms,
+    scenes,
+    final_dir: Path,
+):
+    audio_path = VOICEOVER_ROOT / job_id / "final.mp3"
+    if not audio_path.is_file():
+        raise ValueError("render voiceover is missing")
+
+    actual_audio_sha = file_sha256(audio_path)
+    if actual_audio_sha != input_audio_sha256:
+        raise ValueError("render voiceover SHA256 mismatch")
+
+    audio_probe = ffprobe_audio(audio_path)
+    if audio_probe["duration_ms"] != audio_duration_ms:
+        raise ValueError("render voiceover duration mismatch")
+
+    if not isinstance(scenes, list) or not scenes:
+        raise ValueError("render scenes must be a non-empty array")
+
+    work_dir = final_dir / ".work"
+    work_dir.mkdir()
+
+    segment_files = []
+    segment_manifest = []
+    previous_end = 0
+    asset_hashes = set()
+
+    for index, scene in enumerate(scenes, start=1):
+        if not isinstance(scene, dict):
+            raise ValueError(f"render scene {index} must be an object")
+
+        scene_uuid = str(scene.get("scene_uuid") or "").strip().lower()
+        shot_uuid = str(scene.get("shot_uuid") or "").strip().lower()
+        visual_asset_id = str(scene.get("visual_asset_id") or "").strip().lower()
+        media_type = str(scene.get("media_type") or "").strip().lower()
+        asset_sha = str(scene.get("asset_sha256") or "").strip().lower()
+
+        if not JOB_ID_RE.fullmatch(scene_uuid):
+            raise ValueError(f"render scene {index} has invalid scene UUID")
+        if not JOB_ID_RE.fullmatch(shot_uuid):
+            raise ValueError(f"render scene {index} has invalid shot UUID")
+        if not JOB_ID_RE.fullmatch(visual_asset_id):
+            raise ValueError(f"render scene {index} has invalid visual asset UUID")
+        if media_type not in VISUAL_MEDIA_TYPES:
+            raise ValueError(f"render scene {index} has invalid media type")
+        if not re.fullmatch(r"[0-9a-f]{64}", asset_sha):
+            raise ValueError(f"render scene {index} has invalid asset SHA256")
+
+        try:
+            scene_order = int(scene.get("scene_order"))
+            start_ms = int(scene.get("segment_start_ms"))
+            end_ms = int(scene.get("segment_end_ms"))
+            speech_start_ms = int(scene.get("speech_start_ms"))
+            speech_end_ms = int(scene.get("speech_end_ms"))
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"render scene {index} has invalid timings") from exc
+
+        if scene_order != index:
+            raise ValueError("render scene order is not sequential")
+        if start_ms != previous_end:
+            raise ValueError("render segments are not contiguous")
+        if end_ms <= start_ms or end_ms > audio_duration_ms:
+            raise ValueError("render segment bounds are invalid")
+        if speech_start_ms < start_ms or speech_end_ms > end_ms:
+            raise ValueError("speech timing is outside render segment")
+        if speech_end_ms <= speech_start_ms:
+            raise ValueError("speech timing has non-positive duration")
+
+        asset_path = _safe_render_asset_path(
+            job_id,
+            shot_uuid,
+            scene.get("asset_path"),
+        )
+        if file_sha256(asset_path) != asset_sha:
+            raise ValueError("render asset SHA256 mismatch")
+        if asset_sha in asset_hashes:
+            raise ValueError("render asset hash is reused")
+        asset_hashes.add(asset_sha)
+
+        segment_path = work_dir / f"segment-{index:02d}.mp4"
+        _render_segment(
+            asset_path,
+            media_type,
+            end_ms - start_ms,
+            segment_path,
+        )
+
+        segment_probe = subprocess.run(
+            [
+                "ffprobe",
+                "-v",
+                "error",
+                "-show_entries",
+                "stream=codec_type,codec_name,width,height,pix_fmt,r_frame_rate",
+                "-of",
+                "json",
+                str(segment_path),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        segment_probe_payload = json.loads(segment_probe.stdout)
+        video_streams = [
+            stream
+            for stream in segment_probe_payload.get("streams") or []
+            if stream.get("codec_type") == "video"
+        ]
+        if len(video_streams) != 1:
+            raise ValueError("render segment must contain exactly one video stream")
+
+        segment_video = video_streams[0]
+        if (
+            str(segment_video.get("codec_name") or "").lower() != "h264"
+            or int(segment_video.get("width") or 0) != 1080
+            or int(segment_video.get("height") or 0) != 1920
+            or str(segment_video.get("pix_fmt") or "").lower() != "yuv420p"
+            or str(segment_video.get("r_frame_rate") or "") != "30/1"
+        ):
+            raise ValueError("render segment video parameters are invalid")
+
+        segment_files.append(segment_path)
+        segment_manifest.append(
+            {
+                "scene_uuid": scene_uuid,
+                "shot_uuid": shot_uuid,
+                "visual_asset_id": visual_asset_id,
+                "segment_order": index,
+                "start_ms": start_ms,
+                "end_ms": end_ms,
+                "duration_ms": end_ms - start_ms,
+                "asset_sha256": asset_sha,
+                "media_type": media_type,
+            }
+        )
+        previous_end = end_ms
+
+    if previous_end != audio_duration_ms:
+        raise ValueError("render segments do not cover the full voiceover")
+    if len(asset_hashes) != len(scenes):
+        raise ValueError("render asset hashes are not unique")
+
+    concat_path = work_dir / "concat.txt"
+    concat_path.write_text(
+        "".join(f"file '{path}'\n" for path in segment_files),
+        encoding="utf-8",
+    )
+
+    video_only_path = work_dir / "video-only.mp4"
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-nostdin",
+            "-y",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            str(concat_path),
+            "-c",
+            "copy",
+            str(video_only_path),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+
+    temp_final_path = work_dir / "final.tmp.mp4"
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-nostdin",
+            "-y",
+            "-i",
+            str(video_only_path),
+            "-i",
+            str(audio_path),
+            "-map",
+            "0:v:0",
+            "-map",
+            "1:a:0",
+            "-c:v",
+            "copy",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "192k",
+            "-t",
+            f"{audio_duration_ms / 1000.0:.3f}",
+            "-movflags",
+            "+faststart",
+            str(temp_final_path),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+
+    probe = ffprobe_render(temp_final_path)
+    duration_delta_ms = abs(probe["duration_ms"] - audio_duration_ms)
+
+    qa_gates = {
+        "video_dimensions":
+            probe["width"] == 1080 and probe["height"] == 1920,
+        "video_codec":
+            probe["video_codec"] == "h264" and probe["pix_fmt"] == "yuv420p",
+        "audio_codec":
+            probe["audio_codec"] == "aac",
+        "stream_counts":
+            probe["video_stream_count"] == 1
+            and probe["audio_stream_count"] == 1,
+        "duration_match":
+            duration_delta_ms <= 100,
+        "scene_coverage":
+            len(segment_manifest) == len(scenes)
+            and segment_manifest[0]["start_ms"] == 0
+            and segment_manifest[-1]["end_ms"] == audio_duration_ms,
+        "asset_hashes":
+            len(asset_hashes) == len(scenes),
+        "source_audio_excluded":
+            True,
+    }
+
+    if not all(qa_gates.values()):
+        raise ValueError(
+            "machine QA failed: "
+            + json.dumps(qa_gates, sort_keys=True)
+        )
+
+    final_path = final_dir / "final.mp4"
+    os.rename(temp_final_path, final_path)
+
+    result = {
+        "status": "ready",
+        "job_id": job_id,
+        "storage_path": str(final_path),
+        "manifest_path": str(final_dir / "manifest.json"),
+        "sha256": file_sha256(final_path),
+        "bytes": final_path.stat().st_size,
+        **probe,
+        "audio_duration_ms": audio_duration_ms,
+        "duration_delta_ms": duration_delta_ms,
+        "input_audio_sha256": input_audio_sha256,
+        "segments": segment_manifest,
+        "qa_gates": qa_gates,
+        "qa_passed": True,
+    }
+
+    _write_json_fsync(final_dir / "manifest.json", result)
+    shutil.rmtree(work_dir)
+
+    return result
+
+
 class Handler(BaseHTTPRequestHandler):
     def _json(self, status_code, payload):
         body = json.dumps(payload, ensure_ascii=False).encode()
@@ -677,6 +1104,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def _alignment_job_id(self, suffix=""):
         return self._job_id_for_path("alignments", suffix)
+
+    def _render_job_id(self, suffix=""):
+        return self._job_id_for_path("renders", suffix)
 
     def _visual_ids(self, suffix=""):
         pattern = rf"^/visuals/([^/]+)/([^/]+){suffix}$"
@@ -855,6 +1285,51 @@ class Handler(BaseHTTPRequestHandler):
                 return
 
             self._json(404, {"error": "visual_not_found"})
+            return
+
+        job_id = self._render_job_id("/metadata")
+        if job_id is not None:
+            final_dir = RENDER_ROOT / job_id
+            manifest_path = final_dir / "manifest.json"
+            failure_path = final_dir / "failure.json"
+
+            if manifest_path.is_file():
+                try:
+                    payload = json.loads(
+                        manifest_path.read_text(encoding="utf-8")
+                    )
+                except (OSError, json.JSONDecodeError) as exc:
+                    self._json(
+                        500,
+                        {
+                            "error": "render_metadata_failed",
+                            "message": str(exc),
+                        },
+                    )
+                    return
+
+                self._json(200, payload)
+                return
+
+            if failure_path.is_file():
+                try:
+                    payload = json.loads(
+                        failure_path.read_text(encoding="utf-8")
+                    )
+                except (OSError, json.JSONDecodeError) as exc:
+                    self._json(
+                        500,
+                        {
+                            "error": "render_metadata_failed",
+                            "message": str(exc),
+                        },
+                    )
+                    return
+
+                self._json(422, payload)
+                return
+
+            self._json(404, {"error": "render_not_found"})
             return
 
         self._json(404, {"error": "not_found"})
@@ -1200,7 +1675,123 @@ class Handler(BaseHTTPRequestHandler):
 
         self._json(201, response)
 
+
+    def _handle_render_post(self, job_id):
+        final_dir = RENDER_ROOT / job_id
+        manifest_path = final_dir / "manifest.json"
+        failure_path = final_dir / "failure.json"
+
+        if final_dir.exists():
+            self._json(
+                409,
+                {
+                    "error": "render_attempt_already_exists",
+                    "job_id": job_id,
+                },
+            )
+            return
+
+        try:
+            payload = self._read_json_body()
+            input_audio_sha256 = str(
+                payload.get("input_audio_sha256") or ""
+            ).strip().lower()
+            try:
+                audio_duration_ms = int(payload.get("audio_duration_ms"))
+            except (TypeError, ValueError) as exc:
+                raise ValueError("audio_duration_ms must be an integer") from exc
+
+            scenes = payload.get("scenes")
+            if not re.fullmatch(r"[0-9a-f]{64}", input_audio_sha256):
+                raise ValueError("input_audio_sha256 is invalid")
+            if audio_duration_ms <= 0:
+                raise ValueError("audio_duration_ms must be positive")
+            if not isinstance(scenes, list) or not scenes:
+                raise ValueError("scenes must be a non-empty array")
+
+            try:
+                final_dir.mkdir(parents=True, exist_ok=False)
+            except FileExistsError:
+                self._json(
+                    409,
+                    {
+                        "error": "render_attempt_already_exists",
+                        "job_id": job_id,
+                    },
+                )
+                return
+
+            result = render_final_video(
+                job_id,
+                input_audio_sha256,
+                audio_duration_ms,
+                scenes,
+                final_dir,
+            )
+
+        except subprocess.TimeoutExpired as exc:
+            if final_dir.exists() and not manifest_path.exists():
+                try:
+                    failure = {
+                        "status": "failed",
+                        "job_id": job_id,
+                        "error": "render_timeout",
+                        "message": str(exc),
+                    }
+                    if not failure_path.exists():
+                        _write_json_fsync(failure_path, failure)
+                    work_dir = final_dir / ".work"
+                    if work_dir.exists():
+                        shutil.rmtree(work_dir)
+                    (final_dir / "final.mp4").unlink(missing_ok=True)
+                except Exception:
+                    pass
+
+            self._json(
+                422,
+                {
+                    "error": "render_timeout",
+                    "job_id": job_id,
+                    "message": str(exc),
+                },
+            )
+            return
+        except Exception as exc:
+            if final_dir.exists() and not manifest_path.exists():
+                try:
+                    failure = {
+                        "status": "failed",
+                        "job_id": job_id,
+                        "error": "render_failed",
+                        "message": str(exc),
+                    }
+                    if not failure_path.exists():
+                        _write_json_fsync(failure_path, failure)
+                    work_dir = final_dir / ".work"
+                    if work_dir.exists():
+                        shutil.rmtree(work_dir)
+                    (final_dir / "final.mp4").unlink(missing_ok=True)
+                except Exception:
+                    pass
+
+            self._json(
+                422,
+                {
+                    "error": "render_failed",
+                    "job_id": job_id,
+                    "message": str(exc),
+                },
+            )
+            return
+
+        self._json(201, result)
+
     def do_POST(self):
+        render_job_id = self._render_job_id()
+        if render_job_id is not None:
+            self._handle_render_post(render_job_id)
+            return
+
         visual_ids = self._visual_ids()
         if visual_ids is not None:
             self._handle_visual_post(*visual_ids)
@@ -1226,4 +1817,5 @@ if __name__ == "__main__":
     VOICEOVER_ROOT.mkdir(parents=True, exist_ok=True)
     ALIGNMENT_ROOT.mkdir(parents=True, exist_ok=True)
     VISUAL_ROOT.mkdir(parents=True, exist_ok=True)
+    RENDER_ROOT.mkdir(parents=True, exist_ok=True)
     ThreadingHTTPServer(("0.0.0.0", 3001), Handler).serve_forever()
