@@ -182,12 +182,44 @@ Failed test jobs are preserved terminal and were not reused:
 - `c189c00b-f055-44c5-b564-cc29e690afbf` → `research_failed`;
 - `dd0946fb-046c-4480-9368-ca1fd94c17c6` → `research_failed`.
 
+## M5
+PASS on 2026-09-19.
+
+Verified live:
+- production workflow `VIDEO — M5 Script + Storyboard` ID `VideoM5Storyboard001` is published and active;
+- M5 is an internal sub-workflow with input `job_id`;
+- only `evidence_ready` jobs can start M5;
+- `factory.script_runs`, `factory.script_versions`, `factory.scenes`, `factory.scene_evidence`, and `factory.shots` are deployed;
+- `begin_script()`, `commit_storyboard()`, and `fail_script()` are deployed;
+- each job gets only one immutable M5 attempt;
+- Gemini model is `gemini-3.5-flash-lite` through credential `Gemini Text`;
+- the request body contains no tools, Google Search, URL Context, code execution or TTS;
+- Gemini receives only persisted M4 evidence, capped to 6,000 characters per evidence row for prompt construction;
+- structured JSON is validated before DB commit;
+- every scene requires 1–4 valid evidence IDs and those IDs are mapped to same-job evidence UUIDs before persistence;
+- narration must equal scene narrations joined in order;
+- narration word range is derived from target duration;
+- deterministic visual density is 4/7/10/13 scenes and shots for 15/30/45/60 seconds respectively;
+- every scene contains exactly one shot;
+- every shot requires concrete visual intent, at least one must-show concept, 2–4 distinct English factual queries and an allowed media type;
+- provider names, URLs and manual asset preselection are rejected;
+- first live M5 test on job `198bb721-6c33-4b00-9268-930f5c34afcf` failed closed because Gemini produced only 5 shots against the required 7–10; the job is preserved terminal as `script_failed`;
+- the contract was strengthened rather than weakening the gate: 30-second output now requires exactly 7 scenes / 7 shots;
+- fresh end-to-end M3→M4→M5 test job `e4bc4b8b-dcf5-4c81-9193-5db297c528d7` passed;
+- successful M5 output: 64 narration words, 7 scenes, 7 shots, 7 scenes with evidence links, 0 invalid cross-job evidence links, 0 provider/URL preselection findings;
+- Gemini usage stored for the successful run: 10,390 prompt tokens, 1,374 output tokens, 11,764 total tokens;
+- M4 execution `7757` and M5 execution `7758` succeeded for the fresh job;
+- successful job state is `storyboard_ready`;
+- provider TTS ledger remained unchanged; M5 made no TTS call;
+- temporary M5 public test caller was backed up, deleted, and its random endpoint now returns 404;
+- publisher post-state is 25 workflows / 9 active: 22 protected MCP/ADMIN + M3 + M4 + M5.
+
 ## Immediate next work
-1. Implement M5 script/storyboard persistence.
-2. Load only jobs in `evidence_ready` state.
-3. Send persisted evidence only to `gemini-3.5-flash-lite`; no Google Search grounding.
-4. Require structured JSON with continuous narration, evidence IDs and executable shot intents.
-5. Validate every factual narration unit against persisted evidence IDs and fail closed before TTS.
+1. Implement M6 one-final-voiceover persistence and production workflow.
+2. Load only `storyboard_ready` jobs.
+3. Reserve the correct free-only Google Cloud TTS character budget before synthesis.
+4. Perform exactly one final Google Cloud TTS synthesis using the locked language voice.
+5. Store the exact MP3 durably, persist its SHA-256 and measured duration, then prohibit all later re-TTS.
 
 
 ## Production orchestration lock — 2026-09-19
