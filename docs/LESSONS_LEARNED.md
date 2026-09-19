@@ -154,3 +154,30 @@ Prevention:
 - continue rejecting arbitrary redirect/download hosts;
 - validate the downloaded file with SHA-256 and ffprobe before DB persistence;
 - test allowlist changes against an actual provider-returned URL, not a synthetic hostname.
+
+25. Still-image full-range pixel formats must be normalized explicitly for the final H.264 contract.
+JPEG inputs produced `yuvj420p` even when the encoder was given `-pix_fmt yuv420p`. The machine gate correctly rejected the segment.
+
+Prevention:
+- for still-image inputs, convert full-range to TV-range explicitly before `format=yuv420p`;
+- do not apply the same forced range conversion blindly to source videos that may already be limited-range;
+- keep the final QA gate strict at `yuv420p` rather than weakening it to accept `yuvj420p`;
+- verify the exact encoded segment with ffprobe before final concatenation.
+
+26. Generate FFmpeg concat lists with real newline bytes, not escaped backslash-n text.
+The first M9 unit render created all seven valid segments but could not create `video-only.mp4` because `concat.txt` contained literal `\\n` characters.
+
+Prevention:
+- write actual newline characters to concat manifests;
+- inspect the manifest bytes when concat fails after successful segment encoding;
+- test concat and final mux separately before consuming a normal product render attempt.
+
+27. Repeated manual Docker restarts can corrupt a container restart-manager/rootfs state even when application data is external.
+`ai-short-form-n8n` entered a restart loop with exit 137 while kernel logs showed no OOM. Docker reported `invalid call on an active restart manager` and a missing overlayfs rootfs path.
+
+Prevention:
+- avoid stacking `docker restart` calls after timed-out control commands;
+- verify container state before issuing another lifecycle action;
+- if the stateless n8n container rootfs/restart manager is corrupted, preserve `docker inspect`, confirm PostgreSQL is external, then recreate only that container from the exact image/env/networks;
+- never recreate or modify the publisher PostgreSQL as part of this recovery;
+- after recovery verify protected workflows, credentials, publisher HTTP and restart count before resuming project work.
