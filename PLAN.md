@@ -609,11 +609,23 @@ Verified:
 Acceptance: PASS.
 
 ## M5 — Script + storyboard
-Acceptance:
-- continuous narration;
-- each factual unit cites evidence IDs;
-- each scene contains executable visual intent and search queries;
-- no asset is manually selected in script logic.
+Status: PASS — verified live on 2026-09-19.
+
+Verified:
+- continuous narration in the requested language;
+- every scene cites persisted evidence IDs belonging to the same job;
+- evidence-only Gemini input with no Google Search, URL Context, code execution, or TTS;
+- structured JSON is machine-validated before persistence;
+- visual density is deterministic by target duration:
+  - 15s → 4 scenes / 4 shots;
+  - 30s → 7 scenes / 7 shots;
+  - 45s → 10 scenes / 10 shots;
+  - 60s → 13 scenes / 13 shots;
+- each shot contains executable visual intent, must-show concepts, must-not-show conflicts where useful, 2–4 English search queries, and media-type intent;
+- provider names, URLs, asset IDs and preselected media are rejected by validation;
+- failed script attempts are terminal and immutable.
+
+Acceptance: PASS.
 
 ## M6 — One final voiceover
 Acceptance:
