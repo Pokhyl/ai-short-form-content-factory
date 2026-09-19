@@ -153,12 +153,41 @@ Test note:
 - direct VPS-to-public-domain self-call is blocked by Cloudflare with HTTP 403 / error code 1010;
 - live webhook tests therefore used local Caddy with `publisher.hodor.com.pl` Host/SNI via 127.0.0.1, without changing production routing.
 
+## M4
+PASS on 2026-09-19.
+
+Verified live:
+- production workflow `VIDEO — M4 Research` ID `VideoM4Research001` is published and active;
+- M4 is an internal sub-workflow with input `job_id`; no permanent public research webhook exists;
+- SearXNG returned broad results from multiple engines;
+- M4 selected up to 10 fetch candidates while maximizing independent domains and rejecting social/binary/private-address candidates;
+- page fetch uses direct HTTP with bounded timeout and a project User-Agent;
+- HTML extraction uses n8n's built-in HTML/Cheerio node, not regex page scraping;
+- evidence is capped to 12,000 characters per source;
+- `factory.research_runs`, `factory.evidence`, `begin_research()`, `store_evidence()`, `finalize_research()`, and `fail_research()` are deployed;
+- `pgcrypto` is enabled for SHA-256 content hashes;
+- URL and content-hash deduplication are enforced per job;
+- PASS gate requires at least 3 evidence rows from 3 independent domains;
+- live fresh-job test `198bb721-6c33-4b00-9268-930f5c34afcf` returned `passed` with 7 evidence rows / 7 domains;
+- all 7 stored canonical URLs and all 7 content hashes are distinct;
+- stored source text lengths ranged from 3,142 to 12,000 characters;
+- successful sources included NOAA/NESDIS, SUNY ESF, Woodland Trust, Pacific Science Center, UNC, Wikipedia and Almanac;
+- job state became `evidence_ready`;
+- M4 execution `7750` succeeded;
+- provider usage ledger remained unchanged; M4 did not invoke Gemini or TTS;
+- temporary public test caller was backed up, deleted, and its random webhook now returns 404;
+- publisher post-state is 24 workflows / 8 active: 22 protected MCP/ADMIN + M3 + M4.
+
+Failed test jobs are preserved terminal and were not reused:
+- `c189c00b-f055-44c5-b564-cc29e690afbf` → `research_failed`;
+- `dd0946fb-046c-4480-9368-ca1fd94c17c6` → `research_failed`.
+
 ## Immediate next work
-1. Implement M4 research/evidence persistence.
-2. Add broad SearXNG research through the existing supporting service.
-3. Fetch selected public source pages and persist normalized evidence with source URL/title/retrieval metadata.
-4. Deduplicate sources/content and fail closed when evidence is inadequate.
-5. Do not invoke Gemini script generation until evidence is persisted and M4 acceptance passes.
+1. Implement M5 script/storyboard persistence.
+2. Load only jobs in `evidence_ready` state.
+3. Send persisted evidence only to `gemini-3.5-flash-lite`; no Google Search grounding.
+4. Require structured JSON with continuous narration, evidence IDs and executable shot intents.
+5. Validate every factual narration unit against persisted evidence IDs and fail closed before TTS.
 
 
 ## Production orchestration lock — 2026-09-19
