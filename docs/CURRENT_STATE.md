@@ -59,6 +59,7 @@ Rollback backup before cleanup:
 .backups/publisher-before-video-cleanup-20260919.dump
 
 Recovered credential count in restored publisher DB: 9.
+Current publisher credential count: 10 after the user added `Gemini Text` on 2026-09-19.
 
 Owner/auth state verified live on 2026-09-19:
 - user-management:reset had previously been run;
@@ -69,6 +70,7 @@ Owner/auth state verified live on 2026-09-19:
 - publisher root HTML returns HTTP 200;
 - a referenced n8n JavaScript asset returns HTTP 200;
 - all 9 restored credentials can be decrypted/exported by the running publisher n8n with its current encryption key;
+- `Gemini Text` credential ID `zsRz2tvE57EKe8zy` exists as `googlePalmApi` and passed a live Gemini text call;
 - credential secret values were not printed or stored in project files.
 
 n8n.hodor.com.pl is unrelated and must not be touched.
@@ -94,44 +96,64 @@ A rollback copy of the budget rows exists at .backups/provider-budget-before-ena
 PASS.
 
 ## M2
-PARTIAL. M3 remains blocked.
+PASS on 2026-09-19. M3 is unblocked.
 
 Passed:
-- SearXNG broad web search
-- direct public source fetch
-- Wikimedia Commons API
-- Pixabay image search + video search + metadata + rate-limit headers + real image download
-- Pexels photo search + video search + metadata + rate-limit headers + real image download
-- visual-source gate: PASS with three independent sources
-- local FFmpeg 1080x1920 H.264/AAC render
-- local whisper.cpp CPU runtime and token timestamps
-- fail-closed Google Cloud TTS monthly budget guard
+- SearXNG broad web search;
+- direct public source fetch;
+- Wikimedia Commons API;
+- Pixabay image search + video search + metadata + rate-limit headers + real image download;
+- Pexels photo search + video search + metadata + rate-limit headers + real image download;
+- visual-source gate with three independent sources;
+- local FFmpeg 1080x1920 H.264/AAC render;
+- fail-closed Google Cloud TTS monthly budget guard;
+- `Gemini Text` live structured-JSON call with `gemini-3.5-flash-lite`;
+- existing `Google account` OAuth reconnected and verified by real Cloud TTS calls;
+- all four locked TTS voices returned real MP3 audio;
+- local whisper.cpp `ggml-base.bin` alignment passed on exact EN/PL/RU/UK TTS audio;
+- all four transcripts matched their input text after normalization;
+- lexical token timestamps stayed inside the measured MP3 duration.
 
-Historical proof:
-- Google Cloud TTS worked in August with all four selected voices.
+M2 TTS evidence:
+- EN `en-US-Chirp3-HD-Algenib`: 9,696 bytes, 2.424 s, SHA256 `121d1a7ae38c7ee5797d1c5b1f659443172d4380dccc1b1c4124ba71ff63c3cf`;
+- PL `pl-PL-Chirp3-HD-Enceladus`: 13,536 bytes, 3.384 s, SHA256 `aef1cf5874e15f54d1fc20e6ee913968d53af0c443c86945e337aaa5a34a0499`;
+- RU `ru-RU-Wavenet-D`: 20,352 bytes, 2.544 s, SHA256 `b226835db6798969519418c6daa80cf888199bed2903b39808c847c80c866dde`;
+- UK `uk-UA-Chirp3-HD-Enceladus`: 11,712 bytes, 2.928 s, SHA256 `57a503f03b41c36ec9c8c9c589fe24104168c07002836bd1717170e4fb16b2a6`.
 
-Current blockers:
-- restored `Google account` OAuth in `publisher.hodor.com.pl` returns 401 and needs reconnect;
-- credential metadata confirms `Google account` has not been updated since 2026-08-14, so reconnect has not yet occurred;
-- all-four-voice Google Cloud TTS live proof is pending immediately after reconnect;
-- no Gemini credential currently exists in `publisher.hodor.com.pl`;
-- related recovery export contains encrypted `Google Gemini API` credential ID `6Vb7V9YzIwp9LS8S`, but the source encryption key is not present in the project/recovery files;
-- the only related recovery encryption key found is the previously tested mismatching key, so the old Gemini secret cannot be safely recovered from that export;
-- project-local `.env` contains no Gemini/API key;
-- Gemini free-tier structured-output live proof is pending after a valid credential is added;
-- four-language alignment quality must be tested against exact Google Cloud TTS output after TTS passes;
+Cleanup/accounting:
+- successful M2 TTS usage is committed in the provider ledger using exact character counts;
+- the earlier failed-auth reservations remain released;
+- temporary M2 workflows were removed;
+- publisher workflow count returned to 22 with 6 active protected workflows;
 - Openverse remains disabled but is not required for the visual-source gate.
 
-Do not start M3 until mandatory M2 gates in PLAN.md pass.
+## M3
+PARTIAL on 2026-09-19.
+
+Completed:
+- `db/04-jobs.sql` created and applied to `shorts-v2` PostgreSQL;
+- `factory.jobs` exists with DB-level constraints for topic, language and duration;
+- `factory.create_job(text,text,integer)` inserts one job atomically and rejects invalid input;
+- transactional DB smoke test: valid request creates exactly one row, rollback leaves zero rows;
+- invalid DB input fails and leaves zero rows;
+- production `publisher` container is connected to `shorts-v2_default`;
+- real TCP connectivity from publisher to PostgreSQL 5432, media-worker 3001 and SearXNG 8080 is verified;
+- existing legacy credential `Postgres - TikTok Pipeline v2` was inspected and deliberately not reused because it points to the old `tiktok_pipeline_v2` database;
+- import-ready workflow file `workflows/VIDEO-M3-Intake.json` created for `POST /webhook/jobs`;
+- intake validation test suite: 10/10 cases PASS;
+- workflow contains no Gemini or TTS nodes.
+
+Current blocker:
+- production n8n still needs a dedicated `Video Factory Postgres` credential for `shorts-v2-postgres-1 / shorts_factory / shorts`;
+- automated secret transfer into n8n credential storage is blocked by the execution safety layer, so the DB password must be entered manually in n8n;
+- the workflow is intentionally not imported/activated with a missing credential.
 
 ## Immediate next work
-1. Reconnect the restored `Google account` credential in `publisher.hodor.com.pl`.
-2. Add a Gemini API credential to `publisher.hodor.com.pl` for the approved free-tier text model.
-3. Immediately run all four locked Cloud TTS voices.
-4. Run Gemini structured-output live proof.
-5. Run four-language local alignment quality tests on the exact TTS audio.
-6. Update M2 evidence.
-7. Only then implement M3 intake as new video workflows in `publisher.hodor.com.pl`.
+1. Create `Video Factory Postgres` in `publisher.hodor.com.pl` using the existing `POSTGRES_PASSWORD` from the project-local `.env`.
+2. Replace the workflow credential placeholder with the created credential ID.
+3. Import/publish/activate `VIDEO — M3 Intake`.
+4. Run live valid and invalid `POST /webhook/jobs` tests.
+5. Verify valid request adds exactly one durable row, invalid requests add zero rows, and no Gemini/TTS executions occur.
 
 
 ## Production orchestration lock — 2026-09-19

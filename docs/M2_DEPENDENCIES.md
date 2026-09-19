@@ -76,37 +76,36 @@ Decision:
 - do not bypass Cloudflare or scrape the website.
 
 ### Gemini text
-Status: BLOCKED — credential missing in production n8n.
+Status: PASS — live production-n8n proof completed 2026-09-19.
 
-Verified 2026-09-19:
-- `publisher.hodor.com.pl` has no Gemini/PaLM credential;
-- its container environment exposes no Gemini/API-key variable;
-- model selection and Free Tier were verified separately from official Google documentation.
-
-Required proof after credential is added:
-- current approved free-tier model call through `publisher.hodor.com.pl`;
-- structured JSON response;
-- no paid fallback.
+Verified:
+- credential `Gemini Text` exists in `publisher.hodor.com.pl` as `googlePalmApi`;
+- n8n credential connection test succeeds;
+- model: `gemini-3.5-flash-lite`;
+- a real text request executed through the production n8n;
+- structured JSON mode succeeded;
+- returned values matched `status=ok`, `language=en`, `purpose=script`;
+- n8n reported 19 input tokens and 27 output tokens;
+- no Google Search grounding or Gemini TTS was used;
+- the first smoke request failed only because `thinkingBudget=0` was sent; removing that unsupported request parameter produced a successful call;
+- temporary M2 workflow was deleted after proof.
 
 ### Google Cloud Text-to-Speech
-Status: BLOCKED — restored OAuth requires reconnect.
+Status: PASS — live OAuth + four-voice proof completed 2026-09-19.
 
-Verified 2026-09-19 in production `publisher.hodor.com.pl` using the exact historical working node configuration:
-- endpoint: Google Cloud `text:synthesize`;
-- credential: restored `Google account`;
-- test voice: `en-US-Chirp3-HD-Algenib`;
-- request failed before synthesis with HTTP 401;
-- n8n reports: the credential needs to be reconnected.
-
-Required proof after reconnect:
-- real OAuth authentication through `publisher.hodor.com.pl`;
-- one MP3 synthesis for each locked voice:
-  - `en-US-Chirp3-HD-Algenib`;
-  - `pl-PL-Chirp3-HD-Enceladus`;
-  - `ru-RU-Wavenet-D`;
-  - `uk-UA-Chirp3-HD-Enceladus`;
-- real returned audio inspected;
-- no Gemini TTS substitution.
+Verified after reconnecting the existing `Google account` credential:
+- endpoint: `https://texttospeech.googleapis.com/v1/text:synthesize`;
+- the same restored credential ID `8KbFC6GBZOd18bzG` was reused; no replacement credential was created;
+- one real MP3 was returned for every locked voice:
+  - EN `en-US-Chirp3-HD-Algenib`: 9,696 bytes, 2.424 s, SHA256 `121d1a7ae38c7ee5797d1c5b1f659443172d4380dccc1b1c4124ba71ff63c3cf`;
+  - PL `pl-PL-Chirp3-HD-Enceladus`: 13,536 bytes, 3.384 s, SHA256 `aef1cf5874e15f54d1fc20e6ee913968d53af0c443c86945e337aaa5a34a0499`;
+  - RU `ru-RU-Wavenet-D`: 20,352 bytes, 2.544 s, SHA256 `b226835db6798969519418c6daa80cf888199bed2903b39808c847c80c866dde`;
+  - UK `uk-UA-Chirp3-HD-Enceladus`: 11,712 bytes, 2.928 s, SHA256 `57a503f03b41c36ec9c8c9c589fe24104168c07002836bd1717170e4fb16b2a6`;
+- MP3 streams are mono 24 kHz and were inspected with ffprobe;
+- no Gemini TTS substitution was used;
+- exact successful character counts were committed to the provider usage ledger;
+- the earlier failed-auth test reservations remain released;
+- temporary TTS M2 workflow was deleted after proof.
 
 ### Pixabay
 Status: PASS — live credential verified through `publisher.hodor.com.pl` on 2026-09-19.
@@ -150,7 +149,7 @@ Required before enabling:
 - confirm local render workflow complies with current Unsplash API terms.
 
 ### Local speech alignment
-Status: PARTIAL — runtime/timestamps verified; production-audio quality pending
+Status: PASS — exact production-audio proof completed 2026-09-19.
 
 Selected CPU-compatible dependency:
 - official `ggml-org/whisper.cpp` CPU image;
@@ -158,28 +157,32 @@ Selected CPU-compatible dependency:
 - multilingual `ggml-base.bin`;
 - model SHA256: `60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe`.
 
-Observed:
-- CPU binary starts correctly on the VPS;
-- en/pl/ru/uk fixtures all produce JSON transcription;
-- token timestamps are present;
-- synthetic eSpeak fixtures are not accurate enough, especially RU/UK, to use as a production-quality acceptance test.
+Observed on the exact Cloud TTS MP3s:
+- EN transcript exact after normalization; lexical timestamps end at 2360 ms within 2424 ms audio;
+- PL transcript exact after normalization; lexical timestamps end at 2960 ms within 3384 ms audio;
+- RU transcript exact after normalization; lexical timestamps end at 1930 ms within 2544 ms audio;
+- UK transcript exact after normalization; lexical timestamps end at 2640 ms within 2928 ms audio;
+- token timestamps are present in whisper.cpp full JSON for every language;
+- special `[_TT_*]` control tokens are excluded from lexical timing checks.
 
 Decision:
-- implementation mechanism is viable;
-- final alignment quality gate remains pending until the exact Google Cloud TTS voices are available;
-- production acceptance must use the exact final TTS audio, not synthetic test speech.
+- the local multilingual aligner is accepted for the production pipeline;
+- production must continue using the exact final Google TTS audio as alignment input;
+- no proportional timing fallback is permitted.
 
 ## Gate
 
-M3 must not start until the mandatory M2 production dependencies are verified.
+M2 mandatory gate: PASS.
 
-Mandatory to unblock M3:
+Verified:
 1. Gemini text;
 2. Google Cloud TTS with all four locked voices;
 3. at least two independent production-ready visual sources;
 4. local four-language speech alignment.
 
 Visual-source gate is PASS: Wikimedia Commons, Pixabay and Pexels are independently verified. Openverse remains disabled; Unsplash is optional and not required to unblock M3.
+
+M3 is unblocked.
 
 
 ## Recovery findings — 2026-09-19
@@ -190,10 +193,10 @@ Historical Google Cloud TTS proof:
 - all four selected voices were present;
 - August execution history contains repeated successful executions.
 
-Current status differs:
-- the restored OAuth credential can be read by n8n;
-- a current live call reaches Google but reports that the credential needs reconnect;
-- production status therefore remains PENDING until OAuth is reconnected and all four voices pass again.
+Current status:
+- the restored OAuth credential was reconnected in-place on 2026-09-19;
+- live synthesis now succeeds through the same credential;
+- all four locked voices passed and produced inspected MP3 output.
 
 Recovered visual credentials:
 - historical Pexels and Pixabay credentials exist in the restored publisher database;
@@ -216,9 +219,9 @@ Official Google documentation verified:
 - standard Developer API Free Tier lists text input and output as free of charge;
 - active rate limits are project-specific and must be checked in AI Studio for the connected project.
 
-This closes model-selection uncertainty only. It does NOT close the M2 live-provider gate.
+Model selection and live-provider proof are both closed.
 
-The live structured-output call remains PENDING until it succeeds through the production n8n at `publisher.hodor.com.pl`. The bootstrap `shorts-v2` n8n has been removed.
+The live structured-output call succeeded through the production n8n at `publisher.hodor.com.pl` using the `Gemini Text` credential. The bootstrap `shorts-v2` n8n remains removed.
 
 
 ## Free-only TTS budget guard — 2026-09-19

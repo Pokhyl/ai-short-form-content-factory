@@ -10,6 +10,8 @@ services:
       - postgres_data:/var/lib/postgresql
       - ./db/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
       - ./db/02-provider-budget.sql:/docker-entrypoint-initdb.d/02-provider-budget.sql:ro
+      - ./db/03-provider-budget-policy.sql:/docker-entrypoint-initdb.d/03-provider-budget-policy.sql:ro
+      - ./db/04-jobs.sql:/docker-entrypoint-initdb.d/04-jobs.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U shorts -d shorts_factory"]
       interval: 5s

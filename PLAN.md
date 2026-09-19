@@ -549,20 +549,18 @@ Verified:
 Acceptance: PASS.
 
 ## M2 — Dependency proof before production workflows
-Status: PARTIAL — verified no-secret dependencies; credential-gated providers remain pending.
+Status: PASS — mandatory dependency gate completed on 2026-09-19.
 
 Verified:
 1. SearXNG JSON general-web search — PASS.
 2. Direct public source-page fetch — PASS.
 3. Wikimedia Commons API — PASS.
 4. Local 1080×1920 H.264/AAC FFmpeg render — PASS.
-5. Local whisper.cpp CPU runtime + multilingual token timestamps — PARTIAL PASS; final quality must be tested on exact Google TTS audio.
-
-Pending credentials / provider proof:
-6. Gemini text live proof through the production n8n at `publisher.hodor.com.pl` — BLOCKED because no Gemini credential currently exists there.
-7. Google Cloud TTS OAuth reconnect in `publisher.hodor.com.pl` — BLOCKED because the restored `Google account` credential returns 401 / needs to be reconnected.
-8. All four locked Google TTS voices — pending immediately after OAuth reconnect.
-9. Four-language local alignment quality on the exact final Cloud TTS audio — pending after item 8.
+5. Local whisper.cpp CPU alignment with multilingual `ggml-base.bin` and token timestamps — PASS on exact Google Cloud TTS audio for EN/PL/RU/UK.
+6. Gemini text through production n8n at `publisher.hodor.com.pl` — PASS with credential `Gemini Text` and `gemini-3.5-flash-lite`; structured JSON returned successfully.
+7. Google Cloud TTS OAuth — PASS after reconnect of the existing `Google account` credential.
+8. All four locked Google TTS voices — PASS with real MP3 output.
+9. Four-language alignment quality — PASS with 100% normalized transcript match and lexical token timestamps inside each MP3 duration.
 
 Verified visual providers:
 - Wikimedia Commons API — PASS.

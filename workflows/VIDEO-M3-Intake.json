@@ -1,0 +1,233 @@
+{
+  "id": "VideoM3Intake001",
+  "name": "VIDEO — M3 Intake",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "jobs",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "video-m3-webhook",
+      "name": "POST /jobs",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "0cf516c8-f441-4a33-9050-2ea4e3ea2671"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const body = $json.body;\n\nconst fail = (details) => ({\n  json: {\n    valid: false,\n    response: {\n      error: 'invalid_request',\n      details,\n    },\n  },\n});\n\nif (!body || typeof body !== 'object' || Array.isArray(body)) {\n  return fail(['body must be a JSON object']);\n}\n\nconst allowedKeys = ['duration', 'language', 'topic'];\nconst actualKeys = Object.keys(body).sort();\nconst extraKeys = actualKeys.filter((key) => !allowedKeys.includes(key));\nconst missingKeys = allowedKeys.filter((key) => !actualKeys.includes(key));\n\nconst errors = [];\nif (extraKeys.length) errors.push('unexpected fields: ' + extraKeys.join(', '));\nif (missingKeys.length) errors.push('missing fields: ' + missingKeys.join(', '));\n\nlet topic = '';\nif (typeof body.topic !== 'string') {\n  errors.push('topic must be a string');\n} else {\n  topic = body.topic.trim();\n  if (topic.length < 3 || topic.length > 500) {\n    errors.push('topic length must be between 3 and 500 characters');\n  }\n}\n\nconst language = body.language;\nif (typeof language !== 'string' || !['en', 'pl', 'ru', 'uk'].includes(language)) {\n  errors.push('language must be one of: en, pl, ru, uk');\n}\n\nconst duration = body.duration;\nif (!Number.isInteger(duration) || ![15, 30, 45, 60].includes(duration)) {\n  errors.push('duration must be one of: 15, 30, 45, 60');\n}\n\nif (errors.length) return fail(errors);\n\nreturn {\n  json: {\n    valid: true,\n    topic,\n    language_code: language,\n    target_duration_seconds: duration,\n  },\n};"
+      },
+      "id": "video-m3-validate",
+      "name": "Validate Intake",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m3-valid-condition",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m3-route",
+      "name": "Route Valid Request",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT job_id::text AS job_id, created_at\\nFROM factory.create_job(\\n  $1::text,\\n  $2::text,\\n  $3::integer\\n);",
+        "options": {
+          "queryReplacement": "={{ [ $json.topic, $json.language_code, $json.target_duration_seconds ] }}"
+        }
+      },
+      "id": "video-m3-create-job",
+      "name": "Create Job",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        720,
+        -120
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "__VIDEO_FACTORY_POSTGRES_CREDENTIAL_ID__",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const jobId = typeof $json.job_id === 'string' ? $json.job_id.trim() : '';\nif (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(jobId)) {\n  throw new Error('create_job returned an invalid job_id');\n}\nreturn { json: { job_id: jobId } };"
+      },
+      "id": "video-m3-success-body",
+      "name": "Build 201 Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {
+          "responseCode": 201
+        }
+      },
+      "id": "video-m3-respond-201",
+      "name": "Respond 201",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1200,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const response = $json.response && typeof $json.response === 'object'\n  ? $json.response\n  : { error: 'invalid_request', details: ['request validation failed'] };\nreturn { json: response };"
+      },
+      "id": "video-m3-error-body",
+      "name": "Build 400 Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "video-m3-respond-400",
+      "name": "Respond 400",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        960,
+        120
+      ]
+    }
+  ],
+  "connections": {
+    "POST /jobs": {
+      "main": [
+        [
+          {
+            "node": "Validate Intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Intake": {
+      "main": [
+        [
+          {
+            "node": "Route Valid Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Valid Request": {
+      "main": [
+        [
+          {
+            "node": "Create Job",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build 400 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Job": {
+      "main": [
+        [
+          {
+            "node": "Build 201 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build 201 Response": {
+      "main": [
+        [
+          {
+            "node": "Respond 201",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build 400 Response": {
+      "main": [
+        [
+          {
+            "node": "Respond 400",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

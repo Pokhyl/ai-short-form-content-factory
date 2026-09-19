@@ -16,6 +16,9 @@ Rules:
 - Gemini is for evidence-grounded text/script/storyboard only;
 - no Gemini TTS in production;
 - no Google Search grounding inside Gemini; research comes from SearXNG plus fetched evidence;
+- use a current Gemini authorization key, not a historical standard API key;
+- Google AI Studio has created new keys as authorization keys since 2026-05-28;
+- current Google documentation states standard Gemini API keys are rejected from September 2026;
 - fail closed if free-tier access is unavailable.
 
 ## Google Cloud Text-to-Speech
