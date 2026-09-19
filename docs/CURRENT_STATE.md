@@ -77,13 +77,18 @@ n8n.hodor.com.pl is unrelated and must not be touched.
 ## Free-only provider budget infrastructure
 Implemented and verified on 2026-09-19:
 - db/02-provider-budget.sql;
+- db/03-provider-budget-policy.sql;
 - monthly provider free-limit configuration;
-- disabled-by-default internal safety limits;
 - atomic/idempotent usage reservations;
 - commit/release lifecycle;
-- fail-closed behavior when a budget is not explicitly enabled.
+- fail-closed behavior when a budget is not explicitly enabled;
+- production internal ceilings enabled at 90% of the documented free limits:
+  - Chirp 3 HD: 900,000 characters/month vs 1,000,000 provider free limit;
+  - WaveNet: 3,600,000 characters/month vs 4,000,000 provider free limit;
+- 90% is a project engineering safety setting, not a Google recommendation;
+- live DB smoke test accepts an in-limit reservation, rejects an over-limit reservation, and persists no test rows after rollback.
 
-No production Google Cloud TTS call is allowed until an explicit internal safety ceiling is configured below the provider free limit.
+A rollback copy of the budget rows exists at .backups/provider-budget-before-enable-20260919.sql.
 
 ## M1
 PASS.
