@@ -1,6 +1,7 @@
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import base64
 import binascii
+import difflib
 import hashlib
 import json
 import os
@@ -9,11 +10,14 @@ import re
 import shutil
 import subprocess
 import unicodedata
+import urllib.parse
+import urllib.request
 
 
 DATA_ROOT = Path("/data")
 VOICEOVER_ROOT = DATA_ROOT / "voiceovers"
 ALIGNMENT_ROOT = DATA_ROOT / "alignments"
+VISUAL_ROOT = DATA_ROOT / "visuals"
 WHISPER_CLI = Path("/opt/whisper/whisper-cli")
 WHISPER_MODEL = Path("/models/ggml-base.bin")
 WHISPER_IMAGE_DIGEST = (
@@ -23,6 +27,16 @@ EXPECTED_MODEL_SHA256 = (
     "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe"
 )
 MAX_JSON_BODY_BYTES = 20 * 1024 * 1024
+MAX_VISUAL_BYTES = 80 * 1024 * 1024
+VISUAL_MEDIA_TYPES = {"photo", "video", "diagram"}
+VISUAL_PROVIDERS = {"pixabay", "pexels", "wikimedia"}
+VISUAL_MIME_EXTENSIONS = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "video/mp4": "mp4",
+    "video/webm": "webm",
+}
 JOB_ID_RE = re.compile(
     r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-"
     r"[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-"
@@ -189,11 +203,8 @@ def _build_scene_timings(
         for segment in whisper_segments
     ).strip()
     transcript_normalized = normalize_alignment_text(transcript)
-
-    if transcript_normalized != expected_normalized:
-        raise ValueError(
-            "normalized whisper transcript does not exactly match narration"
-        )
+    if not transcript_normalized:
+        raise ValueError("normalized whisper transcript is empty")
 
     tokens = _lexical_tokens(whisper_payload)
     token_normalized = "".join(token["normalized"] for token in tokens)
@@ -213,9 +224,28 @@ def _build_scene_timings(
     if normalize_alignment_text(scene_joined) != expected_normalized:
         raise ValueError("scene narrations do not reconstruct the final narration")
 
+    matcher = difflib.SequenceMatcher(
+        a=expected_normalized,
+        b=transcript_normalized,
+        autojunk=False,
+    )
+    matching_blocks = [
+        block
+        for block in matcher.get_matching_blocks()
+        if block.size > 0
+    ]
+
+    matched_chars = sum(block.size for block in matching_blocks)
+    global_coverage = matched_chars / len(expected_normalized)
+
+    if global_coverage < 0.95:
+        raise ValueError(
+            "global lexical alignment coverage below 0.95: "
+            f"{global_coverage:.4f}"
+        )
+
     token_ranges = []
     char_cursor = 0
-
     for token in tokens:
         start_char = char_cursor
         end_char = start_char + len(token["normalized"])
@@ -255,15 +285,41 @@ def _build_scene_timings(
         if expected_normalized[scene_start_char:scene_end_char] != scene_normalized:
             raise ValueError(f"scene {scene_key} is not contiguous in narration")
 
+        scene_matched_chars = 0
+        matched_actual_spans = []
+
+        for block in matching_blocks:
+            overlap_start = max(scene_start_char, block.a)
+            overlap_end = min(scene_end_char, block.a + block.size)
+            if overlap_end <= overlap_start:
+                continue
+
+            span_size = overlap_end - overlap_start
+            scene_matched_chars += span_size
+
+            actual_start = block.b + (overlap_start - block.a)
+            actual_end = actual_start + span_size
+            matched_actual_spans.append((actual_start, actual_end))
+
+        scene_coverage = scene_matched_chars / len(scene_normalized)
+        if scene_coverage < 0.85:
+            raise ValueError(
+                f"scene {scene_key} lexical coverage below 0.85: "
+                f"{scene_coverage:.4f}"
+            )
+
         overlapping = [
             token
             for token in token_ranges
-            if token["end_char"] > scene_start_char
-            and token["start_char"] < scene_end_char
+            if any(
+                token["end_char"] > span_start
+                and token["start_char"] < span_end
+                for span_start, span_end in matched_actual_spans
+            )
         ]
 
         if not overlapping:
-            raise ValueError(f"scene {scene_key} has no lexical timing coverage")
+            raise ValueError(f"scene {scene_key} has no matched lexical timing coverage")
 
         start_ms = overlapping[0]["start_ms"]
         end_ms = overlapping[-1]["end_ms"]
@@ -281,7 +337,7 @@ def _build_scene_timings(
                 "scene_key": scene_key,
                 "start_ms": start_ms,
                 "end_ms": end_ms,
-                "coverage": 1.0,
+                "coverage": round(scene_coverage, 6),
             }
         )
 
@@ -293,8 +349,9 @@ def _build_scene_timings(
 
     return {
         "transcript": transcript,
-        "normalized_match": True,
-        "global_coverage": 1.0,
+        "normalized_match": transcript_normalized == expected_normalized,
+        "alignment_method": "whisper_token_sequence_match",
+        "global_coverage": round(global_coverage, 6),
         "lexical_token_count": len(tokens),
         "lexical_start_ms": tokens[0]["start_ms"],
         "lexical_end_ms": tokens[-1]["end_ms"],
@@ -394,6 +451,206 @@ def _write_json_fsync(path: Path, payload):
         os.fsync(handle.fileno())
 
 
+def _visual_host_allowed(provider, hostname):
+    host = str(hostname or "").strip().lower().rstrip(".")
+    if not host:
+        return False
+
+    if provider == "pixabay":
+        return host == "pixabay.com" or host.endswith(".pixabay.com")
+    if provider == "pexels":
+        return host == "pexels.com" or host.endswith(".pexels.com")
+    if provider == "wikimedia":
+        return host in {"upload.wikimedia.org", "thumb.wikimedia.org"}
+
+    return False
+
+
+def _validate_visual_url(provider, value):
+    if provider not in VISUAL_PROVIDERS:
+        raise ValueError("unsupported visual provider")
+
+    parsed = urllib.parse.urlparse(str(value or "").strip())
+    if parsed.scheme.lower() != "https":
+        raise ValueError("visual download URL must use https")
+    if parsed.username or parsed.password:
+        raise ValueError("visual download URL must not contain user info")
+    if parsed.port not in (None, 443):
+        raise ValueError("visual download URL uses a non-HTTPS port")
+    if not _visual_host_allowed(provider, parsed.hostname):
+        raise ValueError("visual download host is not allowed")
+
+    return parsed.geturl()
+
+
+def ffprobe_visual(path: Path, media_type: str):
+    if media_type not in VISUAL_MEDIA_TYPES:
+        raise ValueError("unsupported visual media type")
+
+    result = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-show_entries",
+            "format=duration,size,format_name:stream=codec_type,codec_name,width,height",
+            "-of",
+            "json",
+            str(path),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+    payload = json.loads(result.stdout)
+    streams = payload.get("streams") or []
+    visual_streams = [
+        stream
+        for stream in streams
+        if stream.get("codec_type") == "video"
+        and int(stream.get("width") or 0) > 0
+        and int(stream.get("height") or 0) > 0
+    ]
+
+    if not visual_streams:
+        raise ValueError("visual asset has no valid video/image stream")
+
+    stream = visual_streams[0]
+    width = int(stream.get("width") or 0)
+    height = int(stream.get("height") or 0)
+    codec = str(stream.get("codec_name") or "").strip().lower()
+
+    if width <= 0 or height <= 0 or not codec:
+        raise ValueError("visual asset stream metadata is invalid")
+
+    raw_duration = (payload.get("format") or {}).get("duration")
+    duration_ms = None
+    if media_type == "video":
+        try:
+            duration_ms = round(float(raw_duration or 0) * 1000)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("video duration is invalid") from exc
+
+        if duration_ms <= 0:
+            raise ValueError("video duration must be positive")
+
+    return {
+        "width": width,
+        "height": height,
+        "codec": codec,
+        "duration_ms": duration_ms,
+        "format_name": str((payload.get("format") or {}).get("format_name") or ""),
+    }
+
+
+def download_visual_asset(
+    provider,
+    download_url,
+    media_type,
+    final_dir: Path,
+):
+    if media_type not in VISUAL_MEDIA_TYPES:
+        raise ValueError("unsupported visual media type")
+
+    safe_url = _validate_visual_url(provider, download_url)
+
+    request = urllib.request.Request(
+        safe_url,
+        headers={
+            "User-Agent": "ai-short-form-content-factory/1.0",
+            "Accept": "*/*",
+        },
+        method="GET",
+    )
+
+    temp_path = final_dir / ".download"
+
+    with urllib.request.urlopen(request, timeout=60) as response:
+        final_url = response.geturl()
+        _validate_visual_url(provider, final_url)
+
+        content_type = str(
+            response.headers.get("Content-Type") or ""
+        ).split(";", 1)[0].strip().lower()
+
+        extension = VISUAL_MIME_EXTENSIONS.get(content_type)
+        if extension is None:
+            raise ValueError(
+                f"visual content type is not supported: {content_type or 'missing'}"
+            )
+
+        if media_type == "video" and not content_type.startswith("video/"):
+            raise ValueError("selected video returned non-video content")
+        if media_type != "video" and not content_type.startswith("image/"):
+            raise ValueError("selected image returned non-image content")
+
+        raw_length = response.headers.get("Content-Length")
+        if raw_length:
+            try:
+                content_length = int(raw_length)
+            except ValueError as exc:
+                raise ValueError("invalid visual Content-Length") from exc
+
+            if content_length <= 0 or content_length > MAX_VISUAL_BYTES:
+                raise ValueError("visual asset size is outside allowed bounds")
+
+        digest = hashlib.sha256()
+        total = 0
+
+        fd = os.open(
+            temp_path,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+            0o640,
+        )
+        try:
+            with os.fdopen(fd, "wb") as handle:
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+
+                    total += len(chunk)
+                    if total > MAX_VISUAL_BYTES:
+                        raise ValueError("visual asset exceeds maximum allowed size")
+
+                    digest.update(chunk)
+                    handle.write(chunk)
+
+                handle.flush()
+                os.fsync(handle.fileno())
+        except Exception:
+            temp_path.unlink(missing_ok=True)
+            raise
+
+    if total <= 0:
+        temp_path.unlink(missing_ok=True)
+        raise ValueError("downloaded visual asset is empty")
+
+    probe = ffprobe_visual(temp_path, media_type)
+    final_path = final_dir / f"selected.{extension}"
+
+    try:
+        os.rename(temp_path, final_path)
+    except Exception:
+        temp_path.unlink(missing_ok=True)
+        raise
+
+    return {
+        "storage_path": str(final_path),
+        "sha256": digest.hexdigest(),
+        "bytes": total,
+        "mime_type": content_type,
+        "media_type": media_type,
+        "width": probe["width"],
+        "height": probe["height"],
+        "duration_ms": probe["duration_ms"],
+        "codec": probe["codec"],
+        "final_url": final_url,
+    }
+
+
 class Handler(BaseHTTPRequestHandler):
     def _json(self, status_code, payload):
         body = json.dumps(payload, ensure_ascii=False).encode()
@@ -420,6 +677,18 @@ class Handler(BaseHTTPRequestHandler):
 
     def _alignment_job_id(self, suffix=""):
         return self._job_id_for_path("alignments", suffix)
+
+    def _visual_ids(self, suffix=""):
+        pattern = rf"^/visuals/([^/]+)/([^/]+){suffix}$"
+        match = re.fullmatch(pattern, self.path)
+        if not match:
+            return None
+
+        job_id, shot_id = match.groups()
+        if not JOB_ID_RE.fullmatch(job_id) or not JOB_ID_RE.fullmatch(shot_id):
+            return None
+
+        return job_id.lower(), shot_id.lower()
 
     def _read_json_body(self):
         raw_length = self.headers.get("Content-Length")
@@ -544,6 +813,48 @@ class Handler(BaseHTTPRequestHandler):
                 return
 
             self._json(404, {"error": "alignment_not_found"})
+            return
+
+        visual_ids = self._visual_ids("/metadata")
+        if visual_ids is not None:
+            job_id, shot_id = visual_ids
+            final_dir = VISUAL_ROOT / job_id / shot_id
+            metadata_path = final_dir / "metadata.json"
+            failure_path = final_dir / "failure.json"
+
+            if metadata_path.is_file():
+                try:
+                    payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError) as exc:
+                    self._json(
+                        500,
+                        {
+                            "error": "visual_metadata_failed",
+                            "message": str(exc),
+                        },
+                    )
+                    return
+
+                self._json(200, payload)
+                return
+
+            if failure_path.is_file():
+                try:
+                    payload = json.loads(failure_path.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError) as exc:
+                    self._json(
+                        500,
+                        {
+                            "error": "visual_metadata_failed",
+                            "message": str(exc),
+                        },
+                    )
+                    return
+
+                self._json(422, payload)
+                return
+
+            self._json(404, {"error": "visual_not_found"})
             return
 
         self._json(404, {"error": "not_found"})
@@ -796,7 +1107,105 @@ class Handler(BaseHTTPRequestHandler):
 
         self._json(201, result)
 
+    def _handle_visual_post(self, job_id, shot_id):
+        final_dir = VISUAL_ROOT / job_id / shot_id
+        metadata_path = final_dir / "metadata.json"
+        failure_path = final_dir / "failure.json"
+
+        if final_dir.exists():
+            self._json(
+                409,
+                {
+                    "error": "visual_attempt_already_exists",
+                    "job_id": job_id,
+                    "shot_id": shot_id,
+                },
+            )
+            return
+
+        try:
+            payload = self._read_json_body()
+            provider = str(payload.get("provider") or "").strip().lower()
+            provider_asset_id = str(
+                payload.get("provider_asset_id") or ""
+            ).strip()
+            media_type = str(payload.get("media_type") or "").strip().lower()
+            download_url = str(payload.get("download_url") or "").strip()
+
+            if provider not in VISUAL_PROVIDERS:
+                raise ValueError("unsupported visual provider")
+            if not provider_asset_id:
+                raise ValueError("provider_asset_id is required")
+            if media_type not in VISUAL_MEDIA_TYPES:
+                raise ValueError("unsupported visual media type")
+
+            _validate_visual_url(provider, download_url)
+
+            try:
+                final_dir.mkdir(parents=True, exist_ok=False)
+            except FileExistsError:
+                self._json(
+                    409,
+                    {
+                        "error": "visual_attempt_already_exists",
+                        "job_id": job_id,
+                        "shot_id": shot_id,
+                    },
+                )
+                return
+
+            result = download_visual_asset(
+                provider,
+                download_url,
+                media_type,
+                final_dir,
+            )
+
+            response = {
+                "status": "ready",
+                "job_id": job_id,
+                "shot_id": shot_id,
+                "provider": provider,
+                "provider_asset_id": provider_asset_id,
+                **result,
+            }
+
+            _write_json_fsync(metadata_path, response)
+
+        except Exception as exc:
+            if final_dir.exists() and not metadata_path.exists():
+                try:
+                    failure = {
+                        "status": "failed",
+                        "job_id": job_id,
+                        "shot_id": shot_id,
+                        "error": "visual_download_failed",
+                        "message": str(exc),
+                    }
+                    if not failure_path.exists():
+                        _write_json_fsync(failure_path, failure)
+                except Exception:
+                    pass
+
+            self._json(
+                422,
+                {
+                    "error": "visual_download_failed",
+                    "job_id": job_id,
+                    "shot_id": shot_id,
+                    "message": str(exc),
+                },
+            )
+            return
+
+        self._json(201, response)
+
     def do_POST(self):
+        visual_ids = self._visual_ids()
+        if visual_ids is not None:
+            self._handle_visual_post(*visual_ids)
+            return
+
         alignment_job_id = self._alignment_job_id()
         if alignment_job_id is not None:
             self._handle_alignment_post(alignment_job_id)
@@ -816,4 +1225,5 @@ class Handler(BaseHTTPRequestHandler):
 if __name__ == "__main__":
     VOICEOVER_ROOT.mkdir(parents=True, exist_ok=True)
     ALIGNMENT_ROOT.mkdir(parents=True, exist_ok=True)
+    VISUAL_ROOT.mkdir(parents=True, exist_ok=True)
     ThreadingHTTPServer(("0.0.0.0", 3001), Handler).serve_forever()
