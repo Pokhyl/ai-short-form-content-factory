@@ -71,7 +71,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT job_id::text AS job_id, created_at\\nFROM factory.create_job(\\n  $1::text,\\n  $2::text,\\n  $3::integer\\n);",
+        "query": "SELECT job_id::text AS job_id, created_at\nFROM factory.create_job(\n  $1::text,\n  $2::text,\n  $3::integer\n);",
         "options": {
           "queryReplacement": "={{ [ $json.topic, $json.language_code, $json.target_duration_seconds ] }}"
         }
@@ -86,7 +86,7 @@
       ],
       "credentials": {
         "postgres": {
-          "id": "__VIDEO_FACTORY_POSTGRES_CREDENTIAL_ID__",
+          "id": "gQ3TDSsTe7Tn2X8B",
           "name": "Video Factory Postgres"
         }
       }
