@@ -91,29 +91,31 @@ Passed:
 - SearXNG broad web search
 - direct public source fetch
 - Wikimedia Commons API
+- Pixabay image search + video search + metadata + rate-limit headers + real image download
+- Pexels photo search + video search + metadata + rate-limit headers + real image download
+- visual-source gate: PASS with three independent sources
 - local FFmpeg 1080x1920 H.264/AAC render
 - local whisper.cpp CPU runtime and token timestamps
+- fail-closed Google Cloud TTS monthly budget guard
 
 Historical proof:
 - Google Cloud TTS worked in August with all four selected voices.
 
 Current blockers:
-- restored Google OAuth in `publisher.hodor.com.pl` requires reconnect;
-- live all-four-voice Google Cloud TTS proof through `publisher.hodor.com.pl` is pending;
-- exact current approved Gemini text free-tier live proof through `publisher.hodor.com.pl` is pending;
-- Pixabay live API proof through the restored publisher credential is pending;
-- Pexels live API proof through the restored publisher credential is pending;
-- at least two independent production-ready visual sources must be live;
-- Openverse is disabled while the official API returns a Cloudflare challenge from this VPS;
-- four-language alignment quality must be tested against exact Google Cloud TTS output.
+- restored `Google account` OAuth in `publisher.hodor.com.pl` returns 401 and needs reconnect;
+- all-four-voice Google Cloud TTS live proof is pending immediately after reconnect;
+- no Gemini credential currently exists in `publisher.hodor.com.pl`;
+- Gemini free-tier structured-output live proof is pending after that credential is added;
+- four-language alignment quality must be tested against exact Google Cloud TTS output after TTS passes;
+- Openverse remains disabled but is not required for the visual-source gate.
 
 Do not start M3 until mandatory M2 gates in PLAN.md pass.
 
 ## Immediate next work
-1. Use `publisher.hodor.com.pl` as the production n8n for all provider tests.
-2. Reconnect the restored Google OAuth there and test all four locked Cloud TTS voices.
-3. Validate Gemini text through `publisher.hodor.com.pl` using the approved free-tier model.
-4. Validate restored Pixabay and Pexels credentials with live API calls and metadata/rate-limit capture.
+1. Reconnect the restored `Google account` credential in `publisher.hodor.com.pl`.
+2. Add a Gemini API credential to `publisher.hodor.com.pl` for the approved free-tier text model.
+3. Immediately run all four locked Cloud TTS voices.
+4. Run Gemini structured-output live proof.
 5. Run four-language local alignment quality tests on the exact TTS audio.
 6. Update M2 evidence.
 7. Only then implement M3 intake as new video workflows in `publisher.hodor.com.pl`.
