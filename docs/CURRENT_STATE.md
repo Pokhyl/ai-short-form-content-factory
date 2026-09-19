@@ -60,12 +60,16 @@ Rollback backup before cleanup:
 
 Recovered credential count in restored publisher DB: 9.
 
-Owner state:
-- user-management:reset was run;
+Owner/auth state verified live on 2026-09-19:
+- user-management:reset had previously been run;
 - workflows and credentials remained;
-- UI requires owner setup;
-- intended owner email is pokhylvitalii.it@gmail.com;
-- password must be chosen by the user in the UI and must never be stored in project files.
+- owner setup is complete;
+- sole owner email is pokhylvitalii.it@gmail.com;
+- role is global:owner and the account is enabled;
+- publisher root HTML returns HTTP 200;
+- a referenced n8n JavaScript asset returns HTTP 200;
+- all 9 restored credentials can be decrypted/exported by the running publisher n8n with its current encryption key;
+- credential secret values were not printed or stored in project files.
 
 n8n.hodor.com.pl is unrelated and must not be touched.
 
