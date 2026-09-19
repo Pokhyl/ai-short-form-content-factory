@@ -42,6 +42,13 @@ Free-only enforcement:
 - one final TTS synthesis per job only.
 
 ## Pixabay
+Live production credential verification — 2026-09-19:
+- image search HTTP 200;
+- video search HTTP 200;
+- current key exposed rate-limit headers: limit 100, remaining 99, reset 60 seconds;
+- response cache policy exposed `max-age=86400`;
+- one returned JPEG downloaded successfully through media-worker and passed ffprobe.
+
 Verified from official API documentation:
 - image and video search supported;
 - default limit 100 requests per 60 seconds per API key;
@@ -59,10 +66,16 @@ Adapter requirements:
 - never work around limits.
 
 ## Pexels
+Live production credential verification — 2026-09-19:
+- photo search HTTP 200;
+- video search HTTP 200;
+- current key exposed rate-limit headers: limit 25000, remaining 24248 after smoke tests;
+- one returned JPEG downloaded successfully through media-worker and passed ffprobe.
+
 Verified from official API documentation:
 - photo and video APIs available;
-- default limit 200 requests/hour and 20,000 requests/month;
-- successful responses expose monthly limit/remaining/reset headers;
+- documented default limits may differ from the live account-specific headers;
+- successful responses expose limit/remaining/reset headers;
 - API use requires a prominent link to Pexels;
 - photographer credit is requested when possible;
 - rate-limit bypass is prohibited.
