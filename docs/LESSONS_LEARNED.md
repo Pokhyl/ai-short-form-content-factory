@@ -111,3 +111,46 @@ Prevention:
 - verify `docker compose config --format json` reports `name=shorts-v2` before service changes;
 - inspect exact container/volume names before cleanup;
 - never use `--remove-orphans` here because unrelated recovery containers can exist on the host.
+
+
+21. Exact scene-density requirements need one bounded model repair path, not a weaker gate.
+Gemini occasionally returned 5 scenes for a 30-second job even after the prompt explicitly required 7. A later repaired response produced the correct scene count but a redundant root narration field that did not exactly equal the joined scene narrations.
+
+Prevention:
+- keep the deterministic 4/7/10/13 scene+shot contract;
+- allow exactly one Gemini repair-call inside the same immutable M5 script run;
+- give the repair the same evidence, the failed output and the exact validation error;
+- make validated scene narrations authoritative and derive the persisted continuous narration from their join;
+- never lower the required scene/shot count just to make a model response pass.
+
+
+22. Whisper transcription equality is too strict to be the alignment gate.
+A real immutable TTS file was correctly spoken, but local Whisper transcribed `abscission` as `obsidian`. The normalized global match was 0.981675 and the lowest scene match was 0.883721, while token timing remained usable and monotonic.
+
+Prevention:
+- keep exact audio SHA/model/runtime checks;
+- require Whisper lexical tokens to reconstruct the Whisper transcript exactly;
+- use bounded sequence-match coverage: global >= 0.95 and every scene >= 0.85;
+- derive scene boundaries only from real matching Whisper token timestamps;
+- never substitute proportional timing when lexical coverage is inadequate.
+
+
+23. Wikimedia Commons HTTP 429 must be handled from Retry-After, not by blindly slowing every request.
+The provider consistently accepted the first ten requests and then returned 429 with Retry-After values around 23–27 seconds. Increasing the ordinary batch interval did not solve the burst limit.
+
+Prevention:
+- persist successful provider items immediately;
+- retry only the affected Wikimedia 429 items;
+- wait 35 seconds before each explicit retry;
+- cap retries and fail closed if provider coverage remains incomplete;
+- do not rerun successful Pixabay/Pexels/Wikimedia items just because another item was throttled.
+
+
+24. Wikimedia Commons asset delivery uses more than one official hostname.
+Commons video originals commonly use `upload.wikimedia.org`, while generated image thumbnails can use `thumb.wikimedia.org`. Restricting the downloader to only the upload hostname caused two otherwise valid selected Wikimedia photos to fail persistence.
+
+Prevention:
+- allowlist exact official hosts `upload.wikimedia.org` and `thumb.wikimedia.org`;
+- continue rejecting arbitrary redirect/download hosts;
+- validate the downloaded file with SHA-256 and ffprobe before DB persistence;
+- test allowlist changes against an actual provider-returned URL, not a synthetic hostname.
