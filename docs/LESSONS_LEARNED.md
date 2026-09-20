@@ -135,13 +135,13 @@ Prevention:
 - never substitute proportional timing when lexical coverage is inadequate.
 
 
-23. Wikimedia Commons HTTP 429 must be handled from Retry-After, not by blindly slowing every request.
-The provider consistently accepted the first ten requests and then returned 429 with Retry-After values around 23–27 seconds. Increasing the ordinary batch interval did not solve the burst limit.
+23. Wikimedia Commons HTTP 429 needs bounded pacing and isolated retries.
+Earlier production tests observed bursts of HTTP 429 with Retry-After values around 23–27 seconds. The current implementation later evolved to explicit 8-second per-item pacing plus isolated retry branches.
 
 Prevention:
 - persist successful provider items immediately;
 - retry only the affected Wikimedia 429 items;
-- wait 35 seconds before each explicit retry;
+- current production waits 60 seconds before each explicit Wikimedia retry and uses 8-second request batching;
 - cap retries and fail closed if provider coverage remains incomplete;
 - do not rerun successful Pixabay/Pexels/Wikimedia items just because another item was throttled.
 
