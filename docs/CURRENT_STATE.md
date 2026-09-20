@@ -199,13 +199,13 @@ Verified live:
 - every scene requires 1–4 valid evidence IDs and those IDs are mapped to same-job evidence UUIDs before persistence;
 - scene narrations are authoritative; the persisted continuous narration is canonicalized as those scene narrations joined in order;
 - narration word range is validated against that canonical narration;
-- deterministic visual density is 4/7/10/13 scenes and shots for 15/30/45/60 seconds respectively;
+- current deterministic visual density is 5/9/13/17 scenes and shots for 15/30/45/60 seconds respectively;
 - if the first Gemini JSON is structurally valid but fails deterministic storyboard validation, M5 allows exactly one repair-call inside the same immutable script run; the repair receives the same evidence plus the failed output and must return a complete replacement JSON object;
 - every scene contains exactly one shot;
 - every shot requires concrete visual intent, at least one must-show concept, 2–4 distinct English factual queries and an allowed media type;
 - provider names, URLs and manual asset preselection are rejected;
 - first live M5 test on job `198bb721-6c33-4b00-9268-930f5c34afcf` failed closed because Gemini produced only 5 shots against the required 7–10; the job is preserved terminal as `script_failed`;
-- the contract was strengthened rather than weakening the gate: 30-second output now requires exactly 7 scenes / 7 shots;
+- historical note: this earlier test required 7 scenes / 7 shots; the current production contract was later increased to 9 scenes / 9 shots for 30 seconds;
 - fresh end-to-end M3→M4→M5 test job `e4bc4b8b-dcf5-4c81-9193-5db297c528d7` passed;
 - successful M5 output: 64 narration words, 7 scenes, 7 shots, 7 scenes with evidence links, 0 invalid cross-job evidence links, 0 provider/URL preselection findings;
 - Gemini usage stored for the successful run: 10,390 prompt tokens, 1,374 output tokens, 11,764 total tokens;
@@ -237,6 +237,7 @@ Verified live:
 - a successful provider response commits the usage ledger before storage;
 - pre-provider failures release the reservation; post-provider failures keep usage committed;
 - media-worker atomically stores exactly one `final.mp3` and rejects a second create;
+- current M6 may synthesize up to four independent TTS candidates inside the one immutable voiceover run; only a candidate that passes the measured-duration gate is persisted;
 - successful M6 test used job `e4bc4b8b-dcf5-4c81-9193-5db297c528d7`;
 - exact TTS input was the 418-character final M5 narration;
 - one Google Cloud TTS request used `en-US-Chirp3-HD-Algenib`;
@@ -350,24 +351,15 @@ Verified live:
 - publisher post-state is 29 workflows / 13 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7 + M8 + M9;
 - `ai-short-form-n8n` restart-manager corruption was recovered by recreating only the stateless n8n container from the same image/env/networks; publisher DB, workflows and credentials remained intact; final restart count is 0.
 
-## M10 delivery — PENDING HUMAN PASS
+## M10 delivery — HISTORICAL SINGLE-PRODUCT REVIEW
 
-Verified:
-- exact product MP4 is exposed only through a temporary random-path n8n review webhook;
-- the review webhook proxies the immutable M9 file from the internal media-worker and does not regenerate or modify it;
-- an external download through `publisher.hodor.com.pl` was verified byte-for-byte against the product render;
+The earlier single-product review artifact is preserved as historical verification, not as the current acceptance target:
 - external review bytes: 10,347,458;
 - external review SHA-256: `262941d27a00ac4fe5e8a754d3a459c29e3b75298928fc76322b149bd9e9b178`;
-- external ffprobe confirms 1080×1920 H.264/yuv420p at 30 fps plus AAC audio, duration 30.533333 s;
-- temporary workflow `M10 TMP — Human Review MP4` ID `M10TempReview001` remains active only while HUMAN PASS is pending;
-- no Studio or TikTok publishing changes were made;
-- `ai-short-form-n8n` remains stable with restart count 0.
+- external ffprobe confirmed 1080×1920 H.264/yuv420p at 30 fps plus AAC audio, duration 30.533333 s;
+- workflow `M10 TMP — Exact MP4 Review` ID `M10TempReview001` still exists in production.
 
-## Immediate next work
-1. Human reviews the exact M9 MP4.
-2. Do not regenerate, replace, publish or mark the product accepted before explicit HUMAN PASS.
-3. After explicit HUMAN PASS, remove the temporary M10 review workflow/endpoint and proceed only with the next approved stage.
-
+Current acceptance is defined by the 2026-09-20 production update and docs/CODEX_HANDOFF.md: fresh sequential 4-case regression on M5 v81 / M8 v41, followed by inspection of the exact four resulting MP4s.
 
 ## Production orchestration lock — 2026-09-19
 - Production video workflows run in `publisher.hodor.com.pl`.
@@ -387,11 +379,19 @@ Verified:
 The production implementation advanced substantially beyond the older M10 section above.
 
 Current deployed core:
+- M3 VideoM3Intake001: versionCounter 2;
+- M4 VideoM4Research001: versionCounter 5;
 - M5 VideoM5Storyboard001: versionCounter 81, versionId b548aee4-660f-4997-a17c-1d8fa24c38b3;
+- M6 VideoM6Voiceover001: versionCounter 7;
+- M7 VideoM7Alignment001: versionCounter 4;
 - M8 VideoM8Visuals001: versionCounter 41, versionId d889cb1d-c808-4e19-889e-35b06648da19;
+- M9 VideoM9RenderQa001: versionCounter 1;
+- Self-Test VideoSelfTestApi001: versionCounter 3;
 - media-worker image sha256:5cf02e01d9cfb693d266bedc2f77b866fcee5960bb0a0654923b79be144e1874;
 - publisher and Studio HTTP 200 at the last production check;
 - media-worker healthy with restart count 0.
+- Current M5 density is 5/9/13/17 scenes+shots for 15/30/45/60 seconds.
+- Current M6 may synthesize up to four candidates but persists exactly one final MP3.
 
 On M5 v81 / M8 v40, the sequential acceptance matrix produced machine-QA PASS for PL15, EN30 and RU45. UK60 passed M4-M7 and failed only M8 shot S7-A because compound primary-subject matching was too literal. That scorer defect was fixed systemically, positive/negative regression-smoked, and deployed as M8 v41.
 
