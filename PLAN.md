@@ -617,11 +617,11 @@ Verified:
 - evidence-only Gemini input with no Google Search, URL Context, code execution, or TTS;
 - structured JSON is machine-validated before persistence;
 - visual density is deterministic by target duration:
-  - 15s → 4 scenes / 4 shots;
-  - 30s → 7 scenes / 7 shots;
-  - 45s → 10 scenes / 10 shots;
-  - 60s → 13 scenes / 13 shots;
-- each shot contains executable visual intent, must-show concepts, must-not-show conflicts where useful, 2–4 English search queries, and media-type intent;
+  - 15s → 5 scenes / 5 shots;
+  - 30s → 9 scenes / 9 shots;
+  - 45s → 13 scenes / 13 shots;
+  - 60s → 17 scenes / 17 shots;
+- each shot contains executable visual intent, must-show concepts, must-not-show conflicts where useful, exactly 3 distinct English search queries, and photo media intent;
 - provider names, URLs, asset IDs and preselected media are rejected by validation;
 - failed script attempts are terminal and immutable.
 
@@ -633,7 +633,7 @@ Status: PASS — verified live on 2026-09-19.
 Verified:
 - only `storyboard_ready` jobs can begin voiceover generation;
 - provider budget is reserved before synthesis and committed only after provider consumption;
-- exactly one Google Cloud TTS synthesis is allowed per job;
+- one immutable voiceover run exists per job/script version; up to four independent Google Cloud TTS candidates may be synthesized to satisfy the measured-duration gate, but exactly one final MP3 is persisted;
 - locked language-to-voice mapping is enforced in PostgreSQL;
 - exact MP3 is stored atomically as `/data/voiceovers/<job_id>/final.mp3`;
 - a second storage attempt for the same job is rejected by the media-worker;
@@ -694,11 +694,11 @@ Verified:
 Acceptance: PASS.
 
 ## M10 — HUMAN PASS
-Status: PENDING HUMAN REVIEW.
+Status: PENDING FRESH REGRESSION REVIEW — updated 2026-09-20.
 
-Deliver the exact MP4 produced by M9. Machine PASS is not final product acceptance.
+Machine PASS is not final product acceptance.
 
-No Studio, TikTok publishing, queue optimization or feature expansion before explicit HUMAN PASS.
+The current acceptance target is a fresh sequential 4-case matrix on M5 v81 / M8 v41 followed by inspection of the exact four resulting MP4s. Older single-product review artifacts are historical and do not satisfy the current acceptance target.
 
 ---
 
