@@ -398,3 +398,7 @@ On M5 v81 / M8 v40, the sequential acceptance matrix produced machine-QA PASS fo
 A fresh full 4/4 sequential acceptance matrix on M5 v81 / M8 v41 is still required before declaring final acceptance.
 
 See docs/CODEX_HANDOFF.md for exact current job IDs, constraints and remaining steps.
+
+## Acceptance continuation — 2026-09-20
+
+Fresh PL15 passed machine QA and exact-file visual inspection. Fresh EN30 passed technical QA but failed visual inspection: Pixabay returned a text poster as `photo` and tag-only relevance admitted a honey jar for a bee scene. No final acceptance is claimed. Investigation and exact IDs are in `CODEX_HANDOFF.md`; a fresh four-case matrix must follow the systemic fix.

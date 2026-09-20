@@ -192,3 +192,13 @@ That M8 defect was fixed and deployed as M8 v41.
 - Contact sheet and extracted final audio remain in VPS `.review/acceptance-20260920/`; product artifacts are unchanged. Explicit HUMAN PASS remains a separate final acceptance step after all four outputs are reviewable.
 - EN30 `295cd85b-df3f-42fc-8551-8c7766fa7354`: M4 `8920`, M5 `8921`, M6 `8922`, M7 `8923` all success; M8 `8924` running; M9 pending. Intake `8918`, Self-Test `8919`.
 - Active production versions/image unchanged. Next: finish EN30, then RU45 and UK60 sequentially; audit and visually inspect each final MP4.
+
+### EN30 machine PASS but visual review FAIL — investigation in progress
+
+- EN30 `295cd85b-df3f-42fc-8551-8c7766fa7354` reached `machine_qa_passed`; M4–M8 executions `8920`–`8924`, M9 `8930`, Self-Test `8919` all success. Its 12 technical media checks passed (`docs/acceptance/2026-09-20-en30-audit.json`), but it is NOT an accepted output.
+- Exact MP4 SHA-256 `2dd9fbf137792c0b0f34047f644de736346f56e79c6334bbdaa2c74c9a726d1d`, 3,066,859 bytes, 29,500 ms, immutable narration 29,424 ms, 9 scenes.
+- Exact scene-midpoint contact sheet `.review/acceptance-20260920/en30-contact.jpg` proves S9 is a text-heavy “Bee Honey” graphic poster, S7 is a honey jar instead of the required bee/mouthparts, and S6 has bare comb without the narrated workers.
+- Root cause: Pixabay marks misleading assets `type=photo`, `isAiGenerated=false`; tag-only metadata contains bee/honeycomb terms regardless of visible subjects. The existing type/URL/AI checks and lexical scorer cannot establish photographic content from those tags. This is a provider-evidence defect, not an encoding/duration failure. No asset IDs or topic-specific bindings will be hardcoded.
+- Planned systemic fix: fail closed on tag-only photographic evidence lacking a descriptive caption, retaining provider searches/accounting and the existing relevance gates. Verify positive caption-supported candidates from remaining providers, then deploy only the affected project workflow.
+- RU45 `8e841de6-30fd-433d-9c0d-3625b78af6af` was started sequentially after EN30 machine completion, before visual rejection was found; currently M5 running. Preserve it as a diagnostic pre-fix job. Do not start another job until it is terminal.
+- Current production remains M5 v81 / M8 v41 and the original media-worker image. Next: implement/regression-test evidence validation, deploy it after the current run ends, and run a fresh sequential four-case acceptance on the fixed version. Failed/review-rejected jobs stay immutable.
