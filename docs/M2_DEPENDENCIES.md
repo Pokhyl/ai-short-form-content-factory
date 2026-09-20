@@ -154,7 +154,7 @@ Status: PASS — exact production-audio proof completed 2026-09-19.
 Selected CPU-compatible dependency:
 - official `ggml-org/whisper.cpp` CPU image;
 - pinned image digest: `sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11`;
-- multilingual `ggml-base.bin`;
+- multilingual `ggml-small.bin`;
 - model SHA256: `1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b`.
 
 Observed on the exact Cloud TTS MP3s:
