@@ -176,3 +176,11 @@ That M8 defect was fixed and deployed as M8 v41.
 - No production code, workflows, gates or credentials changed. No new final MP4 exists yet.
 - Next: monitor this exact job through M9; inspect any failure before starting a fresh replacement. Start EN30 only once PL15 is terminal. Then RU45 and UK60 sequentially, inspect the exact four passing MP4s and record final checks.
 - Operational access: SentinelX `sentinel_script_run(sudo=true)` supports scoped Docker/psql diagnostics on this VPS; ordinary exec runs without Docker socket permission. Use stdin with `docker exec -i` for SQL. Do not change SentinelX policy.
+
+### PL15 machine PASS — 2026-09-20 20:01 UTC
+
+- Job `79c6a1f7-d98c-4b07-b68b-17896279df55`: M4/M5/M6/M7/M8/M9 all `passed`; final status `machine_qa_passed`. Executions M4–M9: `8912`, `8913`, `8914`, `8915`, `8916`, `8917`, all success; Self-Test `8911` success.
+- Exact final MP4: `/data/renders/79c6a1f7-d98c-4b07-b68b-17896279df55/final.mp4`; SHA-256 `aecbf91b63da1e602153551a7db61f5f8864e6298c6f30391dfb48f92b567d0d`; 1,936,739 bytes; 14,267 ms, narration 14,256 ms, mux delta 11 ms; 5 scenes. Visual inspection remains pending.
+- Fresh EN30 created next: `295cd85b-df3f-42fc-8551-8c7766fa7354`. Monitor this job before starting RU45.
+- Repository checks PASS: media-worker Python AST; all 8 workflow JSON files and connection graphs; syntax of 113 JavaScript Code nodes; `git diff --check`.
+- Production workflow versions and media-worker image remain unchanged from the verified Production inventory.
