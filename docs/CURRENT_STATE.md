@@ -147,7 +147,7 @@ Verified:
 - invalid requests created zero additional job rows;
 - provider usage ledger remained unchanged during intake testing;
 - workflow node set contains only webhook, validation, routing, PostgreSQL and response nodes; no Gemini or TTS nodes are present;
-- after deployment publisher contains 23 workflows / 7 active: the original 22 protected MCP/ADMIN workflows plus the new M3 video workflow.
+- historical snapshot after that milestone: publisher contained 23 workflows / 7 active: the original 22 protected MCP/ADMIN workflows plus the new M3 video workflow.
 
 Test note:
 - direct VPS-to-public-domain self-call is blocked by Cloudflare with HTTP 403 / error code 1010;
@@ -176,7 +176,7 @@ Verified live:
 - M4 execution `7750` succeeded;
 - provider usage ledger remained unchanged; M4 did not invoke Gemini or TTS;
 - temporary public test caller was backed up, deleted, and its random webhook now returns 404;
-- publisher post-state is 24 workflows / 8 active: 22 protected MCP/ADMIN + M3 + M4.
+- historical snapshot after that milestone: publisher post-state was 24 workflows / 8 active: 22 protected MCP/ADMIN + M3 + M4.
 
 Failed test jobs are preserved terminal and were not reused:
 - `c189c00b-f055-44c5-b564-cc29e690afbf` → `research_failed`;
@@ -252,7 +252,7 @@ Verified live:
 - Chirp3 HD monthly internal allocation after M6 is 526 characters with 899,474 remaining under the 900,000 internal ceiling;
 - job state is `voiceover_ready`;
 - temporary M6 public test caller was backed up, deleted, and its random endpoint returns 404;
-- publisher post-state is 26 workflows / 10 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6.
+- historical snapshot after that milestone: publisher post-state was 26 workflows / 10 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6.
 
 ## M7
 PASS on 2026-09-19.
@@ -325,7 +325,7 @@ Verified live:
 - media-worker file-side SHA-256 and ffprobe checks independently confirmed all 7 files;
 - failed product jobs from earlier M8/M7/M5 diagnostics remain terminal and were not reused;
 - temporary M8 caller was backed up, deleted, and its random endpoint returns 404;
-- publisher post-state is 28 workflows / 12 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7 + M8.
+- historical snapshot after that milestone: publisher post-state was 28 workflows / 12 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7 + M8.
 
 ## M9 render + machine QA — PASS
 
@@ -348,7 +348,7 @@ Verified live:
 - rendered duration is 30.533333 s against immutable voiceover 30.528 s, delta 5 ms;
 - exactly 7 render segments and one passed machine-QA row are persisted;
 - temporary M9 caller was backed up, deleted, and its random endpoint returns 404;
-- publisher post-state is 29 workflows / 13 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7 + M8 + M9;
+- historical snapshot after that milestone: publisher post-state was 29 workflows / 13 active: 22 protected MCP/ADMIN + M3 + M4 + M5 + M6 + M7 + M8 + M9;
 - `ai-short-form-n8n` restart-manager corruption was recovered by recreating only the stateless n8n container from the same image/env/networks; publisher DB, workflows and credentials remained intact; final restart count is 0.
 
 ## M10 delivery — HISTORICAL SINGLE-PRODUCT REVIEW
