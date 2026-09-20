@@ -263,7 +263,7 @@ Verified live:
 - `begin_alignment()`, `complete_alignment()`, and `fail_alignment()` are deployed;
 - only `voiceover_ready` jobs can start alignment;
 - the media-worker contains the pinned `whisper.cpp` binary copied from image digest `sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11`;
-- the exact multilingual model is mounted read-only and verified at startup with SHA-256 `60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe`;
+- the exact multilingual model is mounted read-only and verified at startup with SHA-256 `1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b`;
 - alignment input is only the immutable M6 file `/data/voiceovers/<job_id>/final.mp3`;
 - media-worker verifies the exact audio SHA-256 and duration before alignment;
 - MP3 is decoded only to temporary 16 kHz mono PCM for local Whisper analysis; the original MP3 is never modified;
@@ -380,3 +380,21 @@ Verified:
 - `n8n.hodor.com.pl` is unrelated and must not be touched.
 - Supporting PostgreSQL/media-worker/SearXNG remain separate.
 - The bootstrap `shorts-v2` n8n container has been removed; no second n8n remains in the supporting stack.
+
+
+## Production update — 2026-09-20
+
+The production implementation advanced substantially beyond the older M10 section above.
+
+Current deployed core:
+- M5 VideoM5Storyboard001: versionCounter 81, versionId b548aee4-660f-4997-a17c-1d8fa24c38b3;
+- M8 VideoM8Visuals001: versionCounter 41, versionId d889cb1d-c808-4e19-889e-35b06648da19;
+- media-worker image sha256:5cf02e01d9cfb693d266bedc2f77b866fcee5960bb0a0654923b79be144e1874;
+- publisher and Studio HTTP 200 at the last production check;
+- media-worker healthy with restart count 0.
+
+On M5 v81 / M8 v40, the sequential acceptance matrix produced machine-QA PASS for PL15, EN30 and RU45. UK60 passed M4-M7 and failed only M8 shot S7-A because compound primary-subject matching was too literal. That scorer defect was fixed systemically, positive/negative regression-smoked, and deployed as M8 v41.
+
+A fresh full 4/4 sequential acceptance matrix on M5 v81 / M8 v41 is still required before declaring final acceptance.
+
+See docs/CODEX_HANDOFF.md for exact current job IDs, constraints and remaining steps.

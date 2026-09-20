@@ -272,8 +272,11 @@ LANGUAGE plpgsql
 AS $$
 DECLARE
     v_run factory.voiceover_runs%ROWTYPE;
+    v_job factory.jobs%ROWTYPE;
     v_voiceover_id uuid;
     v_expected_path text;
+    v_target_duration_ms integer;
+    v_duration_tolerance_ms integer;
 BEGIN
     SELECT *
       INTO v_run
@@ -289,6 +292,29 @@ BEGIN
     IF v_run.tts_consumed_at IS NULL THEN
         RAISE EXCEPTION 'TTS usage is not committed'
             USING ERRCODE = '22023';
+    END IF;
+
+    SELECT *
+      INTO v_job
+      FROM factory.jobs
+     WHERE id=v_run.job_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'voiceover job not found'
+            USING ERRCODE='22023';
+    END IF;
+
+    v_target_duration_ms := v_job.target_duration_seconds * 1000;
+    v_duration_tolerance_ms := GREATEST(
+        750,
+        round(v_target_duration_ms * 0.05)::integer
+    ) + 50;
+
+    IF abs(p_duration_ms - v_target_duration_ms) > v_duration_tolerance_ms THEN
+        RAISE EXCEPTION
+            'voiceover duration outside target tolerance: got % ms, target % ms, tolerance % ms',
+            p_duration_ms,v_target_duration_ms,v_duration_tolerance_ms
+            USING ERRCODE='22023';
     END IF;
 
     v_expected_path :=

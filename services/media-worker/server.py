@@ -9,7 +9,11 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import tempfile
+import threading
+import time
 import unicodedata
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -20,15 +24,21 @@ ALIGNMENT_ROOT = DATA_ROOT / "alignments"
 VISUAL_ROOT = DATA_ROOT / "visuals"
 RENDER_ROOT = DATA_ROOT / "renders"
 WHISPER_CLI = Path("/opt/whisper/whisper-cli")
-WHISPER_MODEL = Path("/models/ggml-base.bin")
+WHISPER_MODEL = Path("/models/ggml-small.bin")
 WHISPER_IMAGE_DIGEST = (
     "sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11"
 )
+MAX_WHISPER_TERMINAL_OVERRUN_MS = 1000
+
 EXPECTED_MODEL_SHA256 = (
-    "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe"
+    "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b"
 )
 MAX_JSON_BODY_BYTES = 20 * 1024 * 1024
 MAX_VISUAL_BYTES = 80 * 1024 * 1024
+WIKIMEDIA_DOWNLOAD_LOCK = threading.Lock()
+WIKIMEDIA_LAST_DOWNLOAD_AT = 0.0
+WIKIMEDIA_MIN_DOWNLOAD_INTERVAL_SECONDS = 8.0
+ALIGNMENT_EXECUTION_LOCK = threading.Lock()
 VISUAL_MEDIA_TYPES = {"photo", "video", "diagram"}
 VISUAL_PROVIDERS = {"pixabay", "pexels", "wikimedia"}
 VISUAL_MIME_EXTENSIONS = {
@@ -44,6 +54,96 @@ JOB_ID_RE = re.compile(
     r"[0-9a-fA-F]{12}$"
 )
 LANGUAGE_CODES = {"en", "pl", "ru", "uk"}
+ALIGNMENT_NUMBER_VALUES = {
+    # English
+    "zero":0,"one":1,"two":2,"three":3,"four":4,"five":5,"six":6,"seven":7,
+    "eight":8,"nine":9,"ten":10,"eleven":11,"twelve":12,"thirteen":13,
+    "fourteen":14,"fifteen":15,"sixteen":16,"seventeen":17,"eighteen":18,
+    "nineteen":19,"twenty":20,"thirty":30,"forty":40,"fifty":50,"sixty":60,
+    "seventy":70,"eighty":80,"ninety":90,"hundred":100,"thousand":1000,
+    # Polish
+    "zero":0,"jeden":1,"jedna":1,"jedno":1,"dwa":2,"dwie":2,"trzy":3,
+    "cztery":4,"pięć":5,"piec":5,"sześć":6,"szesc":6,"siedem":7,"osiem":8,
+    "dziewięć":9,"dziewiec":9,"dziesięć":10,"dziesiec":10,
+    "jedenaście":11,"jedenascie":11,"dwanaście":12,"dwanascie":12,
+    "trzynaście":13,"trzynascie":13,"czternaście":14,"czternascie":14,
+    "piętnaście":15,"pietnascie":15,"szesnaście":16,"szesnascie":16,
+    "siedemnaście":17,"siedemnascie":17,"osiemnaście":18,"osiemnascie":18,
+    "dziewiętnaście":19,"dziewietnascie":19,"dwadzieścia":20,"dwadziescia":20,
+    "trzydzieści":30,"trzydziesci":30,"czterdzieści":40,"czterdziesci":40,
+    "pięćdziesiąt":50,"piecdziesiat":50,"sześćdziesiąt":60,"szescdziesiat":60,
+    "siedemdziesiąt":70,"siedemdziesiat":70,"osiemdziesiąt":80,
+    "osiemdziesiat":80,"dziewięćdziesiąt":90,"dziewiecdziesiat":90,
+    "sto":100,"tysiąc":1000,"tysiac":1000,
+    # Russian
+    "ноль":0,"один":1,"одна":1,"одно":1,"два":2,"две":2,"три":3,"четыре":4,
+    "пять":5,"шесть":6,"семь":7,"восемь":8,"девять":9,"десять":10,
+    "одиннадцать":11,"двенадцать":12,"тринадцать":13,"четырнадцать":14,
+    "пятнадцать":15,"шестнадцать":16,"семнадцать":17,"восемнадцать":18,
+    "девятнадцать":19,"двадцать":20,"тридцать":30,"сорок":40,"пятьдесят":50,
+    "шестьдесят":60,"семьдесят":70,"восемьдесят":80,"девяносто":90,
+    "сто":100,"тысяча":1000,"тысяч":1000,
+    # Ukrainian
+    "нуль":0,"один":1,"одна":1,"одне":1,"два":2,"дві":2,"три":3,"чотири":4,
+    "п’ять":5,"п'ять":5,"шість":6,"сім":7,"вісім":8,"дев’ять":9,"дев'ять":9,
+    "десять":10,"одинадцять":11,"дванадцять":12,"тринадцять":13,
+    "чотирнадцять":14,"п’ятнадцять":15,"п'ятнадцять":15,"шістнадцять":16,
+    "сімнадцять":17,"вісімнадцять":18,"дев’ятнадцять":19,"дев'ятнадцять":19,
+    "двадцять":20,"тридцять":30,"сорок":40,"п’ятдесят":50,"п'ятдесят":50,
+    "шістдесят":60,"сімдесят":70,"вісімдесят":80,"дев’яносто":90,
+    "дев'яносто":90,"сто":100,"тисяча":1000,"тисяч":1000,
+}
+
+# Common grammatical inflections of cardinal numbers in the supported languages.
+# They canonicalize to the same numeric value without collapsing different values.
+ALIGNMENT_NUMBER_VALUES.update({
+    # Polish
+    "jednego":1,"jednej":1,"jednemu":1,"jednym":1,
+    "dwóch":2,"dwoch":2,"dwóm":2,"dwom":2,"dwoma":2,
+    "trzech":3,"trzem":3,"trzema":3,
+    "czterech":4,"czterem":4,"czterema":4,
+    "pięciu":5,"pieciu":5,"sześciu":6,"szesciu":6,"siedmiu":7,
+    "ośmiu":8,"osmiu":8,"dziewięciu":9,"dziewieciu":9,
+    "dziesięciu":10,"dziesieciu":10,
+    "jedenastu":11,"dwunastu":12,"trzynastu":13,"czternastu":14,
+    "piętnastu":15,"pietnastu":15,"szesnastu":16,"siedemnastu":17,
+    "osiemnastu":18,"dziewiętnastu":19,"dziewietnastu":19,
+    "dwudziestu":20,"trzydziestu":30,"czterdziestu":40,
+    "pięćdziesięciu":50,"piecdziesieciu":50,
+    "sześćdziesięciu":60,"szescdziesieciu":60,
+    "siedemdziesięciu":70,"siedemdziesieciu":70,
+    "osiemdziesięciu":80,"osiemdziesieciu":80,
+    "dziewięćdziesięciu":90,"dziewiecdziesieciu":90,
+    "stu":100,"tysiąca":1000,"tysiaca":1000,
+    "tysięcy":1000,"tysiecy":1000,
+    # Russian
+    "одного":1,"одной":1,"одному":1,"одним":1,"одном":1,
+    "двух":2,"двум":2,"двумя":2,
+    "трех":3,"трёх":3,"трем":3,"трём":3,"тремя":3,
+    "четырех":4,"четырёх":4,"четырем":4,"четырём":4,"четырьмя":4,
+    "пяти":5,"шести":6,"семи":7,"восьми":8,"девяти":9,"десяти":10,
+    "одиннадцати":11,"двенадцати":12,"тринадцати":13,"четырнадцати":14,
+    "пятнадцати":15,"шестнадцати":16,"семнадцати":17,"восемнадцати":18,
+    "девятнадцати":19,"двадцати":20,"тридцати":30,"сорока":40,
+    "пятидесяти":50,"шестидесяти":60,"семидесяти":70,
+    "восьмидесяти":80,"девяноста":90,"ста":100,
+    "тысячи":1000,"тысячу":1000,"тысяче":1000,"тысячей":1000,
+    # Ukrainian
+    "одній":1,
+    "двох":2,"двом":2,"двома":2,
+    "трьох":3,"трьом":3,"трьома":3,
+    "чотирьох":4,"чотирьом":4,"чотирма":4,
+    "п’яти":5,"п'яти":5,"шести":6,"семи":7,"восьми":8,
+    "дев’яти":9,"дев'яти":9,"десяти":10,
+    "одинадцяти":11,"дванадцяти":12,"тринадцяти":13,
+    "чотирнадцяти":14,"п’ятнадцяти":15,"п'ятнадцяти":15,
+    "шістнадцяти":16,"сімнадцяти":17,"вісімнадцяти":18,
+    "дев’ятнадцяти":19,"дев'ятнадцяти":19,
+    "двадцяти":20,"тридцяти":30,"п’ятдесяти":50,"п'ятдесяти":50,
+    "шістдесяти":60,"сімдесяти":70,"вісімдесяти":80,
+    "дев’яноста":90,"дев'яноста":90,
+    "тисячі":1000,"тисячу":1000,
+})
 _MODEL_SHA256_CACHE = None
 
 
@@ -138,24 +238,81 @@ def whisper_model_sha256():
     return digest
 
 
-def normalize_alignment_text(value):
+def _alignment_lexemes(value):
     normalized = unicodedata.normalize("NFKC", str(value or "")).casefold()
-    return "".join(char for char in normalized if char.isalnum())
+    # Whisper may preserve an apostrophe in the segment transcript while
+    # dropping it at token boundaries (for example Ukrainian в'язкою).
+    # Apostrophes are punctuation, not lexical content, so remove common
+    # apostrophe variants before both transcript and token normalization.
+    normalized = re.sub(r"['’ʼ‘]", "", normalized)
+    return re.findall(
+        r"\d+|[^\W\d_]+",
+        normalized,
+        flags=re.UNICODE,
+    )
 
+
+def _number_words_to_int(words):
+    current = 0
+    total = 0
+    for word in words:
+        value = ALIGNMENT_NUMBER_VALUES[word]
+        if value == 100:
+            current = max(1, current) * 100
+        elif value == 1000:
+            total += max(1, current) * 1000
+            current = 0
+        else:
+            current += value
+    return total + current
+
+
+def _canonical_alignment_lexemes(lexemes):
+    out = []
+    index = 0
+    while index < len(lexemes):
+        token = lexemes[index]
+        if token.isdigit():
+            out.append(str(int(token)))
+            index += 1
+            continue
+
+        if token in ALIGNMENT_NUMBER_VALUES:
+            end = index + 1
+            while end < len(lexemes) and lexemes[end] in ALIGNMENT_NUMBER_VALUES:
+                end += 1
+            out.append(str(_number_words_to_int(lexemes[index:end])))
+            index = end
+            continue
+
+        out.append(token)
+        index += 1
+    return out
+
+
+def normalize_alignment_text(value):
+    return "".join(_canonical_alignment_lexemes(_alignment_lexemes(value)))
 
 def _lexical_tokens(whisper_payload):
-    rows = []
+    raw_rows = []
+    pending_boundary = True
 
-    for segment in whisper_payload.get("transcription") or []:
+    for segment_index, segment in enumerate(
+        whisper_payload.get("transcription") or []
+    ):
+        segment_boundary = True
         for token in segment.get("tokens") or []:
             token_text = str(token.get("text") or "")
             stripped = token_text.strip()
 
             if stripped.startswith("[_") and stripped.endswith("]"):
+                pending_boundary = True
                 continue
 
-            token_normalized = normalize_alignment_text(token_text)
-            if not token_normalized:
+            lexemes = _alignment_lexemes(token_text)
+            if not lexemes:
+                if stripped:
+                    pending_boundary = True
                 continue
 
             offsets = token.get("offsets") or {}
@@ -163,25 +320,113 @@ def _lexical_tokens(whisper_payload):
                 start_ms = int(offsets.get("from"))
                 end_ms = int(offsets.get("to"))
             except (TypeError, ValueError) as exc:
-                raise ValueError("whisper lexical token is missing numeric offsets") from exc
+                raise ValueError(
+                    "whisper lexical token is missing numeric offsets"
+                ) from exc
 
             if start_ms < 0 or end_ms < start_ms:
                 raise ValueError("whisper lexical token has invalid offsets")
 
-            rows.append(
+            starts_word = bool(re.match(r"\s", token_text))
+            raw_rows.append(
                 {
                     "text": token_text,
-                    "normalized": token_normalized,
+                    "lexemes": lexemes,
                     "start_ms": start_ms,
                     "end_ms": end_ms,
+                    "segment_index": segment_index,
+                    "starts_word": (
+                        starts_word or pending_boundary or segment_boundary
+                    ),
                 }
             )
+            pending_boundary = False
+            segment_boundary = False
+
+    if not raw_rows:
+        raise ValueError("whisper returned no lexical tokens")
+
+    # Whisper tokens are model subwords, not guaranteed lexical words.
+    # Rejoin adjacent subword pieces before semantic normalization so a
+    # lexical item has the same representation in transcript text and
+    # token timing data.
+    word_rows = []
+    current = None
+    for row in raw_rows:
+        if current is None or row["starts_word"]:
+            if current is not None:
+                word_rows.append(current)
+            current = {
+                "text": row["text"],
+                "start_ms": row["start_ms"],
+                "end_ms": row["end_ms"],
+                "segment_index": row["segment_index"],
+            }
+        else:
+            current["text"] += row["text"]
+            current["end_ms"] = row["end_ms"]
+
+    if current is not None:
+        word_rows.append(current)
+
+    for row in word_rows:
+        row["lexemes"] = _alignment_lexemes(row["text"])
+
+    rows = []
+    index = 0
+    while index < len(word_rows):
+        row = word_rows[index]
+        lexemes = row["lexemes"]
+
+        if lexemes and all(
+            token in ALIGNMENT_NUMBER_VALUES for token in lexemes
+        ):
+            end = index + 1
+            merged_lexemes = list(lexemes)
+            while end < len(word_rows):
+                next_lexemes = word_rows[end]["lexemes"]
+                if not next_lexemes or not all(
+                    token in ALIGNMENT_NUMBER_VALUES
+                    for token in next_lexemes
+                ):
+                    break
+                merged_lexemes.extend(next_lexemes)
+                end += 1
+
+            rows.append(
+                {
+                    "text": "".join(
+                        word_rows[pos]["text"]
+                        for pos in range(index, end)
+                    ),
+                    "normalized": str(
+                        _number_words_to_int(merged_lexemes)
+                    ),
+                    "start_ms": row["start_ms"],
+                    "end_ms": word_rows[end - 1]["end_ms"],
+                }
+            )
+            index = end
+            continue
+
+        token_normalized = "".join(
+            _canonical_alignment_lexemes(lexemes)
+        )
+        if token_normalized:
+            rows.append(
+                {
+                    "text": row["text"],
+                    "normalized": token_normalized,
+                    "start_ms": row["start_ms"],
+                    "end_ms": row["end_ms"],
+                }
+            )
+        index += 1
 
     if not rows:
         raise ValueError("whisper returned no lexical tokens")
 
     return rows
-
 
 def _build_scene_timings(
     narration,
@@ -215,8 +460,13 @@ def _build_scene_timings(
             "whisper lexical tokens do not reconstruct the normalized transcript"
         )
 
-    if tokens[-1]["end_ms"] > audio_duration_ms:
-        raise ValueError("whisper lexical timing exceeds audio duration")
+    raw_lexical_end_ms = tokens[-1]["end_ms"]
+    terminal_overrun_ms = max(0, raw_lexical_end_ms - audio_duration_ms)
+    if terminal_overrun_ms > MAX_WHISPER_TERMINAL_OVERRUN_MS:
+        raise ValueError(
+            "whisper lexical timing exceeds audio duration beyond tolerance: "
+            f"{terminal_overrun_ms}ms"
+        )
 
     scene_joined = " ".join(
         str(scene.get("narration") or "").strip()
@@ -323,14 +573,15 @@ def _build_scene_timings(
             raise ValueError(f"scene {scene_key} has no matched lexical timing coverage")
 
         start_ms = overlapping[0]["start_ms"]
-        end_ms = overlapping[-1]["end_ms"]
+        raw_end_ms = overlapping[-1]["end_ms"]
+        end_ms = min(raw_end_ms, audio_duration_ms)
 
         if start_ms < previous_end_ms:
             raise ValueError(f"scene {scene_key} timing is not monotonic")
+        if start_ms >= audio_duration_ms:
+            raise ValueError(f"scene {scene_key} starts beyond audio duration")
         if end_ms <= start_ms:
             raise ValueError(f"scene {scene_key} timing has non-positive duration")
-        if end_ms > audio_duration_ms:
-            raise ValueError(f"scene {scene_key} timing exceeds audio duration")
 
         scene_timings.append(
             {
@@ -355,7 +606,9 @@ def _build_scene_timings(
         "global_coverage": round(global_coverage, 6),
         "lexical_token_count": len(tokens),
         "lexical_start_ms": tokens[0]["start_ms"],
-        "lexical_end_ms": tokens[-1]["end_ms"],
+        "lexical_end_ms": min(raw_lexical_end_ms, audio_duration_ms),
+        "lexical_end_ms_raw": raw_lexical_end_ms,
+        "terminal_overrun_ms": terminal_overrun_ms,
         "scene_timings": scene_timings,
     }
 
@@ -552,10 +805,59 @@ def download_visual_asset(
     media_type,
     final_dir: Path,
 ):
+    global WIKIMEDIA_LAST_DOWNLOAD_AT
+
+    if provider != "wikimedia":
+        return _download_visual_asset_inner(
+            provider,
+            download_url,
+            media_type,
+            final_dir,
+        )
+
+    with WIKIMEDIA_DOWNLOAD_LOCK:
+        now = time.monotonic()
+        wait_seconds = (
+            WIKIMEDIA_MIN_DOWNLOAD_INTERVAL_SECONDS
+            - (now - WIKIMEDIA_LAST_DOWNLOAD_AT)
+        )
+        if wait_seconds > 0:
+            time.sleep(wait_seconds)
+
+        try:
+            return _download_visual_asset_inner(
+                provider,
+                download_url,
+                media_type,
+                final_dir,
+            )
+        finally:
+            WIKIMEDIA_LAST_DOWNLOAD_AT = time.monotonic()
+
+
+def _download_visual_asset_inner(
+    provider,
+    download_url,
+    media_type,
+    final_dir: Path,
+):
     if media_type not in VISUAL_MEDIA_TYPES:
         raise ValueError("unsupported visual media type")
 
     safe_url = _validate_visual_url(provider, download_url)
+
+    if provider == "wikimedia":
+        parsed_url = urllib.parse.urlsplit(safe_url)
+        safe_url = urllib.parse.urlunsplit(
+            (
+                parsed_url.scheme,
+                parsed_url.netloc,
+                parsed_url.path,
+                "",
+                "",
+            )
+        )
+        safe_url = _validate_visual_url(provider, safe_url)
 
     request = urllib.request.Request(
         safe_url,
@@ -568,7 +870,28 @@ def download_visual_asset(
 
     temp_path = final_dir / ".download"
 
-    with urllib.request.urlopen(request, timeout=60) as response:
+    response = None
+    for attempt in range(1, 4):
+        try:
+            response = urllib.request.urlopen(request, timeout=60)
+            break
+        except urllib.error.HTTPError as exc:
+            if exc.code != 429 or attempt >= 3:
+                raise
+
+            retry_after = str(exc.headers.get("Retry-After") or "").strip()
+            try:
+                wait_seconds = int(retry_after)
+            except ValueError:
+                wait_seconds = 10 if attempt == 1 else 25
+
+            wait_seconds = max(1, min(wait_seconds, 45))
+            time.sleep(wait_seconds)
+
+    if response is None:
+        raise ValueError("visual download produced no HTTP response")
+
+    with response:
         final_url = response.geturl()
         _validate_visual_url(provider, final_url)
 
@@ -757,20 +1080,17 @@ def _render_segment(asset_path, media_type, duration_ms, output_path):
         raise ValueError("render segment duration must be positive")
 
     duration_seconds = duration_ms / 1000.0
-    final_range_filter = (
-        "scale=1080:1920:in_range=full:out_range=tv,"
+    scale_filter = (
+        "scale=1080:1920:force_original_aspect_ratio=increase:"
+        "in_range=full:out_range=tv,"
         if media_type != "video"
-        else ""
+        else "scale=1080:1920:force_original_aspect_ratio=increase,"
     )
     filter_graph = (
-        "[0:v]split=2[bg][fg];"
-        "[bg]scale=1080:1920:force_original_aspect_ratio=increase,"
-        "crop=1080:1920,boxblur=20:1[bg2];"
-        "[fg]scale=1080:1920:force_original_aspect_ratio=decrease[fg2];"
-        "[bg2][fg2]overlay=(W-w)/2:(H-h)/2,"
-        "fps=30,"
-        + final_range_filter
-        + "format=yuv420p,setsar=1[v]"
+        "[0:v]"
+        + scale_filter
+        + "crop=1080:1920,"
+        + "fps=30,format=yuv420p,setsar=1[v]"
     )
 
     command = ["ffmpeg", "-nostdin", "-y"]
@@ -886,6 +1206,11 @@ def render_final_video(
             raise ValueError("speech timing is outside render segment")
         if speech_end_ms <= speech_start_ms:
             raise ValueError("speech timing has non-positive duration")
+
+        asset_width = int(scene.get("asset_width") or 0)
+        asset_height = int(scene.get("asset_height") or 0)
+        if asset_width <= 0 or asset_height <= 0:
+            raise ValueError("render asset dimensions are invalid")
 
         asset_path = _safe_render_asset_path(
             job_id,
@@ -1367,6 +1692,69 @@ class Handler(BaseHTTPRequestHandler):
 
         self._json(404, {"error": "not_found"})
 
+    def _handle_voiceover_probe_post(self):
+        probe_path = None
+        try:
+            payload = self._read_json_body()
+            encoded = payload.get("audio_base64")
+            if not isinstance(encoded, str) or not encoded:
+                raise ValueError("audio_base64 is required")
+
+            try:
+                audio_bytes = base64.b64decode(encoded, validate=True)
+            except (binascii.Error, ValueError) as exc:
+                raise ValueError("audio_base64 is invalid") from exc
+
+            if not audio_bytes:
+                raise ValueError("decoded audio is empty")
+
+            with tempfile.NamedTemporaryFile(
+                mode="wb",
+                suffix=".mp3",
+                prefix="voiceover-probe-",
+                delete=False,
+            ) as handle:
+                handle.write(audio_bytes)
+                handle.flush()
+                os.fsync(handle.fileno())
+                probe_path = Path(handle.name)
+
+            probe = ffprobe_audio(probe_path)
+            self._json(
+                200,
+                {
+                    "status": "ready",
+                    "bytes": len(audio_bytes),
+                    "sha256": hashlib.sha256(audio_bytes).hexdigest(),
+                    **probe,
+                },
+            )
+            return
+        except ValueError as exc:
+            self._json(
+                400,
+                {
+                    "error": "invalid_voiceover_probe_request",
+                    "message": str(exc),
+                },
+            )
+            return
+        except subprocess.TimeoutExpired:
+            self._json(422, {"error": "voiceover_probe_timeout"})
+            return
+        except subprocess.CalledProcessError as exc:
+            self._json(
+                422,
+                {
+                    "error": "voiceover_probe_failed",
+                    "message": (exc.stderr or exc.stdout or str(exc))[-2000:],
+                },
+            )
+            return
+        finally:
+            if probe_path is not None:
+                probe_path.unlink(missing_ok=True)
+
     def _handle_voiceover_post(self, job_id):
         final_dir = VOICEOVER_ROOT / job_id
         final_path = final_dir / "final.mp3"
@@ -1535,14 +1923,15 @@ class Handler(BaseHTTPRequestHandler):
             work_dir = final_dir / ".work"
             work_dir.mkdir()
 
-            whisper_payload, summary = run_local_alignment(
-                audio_path,
-                language_code,
-                narration,
-                scenes,
-                audio_probe["duration_ms"],
-                work_dir,
-            )
+            with ALIGNMENT_EXECUTION_LOCK:
+                whisper_payload, summary = run_local_alignment(
+                    audio_path,
+                    language_code,
+                    narration,
+                    scenes,
+                    audio_probe["duration_ms"],
+                    work_dir,
+                )
 
             result = {
                 "status": "ready",
@@ -1598,6 +1987,11 @@ class Handler(BaseHTTPRequestHandler):
                     if not failure_path.exists():
                         _write_json_fsync(failure_path, failure)
                     work_dir = final_dir / ".work"
+                    debug_whisper_path = work_dir / "whisper.json"
+                    if debug_whisper_path.is_file() and not raw_path.exists():
+                        with debug_whisper_path.open("r", encoding="utf-8") as handle:
+                            debug_whisper_payload = json.load(handle)
+                        _write_json_fsync(raw_path, debug_whisper_payload)
                     if work_dir.exists():
                         shutil.rmtree(work_dir)
                 except Exception:
@@ -1820,6 +2214,10 @@ class Handler(BaseHTTPRequestHandler):
         self._json(201, result)
 
     def do_POST(self):
+        if self.path == "/voiceover-probe":
+            self._handle_voiceover_probe_post()
+            return
+
         render_job_id = self._render_job_id()
         if render_job_id is not None:
             self._handle_render_post(render_job_id)

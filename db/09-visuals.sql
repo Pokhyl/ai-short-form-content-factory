@@ -1,5 +1,5 @@
 -- M8 multi-source visual search, deterministic selection and local asset persistence.
--- Enabled providers: Pixabay, Pexels and Wikimedia Commons.
+-- Search providers: Pixabay, Pexels and Wikimedia Commons. Diagram shots also receive a deterministic local 9:16 diagram candidate.
 -- Every storyboard query is executed against every enabled provider.
 -- Selection is deterministic, license-aware, relevance-gated and non-reusing.
 
@@ -44,9 +44,17 @@ CREATE TABLE IF NOT EXISTS factory.visual_searches (
     CONSTRAINT visual_search_query_index CHECK (query_index >= 1),
     CONSTRAINT visual_search_query_nonempty CHECK (char_length(btrim(query_text)) > 0),
     CONSTRAINT visual_search_endpoint CHECK (endpoint_kind IN ('photo','video')),
-    CONSTRAINT visual_search_http_ok CHECK (http_status = 200),
+    CONSTRAINT visual_search_http_status CHECK (http_status BETWEEN 100 AND 599),
     UNIQUE (visual_run_id, shot_id, provider, query_index)
 );
+
+ALTER TABLE factory.visual_searches
+    DROP CONSTRAINT IF EXISTS visual_search_http_ok;
+ALTER TABLE factory.visual_searches
+    DROP CONSTRAINT IF EXISTS visual_search_http_status;
+ALTER TABLE factory.visual_searches
+    ADD CONSTRAINT visual_search_http_status
+    CHECK (http_status BETWEEN 100 AND 599);
 
 CREATE TABLE IF NOT EXISTS factory.visual_candidates (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -110,6 +118,10 @@ CREATE INDEX IF NOT EXISTS visual_candidates_shot_rank_idx
         provider_rank
     );
 
+CREATE UNIQUE INDEX IF NOT EXISTS visual_candidates_local_diagram_unique
+    ON factory.visual_candidates (visual_run_id,shot_id)
+    WHERE provider='local_diagram';
+
 CREATE TABLE IF NOT EXISTS factory.visual_selections (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     visual_run_id uuid NOT NULL REFERENCES factory.visual_runs(id) ON DELETE RESTRICT,
@@ -124,6 +136,47 @@ CREATE TABLE IF NOT EXISTS factory.visual_selections (
         CHECK (provider IN ('pixabay','pexels','wikimedia')),
     UNIQUE (visual_run_id, provider, provider_asset_id)
 );
+
+-- Local diagram candidates are generated from the immutable storyboard.
+-- They are not external provider search results, so search_id is nullable.
+ALTER TABLE factory.visual_candidates
+    ALTER COLUMN search_id DROP NOT NULL;
+
+ALTER TABLE factory.visual_candidates
+    DROP CONSTRAINT IF EXISTS visual_candidate_provider;
+ALTER TABLE factory.visual_candidates
+    ADD CONSTRAINT visual_candidate_provider
+    CHECK (provider IN ('pixabay','pexels','wikimedia','local_diagram'));
+
+ALTER TABLE factory.visual_candidates
+    DROP CONSTRAINT IF EXISTS visual_candidate_source_https;
+ALTER TABLE factory.visual_candidates
+    DROP CONSTRAINT IF EXISTS visual_candidate_source_location;
+ALTER TABLE factory.visual_candidates
+    ADD CONSTRAINT visual_candidate_source_location
+    CHECK (
+        (provider='local_diagram' AND source_url ~ '^local://diagram/')
+        OR
+        (provider<>'local_diagram' AND source_url ~ '^https://')
+    );
+
+ALTER TABLE factory.visual_candidates
+    DROP CONSTRAINT IF EXISTS visual_candidate_download_https;
+ALTER TABLE factory.visual_candidates
+    DROP CONSTRAINT IF EXISTS visual_candidate_download_location;
+ALTER TABLE factory.visual_candidates
+    ADD CONSTRAINT visual_candidate_download_location
+    CHECK (
+        (provider='local_diagram' AND download_url ~ '^local://diagram/')
+        OR
+        (provider<>'local_diagram' AND download_url ~ '^https://')
+    );
+
+ALTER TABLE factory.visual_selections
+    DROP CONSTRAINT IF EXISTS visual_selection_provider;
+ALTER TABLE factory.visual_selections
+    ADD CONSTRAINT visual_selection_provider
+    CHECK (provider IN ('pixabay','pexels','wikimedia','local_diagram'));
 
 CREATE TABLE IF NOT EXISTS factory.visual_assets (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -201,7 +254,10 @@ BEGIN
 
     SELECT
         count(*)::integer,
-        COALESCE(sum(jsonb_array_length(s.queries_en)),0)::integer * 3
+        (
+            COALESCE(sum(jsonb_array_length(s.queries_en)),0)::integer * 2
+            + count(*)::integer
+        )
       INTO v_shot_count,v_search_count
       FROM factory.shots s
      WHERE s.job_id=p_job_id;
@@ -349,13 +405,18 @@ BEGIN
             USING ERRCODE='22023';
     END IF;
 
-    IF p_http_status <> 200 THEN
-        RAISE EXCEPTION 'visual provider HTTP status %',p_http_status
+    IF jsonb_typeof(p_candidates) <> 'array' THEN
+        RAISE EXCEPTION 'visual candidates must be an array'
             USING ERRCODE='22023';
     END IF;
 
-    IF jsonb_typeof(p_candidates) <> 'array' THEN
-        RAISE EXCEPTION 'visual candidates must be an array'
+    IF p_http_status < 100 OR p_http_status > 599 THEN
+        RAISE EXCEPTION 'visual provider HTTP status is invalid: %',p_http_status
+            USING ERRCODE='22023';
+    END IF;
+
+    IF p_http_status <> 200 AND jsonb_array_length(p_candidates) <> 0 THEN
+        RAISE EXCEPTION 'failed visual provider search cannot contain candidates'
             USING ERRCODE='22023';
     END IF;
 
@@ -383,7 +444,10 @@ BEGIN
         p_http_status,
         jsonb_array_length(p_candidates),
         COALESCE(p_response_headers,'{}'::jsonb),
-        now() + interval '24 hours'
+        CASE
+            WHEN p_http_status = 200 THEN now() + interval '24 hours'
+            ELSE now() + interval '5 minutes'
+        END
     )
     RETURNING id INTO v_search_id;
 
@@ -485,9 +549,150 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION factory.record_local_diagram_candidate(
+    p_visual_run_id uuid,
+    p_shot_id uuid,
+    p_visual_intent text,
+    p_must_show jsonb
+)
+RETURNS uuid
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_run factory.visual_runs%ROWTYPE;
+    v_shot factory.shots%ROWTYPE;
+    v_candidate_id uuid;
+    v_asset_key text;
+    v_location text;
+    v_metadata_text text;
+BEGIN
+    SELECT *
+      INTO v_run
+      FROM factory.visual_runs
+     WHERE id=p_visual_run_id
+     FOR UPDATE;
+
+    IF NOT FOUND OR v_run.status <> 'running' THEN
+        RAISE EXCEPTION 'visual run is not active'
+            USING ERRCODE='22023';
+    END IF;
+
+    SELECT *
+      INTO v_shot
+      FROM factory.shots
+     WHERE id=p_shot_id
+       AND job_id=v_run.job_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'shot does not belong to visual run job'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF v_shot.preferred_media_type <> 'diagram' THEN
+        RAISE EXCEPTION 'local diagram candidate is only valid for diagram shots'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF btrim(COALESCE(p_visual_intent,'')) <> btrim(v_shot.visual_intent)
+       OR COALESCE(p_must_show,'[]'::jsonb) <> v_shot.must_show THEN
+        RAISE EXCEPTION 'local diagram storyboard payload mismatch'
+            USING ERRCODE='22023';
+    END IF;
+
+    v_asset_key := 'local-diagram:' || v_shot.id::text;
+    v_location := 'local://diagram/' || v_run.job_id::text || '/' || v_shot.id::text;
+
+    SELECT concat_ws(
+               ' ',
+               v_shot.visual_intent,
+               COALESCE(string_agg(value, ' '),'')
+           )
+      INTO v_metadata_text
+      FROM jsonb_array_elements_text(v_shot.must_show);
+
+    INSERT INTO factory.visual_candidates (
+        visual_run_id,
+        search_id,
+        job_id,
+        shot_id,
+        provider,
+        provider_asset_id,
+        provider_rank,
+        media_type,
+        source_url,
+        download_url,
+        preview_url,
+        author,
+        author_url,
+        license_name,
+        license_url,
+        width,
+        height,
+        duration_ms,
+        metadata_text,
+        query_text,
+        relevance_score,
+        rejected,
+        rejection_reason,
+        metadata
+    )
+    VALUES (
+        v_run.id,
+        NULL,
+        v_run.job_id,
+        v_shot.id,
+        'local_diagram',
+        v_asset_key,
+        1,
+        'diagram',
+        v_location,
+        v_location,
+        NULL,
+        'AI Short Form Content Factory',
+        NULL,
+        'Generated locally',
+        'local://generated',
+        1080,
+        1920,
+        NULL,
+        v_metadata_text,
+        COALESCE(v_shot.queries_en->>0, v_shot.visual_intent),
+        1000,
+        false,
+        NULL,
+        jsonb_build_object(
+            'generator','deterministic_local_diagram_v1',
+            'visual_intent',v_shot.visual_intent,
+            'must_show',v_shot.must_show
+        )
+    )
+    ON CONFLICT DO NOTHING
+    RETURNING id INTO v_candidate_id;
+
+    IF v_candidate_id IS NULL THEN
+        SELECT id
+          INTO v_candidate_id
+          FROM factory.visual_candidates
+         WHERE visual_run_id=v_run.id
+           AND shot_id=v_shot.id
+           AND provider='local_diagram'
+           AND provider_asset_id=v_asset_key
+         ORDER BY created_at
+         LIMIT 1;
+    END IF;
+
+    IF v_candidate_id IS NULL THEN
+        RAISE EXCEPTION 'local diagram candidate could not be recorded'
+            USING ERRCODE='22023';
+    END IF;
+
+    RETURN v_candidate_id;
+END;
+$$;
+
 CREATE OR REPLACE FUNCTION factory.select_visuals(
     p_visual_run_id uuid,
-    p_min_relevance_score integer DEFAULT 35
+    p_min_relevance_score integer DEFAULT 55
 )
 RETURNS TABLE (
     selection_count integer,
@@ -567,17 +772,16 @@ BEGIN
         SELECT vc.*
           INTO v_candidate
           FROM factory.visual_candidates vc
+          JOIN factory.visual_searches vq ON vq.id=vc.search_id
          WHERE vc.visual_run_id=v_run.id
            AND vc.shot_id=v_shot.id
            AND vc.rejected=false
+           AND vc.provider <> 'local_diagram'
            AND vc.relevance_score >= p_min_relevance_score
            AND (
                (v_shot.preferred_media_type='video' AND vc.media_type='video')
                OR
-               (v_shot.preferred_media_type='diagram' AND vc.media_type IN ('diagram','photo'))
-               OR
-               (v_shot.preferred_media_type IN ('photo','document','map')
-                    AND vc.media_type IN ('photo','diagram'))
+               (v_shot.preferred_media_type='photo' AND vc.media_type='photo')
            )
            AND NOT EXISTS (
                SELECT 1
@@ -588,11 +792,16 @@ BEGIN
            )
          ORDER BY
            CASE
+             WHEN vq.query_index <= 2 THEN 0
+             ELSE 1
+           END,
+           CASE
              WHEN vc.media_type=v_shot.preferred_media_type THEN 0
              WHEN v_shot.preferred_media_type='diagram' AND vc.media_type='photo' THEN 1
              ELSE 2
            END,
            vc.relevance_score DESC,
+           abs((vc.width::numeric / vc.height::numeric) - (9.0::numeric / 16.0::numeric)) ASC,
            vc.provider_rank ASC,
            (vc.width::bigint * vc.height::bigint) DESC,
            vc.provider ASC,
@@ -645,7 +854,10 @@ BEGIN
                 'width',v_candidate.width,
                 'height',v_candidate.height,
                 'duration_ms',v_candidate.duration_ms,
-                'relevance_score',v_candidate.relevance_score
+                'relevance_score',v_candidate.relevance_score,
+                'visual_intent',v_shot.visual_intent,
+                'must_show',v_shot.must_show,
+                'must_not_show',v_shot.must_not_show
             )
         );
 
@@ -1122,14 +1334,16 @@ RETURNS TABLE (
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    PERFORM factory.put_visual_cache(
-        p_provider,
-        p_endpoint_kind,
-        p_query_text,
-        p_http_status,
-        p_response_headers,
-        p_candidates
-    );
+    IF p_http_status = 200 THEN
+        PERFORM factory.put_visual_cache(
+            p_provider,
+            p_endpoint_kind,
+            p_query_text,
+            p_http_status,
+            p_response_headers,
+            p_candidates
+        );
+    END IF;
 
     RETURN QUERY
     SELECT *
@@ -1173,14 +1387,16 @@ BEGIN
             USING ERRCODE='22023';
     END IF;
 
-    PERFORM factory.put_visual_cache(
-        p_provider,
-        p_endpoint_kind,
-        p_query_text,
-        p_http_status,
-        p_response_headers,
-        p_cache_candidates
-    );
+    IF p_http_status = 200 THEN
+        PERFORM factory.put_visual_cache(
+            p_provider,
+            p_endpoint_kind,
+            p_query_text,
+            p_http_status,
+            p_response_headers,
+            p_cache_candidates
+        );
+    END IF;
 
     RETURN QUERY
     SELECT *

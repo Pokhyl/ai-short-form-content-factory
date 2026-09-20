@@ -32,7 +32,7 @@ services:
       context: ./services/media-worker
     volumes:
       - media_data:/data
-      - ./.cache/whisper/ggml-base.bin:/models/ggml-base.bin:ro
+      - ./.cache/whisper/ggml-small.bin:/models/ggml-small.bin:ro
     healthcheck:
       test:
         [

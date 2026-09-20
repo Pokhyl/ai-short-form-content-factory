@@ -198,7 +198,7 @@ DECLARE
     v_expected_alignment_path text;
     v_expected_raw_path text;
     v_model_sha constant text :=
-        '60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe';
+        '1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b';
     v_image_digest constant text :=
         'sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11';
     v_timing jsonb;
@@ -499,7 +499,7 @@ DECLARE
     v_expected_alignment_path text;
     v_expected_raw_path text;
     v_model_sha constant text :=
-        '60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe';
+        '1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b';
     v_image_digest constant text :=
         'sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11';
     v_alignment_method constant text :=

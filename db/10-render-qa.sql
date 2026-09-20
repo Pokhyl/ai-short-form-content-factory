@@ -99,6 +99,8 @@ DECLARE
     v_scene_count integer;
     v_asset_count integer;
     v_scenes jsonb;
+    v_target_duration_ms integer;
+    v_duration_tolerance_ms integer;
 BEGIN
     SELECT *
       INTO v_job
@@ -123,6 +125,19 @@ BEGIN
 
     IF NOT FOUND THEN
         RAISE EXCEPTION 'voiceover not found'
+            USING ERRCODE='22023';
+    END IF;
+
+    v_target_duration_ms := v_job.target_duration_seconds * 1000;
+    v_duration_tolerance_ms := GREATEST(
+        750,
+        round(v_target_duration_ms * 0.05)::integer
+    ) + 50;
+
+    IF abs(v_voice.duration_ms - v_target_duration_ms) > v_duration_tolerance_ms THEN
+        RAISE EXCEPTION
+            'voiceover duration is outside product target: got % ms, target % ms, tolerance % ms',
+            v_voice.duration_ms,v_target_duration_ms,v_duration_tolerance_ms
             USING ERRCODE='22023';
     END IF;
 
@@ -225,6 +240,7 @@ BEGIN
            OR start_ms < seg_start
            OR end_ms > seg_end
            OR seg_end > v_voice.duration_ms
+           OR (seg_end - seg_start) > 6500
     ) THEN
         RAISE EXCEPTION 'render segment timing coverage is invalid'
             USING ERRCODE='22023';
@@ -269,11 +285,15 @@ AS $$
 DECLARE
     v_run factory.render_runs%ROWTYPE;
     v_voice factory.voiceovers%ROWTYPE;
+    v_job factory.jobs%ROWTYPE;
     v_render_id uuid;
     v_expected_render_path text;
     v_expected_manifest_path text;
     v_duration_ms integer;
     v_delta integer;
+    v_target_duration_ms integer;
+    v_target_delta_ms integer;
+    v_duration_tolerance_ms integer;
     v_segment jsonb;
     v_scene_id uuid;
     v_shot_id uuid;
@@ -311,6 +331,16 @@ BEGIN
             USING ERRCODE='22023';
     END IF;
 
+    SELECT *
+      INTO v_job
+      FROM factory.jobs
+     WHERE id=v_run.job_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'render job not found'
+            USING ERRCODE='22023';
+    END IF;
+
     v_expected_render_path :=
         '/data/renders/' || v_run.job_id::text || '/final.mp4';
     v_expected_manifest_path :=
@@ -318,7 +348,18 @@ BEGIN
 
     v_duration_ms := COALESCE((p_result->>'duration_ms')::integer,0);
     v_delta := abs(v_duration_ms - v_voice.duration_ms);
-    v_gates := COALESCE(p_result->'qa_gates','{}'::jsonb);
+    v_target_duration_ms := v_job.target_duration_seconds * 1000;
+    v_duration_tolerance_ms := GREATEST(
+        750,
+        round(v_target_duration_ms * 0.05)::integer
+    ) + 50;
+    v_target_delta_ms := abs(v_duration_ms - v_target_duration_ms);
+    v_gates := jsonb_set(
+        COALESCE(p_result->'qa_gates','{}'::jsonb),
+        '{target_duration}',
+        to_jsonb(v_target_delta_ms <= v_duration_tolerance_ms),
+        true
+    );
 
     IF COALESCE(p_result->>'status','') <> 'ready'
        OR COALESCE((p_result->>'qa_passed')::boolean,false) <> true
@@ -337,7 +378,8 @@ BEGIN
        OR COALESCE((p_result->>'video_stream_count')::integer,0) <> 1
        OR COALESCE((p_result->>'audio_stream_count')::integer,0) <> 1
        OR v_duration_ms <= 0
-       OR v_delta > 100 THEN
+       OR v_delta > 100
+       OR v_target_delta_ms > v_duration_tolerance_ms THEN
         RAISE EXCEPTION 'render metadata or machine QA failed'
             USING ERRCODE='22023';
     END IF;
@@ -351,6 +393,7 @@ BEGIN
         AND COALESCE((v_gates->>'scene_coverage')::boolean,false)
         AND COALESCE((v_gates->>'asset_hashes')::boolean,false)
         AND COALESCE((v_gates->>'source_audio_excluded')::boolean,false)
+        AND COALESCE((v_gates->>'target_duration')::boolean,false)
     ) THEN
         RAISE EXCEPTION 'one or more machine QA gates are false'
             USING ERRCODE='22023';

@@ -183,7 +183,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const ctx = $('Normalize TTS Response').first().json;\nconst response = $json ?? {};\n\nconst body =\n  response.body && typeof response.body === 'object'\n    ? response.body\n    : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') {\n  statusCode = 201;\n}\n\nconst durationMs = Number(body.duration_ms);\nconst bytes = Number(body.bytes);\nconst sampleRate = Number(body.sample_rate);\nconst channels = Number(body.channels);\nconst sha256 = String(body.sha256 ?? '').trim().toLowerCase();\nconst codec = String(body.codec ?? '').trim().toLowerCase();\nconst storagePath = String(body.storage_path ?? '').trim();\nconst returnedJobId = String(body.job_id ?? '').trim();\n\nconst expectedPath =\n  '/data/voiceovers/' + ctx.job_id + '/final.mp3';\n\nconst storeSuccess =\n  statusCode === 201 &&\n  body.status === 'ready' &&\n  returnedJobId === ctx.job_id &&\n  storagePath === expectedPath &&\n  /^[0-9a-f]{64}$/.test(sha256) &&\n  Number.isInteger(bytes) && bytes > 0 &&\n  Number.isInteger(durationMs) && durationMs > 0 &&\n  Number.isInteger(sampleRate) && sampleRate > 0 &&\n  Number.isInteger(channels) && channels > 0 &&\n  codec === 'mp3';\n\nconst errorMessage =\n  body?.message ??\n  body?.error ??\n  response?.error?.message ??\n  response?.message ??\n  'media-worker voiceover storage failed';\n\nreturn {\n  json: {\n    job_id: ctx.job_id,\n    voiceover_run_id: ctx.voiceover_run_id,\n    target_duration_seconds: ctx.target_duration_seconds,\n    store_success: storeSuccess,\n    storage_http_status: statusCode,\n    storage_path: storagePath,\n    audio_sha256: sha256,\n    bytes,\n    duration_ms: durationMs,\n    sample_rate: sampleRate,\n    channels,\n    codec,\n    tts_consumed: true,\n    error_message: storeSuccess ? '' : String(errorMessage).slice(0, 3000),\n  },\n};"
+        "jsCode": "const ctx = $('Normalize TTS Response').first().json;\nconst response = $json ?? {};\n\nconst body =\n  response.body && typeof response.body === 'object'\n    ? response.body\n    : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') {\n  statusCode = 201;\n}\n\nconst durationMs = Number(body.duration_ms);\nconst bytes = Number(body.bytes);\nconst sampleRate = Number(body.sample_rate);\nconst channels = Number(body.channels);\nconst sha256 = String(body.sha256 ?? '').trim().toLowerCase();\nconst codec = String(body.codec ?? '').trim().toLowerCase();\nconst storagePath = String(body.storage_path ?? '').trim();\nconst returnedJobId = String(body.job_id ?? '').trim();\n\nconst expectedPath =\n  '/data/voiceovers/' + ctx.job_id + '/final.mp3';\nconst targetDurationMs = Math.round(Number(ctx.target_duration_seconds) * 1000);\nconst durationToleranceMs = Math.max(750, Math.round(targetDurationMs * 0.05)) + 50;\nconst durationWithinTarget =\n  Number.isInteger(durationMs) &&\n  Math.abs(durationMs - targetDurationMs) <= durationToleranceMs;\n\nconst storeSuccess =\n  statusCode === 201 &&\n  body.status === 'ready' &&\n  returnedJobId === ctx.job_id &&\n  storagePath === expectedPath &&\n  /^[0-9a-f]{64}$/.test(sha256) &&\n  Number.isInteger(bytes) && bytes > 0 &&\n  Number.isInteger(durationMs) && durationMs > 0 &&\n  durationWithinTarget &&\n  Number.isInteger(sampleRate) && sampleRate > 0 &&\n  Number.isInteger(channels) && channels > 0 &&\n  codec === 'mp3';\n\nconst errorMessage =\n  !durationWithinTarget && Number.isInteger(durationMs) && durationMs > 0\n    ? (\n        'voiceover duration outside target tolerance: got ' +\n        durationMs + 'ms, target ' + targetDurationMs +\n        'ms, tolerance ' + durationToleranceMs + 'ms'\n      )\n    : (\n        body?.message ??\n        body?.error ??\n        response?.error?.message ??\n        response?.message ??\n        'media-worker voiceover storage failed'\n      );\n\nreturn {\n  json: {\n    job_id: ctx.job_id,\n    voiceover_run_id: ctx.voiceover_run_id,\n    target_duration_seconds: ctx.target_duration_seconds,\n    store_success: storeSuccess,\n    storage_http_status: statusCode,\n    storage_path: storagePath,\n    audio_sha256: sha256,\n    bytes,\n    duration_ms: durationMs,\n    target_duration_ms: targetDurationMs,\n    duration_tolerance_ms: durationToleranceMs,\n    duration_within_target: durationWithinTarget,\n    sample_rate: sampleRate,\n    channels,\n    codec,\n    tts_consumed: true,\n    error_message: storeSuccess ? '' : String(errorMessage).slice(0, 3000),\n  },\n};"
       },
       "id": "video-m6-normalize-store",
       "name": "Normalize Stored Voiceover",
@@ -284,7 +284,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT voiceover_status, job_status, usage_state\nFROM factory.fail_voiceover($1::uuid, $2::text, $3::boolean);",
+        "query": "SELECT\n  voiceover_status,\n  job_status,\n  usage_state,\n  $2::text AS error_message\nFROM factory.fail_voiceover($1::uuid, $2::text, $3::boolean);",
         "options": {
           "queryReplacement": "={{ [ $json.voiceover_run_id, $json.error_message, $json.tts_consumed ] }}"
         }
@@ -307,7 +307,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const pre = $('Prepare Pre-TTS Failure').all();\nconst post = $('Prepare Post-TTS Failure').all();\nconst item = post.length ? post[0].json : (pre.length ? pre[0].json : {});\nthrow new Error(String(item.error_message ?? 'M6 voiceover failed'));"
+        "jsCode": "throw new Error(String($json.error_message ?? 'M6 voiceover failed'));"
       },
       "id": "video-m6-raise",
       "name": "Raise Voiceover Failure",
@@ -316,6 +316,1209 @@
       "position": [
         2640,
         160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://shorts-v2-media-worker-1:3001/voiceover-probe",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ audio_base64: $('Normalize TTS Response').first().json.audio_base64 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-probe-1",
+      "name": "Measure TTS Candidate 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1440,
+        -220
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Normalize TTS Response').first().json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') statusCode = 200;\n\nconst durationMs = Number(body.duration_ms);\nconst targetDurationMs = Math.round(Number(ctx.target_duration_seconds) * 1000);\nconst toleranceMs = Math.max(750, Math.round(targetDurationMs * 0.05)) + 50;\nconst durationOk =\n  statusCode === 200 &&\n  body.status === 'ready' &&\n  Number.isInteger(durationMs) &&\n  durationMs > 0 &&\n  Math.abs(durationMs - targetDurationMs) <= toleranceMs;\n\nconst errorMessage = durationOk\n  ? ''\n  : (\n      Number.isInteger(durationMs) && durationMs > 0\n        ? (\n            'voiceover duration outside target tolerance: got ' +\n            durationMs + 'ms, target ' + targetDurationMs +\n            'ms, tolerance ' + toleranceMs + 'ms'\n          )\n        : (\n            body?.message ??\n            body?.error ??\n            response?.error?.message ??\n            response?.message ??\n            'voiceover probe failed'\n          )\n    );\n\nreturn {json:{\n  job_id: ctx.job_id,\n  voiceover_run_id: ctx.voiceover_run_id,\n  target_duration_seconds: ctx.target_duration_seconds,\n  duration_ms: Number.isInteger(durationMs) ? durationMs : 0,\n  target_duration_ms: targetDurationMs,\n  duration_tolerance_ms: toleranceMs,\n  duration_ok: durationOk,\n  error_message: String(errorMessage).slice(0,3000),\n}};"
+      },
+      "id": "video-m6-normalize-probe-1",
+      "name": "Normalize TTS Candidate 1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        -220
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-duration-1-condition",
+              "leftValue": "={{ $json.duration_ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-duration-1",
+      "name": "Route TTS Candidate 1 Duration",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1920,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Voiceover').first().json;\nconst trigger = $('When Executed by Another Workflow').first().json;\nconst firstProbe = $json ?? {};\n\nconst jobId = String(trigger.job_id ?? '').trim();\nconst voiceoverRunId = String(ctx.voiceover_run_id ?? '').trim();\nif (!jobId || !voiceoverRunId) {\n  throw new Error('M6 retry context missing job/run id');\n}\n\nreturn {json:{\n  job_id: jobId,\n  voiceover_run_id: voiceoverRunId,\n  narration: String(ctx.narration ?? ''),\n  target_duration_seconds: Number(ctx.target_duration_seconds),\n  locale: String(ctx.locale ?? ''),\n  voice_name: String(ctx.voice_name ?? ''),\n  sku_family: String(ctx.sku_family ?? ''),\n  character_count: Number(ctx.character_count),\n  retry_usage_key: 'm6-tts-retry:' + jobId + ':2',\n  first_duration_ms: Number(firstProbe.duration_ms || 0),\n}};"
+      },
+      "id": "video-m6-prepare-retry",
+      "name": "Prepare TTS Retry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT factory.reserve_provider_usage(\n  $1::text,\n  'google_cloud_tts',\n  $2::text,\n  'characters',\n  date_trunc('month',CURRENT_DATE)::date,\n  $3::bigint,\n  $4::text,\n  jsonb_build_object('stage','M6','attempt',2,'reason','duration_retry')\n) AS usage_ledger_id;",
+        "options": {
+          "queryReplacement": "={{ [ $json.retry_usage_key, $json.sku_family, $json.character_count, $json.job_id ] }}"
+        }
+      },
+      "id": "video-m6-reserve-retry",
+      "name": "Reserve TTS Retry Usage",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        2400,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://texttospeech.googleapis.com/v1/text:synthesize",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ input: { text: $('Prepare TTS Retry').first().json.narration }, voice: { languageCode: $('Prepare TTS Retry').first().json.locale, name: $('Prepare TTS Retry').first().json.voice_name }, audioConfig: { audioEncoding: 'MP3' } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-tts-retry",
+      "name": "Google Cloud TTS Retry",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2640,
+        0
+      ],
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "8KbFC6GBZOd18bzG",
+          "name": "Google account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Prepare TTS Retry').first().json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nconst audioBase64 = typeof body.audioContent === 'string'\n  ? body.audioContent.trim()\n  : '';\nif (!statusCode && audioBase64) statusCode = 200;\n\nconst ttsConsumed = statusCode >= 200 && statusCode <= 299;\nconst base64Shape =\n  audioBase64.length > 100 &&\n  /^[A-Za-z0-9+/]+={0,2}$/.test(audioBase64);\nconst ttsSuccess = ttsConsumed && base64Shape;\n\nconst providerMessage =\n  body?.error?.message ??\n  response?.error?.message ??\n  response?.message ??\n  (ttsConsumed\n    ? 'Google Cloud TTS retry returned no valid MP3 audioContent'\n    : 'Google Cloud TTS retry request failed');\n\nreturn {json:{\n  ...ctx,\n  tts_http_status: statusCode,\n  tts_consumed: ttsConsumed,\n  tts_success: ttsSuccess,\n  audio_base64: ttsSuccess ? audioBase64 : '',\n  error_message: ttsSuccess ? '' : String(providerMessage).slice(0,3000),\n}};"
+      },
+      "id": "video-m6-normalize-retry",
+      "name": "Normalize TTS Retry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2880,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-retry-consumed-condition",
+              "leftValue": "={{ $json.tts_consumed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-retry-consumed",
+      "name": "Route TTS Retry Consumed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3120,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT factory.commit_provider_usage($1::text,NULL);",
+        "options": {
+          "queryReplacement": "={{ [ $('Normalize TTS Retry').first().json.retry_usage_key ] }}"
+        }
+      },
+      "id": "video-m6-commit-retry",
+      "name": "Commit TTS Retry Usage",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        3360,
+        -100
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT factory.release_provider_usage($1::text);",
+        "options": {
+          "queryReplacement": "={{ [ $('Normalize TTS Retry').first().json.retry_usage_key ] }}"
+        }
+      },
+      "id": "video-m6-release-retry",
+      "name": "Release TTS Retry Usage",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        3360,
+        160
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-retry-success-condition",
+              "leftValue": "={{ $('Normalize TTS Retry').first().json.tts_success }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-retry-success",
+      "name": "Route TTS Retry Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3600,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Voiceover').first().json;\nconst source = $('Normalize TTS Retry').first().json;\nreturn {json:{\n  voiceover_run_id: String(ctx.voiceover_run_id ?? '').trim(),\n  error_message: (\n    'M6 retry TTS failed: ' +\n    String(source.error_message || 'unknown retry TTS error')\n  ).slice(0,4000),\n  tts_consumed: true,\n}};"
+      },
+      "id": "video-m6-retry-failure",
+      "name": "Prepare TTS Retry Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3840,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://shorts-v2-media-worker-1:3001/voiceover-probe",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ audio_base64: $('Normalize TTS Retry').first().json.audio_base64 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-probe-2",
+      "name": "Measure TTS Candidate 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3840,
+        -180
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Normalize TTS Retry').first().json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') statusCode = 200;\n\nconst durationMs = Number(body.duration_ms);\nconst targetDurationMs = Math.round(Number(ctx.target_duration_seconds) * 1000);\nconst toleranceMs = Math.max(750, Math.round(targetDurationMs * 0.05)) + 50;\nconst durationOk =\n  statusCode === 200 &&\n  body.status === 'ready' &&\n  Number.isInteger(durationMs) &&\n  durationMs > 0 &&\n  Math.abs(durationMs - targetDurationMs) <= toleranceMs;\n\nconst errorMessage = durationOk\n  ? ''\n  : (\n      Number.isInteger(durationMs) && durationMs > 0\n        ? (\n            'voiceover duration outside target tolerance: got ' +\n            durationMs + 'ms, target ' + targetDurationMs +\n            'ms, tolerance ' + toleranceMs + 'ms'\n          )\n        : (\n            body?.message ??\n            body?.error ??\n            response?.error?.message ??\n            response?.message ??\n            'voiceover probe failed'\n          )\n    );\n\nreturn {json:{\n  job_id: ctx.job_id,\n  voiceover_run_id: ctx.voiceover_run_id,\n  target_duration_seconds: ctx.target_duration_seconds,\n  duration_ms: Number.isInteger(durationMs) ? durationMs : 0,\n  target_duration_ms: targetDurationMs,\n  duration_tolerance_ms: toleranceMs,\n  duration_ok: durationOk,\n  error_message: String(errorMessage).slice(0,3000),\n}};"
+      },
+      "id": "video-m6-normalize-probe-2",
+      "name": "Normalize TTS Candidate 2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4080,
+        -180
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-duration-2-condition",
+              "leftValue": "={{ $json.duration_ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-duration-2",
+      "name": "Route TTS Candidate 2 Duration",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4320,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $json ?? {};\nreturn {json:{\n  voiceover_run_id: String(source.voiceover_run_id ?? '').trim(),\n  error_message: (\n    'M6 voiceover duration outside target after 4 independent TTS candidates: ' +\n    String(source.error_message || 'unknown retry duration error')\n  ).slice(0,4000),\n  tts_consumed: true,\n}};"
+      },
+      "id": "video-m6-retry-duration-failure",
+      "name": "Prepare TTS Retry Duration Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4560,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://shorts-v2-media-worker-1:3001/voiceovers/' + $('Normalize TTS Retry').first().json.job_id }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ audio_base64: $('Normalize TTS Retry').first().json.audio_base64 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-store-retry",
+      "name": "Store Voiceover Retry",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        4560,
+        -260
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Normalize TTS Retry').first().json;\nconst response = $json ?? {};\n\nconst body =\n  response.body && typeof response.body === 'object'\n    ? response.body\n    : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') {\n  statusCode = 201;\n}\n\nconst durationMs = Number(body.duration_ms);\nconst bytes = Number(body.bytes);\nconst sampleRate = Number(body.sample_rate);\nconst channels = Number(body.channels);\nconst sha256 = String(body.sha256 ?? '').trim().toLowerCase();\nconst codec = String(body.codec ?? '').trim().toLowerCase();\nconst storagePath = String(body.storage_path ?? '').trim();\nconst returnedJobId = String(body.job_id ?? '').trim();\n\nconst expectedPath =\n  '/data/voiceovers/' + ctx.job_id + '/final.mp3';\nconst targetDurationMs = Math.round(Number(ctx.target_duration_seconds) * 1000);\nconst durationToleranceMs = Math.max(750, Math.round(targetDurationMs * 0.05)) + 50;\nconst durationWithinTarget =\n  Number.isInteger(durationMs) &&\n  Math.abs(durationMs - targetDurationMs) <= durationToleranceMs;\n\nconst storeSuccess =\n  statusCode === 201 &&\n  body.status === 'ready' &&\n  returnedJobId === ctx.job_id &&\n  storagePath === expectedPath &&\n  /^[0-9a-f]{64}$/.test(sha256) &&\n  Number.isInteger(bytes) && bytes > 0 &&\n  Number.isInteger(durationMs) && durationMs > 0 &&\n  durationWithinTarget &&\n  Number.isInteger(sampleRate) && sampleRate > 0 &&\n  Number.isInteger(channels) && channels > 0 &&\n  codec === 'mp3';\n\nconst errorMessage =\n  !durationWithinTarget && Number.isInteger(durationMs) && durationMs > 0\n    ? (\n        'voiceover duration outside target tolerance: got ' +\n        durationMs + 'ms, target ' + targetDurationMs +\n        'ms, tolerance ' + durationToleranceMs + 'ms'\n      )\n    : (\n        body?.message ??\n        body?.error ??\n        response?.error?.message ??\n        response?.message ??\n        'media-worker voiceover storage failed'\n      );\n\nreturn {\n  json: {\n    job_id: ctx.job_id,\n    voiceover_run_id: ctx.voiceover_run_id,\n    target_duration_seconds: ctx.target_duration_seconds,\n    store_success: storeSuccess,\n    storage_http_status: statusCode,\n    storage_path: storagePath,\n    audio_sha256: sha256,\n    bytes,\n    duration_ms: durationMs,\n    target_duration_ms: targetDurationMs,\n    duration_tolerance_ms: durationToleranceMs,\n    duration_within_target: durationWithinTarget,\n    sample_rate: sampleRate,\n    channels,\n    codec,\n    tts_consumed: true,\n    error_message: storeSuccess ? '' : String(errorMessage).slice(0, 3000),\n  },\n};"
+      },
+      "id": "video-m6-normalize-store-retry",
+      "name": "Normalize Stored Voiceover Retry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4800,
+        -260
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-store-retry-success-condition",
+              "leftValue": "={{ $json.store_success }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-store-retry",
+      "name": "Route Storage Success Retry",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        5040,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Voiceover').first().json;\nconst trigger = $('When Executed by Another Workflow').first().json;\nconst previousProbe = $json ?? {};\n\nconst jobId = String(trigger.job_id ?? '').trim();\nconst voiceoverRunId = String(ctx.voiceover_run_id ?? '').trim();\nif (!jobId || !voiceoverRunId) {\n  throw new Error('M6 retry 3 context missing job/run id');\n}\n\nreturn {json:{\n  job_id: jobId,\n  voiceover_run_id: voiceoverRunId,\n  narration: String(ctx.narration ?? ''),\n  target_duration_seconds: Number(ctx.target_duration_seconds),\n  locale: String(ctx.locale ?? ''),\n  voice_name: String(ctx.voice_name ?? ''),\n  sku_family: String(ctx.sku_family ?? ''),\n  character_count: Number(ctx.character_count),\n  retry_usage_key: 'm6-tts-retry:' + jobId + ':3',\n  previous_duration_ms: Number(previousProbe.duration_ms || 0),\n  retry_attempt: 3,\n}};"
+      },
+      "id": "video-m6-prepare-retry-3",
+      "name": "Prepare TTS Retry 3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5400,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT factory.reserve_provider_usage(\n  $1::text,\n  'google_cloud_tts',\n  $2::text,\n  'characters',\n  date_trunc('month',CURRENT_DATE)::date,\n  $3::bigint,\n  $4::text,\n  jsonb_build_object('stage','M6','attempt',3,'reason','duration_retry')\n) AS usage_ledger_id;",
+        "options": {
+          "queryReplacement": "={{ [ $json.retry_usage_key, $json.sku_family, $json.character_count, $json.job_id ] }}"
+        }
+      },
+      "id": "video-m6-reserve-retry-3",
+      "name": "Reserve TTS Retry Usage 3",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        5640,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://texttospeech.googleapis.com/v1/text:synthesize",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ input: { text: $('Prepare TTS Retry 3').first().json.narration }, voice: { languageCode: $('Prepare TTS Retry 3').first().json.locale, name: $('Prepare TTS Retry 3').first().json.voice_name }, audioConfig: { audioEncoding: 'MP3' } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-tts-retry-3",
+      "name": "Google Cloud TTS Retry 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        5880,
+        0
+      ],
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "8KbFC6GBZOd18bzG",
+          "name": "Google account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Prepare TTS Retry 3').first().json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nconst audioBase64 = typeof body.audioContent === 'string'\n  ? body.audioContent.trim()\n  : '';\nif (!statusCode && audioBase64) statusCode = 200;\n\nconst ttsConsumed = statusCode >= 200 && statusCode <= 299;\nconst base64Shape =\n  audioBase64.length > 100 &&\n  /^[A-Za-z0-9+/]+={0,2}$/.test(audioBase64);\nconst ttsSuccess = ttsConsumed && base64Shape;\n\nconst providerMessage =\n  body?.error?.message ??\n  response?.error?.message ??\n  response?.message ??\n  (ttsConsumed\n    ? 'Google Cloud TTS retry returned no valid MP3 audioContent'\n    : 'Google Cloud TTS retry request failed');\n\nreturn {json:{\n  ...ctx,\n  tts_http_status: statusCode,\n  tts_consumed: ttsConsumed,\n  tts_success: ttsSuccess,\n  audio_base64: ttsSuccess ? audioBase64 : '',\n  error_message: ttsSuccess ? '' : String(providerMessage).slice(0,3000),\n}};"
+      },
+      "id": "video-m6-normalize-retry-3",
+      "name": "Normalize TTS Retry 3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6120,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-retry-consumed-3-condition",
+              "leftValue": "={{ $json.tts_consumed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-retry-consumed-3",
+      "name": "Route TTS Retry Consumed 3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        6360,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT factory.commit_provider_usage($1::text,NULL);",
+        "options": {
+          "queryReplacement": "={{ [ $('Normalize TTS Retry 3').first().json.retry_usage_key ] }}"
+        }
+      },
+      "id": "video-m6-commit-retry-3",
+      "name": "Commit TTS Retry Usage 3",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        6600,
+        -100
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT factory.release_provider_usage($1::text);",
+        "options": {
+          "queryReplacement": "={{ [ $('Normalize TTS Retry 3').first().json.retry_usage_key ] }}"
+        }
+      },
+      "id": "video-m6-release-retry-3",
+      "name": "Release TTS Retry Usage 3",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        6600,
+        160
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-retry-success-3-condition",
+              "leftValue": "={{ $('Normalize TTS Retry 3').first().json.tts_success }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-retry-success-3",
+      "name": "Route TTS Retry Success 3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        6840,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Voiceover').first().json;\nconst source = $('Normalize TTS Retry 3').first().json;\nreturn {json:{\n  voiceover_run_id: String(ctx.voiceover_run_id ?? '').trim(),\n  error_message: (\n    'M6 retry TTS failed: ' +\n    String(source.error_message || 'unknown retry TTS error')\n  ).slice(0,4000),\n  tts_consumed: true,\n}};"
+      },
+      "id": "video-m6-retry-failure-3",
+      "name": "Prepare TTS Retry Failure 3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7080,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://shorts-v2-media-worker-1:3001/voiceover-probe",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ audio_base64: $('Normalize TTS Retry 3').first().json.audio_base64 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-probe-3",
+      "name": "Measure TTS Candidate 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        7080,
+        -180
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Normalize TTS Retry 3').first().json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') statusCode = 200;\n\nconst durationMs = Number(body.duration_ms);\nconst targetDurationMs = Math.round(Number(ctx.target_duration_seconds) * 1000);\nconst toleranceMs = Math.max(750, Math.round(targetDurationMs * 0.05)) + 50;\nconst durationOk =\n  statusCode === 200 &&\n  body.status === 'ready' &&\n  Number.isInteger(durationMs) &&\n  durationMs > 0 &&\n  Math.abs(durationMs - targetDurationMs) <= toleranceMs;\n\nconst errorMessage = durationOk\n  ? ''\n  : (\n      Number.isInteger(durationMs) && durationMs > 0\n        ? (\n            'voiceover duration outside target tolerance: got ' +\n            durationMs + 'ms, target ' + targetDurationMs +\n            'ms, tolerance ' + toleranceMs + 'ms'\n          )\n        : (\n            body?.message ??\n            body?.error ??\n            response?.error?.message ??\n            response?.message ??\n            'voiceover probe failed'\n          )\n    );\n\nreturn {json:{\n  job_id: ctx.job_id,\n  voiceover_run_id: ctx.voiceover_run_id,\n  target_duration_seconds: ctx.target_duration_seconds,\n  duration_ms: Number.isInteger(durationMs) ? durationMs : 0,\n  target_duration_ms: targetDurationMs,\n  duration_tolerance_ms: toleranceMs,\n  duration_ok: durationOk,\n  error_message: String(errorMessage).slice(0,3000),\n}};"
+      },
+      "id": "video-m6-normalize-probe-3",
+      "name": "Normalize TTS Candidate 3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7320,
+        -180
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-duration-3-condition",
+              "leftValue": "={{ $json.duration_ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-duration-3",
+      "name": "Route TTS Candidate 3 Duration",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        7560,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://shorts-v2-media-worker-1:3001/voiceovers/' + $('Normalize TTS Retry 3').first().json.job_id }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ audio_base64: $('Normalize TTS Retry 3').first().json.audio_base64 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-store-retry-3",
+      "name": "Store Voiceover Retry 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        7800,
+        -260
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Normalize TTS Retry 3').first().json;\nconst response = $json ?? {};\n\nconst body =\n  response.body && typeof response.body === 'object'\n    ? response.body\n    : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') {\n  statusCode = 201;\n}\n\nconst durationMs = Number(body.duration_ms);\nconst bytes = Number(body.bytes);\nconst sampleRate = Number(body.sample_rate);\nconst channels = Number(body.channels);\nconst sha256 = String(body.sha256 ?? '').trim().toLowerCase();\nconst codec = String(body.codec ?? '').trim().toLowerCase();\nconst storagePath = String(body.storage_path ?? '').trim();\nconst returnedJobId = String(body.job_id ?? '').trim();\n\nconst expectedPath =\n  '/data/voiceovers/' + ctx.job_id + '/final.mp3';\nconst targetDurationMs = Math.round(Number(ctx.target_duration_seconds) * 1000);\nconst durationToleranceMs = Math.max(750, Math.round(targetDurationMs * 0.05)) + 50;\nconst durationWithinTarget =\n  Number.isInteger(durationMs) &&\n  Math.abs(durationMs - targetDurationMs) <= durationToleranceMs;\n\nconst storeSuccess =\n  statusCode === 201 &&\n  body.status === 'ready' &&\n  returnedJobId === ctx.job_id &&\n  storagePath === expectedPath &&\n  /^[0-9a-f]{64}$/.test(sha256) &&\n  Number.isInteger(bytes) && bytes > 0 &&\n  Number.isInteger(durationMs) && durationMs > 0 &&\n  durationWithinTarget &&\n  Number.isInteger(sampleRate) && sampleRate > 0 &&\n  Number.isInteger(channels) && channels > 0 &&\n  codec === 'mp3';\n\nconst errorMessage =\n  !durationWithinTarget && Number.isInteger(durationMs) && durationMs > 0\n    ? (\n        'voiceover duration outside target tolerance: got ' +\n        durationMs + 'ms, target ' + targetDurationMs +\n        'ms, tolerance ' + durationToleranceMs + 'ms'\n      )\n    : (\n        body?.message ??\n        body?.error ??\n        response?.error?.message ??\n        response?.message ??\n        'media-worker voiceover storage failed'\n      );\n\nreturn {\n  json: {\n    job_id: ctx.job_id,\n    voiceover_run_id: ctx.voiceover_run_id,\n    target_duration_seconds: ctx.target_duration_seconds,\n    store_success: storeSuccess,\n    storage_http_status: statusCode,\n    storage_path: storagePath,\n    audio_sha256: sha256,\n    bytes,\n    duration_ms: durationMs,\n    target_duration_ms: targetDurationMs,\n    duration_tolerance_ms: durationToleranceMs,\n    duration_within_target: durationWithinTarget,\n    sample_rate: sampleRate,\n    channels,\n    codec,\n    tts_consumed: true,\n    error_message: storeSuccess ? '' : String(errorMessage).slice(0, 3000),\n  },\n};"
+      },
+      "id": "video-m6-normalize-store-retry-3",
+      "name": "Normalize Stored Voiceover Retry 3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8040,
+        -260
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-store-retry-3-condition",
+              "leftValue": "={{ $json.store_success }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-store-retry-3",
+      "name": "Route Storage Success Retry 3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        8280,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Voiceover').first().json;\nconst trigger = $('When Executed by Another Workflow').first().json;\nconst previousProbe = $json ?? {};\n\nconst jobId = String(trigger.job_id ?? '').trim();\nconst voiceoverRunId = String(ctx.voiceover_run_id ?? '').trim();\nif (!jobId || !voiceoverRunId) {\n  throw new Error('M6 retry 4 context missing job/run id');\n}\n\nreturn {json:{\n  job_id: jobId,\n  voiceover_run_id: voiceoverRunId,\n  narration: String(ctx.narration ?? ''),\n  target_duration_seconds: Number(ctx.target_duration_seconds),\n  locale: String(ctx.locale ?? ''),\n  voice_name: String(ctx.voice_name ?? ''),\n  sku_family: String(ctx.sku_family ?? ''),\n  character_count: Number(ctx.character_count),\n  retry_usage_key: 'm6-tts-retry:' + jobId + ':4',\n  previous_duration_ms: Number(previousProbe.duration_ms || 0),\n  retry_attempt: 4,\n}};"
+      },
+      "id": "video-m6-prepare-retry-4",
+      "name": "Prepare TTS Retry 4",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8700,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT factory.reserve_provider_usage(\n  $1::text,\n  'google_cloud_tts',\n  $2::text,\n  'characters',\n  date_trunc('month',CURRENT_DATE)::date,\n  $3::bigint,\n  $4::text,\n  jsonb_build_object('stage','M6','attempt',4,'reason','duration_retry')\n) AS usage_ledger_id;",
+        "options": {
+          "queryReplacement": "={{ [ $json.retry_usage_key, $json.sku_family, $json.character_count, $json.job_id ] }}"
+        }
+      },
+      "id": "video-m6-reserve-retry-4",
+      "name": "Reserve TTS Retry Usage 4",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        8940,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://texttospeech.googleapis.com/v1/text:synthesize",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ input: { text: $('Prepare TTS Retry 4').first().json.narration }, voice: { languageCode: $('Prepare TTS Retry 4').first().json.locale, name: $('Prepare TTS Retry 4').first().json.voice_name }, audioConfig: { audioEncoding: 'MP3' } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-tts-retry-4",
+      "name": "Google Cloud TTS Retry 4",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        9180,
+        0
+      ],
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "8KbFC6GBZOd18bzG",
+          "name": "Google account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Prepare TTS Retry 4').first().json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nconst audioBase64 = typeof body.audioContent === 'string'\n  ? body.audioContent.trim()\n  : '';\nif (!statusCode && audioBase64) statusCode = 200;\n\nconst ttsConsumed = statusCode >= 200 && statusCode <= 299;\nconst base64Shape =\n  audioBase64.length > 100 &&\n  /^[A-Za-z0-9+/]+={0,2}$/.test(audioBase64);\nconst ttsSuccess = ttsConsumed && base64Shape;\n\nconst providerMessage =\n  body?.error?.message ??\n  response?.error?.message ??\n  response?.message ??\n  (ttsConsumed\n    ? 'Google Cloud TTS retry returned no valid MP3 audioContent'\n    : 'Google Cloud TTS retry request failed');\n\nreturn {json:{\n  ...ctx,\n  tts_http_status: statusCode,\n  tts_consumed: ttsConsumed,\n  tts_success: ttsSuccess,\n  audio_base64: ttsSuccess ? audioBase64 : '',\n  error_message: ttsSuccess ? '' : String(providerMessage).slice(0,3000),\n}};"
+      },
+      "id": "video-m6-normalize-retry-4",
+      "name": "Normalize TTS Retry 4",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9420,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-retry-consumed-4-condition",
+              "leftValue": "={{ $json.tts_consumed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-retry-consumed-4",
+      "name": "Route TTS Retry Consumed 4",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        9660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT factory.commit_provider_usage($1::text,NULL);",
+        "options": {
+          "queryReplacement": "={{ [ $('Normalize TTS Retry 4').first().json.retry_usage_key ] }}"
+        }
+      },
+      "id": "video-m6-commit-retry-4",
+      "name": "Commit TTS Retry Usage 4",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        9900,
+        -100
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT factory.release_provider_usage($1::text);",
+        "options": {
+          "queryReplacement": "={{ [ $('Normalize TTS Retry 4').first().json.retry_usage_key ] }}"
+        }
+      },
+      "id": "video-m6-release-retry-4",
+      "name": "Release TTS Retry Usage 4",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        9900,
+        160
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-retry-success-4-condition",
+              "leftValue": "={{ $('Normalize TTS Retry 4').first().json.tts_success }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-retry-success-4",
+      "name": "Route TTS Retry Success 4",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        10140,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Voiceover').first().json;\nconst source = $('Normalize TTS Retry 4').first().json;\nreturn {json:{\n  voiceover_run_id: String(ctx.voiceover_run_id ?? '').trim(),\n  error_message: (\n    'M6 retry TTS failed: ' +\n    String(source.error_message || 'unknown retry TTS error')\n  ).slice(0,4000),\n  tts_consumed: true,\n}};"
+      },
+      "id": "video-m6-retry-failure-4",
+      "name": "Prepare TTS Retry Failure 4",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10380,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://shorts-v2-media-worker-1:3001/voiceover-probe",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ audio_base64: $('Normalize TTS Retry 4').first().json.audio_base64 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-probe-4",
+      "name": "Measure TTS Candidate 4",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        10380,
+        -180
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Normalize TTS Retry 4').first().json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') statusCode = 200;\n\nconst durationMs = Number(body.duration_ms);\nconst targetDurationMs = Math.round(Number(ctx.target_duration_seconds) * 1000);\nconst toleranceMs = Math.max(750, Math.round(targetDurationMs * 0.05)) + 50;\nconst durationOk =\n  statusCode === 200 &&\n  body.status === 'ready' &&\n  Number.isInteger(durationMs) &&\n  durationMs > 0 &&\n  Math.abs(durationMs - targetDurationMs) <= toleranceMs;\n\nconst errorMessage = durationOk\n  ? ''\n  : (\n      Number.isInteger(durationMs) && durationMs > 0\n        ? (\n            'voiceover duration outside target tolerance: got ' +\n            durationMs + 'ms, target ' + targetDurationMs +\n            'ms, tolerance ' + toleranceMs + 'ms'\n          )\n        : (\n            body?.message ??\n            body?.error ??\n            response?.error?.message ??\n            response?.message ??\n            'voiceover probe failed'\n          )\n    );\n\nreturn {json:{\n  job_id: ctx.job_id,\n  voiceover_run_id: ctx.voiceover_run_id,\n  target_duration_seconds: ctx.target_duration_seconds,\n  duration_ms: Number.isInteger(durationMs) ? durationMs : 0,\n  target_duration_ms: targetDurationMs,\n  duration_tolerance_ms: toleranceMs,\n  duration_ok: durationOk,\n  error_message: String(errorMessage).slice(0,3000),\n}};"
+      },
+      "id": "video-m6-normalize-probe-4",
+      "name": "Normalize TTS Candidate 4",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10620,
+        -180
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-duration-4-condition",
+              "leftValue": "={{ $json.duration_ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-duration-4",
+      "name": "Route TTS Candidate 4 Duration",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        10860,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://shorts-v2-media-worker-1:3001/voiceovers/' + $('Normalize TTS Retry 4').first().json.job_id }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ audio_base64: $('Normalize TTS Retry 4').first().json.audio_base64 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-store-retry-4",
+      "name": "Store Voiceover Retry 4",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        11100,
+        -260
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Normalize TTS Retry 4').first().json;\nconst response = $json ?? {};\n\nconst body =\n  response.body && typeof response.body === 'object'\n    ? response.body\n    : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') {\n  statusCode = 201;\n}\n\nconst durationMs = Number(body.duration_ms);\nconst bytes = Number(body.bytes);\nconst sampleRate = Number(body.sample_rate);\nconst channels = Number(body.channels);\nconst sha256 = String(body.sha256 ?? '').trim().toLowerCase();\nconst codec = String(body.codec ?? '').trim().toLowerCase();\nconst storagePath = String(body.storage_path ?? '').trim();\nconst returnedJobId = String(body.job_id ?? '').trim();\n\nconst expectedPath =\n  '/data/voiceovers/' + ctx.job_id + '/final.mp3';\nconst targetDurationMs = Math.round(Number(ctx.target_duration_seconds) * 1000);\nconst durationToleranceMs = Math.max(750, Math.round(targetDurationMs * 0.05)) + 50;\nconst durationWithinTarget =\n  Number.isInteger(durationMs) &&\n  Math.abs(durationMs - targetDurationMs) <= durationToleranceMs;\n\nconst storeSuccess =\n  statusCode === 201 &&\n  body.status === 'ready' &&\n  returnedJobId === ctx.job_id &&\n  storagePath === expectedPath &&\n  /^[0-9a-f]{64}$/.test(sha256) &&\n  Number.isInteger(bytes) && bytes > 0 &&\n  Number.isInteger(durationMs) && durationMs > 0 &&\n  durationWithinTarget &&\n  Number.isInteger(sampleRate) && sampleRate > 0 &&\n  Number.isInteger(channels) && channels > 0 &&\n  codec === 'mp3';\n\nconst errorMessage =\n  !durationWithinTarget && Number.isInteger(durationMs) && durationMs > 0\n    ? (\n        'voiceover duration outside target tolerance: got ' +\n        durationMs + 'ms, target ' + targetDurationMs +\n        'ms, tolerance ' + durationToleranceMs + 'ms'\n      )\n    : (\n        body?.message ??\n        body?.error ??\n        response?.error?.message ??\n        response?.message ??\n        'media-worker voiceover storage failed'\n      );\n\nreturn {\n  json: {\n    job_id: ctx.job_id,\n    voiceover_run_id: ctx.voiceover_run_id,\n    target_duration_seconds: ctx.target_duration_seconds,\n    store_success: storeSuccess,\n    storage_http_status: statusCode,\n    storage_path: storagePath,\n    audio_sha256: sha256,\n    bytes,\n    duration_ms: durationMs,\n    target_duration_ms: targetDurationMs,\n    duration_tolerance_ms: durationToleranceMs,\n    duration_within_target: durationWithinTarget,\n    sample_rate: sampleRate,\n    channels,\n    codec,\n    tts_consumed: true,\n    error_message: storeSuccess ? '' : String(errorMessage).slice(0, 3000),\n  },\n};"
+      },
+      "id": "video-m6-normalize-store-retry-4",
+      "name": "Normalize Stored Voiceover Retry 4",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11340,
+        -260
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-store-retry-4-condition",
+              "leftValue": "={{ $json.store_success }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-store-retry-4",
+      "name": "Route Storage Success Retry 4",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        11580,
+        -260
       ]
     }
   ],
@@ -393,7 +1596,7 @@
       "main": [
         [
           {
-            "node": "Store Voiceover",
+            "node": "Measure TTS Candidate 1",
             "type": "main",
             "index": 0
           }
@@ -493,6 +1696,790 @@
         [
           {
             "node": "Raise Voiceover Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Measure TTS Candidate 1": {
+      "main": [
+        [
+          {
+            "node": "Normalize TTS Candidate 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize TTS Candidate 1": {
+      "main": [
+        [
+          {
+            "node": "Route TTS Candidate 1 Duration",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route TTS Candidate 1 Duration": {
+      "main": [
+        [
+          {
+            "node": "Store Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare TTS Retry": {
+      "main": [
+        [
+          {
+            "node": "Reserve TTS Retry Usage",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reserve TTS Retry Usage": {
+      "main": [
+        [
+          {
+            "node": "Google Cloud TTS Retry",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Cloud TTS Retry": {
+      "main": [
+        [
+          {
+            "node": "Normalize TTS Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize TTS Retry": {
+      "main": [
+        [
+          {
+            "node": "Route TTS Retry Consumed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Release TTS Retry Usage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route TTS Retry Consumed": {
+      "main": [
+        [
+          {
+            "node": "Commit TTS Retry Usage",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Release TTS Retry Usage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit TTS Retry Usage": {
+      "main": [
+        [
+          {
+            "node": "Route TTS Retry Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Release TTS Retry Usage": {
+      "main": [
+        [
+          {
+            "node": "Prepare TTS Retry Failure",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route TTS Retry Success": {
+      "main": [
+        [
+          {
+            "node": "Measure TTS Candidate 2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare TTS Retry Failure": {
+      "main": [
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Measure TTS Candidate 2": {
+      "main": [
+        [
+          {
+            "node": "Normalize TTS Candidate 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize TTS Candidate 2": {
+      "main": [
+        [
+          {
+            "node": "Route TTS Candidate 2 Duration",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route TTS Candidate 2 Duration": {
+      "main": [
+        [
+          {
+            "node": "Store Voiceover Retry",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare TTS Retry Duration Failure": {
+      "main": [
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Voiceover Retry": {
+      "main": [
+        [
+          {
+            "node": "Normalize Stored Voiceover Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Stored Voiceover Retry": {
+      "main": [
+        [
+          {
+            "node": "Route Storage Success Retry",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Storage Success Retry": {
+      "main": [
+        [
+          {
+            "node": "Complete Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare TTS Retry 3": {
+      "main": [
+        [
+          {
+            "node": "Reserve TTS Retry Usage 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reserve TTS Retry Usage 3": {
+      "main": [
+        [
+          {
+            "node": "Google Cloud TTS Retry 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Cloud TTS Retry 3": {
+      "main": [
+        [
+          {
+            "node": "Normalize TTS Retry 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize TTS Retry 3": {
+      "main": [
+        [
+          {
+            "node": "Route TTS Retry Consumed 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Release TTS Retry Usage 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route TTS Retry Consumed 3": {
+      "main": [
+        [
+          {
+            "node": "Commit TTS Retry Usage 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Release TTS Retry Usage 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit TTS Retry Usage 3": {
+      "main": [
+        [
+          {
+            "node": "Route TTS Retry Success 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Release TTS Retry Usage 3": {
+      "main": [
+        [
+          {
+            "node": "Prepare TTS Retry Failure 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry Failure 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route TTS Retry Success 3": {
+      "main": [
+        [
+          {
+            "node": "Measure TTS Candidate 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry Failure 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare TTS Retry Failure 3": {
+      "main": [
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Measure TTS Candidate 3": {
+      "main": [
+        [
+          {
+            "node": "Normalize TTS Candidate 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize TTS Candidate 3": {
+      "main": [
+        [
+          {
+            "node": "Route TTS Candidate 3 Duration",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route TTS Candidate 3 Duration": {
+      "main": [
+        [
+          {
+            "node": "Store Voiceover Retry 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Voiceover Retry 3": {
+      "main": [
+        [
+          {
+            "node": "Normalize Stored Voiceover Retry 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Stored Voiceover Retry 3": {
+      "main": [
+        [
+          {
+            "node": "Route Storage Success Retry 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Storage Success Retry 3": {
+      "main": [
+        [
+          {
+            "node": "Complete Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare TTS Retry 4": {
+      "main": [
+        [
+          {
+            "node": "Reserve TTS Retry Usage 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reserve TTS Retry Usage 4": {
+      "main": [
+        [
+          {
+            "node": "Google Cloud TTS Retry 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Cloud TTS Retry 4": {
+      "main": [
+        [
+          {
+            "node": "Normalize TTS Retry 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize TTS Retry 4": {
+      "main": [
+        [
+          {
+            "node": "Route TTS Retry Consumed 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Release TTS Retry Usage 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route TTS Retry Consumed 4": {
+      "main": [
+        [
+          {
+            "node": "Commit TTS Retry Usage 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Release TTS Retry Usage 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit TTS Retry Usage 4": {
+      "main": [
+        [
+          {
+            "node": "Route TTS Retry Success 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Release TTS Retry Usage 4": {
+      "main": [
+        [
+          {
+            "node": "Prepare TTS Retry Failure 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry Failure 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route TTS Retry Success 4": {
+      "main": [
+        [
+          {
+            "node": "Measure TTS Candidate 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry Failure 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare TTS Retry Failure 4": {
+      "main": [
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Measure TTS Candidate 4": {
+      "main": [
+        [
+          {
+            "node": "Normalize TTS Candidate 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize TTS Candidate 4": {
+      "main": [
+        [
+          {
+            "node": "Route TTS Candidate 4 Duration",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry Duration Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route TTS Candidate 4 Duration": {
+      "main": [
+        [
+          {
+            "node": "Store Voiceover Retry 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare TTS Retry Duration Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Voiceover Retry 4": {
+      "main": [
+        [
+          {
+            "node": "Normalize Stored Voiceover Retry 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Stored Voiceover Retry 4": {
+      "main": [
+        [
+          {
+            "node": "Route Storage Success Retry 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Storage Success Retry 4": {
+      "main": [
+        [
+          {
+            "node": "Complete Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
             "type": "main",
             "index": 0
           }

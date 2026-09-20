@@ -155,7 +155,7 @@ Selected CPU-compatible dependency:
 - official `ggml-org/whisper.cpp` CPU image;
 - pinned image digest: `sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11`;
 - multilingual `ggml-base.bin`;
-- model SHA256: `60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe`.
+- model SHA256: `1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b`.
 
 Observed on the exact Cloud TTS MP3s:
 - EN transcript exact after normalization; lexical timestamps end at 2360 ms within 2424 ms audio;

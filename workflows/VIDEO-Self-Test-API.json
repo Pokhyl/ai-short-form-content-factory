@@ -1,0 +1,989 @@
+{
+  "id": "VideoSelfTestApi001",
+  "name": "VIDEO — Self Test API",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "factory/run",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "self-run-webhook",
+      "name": "POST /factory/run",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "0fb311ce-fce4-464b-bc95-5819ab30984d"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const body=$json.body||{};\nconst jobId=String(body.job_id||'').trim();\nif(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(jobId)){\n  throw new Error('invalid_job_id');\n}\nreturn {json:{job_id:jobId}};"
+      },
+      "id": "self-validate-run",
+      "name": "Validate Run Job",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT q.job_id::text AS job_id,\n       COALESCE(j.status,'not_found') AS status,\n       (j.status='created') AS runnable\nFROM (SELECT $1::uuid AS job_id) q\nLEFT JOIN factory.jobs j ON j.id=q.job_id;",
+        "options": {
+          "queryReplacement": "={{ [ $json.job_id ] }}"
+        }
+      },
+      "id": "self-check-run",
+      "name": "Check Runnable Job",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        440,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "self-runnable",
+              "leftValue": "={{ $json.runnable }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "self-route-run",
+      "name": "Route Runnable Job",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {json:{job_id:String($json.job_id),accepted:true,status:'processing'}};"
+      },
+      "id": "self-build-202",
+      "name": "Build 202 Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "self-respond-202",
+      "name": "Respond 202",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1100,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {json:{error:'job_not_runnable',job_id:String($json.job_id||''),status:String($json.status||'unknown')}};"
+      },
+      "id": "self-build-409",
+      "name": "Build 409 Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {
+          "responseCode": 409
+        }
+      },
+      "id": "self-respond-409",
+      "name": "Respond 409",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1100,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "VideoM4Research001",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VideoM4Research001",
+          "cachedResultName": "VIDEO — M4 Research"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "job_id": "={{ $('Build 202 Response').first().json.job_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "job_id",
+              "displayName": "job_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "self-run-stage-1",
+      "name": "Run M4",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1340,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "VideoM5Storyboard001",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VideoM5Storyboard001",
+          "cachedResultName": "VIDEO — M5 Script + Storyboard"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "job_id": "={{ $('Build 202 Response').first().json.job_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "job_id",
+              "displayName": "job_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "self-run-stage-2",
+      "name": "Run M5",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1580,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "VideoM6Voiceover001",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VideoM6Voiceover001",
+          "cachedResultName": "VIDEO — M6 One Final Voiceover"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "job_id": "={{ $('Build 202 Response').first().json.job_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "job_id",
+              "displayName": "job_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "self-run-stage-3",
+      "name": "Run M6",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1820,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "VideoM7Alignment001",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VideoM7Alignment001",
+          "cachedResultName": "VIDEO — M7 Local Alignment"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "job_id": "={{ $('Build 202 Response').first().json.job_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "job_id",
+              "displayName": "job_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "self-run-stage-4",
+      "name": "Run M7",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        2060,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "VideoM8Visuals001",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VideoM8Visuals001",
+          "cachedResultName": "VIDEO — M8 Multi-Source Visuals"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "job_id": "={{ $('Build 202 Response').first().json.job_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "job_id",
+              "displayName": "job_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "self-run-stage-5",
+      "name": "Run M8",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        2300,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "VideoM9RenderQa001",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VideoM9RenderQa001",
+          "cachedResultName": "VIDEO — M9 Render + Machine QA"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "job_id": "={{ $('Build 202 Response').first().json.job_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "job_id",
+              "displayName": "job_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "self-run-stage-6",
+      "name": "Run M9",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        2540,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "factory/status",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "self-status-webhook",
+      "name": "GET /factory/status",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        520
+      ],
+      "webhookId": "7c5845de-00d3-4e0e-a30c-a37bcb6899e5"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const jobId=String($json.query?.job_id||'').trim();\nif(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(jobId)){\n  throw new Error('invalid_job_id');\n}\nreturn {json:{job_id:jobId}};"
+      },
+      "id": "self-validate-status",
+      "name": "Validate Status Job",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT q.job_id::text AS job_id,\n       COALESCE(j.status,'not_found') AS status,\n       j.topic,\n       j.language_code AS language,\n       j.target_duration_seconds AS duration,\n       (j.status='machine_qa_passed') AS ready,\n       CASE WHEN j.status='machine_qa_passed'\n            THEN '/webhook/factory/review?job_id=' || j.id::text\n            ELSE NULL\n       END AS review_path\nFROM (SELECT $1::uuid AS job_id) q\nLEFT JOIN factory.jobs j ON j.id=q.job_id;",
+        "options": {
+          "queryReplacement": "={{ [ $json.job_id ] }}"
+        }
+      },
+      "id": "self-load-status",
+      "name": "Load Job Status",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        440,
+        520
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Cache-Control",
+                "value": "no-store"
+              }
+            ]
+          }
+        }
+      },
+      "id": "self-respond-status",
+      "name": "Respond Status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        660,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "factory/review",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "self-review-webhook",
+      "name": "GET /factory/review",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        940
+      ],
+      "webhookId": "c6ed48c8-36c5-4f69-bfa1-93a6333f5f23"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const jobId=String($json.query?.job_id||'').trim();\nif(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(jobId)){\n  throw new Error('invalid_job_id');\n}\nreturn {json:{job_id:jobId}};"
+      },
+      "id": "self-validate-review",
+      "name": "Validate Review Job",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT q.job_id::text AS job_id,\n       COALESCE(j.status,'not_found') AS status,\n       (j.status='machine_qa_passed') AS allowed\nFROM (SELECT $1::uuid AS job_id) q\nLEFT JOIN factory.jobs j ON j.id=q.job_id;",
+        "options": {
+          "queryReplacement": "={{ [ $json.job_id ] }}"
+        }
+      },
+      "id": "self-check-review",
+      "name": "Check Review Ready",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        440,
+        940
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "self-review-ready",
+              "leftValue": "={{ $json.allowed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "self-route-review",
+      "name": "Route Review Ready",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        660,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'http://shorts-v2-media-worker-1:3001/renders/' + $json.job_id + '/file' }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "self-load-review",
+      "name": "Load Review MP4",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        880,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "binary",
+        "responseDataSource": "set",
+        "inputFieldName": "data",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "video/mp4"
+              },
+              {
+                "name": "Content-Disposition",
+                "value": "inline; filename=\"factory-review.mp4\""
+              },
+              {
+                "name": "Cache-Control",
+                "value": "no-store"
+              }
+            ]
+          }
+        }
+      },
+      "id": "self-respond-review",
+      "name": "Respond Review MP4",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1100,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {json:{error:'review_not_ready',job_id:String($json.job_id||''),status:String($json.status||'unknown')}};"
+      },
+      "id": "self-build-review-409",
+      "name": "Build Review 409",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        1060
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {
+          "responseCode": 409,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Cache-Control",
+                "value": "no-store"
+              }
+            ]
+          }
+        }
+      },
+      "id": "self-respond-review-409",
+      "name": "Respond Review 409",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1100,
+        1060
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "factory/latest",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "self-latest-webhook",
+      "name": "GET /factory/latest",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        1360
+      ],
+      "webhookId": "fc45b2b9-fb6c-4140-9565-9433dd47fc37"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT j.id::text AS job_id,\n       j.status,\n       j.topic,\n       j.language_code AS language,\n       j.target_duration_seconds AS duration,\n       (j.status='machine_qa_passed') AS ready,\n       CASE WHEN j.status='machine_qa_passed'\n            THEN '/webhook/factory/review?job_id=' || j.id::text\n            ELSE NULL\n       END AS review_path,\n       j.created_at,\n       j.updated_at\nFROM factory.jobs j\nORDER BY j.created_at DESC\nLIMIT 1;",
+        "options": {}
+      },
+      "id": "self-load-latest",
+      "name": "Load Latest Job",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        220,
+        1360
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Cache-Control",
+                "value": "no-store"
+              }
+            ]
+          }
+        }
+      },
+      "id": "self-respond-latest",
+      "name": "Respond Latest Job",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        440,
+        1360
+      ]
+    }
+  ],
+  "connections": {
+    "POST /factory/run": {
+      "main": [
+        [
+          {
+            "node": "Validate Run Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Run Job": {
+      "main": [
+        [
+          {
+            "node": "Check Runnable Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Runnable Job": {
+      "main": [
+        [
+          {
+            "node": "Route Runnable Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Runnable Job": {
+      "main": [
+        [
+          {
+            "node": "Build 202 Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build 409 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build 202 Response": {
+      "main": [
+        [
+          {
+            "node": "Respond 202",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond 202": {
+      "main": [
+        [
+          {
+            "node": "Run M4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build 409 Response": {
+      "main": [
+        [
+          {
+            "node": "Respond 409",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Status Job": {
+      "main": [
+        [
+          {
+            "node": "Load Job Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Job Status": {
+      "main": [
+        [
+          {
+            "node": "Respond Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Review Job": {
+      "main": [
+        [
+          {
+            "node": "Check Review Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Review Ready": {
+      "main": [
+        [
+          {
+            "node": "Route Review Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Review Ready": {
+      "main": [
+        [
+          {
+            "node": "Load Review MP4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Review 409",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Review MP4": {
+      "main": [
+        [
+          {
+            "node": "Respond Review MP4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Review 409": {
+      "main": [
+        [
+          {
+            "node": "Respond Review 409",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run M4": {
+      "main": [
+        [
+          {
+            "node": "Run M5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run M5": {
+      "main": [
+        [
+          {
+            "node": "Run M6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run M6": {
+      "main": [
+        [
+          {
+            "node": "Run M7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run M7": {
+      "main": [
+        [
+          {
+            "node": "Run M8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run M8": {
+      "main": [
+        [
+          {
+            "node": "Run M9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /factory/status": {
+      "main": [
+        [
+          {
+            "node": "Validate Status Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /factory/review": {
+      "main": [
+        [
+          {
+            "node": "Validate Review Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /factory/latest": {
+      "main": [
+        [
+          {
+            "node": "Load Latest Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Latest Job": {
+      "main": [
+        [
+          {
+            "node": "Respond Latest Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

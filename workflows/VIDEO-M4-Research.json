@@ -48,7 +48,7 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const row = $input.first().json;\nconst topic = String(row.topic ?? '').trim();\nconst languageCode = String(row.language_code ?? '').trim();\nconst researchRunId = String(row.research_run_id ?? '').trim();\n\nif (!researchRunId || !topic || !['en','pl','ru','uk'].includes(languageCode)) {\n  throw new Error('begin_research returned invalid context');\n}\n\nconst queries = [\n  {\n    query_kind: 'english_primary',\n    search_query: topic,\n    search_language: 'en',\n  },\n  {\n    query_kind: 'english_context',\n    search_query: topic + ' explained facts',\n    search_language: 'en',\n  },\n];\n\nif (languageCode !== 'en') {\n  queries.push({\n    query_kind: 'local_primary',\n    search_query: topic,\n    search_language: languageCode,\n  });\n}\n\nreturn queries.map((q, index) => ({\n  json: {\n    research_run_id: researchRunId,\n    topic,\n    language_code: languageCode,\n    query_index: index + 1,\n    ...q,\n  },\n}));"
+        "jsCode": "const row = $input.first().json;\nconst topic = String(row.topic ?? '').trim();\nconst languageCode = String(row.language_code ?? '').trim();\nconst researchRunId = String(row.research_run_id ?? '').trim();\n\nif (!researchRunId || !topic || !['en','pl','ru','uk'].includes(languageCode)) {\n  throw new Error('begin_research returned invalid context');\n}\n\nconst contextSuffix = {\n  en: 'explained facts',\n  pl: 'wyjaśnienie fakty',\n  ru: 'объяснение факты',\n  uk: 'пояснення факти',\n}[languageCode];\n\nconst enginePool = ['yahoo','seznam'];\nconst compactRunId = researchRunId.replace(/-/g,'');\nconst seed = Number.parseInt(compactRunId.slice(0,2),16);\nconst engineOffset = Number.isFinite(seed) ? seed % enginePool.length : 0;\n\nconst queries = [\n  {\n    query_kind: 'primary_local',\n    search_query: topic,\n    search_language: languageCode,\n  },\n  {\n    query_kind: 'context_local',\n    search_query: topic + ' ' + contextSuffix,\n    search_language: languageCode,\n  },\n  {\n    query_kind: 'cross_language',\n    search_query: topic,\n    search_language: 'all',\n  },\n];\n\nreturn queries.map((q, index) => ({\n  json: {\n    research_run_id: researchRunId,\n    topic,\n    language_code: languageCode,\n    query_index: index + 1,\n    search_engine: enginePool[(engineOffset + index) % enginePool.length],\n    retry_1_engine: enginePool[(engineOffset + index + 1) % enginePool.length],\n    retry_2_engine: enginePool[(engineOffset + index + 2) % enginePool.length],\n    ...q,\n  },\n}));"
       },
       "id": "video-m4-queries",
       "name": "Build Search Queries",
@@ -79,17 +79,23 @@
               "value": "={{ $json.search_language }}"
             },
             {
-              "name": "categories",
-              "value": "general"
-            },
-            {
               "name": "safesearch",
               "value": "1"
+            },
+            {
+              "name": "engines",
+              "value": "={{ $json.search_engine }}"
             }
           ]
         },
         "options": {
-          "timeout": 60000
+          "timeout": 60000,
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 5000
+            }
+          }
         }
       },
       "id": "video-m4-search",
@@ -371,6 +377,258 @@
         2880,
         240
       ]
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "video-m4-wait-search-retry-1",
+      "name": "Wait Search Retry 1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const queries = $('Build Search Queries').all().map((item) => item.json);\nif (!queries.length) throw new Error('M4 retry 1 query context missing');\nreturn queries.map((query) => ({\n  json: {\n    ...query,\n    search_engine: String(query.retry_1_engine ?? query.search_engine ?? 'yahoo'),\n  },\n}));"
+      },
+      "id": "video-m4-rebuild-search-retry-1",
+      "name": "Rebuild Search Queries Retry 1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        220
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "http://shorts-v2-searxng-1:8080/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.search_query }}"
+            },
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "language",
+              "value": "={{ $json.search_language }}"
+            },
+            {
+              "name": "safesearch",
+              "value": "1"
+            },
+            {
+              "name": "engines",
+              "value": "={{ $json.search_engine }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000,
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 5000
+            }
+          }
+        }
+      },
+      "id": "video-m4-search-retry-1",
+      "name": "Search Web Retry 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1760,
+        220
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const responses = $input.all().map((item) => item.json);\nconst queryInputs = $('Rebuild Search Queries Retry 1').all().map((item) => item.json);\n\nconst denyDomains = new Set([\n  'facebook.com','instagram.com','tiktok.com','x.com','twitter.com',\n  'pinterest.com','reddit.com','youtube.com','youtu.be'\n]);\n\nfunction canonicalize(result) {\n  const raw = String(result?.url ?? '').trim();\n  const parsed = Array.isArray(result?.parsed_url) ? result.parsed_url : [];\n\n  let scheme = String(parsed[0] ?? '').trim().toLowerCase();\n  let authority = String(parsed[1] ?? '').trim();\n  let path = String(parsed[2] ?? '').trim();\n  let query = String(parsed[4] ?? '').trim();\n\n  if (!scheme || !authority) {\n    const match = raw.match(/^(https?):\\/\\/([^\\/?#]+)([^?#]*)(?:\\?([^#]*))?/i);\n    if (!match) return null;\n    scheme = String(match[1] ?? '').toLowerCase();\n    authority = String(match[2] ?? '');\n    path = String(match[3] ?? '');\n    query = String(match[4] ?? '');\n  }\n\n  if (!['http','https'].includes(scheme)) return null;\n\n  const authorityNoUser = authority.split('@').pop() ?? '';\n  const host = authorityNoUser\n    .replace(/:\\d+$/, '')\n    .replace(/^www\\./i, '')\n    .toLowerCase();\n\n  if (!host || host === 'localhost' || host.endsWith('.local')) return null;\n  if (/^(127\\.|10\\.|192\\.168\\.|169\\.254\\.)/.test(host)) return null;\n  const private172 = host.match(/^172\\.(\\d+)\\./);\n  if (\n    private172 &&\n    Number(private172[1]) >= 16 &&\n    Number(private172[1]) <= 31\n  ) return null;\n  if (host === '::1' || host === '0.0.0.0') return null;\n\n  if ([...denyDomains].some((d) => host === d || host.endsWith('.' + d))) {\n    return null;\n  }\n\n  if (/\\.(pdf|jpe?g|png|gif|webp|svg|mp4|mov|avi|zip|gz)$/i.test(path)) {\n    return null;\n  }\n\n  path = path || '/';\n  if (path !== '/') path = path.replace(/\\/+$/, '');\n\n  const cleanQueryParts = query\n    ? query\n        .split('&')\n        .filter(Boolean)\n        .filter((part) => {\n          const rawKey = part.split('=', 1)[0] ?? '';\n          let key = rawKey;\n          try { key = decodeURIComponent(rawKey); } catch {}\n          key = key.toLowerCase();\n          return !(\n            key.startsWith('utm_') ||\n            ['fbclid','gclid','dclid','msclkid'].includes(key)\n          );\n        })\n        .sort()\n    : [];\n\n  const normalizedAuthority = authority.toLowerCase();\n  const canonical =\n    scheme + '://' + normalizedAuthority + path +\n    (cleanQueryParts.length ? '?' + cleanQueryParts.join('&') : '');\n\n  return {\n    canonical_url: canonical,\n    source_domain: host,\n  };\n}\n\nfunction cleanSnippet(value) {\n  return String(value ?? '')\n    .replace(/<[^>]+>/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim()\n    .slice(0, 2000);\n}\n\nconst raw = [];\nfor (let responseIndex = 0; responseIndex < responses.length; responseIndex += 1) {\n  const response = responses[responseIndex] ?? {};\n  const q = queryInputs[responseIndex] ?? {};\n  const results = Array.isArray(response.results) ? response.results : [];\n\n  for (let resultIndex = 0; resultIndex < Math.min(results.length, 12); resultIndex += 1) {\n    const result = results[resultIndex] ?? {};\n    const normalized = canonicalize(result);\n    if (!normalized) continue;\n\n    raw.push({\n      research_run_id: q.research_run_id,\n      search_query: q.search_query,\n      query_kind: q.query_kind,\n      query_index: Number(q.query_index ?? responseIndex + 1),\n      search_rank: resultIndex + 1,\n      search_engines: Array.isArray(result.engines) ? result.engines : [],\n      source_url: String(result.url ?? '').trim(),\n      canonical_url: normalized.canonical_url,\n      source_domain: normalized.source_domain,\n      title: String(result.title ?? normalized.source_domain).trim().slice(0, 1000),\n      snippet: cleanSnippet(result.content ?? result.snippet),\n    });\n  }\n}\n\nconst seenUrl = new Set();\nconst selected = [];\nconst domainCount = new Map();\n\nfunction add(candidate, maxPerDomain) {\n  if (!candidate || selected.length >= 10) return;\n  if (seenUrl.has(candidate.canonical_url)) return;\n  const used = domainCount.get(candidate.source_domain) ?? 0;\n  if (used >= maxPerDomain) return;\n  seenUrl.add(candidate.canonical_url);\n  domainCount.set(candidate.source_domain, used + 1);\n  selected.push(candidate);\n}\n\nraw.forEach((candidate) => add(candidate, 1));\nif (selected.length < 10) {\n  raw.forEach((candidate) => add(candidate, 2));\n}\n\nif (selected.length === 0) {\n  const ctx = queryInputs[0] ?? {};\n  return [{\n    json: {\n      research_run_id: ctx.research_run_id,\n      candidate_valid: false,\n      reason: 'no_fetch_candidates',\n    },\n  }];\n}\n\nreturn selected.map((candidate) => ({\n  json: {\n    ...candidate,\n    candidate_valid: true,\n  },\n}));"
+      },
+      "id": "video-m4-build-fetch-retry-1",
+      "name": "Build Fetch Candidates Retry 1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        220
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m4-fetchable-retry-1-condition",
+              "leftValue": "={{ $json.candidate_valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m4-route-fetch-retry-1",
+      "name": "Route Fetch Candidates Retry 1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2200,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 90,
+        "unit": "seconds"
+      },
+      "id": "video-m4-wait-search-retry-2",
+      "name": "Wait Search Retry 2",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2420,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const queries = $('Build Search Queries').all().map((item) => item.json);\nif (!queries.length) throw new Error('M4 retry 2 query context missing');\nreturn queries.map((query) => ({\n  json: {\n    ...query,\n    search_engine: String(query.retry_2_engine ?? query.search_engine ?? 'seznam'),\n  },\n}));"
+      },
+      "id": "video-m4-rebuild-search-retry-2",
+      "name": "Rebuild Search Queries Retry 2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        340
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "http://shorts-v2-searxng-1:8080/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.search_query }}"
+            },
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "language",
+              "value": "={{ $json.search_language }}"
+            },
+            {
+              "name": "safesearch",
+              "value": "1"
+            },
+            {
+              "name": "engines",
+              "value": "={{ $json.search_engine }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000,
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 5000
+            }
+          }
+        }
+      },
+      "id": "video-m4-search-retry-2",
+      "name": "Search Web Retry 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2860,
+        340
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const responses = $input.all().map((item) => item.json);\nconst queryInputs = $('Rebuild Search Queries Retry 2').all().map((item) => item.json);\n\nconst denyDomains = new Set([\n  'facebook.com','instagram.com','tiktok.com','x.com','twitter.com',\n  'pinterest.com','reddit.com','youtube.com','youtu.be'\n]);\n\nfunction canonicalize(result) {\n  const raw = String(result?.url ?? '').trim();\n  const parsed = Array.isArray(result?.parsed_url) ? result.parsed_url : [];\n\n  let scheme = String(parsed[0] ?? '').trim().toLowerCase();\n  let authority = String(parsed[1] ?? '').trim();\n  let path = String(parsed[2] ?? '').trim();\n  let query = String(parsed[4] ?? '').trim();\n\n  if (!scheme || !authority) {\n    const match = raw.match(/^(https?):\\/\\/([^\\/?#]+)([^?#]*)(?:\\?([^#]*))?/i);\n    if (!match) return null;\n    scheme = String(match[1] ?? '').toLowerCase();\n    authority = String(match[2] ?? '');\n    path = String(match[3] ?? '');\n    query = String(match[4] ?? '');\n  }\n\n  if (!['http','https'].includes(scheme)) return null;\n\n  const authorityNoUser = authority.split('@').pop() ?? '';\n  const host = authorityNoUser\n    .replace(/:\\d+$/, '')\n    .replace(/^www\\./i, '')\n    .toLowerCase();\n\n  if (!host || host === 'localhost' || host.endsWith('.local')) return null;\n  if (/^(127\\.|10\\.|192\\.168\\.|169\\.254\\.)/.test(host)) return null;\n  const private172 = host.match(/^172\\.(\\d+)\\./);\n  if (\n    private172 &&\n    Number(private172[1]) >= 16 &&\n    Number(private172[1]) <= 31\n  ) return null;\n  if (host === '::1' || host === '0.0.0.0') return null;\n\n  if ([...denyDomains].some((d) => host === d || host.endsWith('.' + d))) {\n    return null;\n  }\n\n  if (/\\.(pdf|jpe?g|png|gif|webp|svg|mp4|mov|avi|zip|gz)$/i.test(path)) {\n    return null;\n  }\n\n  path = path || '/';\n  if (path !== '/') path = path.replace(/\\/+$/, '');\n\n  const cleanQueryParts = query\n    ? query\n        .split('&')\n        .filter(Boolean)\n        .filter((part) => {\n          const rawKey = part.split('=', 1)[0] ?? '';\n          let key = rawKey;\n          try { key = decodeURIComponent(rawKey); } catch {}\n          key = key.toLowerCase();\n          return !(\n            key.startsWith('utm_') ||\n            ['fbclid','gclid','dclid','msclkid'].includes(key)\n          );\n        })\n        .sort()\n    : [];\n\n  const normalizedAuthority = authority.toLowerCase();\n  const canonical =\n    scheme + '://' + normalizedAuthority + path +\n    (cleanQueryParts.length ? '?' + cleanQueryParts.join('&') : '');\n\n  return {\n    canonical_url: canonical,\n    source_domain: host,\n  };\n}\n\nfunction cleanSnippet(value) {\n  return String(value ?? '')\n    .replace(/<[^>]+>/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim()\n    .slice(0, 2000);\n}\n\nconst raw = [];\nfor (let responseIndex = 0; responseIndex < responses.length; responseIndex += 1) {\n  const response = responses[responseIndex] ?? {};\n  const q = queryInputs[responseIndex] ?? {};\n  const results = Array.isArray(response.results) ? response.results : [];\n\n  for (let resultIndex = 0; resultIndex < Math.min(results.length, 12); resultIndex += 1) {\n    const result = results[resultIndex] ?? {};\n    const normalized = canonicalize(result);\n    if (!normalized) continue;\n\n    raw.push({\n      research_run_id: q.research_run_id,\n      search_query: q.search_query,\n      query_kind: q.query_kind,\n      query_index: Number(q.query_index ?? responseIndex + 1),\n      search_rank: resultIndex + 1,\n      search_engines: Array.isArray(result.engines) ? result.engines : [],\n      source_url: String(result.url ?? '').trim(),\n      canonical_url: normalized.canonical_url,\n      source_domain: normalized.source_domain,\n      title: String(result.title ?? normalized.source_domain).trim().slice(0, 1000),\n      snippet: cleanSnippet(result.content ?? result.snippet),\n    });\n  }\n}\n\nconst seenUrl = new Set();\nconst selected = [];\nconst domainCount = new Map();\n\nfunction add(candidate, maxPerDomain) {\n  if (!candidate || selected.length >= 10) return;\n  if (seenUrl.has(candidate.canonical_url)) return;\n  const used = domainCount.get(candidate.source_domain) ?? 0;\n  if (used >= maxPerDomain) return;\n  seenUrl.add(candidate.canonical_url);\n  domainCount.set(candidate.source_domain, used + 1);\n  selected.push(candidate);\n}\n\nraw.forEach((candidate) => add(candidate, 1));\nif (selected.length < 10) {\n  raw.forEach((candidate) => add(candidate, 2));\n}\n\nif (selected.length === 0) {\n  const ctx = queryInputs[0] ?? {};\n  return [{\n    json: {\n      research_run_id: ctx.research_run_id,\n      candidate_valid: false,\n      reason: 'no_fetch_candidates',\n    },\n  }];\n}\n\nreturn selected.map((candidate) => ({\n  json: {\n    ...candidate,\n    candidate_valid: true,\n  },\n}));"
+      },
+      "id": "video-m4-build-fetch-retry-2",
+      "name": "Build Fetch Candidates Retry 2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3080,
+        340
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m4-fetchable-retry-2-condition",
+              "leftValue": "={{ $json.candidate_valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m4-route-fetch-retry-2",
+      "name": "Route Fetch Candidates Retry 2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3300,
+        340
+      ]
     }
   ],
   "connections": {
@@ -454,7 +712,7 @@
         ],
         [
           {
-            "node": "Finalize Research",
+            "node": "Wait Search Retry 1",
             "type": "main",
             "index": 0
           }
@@ -583,6 +841,158 @@
         [
           {
             "node": "Raise Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Search Retry 1": {
+      "main": [
+        [
+          {
+            "node": "Rebuild Search Queries Retry 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rebuild Search Queries Retry 1": {
+      "main": [
+        [
+          {
+            "node": "Search Web Retry 1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Web Retry 1": {
+      "main": [
+        [
+          {
+            "node": "Build Fetch Candidates Retry 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Fetch Candidates Retry 1": {
+      "main": [
+        [
+          {
+            "node": "Route Fetch Candidates Retry 1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Fetch Candidates Retry 1": {
+      "main": [
+        [
+          {
+            "node": "Fetch Source Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait Search Retry 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Search Retry 2": {
+      "main": [
+        [
+          {
+            "node": "Rebuild Search Queries Retry 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rebuild Search Queries Retry 2": {
+      "main": [
+        [
+          {
+            "node": "Search Web Retry 2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Web Retry 2": {
+      "main": [
+        [
+          {
+            "node": "Build Fetch Candidates Retry 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Fetch Candidates Retry 2": {
+      "main": [
+        [
+          {
+            "node": "Route Fetch Candidates Retry 2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Fetch Candidates Retry 2": {
+      "main": [
+        [
+          {
+            "node": "Fetch Source Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Finalize Research",
             "type": "main",
             "index": 0
           }

@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Short Form Content Factory</title>
+<style>
+:root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+* { box-sizing: border-box; }
+body { margin:0; background:#0b1020; color:#eef2ff; min-height:100vh; }
+main { width:min(760px, calc(100% - 32px)); margin:48px auto; }
+.card { background:#11182b; border:1px solid #26314f; border-radius:18px; padding:24px; box-shadow:0 16px 50px rgba(0,0,0,.28); }
+h1 { margin:0 0 8px; font-size:28px; }
+p { color:#aab5d1; line-height:1.5; }
+label { display:block; margin:18px 0 7px; font-weight:600; }
+textarea, select { width:100%; border:1px solid #33415f; background:#0d1426; color:#eef2ff; border-radius:10px; padding:12px; font:inherit; }
+textarea { min-height:110px; resize:vertical; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+button { margin-top:22px; border:0; border-radius:10px; padding:12px 18px; font:inherit; font-weight:700; background:#e7ecff; color:#0b1020; cursor:pointer; }
+button[disabled] { opacity:.55; cursor:not-allowed; }
+.status { margin-top:22px; padding:14px; border-radius:10px; background:#0d1426; border:1px solid #26314f; white-space:pre-wrap; }
+video { width:100%; max-height:78vh; margin-top:20px; border-radius:14px; background:black; display:none; }
+.small { font-size:13px; color:#8490ad; overflow-wrap:anywhere; }
+.error { color:#ffb4b4; }
+.ok { color:#b6f5c5; }
+@media (max-width:620px) { .grid { grid-template-columns:1fr; } main { margin:24px auto; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <h1>Create test video</h1>
+    <p>Creates a new M3→M9 test job. Nothing is published to TikTok. HUMAN PASS remains manual.</p>
+
+    <form id="form">
+      <label for="topic">Topic</label>
+      <textarea id="topic" maxlength="500" required placeholder="Example: Why do leaves change color in autumn?"></textarea>
+
+      <div class="grid">
+        <div>
+          <label for="language">Language</label>
+          <select id="language">
+            <option value="en">English</option>
+            <option value="pl">Polski</option>
+            <option value="ru">Русский</option>
+            <option value="uk">Українська</option>
+          </select>
+        </div>
+        <div>
+          <label for="duration">Duration</label>
+          <select id="duration">
+            <option value="15">15 s</option>
+            <option value="30" selected>30 s</option>
+            <option value="45">45 s</option>
+            <option value="60">60 s</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="submit" type="submit">Create video</button>
+    </form>
+
+    <div id="status" class="status">Ready.</div>
+    <div id="job" class="small"></div>
+    <video id="video" controls playsinline></video>
+  </div>
+</main>
+<script>
+const form = document.getElementById('form');
+const submit = document.getElementById('submit');
+const statusBox = document.getElementById('status');
+const jobBox = document.getElementById('job');
+const video = document.getElementById('video');
+let timer = null;
+
+function setStatus(text, cls='') {
+  statusBox.className = 'status ' + cls;
+  statusBox.textContent = text;
+}
+
+async function jsonFetch(url, options={}) {
+  const res = await fetch(url, options);
+  let data = null;
+  try { data = await res.json(); } catch (_) {}
+  if (!res.ok) {
+    const detail = data ? JSON.stringify(data) : ('HTTP ' + res.status);
+    throw new Error(detail);
+  }
+  return data;
+}
+
+async function poll(jobId) {
+  try {
+    const data = await jsonFetch('/webhook/factory/status?job_id=' + encodeURIComponent(jobId), {cache:'no-store'});
+    const state = String(data.status || 'unknown');
+    setStatus('Status: ' + state + (data.ready ? '\nVideo is ready for review.' : '\nProcessing…'), data.ready ? 'ok' : '');
+    if (data.ready && data.review_path) {
+      clearInterval(timer);
+      timer = null;
+      submit.disabled = false;
+      video.src = data.review_path + '?t=' + Date.now();
+      video.style.display = 'block';
+      video.load();
+    } else if (state === 'not_found' || /failed|error/i.test(state)) {
+      clearInterval(timer);
+      timer = null;
+      submit.disabled = false;
+      setStatus('Status: ' + state, 'error');
+    }
+  } catch (err) {
+    setStatus('Status check failed: ' + err.message, 'error');
+  }
+}
+
+async function loadLatestJob() {
+  try {
+    const data = await jsonFetch('/webhook/factory/latest', {cache:'no-store'});
+    if (!data || !data.job_id) return;
+
+    jobBox.textContent = 'Job ID: ' + data.job_id + (data.topic ? ' — ' + data.topic : '');
+
+    if (data.topic) document.getElementById('topic').value = data.topic;
+    if (data.language) document.getElementById('language').value = data.language;
+    if (data.duration) document.getElementById('duration').value = String(data.duration);
+
+    const state = String(data.status || 'unknown');
+
+    if (data.ready && data.review_path) {
+      setStatus('Status: ' + state + '\nVideo is ready for review.', 'ok');
+      video.src = data.review_path + '&t=' + Date.now();
+      video.style.display = 'block';
+      video.load();
+      submit.disabled = false;
+      return;
+    }
+
+    if (/failed|error/i.test(state)) {
+      setStatus('Status: ' + state, 'error');
+      submit.disabled = false;
+      return;
+    }
+
+    setStatus('Status: ' + state + '\nProcessing…');
+    submit.disabled = true;
+    await poll(data.job_id);
+    timer = setInterval(() => poll(data.job_id), 5000);
+  } catch (err) {
+    setStatus('Could not restore latest job: ' + err.message, 'error');
+  }
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (timer) clearInterval(timer);
+  video.pause();
+  video.removeAttribute('src');
+  video.style.display = 'none';
+  jobBox.textContent = '';
+  submit.disabled = true;
+
+  const payload = {
+    topic: document.getElementById('topic').value.trim(),
+    language: document.getElementById('language').value,
+    duration: Number(document.getElementById('duration').value),
+  };
+
+  try {
+    setStatus('Creating job…');
+    const created = await jsonFetch('/webhook/jobs', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    const jobId = created.job_id;
+    if (!jobId) throw new Error('No job_id returned');
+
+    jobBox.textContent = 'Job ID: ' + jobId;
+    setStatus('Job created. Starting M4→M9…');
+
+    await jsonFetch('/webhook/factory/run', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({job_id:jobId})
+    });
+
+    await poll(jobId);
+    timer = setInterval(() => poll(jobId), 5000);
+  } catch (err) {
+    submit.disabled = false;
+    setStatus('Error: ' + err.message, 'error');
+  }
+});
+
+loadLatestJob();
+</script>
+</body>
+</html>

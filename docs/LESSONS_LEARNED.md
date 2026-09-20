@@ -181,3 +181,54 @@ Prevention:
 - if the stateless n8n container rootfs/restart manager is corrupted, preserve `docker inspect`, confirm PostgreSQL is external, then recreate only that container from the exact image/env/networks;
 - never recreate or modify the publisher PostgreSQL as part of this recovery;
 - after recovery verify protected workflows, credentials, publisher HTTP and restart count before resuming project work.
+
+
+28. Planning word-count heuristics must never overrule measured TTS.
+Word count was useful for bounding runaway scripts but repeatedly rejected narrations whose real TTS duration was acceptable.
+
+Prevention:
+- use word counts only as structural/anti-runaway bounds;
+- use real TTS measurements for timing decisions;
+- let M6 remain the strict final-audio duration gate.
+
+29. Preview TTS is stochastic enough that median matters more than single-sample spread.
+Identical Chirp-style synthesis requests produced materially different durations for the same narration.
+
+Prevention:
+- use multiple real preview syntheses;
+- use the median as M5's robust estimate;
+- do not loosen the configured timing tolerance;
+- require M6's independently synthesized final audio to pass the strict measured-duration gate.
+
+30. Provider availability must degrade independently from visual quality.
+A Pexels HTTP 403 from the VPS previously failed the whole visual stage before Pixabay/Wikimedia could satisfy the same shot.
+
+Prevention:
+- persist real provider HTTP failures as failed search rows with zero candidates;
+- never pretend a failed search was HTTP 200;
+- do not cache failed provider responses;
+- keep the final per-shot compliant/relevant selection gate strict.
+
+31. Provider MIME declarations must be checked against downloader support before selection.
+A Wikimedia GIF was classified broadly as an image/photo candidate and selected, then failed in the media-worker.
+
+Prevention:
+- maintain an explicit MIME allowlist aligned with media-worker support;
+- reject unsupported formats before ranking/selection.
+
+32. Compound visual anchors cannot require every descriptive token literally in provider metadata.
+Real photos used correct domain subjects while omitting generic form/function words such as receiver, navigator, runner, chamber, pool or mouthparts.
+
+Prevention:
+- distinguish true domain-subject terms from generic form/function descriptors;
+- when distinctive terms exist, require a real distinctive subject match plus query/intent context;
+- keep zero-distinctive-match cases fail-closed;
+- regression-test known positive candidates and an unrelated negative control.
+
+33. Free-tier LLM acceptance tests should be sequential when concurrent calls exceed provider RPM.
+Running all four matrix rows concurrently caused Gemini HTTP 429 failures unrelated to factory correctness.
+
+Prevention:
+- run the acceptance matrix sequentially;
+- preserve the exact same topics/languages/durations;
+- treat rate-limit failures separately from product-quality failures.
