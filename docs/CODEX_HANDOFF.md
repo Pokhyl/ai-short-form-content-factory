@@ -184,3 +184,11 @@ That M8 defect was fixed and deployed as M8 v41.
 - Fresh EN30 created next: `295cd85b-df3f-42fc-8551-8c7766fa7354`. Monitor this job before starting RU45.
 - Repository checks PASS: media-worker Python AST; all 8 workflow JSON files and connection graphs; syntax of 113 JavaScript Code nodes; `git diff --check`.
 - Production workflow versions and media-worker image remain unchanged from the verified Production inventory.
+
+### Exact PL15 media audit; EN30 M4–M7 PASS
+
+- Added reusable read-only `scripts/audit_final_media.py`. Ran it inside the existing media-worker on the exact PL15 final MP4; all 12 checks PASS. Evidence: `docs/acceptance/2026-09-20-pl15-audit.json`. It verifies full FFmpeg decode, hashes, streams/format, duration, density, contiguous coverage, unique assets and correlation of decoded final AAC with immutable MP3. It neither synthesizes audio nor edits artifacts.
+- PL15 visual review sampled the exact MP4 across all 5 scenes: Hoover Dam, hydroelectric turbine runner, hydroelectric generator stator, high-voltage transformers, transmission pylon. No description cards or corrupt imagery found. Turbine is an illustrative static museum runner, not footage of water moving; the generator image is a historical stator workshop photograph. Both match the narrated subjects. No listening-based assessment is claimed; final/source audio correlation is 0.99998048 with 37.375 ms decoded-length difference.
+- Contact sheet and extracted final audio remain in VPS `.review/acceptance-20260920/`; product artifacts are unchanged. Explicit HUMAN PASS remains a separate final acceptance step after all four outputs are reviewable.
+- EN30 `295cd85b-df3f-42fc-8551-8c7766fa7354`: M4 `8920`, M5 `8921`, M6 `8922`, M7 `8923` all success; M8 `8924` running; M9 pending. Intake `8918`, Self-Test `8919`.
+- Active production versions/image unchanged. Next: finish EN30, then RU45 and UK60 sequentially; audit and visually inspect each final MP4.
