@@ -166,3 +166,13 @@ That M8 defect was fixed and deployed as M8 v41.
    - final duration passes the existing gate.
 7. Update the project documentation with the final matrix and production state.
 8. Run the final repository/production checks, then commit and push the finished state.
+
+## Acceptance continuation — 2026-09-20 19:57 UTC
+
+- Read the complete handoff and operating references; cloned `main` at `b3be6aa`.
+- Live read-only verification: all eight project workflow activeVersionId/versionCounter values exactly match the Production section above; inventory remains 32 total / 15 active.
+- publisher and Studio HTTP 200; media-worker image unchanged, healthy, restart count 0; supporting PostgreSQL and SearXNG healthy. Root filesystem remains 82% used / 6.8 GB available.
+- Fresh PL15 job: `79c6a1f7-d98c-4b07-b68b-17896279df55`. Intake execution `8910` succeeded; Self-Test execution `8911` accepted the run; M4 execution `8912` is running. M5–M9 not started at this checkpoint.
+- No production code, workflows, gates or credentials changed. No new final MP4 exists yet.
+- Next: monitor this exact job through M9; inspect any failure before starting a fresh replacement. Start EN30 only once PL15 is terminal. Then RU45 and UK60 sequentially, inspect the exact four passing MP4s and record final checks.
+- Operational access: SentinelX `sentinel_script_run(sudo=true)` supports scoped Docker/psql diagnostics on this VPS; ordinary exec runs without Docker socket permission. Use stdin with `docker exec -i` for SQL. Do not change SentinelX policy.
