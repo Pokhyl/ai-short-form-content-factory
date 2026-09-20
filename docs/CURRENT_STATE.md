@@ -110,7 +110,7 @@ Passed:
 - `Gemini Text` live structured-JSON call with `gemini-3.5-flash-lite`;
 - existing `Google account` OAuth reconnected and verified by real Cloud TTS calls;
 - all four locked TTS voices returned real MP3 audio;
-- local whisper.cpp `ggml-base.bin` alignment passed on exact EN/PL/RU/UK TTS audio;
+- local whisper.cpp `ggml-small.bin` alignment passed on exact EN/PL/RU/UK TTS audio;
 - all four transcripts matched their input text after normalization;
 - lexical token timestamps stayed inside the measured MP3 duration.
 
@@ -309,7 +309,7 @@ Verified live:
 - Pixabay and Pexels license names are enforced exactly; Wikimedia accepts only the configured CC0 / CC BY / CC BY-SA / public-domain families;
 - `must_not_show`, media-type compatibility, minimum relevance and per-run provider-asset reuse are fail-closed gates;
 - Wikimedia Commons rate limiting was reproduced as HTTP 429 with `Retry-After` values around 23–27 seconds after ten requests;
-- M8 now retries only affected Wikimedia items through explicit 35-second wait nodes; the final successful run reached complete provider coverage;
+- current M8 paces Wikimedia requests at 8 seconds per item and retries affected items through explicit 60-second wait nodes; successful runs may still complete from remaining providers when Wikimedia degrades;
 - Wikimedia photos from Commons use the official `thumb.wikimedia.org` host while videos commonly use `upload.wikimedia.org`; media-worker allowlists both exact official hosts and still rejects arbitrary hosts;
 - selected assets are downloaded atomically into `/data/visuals/<job_id>/<shot_id>/selected.<ext>` and persisted with SHA-256, bytes, dimensions, codec and video duration where applicable;
 - successful product test job is `6974c0e6-9261-495d-b885-0db5a2ae4cd6`;
