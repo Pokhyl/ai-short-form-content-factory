@@ -89,7 +89,7 @@ The first M5 live output was otherwise valid, but Gemini chose 5 scenes and one 
 Prevention:
 - do not weaken the visual-density gate after underproduction;
 - use a deterministic generic density contract by duration;
-- M5 now requires exactly 4/7/10/13 scenes and exactly one shot per scene for 15/30/45/60 seconds;
+- historical contract at that point required exactly 4/7/10/13 scenes and one shot per scene; current production later increased this to 5/9/13/17 for 15/30/45/60 seconds;
 - test fixes only on a fresh job after a terminal failure.
 
 
@@ -117,7 +117,7 @@ Prevention:
 Gemini occasionally returned 5 scenes for a 30-second job even after the prompt explicitly required 7. A later repaired response produced the correct scene count but a redundant root narration field that did not exactly equal the joined scene narrations.
 
 Prevention:
-- keep the deterministic 4/7/10/13 scene+shot contract;
+- keep the deterministic scene+shot contract strict; the historical 4/7/10/13 values were later superseded by the current 5/9/13/17 production contract;
 - allow exactly one Gemini repair-call inside the same immutable M5 script run;
 - give the repair the same evidence, the failed output and the exact validation error;
 - make validated scene narrations authoritative and derive the persisted continuous narration from their join;
