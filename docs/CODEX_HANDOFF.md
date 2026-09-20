@@ -66,6 +66,8 @@ Last verified production state:
 - Studio HTTP 200
 - media-worker healthy
 - media-worker restart count 0
+- workflow inventory: 32 total / 15 active = 8 project workflows (all active), 22 shared workflows (6 active), 2 temporary workflows (1 active)
+- root filesystem: 38 GB total, 29 GB used, 6.8 GB free (82% used); avoid unnecessary Docker image/build accumulation during regression work
 
 Production architecture facts:
 - publisher.hodor.com.pl is shared with existing MCP/ADMIN workflows; those workflows are not part of this project.
