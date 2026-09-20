@@ -202,3 +202,10 @@ That M8 defect was fixed and deployed as M8 v41.
 - Planned systemic fix: fail closed on tag-only photographic evidence lacking a descriptive caption, retaining provider searches/accounting and the existing relevance gates. Verify positive caption-supported candidates from remaining providers, then deploy only the affected project workflow.
 - RU45 `8e841de6-30fd-433d-9c0d-3625b78af6af` was started sequentially after EN30 machine completion, before visual rejection was found; currently M5 running. Preserve it as a diagnostic pre-fix job. Do not start another job until it is terminal.
 - Current production remains M5 v81 / M8 v41 and the original media-worker image. Next: implement/regression-test evidence validation, deploy it after the current run ends, and run a fresh sequential four-case acceptance on the fixed version. Failed/review-rejected jobs stay immutable.
+
+### M8 photographic-evidence fix validated locally — not yet deployed
+
+- Changed only M8 normalizers: Pixabay tag-only images are retained in search diagnostics but rejected as `pixabay_photo_content_unverified_tag_only`; Pexels images require an `alt` description and reject explicit poster/illustration/graphic descriptions. Pixabay video logic is unchanged.
+- This intentionally limits automatic photographic selection to description-supported Pexels/Wikimedia candidates; Pixabay still participates in discovery/accounting. It is a fail-closed provider-evidence restriction, not proof that every captioned image is visually correct. Human/agent scene review remains necessary.
+- `node --test tests/visual-evidence.test.cjs`: 8/8 PASS, including the observed misleading metadata, generic non-topic quarantine, caption-supported positive, missing-description/graphic/unrelated negatives, and provider HTTP-failure accounting. `git diff --check` PASS.
+- Production still M8 v41; RU45 diagnostic job is in M8 and must finish before deployment. Next: backup exact M8, import/publish the tested workflow under the same ID, verify active version/runtime and protected inventory, then restart the sequential matrix with fresh jobs.

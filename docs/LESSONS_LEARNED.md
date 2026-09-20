@@ -232,3 +232,12 @@ Prevention:
 - run the acceptance matrix sequentially;
 - preserve the exact same topics/languages/durations;
 - treat rate-limit failures separately from product-quality failures.
+
+34. Provider `photo` and `isAiGenerated=false` flags plus keyword tags do not verify visible content.
+Fresh EN30 passed machine QA, but exact scene review found a graphic poster and a honey jar selected for photographic bee scenes. Pixabay returned both as ordinary photos, and their tags matched the narration.
+
+Prevention:
+- keep Pixabay searches and their real response/candidate accounting, but reject tag-only image candidates with `pixabay_photo_content_unverified_tag_only` until independent content evidence is implemented; this deliberately reduces selectable source coverage to description-supported Pexels/Wikimedia images;
+- require Pexels `alt` descriptions and reject explicitly described posters/illustrations/digital graphics;
+- preserve all score, timing, license and uniqueness thresholds; never blacklist the observed asset IDs or hardcode the test topic;
+- technical media PASS does not imply visual acceptance; inspect scene-midpoint frames of the exact final MP4.
