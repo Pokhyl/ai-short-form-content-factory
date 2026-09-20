@@ -556,7 +556,7 @@ Verified:
 2. Direct public source-page fetch — PASS.
 3. Wikimedia Commons API — PASS.
 4. Local 1080×1920 H.264/AAC FFmpeg render — PASS.
-5. Local whisper.cpp CPU alignment with multilingual `ggml-base.bin` and token timestamps — PASS on exact Google Cloud TTS audio for EN/PL/RU/UK.
+5. Local whisper.cpp CPU alignment with multilingual `ggml-small.bin` and token timestamps — PASS on exact Google Cloud TTS audio for EN/PL/RU/UK.
 6. Gemini text through production n8n at `publisher.hodor.com.pl` — PASS with credential `Gemini Text` and `gemini-3.5-flash-lite`; structured JSON returned successfully.
 7. Google Cloud TTS OAuth — PASS after reconnect of the existing `Google account` credential.
 8. All four locked Google TTS voices — PASS with real MP3 output.
@@ -648,7 +648,7 @@ Status: PASS — verified live on 2026-09-19.
 
 Verified:
 - exact immutable M6 `final.mp3` is the only alignment input;
-- pinned local `whisper.cpp` image and exact `ggml-base.bin` SHA-256 are enforced;
+- pinned local `whisper.cpp` image and exact `ggml-small.bin` SHA-256 are enforced;
 - Whisper lexical tokens must reconstruct the Whisper transcript exactly;
 - scene narrations must reconstruct the final M5 narration exactly;
 - global lexical sequence-match coverage must be at least 0.95;
@@ -669,7 +669,7 @@ Verified:
 - deterministic ranking is applied across providers;
 - `must_not_show`, license policy, media-type intent and minimum relevance are fail-closed gates;
 - provider asset reuse across shots is prohibited;
-- Wikimedia 429 responses are retried only for the affected items after an explicit 35-second wait;
+- Wikimedia requests are paced at 8 seconds per item; affected retry items use explicit 60-second waits before retry;
 - both `upload.wikimedia.org` and official `thumb.wikimedia.org` asset hosts are allowlisted;
 - selected files are downloaded atomically by media-worker and persisted with SHA-256, dimensions, codec and duration where applicable;
 - the run passes only when every shot has one distinct persisted local asset.
