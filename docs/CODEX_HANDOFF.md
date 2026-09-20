@@ -54,7 +54,7 @@ Current deployed versions:
 - M5 versionCounter 81, versionId b548aee4-660f-4997-a17c-1d8fa24c38b3
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
-- M8 versionCounter 41, versionId d889cb1d-c808-4e19-889e-35b06648da19
+- M8 versionCounter 42, versionId c6309bfc-4aa7-42c6-b5a9-49b187c134c1 (photographic-evidence fix)
 - M9 versionCounter 1, versionId 5b6c937c-1767-4c3e-99c4-31ea38a26961
 - Self-Test API versionCounter 3, versionId f3ef8cbf-1c56-4048-9fdf-feb073de96df
 
@@ -209,3 +209,11 @@ That M8 defect was fixed and deployed as M8 v41.
 - This intentionally limits automatic photographic selection to description-supported Pexels/Wikimedia candidates; Pixabay still participates in discovery/accounting. It is a fail-closed provider-evidence restriction, not proof that every captioned image is visually correct. Human/agent scene review remains necessary.
 - `node --test tests/visual-evidence.test.cjs`: 8/8 PASS, including the observed misleading metadata, generic non-topic quarantine, caption-supported positive, missing-description/graphic/unrelated negatives, and provider HTTP-failure accounting. `git diff --check` PASS.
 - Production still M8 v41; RU45 diagnostic job is in M8 and must finish before deployment. Next: backup exact M8, import/publish the tested workflow under the same ID, verify active version/runtime and protected inventory, then restart the sequential matrix with fresh jobs.
+
+### M8 v42 deployed; fresh matrix restarted — 2026-09-20
+
+- Backup: VPS `.backups/m8-before-photo-evidence-20260920.json`. Imported/published only `VideoM8Visuals001` through n8n CLI with its existing project `FF7o9vSL9orH8B5T`; active version is `c6309bfc-4aa7-42c6-b5a9-49b187c134c1`, counter 42. Other 31 workflow rows have identical aggregate hashes before/after; inventory remains 32/15. No n8n/container restart or credential change.
+- CLI prints a general restart advisory; this workflow is invoked internally. Verify the fresh M8 execution snapshot actually contains the v42 normalizers before claiming runtime deployment acceptance.
+- Pre-fix diagnostic RU45 `8e841de6-30fd-433d-9c0d-3625b78af6af` reached machine PASS: M4 `8939`, M5 `8943`, M6 `8953`, M7 `8954`, M8 `8968`, M9 `8995` all success. This is not part of the final v42 matrix.
+- Fresh v42 PL15: `edb9982b-a391-4033-9a52-a4986393f18b`, run accepted. Next: complete and inspect it, confirm v42 execution and zero selected tag-only Pixabay images, then EN30/RU45/UK60 sequentially.
+- All other workflow versions and media-worker image remain unchanged. The final target is now M5 v81 / M8 v42. Earlier v41 matrix outputs are historical diagnostics.
