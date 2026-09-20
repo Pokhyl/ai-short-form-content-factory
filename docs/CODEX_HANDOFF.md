@@ -6,7 +6,7 @@ Updated: 2026-09-20
 
 Repository: Pokhyl/ai-short-form-content-factory
 
-This is the existing production n8n short-form video factory. Continue from the current implementation; do not rebuild it from scratch.
+This is the existing production n8n short-form video factory. Continue from the current production state and preserve its working contracts and data. Refactor or replace internal implementation when a systemic fix requires it; do not fork the work into a separate parallel project.
 
 Input:
 - topic
@@ -20,7 +20,12 @@ Project constraints already implemented in the codebase:
 - n8n is the orchestrator;
 - providers/services used by the project must remain free-only;
 - no Ollama/local LLM/model-worker;
-- PostgreSQL is the source of truth.
+- PostgreSQL is the source of truth;
+- no topic-specific hardcoding, lookup tables, or manual asset bindings.
+
+Scope boundary:
+- modify this project's code, project workflows, project database functions/schema, media-worker and Studio as needed;
+- shared MCP/ADMIN workflows, n8n.hodor.com.pl and unrelated containers/projects are outside this project.
 
 ## Production
 
@@ -44,8 +49,14 @@ Project workflow IDs:
 - Self-Test API: VideoSelfTestApi001
 
 Current deployed versions:
+- M3 versionCounter 2, versionId e78f648c-639a-439a-8915-270d3b44f1cb
+- M4 versionCounter 5, versionId 3cf94dd2-8c3b-4585-ae88-6315a2685ff7
 - M5 versionCounter 81, versionId b548aee4-660f-4997-a17c-1d8fa24c38b3
+- M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
+- M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
 - M8 versionCounter 41, versionId d889cb1d-c808-4e19-889e-35b06648da19
+- M9 versionCounter 1, versionId 5b6c937c-1767-4c3e-99c4-31ea38a26961
+- Self-Test API versionCounter 3, versionId f3ef8cbf-1c56-4048-9fdf-feb073de96df
 
 Current media-worker image:
 sha256:5cf02e01d9cfb693d266bedc2f77b866fcee5960bb0a0654923b79be144e1874
@@ -61,6 +72,7 @@ Production architecture facts:
 - n8n.hodor.com.pl is unrelated to this project.
 - exported project workflows reference credentials named Gemini Text and Video Factory Postgres; credential secrets are not stored in this repository.
 - supporting Postgres, media-worker and SearXNG are separate from the production n8n container.
+- an older temporary review workflow M10TempReview001 is still present; it is not the current regression acceptance state.
 
 ## Important fixes already implemented
 
@@ -69,6 +81,8 @@ Production architecture facts:
 - no topic lookup tables.
 
 ### M5 script/storyboard
+- current deterministic scene/shot density is 5 / 9 / 13 / 17 for 15 / 30 / 45 / 60 seconds;
+- each scene currently contains exactly one shot;
 - repair prompts interpolate actual scene/shot counts;
 - bounded JSON recovery for trivial structural garbage;
 - pre-TTS word-count heuristics no longer override measured TTS;
@@ -78,7 +92,9 @@ Production architecture facts:
 - M6 remains the authoritative final-audio duration gate.
 
 ### M6 voiceover
-- independent final TTS retries;
+- one immutable voiceover run exists per job/script version;
+- up to four independent TTS candidates may be synthesized to satisfy the measured-duration gate;
+- exactly one final MP3 is persisted;
 - audio is persisted only after the strict measured-duration gate passes.
 
 ### M7 alignment
