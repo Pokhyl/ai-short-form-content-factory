@@ -317,3 +317,12 @@ Prevention:
 - read branch-dependent nodes with bounded optional access;
 - if an optional sample is absent, use only the samples that actually executed and the existing fallback estimator;
 - add tests that throw the exact n8n `hasn't been executed` error for skipped branches.
+
+39. Visual metadata language is an executable contract, not presentation text.
+A Polish narration job reached M8 with Polish `must_show` and `queries_en` even though the scorer/provider metadata path is English-oriented. Retrieval found relevant dam assets, but the required anchors could not match.
+
+Prevention:
+- narration uses the requested user language; visual metadata always uses English;
+- enforce the split in deterministic validators, not prompt wording alone;
+- reject Cyrillic/Polish-language leakage and mixed-language primary anchors before TTS/visual retrieval;
+- use the existing bounded storyboard repair attempts to correct metadata while preserving narration/evidence/IDs.

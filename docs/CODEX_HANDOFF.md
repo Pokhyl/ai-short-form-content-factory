@@ -453,3 +453,14 @@ That M8 defect was fixed and deployed as M8 v41.
 - Live exported M5 core matches repository. Both late timing builders contain optional branch-probe reads and the 2-of-3 stability majority remains active.
 - Publisher and Studio HTTP 200; n8n restart 0; media-worker healthy/restart 0 on unchanged full-fit image.
 - Current production target: M5 v89 / M8 v45 / full-fit worker. Next: fresh PL15 from Studio path, then exact M4-M9/MP4 review before EN30.
+
+### Fresh PL15 on v89 reached M8; non-English visual metadata root cause fixed in M5 — tested, NOT DEPLOYED
+
+- Fresh PL15 `a0b6c789-4cdc-4b59-84e6-790a7d337998`: M4 9079 PASS, M5 9081 PASS on v89, M6 9082 PASS (15,624 ms final PL audio), M7 9083 PASS, M8 9084 FAILED on v45; M9 did not start.
+- M8 completed all 45 provider searches and produced 280 candidates, then failed S1-A with no compliant candidate.
+- Root cause was upstream contract violation, not provider retrieval: S1-A visual_intent was English (`concrete hydro plant dam holding back river water`) but M5 stored Polish visual anchors/queries: must_show `Zapora wodna`, `zbiornik wodny`; queries such as `Zapora wodna i zbiornik wodny`. M8 correctly could not match those Polish tokens against English provider metadata.
+- M5 already had two bounded storyboard-repair attempts. Repository fix strengthens that existing path instead of adding a new stage: all visual metadata fields (`visual_intent`, `must_show`, `must_not_show`, `queries_en`) must always be English regardless of narration language.
+- All three storyboard validators now share `ENGLISH_VISUAL_METADATA_GUARD`: PL diacritics are rejected; RU/UK Cyrillic is rejected; for non-English narration the primary must_show anchor must share a concrete English token with English visual_intent, which catches ASCII Polish anchors such as `Zapora wodna` even without diacritics.
+- Initial prompt and both bounded repair prompts now explicitly split languages: narration follows requested language; visual metadata is English only. When this validation error occurs, repair prompts preserve narration/scene IDs/shot IDs/evidence IDs/factual meaning and repair the visual metadata contract.
+- Exact regression covers current ASCII Polish S1-A, Polish diacritics, Cyrillic RU/UK metadata, and valid English dam/reservoir metadata. Full Node suite 53/53 PASS; all 55 M5 Code nodes pass syntax; `git diff --check` PASS.
+- Production remains M5 v89 / M8 v45 until commit/push and scoped M5 deployment.
