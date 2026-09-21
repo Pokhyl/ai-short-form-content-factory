@@ -275,6 +275,6 @@ Prevention:
 - keep the first validated narration as the immutable meaning reference through all later timing branches;
 - allocate later scene word targets from original scene proportions, not from a damaged intermediate draft;
 - validate semantic-content retention before consuming another TTS probe;
-- enforce requested exact word counts before TTS when a branch claims to be an exact-word retry;
+- treat word counts as timing guidance only; semantic validation must pass first, then real measured TTS decides timing acceptance;
 - preserve numeric facts and negation polarity;
-- use prompt instructions as guidance, never as proof that meaning was preserved.
+- use prompt instructions and word-count targets as guidance, never as proof that meaning or timing was preserved.

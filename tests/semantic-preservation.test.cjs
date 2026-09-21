@@ -92,6 +92,37 @@ test('semantic guard rejects changed numbers and negation polarity', () => {
   );
 });
 
+
+test('v85 precision response filler and lost reservoir are rejected', () => {
+  assert.throws(
+    () => guard(
+      'Zapora spiętrza rzekę, tworząc zbiornik.',
+      'Ogromna zapora spiętrza rzekę.',
+      'S2',
+      'pl'
+    ),
+    /semantic content|filler/
+  );
+  assert.throws(
+    () => guard(
+      'Generator produkuje prąd elektryczny.',
+      'Wydajny generator produkuje prąd.',
+      'S4',
+      'pl'
+    ),
+    /filler/
+  );
+  assert.throws(
+    () => guard(
+      'Prąd trafia do domów.',
+      'Czysty prąd trafia domów.',
+      'S5',
+      'pl'
+    ),
+    /filler/
+  );
+});
+
 test('all late timing builders carry immutable original narration', () => {
   for (const name of [
     'Build Timing Repair 2',
@@ -124,16 +155,20 @@ test('all acceptance-path late validators have semantic guard', () => {
   }
 });
 
-test('precision and final exact-word retries cannot enter another TTS probe off-target', () => {
+test('word-count targets remain guidance while real TTS is authoritative', () => {
   assert.match(
+    byName['Build Timing Precision Retry'].parameters.jsCode,
+    /preferred word counts by scene/
+  );
+  assert.doesNotMatch(
     byName['Validate Timing Precision Retry'].parameters.jsCode,
-    /precision exact total word count mismatch/
+    /exact word count mismatch|exact total word count mismatch/
   );
   for (const name of [
     'Validate Final Word Count Retry',
     'Validate Final Measured Word Count Retry',
   ]) {
-    assert.match(
+    assert.doesNotMatch(
       byName[name].parameters.jsCode,
       /could not produce requested total before TTS/,
       name

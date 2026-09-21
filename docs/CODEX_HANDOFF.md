@@ -352,3 +352,15 @@ That M8 defect was fixed and deployed as M8 v41.
 - Publisher and Studio are HTTP 200; n8n restart count 0; full-fit media-worker remains healthy/restart 0 on image `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`.
 - n8n CLI printed its generic restart advisory. No restart was issued because prior internal sub-workflow deployments have taken effect without it. The next fresh M5 execution snapshot must confirm active v85 before runtime acceptance.
 - Next: run one fresh PL15. Inspect the actual M5 narration and v85 execution snapshot before treating the repair as validated in production.
+
+### Fresh PL15 on M5 v85 failed safely; soft-count semantic patch tested — NOT DEPLOYED
+
+- Fresh job `f03db30f-1b42-41dd-ac7b-48c90bef8e4c`: M3 execution 9048 PASS, M4 9050 PASS, M5 execution 9052 ran active v85 `3fdc6ec5-c1cb-4594-b6c6-d4acb96088f0` and terminated `script_failed`; M6-M9 did not start.
+- Runtime v85 was confirmed directly from execution_data.workflowVersionId, so the generic n8n CLI restart advisory did not require a restart.
+- Original M5 narration was factual and natural: 24 words, 17,424 ms first measurement. First timing repair produced 18 words / 11,496 ms. Repair 2 targeted about 22 words and retained immutable original context.
+- Precision retry returned 23 words while the v85 validator demanded scene targets 6/4/4/4/4 exactly. Its actual response included filler/damage: `Ogromna zapora...`, `Wydajny generator...`, `Czysty prąd...`. v85 failed before another TTS probe with `7, required 6`, so bad text was not accepted.
+- Engineering correction: exact/per-scene word counts are timing guidance again; real measured TTS is authoritative. Repair 2 and precision validators no longer reject a semantically valid narration solely for a small word-count mismatch. Final word-count retries may also proceed near target only after semantic validation.
+- Semantic guard is stronger instead: minimum original-content coverage 0.625, plus generic novel filler-modifier rejection for EN/PL/RU/UK, numeric-fact preservation and negation-polarity preservation. The exact bad v85 response is covered by regression tests.
+- Final timing builders still use immutable original narration, original scene proportions and semantic floors. Their prompts now explicitly allow redistribution between scenes when meaning needs more space and forbid filler/count-driven meaning loss.
+- Full Node suite 35/35 PASS and `git diff --check` PASS. Production remains M5 v85 until this patch is committed/pushed and deployed.
+- Next: deploy only M5 as the next version, confirm all other workflow rows unchanged, then run a new immutable PL15.
