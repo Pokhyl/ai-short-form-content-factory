@@ -1,0 +1,24 @@
+{
+  "job_id": "624f9615-56ca-49cf-8a1a-6853509ed599",
+  "sha256": "697dd432304d4874da3b0c5b57d26925f0bc47cc06a010e0b365597507bddfc9",
+  "bytes": 2281875,
+  "duration_ms": 15533,
+  "audio_duration_ms": 15528,
+  "audio_correlation": 0.9999816339469554,
+  "scene_count": 5,
+  "gates": {
+    "manifest_video_hash": true,
+    "manifest_voice_hash": true,
+    "full_decode": true,
+    "stream_counts": true,
+    "video_format": true,
+    "audio_format": true,
+    "narration_preserved": true,
+    "target_duration": true,
+    "mux_duration": true,
+    "scene_density": true,
+    "unique_assets": true,
+    "contiguous_coverage": true
+  },
+  "passed": true
+}

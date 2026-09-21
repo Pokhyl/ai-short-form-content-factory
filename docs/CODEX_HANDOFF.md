@@ -232,3 +232,11 @@ That M8 defect was fixed and deployed as M8 v41.
 - Imported/published only `VideoM5Storyboard001`: counter 82, activeVersionId `d47c0333-5e66-43ca-a10a-c3482a322d6c`. Backup: `.backups/m5-before-median-propagation-20260921.json`. Other 31 workflow rows unchanged by aggregate hash comparison. Inventory 32 total / 15 active; no service restart.
 - Current matrix target: **M5 v82 / M8 v42**, other versions and media-worker image unchanged.
 - Fresh PL15 `624f9615-56ca-49cf-8a1a-6853509ed599` created and run accepted. Next: verify execution snapshots use new code, complete PL15 and review the exact artifact, then EN30, RU45, UK60 sequentially.
+
+### PL15 PASS on M5 v82 / M8 v42 — 2026-09-21
+
+- Job `624f9615-56ca-49cf-8a1a-6853509ed599`: M4–M9 all passed; executions `9014`, `9015`, `9016`, `9017`, `9018`, `9019` all success (intake `9012`, Self-Test `9013`). Exact execution snapshots confirm M5 v82 and M8 v42 with the new code; no service restart was required.
+- Exact artifact audit: `docs/acceptance/2026-09-21-pl15-audit.json`, all 12 checks PASS. MP4 SHA-256 `697dd432304d4874da3b0c5b57d26925f0bc47cc06a010e0b365597507bddfc9`, 2,281,875 bytes, 15,533 ms; immutable narration 15,528 ms; audio correlation 0.99998163; 5 distinct scenes/assets.
+- Inspected exact scene-midpoint frames: dam intake/reservoir, dam wall, hydroelectric turbine hall, historical generator machinery hall, power substation. All are photographic and relevant to corresponding narration; no placeholder/text cards or corrupt frames. The generator is an illustrative museum photograph, not a claimed live operating facility. Selected sources: 3 Pexels + 2 Wikimedia; zero Pixabay images. Contact sheet: VPS `.review/acceptance-20260920/pl15-v82-contact.jpg`.
+- Live/repository comparison: all 8 workflow node/connection graphs match; media-worker source SHA matches repository. Media-worker healthy, restart count 0, image unchanged; disk 6.7 GB free.
+- Next EN30 `88a2b8c8-4e27-4ae3-9890-755fd0fe1904` created and accepted sequentially after PL15 completion. Finish and inspect it before RU45/UK60. Active versions unchanged: M5 v82 / M8 v42.
