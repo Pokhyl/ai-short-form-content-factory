@@ -1,6 +1,15 @@
 # Codex handoff — production video factory
 
-Updated: 2026-09-20
+Updated: 2026-09-21
+
+## Resume here — authoritative current checkpoint
+
+- Task is NOT complete. Active production remains M5 v83 / M8 v43 (full IDs below). No current-version four-case acceptance exists.
+- Latest PL15 `1be96d5a-7626-4771-9b1c-7b5452894725` terminated `visuals_failed`: intake 9028 success; parent 9029 error; M4 9030, M5 9031, M6 9032, M7 9033 success; M8 9034 error; M9 never started. Execution 9035 is a subsequent successful Self-Test API request, not a render.
+- Exact failure: no compliant relevant candidate for S2-A (penstock pipe / flowing water). Keep this failed job immutable.
+- Confirmed retrieval limitation: Wikimedia searches only query 1 (`water flowing through penstock pipe`), while Pexels/Pixabay search all three, including `hydroelectric penstock pipe` and `penstock pipe`. Current database expected count is 2 × query count + shot count. Whether broader Commons retrieval supplies compliant assets remains to be tested; do not weaken relevance gates.
+- Next: inspect Commons responses, implement/test complete Wikimedia query coverage and matching expected-count contract if justified, checkpoint, deploy scoped changes, then fresh sequential PL15 → EN30 → RU45 → UK60. Audit exact final artifacts and review all scenes; explicit HUMAN PASS remains separate.
+- Earlier machine-passing jobs below are historical diagnostics and must not be mistaken for current-version acceptance. All substantive fixes, tests, deployments and IDs must be recorded here and pushed to main before moving on.
 
 ## Project
 
