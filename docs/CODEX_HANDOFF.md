@@ -7,7 +7,7 @@ Updated: 2026-09-21
 - Task is NOT complete. Active production is M5 v83 / M8 v44 (full IDs below). No current-version four-case acceptance exists.
 - Previous PL15 `1be96d5a-7626-4771-9b1c-7b5452894725` terminated `visuals_failed`: intake 9028 success; parent 9029 error; M4 9030, M5 9031, M6 9032, M7 9033 success; M8 9034 error; M9 never started. Execution 9035 is a subsequent successful Self-Test API request, not a render.
 - Exact failure: no compliant relevant candidate for S2-A (penstock pipe / flowing water). Keep this failed job immutable.
-- Confirmed retrieval limitation: Wikimedia searches only query 1 (`water flowing through penstock pipe`), while Pexels/Pixabay search all three, including `hydroelectric penstock pipe` and `penstock pipe`. Current database expected count is 2 × query count + shot count. Whether broader Commons retrieval supplies compliant assets remains to be tested; do not weaken relevance gates.
+- Retrieval gap FIXED in M8 v44: all three providers now execute every query. New run accounting is 3 × total query count; verified 45/45 searches in the latest PL15. Historical failed run counts remain unchanged.
 - Latest PL15 `69391e2d-34bc-4775-89f8-32913dff9edb` is machine PASS but REVIEW REJECTED. Do not start EN30 yet. Investigate M5 semantic damage during timing shortening and M9 subject loss from center cropping; details at the last checkpoint.
 - Earlier machine-passing jobs below are historical diagnostics and must not be mistaken for current-version acceptance. All substantive fixes, tests, deployments and IDs must be recorded here and pushed to main before moving on.
 
@@ -305,3 +305,9 @@ That M8 defect was fixed and deployed as M8 v41.
 - Repository correction distributes the unchanged total target proportionally to original scene lengths within unchanged 2–10/14 bounds, and supplies original scene narration to both precision builders. The retry explicitly treats its previous draft as unaccepted and preserves subjects, required objects and causal direction. Exact total/per-scene checks, duration gates, attempt counts and provider budgets remain unchanged.
 - Validation: 24/24 Node tests PASS, including median propagation, bounded proportional allocation and preservation of original meaning context when the failed draft lost an object. These tests prove data/prompt contracts, not semantic quality of future model output. Production remains M5 v83 / M8 v44.
 - Next: scoped M5 deployment with backups/protected-row comparison; resolve render crop and provider-label ambiguity before fresh acceptance. No new job is running. Do not claim semantic acceptance until actual new narration and all final frames are reviewed.
+
+### Full-image render fit regression — tested, NOT DEPLOYED
+
+- `_render_segment` now fits the entire source image/video inside 1080×1920 with proportional scaling and neutral black padding, replacing unconditional center cropping. This preserves edge content and source geometry; it does not prove a source depicts the correct subject.
+- `tests/render-fit-regression.py` executes the actual renderer function with synthetic red/blue edge landmarks and real production FFmpeg. PASS for square-ish 1600×1611, landscape 1920×1080 and portrait 1080×1920: encoded H.264 output decodes at 1080×1920 with both edge landmarks retained. Test output uses temporary paths, no accepted/failed job artifacts are modified.
+- Python AST and git diff checks PASS. Production worker is still the old image; new build/deploy remains pending together with M5 semantic-space fix. Exact selected sources can still be semantically wrong despite matching provider titles (e.g. theme-park wheel); review every scene and do not declare this solved by padding.
