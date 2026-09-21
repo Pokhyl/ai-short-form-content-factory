@@ -44,6 +44,37 @@ test('described photographic bee remains eligible with original score gates', ()
   assert.ok(c.relevance_score>=60);
 });
 
+
+test('residential modifier does not block a house-and-power-lines photo', () => {
+  const shot={...ctx,
+    query:'houses near power lines',
+    visual_intent:'Modern residential houses supplied with electricity from power grid',
+    must_show:['residential houses','power lines'],
+    must_not_show:['wind turbine']};
+  const c=normalize(
+    'Pexels',
+    shot,
+    {photos:[pexels('Tranquil suburban street with houses and power lines under a clear blue sky.')]}
+  ).candidates[0];
+  assert.equal(c.rejected,false,c.rejection_reason);
+  assert.ok(c.relevance_score>=60);
+});
+
+test('residential house without required power-line context still rejects', () => {
+  const shot={...ctx,
+    query:'residential houses',
+    visual_intent:'Modern residential houses supplied with electricity from power grid',
+    must_show:['residential houses','power lines'],
+    must_not_show:['wind turbine']};
+  const c=normalize(
+    'Pexels',
+    shot,
+    {photos:[pexels('A serene view of residential houses on a quiet street.')]}
+  ).candidates[0];
+  assert.equal(c.rejected,true);
+  assert.match(c.rejection_reason,/missing_secondary_subject_context/);
+});
+
 test('Pexels page title may corroborate one missing subtype term when alt already proves the object and scene context', () => {
   const shot={...ctx,
     query:'hydroelectric power plant building exterior',
