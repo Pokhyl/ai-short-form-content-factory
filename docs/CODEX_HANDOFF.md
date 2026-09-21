@@ -572,3 +572,16 @@ That M8 defect was fixed and deployed as M8 v41.
 - Targeted live Wikimedia retrieval: S2 returned 4 eligible hydro-context turbine assets; S4 returned 3 eligible substation-transformer assets.
 - Evidence: docs/acceptance/2026-09-21-pl15-v97-v49-manual-reject-v50-targeted.json.
 - Production remains M8 v49 until this patch is committed/pushed and M8-only deployed. After deploy, run a new fresh PL15; do not reuse job 306162e6-6ae4-4551-b948-d219175b1479.
+
+
+### Fresh PL15 after M8 v50 deploy failed in M6; M5 three-sample gate bypass fixed — TESTED, NOT DEPLOYED
+
+- Fresh PL15 `dfd72856-9480-44d4-9e07-f8decae7ae9f`: M4 execution `9179` PASS; M5 execution `9180` PASS on v97 `3ce4729e-1f30-4b32-ae99-88aa91109308`; M6 execution `9181` FAIL on v7 `98e671f3-a0dc-42fa-81e9-4c9524a05e6a`. M7-M9 did not run. Terminal job status: `voiceover_failed`.
+- M6 failure: after four independent Polish Chirp3-HD syntheses, no candidate entered the unchanged 15,000 +/- 800 ms final window; reported fourth candidate was 16,608 ms.
+- Persisted M5 narration was 25 words / 184 characters. M5 and M6 both used `pl-PL-Chirp3-HD-Enceladus` with MP3 encoding, so no voice/config mismatch was found.
+- Provider-usage ledger proves the final 184-character narration received M5 Probe 4 and one Stability A synthesis, then was accepted without a Stability B request. All four M6 attempts used the same 184-character narration.
+- Exact systemic root cause: `Route Timing Stability PASS` sent its true branch directly to `Canonicalize Final Storyboard`. Therefore the existing 2-of-3 majority logic in `Normalize Timing Stability B` was bypassed whenever the first two samples were both in-window.
+- Repository fix: both outcomes of `Route Timing Stability PASS` now route to `Prepare Timing Stability Probe B`. Only `Route Timing Stability PASS B` may canonicalize the final storyboard, so every accepted stability path uses three real syntheses and the existing 2/3 gate.
+- Added graph regression test `M5 regression: two-sample stability cannot bypass the three-sample majority gate`.
+- Validation in an isolated local n8n image with the repository mounted read-only: **85/85 Node tests PASS**; `git diff --check` PASS; M5 workflow JSON parse PASS.
+- Production at this checkpoint is still M5 v97 / M8 v50. No retry job has been started. Next: commit/push this checkpoint, deploy only M5 with exact backup and protected-row comparison, verify the new active version, then run one fresh PL15 from the beginning.

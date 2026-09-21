@@ -356,3 +356,13 @@ Prevention:
 - keep the domain gate independent from primary form modifiers;
 - do not blacklist venues such as museums or theme parks; accept them only when metadata establishes the requested operating domain;
 - prove the new query still returns eligible candidates before spending another full pipeline job.
+
+
+42. A correct three-sample timing rule is ineffective if the workflow graph can bypass it.
+A fresh PL15 passed M5 but failed M6 after four independent TTS candidates. The final narration had received only the original M5 timing sample plus one stability confirmation; the graph sent that two-sample success directly to canonicalization, so the existing 2-of-3 majority code in Stability B never ran.
+
+Prevention:
+- every accepted final narration must traverse the third independent stability synthesis;
+- only the three-sample majority gate may route to final storyboard canonicalization;
+- test workflow connections as well as Code-node logic, because correct code in an unreachable/bypassable branch is not an enforced contract;
+- keep M6 as the strict immutable final-audio gate and do not widen its duration tolerance.

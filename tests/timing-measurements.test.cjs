@@ -254,3 +254,14 @@ test('precision retry sees original meaning even when failed draft lost an objec
  assert.deepEqual(out.target_scene_word_counts,[7,5]);
  assert.deepEqual(out.base_storyboard,failed); // prompts restore meaning; no unmeasured text substitution
 });
+
+
+test('M5 regression: two-sample stability cannot bypass the three-sample majority gate',()=>{
+  const fastRoute=workflow.connections['Route Timing Stability PASS']?.main;
+  assert.equal(fastRoute?.[0]?.[0]?.node,'Prepare Timing Stability Probe B');
+  assert.equal(fastRoute?.[1]?.[0]?.node,'Prepare Timing Stability Probe B');
+
+  const majorityRoute=workflow.connections['Route Timing Stability PASS B']?.main;
+  assert.equal(majorityRoute?.[0]?.[0]?.node,'Canonicalize Final Storyboard');
+  assert.equal(majorityRoute?.[1]?.[0]?.node,'Route Stability Origin 1');
+});
