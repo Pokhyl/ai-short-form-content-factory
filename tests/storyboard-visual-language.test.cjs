@@ -111,6 +111,14 @@ test('secondary must_show does not restate or detail the primary object',()=>{
     normalizeMustShow(['power transformer','transformer substation']),
     ['power transformer']
   );
+  assert.deepEqual(
+    normalizeMustShow(['electric generator','industrial machinery']),
+    ['electric generator']
+  );
+  assert.deepEqual(
+    normalizeMustShow(['water turbine','industrial equipment']),
+    ['water turbine']
+  );
 });
 
 test('independent secondary context remains mandatory',()=>{
