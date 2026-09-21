@@ -155,6 +155,24 @@ test('secondary context absent from visual_intent is removed instead of becoming
 });
 
 
+
+test('action word alone cannot keep an unrequested secondary object as a hard visual gate',()=>{
+  assert.deepEqual(
+    normalizeMustShow(
+      ['water turbine','spinning blades'],
+      'Water turbine wheel spinning underwater in hydro plant'
+    ),
+    ['water turbine']
+  );
+  assert.deepEqual(
+    normalizeMustShow(
+      ['pump','rotating shaft'],
+      'Industrial pump rotating inside a machine room'
+    ),
+    ['pump']
+  );
+});
+
 test('process or state secondary anchors do not become hard visual requirements',()=>{
   assert.deepEqual(
     normalizeMustShow(
