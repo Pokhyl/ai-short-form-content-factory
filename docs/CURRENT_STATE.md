@@ -447,3 +447,18 @@ This section supersedes older version snapshots above where they conflict.
 - media-worker healthy, restart count 0, image `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`.
 - Last fresh PL15 `dfd72856-9480-44d4-9e07-f8decae7ae9f` is immutable `voiceover_failed`: M4 9179 PASS, M5 9180 PASS on the pre-fix v97 versionId `3ce4729e-1f30-4b32-ae99-88aa91109308`, M6 9181 FAIL after four out-of-window TTS candidates. M7-M9 did not run.
 - Runtime proof for the newly published M5 version is still pending. Do not claim PL15 acceptance or start EN30 until a new fresh PL15 reaches machine PASS and passes exact-file manual review.
+
+
+## Authoritative production update — 2026-09-21 after M8 v51 spatial-domain fix
+
+This section supersedes older M8 snapshots above where they conflict.
+
+- Git main before runtime verification: `ec6c2acc0335a9494040050fc54fd08f0a72a76d`.
+- M5 `VideoM5Storyboard001`: active, versionCounter 97, activeVersionId `9cfd4e2d-883f-417c-933d-6b553c5b73c9`.
+- M8 `VideoM8Visuals001`: active, versionCounter 51, activeVersionId `f242881a-d79e-449d-a8c8-68d65ec54cde`.
+- M8 v51 excludes `outdoor/outdoors/indoor/indoors` only from singleton-machinery local operating-domain inference. Repeated-subject context and scorer thresholds are unchanged.
+- Exact pre-deploy M8 backup: `.backups/m8-before-spatial-domain-fix-20260921-192246.json`.
+- Other 31 workflow rows unchanged by publication; aggregate hash `8fbf6b2399f8dd92c1c391dcee4308cf`.
+- Publisher HTTP 200; Studio HTTP 200; n8n restart count 0; media-worker healthy restart count 0.
+- Last fresh PL15 `67a1e838-038e-45d6-aa95-16c4638bbebd` remains immutable `visuals_failed`; its exact S4 defect and v51 fix evidence are in `docs/acceptance/2026-09-21-pl15-v50-s4-spatial-domain-fix.json`.
+- Runtime proof for M8 v51 is pending. Do not claim PL15 acceptance or start EN30 until a new fresh PL15 reaches machine PASS and passes exact-file manual review.

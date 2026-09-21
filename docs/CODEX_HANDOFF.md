@@ -612,3 +612,16 @@ That M8 defect was fixed and deployed as M8 v41.
 - Validation: **89/89 Node tests PASS**; `git diff --check` PASS; M8 JSON parse PASS.
 - Evidence: `docs/acceptance/2026-09-21-pl15-v50-s4-spatial-domain-fix.json`.
 - Production remains M5 activeVersionId `9cfd4e2d-883f-417c-933d-6b553c5b73c9` / M8 v50 `310816fc-fbf3-46e9-983b-b6f612ea009a`. Next: commit/push, M8-only deploy, then one new fresh PL15.
+
+
+### M8 v51 deployed — spatial presentation terms excluded from local machinery domain inference
+
+- Repository fix commit before deployment: `ec6c2acc0335a9494040050fc54fd08f0a72a76d`.
+- Exact pre-deploy M8 backup: `.backups/m8-before-spatial-domain-fix-20260921-192246.json`.
+- Published only `VideoM8Visuals001`: versionCounter **51**, active/current versionId `f242881a-d79e-449d-a8c8-68d65ec54cde`.
+- Published M8 export matches repository exactly for nodes, connections and settings.
+- Other 31 workflow rows were unchanged across M8 publication: count 31 and aggregate hash `8fbf6b2399f8dd92c1c391dcee4308cf` before/after.
+- M5 remains activeVersionId `9cfd4e2d-883f-417c-933d-6b553c5b73c9`; no M5 change.
+- Publisher and Studio HTTP 200; n8n running restart 0; media-worker healthy restart 0 on `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`.
+- No database migration, credential change, service restart or unrelated workflow publication.
+- Next exact step: one fresh PL15. Require M4-M9 PASS, runtime M5 `9cfd4e2d...`, runtime M8 `f242881a...`, then exact MP4 technical/manual semantic/audio acceptance before EN30.
