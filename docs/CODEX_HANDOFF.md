@@ -4,7 +4,7 @@ Updated: 2026-09-21
 
 ## Resume here — authoritative current checkpoint
 
-- Task is NOT complete. Active production is M5 v83 / M8 v44 (full IDs below). No current-version four-case acceptance exists.
+- Task is NOT complete. Active production is M5 v84 / M8 v44 (full IDs below). No current-version four-case acceptance exists.
 - Previous PL15 `1be96d5a-7626-4771-9b1c-7b5452894725` terminated `visuals_failed`: intake 9028 success; parent 9029 error; M4 9030, M5 9031, M6 9032, M7 9033 success; M8 9034 error; M9 never started. Execution 9035 is a subsequent successful Self-Test API request, not a render.
 - Exact failure: no compliant relevant candidate for S2-A (penstock pipe / flowing water). Keep this failed job immutable.
 - Retrieval gap FIXED in M8 v44: all three providers now execute every query. New run accounting is 3 × total query count; verified 45/45 searches in the latest PL15. Historical failed run counts remain unchanged.
@@ -60,7 +60,7 @@ Project workflow IDs:
 Current deployed versions:
 - M3 versionCounter 2, versionId e78f648c-639a-439a-8915-270d3b44f1cb
 - M4 versionCounter 5, versionId 3cf94dd2-8c3b-4585-ae88-6315a2685ff7
-- M5 versionCounter 83, versionId 5e50db9d-e3f9-44a0-8e2f-a0168f505bec (median propagation + whole-subject visual planning)
+- M5 versionCounter 84, versionId 8918963e-54ad-4b52-b167-ef6c6fb9f52f (median propagation + original meaning context + weighted scene word targets)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
 - M8 versionCounter 44, versionId 16c27568-3bbf-41b2-9b23-9e555b3b98da (photographic/subject evidence + complete Commons query coverage)
@@ -68,7 +68,7 @@ Current deployed versions:
 - Self-Test API versionCounter 3, versionId f3ef8cbf-1c56-4048-9fdf-feb073de96df
 
 Current media-worker image:
-sha256:5cf02e01d9cfb693d266bedc2f77b866fcee5960bb0a0654923b79be144e1874
+sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec
 
 Last verified production state:
 - publisher HTTP 200
@@ -311,3 +311,9 @@ That M8 defect was fixed and deployed as M8 v41.
 - `_render_segment` now fits the entire source image/video inside 1080×1920 with proportional scaling and neutral black padding, replacing unconditional center cropping. This preserves edge content and source geometry; it does not prove a source depicts the correct subject.
 - `tests/render-fit-regression.py` executes the actual renderer function with synthetic red/blue edge landmarks and real production FFmpeg. PASS for square-ish 1600×1611, landscape 1920×1080 and portrait 1080×1920: encoded H.264 output decodes at 1080×1920 with both edge landmarks retained. Test output uses temporary paths, no accepted/failed job artifacts are modified.
 - Python AST and git diff checks PASS. Production worker is still the old image; new build/deploy remains pending together with M5 semantic-space fix. Exact selected sources can still be semantically wrong despite matching provider titles (e.g. theme-park wheel); review every scene and do not declare this solved by padding.
+
+### M5 v84 + full-fit worker deployed — 2026-09-21
+
+- M5 active counter 84 / ID `8918963e-54ad-4b52-b167-ef6c6fb9f52f`; M8 remains 44 / `16c27568-3bbf-41b2-9b23-9e555b3b98da`. Other 31 workflow rows unchanged by exact aggregate hash; inventory 32/15. M5 backup `.backups/m5-before-semantic-space-20260921.json`. n8n was not restarted.
+- Rebuilt and recreated only Compose `shorts-v2` media-worker. Active image `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`, healthy, restart counter 0. Old image ID saved in `.backups/worker-before-full-fit-20260921.txt`; original image retained for rollback. Models, voices, alignment hashes and persistent media volumes unchanged.
+- No job ran during deployment. Next: verify live source and fresh M5 execution, run new PL15, inspect every sentence and exact full-fit frame. Provider caption/subject ambiguity remains an explicit unresolved limitation; do not reuse rejected outputs as acceptance or claim four-case completion.
