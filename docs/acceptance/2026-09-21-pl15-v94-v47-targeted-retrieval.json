@@ -1,0 +1,77 @@
+{
+  "base_job_id": "cd432c5e-20b2-4f08-ad45-3cc21d4ee588",
+  "base_production": {
+    "m5_version": 94,
+    "m8_version": 46
+  },
+  "purpose": "Targeted Wikimedia retrieval adequacy for contextual provider queries before full pipeline rerun.",
+  "workflow_state": "repository candidate for M8 v47; not deployed at time of evidence",
+  "final_checks": [
+    {
+      "shot": "S3-A",
+      "query_index": 2,
+      "query": "electric generator turbine",
+      "provider_query": "hydroelectric electric generator turbine",
+      "http_status": 200,
+      "total_candidates": 3,
+      "eligible": [
+        {
+          "provider_asset_id": "28430018",
+          "relevance_score": 86,
+          "title": "File:In-conduit hydro turbine with single-phase generator.jpg"
+        },
+        {
+          "provider_asset_id": "485082",
+          "relevance_score": 81,
+          "title": "File:HydroElectricTurbine.jpg"
+        },
+        {
+          "provider_asset_id": "33734711",
+          "relevance_score": 80,
+          "title": "File:Turbine and Generator Unit 1925 - Wilson Dam and Hydroelectric Plant"
+        }
+      ]
+    },
+    {
+      "shot": "S4-A",
+      "query_index": 2,
+      "query": "power plant generator equipment",
+      "provider_query": "hydroelectric power plant generator equipment",
+      "http_status": 200,
+      "total_candidates": 6,
+      "eligible": [
+        {
+          "provider_asset_id": "6563125",
+          "relevance_score": 87,
+          "title": "File:Fankel Generator Seilkupplung 01.jpg"
+        },
+        {
+          "provider_asset_id": "6563070",
+          "relevance_score": 85,
+          "title": "File:Fankel Generator 01.jpg"
+        },
+        {
+          "provider_asset_id": "6563098",
+          "relevance_score": 83,
+          "title": "File:Fankel Generator Kupplung Turbine 01.jpg"
+        },
+        {
+          "provider_asset_id": "6563112",
+          "relevance_score": 81,
+          "title": "File:Fankel Generator Kupplung Turbine 02.jpg"
+        },
+        {
+          "provider_asset_id": "135264824",
+          "relevance_score": 69,
+          "title": "File:Kraftwerk Wienerbruck Maschinenhalle Generator 3 2023-06-17.jpg"
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Original storyboard query remains unchanged as query_text.",
+    "Effective provider query is stored separately as provider_query_text and is intended to be the cache key.",
+    "No full production job was started for this evidence.",
+    "Earlier diagnostic contextual queries were also executed; only the final post-scorer-fix adequacy checks are recorded here."
+  ]
+}

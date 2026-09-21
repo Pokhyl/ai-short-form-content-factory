@@ -336,3 +336,13 @@ Prevention:
 - distinguish a photograph of signage/doors from the equipment named by the title;
 - do not blanket-reject museum images: an actual hydroelectric runner is valid static illustration;
 - replay the complete original candidate pool and report newly empty pools honestly before another live job.
+
+40. A relevance guard cannot improve retrieval if its context never reaches the provider query.
+M8 v46 learned repeated-subject domain context and correctly rejected off-domain assets, but HTTP searches still used the broad original storyboard query. This produced safe failures rather than useful replacements.
+
+Prevention:
+- preserve storyboard query provenance separately from the effective provider search string;
+- use established context to enrich only the actual provider query;
+- store the effective provider query explicitly and use it as the cache key;
+- keep scorer evaluation against the original query plus explicit domain context;
+- prove retrieval adequacy with targeted provider calls before spending a full pipeline job.

@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS factory.visual_searches (
     provider text NOT NULL,
     query_index integer NOT NULL,
     query_text text NOT NULL,
+    provider_query_text text NOT NULL,
     endpoint_kind text NOT NULL,
     http_status integer NOT NULL,
     result_count integer NOT NULL CHECK (result_count >= 0),
@@ -43,10 +44,27 @@ CREATE TABLE IF NOT EXISTS factory.visual_searches (
         CHECK (provider IN ('pixabay','pexels','wikimedia')),
     CONSTRAINT visual_search_query_index CHECK (query_index >= 1),
     CONSTRAINT visual_search_query_nonempty CHECK (char_length(btrim(query_text)) > 0),
+    CONSTRAINT visual_search_provider_query_nonempty CHECK (char_length(btrim(provider_query_text)) > 0),
     CONSTRAINT visual_search_endpoint CHECK (endpoint_kind IN ('photo','video')),
     CONSTRAINT visual_search_http_status CHECK (http_status BETWEEN 100 AND 599),
     UNIQUE (visual_run_id, shot_id, provider, query_index)
 );
+
+ALTER TABLE factory.visual_searches
+    ADD COLUMN IF NOT EXISTS provider_query_text text;
+
+UPDATE factory.visual_searches
+   SET provider_query_text=query_text
+ WHERE provider_query_text IS NULL;
+
+ALTER TABLE factory.visual_searches
+    ALTER COLUMN provider_query_text SET NOT NULL;
+
+ALTER TABLE factory.visual_searches
+    DROP CONSTRAINT IF EXISTS visual_search_provider_query_nonempty;
+ALTER TABLE factory.visual_searches
+    ADD CONSTRAINT visual_search_provider_query_nonempty
+    CHECK (char_length(btrim(provider_query_text)) > 0);
 
 ALTER TABLE factory.visual_searches
     DROP CONSTRAINT IF EXISTS visual_search_http_ok;
@@ -426,6 +444,7 @@ BEGIN
         provider,
         query_index,
         query_text,
+        provider_query_text,
         endpoint_kind,
         http_status,
         result_count,
@@ -438,6 +457,7 @@ BEGIN
         v_shot.id,
         p_provider,
         p_query_index,
+        v_expected_query,
         v_expected_query,
         p_endpoint_kind,
         p_http_status,
@@ -1410,5 +1430,76 @@ BEGIN
         p_response_headers,
         p_scored_candidates
     );
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION factory.record_live_visual_search_v3(
+    p_visual_run_id uuid,
+    p_shot_id uuid,
+    p_provider text,
+    p_query_index integer,
+    p_query_text text,
+    p_provider_query_text text,
+    p_endpoint_kind text,
+    p_http_status integer,
+    p_response_headers jsonb,
+    p_cache_candidates jsonb,
+    p_scored_candidates jsonb
+)
+RETURNS TABLE (
+    search_id uuid,
+    candidate_count integer
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_search_id uuid;
+    v_candidate_count integer;
+    v_provider_query_text text;
+BEGIN
+    v_provider_query_text := btrim(COALESCE(p_provider_query_text,''));
+
+    IF v_provider_query_text='' THEN
+        RAISE EXCEPTION 'effective visual provider query is required'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF jsonb_typeof(p_cache_candidates) <> 'array'
+       OR jsonb_typeof(p_scored_candidates) <> 'array' THEN
+        RAISE EXCEPTION 'visual candidate arrays are required'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF p_http_status = 200 THEN
+        PERFORM factory.put_visual_cache(
+            p_provider,
+            p_endpoint_kind,
+            v_provider_query_text,
+            p_http_status,
+            p_response_headers,
+            p_cache_candidates
+        );
+    END IF;
+
+    SELECT r.search_id,r.candidate_count
+      INTO v_search_id,v_candidate_count
+      FROM factory.record_visual_search(
+          p_visual_run_id,
+          p_shot_id,
+          p_provider,
+          p_query_index,
+          p_query_text,
+          p_endpoint_kind,
+          p_http_status,
+          p_response_headers,
+          p_scored_candidates
+      ) AS r;
+
+    UPDATE factory.visual_searches
+       SET provider_query_text=v_provider_query_text
+     WHERE id=v_search_id;
+
+    RETURN QUERY
+    SELECT v_search_id,v_candidate_count;
 END;
 $$;

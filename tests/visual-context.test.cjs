@@ -12,12 +12,34 @@ for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': broad fa
  const out=requests(provider,shots);
  for(const shot of ['S3-A','S4-A'])assert.ok(out.filter(r=>r.shot_key===shot).every(r=>r.domain_context_terms.includes('hydroelectric')));
  assert.ok(out.filter(r=>r.shot_key==='S2-A').every(r=>r.domain_context_terms.length===0));
- assert.equal(out.length,15); // search/provenance contract unchanged
+ assert.equal(out.length,15); // search cardinality/provenance contract unchanged
+
+ const byShot=Object.fromEntries(shots.map(s=>[s.shot_key,s]));
+ for(const row of out){
+   const original=byShot[row.shot_key].queries_en[row.query_index-1];
+   assert.equal(row.query,original,'original storyboard query must remain unchanged');
+   assert.ok(row.provider_query,'effective provider query is required');
+ }
+
+ for(const shot of ['S3-A','S4-A']){
+   const rows=out.filter(r=>r.shot_key===shot);
+   assert.ok(rows.every(r=>r.provider_query.toLowerCase().includes('hydroelectric')));
+ }
+ const s3=out.filter(r=>r.shot_key==='S3-A');
+ assert.equal(s3[0].provider_query,s3[0].query); // already qualified; no duplicate prefix
+ assert.equal(s3[1].provider_query,'hydroelectric '+s3[1].query);
+ assert.equal(s3[2].provider_query,'hydroelectric '+s3[2].query);
+ assert.ok(out.filter(r=>r.shot_key==='S2-A').every(r=>r.provider_query===r.query));
 });
 test('context derives from arbitrary storyboard vocabulary, not hydro topic rules',()=>{
  const sample=[{shot_uuid:'a',must_show:['research vessel'],queries_en:['marine research vessel','marine expedition ship']},{shot_uuid:'b',must_show:['engine'],queries_en:['marine engine','engine equipment']},{shot_uuid:'c',must_show:['engine'],queries_en:['industrial engine','engine']}];
  const rows=requests('Wikimedia',sample);
- assert.ok(rows.filter(r=>['b','c'].includes(r.shot_uuid)).every(r=>r.domain_context_terms.includes('marine')));
+ const repeated=rows.filter(r=>['b','c'].includes(r.shot_uuid));
+ assert.ok(repeated.every(r=>r.domain_context_terms.includes('marine')));
+ assert.equal(rows.find(r=>r.shot_uuid==='b'&&r.query_index===1).provider_query,'marine engine');
+ assert.equal(rows.find(r=>r.shot_uuid==='b'&&r.query_index===2).provider_query,'marine engine equipment');
+ assert.equal(rows.find(r=>r.shot_uuid==='c'&&r.query_index===1).provider_query,'marine industrial engine');
+ assert.equal(rows.find(r=>r.shot_uuid==='c'&&r.query_index===2).provider_query,'marine engine');
  assert.ok(!code('Build Wikimedia Requests').includes('hydroelectric'));
 });
 test('exact rejected final-frame assets fail while museum water runner remains eligible',()=>{
@@ -30,6 +52,18 @@ test('exact rejected final-frame assets fail while museum water runner remains e
   if(f.scene==='S5')assert.match(c.rejection_reason,/depicts_surface/);
  }
 });
+
+test('hydroelectric generator metadata satisfies electric-generator subject without weakening domain gate',()=>{
+ const f=structuredClone(fixtures.find(f=>f.scene==='S4'));
+ const page=Object.values(f.body.query.pages)[0];
+ page.title='File:Fankel Generator 01.jpg';
+ page.imageinfo[0].extmetadata.ObjectName={value:'Fankel Generator 01'};
+ page.imageinfo[0].extmetadata.ImageDescription={value:'Turbine-generator set from a hydroelectric power plant'};
+ page.imageinfo[0].extmetadata.Categories={value:'Hydroelectric generators|Francis turbines|Power station equipment'};
+ const c=normalize({...f.ctx,domain_context_terms:['hydroelectric']},f.body);
+ assert.equal(c.rejected,false,c.rejection_reason);
+});
+
 test('actual domain evidence accepts a museum generator without museum blacklist',()=>{
  const f=structuredClone(fixtures.find(f=>f.scene==='S4'));
  const page=Object.values(f.body.query.pages)[0];

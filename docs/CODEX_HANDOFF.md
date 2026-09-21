@@ -510,3 +510,23 @@ That M8 defect was fixed and deployed as M8 v41.
 - Media-worker remains healthy/restart 0 on `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`; publisher and Studio HTTP 200. No service restart, credential change, new provider calls or new acceptance job.
 - Deployment first stopped on a dirty-checkout guard. Inspection showed only pre-existing untracked `studio/qa-v94-pl15-contact.jpg`; all tracked files were clean. Preserved that file untouched, pulled main with fast-forward and completed scoped publication. Do not remove that review artifact as cleanup.
 - Confirmed next result: bad context/depiction selections fail closed under the published source, with original positive subjects retained and 65/65 regressions passing. Product remains incomplete: PL15 visually rejected, audio listening unaccepted, EN30 not started. Next agent should work on context-preserving query planning/retrieval before spending another complete pipeline attempt.
+
+### M8 contextual provider-query planning + explicit query provenance — tested, NOT DEPLOYED
+
+- Continued from production M5 v94 / M8 v46. No full acceptance job was started.
+- Root issue after v46: domain/depiction guards correctly rejected the old S3 steam generator and S4 oil-engine generator, but provider searches still sent the original broad storyboard query unchanged. Existing domain_context_terms affected scoring only, so old S3/S4 pools had zero eligible candidates.
+- Repository change separates two query meanings:
+  - query / DB query_text remains immutable storyboard queries_en provenance and scorer input;
+  - provider_query / DB provider_query_text is the actual provider search string and cache key.
+- For repeated subjects with established shared context, missing domain terms are prepended only to the provider query. Example: storyboard electric generator turbine remains unchanged while Wikimedia searches hydroelectric electric generator turbine. Queries already containing the context are not duplicated.
+- HTTP nodes for Pixabay/Pexels/Wikimedia and Wikimedia retries now use provider_query. All normalizers retain original query_text and expose provider_query_text.
+- DB migration is backward-compatible: visual_searches.provider_query_text is backfilled from existing query_text; old record_live_visual_search / v2 remain; new record_live_visual_search_v3 records original query provenance but caches by the effective provider query. Full db/09-visuals.sql was executed in a transaction with ROLLBACK; column/function appeared inside the transaction and production remained unchanged afterward.
+- Targeted Wikimedia retrieval, without a full pipeline job, proves adequacy:
+  - S3 q2 hydroelectric electric generator turbine -> 3 eligible hydro-context assets, including an in-conduit hydro turbine with generator and a Wilson Dam turbine/generator unit.
+  - S4 q2 hydroelectric power plant generator equipment -> 5 eligible hydro-generator assets, including Fankel hydroelectric generator sets and Wienerbruck hydro power plant Generator 3.
+- The scorer also treats electric/electrical as primary form modifiers, leaving generator distinctive while hydroelectric remains a separate exact storyboard-domain requirement. This lets Hydroelectric generators satisfy electric generator without allowing steam/oil generators to satisfy the domain gate.
+- Full Node suite 70/70 PASS; all 10 M8 Code nodes syntax PASS; git diff --check PASS.
+- Full replay of all 333 old candidates used zero provider calls: old S3 steam, S4 oil-engine and S5 signage selections remain rejected; old S1/S2 remain eligible. Evidence:
+  - docs/acceptance/2026-09-21-pl15-v94-v47-context-replay.json
+  - docs/acceptance/2026-09-21-pl15-v94-v47-targeted-retrieval.json
+- Production is still M8 v46 until this checkpoint is committed/pushed and the DB migration + M8-only publish are performed. Deploy DB first, then M8, verify other workflow rows unchanged, then run one fresh PL15.
