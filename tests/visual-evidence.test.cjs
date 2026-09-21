@@ -75,6 +75,24 @@ test('residential house without required power-line context still rejects', () =
   assert.match(c.rejection_reason,/missing_secondary_subject_context/);
 });
 
+
+test('fresh PL15 portable generator is rejected when shared hydroelectric context is present', () => {
+  const shot={...ctx,
+    query:'electrical generator equipment generating power',
+    provider_query:'hydroelectric electrical generator equipment generating power',
+    domain_context_terms:['hydroelectric'],
+    visual_intent:'Electrical generator equipment generating electric power',
+    must_show:['electrical generator'],
+    must_not_show:['water pump']};
+  const c=normalize(
+    'Pexels',
+    shot,
+    {photos:[pexels('Industrial generator on wheels in a snowy outdoor environment with equipment backdrop.')]}
+  ).candidates[0];
+  assert.equal(c.rejected,true);
+  assert.match(c.rejection_reason,/missing_storyboard_domain_context:hydroelectric/);
+});
+
 test('Pexels page title may corroborate one missing subtype term when alt already proves the object and scene context', () => {
   const shot={...ctx,
     query:'hydroelectric power plant building exterior',

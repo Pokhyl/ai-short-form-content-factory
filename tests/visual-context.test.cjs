@@ -31,6 +31,35 @@ for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': broad fa
  assert.equal(s3[2].provider_query,'hydroelectric '+s3[2].query);
  assert.ok(out.filter(r=>r.shot_key==='S2-A').every(r=>r.provider_query===r.query));
 });
+
+for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': form-modified repeated primary subjects share the same context key',()=>{
+ const sample=[
+  {
+   shot_uuid:'s3',shot_key:'S3-A',scene_order:3,preferred_media_type:'photo',
+   must_show:['generator'],must_not_show:['solar panels'],
+   visual_intent:'Generator unit driven by a turbine in a power station',
+   queries_en:['generator unit driven by turbine','hydroelectric generator machinery','generator'],
+  },
+  {
+   shot_uuid:'s4',shot_key:'S4-A',scene_order:4,preferred_media_type:'photo',
+   must_show:['electrical generator'],must_not_show:['water pump'],
+   visual_intent:'Electrical generator equipment generating electric power',
+   queries_en:['electrical generator equipment generating power','hydroelectric power generator device','electrical generator'],
+  },
+ ];
+ const rows=requests(provider,sample);
+ for(const shot of ['S3-A','S4-A']) {
+   const shotRows=rows.filter(r=>r.shot_key===shot);
+   assert.equal(shotRows.length,3);
+   assert.ok(shotRows.every(r=>r.domain_context_terms.includes('hydroelectric')),shot);
+ }
+ const s4q1=rows.find(r=>r.shot_key==='S4-A'&&r.query_index===1);
+ assert.equal(s4q1.query,'electrical generator equipment generating power');
+ assert.equal(s4q1.provider_query,'hydroelectric electrical generator equipment generating power');
+ const s4q2=rows.find(r=>r.shot_key==='S4-A'&&r.query_index===2);
+ assert.equal(s4q2.provider_query,s4q2.query); // do not duplicate existing context
+});
+
 test('context derives from arbitrary storyboard vocabulary, not hydro topic rules',()=>{
  const sample=[{shot_uuid:'a',must_show:['research vessel'],queries_en:['marine research vessel','marine expedition ship']},{shot_uuid:'b',must_show:['engine'],queries_en:['marine engine','engine equipment']},{shot_uuid:'c',must_show:['engine'],queries_en:['industrial engine','engine']}];
  const rows=requests('Wikimedia',sample);
