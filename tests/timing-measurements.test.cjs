@@ -183,6 +183,52 @@ test('final measured correction tolerates skipped Probe 2 and Probe 3',()=>{
   assert.match(out.user_message,/CURRENT MEASURED TTS: 13368 ms/);
 });
 
+
+test('v96 regression: final measured correction stays inside the window instead of aiming at center',()=>{
+  const code=workflow.nodes.find(n=>n.name==='Build Final Measured Correction').parameters.jsCode;
+  const mk=(words,ms,label)=>({
+    storyboard:{
+      narration:Array(words).fill(label).join(' '),
+      scenes:[6,5,5,4,4].map((n,i)=>({narration:Array(Math.max(2,Math.round(words*[6,5,5,4,4][i]/24))).fill(label).join(' ')})),
+    },
+    measured_duration_ms:ms,
+    narration_word_count:words,
+    target_duration_ms:15000,
+    tolerance_ms:750,
+    usage:{},
+  });
+  const p2=mk(20,13536,'short');
+  const p3=mk(26,15624,'longer');
+  const source=mk(24,16224,'current');
+  const stableP3={...p3,stability_median_ms:16656};
+
+  const originalScenes=[
+    'Ogromny zbiornik wodny gromadzi zasoby na wysokości.',
+    'Spadająca woda napędza turbinę.',
+    'Turbina uruchamia generator, tworząc prąd.',
+    'Transformator podnosi napięcie.',
+    'Prąd trafia do sieci przesyłowej.',
+  ];
+  const $=name=>{
+    if(name==='Normalize Timing Stability B') {
+      return {all:(_branch,run)=>{
+        if(run===0) return [{json:stableP3}];
+        throw new Error('not executed');
+      }};
+    }
+    if(name==='Normalize Timing Probe 2') return {first:()=>({json:p2})};
+    if(name==='Normalize Timing Probe 3') return {first:()=>({json:p3})};
+    if(name==='Normalize Timing Probe') return {first:()=>({json:{storyboard:{scenes:originalScenes.map(narration=>({narration}))}}})};
+    if(name==='Build Script Prompt') return {first:()=>({json:{language_code:'pl',target_duration_seconds:15,target_scenes:5,target_shots:5,word_min:20,word_max:40}})};
+    throw new Error('unexpected node '+name);
+  };
+  const out=new Function('$','$json',code)($,source).json;
+  assert.equal(out.repair_target_duration_ms,15375);
+  assert.equal(out.target_words,23);
+  assert.equal(out.target_scene_word_counts.reduce((a,b)=>a+b,0),23);
+  assert.match(out.user_message,/MEASURED CORRECTION AIM: 15375 ms/);
+});
+
 test('late timing builders use optional reads for branch-dependent probes',()=>{
   const durationCode=workflow.nodes.find(n=>n.name==='Build Final Duration Repair').parameters.jsCode;
   const measuredCode=workflow.nodes.find(n=>n.name==='Build Final Measured Correction').parameters.jsCode;
