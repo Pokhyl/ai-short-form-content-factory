@@ -5,10 +5,10 @@ Updated: 2026-09-21
 ## Resume here — authoritative checkpoint, 2026-09-21
 
 - Synced main from GitHub (`690a880`) and fully reread this handoff, the M5-v94 checkpoint, CURRENT_STATE and LESSONS_LEARNED before continuing. Earlier v84/v44 summaries below are historical.
-- Live SSH verification: M5 **v94** / `b4122d0a-5754-4311-8b7a-adab15ff0697`; M8 **v46** / `b315a1e5-20c1-435e-b2a9-062f207dccfa`. Published M8 code matches repository; other 31 workflow rows unchanged. M5 and worker unchanged.
+- Live verification: M5 v94 / b4122d0a-5754-4311-8b7a-adab15ff0697; M8 v47 / b47eb18a-e2f3-4b4e-96e2-b263b29f558d. Published M8 core matches repository; other 31 workflow rows unchanged. M5 and worker unchanged.
 - PL15 `cd432c5e-20b2-4f08-ad45-3cc21d4ee588`: M4–M9 PASS, but exact-file visual review now **REJECTED**. Do not start EN30. Candidate IDs, metadata and execution snapshots are in `docs/acceptance/2026-09-21-pl15-v94-review.json`.
 - Exact midpoint review: S1 dam acceptable; S2 museum hydroelectric runner acceptable as static illustration; S3 steam-turbine generator is wrong mechanism context; S4 oil-engine-driven generator is wrong plant context; S5 shows door/warning signs rather than the requested transformer/power lines. Do not reject museum images categorically.
-- Implemented/deployed: repeated-subject shared-domain guard and Commons signage/door depiction guard. 65 tests and complete 333-candidate replay PASS; exact old S3/S4/S5 rejected, S1/S2 retained. Next: improve planned query specificity using established subject context, without changing stored query provenance or cache keys silently. Old S3/S4 pools have zero eligible candidates. Do not launch another full job until retrieval is shown adequate. No fresh v46 execution or product acceptance claimed.
+- Implemented/deployed: repeated-subject domain/depiction guards plus contextual provider-query planning with explicit query provenance/cache separation. 70 tests PASS; complete 333-candidate replay keeps old S3/S4/S5 bad selections rejected; targeted Wikimedia retrieval now finds eligible hydro-context replacements for S3/S4. DB provider_query_text + record_live_visual_search_v3 migration is live. Next: run one fresh PL15 on M5 v94 / M8 v47, confirm v47 runtime snapshot and query provenance rows, then inspect exact MP4 before EN30.
 - Audio: technical integrity checked; listening QA is NOT complete, no audio/HUMAN PASS claimed. Full four-case acceptance remains incomplete.
 - Access: SentinelX currently reports zero connected hosts / agent_offline even though its service is active. Existing SSH alias `hodor-vps` works and was used for read-only verification. No service restart, credential change or new connection setup needed.
 
@@ -64,7 +64,7 @@ Current deployed versions:
 - M5 versionCounter 94, versionId b4122d0a-5754-4311-8b7a-adab15ff0697 (semantic/timing guards + English visual metadata + secondary process-anchor normalization)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
-- M8 versionCounter 46, versionId b315a1e5-20c1-435e-b2a9-062f207dccfa (v45 + repeated-subject domain context + signage/door depiction guard)
+- M8 versionCounter 47, versionId b47eb18a-e2f3-4b4e-96e2-b263b29f558d (v46 + contextual provider queries + explicit query provenance/cache key separation)
 - M9 versionCounter 1, versionId 5b6c937c-1767-4c3e-99c4-31ea38a26961
 - Self-Test API versionCounter 3, versionId f3ef8cbf-1c56-4048-9fdf-feb073de96df
 
@@ -530,3 +530,25 @@ That M8 defect was fixed and deployed as M8 v41.
   - docs/acceptance/2026-09-21-pl15-v94-v47-context-replay.json
   - docs/acceptance/2026-09-21-pl15-v94-v47-targeted-retrieval.json
 - Production is still M8 v46 until this checkpoint is committed/pushed and the DB migration + M8-only publish are performed. Deploy DB first, then M8, verify other workflow rows unchanged, then run one fresh PL15.
+
+### M8 v47 deployed and verified — contextual provider queries + explicit query provenance
+
+- Active M8 counter 47, activeVersionId b47eb18a-e2f3-4b4e-96e2-b263b29f558d. Exact pre-deploy workflow backup: .backups/m8-before-context-query-v47-20260921-153304.json.
+- Project DB migration applied before workflow publication:
+  - added non-null factory.visual_searches.provider_query_text;
+  - backfilled all 6269 existing rows from query_text (legacy_equal=6269/6269);
+  - added factory.record_live_visual_search_v3;
+  - old record_live_visual_search and v2 remain available;
+  - v3 persists original query_text but caches by effective provider_query_text.
+- DB backups before migration:
+  - .backups/visual-searches-schema-before-v47-20260921-153304.sql
+  - .backups/visual-searches-data-before-v47-20260921-153304.sql.gz
+  - .backups/visual-functions-before-v47-20260921-153304.sql
+- Other 31 n8n workflow rows were identical before/after M8 publication; aggregate hash 9d077f9318f625630aea069f4be52fcf.
+- Live exported M8 core matches repository. Publisher/Studio HTTP 200; n8n restart count 0; media-worker healthy/restart 0. No service restart or credential change.
+- Pre-deploy validation: 70/70 Node tests PASS, all 10 M8 Code nodes syntax PASS, git diff check PASS, full DB migration transaction dry-run PASS.
+- Retrieval adequacy was shown before the full rerun:
+  - S3 contextual query returned 3 eligible hydro-generator/turbine assets.
+  - S4 contextual query returned 5 eligible hydro-generator assets.
+  - Full 333-candidate replay used zero provider calls and retained rejection of old S3 steam, S4 oil-engine and S5 signage selections.
+- No fresh v47 execution has been claimed yet. Next exact step: create one new PL15, confirm execution M8 versionId is v47, verify query_text vs provider_query_text on search rows, then require M4-M9 PASS and exact MP4 visual/audio QA before EN30.

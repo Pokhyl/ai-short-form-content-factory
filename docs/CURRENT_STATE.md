@@ -4,7 +4,7 @@ Updated: 2026-09-21
 
 ## Current authoritative status
 
-Live verified M5 v94 (`b4122d0a-5754-4311-8b7a-adab15ff0697`) / M8 v46 (`b315a1e5-20c1-435e-b2a9-062f207dccfa`). PL15 `cd432c5e-20b2-4f08-ad45-3cc21d4ee588` passes machine QA but fails exact-frame visual QA in S3/S4/S5. M8 v46 now rejects the wrong-domain/signage selections in complete 333-candidate replay; 65 tests pass. Old S3/S4 candidate pools become empty; improve planned retrieval before a fresh job. EN30 must wait. See CODEX_HANDOFF.md and acceptance/2026-09-21-pl15-v94-review.json for evidence and next action. Older milestone/status sections below are historical, not the deployment inventory.
+Live verified M5 v94 / M8 v47. PL15 cd432c5e-20b2-4f08-ad45-3cc21d4ee588 is historical: it passes machine QA but fails exact-frame visual QA in S3/S4/S5. M8 v47 keeps the v46 domain/depiction guards and now sends established repeated-subject context in the actual provider query while preserving the original storyboard query separately in PostgreSQL. DB query provenance/cache migration is live; 70 tests pass and targeted Wikimedia retrieval finds eligible hydro-generator candidates for former S3/S4 gaps. No fresh v47 acceptance job has run yet. EN30 must wait for a fresh PL15 visual/audio acceptance. See CODEX_HANDOFF.md and acceptance evidence files for the exact next action. Older milestone/status sections below are historical.
 
 ## Repository
 Repo: Pokhyl/ai-short-form-content-factory
