@@ -43,6 +43,32 @@ test('described photographic bee remains eligible with original score gates', ()
   assert.equal(c.rejected,false);
   assert.ok(c.relevance_score>=60);
 });
+
+test('Pexels page title may corroborate one missing subtype term when alt already proves the object and scene context', () => {
+  const shot={...ctx,
+    query:'hydroelectric power plant building exterior',
+    visual_intent:'Hydroelectric power plant building exterior near a river',
+    must_show:['hydroelectric power plant','river'],
+    must_not_show:[]};
+  const hit=pexels('Picturesque scenery of power plant with flowing water located near river among green hills');
+  hit.url='https://www.pexels.com/photo/hydroelectric-power-plant-in-forest-4500695/';
+  const c=normalize('Pexels',shot,{photos:[hit]}).candidates[0];
+  assert.equal(c.rejected,false,c.rejection_reason);
+  assert.ok(c.relevance_score>=60);
+});
+
+test('Pexels page title cannot rescue an unrelated described subject', () => {
+  const shot={...ctx,
+    query:'hydroelectric power plant building exterior',
+    visual_intent:'Hydroelectric power plant building exterior near a river',
+    must_show:['hydroelectric power plant','river'],
+    must_not_show:[]};
+  const hit=pexels('Portrait of a swimmer standing beside a blue swimming pool');
+  hit.url='https://www.pexels.com/photo/hydroelectric-power-plant-in-forest-4500695/';
+  const c=normalize('Pexels',shot,{photos:[hit]}).candidates[0];
+  assert.equal(c.rejected,true);
+});
+
 test('Pexels URL keywords cannot replace an absent visual description', () => {
   const hit=pexels(''); hit.url='https://www.pexels.com/photo/honey-bee-processing-nectar-mouthparts-456/';
   const c=normalize('Pexels',ctx,{photos:[hit]}).candidates[0];

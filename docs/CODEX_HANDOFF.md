@@ -373,3 +373,14 @@ That M8 defect was fixed and deployed as M8 v41.
 - Live exported M5 core matches repository. Semantic coverage threshold is 0.625 with generic filler rejection; hard exact-total precision rejection is absent.
 - Publisher and Studio HTTP 200; n8n and media-worker healthy with restart count 0. No restart was issued.
 - Next: create one fresh PL15, confirm execution snapshot uses v86, inspect M5 narration/semantic path, then continue only if the exact job passes.
+
+### PL15 v86 reached M8; Pexels title corroboration fix tested — NOT DEPLOYED
+
+- Fresh PL15 `b2e90f30-a887-4292-b489-ee6124c8d67f`: M4 9055 PASS, M5 9057 PASS on v86 `7ad8ed81-edfe-4c74-9957-f0578de84261`, M6 9058 PASS, M7 9059 PASS, M8 9060 FAILED on v44; M9 never started.
+- M5 final narration was 25 words and stable in-window (14,448 ms first measurement, 14,472 ms canonical stability): `Elektrownia wodna zamienia energię wody w prąd. Zapora spiętrza rzekę, tworząc zbiornik. Woda spada przez turbinę wodną. Generator wytwarza czystą energię elektryczną. Prąd zasila domy.` No timing rewrite was needed.
+- Exact M8 failure: S1-A `Hydroelectric power plant building exterior near a river`, must_show `hydroelectric power plant` + `river`. All 45 searches completed, but no candidate selected.
+- Retrieval was not the problem. Pexels returned an exact-looking candidate with alt `Picturesque scenery of power plant with flowing water located near river among green hills against cloudy sky in summer day` and page URL slug `hydroelectric-power-plant-in-forest-4500695`; score 100, rejected only because `hydroelectric` was absent from alt strong subject text.
+- Repository fix is provider-specific and fail-closed: Pexels page slug is treated as provider title corroboration only for one missing subtype term when the non-empty alt already establishes part of the primary subject, independent secondary scene context, and sufficient visual-intent overlap. URL/title alone cannot establish a subject and cannot rescue an unrelated alt.
+- Photo scoring metadata no longer mixes the raw URL into ordinary visual-description text; the title corroboration channel is separate.
+- Regression coverage includes the exact hydro candidate, unrelated-alt same-URL negative, existing URL-only negative, bee/wasp/dew/monkey negatives, and existing valid compound subjects. Full Node suite 37/37 PASS; all 10 M8 Code nodes pass `node --check`; `git diff --check` PASS.
+- Production remains M8 v44 until this tested patch is committed/pushed and deployed. Next: deploy only M8, verify all other workflow rows unchanged, then start a fresh immutable PL15.

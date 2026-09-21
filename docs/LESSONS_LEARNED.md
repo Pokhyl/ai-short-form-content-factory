@@ -278,3 +278,13 @@ Prevention:
 - treat word counts as timing guidance only; semantic validation must pass first, then real measured TTS decides timing acceptance;
 - preserve numeric facts and negation polarity;
 - use prompt instructions and word-count targets as guidance, never as proof that meaning or timing was preserved.
+
+35. Provider page titles can corroborate, but must never substitute for, visual description evidence.
+Pexels may describe a hydroelectric plant photo as a generic `power plant with flowing water near river` while the canonical page title carries the missing subtype word.
+
+Prevention:
+- keep raw URL/title metadata separate from visible-description evidence;
+- require non-empty visual description before title corroboration is considered;
+- allow title metadata to fill only a bounded missing subtype gap;
+- require independently matched scene context and intent overlap;
+- retain negative tests proving URL-only or unrelated descriptions cannot pass.
