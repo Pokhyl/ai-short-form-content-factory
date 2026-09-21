@@ -11,7 +11,7 @@ const shots=evidence.selected.map(s=>({...s,shot_uuid:s.scene_key,shot_key:s.sce
 for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': broad fallback retains shared context for repeated subject',()=>{
  const out=requests(provider,shots);
  for(const shot of ['S3-A','S4-A'])assert.ok(out.filter(r=>r.shot_key===shot).every(r=>r.domain_context_terms.includes('hydroelectric')));
- assert.ok(out.filter(r=>r.shot_key==='S2-A').every(r=>r.domain_context_terms.length===0));
+ assert.ok(out.filter(r=>r.shot_key==='S2-A').every(r=>r.domain_context_terms.includes('hydro')));
  assert.equal(out.length,15); // search cardinality/provenance contract unchanged
 
  const byShot=Object.fromEntries(shots.map(s=>[s.shot_key,s]));
@@ -29,7 +29,10 @@ for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': broad fa
  assert.equal(s3[0].provider_query,s3[0].query); // already qualified; no duplicate prefix
  assert.equal(s3[1].provider_query,'hydroelectric '+s3[1].query);
  assert.equal(s3[2].provider_query,'hydroelectric '+s3[2].query);
- assert.ok(out.filter(r=>r.shot_key==='S2-A').every(r=>r.provider_query===r.query));
+ const s2=out.filter(r=>r.shot_key==='S2-A');
+ assert.equal(s2[0].provider_query,s2[0].query);
+ assert.equal(s2[1].provider_query,'hydro '+s2[1].query);
+ assert.equal(s2[2].provider_query,'hydro '+s2[2].query);
 });
 
 for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': form-modified repeated primary subjects share the same context key',()=>{
@@ -58,6 +61,62 @@ for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': form-mod
  assert.equal(s4q1.provider_query,'hydroelectric electrical generator equipment generating power');
  const s4q2=rows.find(r=>r.shot_key==='S4-A'&&r.query_index===2);
  assert.equal(s4q2.provider_query,s4q2.query); // do not duplicate existing context
+});
+
+
+for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': singleton machinery retains explicit local operating domain',()=>{
+ const sample=[{
+   shot_uuid:'t1',shot_key:'S2-A',scene_order:2,preferred_media_type:'photo',
+   must_show:['water turbine'],must_not_show:[],
+   visual_intent:'Water turbine spinning inside a hydroelectric power station',
+   queries_en:['water turbine inside hydroelectric plant','turbine spinning in water power station','water turbine'],
+ }];
+ const rows=requests(provider,sample);
+ assert.equal(rows.length,3);
+ assert.ok(rows.every(r=>r.domain_context_terms.includes('hydroelectric')));
+ assert.equal(rows[0].provider_query,rows[0].query);
+ assert.equal(rows[1].provider_query,'hydroelectric '+rows[1].query);
+ assert.equal(rows[2].provider_query,'hydroelectric water turbine');
+});
+
+test('non-machinery subject is not overconstrained by local operating-domain inference',()=>{
+ const sample=[{
+   shot_uuid:'r1',shot_key:'S1-A',scene_order:1,preferred_media_type:'photo',
+   must_show:['water reservoir'],must_not_show:[],
+   visual_intent:'Large water reservoir behind a concrete dam in a hydroelectric plant',
+   queries_en:['water reservoir behind concrete dam','hydroelectric plant water reservoir','water reservoir'],
+ }];
+ const rows=requests('Wikimedia',sample);
+ assert.ok(rows.every(r=>r.domain_context_terms.length===0));
+ assert.equal(rows[2].provider_query,'water reservoir');
+});
+
+test('fresh PL15 theme-park water turbine is rejected while actual hydro turbine remains eligible',()=>{
+ const base=structuredClone(fixtures.find(f=>f.scene==='S2'));
+ const ctx={
+   ...base.ctx,
+   query:'water turbine',
+   visual_intent:'Water turbine spinning inside a hydroelectric power station',
+   must_show:['water turbine'],
+   must_not_show:[],
+   domain_context_terms:['hydroelectric'],
+ };
+ const page=Object.values(base.body.query.pages)[0];
+
+ page.title='File:Disney California Adventure Grizzly Rapids water turbine.jpg';
+ page.imageinfo[0].extmetadata.ObjectName={value:'Disney California Adventure Grizzly Rapids water turbine'};
+ page.imageinfo[0].extmetadata.ImageDescription={value:'Old house with a water wheel at Disney California Adventure Grizzly River Run'};
+ page.imageinfo[0].extmetadata.Categories={value:'Water turbines|Theme park attractions|Disney California Adventure'};
+ let c=normalize(ctx,base.body);
+ assert.equal(c.rejected,true);
+ assert.match(c.rejection_reason,/missing_storyboard_domain_context:hydroelectric/);
+
+ page.title='File:Hydroelectric power station turbines.jpg';
+ page.imageinfo[0].extmetadata.ObjectName={value:'Hydroelectric power station turbines'};
+ page.imageinfo[0].extmetadata.ImageDescription={value:'Industrial turbines inside a hydroelectric power station'};
+ page.imageinfo[0].extmetadata.Categories={value:'Hydroelectric power stations|Water turbines'};
+ c=normalize(ctx,base.body);
+ assert.equal(c.rejected,false,c.rejection_reason);
 });
 
 test('context derives from arbitrary storyboard vocabulary, not hydro topic rules',()=>{

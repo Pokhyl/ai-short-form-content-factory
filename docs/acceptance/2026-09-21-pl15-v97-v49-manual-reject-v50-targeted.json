@@ -1,0 +1,75 @@
+{
+  "job_id": "306162e6-6ae4-4551-b948-d219175b1479",
+  "status": "machine_qa_passed_but_manual_semantic_rejected",
+  "production": {
+    "m5_version": 97,
+    "m5_version_id": "3ce4729e-1f30-4b32-ae99-88aa91109308",
+    "m8_version": 49,
+    "m8_version_id": "a8f8b376-12b2-4089-9dd0-d410afcb43a7"
+  },
+  "executions": {
+    "M4": 9170,
+    "M5": 9172,
+    "M6": 9173,
+    "M7": 9174,
+    "M8": 9175,
+    "M9": 9176
+  },
+  "machine_result": "machine_qa_passed",
+  "manual_rejection": {
+    "shot": "S2-A",
+    "visual_intent": "Water turbine spinning inside a hydroelectric power station",
+    "must_show": [
+      "water turbine"
+    ],
+    "selected": {
+      "provider": "wikimedia",
+      "provider_asset_id": "110818093",
+      "query_text": "water turbine",
+      "provider_rank": 3,
+      "relevance_score": 100,
+      "source_url": "https://commons.wikimedia.org/wiki/File:Disney_California_Adventure_Grizzly_Rapids_Eureka_Gold_Timber_%26_Mining_Company_water_turbine.jpg",
+      "metadata_summary": "Disney California Adventure / Grizzly River Run water turbine / old house with water wheel"
+    },
+    "reason": "Generic fallback preserved the primary subject but lost the explicit hydroelectric power-station operating domain."
+  },
+  "v50_targeted_checks": [
+    {
+      "shot": "S2-A",
+      "query": "water turbine",
+      "provider_query": "hydroelectric water turbine",
+      "domain_context_terms": [
+        "hydroelectric"
+      ],
+      "provider": "wikimedia",
+      "http_status": 200,
+      "eligible_count": 4,
+      "examples": [
+        "CBu hydroelectric power plant + turbine 01.jpg",
+        "Water turbine construction.png - Dnieper Hydroelectric Station",
+        "Hydroelectric turbines (28408674974).jpg"
+      ]
+    },
+    {
+      "shot": "S4-A",
+      "query": "power transformer",
+      "provider_query": "substation power transformer",
+      "domain_context_terms": [
+        "substation"
+      ],
+      "provider": "wikimedia",
+      "http_status": 200,
+      "eligible_count": 3,
+      "examples": [
+        "Substation Power Transformer 1.jpg",
+        "Power Transformer Fischbech.jpg",
+        "Pont-l'Abbe high-voltage substation - Transformer connections.jpg"
+      ]
+    }
+  ],
+  "validation": {
+    "node_tests": "84/84 PASS",
+    "m8_code_nodes": "10/10 syntax PASS",
+    "git_diff_check": "PASS"
+  }
+}

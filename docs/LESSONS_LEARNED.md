@@ -346,3 +346,13 @@ Prevention:
 - store the effective provider query explicitly and use it as the cache key;
 - keep scorer evaluation against the original query plus explicit domain context;
 - prove retrieval adequacy with targeted provider calls before spending a full pipeline job.
+
+41. A singleton machinery subject can still need an explicit local operating domain.
+A fallback query can preserve the primary noun (water turbine) while losing the scene-defining location/domain (inside a hydroelectric power station). That allowed a theme-park water turbine to score 100.
+
+Prevention:
+- for machinery primaries, retain a specific local domain/location qualifier when it is supported by both visual_intent and planned queries;
+- enrich provider search without overwriting original query provenance;
+- keep the domain gate independent from primary form modifiers;
+- do not blacklist venues such as museums or theme parks; accept them only when metadata establishes the requested operating domain;
+- prove the new query still returns eligible candidates before spending another full pipeline job.

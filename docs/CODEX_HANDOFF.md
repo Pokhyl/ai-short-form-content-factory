@@ -552,3 +552,23 @@ That M8 defect was fixed and deployed as M8 v41.
   - S4 contextual query returned 5 eligible hydro-generator assets.
   - Full 333-candidate replay used zero provider calls and retained rejection of old S3 steam, S4 oil-engine and S5 signage selections.
 - No fresh v47 execution has been claimed yet. Next exact step: create one new PL15, confirm execution M8 versionId is v47, verify query_text vs provider_query_text on search rows, then require M4-M9 PASS and exact MP4 visual/audio QA before EN30.
+
+### Fresh PL15 on M5 v97 / M8 v49 machine-passed but semantic QA rejected S2 - v50 fix tested, NOT DEPLOYED
+
+- Fresh PL15 job 306162e6-6ae4-4551-b948-d219175b1479 completed M4-M9 and reached machine_qa_passed.
+- Execution snapshots: M4 9170; M5 9172 on v97 3ce4729e-1f30-4b32-ae99-88aa91109308; M6 9173; M7 9174; M8 9175 on v49 a8f8b376-12b2-4089-9dd0-d410afcb43a7; M9 9176.
+- Manual semantic review rejects the job before acceptance. S2 visual_intent is Water turbine spinning inside a hydroelectric power station, but v49 selected Wikimedia asset 110818093 from fallback query water turbine, score 100. Its metadata is Disney California Adventure / Grizzly River Run / an old house with a water wheel, not a hydroelectric power-station turbine.
+- The defect is systemic: singleton machinery fallback queries can retain the primary object while dropping an explicit operating-domain/location qualifier from the storyboard.
+- Repository v50 candidate fix:
+  - for machinery primaries only, derive one specific local operating-domain term from the intersection of visual_intent and the first two planned queries;
+  - exclude primary terms, machinery companion heads and generic action/process words;
+  - merge that local term with existing repeated-subject domain context;
+  - enrich only provider_query while preserving original query provenance;
+  - when such domain context exists, form modifiers such as water/hydro/hydraulic/steam/gas/wind/power do not need literal primary-caption coverage; the machinery head remains distinctive and the separate domain gate remains mandatory;
+  - domain tokens support safe prefix compatibility such as hydro -> hydroelectric.
+- This is not a Disney blacklist and contains no topic-specific asset IDs in production logic. Old Manitoba hydro museum runner remains eligible because its metadata establishes the requested hydro domain.
+- Validation: 84/84 Node tests PASS; all 10 M8 Code nodes syntax PASS; git diff check PASS.
+- Exact current storyboard dry-run: S2 fallback becomes hydroelectric water turbine with hydroelectric required; S4 fallback becomes substation power transformer with substation required; S1/S5 remain unmodified by local machinery context.
+- Targeted live Wikimedia retrieval: S2 returned 4 eligible hydro-context turbine assets; S4 returned 3 eligible substation-transformer assets.
+- Evidence: docs/acceptance/2026-09-21-pl15-v97-v49-manual-reject-v50-targeted.json.
+- Production remains M8 v49 until this patch is committed/pushed and M8-only deployed. After deploy, run a new fresh PL15; do not reuse job 306162e6-6ae4-4551-b948-d219175b1479.
