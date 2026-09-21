@@ -284,3 +284,9 @@ That M8 defect was fixed and deployed as M8 v41.
 - Backups: `.backups/m8-before-query-coverage-20260921.json` and `.backups/begin-visuals-before-query-coverage-20260921.sql`. Verified deployed SQL uses 3 × total queries; old run records untouched.
 - Deployment interruption resolved: strict umask made the copied non-secret workflow JSON unreadable by n8n (EACCES). Changed only `/tmp/m8-query-coverage.json` mode to 0644 and repeated import/publish successfully. No product job ran during the brief SQL/workflow transition.
 - Fresh PL15 `69391e2d-34bc-4775-89f8-32913dff9edb` created and run accepted. Next: record actual execution IDs/version snapshot and full search accounting; inspect final artifact or diagnose terminal failure before any new job.
+
+### Runtime verification on fresh v44 job
+
+- PL15 `69391e2d-34bc-4775-89f8-32913dff9edb`: intake 9036 success; parent 9037 running; M4 9038, M5 9039, M6 9040, M7 9041 success; M8 9042 running. No final artifact yet.
+- Execution snapshots confirm M5 active ID `5e50db9d-e3f9-44a0-8e2f-a0168f505bec` and M8 `16c27568-3bbf-41b2-9b23-9e555b3b98da`. New visual run expects 45 searches for 5 × 3 × 3, with 30 persisted while paced Commons searches are still in progress.
+- All 8 active workflow node/connection graphs match repository; syntax checks pass for 113 Code nodes. Next: wait for this job's terminal result, audit/review output before starting EN30.
