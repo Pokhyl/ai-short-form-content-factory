@@ -60,7 +60,7 @@ Project workflow IDs:
 Current deployed versions:
 - M3 versionCounter 2, versionId e78f648c-639a-439a-8915-270d3b44f1cb
 - M4 versionCounter 5, versionId 3cf94dd2-8c3b-4585-ae88-6315a2685ff7
-- M5 versionCounter 86, versionId 7ad8ed81-edfe-4c74-9957-f0578de84261 (immutable semantic source + fail-closed semantic validation; word counts are soft timing guidance)
+- M5 versionCounter 87, versionId 76997364-249a-470b-9773-039977eeeba3 (topic-focused initial script + first-repair semantic guard/fallback + soft timing counts)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
 - M8 versionCounter 45, versionId 3778d30c-70c0-4cd2-9df8-e8465d4fdd7a (photographic/subject evidence + complete Commons query coverage + bounded Pexels page-title corroboration)
@@ -405,3 +405,12 @@ That M8 defect was fixed and deployed as M8 v41.
 - Repair 2 and Canonicalize Final Storyboard also reject duplicate scene narration.
 - Full Node suite 42/42 PASS, including exact regressions from executions 9047/9052/9065, graph routing, fallback behavior, topic-focus contract, Pexels visual tests and query coverage. All M5 Code nodes pass syntax; `git diff --check` PASS.
 - Production remains M5 v86 / M8 v45 until this patch is committed/pushed and M5-only deployed.
+
+### M5 v87 deployed — topic-focused script and pre-TTS semantic fallback
+
+- Published only `VideoM5Storyboard001`: counter 87, activeVersionId `76997364-249a-470b-9773-039977eeeba3`.
+- Backup of v86: `.backups/m5-before-topic-fallback-20260921-093317.json`.
+- Aggregate hash of the other 31 workflow rows is identical before/after; inventory unchanged.
+- Live exported M5 core matches repository. `Validate Timing Repair` contains the semantic guard and its error output points to `Build Timing Repair 2`; Repair 2 supports fallback from the immutable original without a TTS probe.
+- Publisher and Studio HTTP 200; n8n and media-worker healthy with restart count 0. No restart was issued.
+- Current production target is M5 v87 / M8 v45 / full-fit media-worker. Next: run a fresh PL15 and confirm execution snapshots before any acceptance claim.
