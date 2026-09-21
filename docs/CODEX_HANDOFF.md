@@ -51,10 +51,10 @@ Project workflow IDs:
 Current deployed versions:
 - M3 versionCounter 2, versionId e78f648c-639a-439a-8915-270d3b44f1cb
 - M4 versionCounter 5, versionId 3cf94dd2-8c3b-4585-ae88-6315a2685ff7
-- M5 versionCounter 82, versionId d47c0333-5e66-43ca-a10a-c3482a322d6c (confirmed TTS median propagation)
+- M5 versionCounter 83, versionId 5e50db9d-e3f9-44a0-8e2f-a0168f505bec (median propagation + whole-subject visual planning)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
-- M8 versionCounter 42, versionId c6309bfc-4aa7-42c6-b5a9-49b187c134c1 (photographic-evidence fix)
+- M8 versionCounter 43, versionId d282d875-8e81-43c7-99bb-3f9730fb9052 (photographic + subject-evidence fixes)
 - M9 versionCounter 1, versionId 5b6c937c-1767-4c3e-99c4-31ea38a26961
 - Self-Test API versionCounter 3, versionId f3ef8cbf-1c56-4048-9fdf-feb073de96df
 
@@ -255,3 +255,9 @@ That M8 defect was fixed and deployed as M8 v41.
 - `node --test tests/*.test.cjs`: 18/18 PASS, including wasp/bee-fly/dew/ambiguous-monkey negatives and valid compound subject controls. All 8 workflow graphs, 113 JavaScript nodes and Python AST checks PASS; `git diff --check` PASS.
 - Replayed 236 original Pexels/Wikimedia candidates from execution 9026 without provider calls; 211 correctly rejected under stronger evidence. Old overspecific storyboard now has 6 shots without eligible candidates and would fail closed instead of producing unrelated images. This does NOT assert the old job can pass. Raw replay input is VPS `.review/acceptance-20260920/en30-v42-replay.json`; bounded result is `docs/acceptance/2026-09-21-en30-v42-replay.jsonl`.
 - Production remains M5 v82 / M8 v42 at this checkpoint. Next: deploy both tested project workflows after backups and protected-row checks, then fresh sequential matrix on the final versions. Existing rejected jobs remain unchanged.
+
+### M5 v83 / M8 v43 published — 2026-09-21
+
+- Active IDs: M5 `5e50db9d-e3f9-44a0-8e2f-a0168f505bec` / counter 83; M8 `d282d875-8e81-43c7-99bb-3f9730fb9052` / counter 43. Exact backup `.backups/m5-m8-before-subject-grounding-20260921.json`. Other 30 workflow rows unchanged by aggregate comparison; inventory 32/15. No service restart or credential change.
+- Fresh sequential matrix starts with PL15 `1be96d5a-7626-4771-9b1c-7b5452894725`, created and run accepted. All earlier jobs are diagnostics for prior versions.
+- Next: complete/inspect PL15, then fresh EN30/RU45/UK60 sequentially; record execution snapshots and exact artifacts. Production media-worker and other six workflow versions remain unchanged.
