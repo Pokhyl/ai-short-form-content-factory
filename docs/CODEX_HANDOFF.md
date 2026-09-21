@@ -585,3 +585,16 @@ That M8 defect was fixed and deployed as M8 v41.
 - Added graph regression test `M5 regression: two-sample stability cannot bypass the three-sample majority gate`.
 - Validation in an isolated local n8n image with the repository mounted read-only: **85/85 Node tests PASS**; `git diff --check` PASS; M5 workflow JSON parse PASS.
 - Production at this checkpoint is still M5 v97 / M8 v50. No retry job has been started. Next: commit/push this checkpoint, deploy only M5 with exact backup and protected-row comparison, verify the new active version, then run one fresh PL15 from the beginning.
+
+
+### M5 three-sample stability gate deployed — runtime verification pending
+
+- Repository checkpoint `786bf008593ae8c42e9ef6d580033eb035297206` was fetched/pushed on `main` before deployment.
+- Exact pre-deploy published M5 backup: `.backups/m5-before-three-sample-gate-20260921-190126.json`.
+- Published only `VideoM5Storyboard001`. n8n kept `versionCounter=97` but created new current/active versionId `9cfd4e2d-883f-417c-933d-6b553c5b73c9`.
+- Published M5 export matches repository exactly for nodes, connections and settings.
+- Other 31 workflow rows were unchanged across deployment: count 31 and aggregate hash `99baea155409822fc83fa57cb2896c05` before/after. Inventory remains 32 total / 15 active.
+- M8 remains v50 `310816fc-fbf3-46e9-983b-b6f612ea009a`. No M8 change, database migration, service restart or credential change was performed.
+- Publisher and Studio HTTP 200; n8n running restart 0; media-worker healthy restart 0 on `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`.
+- n8n CLI emitted its generic restart advisory after publish; no restart was performed. The next fresh M5 execution must prove runtime versionId `9cfd4e2d-883f-417c-933d-6b553c5b73c9` and its usage ledger must contain the Stability B request for the accepted final narration.
+- Next exact step: one fresh PL15 from the beginning. Require M4-M9 completion, M5 runtime proof, M8 v50 runtime proof, then exact final MP4/manual semantic/audio acceptance before EN30.

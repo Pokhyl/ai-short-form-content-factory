@@ -432,3 +432,18 @@ PL15 on M5 v82/M8 v42 passed exact-file review. EN30 on the same versions reache
 Render fit correction tested locally/in the existing worker via an isolated function, not deployed: preserve full source geometry with aspect-fit and black padding. Three real FFmpeg edge-landmark regressions pass. See CODEX_HANDOFF.md for active vs pending versions and latest rejected output.
 
 Latest acceptance failed in M5: job `ccc91e49-8e19-404d-bf05-3ec4cab5d469`, execution 9047, 14,064 ms vs 15,000 ± 750 ms. v84 prompts did not prevent semantic drift; exact evidence and next repair scope are in CODEX_HANDOFF.md. Active: M5 v84, M8 v44, full-fit worker `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`. No current-version accepted matrix.
+
+
+## Authoritative production update — 2026-09-21 after three-sample M5 gate deploy
+
+This section supersedes older version snapshots above where they conflict.
+
+- Git main: `786bf008593ae8c42e9ef6d580033eb035297206`.
+- M5 `VideoM5Storyboard001`: active, versionCounter 97, activeVersionId `9cfd4e2d-883f-417c-933d-6b553c5b73c9`. The published graph forces every accepted timing-stability path through the third independent TTS synthesis and the existing 2-of-3 gate.
+- M8 `VideoM8Visuals001`: active, versionCounter 50, activeVersionId `310816fc-fbf3-46e9-983b-b6f612ea009a`.
+- Exact pre-deploy M5 backup: `.backups/m5-before-three-sample-gate-20260921-190126.json`.
+- Other 31 workflow rows unchanged by the M5 publication; aggregate hash `99baea155409822fc83fa57cb2896c05`; workflow inventory 32 total / 15 active.
+- Publisher HTTP 200; Studio HTTP 200; n8n restart count 0.
+- media-worker healthy, restart count 0, image `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`.
+- Last fresh PL15 `dfd72856-9480-44d4-9e07-f8decae7ae9f` is immutable `voiceover_failed`: M4 9179 PASS, M5 9180 PASS on the pre-fix v97 versionId `3ce4729e-1f30-4b32-ae99-88aa91109308`, M6 9181 FAIL after four out-of-window TTS candidates. M7-M9 did not run.
+- Runtime proof for the newly published M5 version is still pending. Do not claim PL15 acceptance or start EN30 until a new fresh PL15 reaches machine PASS and passes exact-file manual review.
