@@ -100,6 +100,99 @@ test('unequal original scenes retain their relative space at 22 words',()=>{
   assert.ok(out.target_scene_word_counts.every(n=>n>=2&&n<=10));
   assert.ok(out.user_message.includes(original[0]));
 });
+
+function runLateTimingBuilderWithSkippedProbes(name) {
+  const code=workflow.nodes.find(n=>n.name===name).parameters.jsCode;
+  const originalScenes=[
+    'Elektrownia wodna gromadzi wodę w zbiorniku za zaporą.',
+    'Spadająca ciecz napędza wirnik turbiny wodnej.',
+    'Obracająca się turbina napędza generator.',
+    'Wytworzony prąd trafia do sieci.',
+    'Energia zasila domy.',
+  ];
+  const original={
+    storyboard:{
+      narration:originalScenes.join(' '),
+      scenes:originalScenes.map(narration=>({narration})),
+    },
+    measured_duration_ms:17928,
+    narration_word_count:29,
+    target_duration_ms:15000,
+    tolerance_ms:750,
+    usage:{},
+  };
+  const currentScenes=[
+    'Zapora gromadzi wodę w zbiorniku.',
+    'Spadająca ciecz napędza wirnik turbiny.',
+    'Turbina napędza generator.',
+    'Prąd trafia do sieci.',
+    'Energia zasila domy.',
+  ];
+  const source={
+    script_run_id:'run',
+    model:'model',
+    storyboard:{
+      narration:currentScenes.join(' '),
+      scenes:currentScenes.map(narration=>({narration})),
+    },
+    measured_duration_ms:13368,
+    narration_word_count:20,
+    target_duration_ms:15000,
+    tolerance_ms:750,
+    usage:{},
+  };
+  const buildCtx={
+    language_code:'pl',
+    target_duration_seconds:15,
+    word_min:20,
+    word_max:40,
+  };
+  const $=nodeName=>{
+    if(nodeName==='Normalize Timing Stability B') {
+      return {all:()=>{throw new Error('not executed')}};
+    }
+    if(nodeName==='Normalize Timing Probe') {
+      return {first:()=>({json:original})};
+    }
+    if(nodeName==='Normalize Timing Probe 2' || nodeName==='Normalize Timing Probe 3') {
+      return {first:()=>{throw new Error("Node '"+nodeName+"' hasn't been executed")}};
+    }
+    if(nodeName==='Build Script Prompt') {
+      return {first:()=>({json:buildCtx})};
+    }
+    throw new Error('unexpected node '+nodeName);
+  };
+  return new Function('$','$json',code)($,source).json;
+}
+
+test('final duration builder tolerates skipped Probe 2 after semantic fallback',()=>{
+  const out=runLateTimingBuilderWithSkippedProbes('Build Final Duration Repair');
+  assert.equal(out.script_run_id,'run');
+  assert.equal(out.target_duration_ms,15000);
+  assert.ok(Number.isInteger(out.target_words));
+  assert.equal(out.target_scene_word_counts.length,5);
+  assert.match(out.user_message,/CURRENT MEASURED TTS: 13368 ms/);
+});
+
+test('final measured correction tolerates skipped Probe 2 and Probe 3',()=>{
+  const out=runLateTimingBuilderWithSkippedProbes('Build Final Measured Correction');
+  assert.equal(out.script_run_id,'run');
+  assert.equal(out.target_duration_ms,15000);
+  assert.ok(Number.isInteger(out.target_words));
+  assert.equal(out.target_scene_word_counts.length,5);
+  assert.match(out.user_message,/CURRENT MEASURED TTS: 13368 ms/);
+});
+
+test('late timing builders use optional reads for branch-dependent probes',()=>{
+  const durationCode=workflow.nodes.find(n=>n.name==='Build Final Duration Repair').parameters.jsCode;
+  const measuredCode=workflow.nodes.find(n=>n.name==='Build Final Measured Correction').parameters.jsCode;
+  assert.match(durationCode,/optionalNodeFirst\('Normalize Timing Probe 2'\)/);
+  assert.doesNotMatch(durationCode,/\$\('Normalize Timing Probe 2'\)\.first\(\)/);
+  assert.match(measuredCode,/optionalNodeFirst\('Normalize Timing Probe 2'\)/);
+  assert.match(measuredCode,/optionalNodeFirst\('Normalize Timing Probe 3'\)/);
+  assert.doesNotMatch(measuredCode,/\$\('Normalize Timing Probe [23]'\)\.first\(\)/);
+});
+
 test('precision retry sees original meaning even when failed draft lost an object',()=>{
  const original=['Elektrownia wodna zamienia energię wody na prąd elektryczny.','Zapora spiętrza rzekę, tworząc zbiornik.'];
  const failed={scenes:[{narration:'Tradycyjna elektrownia zamienia energię elektryczną.'},{narration:'Potężna zapora bardzo skutecznie spiętrza.'}]};

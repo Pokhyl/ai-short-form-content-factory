@@ -435,3 +435,12 @@ That M8 defect was fixed and deployed as M8 v41.
 - Live exported M5 core matches repository and contains `requiredWithinFinal = 2` in `Normalize Timing Stability B`.
 - Publisher and Studio HTTP 200; n8n restart 0; media-worker healthy/restart 0 on unchanged full-fit image.
 - Current production target: M5 v88 / M8 v45 / full-fit worker. Next fresh PL15 must confirm runtime v88 and survive M6 before M8/M9 review.
+
+### v88 PL15 exposed branch-topology assumption; optional-probe patch tested — NOT DEPLOYED
+
+- Fresh PL15 `71c65de5-ce45-44ba-b0d9-6ec47aa72fa2` confirmed active M5 v88 `de96b2f2-2660-4b75-a33b-db3b8793e589` but M5 execution 9076 failed before M6.
+- Failure was not the new 2-of-3 stability gate. The first timing rewrite was semantically rejected before Probe 2, so the bounded fallback correctly skipped `Normalize Timing Probe 2`. Later `Build Final Duration Repair` still unconditionally called `$('Normalize Timing Probe 2').first()` and n8n raised `Node 'Normalize Timing Probe 2' hasn't been executed`.
+- Repository fix makes branch-dependent timing probes optional only in `Build Final Duration Repair` and `Build Final Measured Correction`. Missing Probe 2/3 returns null and the builders use the real samples that actually executed plus their existing fallback calculation. Timing tolerances, semantic floors, retry budget and acceptance gates are unchanged.
+- Regression tests execute both late builders with Probe 2/3 deliberately throwing the exact n8n not-executed error and verify valid correction prompts are still built.
+- Full Node suite 47/47 PASS; all 55 M5 Code nodes pass syntax; `git diff --check` PASS.
+- Production remains M5 v88 / M8 v45 until this scoped patch is committed/pushed and M5-only deployed.

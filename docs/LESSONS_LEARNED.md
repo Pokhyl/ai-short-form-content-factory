@@ -308,3 +308,12 @@ Prevention:
 - do not widen timing gates to hide stochastic TTS behavior;
 - do not add blind retries when repeated candidates return identical out-of-window audio hashes;
 - compare exact audio hashes and request configuration before blaming workflow configuration.
+
+38. Optional workflow branches must not be read as mandatory execution history.
+After first-repair semantic fallback intentionally skipped Probe 2, a later builder crashed because it still assumed that node had executed.
+
+Prevention:
+- distinguish immutable required sources from branch-dependent diagnostic/timing samples;
+- read branch-dependent nodes with bounded optional access;
+- if an optional sample is absent, use only the samples that actually executed and the existing fallback estimator;
+- add tests that throw the exact n8n `hasn't been executed` error for skipped branches.
