@@ -4,7 +4,7 @@ Updated: 2026-09-21
 
 ## Current authoritative status
 
-M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v52 `b6b9f5cf-5062-4be3-8322-81d3fb2ebcba` are deployed. S3 retrieval fix is verified by 102 tests and targeted live Commons scoring. Next: one fresh PL15, runtime-version confirmation, then exact final visual/audio QA before EN30. Last failed job remains `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe` (M8 9203). No HUMAN PASS. Older sections are historical; latest details at the end.
+M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v52 `b6b9f5cf-5062-4be3-8322-81d3fb2ebcba` are deployed. S3 retrieval fix is verified by 102 tests and targeted live Commons scoring. Fresh PL15 `f6088d2f-f2eb-4a49-9379-f71c20852cbf` is running (parent 9205, M4 9206 PASS, M5 9207); monitor this exact job next, then final visual/audio QA before EN30. Last failed job remains `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe` (M8 9203). No HUMAN PASS. Older sections are historical; latest details at the end.
 
 ## Repository
 Repo: Pokhyl/ai-short-form-content-factory
@@ -515,3 +515,9 @@ This section supersedes older M8 snapshots above where they conflict.
 - Other 31 workflow rows unchanged: aggregate hash `a900b43516222593dbe68d2c237aa6f1` before/after. No active project runs before publication; live nodes/connections/settings match repository.
 - M5 stays v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`; no service restart or credential change.
 - Next: one fresh PL15; verify runtime versions, then exact final MP4 visual/audio QA before EN30.
+
+### Fresh PL15 on M5 v98 / M8 v52 — running
+
+- New immutable job `f6088d2f-f2eb-4a49-9379-f71c20852cbf` created through the Studio webhook path; intake 9204 PASS, parent 9205 running, M4 9206 PASS, M5 9207 running on exact v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`.
+- Production M8 v52 `b6b9f5cf-5062-4be3-8322-81d3fb2ebcba`; runtime M8 proof pending. Publisher/Studio HTTP 200; n8n/worker restart 0; worker healthy with unchanged full-fit image.
+- Next: monitor THIS job (do not create a duplicate). If M9 succeeds, audit exact MP4/selected assets and visual/audio QA. If terminal failure, diagnose exact failed execution. EN30 remains unstarted.

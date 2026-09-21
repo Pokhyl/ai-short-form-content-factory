@@ -1,0 +1,21 @@
+{
+  "job_id": "f6088d2f-f2eb-4a49-9379-f71c20852cbf",
+  "status": "scripting",
+  "executions": {
+    "intake": 9204,
+    "parent": 9205,
+    "M4": 9206,
+    "M5": 9207
+  },
+  "production": {
+    "M5": {
+      "version": 98,
+      "id": "ce78a67f-bce4-45fb-bbf8-2d421b3c3142"
+    },
+    "M8": {
+      "version": 52,
+      "id": "b6b9f5cf-5062-4be3-8322-81d3fb2ebcba"
+    }
+  },
+  "next_step": "Monitor this job; do not create another while it is running."
+}
