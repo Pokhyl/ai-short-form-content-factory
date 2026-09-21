@@ -60,7 +60,7 @@ Project workflow IDs:
 Current deployed versions:
 - M3 versionCounter 2, versionId e78f648c-639a-439a-8915-270d3b44f1cb
 - M4 versionCounter 5, versionId 3cf94dd2-8c3b-4585-ae88-6315a2685ff7
-- M5 versionCounter 90, versionId 1e9b6f99-5815-44c7-8bd1-955a2c0b7c8c (topic-focused/semantic repair + 2-of-3 real TTS stability + optional probes + enforced English visual metadata)
+- M5 versionCounter 91, versionId 7cb215ae-f6ef-4361-9763-b608cea98e8f (same as v90 + redundant secondary must_show normalization)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
 - M8 versionCounter 45, versionId 3778d30c-70c0-4cd2-9df8-e8465d4fdd7a (photographic/subject evidence + complete Commons query coverage + bounded Pexels page-title corroboration)
@@ -473,3 +473,13 @@ That M8 defect was fixed and deployed as M8 v41.
 - Live exported M5 core matches repository. Initial + both repaired storyboard validators contain the English visual metadata guard.
 - Publisher and Studio HTTP 200; n8n restart 0; media-worker healthy/restart 0 on unchanged full-fit image.
 - Current production target: M5 v90 / M8 v45 / full-fit worker. Next fresh PL15 must prove bounded repair produces English visual metadata, then reach M8/M9.
+
+### M5 v91 deployed — redundant secondary must_show normalization
+
+- Published only `VideoM5Storyboard001`: counter 91, activeVersionId `7cb215ae-f6ef-4361-9763-b608cea98e8f`.
+- Backup of v90: `.backups/m5-before-secondary-anchor-normalization-20260921-110020.json`.
+- Aggregate hash of the other 31 workflow rows is identical before/after; no unrelated workflow or credential changed.
+- Live exported M5 core matches repository. All three storyboard validators contain the secondary-anchor normalization guard.
+- `water turbine + turbine blades` now normalizes to primary `water turbine`; independent context pairs such as `water reservoir + dam`, `magma pool + rock cavity`, and `power lines + transmission towers` remain mandatory.
+- Publisher and Studio HTTP 200; n8n restart 0; media-worker healthy/restart 0 on unchanged full-fit image.
+- Current production target: M5 v91 / M8 v45 / full-fit worker. Next: fresh PL15 from Studio path and exact M4-M9/MP4 review.
