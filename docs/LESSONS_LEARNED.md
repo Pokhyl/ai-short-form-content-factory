@@ -326,3 +326,13 @@ Prevention:
 - enforce the split in deterministic validators, not prompt wording alone;
 - reject Cyrillic/Polish-language leakage and mixed-language primary anchors before TTS/visual retrieval;
 - use the existing bounded storyboard repair attempts to correct metadata while preserving narration/evidence/IDs.
+
+40. A generic object name does not establish its mechanism context, and a title may name equipment absent from the photograph.
+Execution 9125 selected a steam turbine, oil-engine generator and transformer signage for hydroelectric narration; exact final frames confirmed the mismatch.
+
+Prevention:
+- retain an established storyboard domain across repeated primary subjects and broad fallback queries;
+- derive context from storyboard evidence, never hardcode acceptance topics or rejected asset IDs;
+- distinguish a photograph of signage/doors from the equipment named by the title;
+- do not blanket-reject museum images: an actual hydroelectric runner is valid static illustration;
+- replay the complete original candidate pool and report newly empty pools honestly before another live job.

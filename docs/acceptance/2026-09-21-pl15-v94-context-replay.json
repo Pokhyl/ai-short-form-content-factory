@@ -1,0 +1,127 @@
+{
+  "job_id": "cd432c5e-20b2-4f08-ad45-3cc21d4ee588",
+  "provider_calls": 0,
+  "total_candidates": 333,
+  "shots": [
+    {
+      "shot": "S1-A",
+      "domain_context_terms": [],
+      "eligible": 3
+    },
+    {
+      "shot": "S2-A",
+      "domain_context_terms": [],
+      "eligible": 9
+    },
+    {
+      "shot": "S3-A",
+      "domain_context_terms": [
+        "hydroelectric"
+      ],
+      "eligible": 0
+    },
+    {
+      "shot": "S4-A",
+      "domain_context_terms": [
+        "hydroelectric"
+      ],
+      "eligible": 0
+    },
+    {
+      "shot": "S5-A",
+      "domain_context_terms": [],
+      "eligible": 1
+    }
+  ],
+  "previous_selections": [
+    {
+      "scene": "S1",
+      "asset_id": "28860847",
+      "results": [
+        {
+          "shot": "S1-A",
+          "query_index": 1,
+          "provider": "Pexels",
+          "domain": [],
+          "id": "28860847",
+          "rejected": false,
+          "score": 100,
+          "reason": null,
+          "title": "An impressive aerial view of a large concrete dam with water reservoir."
+        }
+      ]
+    },
+    {
+      "scene": "S2",
+      "asset_id": "2050414",
+      "results": [
+        {
+          "shot": "S2-A",
+          "query_index": 1,
+          "provider": "Wikimedia",
+          "domain": [],
+          "id": "2050414",
+          "rejected": false,
+          "score": 100,
+          "reason": null,
+          "title": "File:HydroelectricTurbineRunner.png"
+        }
+      ]
+    },
+    {
+      "scene": "S3",
+      "asset_id": "24925760",
+      "results": [
+        {
+          "shot": "S3-A",
+          "query_index": 2,
+          "provider": "Wikimedia",
+          "domain": [
+            "hydroelectric"
+          ],
+          "id": "24925760",
+          "rejected": true,
+          "score": 100,
+          "reason": "missing_storyboard_domain_context:hydroelectric",
+          "title": "File:Power turbine system.jpg"
+        }
+      ]
+    },
+    {
+      "scene": "S4",
+      "asset_id": "31581140",
+      "results": [
+        {
+          "shot": "S4-A",
+          "query_index": 1,
+          "provider": "Wikimedia",
+          "domain": [
+            "hydroelectric"
+          ],
+          "id": "31581140",
+          "rejected": true,
+          "score": 100,
+          "reason": "missing_storyboard_domain_context:hydroelectric",
+          "title": "File:Petter Patent Oil Engine S Type with GE Electric Generator - Birla Industrial & Technological Museum - Kolkata 2014-01-23 7095.JPG"
+        }
+      ]
+    },
+    {
+      "scene": "S5",
+      "asset_id": "4514763",
+      "results": [
+        {
+          "shot": "S5-A",
+          "query_index": 2,
+          "provider": "Wikimedia",
+          "domain": [],
+          "id": "4514763",
+          "rejected": true,
+          "score": 100,
+          "reason": "wikimedia_depicts_surface_not_requested_subject",
+          "title": "File:HK Sheung Wan No8 Rumsey Street Zone Substation HK Electric Power Transformer 2 Danger a.jpg"
+        }
+      ]
+    }
+  ]
+}
