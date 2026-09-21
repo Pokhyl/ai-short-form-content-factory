@@ -1,0 +1,105 @@
+{
+  "date": "2026-09-21",
+  "status": "wip_not_deployed",
+  "job_id": "9844d17f-1548-4ecb-97bf-6b9e56b0c7fe",
+  "executions": {
+    "M4": {
+      "id": 9199,
+      "status": "success",
+      "workflowVersionId": "3cf94dd2-8c3b-4585-ae88-6315a2685ff7"
+    },
+    "M5": {
+      "id": 9200,
+      "status": "success",
+      "workflowVersionId": "ce78a67f-bce4-45fb-bbf8-2d421b3c3142"
+    },
+    "M6": {
+      "id": 9201,
+      "status": "success",
+      "workflowVersionId": "98e671f3-a0dc-42fa-81e9-4c9524a05e6a"
+    },
+    "M7": {
+      "id": 9202,
+      "status": "success",
+      "workflowVersionId": "91fbac4f-f40d-4d75-9111-3e4ed01bd9ff"
+    },
+    "M8": {
+      "id": 9203,
+      "status": "error",
+      "workflowVersionId": "f242881a-d79e-449d-a8c8-68d65ec54cde"
+    },
+    "M9": null
+  },
+  "visual_searches": {
+    "expected": 45,
+    "pexels": {
+      "count": 15,
+      "result_count": 118
+    },
+    "pixabay": {
+      "count": 15,
+      "result_count": 120
+    },
+    "wikimedia": {
+      "count": 15,
+      "result_count": 71
+    }
+  },
+  "failure": {
+    "shot_key": "S3-A",
+    "reason": "M8 visuals failed: no compliant relevant visual candidate for shot S3-A",
+    "narration": "Wirnik napędza nowoczesny generator prądu.",
+    "visual_intent": "Large electric generator inside a hydroelectric power station",
+    "must_show": [
+      "electric generator",
+      "power station"
+    ],
+    "queries_en": [
+      "electric generator in hydroelectric station",
+      "power generator equipment inside plant",
+      "electric generator"
+    ],
+    "broad_effective_query_v51": "hydroelectric electric generator",
+    "example_rejected_candidate": {
+      "provider": "wikimedia",
+      "provider_asset_id": "78928898",
+      "title": "File:Generators in Cedar Falls Powerhouse, 1903 (INDOCC 1758).jpg",
+      "relevance_score": 73,
+      "rejection_reason": "missing_secondary_subject_context"
+    }
+  },
+  "live_retrieval_evidence": {
+    "useful_queries": [
+      "hydroelectric electric generator equipment",
+      "hydroelectric generator equipment",
+      "hydroelectric electric generator unit"
+    ],
+    "conclusion": "Generic equipment/unit variants return actual generator machinery; do not solve by lowering scorer thresholds or hardcoding asset IDs."
+  },
+  "repository_wip": {
+    "implemented": [
+      "Specific powerhouse token expands to power + station + powerstation in all three normalizers.",
+      "Secondary must-show compounds are evaluated per concept profile at the existing concept threshold."
+    ],
+    "not_implemented": [
+      "Bare machinery fallback enrichment: add generic equipment only to provider_query while preserving query_text."
+    ],
+    "validation": {
+      "existing_node_tests": "92/92 PASS",
+      "git_diff_check": "PASS",
+      "workflow_json_parse": "PASS",
+      "new_wip_regressions_added": false
+    }
+  },
+  "production": {
+    "M5": {
+      "versionCounter": 98,
+      "activeVersionId": "ce78a67f-bce4-45fb-bbf8-2d421b3c3142"
+    },
+    "M8": {
+      "versionCounter": 51,
+      "activeVersionId": "f242881a-d79e-449d-a8c8-68d65ec54cde"
+    }
+  },
+  "next_step": "Complete generic provider_query machinery fallback enrichment, add regressions, replay exact S3, full tests, then M8-only deploy and fresh PL15."
+}

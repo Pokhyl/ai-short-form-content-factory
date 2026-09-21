@@ -663,3 +663,51 @@ That M8 defect was fixed and deployed as M8 v41.
 - Reconciled result: job `64511f0b-16a1-40ba-9930-9499cf92d7f1` = `script_failed`; script_run `ebd923f4-8e61-4d91-8066-2d5bf033ae3f` = `failed` with completion timestamp and exact reason.
 - No workflow code, database schema, service, credential or production version was changed for this incident. M5 remains v98; M8 remains v51.
 - Next: run one new fresh PL15. If the task-runner offer-expiry pattern recurs, treat it as an infrastructure defect and diagnose runner scheduling before further pipeline jobs; do not keep spending fresh jobs blindly.
+
+
+### Fresh PL15 `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe` reached M8 v51 and exposed S3 retrieval gap — WIP CHECKPOINT, NOT DEPLOYED
+
+- Fresh PL15 job `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe`:
+  - M4 `9199` PASS on `3cf94dd2-8c3b-4585-ae88-6315a2685ff7`;
+  - M5 `9200` PASS on active v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`;
+  - M6 `9201` PASS on `98e671f3-a0dc-42fa-81e9-4c9524a05e6a`;
+  - M7 `9202` PASS on `91fbac4f-f40d-4d75-9111-3e4ed01bd9ff`;
+  - M8 `9203` ran active v51 `f242881a-d79e-449d-a8c8-68d65ec54cde` and failed;
+  - M9 did not run.
+- M5 v98 runtime proof succeeded. Provider ledger includes `m5-tts-stability-b:...:4`; the earlier task-runner offer-expiry incident did not recur.
+- M8 completed all expected 45 searches: Pexels 15 / 118 results, Pixabay 15 / 120, Wikimedia 15 / 71.
+- Terminal failure: `M8 visuals failed: no compliant relevant visual candidate for shot S3-A`.
+- S3 narration: `Wirnik napędza nowoczesny generator prądu.`
+- S3 storyboard:
+  - visual_intent: `Large electric generator inside a hydroelectric power station`;
+  - must_show: `["electric generator","power station"]`;
+  - queries: `electric generator in hydroelectric station`, `power generator equipment inside plant`, `electric generator`.
+- v51 correctly preserved original query provenance and contextualized the broad fallback to `hydroelectric electric generator`, but Commons top-8 mainly returned station/building photographs rather than depicted generator units.
+- Example current rejection: Wikimedia asset `78928898`, title `Generators in Cedar Falls Powerhouse, 1903 (INDOCC 1758).jpg`, score 73, rejected for `missing_secondary_subject_context`. This exposed that `powerhouse` was not recognized as the generating-building sense of `power station`.
+- Live Commons probes confirmed that generic equipment/unit variants return actual generator machinery:
+  - `hydroelectric electric generator equipment`;
+  - `hydroelectric generator equipment`;
+  - `hydroelectric electric generator unit`.
+- Do NOT weaken primary subject/domain gates and do NOT hardcode hydro or asset IDs.
+
+Current repository WIP in `workflows/VIDEO-M8-Multi-Source-Visuals.json`:
+1. all three normalizers now expand the specific compound `powerhouse` to semantic evidence `power + station + powerstation`; generic `station` does not imply powerhouse;
+2. secondary must-show context is now evaluated per compound profile at the existing concept threshold instead of accepting any single shared secondary token;
+3. this is intentionally stricter for compounds such as `power station`, so unrelated `railway station` metadata cannot satisfy it via `station` alone;
+4. the provider-request planner change is still NOT implemented: for a bare machinery fallback equal to the primary must-show, append generic `equipment` only to `provider_query`, keeping immutable `query_text` unchanged. For current S3 the intended effective query is `hydroelectric electric generator equipment`.
+
+Validation of the current WIP checkpoint:
+- existing Node suite: **92/92 PASS**;
+- M8 workflow JSON parse: PASS;
+- `git diff --check`: PASS;
+- no new regression tests for this unfinished WIP have been added yet;
+- not deployed; production remains M5 v98 / M8 v51.
+
+Exact next step:
+1. implement the generic bare-machinery fallback enrichment in all three request planners, without topic-specific vocabulary;
+2. add regressions for `powerhouse ↔ power station` only in the safe direction, compound-secondary rejection, immutable `query_text`, and `provider_query` equipment enrichment;
+3. replay/live-score the exact S3 case through the current scorer;
+4. run the full suite and JSON/diff checks;
+5. commit/push the completed fix;
+6. deploy only M8 with backup + protected-row hash verification;
+7. run one fresh PL15 and continue through M9/manual acceptance before EN30.

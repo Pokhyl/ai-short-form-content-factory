@@ -481,3 +481,17 @@ This section supersedes older M8 snapshots above where they conflict.
 - M4 `9195` passed. M5 `9196` loaded active v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` but n8n task execution failed before normal workflow failure handling because task-runner offers expired.
 - Project DB stale `scripting/running` state was reconciled through deployed `factory.fail_script()`; no manual row update was used.
 - Production versions remain M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` and M8 v51 `f242881a-d79e-449d-a8c8-68d65ec54cde`.
+
+
+## Authoritative continuation — 2026-09-21 after PL15 M8 v51 S3 failure
+
+- Git/production before the WIP checkpoint: M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`; M8 v51 `f242881a-d79e-449d-a8c8-68d65ec54cde`.
+- Fresh PL15 `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe` passed M4-M7 and failed only M8 S3-A after all 45 provider searches completed. M9 did not run.
+- The earlier n8n task-runner offer-expiry incident did not recur; M5 v98 executed successfully and the three-sample stability-B path was exercised.
+- Exact M8 defect is now retrieval/semantic-context related: broad Commons fallback `hydroelectric electric generator` returned mostly station/building results while S3 requires a depicted generator inside hydroelectric power-station context.
+- Repository contains a **WIP, not deployed** M8 scorer refinement:
+  - `powerhouse` supplies `power station` semantic evidence in the specific-to-generic direction only;
+  - secondary compound must-show context now uses full profile threshold rather than any single token.
+- Existing suite remains 92/92 PASS and JSON/diff checks pass.
+- Missing next implementation: generic bare-machinery fallback enrichment to add `equipment` only to effective `provider_query` while preserving original `query_text`.
+- Do not treat this WIP commit as production parity: production M8 remains v51 until the completed fix is regression-tested and deployed.
