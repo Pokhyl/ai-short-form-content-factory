@@ -4,11 +4,11 @@ Updated: 2026-09-21
 
 ## Resume here — authoritative current checkpoint
 
-- Task is NOT complete. Active production remains M5 v83 / M8 v43 (full IDs below). No current-version four-case acceptance exists.
-- Latest PL15 `1be96d5a-7626-4771-9b1c-7b5452894725` terminated `visuals_failed`: intake 9028 success; parent 9029 error; M4 9030, M5 9031, M6 9032, M7 9033 success; M8 9034 error; M9 never started. Execution 9035 is a subsequent successful Self-Test API request, not a render.
+- Task is NOT complete. Active production is M5 v83 / M8 v44 (full IDs below). No current-version four-case acceptance exists.
+- Previous PL15 `1be96d5a-7626-4771-9b1c-7b5452894725` terminated `visuals_failed`: intake 9028 success; parent 9029 error; M4 9030, M5 9031, M6 9032, M7 9033 success; M8 9034 error; M9 never started. Execution 9035 is a subsequent successful Self-Test API request, not a render.
 - Exact failure: no compliant relevant candidate for S2-A (penstock pipe / flowing water). Keep this failed job immutable.
 - Confirmed retrieval limitation: Wikimedia searches only query 1 (`water flowing through penstock pipe`), while Pexels/Pixabay search all three, including `hydroelectric penstock pipe` and `penstock pipe`. Current database expected count is 2 × query count + shot count. Whether broader Commons retrieval supplies compliant assets remains to be tested; do not weaken relevance gates.
-- Next: inspect Commons responses, implement/test complete Wikimedia query coverage and matching expected-count contract if justified, checkpoint, deploy scoped changes, then fresh sequential PL15 → EN30 → RU45 → UK60. Audit exact final artifacts and review all scenes; explicit HUMAN PASS remains separate.
+- Next: monitor fresh PL15 `69391e2d-34bc-4775-89f8-32913dff9edb` on M5 v83 / M8 v44 through terminal status, inspect exact output, then EN30 → RU45 → UK60 sequentially. Audit all exact media; explicit HUMAN PASS remains separate.
 - Earlier machine-passing jobs below are historical diagnostics and must not be mistaken for current-version acceptance. All substantive fixes, tests, deployments and IDs must be recorded here and pushed to main before moving on.
 
 ## Project
@@ -63,7 +63,7 @@ Current deployed versions:
 - M5 versionCounter 83, versionId 5e50db9d-e3f9-44a0-8e2f-a0168f505bec (median propagation + whole-subject visual planning)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
-- M8 versionCounter 43, versionId d282d875-8e81-43c7-99bb-3f9730fb9052 (photographic + subject-evidence fixes)
+- M8 versionCounter 44, versionId 16c27568-3bbf-41b2-9b23-9e555b3b98da (photographic/subject evidence + complete Commons query coverage)
 - M9 versionCounter 1, versionId 5b6c937c-1767-4c3e-99c4-31ea38a26961
 - Self-Test API versionCounter 3, versionId f3ef8cbf-1c56-4048-9fdf-feb073de96df
 
@@ -277,3 +277,10 @@ That M8 defect was fixed and deployed as M8 v41.
 - M8 now enumerates every storyboard query for Wikimedia, retaining query index, provenance, 8-second pacing and existing retry/quality gates. `factory.begin_visuals` expected count becomes 3 × total storyboard queries. Existing immutable run counts are untouched.
 - Checks: 22/22 Node tests PASS; replacement SQL compiled and function definition asserted in a rolled-back production transaction; git diff check PASS. Production remains M5 v83 / M8 v43 until the following deployment checkpoint.
 - Next: back up and replace only begin_visuals(uuid), publish M8, verify protected workflow rows and deployed count contract, then create a fresh PL15.
+
+### M8 v44 and search accounting deployed — 2026-09-21
+
+- Replaced only `factory.begin_visuals(uuid)` and published M8 counter 44 / active ID `16c27568-3bbf-41b2-9b23-9e555b3b98da`. M5 remains v83; all other versions/image unchanged. Other 31 workflow rows exactly unchanged by aggregate hash; inventory 32/15. No service restart.
+- Backups: `.backups/m8-before-query-coverage-20260921.json` and `.backups/begin-visuals-before-query-coverage-20260921.sql`. Verified deployed SQL uses 3 × total queries; old run records untouched.
+- Deployment interruption resolved: strict umask made the copied non-secret workflow JSON unreadable by n8n (EACCES). Changed only `/tmp/m8-query-coverage.json` mode to 0644 and repeated import/publish successfully. No product job ran during the brief SQL/workflow transition.
+- Fresh PL15 `69391e2d-34bc-4775-89f8-32913dff9edb` created and run accepted. Next: record actual execution IDs/version snapshot and full search accounting; inspect final artifact or diagnose terminal failure before any new job.
