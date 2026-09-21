@@ -4,7 +4,7 @@ Updated: 2026-09-21
 
 ## Current authoritative status
 
-Production M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v53 `0953f69f-e982-467e-95e0-35161a613771`. PL15 `b3d1f5e3-f368-493b-bde9-f5343783d41d` failed bounded M5 timing in 9216; M8 v53 has not run. See latest section for one bounded fresh attempt and repeat-failure stop condition. Generic-unit domain/nameplate fixes have 106 passing tests. Next: runtime proof and final visual/audio QA before EN30. No HUMAN PASS. Older sections are historical.
+Production M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v53 `0953f69f-e982-467e-95e0-35161a613771`. PL15 `b3d1f5e3-f368-493b-bde9-f5343783d41d` failed bounded M5 timing in 9216; M8 v53 has not run. One fresh attempt `12f1ac4f-b8dc-4f17-a191-06888fb7e8a4` is now running; monitor it, no duplicate. Generic-unit domain/nameplate fixes have 106 passing tests. Next: runtime proof and final visual/audio QA before EN30. No HUMAN PASS. Older sections are historical.
 
 ## Repository
 Repo: Pokhyl/ai-short-form-content-factory
@@ -546,3 +546,8 @@ This section supersedes older M8 snapshots above where they conflict.
 - Exact bounded trace: 30 words/19224 ms → early semantic rejects (coverage .571/.429 below unchanged .600) → 27 words/17304 ms → 26 words/16176 ms → final exact-target 25 words/17448 ms. M5 failed at unchanged 15000 ±750 ms.
 - Final rewrite met its requested word target but real duration increased; count monotonicity cannot guarantee TTS timing. No new deterministic workflow defect is demonstrated; do not loosen semantics/timing or add retries. Sanitized trace `.review/pl15-v51/v53-m5-timing.json`.
 - Production unchanged M5 v98 / M8 v53; M8 v53 runtime proof still pending. Next: one fresh PL15 on unchanged code; if this timing failure repeats, do not continue blind jobs—investigate narration/calibration feasibility first.
+
+### Second PL15 on unchanged v98/v53 — running
+
+- Job `12f1ac4f-b8dc-4f17-a191-06888fb7e8a4` accepted via Studio webhook path. Versions unchanged: M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`, M8 v53 `0953f69f-e982-467e-95e0-35161a613771`.
+- Monitor this exact job. If M5 timing rejection repeats, no further blind attempts; investigate feasibility/calibration. Otherwise continue through M9 and exact visual/audio review before EN30.
