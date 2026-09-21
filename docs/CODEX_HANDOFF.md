@@ -4,7 +4,7 @@ Updated: 2026-09-21
 
 ## Resume here — authoritative checkpoint, 2026-09-21
 
-Production M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v53 `0953f69f-e982-467e-95e0-35161a613771`. Fresh PL15 `b3d1f5e3-f368-493b-bde9-f5343783d41d` is running. Monitor this exact job; do not duplicate it. Generic-unit domain/nameplate fixes have 106 passing tests. Next: runtime proof and final visual/audio QA before EN30. No HUMAN PASS. Older sections are historical.
+Production M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v53 `0953f69f-e982-467e-95e0-35161a613771`. PL15 `b3d1f5e3-f368-493b-bde9-f5343783d41d` failed bounded M5 timing in 9216; M8 v53 has not run. See latest section for one bounded fresh attempt and repeat-failure stop condition. Generic-unit domain/nameplate fixes have 106 passing tests. Next: runtime proof and final visual/audio QA before EN30. No HUMAN PASS. Older sections are historical.
 
 ## Project
 
@@ -749,3 +749,10 @@ Exact next step:
 - Backup `.backups/m8-before-unit-context-20260921-202231.json`; other 31 workflow rows unchanged (before/after hash `a900b43516222593dbe68d2c237aa6f1`). No project runs active before publication; live nodes/connections/settings equal repository. No service restart or credential changes; M5 remains v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`.
 - Fresh immutable PL15 `b3d1f5e3-f368-493b-bde9-f5343783d41d` created and accepted through the Studio webhook path.
 - Next: monitor this exact job, prove v53 runtime, then M9/exact visual and audio review. EN30 not started. Failed v52 job remains unchanged.
+
+### First PL15 after v53 deploy rejected by M5 timing; v53 not yet exercised
+
+- `b3d1f5e3-f368-493b-bde9-f5343783d41d`: intake 9213 PASS, parent 9214 ERROR, M4 9215 PASS, M5 9216 ERROR on v98. M6–M9 never ran; no audio/render acceptance artifacts.
+- Exact bounded trace: 30 words/19224 ms → early semantic rejects (coverage .571/.429 below unchanged .600) → 27 words/17304 ms → 26 words/16176 ms → final exact-target 25 words/17448 ms. M5 failed at unchanged 15000 ±750 ms.
+- Final rewrite met its requested word target but real duration increased; count monotonicity cannot guarantee TTS timing. No new deterministic workflow defect is demonstrated; do not loosen semantics/timing or add retries. Sanitized trace `.review/pl15-v51/v53-m5-timing.json`.
+- Production unchanged M5 v98 / M8 v53; M8 v53 runtime proof still pending. Next: one fresh PL15 on unchanged code; if this timing failure repeats, do not continue blind jobs—investigate narration/calibration feasibility first.
