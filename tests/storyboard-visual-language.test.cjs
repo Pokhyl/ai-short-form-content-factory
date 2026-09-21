@@ -154,6 +154,38 @@ test('secondary context absent from visual_intent is removed instead of becoming
   );
 });
 
+
+test('process or state secondary anchors do not become hard visual requirements',()=>{
+  assert.deepEqual(
+    normalizeMustShow(
+      ['penstock','water flow'],
+      'Water rushing down through a large penstock pipe'
+    ),
+    ['penstock']
+  );
+  assert.deepEqual(
+    normalizeMustShow(
+      ['electric generator','energy generation'],
+      'Electric generator inside a hydroelectric plant'
+    ),
+    ['electric generator']
+  );
+  assert.deepEqual(
+    normalizeMustShow(
+      ['turbine','shaft rotation'],
+      'Turbine and shaft inside a power station'
+    ),
+    ['turbine']
+  );
+  assert.deepEqual(
+    normalizeMustShow(
+      ['spillway','falling water'],
+      'Spillway with visibly falling water'
+    ),
+    ['spillway','falling water']
+  );
+});
+
 test('all bounded storyboard validators normalize redundant secondary anchors',()=>{
   for(const name of [
     'Validate Storyboard',
