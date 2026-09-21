@@ -650,3 +650,16 @@ That M8 defect was fixed and deployed as M8 v41.
 - M8 remains v51 `f242881a-d79e-449d-a8c8-68d65ec54cde`.
 - Publisher/Studio HTTP 200; n8n restart 0; media-worker healthy restart 0.
 - Next: one fresh PL15; runtime must prove M5 v98 and M8 v51 before exact MP4 acceptance.
+
+
+### Fresh PL15 hit transient n8n task-runner failure; stale project state reconciled
+
+- Fresh PL15 `64511f0b-16a1-40ba-9930-9499cf92d7f1`: M4 execution `9195` PASS; M5 execution `9196` started the active v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` but n8n execution terminated `error` after about 4 seconds.
+- This was not a semantic/timing product rejection. Provider ledger contained only M5 timing probe attempt 1 in `released` state. n8n logs showed three task offers rejected with `Offer expired - not accepted within validity window`, followed by `Cannot read properties of undefined (reading 'json')`.
+- Because execution terminated before M5's normal `Fail Script` node, project DB remained stale at job `scripting` / script_run `running` even though parent execution `9194` and M5 `9196` were terminal errors and no project executions were active.
+- Same-job rerun is intentionally unsupported: `factory.begin_script()` accepts only `evidence_ready`, and `factory.script_runs.job_id` is UNIQUE.
+- Reconciled the exact stale run using the deployed state-transition function, not manual UPDATE:
+  `factory.fail_script('ebd923f4-8e61-4d91-8066-2d5bf033ae3f', <exact transient-runtime reason>)`.
+- Reconciled result: job `64511f0b-16a1-40ba-9930-9499cf92d7f1` = `script_failed`; script_run `ebd923f4-8e61-4d91-8066-2d5bf033ae3f` = `failed` with completion timestamp and exact reason.
+- No workflow code, database schema, service, credential or production version was changed for this incident. M5 remains v98; M8 remains v51.
+- Next: run one new fresh PL15. If the task-runner offer-expiry pattern recurs, treat it as an infrastructure defect and diagnose runner scheduling before further pipeline jobs; do not keep spending fresh jobs blindly.

@@ -473,3 +473,11 @@ This section supersedes older M8 snapshots above where they conflict.
 - Other 31 workflow rows unchanged; aggregate hash `efd8e340d7b44dc59429062d4b1bda5f`.
 - Publisher/Studio 200; n8n restart 0; media-worker healthy restart 0.
 - Runtime verification of M5 v98 is pending.
+
+
+## Runtime incident update — 2026-09-21 task-runner transient
+
+- Job `64511f0b-16a1-40ba-9930-9499cf92d7f1` is terminal `script_failed` after reconciliation.
+- M4 `9195` passed. M5 `9196` loaded active v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` but n8n task execution failed before normal workflow failure handling because task-runner offers expired.
+- Project DB stale `scripting/running` state was reconciled through deployed `factory.fail_script()`; no manual row update was used.
+- Production versions remain M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` and M8 v51 `f242881a-d79e-449d-a8c8-68d65ec54cde`.
