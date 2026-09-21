@@ -25,7 +25,7 @@ for(const name of builders) {
 }
 test('PL15 regression: correction interpolates from 17.136s median, not 15.144s first sample',()=>{
   const code=workflow.nodes.find(n=>n.name==='Build Timing Repair 2').parameters.jsCode;
-  const p1={storyboard:{narration:Array(26).fill('slowo').join(' ')},measured_duration_ms:15144,narration_word_count:26};
+  const p1={storyboard:{narration:Array(26).fill('slowo').join(' '),scenes:[8,5,5,4,4].map(n=>({narration:Array(n).fill('slowo').join(' ')}))},measured_duration_ms:15144,narration_word_count:26};
   const p2={storyboard:{narration:Array(20).fill('slowo').join(' ')},measured_duration_ms:13704,narration_word_count:20,target_duration_ms:15000,tolerance_ms:750};
   const $=name=>name==='Normalize Timing Stability B'
     ? {all:(_b,r)=>{if(r)throw Error('not executed');return [{json:{storyboard:p1.storyboard,stability_median_ms:17136}}];}}
@@ -34,4 +34,32 @@ test('PL15 regression: correction interpolates from 17.136s median, not 15.144s 
   assert.equal(result.target_precision_words,22);
   assert.match(result.user_message,/17136 ms/);
   assert.match(result.user_message,/15000 ms \+\/- 750 ms/);
+});
+
+test('unequal original scenes retain their relative space at 22 words',()=>{
+  const code=workflow.nodes.find(n=>n.name==='Build Timing Repair 2').parameters.jsCode;
+  const original=['Elektrownia wodna zamienia energię wody na prąd elektryczny.','Zapora spiętrza rzekę, tworząc zbiornik.','Spadająca woda napędza turbinę.','Następnie generator wytwarza energię.','Prąd trafia do domów.'];
+  const p1={storyboard:{narration:original.join(' '),scenes:original.map(narration=>({narration}))},measured_duration_ms:17856,narration_word_count:25};
+  const p2={storyboard:{narration:'Shorter complete draft.'},measured_duration_ms:13596,narration_word_count:18,target_duration_ms:15000,tolerance_ms:750};
+  const $=name=>name==='Normalize Timing Stability B'?{all:()=>{throw Error('not executed')}}:{first:()=>({json:name==='Normalize Timing Probe'?p1:{target_duration_seconds:15,target_scenes:5,target_shots:5,word_min:20,word_max:40}})};
+  const out=new Function('$','$json',code)($,p2).json;
+  assert.equal(out.target_scene_word_counts.reduce((a,b)=>a+b),out.target_precision_words);
+  assert.ok(out.target_scene_word_counts[0]>out.target_scene_word_counts[1]);
+  assert.ok(out.target_scene_word_counts.every(n=>n>=2&&n<=10));
+  assert.ok(out.user_message.includes(original[0]));
+});
+test('precision retry sees original meaning even when failed draft lost an object',()=>{
+ const original=['Elektrownia wodna zamienia energię wody na prąd elektryczny.','Zapora spiętrza rzekę, tworząc zbiornik.'];
+ const failed={scenes:[{narration:'Tradycyjna elektrownia zamienia energię elektryczną.'},{narration:'Potężna zapora bardzo skutecznie spiętrza.'}]};
+ const rows={
+  'Build Script Prompt':{language_code:'pl'},
+  'Build Timing Repair 2':{target_precision_words:12,target_scene_word_counts:[7,5]},
+  'Repair Storyboard Timing 2':{candidates:[{content:{parts:[{text:JSON.stringify(failed)}]}}]},
+  'Normalize Timing Probe':{storyboard:{scenes:original.map(narration=>({narration}))}},
+ };
+ const code=workflow.nodes.find(n=>n.name==='Build Timing Precision Retry').parameters.jsCode;
+ const out=new Function('$',code)(name=>({first:()=>({json:rows[name]})})).json;
+ for(const sentence of original)assert.ok(out.user_message.includes(sentence));
+ assert.deepEqual(out.target_scene_word_counts,[7,5]);
+ assert.deepEqual(out.base_storyboard,failed); // prompts restore meaning; no unmeasured text substitution
 });

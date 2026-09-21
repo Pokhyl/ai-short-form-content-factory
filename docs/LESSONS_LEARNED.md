@@ -263,3 +263,5 @@ Prevention:
 - replay original provider responses, including negative controls, before consuming more live acceptance jobs.
 
 Complete query coverage and accounting must change together. Restricting Commons to only the longest first query discards concise fallback searches that retrieve the actual subject. Keep paced complete retrieval and persist expected search counts per new run; do not rewrite failed runs or loosen relevance to compensate for missing searches.
+
+Equal per-scene word quotas can remove the grammatical object from one sentence while adding filler to another. Allocate timing targets using original scene lengths and retain original narration through retries; successive drafts are not a semantic source of truth. Mechanical word-count validation does not validate factual meaning.
