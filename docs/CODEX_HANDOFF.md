@@ -598,3 +598,17 @@ That M8 defect was fixed and deployed as M8 v41.
 - Publisher and Studio HTTP 200; n8n running restart 0; media-worker healthy restart 0 on `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`.
 - n8n CLI emitted its generic restart advisory after publish; no restart was performed. The next fresh M5 execution must prove runtime versionId `9cfd4e2d-883f-417c-933d-6b553c5b73c9` and its usage ledger must contain the Stability B request for the accepted final narration.
 - Next exact step: one fresh PL15 from the beginning. Require M4-M9 completion, M5 runtime proof, M8 v50 runtime proof, then exact final MP4/manual semantic/audio acceptance before EN30.
+
+
+### Fresh PL15 on M5 three-sample gate / M8 v50 failed S4; spatial-domain fix tested, NOT DEPLOYED
+
+- Fresh PL15 `67a1e838-038e-45d6-aa95-16c4638bbebd`: M4 `9184` PASS; M5 `9185` PASS on `9cfd4e2d-883f-417c-933d-6b553c5b73c9`; M6 `9186` PASS; M7 `9187` PASS; M8 `9188` FAIL on v50 `310816fc-fbf3-46e9-983b-b6f612ea009a`. M9 did not run.
+- M5 runtime proof is complete: the job executed the new version and provider ledger contained `m5-tts-stability-b:...:4`; final persisted voiceover was 15,048 ms.
+- M8 completed all 45 searches but failed `S4-A`: `no compliant relevant visual candidate`.
+- Exact high-scoring rejected candidate: Pexels `28912007`, score 98, metadata `Close-up of high voltage transformers at a power station in Austria during daylight.`; rejected only for `missing_storyboard_domain_context:outdoors`.
+- Systemic cause: singleton-machinery local domain inference treated the spatial/presentation token `outdoors` as an operating-domain term because it appeared in both visual_intent and a planned query after generic filtering.
+- Repository fix keeps repeated-subject context and scorer thresholds unchanged; only local machinery inference now treats `outdoor/outdoors/indoor/indoors` as context noise.
+- Added provider-planner regressions for Pixabay/Pexels/Wikimedia and an exact Pexels S4 normalization regression. Exact candidate becomes eligible after the fix.
+- Validation: **89/89 Node tests PASS**; `git diff --check` PASS; M8 JSON parse PASS.
+- Evidence: `docs/acceptance/2026-09-21-pl15-v50-s4-spatial-domain-fix.json`.
+- Production remains M5 activeVersionId `9cfd4e2d-883f-417c-933d-6b553c5b73c9` / M8 v50 `310816fc-fbf3-46e9-983b-b6f612ea009a`. Next: commit/push, M8-only deploy, then one new fresh PL15.

@@ -1,0 +1,73 @@
+{
+  "date": "2026-09-21",
+  "job_id": "67a1e838-038e-45d6-aa95-16c4638bbebd",
+  "terminal_status": "visuals_failed",
+  "executions": {
+    "M4": {
+      "id": 9184,
+      "status": "success",
+      "workflowVersionId": "3cf94dd2-8c3b-4585-ae88-6315a2685ff7"
+    },
+    "M5": {
+      "id": 9185,
+      "status": "success",
+      "workflowVersionId": "9cfd4e2d-883f-417c-933d-6b553c5b73c9"
+    },
+    "M6": {
+      "id": 9186,
+      "status": "success",
+      "workflowVersionId": "98e671f3-a0dc-42fa-81e9-4c9524a05e6a"
+    },
+    "M7": {
+      "id": 9187,
+      "status": "success",
+      "workflowVersionId": "91fbac4f-f40d-4d75-9111-3e4ed01bd9ff"
+    },
+    "M8": {
+      "id": 9188,
+      "status": "error",
+      "workflowVersionId": "310816fc-fbf3-46e9-983b-b6f612ea009a"
+    }
+  },
+  "failure": {
+    "shot_key": "S4-A",
+    "reason": "M8 visuals failed: no compliant relevant visual candidate for shot S4-A",
+    "exact_candidate": {
+      "provider": "pexels",
+      "provider_asset_id": "28912007",
+      "relevance_score": 98,
+      "rejection_reason": "missing_storyboard_domain_context:outdoors",
+      "metadata_text": "Close-up of high voltage transformers at a power station in Austria during daylight. Michael Pointner",
+      "query_text": "electrical transformer outdoors station",
+      "provider_query_text": "electrical transformer outdoors station"
+    },
+    "systemic_cause": "Singleton machinery local operating-domain inference treated generic spatial/presentation token 'outdoors' as a semantic domain requirement because it appeared in visual_intent and a planned query after generic filtering."
+  },
+  "fix": {
+    "scope": "M8 request planners only",
+    "change": "Add outdoor/outdoors/indoor/indoors to localContextNoise so spatial presentation words cannot become local machinery domain gates. Repeated-subject domain inference and scorer thresholds remain unchanged.",
+    "hydro_specific": false,
+    "scorer_weakened": false
+  },
+  "validation": {
+    "node_tests": "89/89 PASS",
+    "git_diff_check": "PASS",
+    "workflow_json_parse": "PASS",
+    "regression_tests": [
+      "Pixabay/Pexels/Wikimedia: spatial presentation words do not become machinery operating-domain gates",
+      "PL15 S4 regression: described transformer at a power station is not rejected for missing literal outdoors metadata"
+    ],
+    "exact_candidate_after_fix": "eligible in targeted normalization regression"
+  },
+  "production_before_deploy": {
+    "M5": {
+      "versionCounter": 97,
+      "activeVersionId": "9cfd4e2d-883f-417c-933d-6b553c5b73c9"
+    },
+    "M8": {
+      "versionCounter": 50,
+      "activeVersionId": "310816fc-fbf3-46e9-983b-b6f612ea009a"
+    }
+  },
+  "next_step": "Commit/push, deploy only M8 with protected-row verification, then run one fresh PL15."
+}

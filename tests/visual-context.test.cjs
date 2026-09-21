@@ -166,3 +166,49 @@ test('sign photographs remain allowed when signage is the requested visible subj
  const c=normalize({...f.ctx,query:'electrical warning signs',visual_intent:'Electrical warning signs on door',must_show:['warning signs'],must_not_show:[]},f.body);
  assert.equal(c.rejected,false);
 });
+
+
+for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': spatial presentation words do not become machinery operating-domain gates',()=>{
+ const sample=[{
+   shot_uuid:'x4',shot_key:'S4-A',scene_order:4,preferred_media_type:'photo',
+   must_show:['electrical transformer','power station'],must_not_show:['wind mill'],
+   visual_intent:'Large electrical transformer outdoors near a power station',
+   queries_en:['electrical transformer outdoors station','power transformer equipment','electrical transformer'],
+ }];
+ const rows=requests(provider,sample);
+ assert.equal(rows.length,3);
+ assert.ok(rows.every(r=>!r.domain_context_terms.includes('outdoors')));
+ assert.ok(rows.every(r=>!r.domain_context_terms.includes('outdoor')));
+ assert.deepEqual(rows.map(r=>r.provider_query),sample[0].queries_en);
+});
+
+test('PL15 S4 regression: described transformer at a power station is not rejected for missing literal outdoors metadata',()=>{
+ const request=requests('Pexels',[{
+   shot_uuid:'x4',shot_key:'S4-A',scene_order:4,preferred_media_type:'photo',
+   must_show:['electrical transformer','power station'],must_not_show:['wind mill'],
+   visual_intent:'Large electrical transformer outdoors near a power station',
+   queries_en:['electrical transformer outdoors station','power transformer equipment','electrical transformer'],
+ }])[0];
+ const normalizePexels=code('Normalize Pexels');
+ const $=name=>{
+   if(name==='Build Pexels Requests') return {item:{json:request}};
+   throw new Error('unexpected node '+name);
+ };
+ const body={photos:[{
+   id:28912007,
+   width:1365,
+   height:2048,
+   url:'https://www.pexels.com/photo/high-voltage-transformers-at-a-power-station-28912007/',
+   alt:'Close-up of high voltage transformers at a power station in Austria during daylight.',
+   photographer:'Michael Pointner',
+   photographer_url:'https://www.pexels.com/@michael-pointner/',
+   src:{
+     large2x:'https://images.pexels.com/photos/28912007/pexels-photo-28912007.jpeg',
+     medium:'https://images.pexels.com/photos/28912007/pexels-photo-28912007.jpeg',
+   },
+ }]};
+ const out=new Function('$','$json',normalizePexels)($,{statusCode:200,body}).json.candidates[0];
+ assert.equal(request.domain_context_terms.length,0);
+ assert.equal(out.rejected,false,out.rejection_reason);
+ assert.doesNotMatch(String(out.rejection_reason||''),/missing_storyboard_domain_context:outdoors/);
+});

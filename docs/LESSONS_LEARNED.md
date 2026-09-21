@@ -366,3 +366,13 @@ Prevention:
 - only the three-sample majority gate may route to final storyboard canonicalization;
 - test workflow connections as well as Code-node logic, because correct code in an unreachable/bypassable branch is not an enforced contract;
 - keep M6 as the strict immutable final-audio gate and do not widen its duration tolerance.
+
+
+43. Spatial presentation words are not machinery operating domains.
+A singleton machinery shot can legitimately say that equipment is outdoors or indoors without requiring provider metadata to contain that literal presentation word. Treating such words as domain gates rejected a strong transformer-at-power-station photo solely because its caption did not say `outdoors`.
+
+Prevention:
+- local operating-domain inference must exclude generic spatial/presentation terms such as outdoor/outdoors/indoor/indoors;
+- preserve real semantic domains such as hydroelectric, marine or substation when they are established;
+- do not weaken scorer thresholds to recover candidates that were rejected by a bad inferred constraint;
+- regression-test both planner output and exact candidate normalization.
