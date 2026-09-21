@@ -86,6 +86,60 @@ test('all bounded storyboard validators enforce the same English visual contract
   }
 });
 
+
+function mustShowNormalizer(name='Validate Storyboard') {
+  const code=byName[name].parameters.jsCode;
+  const start=code.indexOf('// MUST_SHOW_SECONDARY_GUARD_START');
+  const end=code.indexOf('// MUST_SHOW_SECONDARY_GUARD_END');
+  assert.ok(start>=0 && end>start,name);
+  const helper=code.slice(start,end+'// MUST_SHOW_SECONDARY_GUARD_END'.length);
+  return new Function(helper+'\nreturn normalizeMustShowAnchors;')();
+}
+
+const normalizeMustShow=mustShowNormalizer();
+
+test('secondary must_show does not restate or detail the primary object',()=>{
+  assert.deepEqual(
+    normalizeMustShow(['water turbine','turbine blades']),
+    ['water turbine']
+  );
+  assert.deepEqual(
+    normalizeMustShow(['electric generator','generator machinery']),
+    ['electric generator']
+  );
+  assert.deepEqual(
+    normalizeMustShow(['power transformer','transformer substation']),
+    ['power transformer']
+  );
+});
+
+test('independent secondary context remains mandatory',()=>{
+  assert.deepEqual(
+    normalizeMustShow(['water reservoir','dam']),
+    ['water reservoir','dam']
+  );
+  assert.deepEqual(
+    normalizeMustShow(['magma pool','rock cavity']),
+    ['magma pool','rock cavity']
+  );
+  assert.deepEqual(
+    normalizeMustShow(['power lines','transmission towers']),
+    ['power lines','transmission towers']
+  );
+});
+
+test('all bounded storyboard validators normalize redundant secondary anchors',()=>{
+  for(const name of [
+    'Validate Storyboard',
+    'Validate Repaired Storyboard',
+    'Validate Repaired Storyboard 2',
+  ]) {
+    const code=byName[name].parameters.jsCode;
+    assert.match(code,/MUST_SHOW_SECONDARY_GUARD_START/,name);
+    assert.match(code,/normalizeMustShowAnchors\(rawMustShow\)/,name);
+  }
+});
+
 test('initial and bounded repair prompts explicitly split narration and visual languages',()=>{
   assert.match(byName['Build Script Prompt'].parameters.jsCode,/CRITICAL LANGUAGE SPLIT/);
   for(const name of ['Build Storyboard Repair','Build Storyboard Repair 2']) {
