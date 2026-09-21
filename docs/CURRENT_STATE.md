@@ -426,3 +426,5 @@ PL15 on M5 v82/M8 v42 passed exact-file review. EN30 on the same versions reache
 - Next: scoped M5 deployment with backups/protected-row comparison; resolve render crop and provider-label ambiguity before fresh acceptance. No new job is running. Do not claim semantic acceptance until actual new narration and all final frames are reviewed.
 
 Render fit correction tested locally/in the existing worker via an isolated function, not deployed: preserve full source geometry with aspect-fit and black padding. Three real FFmpeg edge-landmark regressions pass. See CODEX_HANDOFF.md for active vs pending versions and latest rejected output.
+
+Latest acceptance failed in M5: job `ccc91e49-8e19-404d-bf05-3ec4cab5d469`, execution 9047, 14,064 ms vs 15,000 ± 750 ms. v84 prompts did not prevent semantic drift; exact evidence and next repair scope are in CODEX_HANDOFF.md. Active: M5 v84, M8 v44, full-fit worker `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`. No current-version accepted matrix.
