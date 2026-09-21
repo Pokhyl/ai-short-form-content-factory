@@ -376,3 +376,13 @@ Prevention:
 - preserve real semantic domains such as hydroelectric, marine or substation when they are established;
 - do not weaken scorer thresholds to recover candidates that were rejected by a bad inferred constraint;
 - regression-test both planner output and exact candidate normalization.
+
+
+44. A fail-closed semantic guard still needs a bounded recovery path when one already exists.
+The first late timing repair can be semantically rejected without meaning the immutable source is unusable. Sending that first rejection directly to terminal failure wasted the existing single retry designed to regenerate from immutable original narration.
+
+Prevention:
+- keep semantic thresholds unchanged;
+- first late semantic miss may use the already-bounded regeneration path from immutable original text;
+- the retry validator remains terminal fail-closed;
+- never turn this into an unbounded retry loop.

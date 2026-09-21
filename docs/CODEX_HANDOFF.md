@@ -625,3 +625,16 @@ That M8 defect was fixed and deployed as M8 v41.
 - Publisher and Studio HTTP 200; n8n running restart 0; media-worker healthy restart 0 on `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`.
 - No database migration, credential change, service restart or unrelated workflow publication.
 - Next exact step: one fresh PL15. Require M4-M9 PASS, runtime M5 `9cfd4e2d...`, runtime M8 `f242881a...`, then exact MP4 technical/manual semantic/audio acceptance before EN30.
+
+
+### Fresh PL15 failed in M5 late semantic validation; bounded retry routing fix tested, NOT DEPLOYED
+
+- Fresh PL15 `fe186d1e-27c6-4682-8649-6d94c9a7d45b`: M4 `9191` PASS; M5 `9192` FAIL on `9cfd4e2d-883f-417c-933d-6b553c5b73c9`.
+- Exact failure: `M5 script workflow failed: 2, allowed 1 [line 202]`. Probe ledger had attempts 1 and 3 only; no final script version was persisted.
+- Exact failing node is `Validate Final Duration Repair`: the semantic guard correctly rejected a late timing draft for introducing too many novel content words.
+- Systemic defect was routing, not the guard. Its error output terminated M5 even though the graph already has one bounded `Build Final Word Count Retry` whose immutable original narration is the factual source.
+- Fix: late final-duration and final-measured validators expose `semantic_valid=false` and the exact semantic error instead of terminalizing the first semantic miss. Existing word-count IF routes now require `word_count_exact && semantic_valid`; otherwise they use the existing single bounded retry.
+- Retry validators remain semantic fail-closed; no tolerance/semantic thresholds were weakened and no retry loop was added.
+- Validation: **92/92 Node tests PASS**, `git diff --check` PASS, M5 JSON parse PASS.
+- Evidence: `docs/acceptance/2026-09-21-pl15-m5-late-semantic-retry.json`.
+- Production remains M5 `9cfd4e2d...` / M8 v51 `f242881a...` until M5-only deploy.

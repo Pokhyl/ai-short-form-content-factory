@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-21",
+  "job_id": "fe186d1e-27c6-4682-8649-6d94c9a7d45b",
+  "terminal_status": "script_failed",
+  "executions": {
+    "M4": {
+      "id": 9191,
+      "status": "success",
+      "workflowVersionId": "3cf94dd2-8c3b-4585-ae88-6315a2685ff7"
+    },
+    "M5": {
+      "id": 9192,
+      "status": "error",
+      "workflowVersionId": "9cfd4e2d-883f-417c-933d-6b553c5b73c9"
+    }
+  },
+  "failure": {
+    "reason": "M5 script workflow failed: 2, allowed 1 [line 202]",
+    "exact_node": "Validate Final Duration Repair",
+    "systemic_cause": "The late final-duration semantic guard correctly rejected a draft with too many novel content words, but its error output went directly to terminal script failure instead of the already-existing single bounded final-word retry."
+  },
+  "fix": {
+    "scope": "M5 late final repair routing",
+    "change": "Validate Final Duration Repair and Validate Final Measured Correction now return semantic_valid=false plus the exact semantic error for semantic-preservation misses. Their existing word-count route requires both word_count_exact and semantic_valid; otherwise it uses the existing single bounded retry. Retry validators remain fail-closed.",
+    "semantic_guard_weakened": false,
+    "retry_count_added": 0,
+    "unbounded_loop": false
+  },
+  "validation": {
+    "node_tests": "92/92 PASS",
+    "git_diff_check": "PASS",
+    "workflow_json_parse": "PASS",
+    "regressions": [
+      "9192 regression: first final duration semantic miss is routed into the existing bounded retry",
+      "late measured correction semantic miss also uses its single bounded retry",
+      "bounded retry validators remain semantic fail-closed"
+    ]
+  },
+  "next_step": "Commit/push, deploy only M5, verify protected workflow rows, then run a new fresh PL15."
+}

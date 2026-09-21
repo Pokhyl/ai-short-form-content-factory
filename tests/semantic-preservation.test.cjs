@@ -278,3 +278,104 @@ test('final duration target allocation uses original scene weights and semantic 
     assert.doesNotMatch(code,/sceneCurrentWords/);
   }
 });
+
+
+function runLateFinalValidator(name,builderName,candidateNarrations) {
+  const code=byName[name].parameters.jsCode;
+  const originalNarrations=[
+    'Woda gromadzi się za tamą.',
+    'Woda napędza turbinę wodną.',
+    'Turbina obraca generator prądu.',
+    'Transformator przekazuje energię dalej.',
+    'Prąd trafia do sieci.',
+  ];
+  const total=candidateNarrations.join(' ').split(/\s+/u).filter(Boolean).length;
+  const baseStoryboard={
+    narration:originalNarrations.join(' '),
+    scenes:originalNarrations.map((narration,i)=>({
+      narration,
+      shots:[{shot_key:'S'+(i+1)+'-A'}],
+    })),
+  };
+  const builder={
+    script_run_id:'run',
+    model:'gemini',
+    base_storyboard:baseStoryboard,
+    prior_usage:{},
+    target_words:total,
+  };
+  const buildCtx={
+    language_code:'pl',
+    target_duration_seconds:15,
+    word_min:20,
+    word_max:40,
+  };
+  const $=nodeName=>{
+    if(nodeName===builderName) return {first:()=>({json:builder})};
+    if(nodeName==='Build Script Prompt') return {first:()=>({json:buildCtx})};
+    if(nodeName==='Normalize Timing Probe') {
+      return {first:()=>({json:{storyboard:baseStoryboard}})};
+    }
+    throw new Error('unexpected node '+nodeName);
+  };
+  const response={
+    statusCode:200,
+    body:{
+      candidates:[{content:{parts:[{text:JSON.stringify({narrations:candidateNarrations})}]}}],
+      usageMetadata:{},
+    },
+  };
+  return new Function('$','$json',code)($,response).json;
+}
+
+test('9192 regression: first final duration semantic miss is routed into the existing bounded retry',()=>{
+  const candidate=[
+    'Ogromna woda spokojnie gromadzi się za tamą.',
+    'Woda napędza turbinę wodną.',
+    'Turbina obraca generator prądu.',
+    'Transformator przekazuje energię dalej.',
+    'Prąd trafia do sieci.',
+  ];
+  const out=runLateFinalValidator(
+    'Validate Final Duration Repair',
+    'Build Final Duration Repair',
+    candidate
+  );
+  assert.equal(out.word_count_exact,true);
+  assert.equal(out.semantic_valid,false);
+  assert.match(out.semantic_validation_error,/introduced too many new content words/);
+
+  const route=byName['Route Final Duration Word Count'].parameters.conditions.conditions[0].leftValue;
+  assert.match(route,/semantic_valid/);
+  assert.equal(workflow.connections['Route Final Duration Word Count'].main[1][0].node,'Build Final Word Count Retry');
+});
+
+test('late measured correction semantic miss also uses its single bounded retry',()=>{
+  const candidate=[
+    'Ogromna woda spokojnie gromadzi się za tamą.',
+    'Woda napędza turbinę wodną.',
+    'Turbina obraca generator prądu.',
+    'Transformator przekazuje energię dalej.',
+    'Prąd trafia do sieci.',
+  ];
+  const out=runLateFinalValidator(
+    'Validate Final Measured Correction',
+    'Build Final Measured Correction',
+    candidate
+  );
+  assert.equal(out.word_count_exact,true);
+  assert.equal(out.semantic_valid,false);
+  assert.match(out.semantic_validation_error,/introduced too many new content words/);
+
+  const route=byName['Route Final Measured Word Count'].parameters.conditions.conditions[0].leftValue;
+  assert.match(route,/semantic_valid/);
+  assert.equal(workflow.connections['Route Final Measured Word Count'].main[1][0].node,'Build Final Measured Word Count Retry');
+});
+
+test('bounded retry validators remain semantic fail-closed',()=>{
+  for(const name of ['Validate Final Word Count Retry','Validate Final Measured Word Count Retry']) {
+    const code=byName[name].parameters.jsCode;
+    assert.match(code,/SEMANTIC_PRESERVATION_GUARD_START/);
+    assert.doesNotMatch(code,/semanticValidationError =/);
+  }
+});
