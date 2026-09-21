@@ -63,7 +63,7 @@ Current deployed versions:
 - M5 versionCounter 86, versionId 7ad8ed81-edfe-4c74-9957-f0578de84261 (immutable semantic source + fail-closed semantic validation; word counts are soft timing guidance)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
-- M8 versionCounter 44, versionId 16c27568-3bbf-41b2-9b23-9e555b3b98da (photographic/subject evidence + complete Commons query coverage)
+- M8 versionCounter 45, versionId 3778d30c-70c0-4cd2-9df8-e8465d4fdd7a (photographic/subject evidence + complete Commons query coverage + bounded Pexels page-title corroboration)
 - M9 versionCounter 1, versionId 5b6c937c-1767-4c3e-99c4-31ea38a26961
 - Self-Test API versionCounter 3, versionId f3ef8cbf-1c56-4048-9fdf-feb073de96df
 
@@ -384,3 +384,12 @@ That M8 defect was fixed and deployed as M8 v41.
 - Photo scoring metadata no longer mixes the raw URL into ordinary visual-description text; the title corroboration channel is separate.
 - Regression coverage includes the exact hydro candidate, unrelated-alt same-URL negative, existing URL-only negative, bee/wasp/dew/monkey negatives, and existing valid compound subjects. Full Node suite 37/37 PASS; all 10 M8 Code nodes pass `node --check`; `git diff --check` PASS.
 - Production remains M8 v44 until this tested patch is committed/pushed and deployed. Next: deploy only M8, verify all other workflow rows unchanged, then start a fresh immutable PL15.
+
+### M8 v45 deployed — bounded Pexels title corroboration
+
+- Published only `VideoM8Visuals001`: counter 45, activeVersionId `3778d30c-70c0-4cd2-9df8-e8465d4fdd7a`.
+- Backup of v44: `.backups/m8-before-pexels-title-20260921-092430.json`.
+- Aggregate hash of the other 31 workflow rows is identical before/after; no credential or unrelated workflow changed.
+- Live exported M8 core matches repository and contains `pexelsPageTitleText` / `primaryTitleCorroborated` logic.
+- Publisher and Studio HTTP 200; n8n restart 0; full-fit worker healthy/restart 0 on the same image.
+- No restart was issued. Next fresh execution must confirm v45 runtime snapshot, then PL15 must be reviewed from the exact final MP4 before EN30 starts.
