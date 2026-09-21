@@ -60,7 +60,7 @@ Project workflow IDs:
 Current deployed versions:
 - M3 versionCounter 2, versionId e78f648c-639a-439a-8915-270d3b44f1cb
 - M4 versionCounter 5, versionId 3cf94dd2-8c3b-4585-ae88-6315a2685ff7
-- M5 versionCounter 85, versionId 3fdc6ec5-c1cb-4594-b6c6-d4acb96088f0 (immutable semantic source + fail-closed semantic/exact-word timing validation)
+- M5 versionCounter 86, versionId 7ad8ed81-edfe-4c74-9957-f0578de84261 (immutable semantic source + fail-closed semantic validation; word counts are soft timing guidance)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
 - M8 versionCounter 44, versionId 16c27568-3bbf-41b2-9b23-9e555b3b98da (photographic/subject evidence + complete Commons query coverage)
@@ -364,3 +364,12 @@ That M8 defect was fixed and deployed as M8 v41.
 - Final timing builders still use immutable original narration, original scene proportions and semantic floors. Their prompts now explicitly allow redistribution between scenes when meaning needs more space and forbid filler/count-driven meaning loss.
 - Full Node suite 35/35 PASS and `git diff --check` PASS. Production remains M5 v85 until this patch is committed/pushed and deployed.
 - Next: deploy only M5 as the next version, confirm all other workflow rows unchanged, then run a new immutable PL15.
+
+### M5 v86 deployed — soft word targets, hard semantics
+
+- Published only `VideoM5Storyboard001`: counter 86, activeVersionId `7ad8ed81-edfe-4c74-9957-f0578de84261`.
+- Backup of v85: `.backups/m5-before-soft-semantic-20260921-081235.json`.
+- Other 31 workflow rows retain the exact same aggregate hash `a27f18a4b81669e2c7ec0721c2e20e5e`; inventory unchanged.
+- Live exported M5 core matches repository. Semantic coverage threshold is 0.625 with generic filler rejection; hard exact-total precision rejection is absent.
+- Publisher and Studio HTTP 200; n8n and media-worker healthy with restart count 0. No restart was issued.
+- Next: create one fresh PL15, confirm execution snapshot uses v86, inspect M5 narration/semantic path, then continue only if the exact job passes.
