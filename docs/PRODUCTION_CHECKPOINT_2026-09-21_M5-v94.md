@@ -1,6 +1,6 @@
 # Production checkpoint — 2026-09-21 — M5 v94
 
-This checkpoint records only state verified before the SentinelX agent disconnected.
+This checkpoint records historical deployment state before SentinelX disconnected. **Continuation update:** M5 v94 runtime was subsequently confirmed by execution 9122; PL15 cd432c5e-20b2-4f08-ad45-3cc21d4ee588 reached machine PASS but failed exact-frame visual review. M8 has since advanced to v46. See the authoritative Resume section in CODEX_HANDOFF.md; do not execute this historical Next exact step again.
 
 ## Production versions
 

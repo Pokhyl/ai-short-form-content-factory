@@ -5,10 +5,10 @@ Updated: 2026-09-21
 ## Resume here — authoritative checkpoint, 2026-09-21
 
 - Synced main from GitHub (`690a880`) and fully reread this handoff, the M5-v94 checkpoint, CURRENT_STATE and LESSONS_LEARNED before continuing. Earlier v84/v44 summaries below are historical.
-- Live SSH verification: M5 **v94** / `b4122d0a-5754-4311-8b7a-adab15ff0697`; M8 **v45** / `3778d30c-70c0-4cd2-9df8-e8465d4fdd7a`. No changes deployed in this continuation yet.
+- Live SSH verification: M5 **v94** / `b4122d0a-5754-4311-8b7a-adab15ff0697`; M8 **v46** / `b315a1e5-20c1-435e-b2a9-062f207dccfa`. Published M8 code matches repository; other 31 workflow rows unchanged. M5 and worker unchanged.
 - PL15 `cd432c5e-20b2-4f08-ad45-3cc21d4ee588`: M4–M9 PASS, but exact-file visual review now **REJECTED**. Do not start EN30. Candidate IDs, metadata and execution snapshots are in `docs/acceptance/2026-09-21-pl15-v94-review.json`.
 - Exact midpoint review: S1 dam acceptable; S2 museum hydroelectric runner acceptable as static illustration; S3 steam-turbine generator is wrong mechanism context; S4 oil-engine-driven generator is wrong plant context; S5 shows door/warning signs rather than the requested transformer/power lines. Do not reject museum images categorically.
-- Next: replay original M8 responses and introduce generic domain/context relevance plus distinction between the depicted object and signage about it. Do not hardcode hydro topics, asset IDs or a blanket museum ban. Keep failed/rejected job immutable and preserve quality gates.
+- Implemented/deployed: repeated-subject shared-domain guard and Commons signage/door depiction guard. 65 tests and complete 333-candidate replay PASS; exact old S3/S4/S5 rejected, S1/S2 retained. Next: improve planned query specificity using established subject context, without changing stored query provenance or cache keys silently. Old S3/S4 pools have zero eligible candidates. Do not launch another full job until retrieval is shown adequate. No fresh v46 execution or product acceptance claimed.
 - Audio: technical integrity checked; listening QA is NOT complete, no audio/HUMAN PASS claimed. Full four-case acceptance remains incomplete.
 - Access: SentinelX currently reports zero connected hosts / agent_offline even though its service is active. Existing SSH alias `hodor-vps` works and was used for read-only verification. No service restart, credential change or new connection setup needed.
 
@@ -64,7 +64,7 @@ Current deployed versions:
 - M5 versionCounter 94, versionId b4122d0a-5754-4311-8b7a-adab15ff0697 (semantic/timing guards + English visual metadata + secondary process-anchor normalization)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
-- M8 versionCounter 45, versionId 3778d30c-70c0-4cd2-9df8-e8465d4fdd7a (photographic/subject evidence + complete Commons query coverage + bounded Pexels page-title corroboration)
+- M8 versionCounter 46, versionId b315a1e5-20c1-435e-b2a9-062f207dccfa (v45 + repeated-subject domain context + signage/door depiction guard)
 - M9 versionCounter 1, versionId 5b6c937c-1767-4c3e-99c4-31ea38a26961
 - Self-Test API versionCounter 3, versionId f3ef8cbf-1c56-4048-9fdf-feb073de96df
 
@@ -502,3 +502,11 @@ That M8 defect was fixed and deployed as M8 v41.
 - Raw sanitized provider body/context replay: VPS `.review/pl15-v94/provider-replay.json`, SHA-256 `a42703535766aacdb748ead0deb6dd9f9ee9bedb0b23a6d5d1ca3cfb17cb6848`. Only bodies and shot context retained, no credentials/request headers. Reproduce using `scripts/replay_visual_candidates.cjs WORKFLOW REPLAY_INPUT REVIEW_EVIDENCE REPORT`. Exact Commons fixtures are committed under tests/fixtures.
 - Validation: **65/65 Node tests PASS**, including actual selected assets, generic marine-domain control, valid museum generator, requested-signage positive, all prior regressions; all 113 Code nodes syntax PASS; git diff check PASS.
 - Next: scoped M8 publication with backup/unchanged-other-row verification. Keep M5 v94 and media-worker unchanged. Do not spend another full job on the same inadequate query pool: next retrieval work should provide the missing established context in planned queries, preserving exact query accounting/cache provenance. EN30 remains blocked by PL15 review failure.
+
+### M8 v46 deployed and verified — 2026-09-21 15:04 UTC
+
+- Active M8 counter **46**, ID **`b315a1e5-20c1-435e-b2a9-062f207dccfa`**. Exact pre-deploy backup `.backups/m8-before-domain-context-20260921-150344.json`. Other 31 workflow rows have identical aggregate hash `147f6922e827cc40b1af7a6e113f313d`; inventory 32 total / 15 active. No project run was active before publication.
+- M5 remains v94 `b4122d0a-5754-4311-8b7a-adab15ff0697`. Both M5/M8 active node/connection graphs match repository. Previous PL15 execution 9122 confirms M5 v94 runtime and execution 9125 confirms M8 v45. No fresh v46 execution is claimed.
+- Media-worker remains healthy/restart 0 on `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`; publisher and Studio HTTP 200. No service restart, credential change, new provider calls or new acceptance job.
+- Deployment first stopped on a dirty-checkout guard. Inspection showed only pre-existing untracked `studio/qa-v94-pl15-contact.jpg`; all tracked files were clean. Preserved that file untouched, pulled main with fast-forward and completed scoped publication. Do not remove that review artifact as cleanup.
+- Confirmed next result: bad context/depiction selections fail closed under the published source, with original positive subjects retained and 65/65 regressions passing. Product remains incomplete: PL15 visually rejected, audio listening unaccepted, EN30 not started. Next agent should work on context-preserving query planning/retrieval before spending another complete pipeline attempt.
