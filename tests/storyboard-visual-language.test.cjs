@@ -100,39 +100,57 @@ const normalizeMustShow=mustShowNormalizer();
 
 test('secondary must_show does not restate or detail the primary object',()=>{
   assert.deepEqual(
-    normalizeMustShow(['water turbine','turbine blades']),
+    normalizeMustShow(['water turbine','turbine blades'],'Water turbine runner inside a power station'),
     ['water turbine']
   );
   assert.deepEqual(
-    normalizeMustShow(['electric generator','generator machinery']),
+    normalizeMustShow(['electric generator','generator machinery'],'Electric generator inside a hydroelectric plant'),
     ['electric generator']
   );
   assert.deepEqual(
-    normalizeMustShow(['power transformer','transformer substation']),
+    normalizeMustShow(['power transformer','transformer substation'],'Power transformer outside a hydroelectric plant'),
     ['power transformer']
   );
   assert.deepEqual(
-    normalizeMustShow(['electric generator','industrial machinery']),
+    normalizeMustShow(['electric generator','industrial machinery'],'Electric generator inside a hydroelectric plant'),
     ['electric generator']
   );
   assert.deepEqual(
-    normalizeMustShow(['water turbine','industrial equipment']),
+    normalizeMustShow(['water turbine','industrial equipment'],'Water turbine inside a hydroelectric plant'),
     ['water turbine']
   );
 });
 
 test('independent secondary context remains mandatory',()=>{
   assert.deepEqual(
-    normalizeMustShow(['water reservoir','dam']),
+    normalizeMustShow(['water reservoir','dam'],'Large water reservoir behind a concrete dam'),
     ['water reservoir','dam']
   );
   assert.deepEqual(
-    normalizeMustShow(['magma pool','rock cavity']),
+    normalizeMustShow(['magma pool','rock cavity'],'Large underground magma pool trapped inside a dark rock cavity'),
     ['magma pool','rock cavity']
   );
   assert.deepEqual(
-    normalizeMustShow(['power lines','transmission towers']),
+    normalizeMustShow(['power lines','transmission towers'],'Electrical power lines and transmission towers distributing electricity'),
     ['power lines','transmission towers']
+  );
+});
+
+
+test('secondary context absent from visual_intent is removed instead of becoming a hard retrieval gate',()=>{
+  assert.deepEqual(
+    normalizeMustShow(
+      ['electric generator','turbine shaft'],
+      'Electric generator machine inside a hydroelectric plant'
+    ),
+    ['electric generator']
+  );
+  assert.deepEqual(
+    normalizeMustShow(
+      ['water turbine','maintenance worker'],
+      'Water turbine runner inside a power station'
+    ),
+    ['water turbine']
   );
 });
 
@@ -144,7 +162,7 @@ test('all bounded storyboard validators normalize redundant secondary anchors',(
   ]) {
     const code=byName[name].parameters.jsCode;
     assert.match(code,/MUST_SHOW_SECONDARY_GUARD_START/,name);
-    assert.match(code,/normalizeMustShowAnchors\(rawMustShow\)/,name);
+    assert.match(code,/normalizeMustShowAnchors\(rawMustShow, visualIntent\)/,name);
   }
 });
 
