@@ -60,7 +60,7 @@ Project workflow IDs:
 Current deployed versions:
 - M3 versionCounter 2, versionId e78f648c-639a-439a-8915-270d3b44f1cb
 - M4 versionCounter 5, versionId 3cf94dd2-8c3b-4585-ae88-6315a2685ff7
-- M5 versionCounter 87, versionId 76997364-249a-470b-9773-039977eeeba3 (topic-focused initial script + first-repair semantic guard/fallback + soft timing counts)
+- M5 versionCounter 88, versionId de96b2f2-2660-4b75-a33b-db3b8793e589 (topic-focused/semantic repair + 2-of-3 real TTS stability majority)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
 - M8 versionCounter 45, versionId 3778d30c-70c0-4cd2-9df8-e8465d4fdd7a (photographic/subject evidence + complete Commons query coverage + bounded Pexels page-title corroboration)
@@ -426,3 +426,12 @@ That M8 defect was fixed and deployed as M8 v41.
 - Exact regression `15,576 / 16,704 / 13,536` now fails with 1/3 inliers. Positive control `15,576 / 15,600 / 16,704` passes with 2/3 inliers and median in-window.
 - Full Node suite 44/44 PASS; all 55 M5 Code nodes pass syntax; `git diff --check` PASS.
 - Production remains M5 v87 / M8 v45 until commit/push and scoped M5 deployment. Next fresh PL15 must prove the majority stability gate in a real execution before M6 acceptance is trusted.
+
+### M5 v88 deployed — majority real-TTS stability
+
+- Published only `VideoM5Storyboard001`: counter 88, activeVersionId `de96b2f2-2660-4b75-a33b-db3b8793e589`.
+- Backup of v87: `.backups/m5-before-majority-stability-20260921-094111.json`.
+- Aggregate hash of the other 31 workflow rows is identical before/after; no unrelated workflow or credential changed.
+- Live exported M5 core matches repository and contains `requiredWithinFinal = 2` in `Normalize Timing Stability B`.
+- Publisher and Studio HTTP 200; n8n restart 0; media-worker healthy/restart 0 on unchanged full-fit image.
+- Current production target: M5 v88 / M8 v45 / full-fit worker. Next fresh PL15 must confirm runtime v88 and survive M6 before M8/M9 review.
