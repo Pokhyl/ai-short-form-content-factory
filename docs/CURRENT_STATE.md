@@ -462,3 +462,14 @@ This section supersedes older M8 snapshots above where they conflict.
 - Publisher HTTP 200; Studio HTTP 200; n8n restart count 0; media-worker healthy restart count 0.
 - Last fresh PL15 `67a1e838-038e-45d6-aa95-16c4638bbebd` remains immutable `visuals_failed`; its exact S4 defect and v51 fix evidence are in `docs/acceptance/2026-09-21-pl15-v50-s4-spatial-domain-fix.json`.
 - Runtime proof for M8 v51 is pending. Do not claim PL15 acceptance or start EN30 until a new fresh PL15 reaches machine PASS and passes exact-file manual review.
+
+
+## Authoritative production update — 2026-09-21 after M5 v98 deploy
+
+- Git main fix commit: `1ac2c948e6a44c11f11a51c59ccab41a7226a447`.
+- M5: versionCounter 98, activeVersionId `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`.
+- M8: versionCounter 51, activeVersionId `f242881a-d79e-449d-a8c8-68d65ec54cde`.
+- Exact M5 backup: `.backups/m5-before-late-semantic-retry-20260921-193037.json`.
+- Other 31 workflow rows unchanged; aggregate hash `efd8e340d7b44dc59429062d4b1bda5f`.
+- Publisher/Studio 200; n8n restart 0; media-worker healthy restart 0.
+- Runtime verification of M5 v98 is pending.

@@ -638,3 +638,15 @@ That M8 defect was fixed and deployed as M8 v41.
 - Validation: **92/92 Node tests PASS**, `git diff --check` PASS, M5 JSON parse PASS.
 - Evidence: `docs/acceptance/2026-09-21-pl15-m5-late-semantic-retry.json`.
 - Production remains M5 `9cfd4e2d...` / M8 v51 `f242881a...` until M5-only deploy.
+
+
+### M5 v98 deployed — late semantic miss uses existing bounded retry
+
+- Repository fix commit before deployment: `1ac2c948e6a44c11f11a51c59ccab41a7226a447`.
+- Exact pre-deploy backup: `.backups/m5-before-late-semantic-retry-20260921-193037.json`.
+- Published only `VideoM5Storyboard001`: versionCounter **98**, activeVersionId `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`.
+- Live export matches repository for nodes, connections and settings.
+- Other 31 workflow rows unchanged: aggregate hash `efd8e340d7b44dc59429062d4b1bda5f` before/after.
+- M8 remains v51 `f242881a-d79e-449d-a8c8-68d65ec54cde`.
+- Publisher/Studio HTTP 200; n8n restart 0; media-worker healthy restart 0.
+- Next: one fresh PL15; runtime must prove M5 v98 and M8 v51 before exact MP4 acceptance.
