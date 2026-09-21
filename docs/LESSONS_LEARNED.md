@@ -267,3 +267,14 @@ Complete query coverage and accounting must change together. Restricting Commons
 Equal per-scene word quotas can remove the grammatical object from one sentence while adding filler to another. Allocate timing targets using original scene lengths and retain original narration through retries; successive drafts are not a semantic source of truth. Mechanical word-count validation does not validate factual meaning.
 
 A relevance-approved source can lose its subject during unconditional portrait center cropping. Preserve the full source geometry unless a verified subject location supports cropping; test edge landmarks in the encoded output, not just filter-string syntax. Source semantic relevance remains a separate gate.
+
+34. Timing retries need an immutable semantic source and fail-closed validation, not only stronger prompts.
+Execution 9047 showed that an exact-word prompt can still return the wrong word count and semantic damage; later repairs then treat the damaged draft as truth.
+
+Prevention:
+- keep the first validated narration as the immutable meaning reference through all later timing branches;
+- allocate later scene word targets from original scene proportions, not from a damaged intermediate draft;
+- validate semantic-content retention before consuming another TTS probe;
+- enforce requested exact word counts before TTS when a branch claims to be an exact-word retry;
+- preserve numeric facts and negation polarity;
+- use prompt instructions as guidance, never as proof that meaning was preserved.

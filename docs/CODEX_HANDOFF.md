@@ -332,3 +332,13 @@ That M8 defect was fixed and deployed as M8 v41.
 - Execution 9047 confirms actual M5 v84 ID `8918963e-54ad-4b52-b167-ef6c6fb9f52f`. Zero project executions running/waiting. Inventory remains 32 total / 15 active.
 - Publisher and Studio HTTP 200; full-fit worker healthy, restart 0, active image exactly as listed above. Local and VPS worktrees clean at verification; all implementation commits pushed to origin/main.
 - This is a safe continuation checkpoint, NOT final task acceptance. Next agent should start with the M5 v84 failure analysis immediately above, not rerun the historical matrix or infer success from machine PASS labels.
+
+### M5 semantic-preservation gate — tested, NOT DEPLOYED
+
+- Continued from failed v84 job `ccc91e49-8e19-404d-bf05-3ec4cab5d469` / execution `9047`; no production job was rerun while diagnosing.
+- Exact replay confirms the failure chain: original 28-word factual narration -> 20-word calibration draft -> precision retry returned 30 words despite a 25-word request and introduced `siłę prądu` / `Ogromna woda`; later final repairs inherited that damaged draft and eventually measured 14,064 ms.
+- Repository fix keeps `Normalize Timing Probe` as the immutable semantic source through every late timing builder. `Build Final Duration Repair`, `Build Final Measured Correction`, and both exact-word retry builders now include `original_narration`; final scene word allocations use original scene weights plus a 60% semantic floor instead of the latest damaged draft.
+- New deterministic semantic-preservation guard runs on `Validate Timing Repair 2`, `Validate Timing Precision Retry`, both final-duration validators, both exact-word retry validators, and `Canonicalize Final Storyboard`. It checks original-content retention, limits novel content words, preserves numeric facts and negation polarity, and remains language-aware for EN/PL/RU/UK.
+- `Validate Timing Precision Retry` now requires the exact requested per-scene and total word counts before TTS. Final exact-word retry validators also fail closed instead of sending a non-exact hybrid into another TTS probe.
+- Regression tests include the exact bad PL phrases from execution 9047 and valid concise controls. Full Node suite: 34/34 PASS; all 55 M5 Code nodes pass `node --check`; Python compile and `git diff --check` PASS.
+- Production is still M5 v84 / M8 v44 / full-fit worker. Next: commit/push this tested checkpoint, back up/import/publish only M5, verify all other workflow rows unchanged, then run a fresh PL15 and inspect narration before allowing M6-M9 acceptance progression.
