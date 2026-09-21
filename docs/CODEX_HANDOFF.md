@@ -4,12 +4,12 @@ Updated: 2026-09-21
 
 ## Resume here — authoritative current checkpoint
 
-- Task is NOT complete. Active production is M5 v84 / M8 v44 (full IDs below). No current-version four-case acceptance exists.
-- Previous PL15 `1be96d5a-7626-4771-9b1c-7b5452894725` terminated `visuals_failed`: intake 9028 success; parent 9029 error; M4 9030, M5 9031, M6 9032, M7 9033 success; M8 9034 error; M9 never started. Execution 9035 is a subsequent successful Self-Test API request, not a render.
-- Exact failure: no compliant relevant candidate for S2-A (penstock pipe / flowing water). Keep this failed job immutable.
-- Retrieval gap FIXED in M8 v44: all three providers now execute every query. New run accounting is 3 × total query count; verified 45/45 searches in the latest PL15. Historical failed run counts remain unchanged.
-- Latest PL15 `69391e2d-34bc-4775-89f8-32913dff9edb` is machine PASS but REVIEW REJECTED. Do not start EN30 yet. Investigate M5 semantic damage during timing shortening and M9 subject loss from center cropping; details at the last checkpoint.
-- Earlier machine-passing jobs below are historical diagnostics and must not be mistaken for current-version acceptance. All substantive fixes, tests, deployments and IDs must be recorded here and pushed to main before moving on.
+- Task is NOT complete. Production: M5 v84, M8 v44, full-fit media-worker image `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`; exact workflow version IDs below. Worker healthy; live source matches repository. Inventory 32/15, protected workflows unchanged.
+- Active fresh PL15: `ccc91e49-8e19-404d-bf05-3ec4cab5d469`, created and run accepted after deployment. Monitor this exact job; do not start overlapping jobs. Review each sentence and exact final frame before EN30 → RU45 → UK60.
+- Previous PL15 `69391e2d-34bc-4775-89f8-32913dff9edb` passed all technical checks but was REJECTED: semantic damage in M5 precision retry, poor subject choice and center crop. Immutable. Exact execution IDs, artifact hash and diagnosis appear below.
+- Deployed fixes: complete Wikimedia query coverage/accounting (verified 45/45); original meaning context and proportional scene word targets in M5; full-source fit without stretching in the renderer. 24 Node tests and three real FFmpeg framing regressions passed. These checks do not prove future semantic output.
+- Remaining risk: provider labels may describe a decorative wheel as an industrial turbine; lexical matching and full-frame rendering do not certify actual depicted mechanism. Review outputs honestly; no topic/asset blacklists, weakened gates or reuse of rejected jobs.
+- No accepted four-case matrix exists on current versions. Explicit HUMAN PASS remains required after four reviewable outputs. Historical machine-passing jobs below are diagnostics, not final acceptance. Record and push each meaningful checkpoint.
 
 ## Project
 
