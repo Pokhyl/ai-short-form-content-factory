@@ -410,3 +410,10 @@ M8 v42 is published (`c6309bfc-4aa7-42c6-b5a9-49b187c134c1`), with other 31 work
 ## Subject-evidence continuation — 2026-09-21
 
 PL15 on M5 v82/M8 v42 passed exact-file review. EN30 on the same versions reached machine PASS but was rejected after frame inspection (bee fly, wasp, dew substituted for the narrated subjects). The stronger subject-grounding correction and whole-subject storyboard prompt pass 18 tests plus a replay of 236 persisted candidates. They are not yet deployed at this checkpoint; no final four-case acceptance is claimed.
+
+### Complete Commons query coverage — tested, not yet deployed
+
+- Confirmed live public Commons probes: `hydroelectric penstock pipe` and `penstock pipe` each return 8 candidates including penstock photographs. The original long query returned a turbine and hydraulic-compressor diagram, both correctly rejected. This confirms a retrieval gap; it does not yet prove the complete storyboard passes.
+- M8 now enumerates every storyboard query for Wikimedia, retaining query index, provenance, 8-second pacing and existing retry/quality gates. `factory.begin_visuals` expected count becomes 3 × total storyboard queries. Existing immutable run counts are untouched.
+- Checks: 22/22 Node tests PASS; replacement SQL compiled and function definition asserted in a rolled-back production transaction; git diff check PASS. Production remains M5 v83 / M8 v43 until the following deployment checkpoint.
+- Next: back up and replace only begin_visuals(uuid), publish M8, verify protected workflow rows and deployed count contract, then create a fresh PL15.

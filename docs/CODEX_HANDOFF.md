@@ -270,3 +270,10 @@ That M8 defect was fixed and deployed as M8 v41.
 - Active IDs: M5 `5e50db9d-e3f9-44a0-8e2f-a0168f505bec` / counter 83; M8 `d282d875-8e81-43c7-99bb-3f9730fb9052` / counter 43. Exact backup `.backups/m5-m8-before-subject-grounding-20260921.json`. Other 30 workflow rows unchanged by aggregate comparison; inventory 32/15. No service restart or credential change.
 - Fresh sequential matrix starts with PL15 `1be96d5a-7626-4771-9b1c-7b5452894725`, created and run accepted. All earlier jobs are diagnostics for prior versions.
 - Next: complete/inspect PL15, then fresh EN30/RU45/UK60 sequentially; record execution snapshots and exact artifacts. Production media-worker and other six workflow versions remain unchanged.
+
+### Complete Commons query coverage — tested, not yet deployed
+
+- Confirmed live public Commons probes: `hydroelectric penstock pipe` and `penstock pipe` each return 8 candidates including penstock photographs. The original long query returned a turbine and hydraulic-compressor diagram, both correctly rejected. This confirms a retrieval gap; it does not yet prove the complete storyboard passes.
+- M8 now enumerates every storyboard query for Wikimedia, retaining query index, provenance, 8-second pacing and existing retry/quality gates. `factory.begin_visuals` expected count becomes 3 × total storyboard queries. Existing immutable run counts are untouched.
+- Checks: 22/22 Node tests PASS; replacement SQL compiled and function definition asserted in a rolled-back production transaction; git diff check PASS. Production remains M5 v83 / M8 v43 until the following deployment checkpoint.
+- Next: back up and replace only begin_visuals(uuid), publish M8, verify protected workflow rows and deployed count contract, then create a fresh PL15.

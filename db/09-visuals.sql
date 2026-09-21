@@ -255,8 +255,7 @@ BEGIN
     SELECT
         count(*)::integer,
         (
-            COALESCE(sum(jsonb_array_length(s.queries_en)),0)::integer * 2
-            + count(*)::integer
+            COALESCE(sum(jsonb_array_length(s.queries_en)),0)::integer * 3
         )
       INTO v_shot_count,v_search_count
       FROM factory.shots s

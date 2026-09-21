@@ -261,3 +261,5 @@ Prevention:
 - normalize ordinary plurals consistently;
 - storyboard anchors name the complete visible main subject, keeping internal mechanisms in narration and using relevant real physical context;
 - replay original provider responses, including negative controls, before consuming more live acceptance jobs.
+
+Complete query coverage and accounting must change together. Restricting Commons to only the longest first query discards concise fallback searches that retrieve the actual subject. Keep paced complete retrieval and persist expected search counts per new run; do not rewrite failed runs or loosen relevance to compensate for missing searches.
