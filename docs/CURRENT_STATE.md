@@ -402,3 +402,7 @@ See docs/CODEX_HANDOFF.md for exact current job IDs, constraints and remaining s
 ## Acceptance continuation — 2026-09-20
 
 Fresh PL15 passed machine QA and exact-file visual inspection. Fresh EN30 passed technical QA but failed visual inspection: Pixabay returned a text poster as `photo` and tag-only relevance admitted a honey jar for a bee scene. No final acceptance is claimed. Investigation and exact IDs are in `CODEX_HANDOFF.md`; a fresh four-case matrix must follow the systemic fix.
+
+## Timing continuation — 2026-09-21
+
+M8 v42 is published (`c6309bfc-4aa7-42c6-b5a9-49b187c134c1`), with other 31 workflow rows unchanged. The fresh PL15 failed before M8 in M5 v81 because repair interpolation reused a first TTS sample after a materially different median had been confirmed. The targeted fix passes 12 regression tests; deployment and a fresh full acceptance matrix remain next. See `CODEX_HANDOFF.md` for exact IDs and measurements.

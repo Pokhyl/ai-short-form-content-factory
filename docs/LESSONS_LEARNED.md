@@ -241,3 +241,12 @@ Prevention:
 - require Pexels `alt` descriptions and reject explicitly described posters/illustrations/digital graphics;
 - preserve all score, timing, license and uniqueness thresholds; never blacklist the observed asset IDs or hardcode the test topic;
 - technical media PASS does not imply visual acceptance; inspect scene-midpoint frames of the exact final MP4.
+
+35. Confirming TTS with a median is insufficient if later repair models reuse the original sample.
+M5 execution 9011 confirmed probe 1 at a 17,136 ms median but later interpolated using its stale 15,144 ms first synthesis. The correction overshot, causing bounded repair exhaustion.
+
+Prevention:
+- all interpolation/final-correction builders reuse available medians keyed by the exact narration text;
+- never transfer a median between different scripts;
+- keep the original strict timing acceptance gates and final M6 measurement;
+- regression-test the measured failed sequence, not just syntax.

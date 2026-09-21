@@ -217,3 +217,12 @@ That M8 defect was fixed and deployed as M8 v41.
 - Pre-fix diagnostic RU45 `8e841de6-30fd-433d-9c0d-3625b78af6af` reached machine PASS: M4 `8939`, M5 `8943`, M6 `8953`, M7 `8954`, M8 `8968`, M9 `8995` all success. This is not part of the final v42 matrix.
 - Fresh v42 PL15: `edb9982b-a391-4033-9a52-a4986393f18b`, run accepted. Next: complete and inspect it, confirm v42 execution and zero selected tag-only Pixabay images, then EN30/RU45/UK60 sequentially.
 - All other workflow versions and media-worker image remain unchanged. The final target is now M5 v81 / M8 v42. Earlier v41 matrix outputs are historical diagnostics.
+
+### PL15 M5 failure diagnosed and correction tested — 2026-09-21 01:48 UTC
+
+- Job `edb9982b-a391-4033-9a52-a4986393f18b` is immutable `script_failed`: intake `9008`, M4 `9010` success, M5 `9011` failed; M6–M9 never started. Error: final preview median 16,368 ms vs 15,000 ms target / 750 ms tolerance.
+- Exact cause in execution 9011: probe 1 first sample was 15,144 ms but its confirmed three-sample median was 17,136 ms (15,144 / 17,376 / 17,136). Later timing-repair interpolation reused the original 15,144 ms rather than the confirmed median for that same narration. Against probe 2 (20 words / 13,704 ms), this incorrectly requested 25 words instead of 22. Subsequent corrections oscillated and exhausted the bounded attempt budget.
+- Fix in the three M5 interpolation/final-repair builders: use the latest available stability median only when the exact canonical narration matches. Unconfirmed or different-text samples keep their own measurement. Existing timing gates, provider budgets, voices, attempt limits and immutable-job rules are unchanged.
+- Validation: `node --test tests/*.test.cjs` 12/12 PASS. Includes the exact 15,144→17,136 ms regression, same-text matching, unrelated-text isolation and original 750 ms tolerance. `git diff --check` PASS.
+- Fresh production check 2026-09-21 01:47 UTC: M5 still v81, M8 v42; no project executions running/waiting; no additional jobs since the failed PL15. Fix is tested locally but not yet deployed at this checkpoint.
+- Next: backup/import/publish only M5; verify unchanged other workflows and fresh execution version snapshots for both M5 and M8. Start a fresh sequential PL15/EN30/RU45/UK60 matrix and inspect all four exact MP4s before final acceptance.
