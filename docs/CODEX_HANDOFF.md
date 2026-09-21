@@ -60,7 +60,7 @@ Project workflow IDs:
 Current deployed versions:
 - M3 versionCounter 2, versionId e78f648c-639a-439a-8915-270d3b44f1cb
 - M4 versionCounter 5, versionId 3cf94dd2-8c3b-4585-ae88-6315a2685ff7
-- M5 versionCounter 84, versionId 8918963e-54ad-4b52-b167-ef6c6fb9f52f (median propagation + original meaning context + weighted scene word targets)
+- M5 versionCounter 85, versionId 3fdc6ec5-c1cb-4594-b6c6-d4acb96088f0 (immutable semantic source + fail-closed semantic/exact-word timing validation)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
 - M8 versionCounter 44, versionId 16c27568-3bbf-41b2-9b23-9e555b3b98da (photographic/subject evidence + complete Commons query coverage)
@@ -341,4 +341,14 @@ That M8 defect was fixed and deployed as M8 v41.
 - New deterministic semantic-preservation guard runs on `Validate Timing Repair 2`, `Validate Timing Precision Retry`, both final-duration validators, both exact-word retry validators, and `Canonicalize Final Storyboard`. It checks original-content retention, limits novel content words, preserves numeric facts and negation polarity, and remains language-aware for EN/PL/RU/UK.
 - `Validate Timing Precision Retry` now requires the exact requested per-scene and total word counts before TTS. Final exact-word retry validators also fail closed instead of sending a non-exact hybrid into another TTS probe.
 - Regression tests include the exact bad PL phrases from execution 9047 and valid concise controls. Full Node suite: 34/34 PASS; all 55 M5 Code nodes pass `node --check`; Python compile and `git diff --check` PASS.
-- Production is still M5 v84 / M8 v44 / full-fit worker. Next: commit/push this tested checkpoint, back up/import/publish only M5, verify all other workflow rows unchanged, then run a fresh PL15 and inspect narration before allowing M6-M9 acceptance progression.
+- Production checkpoint after deploy: M5 v85 / M8 v44 / full-fit worker. M5 v85 active ID `3fdc6ec5-c1cb-4594-b6c6-d4acb96088f0`; exact pre-deploy backup `.backups/m5-before-semantic-guard-20260921-080223.json`. Other 31 workflow rows were unchanged by aggregate hash; inventory remains 32/15. Live exported M5 core matches repository and contains the semantic/exact-word guards. No n8n restart was performed; runtime version must be confirmed by the next fresh execution snapshot.
+
+### M5 v85 semantic guard deployed — 2026-09-21
+
+- Published only `VideoM5Storyboard001`: counter 85, activeVersionId `3fdc6ec5-c1cb-4594-b6c6-d4acb96088f0`.
+- Backup: `.backups/m5-before-semantic-guard-20260921-080223.json`.
+- Aggregate hash of every other workflow row is identical before/after; inventory remains 32 total / 15 active. No credential or other workflow change.
+- Live exported M5 nodes/connections/settings/pinData match repository. `Validate Timing Precision Retry` contains both semantic-preservation and exact-word guards.
+- Publisher and Studio are HTTP 200; n8n restart count 0; full-fit media-worker remains healthy/restart 0 on image `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`.
+- n8n CLI printed its generic restart advisory. No restart was issued because prior internal sub-workflow deployments have taken effect without it. The next fresh M5 execution snapshot must confirm active v85 before runtime acceptance.
+- Next: run one fresh PL15. Inspect the actual M5 narration and v85 execution snapshot before treating the repair as validated in production.
