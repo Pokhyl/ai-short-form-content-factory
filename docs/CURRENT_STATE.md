@@ -4,7 +4,7 @@ Updated: 2026-09-21
 
 ## Current authoritative status
 
-M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v52 `b6b9f5cf-5062-4be3-8322-81d3fb2ebcba` are deployed. S3 retrieval fix is verified by 102 tests and targeted live Commons scoring. Fresh PL15 `f6088d2f-f2eb-4a49-9379-f71c20852cbf` is running (parent 9205, M4 9206 PASS, M5 9207); monitor this exact job next, then final visual/audio QA before EN30. Last failed job remains `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe` (M8 9203). No HUMAN PASS. Older sections are historical; latest details at the end.
+Production M5 v98 / M8 v52. Fresh PL15 `f6088d2f-f2eb-4a49-9379-f71c20852cbf` failed M8 9212 on S4 after M4–M7 passed; no M9/MP4. Exact generic-unit domain defect and nameplate candidate are fixed in repository, 106 tests PASS, not deployed yet. Next: scoped M8 publication, then new PL15. See final section and acceptance evidence; no HUMAN PASS or EN30. Older sections are historical.
 
 ## Repository
 Repo: Pokhyl/ai-short-form-content-factory
@@ -521,3 +521,14 @@ This section supersedes older M8 snapshots above where they conflict.
 - New immutable job `f6088d2f-f2eb-4a49-9379-f71c20852cbf` created through the Studio webhook path; intake 9204 PASS, parent 9205 running, M4 9206 PASS, M5 9207 running on exact v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`.
 - Production M8 v52 `b6b9f5cf-5062-4be3-8322-81d3fb2ebcba`; runtime M8 proof pending. Publisher/Studio HTTP 200; n8n/worker restart 0; worker healthy with unchanged full-fit image.
 - Next: monitor THIS job (do not create a duplicate). If M9 succeeds, audit exact MP4/selected assets and visual/audio QA. If terminal failure, diagnose exact failed execution. EN30 remains unstarted.
+
+### PL15 v52 terminal S4 failure; generic context correction tested, not deployed
+
+- Job `f6088d2f-f2eb-4a49-9379-f71c20852cbf`: M4 9206, M5 9207, M6 9209, M7 9210 PASS; M8 9212 ERROR on confirmed v52 `b6b9f5cf-5062-4be3-8322-81d3fb2ebcba`. M9 did not run; no final MP4. Job stays immutable.
+- All 45 searches completed: Pexels 15/120 results, Pixabay 15/120, Commons 15/66. Failure is S4-A, not S3. Zero committed selections (selection transaction rolled back on S4 failure).
+- Exact cause: S4 intent `Industrial electric generator unit inside a power plant` plus first query `electric generator unit power plant` inferred generic `unit` as a local operating domain. Combined with the established repeated-subject hydroelectric domain it produced `hydroelectric unit generator equipment`, yielded no Commons candidates for S4, and required literal unit in other metadata. This is not an asset-uniqueness failure.
+- Fix: exclude generic unit/apparatus/instrument/receiver/room from domain inference in all three planners, consistent with existing scorer generic-object terms. Real hydroelectric/marine domain gates remain intact; no topic hack/threshold change.
+- Separate exact candidate defect: Commons 28807269 `Generator Nameplate PF Percent.JPG` scored 100 and passed for S3 machinery. Extended existing signage/surface rejection to nameplates; actual requested nameplates still pass. No visual acceptance claim is made from metadata alone.
+- Zero-provider-call replay: corrected S4 fallback equals the already executed S3 effective query `hydroelectric generator equipment`; scoring its exact saved response against S4 produces six eligible distinct hydro-generator candidates. Exact nameplate now rejected. Evidence `docs/acceptance/2026-09-21-pl15-v52-unit-context-replay.json`; all 45 sanitized responses on VPS `.review/pl15-v51/v52-replay.json`.
+- 106/106 tests PASS; JSON/113 Code syntax/diff checks PASS. Production remains M5 v98 / M8 v52 until the scoped deployment.
+- Next: publish only M8 after backup/protected-row verification, then one fresh PL15 and exact visual/audio review before EN30. Do not rerun failed job.

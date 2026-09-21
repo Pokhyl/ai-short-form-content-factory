@@ -39,3 +39,23 @@ test('exact Commons Cedar Falls powerhouse candidate supports S3 compound contex
  assert.equal(result[0].rejected,false,result[0].rejection_reason);
  assert.ok(result[0].relevance_score>=55);
 });
+
+for(const provider of ['Pixabay','Pexels','Wikimedia']) test(provider+': generic unit/room are not machinery domains',()=>{
+ const shots=[{...shot,shot_uuid:'s3',must_show:['generator'],visual_intent:'Electric generator in hydroelectric plant',queries_en:['electric generator power station','hydroelectric generator machine','generator']},{...shot,shot_uuid:'s4',visual_intent:'Industrial electric generator unit inside a power plant',must_show:['generator'],queries_en:['electric generator unit power plant','industrial electric generator room','generator']}];
+ shots.push({...shot,shot_uuid:'s2',must_show:['turbine'],visual_intent:'Hydroelectric turbine',queries_en:['hydroelectric turbine','water turbine','turbine']});
+ const rows=new Function('$',code('Build '+provider+' Requests'))(()=>({first:()=>({json:{visual_run_id:'test',shots_json:shots}})})).map(r=>r.json);
+ const fallback=rows.find(r=>r.shot_uuid==='s4'&&r.query_index===3);
+ assert.deepEqual(fallback.domain_context_terms,['hydroelectric']);
+ assert.equal(fallback.query,'generator');
+ assert.equal(fallback.provider_query,'hydroelectric generator equipment');
+});
+
+test('exact generator nameplate is rejected as a surface, but requested nameplate remains allowed',()=>{
+ const f=JSON.parse(fs.readFileSync('tests/fixtures/pl15-v52-nameplate.json'));
+ const normalize=ctx=>new Function('$','$json',code('Normalize Wikimedia'))(()=>({item:{json:ctx}}),{statusCode:200,body:f.body}).json.candidates[0];
+ const c=normalize(f.ctx);
+ assert.equal(c.rejected,true);
+ assert.match(c.rejection_reason,/depicts_surface/);
+ const allowed=normalize({...f.ctx,query:'generator nameplate',visual_intent:'Generator nameplate',must_show:['nameplate'],must_not_show:[],domain_context_terms:[]});
+ assert.equal(allowed.rejected,false,allowed.rejection_reason);
+});

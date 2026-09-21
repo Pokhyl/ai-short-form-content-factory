@@ -1,0 +1,138 @@
+{
+  "ctx": {
+    "visual_run_id": "df135d9b-80ba-4ab0-9e5a-3dd1d0f0877f",
+    "shot_uuid": "d1fd3fd7-95f1-475f-be61-c6594aa1d1ce",
+    "shot_key": "S3-A",
+    "scene_order": 3,
+    "query_index": 2,
+    "query": "hydroelectric generator machine",
+    "provider_query": "hydroelectric generator machine",
+    "provider": "wikimedia",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "Industrial electric generator inside a power station",
+    "must_show": [
+      "generator"
+    ],
+    "must_not_show": [
+      "wind turbine"
+    ],
+    "primary_repeated": true,
+    "domain_context_terms": [
+      "hydroelectric"
+    ]
+  },
+  "body": {
+    "query": {
+      "pages": {
+        "28807269": {
+          "pageid": 28807269,
+          "ns": 6,
+          "title": "File:Generator Nameplate PF Percent.JPG",
+          "index": 1,
+          "imagerepository": "local",
+          "imageinfo": [
+            {
+              "size": 2680314,
+              "width": 4000,
+              "height": 3000,
+              "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Generator_Nameplate_PF_Percent.JPG/1920px-Generator_Nameplate_PF_Percent.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "thumbwidth": 1600,
+              "thumbheight": 1200,
+              "responsiveUrls": {
+                "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Generator_Nameplate_PF_Percent.JPG/3840px-Generator_Nameplate_PF_Percent.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+              },
+              "thumbattribs": {
+                "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Generator_Nameplate_PF_Percent.JPG/1920px-Generator_Nameplate_PF_Percent.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+                "decoding": "async",
+                "loading": "lazy",
+                "width": 1600,
+                "height": 1200,
+                "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Generator_Nameplate_PF_Percent.JPG/3840px-Generator_Nameplate_PF_Percent.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+              },
+              "url": "https://upload.wikimedia.org/wikipedia/commons/2/24/Generator_Nameplate_PF_Percent.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+              "descriptionurl": "https://commons.wikimedia.org/wiki/File:Generator_Nameplate_PF_Percent.JPG",
+              "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=28807269",
+              "extmetadata": {
+                "DateTime": {
+                  "value": "2013-10-01 21:02:18",
+                  "source": "mediawiki-metadata",
+                  "hidden": ""
+                },
+                "ObjectName": {
+                  "value": "Generator Nameplate PF Percent",
+                  "source": "mediawiki-metadata"
+                },
+                "CommonsMetadataExtension": {
+                  "value": 1.2,
+                  "source": "extension",
+                  "hidden": ""
+                },
+                "Categories": {
+                  "value": "Hydroelectric generators|Self-published work",
+                  "source": "commons-categories",
+                  "hidden": ""
+                },
+                "Assessments": {
+                  "value": "",
+                  "source": "commons-categories",
+                  "hidden": ""
+                },
+                "ImageDescription": {
+                  "value": "Candian Westinghouse  hydroelectric generator nameplate showing rated power factor in percent.   This machine was built around 1969 and is currently Unit #1 at SaskPower Coteau Creek generating station.",
+                  "source": "commons-desc-page"
+                },
+                "DateTimeOriginal": {
+                  "value": "2013-10-01 12:19:33",
+                  "source": "commons-desc-page"
+                },
+                "Credit": {
+                  "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                  "source": "commons-desc-page"
+                },
+                "Artist": {
+                  "value": "<a href=\"//commons.wikimedia.org/wiki/User:Wtshymanski\" title=\"User:Wtshymanski\">Wtshymanski</a>",
+                  "source": "commons-desc-page"
+                },
+                "LicenseShortName": {
+                  "value": "CC BY-SA 3.0",
+                  "source": "commons-desc-page",
+                  "hidden": ""
+                },
+                "UsageTerms": {
+                  "value": "Creative Commons Attribution-Share Alike 3.0",
+                  "source": "commons-desc-page"
+                },
+                "AttributionRequired": {
+                  "value": "true",
+                  "source": "commons-desc-page",
+                  "hidden": ""
+                },
+                "LicenseUrl": {
+                  "value": "https://creativecommons.org/licenses/by-sa/3.0",
+                  "source": "commons-desc-page"
+                },
+                "Copyrighted": {
+                  "value": "True",
+                  "source": "commons-desc-page",
+                  "hidden": ""
+                },
+                "Restrictions": {
+                  "value": "",
+                  "source": "commons-desc-page",
+                  "hidden": ""
+                },
+                "License": {
+                  "value": "cc-by-sa-3.0",
+                  "source": "commons-templates",
+                  "hidden": ""
+                }
+              },
+              "mime": "image/jpeg"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

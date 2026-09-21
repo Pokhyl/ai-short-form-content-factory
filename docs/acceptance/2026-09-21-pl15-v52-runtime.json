@@ -1,11 +1,15 @@
 {
   "job_id": "f6088d2f-f2eb-4a49-9379-f71c20852cbf",
-  "status": "scripting",
+  "status": "visuals_failed",
   "executions": {
     "intake": 9204,
     "parent": 9205,
     "M4": 9206,
-    "M5": 9207
+    "M5": 9207,
+    "M6": 9209,
+    "M7": 9210,
+    "M8": 9212,
+    "M9": null
   },
   "production": {
     "M5": {
@@ -17,5 +21,24 @@
       "id": "b6b9f5cf-5062-4be3-8322-81d3fb2ebcba"
     }
   },
-  "next_step": "Monitor this job; do not create another while it is running."
+  "next_step": "Deploy tested generic unit-domain/nameplate correction, then new immutable PL15. No M9 or MP4 for this failed job.",
+  "failure": "M8 visuals failed: no compliant relevant visual candidate for shot S4-A",
+  "searches": {
+    "pexels": {
+      "count": 15,
+      "results": 120
+    },
+    "pixabay": {
+      "count": 15,
+      "results": 120
+    },
+    "wikimedia": {
+      "count": 15,
+      "results": 66
+    }
+  },
+  "runtime_versions_confirmed": [
+    "M5 v98 ce78a67f-bce4-45fb-bbf8-2d421b3c3142",
+    "M8 v52 b6b9f5cf-5062-4be3-8322-81d3fb2ebcba"
+  ]
 }

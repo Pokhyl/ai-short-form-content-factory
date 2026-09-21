@@ -1,0 +1,87 @@
+{
+  "job_id": "f6088d2f-f2eb-4a49-9379-f71c20852cbf",
+  "execution_id": 9212,
+  "status": "tested_not_deployed",
+  "root_cause": "Generic unit inferred as a required machinery operating domain for S4; no Commons candidates retrieved for that scene.",
+  "provider_calls": 0,
+  "s4_context": {
+    "visual_run_id": "df135d9b-80ba-4ab0-9e5a-3dd1d0f0877f",
+    "shot_uuid": "359b1d41-0409-451d-8f58-1f0cff0c2df0",
+    "shot_key": "S4-A",
+    "scene_order": 4,
+    "query_index": 3,
+    "query": "generator",
+    "provider_query": "hydroelectric generator equipment",
+    "provider": "wikimedia",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "Industrial electric generator unit inside a power plant",
+    "must_show": [
+      "generator"
+    ],
+    "must_not_show": [
+      "water wheel"
+    ],
+    "primary_repeated": true,
+    "domain_context_terms": [
+      "hydroelectric"
+    ]
+  },
+  "s4_replay": {
+    "source_shot": "S3-A",
+    "same_effective_query": "hydroelectric generator equipment",
+    "candidates": [
+      {
+        "id": "135264824",
+        "title": "File:Kraftwerk Wienerbruck Maschinenhalle Generator 3 2023-06-17.jpg",
+        "rejected": false,
+        "score": 100,
+        "reason": null
+      },
+      {
+        "id": "135264822",
+        "title": "File:Kraftwerk Wienerbruck Generator 2 2023-06-17.jpg",
+        "rejected": false,
+        "score": 100,
+        "reason": null
+      },
+      {
+        "id": "6563125",
+        "title": "File:Fankel Generator Seilkupplung 01.jpg",
+        "rejected": false,
+        "score": 100,
+        "reason": null
+      },
+      {
+        "id": "6563070",
+        "title": "File:Fankel Generator 01.jpg",
+        "rejected": false,
+        "score": 100,
+        "reason": null
+      },
+      {
+        "id": "6563098",
+        "title": "File:Fankel Generator Kupplung Turbine 01.jpg",
+        "rejected": false,
+        "score": 100,
+        "reason": null
+      },
+      {
+        "id": "6563112",
+        "title": "File:Fankel Generator Kupplung Turbine 02.jpg",
+        "rejected": false,
+        "score": 100,
+        "reason": null
+      }
+    ]
+  },
+  "nameplate": [
+    {
+      "id": "28807269",
+      "title": "File:Generator Nameplate PF Percent.JPG",
+      "rejected": true,
+      "score": 100,
+      "reason": "wikimedia_depicts_surface_not_requested_subject"
+    }
+  ]
+}

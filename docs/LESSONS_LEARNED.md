@@ -389,3 +389,6 @@ Prevention:
 
 45. Primary machinery form modifiers must not erase independent secondary compound meaning.
 The S3 WIP used the same mutable generic-anchor set for primary and secondary profiles; adding power as a primary modifier reduced power station to station. Preserve the baseline secondary set and test an unrelated railway station negative across all providers. Bare machinery retrieval may append generic equipment to the effective provider query while keeping storyboard provenance immutable. Metadata acceptance, especially of historical imagery, still requires final visual/narration review.
+
+46. Domain inference must exclude generic object/form words consistently with scoring.
+Execution 9212 inferred unit as a machinery domain and sent hydroelectric unit generator equipment, emptying the S4 Commons pool. Reuse generic-object semantics for planner exclusions and test repeated-subject context remains present. Nameplates are signage, not evidence that the named machinery is depicted; extend the existing surface guard and retain requested-nameplate positives.
