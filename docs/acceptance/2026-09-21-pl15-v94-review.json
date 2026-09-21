@@ -1,0 +1,205 @@
+{
+  "job_id": "cd432c5e-20b2-4f08-ad45-3cc21d4ee588",
+  "selected": [
+    {
+      "scene_key": "S1",
+      "narration": "Elektrownia wodna gromadzi wodę za zaporą.",
+      "visual_intent": "Concrete view of a large concrete dam holding back a river reservoir water",
+      "must_show": [
+        "concrete dam",
+        "water reservoir"
+      ],
+      "queries_en": [
+        "concrete hydroelectric dam reservoir",
+        "hydroelectric power station dam",
+        "concrete dam"
+      ],
+      "candidate_id": "babb2f2a-264c-40b1-9d41-750db055f235",
+      "provider": "pexels",
+      "provider_asset_id": "28860847",
+      "source_url": "https://www.pexels.com/photo/aerial-view-of-massive-concrete-dam-structure-28860847/",
+      "metadata": {
+        "alt": "An impressive aerial view of a large concrete dam with water reservoir.",
+        "tags": null,
+        "query": "concrete hydroelectric dam reservoir",
+        "avg_color": "#888888"
+      },
+      "relevance_score": 100,
+      "metadata_text": "An impressive aerial view of a large concrete dam with water reservoir. Razvan Trif"
+    },
+    {
+      "scene_key": "S2",
+      "narration": "Spadająca woda napędza turbinę wodną.",
+      "visual_intent": "Interior view of a hydro turbine runner being struck by flowing water inside a power plant",
+      "must_show": [
+        "water turbine"
+      ],
+      "queries_en": [
+        "hydro turbine runner water",
+        "water turbine mechanism",
+        "water turbine"
+      ],
+      "candidate_id": "7b38ad74-8893-45c1-874d-7f5124c2f600",
+      "provider": "wikimedia",
+      "provider_asset_id": "2050414",
+      "source_url": "https://commons.wikimedia.org/wiki/File:HydroelectricTurbineRunner.png",
+      "metadata": {
+        "mime": "image/png",
+        "query": "hydro turbine runner water",
+        "title": "File:HydroelectricTurbineRunner.png",
+        "credit": "own work by Wtshymanski    http://en.wikipedia.org/wiki/Image:HydroelectricTurbineRunner.png  ",
+        "original_bytes": 652135,
+        "attribution_required": "false"
+      },
+      "relevance_score": 100,
+      "metadata_text": "File:HydroelectricTurbineRunner.png HydroelectricTurbineRunner A propeller runner of a  hydroelectric turbine     A fixed-blade turbine runner 15 feet 10 inches (4826 mm) diameter rated 28000 HP (20880 kW). In 59 years of service this runner produced 7.5 terawatthours of energy. This runner was installed at Manitoba Hydro's Great Falls generating station. This runner is on display at the Manitoba Electrical Museum, Winnipeg. Note the fixed attachment of the roots of the propeller blades to the hub - this angle is not adjustable, unlike a Kaplan turbine.   PD-user|Water turbines|Great Falls Generating Station|Manitoba Electrical Museum|Files uploaded by D-Kuru|March 2004 in Canada|2004 in Winnipeg"
+    },
+    {
+      "scene_key": "S3",
+      "narration": "Turbina porusza generator.",
+      "visual_intent": "Industrial electric generator connected to a turbine inside a powerhouse",
+      "must_show": [
+        "electric generator",
+        "turbine shaft"
+      ],
+      "queries_en": [
+        "hydroelectric power generator",
+        "electric generator turbine",
+        "electric generator"
+      ],
+      "candidate_id": "30f8db7e-67dc-467c-b3fc-1310e82f8117",
+      "provider": "wikimedia",
+      "provider_asset_id": "24925760",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Power_turbine_system.jpg",
+      "metadata": {
+        "mime": "image/jpeg",
+        "query": "electric generator turbine",
+        "title": "File:Power turbine system.jpg",
+        "credit": " http://www.public-domain-image.com/public-domain-images-pictures-free-stock-photos/objects-public-domain-images-pictures/electronics-devices-public-domain-images-pictures/power-turbine-system.jpg ",
+        "original_bytes": 335843,
+        "attribution_required": "false"
+      },
+      "relevance_score": 100,
+      "metadata_text": "File:Power turbine system.jpg Power turbine system  \n  Image title: Power turbine system \n Image from Public domain images website,  http://www.public-domain-image.com/full-image/objects-public-domain-images-pictures/electronics-devices-public-domain-images-pictures/power-turbine-system.jpg.html    PD-author|Steam turbine generator sets|Images uploaded by Fæ|Public-domain-image.com|Public-domain-image.com (check needed)|Media needing category review as of 11 October 2013|Photographs by Greg Goebel|General Electric steam turbines"
+    },
+    {
+      "scene_key": "S4",
+      "narration": "Generator wytwarza prąd.",
+      "visual_intent": "Large industrial electrical generator equipment operating inside a power plant",
+      "must_show": [
+        "electric generator"
+      ],
+      "queries_en": [
+        "industrial electric generator",
+        "power plant generator equipment",
+        "electric generator"
+      ],
+      "candidate_id": "8f68c84c-e9cc-4f5c-a414-235670d349a6",
+      "provider": "wikimedia",
+      "provider_asset_id": "31581140",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Petter_Patent_Oil_Engine_S_Type_with_GE_Electric_Generator_-_Birla_Industrial_%26_Technological_Museum_-_Kolkata_2014-01-23_7095.JPG",
+      "metadata": {
+        "mime": "image/jpeg",
+        "query": "industrial electric generator",
+        "title": "File:Petter Patent Oil Engine S Type with GE Electric Generator - Birla Industrial & Technological Museum - Kolkata 2014-01-23 7095.JPG",
+        "credit": " Own work ",
+        "original_bytes": 10931919,
+        "attribution_required": "true"
+      },
+      "relevance_score": 100,
+      "metadata_text": "File:Petter Patent Oil Engine S Type with GE Electric Generator - Birla Industrial & Technological Museum - Kolkata 2014-01-23 7095.JPG Petter Patent Oil Engine S Type with GE Electric Generator - Birla Industrial & Technological Museum - Kolkata 2014-01-23 7095 Exhibit, Motive Power gallery of the Birla Industrial and Technological Museum, Kolkata. GFDL|Taken with Nikon D3200|License migration redundant|Self-published work|January 2014 India photographs|Photographs by Biswarup Ganguly|Motive Power Gallery, Birla Industrial and Technological Museum"
+    },
+    {
+      "scene_key": "S5",
+      "narration": "Transformator przesyła energię.",
+      "visual_intent": "High voltage electrical transformer station outdoors connected to power lines",
+      "must_show": [
+        "electrical transformer",
+        "power lines"
+      ],
+      "queries_en": [
+        "high voltage electrical transformer",
+        "power substation transformer",
+        "electrical transformer"
+      ],
+      "candidate_id": "e1864a86-547f-4e61-94e6-b660070f2ea4",
+      "provider": "wikimedia",
+      "provider_asset_id": "4514763",
+      "source_url": "https://commons.wikimedia.org/wiki/File:HK_Sheung_Wan_No8_Rumsey_Street_Zone_Substation_HK_Electric_Power_Transformer_2_Danger_a.jpg",
+      "metadata": {
+        "mime": "image/jpeg",
+        "query": "power substation transformer",
+        "title": "File:HK Sheung Wan No8 Rumsey Street Zone Substation HK Electric Power Transformer 2 Danger a.jpg",
+        "credit": " Own work ",
+        "original_bytes": 399756,
+        "attribution_required": "true"
+      },
+      "relevance_score": 100,
+      "metadata_text": "File:HK Sheung Wan No8 Rumsey Street Zone Substation HK Electric Power Transformer 2 Danger a.jpg HK Sheung Wan No8 Rumsey Street Zone Substation HK Electric Power Transformer 2 Danger a 上環 zh:林士街 又名 上環 霖士街   Distribution substations in China|GFDL|Taken with Casio Exilim EX-Z60|FAL|Rumsey Street|License migration redundant|Public notices|Self-published work|Multilingual signs in Hong Kong|Metal doors in Hong Kong|Photographs by Anonymous Hong Kong Photographer 1|Hong Kong photographs taken on 2008-08-06|Electricity warning signs (black lightning in yellow triangle)|Electrical substations in Sheung Wan|Electrical substations of HongKong Electric"
+    }
+  ],
+  "versions": [
+    {
+      "id": "VideoM5Storyboard001",
+      "versionCounter": 94,
+      "activeVersionId": "b4122d0a-5754-4311-8b7a-adab15ff0697"
+    },
+    {
+      "id": "VideoM8Visuals001",
+      "versionCounter": 45,
+      "activeVersionId": "3778d30c-70c0-4cd2-9df8-e8465d4fdd7a"
+    }
+  ],
+  "executions": [
+    {
+      "id": 9118,
+      "workflowId": "VideoM3Intake001",
+      "status": "success",
+      "workflowVersionId": "e78f648c-639a-439a-8915-270d3b44f1cb"
+    },
+    {
+      "id": 9119,
+      "workflowId": "VideoSelfTestApi001",
+      "status": "success",
+      "workflowVersionId": "f3ef8cbf-1c56-4048-9fdf-feb073de96df"
+    },
+    {
+      "id": 9120,
+      "workflowId": "VideoM4Research001",
+      "status": "success",
+      "workflowVersionId": "3cf94dd2-8c3b-4585-ae88-6315a2685ff7"
+    },
+    {
+      "id": 9122,
+      "workflowId": "VideoM5Storyboard001",
+      "status": "success",
+      "workflowVersionId": "b4122d0a-5754-4311-8b7a-adab15ff0697"
+    },
+    {
+      "id": 9123,
+      "workflowId": "VideoM6Voiceover001",
+      "status": "success",
+      "workflowVersionId": "98e671f3-a0dc-42fa-81e9-4c9524a05e6a"
+    },
+    {
+      "id": 9124,
+      "workflowId": "VideoM7Alignment001",
+      "status": "success",
+      "workflowVersionId": "91fbac4f-f40d-4d75-9111-3e4ed01bd9ff"
+    },
+    {
+      "id": 9125,
+      "workflowId": "VideoM8Visuals001",
+      "status": "success",
+      "workflowVersionId": "3778d30c-70c0-4cd2-9df8-e8465d4fdd7a"
+    },
+    {
+      "id": 9126,
+      "workflowId": "VideoM9RenderQa001",
+      "status": "success",
+      "workflowVersionId": "5b6c937c-1767-4c3e-99c4-31ea38a26961"
+    }
+  ],
+  "visual_review": "REJECTED: S3 steam-turbine context; S4 oil-engine generator context; S5 door/signage instead of visible transformer. S2 museum water-turbine runner is relevant illustration.",
+  "audio_listening_review": "not completed; no listening PASS claimed"
+}

@@ -2,14 +2,15 @@
 
 Updated: 2026-09-21
 
-## Resume here — authoritative current checkpoint
+## Resume here — authoritative checkpoint, 2026-09-21
 
-- Task is NOT complete. Production: M5 v84, M8 v44, full-fit media-worker image `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`; exact workflow version IDs below. Worker healthy; live source matches repository. Inventory 32/15, protected workflows unchanged.
-- Latest PL15 `ccc91e49-8e19-404d-bf05-3ec4cab5d469` TERMINATED `script_failed`. Intake 9044 success, parent 9045 error, M4 9046 success, M5 9047 error; M6–M9 never started. No job is running. Do not blindly retry.
-- Previous PL15 `69391e2d-34bc-4775-89f8-32913dff9edb` passed all technical checks but was REJECTED: semantic damage in M5 precision retry, poor subject choice and center crop. Immutable. Exact execution IDs, artifact hash and diagnosis appear below.
-- Deployed fixes: complete Wikimedia query coverage/accounting (verified 45/45); original meaning context and proportional scene word targets in M5; full-source fit without stretching in the renderer. 24 Node tests and three real FFmpeg framing regressions passed. These checks do not prove future semantic output.
-- Remaining risk: provider labels may describe a decorative wheel as an industrial turbine; lexical matching and full-frame rendering do not certify actual depicted mechanism. Review outputs honestly; no topic/asset blacklists, weakened gates or reuse of rejected jobs.
-- No accepted four-case matrix exists on current versions. Explicit HUMAN PASS remains required after four reviewable outputs. Historical machine-passing jobs below are diagnostics, not final acceptance. Record and push each meaningful checkpoint.
+- Synced main from GitHub (`690a880`) and fully reread this handoff, the M5-v94 checkpoint, CURRENT_STATE and LESSONS_LEARNED before continuing. Earlier v84/v44 summaries below are historical.
+- Live SSH verification: M5 **v94** / `b4122d0a-5754-4311-8b7a-adab15ff0697`; M8 **v45** / `3778d30c-70c0-4cd2-9df8-e8465d4fdd7a`. No changes deployed in this continuation yet.
+- PL15 `cd432c5e-20b2-4f08-ad45-3cc21d4ee588`: M4–M9 PASS, but exact-file visual review now **REJECTED**. Do not start EN30. Candidate IDs, metadata and execution snapshots are in `docs/acceptance/2026-09-21-pl15-v94-review.json`.
+- Exact midpoint review: S1 dam acceptable; S2 museum hydroelectric runner acceptable as static illustration; S3 steam-turbine generator is wrong mechanism context; S4 oil-engine-driven generator is wrong plant context; S5 shows door/warning signs rather than the requested transformer/power lines. Do not reject museum images categorically.
+- Next: replay original M8 responses and introduce generic domain/context relevance plus distinction between the depicted object and signage about it. Do not hardcode hydro topics, asset IDs or a blanket museum ban. Keep failed/rejected job immutable and preserve quality gates.
+- Audio: technical integrity checked; listening QA is NOT complete, no audio/HUMAN PASS claimed. Full four-case acceptance remains incomplete.
+- Access: SentinelX currently reports zero connected hosts / agent_offline even though its service is active. Existing SSH alias `hodor-vps` works and was used for read-only verification. No service restart, credential change or new connection setup needed.
 
 ## Project
 
@@ -60,7 +61,7 @@ Project workflow IDs:
 Current deployed versions:
 - M3 versionCounter 2, versionId e78f648c-639a-439a-8915-270d3b44f1cb
 - M4 versionCounter 5, versionId 3cf94dd2-8c3b-4585-ae88-6315a2685ff7
-- M5 versionCounter 91, versionId 7cb215ae-f6ef-4361-9763-b608cea98e8f (same as v90 + redundant secondary must_show normalization)
+- M5 versionCounter 94, versionId b4122d0a-5754-4311-8b7a-adab15ff0697 (semantic/timing guards + English visual metadata + secondary process-anchor normalization)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
 - M8 versionCounter 45, versionId 3778d30c-70c0-4cd2-9df8-e8465d4fdd7a (photographic/subject evidence + complete Commons query coverage + bounded Pexels page-title corroboration)
@@ -160,7 +161,7 @@ That M8 defect was fixed and deployed as M8 v41.
 
 ## Remaining work
 
-1. Run a fresh sequential 4-case acceptance matrix on the currently deployed M5 v81 / M8 v41.
+1. Resolve current PL15 visual rejection on M5 v94 / M8 v45, then run fresh sequential acceptance on the verified deployed versions. Do not start EN30 before PL15 visual/audio review passes.
 2. Each fresh job must reach machine_qa_passed.
 3. Record each new job_id and the M4/M5/M6/M7/M8/M9 status.
 4. If a case fails, inspect the exact production execution/data, fix the systemic cause, validate it, deploy the affected component, and rerun that case with a fresh job.
@@ -483,3 +484,11 @@ That M8 defect was fixed and deployed as M8 v41.
 - `water turbine + turbine blades` now normalizes to primary `water turbine`; independent context pairs such as `water reservoir + dam`, `magma pool + rock cavity`, and `power lines + transmission towers` remain mandatory.
 - Publisher and Studio HTTP 200; n8n restart 0; media-worker healthy/restart 0 on unchanged full-fit image.
 - Current production target: M5 v91 / M8 v45 / full-fit worker. Next: fresh PL15 from Studio path and exact M4-M9/MP4 review.
+
+### Exact v94 PL15 review, after GitHub refresh
+
+- Executions: intake 9118, parent 9119, M4 9120, M5 9122, M6 9123, M7 9124, M8 9125, M9 9126, all success. Exact execution version snapshots saved in evidence JSON.
+- Independent audit of exact final MP4: SHA-256 `ff01fdcd6eeec78cbe6fa51e82c1ddd9b604f20eac820115edce58b63aeb04a7`, 1,615,659 bytes, video 15,500 ms, immutable narration 15,456 ms, mux delta 44 ms, decoded audio correlation 0.9999785595975776. All 12 technical gates PASS.
+- Contact sheet: VPS `.review/pl15-v94/contact.jpg`, generated from final MP4 at 2.125, 6.295, 9.665, 12.445 and 14.678 s (actual segment midpoints). Browser also played the exact public MP4. No listening-based acceptance claimed.
+- S3 selected candidate `30f8db7e-67dc-467c-b3fc-1310e82f8117`, Commons 24925760, `Power turbine system.jpg`: categories explicitly identify steam turbine generator sets; exact frame depicts that apparatus. S4 `8f68c84c-e9cc-4f5c-a414-235670d349a6`, Commons 31581140, Petter oil engine with GE generator: exact frame confirms the engine-generator assembly. S5 `e1864a86-547f-4e61-94e6-b660070f2ea4`, Commons 4514763: exact frame is signage/door; title mentions transformer but requested equipment is not visible. All scored 100 in v45, so high lexical score is not context/depiction proof.
+- No EN30 started and no job/artifact rewritten. Next action is systemic M8 replay/fix, not another blind live job.
