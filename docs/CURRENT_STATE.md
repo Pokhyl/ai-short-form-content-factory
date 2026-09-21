@@ -4,7 +4,7 @@ Updated: 2026-09-21
 
 ## Current authoritative status
 
-Production M5 v98 / M8 v52. Fresh PL15 `f6088d2f-f2eb-4a49-9379-f71c20852cbf` failed M8 9212 on S4 after M4–M7 passed; no M9/MP4. Exact generic-unit domain defect and nameplate candidate are fixed in repository, 106 tests PASS, not deployed yet. Next: scoped M8 publication, then new PL15. See final section and acceptance evidence; no HUMAN PASS or EN30. Older sections are historical.
+Production M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v53 `0953f69f-e982-467e-95e0-35161a613771`. Fresh PL15 `b3d1f5e3-f368-493b-bde9-f5343783d41d` is running. Monitor this exact job; do not duplicate it. Generic-unit domain/nameplate fixes have 106 passing tests. Next: runtime proof and final visual/audio QA before EN30. No HUMAN PASS. Older sections are historical.
 
 ## Repository
 Repo: Pokhyl/ai-short-form-content-factory
@@ -532,3 +532,10 @@ This section supersedes older M8 snapshots above where they conflict.
 - Zero-provider-call replay: corrected S4 fallback equals the already executed S3 effective query `hydroelectric generator equipment`; scoring its exact saved response against S4 produces six eligible distinct hydro-generator candidates. Exact nameplate now rejected. Evidence `docs/acceptance/2026-09-21-pl15-v52-unit-context-replay.json`; all 45 sanitized responses on VPS `.review/pl15-v51/v52-replay.json`.
 - 106/106 tests PASS; JSON/113 Code syntax/diff checks PASS. Production remains M5 v98 / M8 v52 until the scoped deployment.
 - Next: publish only M8 after backup/protected-row verification, then one fresh PL15 and exact visual/audio review before EN30. Do not rerun failed job.
+
+### M8 v53 deployed; new PL15 running
+
+- Fix commit `0f1a709c9f49d3320dfee50b8d9129fece3a3a4d`; only M8 published as v53 `0953f69f-e982-467e-95e0-35161a613771`.
+- Backup `.backups/m8-before-unit-context-20260921-202231.json`; other 31 workflow rows unchanged (before/after hash `a900b43516222593dbe68d2c237aa6f1`). No project runs active before publication; live nodes/connections/settings equal repository. No service restart or credential changes; M5 remains v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`.
+- Fresh immutable PL15 `b3d1f5e3-f368-493b-bde9-f5343783d41d` created and accepted through the Studio webhook path.
+- Next: monitor this exact job, prove v53 runtime, then M9/exact visual and audio review. EN30 not started. Failed v52 job remains unchanged.

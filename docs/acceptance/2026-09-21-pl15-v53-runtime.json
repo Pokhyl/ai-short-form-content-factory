@@ -1,0 +1,15 @@
+{
+  "job_id": "b3d1f5e3-f368-493b-bde9-f5343783d41d",
+  "status": "processing",
+  "production": {
+    "M5": {
+      "version": 98,
+      "id": "ce78a67f-bce4-45fb-bbf8-2d421b3c3142"
+    },
+    "M8": {
+      "version": 53,
+      "id": "0953f69f-e982-467e-95e0-35161a613771"
+    }
+  },
+  "next_step": "Monitor this exact job, verify runtime, then final MP4 visual/audio QA before EN30."
+}
