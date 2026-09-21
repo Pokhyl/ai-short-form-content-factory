@@ -234,7 +234,7 @@ test('all acceptance-path late validators have semantic guard', () => {
   }
 });
 
-test('word-count targets remain guidance while real TTS is authoritative', () => {
+test('word-count targets remain guidance until measured TTS proves final correction is required', () => {
   assert.match(
     byName['Build Timing Precision Retry'].parameters.jsCode,
     /preferred word counts by scene/
@@ -243,16 +243,31 @@ test('word-count targets remain guidance while real TTS is authoritative', () =>
     byName['Validate Timing Precision Retry'].parameters.jsCode,
     /exact word count mismatch|exact total word count mismatch/
   );
-  for (const name of [
-    'Validate Final Word Count Retry',
-    'Validate Final Measured Word Count Retry',
-  ]) {
-    assert.doesNotMatch(
-      byName[name].parameters.jsCode,
-      /could not produce requested total before TTS/,
-      name
-    );
-  }
+  assert.doesNotMatch(
+    byName['Validate Final Word Count Retry'].parameters.jsCode,
+    /final measured exact-word retry missed required total before TTS/
+  );
+  assert.match(
+    byName['Build Final Measured Word Count Retry'].parameters.jsCode,
+    /TARGET TOTAL WORDS \(HARD\): exactly/
+  );
+  assert.match(
+    byName['Build Final Measured Word Count Retry'].parameters.jsCode,
+    /combined total across all strings MUST equal exactly/
+  );
+  assert.match(
+    byName['Validate Final Measured Word Count Retry'].parameters.jsCode,
+    /final measured exact-word retry missed required total before TTS/
+  );
+});
+
+
+test('9137 regression: final measured retry cannot send a 30-word nearest hybrid into TTS when target is 26', () => {
+  const code=byName['Validate Final Measured Word Count Retry'].parameters.jsCode;
+  assert.match(code,/const exact = states\.get\(targetWords\)/);
+  assert.match(code,/nearestTotal = completed\.length \? Number\(completed\[0\]\[0\]\) : totalWords/);
+  assert.match(code,/final measured exact-word retry missed required total before TTS/);
+  assert.doesNotMatch(code,/narrations = nearest\.lines;/);
 });
 
 test('final duration target allocation uses original scene weights and semantic floors', () => {
