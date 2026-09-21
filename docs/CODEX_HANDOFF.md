@@ -8,7 +8,7 @@ Updated: 2026-09-21
 - Previous PL15 `1be96d5a-7626-4771-9b1c-7b5452894725` terminated `visuals_failed`: intake 9028 success; parent 9029 error; M4 9030, M5 9031, M6 9032, M7 9033 success; M8 9034 error; M9 never started. Execution 9035 is a subsequent successful Self-Test API request, not a render.
 - Exact failure: no compliant relevant candidate for S2-A (penstock pipe / flowing water). Keep this failed job immutable.
 - Confirmed retrieval limitation: Wikimedia searches only query 1 (`water flowing through penstock pipe`), while Pexels/Pixabay search all three, including `hydroelectric penstock pipe` and `penstock pipe`. Current database expected count is 2 × query count + shot count. Whether broader Commons retrieval supplies compliant assets remains to be tested; do not weaken relevance gates.
-- Next: monitor fresh PL15 `69391e2d-34bc-4775-89f8-32913dff9edb` on M5 v83 / M8 v44 through terminal status, inspect exact output, then EN30 → RU45 → UK60 sequentially. Audit all exact media; explicit HUMAN PASS remains separate.
+- Latest PL15 `69391e2d-34bc-4775-89f8-32913dff9edb` is machine PASS but REVIEW REJECTED. Do not start EN30 yet. Investigate M5 semantic damage during timing shortening and M9 subject loss from center cropping; details at the last checkpoint.
 - Earlier machine-passing jobs below are historical diagnostics and must not be mistaken for current-version acceptance. All substantive fixes, tests, deployments and IDs must be recorded here and pushed to main before moving on.
 
 ## Project
@@ -290,3 +290,11 @@ That M8 defect was fixed and deployed as M8 v41.
 - PL15 `69391e2d-34bc-4775-89f8-32913dff9edb`: intake 9036 success; parent 9037 running; M4 9038, M5 9039, M6 9040, M7 9041 success; M8 9042 running. No final artifact yet.
 - Execution snapshots confirm M5 active ID `5e50db9d-e3f9-44a0-8e2f-a0168f505bec` and M8 `16c27568-3bbf-41b2-9b23-9e555b3b98da`. New visual run expects 45 searches for 5 × 3 × 3, with 30 persisted while paced Commons searches are still in progress.
 - All 8 active workflow node/connection graphs match repository; syntax checks pass for 113 Code nodes. Next: wait for this job's terminal result, audit/review output before starting EN30.
+
+### PL15 v44 machine PASS, semantic/visual REJECT — 2026-09-21
+
+- Job `69391e2d-34bc-4775-89f8-32913dff9edb`: intake 9036, parent 9037, M4–M9 9038–9043 all success. All 45/45 searches persisted; complete query coverage works. No further job started.
+- Exact MP4 SHA-256 `5ac0465ba7f27008b3d69c4261d99db6c677666c39dfb8a59902bd39547447ea`, 2,168,618 bytes, 15,367 ms; narration 15,336 ms; correlation 0.9999856084634534; 5 unique scenes. All 12 read-only technical media checks PASS. This is NOT accepted product output.
+- Exact scene-midpoint sheet `.review/acceptance-20260920/pl15-v44-contact.jpg`: S1 dam, S2 reservoir, S3 decorative theme-park waterwheel labeled by Commons as turbine, S4 mostly facade with small portable generators near the edges, S5 transmission pylon. S3 does not establish an industrial turbine runner; S4 does not provide a usable generator view. Lexical provider labels alone still do not establish the actual mechanism or final crop visibility.
+- Persisted Polish narration has semantic damage: S1 “Tradycyjna elektrownia zamienia energię elektryczną.” reverses/omits the intended energy transformation; S2 “Potężna zapora bardzo skutecznie spiętrza.” lacks the object (water). Technical timing/alignment checks cannot catch this. Need inspect execution 9039 repair history before identifying which builder introduced the damage.
+- Next: trace timing repairs and preserve complete factual meaning during shortening; investigate center-crop object loss and a generic geometry-preserving render strategy. Do not add asset/topic blacklists or weaken gates. Keep this job immutable. M5 v83 / M8 v44 and worker image remain active; no new deployment after review.
