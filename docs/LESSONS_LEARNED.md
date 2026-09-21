@@ -288,3 +288,13 @@ Prevention:
 - allow title metadata to fill only a bounded missing subtype gap;
 - require independently matched scene context and intent overlap;
 - retain negative tests proving URL-only or unrelated descriptions cannot pass.
+
+36. A supported fact can still be wrong for the user's question, and a timing rewrite must preserve scene identity before TTS.
+Execution 9065 showed both failure modes: a generic environmental benefit was evidence-supported but did not answer the mechanism topic, and the first timing rewrite duplicated one turbine sentence across multiple scenes.
+
+Prevention:
+- require every scene to directly advance the user topic, not merely cite supporting evidence;
+- for how/process topics, keep the scene sequence causal and use the final scene for the mechanism/output, not generic benefits;
+- validate each timing-rewritten scene against its own immutable original scene before another TTS call;
+- reject duplicate scene narration;
+- route semantic failure into an existing bounded regeneration step before consuming another TTS probe.

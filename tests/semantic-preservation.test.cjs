@@ -123,6 +123,85 @@ test('v85 precision response filler and lost reservoir are rejected', () => {
   );
 });
 
+
+test('9065 compact dam causality at 60 percent content coverage is accepted', () => {
+  assert.doesNotThrow(() =>
+    guard(
+      'Zapora zatrzymuje rzekę, tworząc zbiornik.',
+      'Zapora tworzy zbiornik.',
+      'S2',
+      'pl'
+    )
+  );
+});
+
+test('first timing validator is semantic fail-closed and rejects duplicate scene rewrites', () => {
+  const code=byName['Validate Timing Repair'].parameters.jsCode;
+  assert.match(code,/SEMANTIC_PRESERVATION_GUARD_START/);
+  assert.match(code,/first timing repair produced duplicate scene narration/);
+});
+
+test('first timing validation failure routes to Repair 2 before another TTS probe', () => {
+  const outputs=workflow.connections['Validate Timing Repair'].main;
+  assert.equal(outputs[1][0].node,'Build Timing Repair 2');
+  assert.equal(outputs[0][0].node,'Prepare Timing Probe 2');
+});
+
+test('initial storyboard prompt keeps every scene on the user topic and mechanism', () => {
+  const code=byName['Build Script Prompt'].parameters.jsCode;
+  assert.match(code,/every scene must directly advance the answer to TOPIC/);
+  assert.match(code,/generic praise, benefits, environmental\/economic impact/);
+  assert.match(code,/last scene must complete that mechanism\/result/);
+  assert.match(code,/each scene must add a distinct necessary fact/);
+});
+
+test('Repair 2 fallback regenerates from immutable original without consuming failed draft as truth', () => {
+  const code=byName['Build Timing Repair 2'].parameters.jsCode;
+  const original=[
+    'Elektrownia wodna zamienia energię spiętrzonej wody na prąd.',
+    'Zapora zatrzymuje rzekę, tworząc zbiornik.',
+    'Spadająca woda napędza turbinę.',
+    'Generator wytwarza prąd elektryczny.',
+    'Prąd trafia do domów.',
+  ];
+  const p1={
+    storyboard:{narration:original.join(' '),scenes:original.map(narration=>({narration}))},
+    measured_duration_ms:17424,
+    target_duration_ms:15000,
+    tolerance_ms:750,
+    narration_word_count:28,
+    script_run_id:'run',
+    model:'gemini',
+    usage:{promptTokenCount:10,candidatesTokenCount:20,totalTokenCount:30},
+  };
+  const ctx={
+    topic:'jak działa elektrownia wodna?',
+    language_code:'pl',
+    target_duration_seconds:15,
+    target_scenes:5,
+    target_shots:5,
+    word_min:21,
+    word_max:33,
+    user_message:'base',
+  };
+  const rows={
+    'Normalize Timing Probe':p1,
+    'Build Script Prompt':ctx,
+    'Build Timing Repair':{prior_usage:{promptTokenCount:10,candidatesTokenCount:20,totalTokenCount:30}},
+    'Repair Storyboard Timing':{body:{usageMetadata:{promptTokenCount:7,candidatesTokenCount:5,totalTokenCount:12}}},
+  };
+  const $=name=>{
+    if(name==='Normalize Timing Stability B') return {all:()=>{throw Error('not executed')}};
+    return {first:()=>({json:rows[name]})};
+  };
+  const out=new Function('$','$json',code)($,{error:{message:'semantic reject'}}).json;
+  assert.equal(out.semantic_fallback_from_first_repair,true);
+  assert.match(out.user_message,/SEMANTIC FALLBACK/);
+  assert.ok(out.user_message.includes(original[0]));
+  assert.equal(out.prior_usage.totalTokenCount,42);
+  assert.ok(out.target_precision_words>=10 && out.target_precision_words<=50);
+});
+
 test('all late timing builders carry immutable original narration', () => {
   for (const name of [
     'Build Timing Repair 2',

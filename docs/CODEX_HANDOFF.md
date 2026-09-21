@@ -393,3 +393,15 @@ That M8 defect was fixed and deployed as M8 v41.
 - Live exported M8 core matches repository and contains `pexelsPageTitleText` / `primaryTitleCorroborated` logic.
 - Publisher and Studio HTTP 200; n8n restart 0; full-fit worker healthy/restart 0 on the same image.
 - No restart was issued. Next fresh execution must confirm v45 runtime snapshot, then PL15 must be reviewed from the exact final MP4 before EN30 starts.
+
+### M5 first-repair semantic fallback + topic-focus patch — tested, NOT DEPLOYED
+
+- Fresh PL15 `42a76712-dbe5-4d9a-99ea-17e82abd2e48` confirmed M5 v86 runtime and terminated in M5 execution 9065 before M6. Failure: semantic coverage 0.600 vs guard 0.625.
+- Exact trace: initial storyboard 28 words / 21,408 ms contained an off-topic final scene about generic environmental benefit. First timing repair then collapsed S1-S3 into the same turbine sentence; it still consumed a TTS probe and measured 16,368 ms. Repair 2 regenerated a substantially better 23-word mechanism-focused draft, but its compact `Zapora tworzy zbiornik.` scored exactly 0.600 against the original scene and was treated as too lossy; precision retry reverted toward the long original, then final duration repair hit the same coverage boundary.
+- Semantic coverage threshold is now 0.600. Existing filler, number and negation guards remain unchanged, so v84/v85 corruption regressions still fail closed.
+- Build Script Prompt now requires every scene to directly advance TOPIC, forbids generic benefit/environmental/economic/history/outro scenes unless explicitly requested, requires causal/operational order for how/process topics, requires the final scene to complete the mechanism/result, and forbids repeated filler scenes.
+- Validate Timing Repair now has the same immutable-original semantic guard as later timing validators and rejects duplicate repaired scene narrations.
+- Validate Timing Repair error output no longer fails the job immediately. It routes directly to the existing Build Timing Repair 2 without another TTS probe. Build Timing Repair 2 detects this semantic-fallback mode, regenerates from Normalize Timing Probe immutable original, carries the failed Gemini usage forward, and never treats the rejected draft as semantic truth.
+- Repair 2 and Canonicalize Final Storyboard also reject duplicate scene narration.
+- Full Node suite 42/42 PASS, including exact regressions from executions 9047/9052/9065, graph routing, fallback behavior, topic-focus contract, Pexels visual tests and query coverage. All M5 Code nodes pass syntax; `git diff --check` PASS.
+- Production remains M5 v86 / M8 v45 until this patch is committed/pushed and M5-only deployed.
