@@ -298,3 +298,13 @@ Prevention:
 - validate each timing-rewritten scene against its own immutable original scene before another TTS call;
 - reject duplicate scene narration;
 - route semantic failure into an existing bounded regeneration step before consuming another TTS probe.
+
+37. A median timing estimate is not enough when identical Chirp3-HD syntheses are multimodal.
+One PL narration produced 13.536 s, 15.576 s, and 16.704 s with the same voice/config. Accepting because the median and only one sample were in-window allowed M5 to pass a script that M6 could not reliably synthesize inside its final gate.
+
+Prevention:
+- keep the median of multiple real syntheses for a robust center estimate;
+- additionally require a majority of the real samples to be inside the unchanged final tolerance;
+- do not widen timing gates to hide stochastic TTS behavior;
+- do not add blind retries when repeated candidates return identical out-of-window audio hashes;
+- compare exact audio hashes and request configuration before blaming workflow configuration.

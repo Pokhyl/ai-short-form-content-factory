@@ -23,6 +23,58 @@ for(const name of builders) {
     assert.equal(helper(name,row,[]).measured_duration_ms,15144);
   });
 }
+
+function runStabilityB(ctx,bMs) {
+  const code=workflow.nodes.find(n=>n.name==='Normalize Timing Stability B').parameters.jsCode;
+  const $=name=>{
+    if(name==='Prepare Timing Stability Probe B') return {first:()=>({json:ctx})};
+    throw new Error('unexpected node '+name);
+  };
+  return new Function('$','$json',code)($,{statusCode:200,body:{status:'ready',duration_ms:bMs}}).json;
+}
+
+test('M6 regression: median-only PL15 stability with one of three in-window samples is rejected',()=>{
+  const out=runStabilityB({
+    target_duration_ms:15000,
+    stability_original_ms:15576,
+    stability_a_measured_duration_ms:16704,
+    requested_tolerance_ms:750,
+    origin_probe_attempt:1,
+    script_run_id:'run',
+    model:'model',
+    storyboard:{narration:'fixture'},
+    narration_word_count:24,
+    scene_count:5,
+    shot_count:5,
+    usage:{},
+  },13536);
+  assert.equal(out.stability_median_ms,15576);
+  assert.equal(out.stability_within_final_count,1);
+  assert.equal(out.stability_required_within_final,2);
+  assert.equal(out.timing_stability_ok,false);
+});
+
+test('stability majority passes when two of three real TTS samples are inside final window',()=>{
+  const out=runStabilityB({
+    target_duration_ms:15000,
+    stability_original_ms:15576,
+    stability_a_measured_duration_ms:15600,
+    requested_tolerance_ms:750,
+    origin_probe_attempt:1,
+    script_run_id:'run',
+    model:'model',
+    storyboard:{narration:'fixture'},
+    narration_word_count:24,
+    scene_count:5,
+    shot_count:5,
+    usage:{},
+  },16704);
+  assert.equal(out.stability_median_ms,15600);
+  assert.equal(out.stability_within_final_count,2);
+  assert.equal(out.stability_required_within_final,2);
+  assert.equal(out.timing_stability_ok,true);
+});
+
 test('PL15 regression: correction interpolates from 17.136s median, not 15.144s first sample',()=>{
   const code=workflow.nodes.find(n=>n.name==='Build Timing Repair 2').parameters.jsCode;
   const p1={storyboard:{narration:Array(26).fill('slowo').join(' '),scenes:[8,5,5,4,4].map(n=>({narration:Array(n).fill('slowo').join(' ')}))},measured_duration_ms:15144,narration_word_count:26};

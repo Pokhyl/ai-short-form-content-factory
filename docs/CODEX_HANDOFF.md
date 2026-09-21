@@ -414,3 +414,15 @@ That M8 defect was fixed and deployed as M8 v41.
 - Live exported M5 core matches repository. `Validate Timing Repair` contains the semantic guard and its error output points to `Build Timing Repair 2`; Repair 2 supports fallback from the immutable original without a TTS probe.
 - Publisher and Studio HTTP 200; n8n and media-worker healthy with restart count 0. No restart was issued.
 - Current production target is M5 v87 / M8 v45 / full-fit media-worker. Next: run a fresh PL15 and confirm execution snapshots before any acceptance claim.
+
+### M6 nondeterministic Chirp timing exposed weak M5 stability gate — majority fix tested, NOT DEPLOYED
+
+- Fresh PL15 `a5dff806-f10e-4645-83b1-d61a2105592d` on M5 v87 / M8 v45: M4 9068 PASS, M5 9070 PASS, M6 9071 FAILED; M7-M9 did not start.
+- M5 output was topic-focused and semantically acceptable: `Zapora wodna spiętrza rzekę i tworzy zbiornik. Spadająca woda napędza turbinę. Obracająca się turbina porusza generator. Generator wytwarza prąd elektryczny. Prąd trafia do sieci.`
+- M5 and M6 use the same Google Cloud TTS configuration for PL: locale `pl-PL`, voice `pl-PL-Chirp3-HD-Enceladus`, MP3, no speaking-rate/pitch override. This is not a configuration mismatch.
+- Three actual M5 syntheses of the exact same narration produced 15,576 ms, 16,704 ms, and 13,536 ms with different audio hashes. M5 v87 accepted because its median was 15,576 ms and `requiredWithinFinal` was only 1.
+- M6 then synthesized the same text: 13,536 ms (same hash as the low M5 sample) followed by 16,704 ms three times (same hash as the high M5 sample). None entered M6's 15,000 ± 800 ms gate. More blind M6 retries would not solve this stochastic distribution and were not added.
+- Repository correction changes only M5 final stability acceptance: median-of-three remains the robust center estimate, but at least 2 of the 3 actual syntheses must also be inside the unchanged final M5 tolerance. Tolerance is not widened and M6 remains unchanged/authoritative for persisted final audio.
+- Exact regression `15,576 / 16,704 / 13,536` now fails with 1/3 inliers. Positive control `15,576 / 15,600 / 16,704` passes with 2/3 inliers and median in-window.
+- Full Node suite 44/44 PASS; all 55 M5 Code nodes pass syntax; `git diff --check` PASS.
+- Production remains M5 v87 / M8 v45 until commit/push and scoped M5 deployment. Next fresh PL15 must prove the majority stability gate in a real execution before M6 acceptance is trusted.
