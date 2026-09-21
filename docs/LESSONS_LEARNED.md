@@ -250,3 +250,14 @@ Prevention:
 - never transfer a median between different scripts;
 - keep the original strict timing acceptance gates and final M6 measurement;
 - regression-test the measured failed sequence, not just syntax.
+
+36. Lexical overlap must establish the pictured subject, not just mention it.
+Execution 9026 selected a wasp for a bee because its background taxonomy mentioned bees, and dew for nectar because the primary compound matched only “droplets.” A replay also found proboscis monkeys for a detached anatomical fallback.
+
+Prevention:
+- primary compound identity and supplied secondary subject context must be supported by strong image-specific metadata;
+- Commons long prose is weak context, not primary identity evidence;
+- generic form words alone cannot establish the material/object;
+- normalize ordinary plurals consistently;
+- storyboard anchors name the complete visible main subject, keeping internal mechanisms in narration and using relevant real physical context;
+- replay original provider responses, including negative controls, before consuming more live acceptance jobs.

@@ -64,3 +64,43 @@ test('provider errors preserve HTTP failure and zero candidates', () => {
     assert.deepEqual(r.candidates,[]);
   }
 });
+
+test('shared form word cannot satisfy a different compound subject', () => {
+  const shot={...ctx,query:'nectar droplets',visual_intent:'Nectar droplets in honeycomb cells',must_show:['nectar droplets','honeycomb cells'],must_not_show:[]};
+  const c=normalize('Pexels',shot,{photos:[pexels('Macro shot of water droplets glistening on brown pine needles')]}).candidates[0];
+  assert.equal(c.rejected,true);
+  assert.match(c.rejection_reason,/missing_primary_subject_anchor/);
+});
+function commons(title,description) {
+  return {query:{pages:{'1':{pageid:1,index:1,title,imageinfo:[{mime:'image/jpeg',
+    url:'https://upload.wikimedia.org/fixture.jpg',width:1080,height:1920,
+    descriptionurl:'https://commons.wikimedia.org/wiki/'+title,
+    extmetadata:{LicenseShortName:{value:'Public domain'},ObjectName:{value:title},ImageDescription:{value:description}}}]}}}};
+}
+test('background taxonomic mention of bees cannot turn wasp title into bee evidence', () => {
+  const shot={...ctx,query:'worker bee',visual_intent:'Worker bee body and abdomen',must_show:['worker bee','bee abdomen'],must_not_show:[]};
+  const c=normalize('Wikimedia',shot,commons('File:The Wasp.jpg','A wasp belongs to the order of ants, bees and wasps. It is neither a bee nor an ant. Workers have an abdomen.')).candidates[0];
+  assert.equal(c.rejected,true);
+});
+test('background proboscis mention cannot attest the depicted insect identity', () => {
+  const shot={...ctx,query:'bee proboscis drinking nectar',must_show:['proboscis','bee head'],must_not_show:[]};
+  const c=normalize('Wikimedia',shot,commons('File:Stylidium schoenoides.jpg','The bee fly drinks nectar using its proboscis and moves its head.')).candidates[0];
+  assert.equal(c.rejected,true);
+});
+test('generic form relaxation still accepts the actual distinctive subjects', () => {
+  for(const [primary,title] of [['magma pool','File:Magma.jpg'],['GPS receiver','File:GPS navigation.jpg'],['water turbine runner','File:Water turbine.jpg'],['bee mouthparts','File:Bee.jpg']]) {
+    const shot={...ctx,query:primary,visual_intent:primary,must_show:[primary],must_not_show:[]};
+    const c=normalize('Wikimedia',shot,commons(title,primary)).candidates[0];
+    assert.equal(c.rejected,false,primary);
+  }
+});
+test('ambiguous anatomical fallback cannot select another organism', () => {
+  const shot={...ctx,query:'proboscis',visual_intent:'Forager bee proboscis drinking nectar',must_show:['proboscis','bee head'],must_not_show:[]};
+  const c=normalize('Pexels',shot,{photos:[pexels('Proboscis monkey eating outdoors in natural habitat')]}).candidates[0];
+  assert.equal(c.rejected,true);
+  assert.match(c.rejection_reason,/missing_secondary_subject_context/);
+});
+test('normal plural subjects do not lose their identity', () => {
+  const shot={...ctx,query:'honey bee',visual_intent:'Honey bee on honeycomb',must_show:['honey bee'],must_not_show:[]};
+  assert.equal(normalize('Pexels',shot,{photos:[pexels('Honey bees on a honeycomb frame')]}).candidates[0].rejected,false);
+});
