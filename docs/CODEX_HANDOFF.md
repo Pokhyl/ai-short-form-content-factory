@@ -51,7 +51,7 @@ Project workflow IDs:
 Current deployed versions:
 - M3 versionCounter 2, versionId e78f648c-639a-439a-8915-270d3b44f1cb
 - M4 versionCounter 5, versionId 3cf94dd2-8c3b-4585-ae88-6315a2685ff7
-- M5 versionCounter 81, versionId b548aee4-660f-4997-a17c-1d8fa24c38b3
+- M5 versionCounter 82, versionId d47c0333-5e66-43ca-a10a-c3482a322d6c (confirmed TTS median propagation)
 - M6 versionCounter 7, versionId 98e671f3-a0dc-42fa-81e9-4c9524a05e6a
 - M7 versionCounter 4, versionId 91fbac4f-f40d-4d75-9111-3e4ed01bd9ff
 - M8 versionCounter 42, versionId c6309bfc-4aa7-42c6-b5a9-49b187c134c1 (photographic-evidence fix)
@@ -226,3 +226,9 @@ That M8 defect was fixed and deployed as M8 v41.
 - Validation: `node --test tests/*.test.cjs` 12/12 PASS. Includes the exact 15,144→17,136 ms regression, same-text matching, unrelated-text isolation and original 750 ms tolerance. `git diff --check` PASS.
 - Fresh production check 2026-09-21 01:47 UTC: M5 still v81, M8 v42; no project executions running/waiting; no additional jobs since the failed PL15. Fix is tested locally but not yet deployed at this checkpoint.
 - Next: backup/import/publish only M5; verify unchanged other workflows and fresh execution version snapshots for both M5 and M8. Start a fresh sequential PL15/EN30/RU45/UK60 matrix and inspect all four exact MP4s before final acceptance.
+
+### M5 v82 deployment — 2026-09-21 01:49 UTC
+
+- Imported/published only `VideoM5Storyboard001`: counter 82, activeVersionId `d47c0333-5e66-43ca-a10a-c3482a322d6c`. Backup: `.backups/m5-before-median-propagation-20260921.json`. Other 31 workflow rows unchanged by aggregate hash comparison. Inventory 32 total / 15 active; no service restart.
+- Current matrix target: **M5 v82 / M8 v42**, other versions and media-worker image unchanged.
+- Fresh PL15 `624f9615-56ca-49cf-8a1a-6853509ed599` created and run accepted. Next: verify execution snapshots use new code, complete PL15 and review the exact artifact, then EN30, RU45, UK60 sequentially.
