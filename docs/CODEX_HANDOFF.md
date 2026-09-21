@@ -4,7 +4,7 @@ Updated: 2026-09-21
 
 ## Resume here — authoritative checkpoint, 2026-09-21
 
-M5 v98 / M8 v51 remain deployed. The last job is `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe` (M4–M7 PASS; M8 9203 failed S3; no M9). Its unfinished retrieval fix is now completed and tested, not yet deployed. See the final section below for exact evidence and next action: scoped M8 deployment, then fresh PL15. Older version/status sections are historical. EN30 and final HUMAN PASS remain pending.
+M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v52 `b6b9f5cf-5062-4be3-8322-81d3fb2ebcba` are deployed. S3 retrieval fix is verified by 102 tests and targeted live Commons scoring. Next: one fresh PL15, runtime-version confirmation, then exact final visual/audio QA before EN30. Last failed job remains `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe` (M8 9203). No HUMAN PASS. Older sections are historical; latest details at the end.
 
 ## Project
 
@@ -716,3 +716,12 @@ Exact next step:
 - Evidence: `docs/acceptance/2026-09-21-pl15-v51-s3-retrieval-completed.json`; sanitized raw responses on VPS `.review/pl15-v51/`. Three public Commons calls (one initial probe omitted MIME/bitmap parameters and was corrected; one exact production search, one exact page lookup). No new full pipeline job yet.
 - Production remains M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v51 `f242881a-d79e-449d-a8c8-68d65ec54cde` pending scoped deployment.
 - Next: backup and deploy only M8, verify protected rows/live source, then one fresh PL15 through M9 and manual visual/audio review. EN30 remains blocked; no HUMAN PASS.
+
+### M8 v52 deployed — generic machinery fallback and compound context
+
+- Fix commit: `65bec7e0b0692145d4989fc7c2066058725b56ab`.
+- Published only M8: counter **52**, activeVersionId `b6b9f5cf-5062-4be3-8322-81d3fb2ebcba`.
+- Exact backup: `.backups/m8-before-machinery-fallback-20260921-201442.json`.
+- Other 31 workflow rows unchanged: aggregate hash `a900b43516222593dbe68d2c237aa6f1` before/after. No active project runs before publication; live nodes/connections/settings match repository.
+- M5 stays v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`; no service restart or credential change.
+- Next: one fresh PL15; verify runtime versions, then exact final MP4 visual/audio QA before EN30.
