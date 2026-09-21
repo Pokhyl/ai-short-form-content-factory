@@ -28,11 +28,11 @@ for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': broad fa
  const s3=out.filter(r=>r.shot_key==='S3-A');
  assert.equal(s3[0].provider_query,s3[0].query); // already qualified; no duplicate prefix
  assert.equal(s3[1].provider_query,'hydroelectric '+s3[1].query);
- assert.equal(s3[2].provider_query,'hydroelectric '+s3[2].query);
+ assert.equal(s3[2].provider_query,'hydroelectric '+s3[2].query+' equipment');
  const s2=out.filter(r=>r.shot_key==='S2-A');
  assert.equal(s2[0].provider_query,s2[0].query);
  assert.equal(s2[1].provider_query,'hydro '+s2[1].query);
- assert.equal(s2[2].provider_query,'hydro '+s2[2].query);
+ assert.equal(s2[2].provider_query,'hydro '+s2[2].query+' equipment');
 });
 
 for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': form-modified repeated primary subjects share the same context key',()=>{
@@ -76,7 +76,7 @@ for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': singleto
  assert.ok(rows.every(r=>r.domain_context_terms.includes('hydroelectric')));
  assert.equal(rows[0].provider_query,rows[0].query);
  assert.equal(rows[1].provider_query,'hydroelectric '+rows[1].query);
- assert.equal(rows[2].provider_query,'hydroelectric water turbine');
+ assert.equal(rows[2].provider_query,'hydroelectric water turbine equipment');
 });
 
 test('non-machinery subject is not overconstrained by local operating-domain inference',()=>{
@@ -127,7 +127,7 @@ test('context derives from arbitrary storyboard vocabulary, not hydro topic rule
  assert.equal(rows.find(r=>r.shot_uuid==='b'&&r.query_index===1).provider_query,'marine engine');
  assert.equal(rows.find(r=>r.shot_uuid==='b'&&r.query_index===2).provider_query,'marine engine equipment');
  assert.equal(rows.find(r=>r.shot_uuid==='c'&&r.query_index===1).provider_query,'marine industrial engine');
- assert.equal(rows.find(r=>r.shot_uuid==='c'&&r.query_index===2).provider_query,'marine engine');
+ assert.equal(rows.find(r=>r.shot_uuid==='c'&&r.query_index===2).provider_query,'marine engine equipment');
  assert.ok(!code('Build Wikimedia Requests').includes('hydroelectric'));
 });
 test('exact rejected final-frame assets fail while museum water runner remains eligible',()=>{
@@ -179,7 +179,8 @@ for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': spatial 
  assert.equal(rows.length,3);
  assert.ok(rows.every(r=>!r.domain_context_terms.includes('outdoors')));
  assert.ok(rows.every(r=>!r.domain_context_terms.includes('outdoor')));
- assert.deepEqual(rows.map(r=>r.provider_query),sample[0].queries_en);
+ assert.deepEqual(rows.map(r=>r.query),sample[0].queries_en);
+ assert.deepEqual(rows.map(r=>r.provider_query),[...sample[0].queries_en.slice(0,2),'electrical transformer equipment']);
 });
 
 test('PL15 S4 regression: described transformer at a power station is not rejected for missing literal outdoors metadata',()=>{

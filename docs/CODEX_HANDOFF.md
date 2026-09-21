@@ -4,13 +4,7 @@ Updated: 2026-09-21
 
 ## Resume here — authoritative checkpoint, 2026-09-21
 
-- Synced main from GitHub (`690a880`) and fully reread this handoff, the M5-v94 checkpoint, CURRENT_STATE and LESSONS_LEARNED before continuing. Earlier v84/v44 summaries below are historical.
-- Live verification: M5 v94 / b4122d0a-5754-4311-8b7a-adab15ff0697; M8 v47 / b47eb18a-e2f3-4b4e-96e2-b263b29f558d. Published M8 core matches repository; other 31 workflow rows unchanged. M5 and worker unchanged.
-- PL15 `cd432c5e-20b2-4f08-ad45-3cc21d4ee588`: M4–M9 PASS, but exact-file visual review now **REJECTED**. Do not start EN30. Candidate IDs, metadata and execution snapshots are in `docs/acceptance/2026-09-21-pl15-v94-review.json`.
-- Exact midpoint review: S1 dam acceptable; S2 museum hydroelectric runner acceptable as static illustration; S3 steam-turbine generator is wrong mechanism context; S4 oil-engine-driven generator is wrong plant context; S5 shows door/warning signs rather than the requested transformer/power lines. Do not reject museum images categorically.
-- Implemented/deployed: repeated-subject domain/depiction guards plus contextual provider-query planning with explicit query provenance/cache separation. 70 tests PASS; complete 333-candidate replay keeps old S3/S4/S5 bad selections rejected; targeted Wikimedia retrieval now finds eligible hydro-context replacements for S3/S4. DB provider_query_text + record_live_visual_search_v3 migration is live. Next: run one fresh PL15 on M5 v94 / M8 v47, confirm v47 runtime snapshot and query provenance rows, then inspect exact MP4 before EN30.
-- Audio: technical integrity checked; listening QA is NOT complete, no audio/HUMAN PASS claimed. Full four-case acceptance remains incomplete.
-- Access: SentinelX currently reports zero connected hosts / agent_offline even though its service is active. Existing SSH alias `hodor-vps` works and was used for read-only verification. No service restart, credential change or new connection setup needed.
+M5 v98 / M8 v51 remain deployed. The last job is `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe` (M4–M7 PASS; M8 9203 failed S3; no M9). Its unfinished retrieval fix is now completed and tested, not yet deployed. See the final section below for exact evidence and next action: scoped M8 deployment, then fresh PL15. Older version/status sections are historical. EN30 and final HUMAN PASS remain pending.
 
 ## Project
 
@@ -711,3 +705,14 @@ Exact next step:
 5. commit/push the completed fix;
 6. deploy only M8 with backup + protected-row hash verification;
 7. run one fresh PL15 and continue through M9/manual acceptance before EN30.
+
+### M8 S3 retrieval completion — tested, not deployed
+
+- Continued exactly from main `566457e`, job `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe`, M8 execution `9203`; no old job rerun.
+- All three planners now append generic `equipment` only when a machinery query equals the primary must-show phrase. Original query/query_text stays immutable; exact S3 provider query becomes `hydroelectric electric generator equipment`. Qualified queries and non-machinery queries remain unchanged.
+- New regression exposed a defect in the prior WIP: domain-scoped primary form modifiers also removed `power` from secondary `power station`, leaving only `station`. Secondary profiles now use the original generic-anchor set, so railway station cannot pass via one shared word. Powerhouse expansion remains directional.
+- Validation: 102/102 Node tests PASS, workflow Code syntax/JSON and diff checks PASS. Includes all three providers, unchanged query provenance, compound negative control and exact Commons 78928898 fixture.
+- Replayed the three persisted S3 initial Commons responses from execution 9203. Separate exact live page lookup confirms asset 78928898 now passes (score 95); production-parameter equipment search returns it at score 92. It is a historical 1903 image: this metadata eligibility does NOT establish suitability for narration saying modern or replace exact-frame review.
+- Evidence: `docs/acceptance/2026-09-21-pl15-v51-s3-retrieval-completed.json`; sanitized raw responses on VPS `.review/pl15-v51/`. Three public Commons calls (one initial probe omitted MIME/bitmap parameters and was corrected; one exact production search, one exact page lookup). No new full pipeline job yet.
+- Production remains M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v51 `f242881a-d79e-449d-a8c8-68d65ec54cde` pending scoped deployment.
+- Next: backup and deploy only M8, verify protected rows/live source, then one fresh PL15 through M9 and manual visual/audio review. EN30 remains blocked; no HUMAN PASS.

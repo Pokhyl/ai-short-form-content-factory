@@ -4,7 +4,7 @@ Updated: 2026-09-21
 
 ## Current authoritative status
 
-Live verified M5 v94 / M8 v47. PL15 cd432c5e-20b2-4f08-ad45-3cc21d4ee588 is historical: it passes machine QA but fails exact-frame visual QA in S3/S4/S5. M8 v47 keeps the v46 domain/depiction guards and now sends established repeated-subject context in the actual provider query while preserving the original storyboard query separately in PostgreSQL. DB query provenance/cache migration is live; 70 tests pass and targeted Wikimedia retrieval finds eligible hydro-generator candidates for former S3/S4 gaps. No fresh v47 acceptance job has run yet. EN30 must wait for a fresh PL15 visual/audio acceptance. See CODEX_HANDOFF.md and acceptance evidence files for the exact next action. Older milestone/status sections below are historical.
+M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v51 `f242881a-d79e-449d-a8c8-68d65ec54cde`. Last PL15 `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe` failed M8 S3 after M4–M7 passed. The pending generic machinery retrieval fix is complete, with 102 tests passing and exact S3 live scoring recorded; not deployed yet. Next: publish only M8 with backup/protected-row verification, then one fresh PL15 and exact final visual/audio QA before EN30. No HUMAN PASS. Older sections below are historical.
 
 ## Repository
 Repo: Pokhyl/ai-short-form-content-factory
@@ -495,3 +495,14 @@ This section supersedes older M8 snapshots above where they conflict.
 - Existing suite remains 92/92 PASS and JSON/diff checks pass.
 - Missing next implementation: generic bare-machinery fallback enrichment to add `equipment` only to effective `provider_query` while preserving original `query_text`.
 - Do not treat this WIP commit as production parity: production M8 remains v51 until the completed fix is regression-tested and deployed.
+
+### M8 S3 retrieval completion — tested, not deployed
+
+- Continued exactly from main `566457e`, job `9844d17f-1548-4ecb-97bf-6b9e56b0c7fe`, M8 execution `9203`; no old job rerun.
+- All three planners now append generic `equipment` only when a machinery query equals the primary must-show phrase. Original query/query_text stays immutable; exact S3 provider query becomes `hydroelectric electric generator equipment`. Qualified queries and non-machinery queries remain unchanged.
+- New regression exposed a defect in the prior WIP: domain-scoped primary form modifiers also removed `power` from secondary `power station`, leaving only `station`. Secondary profiles now use the original generic-anchor set, so railway station cannot pass via one shared word. Powerhouse expansion remains directional.
+- Validation: 102/102 Node tests PASS, workflow Code syntax/JSON and diff checks PASS. Includes all three providers, unchanged query provenance, compound negative control and exact Commons 78928898 fixture.
+- Replayed the three persisted S3 initial Commons responses from execution 9203. Separate exact live page lookup confirms asset 78928898 now passes (score 95); production-parameter equipment search returns it at score 92. It is a historical 1903 image: this metadata eligibility does NOT establish suitability for narration saying modern or replace exact-frame review.
+- Evidence: `docs/acceptance/2026-09-21-pl15-v51-s3-retrieval-completed.json`; sanitized raw responses on VPS `.review/pl15-v51/`. Three public Commons calls (one initial probe omitted MIME/bitmap parameters and was corrected; one exact production search, one exact page lookup). No new full pipeline job yet.
+- Production remains M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v51 `f242881a-d79e-449d-a8c8-68d65ec54cde` pending scoped deployment.
+- Next: backup and deploy only M8, verify protected rows/live source, then one fresh PL15 through M9 and manual visual/audio review. EN30 remains blocked; no HUMAN PASS.

@@ -1,0 +1,177 @@
+{
+  "job_id": "9844d17f-1548-4ecb-97bf-6b9e56b0c7fe",
+  "execution_id": 9203,
+  "status": "tested_not_deployed",
+  "production": {
+    "M5": {
+      "version": 98,
+      "id": "ce78a67f-bce4-45fb-bbf8-2d421b3c3142"
+    },
+    "M8": {
+      "version": 51,
+      "id": "f242881a-d79e-449d-a8c8-68d65ec54cde"
+    }
+  },
+  "replay": [
+    {
+      "query": "electric generator in hydroelectric station",
+      "candidates": [
+        {
+          "id": "84155852",
+          "title": "File:Waterworks Museum (85472)bw.jpg",
+          "score": 36,
+          "rejected": true,
+          "reason": "missing_storyboard_domain_context:hydroelectric; missing_secondary_subject_context; missing_primary_subject_anchor:electric generator; insufficient_must_show_concept_coverage; insufficient_query_intent_metadata_match; missing_distinctive_domain_anchor"
+        },
+        {
+          "id": "30236559",
+          "title": "File:2013-10-03 Fierza Hydroelectric Power Station, Albania 0632.jpg",
+          "score": 72,
+          "rejected": true,
+          "reason": "missing_primary_subject_anchor:electric generator"
+        },
+        {
+          "id": "84155857",
+          "title": "File:Waterworks Museum - defunct Chestnut Hill Pumping Station (85495s)bw.jpg",
+          "score": 51,
+          "rejected": true,
+          "reason": "missing_storyboard_domain_context:hydroelectric; missing_secondary_subject_context; missing_primary_subject_anchor:electric generator; insufficient_must_show_concept_coverage"
+        },
+        {
+          "id": "110728426",
+          "title": "File:Ohau C hydroelectric Power station New Zealand.jpg",
+          "score": 73,
+          "rejected": true,
+          "reason": "missing_primary_subject_anchor:electric generator"
+        },
+        {
+          "id": "132585481",
+          "title": "File:Dolgarrog hydroelectric power station in Dyffryn Conwy, Parc Cenedlaethol Eryri (National Park) 05.jpg",
+          "score": 69,
+          "rejected": true,
+          "reason": "missing_primary_subject_anchor:electric generator"
+        },
+        {
+          "id": "89132676",
+          "title": "File:Hydroelectric power plant.jpg",
+          "score": 68,
+          "rejected": true,
+          "reason": "missing_primary_subject_anchor:electric generator"
+        },
+        {
+          "id": "152081590",
+          "title": "File:Tambov hydroelectric power station 004.jpg",
+          "score": 67,
+          "rejected": true,
+          "reason": "missing_primary_subject_anchor:electric generator"
+        },
+        {
+          "id": "150970260",
+          "title": "File:Locks-at-the-vitebsk-hydroelectric-power-station.jpg",
+          "score": 66,
+          "rejected": true,
+          "reason": "missing_primary_subject_anchor:electric generator"
+        }
+      ]
+    },
+    {
+      "query": "power generator equipment inside plant",
+      "candidates": [
+        {
+          "id": "133200274",
+          "title": "File:Lake Wissota State Park 05.jpg",
+          "score": 45,
+          "rejected": true,
+          "reason": "missing_storyboard_domain_context:hydroelectric; missing_secondary_subject_context; missing_primary_subject_anchor:electric generator; insufficient_must_show_concept_coverage; missing_distinctive_domain_anchor"
+        }
+      ]
+    },
+    {
+      "query": "electric generator",
+      "candidates": [
+        {
+          "id": "84155852",
+          "title": "File:Waterworks Museum (85472)bw.jpg",
+          "score": 35,
+          "rejected": true,
+          "reason": "missing_storyboard_domain_context:hydroelectric; missing_secondary_subject_context; missing_primary_subject_anchor:electric generator; insufficient_must_show_concept_coverage; insufficient_query_intent_metadata_match; missing_distinctive_domain_anchor"
+        },
+        {
+          "id": "30236559",
+          "title": "File:2013-10-03 Fierza Hydroelectric Power Station, Albania 0632.jpg",
+          "score": 58,
+          "rejected": true,
+          "reason": "missing_primary_subject_anchor:electric generator"
+        },
+        {
+          "id": "84155857",
+          "title": "File:Waterworks Museum - defunct Chestnut Hill Pumping Station (85495s)bw.jpg",
+          "score": 44,
+          "rejected": true,
+          "reason": "missing_storyboard_domain_context:hydroelectric; missing_secondary_subject_context; missing_primary_subject_anchor:electric generator; insufficient_must_show_concept_coverage; insufficient_query_intent_metadata_match"
+        },
+        {
+          "id": "110728426",
+          "title": "File:Ohau C hydroelectric Power station New Zealand.jpg",
+          "score": 59,
+          "rejected": true,
+          "reason": "missing_primary_subject_anchor:electric generator"
+        },
+        {
+          "id": "132585481",
+          "title": "File:Dolgarrog hydroelectric power station in Dyffryn Conwy, Parc Cenedlaethol Eryri (National Park) 05.jpg",
+          "score": 55,
+          "rejected": true,
+          "reason": "missing_primary_subject_anchor:electric generator"
+        },
+        {
+          "id": "89132676",
+          "title": "File:Hydroelectric power plant.jpg",
+          "score": 54,
+          "rejected": true,
+          "reason": "missing_primary_subject_anchor:electric generator"
+        },
+        {
+          "id": "150970260",
+          "title": "File:Locks-at-the-vitebsk-hydroelectric-power-station.jpg",
+          "score": 53,
+          "rejected": true,
+          "reason": "missing_primary_subject_anchor:electric generator"
+        },
+        {
+          "id": "150970261",
+          "title": "File:Vitebsk-hydroelectric-power-station.jpg",
+          "score": 52,
+          "rejected": true,
+          "reason": "missing_primary_subject_anchor:electric generator"
+        }
+      ]
+    }
+  ],
+  "exact_asset_live": [
+    {
+      "id": "78928898",
+      "title": "File:Generators in Cedar Falls Powerhouse, 1903 (INDOCC 1758).jpg",
+      "score": 95,
+      "rejected": false,
+      "reason": null
+    }
+  ],
+  "live": {
+    "provider": "wikimedia",
+    "calls": 3,
+    "notes": "First exploratory search lacked mime and bitmap parameters; final search below uses exact production parameters. One separate exact page lookup.",
+    "query": "electric generator",
+    "provider_query": "hydroelectric electric generator equipment",
+    "candidates": [
+      {
+        "id": "78928898",
+        "title": "File:Generators in Cedar Falls Powerhouse, 1903 (INDOCC 1758).jpg",
+        "score": 92,
+        "rejected": false,
+        "reason": null
+      }
+    ]
+  },
+  "tests": "102/102 PASS"
+}

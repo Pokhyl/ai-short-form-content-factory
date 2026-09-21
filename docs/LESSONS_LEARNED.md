@@ -386,3 +386,6 @@ Prevention:
 - first late semantic miss may use the already-bounded regeneration path from immutable original text;
 - the retry validator remains terminal fail-closed;
 - never turn this into an unbounded retry loop.
+
+45. Primary machinery form modifiers must not erase independent secondary compound meaning.
+The S3 WIP used the same mutable generic-anchor set for primary and secondary profiles; adding power as a primary modifier reduced power station to station. Preserve the baseline secondary set and test an unrelated railway station negative across all providers. Bare machinery retrieval may append generic equipment to the effective provider query while keeping storyboard provenance immutable. Metadata acceptance, especially of historical imagery, still requires final visual/narration review.
