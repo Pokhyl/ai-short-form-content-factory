@@ -1,0 +1,101 @@
+{
+  "Build Script Prompt": {
+    "script_run_id": "0a9242ef-b393-40b5-950b-fc55a1f43bd4",
+    "model": "gemini-3.5-flash-lite",
+    "language_code": "pl",
+    "target_duration_seconds": 15,
+    "word_min": 21,
+    "word_max": 33,
+    "target_scenes": 5,
+    "target_shots": 5,
+    "evidence_map": {
+      "E1": "9ecb6f30-180c-4ac9-b2bc-1cea2ef35534",
+      "E2": "8bb90474-7754-4fb4-ae17-5133fbbb2ce1",
+      "E3": "0c7a32c6-b5c6-414d-81f8-2022d801d889",
+      "E4": "c4823222-86d1-4daf-bac4-ce50389a658e",
+      "E5": "f211d1e8-3b25-429e-a00b-738ea4d1a080",
+      "E6": "6ab51415-ece6-43a6-bc36-d76b643ef00f"
+    }
+  },
+  "Generate Storyboard": {
+    "body": {
+      "usageMetadata": {
+        "promptTokenCount": 13350,
+        "candidatesTokenCount": 564,
+        "totalTokenCount": 13914,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 13350
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    }
+  },
+  "Repair Storyboard": {
+    "body": {
+      "usageMetadata": {
+        "promptTokenCount": 14609,
+        "candidatesTokenCount": 670,
+        "totalTokenCount": 15279,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 14609
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    }
+  },
+  "response": {
+    "body": {
+      "candidates": [
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "{\n  \"narration\": \"Woda gromadzi się za tamą i spływa w dół. Ten ruch obracający turbinę generuje prąd. Wytworzona energia elektryczna trafia do sieci przesyłowej.\",\n  \"scenes\": [\n    {\n      \"scene_id\": \"S1\",\n      \"narration\": \"Woda gromadzi się za tamą i spływa w dół.\",\n      \"evidence_ids\": [\n        \"E2\",\n        \"E3\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S1-A\",\n          \"visual_intent\": \"Large concrete dam holding back a vast water reservoir\",\n          \"must_show\": [\n            \"dam\",\n            \"water reservoir\"\n          ],\n          \"must_not_show\": [\n            \"wind turbine\"\n          ],\n          \"queries_en\": [\n            \"hydroelectric dam water reservoir\",\n            \"concrete dam water drop\",\n            \"dam water reservoir aerial view\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S2\",\n      \"narration\": \"Ten ruch obracający turbinę\",\n      \"evidence_ids\": [\n        \"E2\",\n        \"E3\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S2-A\",\n          \"visual_intent\": \"Water turbine inside a hydroelectric power plant conduit\",\n          \"must_show\": [\n            \"water turbine\",\n            \"water flow\"\n          ],\n          \"must_not_show\": [\n            \"solar panel\"\n          ],\n          \"queries_en\": [\n            \"water turbine runner blades\",\n            \"hydroelectric turbine mechanism\",\n            \"water turbine power plant\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S3\",\n      \"narration\": \"generuje prąd.\",\n      \"evidence_ids\": [\n        \"E2\",\n        \"E3\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S3-A\",\n          \"visual_intent\": \"Large electrical generator machine inside a power station hall\",\n          \"must_show\": [\n            \"generator\",\n            \"rotating shaft\"\n          ],\n          \"must_not_show\": [\n            \"steam turbine\"\n          ],\n          \"queries_en\": [\n            \"hydroelectric generator machine\",\n            \"electric generator rotor stator\",\n            \"power plant generator hall\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S4\",\n      \"narration\": \"Wytworzona energia elektryczna trafia\",\n      \"evidence_ids\": [\n        \"E2\",\n        \"E5\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S4-A\",\n          \"visual_intent\": \"Electrical transformer station with high voltage equipment\",\n          \"must_show\": [\n            \"transformer\",\n            \"electric power lines\"\n          ],\n          \"must_not_show\": [\n            \"wind turbine\"\n          ],\n          \"queries_en\": [\n            \"electrical transformer station\",\n            \"high voltage transformer grid\",\n            \"power substation transformer\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S5\",\n      \"narration\": \"do sieci przesyłowej.\",\n      \"evidence_ids\": [\n        \"E2\",\n        \"E5\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S5-A\",\n          \"visual_intent\": \"Electric power transmission towers carrying lines across open landscape\",\n          \"must_show\": [\n            \"power transmission tower\",\n            \"power lines\"\n          ],\n          \"must_not_show\": [\n            \"solar panels\"\n          ],\n          \"queries_en\": [\n            \"electric power transmission towers\",\n            \"power grid lines landscape\",\n            \"electrical transmission pylon\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    }\n  ]\n}",
+                "thoughtSignature": "El4KXAFpFH0T+UukKSjTYANYVPVD0o8gnPXl5SaaTqagN67i6nVcUEYWWV6a4yNZjE3vn8Z+FWY+STDU1/xHjpLpOT51tX0S6y6bt487fNPcdb9/XUI4Yx7UAM6iKrcu"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      ],
+      "usageMetadata": {
+        "promptTokenCount": 14722,
+        "candidatesTokenCount": 1017,
+        "totalTokenCount": 15739,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 14722
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "responseId": "jeCyaordD6mMvdIPs7aumQM"
+    },
+    "headers": {
+      "x-gemini-service-tier": "standard",
+      "content-type": "application/json; charset=UTF-8",
+      "vary": "Origin, X-Origin, Referer",
+      "date": "Tue, 22 Sep 2026 20:09:52 GMT",
+      "server": "scaffolding on HTTPServer2",
+      "x-xss-protection": "0",
+      "x-frame-options": "SAMEORIGIN",
+      "x-content-type-options": "nosniff",
+      "server-timing": "gfet4t7; dur=3080",
+      "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+      "connection": "close",
+      "transfer-encoding": "chunked"
+    },
+    "statusCode": 200,
+    "statusMessage": "OK"
+  }
+}

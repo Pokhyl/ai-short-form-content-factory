@@ -822,3 +822,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Generic power-plant and contextual non-machinery protections remain fail-closed.
 - Full suite 247/247 PASS; deterministic 9229 selected IDs unchanged.
 - Production still M8 v59; fix not deployed yet.
+
+
+## M8 v60 live; M5 continuous-narration scene-segment contract tested — 2026-09-22
+
+- M8 v60 activeVersionId `980fdaec-f66b-45ba-8da0-d6005be00a9a`; scoped deploy verified clean.
+- Fresh job `21f8e198-d15c-434d-b89a-d6772ddbc129` stopped in M5 execution 9537 only because five visual segments were required to be five standalone sentences.
+- Local M5 fix makes scenes contiguous visual cut segments of one continuous narration; only the joined narration must be a complete utterance.
+- Exact 9537 replay PASS; full suite 252/252 PASS; M5 syntax/graph PASS.
+- Production still M5 v109 / M6 v8 / M8 v60. M5 fix not deployed yet.

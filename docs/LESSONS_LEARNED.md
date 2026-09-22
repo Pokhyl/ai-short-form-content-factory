@@ -558,3 +558,14 @@ Prevention:
 - do not make presentation words such as outdoors into domains;
 - for Wikimedia, allow concrete category segments to prove a machinery class only when the requested primary is machinery and the category itself satisfies that machinery concept;
 - do not extend category-only depiction proof to reservoirs, people, animals or other contextual taxonomy.
+
+
+60. Visual scene boundaries are not sentence boundaries.
+A short-form video can require five visual changes while the natural continuous voiceover contains only two or three sentences. Requiring every scene narration to be a standalone sentence forces unnatural text or repeatedly rejects otherwise valid continuous narration.
+
+Prevention:
+- define each scene narration as an exact contiguous segment of the continuous voiceover;
+- allow visual cuts inside sentences;
+- enforce scene-level word bounds, evidence and semantic preservation without requiring per-scene terminal punctuation;
+- require the joined narration, not each segment, to have a normal beginning and complete terminal punctuation;
+- keep alignment token-based so mid-sentence visual cuts remain precisely timeable.

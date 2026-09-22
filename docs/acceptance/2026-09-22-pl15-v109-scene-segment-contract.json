@@ -1,0 +1,74 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "job_id": "21f8e198-d15c-434d-b89a-d6772ddbc129",
+  "execution_id": 9537,
+  "workflow_version_id": "cf78728e-b044-4862-86f4-33798d0c4c0a",
+  "script_run_id": "0a9242ef-b393-40b5-950b-fc55a1f43bd4",
+  "failure": "M5 script workflow failed: S2 narration must end as a standalone sentence [line 386]",
+  "observed": {
+    "target_scenes": 5,
+    "target_shots": 5,
+    "final_repair_root_narration": "Woda gromadzi się za tamą i spływa w dół. Ten ruch obracający turbinę generuje prąd. Wytworzona energia elektryczna trafia do sieci przesyłowej.",
+    "scene_segments": [
+      "Woda gromadzi się za tamą i spływa w dół.",
+      "Ten ruch obracający turbinę",
+      "generuje prąd.",
+      "Wytworzona energia elektryczna trafia",
+      "do sieci przesyłowej."
+    ],
+    "joined_word_count": 22,
+    "joined_is_natural_complete_narration": true
+  },
+  "root_cause": "The M5 contract conflated visual scene boundaries with sentence boundaries. It required exactly five visual scenes and also required each scene narration to be a standalone complete sentence. Gemini repeatedly produced natural continuous narration with visual cuts inside sentences, so the validator rejected a valid continuous voiceover even after bounded repairs.",
+  "contract_fix": {
+    "principle": "Audio narration is continuous. Scene narration fields are exact contiguous narration segments used to anchor visual cuts; a visual cut may occur inside a sentence.",
+    "unchanged": [
+      "exact scene count",
+      "exact shot count",
+      "2..10/14 words per scene segment",
+      "per-scene evidence IDs",
+      "per-scene semantic-preservation guards",
+      "visual metadata gates",
+      "total narration anti-runaway bounds",
+      "language leakage checks",
+      "exact reconstruction of narration by joining scene segments"
+    ],
+    "new_global_surface_gate": "Only the joined continuous narration must start normally and end with . ! ? or ….",
+    "removed_invalid_constraint": "Individual visual scene segments no longer need uppercase starts or terminal sentence punctuation."
+  },
+  "exact_9537_replay": {
+    "provider_calls": 0,
+    "passed": true,
+    "scene_count": 5,
+    "shot_count": 5,
+    "word_count": 22,
+    "scene2": "Ten ruch obracający turbinę",
+    "scene3": "generuje prąd.",
+    "joined_narration": "Woda gromadzi się za tamą i spływa w dół. Ten ruch obracający turbinę generuje prąd. Wytworzona energia elektryczna trafia do sieci przesyłowej."
+  },
+  "validation": {
+    "focused_scene_segment_tests": "5/5 PASS",
+    "full_suite": "252/252 PASS",
+    "m5_code_syntax": "56/56 PASS",
+    "m5_graph": "127/127 PASS",
+    "workflow_json_parse": "PASS",
+    "fixture_json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 109,
+      "activeVersionId": "cf78728e-b044-4862-86f4-33798d0c4c0a"
+    },
+    "M6": {
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "M8": {
+      "versionCounter": 60,
+      "activeVersionId": "980fdaec-f66b-45ba-8da0-d6005be00a9a"
+    }
+  },
+  "next_step": "Commit/push, deploy only M5, then run one fresh PL15 on M5 next version + M6 v8 + M8 v60."
+}

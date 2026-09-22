@@ -1339,3 +1339,31 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-pl15-v109-v8-v59-s5-substation-setting-fix.json`.
 - Production remains M5 v109 / M6 v8 / M8 v59 at this checkpoint.
 - Next: commit/push, deploy only M8, then exactly one fresh PL15.
+
+
+### M8 v60 deployed; fresh PL15 exposed M5 scene/sentence contract mismatch — exact 9537 replay fixed — NOT DEPLOYED — 2026-09-22
+
+- M8 S5 fix from commit `36e9f920b27bb23161b350cdba3ffd73dcc90483` is live as v60 `980fdaec-f66b-45ba-8da0-d6005be00a9a`.
+- M8 deployment backup: `.backups/m8-before-substation-20260922-200843.json`.
+- M8-only deploy verification: other 31 workflow fingerprint stayed `31|5fe515c308ef0bcda6a59d82c5d817d8`; published M8 core matches repo; Publisher/Studio 200; n8n restart 0; media-worker healthy restart 0.
+- Fresh job `21f8e198-d15c-434d-b89a-d6772ddbc129` stopped in M5 execution `9537` on v109 before M6/M8.
+- Exact failure: `S2 narration must end as a standalone sentence`.
+- The final bounded repair actually produced a natural complete 22-word narration, split into five visual segments:
+  1. `Woda gromadzi się za tamą i spływa w dół.`
+  2. `Ten ruch obracający turbinę`
+  3. `generuje prąd.`
+  4. `Wytworzona energia elektryczna trafia`
+  5. `do sieci przesyłowej.`
+- Root cause: M5 incorrectly equated five visual scene boundaries with five sentence boundaries. This conflicts with the product requirement for one continuous voiceover and enough visual changes.
+- New contract:
+  - scene narration is an exact contiguous 2–10/14-word segment of the continuous narration;
+  - visual cuts may occur inside a sentence, so a segment may start lowercase or end without sentence punctuation;
+  - joined scene narration remains authoritative and must be one natural complete utterance with normal start and terminal punctuation;
+  - exact scene/shot counts, per-scene evidence, semantic guards, word bounds, language gates and visual constraints remain unchanged.
+- The contract is applied consistently across initial storyboard validation, both storyboard repairs, timing repairs, precision retry, final duration/word-count repairs and final canonicalization.
+- Exact 9537 replay now PASS with no provider call.
+- Validation: focused 5/5 PASS; full suite **252/252 PASS**; M5 Code syntax 56/56; graph 127/127; JSON/diff checks PASS.
+- Fixture: `tests/fixtures/m5-9537-scene-segments.json`.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v109-scene-segment-contract.json`.
+- Production currently M5 v109 / M6 v8 / M8 v60. M5 segment-contract fix is not deployed yet.
+- Next: commit/push, deploy only M5, then one fresh PL15.
