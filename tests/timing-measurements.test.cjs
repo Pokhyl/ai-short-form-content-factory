@@ -229,6 +229,90 @@ test('v96 regression: final measured correction stays inside the window instead 
   assert.match(out.user_message,/MEASURED CORRECTION AIM: 15375 ms/);
 });
 
+
+test('9287 regression: measured-short final correction cannot request fewer words or characters',()=>{
+  const code=workflow.nodes.find(n=>n.name==='Build Final Measured Correction').parameters.jsCode;
+
+  const originalScenes=[
+    'Zapora gromadzi wodę w dużym zbiorniku.',
+    'Spadająca woda porusza potężną turbinę.',
+    'Obrotowy ruch napędza generator.',
+    'Generator wytwarza prąd elektryczny.',
+    'Transformator przesyła go do sieci.',
+  ];
+  const p2Scenes=[
+    'Zapora gromadzi wodę.',
+    'Spadająca woda porusza turbinę.',
+    'Ruch napędza generator.',
+    'Generator wytwarza prąd.',
+    'Transformator przesyła go.',
+  ];
+  const sourceScenes=[
+    'Zapora gromadzi wodę w zbiorniku.',
+    'Spadająca woda porusza turbinę.',
+    'Obrotowy ruch napędza generator.',
+    'Generator wytwarza prąd elektryczny.',
+    'Transformator przesyła go do sieci.',
+  ];
+  const mk=(scenes,ms)=>({
+    storyboard:{
+      narration:scenes.join(' '),
+      scenes:scenes.map(narration=>({narration})),
+    },
+    measured_duration_ms:ms,
+    narration_word_count:scenes.join(' ').split(/\s+/u).filter(Boolean).length,
+    target_duration_ms:15000,
+    tolerance_ms:750,
+    usage:{},
+  });
+  const p2=mk(p2Scenes,13344);
+  const p3=mk(originalScenes,16344);
+  const source=mk(sourceScenes,14208);
+  source.script_run_id='run';
+  source.model='model';
+
+  const $=name=>{
+    if(name==='Normalize Timing Stability B') {
+      return {all:()=>{throw new Error('not executed')}};
+    }
+    if(name==='Normalize Timing Probe 2') return {first:()=>({json:p2})};
+    if(name==='Normalize Timing Probe 3') return {first:()=>({json:p3})};
+    if(name==='Normalize Timing Probe') {
+      return {first:()=>({json:{storyboard:{scenes:originalScenes.map(narration=>({narration}))}}})};
+    }
+    if(name==='Build Script Prompt') {
+      return {first:()=>({json:{
+        language_code:'pl',
+        target_duration_seconds:15,
+        target_scenes:5,
+        target_shots:5,
+        word_min:20,
+        word_max:40,
+      }})};
+    }
+    throw new Error('unexpected node '+name);
+  };
+
+  const out=new Function('$','$json',code)($,source).json;
+  const currentWords=source.storyboard.narration.split(/\s+/u).filter(Boolean).length;
+  const currentChars=Array.from(source.storyboard.narration).length;
+  assert.equal(currentWords,22);
+  assert.equal(currentChars,171);
+  assert.equal(out.repair_target_duration_ms,14625);
+  assert.ok(out.target_words>currentWords,JSON.stringify(out));
+  assert.ok(out.target_chars>currentChars,JSON.stringify(out));
+  assert.match(out.user_message,/DIRECTION: make the complete narration LONGER/);
+});
+
+test('late timing targets never contradict the requested direction',()=>{
+  for(const name of ['Build Final Duration Repair','Build Final Measured Correction']){
+    const code=workflow.nodes.find(n=>n.name===name).parameters.jsCode;
+    assert.match(code,/predictedDirectionOk/);
+    assert.match(code,/makeLonger \? predicted > current : predicted < current/);
+    assert.match(code,/late timing target cannot move in required direction within hard bounds/);
+  }
+});
+
 test('late timing builders use optional reads for branch-dependent probes',()=>{
   const durationCode=workflow.nodes.find(n=>n.name==='Build Final Duration Repair').parameters.jsCode;
   const measuredCode=workflow.nodes.find(n=>n.name==='Build Final Measured Correction').parameters.jsCode;

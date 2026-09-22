@@ -622,3 +622,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Other 30 workflow fingerprint unchanged: `988ee473175a09fe877d3de8c2325108`.
 - Live published exports match repo nodes/connections/settings. Publisher/Studio 200. n8n restart 0. Worker healthy restart 0. Zero active project executions.
 - Runtime proof is pending; next action is exactly one fresh PL15, not a rerun of the failed v54 job.
+
+
+## M5 v100 runtime timing-direction defect — tested fix, not deployed — 2026-09-22
+
+- Fresh PL15 `94d22732-c6f6-4514-bb5b-71f006f749ad` proved M5 v100 runtime and failed in M5 execution 9287 before M6.
+- 22-word narration measured 14208ms against unchanged valid window 14250-15750ms. The late builder requested LONGER but old regression returned a smaller 21-word / 162-character target, which produced a confirmed too-short 21-word narration (13368/13512/13368ms).
+- Tested fix makes both late timing builders direction-safe. Exact replay now produces 23 words / 176 chars, scene targets [5,5,4,4,5], for the same 14208ms input.
+- Validation: 160/160 tests PASS; M5 55/55 Code-node syntax PASS; JSON/diff checks PASS. No timing tolerance or acceptance gate changed.
+- Production remains M5 v100 `8cc07108-bc76-43f3-b97e-071fbca26148` and M8 v55 `5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8` until M5-only deploy.

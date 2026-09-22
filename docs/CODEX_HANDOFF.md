@@ -879,3 +879,31 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - No active project executions before or after deployment. No credential change, DB migration or service restart.
 - n8n CLI printed its generic restart advisory; runtime workflowVersionId on the next execution is the acceptance proof.
 - Exact next step: **one** fresh PL15 via Studio. Require M5 v100 and M8 v55 runtime IDs, then M9 and exact final MP4 technical/visual/audio acceptance before EN30.
+
+
+### Fresh PL15 proved M5 v100 and exposed direction-contradicting late timing target — fixed locally, NOT DEPLOYED — 2026-09-22
+
+- Fresh job `94d22732-c6f6-4514-bb5b-71f006f749ad`:
+  - parent 9283 ERROR;
+  - M4 9284 PASS;
+  - M5 9287 ERROR on exact **v100 `8cc07108-bc76-43f3-b97e-071fbca26148`**;
+  - M6-M9 did not run.
+- Script run `4d1c7f28-b33b-46d2-bfa5-f91cf9463a91` failed: `M5 timing repair still outside target: got 13368ms, target 15000ms, tolerance 750ms`.
+- Real timing sequence:
+  - 24w/185c -> 16344ms;
+  - 16w/129c -> 13344ms;
+  - 24w/185c -> 16344ms;
+  - 22w/171c -> 14208ms (only 42ms below the unchanged lower bound 14250ms);
+  - old late builder correctly said LONGER but incorrectly targeted 21w/162c;
+  - resulting 21w/159c measured 13368ms, then stability 13512ms and 13368ms; all three confirmed it was genuinely too short.
+- Root cause: noisy linear interpolation was allowed to produce a target opposite to the measured correction direction. The later hard exact-word retry faithfully enforced that wrong target.
+- Systemic fix in both `Build Final Duration Repair` and `Build Final Measured Correction`:
+  - use regression only when the prediction is directionally consistent with the latest real measurement;
+  - otherwise use the proportional latest-measurement fallback;
+  - force at least one word/character step in the required direction when hard bounds permit;
+  - fail explicitly if both target dimensions cannot move in the required direction.
+- No tolerance, semantic guard, provider budget, stability rule or exact-count gate was weakened.
+- Exact replay of execution 9287 inputs after the fix: 22w/171c at 14208ms -> LONGER -> **23 words / 176 chars**, scene targets `[5,5,4,4,5]`, internal aim 14625ms.
+- Validation: **160/160 PASS**, M5 55/55 Code-node syntax PASS, JSON parse PASS, `git diff --check` PASS.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v100-timing-direction-fix.json`.
+- Production is still M5 v100 / M8 v55 at this checkpoint. Next: commit/push, deploy **M5 only**, verify M8/protected rows unchanged, then exactly one fresh PL15.

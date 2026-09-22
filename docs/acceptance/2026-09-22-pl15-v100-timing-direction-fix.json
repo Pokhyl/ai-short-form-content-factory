@@ -1,0 +1,149 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "job_id": "94d22732-c6f6-4514-bb5b-71f006f749ad",
+  "topic": "jak działa elektrownia wodna?",
+  "language": "pl",
+  "duration_seconds": 15,
+  "executions": {
+    "parent": {
+      "id": 9283,
+      "status": "error",
+      "workflowVersionId": "f3ef8cbf-1c56-4048-9fdf-feb073de96df"
+    },
+    "M4": {
+      "id": 9284,
+      "status": "success",
+      "workflowVersionId": "3cf94dd2-8c3b-4585-ae88-6315a2685ff7"
+    },
+    "M5": {
+      "id": 9287,
+      "status": "error",
+      "workflowVersionId": "8cc07108-bc76-43f3-b97e-071fbca26148"
+    },
+    "M6": null,
+    "M7": null,
+    "M8": null,
+    "M9": null
+  },
+  "production_before_fix": {
+    "M5": {
+      "versionCounter": 100,
+      "activeVersionId": "8cc07108-bc76-43f3-b97e-071fbca26148"
+    },
+    "M8": {
+      "versionCounter": 55,
+      "activeVersionId": "5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8"
+    }
+  },
+  "failure": {
+    "script_run_id": "4d1c7f28-b33b-46d2-bfa5-f91cf9463a91",
+    "reason": "M5 timing repair still outside target: got 13368ms, target 15000ms, tolerance 750ms",
+    "allowed_window_ms": [
+      14250,
+      15750
+    ],
+    "timing_samples": [
+      {
+        "attempt": 1,
+        "words": 24,
+        "chars": 185,
+        "duration_ms": 16344
+      },
+      {
+        "attempt": 2,
+        "words": 16,
+        "chars": 129,
+        "duration_ms": 13344
+      },
+      {
+        "attempt": 3,
+        "words": 24,
+        "chars": 185,
+        "duration_ms": 16344
+      },
+      {
+        "attempt": 4,
+        "words": 22,
+        "chars": 171,
+        "duration_ms": 14208
+      },
+      {
+        "attempt": 5,
+        "words": 21,
+        "chars": 159,
+        "duration_ms": 13368
+      },
+      {
+        "attempt": "stability_a",
+        "words": 21,
+        "chars": 159,
+        "duration_ms": 13512
+      },
+      {
+        "attempt": "stability_b",
+        "words": 21,
+        "chars": 159,
+        "duration_ms": 13368
+      }
+    ]
+  },
+  "root_cause": {
+    "summary": "Final measured correction correctly chose LONGER after the 22-word narration measured 14208ms, but noisy linear interpolation produced a contradictory smaller target of 21 words / 162 characters. The hard exact-word retry then shortened the narration to 21 words, and three real TTS samples confirmed that version was too short.",
+    "prior_measured_state": {
+      "words": 22,
+      "chars": 171,
+      "duration_ms": 14208,
+      "direction": "LONGER",
+      "old_target_words": 21,
+      "old_target_chars": 162,
+      "repair_target_duration_ms": 14625
+    },
+    "final_failed_state": {
+      "words": 21,
+      "chars": 159,
+      "samples_ms": [
+        13368,
+        13512,
+        13368
+      ]
+    }
+  },
+  "systemic_fix": {
+    "builders": [
+      "Build Final Duration Repair",
+      "Build Final Measured Correction"
+    ],
+    "behavior": [
+      "A regression prediction is used only if it moves in the required direction relative to the latest measured narration.",
+      "If the prediction contradicts direction, use the proportional target from the latest real TTS measurement.",
+      "If rounding would produce no movement, require at least one word/character step when hard bounds allow it.",
+      "Fail explicitly if both word and character targets cannot move in the required direction within hard bounds.",
+      "Do not change the 750ms tolerance, semantic guards, provider budgets, stability majority rule, or hard exact-word retry."
+    ]
+  },
+  "exact_replay_after_fix": {
+    "current_words": 22,
+    "current_chars": 171,
+    "current_duration_ms": 14208,
+    "repair_target_duration_ms": 14625,
+    "direction": "LONGER",
+    "target_words": 23,
+    "target_chars": 176,
+    "target_scene_word_counts": [
+      5,
+      5,
+      4,
+      4,
+      5
+    ]
+  },
+  "validation": {
+    "tests": "160/160 PASS",
+    "M5_code_node_syntax": "55/55 PASS",
+    "M5_json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "deployment": "NOT YET DEPLOYED at this checkpoint",
+  "next_step": "Commit/push, deploy M5 only, verify protected workflows/M8 unchanged, then exactly one fresh PL15."
+}

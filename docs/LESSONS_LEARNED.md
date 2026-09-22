@@ -420,3 +420,14 @@ Prevention:
 - when the visible enclosure has a meaningful operating domain, retain that domain on broad fallback retrieval so a generic conduit/cable/penstock does not drift into unrelated contexts;
 - keep query provenance separate from effective provider query;
 - do not add machinery-specific retrieval suffixes to generic infrastructure unless evidence proves they improve results.
+
+
+51. A timing regression must never contradict the direction implied by the latest real measurement.
+Execution 9287 measured a 22-word narration at 14208ms, slightly below the unchanged final window, so the correction had to be longer. A noisy multi-sample linear fit nevertheless returned a 21-word target. The hard retry then correctly enforced the wrong target, and three TTS samples confirmed the result was much too short.
+
+Prevention:
+- derive LONGER/SHORTER from the latest accepted measurement and unchanged target window;
+- accept regression estimates only when they move words/characters in that direction;
+- otherwise fall back to proportional scaling from the latest real TTS sample;
+- keep semantic floors, exact-count validation, stability majority and duration tolerance unchanged;
+- regression/prediction is guidance only; measured TTS remains the acceptance authority.
