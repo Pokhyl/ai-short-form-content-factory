@@ -1,0 +1,194 @@
+# AI Short-Form Content Factory — Production Plan
+
+Updated: 2026-09-22
+
+## Source of truth and execution rules
+
+- Repository: `Pokhyl/ai-short-form-content-factory`.
+- Branch: `main`.
+- VPS path: `/opt/ai-short-form-content-factory`.
+- Production n8n: `https://publisher.hodor.com.pl`.
+- Studio: `https://studio.hodor.com.pl/`.
+- GitHub + actual production state are the source of truth.
+- Before every substantive action, read this PLAN and verify that the action matches the current next step.
+- After every substantive finding, fix, test result, deploy, acceptance result, or change of direction:
+  1. update this PLAN if current state or next step changed;
+  2. update detailed handoff/evidence where applicable;
+  3. commit and push immediately.
+- A change that is not committed/pushed is not a durable project checkpoint.
+- Never create a fresh acceptance job while another project execution is active.
+- If a tool times out, inspect actual state before retrying.
+- Do not touch unrelated workflows, credentials, n8n instances, domains, containers, or jobs.
+- User disagreement is not new evidence. Change a technical conclusion only because of new evidence, a new test/tool result, or a specific identified error in the prior reasoning.
+- Never claim fixed/deployed/passing without verifying the actual state.
+
+## Product goal
+
+Fully automatic n8n short-form video factory:
+
+topic + language + duration
+-> research
+-> continuous narration/storyboard
+-> exact accepted TTS audio
+-> alignment
+-> visual retrieval/selection
+-> render
+-> machine QA
+-> final vertical MP4.
+
+Inputs:
+- topic
+- language: PL / EN / RU / UK
+- duration: 15 / 30 / 45 / 60 seconds
+
+Constraints:
+- n8n is the mandatory orchestrator.
+- Free-only production path.
+- No hacks or topic-specific production rules.
+- No hardcoded visual asset IDs.
+- Draft/inbox publishing only.
+- Do not weaken semantic, visual, timing, or QA gates merely to pass acceptance.
+
+## Current production state
+
+Last production versions verified before the latest Git-only M5 fix:
+- M5 Script/Storyboard: v110
+  - activeVersionId: `f67bac25-872d-48d6-baba-c6afff1ca146`
+- M6 Voiceover: v8
+  - activeVersionId: `0bcabe39-ae90-42fe-842b-8a56ad238709`
+- M8 Visuals: v61
+  - activeVersionId: `a73aefbc-4c8e-4458-8ef2-c48bbce3a957`
+
+Current GitHub main checkpoint:
+- `9b34f47e6ed151675f8b9e2a825e1d3da14dbcaa`
+- message: `chore: checkpoint current production work`
+
+Important: Git contains an M5 fix that is NOT yet verified as deployed to production.
+
+## Proven architecture decisions
+
+### Exact audio handoff M5 -> M6
+M5 preserves the exact synthesized MP3 that passed the final duration gate.
+M6 reuses that exact file instead of independently synthesizing the same narration again.
+This avoids stochastic TTS-duration drift.
+
+### Continuous narration
+Narration is continuous.
+Scene boundaries are visual/timing cuts and may occur inside a sentence.
+Do not require every scene narration segment to be a standalone sentence.
+
+### Visual selection
+Visual gates remain fail-closed:
+- primary subject must be grounded;
+- operational setting must be grounded when required;
+- unrelated/museum/component/background false positives remain rejected;
+- no topic-specific asset exceptions.
+
+## Latest accepted technical result
+
+Job:
+- `345adac7-105e-461b-97ff-1a66789704ba`
+
+Result:
+- reached `machine_qa_passed`;
+- rendered technically valid MP4:
+  - 1080x1920
+  - H.264
+  - AAC
+  - 30 fps
+  - 14.800 s
+
+Manual review identified a real cross-scene grounding defect:
+- S5 narration `Który wytwarza prąd.` inherited its grammatical subject from the previous generator scene;
+- storyboard visual primary incorrectly switched to transformer/substation imagery;
+- malformed boundary punctuation such as `turbiny,.` / `generator,.` also appeared.
+
+Evidence:
+- `docs/acceptance/2026-09-22-pl15-machine-pass-manual-reject-anaphoric-visual-fix.json`
+
+## Current Git-only fix
+
+The latest M5 fix in Git:
+- keeps one continuous narration contract across initial and repair prompts;
+- detects relative/personal anaphoric scene starts and requires them to retain the previous concrete visual primary;
+- excludes demonstratives that can legitimately introduce a new explicitly named subject;
+- normalizes conflicting visual-cut punctuation without changing words or semantic content.
+
+Validation recorded in Git:
+- focused scene-segment tests: 9/9 PASS;
+- full suite: 260/260 PASS;
+- JSON/diff checks: PASS.
+
+This fix is not considered production-complete until deployment and live verification succeed.
+
+## Immediate next step
+
+1. Restore VPS/SentinelX connectivity.
+2. Read this PLAN again before making any production change.
+3. Verify:
+   - Git HEAD == origin/main;
+   - working tree clean;
+   - no active project executions;
+   - production M5/M6/M8 versions.
+4. Deploy ONLY M5 from current Git main.
+5. Before deployment:
+   - export published M5 backup;
+   - fingerprint all non-M5 workflows.
+6. After deployment verify:
+   - M5 version incremented exactly once;
+   - live M5 nodes/connections/settings == Git;
+   - non-M5 workflow fingerprint unchanged;
+   - Publisher 200;
+   - Studio 200;
+   - n8n restart count unchanged unless an actual restart is required and explicitly justified.
+7. Update this PLAN + handoff + evidence; commit/push deployment checkpoint.
+8. Run exactly ONE fresh PL15 only when active project execution count is zero.
+9. Follow that single job to terminal state. Do not create another job while it is running.
+10. If it passes M5 -> M9:
+    - inspect the actual rendered MP4 technically;
+    - review scene-by-scene visual grounding against narration;
+    - review audio/narration continuity.
+11. If it fails:
+    - fix only the demonstrated blocker using saved execution/provider data first;
+    - regression test;
+    - deploy only the affected workflow;
+    - update PLAN/Git;
+    - one new acceptance job.
+
+## Acceptance sequence after PL15
+
+Only after PL15 passes full manual acceptance:
+
+1. EN30 — `how do bees make honey?`
+2. RU45 — `как работает GPS?`
+3. UK60 — `як утворюються вулкани?`
+
+Run sequentially, never in parallel.
+
+For each:
+- complete production path must pass;
+- technical MP4 checks must pass;
+- actual final output must be manually reviewed;
+- only demonstrated defects may be fixed.
+
+## Definition of done
+
+The project is done only when PL15 + EN30 + RU45 + UK60 all pass the complete production path and actual rendered outputs pass:
+
+- requested timing window;
+- 1080x1920 vertical output;
+- H.264 / yuv420p / 30 fps;
+- AAC audio;
+- successful full decode;
+- continuous natural narration;
+- scene/visual semantic match;
+- no missing/broken visual;
+- no invalid-domain imagery;
+- no semantic subject drift across scene cuts;
+- actual final MP4 manually reviewed.
+
+After all four pass:
+- freeze M5/M6/M8/M9 production versions;
+- record final evidence;
+- create final Git checkpoint/tag;
+- stop development.
