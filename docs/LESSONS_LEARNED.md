@@ -435,3 +435,16 @@ Prevention:
 
 ### 45. An operational-setting intent needs positive evidence, not only absence of contradictions
 A candidate can contain every requested machine noun and still depict the wrong world (for example an aircraft wind-driven generator instead of a generator inside a power plant). If the storyboard explicitly requires plant/station/facility/powerhouse context, scorer acceptance must positively establish that setting from strong metadata. Negative museum/manufacturing filters alone are insufficient. Keep this generic and compound-aware: `power plant` may be satisfied by `power station`, but an unrelated bare `plant` token is not enough.
+
+
+52. Retrieval failures can hide behind an earlier zero-pool shot; inspect all scene pools before another live job.
+A v56 PL15 stopped on S3, but the same persisted run already showed S5 had zero eligible candidates too. Spending another full job after fixing only S3 would have reproduced a different terminal failure.
+
+Prevention:
+- after any M8 failure, inspect eligible counts for every shot in that same completed 45-search run;
+- machine components such as shaft/stator/armature/impeller/bearing/coupling are not operating domains;
+- compound negative subtypes such as `coal power plant` require the distinctive forbidden modifier, not only generic head overlap;
+- if a multi-object fallback query omits a required subject, enrich only the effective provider query and preserve storyboard provenance;
+- small lexical retrieval equivalences such as home/house are acceptable when scorer semantics remain strict and independent required subjects are still enforced;
+- provider MIME policy must reflect the actual bytes downloaded: a TIFF original may be usable when Commons supplies a safe JPEG/PNG/WebP thumbnail, but the original TIFF must remain excluded from the media path;
+- validate all affected shot pools and simulate real selection ordering before deploying.

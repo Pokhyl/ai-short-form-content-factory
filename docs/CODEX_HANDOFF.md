@@ -964,3 +964,43 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0 on unchanged image `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`.
 - n8n CLI printed its generic restart advisory; no restart was performed. Runtime execution version is the acceptance proof.
 - Exact next step: one fresh PL15 through M9. Require M5 v101 and M8 v56 execution IDs, then exact technical + scene-by-scene visual + audio review. HUMAN PASS remains false until that completes; EN30 remains blocked.
+
+
+### Fresh PL15 v56 exposed S3 + latent S5 retrieval gaps; systemic M8 fix tested — NOT DEPLOYED — 2026-09-22
+
+- Fresh job `fe1acef0-c956-441a-94ad-92b56f08902e`:
+  - M4 9334 PASS;
+  - M5 9337 PASS on v101 `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f`;
+  - M6 9340 PASS;
+  - M7 9342 PASS;
+  - M8 9344 ERROR on exact v56 `ff72822c-44df-4058-9c7a-f31aa4abd7c9`;
+  - M9 did not run.
+- M8 completed all 45/45 searches, 308 candidates: Pexels 120, Pixabay 120, Wikimedia 68.
+- Exact persisted eligible pools: S1=13, S2=7, S3=0, S4=28, S5=0. Terminal failure surfaced S3 first; S5 was a latent zero-pool and was fixed before spending another job.
+- S3 root causes:
+  - `shaft` from `turbine shaft` was incorrectly promoted to a hard operating-domain term;
+  - compound exclusion `coal power plant` could reject a normal power-plant candidate without any coal evidence;
+  - fallback query `turbine shaft` omitted mandatory primary `generator`.
+- S5 root cause:
+  - fallback query `residential homes` omitted mandatory primary `power lines`;
+  - Commons retrieval is materially stronger for `houses` than `homes`.
+- Additional Commons transport/type gap:
+  - relevant HAER photos may have TIFF originals but Commons provides JPEG thumbnails;
+  - M8 already downloads `thumburl`, but old MIME filtering discarded these sources before scoring.
+- Retained generic fix:
+  - machine components `shaft/stator/armature/impeller/bearing/coupling` are planner noise, not operating domains;
+  - multi-token `must_not_show` requires distinctive forbidden evidence, so `coal power plant` does not match merely `power plant`;
+  - when a multi-object fallback equals a secondary subject or machinery fallback omits primary, enrich only `provider_query`, never storyboard provenance;
+  - machinery missing-primary fallback may reuse at most one specific qualifier from the first query as retrieval-only context;
+  - `home ↔ house` is a semantic equivalent and `residential homes` becomes `residential houses` only for provider retrieval;
+  - Wikimedia TIFF origins are accepted only when Commons supplies JPEG/PNG/WebP `thumburl`; original TIFF is never downloaded.
+- Validation: **189/189 tests PASS**, workflow JSON parse PASS, `git diff --check` PASS.
+- Exact targeted live/replay evidence:
+  - S3 q3 provenance stays `turbine shaft`, effective query becomes `hydroelectric generator turbine shaft`, hard domain list stays empty, and 4 Wikimedia candidates pass current scorer.
+  - actual simulated top by production ordering: Wikimedia `34396526`, Francis turbine beneath generator at Trenton Falls Hydroelectric Station; source thumbnail is JPEG and manual source review matches the required industrial turbine/generator setting.
+  - S5 q3 provenance stays `residential homes`, effective query becomes `power lines residential houses`; 3 Wikimedia candidates pass.
+  - actual simulated top: Wikimedia `27850821`, Residential alley off Yong'an Road, Shanghai; exact categories include `Houses in Shanghai`, `Tangled cables on overhead power lines`, `Residential alleys in Shanghai`; source image review shows residential buildings with overhead utility cabling.
+  - no persisted S3 candidate becomes eligible solely by removing the false `shaft`/coal reasons.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v56-s3-s5-retrieval-fix.json`.
+- Production remains M5 v101 / M8 v56 at this checkpoint.
+- Exact next step: commit/push, deploy only M8 with backup/protected-row fingerprint, then one fresh PL15 and full final MP4 technical + visual + audio acceptance. Do not run EN30 before HUMAN PASS.

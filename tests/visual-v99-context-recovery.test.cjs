@@ -244,3 +244,139 @@ for(const provider of ['Pixabay','Pexels','Wikimedia']) {
     assert.match(c.rejection_reason,/missing_operational_setting_context/);
   });
 }
+
+
+const freshV56S3=[{
+  shot_uuid:'v56-s3',
+  shot_key:'S3-A',
+  scene_order:3,
+  preferred_media_type:'photo',
+  visual_intent:'Industrial generator connected to a turbine shaft in a power plant',
+  must_show:['generator','turbine shaft'],
+  must_not_show:['coal power plant'],
+  queries_en:[
+    'hydroelectric generator machine hall',
+    'power plant generator rotor shaft',
+    'turbine shaft',
+  ],
+}];
+
+for(const provider of ['Pixabay','Pexels','Wikimedia']) {
+  test(provider+': machine shaft is a component, never an operating domain',()=>{
+    const rows=requests(provider,freshV56S3);
+    assert.ok(rows.every(r=>!r.domain_context_terms.includes('shaft')));
+  });
+
+  test(provider+': multi-object query missing the primary is enriched only in provider_query',()=>{
+    const rows=requests(provider,freshV56S3);
+    const q3=rows.find(r=>r.query_index===3);
+    assert.equal(q3.query,'turbine shaft');
+    assert.equal(q3.provider_query,'hydroelectric generator turbine shaft');
+  });
+
+  test(provider+': missing-primary machinery fallback reuses one specific first-query qualifier without a hard domain gate',()=>{
+    const rows=requests(provider,freshV56S3);
+    const q1=rows.find(r=>r.query_index===1);
+    const q3=rows.find(r=>r.query_index===3);
+    assert.equal(q1.query,'hydroelectric generator machine hall');
+    assert.equal(q1.provider_query,'hydroelectric generator machine hall');
+    assert.deepEqual(q3.domain_context_terms,[]);
+    assert.equal(q3.provider_query,'hydroelectric generator turbine shaft');
+  });
+
+  test(provider+': coal power plant exclusion requires coal evidence, not generic power-plant overlap',()=>{
+    const src=code('Normalize '+provider);
+    const {scoreCandidate}=new Function(src.slice(0,src.indexOf('const ctx ='))+';return {scoreCandidate};')();
+    const ctx={
+      query:'generator turbine power plant',
+      visual_intent:'Industrial generator connected to a turbine inside power plant',
+      must_show:['generator','turbine'],
+      must_not_show:['coal power plant'],
+      domain_context_terms:[],
+      preferred_media_type:'photo',
+    };
+    const nonCoal='Industrial generator and turbine inside a hydroelectric power plant';
+    const a=scoreCandidate(ctx,nonCoal,'photo',1600,1200,1,'',nonCoal,nonCoal);
+    assert.equal(a.rejected,false,JSON.stringify(a));
+
+    const coal='Industrial generator and turbine inside a coal power plant';
+    const b=scoreCandidate(ctx,coal,'photo',1600,1200,1,'',coal,coal);
+    assert.equal(b.rejected,true,JSON.stringify(b));
+    assert.match(b.rejection_reason,/must_not_show:coal power plant/);
+  });
+}
+
+
+test('Wikimedia accepts TIFF-origin photo only through a web-raster thumbnail',()=>{
+  const f=JSON.parse(fs.readFileSync('tests/fixtures/pl15-v99-dam-reservoir.json'));
+  const body=structuredClone(f.body);
+  const page=Object.values(body.query.pages)[0];
+  page.imageinfo[0].mime='image/tiff';
+  page.imageinfo[0].thumburl='https://upload.wikimedia.example/example.tif/lossy-page1-1920px-thumbnail.tif.jpg';
+  page.imageinfo[0].thumbwidth=1600;
+  page.imageinfo[0].thumbheight=1067;
+  const $=name=>name==='Build Wikimedia Requests'?{item:{json:f.ctx}}:(()=>{throw new Error(name)})();
+  const out=new Function('$','$json',code('Normalize Wikimedia'))($,{statusCode:200,body}).json;
+  assert.equal(out.candidates.length,1);
+  assert.equal(out.candidates[0].rejected,false,out.candidates[0].rejection_reason);
+  assert.match(out.candidates[0].download_url,/\.jpg(?:\?|$)/i);
+});
+
+test('Wikimedia TIFF original without a JPEG PNG or WebP thumbnail remains unsupported',()=>{
+  const f=JSON.parse(fs.readFileSync('tests/fixtures/pl15-v99-dam-reservoir.json'));
+  const body=structuredClone(f.body);
+  const page=Object.values(body.query.pages)[0];
+  page.imageinfo[0].mime='image/tiff';
+  page.imageinfo[0].thumburl='';
+  const $=name=>name==='Build Wikimedia Requests'?{item:{json:f.ctx}}:(()=>{throw new Error(name)})();
+  const out=new Function('$','$json',code('Normalize Wikimedia'))($,{statusCode:200,body}).json;
+  assert.equal(out.candidates.length,0);
+});
+
+
+const residentialLinesShot=[{
+  shot_uuid:'res-lines',
+  shot_key:'S5-A',
+  scene_order:5,
+  preferred_media_type:'photo',
+  visual_intent:'Electric power lines distributing energy to residential homes',
+  must_show:['power lines','residential homes'],
+  must_not_show:[],
+  queries_en:[
+    'electric power transmission lines homes',
+    'power grid distribution towers city',
+    'residential homes',
+  ],
+}];
+
+for(const provider of ['Pixabay','Pexels','Wikimedia']) {
+  test(provider+': secondary-only fallback restores the primary and uses residential house retrieval synonym only in provider_query',()=>{
+    const rows=requests(provider,residentialLinesShot);
+    const q1=rows.find(r=>r.query_index===1);
+    const q3=rows.find(r=>r.query_index===3);
+    assert.equal(q1.provider_query,'electric power transmission lines homes');
+    assert.equal(q3.query,'residential homes');
+    assert.equal(q3.provider_query,'power lines residential houses');
+  });
+
+  test(provider+': house metadata satisfies residential-home secondary subject while power lines remain independently required',()=>{
+    const src=code('Normalize '+provider);
+    const {scoreCandidate}=new Function(src.slice(0,src.indexOf('const ctx ='))+';return {scoreCandidate};')();
+    const ctx={
+      query:'residential homes',
+      visual_intent:'Electric power lines distributing energy to residential homes',
+      must_show:['power lines','residential homes'],
+      must_not_show:[],
+      domain_context_terms:[],
+      preferred_media_type:'photo',
+    };
+    const good='Houses and overhead power lines in a residential neighborhood';
+    const a=scoreCandidate(ctx,good,'photo',1600,1200,1,'',good,good);
+    assert.equal(a.rejected,false,JSON.stringify(a));
+
+    const bad='Residential houses in a quiet neighborhood';
+    const b=scoreCandidate(ctx,bad,'photo',1600,1200,1,'',bad,bad);
+    assert.equal(b.rejected,true,JSON.stringify(b));
+    assert.match(b.rejection_reason,/missing_primary_subject_anchor:power lines/);
+  });
+}

@@ -1,0 +1,133 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "source_job": {
+    "job_id": "fe1acef0-c956-441a-94ad-92b56f08902e",
+    "visual_run_id": "ae362016-20ec-46cd-906a-0f3e590ddf5b",
+    "executions": {
+      "M4": {
+        "id": 9334,
+        "status": "success"
+      },
+      "M5": {
+        "id": 9337,
+        "status": "success",
+        "workflowVersionId": "0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f"
+      },
+      "M6": {
+        "id": 9340,
+        "status": "success"
+      },
+      "M7": {
+        "id": 9342,
+        "status": "success"
+      },
+      "M8": {
+        "id": 9344,
+        "status": "error",
+        "workflowVersionId": "ff72822c-44df-4058-9c7a-f31aa4abd7c9"
+      },
+      "M9": null
+    },
+    "searches": {
+      "expected": 45,
+      "completed": 45,
+      "candidates": 308,
+      "pexels": {
+        "searches": 15,
+        "results": 120
+      },
+      "pixabay": {
+        "searches": 15,
+        "results": 120
+      },
+      "wikimedia": {
+        "searches": 15,
+        "results": 68
+      }
+    },
+    "persisted_eligible_counts": {
+      "S1-A": 13,
+      "S2-A": 7,
+      "S3-A": 0,
+      "S4-A": 28,
+      "S5-A": 0
+    },
+    "terminal_failure": "M8 visuals failed: no compliant relevant visual candidate for shot S3-A"
+  },
+  "root_causes": [
+    "Machine component term shaft was incorrectly inferred as a hard operating domain.",
+    "Compound must_not_show 'coal power plant' could reject generic power-plant candidates without coal evidence.",
+    "A multi-object fallback query could omit the primary required subject, e.g. S3 'turbine shaft' omitted generator and S5 'residential homes' omitted power lines.",
+    "Commons lexical retrieval is materially better for residential houses than residential homes.",
+    "Relevant Commons HAER photographs can have image/tiff originals while providing safe JPEG thumbnails; M8 downloads the thumbnail but previously skipped the source by original MIME."
+  ],
+  "fix": {
+    "component_domain_noise": [
+      "shaft",
+      "shafts",
+      "stator",
+      "stators",
+      "armature",
+      "armatures",
+      "impeller",
+      "impellers",
+      "bearing",
+      "bearings",
+      "coupling",
+      "couplings"
+    ],
+    "compound_must_not": "Multi-token exclusions require at least one distinctive non-generic forbidden modifier in metadata in addition to the existing concept threshold.",
+    "scoped_missing_primary": "Only provider_query is enriched when a multi-object fallback omits primary subject; storyboard query/query_text stays immutable.",
+    "machinery_fallback": "For missing-primary machinery fallback, reuse at most one specific qualifier from the scene's first query as retrieval-only context; never promote it to hard domain.",
+    "residential_alias": "Provider retrieval normalizes residential home(s) to residential houses; scorer treats home and house as semantic equivalents.",
+    "wikimedia_tiff": "Allow image/tiff origin only when Commons supplies a JPEG/PNG/WebP thumburl; download remains the web-raster thumbnail."
+  },
+  "validation": {
+    "tests": "189/189 PASS",
+    "git_diff_check": "PASS",
+    "workflow_json_parse": "PASS",
+    "no_old_s3_candidate_resurrected_only_by_shaft_or_coal_fix": true,
+    "s3": {
+      "original_query": "turbine shaft",
+      "effective_provider_query": "hydroelectric generator turbine shaft",
+      "domain_context_terms": [],
+      "eligible_count": 4,
+      "simulated_top": {
+        "provider": "wikimedia",
+        "provider_asset_id": "34396526",
+        "score": 100,
+        "title": "DETAIL TO NORTHWEST OF UNIT 6 FRANCIS TURBINE, UPPER SCROLLCASE AND WEARING BENEATH GENERATOR; GATEVALVE SHAFT AT REAR RIGHT CENTER - Trenton Falls Hydroelectric Station",
+        "original_mime": "image/tiff",
+        "delivery": "Commons JPEG thumbnail"
+      }
+    },
+    "s5": {
+      "original_query": "residential homes",
+      "effective_provider_query": "power lines residential houses",
+      "eligible_count": 3,
+      "simulated_top": {
+        "provider": "wikimedia",
+        "provider_asset_id": "27850821",
+        "score": 100,
+        "title": "Residential alley off Yong'an Road, Shanghai",
+        "metadata_evidence": [
+          "Houses in Shanghai",
+          "Tangled cables on overhead power lines",
+          "Residential alleys in Shanghai"
+        ]
+      }
+    }
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 101,
+      "activeVersionId": "0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f"
+    },
+    "M8": {
+      "versionCounter": 56,
+      "activeVersionId": "ff72822c-44df-4058-9c7a-f31aa4abd7c9"
+    }
+  },
+  "next_step": "Commit/push, deploy only M8 with backup/protected-row fingerprint, then exactly one fresh PL15 and full final MP4 visual/audio acceptance."
+}

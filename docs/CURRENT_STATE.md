@@ -660,3 +660,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Backup `.backups/m8-before-operational-setting-20260922-073017.json`.
 - Other 31 workflows unchanged by exact fingerprint; live M8 core matches repository; Publisher/Studio healthy; no restart/credential change.
 - Runtime proof and HUMAN acceptance are still pending. One fresh PL15 is the next action.
+
+
+## PL15 v56 S3/S5 retrieval fix tested — 2026-09-22
+
+- Job `fe1acef0-c956-441a-94ad-92b56f08902e` proves M5 v101 and M8 v56 runtime; M8 9344 failed after 45/45 searches.
+- Persisted eligible pools: S1=13, S2=7, S3=0, S4=28, S5=0.
+- Retained M8 WIP fixes false component-domain inference, compound forbidden-subtype matching, missing-primary fallback retrieval, home/house lexical equivalence, and Commons TIFF-origin/JPEG-thumbnail handling.
+- Validation: 189/189 tests PASS; targeted live scorer gives S3=4 eligible and S5=3 eligible with exact provider-query provenance preserved.
+- Production is still M5 v101 `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f` / M8 v56 `ff72822c-44df-4058-9c7a-f31aa4abd7c9`.
+- Not deployed yet. HUMAN PASS remains false; EN30 remains blocked.
