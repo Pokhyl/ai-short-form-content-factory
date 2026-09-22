@@ -224,3 +224,47 @@ test('initial and bounded repair prompts explicitly split narration and visual l
     assert.match(code,/preserve narration, scene_id, shot_id, evidence_ids/,name);
   }
 });
+
+
+function shortMustShowNormalizer(name='Validate Storyboard') {
+  const code=byName[name].parameters.jsCode;
+  const start=code.indexOf('// SHORT_MUST_SHOW_GUARD_START');
+  const end=code.indexOf('// SHORT_MUST_SHOW_GUARD_END');
+  assert.ok(start>=0 && end>start,name);
+  const helper=code.slice(start,end+'// SHORT_MUST_SHOW_GUARD_END'.length);
+  return new Function(helper+'\nreturn normalizeShortDomainAnchor;')();
+}
+
+test('9361 regression: common leading electrical modifier pair is canonicalized before the 1-3 word anchor guard',()=>{
+  const normalize=shortMustShowNormalizer('Validate Repaired Storyboard 2');
+  assert.equal(normalize('high voltage power lines'),'power lines');
+});
+
+test('short-anchor canonicalization does not turn descriptive prose into a valid anchor',()=>{
+  const normalize=shortMustShowNormalizer();
+  const value=normalize('large concrete dam with water');
+  assert.equal(value,'concrete dam with water');
+  assert.equal(value.split(/\s+/u).filter(Boolean).length,4);
+});
+
+test('short-anchor canonicalization preserves already valid specific anchors',()=>{
+  const normalize=shortMustShowNormalizer();
+  assert.equal(normalize('electric generator'),'electric generator');
+  assert.equal(normalize('turbine shaft'),'turbine shaft');
+  assert.equal(normalize('residential houses'),'residential houses');
+});
+
+test('all bounded storyboard validators canonicalize permitted leading modifiers before the hard short-anchor guard',()=>{
+  for(const name of [
+    'Validate Storyboard',
+    'Validate Repaired Storyboard',
+    'Validate Repaired Storyboard 2',
+  ]) {
+    const code=byName[name].parameters.jsCode;
+    assert.match(code,/SHORT_MUST_SHOW_GUARD_START/,name);
+    assert.match(code,/\.map\(normalizeShortDomainAnchor\)/,name);
+    const guardPos=code.indexOf('must_show items must be short domain anchors');
+    const mapPos=code.indexOf('.map(normalizeShortDomainAnchor)');
+    assert.ok(mapPos>=0 && guardPos>mapPos,name);
+  }
+});

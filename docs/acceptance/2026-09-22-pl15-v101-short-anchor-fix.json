@@ -1,0 +1,94 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "job_id": "2b528909-1b80-430a-86a7-ee84e7753353",
+  "script_run_id": "39f44839-0b22-43da-ab8e-a177a931d8e5",
+  "executions": {
+    "parent": {
+      "id": 9357,
+      "status": "error"
+    },
+    "M4": {
+      "id": 9358,
+      "status": "success"
+    },
+    "M5": {
+      "id": 9361,
+      "status": "error",
+      "workflowVersionId": "0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f"
+    }
+  },
+  "failure": "S5-A must_show items must be short domain anchors [line 391]",
+  "saved_model_sequence": {
+    "initial": "S3 narration ended with comma and failed standalone-sentence validation",
+    "repair_1": "S3 narration still ended with comma and failed the same validation",
+    "repair_2": {
+      "narration": "Woda gromadzi się w zbiorniku za tamą. Spadając z dużej wysokości, porusza turbinę wodną. Obracająca się turbina napędza generator. Generator produkuje prąd elektryczny. Prąd trafia do sieci przesyłowej.",
+      "S5_must_show": [
+        "high voltage power lines"
+      ]
+    }
+  },
+  "root_cause": "Raw must_show token count was validated before harmless leading visual modifiers were canonicalized.",
+  "fix": {
+    "scope": [
+      "Validate Storyboard",
+      "Validate Repaired Storyboard",
+      "Validate Repaired Storyboard 2"
+    ],
+    "allowed_prefix_pairs": [
+      "high voltage",
+      "low voltage",
+      "high pressure",
+      "low pressure"
+    ],
+    "allowed_leading_modifiers": [
+      "large",
+      "small",
+      "modern",
+      "industrial",
+      "technical",
+      "mechanical"
+    ],
+    "hard_guard_after_canonicalization": "1-3 words and <=60 characters remains unchanged",
+    "arbitrary_truncation": false
+  },
+  "exact_replay_9361": {
+    "validator": "Validate Repaired Storyboard 2",
+    "api_calls_added": 0,
+    "passed": true,
+    "S5": {
+      "must_show": [
+        "power lines"
+      ],
+      "queries_en": [
+        "high voltage power lines electricity network",
+        "electrical substation transformers power lines",
+        "power lines"
+      ]
+    }
+  },
+  "negative_regression": {
+    "input": "large concrete dam with water",
+    "canonicalized": "concrete dam with water",
+    "word_count": 4,
+    "still_rejected": true
+  },
+  "validation": {
+    "tests": "193/193 PASS",
+    "m5_code_syntax": "55/55 PASS",
+    "workflow_json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 101,
+      "activeVersionId": "0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f"
+    },
+    "M8": {
+      "versionCounter": 57,
+      "activeVersionId": "ecb6889c-b8b7-4a01-8f30-8e9a41f8213b"
+    }
+  },
+  "next_step": "Commit/push, deploy only M5, then exactly one fresh PL15 for M5 v102 and M8 v57 runtime plus final acceptance."
+}

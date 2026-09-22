@@ -679,3 +679,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Backup `.backups/m8-before-s3-s5-retrieval-20260922-083029.json`.
 - Other 31 workflow fingerprint unchanged; live core matches repo; Publisher/Studio healthy; no restart/credential change.
 - Runtime proof and HUMAN acceptance still pending. One fresh PL15 is next.
+
+
+## M5 short-anchor canonicalization fix tested — 2026-09-22
+
+- Fresh job `2b528909-1b80-430a-86a7-ee84e7753353` stopped in M5 execution 9361 on v101 because `high voltage power lines` exceeded the raw 3-word must_show limit.
+- Exact saved-response replay now canonicalizes that concrete anchor to `power lines`; descriptive 4+ word prose remains fail-closed.
+- Validation: 193/193 tests PASS; M5 55/55 Code-node syntax PASS; JSON/diff checks PASS.
+- Production still M5 v101 `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f` / M8 v57 `ecb6889c-b8b7-4a01-8f30-8e9a41f8213b`.
+- M8 v57 runtime proof remains pending because the job never reached M8. HUMAN PASS false; EN30 blocked.

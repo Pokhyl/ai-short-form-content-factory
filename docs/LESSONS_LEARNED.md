@@ -448,3 +448,14 @@ Prevention:
 - small lexical retrieval equivalences such as home/house are acceptable when scorer semantics remain strict and independent required subjects are still enforced;
 - provider MIME policy must reflect the actual bytes downloaded: a TIFF original may be usable when Commons supplies a safe JPEG/PNG/WebP thumbnail, but the original TIFF must remain excluded from the media path;
 - validate all affected shot pools and simulate real selection ordering before deploying.
+
+
+53. Canonicalize harmless leading visual modifiers before rejecting a concrete short anchor.
+A bounded repair can legitimately return a four-token noun phrase such as `high voltage power lines`. Rejecting it solely on raw token count wastes the existing repair budget even though the searchable physical subject is simply `power lines`.
+
+Prevention:
+- keep the 1–3 word hard anchor contract after canonicalization;
+- strip only a tightly controlled set of leading modifier pairs or generic leading visual modifiers;
+- never truncate arbitrary trailing words or descriptive prose to force acceptance;
+- preserve richer context in visual_intent and queries while keeping must_show concise;
+- replay the exact failed provider response through the validator before another live job.

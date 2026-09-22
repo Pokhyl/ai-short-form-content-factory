@@ -1017,3 +1017,33 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0 on unchanged image.
 - CLI restart advisory is generic; no restart was performed. Runtime execution version is the proof.
 - Next: exactly one fresh PL15; require M5 v101 + M8 v57 runtime, then exact final MP4 technical/visual/audio acceptance before EN30.
+
+
+### Fresh PL15 exposed M5 short-anchor false rejection; exact 9361 replay fixed — NOT DEPLOYED — 2026-09-22
+
+- Fresh job `2b528909-1b80-430a-86a7-ee84e7753353`:
+  - parent 9357 ERROR;
+  - M4 9358 PASS;
+  - M5 9361 ERROR on exact v101 `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f`;
+  - M6-M9 did not run.
+- Script run `39f44839-0b22-43da-ab8e-a177a931d8e5` failed with `S5-A must_show items must be short domain anchors [line 391]`.
+- Exact saved Gemini sequence:
+  - first output failed because S3 narration ended with a comma;
+  - repair 1 still failed the same sentence-boundary rule;
+  - repair 2 fixed narration and returned S5 `must_show:["high voltage power lines"]`.
+- Root cause: the validator rejected any raw `must_show` over 3 words before canonicalization. `high voltage power lines` is a concrete visual anchor, not descriptive prose, and the existing two bounded repairs were already exhausted.
+- Systemic fix in the three bounded storyboard validators only:
+  - canonicalize a small controlled set of leading visual modifiers before the existing 1–3 word hard guard;
+  - compound prefixes `high voltage`, `low voltage`, `high pressure`, `low pressure` may be removed only when needed to reach the short-anchor limit;
+  - generic leading modifiers `large/small/modern/industrial/technical/mechanical` may be removed one-by-one only while the anchor is still over 3 words;
+  - the strict post-canonicalization 1–3 word / 60-character guard remains unchanged.
+- Exact 9361 replay through the new `Validate Repaired Storyboard 2` succeeds without another Gemini call:
+  - S5 becomes `must_show:["power lines"]`;
+  - q1 remains `high voltage power lines electricity network`;
+  - q2 becomes `electrical substation transformers power lines`;
+  - q3 becomes `power lines`.
+- Negative regression: `large concrete dam with water` canonicalizes only to `concrete dam with water` and still has 4 words, so it remains rejected.
+- Validation: **193/193 tests PASS**, M5 **55/55 Code-node syntax PASS**, workflow JSON parse PASS, `git diff --check` PASS.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v101-short-anchor-fix.json`.
+- Production remains M5 v101 / M8 v57 at this checkpoint. M8 v57 is deployed but still lacks runtime proof because this fresh job stopped in M5.
+- Next: commit/push, deploy only M5 with backup/protected-row fingerprint, then exactly one fresh PL15. Do not duplicate the failed job and do not run EN30 before PL15 HUMAN PASS.
