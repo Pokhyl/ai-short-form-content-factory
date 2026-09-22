@@ -1,0 +1,28 @@
+{
+  "date": "2026-09-23",
+  "status": "m5_failed",
+  "job_id": "d74ebc77-dfe1-4440-8d06-357b584785d2",
+  "m5_execution_id": 9613,
+  "m5_versionCounter": 112,
+  "m5_activeVersionId": "d7eab2c2-c0a6-4258-9c17-4a28a706a701",
+  "script_run_id": "160b2de8-16ff-4e83-97d0-8d19fdb6a757",
+  "terminal_failure": "electrical generator -> power substation [line 637]",
+  "exact_transition": {
+    "previous": {
+      "narration": "Następnie generator wytwarza prąd elektryczny,",
+      "visual_primary": "electrical generator"
+    },
+    "current": {
+      "narration": "który trafia do sieci",
+      "attempted_visual_primary": "power substation",
+      "secondary": "transmission lines"
+    }
+  },
+  "root_cause": "leading anaphor was assumed to refer to previous visual primary even though later lexical content after generator introduced the actual antecedent electric current",
+  "required_refinement": "apply inherited-primary constraint only when previous visual primary is the likely terminal antecedent; remain conservative when primary cannot be located",
+  "preserve": [
+    "old generator-ending + Który + unmentioned transformer remains rejected",
+    "9609 turbine-ending + która + explicitly named generator remains accepted"
+  ],
+  "next_step": "Implement deterministic antecedent-position guard, regressions, full suite, M5-only deploy."
+}

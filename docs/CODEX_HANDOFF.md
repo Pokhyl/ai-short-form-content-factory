@@ -1548,3 +1548,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M5 == Git.
 - Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
 - Next: one fresh PL15 and full manual acceptance.
+
+
+### Fresh PL15 on M5 v112 exposed antecedent-position flaw — 2026-09-23
+
+- Job `d74ebc77-dfe1-4440-8d06-357b584785d2`, M5 execution `9613`.
+- S3: `Następnie generator wytwarza prąd elektryczny,` visual primary `electrical generator`.
+- S4: `który trafia do sieci` with grid/substation imagery.
+- The relative pronoun `który` refers to `prąd elektryczny`, which appears after `generator`; it does not refer to the previous visual primary.
+- Current v112 guard still assumes every leading anaphor inherits the previous visual primary unless the current segment explicitly names a new primary.
+- Required refinement: enforce that inheritance only when the previous visual primary is the likely terminal antecedent of the previous narration. If later lexical content follows the previous primary, do not force that primary onto the anaphoric scene.
+- Keep fail-closed behavior when the previous primary cannot be lexically located.
+- Next: deterministic 9613 regression, tests, M5-only deploy.

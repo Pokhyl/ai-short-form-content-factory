@@ -298,15 +298,47 @@ M5 v112 deploy verification:
 - n8n restart count 0
 - media worker healthy, restart count 0
 
+## Latest fresh PL15 result
+
+Job: `d74ebc77-dfe1-4440-8d06-357b584785d2`
+
+Pipeline:
+- M4 PASS
+- M5 v112 FAIL, execution `9613`
+- M6/M8/M9 did not run
+- script_run `160b2de8-16ff-4e83-97d0-8d19fdb6a757`
+
+Exact continuity:
+- S3 narration: `Następnie generator wytwarza prąd elektryczny,`
+- S3 visual primary: `electrical generator`
+- S4 narration: `który trafia do sieci`
+- S4 attempted visual primary: transformer/substation + transmission lines
+
+New root cause:
+- the anaphoric guard assumes the next relative pronoun refers to the previous scene's visual primary;
+- here the previous narration introduces `prąd elektryczny` after `generator`, so Polish `który` refers to the electric current, not the generator;
+- forcing generator as the inherited visual subject is therefore grammatically wrong.
+
+Required refinement:
+- determine whether the previous visual primary is actually the likely terminal antecedent in the previous narration;
+- enforce inherited-primary preservation only when that primary is the terminal/last grounded referent, or when lexical evidence is unavailable and fail-closed behavior is required;
+- if the previous visual primary is followed by later lexical content, do not assume the next anaphor refers to it;
+- preserve old regression `... generator, / Który wytwarza prąd.` -> transformer REJECT;
+- preserve 9609 regression `... turbiny, / która ... generator` -> generator PASS.
+
+No new PL15 until this M5 refinement is tested/deployed.
+
 ## Immediate next step
 
-1. Read this PLAN before the next production action.
-2. Verify Git clean and active project execution count = 0.
-3. Run exactly ONE fresh PL15 on M5 v112 / M6 v8 / M8 v62.
-4. Follow only that job to terminal state.
-5. If it reaches machine QA PASS, inspect the exact final MP4 technically, audio-wise, and scene-by-scene visually.
-6. Do not proceed to EN30 until PL15 passes manual acceptance.
-7. If it fails, use only that job's saved evidence and fix the demonstrated blocker.
+1. Read this PLAN before changing M5.
+2. Add deterministic antecedent-position logic to the same three storyboard validators.
+3. Add exact 9613 regression plus preserve old transformer and 9609 regressions.
+4. Keep behavior conservative when previous primary cannot be lexically located.
+5. Run focused tests + full suite.
+6. Update PLAN/handoff/evidence and commit/push.
+7. Deploy ONLY M5 after active execution count is zero.
+8. Verify live M5 == Git and non-M5 workflows unchanged.
+9. Run exactly one fresh PL15.
 
 ## Acceptance sequence after PL15
 

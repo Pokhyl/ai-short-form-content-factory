@@ -923,3 +923,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - M6 v8 and M8 v62 unchanged.
 - Live M5 == Git; non-M5 workflow fingerprint unchanged.
 - Next: one fresh PL15, then manual acceptance.
+
+
+## PL15 on M5 v112 failed antecedent-position guard — 2026-09-23
+
+- Job `d74ebc77-dfe1-4440-8d06-357b584785d2`, M5 execution `9613`.
+- M8 v62 was not reached.
+- Current blocker: M5 assumes a leading relative pronoun refers to previous visual primary even when a later noun/result in previous narration is the actual antecedent.
+- No new PL15 until deterministic antecedent-position refinement is tested and deployed.
