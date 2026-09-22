@@ -697,3 +697,17 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Backup `.backups/m5-before-short-anchor-20260922-084041.json`.
 - Other 31 workflows unchanged by exact fingerprint; live M5 core matches repo; Publisher/Studio healthy; no restart/credential change.
 - One fresh PL15 is next. HUMAN PASS false; EN30 blocked.
+
+
+## PL15 v102/v57 hidden-process/domain fix tested — 2026-09-22
+
+- Job `6a6cd336-2c31-4d75-8b5b-f252c5d00ce0`: M5 v102 PASS, M8 v57 execution 9406 FAIL after all 45 searches.
+- Eligible pools S1=10, S2=0, S3=10, S4=2, S5=3.
+- S2 failure was caused by hidden `flowing water` being retained as must_show for a closed penstock plus false hard `water` domain inference.
+- Local WIP:
+  - M5 removes hidden process/action secondary anchors for closed conduits/machines unless explicitly visible;
+  - M8 excludes transported medium/content terms from hard domain inference for closed infrastructure.
+- Corrected S2 has must_show `penstock pipe`, no hard domain terms, and cached Wikimedia q3 already has 2 eligible penstock candidates.
+- Validation 204/204 PASS; M5 55/55 and M8 10/10 Code-node syntax PASS; JSON/diff checks PASS.
+- Production still M5 v102 `fd54c08f-7bd4-480d-9959-27d882ca7c63` / M8 v57 `ecb6889c-b8b7-4a01-8f30-8e9a41f8213b`.
+- Not deployed yet. HUMAN PASS false; EN30 blocked.

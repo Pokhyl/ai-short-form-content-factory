@@ -1,0 +1,173 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "job_id": "6a6cd336-2c31-4d75-8b5b-f252c5d00ce0",
+  "executions": {
+    "parent": {
+      "id": 9395,
+      "status": "error"
+    },
+    "M4": {
+      "id": 9396,
+      "status": "success",
+      "workflowVersionId": "3cf94dd2-8c3b-4585-ae88-6315a2685ff7"
+    },
+    "M5": {
+      "id": 9399,
+      "status": "success",
+      "workflowVersionId": "fd54c08f-7bd4-480d-9959-27d882ca7c63"
+    },
+    "M6": {
+      "id": 9401,
+      "status": "success",
+      "workflowVersionId": "98e671f3-a0dc-42fa-81e9-4c9524a05e6a"
+    },
+    "M7": {
+      "id": 9403,
+      "status": "success",
+      "workflowVersionId": "91fbac4f-f40d-4d75-9111-3e4ed01bd9ff"
+    },
+    "M8": {
+      "id": 9406,
+      "status": "error",
+      "workflowVersionId": "ecb6889c-b8b7-4a01-8f30-8e9a41f8213b"
+    },
+    "M9": null
+  },
+  "visual_run_id": "eb41672f-becd-4d09-9090-42e7007131f2",
+  "visual_searches": {
+    "expected": 45,
+    "completed": 45,
+    "total_results": 346,
+    "pexels": {
+      "searches": 15,
+      "results": 120
+    },
+    "pixabay": {
+      "searches": 15,
+      "results": 120
+    },
+    "wikimedia": {
+      "searches": 15,
+      "results": 106
+    }
+  },
+  "eligible_pools": {
+    "S1-A": {
+      "eligible": 10,
+      "total": 72
+    },
+    "S2-A": {
+      "eligible": 0,
+      "total": 60
+    },
+    "S3-A": {
+      "eligible": 10,
+      "total": 72
+    },
+    "S4-A": {
+      "eligible": 2,
+      "total": 70
+    },
+    "S5-A": {
+      "eligible": 3,
+      "total": 72
+    }
+  },
+  "failure": {
+    "shot_key": "S2-A",
+    "reason": "M8 visuals failed: no compliant relevant visual candidate for shot S2-A",
+    "narration": "Następnie spada w dół przez rurociąg.",
+    "visual_intent": "Large penstock pipe directing water downward in a power plant",
+    "must_show": [
+      "penstock pipe",
+      "flowing water"
+    ],
+    "queries_en": [
+      "penstock pipe flowing water",
+      "hydroelectric penstock pipe",
+      "flowing water"
+    ]
+  },
+  "root_causes": [
+    "M5 retained flowing water as an independent must_show even though the primary is a closed penstock pipe and the intent does not request transparent/open/cutaway/exposed visibility.",
+    "M8 promoted water from closed-infrastructure intent/query overlap into hard domain_context_terms, although water is the medium/content of the penstock rather than an operating domain."
+  ],
+  "fixes": {
+    "M5": {
+      "scope": "all four normalizeMustShowAnchors helpers, including Canonicalize Final Storyboard",
+      "behavior": "When the primary head is a closed conduit/machine and there is no explicit visibility override, secondary process/action anchors are removed as hidden internal process requirements.",
+      "visibility_overrides": [
+        "transparent",
+        "glass",
+        "open",
+        "opened",
+        "cutaway",
+        "exposed"
+      ],
+      "topic_specific": false
+    },
+    "M8": {
+      "scope": "all three provider request planners",
+      "behavior": "For closed-infrastructure primaries, medium/content terms water/steam/oil/gas/air/fuel/liquid/fluid cannot become hard local or repeated domains. They remain available in original retrieval queries.",
+      "topic_specific": false
+    }
+  },
+  "corrected_s2_contract": {
+    "visual_intent": "Large penstock pipe directing water downward in a power plant",
+    "must_show": [
+      "penstock pipe"
+    ],
+    "queries_en": [
+      "penstock pipe flowing water",
+      "hydroelectric penstock pipe",
+      "penstock pipe"
+    ],
+    "expected_domain_context_terms": [],
+    "expected_provider_queries": [
+      "penstock pipe flowing water",
+      "hydroelectric penstock pipe",
+      "penstock pipe"
+    ]
+  },
+  "retrieval_proof": {
+    "provider": "wikimedia",
+    "query": "penstock pipe",
+    "cached_candidate_count": 8,
+    "cached_eligible_count": 2,
+    "example": {
+      "provider_asset_id": "107610202",
+      "provider_rank": 1,
+      "score": 100,
+      "title": "File:Workers standing in end of penstock pipe for power generating unit no 3, Gorge Dam Powerhouse, August 13, 1923 (SPWS 214).jpg",
+      "old_v57_rejection_reason": "missing_secondary_subject_context",
+      "source_review_copy_sha256": "f5c87de08e382e36b7c2eee2feb24cd07e9d5b1e175115da8bb418485f4b3d0b"
+    }
+  },
+  "validation": {
+    "tests": "204/204 PASS",
+    "m5_code_syntax": "55/55 PASS",
+    "m8_code_syntax": "10/10 PASS",
+    "m5_json_parse": "PASS",
+    "m8_json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 102,
+      "activeVersionId": "fd54c08f-7bd4-480d-9959-27d882ca7c63"
+    },
+    "M8": {
+      "versionCounter": 57,
+      "activeVersionId": "ecb6889c-b8b7-4a01-8f30-8e9a41f8213b"
+    }
+  },
+  "prior_machine_pass_note": {
+    "job_id": "43cb14c8-0208-47b6-8949-754684bcc277",
+    "machine_qa_passed": true,
+    "technical_audit_passed": true,
+    "human_pass": false,
+    "note": "Prior machine pass contains semantically suspect Commons selections and is not acceptance evidence. Fresh post-fix PL15 must be reviewed scene-by-scene."
+  },
+  "next_step": "Commit/push, deploy only M5 and M8 with backups/protected-row fingerprint, then exactly one fresh PL15 and full technical/visual/audio acceptance."
+}

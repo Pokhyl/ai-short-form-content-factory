@@ -1060,3 +1060,37 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0.
 - CLI restart advisory is generic; no restart performed. Runtime execution version is proof.
 - Next: exactly one fresh PL15; require M5 v102 and M8 v57 runtime, then exact final MP4 technical/visual/audio acceptance before EN30.
+
+
+### Fresh PL15 v102/v57 exposed hidden-process + false-domain S2 defect; M5/M8 fix tested — NOT DEPLOYED — 2026-09-22
+
+- Fresh job `6a6cd336-2c31-4d75-8b5b-f252c5d00ce0`:
+  - M4 9396 PASS;
+  - M5 9399 PASS on exact v102 `fd54c08f-7bd4-480d-9959-27d882ca7c63`;
+  - M6 9401 PASS;
+  - M7 9403 PASS;
+  - M8 9406 ERROR on exact v57 `ecb6889c-b8b7-4a01-8f30-8e9a41f8213b`;
+  - M9 did not run.
+- M8 visual_run `eb41672f-becd-4d09-9090-42e7007131f2` completed all 45/45 searches and 346 results.
+- Persisted eligible pools: S1=10/72, S2=0/60, S3=10/72, S4=2/70, S5=3/72. Only S2 was zero.
+- Exact S2:
+  - narration `Następnie spada w dół przez rurociąg.`;
+  - intent `Large penstock pipe directing water downward in a power plant`;
+  - must_show `["penstock pipe","flowing water"]`;
+  - queries `penstock pipe flowing water`, `hydroelectric penstock pipe`, `flowing water`.
+- Two independent systemic defects:
+  1. M5 kept hidden `flowing water` as an independent hard visual gate inside a closed penstock even though the intent did not request transparent/open/cutaway/exposed visibility.
+  2. M8 promoted `water` to hard `domain_context_terms` for a closed-infrastructure primary. Water is the transported medium/content, not an operating domain.
+- M5 WIP fix is in all four `normalizeMustShowAnchors` copies, including `Canonicalize Final Storyboard`: closed conduit/machine primary drops process/action secondary anchors unless intent explicitly exposes the contents.
+- M8 WIP fix is in all three request planners: for closed-infrastructure primaries, `water/steam/oil/gas/air/fuel/liquid/fluid` cannot become hard local/repeated domains. Original retrieval vocabulary is preserved.
+- Corrected exact S2 planner contract:
+  - must_show `["penstock pipe"]`;
+  - q1 `penstock pipe flowing water`, q2 `hydroelectric penstock pipe`, q3 `penstock pipe`;
+  - all three providers produce `domain_context_terms:[]`;
+  - provider_query remains identical to each storyboard query.
+- Retrieval proof exists without another full job: current Wikimedia cache for exact `penstock pipe` has 8 candidates / 2 eligible. Asset `107610202` (Gorge Dam Powerhouse penstock pipe) is rank 1, score 100; in v57 it was rejected only for the now-removed secondary `flowing water` gate.
+- Validation: **204/204 tests PASS**, M5 Code nodes **55/55 syntax PASS**, M8 Code nodes **10/10 syntax PASS**, both workflow JSON parses PASS, `git diff --check` PASS.
+- Prior machine-pass job `43cb14c8-0208-47b6-8949-754684bcc277` is NOT human acceptance evidence despite technical QA PASS; its selected Commons assets include semantically suspect detail/location matches. Fresh post-fix output must be reviewed scene-by-scene.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v102-v57-hidden-process-domain-fix.json`.
+- Production remains M5 v102 / M8 v57 at this checkpoint.
+- Next: commit/push, deploy only M5 + M8 with backups and protected-row fingerprint, then exactly one fresh PL15. HUMAN PASS requires technical + every-scene visual + audio review before EN30.

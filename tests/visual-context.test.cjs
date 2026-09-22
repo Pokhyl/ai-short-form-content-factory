@@ -232,3 +232,28 @@ test('PL15 S4 regression: described transformer at a power station is not reject
  assert.equal(out.rejected,false,out.rejection_reason);
  assert.doesNotMatch(String(out.rejection_reason||''),/missing_storyboard_domain_context:outdoors/);
 });
+
+
+for(const provider of ['Pixabay','Pexels','Wikimedia']) test(provider+': closed infrastructure contents do not become hard operating domains',()=>{
+ const sample=[{
+   shot_uuid:'penstock-water',
+   shot_key:'S2-A',
+   scene_order:2,
+   preferred_media_type:'photo',
+   must_show:['penstock pipe'],
+   must_not_show:[],
+   visual_intent:'Large penstock pipe directing water downward in a power plant',
+   queries_en:[
+     'penstock pipe flowing water',
+     'hydroelectric penstock pipe',
+     'penstock pipe'
+   ],
+ }];
+ const rows=requests(provider,sample);
+ assert.equal(rows.length,3);
+ assert.ok(rows.every(r=>!r.domain_context_terms.includes('water')));
+ assert.deepEqual(rows[0].domain_context_terms,[]);
+ assert.equal(rows[0].provider_query,'penstock pipe flowing water');
+ assert.equal(rows[1].provider_query,'hydroelectric penstock pipe');
+ assert.equal(rows[2].provider_query,'penstock pipe');
+});

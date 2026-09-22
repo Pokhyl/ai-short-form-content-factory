@@ -459,3 +459,14 @@ Prevention:
 - never truncate arbitrary trailing words or descriptive prose to force acceptance;
 - preserve richer context in visual_intent and queries while keeping must_show concise;
 - replay the exact failed provider response through the validator before another live job.
+
+
+54. Hidden contents of closed infrastructure are not independent visible requirements or operating domains.
+A storyboard can correctly describe water flowing through a penstock while the image can only prove the closed penstock itself. Treating `flowing water` as a hard secondary must_show, or `water` as the penstock's operating domain, makes valid infrastructure photography impossible.
+
+Prevention:
+- if the primary is a closed conduit/machine, remove secondary process/action anchors unless the visual intent explicitly requests transparent/open/cutaway/exposed visibility;
+- transported media such as water/steam/oil/gas/air/fuel/liquid/fluid may remain useful retrieval words but must not automatically become hard domain context for closed infrastructure;
+- do not apply that medium filter globally to machinery forms such as gas/steam turbines; scope it to closed infrastructure;
+- after an M8 failure, inspect every shot pool in the completed run before spending another job;
+- prove a corrected fallback against persisted/cache candidates before deploy.

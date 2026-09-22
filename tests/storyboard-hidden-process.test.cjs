@@ -63,6 +63,29 @@ for(const name of [
     );
   });
 
+
+  test(name+': closed penstock primary drops hidden flowing-water secondary gate',()=>{
+    const normalize=helper(name);
+    assert.deepEqual(
+      normalize(
+        ['penstock pipe','flowing water'],
+        'Large penstock pipe directing water downward in a power plant'
+      ),
+      ['penstock pipe']
+    );
+  });
+
+  test(name+': exposed penstock may keep a genuinely visible flowing-water secondary',()=>{
+    const normalize=helper(name);
+    assert.deepEqual(
+      normalize(
+        ['penstock pipe','flowing water'],
+        'Exposed cutaway penstock pipe with visibly flowing water'
+      ),
+      ['penstock pipe','flowing water']
+    );
+  });
+
   test(name+': electric current inside cable promotes the visible cable',()=>{
     const normalize=helper(name);
     assert.deepEqual(
