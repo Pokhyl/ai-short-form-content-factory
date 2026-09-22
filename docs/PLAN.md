@@ -126,23 +126,45 @@ Validation recorded in Git:
 
 This fix is not considered production-complete until deployment and live verification succeed.
 
+## Latest fresh PL15
+
+Job: `8ce87adb-3952-43cb-ab1d-7a1b2d549651`
+
+Verified pipeline state before SentinelX disconnected:
+- M5 v111: PASS
+- M6 v8: PASS
+- M8 v61: PASS
+- visual_run `cfb7a60e-ed47-408f-85f9-3bbaa7626648`: PASS
+- visual searches: 45/45
+- provider results collected: 288
+- job status: `machine_qa_passed`
+
+No new acceptance job may be created. This exact PL15 remains the active acceptance artifact until its final MP4 has been manually reviewed.
+
 ## Immediate next step
 
-1. Read this PLAN before the next production action.
-2. Verify Git clean and active project execution count = 0.
-3. Run exactly ONE fresh PL15 on M5 v111 / M6 v8 / M8 v61.
-4. Follow that single job to terminal state. Do not create another job while it is running.
-5. If it passes M5 -> M9:
-   - inspect the actual rendered MP4 technically;
-   - review scene-by-scene visual grounding against narration;
-   - review audio/narration continuity.
-6. If it fails:
-   - use saved execution/provider data from that exact job first;
-   - fix only the demonstrated blocker;
-   - regression test;
-   - deploy only the affected workflow;
+1. Restore SentinelX/VPS connectivity.
+2. Read this PLAN before any production action.
+3. Do NOT create another PL15.
+4. Locate/copy the final MP4 for job `8ce87adb-3952-43cb-ab1d-7a1b2d549651`.
+5. Verify the actual MP4 technically:
+   - duration;
+   - 1080x1920;
+   - H.264 / yuv420p / 30 fps;
+   - AAC audio;
+   - full decode without errors.
+6. Review that exact MP4 scene-by-scene against its narration and selected visual metadata.
+7. Review audio/narration continuity.
+8. If manual acceptance passes:
+   - update PLAN/handoff/evidence;
+   - commit/push;
+   - proceed to EN30.
+9. If manual acceptance fails:
+   - record the exact demonstrated defect;
+   - fix only that defect;
+   - regression test and deploy only the affected workflow;
    - update PLAN/Git;
-   - then run one new acceptance job.
+   - then one new PL15.
 
 ## Acceptance sequence after PL15
 
