@@ -580,3 +580,13 @@ Prevention:
 - never promote arbitrary adjectives, action words, locations, or topic terms into hard detail gates;
 - add missing detail terms to provider retrieval without rewriting original query provenance;
 - if no saved/provider candidate proves the required detail, fail closed rather than selecting a generic subject image.
+
+
+61. An anaphoric scene cut does not always mean the visual primary must remain unchanged.
+A continuation such as `która wprawia w ruch generator` inherits the turbine as grammatical subject but also explicitly introduces the generator as a concrete visible object. Rejecting every primary change forces valid continuous narration into artificial scene wording.
+
+Prevention:
+- allow the inherited previous primary;
+- allow a changed primary only when its concrete noun is explicitly grounded in the current narration segment;
+- keep unmentioned object switches fail-closed;
+- make prompts and validators use the same rule.

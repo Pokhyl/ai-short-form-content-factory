@@ -905,3 +905,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - M8 v62 was not reached.
 - Current blocker: anaphoric guard wrongly rejects an explicitly named new object (`generator`) in `która wprawia w ruch generator`.
 - No new acceptance job until M5 guard is fixed and deployed.
+
+
+## M5 explicit-object anaphora fix tested — 2026-09-23
+
+- Production remains M5 v111 / M6 v8 / M8 v62.
+- Local M5 fix accepts explicit new visual primary in an anaphoric segment only when that primary is lexically named in the same narration.
+- Exact execution 9609 replay PASS.
+- Old unmentioned-transformer regression remains rejected.
+- Full suite 266/266 PASS.
+- Fix not deployed yet.

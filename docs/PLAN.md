@@ -253,22 +253,54 @@ Root cause:
 
 No new PL15 may be started until this M5 guard is corrected and verified.
 
+## M5 anaphoric explicit-object fix tested locally
+
+Source:
+- job `5429bbe8-9b13-4fe6-b3f4-9b6c36d5a9dc`
+- M5 execution `9609`
+- old failure: `water turbine -> electric generator [line 588]`
+
+Corrected rule:
+- an anaphoric scene may keep the previous visual primary; OR
+- may switch to a new concrete primary only when that primary is explicitly named in the current narration segment;
+- switching to an unmentioned object remains fail-closed.
+
+Exact replay:
+- provider calls: 0
+- exact saved repair response from execution 9609
+- result: PASS
+- S3: `na łopatki turbiny,` -> `water turbine`
+- S4: `która wprawia w ruch generator` -> `electric generator`
+- 5 scenes / 5 shots / 23 words
+
+Preserved regression:
+- `Który wytwarza prąd.` cannot switch generator -> transformer because transformer is not named in that narration segment.
+
+Validation:
+- focused scene-segment tests: 10/10 PASS
+- all three storyboard validators contain the corrected rule
+- full suite: 266/266 PASS
+- workflow JSON/diff checks: PASS
+
+This M5 fix is tested but NOT deployed yet.
+
 ## Immediate next step
 
-1. Read this PLAN before changing M5.
-2. Fix the anaphoric visual guard generically:
-   - inherited-reference scenes may retain the previous visual primary; OR
-   - may switch to a new concrete primary only when that primary is explicitly named in the current narration segment;
-   - switching to an unmentioned object remains fail-closed.
-3. Add deterministic regressions:
-   - old `Który wytwarza prąd.` -> transformer remains rejected;
-   - current `która wprawia w ruch generator` -> electric generator passes.
-4. Apply the same rule to all storyboard validators that contain the anaphoric guard.
-5. Run focused tests + full suite.
-6. Update PLAN/handoff/evidence and commit/push.
-7. Deploy ONLY M5 after active project execution count is zero.
-8. Verify live M5 == Git and all non-M5 workflows unchanged.
-9. Run exactly one fresh PL15.
+1. Commit and push the tested M5 fix/regression/evidence.
+2. Read this PLAN before production deployment.
+3. Verify Git clean and active project execution count = 0.
+4. Deploy ONLY M5.
+5. Export published M5 backup and fingerprint all non-M5 workflows before deploy.
+6. Verify after deploy:
+   - M5 increments exactly once;
+   - live M5 == Git;
+   - non-M5 workflow fingerprint unchanged;
+   - Publisher/Studio 200;
+   - n8n restart count unchanged;
+   - media worker healthy.
+7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
+8. Run exactly ONE fresh PL15.
+9. Manually review the actual final MP4 before EN30.
 
 ## Acceptance sequence after PL15
 

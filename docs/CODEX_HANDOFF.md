@@ -1516,3 +1516,22 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Correct generic rule: an anaphoric segment may either keep the inherited subject or switch to a concrete primary explicitly named in the current narration. It may not switch to an unmentioned object.
 - This preserves the prior regression: `Który wytwarza prąd.` cannot switch from generator to transformer because transformer is absent from the narration.
 - Next: deterministic M5 guard fix, tests, M5-only deploy, one PL15.
+
+
+### M5 explicit-object anaphora fix from execution 9609 — tested, NOT DEPLOYED — 2026-09-23
+
+- Source job `5429bbe8-9b13-4fe6-b3f4-9b6c36d5a9dc`, M5 execution `9609`.
+- v111 falsely rejected S4 `która wprawia w ruch generator` because S3 primary was `water turbine` and S4 primary was `electric generator`.
+- Correct rule:
+  - inherited primary is allowed;
+  - a new primary is allowed only when its concrete term is explicitly present in the current narration segment;
+  - an unmentioned primary remains rejected.
+- The check is conservative:
+  - English/Latin lexical terms are matched directly with noun inflection suffixes;
+  - Cyrillic is transliterated for cognate noun matching;
+  - no semantic guess is made when lexical grounding is absent.
+- Prompts now state the same rule to avoid repeated repair loops.
+- Exact 9609 saved repair-output replay PASS with no provider calls: 5 scenes, 5 shots, 23 words, S3 water turbine -> S4 electric generator accepted.
+- Previous regression generator -> transformer on `Który wytwarza prąd.` remains rejected.
+- Focused tests 10/10 PASS; full suite **266/266 PASS**.
+- Next: commit/push, M5-only deploy, one PL15.
