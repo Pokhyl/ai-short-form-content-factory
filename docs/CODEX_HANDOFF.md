@@ -1367,3 +1367,21 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-pl15-v109-scene-segment-contract.json`.
 - Production currently M5 v109 / M6 v8 / M8 v60. M5 segment-contract fix is not deployed yet.
 - Next: commit/push, deploy only M5, then one fresh PL15.
+
+
+### M8 v61 generator-hall fix deployed — waiting for fresh acceptance — 2026-09-22
+
+- Source failure: job `c3041ef4-1181-43c4-8b61-91d3cdd9c0d9`, M8 execution `9552`, visual_run `4bdee8cc-d008-49c1-bf45-9b8f351648fb`, failed only on S5 generator-hall shot.
+- S5 contract was `electric generator` inside a power-plant generator hall; three Commons HAER images were manually reviewed and are valid generator/turbine hall imagery.
+- Root causes:
+  - `hall` was incorrectly inferred as a hard domain;
+  - operational setting required literal power+plant/station metadata instead of accepting a real generator/turbine hall with generation context;
+  - broad machinery-category evidence could admit a different machine, so a conflict guard was required.
+- Commit `539fa22652814acbb4407dfd69e1a51314bc041c`.
+- M8 v61 activeVersionId `a73aefbc-4c8e-4458-8ef2-c48bbce3a957`.
+- M5 unchanged v110 `f67bac25-872d-48d6-baba-c6afff1ca146`; M6 unchanged v8 `0bcabe39-ae90-42fe-842b-8a56ad238709`.
+- Full suite **256/256 PASS**.
+- Old deterministic 9229 replay remains terminal-success with the exact same selected five assets and S3 pool restored to 5.
+- False-positive Wikimedia `33683614` visually shows a generator unit/control panel rather than a water turbine and is rejected again.
+- Evidence: `docs/acceptance/2026-09-22-m8-v61-generator-hall-fix.json`.
+- Next: after unrelated production execution finishes, run exactly one fresh PL15 on v110/v8/v61.

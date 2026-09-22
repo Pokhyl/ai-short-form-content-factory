@@ -1,0 +1,147 @@
+{
+  "date": "2026-09-22",
+  "status": "deployed_waiting_for_fresh_acceptance",
+  "source_job_id": "c3041ef4-1181-43c4-8b61-91d3cdd9c0d9",
+  "source_m8_execution_id": 9552,
+  "source_visual_run_id": "4bdee8cc-d008-49c1-bf45-9b8f351648fb",
+  "source_m8_version": "980fdaec-f66b-45ba-8da0-d6005be00a9a",
+  "source_failure": "M8 visuals failed: no compliant relevant visual candidate for shot S5-A",
+  "s5_contract": {
+    "narration": "a połączony z nią generator wytwarza czystą energię.",
+    "visual_intent": "large electric generator machine inside a power plant generator hall",
+    "must_show": [
+      "electric generator"
+    ],
+    "must_not_show": [
+      "solar panel",
+      "wind turbine"
+    ],
+    "queries_en": [
+      "electric generator machine in power plant",
+      "hydroelectric generator turbine hall equipment",
+      "electric generator"
+    ]
+  },
+  "reviewed_valid_candidates": [
+    {
+      "id": "34379789",
+      "title": "TURBINE HALL, LOOKING FROM THE SOUTH GALLERY TO THE NORTH WALL",
+      "review": "PASS: large turbine/generator units visibly occupy the hall",
+      "sha256": "3c1e80b3af0e3583f3a9c33132ea8aca3b950b87f7f9997232e1ae8ac9c6f91e"
+    },
+    {
+      "id": "34379813",
+      "title": "TURBINE HALL, PERSPECTIVE VIEW OF UNIT 2 and SOUTH GALLERY BEYOND",
+      "review": "PASS: large generator/turbine machine inside real turbine hall",
+      "sha256": "540425ed572a842f59817fe57c9cd00cb790db483bf97180ee4b0c2b9cf37684"
+    },
+    {
+      "id": "34379818",
+      "title": "TURBINE HALL, UNIT 2",
+      "review": "PASS: industrial generating unit inside power-generation hall",
+      "sha256": "2fc9c30a9b5c4361bc2e37e492a09ca8b4cfcf278372c85672de72dbe71c90c0"
+    }
+  ],
+  "root_cause": [
+    "hall was inferred as a hard domain qualifier even though it is a scene setting",
+    "power-facility operational setting required literal power+plant/station metadata and did not accept a real turbine/generator hall with generation context",
+    "a broad machinery-category exception could also admit generator imagery as turbine imagery, so the fix needed a conflict guard rather than a blanket relaxation"
+  ],
+  "fix": {
+    "commit": "539fa22652814acbb4407dfd69e1a51314bc041c",
+    "planner": [
+      "hall/halls are generic scene-setting tokens and no longer become hard domain qualifiers"
+    ],
+    "scorer": [
+      "generator/turbine hall can satisfy operational power-generation setting only with generator/turbine machinery plus station/plant/facility/powerhouse/hydroelectric/steam context",
+      "generic hall remains insufficient",
+      "Wikimedia machinery category cannot override a different explicitly named machinery subject",
+      "narrow turbine/generator hall assembly exception requires hall context and the category to tie both machinery heads together"
+    ],
+    "hardcoded_asset_ids": false,
+    "topic_specific_rule": false
+  },
+  "regression": {
+    "focused_visual_tests": "15/15 PASS",
+    "full_suite": "256/256 PASS",
+    "old_9229_replay": {
+      "terminal_failure": null,
+      "pools": [
+        [
+          "S1-A",
+          1
+        ],
+        [
+          "S2-A",
+          5
+        ],
+        [
+          "S3-A",
+          5
+        ],
+        [
+          "S4-A",
+          8
+        ],
+        [
+          "S5-A",
+          4
+        ]
+      ],
+      "selected": [
+        [
+          "S1-A",
+          "wikimedia",
+          "172815415"
+        ],
+        [
+          "S2-A",
+          "wikimedia",
+          "39943534"
+        ],
+        [
+          "S3-A",
+          "pexels",
+          "12270481"
+        ],
+        [
+          "S4-A",
+          "wikimedia",
+          "34396499"
+        ],
+        [
+          "S5-A",
+          "wikimedia",
+          "27207173"
+        ]
+      ],
+      "provider_calls": 0
+    },
+    "false_positive_33683614": {
+      "visual_review": "REJECT: generator unit/control panel, not water turbine runner",
+      "sha256": "db3ba41925398e673458bab62236f6bb47adfb33207140657f4b3f05b6b0d981",
+      "now_rejected": true
+    }
+  },
+  "deployment": {
+    "M8_versionCounter": 61,
+    "M8_activeVersionId": "a73aefbc-4c8e-4458-8ef2-c48bbce3a957",
+    "backup": ".backups/m8-before-generator-hall-20260922-203112.json",
+    "M5_unchanged": {
+      "versionCounter": 110,
+      "activeVersionId": "f67bac25-872d-48d6-baba-c6afff1ca146"
+    },
+    "M6_unchanged": {
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "other_workflow_fingerprint_before": "31|a57bcb294d65e61f74780df291b52b1e",
+    "other_workflow_fingerprint_after": "31|a57bcb294d65e61f74780df291b52b1e",
+    "live_core_match": true,
+    "publisher_http": 200,
+    "studio_http": 200,
+    "n8n_restart_count": 0,
+    "media_worker_health": "healthy"
+  },
+  "next_step": "Wait for unrelated production execution to finish; then run exactly one fresh PL15 on M5 v110 / M6 v8 / M8 v61."
+}

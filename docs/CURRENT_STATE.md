@@ -831,3 +831,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Local M5 fix makes scenes contiguous visual cut segments of one continuous narration; only the joined narration must be a complete utterance.
 - Exact 9537 replay PASS; full suite 252/252 PASS; M5 syntax/graph PASS.
 - Production still M5 v109 / M6 v8 / M8 v60. M5 fix not deployed yet.
+
+
+## M8 v61 production checkpoint — 2026-09-22
+
+- M8 v61 `a73aefbc-4c8e-4458-8ef2-c48bbce3a957` from commit `539fa22652814acbb4407dfd69e1a51314bc041c`.
+- Generator/turbine hall is now treated as an operational power-generation setting only when real generating machinery and generation context are present.
+- `hall` no longer becomes a hard domain qualifier.
+- Wikimedia machinery categories cannot override a different explicitly named machine.
+- 256/256 tests PASS; old 9229 selected assets unchanged.
+- Waiting only for unrelated active production execution to finish before one fresh PL15.
