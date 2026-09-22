@@ -282,25 +282,31 @@ Validation:
 - full suite: 266/266 PASS
 - workflow JSON/diff checks: PASS
 
-This M5 fix is tested but NOT deployed yet.
+The M5 explicit-object anaphora fix is now deployed and verified live.
+
+Production:
+- M5 v112: `d7eab2c2-c0a6-4258-9c17-4a28a706a701`
+- M6 v8: `0bcabe39-ae90-42fe-842b-8a56ad238709`
+- M8 v62: `90329f54-40fd-4382-92fd-2fd1e9ecea01`
+
+M5 v112 deploy verification:
+- backup: `.backups/m5-before-anaphora-explicit-20260922-222941.json`
+- non-M5 workflow fingerprint before/after: `31|6d5bcd9e4ad7e94f6f9907f52426c741`
+- live M5 nodes/connections/settings == Git: PASS
+- Publisher 200
+- Studio 200
+- n8n restart count 0
+- media worker healthy, restart count 0
 
 ## Immediate next step
 
-1. Commit and push the tested M5 fix/regression/evidence.
-2. Read this PLAN before production deployment.
-3. Verify Git clean and active project execution count = 0.
-4. Deploy ONLY M5.
-5. Export published M5 backup and fingerprint all non-M5 workflows before deploy.
-6. Verify after deploy:
-   - M5 increments exactly once;
-   - live M5 == Git;
-   - non-M5 workflow fingerprint unchanged;
-   - Publisher/Studio 200;
-   - n8n restart count unchanged;
-   - media worker healthy.
-7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
-8. Run exactly ONE fresh PL15.
-9. Manually review the actual final MP4 before EN30.
+1. Read this PLAN before the next production action.
+2. Verify Git clean and active project execution count = 0.
+3. Run exactly ONE fresh PL15 on M5 v112 / M6 v8 / M8 v62.
+4. Follow only that job to terminal state.
+5. If it reaches machine QA PASS, inspect the exact final MP4 technically, audio-wise, and scene-by-scene visually.
+6. Do not proceed to EN30 until PL15 passes manual acceptance.
+7. If it fails, use only that job's saved evidence and fix the demonstrated blocker.
 
 ## Acceptance sequence after PL15
 

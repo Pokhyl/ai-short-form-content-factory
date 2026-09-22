@@ -915,3 +915,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Old unmentioned-transformer regression remains rejected.
 - Full suite 266/266 PASS.
 - Fix not deployed yet.
+
+
+## M5 v112 deployed — 2026-09-23
+
+- M5 v112 activeVersionId `d7eab2c2-c0a6-4258-9c17-4a28a706a701`.
+- M6 v8 and M8 v62 unchanged.
+- Live M5 == Git; non-M5 workflow fingerprint unchanged.
+- Next: one fresh PL15, then manual acceptance.

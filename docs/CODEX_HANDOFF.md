@@ -1535,3 +1535,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Previous regression generator -> transformer on `Który wytwarza prąd.` remains rejected.
 - Focused tests 10/10 PASS; full suite **266/266 PASS**.
 - Next: commit/push, M5-only deploy, one PL15.
+
+
+### M5 v112 explicit-object anaphora fix deployed — 2026-09-23
+
+- Git fix commit: `05ff6d423a7635e733e52bc75636f054077b6d38`.
+- Before: M5 v111 `31eaa7a9-98d1-44b6-bec6-416ef388753b`.
+- After: M5 v112 `d7eab2c2-c0a6-4258-9c17-4a28a706a701`.
+- Backup: `.backups/m5-before-anaphora-explicit-20260922-222941.json`.
+- Non-M5 fingerprint unchanged: `31|6d5bcd9e4ad7e94f6f9907f52426c741`.
+- M6 remained v8; M8 remained v62.
+- Live M5 == Git.
+- Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
+- Next: one fresh PL15 and full manual acceptance.
