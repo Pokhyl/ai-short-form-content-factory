@@ -218,3 +218,69 @@ test('machinery-only category depiction relaxation does not let contextual reser
   assert.equal(c.rejected,true);
   assert.match(c.rejection_reason,/wikimedia_primary_only_contextual_metadata/);
 });
+
+
+test('9552 regression: turbine-generator hall at a power station is valid operational generator evidence',()=>{
+  const ctx={
+    query:'electric generator machine in power plant',
+    visual_intent:'large electric generator machine inside a power plant generator hall',
+    must_show:['electric generator'],
+    must_not_show:['solar panel','wind turbine'],
+    domain_context_terms:['hall'],
+  };
+  const c=normalize(ctx,body({
+    id:34379813,
+    title:'TURBINE HALL, PERSPECTIVE VIEW OF UNIT 2 and SOUTH GALLERY BEYOND - Delaware County Electric Company, Chester Station',
+    objectName:'TURBINE HALL, PERSPECTIVE VIEW OF UNIT 2 and SOUTH GALLERY BEYOND - Delaware County Electric Company, Chester Station',
+    categories:'Chester Waterside Station of the Philadelphia Electric Company|Steam turbine generator sets|Turbine halls|Historic American Engineering Record images of Pennsylvania',
+    description:'Turbine hall, perspective view of unit 2 and south gallery beyond.',
+  }));
+  assert.equal(c.rejected,false,c.rejection_reason);
+});
+
+test('generic hall does not substitute for a power-generation operational setting',()=>{
+  const ctx={
+    query:'electric generator machine in power plant',
+    visual_intent:'large electric generator machine inside a power plant generator hall',
+    must_show:['electric generator'],
+    must_not_show:['solar panel','wind turbine'],
+    domain_context_terms:[],
+  };
+  const c=normalize(ctx,body({
+    id:999001,
+    title:'Portable electric generator displayed in exhibition hall',
+    objectName:'Portable electric generator displayed in exhibition hall',
+    categories:'Portable generators|Exhibition halls',
+    description:'Portable generator on display.',
+  }));
+  assert.equal(c.rejected,true);
+  assert.match(c.rejection_reason,/missing_operational_setting_context/);
+});
+
+test('visual request planners treat hall as scene setting rather than hard domain',()=>{
+  for(const provider of ['Pixabay','Pexels','Wikimedia']){
+    const planner=code('Build '+provider+' Requests');
+    assert.match(planner,/receiver room hall halls photo photograph/);
+    assert.match(planner,/outdoor outdoors indoor indoors hall halls/);
+  }
+});
+
+
+test('9229 regression: generator unit title cannot become a water turbine from contextual Turbine halls category',()=>{
+  const ctx={
+    query:'hydroelectric water turbine runner',
+    visual_intent:'industrial water turbine runner being rotated by water flow inside hydroelectric plant',
+    must_show:['water turbine'],
+    must_not_show:[],
+    domain_context_terms:['hydroelectric'],
+  };
+  const c=normalize(ctx,body({
+    id:33683614,
+    title:'CLOSE-UP VIEW OF A GENERATOR UNIT WITH ITS ASSOCIATED INSTRUMENTATION AND CONTROL PANEL. - Wilson Dam and Hydroelectric Plant, Turbine and Generator Unit',
+    objectName:'CLOSE-UP VIEW OF A GENERATOR UNIT WITH ITS ASSOCIATED INSTRUMENTATION AND CONTROL PANEL. - Wilson Dam and Hydroelectric Plant, Turbine and Generator Unit',
+    categories:'Wilson Dam|Turbine halls|Historic American Engineering Record images',
+    description:'Close-up view of a generator unit and control panel.',
+  }));
+  assert.equal(c.rejected,true);
+  assert.match(c.rejection_reason,/wikimedia_primary_only_contextual_metadata/);
+});
