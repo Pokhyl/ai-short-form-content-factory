@@ -611,3 +611,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Current targeted live/scorer evidence yields 5 compliant hydroelectric penstock candidates. No scorer threshold or semantic gate was weakened.
 - Validation: 158/158 tests PASS; M5 55 and M8 10 Code-node syntax checks PASS; JSON/diff checks PASS.
 - Production remains M5 v99 `8317622a-7d47-4cc5-8c40-f3f76caebf42` / M8 v54 `818d2c37-28db-488b-b7b7-f0e047a29f30` until scoped deployment.
+
+
+## M5 v100 / M8 v55 deployment checkpoint — 2026-09-22
+
+- M5 active: v100 `8cc07108-bc76-43f3-b97e-071fbca26148`.
+- M8 active: v55 `5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8`.
+- Source commit `ca0716f08f722bd5bbd39022b2e0b9c3f9f3b119`.
+- Exact backups: `.backups/m5-before-hidden-process-fix-20260922-065211.json`, `.backups/m8-before-hidden-process-fix-20260922-065211.json`.
+- Other 30 workflow fingerprint unchanged: `988ee473175a09fe877d3de8c2325108`.
+- Live published exports match repo nodes/connections/settings. Publisher/Studio 200. n8n restart 0. Worker healthy restart 0. Zero active project executions.
+- Runtime proof is pending; next action is exactly one fresh PL15, not a rerun of the failed v54 job.

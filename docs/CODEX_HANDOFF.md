@@ -862,3 +862,20 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-pl15-v54-s2-hidden-process-fix.json`.
 - **Not deployed yet at this checkpoint.** Production remains M5 v99 / M8 v54.
 - Exact next step: commit/push this tested M5+M8 fix, scoped deploy only those two workflows with backups/protected-row comparison, then exactly one fresh PL15. Do not rerun failed job `763b1c91...`.
+
+
+### M5 v100 + M8 v55 deployed — hidden-process / closed-infrastructure fix — 2026-09-22
+
+- Source commit: `ca0716f08f722bd5bbd39022b2e0b9c3f9f3b119`.
+- Published only M5 and M8:
+  - M5 v100 activeVersionId `8cc07108-bc76-43f3-b97e-071fbca26148`;
+  - M8 v55 activeVersionId `5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8`.
+- Published backups:
+  - `.backups/m5-before-hidden-process-fix-20260922-065211.json`;
+  - `.backups/m8-before-hidden-process-fix-20260922-065211.json`.
+- Other 30 workflow rows unchanged: protected fingerprint `988ee473175a09fe877d3de8c2325108` before/after.
+- Published M5 and M8 exports match repository exactly for `nodes/connections/settings`.
+- Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0 on unchanged `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`.
+- No active project executions before or after deployment. No credential change, DB migration or service restart.
+- n8n CLI printed its generic restart advisory; runtime workflowVersionId on the next execution is the acceptance proof.
+- Exact next step: **one** fresh PL15 via Studio. Require M5 v100 and M8 v55 runtime IDs, then M9 and exact final MP4 technical/visual/audio acceptance before EN30.
