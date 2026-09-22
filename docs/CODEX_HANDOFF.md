@@ -1433,3 +1433,20 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M5 nodes/connections/settings exactly match Git.
 - Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0.
 - Next: exactly one fresh PL15, then inspect the actual final MP4 if M9 passes.
+
+
+### Fresh PL15 v111/v8/v61 reached machine QA — final MP4 review pending — 2026-09-22
+
+- Job: `8ce87adb-3952-43cb-ab1d-7a1b2d549651`.
+- Verified before SentinelX disconnected:
+  - M5 v111 PASS;
+  - M6 v8 PASS;
+  - M8 v61 PASS;
+  - visual_run `cfb7a60e-ed47-408f-85f9-3bbaa7626648` PASS;
+  - 45/45 visual searches completed;
+  - 288 provider results collected;
+  - job terminal state: `machine_qa_passed`.
+- Do NOT create another PL15.
+- This exact job remains the active acceptance artifact.
+- Final manual acceptance is pending only because SentinelX lost connectivity while locating/copying the rendered MP4.
+- Resume by inspecting this exact MP4 technically and scene-by-scene. If it passes, proceed to EN30; if it fails, fix only the demonstrated defect.
