@@ -1,0 +1,135 @@
+{
+  "job_id": "b36a7c19-3427-4d67-9e2b-50d0acb4d717",
+  "execution_id": 9229,
+  "provider_calls": 0,
+  "status": "experimental_rule_rejected_not_deployed",
+  "total": 335,
+  "shots": [
+    {
+      "shot": "S1-A",
+      "eligible": [
+        "Wikimedia:172815415",
+        "Wikimedia:94068077",
+        "Wikimedia:110885891",
+        "Wikimedia:110885859"
+      ]
+    },
+    {
+      "shot": "S2-A",
+      "eligible": [
+        "Wikimedia:2292826",
+        "Wikimedia:42498812",
+        "Wikimedia:309198",
+        "Wikimedia:121967387",
+        "Wikimedia:139956089",
+        "Wikimedia:102036775",
+        "Wikimedia:106376925",
+        "Wikimedia:54221803",
+        "Wikimedia:106376926",
+        "Wikimedia:106376928",
+        "Wikimedia:139296455"
+      ]
+    },
+    {
+      "shot": "S3-A",
+      "eligible": [
+        "Wikimedia:6074880",
+        "Wikimedia:2050414",
+        "Wikimedia:19189428",
+        "Wikimedia:6563098",
+        "Wikimedia:6563112"
+      ]
+    },
+    {
+      "shot": "S4-A",
+      "eligible": [
+        "Pexels:35042792",
+        "Pexels:5499572",
+        "Wikimedia:89006850",
+        "Wikimedia:35600740",
+        "Wikimedia:10402916",
+        "Wikimedia:109448270",
+        "Wikimedia:110869359",
+        "Wikimedia:110869389",
+        "Wikimedia:68099788",
+        "Wikimedia:78066893",
+        "Wikimedia:28807267",
+        "Wikimedia:829307",
+        "Wikimedia:35625828",
+        "Wikimedia:189528872",
+        "Wikimedia:9478362",
+        "Wikimedia:150608935",
+        "Wikimedia:112972156",
+        "Wikimedia:718927",
+        "Wikimedia:114884972"
+      ]
+    },
+    {
+      "shot": "S5-A",
+      "eligible": []
+    }
+  ],
+  "s1": [
+    {
+      "shot": "S1-A",
+      "id": "172815415",
+      "provider": "Wikimedia",
+      "rejected": false,
+      "score": 100,
+      "reason": null,
+      "title": "File:Tri An Hydroelectric Dam And Its Reservoir.jpg"
+    },
+    {
+      "shot": "S1-A",
+      "id": "94068077",
+      "provider": "Wikimedia",
+      "rejected": false,
+      "score": 100,
+      "reason": null,
+      "title": "File:Pacific Northwest drought status and hydroelectric dam reservoir storage capacity as of September 1, 2020 (50329403668).png"
+    },
+    {
+      "shot": "S1-A",
+      "id": "110885891",
+      "provider": "Wikimedia",
+      "rejected": false,
+      "score": 100,
+      "reason": null,
+      "title": "File:Peechi Dam 4.jpg"
+    },
+    {
+      "shot": "S1-A",
+      "id": "110885859",
+      "provider": "Wikimedia",
+      "rejected": false,
+      "score": 100,
+      "reason": null,
+      "title": "File:Peechi Dam 3.jpg"
+    },
+    {
+      "shot": "S1-A",
+      "id": "110885859",
+      "provider": "Wikimedia",
+      "rejected": false,
+      "score": 100,
+      "reason": null,
+      "title": "File:Peechi Dam 3.jpg"
+    },
+    {
+      "shot": "S1-A",
+      "id": "110885891",
+      "provider": "Wikimedia",
+      "rejected": false,
+      "score": 100,
+      "reason": null,
+      "title": "File:Peechi Dam 4.jpg"
+    }
+  ],
+  "experiment": "Retain generic secondary object head; ignore existing form modifiers only with fully grounded primary and visible secondary head. Experimental workflow change reverted; production M8 v53 and repository runtime source unchanged.",
+  "blocking_findings": [
+    "S5-A has zero eligible candidates even under the experiment.",
+    "S1 experiment admits Commons PNG 94068077 drought/storage-capacity summary; type/depiction not verified and must not be accepted from keyword score.",
+    "S4 singleton generator has no hydroelectric domain in storyboard or inferred context; its eligible pool needs exact domain review before any acceptance."
+  ],
+  "next_step": "Do not deploy this experiment. Continue targeted S1 compound evidence/retrieval and S5 context retrieval using saved execution 9229; verify S4 domain before new acceptance job."
+}

@@ -1,6 +1,6 @@
 {
   "job_id": "b36a7c19-3427-4d67-9e2b-50d0acb4d717",
-  "status": "processing",
+  "status": "visuals_failed",
   "production": {
     "M5": {
       "version": 99,
@@ -11,5 +11,32 @@
       "id": "0953f69f-e982-467e-95e0-35161a613771"
     }
   },
-  "next_step": "Monitor this exact job; runtime proof, then final visual/audio QA before EN30."
+  "next_step": "Targeted replay of 9229 S1/S5 and S4 domain. Do not start another full job or EN30 until these recorded gaps are addressed.",
+  "executions": {
+    "intake": 9223,
+    "parent": 9224,
+    "M4": 9225,
+    "M5": 9226,
+    "M6": 9227,
+    "M7": 9228,
+    "M8": 9229,
+    "M9": null
+  },
+  "failure": "M8 visuals failed: no compliant relevant visual candidate for shot S1-A",
+  "runtime_versions_confirmed": true,
+  "searches": {
+    "pexels": {
+      "count": 15,
+      "results": 120
+    },
+    "pixabay": {
+      "count": 15,
+      "results": 120
+    },
+    "wikimedia": {
+      "count": 15,
+      "results": 95
+    }
+  },
+  "candidates": 335
 }

@@ -395,3 +395,6 @@ Execution 9212 inferred unit as a machinery domain and sent hydroelectric unit g
 
 47. Before weakening a late exact-count guard, check the existing regression and candidate history.
 Execution 9221 had useful measured short scene alternatives, but the final dynamic program saw only recent longer drafts. Reuse a bounded set of same-execution measured scenes, verifying immutable semantics and scene identity again. Keep the intentional final exact-total guard (9137), provider budget, actual TTS gate and stability rules unchanged; successful code replay does not establish audio duration.
+
+48. A local scorer regression fix needs whole-run replay before another live job.
+Execution 9229 stopped at S1, but replay of all 335 candidates also found an empty S5 pool and a singleton S4 domain omission. A secondary-head experiment made the exact S1 source eligible but also admitted an unverified PNG summary. It was reverted without deployment. Keep experiments explicitly separate from production evidence and avoid spending a new complete job when later known pools remain empty.
