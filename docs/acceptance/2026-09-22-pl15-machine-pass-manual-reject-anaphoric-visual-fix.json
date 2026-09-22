@@ -1,0 +1,109 @@
+{
+  "date": "2026-09-22",
+  "status": "manual_acceptance_failed_fix_tested_not_deployed",
+  "source_job_id": "345adac7-105e-461b-97ff-1a66789704ba",
+  "source_state": "machine_qa_passed",
+  "source_versions": {
+    "M5": {
+      "versionCounter": 110,
+      "activeVersionId": "f67bac25-872d-48d6-baba-c6afff1ca146"
+    },
+    "M6": {
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "M8": {
+      "versionCounter": 60,
+      "activeVersionId": "980fdaec-f66b-45ba-8da0-d6005be00a9a"
+    }
+  },
+  "render": {
+    "storage_path": "/data/renders/345adac7-105e-461b-97ff-1a66789704ba/final.mp4",
+    "sha256": "847c628110515eb0cedae6f0265733236856deace6832136c1f16ff25adf6915",
+    "width": 1080,
+    "height": 1920,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "pix_fmt": "yuv420p",
+    "fps": "30/1",
+    "duration_ms": 14800,
+    "audio_duration_ms": 14784,
+    "duration_delta_ms": 16,
+    "machine_qa_passed": true
+  },
+  "manual_review": {
+    "accepted": false,
+    "scene_frames": [
+      {
+        "scene": 1,
+        "verdict": "PASS",
+        "note": "dam/reservoir visible"
+      },
+      {
+        "scene": 2,
+        "verdict": "PASS_WITH_LIMITATION",
+        "note": "dam/facility visible; high drop is not strongly visible"
+      },
+      {
+        "scene": 3,
+        "verdict": "FAIL",
+        "note": "generator hall machinery shown while narration says river hits turbine blades"
+      },
+      {
+        "scene": 4,
+        "verdict": "PASS",
+        "note": "generator machinery matches narration"
+      },
+      {
+        "scene": 5,
+        "verdict": "FAIL",
+        "note": "substation/switchgear shown while narration 'Który wytwarza prąd.' inherits generator from S4"
+      }
+    ],
+    "narration_surface_defects": [
+      "Spadająca rzeka uderza w łopatki turbiny,.",
+      "A ruch obrotowy napędza generator,."
+    ]
+  },
+  "root_causes": [
+    "continuous narration scene cuts were allowed, but storyboard validation did not require an anaphoric scene to preserve the previous concrete visual subject",
+    "initial prompt and storyboard repair prompts were inconsistent about continuation fragments",
+    "final canonicalizer did not normalize conflicting punctuation such as ',.' at visual-cut boundaries"
+  ],
+  "fix": {
+    "prompt_contract": [
+      "scene cuts may occur inside one sentence",
+      "relative/anaphoric scene segments must resolve the inherited subject in visual_intent, must_show[0], and queries_en"
+    ],
+    "validator": [
+      "Polish/Russian/Ukrainian/English relative or personal anaphoric starters are detected",
+      "for such scenes, current primary visual subject must share a distinctive concrete term with previous scene primary subject",
+      "demonstratives such as Polish Ten/ta/to and English this/these/those are excluded to avoid false positives when a new subject is explicitly named"
+    ],
+    "canonicalizer": [
+      "internal ',.' ';.' ':.' style artifacts preserve clause punctuation and drop the conflicting terminal",
+      "final scene converts conflicting clause+terminal sequence to a single terminal period"
+    ]
+  },
+  "validation": {
+    "focused_scene_segment_tests": "9/9 PASS",
+    "full_suite": "260/260 PASS",
+    "git_diff_check": "PASS",
+    "workflow_json_parse": "PASS"
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 110,
+      "activeVersionId": "f67bac25-872d-48d6-baba-c6afff1ca146"
+    },
+    "M6": {
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "M8": {
+      "versionCounter": 61,
+      "activeVersionId": "a73aefbc-4c8e-4458-8ef2-c48bbce3a957"
+    }
+  },
+  "next_step": "Commit/push M5 fix, deploy only M5, then one fresh PL15 on M5 next version + M6 v8 + M8 v61 and perform full manual acceptance."
+}

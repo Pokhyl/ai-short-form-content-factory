@@ -1385,3 +1385,38 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - False-positive Wikimedia `33683614` visually shows a generator unit/control panel rather than a water turbine and is rejected again.
 - Evidence: `docs/acceptance/2026-09-22-m8-v61-generator-hall-fix.json`.
 - Next: after unrelated production execution finishes, run exactly one fresh PL15 on v110/v8/v61.
+
+
+### Machine QA PASS manually rejected: anaphoric visual grounding + punctuation fix tested — NOT DEPLOYED — 2026-09-22
+
+- Job `345adac7-105e-461b-97ff-1a66789704ba` reached `machine_qa_passed` and rendered a technically valid 1080x1920 H.264/AAC 30 fps MP4, 14.800 s.
+- Manual midpoint review rejected the result despite machine QA:
+  - S3 narration says water hits turbine blades, but selected frame is generator-hall machinery rather than visible turbine blades;
+  - S5 narration `Który wytwarza prąd.` inherits the generator from S4, but storyboard switched visual primary to `power transformer`, producing a substation/switchgear image;
+  - narration also contained `turbiny,.` and `generator,.`.
+- Root validation gap: continuous narration scene cuts were allowed, but an anaphoric scene was not required to preserve the previous concrete visual subject. Initial generation and repair prompts were also inconsistent about continuation fragments.
+- Tested M5 fix:
+  - prompt and both storyboard repair prompts now keep one continuous narration contract;
+  - scenes beginning with relative/personal anaphoric forms such as `Który/which/it/который/який` must retain the previous scene primary visual subject;
+  - demonstratives such as Polish `Ten/ta/to` and English `this/these/those` are intentionally excluded because they may introduce a newly named subject;
+  - final canonicalizer removes conflicting punctuation such as internal `,.` without changing words or semantic content.
+- Exact regression:
+  - S4 primary `electrical generator` + S5 `Który...` + `power transformer` => deterministic rejection;
+  - same S5 with `electric generator` => PASS.
+- Validation: scene-segment focused **9/9 PASS**, full suite **260/260 PASS**, JSON/diff checks PASS.
+- Evidence: `docs/acceptance/2026-09-22-pl15-machine-pass-manual-reject-anaphoric-visual-fix.json`.
+- Production at this checkpoint: M5 v110, M6 v8, M8 v61. M5 fix is not deployed yet.
+- Next: commit/push; deploy only M5; one fresh PL15; then technical + scene-by-scene manual visual acceptance.
+
+
+### Permanent interaction rule — evidence over agreement — 2026-09-22
+
+- User disagreement is not new evidence.
+- Do not change a technical conclusion merely because the user objects, insists, gets angry, or states the opposite.
+- A prior conclusion may change only because of new factual evidence, a new test/tool result, or a specific identified logical/factual error.
+- Whenever a conclusion changes, record exactly what new fact/test/error caused the change.
+- Treat user assertions as claims to verify, not proof.
+- Do not guess the answer the user wants to hear.
+- If evidence is insufficient, mark the conclusion unverified instead of agreeing.
+- Never claim a technical problem is fixed/completed/deployed/passing without verifying actual state.
+- Canonical copy: `docs/OPERATOR_RULES.md`.

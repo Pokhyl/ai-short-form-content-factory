@@ -81,3 +81,101 @@ test('final canonicalizer still requires one complete continuous narration',()=>
   assert.match(code,/final continuous narration must start normally and end as a complete utterance/);
   assert.match(code,/final narration segment has no lexical content/);
 });
+
+
+test('anaphoric scene cannot switch visual primary away from previous scene subject',()=>{
+  const fixture=JSON.parse(
+    fs.readFileSync('tests/fixtures/m5-9537-scene-segments.json')
+  );
+  const parsed=JSON.parse(
+    fixture.response.body.candidates[0].content.parts[0].text
+  );
+
+  parsed.scenes[3].narration='A ruch obrotowy napędza generator,';
+  parsed.scenes[3].shots[0].visual_intent=
+    'Large hydroelectric generator inside power station';
+  parsed.scenes[3].shots[0].must_show=['electrical generator'];
+  parsed.scenes[3].shots[0].queries_en=[
+    'electrical generator in power plant',
+    'hydroelectric generator machine hall',
+    'electrical generator'
+  ];
+
+  parsed.scenes[4].narration='Który wytwarza prąd.';
+  parsed.scenes[4].shots[0].visual_intent=
+    'High voltage power transformer and electric grid lines';
+  parsed.scenes[4].shots[0].must_show=['power transformer'];
+  parsed.scenes[4].shots[0].queries_en=[
+    'power transformer electric substation',
+    'high voltage transformer station',
+    'power transformer'
+  ];
+  parsed.narration=parsed.scenes.map(s=>s.narration).join(' ');
+  fixture.response.body.candidates[0].content.parts[0].text=
+    JSON.stringify(parsed);
+
+  assert.throws(
+    ()=>run9537(fixture),
+    /anaphoric scene visual subject must preserve previous scene primary subject/
+  );
+});
+
+test('anaphoric scene may keep the same concrete visual primary with a normal synonym',()=>{
+  const fixture=JSON.parse(
+    fs.readFileSync('tests/fixtures/m5-9537-scene-segments.json')
+  );
+  const parsed=JSON.parse(
+    fixture.response.body.candidates[0].content.parts[0].text
+  );
+
+  parsed.scenes[3].narration='A ruch obrotowy napędza generator,';
+  parsed.scenes[3].shots[0].visual_intent=
+    'Large hydroelectric generator inside power station';
+  parsed.scenes[3].shots[0].must_show=['electrical generator'];
+  parsed.scenes[3].shots[0].queries_en=[
+    'electrical generator in power plant',
+    'hydroelectric generator machine hall',
+    'electrical generator'
+  ];
+
+  parsed.scenes[4].narration='Który wytwarza prąd.';
+  parsed.scenes[4].shots[0].visual_intent=
+    'Electric generator producing power inside a power station';
+  parsed.scenes[4].shots[0].must_show=['electric generator'];
+  parsed.scenes[4].shots[0].queries_en=[
+    'electric generator producing power',
+    'power station electric generator',
+    'electric generator'
+  ];
+  parsed.narration=parsed.scenes.map(s=>s.narration).join(' ');
+  fixture.response.body.candidates[0].content.parts[0].text=
+    JSON.stringify(parsed);
+
+  const out=run9537(fixture);
+  assert.equal(out.storyboard.scenes[4].shots[0].must_show[0],'electric generator');
+});
+
+test('final visual-cut punctuation normalizer removes comma-period artifacts without deleting clause punctuation',()=>{
+  const code=byName['Canonicalize Final Storyboard'].parameters.jsCode;
+  const match=code.match(
+    /function normalizeVisualCutPunctuation\(value,isLastScene\) \{[\s\S]*?\n\}/
+  );
+  assert.ok(match,'normalizeVisualCutPunctuation helper missing');
+  const normalize=new Function(match[0]+'; return normalizeVisualCutPunctuation;')();
+
+  assert.equal(normalize('Spadająca rzeka uderza w łopatki turbiny,.',false),
+    'Spadająca rzeka uderza w łopatki turbiny,');
+  assert.equal(normalize('A ruch obrotowy napędza generator,.',false),
+    'A ruch obrotowy napędza generator,');
+  assert.equal(normalize('Który wytwarza prąd,.',true),
+    'Który wytwarza prąd.');
+});
+
+test('repair prompts preserve continuous visual-cut contract and resolve inherited referents',()=>{
+  for(const name of ['Build Storyboard Repair','Build Storyboard Repair 2']){
+    const code=byName[name].parameters.jsCode;
+    assert.match(code,/MAY start as a continuation fragment/);
+    assert.match(code,/resolve the inherited subject from the immediately previous scene/);
+    assert.doesNotMatch(code,/must not start as a continuation fragment/);
+  }
+});

@@ -841,3 +841,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Wikimedia machinery categories cannot override a different explicitly named machine.
 - 256/256 tests PASS; old 9229 selected assets unchanged.
 - Waiting only for unrelated active production execution to finish before one fresh PL15.
+
+
+## Manual acceptance rejected a machine-QA-passed PL15 — 2026-09-22
+
+- Job `345adac7-105e-461b-97ff-1a66789704ba` rendered successfully, but manual review found a cross-scene visual-subject error and malformed visual-cut punctuation.
+- S5 `Który wytwarza prąd.` incorrectly switched from generator to transformer. M5 local fix now enforces inherited visual primary for relative/personal anaphoric segments.
+- Final canonicalizer normalizes `,.`/similar boundary artifacts without changing words.
+- Full suite 260/260 PASS.
+- Production remains M5 v110 / M6 v8 / M8 v61; M5 fix not deployed yet.
