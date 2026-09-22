@@ -1,0 +1,112 @@
+{
+  "date": "2026-09-22",
+  "status": "isolated_acceptance_passed_not_deployed",
+  "problem": {
+    "production_example": {
+      "job_id": "4852594f-da84-419c-982b-c416fed32cf1",
+      "m5_execution_id": 9523,
+      "target_duration_ms": 15000,
+      "old_requested_tolerance_ms": 750,
+      "actual_samples_ms": [
+        15336,
+        13368,
+        16248
+      ],
+      "old_in_window_count": 1,
+      "old_outcome": "terminal timing failure because M5 required 2/3 samples even though one exact real MP3 was already valid"
+    },
+    "root_cause": "M5 synthesized and measured real TTS audio but discarded it. M6 then synthesized the same narration again, so stochastic Chirp duration made M5 timing prediction unreliable."
+  },
+  "architecture": {
+    "principle": "A real TTS file that passes the final duration gate is the artifact to preserve. Do not predict a future synthesis when the accepted synthesis already exists.",
+    "m5": [
+      "still observes three real syntheses on the stability path",
+      "selects the closest actual MP3 inside the same final M6 tolerance",
+      "stores the exact accepted MP3 under /data/voiceover-candidates/<job>/accepted.mp3",
+      "registers candidate SHA/duration/audio metadata and the exact committed M5 provider-usage ledger before storyboard commit"
+    ],
+    "database": [
+      "new factory.voiceover_candidates table",
+      "register_voiceover_candidate validates exact active script run, narration, voice/locale/sku, committed M5 timing-probe usage, path and final duration tolerance",
+      "begin_voiceover_v2 adopts a matching candidate and reuses its committed M5 usage ledger instead of reserving new M6 TTS usage",
+      "legacy M6 synthesis path remains only when no candidate exists"
+    ],
+    "m6": [
+      "begin_voiceover_v2 returns reuse_candidate plus immutable candidate metadata",
+      "reuse branch promotes the staged MP3 to /data/voiceovers/<job>/final.mp3",
+      "promotion requires exact SHA and duration",
+      "normalizer requires exact bytes/duration/sample-rate/channels/codec from DB candidate metadata",
+      "then existing complete_voiceover final gate persists the exact reused file"
+    ],
+    "media_worker": [
+      "POST /voiceover-candidates/<job>",
+      "GET /voiceover-candidates/<job>/metadata",
+      "POST /voiceover-candidates/<job>/promote",
+      "promotion uses a hard link and re-verifies SHA and ffprobe metadata"
+    ]
+  },
+  "exact_9523_replay": {
+    "provider_calls": 0,
+    "target_duration_ms": 15000,
+    "final_tolerance_ms": 800,
+    "samples_ms": [
+      15336,
+      13368,
+      16248
+    ],
+    "accepted_source": "origin",
+    "accepted_duration_ms": 15336,
+    "accepted_delta_ms": 336,
+    "accepted_usage_key": "m5-tts-probe:2bba5e4f-f55c-4ae3-9148-8dc24cfff63b:5",
+    "accepted_audio_sha256": "8d56d85b85d1b22409493cb117466bdea8d32d221e10cdc61febfcb494f2f716",
+    "accepted_audio_bytes": 61344,
+    "timing_ok": true
+  },
+  "isolated_media_worker_integration": {
+    "production_mutations": 0,
+    "source_audio_sha256": "84659a9389f925ad8d5ba0df456a56ebba930982dd8d32d877a96d47e168da2c",
+    "source_duration_ms": 15408,
+    "source_bytes": 61632,
+    "sample_rate": 24000,
+    "channels": 1,
+    "codec": "mp3",
+    "candidate_store_http": 201,
+    "candidate_metadata_http": 200,
+    "promote_http": 201,
+    "final_metadata_http": 200,
+    "second_promote_http": 409,
+    "exact_sha_duration_metadata_match": true
+  },
+  "db_transaction_test": {
+    "production_mutations": 0,
+    "method": "apply migration + synthetic candidate registration + begin_voiceover_v2 adoption inside one transaction, then ROLLBACK",
+    "register_candidate": "PASS",
+    "reuse_committed_m5_usage_ledger": "PASS",
+    "candidate_adoption_metadata": "PASS",
+    "rollback_confirmed": true
+  },
+  "validation": {
+    "full_test_suite": "245/245 PASS",
+    "m5_code_syntax": "56/56 PASS",
+    "m5_graph": "127/127 PASS",
+    "m6_code_syntax": "23/23 PASS",
+    "m6_graph": "67/67 PASS",
+    "media_worker_py_compile": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "production_before_deploy": {
+    "M5": {
+      "versionCounter": 108,
+      "activeVersionId": "b7b9ea08-24ee-469a-b596-484fc1749f1e"
+    },
+    "M6": {
+      "versionCounter": 7,
+      "activeVersionId": "98e671f3-a0dc-42fa-81e9-4c9524a05e6a"
+    },
+    "M8": {
+      "versionCounter": 59,
+      "activeVersionId": "96b3a6b9-b5ef-4a28-a68a-5c3c928b8185"
+    }
+  },
+  "next_step": "Commit/push, apply DB migration, deploy media worker, publish only M5 and M6, verify exact live state, then one fresh PL15."
+}

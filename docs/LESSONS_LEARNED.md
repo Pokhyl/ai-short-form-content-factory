@@ -536,3 +536,14 @@ Prevention:
 - exclude invalid options rather than relying only on a final whole-output check;
 - treat retry/base/pre-final/measured variants uniformly;
 - fail closed when a scene has no semantic-valid candidate.
+
+
+58. Do not predict a future stochastic TTS synthesis when a real accepted synthesis already exists.
+Repeated Chirp3-HD calls for identical text can differ by several seconds. A script-stage majority/median gate cannot guarantee that a later independently synthesized M6 file will have the same duration.
+
+Prevention:
+- treat an actual in-window MP3 as the artifact, not merely as a timing sample;
+- persist its exact SHA, duration, audio metadata, narration and committed provider-usage ledger;
+- reuse that exact file downstream rather than re-synthesizing the same narration;
+- keep the final M6 persistence/duration/SHA checks fail-closed;
+- use a new TTS call only when no persisted accepted candidate exists.

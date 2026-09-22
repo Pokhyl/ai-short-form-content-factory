@@ -25,7 +25,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT\n  voiceover_run_id::text AS voiceover_run_id,\n  script_version_id::text AS script_version_id,\n  narration,\n  language_code,\n  target_duration_seconds,\n  locale,\n  voice_name,\n  sku_family,\n  character_count,\n  usage_idempotency_key\nFROM factory.begin_voiceover($1::uuid);",
+        "query": "SELECT\n  voiceover_run_id::text AS voiceover_run_id,\n  script_version_id::text AS script_version_id,\n  narration,\n  language_code,\n  target_duration_seconds,\n  locale,\n  voice_name,\n  sku_family,\n  character_count,\n  usage_idempotency_key,\n  reuse_candidate,\n  candidate_id::text AS candidate_id,\n  candidate_storage_path,\n  candidate_audio_sha256,\n  candidate_bytes,\n  candidate_duration_ms,\n  candidate_sample_rate,\n  candidate_channels,\n  candidate_codec\nFROM factory.begin_voiceover_v2($1::uuid);",
         "options": {
           "queryReplacement": "={{ [ $json.job_id ] }}"
         }
@@ -1520,6 +1520,115 @@
         11580,
         -260
       ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-reusable-m5-candidate-condition",
+              "leftValue": "={{ $json.reuse_candidate }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-reusable-m5-candidate",
+      "name": "Route Reusable M5 Candidate",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://shorts-v2-media-worker-1:3001/voiceover-candidates/' + $('When Executed by Another Workflow').first().json.job_id + '/promote' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ expected_sha256: $('Begin Voiceover').first().json.candidate_audio_sha256, expected_duration_ms: $('Begin Voiceover').first().json.candidate_duration_ms }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m6-promote-m5-candidate",
+      "name": "Promote M5 Voiceover Candidate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        -360
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx = $('Begin Voiceover').first().json;\nconst trigger = $('When Executed by Another Workflow').first().json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') statusCode = 201;\n\nconst jobId = String(trigger.job_id ?? '').trim();\nconst expectedPath = '/data/voiceovers/' + jobId + '/final.mp3';\nconst storagePath = String(body.storage_path ?? '').trim();\nconst returnedJobId = String(body.job_id ?? '').trim();\nconst sha256 = String(body.sha256 ?? '').trim().toLowerCase();\nconst bytes = Number(body.bytes);\nconst durationMs = Number(body.duration_ms);\nconst sampleRate = Number(body.sample_rate);\nconst channels = Number(body.channels);\nconst codec = String(body.codec ?? '').trim().toLowerCase();\n\nconst storeSuccess =\n  ctx.reuse_candidate === true &&\n  statusCode === 201 &&\n  body.status === 'ready' &&\n  returnedJobId === jobId &&\n  storagePath === expectedPath &&\n  sha256 === String(ctx.candidate_audio_sha256 ?? '').toLowerCase() &&\n  bytes === Number(ctx.candidate_bytes) &&\n  durationMs === Number(ctx.candidate_duration_ms) &&\n  sampleRate === Number(ctx.candidate_sample_rate) &&\n  channels === Number(ctx.candidate_channels) &&\n  codec === String(ctx.candidate_codec ?? '').toLowerCase() &&\n  /^[0-9a-f]{64}$/.test(sha256) &&\n  Number.isInteger(bytes) && bytes > 0 &&\n  Number.isInteger(durationMs) && durationMs > 0 &&\n  Number.isInteger(sampleRate) && sampleRate > 0 &&\n  Number.isInteger(channels) && channels > 0 &&\n  codec === 'mp3';\n\nconst errorMessage = storeSuccess\n  ? ''\n  : (\n      body?.message ??\n      body?.error ??\n      response?.error?.message ??\n      response?.message ??\n      'M5 voiceover candidate promotion failed'\n    );\n\nreturn {json:{\n  job_id: jobId,\n  voiceover_run_id: String(ctx.voiceover_run_id ?? '').trim(),\n  target_duration_seconds: Number(ctx.target_duration_seconds),\n  store_success: storeSuccess,\n  storage_http_status: statusCode,\n  storage_path: storagePath,\n  audio_sha256: sha256,\n  bytes,\n  duration_ms: durationMs,\n  sample_rate: sampleRate,\n  channels,\n  codec,\n  tts_consumed: true,\n  reused_m5_candidate: true,\n  error_message: storeSuccess ? '' : String(errorMessage).slice(0,3000),\n}};"
+      },
+      "id": "video-m6-normalize-promoted-m5-candidate",
+      "name": "Normalize Promoted M5 Candidate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        -360
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "video-m6-route-promoted-m5-candidate-success-condition",
+              "leftValue": "={{ $json.store_success }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-m6-route-promoted-m5-candidate-success",
+      "name": "Route Promoted M5 Candidate Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1200,
+        -360
+      ]
     }
   ],
   "connections": {
@@ -1538,7 +1647,7 @@
       "main": [
         [
           {
-            "node": "Google Cloud TTS",
+            "node": "Route Reusable M5 Candidate",
             "type": "main",
             "index": 0
           }
@@ -2469,6 +2578,71 @@
       ]
     },
     "Route Storage Success Retry 4": {
+      "main": [
+        [
+          {
+            "node": "Complete Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Reusable M5 Candidate": {
+      "main": [
+        [
+          {
+            "node": "Promote M5 Voiceover Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Cloud TTS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Promote M5 Voiceover Candidate": {
+      "main": [
+        [
+          {
+            "node": "Normalize Promoted M5 Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Promoted M5 Candidate": {
+      "main": [
+        [
+          {
+            "node": "Route Promoted M5 Candidate Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Post-TTS Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Promoted M5 Candidate Success": {
       "main": [
         [
           {

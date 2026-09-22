@@ -119,7 +119,7 @@
         "operation": "executeQuery",
         "query": "SELECT script_version_id::text AS script_version_id, scene_count, shot_count, narration_word_count\nFROM factory.commit_storyboard($1::uuid, $2::text, $3::jsonb, $4::jsonb);",
         "options": {
-          "queryReplacement": "={{ [ $json.script_run_id, $json.model, JSON.stringify($json.storyboard), JSON.stringify($json.usage) ] }}"
+          "queryReplacement": "={{ [ $('Canonicalize Final Storyboard').first().json.script_run_id, $('Canonicalize Final Storyboard').first().json.model, JSON.stringify($('Canonicalize Final Storyboard').first().json.storyboard), JSON.stringify($('Canonicalize Final Storyboard').first().json.usage) ] }}"
         }
       },
       "id": "video-m5-commit",
@@ -2253,7 +2253,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const ctx = $('Prepare Timing Stability Probe B').first().json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nconst statusCode = Number(response.statusCode ?? response.status ?? 0);\nconst bMs = Number(body.duration_ms);\nif (\n  statusCode !== 200 ||\n  body.status !== 'ready' ||\n  !Number.isInteger(bMs) ||\n  bMs <= 0\n) {\n  const message =\n    body?.message ??\n    body?.error ??\n    response?.error?.message ??\n    response?.message ??\n    'media-worker timing stability probe B failed';\n  throw new Error('M5 timing stability probe B failed: ' + String(message));\n}\n\nconst targetMs = Number(ctx.target_duration_ms);\nconst originalMs = Number(ctx.stability_original_ms);\nconst aMs = Number(ctx.stability_a_measured_duration_ms);\nif (![targetMs,originalMs,aMs].every((v) => Number.isInteger(v) && v > 0)) {\n  throw new Error('timing stability B context invalid');\n}\n\nconst samples = [originalMs,aMs,bMs].sort((a,b) => a-b);\nconst medianMs = samples[1];\nconst spreadMs = samples[2] - samples[0];\nconst requestedToleranceMs = Number(ctx.requested_tolerance_ms);\nif (!Number.isInteger(requestedToleranceMs) || requestedToleranceMs <= 0) {\n  throw new Error('timing stability B requested tolerance invalid');\n}\nconst finalToleranceMs = requestedToleranceMs;\nconst centerToleranceMs = requestedToleranceMs;\nconst inlierSamples = [originalMs,aMs,bMs].filter(\n  (v) => Math.abs(v-targetMs) <= finalToleranceMs\n);\nconst withinFinalCount = inlierSamples.length;\nconst medianDelta = Math.abs(medianMs-targetMs);\nconst inlierSpreadMs = inlierSamples.length >= 2\n  ? Math.max(...inlierSamples) - Math.min(...inlierSamples)\n  : 0;\n\nconst requiredWithinFinal = 2;\nconst allowedMedianDelta = centerToleranceMs;\nconst allowedInlierSpreadMs =\n  Math.max(2000, Math.round(targetMs * 0.10));\n\n// M5 is a script-duration preflight, not the final audio gate.\n// Chirp voices can vary materially between identical syntheses.\n// Use the median of three real TTS measurements as the robust estimate,\n// but require a majority (2/3) of actual syntheses inside the final window.\n// A median-only pass with one in-window sample is too fragile for M6,\n// which must persist one real final audio candidate inside its strict gate.\nconst stabilityOk =\n  withinFinalCount >= requiredWithinFinal &&\n  medianDelta <= allowedMedianDelta;\n\nconst origin = Number(ctx.origin_probe_attempt);\n\nreturn {json:{\n  script_run_id: ctx.script_run_id,\n  model: ctx.model,\n  storyboard: ctx.storyboard,\n  narration_word_count: ctx.narration_word_count,\n  scene_count: ctx.scene_count,\n  shot_count: ctx.shot_count,\n  usage: ctx.usage,\n  measured_duration_ms: medianMs,\n  target_duration_ms: targetMs,\n  tolerance_ms: centerToleranceMs,\n  duration_delta_ms: medianDelta,\n  stability_original_ms: originalMs,\n  stability_confirm_a_ms: aMs,\n  stability_confirm_b_ms: bMs,\n  stability_median_ms: medianMs,\n  stability_spread_ms: spreadMs,\n  stability_inlier_spread_ms: inlierSpreadMs,\n  stability_allowed_inlier_spread_ms: allowedInlierSpreadMs,\n  stability_within_final_count: withinFinalCount,\n  stability_final_tolerance_ms: finalToleranceMs,\n  stability_center_tolerance_ms: centerToleranceMs,\n  stability_required_within_final: requiredWithinFinal,\n  stability_allowed_median_delta_ms: allowedMedianDelta,\n  timing_stability_ok: stabilityOk,\n  origin_probe_attempt: origin,\n  origin_is_1: origin === 1,\n  origin_is_2: origin === 2,\n  origin_is_3: origin === 3,\n  origin_is_4: origin === 4,\n}};"
+        "jsCode": "const ctx = $('Prepare Timing Stability Probe B').first().json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\n\nconst statusCode = Number(response.statusCode ?? response.status ?? 0);\nconst bMs = Number(body.duration_ms);\nif (\n  statusCode !== 200 ||\n  body.status !== 'ready' ||\n  !Number.isInteger(bMs) ||\n  bMs <= 0\n) {\n  const message =\n    body?.message ??\n    body?.error ??\n    response?.error?.message ??\n    response?.message ??\n    'media-worker timing stability probe B failed';\n  throw new Error('M5 timing stability probe B failed: ' + String(message));\n}\n\nconst targetMs = Number(ctx.target_duration_ms);\nconst originalMs = Number(ctx.stability_original_ms);\nconst aMs = Number(ctx.stability_a_measured_duration_ms);\nif (![targetMs,originalMs,aMs].every((v) => Number.isInteger(v) && v > 0)) {\n  throw new Error('timing stability B context invalid');\n}\n\nconst requestedToleranceMs = Number(ctx.requested_tolerance_ms);\nif (!Number.isInteger(requestedToleranceMs) || requestedToleranceMs <= 0) {\n  throw new Error('timing stability B requested tolerance invalid');\n}\n\n// M5 now hands the exact accepted MP3 to M6. Therefore acceptance is based\n// on a real synthesized file inside the same final duration gate used by M6,\n// not on predicting whether a future stochastic Chirp synthesis will match.\nconst finalToleranceMs =\n  Math.max(750, Math.round(targetMs * 0.05)) + 50;\n\nconst origin = Number(ctx.origin_probe_attempt);\nconst originPrepareNames = {\n  1: 'Prepare Timing Probe',\n  2: 'Prepare Timing Probe 2',\n  3: 'Prepare Timing Probe 3',\n  4: 'Prepare Timing Probe 4',\n  5: 'Prepare Timing Probe 5',\n};\nconst originNormalizeNames = {\n  1: 'Normalize TTS Timing Probe',\n  2: 'Normalize TTS Timing Probe 2',\n  3: 'Normalize TTS Timing Probe 3',\n  4: 'Normalize TTS Timing Probe 4',\n  5: 'Normalize TTS Timing Probe 5',\n};\nconst originPrepareName = originPrepareNames[origin];\nconst originNormalizeName = originNormalizeNames[origin];\nif (!originPrepareName || !originNormalizeName) {\n  throw new Error('timing stability origin probe attempt invalid');\n}\n\nconst originalPrepare = $(originPrepareName).first().json;\nconst originalAudio = $(originNormalizeName).first().json;\nconst aPrepare = $('Prepare Timing Stability Probe').first().json;\nconst aAudio = $('Normalize TTS Timing Stability').first().json;\nconst bPrepare = $('Prepare Timing Stability Probe B').first().json;\nconst bAudio = $('Normalize TTS Timing Stability B').first().json;\n\nconst isAudioBase64 = (value) =>\n  typeof value === 'string' &&\n  value.length > 100 &&\n  /^[A-Za-z0-9+/]+={0,2}$/.test(value);\n\nconst candidates = [\n  {\n    source: 'origin',\n    duration_ms: originalMs,\n    audio_base64: originalAudio.audio_base64,\n    usage_idempotency_key: originalPrepare.probe_usage_key,\n  },\n  {\n    source: 'stability_a',\n    duration_ms: aMs,\n    audio_base64: aAudio.audio_base64,\n    usage_idempotency_key: aPrepare.stability_usage_key,\n  },\n  {\n    source: 'stability_b',\n    duration_ms: bMs,\n    audio_base64: bAudio.audio_base64,\n    usage_idempotency_key: bPrepare.stability_b_usage_key,\n  },\n].map((candidate) => ({\n  ...candidate,\n  duration_delta_ms: Math.abs(candidate.duration_ms-targetMs),\n}));\n\nconst acceptedCandidates = candidates\n  .filter((candidate) =>\n    candidate.duration_delta_ms <= finalToleranceMs &&\n    isAudioBase64(candidate.audio_base64) &&\n    typeof candidate.usage_idempotency_key === 'string' &&\n    candidate.usage_idempotency_key.length > 0\n  )\n  .sort((left,right) =>\n    left.duration_delta_ms-right.duration_delta_ms ||\n    left.source.localeCompare(right.source)\n  );\n\nconst acceptedCandidate = acceptedCandidates[0] ?? null;\n\nconst samples = [originalMs,aMs,bMs].sort((a,b) => a-b);\nconst medianMs = samples[1];\nconst spreadMs = samples[2] - samples[0];\nconst inlierSamples = [originalMs,aMs,bMs].filter(\n  (value) => Math.abs(value-targetMs) <= finalToleranceMs\n);\nconst withinFinalCount = inlierSamples.length;\nconst medianDelta = Math.abs(medianMs-targetMs);\nconst inlierSpreadMs = inlierSamples.length >= 2\n  ? Math.max(...inlierSamples) - Math.min(...inlierSamples)\n  : 0;\n\nconst stabilityOk = acceptedCandidate !== null;\n\nreturn {json:{\n  script_run_id: ctx.script_run_id,\n  model: ctx.model,\n  storyboard: ctx.storyboard,\n  narration_word_count: ctx.narration_word_count,\n  scene_count: ctx.scene_count,\n  shot_count: ctx.shot_count,\n  usage: ctx.usage,\n  measured_duration_ms: medianMs,\n  target_duration_ms: targetMs,\n  tolerance_ms: finalToleranceMs,\n  duration_delta_ms: medianDelta,\n  stability_original_ms: originalMs,\n  stability_confirm_a_ms: aMs,\n  stability_confirm_b_ms: bMs,\n  stability_median_ms: medianMs,\n  stability_spread_ms: spreadMs,\n  stability_inlier_spread_ms: inlierSpreadMs,\n  stability_within_final_count: withinFinalCount,\n  stability_final_tolerance_ms: finalToleranceMs,\n  stability_required_within_final: 1,\n  timing_stability_ok: stabilityOk,\n  accepted_voiceover_candidate: acceptedCandidate\n    ? {\n        source: acceptedCandidate.source,\n        duration_ms: acceptedCandidate.duration_ms,\n        duration_delta_ms: acceptedCandidate.duration_delta_ms,\n        audio_base64: acceptedCandidate.audio_base64,\n        usage_idempotency_key: acceptedCandidate.usage_idempotency_key,\n        locale: String(ctx.locale ?? bPrepare.locale ?? ''),\n        voice_name: String(ctx.voice_name ?? bPrepare.voice_name ?? ''),\n        sku_family: String(ctx.sku_family ?? bPrepare.sku_family ?? ''),\n      }\n    : null,\n  origin_probe_attempt: origin,\n  origin_is_1: origin === 1,\n  origin_is_2: origin === 2,\n  origin_is_3: origin === 3,\n  origin_is_4: origin === 4,\n}};"
       },
       "id": "video-m5-normalize-timing-stability-b",
       "name": "Normalize Timing Stability B",
@@ -2911,6 +2911,71 @@
         16700,
         440
       ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://shorts-v2-media-worker-1:3001/voiceover-candidates/' + $('When Executed by Another Workflow').first().json.job_id }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ audio_base64: $json.accepted_voiceover_candidate.audio_base64 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "video-m5-store-accepted-voiceover-candidate",
+      "name": "Store Accepted Voiceover Candidate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        18360,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $('Canonicalize Final Storyboard').first().json;\nconst accepted = source.accepted_voiceover_candidate;\nif (!accepted || typeof accepted !== 'object') {\n  throw new Error('accepted voiceover candidate metadata missing');\n}\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object'\n  ? response.body\n  : response;\nlet statusCode = Number(response.statusCode ?? response.status ?? 0);\nif (!statusCode && body.status === 'ready') statusCode = 201;\n\nconst jobId = String(\n  $('When Executed by Another Workflow').first().json.job_id ?? ''\n).trim();\nconst expectedPath =\n  '/data/voiceover-candidates/' + jobId + '/accepted.mp3';\nconst durationMs = Number(body.duration_ms);\nconst targetMs = Number(source.target_duration_ms);\nconst toleranceMs =\n  Math.max(750, Math.round(targetMs * 0.05)) + 50;\nconst durationOk =\n  Number.isInteger(durationMs) &&\n  Math.abs(durationMs-targetMs) <= toleranceMs &&\n  durationMs === Number(accepted.duration_ms);\nconst sha256 = String(body.sha256 ?? '').trim().toLowerCase();\nconst bytes = Number(body.bytes);\nconst sampleRate = Number(body.sample_rate);\nconst channels = Number(body.channels);\nconst codec = String(body.codec ?? '').trim().toLowerCase();\nconst storagePath = String(body.storage_path ?? '').trim();\nconst returnedJobId = String(body.job_id ?? '').trim();\n\nconst success =\n  statusCode === 201 &&\n  body.status === 'ready' &&\n  returnedJobId === jobId &&\n  storagePath === expectedPath &&\n  durationOk &&\n  /^[0-9a-f]{64}$/.test(sha256) &&\n  Number.isInteger(bytes) && bytes > 0 &&\n  Number.isInteger(sampleRate) && sampleRate > 0 &&\n  Number.isInteger(channels) && channels > 0 &&\n  codec === 'mp3';\n\nif (!success) {\n  const message =\n    body?.message ??\n    body?.error ??\n    response?.error?.message ??\n    response?.message ??\n    'accepted voiceover candidate storage failed';\n  throw new Error(\n    'M5 accepted voiceover candidate storage failed: ' +\n    String(message)\n  );\n}\n\nreturn {json:{\n  script_run_id: source.script_run_id,\n  narration: source.storyboard.narration,\n  locale: accepted.locale,\n  voice_name: accepted.voice_name,\n  sku_family: accepted.sku_family,\n  usage_idempotency_key: accepted.usage_idempotency_key,\n  storage_path: storagePath,\n  audio_sha256: sha256,\n  bytes,\n  duration_ms: durationMs,\n  sample_rate: sampleRate,\n  channels,\n  codec,\n}};"
+      },
+      "id": "video-m5-normalize-accepted-voiceover-candidate",
+      "name": "Normalize Accepted Voiceover Candidate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        18600,
+        -400
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT candidate_id::text AS candidate_id, duration_ms, audio_sha256\nFROM factory.register_voiceover_candidate(\n  $1::uuid,$2::text,$3::text,$4::text,$5::text,$6::text,\n  $7::text,$8::text,$9::bigint,$10::integer,$11::integer,$12::integer,$13::text\n);",
+        "options": {
+          "queryReplacement": "={{ [ $json.script_run_id, $json.narration, $json.locale, $json.voice_name, $json.sku_family, $json.usage_idempotency_key, $json.storage_path, $json.audio_sha256, $json.bytes, $json.duration_ms, $json.sample_rate, $json.channels, $json.codec ] }}"
+        }
+      },
+      "id": "video-m5-register-accepted-voiceover-candidate",
+      "name": "Register Accepted Voiceover Candidate",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        18840,
+        -400
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
     }
   ],
   "connections": {
@@ -3302,7 +3367,7 @@
         ],
         [
           {
-            "node": "Build Timing Repair",
+            "node": "Prepare Timing Stability Probe",
             "type": "main",
             "index": 0
           }
@@ -3533,7 +3598,7 @@
         ],
         [
           {
-            "node": "Build Timing Repair 2",
+            "node": "Prepare Timing Stability Probe",
             "type": "main",
             "index": 0
           }
@@ -3775,7 +3840,7 @@
         ],
         [
           {
-            "node": "Build Final Duration Repair",
+            "node": "Prepare Timing Stability Probe",
             "type": "main",
             "index": 0
           }
@@ -4071,7 +4136,7 @@
         ],
         [
           {
-            "node": "Build Final Measured Correction",
+            "node": "Prepare Timing Stability Probe",
             "type": "main",
             "index": 0
           }
@@ -4573,7 +4638,7 @@
       "main": [
         [
           {
-            "node": "Commit Storyboard",
+            "node": "Store Accepted Voiceover Candidate",
             "type": "main",
             "index": 0
           }
@@ -4883,7 +4948,7 @@
         ],
         [
           {
-            "node": "Prepare Final Timing Failure 5",
+            "node": "Prepare Timing Stability Probe",
             "type": "main",
             "index": 0
           }
@@ -4913,6 +4978,53 @@
         [
           {
             "node": "Prepare Final Timing Failure 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Accepted Voiceover Candidate": {
+      "main": [
+        [
+          {
+            "node": "Normalize Accepted Voiceover Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Accepted Voiceover Candidate": {
+      "main": [
+        [
+          {
+            "node": "Register Accepted Voiceover Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Script Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Register Accepted Voiceover Candidate": {
+      "main": [
+        [
+          {
+            "node": "Commit Storyboard",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Script Failure",
             "type": "main",
             "index": 0
           }

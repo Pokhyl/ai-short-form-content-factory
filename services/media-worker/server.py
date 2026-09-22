@@ -20,6 +20,7 @@ import urllib.request
 
 DATA_ROOT = Path("/data")
 VOICEOVER_ROOT = DATA_ROOT / "voiceovers"
+VOICEOVER_CANDIDATE_ROOT = DATA_ROOT / "voiceover-candidates"
 ALIGNMENT_ROOT = DATA_ROOT / "alignments"
 VISUAL_ROOT = DATA_ROOT / "visuals"
 RENDER_ROOT = DATA_ROOT / "renders"
@@ -1427,6 +1428,9 @@ class Handler(BaseHTTPRequestHandler):
     def _voiceover_job_id(self, suffix=""):
         return self._job_id_for_path("voiceovers", suffix)
 
+    def _voiceover_candidate_job_id(self, suffix=""):
+        return self._job_id_for_path("voiceover-candidates", suffix)
+
     def _alignment_job_id(self, suffix=""):
         return self._job_id_for_path("alignments", suffix)
 
@@ -1471,6 +1475,21 @@ class Handler(BaseHTTPRequestHandler):
 
     def _voiceover_metadata(self, job_id):
         path = VOICEOVER_ROOT / job_id / "final.mp3"
+        if not path.is_file():
+            return None
+
+        probe = ffprobe_audio(path)
+        return {
+            "status": "ready",
+            "job_id": job_id,
+            "storage_path": str(path),
+            "sha256": file_sha256(path),
+            "bytes": path.stat().st_size,
+            **probe,
+        }
+
+    def _voiceover_candidate_metadata(self, job_id):
+        path = VOICEOVER_CANDIDATE_ROOT / job_id / "accepted.mp3"
         if not path.is_file():
             return None
 
@@ -1535,6 +1554,26 @@ class Handler(BaseHTTPRequestHandler):
                 return
 
             self._json(200, body)
+            return
+
+        job_id = self._voiceover_candidate_job_id("/metadata")
+        if job_id is not None:
+            try:
+                payload = self._voiceover_candidate_metadata(job_id)
+                if payload is None:
+                    self._json(404, {"error": "voiceover_candidate_not_found"})
+                    return
+            except (OSError, subprocess.SubprocessError, ValueError, json.JSONDecodeError) as exc:
+                self._json(
+                    500,
+                    {
+                        "error": "voiceover_candidate_metadata_failed",
+                        "message": str(exc),
+                    },
+                )
+                return
+
+            self._json(200, payload)
             return
 
         job_id = self._voiceover_job_id("/metadata")
@@ -1754,6 +1793,200 @@ class Handler(BaseHTTPRequestHandler):
         finally:
             if probe_path is not None:
                 probe_path.unlink(missing_ok=True)
+
+    def _handle_voiceover_candidate_post(self, job_id):
+        candidate_dir = VOICEOVER_CANDIDATE_ROOT / job_id
+        candidate_path = candidate_dir / "accepted.mp3"
+
+        if candidate_path.exists():
+            self._json(
+                409,
+                {
+                    "error": "voiceover_candidate_already_exists",
+                    "job_id": job_id,
+                },
+            )
+            return
+
+        try:
+            payload = self._read_json_body()
+            encoded = payload.get("audio_base64")
+            if not isinstance(encoded, str) or not encoded:
+                raise ValueError("audio_base64 is required")
+
+            try:
+                audio_bytes = base64.b64decode(encoded, validate=True)
+            except (binascii.Error, ValueError) as exc:
+                raise ValueError("audio_base64 is invalid") from exc
+
+            if not audio_bytes:
+                raise ValueError("decoded audio is empty")
+
+            candidate_dir.mkdir(parents=True, exist_ok=True)
+
+            try:
+                fd = os.open(
+                    candidate_path,
+                    os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                    0o640,
+                )
+            except FileExistsError:
+                self._json(
+                    409,
+                    {
+                        "error": "voiceover_candidate_already_exists",
+                        "job_id": job_id,
+                    },
+                )
+                return
+
+            try:
+                with os.fdopen(fd, "wb") as handle:
+                    handle.write(audio_bytes)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+
+                probe = ffprobe_audio(candidate_path)
+                sha256 = hashlib.sha256(audio_bytes).hexdigest()
+                result = {
+                    "status": "ready",
+                    "job_id": job_id,
+                    "storage_path": str(candidate_path),
+                    "sha256": sha256,
+                    "bytes": len(audio_bytes),
+                    **probe,
+                }
+            except Exception:
+                try:
+                    candidate_path.unlink(missing_ok=True)
+                finally:
+                    raise
+
+        except ValueError as exc:
+            self._json(
+                400,
+                {
+                    "error": "invalid_voiceover_candidate_request",
+                    "message": str(exc),
+                },
+            )
+            return
+        except subprocess.TimeoutExpired:
+            self._json(422, {"error": "voiceover_candidate_probe_timeout"})
+            return
+        except (OSError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
+            self._json(
+                422,
+                {
+                    "error": "voiceover_candidate_validation_failed",
+                    "message": str(exc),
+                },
+            )
+            return
+
+        self._json(201, result)
+
+    def _handle_voiceover_candidate_promote_post(self, job_id):
+        candidate_path = VOICEOVER_CANDIDATE_ROOT / job_id / "accepted.mp3"
+        final_dir = VOICEOVER_ROOT / job_id
+        final_path = final_dir / "final.mp3"
+
+        if not candidate_path.is_file():
+            self._json(
+                404,
+                {
+                    "error": "voiceover_candidate_not_found",
+                    "job_id": job_id,
+                },
+            )
+            return
+
+        if final_path.exists():
+            self._json(
+                409,
+                {
+                    "error": "voiceover_already_exists",
+                    "job_id": job_id,
+                },
+            )
+            return
+
+        try:
+            payload = self._read_json_body()
+            expected_sha256 = str(payload.get("expected_sha256") or "").lower()
+            try:
+                expected_duration_ms = int(payload.get("expected_duration_ms"))
+            except (TypeError, ValueError) as exc:
+                raise ValueError("expected_duration_ms must be an integer") from exc
+
+            if not re.fullmatch(r"[0-9a-f]{64}", expected_sha256):
+                raise ValueError("expected_sha256 must be lowercase SHA256")
+            if expected_duration_ms <= 0:
+                raise ValueError("expected_duration_ms must be positive")
+
+            actual_sha256 = file_sha256(candidate_path)
+            candidate_probe = ffprobe_audio(candidate_path)
+            if actual_sha256 != expected_sha256:
+                raise ValueError("voiceover candidate SHA256 mismatch")
+            if candidate_probe["duration_ms"] != expected_duration_ms:
+                raise ValueError("voiceover candidate duration mismatch")
+
+            final_dir.mkdir(parents=True, exist_ok=True)
+            try:
+                os.link(candidate_path, final_path)
+            except FileExistsError:
+                self._json(
+                    409,
+                    {
+                        "error": "voiceover_already_exists",
+                        "job_id": job_id,
+                    },
+                )
+                return
+
+            try:
+                final_probe = ffprobe_audio(final_path)
+                final_sha256 = file_sha256(final_path)
+                if final_sha256 != actual_sha256:
+                    raise ValueError("promoted voiceover SHA256 mismatch")
+                if final_probe["duration_ms"] != candidate_probe["duration_ms"]:
+                    raise ValueError("promoted voiceover duration mismatch")
+
+                result = {
+                    "status": "ready",
+                    "job_id": job_id,
+                    "storage_path": str(final_path),
+                    "sha256": final_sha256,
+                    "bytes": final_path.stat().st_size,
+                    **final_probe,
+                }
+            except Exception:
+                final_path.unlink(missing_ok=True)
+                raise
+
+        except ValueError as exc:
+            self._json(
+                400,
+                {
+                    "error": "invalid_voiceover_candidate_promotion",
+                    "message": str(exc),
+                },
+            )
+            return
+        except subprocess.TimeoutExpired:
+            self._json(422, {"error": "voiceover_candidate_promotion_timeout"})
+            return
+        except (OSError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
+            self._json(
+                422,
+                {
+                    "error": "voiceover_candidate_promotion_failed",
+                    "message": str(exc),
+                },
+            )
+            return
+
+        self._json(201, result)
 
     def _handle_voiceover_post(self, job_id):
         final_dir = VOICEOVER_ROOT / job_id
@@ -2218,6 +2451,16 @@ class Handler(BaseHTTPRequestHandler):
             self._handle_voiceover_probe_post()
             return
 
+        candidate_promote_job_id = self._voiceover_candidate_job_id("/promote")
+        if candidate_promote_job_id is not None:
+            self._handle_voiceover_candidate_promote_post(candidate_promote_job_id)
+            return
+
+        candidate_job_id = self._voiceover_candidate_job_id()
+        if candidate_job_id is not None:
+            self._handle_voiceover_candidate_post(candidate_job_id)
+            return
+
         render_job_id = self._render_job_id()
         if render_job_id is not None:
             self._handle_render_post(render_job_id)
@@ -2246,6 +2489,7 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     VOICEOVER_ROOT.mkdir(parents=True, exist_ok=True)
+    VOICEOVER_CANDIDATE_ROOT.mkdir(parents=True, exist_ok=True)
     ALIGNMENT_ROOT.mkdir(parents=True, exist_ok=True)
     VISUAL_ROOT.mkdir(parents=True, exist_ok=True)
     RENDER_ROOT.mkdir(parents=True, exist_ok=True)

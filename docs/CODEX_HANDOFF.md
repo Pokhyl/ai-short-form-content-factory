@@ -1280,3 +1280,31 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-pl15-v107-final-hybrid-semantic-filter.json`.
 - Production remains M5 v107 / M8 v59 at this checkpoint.
 - Next: commit/push, deploy only M5, then one fresh PL15.
+
+
+### TTS timing architecture changed to exact-audio handoff — isolated acceptance PASS — NOT DEPLOYED — 2026-09-22
+
+- Root cause is architectural, not another word-count edge case: Chirp3-HD is stochastic. M5 was synthesizing real audio, measuring it, then discarding it; M6 synthesized the same narration again and could receive a materially different duration.
+- Exact execution 9523 evidence for the same final narration:
+  - 15.336 s;
+  - 13.368 s;
+  - 16.248 s.
+  The 15.336 s MP3 was already inside the final 15 s gate but old M5 rejected the text because only 1/3 samples were in-window.
+- New architecture:
+  - M5 still observes the real TTS samples, but if any actual MP3 is inside the same final M6 tolerance it chooses the closest file;
+  - M5 stages that exact MP3 in media-worker and registers SHA/duration/audio metadata plus the exact committed M5 TTS usage ledger;
+  - M6 adopts the registered candidate via `begin_voiceover_v2`, promotes the same file to `final.mp3`, and does not call Google TTS again;
+  - the old M6 synth/retry path remains only for jobs without a candidate.
+- New persistence: `factory.voiceover_candidates`, `register_voiceover_candidate`, `begin_voiceover_v2` in `db/11-voiceover-candidate-reuse.sql`.
+- New media-worker endpoints: candidate store, candidate metadata, and exact SHA/duration promotion.
+- Exact 9523 replay with no provider calls now accepts the original 15.336 s MP3:
+  - usage key `m5-tts-probe:2bba5e4f-f55c-4ae3-9148-8dc24cfff63b:5`;
+  - SHA `8d56d85b85d1b22409493cb117466bdea8d32d221e10cdc61febfcb494f2f716`;
+  - 61,344 bytes;
+  - delta from 15 s = 336 ms.
+- Isolated media-worker integration PASS: store -> metadata -> promote -> final metadata preserved exact SHA/bytes/duration/sample-rate/channels/codec; second promote returned 409.
+- DB integration PASS inside one transaction with ROLLBACK: candidate registered, adopted by M6, same committed M5 usage ledger reused; rollback confirmed no production schema/data mutation from the test.
+- Validation: **245/245 tests PASS**, M5 syntax 56/56 graph 127/127, M6 syntax 23/23 graph 67/67, media-worker py_compile PASS, diff checks PASS.
+- Evidence: `docs/acceptance/2026-09-22-m5-m6-exact-audio-handoff.json`.
+- Production remains M5 v108 / M6 v7 / M8 v59 at this checkpoint.
+- Next: commit/push; deploy DB migration, media-worker, then only M5+M6; verify exact live state; only then one fresh PL15.

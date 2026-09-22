@@ -26,14 +26,32 @@ for(const name of builders) {
 
 function runStabilityB(ctx,bMs) {
   const code=workflow.nodes.find(n=>n.name==='Normalize Timing Stability B').parameters.jsCode;
-  const $=name=>{
-    if(name==='Prepare Timing Stability Probe B') return {first:()=>({json:ctx})};
-    throw new Error('unexpected node '+name);
+  const audio=(ch)=>ch.repeat(256);
+  const refs={
+    'Prepare Timing Stability Probe B':{
+      locale:'pl-PL',
+      voice_name:'pl-PL-Chirp3-HD-Enceladus',
+      sku_family:'chirp3_hd',
+      stability_b_usage_key:'m5-b',
+      ...ctx,
+    },
+    'Prepare Timing Probe':{probe_usage_key:'m5-origin'},
+    'Normalize TTS Timing Probe':{audio_base64:audio('A')},
+    'Prepare Timing Stability Probe':{stability_usage_key:'m5-a'},
+    'Normalize TTS Timing Stability':{audio_base64:audio('B')},
+    'Normalize TTS Timing Stability B':{audio_base64:audio('C')},
   };
-  return new Function('$','$json',code)($,{statusCode:200,body:{status:'ready',duration_ms:bMs}}).json;
+  const $=name=>{
+    if(!(name in refs)) throw new Error('unexpected node '+name);
+    return {first:()=>({json:refs[name]})};
+  };
+  return new Function('$','$json',code)(
+    $,
+    {statusCode:200,body:{status:'ready',duration_ms:bMs}}
+  ).json;
 }
 
-test('M6 regression: median-only PL15 stability with one of three in-window samples is rejected',()=>{
+test('PL15 exact-audio handoff accepts one real in-window synthesis because that exact MP3 is reused in M6',()=>{
   const out=runStabilityB({
     target_duration_ms:15000,
     stability_original_ms:15576,
@@ -50,11 +68,17 @@ test('M6 regression: median-only PL15 stability with one of three in-window samp
   },13536);
   assert.equal(out.stability_median_ms,15576);
   assert.equal(out.stability_within_final_count,1);
-  assert.equal(out.stability_required_within_final,2);
-  assert.equal(out.timing_stability_ok,false);
+  assert.equal(out.stability_required_within_final,1);
+  assert.equal(out.timing_stability_ok,true);
+  assert.equal(out.accepted_voiceover_candidate.source,'origin');
+  assert.equal(out.accepted_voiceover_candidate.duration_ms,15576);
+  assert.equal(
+    out.accepted_voiceover_candidate.usage_idempotency_key,
+    'm5-origin'
+  );
 });
 
-test('stability majority passes when two of three real TTS samples are inside final window',()=>{
+test('exact-audio handoff selects the closest in-window synthesis when more than one is valid',()=>{
   const out=runStabilityB({
     target_duration_ms:15000,
     stability_original_ms:15576,
@@ -69,10 +93,11 @@ test('stability majority passes when two of three real TTS samples are inside fi
     shot_count:5,
     usage:{},
   },16704);
-  assert.equal(out.stability_median_ms,15600);
   assert.equal(out.stability_within_final_count,2);
-  assert.equal(out.stability_required_within_final,2);
+  assert.equal(out.stability_required_within_final,1);
   assert.equal(out.timing_stability_ok,true);
+  assert.equal(out.accepted_voiceover_candidate.source,'origin');
+  assert.equal(out.accepted_voiceover_candidate.duration_ms,15576);
 });
 
 test('PL15 regression: correction interpolates from 17.136s median, not 15.144s first sample',()=>{
@@ -340,7 +365,7 @@ test('precision retry sees original meaning even when failed draft lost an objec
 });
 
 
-test('M5 regression: two-sample stability cannot bypass the three-sample majority gate',()=>{
+test('M5 still observes the third real synthesis before selecting the persisted final candidate',()=>{
   const fastRoute=workflow.connections['Route Timing Stability PASS']?.main;
   assert.equal(fastRoute?.[0]?.[0]?.node,'Prepare Timing Stability Probe B');
   assert.equal(fastRoute?.[1]?.[0]?.node,'Prepare Timing Stability Probe B');

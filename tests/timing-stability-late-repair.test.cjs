@@ -40,11 +40,16 @@ test('final measured retry uses bounded nearest semantic hybrid before real prob
   );
 });
 
-test('probe 5 remains stability-gated for both in-window and bounded near-miss samples',()=>{
-  const route=byName['Route Timing Within Target 5']
-    .parameters.conditions.conditions[0].leftValue;
-  assert.equal(route,'={{ $json.timing_ok || $json.timing_stability_candidate }}');
-  const out=workflow.connections['Route Timing Within Target 5'].main;
-  assert.equal(out[0][0].node,'Prepare Timing Stability Probe');
-  assert.equal(out[1][0].node,'Prepare Final Timing Failure 5');
+test('every narration candidate gets three real TTS syntheses before any text repair decision',()=>{
+  for(const name of [
+    'Route Timing Within Target',
+    'Route Timing Within Target 2',
+    'Route Timing Within Target 3',
+    'Route Timing Within Target 4',
+    'Route Timing Within Target 5',
+  ]) {
+    const out=workflow.connections[name].main;
+    assert.equal(out[0][0].node,'Prepare Timing Stability Probe',name);
+    assert.equal(out[1][0].node,'Prepare Timing Stability Probe',name);
+  }
 });

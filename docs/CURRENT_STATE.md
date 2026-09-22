@@ -800,3 +800,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Exact 9516 replay returns 24/24 words with valid S3.
 - Full suite 238/238 PASS; M5 syntax/graph PASS.
 - Production still M5 v107 / M8 v59. Fix not deployed yet.
+
+
+## Exact-audio M5->M6 handoff tested — 2026-09-22
+
+- Replaced timing prediction across independent Chirp syntheses with reuse of the exact real MP3 that already passed the final duration gate.
+- Exact 9523 replay selects 15.336 s / SHA `8d56d85b...f716` from the saved 15.336 / 13.368 / 16.248 s syntheses.
+- Isolated media-worker store/promote integration PASS.
+- DB candidate registration/adoption test PASS under ROLLBACK.
+- Full suite 245/245 PASS; M5/M6 syntax+graph checks PASS.
+- Production is still unchanged: M5 v108, M6 v7, M8 v59.
+- Next: deploy migration + media-worker + only M5/M6, then one fresh PL15.
