@@ -4,7 +4,7 @@ Updated: 2026-09-21
 
 ## Current authoritative status
 
-Production M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v53 `0953f69f-e982-467e-95e0-35161a613771`. PL15 `b3d1f5e3-f368-493b-bde9-f5343783d41d` failed bounded M5 timing in 9216; M8 v53 has not run. One fresh attempt `12f1ac4f-b8dc-4f17-a191-06888fb7e8a4` is now running; monitor it, no duplicate. Generic-unit domain/nameplate fixes have 106 passing tests. Next: runtime proof and final visual/audio QA before EN30. No HUMAN PASS. Older sections are historical.
+Production M5 v98 / M8 v53. Last PL15 `12f1ac4f-b8dc-4f17-a191-06888fb7e8a4` failed in M5 9221 before final TTS because the strict 21-word target could not be formed from the last drafts. Tested fix reuses earlier measured, semantically validated scenes within the existing bounded selection; exact target remains strict. 110 tests PASS, not deployed. Next: M5-only deployment and fresh PL15, then M8 v53 runtime proof and final visual/audio QA. No EN30/HUMAN PASS. Latest details below; earlier sections historical.
 
 ## Repository
 Repo: Pokhyl/ai-short-form-content-factory
@@ -551,3 +551,13 @@ This section supersedes older M8 snapshots above where they conflict.
 
 - Job `12f1ac4f-b8dc-4f17-a191-06888fb7e8a4` accepted via Studio webhook path. Versions unchanged: M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142`, M8 v53 `0953f69f-e982-467e-95e0-35161a613771`.
 - Monitor this exact job. If M5 timing rejection repeats, no further blind attempts; investigate feasibility/calibration. Otherwise continue through M9 and exact visual/audio review before EN30.
+
+### M5 execution 9221 diagnosed; strict measured-draft reuse tested, not deployed — 2026-09-22 local
+
+- Job `12f1ac4f-b8dc-4f17-a191-06888fb7e8a4`: intake 9218 PASS, parent 9219 ERROR, M4 9220 PASS, M5 9221 ERROR on v98. M6–M9 absent. M8 v53 runtime still unproven.
+- Measurements: 26 words/17208 ms → 20/13704 → 24/16968 → 23/18024. Final correction target 21; last candidates/hybrids could reach only 22, so existing strict pre-TTS gate stopped the run.
+- Correction to preliminary interpretation: the final measured exact-word requirement is intentional (regression 9137), not an accidental leftover. It stays strict. The defect is that final hybrid selection ignored earlier measured, semantically valid short scenes from the SAME execution, although they can satisfy the exact target.
+- Scoped fix only in `Validate Final Measured Word Count Retry`: add optional Normalize Timing Probe 2/3 scene alternatives to the existing bounded dynamic program. Revalidate each alternative against immutable original semantics, standalone sentence bounds, and scene identity. Skipped probes/invalid alternatives are ignored. Existing final exact-total, semantic, numeric, negation, TTS tolerance and 3-sample stability gates unchanged. No new provider calls/retry loops/budget.
+- Exact sanitized execution fixture now in `tests/fixtures/m5-9221-final-retry.json`. Pre-fix replay reproduces got 22/target 21; post-fix returns exactly 21 words with original scene identities and semantics. This is code replay, NOT audio timing acceptance.
+- 110/110 tests PASS including exact replay, unavailable branches, semantic-invalid and mismatched-scene negatives plus original 9137 strict-count regression. JSON/113 Code syntax and diff checks PASS.
+- Production remains M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v53 `0953f69f-e982-467e-95e0-35161a613771`. Next: scoped M5 deploy with backup/protected hash, then fresh PL15; no more jobs on unchanged v98. No EN30/HUMAN PASS.

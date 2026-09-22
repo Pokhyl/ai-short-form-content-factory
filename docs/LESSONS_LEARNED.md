@@ -392,3 +392,6 @@ The S3 WIP used the same mutable generic-anchor set for primary and secondary pr
 
 46. Domain inference must exclude generic object/form words consistently with scoring.
 Execution 9212 inferred unit as a machinery domain and sent hydroelectric unit generator equipment, emptying the S4 Commons pool. Reuse generic-object semantics for planner exclusions and test repeated-subject context remains present. Nameplates are signage, not evidence that the named machinery is depicted; extend the existing surface guard and retain requested-nameplate positives.
+
+47. Before weakening a late exact-count guard, check the existing regression and candidate history.
+Execution 9221 had useful measured short scene alternatives, but the final dynamic program saw only recent longer drafts. Reuse a bounded set of same-execution measured scenes, verifying immutable semantics and scene identity again. Keep the intentional final exact-total guard (9137), provider budget, actual TTS gate and stability rules unchanged; successful code replay does not establish audio duration.

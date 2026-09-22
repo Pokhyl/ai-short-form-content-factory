@@ -1,6 +1,6 @@
 {
   "job_id": "12f1ac4f-b8dc-4f17-a191-06888fb7e8a4",
-  "status": "processing",
+  "status": "script_failed",
   "production": {
     "M5": {
       "version": 98,
@@ -11,5 +11,34 @@
       "id": "0953f69f-e982-467e-95e0-35161a613771"
     }
   },
-  "next_step": "Monitor this exact job; no blind repeat if M5 timing fails again."
+  "next_step": "Deploy tested M5 measured-draft reuse, then new PL15. Strict final word target and timing/semantic/stability gates unchanged.",
+  "executions": {
+    "intake": 9218,
+    "parent": 9219,
+    "M4": 9220,
+    "M5": 9221,
+    "M6": null,
+    "M7": null,
+    "M8": null,
+    "M9": null
+  },
+  "failure": "final measured exact-word retry missed required total before TTS: got 22, target 21",
+  "timing_samples": [
+    {
+      "words": 26,
+      "ms": 17208
+    },
+    {
+      "words": 20,
+      "ms": 13704
+    },
+    {
+      "words": 24,
+      "ms": 16968
+    },
+    {
+      "words": 23,
+      "ms": 18024
+    }
+  ]
 }
