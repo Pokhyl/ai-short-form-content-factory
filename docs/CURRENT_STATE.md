@@ -771,3 +771,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Backup `.backups/m8-before-9229-replay-20260922-161125.json`.
 - Other 31 workflow fingerprint unchanged; live M8 core matches repo; Publisher/Studio healthy; no restart.
 - Exactly one fresh PL15 is now authorized by the deterministic replay acceptance.
+
+
+## M5 transient Gemini 503 retry fix tested — 2026-09-22
+
+- Post-M8-replay PL15 job `8f2970ba-4406-4eca-aecb-f9d67d2a895c` stopped in M5 execution 9488 because `Generate Storyboard` received Gemini HTTP 503/high demand.
+- M8 v59 was not reached.
+- Root cause: n8n retry detector reads main `json.error`, while Gemini nodes used `continueErrorOutput`; their apparent retry configuration was therefore bypassed.
+- Local M5 WIP puts provider errors on main output for n8n retry detection, uses 3 attempts / 5 s, and preserves final provider error through existing bounded validator error routing.
+- Validation: 235/235 full tests PASS.
+- Production remains M5 v105 / M8 v59; M5 fix is not deployed yet.

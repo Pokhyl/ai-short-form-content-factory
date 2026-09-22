@@ -1,0 +1,82 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "job_id": "8f2970ba-4406-4eca-aecb-f9d67d2a895c",
+  "script_run_id": "83366ad3-ddc2-4a87-85eb-25a370cd121d",
+  "execution": {
+    "parent": {
+      "id": 9484,
+      "status": "error",
+      "workflowVersionId": "f3ef8cbf-1c56-4048-9fdf-feb073de96df"
+    },
+    "M4": {
+      "id": 9485,
+      "status": "success",
+      "workflowVersionId": "3cf94dd2-8c3b-4585-ae88-6315a2685ff7"
+    },
+    "M5": {
+      "id": 9488,
+      "status": "error",
+      "workflowVersionId": "56bcb365-4180-4ff4-b3c9-6732e2c7cfb5"
+    }
+  },
+  "failure": {
+    "node": "Generate Storyboard",
+    "provider": "Gemini",
+    "model": "gemini-3.5-flash-lite",
+    "http_code": 503,
+    "status": "UNAVAILABLE",
+    "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "m5_failure": "M5 script workflow failed: Service unavailable - try again later or consider setting this node to retry automatically (in the node settings)"
+  },
+  "root_cause": {
+    "workflow_config_before": {
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 65000,
+      "onError": "continueErrorOutput"
+    },
+    "live_v105_matches_repo": true,
+    "n8n_runtime_observation": "Generate Storyboard executionStatus=success with zero main items and one error-output item; executionTime=39742ms.",
+    "engine_behavior": "n8n 2.37.10 retry detector checkFailure inspects main data[0][0].json.error. continueErrorOutput places the HTTP error in the second output, so retryOnFail does not see it. Engine also caps waitBetweenTries at 5000ms.",
+    "engine_source": "n8n-core/dist/execution-engine/workflow-execute.js around retry/checkFailure block"
+  },
+  "fix": {
+    "gemini_http_nodes": 10,
+    "config": {
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    "validator_guard": "Every corresponding validator checks top-level json.error first and throws 'Gemini provider failed after transient retries: ...' preserving the provider message.",
+    "bounded_error_routing": "Existing semantic/timing repair/failure graph remains unchanged. Provider failure after HTTP retries follows the same already-bounded validator error path.",
+    "semantic_thresholds_changed": false,
+    "timing_tolerance_changed": false,
+    "extra_semantic_retry_nodes_added": false
+  },
+  "validation": {
+    "provider_retry_tests": "3/3 PASS",
+    "full_suite": "235/235 PASS",
+    "workflow_json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 105,
+      "activeVersionId": "56bcb365-4180-4ff4-b3c9-6732e2c7cfb5"
+    },
+    "M8": {
+      "versionCounter": 59,
+      "activeVersionId": "96b3a6b9-b5ef-4a28-a68a-5c3c928b8185"
+    }
+  },
+  "full_pl15_budget": {
+    "user_authorized_one_after_m8_replay": true,
+    "job_consumed": "8f2970ba-4406-4eca-aecb-f9d67d2a895c",
+    "reached_m8": false,
+    "reason": "external Gemini 503 before storyboard generation",
+    "second_full_job_started": false
+  },
+  "next_step": "Commit/push, deploy only M5, verify live core/fingerprint/health. Do not start another full PL15 without a new explicit decision because the single authorized full job was already consumed by the provider 503."
+}

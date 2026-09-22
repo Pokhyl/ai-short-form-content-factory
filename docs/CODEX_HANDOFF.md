@@ -1222,3 +1222,24 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
 - CLI restart advisory is generic; no restart performed. Runtime execution version is the acceptance proof.
 - Next: exactly one fresh PL15, then exact technical + scene-by-scene visual + audio review.
+
+
+### Fresh PL15 stopped on transient Gemini 503; M5 provider retry path fixed — NOT DEPLOYED — 2026-09-22
+
+- Per user instruction, exactly one full PL15 was launched after M8 execution-9229 replay acceptance:
+  - job `8f2970ba-4406-4eca-aecb-f9d67d2a895c`;
+  - M4 execution 9485 PASS;
+  - M5 execution 9488 ERROR on exact v105 `56bcb365-4180-4ff4-b3c9-6732e2c7cfb5`;
+  - M8 v59 was not reached.
+- Failure was external/transient, not script semantics: first `Generate Storyboard` call to `gemini-3.5-flash-lite` returned HTTP 503 / `UNAVAILABLE`: model high demand.
+- Live v105 exactly matches repository and already had `retryOnFail=true`, but its Gemini nodes used `onError=continueErrorOutput`.
+- n8n 2.37.10 runtime source confirms node retry failure detection checks main `data[0][0].json.error`; `continueErrorOutput` sends the HTTP error to output 2, so built-in retry never sees it. Runtime caps `waitBetweenTries` at 5000 ms.
+- Systemic M5 WIP:
+  - all 10 Gemini HTTP nodes now use `retryOnFail=true`, `maxTries=3`, `waitBetweenTries=5000`, `onError=continueRegularOutput`;
+  - every paired validator first detects top-level `json.error` and preserves the provider message as `Gemini provider failed after transient retries: ...`;
+  - existing bounded semantic/timing repair/failure graph is unchanged; no thresholds/tolerances weakened and no new semantic retry nodes added.
+- Validation: dedicated provider-retry tests 3/3 PASS; full suite **235/235 PASS**; workflow JSON/diff checks PASS.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v105-gemini-503-retry-fix.json`.
+- Production at this checkpoint remains M5 v105 / M8 v59.
+- The single authorized full PL15 was consumed by the provider 503. No second full PL15 has been started.
+- Next: commit/push and deploy only M5 with backup/fingerprint/live-core verification.

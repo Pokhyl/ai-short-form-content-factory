@@ -505,3 +505,14 @@ Prevention:
 - reproduce production selection ordering, not an ad-hoc score sort;
 - inspect the final selected image for every scene manually before any full pipeline rerun;
 - reject candidates whose metadata explicitly says the requested primary is only background unless background composition is requested.
+
+
+56. n8n retryOnFail can be bypassed by continueErrorOutput for HTTP nodes.
+In n8n 2.37.10, workflow execution retry detection inspects `main[0][0].json.error`. An HTTP node configured with `onError=continueErrorOutput` can therefore report a 503 in output 2 while the node execution itself is considered successful, bypassing `retryOnFail`.
+
+Prevention:
+- for transient external HTTP providers that must use n8n node retries, expose terminal request errors on the main output with `continueRegularOutput`;
+- keep `retryOnFail` bounded and use the actual runtime cap for `waitBetweenTries`;
+- immediately detect top-level `json.error` in the downstream validator and preserve the provider message;
+- keep existing semantic/timing recovery budgets independent from transport retries;
+- verify live published node configuration against repository before blaming provider behavior.
