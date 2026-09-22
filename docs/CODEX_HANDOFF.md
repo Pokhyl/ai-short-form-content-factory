@@ -1122,3 +1122,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-pl15-v103-late-stability-fix.json`.
 - Production remains M5 v103 / M8 v58 at this checkpoint.
 - Next: commit/push, deploy only M5 with backup + protected-row fingerprint, then one fresh PL15. HUMAN PASS still requires fresh M8 v58 runtime plus exact final technical/visual/audio review.
+
+
+### M5 v104 deployed — late Chirp stability fix — 2026-09-22
+
+- Source commit: `964cada1e3414134645c1a6d69cfbaffc32d02a4`.
+- Backup: `.backups/m5-before-late-stability-20260922-115826.json`.
+- Published only `VideoM5Storyboard001`: v104, activeVersionId `2a30c8ab-083a-4d4f-967e-ffd2a5889620`.
+- M8 remains v58 `05df9dcc-404c-4a78-9b2a-e45e930b9dc6`.
+- Other 31 workflow rows unchanged: `31|016eb559fffe1a5d3beb243c6515f0e1` before/after.
+- Published M5 export matches repository for nodes/connections/settings.
+- Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0.
+- CLI restart advisory is generic; no restart was performed. Runtime execution version is the proof.
+- Next: one fresh PL15 on M5 v104 / M8 v58, then exact final technical/visual/audio acceptance before EN30.
