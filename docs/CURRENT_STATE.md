@@ -897,3 +897,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Non-M8 workflow fingerprint unchanged.
 - Live M8 == Git; Publisher/Studio 200; no n8n restart; worker healthy.
 - Next: one fresh PL15, then technical/audio/manual visual acceptance.
+
+
+## Fresh PL15 failed M5 anaphoric guard — 2026-09-23
+
+- Job `5429bbe8-9b13-4fe6-b3f4-9b6c36d5a9dc`, M5 execution `9609`.
+- M8 v62 was not reached.
+- Current blocker: anaphoric guard wrongly rejects an explicitly named new object (`generator`) in `która wprawia w ruch generator`.
+- No new acceptance job until M5 guard is fixed and deployed.

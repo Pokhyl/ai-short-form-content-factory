@@ -1502,3 +1502,17 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M8 nodes/connections/settings exactly match Git.
 - Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0.
 - Next: exactly one fresh PL15 and full manual acceptance of the actual MP4.
+
+
+### Fresh PL15 on M8 v62 exposed over-strict M5 anaphoric guard — 2026-09-23
+
+- Job `5429bbe8-9b13-4fe6-b3f4-9b6c36d5a9dc`.
+- M4 PASS; M5 execution `9609` on v111 failed; downstream stages did not run.
+- Terminal error: `water turbine -> electric generator [line 588]`.
+- Exact S3/S4 continuity:
+  - S3: `na łopatki turbiny,` visual primary `water turbine`;
+  - S4: `która wprawia w ruch generator` visual primary `electric generator`.
+- The current guard rejects every anaphoric segment that changes primary, but this segment explicitly names `generator`.
+- Correct generic rule: an anaphoric segment may either keep the inherited subject or switch to a concrete primary explicitly named in the current narration. It may not switch to an unmentioned object.
+- This preserves the prior regression: `Który wytwarza prąd.` cannot switch from generator to transformer because transformer is absent from the narration.
+- Next: deterministic M5 guard fix, tests, M5-only deploy, one PL15.

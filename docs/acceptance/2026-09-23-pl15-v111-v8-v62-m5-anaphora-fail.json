@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-23",
+  "status": "m5_failed",
+  "job_id": "5429bbe8-9b13-4fe6-b3f4-9b6c36d5a9dc",
+  "m5_execution_id": 9609,
+  "m5_versionCounter": 111,
+  "m5_activeVersionId": "31eaa7a9-98d1-44b6-bec6-416ef388753b",
+  "script_run_id": "576153a6-ed87-4c1f-ac4a-c894b4169fa7",
+  "failure": "water turbine -> electric generator [line 588]",
+  "exact_transition": {
+    "previous_scene": {
+      "narration": "na łopatki turbiny,",
+      "visual_primary": "water turbine"
+    },
+    "current_scene": {
+      "narration": "która wprawia w ruch generator",
+      "visual_primary": "electric generator"
+    }
+  },
+  "root_cause": "anaphoric visual guard requires previous primary even when current narration explicitly names a new concrete visual subject",
+  "required_rule": "anaphoric segment may keep previous primary or switch only to a concrete primary explicitly named in current narration; unmentioned switches remain rejected",
+  "preserved_regression": "Który wytwarza prąd. cannot switch generator -> transformer",
+  "next_step": "Fix M5 validators deterministically, regression test, full suite, M5-only deploy, one PL15."
+}

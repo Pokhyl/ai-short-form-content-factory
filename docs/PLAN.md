@@ -228,19 +228,47 @@ M8 v62 deploy verification:
 - n8n restart count 0
 - media worker healthy, restart count 0
 
+## Latest fresh PL15 result
+
+Job: `5429bbe8-9b13-4fe6-b3f4-9b6c36d5a9dc`
+
+Pipeline result:
+- M4 PASS
+- M5 v111 FAIL, execution `9609`
+- M6/M8/M9 did not run
+- script_run `576153a6-ed87-4c1f-ac4a-c894b4169fa7`
+- terminal reason: `water turbine -> electric generator [line 588]`
+
+Exact storyboard evidence:
+- S3 narration: `na łopatki turbiny,`
+- S3 visual primary: `water turbine`
+- S4 narration: `która wprawia w ruch generator`
+- S4 visual primary: `electric generator`
+
+Root cause:
+- current anaphoric visual guard requires every scene beginning with an inherited referent to keep the previous scene primary;
+- that is too strict when the current narration segment explicitly names a new concrete object;
+- here Polish `która` refers to the turbine, but `generator` is explicitly named in the same segment, so focusing the S4 visual on the generator is semantically grounded;
+- the previous bad case `Który wytwarza prąd.` -> `power transformer` remains invalid because transformer is not named in that segment.
+
+No new PL15 may be started until this M5 guard is corrected and verified.
+
 ## Immediate next step
 
-1. Read this PLAN before the next production action.
-2. Verify Git clean and active project execution count = 0.
-3. Run exactly ONE fresh PL15 on M5 v111 / M6 v8 / M8 v62.
-4. Follow only that job to terminal state.
-5. If it reaches machine QA PASS:
-   - copy the exact final MP4;
-   - verify technical properties/full decode;
-   - verify audio transcript/coverage;
-   - review every scene visually against narration.
-6. Do not proceed to EN30 until PL15 passes manual acceptance.
-7. If PL15 fails, use only that job's saved evidence and fix the demonstrated blocker.
+1. Read this PLAN before changing M5.
+2. Fix the anaphoric visual guard generically:
+   - inherited-reference scenes may retain the previous visual primary; OR
+   - may switch to a new concrete primary only when that primary is explicitly named in the current narration segment;
+   - switching to an unmentioned object remains fail-closed.
+3. Add deterministic regressions:
+   - old `Który wytwarza prąd.` -> transformer remains rejected;
+   - current `która wprawia w ruch generator` -> electric generator passes.
+4. Apply the same rule to all storyboard validators that contain the anaphoric guard.
+5. Run focused tests + full suite.
+6. Update PLAN/handoff/evidence and commit/push.
+7. Deploy ONLY M5 after active project execution count is zero.
+8. Verify live M5 == Git and all non-M5 workflows unchanged.
+9. Run exactly one fresh PL15.
 
 ## Acceptance sequence after PL15
 
