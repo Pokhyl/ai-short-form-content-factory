@@ -640,3 +640,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Protected 31-workflow fingerprint unchanged: `07f4e3bc61e679e8ba1b0ff5677373d9`.
 - Live M5 nodes/connections/settings match repo. Publisher/Studio 200; n8n restart 0; worker healthy restart 0; zero active executions.
 - Next: exactly one fresh PL15 for runtime proof and continuation through M8/M9.
+
+
+## PL15 v101/v55 full machine pass is NOT human visual pass — 2026-09-22
+
+- Job `6ff32b6c-27f8-4cfc-9872-450bb74530a7` reached M9 successfully on M5 v101 / M8 v55 and produced a technically valid 15.700 s 1080x1920 MP4.
+- Exact technical audit passes every gate, including full decode and 0.999984 audio correlation.
+- Manual/source visual review rejects S3: production selected a 1918 aircraft wind-driven generator for an intent requiring generator+turbine inside a power plant.
+- Local M8 WIP now requires positive strong-metadata evidence for explicit operational plant/station/facility settings. This is generic, not topic- or asset-specific.
+- 169/169 tests PASS. Exact 69-candidate S3 replay leaves one old-production eligible candidate with the requested setting: Wikimedia 112972156, turbine+generator inside Iru Thermal Power Plant.
+- This WIP is not yet deployed. Production remains M5 v101 `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f` / M8 v55 `5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8`.
+- HUMAN PASS remains false; EN30 remains blocked.

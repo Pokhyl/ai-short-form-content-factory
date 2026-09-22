@@ -431,3 +431,7 @@ Prevention:
 - otherwise fall back to proportional scaling from the latest real TTS sample;
 - keep semantic floors, exact-count validation, stability majority and duration tolerance unchanged;
 - regression/prediction is guidance only; measured TTS remains the acceptance authority.
+
+
+### 45. An operational-setting intent needs positive evidence, not only absence of contradictions
+A candidate can contain every requested machine noun and still depict the wrong world (for example an aircraft wind-driven generator instead of a generator inside a power plant). If the storyboard explicitly requires plant/station/facility/powerhouse context, scorer acceptance must positively establish that setting from strong metadata. Negative museum/manufacturing filters alone are insufficient. Keep this generic and compound-aware: `power plant` may be satisfied by `power station`, but an unrelated bare `plant` token is not enough.

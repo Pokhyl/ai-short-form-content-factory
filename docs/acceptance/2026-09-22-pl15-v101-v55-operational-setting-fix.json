@@ -1,0 +1,112 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed_human_visual_fail",
+  "job_id": "6ff32b6c-27f8-4cfc-9872-450bb74530a7",
+  "executions": {
+    "parent": {
+      "id": 9293,
+      "status": "success"
+    },
+    "M4": {
+      "id": 9294,
+      "status": "success",
+      "workflowVersionId": "3cf94dd2-8c3b-4585-ae88-6315a2685ff7"
+    },
+    "M5": {
+      "id": 9296,
+      "status": "success",
+      "workflowVersionId": "0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f"
+    },
+    "M6": {
+      "id": 9307,
+      "status": "success",
+      "workflowVersionId": "98e671f3-a0dc-42fa-81e9-4c9524a05e6a"
+    },
+    "M7": {
+      "id": 9308,
+      "status": "success",
+      "workflowVersionId": "91fbac4f-f40d-4d75-9111-3e4ed01bd9ff"
+    },
+    "M8": {
+      "id": 9311,
+      "status": "success",
+      "workflowVersionId": "5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8"
+    },
+    "M9": {
+      "id": 9321,
+      "status": "success",
+      "workflowVersionId": "5b6c937c-1767-4c3e-99c4-31ea38a26961"
+    }
+  },
+  "final_media": {
+    "path": "/data/renders/6ff32b6c-27f8-4cfc-9872-450bb74530a7/final.mp4",
+    "sha256": "b6587526e007c11fd202287eb1f8c98c52aade1fcc6a883f73a1f7f89c36e3d8",
+    "bytes": 1168070,
+    "duration_ms": 15700,
+    "audio_duration_ms": 15696,
+    "width": 1080,
+    "height": 1920,
+    "video_codec": "h264",
+    "pixel_format": "yuv420p",
+    "fps": "30/1",
+    "audio_codec": "aac",
+    "audio_correlation": 0.9999843727852827,
+    "exact_audit_passed": true
+  },
+  "alignment": {
+    "normalized_match": false,
+    "global_coverage": 0.994,
+    "transcript": "Ogromny zbiornik wodny gromadzi zasoby wody. Spadająca woda napędza turbine. Ruch obrotowy uruchamia generator prądu. Powstały prąd trafia do transformatora. Czysta energia zasila sieć."
+  },
+  "human_visual_review": {
+    "passed": false,
+    "failing_shot": "S3-A",
+    "visual_intent": "Industrial electric generator connected to a turbine inside power plant",
+    "must_show": [
+      "electric generator",
+      "turbine"
+    ],
+    "selected": {
+      "provider": "wikimedia",
+      "provider_asset_id": "62539210",
+      "query": "generator driven by turbine",
+      "score": 100,
+      "title": "File:Airplanes - Parts - Wind driven generator. Crocker-Wheeler type. Western Electric Co., NYC - NARA - 17340875.jpg"
+    },
+    "reason": "Aircraft/ram-air generator is not machinery inside a power plant."
+  },
+  "root_cause": "Operational intent had contradiction filtering but no positive strong-metadata requirement for the explicit plant/station/facility setting.",
+  "fix": {
+    "scope": "all three M8 provider normalizers",
+    "behavior": "Explicit operational setting must be positively established. Power plant/station/powerhouse is compound-aware and synonym-aware.",
+    "topic_specific": false,
+    "hardcoded_asset_ids": false,
+    "threshold_weakening": false
+  },
+  "validation": {
+    "tests": "169/169 PASS",
+    "git_diff_check": "PASS",
+    "workflow_json_parse": "PASS",
+    "exact_s3_candidate_count": 69,
+    "surviving_originally_eligible_candidates": 1,
+    "expected_selection_after_fix": {
+      "provider": "wikimedia",
+      "provider_asset_id": "112972156",
+      "query": "generator turbine",
+      "score": 100,
+      "title": "File:Waste block turbine and generator in Iru Thermal Power Plant.jpg"
+    },
+    "source_review": "Turbine-generator installation inside an industrial power-plant hall."
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 101,
+      "activeVersionId": "0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f"
+    },
+    "M8": {
+      "versionCounter": 55,
+      "activeVersionId": "5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8"
+    }
+  },
+  "next_step": "Commit/push, deploy only M8 with protected-row verification, then exactly one fresh PL15 and exact final visual/audio acceptance."
+}

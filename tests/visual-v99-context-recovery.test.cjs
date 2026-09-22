@@ -191,3 +191,56 @@ for(const provider of ['Pixabay','Pexels','Wikimedia']) {
     assert.match(c.rejection_reason,/conflicting_non_operational_context/);
   });
 }
+
+
+for(const provider of ['Pixabay','Pexels','Wikimedia']) {
+  test(provider+': explicit power-plant setting rejects an aviation generator even when generator and turbine both match',()=>{
+    const src=code('Normalize '+provider);
+    const {scoreCandidate}=new Function(src.slice(0,src.indexOf('const ctx ='))+';return {scoreCandidate};')();
+    const ctx={
+      query:'generator driven by turbine',
+      visual_intent:'Industrial electric generator connected to a turbine inside power plant',
+      must_show:['electric generator','turbine'],
+      must_not_show:[],
+      domain_context_terms:[],
+      preferred_media_type:'photo',
+    };
+    const bad='Airplanes parts wind driven electric generator Crocker Wheeler ram air turbines aviation';
+    const c=scoreCandidate(ctx,bad,'photo',1600,1200,1,'',bad,bad);
+    assert.equal(c.rejected,true,JSON.stringify(c));
+    assert.match(c.rejection_reason,/missing_operational_setting_context/);
+  });
+
+  test(provider+': power station metadata satisfies an explicit power-plant setting synonym',()=>{
+    const src=code('Normalize '+provider);
+    const {scoreCandidate}=new Function(src.slice(0,src.indexOf('const ctx ='))+';return {scoreCandidate};')();
+    const ctx={
+      query:'generator driven by turbine',
+      visual_intent:'Industrial electric generator connected to a turbine inside power plant',
+      must_show:['electric generator','turbine'],
+      must_not_show:[],
+      domain_context_terms:[],
+      preferred_media_type:'photo',
+    };
+    const good='Industrial electric generator connected to turbine inside power station';
+    const c=scoreCandidate(ctx,good,'photo',1600,1200,1,'',good,good);
+    assert.equal(c.rejected,false,JSON.stringify(c));
+  });
+
+  test(provider+': a generic plant word without power context cannot satisfy power-plant setting',()=>{
+    const src=code('Normalize '+provider);
+    const {scoreCandidate}=new Function(src.slice(0,src.indexOf('const ctx ='))+';return {scoreCandidate};')();
+    const ctx={
+      query:'generator driven by turbine',
+      visual_intent:'Industrial electric generator connected to a turbine inside power plant',
+      must_show:['electric generator','turbine'],
+      must_not_show:[],
+      domain_context_terms:[],
+      preferred_media_type:'photo',
+    };
+    const bad='Electric generator and turbine beside a green plant';
+    const c=scoreCandidate(ctx,bad,'photo',1600,1200,1,'',bad,bad);
+    assert.equal(c.rejected,true,JSON.stringify(c));
+    assert.match(c.rejection_reason,/missing_operational_setting_context/);
+  });
+}

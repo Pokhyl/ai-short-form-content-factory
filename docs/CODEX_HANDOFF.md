@@ -920,3 +920,34 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0. No active project executions before/after.
 - CLI restart advisory is generic; runtime proof is pending.
 - Exact next step: one fresh PL15. Require M5 v101 runtime; if it reaches M8 require exact v55; then M9 and final MP4 acceptance before EN30.
+
+
+### PL15 M4→M9 machine PASS exposed S3 HUMAN visual false positive; operational-setting gate tested — NOT DEPLOYED — 2026-09-22
+
+- Fresh job `6ff32b6c-27f8-4cfc-9872-450bb74530a7` completed the whole pipeline:
+  - parent 9293 PASS;
+  - M4 9294 PASS;
+  - M5 9296 PASS on v101 `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f`;
+  - M6 9307 PASS;
+  - M7 9308 PASS;
+  - M8 9311 PASS on v55 `5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8`;
+  - M9 9321 PASS.
+- Final MP4 `/data/renders/6ff32b6c-27f8-4cfc-9872-450bb74530a7/final.mp4`, sha256 `b6587526e007c11fd202287eb1f8c98c52aade1fcc6a883f73a1f7f89c36e3d8`, 1,168,070 bytes.
+- Exact read-only media audit PASS: 1080x1920, H.264, yuv420p, 30 fps, AAC, 15.700 s; audio 15.696 s; audio correlation 0.9999843728; 5 unique contiguous scenes; manifest/audio/video hashes and full decode all PASS.
+- Machine QA is NOT HUMAN PASS. Exact midpoint/source review found S3 wrong:
+  - storyboard: `Industrial electric generator connected to a turbine inside power plant`, must_show `electric generator + turbine`;
+  - selected Wikimedia asset `62539210`: 1918 `Airplanes - Parts - Wind driven generator...`, categories include ram-air turbines / World War I aviation;
+  - this is a real generator+turbine semantic token match but the wrong operational setting.
+- Other selected scene sources are semantically aligned at source/frame level: S1 dam+reservoir, S2 hydroelectric turbine machinery, S4 power-station transformer, S5 utility pole/power lines.
+- Root cause: M8 only rejected explicit museum/exhibit/manufacturing/transport contradictions for an operational storyboard. It did NOT positively require strong metadata for an explicit plant/station/facility setting. Production ranking therefore preferred a q2 aviation match over the valid q3 in-plant turbine-generator.
+- Scoped generic fix in all three normalizers: when the visual intent explicitly places machinery in a plant/station/facility/powerhouse, strong candidate metadata must positively establish that setting. For `power plant` / `power station`, require power + a plant/station/powerhouse synonym. This is not hydro-specific and contains no asset IDs.
+- Regression coverage includes all providers:
+  - aviation generator+turbine is rejected with `missing_operational_setting_context`;
+  - `power station` satisfies a `power plant` intent;
+  - a botanical/generic `plant` token without power context does not.
+- Full suite **169/169 PASS**; workflow JSON and `git diff --check` PASS.
+- Exact S3 replay uses the 69 persisted candidates from M8 execution 9311. Intersecting the original production-eligible set with the new gate leaves exactly one candidate: Wikimedia `112972156`, `Waste block turbine and generator in Iru Thermal Power Plant.jpg`, q3, score 100. The selected aviation assets `62539210/62539212`, wind candidate `54983717`, standalone steam candidate `5226595` and factory-assembly candidate `8285173` become fail-closed.
+- Source review of `112972156` confirms a turbine-generator installation inside an industrial power-plant hall, matching the S3 storyboard setting.
+- Alignment transcript coverage is 0.994; normalized_match is false because the stored ASR text differs from narration spelling/diacritics at least at `turbinę/turbine`. Do not infer HUMAN audio PASS from this; exact fresh post-fix audio review remains required.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v101-v55-operational-setting-fix.json`.
+- Production remains M5 v101 / M8 v55 at this checkpoint. Next: commit/push, scoped M8-only deploy with backup + protected-row fingerprint, then exactly one fresh PL15 and full exact MP4 visual/audio acceptance before EN30.
