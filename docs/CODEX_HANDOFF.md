@@ -1167,3 +1167,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-pl15-v104-precision-scene-fallback.json`.
 - Production remains M5 v104 / M8 v58 at this checkpoint.
 - Next: commit/push, deploy only M5, then one fresh PL15. HUMAN PASS still requires fresh M8 v58 runtime plus exact final technical/visual/audio review.
+
+
+### M5 v105 deployed — precision scene semantic fallback — 2026-09-22
+
+- Source commit: `689b08f5940ac98da78e8402be77613918569385`.
+- Backup: `.backups/m5-before-precision-fallback-20260922-121005.json`.
+- Published only `VideoM5Storyboard001`: v105, activeVersionId `56bcb365-4180-4ff4-b3c9-6732e2c7cfb5`.
+- M8 remains v58 `05df9dcc-404c-4a78-9b2a-e45e930b9dc6`.
+- Other 31 workflow rows unchanged: `31|016eb559fffe1a5d3beb243c6515f0e1` before/after.
+- Published M5 export matches repository for nodes/connections/settings.
+- Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0.
+- CLI restart advisory is generic; no restart was performed.
+- Next: one fresh PL15. Require M5 v105 and M8 v58 runtime proof, then exact final technical/visual/audio acceptance before EN30.

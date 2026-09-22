@@ -82,5 +82,26 @@
       "activeVersionId": "05df9dcc-404c-4a78-9b2a-e45e930b9dc6"
     }
   },
-  "next_step": "Commit/push, deploy only M5 with protected-row verification, then one fresh PL15. Require M5 and M8 runtime proof and full final technical/visual/audio acceptance before EN30."
+  "next_step": "One fresh PL15 on M5 v105 / M8 v58, then exact final technical, visual and audio acceptance.",
+  "deployment": {
+    "status": "deployed",
+    "source_commit": "689b08f5940ac98da78e8402be77613918569385",
+    "backup": ".backups/m5-before-precision-fallback-20260922-121005.json",
+    "M5": {
+      "versionCounter": 105,
+      "activeVersionId": "56bcb365-4180-4ff4-b3c9-6732e2c7cfb5"
+    },
+    "M8_unchanged": {
+      "versionCounter": 58,
+      "activeVersionId": "05df9dcc-404c-4a78-9b2a-e45e930b9dc6"
+    },
+    "other_workflows_fingerprint_before": "31|016eb559fffe1a5d3beb243c6515f0e1",
+    "other_workflows_fingerprint_after": "31|016eb559fffe1a5d3beb243c6515f0e1",
+    "live_core_match": true,
+    "publisher_http": 200,
+    "studio_http": 200,
+    "n8n_restart_count": 0,
+    "media_worker_health": "healthy",
+    "media_worker_restart_count": 0
+  }
 }
