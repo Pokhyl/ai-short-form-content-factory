@@ -1450,3 +1450,20 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - This exact job remains the active acceptance artifact.
 - Final manual acceptance is pending only because SentinelX lost connectivity while locating/copying the rendered MP4.
 - Resume by inspecting this exact MP4 technically and scene-by-scene. If it passes, proceed to EN30; if it fails, fix only the demonstrated defect.
+
+
+### Fresh PL15 machine QA PASS but manual visual acceptance FAIL — 2026-09-23
+
+- Job `8ce87adb-3952-43cb-ab1d-7a1b2d549651`.
+- M8 execution `9601`, visual_run `cfb7a60e-ed47-408f-85f9-3bbaa7626648`, 45/45 searches, 288 provider results, M8 status PASS.
+- M9 execution `9602`, render `fa9dc976-a76d-40fb-977e-135af4c38e47`, machine QA PASS.
+- Technical MP4 PASS: 1080x1920, H.264/yuv420p/30fps, AAC mono 24kHz, 14.933 s video, 14.904 s audio, 29 ms delta, full decode clean.
+- Audio PASS: Whisper token-sequence match, global coverage 1.000, canonical narration preserved.
+- Manual visual review:
+  - S1 PASS;
+  - S2 FAIL: small rocky brook + thin blue pipe instead of large falling water/penstock flow;
+  - S3 FAIL: generator/turbine hall instead of visible turbine blades;
+  - S4 FAIL: static old/museum-like turbine exhibit instead of turbine in operation;
+  - S5 PASS.
+- Therefore this job is NOT accepted even though machine QA passed.
+- Next: inspect saved M8 candidate pools for S2/S3/S4, fix only the demonstrated selection defects, deterministic regressions, M8-only deploy, one new PL15.

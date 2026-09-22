@@ -1,0 +1,56 @@
+{
+  "date": "2026-09-23",
+  "status": "machine_qa_pass_manual_visual_fail",
+  "job_id": "8ce87adb-3952-43cb-ab1d-7a1b2d549651",
+  "m8_execution_id": 9601,
+  "m9_execution_id": 9602,
+  "visual_run_id": "cfb7a60e-ed47-408f-85f9-3bbaa7626648",
+  "render": {
+    "id": "fa9dc976-a76d-40fb-977e-135af4c38e47",
+    "sha256": "e43b6e1a9e1fa07b84e8675665c2394e09e9b0390c4a71897c04ba66f1b78a66",
+    "bytes": 1570875,
+    "width": 1080,
+    "height": 1920,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "pix_fmt": "yuv420p",
+    "fps": "30/1",
+    "duration_ms": 14933,
+    "audio_duration_ms": 14904,
+    "duration_delta_ms": 29,
+    "full_decode": "PASS"
+  },
+  "audio": {
+    "status": "PASS",
+    "audio_sha256": "45602fa3cd7d6228d39b862288f3893e7548ca0b24b48e1db23316659869b90c",
+    "global_coverage": 1.0,
+    "lexical_token_count": 25,
+    "alignment_method": "whisper_token_sequence_match"
+  },
+  "manual_visual": {
+    "S1": {
+      "status": "PASS",
+      "frame_sha256": "1c1cb4f09f3db70263c768cec9dfdfcc3b7aec4462a4f78f1551b15864277239"
+    },
+    "S2": {
+      "status": "FAIL",
+      "reason": "small rocky brook with thin blue pipe instead of large falling water stream/penstock context",
+      "frame_sha256": "0c5a326f0b5ea47764401003bb759acd716b0e4a7a5ec70e4fb19a5003b33137"
+    },
+    "S3": {
+      "status": "FAIL",
+      "reason": "general generator/turbine hall; turbine blades not visible",
+      "frame_sha256": "ad39c543d4ace3b7ccd42eebf54eb6bbbe4f164f71c60ea04b8ef65d256f2736"
+    },
+    "S4": {
+      "status": "FAIL",
+      "reason": "static old/museum-like turbine exhibit instead of turbine in operation",
+      "frame_sha256": "91379e0618ff1a4c3295192e2aa9a7f40e5512a5b982497ff17fd49324c8df9b"
+    },
+    "S5": {
+      "status": "PASS",
+      "frame_sha256": "00e435f08f864c8a10cd50032da6e85268692b5af81b4e2cf152bf0d8faee898"
+    }
+  },
+  "next_step": "Use saved M8 execution 9601 candidate pools to fix only S2/S3/S4 visual-selection defects; no new PL15 until M8-only fix is tested and deployed."
+}

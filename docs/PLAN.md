@@ -141,30 +141,51 @@ Verified pipeline state before SentinelX disconnected:
 
 No new acceptance job may be created. This exact PL15 remains the active acceptance artifact until its final MP4 has been manually reviewed.
 
+## Manual acceptance result for current PL15
+
+Job: `8ce87adb-3952-43cb-ab1d-7a1b2d549651`
+
+Technical MP4 checks: PASS
+- render execution: `9602`
+- render id: `fa9dc976-a76d-40fb-977e-135af4c38e47`
+- 1080x1920
+- H.264 / yuv420p / 30 fps
+- AAC mono 24 kHz
+- video duration: 14.933 s
+- audio duration: 14.904 s
+- duration delta: 29 ms
+- full decode: PASS
+- render SHA256: `e43b6e1a9e1fa07b84e8675665c2394e09e9b0390c4a71897c04ba66f1b78a66`
+
+Audio/narration checks: PASS
+- Whisper transcript matched canonical narration with `global_coverage=1.000`
+- alignment method: `whisper_token_sequence_match`
+- lexical coverage: 25 tokens
+- audio SHA256: `45602fa3cd7d6228d39b862288f3893e7548ca0b24b48e1db23316659869b90c`
+
+Manual visual checks: FAIL
+- S1 PASS: dam/reservoir image matches narration.
+- S2 FAIL: narration describes a large falling water stream / penstock context; selected frame is a small rocky brook with a thin blue pipe.
+- S3 FAIL: narration says water strikes turbine blades directly; selected frame is a general generator/turbine hall and does not show turbine blades.
+- S4 FAIL: narration describes the turbine in rapid rotation; selected frame is a static old/museum-like turbine exhibit rather than an operating turbine.
+- S5 PASS: electric generator image matches narration.
+
+This PL15 is NOT accepted despite machine QA passing.
+
 ## Immediate next step
 
-1. Restore SentinelX/VPS connectivity.
-2. Read this PLAN before any production action.
-3. Do NOT create another PL15.
-4. Locate/copy the final MP4 for job `8ce87adb-3952-43cb-ab1d-7a1b2d549651`.
-5. Verify the actual MP4 technically:
-   - duration;
-   - 1080x1920;
-   - H.264 / yuv420p / 30 fps;
-   - AAC audio;
-   - full decode without errors.
-6. Review that exact MP4 scene-by-scene against its narration and selected visual metadata.
-7. Review audio/narration continuity.
-8. If manual acceptance passes:
-   - update PLAN/handoff/evidence;
-   - commit/push;
-   - proceed to EN30.
-9. If manual acceptance fails:
-   - record the exact demonstrated defect;
-   - fix only that defect;
-   - regression test and deploy only the affected workflow;
-   - update PLAN/Git;
-   - then one new PL15.
+1. Read this PLAN before changing production.
+2. Do NOT create a new PL15 yet.
+3. Use saved DB/provider/execution data from M8 execution `9601` / visual_run `cfb7a60e-ed47-408f-85f9-3bbaa7626648`.
+4. Inspect candidate pools and rejection/selection reasons for S2/S3/S4.
+5. Determine why M8 preferred the wrong images and whether better saved candidates already exist.
+6. Fix only the demonstrated visual-selection defects in M8.
+7. Add deterministic regressions from this exact job.
+8. Run focused tests + full suite + old deterministic replays.
+9. Update PLAN/handoff/evidence and commit/push.
+10. Deploy ONLY M8 after active project execution count is zero.
+11. Verify live M8 == Git and all non-M8 workflows unchanged.
+12. Run exactly one new PL15.
 
 ## Acceptance sequence after PL15
 

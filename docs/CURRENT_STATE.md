@@ -869,3 +869,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Job state: `machine_qa_passed`.
 - No replacement PL15 should be launched.
 - Next: inspect this exact final MP4 once SentinelX reconnects; only then decide pass/fail and next action.
+
+
+## PL15 manual visual acceptance failed after machine QA — 2026-09-23
+
+- Job `8ce87adb-3952-43cb-ab1d-7a1b2d549651` reached `machine_qa_passed`.
+- Technical render PASS and audio/narration PASS.
+- Manual visual FAIL on S2/S3/S4; S1/S5 PASS.
+- Current blocker is M8 visual ranking/eligibility for water-flow, turbine-blade, and operating-turbine scenes.
+- No new PL15 until M8 is fixed from saved execution `9601` data.
