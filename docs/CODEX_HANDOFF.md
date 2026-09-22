@@ -1489,3 +1489,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Old deterministic 9229 replay remains terminal-success with 0 provider calls, same selected five assets and pool counts 1/5/5/8/4.
 - `tests/timing-measurements.test.cjs` only received a missing current M5 mock (`Validate Repaired Storyboard`) so the old fixture matches already-deployed M5 behavior; production M5 was not changed.
 - Next: commit/push, then M8-only deploy.
+
+
+### M8 v62 distinctive visual-detail fix deployed — 2026-09-23
+
+- Git fix commit: `928444784c328ab994ab34f0f4df9600cd59391a`.
+- Before: M8 v61 `a73aefbc-4c8e-4458-8ef2-c48bbce3a957`.
+- After: M8 v62 `90329f54-40fd-4382-92fd-2fd1e9ecea01`.
+- Published backup: `.backups/m8-before-detail-anchor-20260922-222108.json`.
+- Non-M8 fingerprint before/after identical: `31|18aedb2a006c96e8033db6f0770b6bee`.
+- M5 remained v111; M6 remained v8.
+- Live M8 nodes/connections/settings exactly match Git.
+- Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0.
+- Next: exactly one fresh PL15 and full manual acceptance of the actual MP4.

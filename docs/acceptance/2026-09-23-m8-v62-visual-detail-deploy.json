@@ -1,0 +1,49 @@
+{
+  "date": "2026-09-23",
+  "status": "deployed_verified",
+  "workflow": "VideoM8Visuals001",
+  "git_commit": "928444784c328ab994ab34f0f4df9600cd59391a",
+  "before": {
+    "versionCounter": 61,
+    "activeVersionId": "a73aefbc-4c8e-4458-8ef2-c48bbce3a957"
+  },
+  "after": {
+    "versionCounter": 62,
+    "activeVersionId": "90329f54-40fd-4382-92fd-2fd1e9ecea01"
+  },
+  "backup": ".backups/m8-before-detail-anchor-20260922-222108.json",
+  "other_workflows": {
+    "count": 31,
+    "fingerprint_before": "31|18aedb2a006c96e8033db6f0770b6bee",
+    "fingerprint_after": "31|18aedb2a006c96e8033db6f0770b6bee",
+    "unchanged": true
+  },
+  "live_core_match": true,
+  "publisher_http": 200,
+  "studio_http": 200,
+  "n8n": {
+    "status": "running",
+    "restart_count": 0
+  },
+  "media_worker": {
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0
+  },
+  "unchanged_versions": {
+    "M5": {
+      "versionCounter": 111,
+      "activeVersionId": "31eaa7a9-98d1-44b6-bec6-416ef388753b"
+    },
+    "M6": {
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    }
+  },
+  "validation_before_deploy": {
+    "focused_m8": "47/47 PASS",
+    "full_suite": "265/265 PASS",
+    "old_9229_replay": "PASS, same selected IDs and pool counts"
+  },
+  "next_step": "Run exactly one fresh PL15 and manually inspect its actual MP4."
+}

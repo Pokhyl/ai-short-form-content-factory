@@ -888,3 +888,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Full suite 265/265 PASS.
 - Old deterministic 9229 selections/pools unchanged.
 - Fix not deployed yet; next action is M8-only deploy after Git checkpoint.
+
+
+## M8 v62 deployed — 2026-09-23
+
+- M8 v62 activeVersionId `90329f54-40fd-4382-92fd-2fd1e9ecea01`.
+- M5 v111 and M6 v8 unchanged.
+- Non-M8 workflow fingerprint unchanged.
+- Live M8 == Git; Publisher/Studio 200; no n8n restart; worker healthy.
+- Next: one fresh PL15, then technical/audio/manual visual acceptance.

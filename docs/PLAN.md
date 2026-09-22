@@ -212,28 +212,35 @@ Validation:
   - S5 Wikimedia 27207173
 - old 9229 eligible pool counts unchanged: 1 / 5 / 5 / 8 / 4.
 
-This M8 fix is tested but NOT deployed yet.
+The M8 visual-detail fix is now deployed and verified live.
+
+Production after deploy:
+- M5 v111: `31eaa7a9-98d1-44b6-bec6-416ef388753b`
+- M6 v8: `0bcabe39-ae90-42fe-842b-8a56ad238709`
+- M8 v62: `90329f54-40fd-4382-92fd-2fd1e9ecea01`
+
+M8 v62 deploy verification:
+- published backup: `.backups/m8-before-detail-anchor-20260922-222108.json`
+- non-M8 workflow fingerprint before/after: `31|18aedb2a006c96e8033db6f0770b6bee`
+- live M8 nodes/connections/settings == Git: PASS
+- Publisher 200
+- Studio 200
+- n8n restart count 0
+- media worker healthy, restart count 0
 
 ## Immediate next step
 
-1. Commit and push the tested M8 visual-detail fix and regressions.
-2. Read this PLAN before production deployment.
-3. Verify Git clean and active project execution count = 0.
-4. Deploy ONLY M8.
-5. Before deployment:
-   - export published M8 backup;
-   - fingerprint every non-M8 workflow.
-6. After deployment verify:
-   - M8 version increments exactly once;
-   - live M8 nodes/connections/settings == Git;
-   - all non-M8 workflows unchanged;
-   - Publisher 200;
-   - Studio 200;
-   - n8n restart count unchanged;
-   - media worker healthy.
-7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
-8. Run exactly ONE fresh PL15.
-9. Manually review the actual final MP4 before proceeding to EN30.
+1. Read this PLAN before the next production action.
+2. Verify Git clean and active project execution count = 0.
+3. Run exactly ONE fresh PL15 on M5 v111 / M6 v8 / M8 v62.
+4. Follow only that job to terminal state.
+5. If it reaches machine QA PASS:
+   - copy the exact final MP4;
+   - verify technical properties/full decode;
+   - verify audio transcript/coverage;
+   - review every scene visually against narration.
+6. Do not proceed to EN30 until PL15 passes manual acceptance.
+7. If PL15 fails, use only that job's saved evidence and fix the demonstrated blocker.
 
 ## Acceptance sequence after PL15
 
