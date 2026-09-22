@@ -1004,3 +1004,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-pl15-v56-s3-s5-retrieval-fix.json`.
 - Production remains M5 v101 / M8 v56 at this checkpoint.
 - Exact next step: commit/push, deploy only M8 with backup/protected-row fingerprint, then one fresh PL15 and full final MP4 technical + visual + audio acceptance. Do not run EN30 before HUMAN PASS.
+
+
+### M8 v57 deployed — S3/S5 retrieval recovery — 2026-09-22
+
+- Source commit: `e00eee0f1fb664cdc28e4f061a2ed53f49e4e17d`.
+- Backup: `.backups/m8-before-s3-s5-retrieval-20260922-083029.json`.
+- Published only `VideoM8Visuals001`: v57, activeVersionId `ecb6889c-b8b7-4a01-8f30-8e9a41f8213b`.
+- M5 remains v101 `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f`.
+- Other 31 workflow rows unchanged: `31|ef93efe27a6af28349854d1179d818d3` before/after.
+- Published M8 export matches repository for nodes/connections/settings.
+- Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0 on unchanged image.
+- CLI restart advisory is generic; no restart was performed. Runtime execution version is the proof.
+- Next: exactly one fresh PL15; require M5 v101 + M8 v57 runtime, then exact final MP4 technical/visual/audio acceptance before EN30.
