@@ -470,3 +470,14 @@ Prevention:
 - do not apply that medium filter globally to machinery forms such as gas/steam turbines; scope it to closed infrastructure;
 - after an M8 failure, inspect every shot pool in the completed run before spending another job;
 - prove a corrected fallback against persisted/cache candidates before deploy.
+
+
+55. Do not let one stochastic Chirp synthesis dictate late word-count correction.
+The same text/voice/config can vary by more than a second. A late single timing sample can therefore be an outlier and must not directly force a new word target.
+
+Prevention:
+- use the same bounded near-miss stability candidate logic on late Probe 4 that already exists on Probe 5;
+- route failed origin-4 stability to measured correction, not directly to terminal failure;
+- keep exact word count as a preferred heuristic, not the final timing truth;
+- a close semantic hybrid may reach the real final TTS probe only inside a tight bounded delta; farther hybrids stay fail-closed;
+- the final timing decision remains based on actual multi-sample TTS duration, not word count.

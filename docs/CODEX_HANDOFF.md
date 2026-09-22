@@ -1094,3 +1094,31 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-pl15-v102-v57-hidden-process-domain-fix.json`.
 - Production remains M5 v102 / M8 v57 at this checkpoint.
 - Next: commit/push, deploy only M5 + M8 with backups and protected-row fingerprint, then exactly one fresh PL15. HUMAN PASS requires technical + every-scene visual + audio review before EN30.
+
+
+### Fresh PL15 v103 exposed late Chirp timing-instability bug; M5 fix tested — NOT DEPLOYED — 2026-09-22
+
+- Fresh job `c2e66456-1593-4052-b0d7-61fe53bf696d`:
+  - parent 9420 ERROR;
+  - M4 9421 PASS;
+  - M5 9424 ERROR on exact v103 `26ab19ec-ad1c-44ed-9f98-1f6c9d41214b`;
+  - M6-M9 did not run.
+- Script run `38a557b0-a316-4ca3-b106-1d198f492bc8` failed with `got 25, target 27`.
+- Exact TTS evidence for the same 24-word narration and same `pl-PL-Chirp3-HD-Enceladus`/MP3 config:
+  - 15.024 s;
+  - 13.896 s;
+  - 14.016 s;
+  - median 14.016 s, spread 1.128 s, only 1/3 inside ±750 ms.
+- After one late repair, the 25-word narration got a single Probe 4 measurement of 13.344 s. Because Probe 4 lacked the same near-miss stability handling already present on Probe 5, that one sample immediately drove target_words to 27.
+- Final measured retry could not synthesize an exact 27-word semantic hybrid from existing scene variants and failed before final real TTS.
+- Systemic M5 fix:
+  1. `Normalize Timing Probe 4` now exposes `timing_stability_candidate` using the existing Probe-5 window `tolerance + 1000 ms`;
+  2. `Route Timing Within Target 4` now routes `timing_ok || timing_stability_candidate` into the existing 3-sample stability gate;
+  3. new `Route Stability Origin 4`: failed stability from origin 4 proceeds to `Build Final Measured Correction`; origin 5 remains terminal timing failure;
+  4. `Validate Final Measured Word Count Retry` still prefers exact target but may pass the nearest already-semantic-valid hybrid to Probe 5 only when delta <= `max(2 words, ceil(5% target))`. Far hybrids remain fail-closed.
+- Timing tolerance, semantic thresholds and repair count are unchanged.
+- Exact execution-9424 replay now returns the existing 25-word semantic narration with `word_count_exact=false`, `deterministic_word_hybrid_used=true` and would continue to Probe 5 instead of failing.
+- Validation: **208/208 tests PASS**, M5 **55/55 Code-node syntax PASS**, all graph edge targets valid, JSON parse PASS, `git diff --check` PASS.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v103-late-stability-fix.json`.
+- Production remains M5 v103 / M8 v58 at this checkpoint.
+- Next: commit/push, deploy only M5 with backup + protected-row fingerprint, then one fresh PL15. HUMAN PASS still requires fresh M8 v58 runtime plus exact final technical/visual/audio review.

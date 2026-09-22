@@ -711,3 +711,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Validation 204/204 PASS; M5 55/55 and M8 10/10 Code-node syntax PASS; JSON/diff checks PASS.
 - Production still M5 v102 `fd54c08f-7bd4-480d-9959-27d882ca7c63` / M8 v57 `ecb6889c-b8b7-4a01-8f30-8e9a41f8213b`.
 - Not deployed yet. HUMAN PASS false; EN30 blocked.
+
+
+## M5 late timing-stability fix tested — 2026-09-22
+
+- Fresh job `c2e66456-1593-4052-b0d7-61fe53bf696d` stopped in M5 execution 9424 on v103 with `got 25, target 27`.
+- Same 24-word Chirp3-HD narration varied 13.896–15.024 s across real syntheses. A single 13.344 s Probe-4 result was incorrectly used to recalculate target words.
+- Local M5 WIP now sends Probe-4 bounded near-misses through the existing 3-sample stability gate, adds origin-4 routing, and allows only a tightly bounded semantic nearest word-count hybrid to reach real Probe 5.
+- Exact 9424 replay passes to Probe 5 with 25 words vs target 27; semantic guard remains active.
+- Validation 208/208 PASS; M5 55/55 Code-node syntax PASS; graph/JSON/diff checks PASS.
+- Production still M5 v103 `26ab19ec-ad1c-44ed-9f98-1f6c9d41214b` / M8 v58 `05df9dcc-404c-4a78-9b2a-e45e930b9dc6`.
+- Not deployed yet. HUMAN PASS false; EN30 blocked.

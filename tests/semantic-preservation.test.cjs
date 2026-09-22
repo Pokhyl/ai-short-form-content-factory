@@ -257,17 +257,22 @@ test('word-count targets remain guidance until measured TTS proves final correct
   );
   assert.match(
     byName['Validate Final Measured Word Count Retry'].parameters.jsCode,
-    /final measured exact-word retry missed required total before TTS/
+    /allowedNearDelta = Math\.max\(2, Math\.ceil\(targetWords \* 0\.05\)\)/
+  );
+  assert.match(
+    byName['Validate Final Measured Word Count Retry'].parameters.jsCode,
+    /Probe 5 \+ stability remains the actual timing gate/
   );
 });
 
 
-test('9137 regression: final measured retry cannot send a 30-word nearest hybrid into TTS when target is 26', () => {
+test('9137 regression: a far nearest hybrid still cannot reach Probe 5', () => {
   const code=byName['Validate Final Measured Word Count Retry'].parameters.jsCode;
   assert.match(code,/const exact = states\.get\(targetWords\)/);
-  assert.match(code,/nearestTotal = completed\.length \? Number\(completed\[0\]\[0\]\) : totalWords/);
-  assert.match(code,/final measured exact-word retry missed required total before TTS/);
-  assert.doesNotMatch(code,/narrations = nearest\.lines;/);
+  assert.match(code,/allowedNearDelta = Math\.max\(2, Math\.ceil\(targetWords \* 0\.05\)\)/);
+  assert.match(code,/Math\.abs\(nearestTotal - targetWords\) > allowedNearDelta/);
+  assert.match(code,/final measured word-count retry too far from target before TTS/);
+  assert.match(code,/narrations = nearest\.lines;/);
 });
 
 test('final duration target allocation uses original scene weights and semantic floors', () => {

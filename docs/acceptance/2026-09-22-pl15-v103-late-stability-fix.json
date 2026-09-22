@@ -1,0 +1,79 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "job_id": "c2e66456-1593-4052-b0d7-61fe53bf696d",
+  "script_run_id": "38a557b0-a316-4ca3-b106-1d198f492bc8",
+  "executions": {
+    "parent": {
+      "id": 9420,
+      "status": "error"
+    },
+    "M4": {
+      "id": 9421,
+      "status": "success",
+      "workflowVersionId": "3cf94dd2-8c3b-4585-ae88-6315a2685ff7"
+    },
+    "M5": {
+      "id": 9424,
+      "status": "error",
+      "workflowVersionId": "26ab19ec-ad1c-44ed-9f98-1f6c9d41214b"
+    }
+  },
+  "failure": "M5 script workflow failed: got 25, target 27 [line 399]",
+  "tts_variance_evidence": {
+    "voice": "pl-PL-Chirp3-HD-Enceladus",
+    "audio_encoding": "MP3",
+    "same_24_word_narration_ms": [
+      15024,
+      13896,
+      14016
+    ],
+    "same_24_word_median_ms": 14016,
+    "same_24_word_spread_ms": 1128,
+    "in_window_samples": 1,
+    "required_in_window_samples": 2,
+    "repaired_25_word_single_probe_ms": 13344,
+    "conclusion": "A single Chirp3-HD synthesis is not a reliable duration estimator; late text correction must use the existing multi-sample stability gate when the sample is a bounded near-miss."
+  },
+  "root_causes": [
+    "Normalize Timing Probe 4 did not expose timing_stability_candidate, unlike Probe 5.",
+    "Route Timing Within Target 4 used timing_ok only, so a 13.344s near-miss/outlier went directly to word-target recalculation.",
+    "Stability routing handled origins 1-3 only; origin 4 had no measured-correction route.",
+    "Validate Final Measured Word Count Retry treated the word-count heuristic as exact and failed before Probe 5 even when the nearest semantic hybrid was only two words from target."
+  ],
+  "fix": {
+    "probe4": "Expose timing_stability_candidate when delta <= tolerance + 1000ms and route on timing_ok OR timing_stability_candidate.",
+    "stability_origin4": "Add Route Stability Origin 4. A failed 3-sample stability set from origin 4 proceeds to Build Final Measured Correction; non-1/2/3/4 (origin 5) proceeds to final timing failure.",
+    "final_measured_retry": "Prefer exact word target. If unavailable, allow only the closest already semantic-validated hybrid within max(2 words, ceil(5% of target)) to reach Probe 5; farther hybrids remain fail-closed.",
+    "semantic_guard_weakened": false,
+    "timing_tolerance_changed": false,
+    "extra_llm_retry_added": false
+  },
+  "exact_9424_replay": {
+    "passed": true,
+    "target_word_count": 27,
+    "output_word_count": 25,
+    "word_count_exact": false,
+    "deterministic_word_hybrid_used": true,
+    "narration": "Woda gromadzi się w dużym zbiorniku za tamą. Następnie spada z dużej wysokości. Porusza ukrytą turbinę. Generator wytwarza prąd elektryczny. Prąd trafia do sieci przesyłowej.",
+    "next_runtime_gate": "Prepare Timing Probe 5 then three-sample stability if in-window or bounded near-miss"
+  },
+  "validation": {
+    "tests": "208/208 PASS",
+    "m5_code_syntax": "55/55 PASS",
+    "graph_targets": "124/124 nodes referenced validly",
+    "workflow_json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 103,
+      "activeVersionId": "26ab19ec-ad1c-44ed-9f98-1f6c9d41214b"
+    },
+    "M8": {
+      "versionCounter": 58,
+      "activeVersionId": "05df9dcc-404c-4a78-9b2a-e45e930b9dc6"
+    }
+  },
+  "next_step": "Commit/push, deploy only M5 with backup and protected-row fingerprint, then exactly one fresh PL15. Require M5 runtime proof, M8 v58 runtime proof and full technical/visual/audio acceptance before EN30."
+}

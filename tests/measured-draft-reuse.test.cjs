@@ -14,17 +14,28 @@ test('9221 exact replay: measured shorter scenes complete the strict 21-word tar
  const originals=fixture['Normalize Timing Probe'].storyboard.scenes;
  out.storyboard.scenes.forEach((s,i)=>assert.equal(s.scene_id,originals[i].scene_id));
 });
-test('skipped earlier probes retain fail-closed exact-total behavior',()=>{
+test('skipped earlier probes may use the bounded nearest semantic hybrid before Probe 5',()=>{
  const f=structuredClone(fixture);delete f['Normalize Timing Probe 2'];delete f['Normalize Timing Probe 3'];
- assert.throws(()=>run(f),/got 22, target 21/);
+ const out=run(f);
+ assert.equal(out.narration_word_count,22);
+ assert.equal(out.target_word_count,21);
+ assert.equal(out.word_count_exact,false);
+ assert.equal(out.deterministic_word_hybrid_used,true);
 });
-test('semantically invalid earlier drafts cannot rescue exact word target',()=>{
+test('semantically invalid earlier drafts cannot rescue the exact target or enter the bounded nearest hybrid',()=>{
  const f=structuredClone(fixture);
- for(const name of ['Normalize Timing Probe 2','Normalize Timing Probe 3'])for(const s of f[name].storyboard.scenes)s.narration='Ogromne samochody jadą drogą.';
- assert.throws(()=>run(f),/got 22, target 21/);
+ for(const name of ['Normalize Timing Probe 2','Normalize Timing Probe 3'])for(const scene of f[name].storyboard.scenes)scene.narration='Ogromne samochody jadą drogą.';
+ const out=run(f);
+ assert.equal(out.narration_word_count,22);
+ assert.equal(out.word_count_exact,false);
+ assert.ok(out.storyboard.scenes.every(scene=>scene.narration!=='Ogromne samochody jadą drogą.'));
 });
-test('earlier drafts cannot supply narration from a different scene identity',()=>{
+test('earlier drafts from a different scene identity cannot enter the bounded nearest hybrid',()=>{
  const f=structuredClone(fixture);
- for(const name of ['Normalize Timing Probe 2','Normalize Timing Probe 3'])for(const s of f[name].storyboard.scenes)s.scene_id='unrelated';
- assert.throws(()=>run(f),/got 22, target 21/);
+ for(const name of ['Normalize Timing Probe 2','Normalize Timing Probe 3'])for(const scene of f[name].storyboard.scenes)scene.scene_id='unrelated';
+ const out=run(f);
+ assert.equal(out.narration_word_count,22);
+ assert.equal(out.word_count_exact,false);
+ const originals=fixture['Normalize Timing Probe'].storyboard.scenes;
+ out.storyboard.scenes.forEach((scene,i)=>assert.equal(scene.scene_id,originals[i].scene_id));
 });
