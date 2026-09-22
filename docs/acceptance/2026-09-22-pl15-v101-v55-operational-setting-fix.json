@@ -108,5 +108,26 @@
       "activeVersionId": "5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8"
     }
   },
-  "next_step": "Commit/push, deploy only M8 with protected-row verification, then exactly one fresh PL15 and exact final visual/audio acceptance."
+  "next_step": "One fresh PL15; prove M5 v101/M8 v56 runtime, then exact final MP4 technical, visual and audio acceptance.",
+  "deployment": {
+    "status": "deployed",
+    "source_commit": "5820a277dfdfe9098fe13d9814f46553392a05a5",
+    "backup": ".backups/m8-before-operational-setting-20260922-073017.json",
+    "M8": {
+      "versionCounter": 56,
+      "activeVersionId": "ff72822c-44df-4058-9c7a-f31aa4abd7c9"
+    },
+    "M5_unchanged": {
+      "versionCounter": 101,
+      "activeVersionId": "0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f"
+    },
+    "other_workflows_fingerprint_before": "31|ef93efe27a6af28349854d1179d818d3",
+    "other_workflows_fingerprint_after": "31|ef93efe27a6af28349854d1179d818d3",
+    "live_core_match": true,
+    "publisher_http": 200,
+    "studio_http": 200,
+    "n8n_restart_count": 0,
+    "media_worker_health": "healthy",
+    "media_worker_restart_count": 0
+  }
 }

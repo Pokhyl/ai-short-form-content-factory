@@ -951,3 +951,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Alignment transcript coverage is 0.994; normalized_match is false because the stored ASR text differs from narration spelling/diacritics at least at `turbinę/turbine`. Do not infer HUMAN audio PASS from this; exact fresh post-fix audio review remains required.
 - Evidence: `docs/acceptance/2026-09-22-pl15-v101-v55-operational-setting-fix.json`.
 - Production remains M5 v101 / M8 v55 at this checkpoint. Next: commit/push, scoped M8-only deploy with backup + protected-row fingerprint, then exactly one fresh PL15 and full exact MP4 visual/audio acceptance before EN30.
+
+
+### M8 v56 deployed — positive operational-setting evidence — 2026-09-22
+
+- Source commit: `5820a277dfdfe9098fe13d9814f46553392a05a5` (`fix: require explicit operational visual setting`).
+- Exact published backup: `.backups/m8-before-operational-setting-20260922-073017.json`.
+- Published **only** `VideoM8Visuals001`: versionCounter **56**, activeVersionId `ff72822c-44df-4058-9c7a-f31aa4abd7c9`.
+- M5 remains v101 `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f`.
+- Other 31 workflow rows unchanged: count/hash `31|ef93efe27a6af28349854d1179d818d3` before and after.
+- Published M8 export matches repository for `nodes`, `connections`, `settings`.
+- Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0 on unchanged image `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`.
+- n8n CLI printed its generic restart advisory; no restart was performed. Runtime execution version is the acceptance proof.
+- Exact next step: one fresh PL15 through M9. Require M5 v101 and M8 v56 execution IDs, then exact technical + scene-by-scene visual + audio review. HUMAN PASS remains false until that completes; EN30 remains blocked.

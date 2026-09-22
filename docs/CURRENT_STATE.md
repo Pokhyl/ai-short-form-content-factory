@@ -651,3 +651,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - 169/169 tests PASS. Exact 69-candidate S3 replay leaves one old-production eligible candidate with the requested setting: Wikimedia 112972156, turbine+generator inside Iru Thermal Power Plant.
 - This WIP is not yet deployed. Production remains M5 v101 `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f` / M8 v55 `5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8`.
 - HUMAN PASS remains false; EN30 remains blocked.
+
+
+## M8 v56 production checkpoint — 2026-09-22
+
+- M8 v56 activeVersionId `ff72822c-44df-4058-9c7a-f31aa4abd7c9`, source commit `5820a277dfdfe9098fe13d9814f46553392a05a5`.
+- M5 remains v101 `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f`.
+- Backup `.backups/m8-before-operational-setting-20260922-073017.json`.
+- Other 31 workflows unchanged by exact fingerprint; live M8 core matches repository; Publisher/Studio healthy; no restart/credential change.
+- Runtime proof and HUMAN acceptance are still pending. One fresh PL15 is the next action.
