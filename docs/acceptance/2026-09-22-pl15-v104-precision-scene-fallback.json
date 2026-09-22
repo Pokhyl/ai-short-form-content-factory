@@ -1,0 +1,86 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "job_id": "b1fb1aa8-854f-4d47-b4d1-174e8410b0ef",
+  "script_run_id": "4541d75a-4015-4500-977a-e100ae9607a6",
+  "executions": {
+    "parent": {
+      "id": 9435,
+      "status": "error"
+    },
+    "M4": {
+      "id": 9436,
+      "status": "success",
+      "workflowVersionId": "3cf94dd2-8c3b-4585-ae88-6315a2685ff7"
+    },
+    "M5": {
+      "id": 9438,
+      "status": "error",
+      "workflowVersionId": "2a30c8ab-083a-4d4f-967e-ffd2a5889620"
+    }
+  },
+  "failure": "M5 script workflow failed: poteznie [line 235]",
+  "exact_precision_response": {
+    "narrations": [
+      "Woda gromadzona jest w zbiorniku za zaporą.",
+      "Spadająca rzeka potężnie napędza turbinę wodną.",
+      "Obrotowy ruch turbiny napędza generator prądu elektrycznego.",
+      "Gotowy prąd trafia bezpośrednio do sieci.",
+      "To czysta energia."
+    ],
+    "rejected_reason": "novel generic filler modifier: poteznie"
+  },
+  "root_cause": "The final precision validator was correctly semantic fail-closed, but any single invalid precision scene terminated M5 even though a previous scene candidate or immutable original could be independently semantically valid.",
+  "fix": {
+    "scope": "Validate Timing Precision Retry only",
+    "behavior": [
+      "Validate each precision scene independently against immutable original narration.",
+      "If the precision scene fails surface or semantic validation, try the previous precision base scene for that same scene identity.",
+      "If the base scene also fails, use the immutable original narration.",
+      "Every selected fallback must independently pass the existing surface bounds and semantic-preservation guard.",
+      "Recompute total words and anti-runaway envelope after scene-level fallback."
+    ],
+    "filler_accepted": false,
+    "semantic_thresholds_changed": false,
+    "timing_tolerance_changed": false,
+    "extra_llm_retry_added": false
+  },
+  "exact_9438_replay": {
+    "passed": true,
+    "narration_word_count": 27,
+    "precision_semantic_fallback_used": true,
+    "precision_semantic_sources": [
+      "precision",
+      "base",
+      "precision",
+      "precision",
+      "precision"
+    ],
+    "contains_poteznie": false,
+    "scenes": [
+      "Woda gromadzona jest w zbiorniku za zaporą.",
+      "Spadająca rzeka napędza turbinę.",
+      "Obrotowy ruch turbiny napędza generator prądu elektrycznego.",
+      "Gotowy prąd trafia bezpośrednio do sieci.",
+      "To czysta energia."
+    ],
+    "next_node": "Prepare Timing Probe 3"
+  },
+  "validation": {
+    "tests": "211/211 PASS",
+    "focused_precision_tests": "3/3 PASS",
+    "workflow_json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 104,
+      "activeVersionId": "2a30c8ab-083a-4d4f-967e-ffd2a5889620"
+    },
+    "M8": {
+      "versionCounter": 58,
+      "activeVersionId": "05df9dcc-404c-4a78-9b2a-e45e930b9dc6"
+    }
+  },
+  "next_step": "Commit/push, deploy only M5 with protected-row verification, then one fresh PL15. Require M5 and M8 runtime proof and full final technical/visual/audio acceptance before EN30."
+}

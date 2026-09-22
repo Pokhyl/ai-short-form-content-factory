@@ -1135,3 +1135,35 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0.
 - CLI restart advisory is generic; no restart was performed. Runtime execution version is the proof.
 - Next: one fresh PL15 on M5 v104 / M8 v58, then exact final technical/visual/audio acceptance before EN30.
+
+
+### Fresh PL15 v104 rejected precision filler; scene-level semantic fallback tested — NOT DEPLOYED — 2026-09-22
+
+- Fresh job `b1fb1aa8-854f-4d47-b4d1-174e8410b0ef`:
+  - parent 9435 ERROR;
+  - M4 9436 PASS;
+  - M5 9438 ERROR on exact v104 `2a30c8ab-083a-4d4f-967e-ffd2a5889620`;
+  - M6-M9 did not run.
+- Script run `4541d75a-4015-4500-977a-e100ae9607a6` failed because precision retry introduced Polish filler `potężnie`; the existing semantic guard correctly rejected it.
+- Exact precision response was otherwise close to immutable original. The only rejected scene was S2:
+  - precision: `Spadająca rzeka potężnie napędza turbinę wodną.`;
+  - previous/base: `Spadająca rzeka napędza turbinę.`;
+  - immutable original: `Spadająca rzeka napędza turbinę wodną.`.
+- Root cause was not a weak semantic guard. The problem was that one invalid precision scene terminated all of M5 even when a same-scene previous version could independently satisfy the unchanged semantic guard.
+- Systemic fix is local to `Validate Timing Precision Retry`:
+  - validate every precision scene independently against immutable original;
+  - if precision scene fails surface/semantic validation, try same-scene previous base narration;
+  - if that also fails, use immutable original;
+  - every selected fallback must independently pass the existing standalone-sentence, 2-N word and semantic-preservation checks;
+  - recompute total words and anti-runaway envelope after fallback;
+  - expose `precision_semantic_fallback_used` and per-scene `precision_semantic_sources`.
+- This does NOT accept or strip prohibited filler. Invalid precision text is discarded.
+- Exact execution-9438 replay with the saved Gemini response now succeeds without API calls:
+  - sources `["precision","base","precision","precision","precision"]`;
+  - `potężnie` absent from output;
+  - final replay narration is 27 words;
+  - next node is `Prepare Timing Probe 3`.
+- Validation: **211/211 tests PASS**, focused fallback tests 3/3 PASS, workflow JSON parse PASS, `git diff --check` PASS.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v104-precision-scene-fallback.json`.
+- Production remains M5 v104 / M8 v58 at this checkpoint.
+- Next: commit/push, deploy only M5, then one fresh PL15. HUMAN PASS still requires fresh M8 v58 runtime plus exact final technical/visual/audio review.

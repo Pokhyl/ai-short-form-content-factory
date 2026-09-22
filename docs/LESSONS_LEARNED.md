@@ -481,3 +481,14 @@ Prevention:
 - keep exact word count as a preferred heuristic, not the final timing truth;
 - a close semantic hybrid may reach the real final TTS probe only inside a tight bounded delta; farther hybrids stay fail-closed;
 - the final timing decision remains based on actual multi-sample TTS duration, not word count.
+
+
+56. A bad timing rewrite in one scene should not force acceptance or terminate the whole precision stage when a safe same-scene fallback exists.
+The semantic guard correctly rejected `potężnie`; weakening that guard would be wrong. The reusable recovery is scene-local: preserve valid precision scenes, and for only the failing scene reuse a previous narration if it independently passes the immutable semantic reference, otherwise use the immutable original.
+
+Prevention:
+- never sanitize prohibited filler into acceptance by lowering semantic thresholds;
+- validate fallback scenes independently against immutable original meaning;
+- never borrow narration from a different scene identity;
+- recompute total word/safety envelopes after hybridization;
+- let subsequent real TTS probes decide duration.

@@ -731,3 +731,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Backup `.backups/m5-before-late-stability-20260922-115826.json`.
 - Other 31 workflows unchanged by exact fingerprint; live M5 core matches repo; services healthy; no restart/credential change.
 - Runtime proof/HUMAN acceptance pending. One fresh PL15 is next.
+
+
+## M5 precision scene fallback tested — 2026-09-22
+
+- Job `b1fb1aa8-854f-4d47-b4d1-174e8410b0ef` stopped in M5 execution 9438 on v104 because precision retry introduced prohibited filler `potężnie`.
+- Semantic guard remains strict. Local WIP now falls back per scene to a same-scene previous narration only if it independently passes the unchanged semantic guard; otherwise immutable original is used.
+- Exact 9438 replay passes with S2 using the prior valid line, no `potężnie`, 27 total words and next node `Prepare Timing Probe 3`.
+- Validation 211/211 PASS; focused tests 3/3 PASS; JSON/diff checks PASS.
+- Production still M5 v104 `2a30c8ab-083a-4d4f-967e-ffd2a5889620` / M8 v58 `05df9dcc-404c-4a78-9b2a-e45e930b9dc6`.
+- Not deployed yet. HUMAN PASS false; EN30 blocked.
