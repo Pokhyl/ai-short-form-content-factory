@@ -1,0 +1,15 @@
+{
+  "job_id": "b36a7c19-3427-4d67-9e2b-50d0acb4d717",
+  "status": "processing",
+  "production": {
+    "M5": {
+      "version": 99,
+      "id": "8317622a-7d47-4cc5-8c40-f3f76caebf42"
+    },
+    "M8": {
+      "version": 53,
+      "id": "0953f69f-e982-467e-95e0-35161a613771"
+    }
+  },
+  "next_step": "Monitor this exact job; runtime proof, then final visual/audio QA before EN30."
+}

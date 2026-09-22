@@ -4,7 +4,7 @@ Updated: 2026-09-21
 
 ## Current authoritative status
 
-Production M5 v98 / M8 v53. Last PL15 `12f1ac4f-b8dc-4f17-a191-06888fb7e8a4` failed in M5 9221 before final TTS because the strict 21-word target could not be formed from the last drafts. Tested fix reuses earlier measured, semantically validated scenes within the existing bounded selection; exact target remains strict. 110 tests PASS, not deployed. Next: M5-only deployment and fresh PL15, then M8 v53 runtime proof and final visual/audio QA. No EN30/HUMAN PASS. Latest details below; earlier sections historical.
+Production M5 v99 `8317622a-7d47-4cc5-8c40-f3f76caebf42` / M8 v53 `0953f69f-e982-467e-95e0-35161a613771`. Fresh PL15 `b36a7c19-3427-4d67-9e2b-50d0acb4d717` is running. Monitor this exact job; prove runtime versions and continue to final visual/audio QA before EN30. 110 tests PASS. No HUMAN PASS. Latest details below; prior sections historical.
 
 ## Repository
 Repo: Pokhyl/ai-short-form-content-factory
@@ -561,3 +561,10 @@ This section supersedes older M8 snapshots above where they conflict.
 - Exact sanitized execution fixture now in `tests/fixtures/m5-9221-final-retry.json`. Pre-fix replay reproduces got 22/target 21; post-fix returns exactly 21 words with original scene identities and semantics. This is code replay, NOT audio timing acceptance.
 - 110/110 tests PASS including exact replay, unavailable branches, semantic-invalid and mismatched-scene negatives plus original 9137 strict-count regression. JSON/113 Code syntax and diff checks PASS.
 - Production remains M5 v98 `ce78a67f-bce4-45fb-bbf8-2d421b3c3142` / M8 v53 `0953f69f-e982-467e-95e0-35161a613771`. Next: scoped M5 deploy with backup/protected hash, then fresh PL15; no more jobs on unchanged v98. No EN30/HUMAN PASS.
+
+### M5 v99 deployed; fresh PL15 running — 2026-09-22
+
+- Fix commit `486406fa5f48e2d62c8e7b4f7bda482dfe3587e4`; only M5 published as v99 `8317622a-7d47-4cc5-8c40-f3f76caebf42`.
+- Backup `.backups/m5-before-measured-drafts-20260922-032117.json`; all other 31 workflow rows unchanged (before/after hash `2b1e19662b731815a72c46a9042f1243`). Live nodes/connections/settings match repository. No active project runs before deploy; no restart/credential change. M8 remains v53 `0953f69f-e982-467e-95e0-35161a613771`.
+- Fresh PL15 `b36a7c19-3427-4d67-9e2b-50d0acb4d717` created and accepted through Studio webhook path.
+- Next: monitor this exact job, confirm M5 v99/M8 v53 execution versions, inspect output or exact terminal failure. Do not duplicate a running job. EN30 remains blocked by PL15 visual/audio QA.
