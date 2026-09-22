@@ -1,0 +1,43 @@
+{
+  "date": "2026-09-22",
+  "status": "deployed_verified",
+  "workflow": "VideoM5Storyboard001",
+  "before": {
+    "versionCounter": 110,
+    "activeVersionId": "f67bac25-872d-48d6-baba-c6afff1ca146"
+  },
+  "after": {
+    "versionCounter": 111,
+    "activeVersionId": "31eaa7a9-98d1-44b6-bec6-416ef388753b"
+  },
+  "backup": ".backups/m5-before-anaphoric-20260922-210414.json",
+  "other_workflows": {
+    "count": 31,
+    "fingerprint_before": "31|f28cd4244a334ea2ea539357a3302585",
+    "fingerprint_after": "31|f28cd4244a334ea2ea539357a3302585",
+    "unchanged": true
+  },
+  "live_core_match": true,
+  "publisher_http": 200,
+  "studio_http": 200,
+  "n8n": {
+    "status": "running",
+    "restart_count": 0
+  },
+  "media_worker": {
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0
+  },
+  "unchanged_versions": {
+    "M6": {
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "M8": {
+      "versionCounter": 61,
+      "activeVersionId": "a73aefbc-4c8e-4458-8ef2-c48bbce3a957"
+    }
+  },
+  "next_step": "Run exactly one fresh PL15 on M5 v111 / M6 v8 / M8 v61."
+}

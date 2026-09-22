@@ -850,3 +850,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Final canonicalizer normalizes `,.`/similar boundary artifacts without changing words.
 - Full suite 260/260 PASS.
 - Production remains M5 v110 / M6 v8 / M8 v61; M5 fix not deployed yet.
+
+
+## M5 v111 deployed — 2026-09-22
+
+- M5 v111 activeVersionId `31eaa7a9-98d1-44b6-bec6-416ef388753b`.
+- M6 v8 and M8 v61 unchanged.
+- Non-M5 workflow fingerprint unchanged.
+- Live M5 == Git; Publisher/Studio 200; no n8n restart.
+- Next action: one fresh PL15 only.

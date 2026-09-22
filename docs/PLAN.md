@@ -51,19 +51,24 @@ Constraints:
 
 ## Current production state
 
-Last production versions verified before the latest Git-only M5 fix:
-- M5 Script/Storyboard: v110
-  - activeVersionId: `f67bac25-872d-48d6-baba-c6afff1ca146`
+Current verified production versions:
+- M5 Script/Storyboard: v111
+  - activeVersionId: `31eaa7a9-98d1-44b6-bec6-416ef388753b`
 - M6 Voiceover: v8
   - activeVersionId: `0bcabe39-ae90-42fe-842b-8a56ad238709`
 - M8 Visuals: v61
   - activeVersionId: `a73aefbc-4c8e-4458-8ef2-c48bbce3a957`
 
-Current GitHub main checkpoint:
-- `9b34f47e6ed151675f8b9e2a825e1d3da14dbcaa`
-- message: `chore: checkpoint current production work`
+M5 v111 deployment verification:
+- published backup: `.backups/m5-before-anaphoric-20260922-210414.json`
+- non-M5 workflow fingerprint unchanged: `31|f28cd4244a334ea2ea539357a3302585`
+- live M5 nodes/connections/settings == Git: PASS
+- Publisher: 200
+- Studio: 200
+- n8n restart count: 0
+- media worker: healthy, restart count 0
 
-Important: Git contains an M5 fix that is NOT yet verified as deployed to production.
+The anaphoric/cross-scene visual fix is now deployed and verified live.
 
 ## Proven architecture decisions
 
@@ -123,37 +128,21 @@ This fix is not considered production-complete until deployment and live verific
 
 ## Immediate next step
 
-1. Restore VPS/SentinelX connectivity.
-2. Read this PLAN again before making any production change.
-3. Verify:
-   - Git HEAD == origin/main;
-   - working tree clean;
-   - no active project executions;
-   - production M5/M6/M8 versions.
-4. Deploy ONLY M5 from current Git main.
-5. Before deployment:
-   - export published M5 backup;
-   - fingerprint all non-M5 workflows.
-6. After deployment verify:
-   - M5 version incremented exactly once;
-   - live M5 nodes/connections/settings == Git;
-   - non-M5 workflow fingerprint unchanged;
-   - Publisher 200;
-   - Studio 200;
-   - n8n restart count unchanged unless an actual restart is required and explicitly justified.
-7. Update this PLAN + handoff + evidence; commit/push deployment checkpoint.
-8. Run exactly ONE fresh PL15 only when active project execution count is zero.
-9. Follow that single job to terminal state. Do not create another job while it is running.
-10. If it passes M5 -> M9:
-    - inspect the actual rendered MP4 technically;
-    - review scene-by-scene visual grounding against narration;
-    - review audio/narration continuity.
-11. If it fails:
-    - fix only the demonstrated blocker using saved execution/provider data first;
-    - regression test;
-    - deploy only the affected workflow;
-    - update PLAN/Git;
-    - one new acceptance job.
+1. Read this PLAN before the next production action.
+2. Verify Git clean and active project execution count = 0.
+3. Run exactly ONE fresh PL15 on M5 v111 / M6 v8 / M8 v61.
+4. Follow that single job to terminal state. Do not create another job while it is running.
+5. If it passes M5 -> M9:
+   - inspect the actual rendered MP4 technically;
+   - review scene-by-scene visual grounding against narration;
+   - review audio/narration continuity.
+6. If it fails:
+   - use saved execution/provider data from that exact job first;
+   - fix only the demonstrated blocker;
+   - regression test;
+   - deploy only the affected workflow;
+   - update PLAN/Git;
+   - then run one new acceptance job.
 
 ## Acceptance sequence after PL15
 

@@ -1420,3 +1420,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - If evidence is insufficient, mark the conclusion unverified instead of agreeing.
 - Never claim a technical problem is fixed/completed/deployed/passing without verifying actual state.
 - Canonical copy: `docs/OPERATOR_RULES.md`.
+
+
+### M5 v111 anaphoric visual fix deployed — 2026-09-22
+
+- Deployed only M5 from Git main after active project executions were verified at 0.
+- Before: M5 v110 `f67bac25-872d-48d6-baba-c6afff1ca146`.
+- After: M5 v111 `31eaa7a9-98d1-44b6-bec6-416ef388753b`.
+- Published backup: `.backups/m5-before-anaphoric-20260922-210414.json`.
+- Non-M5 workflow fingerprint before/after identical: `31|f28cd4244a334ea2ea539357a3302585`.
+- M6 remained v8; M8 remained v61.
+- Live M5 nodes/connections/settings exactly match Git.
+- Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0.
+- Next: exactly one fresh PL15, then inspect the actual final MP4 if M9 passes.
