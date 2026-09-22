@@ -781,3 +781,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Local M5 WIP puts provider errors on main output for n8n retry detection, uses 3 attempts / 5 s, and preserves final provider error through existing bounded validator error routing.
 - Validation: 235/235 full tests PASS.
 - Production remains M5 v105 / M8 v59; M5 fix is not deployed yet.
+
+
+## M5 v106 repair-provider fallback tested — 2026-09-22
+
+- Job `8d03a4e9-fab8-48bc-9feb-401cad6738c8`, M5 execution `9499`.
+- First storyboard response was usable but invalid (4/5 scenes); first repair then exhausted Gemini 503 retries.
+- Local fix makes second repair fall back to the original successful draft + original validation error instead of failing with `first Gemini output is empty`.
+- Exact 9499 replay PASS; full suite 237/237 PASS.
+- Production still M5 v106 / M8 v59. Fix not deployed yet.

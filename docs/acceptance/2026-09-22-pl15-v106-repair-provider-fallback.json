@@ -1,0 +1,57 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "job_id": "8d03a4e9-fab8-48bc-9feb-401cad6738c8",
+  "execution_id": 9499,
+  "workflow_version_id": "2fd8fddd-a169-4048-8ba4-c6dea2be3084",
+  "script_run_id": "d40cefce-c064-4c32-b35b-24aadbe66c3c",
+  "observed": {
+    "first_generate": {
+      "status_code": 200,
+      "scene_count": 4,
+      "validation_error": "4, required exactly 5 [line 140]"
+    },
+    "first_repair": {
+      "terminal_provider_error": "503 UNAVAILABLE / model high demand",
+      "retry_duration_ms": 74699
+    },
+    "old_second_repair_builder_failure": "first Gemini output is empty [line 34]"
+  },
+  "root_cause": "Build Storyboard Repair 2 read only Repair Storyboard output. When that provider call exhausted transient retries and produced no content, the builder discarded the still-valid original Generate Storyboard draft and its validation error.",
+  "fix": {
+    "node": "Build Storyboard Repair 2",
+    "behavior": [
+      "prefer usable first repair draft when present",
+      "otherwise fall back to original Generate Storyboard draft",
+      "when falling back, preserve original deterministic validation error",
+      "append exhausted provider failure context instead of replacing the deterministic repair reason"
+    ],
+    "semantic_thresholds_changed": false,
+    "repair_budget_changed": false,
+    "additional_full_job_required_for_replay": false
+  },
+  "exact_9499_replay": {
+    "passed": true,
+    "has_original_validation": true,
+    "has_provider_failure": true,
+    "has_original_output": true,
+    "has_false_empty_output_failure": false
+  },
+  "validation": {
+    "focused_tests": "5/5 PASS",
+    "full_suite": "237/237 PASS",
+    "workflow_json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 106,
+      "activeVersionId": "2fd8fddd-a169-4048-8ba4-c6dea2be3084"
+    },
+    "M8": {
+      "versionCounter": 59,
+      "activeVersionId": "96b3a6b9-b5ef-4a28-a68a-5c3c928b8185"
+    }
+  },
+  "next_step": "Commit/push, deploy only M5, then one fresh PL15 on M5 next version + M8 v59."
+}

@@ -93,3 +93,88 @@ test('provider guard surfaces exact final provider message instead of hiding it 
     true
   );
 });
+
+
+test('execution 9499 regression: second storyboard repair falls back to original successful draft after repair provider 503',()=>{
+  const code=byName['Build Storyboard Repair 2'].parameters.jsCode;
+  const originalText='{"narration":"four scenes","scenes":[1,2,3,4]}';
+  const refs={
+    'Build Script Prompt':{
+      script_run_id:'run-9499',
+      model:'gemini-3.5-flash-lite',
+      system_message:'SYSTEM',
+      user_message:'USER',
+      target_scenes:5,
+      target_shots:5,
+      target_words:28,
+      language_code:'pl',
+    },
+    'Repair Storyboard':{
+      error:{
+        description:'This model is currently experiencing high demand.',
+        message:'Service unavailable',
+      },
+    },
+    'Generate Storyboard':{
+      body:{
+        candidates:[{
+          content:{parts:[{text:originalText}]},
+        }],
+      },
+    },
+    'Validate Storyboard':{
+      error:'4, required exactly 5 [line 140]',
+    },
+  };
+  const $=name=>({first:()=>({json:refs[name]})});
+
+  const out=new Function('$','$json',code)(
+    $,
+    {
+      error:{
+        description:'This model is currently experiencing high demand.',
+        message:'Service unavailable',
+      },
+    }
+  ).json;
+
+  assert.equal(out.script_run_id,'run-9499');
+  assert.match(out.user_message,/4, required exactly 5/);
+  assert.match(
+    out.user_message,
+    /Previous repair provider failed after retries: This model is currently experiencing high demand/
+  );
+  assert.match(out.user_message,/\{"narration":"four scenes"/);
+  assert.doesNotMatch(out.user_message,/first Gemini output is empty/);
+});
+
+test('second storyboard repair prefers a usable first repair draft over the original draft',()=>{
+  const code=byName['Build Storyboard Repair 2'].parameters.jsCode;
+  const refs={
+    'Build Script Prompt':{
+      script_run_id:'run-x',
+      model:'gemini',
+      system_message:'SYSTEM',
+      user_message:'USER',
+      target_scenes:5,
+      target_shots:5,
+      target_words:28,
+      language_code:'pl',
+    },
+    'Repair Storyboard':{
+      body:{candidates:[{content:{parts:[{text:'REPAIR_DRAFT'}]}}]},
+    },
+    'Generate Storyboard':{
+      body:{candidates:[{content:{parts:[{text:'ORIGINAL_DRAFT'}]}}]},
+    },
+    'Validate Storyboard':{error:'original error'},
+  };
+  const $=name=>({first:()=>({json:refs[name]})});
+  const out=new Function('$','$json',code)(
+    $,
+    {error:'repair validation error'}
+  ).json;
+  assert.match(out.user_message,/REPAIR_DRAFT/);
+  assert.doesNotMatch(out.user_message,/ORIGINAL_DRAFT/);
+  assert.match(out.user_message,/repair validation error/);
+});

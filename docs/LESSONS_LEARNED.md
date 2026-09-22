@@ -516,3 +516,13 @@ Prevention:
 - immediately detect top-level `json.error` in the downstream validator and preserve the provider message;
 - keep existing semantic/timing recovery budgets independent from transport retries;
 - verify live published node configuration against repository before blaming provider behavior.
+
+
+56. A transient provider failure inside a bounded repair must not erase the last usable deterministic draft.
+When a repair API call fails after retries, the next repair stage should recover from the latest usable model output and the deterministic validation error that actually needs fixing. Treating the failed provider response as the only source can turn a recoverable provider outage into a false empty-output terminal failure.
+
+Prevention:
+- keep the original successful draft addressable through later bounded repair stages;
+- prefer the most recent usable repair output, but fall back to the original draft when the repair call produced no candidate text;
+- preserve deterministic validation errors separately from provider transport errors;
+- provider outages may add context, but must not replace the actual content-repair reason.

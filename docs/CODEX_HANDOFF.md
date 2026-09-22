@@ -1243,3 +1243,25 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Production at this checkpoint remains M5 v105 / M8 v59.
 - The single authorized full PL15 was consumed by the provider 503. No second full PL15 has been started.
 - Next: commit/push and deploy only M5 with backup/fingerprint/live-core verification.
+
+
+### Fresh PL15 v106 exposed repair-provider fallback bug; exact 9499 replay fixed — NOT DEPLOYED — 2026-09-22
+
+- Fresh job `8d03a4e9-fab8-48bc-9feb-401cad6738c8` reached M5 execution `9499` on exact v106 `2fd8fddd-a169-4048-8ba4-c6dea2be3084`.
+- First `Generate Storyboard` succeeded with HTTP 200 but returned 4 scenes; deterministic validation correctly rejected it with `4, required exactly 5`.
+- First bounded `Repair Storyboard` exhausted transient provider retries on Gemini 503 / model high demand.
+- Old `Build Storyboard Repair 2` read only the failed repair response. Because that response had no candidate text, it falsely failed with `first Gemini output is empty` and lost the still-usable original draft + original deterministic validation reason.
+- Systemic fix:
+  - prefer usable first-repair draft when present;
+  - otherwise fall back to original `Generate Storyboard` draft;
+  - preserve the original deterministic validation error;
+  - append exhausted provider-failure context rather than replacing the repair reason.
+- Exact execution-9499 replay now builds the second repair prompt successfully with:
+  - original draft present;
+  - original `4, required exactly 5` validation error present;
+  - exhausted 503 provider context present;
+  - no false empty-output failure.
+- Validation: focused provider/replay tests **5/5 PASS**, full suite **237/237 PASS**, workflow JSON parse PASS, `git diff --check` PASS.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v106-repair-provider-fallback.json`.
+- Production remains M5 v106 / M8 v59 at this checkpoint.
+- Next: commit/push, deploy only M5, then one fresh PL15.
