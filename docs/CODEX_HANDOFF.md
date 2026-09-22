@@ -1308,3 +1308,34 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-m5-m6-exact-audio-handoff.json`.
 - Production remains M5 v108 / M6 v7 / M8 v59 at this checkpoint.
 - Next: commit/push; deploy DB migration, media-worker, then only M5+M6; verify exact live state; only then one fresh PL15.
+
+
+### Fresh PL15 v109/v8/v59 proved exact-audio reuse; M8 S5 substation evidence fix tested — NOT DEPLOYED — 2026-09-22
+
+- Fresh job `7813ffd0-76bb-4e99-8fd4-dc8d4819520b`:
+  - M4 9527 PASS;
+  - M5 9529 PASS on v109 `cf78728e-b044-4862-86f4-33798d0c4c0a`;
+  - M6 9530 PASS on v8 `0bcabe39-ae90-42fe-842b-8a56ad238709`;
+  - M7 9531 PASS;
+  - M8 9532 ERROR on v59 `96b3a6b9-b5ef-4a28-a68a-5c3c928b8185`;
+  - M9 did not run.
+- Exact-audio handoff is production-proven:
+  - M5 candidate and final M6 voiceover are byte-identical: 14.808 s, SHA `88eac0eb52115c74c2a12d73138f63f6c6a1ccf9d338565a0a32c7471d4e56a9`, 59,232 bytes, 24 kHz mono MP3;
+  - same committed M5 usage ledger 843 / key `m5-tts-stability:69890fdc-aa80-498c-b96c-8a8d95be4b0d:3`;
+  - M6 created 0 `m6-tts:%` usage rows;
+  - M6 execution contains candidate promotion and does not contain `Google Cloud TTS`.
+- M8 visual_run `6f678067-577f-421b-b39e-3e8dfbc1f33f`: 45/45 searches, 343 results. Pools before fix S1=30, S2=8, S3=3, S4=1, S5=0. Only S5 blocked.
+- Exact S5 contract: narration `Transformator dostosowuje napięcie do sieci.`; intent `Large electrical transformer substation outdoors near power plant`; must_show only `electrical transformer`.
+- Valid Commons candidate `54317267` was falsely rejected only by setting/depiction metadata gates. It is a real outdoor electrical substation with a large transformer visibly present; manual source-image review PASS.
+- Root causes:
+  1. operational-setting logic over-required literal power-plant wording even when storyboard itself allowed the concrete grid setting `substation`;
+  2. Wikimedia primary depiction logic treated concrete machinery category segments as contextual-only.
+- WIP fix:
+  - `substation` / `switchyard` are accepted as explicit operational grid settings when storyboard asks for them;
+  - generic `plant` without `power` still cannot satisfy a power-plant scene;
+  - only machinery heads may use a concrete Commons category segment such as `High-voltage transformers` as primary depiction evidence;
+  - non-machinery contextual-category false positives remain rejected.
+- Validation: **247/247 tests PASS**; old deterministic 9229 replay performs 0 provider calls, remains terminal-success, and selects the exact same five visual assets as before. S5 pool grows only from 3 to 4.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v109-v8-v59-s5-substation-setting-fix.json`.
+- Production remains M5 v109 / M6 v8 / M8 v59 at this checkpoint.
+- Next: commit/push, deploy only M8, then exactly one fresh PL15.

@@ -64,7 +64,7 @@ test('execution 9229 replay: exact v53 fails S1, current M8 selects five visuall
         ['S2-A',5],
         ['S3-A',5],
         ['S4-A',8],
-        ['S5-A',3],
+        ['S5-A',4],
       ]
     );
 

@@ -547,3 +547,14 @@ Prevention:
 - reuse that exact file downstream rather than re-synthesizing the same narration;
 - keep the final M6 persistence/duration/SHA checks fail-closed;
 - use a new TTS call only when no persisted accepted candidate exists.
+
+
+59. Operational scene context is a set of compatible locations, not a requirement that every location phrase appear literally.
+A storyboard may describe an electrical transformer as being in a substation near a power plant. If the candidate directly proves the requested substation and transformer, requiring the metadata to also repeat `power plant` creates a false rejection.
+
+Prevention:
+- preserve strict `power + plant/station` evidence when the only proved setting is a generic plant/station;
+- allow an explicitly requested concrete grid setting such as substation or switchyard to independently satisfy the operational-setting gate;
+- do not make presentation words such as outdoors into domains;
+- for Wikimedia, allow concrete category segments to prove a machinery class only when the requested primary is machinery and the category itself satisfies that machinery concept;
+- do not extend category-only depiction proof to reservoirs, people, animals or other contextual taxonomy.

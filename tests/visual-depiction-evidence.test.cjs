@@ -180,3 +180,41 @@ test('Wikimedia background primary is allowed when storyboard explicitly request
   }));
   assert.equal(c.rejected,false,c.rejection_reason);
 });
+
+
+test('9532 regression: concrete transformer category plus requested substation setting proves operational S5 image',()=>{
+  const ctx={
+    query:'high voltage electrical transformer station',
+    visual_intent:'Large electrical transformer substation outdoors near power plant',
+    must_show:['electrical transformer'],
+    must_not_show:[],
+    domain_context_terms:['substation'],
+  };
+  const c=normalize(ctx,body({
+    id:54317267,
+    title:'Electrical substation, Cosne-Cours-sur-Loire, 58-Fr (2).jpg',
+    objectName:'Electrical substation, Cosne-Cours-sur-Loire, 58-Fr (2)',
+    categories:'High-voltage transformers|Transformer cooling fans|Electrical substations in Cosne-Cours-sur-Loire',
+    description:'Sous-station électrique, rue des Frères Lumière, Cosne-Cours-sur-Loire, France.',
+  }));
+  assert.equal(c.rejected,false,c.rejection_reason);
+  assert.equal(c.relevance_score,100);
+});
+
+test('machinery-only category depiction relaxation does not let contextual reservoir categories prove a reservoir',()=>{
+  const ctx={
+    query:'water reservoir',
+    visual_intent:'Large water reservoir near hydroelectric power plant',
+    must_show:['water reservoir'],
+    must_not_show:[],
+    domain_context_terms:[],
+  };
+  const c=normalize(ctx,body({
+    title:'Concrete tunnel portal',
+    objectName:'Concrete tunnel portal',
+    categories:'Reservoirs in France|Hydroelectric power plants in France',
+    description:'Tunnel carrying water from a reservoir.',
+  }));
+  assert.equal(c.rejected,true);
+  assert.match(c.rejection_reason,/wikimedia_primary_only_contextual_metadata/);
+});

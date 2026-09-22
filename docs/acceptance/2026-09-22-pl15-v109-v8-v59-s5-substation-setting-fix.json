@@ -1,0 +1,173 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "job_id": "7813ffd0-76bb-4e99-8fd4-dc8d4819520b",
+  "executions": {
+    "parent": {
+      "id": 9526,
+      "status": "error"
+    },
+    "M4": {
+      "id": 9527,
+      "status": "success",
+      "workflowVersionId": "3cf94dd2-8c3b-4585-ae88-6315a2685ff7"
+    },
+    "M5": {
+      "id": 9529,
+      "status": "success",
+      "workflowVersionId": "cf78728e-b044-4862-86f4-33798d0c4c0a"
+    },
+    "M6": {
+      "id": 9530,
+      "status": "success",
+      "workflowVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "M7": {
+      "id": 9531,
+      "status": "success",
+      "workflowVersionId": "91fbac4f-f40d-4d75-9111-3e4ed01bd9ff"
+    },
+    "M8": {
+      "id": 9532,
+      "status": "error",
+      "workflowVersionId": "96b3a6b9-b5ef-4a28-a68a-5c3c928b8185"
+    },
+    "M9": null
+  },
+  "exact_audio_reuse_proof": {
+    "candidate_id": "5e5d7eff-4cc6-414c-a1f8-63b9455289d7",
+    "voiceover_run_id": "b13e9f95-ca91-4535-94b6-ec0e62cc6c64",
+    "duration_ms": 14808,
+    "audio_sha256": "88eac0eb52115c74c2a12d73138f63f6c6a1ccf9d338565a0a32c7471d4e56a9",
+    "bytes": 59232,
+    "sample_rate": 24000,
+    "channels": 1,
+    "codec": "mp3",
+    "usage_idempotency_key": "m5-tts-stability:69890fdc-aa80-498c-b96c-8a8d95be4b0d:3",
+    "usage_ledger_id": 843,
+    "final_voiceover_matches_candidate": true,
+    "m6_tts_usage_rows": 0,
+    "m6_google_tts_node_executed": false,
+    "m6_promote_node_executed": true
+  },
+  "visual_run": {
+    "id": "6f678067-577f-421b-b39e-3e8dfbc1f33f",
+    "expected_searches": 45,
+    "completed_searches": 45,
+    "total_results": 343,
+    "terminal_failure": "M8 visuals failed: no compliant relevant visual candidate for shot S5-A",
+    "eligible_pools_before_fix": {
+      "S1-A": 30,
+      "S2-A": 8,
+      "S3-A": 3,
+      "S4-A": 1,
+      "S5-A": 0
+    }
+  },
+  "s5_contract": {
+    "narration": "Transformator dostosowuje napięcie do sieci.",
+    "visual_intent": "Large electrical transformer substation outdoors near power plant",
+    "must_show": [
+      "electrical transformer"
+    ],
+    "must_not_show": [],
+    "queries_en": [
+      "high voltage electrical transformer station",
+      "electrical substation equipment",
+      "electrical transformer"
+    ]
+  },
+  "accepted_regression_candidate": {
+    "provider": "wikimedia",
+    "provider_asset_id": "54317267",
+    "title": "File:Electrical substation, Cosne-Cours-sur-Loire, 58-Fr (2).jpg",
+    "categories": [
+      "High-voltage transformers",
+      "Transformer cooling fans",
+      "Electrical substations in Cosne-Cours-sur-Loire"
+    ],
+    "old_rejection_reason": "missing_operational_setting_context; wikimedia_primary_only_contextual_metadata",
+    "manual_visual_review": "PASS: real outdoor electrical substation with a large transformer visibly present",
+    "local_sha256": "42956535fbf5babe4b1443f544ad4077100fb83102276b82a9c6bb1aa622f30f"
+  },
+  "root_causes": [
+    "The operational-setting gate treated power plant/station wording as if every allowed scene location had to be repeated literally in candidate metadata. A requested electrical substation therefore failed even when metadata proved a real substation.",
+    "Wikimedia depiction proof rejected concrete machinery categories such as High-voltage transformers because category evidence was globally treated as contextual-only."
+  ],
+  "fix": {
+    "operational_setting": [
+      "substation and switchyard are explicit operational grid-infrastructure settings",
+      "for a power-facility scene, direct power+plant/station evidence still passes",
+      "an explicitly requested substation/switchyard may alternatively satisfy the operating-setting requirement",
+      "a generic plant word without power context remains rejected"
+    ],
+    "wikimedia_depiction": [
+      "only machinery heads may use a concrete category segment as primary depiction evidence",
+      "the category segment must itself satisfy the requested machinery concept threshold",
+      "reservoir/bee/person/background taxonomy categories remain unable to prove primary depiction"
+    ],
+    "topic_specific": false,
+    "asset_ids_hardcoded": false
+  },
+  "regression_validation": {
+    "full_suite": "247/247 PASS",
+    "deterministic_9229_replay": {
+      "provider_calls": 0,
+      "terminal_failure": null,
+      "selected": [
+        [
+          "S1-A",
+          "wikimedia",
+          "172815415"
+        ],
+        [
+          "S2-A",
+          "wikimedia",
+          "39943534"
+        ],
+        [
+          "S3-A",
+          "pexels",
+          "12270481"
+        ],
+        [
+          "S4-A",
+          "wikimedia",
+          "34396499"
+        ],
+        [
+          "S5-A",
+          "wikimedia",
+          "27207173"
+        ]
+      ],
+      "eligible_pools": {
+        "S1-A": 1,
+        "S2-A": 5,
+        "S3-A": 5,
+        "S4-A": 8,
+        "S5-A": 4
+      },
+      "selections_unchanged": true
+    },
+    "generic_power_plant_regressions": "PASS",
+    "reservoir_contextual_category_regression": "PASS",
+    "git_diff_check": "PASS",
+    "workflow_json_parse": "PASS"
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 109,
+      "activeVersionId": "cf78728e-b044-4862-86f4-33798d0c4c0a"
+    },
+    "M6": {
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "M8": {
+      "versionCounter": 59,
+      "activeVersionId": "96b3a6b9-b5ef-4a28-a68a-5c3c928b8185"
+    }
+  },
+  "next_step": "Commit/push the M8 scorer fix, deploy only M8 with backup/fingerprint/live-core verification, then run exactly one fresh PL15."
+}

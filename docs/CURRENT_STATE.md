@@ -811,3 +811,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Full suite 245/245 PASS; M5/M6 syntax+graph checks PASS.
 - Production is still unchanged: M5 v108, M6 v7, M8 v59.
 - Next: deploy migration + media-worker + only M5/M6, then one fresh PL15.
+
+
+## Fresh PL15 reached M8 after exact-audio success; S5 fix tested — 2026-09-22
+
+- Job `7813ffd0-76bb-4e99-8fd4-dc8d4819520b`: M5 v109 PASS, M6 v8 PASS via exact candidate reuse, M7 PASS, M8 v59 failed only on S5.
+- Exact reused final voiceover: 14.808 s, SHA `88eac0eb...e56a9`; no M6 Google TTS call and no M6 TTS usage reservation.
+- M8 run 9532 completed all 45 searches / 343 results; only S5 had zero eligible candidates.
+- Local M8 fix accepts explicitly requested substation/switchyard as an operational grid setting and allows concrete machinery-only Commons categories to prove the machinery subject.
+- Generic power-plant and contextual non-machinery protections remain fail-closed.
+- Full suite 247/247 PASS; deterministic 9229 selected IDs unchanged.
+- Production still M8 v59; fix not deployed yet.
