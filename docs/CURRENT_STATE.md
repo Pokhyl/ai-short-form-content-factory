@@ -859,3 +859,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Non-M5 workflow fingerprint unchanged.
 - Live M5 == Git; Publisher/Studio 200; no n8n restart.
 - Next action: one fresh PL15 only.
+
+
+## Fresh PL15 machine QA passed — manual review pending — 2026-09-22
+
+- Job `8ce87adb-3952-43cb-ab1d-7a1b2d549651`.
+- M5 v111 PASS; M6 v8 PASS; M8 v61 PASS.
+- visual_run `cfb7a60e-ed47-408f-85f9-3bbaa7626648`: PASS, 45/45 searches, 288 results.
+- Job state: `machine_qa_passed`.
+- No replacement PL15 should be launched.
+- Next: inspect this exact final MP4 once SentinelX reconnects; only then decide pass/fail and next action.
