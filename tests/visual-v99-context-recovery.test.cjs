@@ -75,7 +75,7 @@ for(const provider of ['Pixabay','Pexels','Wikimedia']) {
     const q3=rows.find(r=>r.query_index===3);
     assert.equal(q3.query,'electrical transformer');
     assert.deepEqual(q3.domain_context_terms,['substation']);
-    assert.equal(q3.provider_query,'substation electrical transformer power lines equipment');
+    assert.equal(q3.provider_query,'substation electrical transformer power lines');
   });
 }
 

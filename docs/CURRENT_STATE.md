@@ -750,3 +750,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Backup `.backups/m5-before-precision-fallback-20260922-121005.json`.
 - Other 31 workflow rows unchanged by exact fingerprint; live M5 core matches repo; services healthy; no restart/credential change.
 - Runtime proof/HUMAN acceptance pending. One fresh PL15 is next.
+
+
+## M8 execution 9229 deterministic replay accepted — 2026-09-22
+
+- Exact v53 replay reproduces the old S1 failure from execution 9229 on original saved inputs.
+- Current M8 + separately captured changed-query responses selects five compliant images with no terminal failure:
+  S1 `172815415`, S2 `39943534`, S3 Pexels `12270481`, S4 `34396499`, S5 `27207173`.
+- Manual source-image review: 5/5 PASS.
+- Full suite 232/232 PASS; M5/M8 syntax+graph checks PASS; diff/JSON checks PASS.
+- Temporary search workflows removed; original job 9229-source unchanged.
+- Production remains M5 v105 / M8 v58. Current M8 WIP is not deployed yet.
+- Next action: commit/push and deploy only M8, then exactly one fresh PL15.

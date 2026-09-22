@@ -492,3 +492,16 @@ Prevention:
 - never borrow narration from a different scene identity;
 - recompute total word/safety envelopes after hybridization;
 - let subsequent real TTS probes decide duration.
+
+
+55. A visual regression must be replayed against immutable provider responses, and changed retrieval must be captured separately.
+Re-running a whole job while scorer/query logic is still changing hides whether a fix came from scoring, provider search variability, or a new storyboard. Execution 9229 demonstrated a better acceptance pattern.
+
+Prevention:
+- freeze the exact workflow version, storyboard, must_show/must_not_show and raw provider responses from the failing execution;
+- replay old and new scoring on those exact inputs without project DB writes;
+- when provider_query changes, capture only those new searches into a separate immutable overlay;
+- apply the overlay only to matching provider/shot/query/provider_query keys and fail if any overlay row is stale or unused;
+- reproduce production selection ordering, not an ad-hoc score sort;
+- inspect the final selected image for every scene manually before any full pipeline rerun;
+- reject candidates whose metadata explicitly says the requested primary is only background unless background composition is requested.

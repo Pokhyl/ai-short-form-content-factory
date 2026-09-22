@@ -1180,3 +1180,32 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0.
 - CLI restart advisory is generic; no restart was performed.
 - Next: one fresh PL15. Require M5 v105 and M8 v58 runtime proof, then exact final technical/visual/audio acceptance before EN30.
+
+
+### Execution 9229 deterministic M8 replay accepted — 2026-09-22
+
+- Per user instruction, no new full PL15 was run during this acceptance.
+- Immutable source: job `b36a7c19-3427-4d67-9e2b-50d0acb4d717`, M8 execution `9229`, exact workflow v53 `0953f69f-e982-467e-95e0-35161a613771`, visual_run `356fe986-cf66-4df4-ace4-d556685d8f7d`.
+- Exact v53 replay uses the original 45 saved provider responses / 335 candidates and reproduces the original terminal S1 failure.
+- Current M8 replay uses the same immutable storyboard/requirements. Unchanged provider queries reuse the original saved responses; 27 changed effective queries use separately captured raw provider responses stored in `tests/fixtures/m8-9229-live-overlay-provider-responses.json`. Deterministic replay itself performs 0 provider calls and 0 production mutations.
+- Accepted current selection after scorer/retrieval fixes:
+  - S1 Wikimedia `172815415` — Tri An Hydroelectric Dam And Its Reservoir;
+  - S2 Wikimedia `39943534` — Ponte Brolla hydro penstock;
+  - S3 Pexels `12270481` — operational turbines inside hydroelectric station;
+  - S4 Wikimedia `34396499` — exciter generator + Pelton wheel on hydroelectric powerhouse generator floor;
+  - S5 Wikimedia `27207173` — transformer/substation + overhead power lines.
+- Manual visual review: **5/5 PASS**.
+- Important false positives now fail closed:
+  - museum turbine runner `2050414`;
+  - Wimshurst electrostatic machine `89006850`;
+  - rotor transport `78066893`;
+  - rotor/stator component-only views `829307` / `28807267`;
+  - governor-stand foreground / generator-background `37932845` / `34255726`;
+  - transformer-only S5 images without power-lines evidence.
+- Wikimedia primary evidence boundary remains strict: prose description alone cannot prove the depicted primary subject. Explicit `PRIMARY (BACKGROUND)` loses eligibility unless storyboard requests background composition.
+- Full suite **232/232 PASS**. M5 Code syntax 55/55 + graph 124/124 PASS. M8 Code syntax 10/10 + graph 32/32 PASS. JSON/diff checks PASS.
+- Temporary search workflows used only for the three final S5 q3 captures were deleted exactly; 0 remain. Non-temp workflow fingerprint stayed `32|ea9d5d1b670194058f324e24ad8aa7e4`.
+- Old source job is still unchanged: `visuals_failed`, updated_at `2026-09-22 05:25:05.973592+02`.
+- Evidence: `docs/acceptance/2026-09-22-m8-execution-9229-deterministic-replay.json`.
+- Production at this checkpoint: M5 v105 `56bcb365-4180-4ff4-b3c9-6732e2c7cfb5`; M8 still v58 `05df9dcc-404c-4a78-9b2a-e45e930b9dc6`.
+- Next: commit/push current M8 replay/scorer changes, deploy **only M8** with backup/fingerprint/live-export verification, then exactly **one** fresh PL15 and full technical + visual + audio acceptance.

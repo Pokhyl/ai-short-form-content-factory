@@ -1,0 +1,220 @@
+{
+  "date": "2026-09-22",
+  "status": "replay_accepted_not_deployed",
+  "source": {
+    "job_id": "b36a7c19-3427-4d67-9e2b-50d0acb4d717",
+    "execution_id": 9229,
+    "workflow_id": "VideoM8Visuals001",
+    "workflow_version_id": "0953f69f-e982-467e-95e0-35161a613771",
+    "visual_run_id": "356fe986-cf66-4df4-ace4-d556685d8f7d",
+    "source_job_status": "visuals_failed",
+    "source_job_updated_at": "2026-09-22 05:25:05.973592+02",
+    "source_job_mutated": false
+  },
+  "reproducibility": {
+    "before_workflow_fixture": "tests/fixtures/m8-9229-workflow-v53.json",
+    "before_workflow_sha256": "51973e966acd2fd4277f48e2f9422e537ad7c7526d27349ad277bc247e9f31de",
+    "saved_provider_fixture": "tests/fixtures/m8-9229-saved-provider-responses.json",
+    "saved_provider_fixture_sha256": "7c49b4ef7fc7b7aec36379f03db8c0c4c540a15a13d0a35f0aa448da3555928d",
+    "source_raw_response_sha256": "1c36e738eae10237671cd7af63590ae62956d0671b6d7cc10a1659b81214b327",
+    "live_overlay_fixture": "tests/fixtures/m8-9229-live-overlay-provider-responses.json",
+    "live_overlay_sha256": "dc13ce7c9effa740540f5df19b6d203331d054af7fc49333e6a917b392dca003",
+    "harness": "scripts/replay_m8_9229.cjs",
+    "changed_provider_queries": 27,
+    "original_saved_provider_queries": 45,
+    "provider_calls_during_deterministic_replay": 0,
+    "production_mutations_during_replay": 0
+  },
+  "before_exact_v53": {
+    "candidate_count": 335,
+    "eligible_pools": {
+      "S1-A": 0,
+      "S2-A": 11,
+      "S3-A": 5,
+      "S4-A": 21,
+      "S5-A": 0
+    },
+    "terminal_failure": "no compliant relevant visual candidate for shot S1-A",
+    "top_if_independently_ranked": {
+      "S1-A": null,
+      "S2-A": {
+        "provider": "wikimedia",
+        "id": "42498812",
+        "title": "File:CONDOTTA FORZATA FEDIO.png"
+      },
+      "S3-A": {
+        "provider": "wikimedia",
+        "id": "2050414",
+        "title": "File:HydroelectricTurbineRunner.png"
+      },
+      "S4-A": {
+        "provider": "wikimedia",
+        "id": "89006850",
+        "title": "File:Quadruple Sector-less Wimshurst Machine (Bonetti Machine) with LP Records for Disks.jpg"
+      },
+      "S5-A": null
+    }
+  },
+  "after_current_m8": {
+    "candidate_count": 334,
+    "eligible_pools": {
+      "S1-A": 1,
+      "S2-A": 5,
+      "S3-A": 5,
+      "S4-A": 8,
+      "S5-A": 3
+    },
+    "terminal_failure": null,
+    "selected": [
+      {
+        "shot": "S1-A",
+        "provider": "wikimedia",
+        "id": "172815415",
+        "score": 100,
+        "title": "File:Tri An Hydroelectric Dam And Its Reservoir.jpg",
+        "provider_query": "hydroelectric dam reservoir",
+        "visual_review": "PASS: dam/embankment plus wide reservoir visibly present",
+        "local_sha256": "77b4604d190e4559e9d0cb13a892799a6215ac2d44509b0853381a3795f15150"
+      },
+      {
+        "shot": "S2-A",
+        "provider": "wikimedia",
+        "id": "39943534",
+        "score": 100,
+        "title": "File:Centrale Ponte Brolla condotta forzata 231010.jpg",
+        "provider_query": "hydroelectric water pipeline penstock",
+        "visual_review": "PASS: large steep penstock/water pipelines descending to hydro facility",
+        "local_sha256": "a82d8917b408daa82f0f9dc5a41f7a037b7725f6b4298ed1088bbd80c997c4a3"
+      },
+      {
+        "shot": "S3-A",
+        "provider": "pexels",
+        "id": "12270481",
+        "score": 100,
+        "title": "Expansive view of industrial turbines inside a hydroelectric power station.",
+        "provider_query": "hydroelectric water turbine runner",
+        "visual_review": "PASS: operational hydroelectric turbine machinery inside station",
+        "local_sha256": "d13ec7a2c5439df5b4b1739d9f4f08c93f669b033930c5687940797982436c4d"
+      },
+      {
+        "shot": "S4-A",
+        "provider": "wikimedia",
+        "id": "34396499",
+        "score": 87,
+        "title": "File:DETAIL TO SOUTHWEST OF HORIZONTAL EXCITER GENERATOR (LEFT) DRIVEN BY DOUBLE-RUNNER PELTON WHEEL (RIGHT), FORMER OLD POWERHOUSE GENERATOR FLOOR - Trenton Falls Hydroelectric HAER NY,33-TREN,1A-21.tif",
+        "provider_query": "hydroelectric electric generator machine",
+        "visual_review": "PASS: generator visibly left, Pelton wheel right, inside hydroelectric generator floor",
+        "local_sha256": "f5cac2453aecb152c9f8c9d057a91f91d3e470f8ede05c120786e488d7fed06c"
+      },
+      {
+        "shot": "S5-A",
+        "provider": "wikimedia",
+        "id": "27207173",
+        "score": 100,
+        "title": "File:Chantecoq-FR-45-B-08.JPG",
+        "provider_query": "substation electrical transformer power lines",
+        "visual_review": "PASS: transformer/substation structure with overhead power lines visibly present",
+        "local_sha256": "f5c15e3d2e375632fe5a8629aa23fb19fade15b7398c8609d78297034f4613c4"
+      }
+    ]
+  },
+  "rejected_false_positives": [
+    {
+      "shot": "S3-A",
+      "provider": "wikimedia",
+      "id": "2050414",
+      "title": "File:HydroelectricTurbineRunner.png",
+      "reason": "conflicting_non_operational_context:museum; missing_operational_setting_context; wikimedia_primary_only_contextual_metadata"
+    },
+    {
+      "shot": "S4-A",
+      "provider": "wikimedia",
+      "id": "89006850",
+      "title": "File:Quadruple Sector-less Wimshurst Machine (Bonetti Machine) with LP Records for Disks.jpg",
+      "reason": "fails current operational/domain/depiction evidence; no longer eligible"
+    },
+    {
+      "shot": "S4-A",
+      "provider": "wikimedia",
+      "id": "78066893",
+      "title": "File:Rotor Transport Kraftwerk Wägital.png",
+      "reason": "conflicting_non_operational_context:transport; missing_operational_setting_context; wikimedia_primary_only_contextual_metadata"
+    },
+    {
+      "shot": "S4-A",
+      "provider": "wikimedia",
+      "id": "829307",
+      "title": "File:Goldisthal Rotor-Blechpaket.jpg",
+      "reason": "missing_operational_setting_context; wikimedia_unrequested_component_view:rotor"
+    },
+    {
+      "shot": "S4-A",
+      "provider": "wikimedia",
+      "id": "28807267",
+      "title": "File:Generator Stator Core Vent Slots.JPG",
+      "reason": "missing_operational_setting_context; wikimedia_unrequested_component_view:stator"
+    },
+    {
+      "shot": "S4-A",
+      "provider": "wikimedia",
+      "id": "37932845",
+      "title": "File:DETAIL OF GOVERNOR STAND (FOREGROUND) AT UNIT 3 GENERATOR (BACKGROUND)...",
+      "reason": "wikimedia_primary_background_only"
+    },
+    {
+      "shot": "S4-A",
+      "provider": "wikimedia",
+      "id": "34255726",
+      "title": "File:DETAIL OF GOVERNOR STAND (FOREGROUND) AT UNIT 4 GENERATOR (BACKGROUND)...",
+      "reason": "wikimedia_primary_background_only"
+    },
+    {
+      "shot": "S5-A",
+      "provider": "wikimedia",
+      "id": "79400583",
+      "title": "File:Substation transfomer.jpg",
+      "reason": "missing_secondary_subject_context"
+    }
+  ],
+  "scorer_changes_verified": [
+    "Wikimedia prose description is not strong primary depicted-subject evidence",
+    "direct reservoir evidence semantically implies water reservoir without using prose description",
+    "unrequested component-only machinery views reject",
+    "primary explicitly relegated to background rejects unless storyboard asks for background",
+    "operational setting/domain gates remain fail-closed",
+    "paired S5 retrieval requires transformer plus power-lines evidence"
+  ],
+  "validation": {
+    "full_test_suite": "232/232 PASS",
+    "m5_code_syntax": "55/55 PASS",
+    "m5_graph": "124/124 nodes valid",
+    "m8_code_syntax": "10/10 PASS",
+    "m8_graph": "32/32 nodes valid",
+    "git_diff_check": "PASS",
+    "workflow_json_parse": "PASS",
+    "replay_test": "PASS",
+    "manual_visual_review": "5/5 PASS"
+  },
+  "temp_search_cleanup": {
+    "temp_workflows": [
+      "TmpM8R9229PixaQ3",
+      "TmpM8R9229PexQ3",
+      "TmpM8R9229WikiQ3"
+    ],
+    "removed": 3,
+    "remaining": 0,
+    "non_temp_workflow_fingerprint_before": "32|ea9d5d1b670194058f324e24ad8aa7e4",
+    "non_temp_workflow_fingerprint_after": "32|ea9d5d1b670194058f324e24ad8aa7e4"
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 105,
+      "activeVersionId": "56bcb365-4180-4ff4-b3c9-6732e2c7cfb5"
+    },
+    "M8": {
+      "versionCounter": 58,
+      "activeVersionId": "05df9dcc-404c-4a78-9b2a-e45e930b9dc6"
+    }
+  },
+  "next_step": "Commit/push M8 replay/scorer changes, deploy only M8 with backup/fingerprint/live-core verification, then run exactly one fresh PL15 and perform full technical/visual/audio acceptance."
+}
