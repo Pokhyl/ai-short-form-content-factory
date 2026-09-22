@@ -39,3 +39,21 @@ test('earlier drafts from a different scene identity cannot enter the bounded ne
  const originals=fixture['Normalize Timing Probe'].storyboard.scenes;
  out.storyboard.scenes.forEach((scene,i)=>assert.equal(scene.scene_id,originals[i].scene_id));
 });
+
+
+test('9516 regression: semantic-invalid base option cannot re-enter final measured hybrid',()=>{
+ const f=JSON.parse(fs.readFileSync('tests/fixtures/m5-9516-final-measured.json'));
+ const out=run(f);
+ assert.equal(out.narration_word_count,24);
+ assert.equal(out.target_word_count,24);
+ assert.equal(out.word_count_exact,true);
+ assert.equal(out.deterministic_word_hybrid_used,true);
+ assert.equal(
+   out.storyboard.scenes[2].narration,
+   f['Normalize Timing Probe'].storyboard.scenes[2].narration
+ );
+ assert.notEqual(
+   out.storyboard.scenes[2].narration,
+   f['Build Final Measured Word Count Retry'].base_storyboard.scenes[2].narration
+ );
+});

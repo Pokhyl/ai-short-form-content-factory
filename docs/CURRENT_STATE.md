@@ -790,3 +790,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Local fix makes second repair fall back to the original successful draft + original validation error instead of failing with `first Gemini output is empty`.
 - Exact 9499 replay PASS; full suite 237/237 PASS.
 - Production still M5 v106 / M8 v59. Fix not deployed yet.
+
+
+## M5 v107 final-hybrid semantic filter tested — 2026-09-22
+
+- Job `34fd153d-0164-4cf9-8eef-25da2401d498`, M5 execution `9516`.
+- Root cause: final measured hybrid search could reinsert semantic-invalid `base/pre_final` scene variants because only measured drafts were prevalidated.
+- Local fix prevalidates every hybrid option against immutable scene semantics before dynamic-programming selection.
+- Exact 9516 replay returns 24/24 words with valid S3.
+- Full suite 238/238 PASS; M5 syntax/graph PASS.
+- Production still M5 v107 / M8 v59. Fix not deployed yet.

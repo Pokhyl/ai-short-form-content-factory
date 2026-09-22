@@ -1265,3 +1265,18 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-pl15-v106-repair-provider-fallback.json`.
 - Production remains M5 v106 / M8 v59 at this checkpoint.
 - Next: commit/push, deploy only M5, then one fresh PL15.
+
+
+### Fresh PL15 v107 exposed final-hybrid semantic reintroduction; exact 9516 replay fixed — NOT DEPLOYED — 2026-09-22
+
+- Job `34fd153d-0164-4cf9-8eef-25da2401d498`, M5 execution `9516`, exact v107 `0ff4bad8-eec6-4f61-a0d8-b3245f8534f6`.
+- Probe 4 measured 17.184 s and entered final measured correction.
+- Final measured correction produced a 22-word draft with S3 `Generator wytwarza prąd elektryczny.`; semantic guard correctly marked S3 coverage 0.500 vs immutable `W obracającym się generatorze powstaje prąd.`.
+- Final exact-word retry then received a valid response containing the immutable S3 text, but its dynamic-programming hybrid admitted `base`/`pre_final` lines without per-option semantic validation and could reintroduce the already-invalid S3.
+- Systemic fix in `Validate Final Measured Word Count Retry`: every retry/base/pre_final/measured candidate line must independently pass the same immutable semantic guard before it can enter hybrid search. If no semantic-valid line exists for a scene, fail closed.
+- Exact 9516 replay now produces exactly 24/24 words, keeps immutable-valid S3, and proceeds toward Probe 5.
+- Validation: focused replay 5/5 PASS, full suite **238/238 PASS**, M5 Code syntax 55/55, graph 124/124, JSON/diff checks PASS.
+- Fixture: `tests/fixtures/m5-9516-final-measured.json`.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v107-final-hybrid-semantic-filter.json`.
+- Production remains M5 v107 / M8 v59 at this checkpoint.
+- Next: commit/push, deploy only M5, then one fresh PL15.

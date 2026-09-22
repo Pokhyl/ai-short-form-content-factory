@@ -1,0 +1,64 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "job_id": "34fd153d-0164-4cf9-8eef-25da2401d498",
+  "execution_id": 9516,
+  "workflow_version_id": "0ff4bad8-eec6-4f61-a0d8-b3245f8534f6",
+  "script_run_id": "0b568575-a723-43a8-9595-f55f67c6547c",
+  "failure": "M5 script workflow failed: coverage 0.500, required >= 0.600",
+  "observed": {
+    "accepted_storyboard_words": 29,
+    "probe4_measured_duration_ms": 17184,
+    "final_measured_target_words": 24,
+    "final_measured_candidate_words": 22,
+    "final_retry_response_words": 28,
+    "invalid_reintroduced_scene": {
+      "scene": "S3",
+      "immutable_original": "W obracającym się generatorze powstaje prąd.",
+      "semantic_invalid_base": "Generator wytwarza prąd elektryczny.",
+      "coverage": 0.5
+    }
+  },
+  "root_cause": "Validate Final Measured Word Count Retry validated measured draft options against the immutable semantic baseline, but added retry/base/pre_final options to the dynamic-programming hybrid without the same per-option semantic validation. The exact-word hybrid could therefore reintroduce a scene already known to be semantic-invalid.",
+  "fix": {
+    "node": "Validate Final Measured Word Count Retry",
+    "behavior": [
+      "every retry/base/pre_final/measured option is validated against the immutable Normalize Timing Probe scene before entering hybrid search",
+      "invalid options are excluded rather than selected and rejected only after combination",
+      "scene with no semantic-valid option fails closed",
+      "final whole-output semantic guard remains unchanged"
+    ],
+    "semantic_threshold_changed": false,
+    "timing_tolerance_changed": false,
+    "retry_budget_changed": false
+  },
+  "exact_9516_replay": {
+    "passed": true,
+    "target_words": 24,
+    "output_words": 24,
+    "word_count_exact": true,
+    "deterministic_word_hybrid_used": true,
+    "scene3": "W obracającym się generatorze powstaje prąd.",
+    "invalid_base_scene3_excluded": true
+  },
+  "validation": {
+    "focused_replay_tests": "5/5 PASS",
+    "full_suite": "238/238 PASS",
+    "m5_code_syntax": "55/55 PASS",
+    "m5_graph": "124/124 PASS",
+    "workflow_json_parse": "PASS",
+    "fixture_json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "production_at_checkpoint": {
+    "M5": {
+      "versionCounter": 107,
+      "activeVersionId": "0ff4bad8-eec6-4f61-a0d8-b3245f8534f6"
+    },
+    "M8": {
+      "versionCounter": 59,
+      "activeVersionId": "96b3a6b9-b5ef-4a28-a68a-5c3c928b8185"
+    }
+  },
+  "next_step": "Commit/push, deploy only M5, then one fresh PL15 on the next M5 version + M8 v59."
+}

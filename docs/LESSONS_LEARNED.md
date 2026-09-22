@@ -526,3 +526,13 @@ Prevention:
 - prefer the most recent usable repair output, but fall back to the original draft when the repair call produced no candidate text;
 - preserve deterministic validation errors separately from provider transport errors;
 - provider outages may add context, but must not replace the actual content-repair reason.
+
+
+57. A deterministic hybrid must validate every candidate option before optimization, not only the final combination.
+If dynamic programming can choose from retry/base/pre-final/measured scene variants, any unvalidated source can reintroduce a line that an earlier semantic gate already rejected.
+
+Prevention:
+- apply the immutable semantic guard to every line before adding it to the candidate option set;
+- exclude invalid options rather than relying only on a final whole-output check;
+- treat retry/base/pre-final/measured variants uniformly;
+- fail closed when a scene has no semantic-valid candidate.

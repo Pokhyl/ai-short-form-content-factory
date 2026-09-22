@@ -1,0 +1,526 @@
+{
+  "Build Final Measured Word Count Retry": {
+    "base_storyboard": {
+      "narration": "Zapora wodna gromadzi wodę na wysokości. Spadająca woda napędza turbinę. Generator wytwarza prąd elektryczny. Transformator przesyła energię dalej. Prąd trafia do sieci.",
+      "scenes": [
+        {
+          "scene_id": "S1",
+          "narration": "Zapora wodna gromadzi wodę na wysokości.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb"
+          ],
+          "shots": [
+            {
+              "shot_id": "S1-A",
+              "visual_intent": "concrete dam holding a large water reservoir",
+              "must_show": [
+                "hydroelectric dam",
+                "water reservoir"
+              ],
+              "must_not_show": [
+                "turbines",
+                "generators"
+              ],
+              "queries_en": [
+                "hydroelectric dam reservoir structure",
+                "concrete water retention dam",
+                "hydroelectric dam"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S2",
+          "narration": "Spadająca woda napędza turbinę.",
+          "evidence_ids": [
+            "E1",
+            "E7"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb",
+            "1ce9fd47-e3a4-4f4e-86d5-52d381cadbd0"
+          ],
+          "shots": [
+            {
+              "shot_id": "S2-A",
+              "visual_intent": "water turbine spinning inside a hydroelectric power plant",
+              "must_show": [
+                "water turbine"
+              ],
+              "must_not_show": [
+                "transformers"
+              ],
+              "queries_en": [
+                "water turbine runner inside power plant",
+                "hydroelectric turbine water flow",
+                "water turbine"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S3",
+          "narration": "Generator wytwarza prąd elektryczny.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb"
+          ],
+          "shots": [
+            {
+              "shot_id": "S3-A",
+              "visual_intent": "large electrical generator inside a power plant machine hall",
+              "must_show": [
+                "electric generator",
+                "machine hall"
+              ],
+              "must_not_show": [
+                "external river landscape"
+              ],
+              "queries_en": [
+                "hydroelectric generator machine hall",
+                "electric power generator equipment",
+                "electric generator"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S4",
+          "narration": "Transformator przesyła energię dalej.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb"
+          ],
+          "shots": [
+            {
+              "shot_id": "S4-A",
+              "visual_intent": "electrical transformer station near a power plant",
+              "must_show": [
+                "electrical transformer"
+              ],
+              "must_not_show": [
+                "water dam"
+              ],
+              "queries_en": [
+                "power station electrical transformer",
+                "high voltage transformer substation",
+                "electrical transformer"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S5",
+          "narration": "Prąd trafia do sieci.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb"
+          ],
+          "shots": [
+            {
+              "shot_id": "S5-A",
+              "visual_intent": "high voltage power lines transmitting electricity",
+              "must_show": [
+                "power lines"
+              ],
+              "must_not_show": [
+                "water reservoir"
+              ],
+              "queries_en": [
+                "high voltage power lines",
+                "electrical transmission tower power lines",
+                "power lines"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        }
+      ]
+    },
+    "target_words": 24,
+    "target_scene_word_counts": [
+      6,
+      4,
+      5,
+      4,
+      5
+    ],
+    "script_run_id": "0b568575-a723-43a8-9595-f55f67c6547c",
+    "model": "gemini-3.5-flash-lite",
+    "prior_usage": {
+      "promptTokenCount": 52594,
+      "candidatesTokenCount": 3432,
+      "totalTokenCount": 56026
+    }
+  },
+  "Build Final Measured Correction": {
+    "base_storyboard": {
+      "narration": "Zapora wodna gromadzi wodę na wysokości. Spadająca rzeka napędza potężną turbinę. W obracającym się generatorze powstaje prąd. Transformator przesyła całą energię dalej. Prąd trafia bezpośrednio do sieci.",
+      "scenes": [
+        {
+          "scene_id": "S1",
+          "narration": "Zapora wodna gromadzi wodę na wysokości.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb"
+          ],
+          "shots": [
+            {
+              "shot_id": "S1-A",
+              "visual_intent": "concrete dam holding a large water reservoir",
+              "must_show": [
+                "hydroelectric dam",
+                "water reservoir"
+              ],
+              "must_not_show": [
+                "turbines",
+                "generators"
+              ],
+              "queries_en": [
+                "hydroelectric dam reservoir structure",
+                "concrete water retention dam",
+                "hydroelectric dam"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S2",
+          "narration": "Spadająca rzeka napędza potężną turbinę.",
+          "evidence_ids": [
+            "E1",
+            "E7"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb",
+            "1ce9fd47-e3a4-4f4e-86d5-52d381cadbd0"
+          ],
+          "shots": [
+            {
+              "shot_id": "S2-A",
+              "visual_intent": "water turbine spinning inside a hydroelectric power plant",
+              "must_show": [
+                "water turbine"
+              ],
+              "must_not_show": [
+                "transformers"
+              ],
+              "queries_en": [
+                "water turbine runner inside power plant",
+                "hydroelectric turbine water flow",
+                "water turbine"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S3",
+          "narration": "W obracającym się generatorze powstaje prąd.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb"
+          ],
+          "shots": [
+            {
+              "shot_id": "S3-A",
+              "visual_intent": "large electrical generator inside a power plant machine hall",
+              "must_show": [
+                "electric generator",
+                "machine hall"
+              ],
+              "must_not_show": [
+                "external river landscape"
+              ],
+              "queries_en": [
+                "hydroelectric generator machine hall",
+                "electric power generator equipment",
+                "electric generator"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S4",
+          "narration": "Transformator przesyła całą energię dalej.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb"
+          ],
+          "shots": [
+            {
+              "shot_id": "S4-A",
+              "visual_intent": "electrical transformer station near a power plant",
+              "must_show": [
+                "electrical transformer"
+              ],
+              "must_not_show": [
+                "water dam"
+              ],
+              "queries_en": [
+                "power station electrical transformer",
+                "high voltage transformer substation",
+                "electrical transformer"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S5",
+          "narration": "Prąd trafia bezpośrednio do sieci.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb"
+          ],
+          "shots": [
+            {
+              "shot_id": "S5-A",
+              "visual_intent": "high voltage power lines transmitting electricity",
+              "must_show": [
+                "power lines"
+              ],
+              "must_not_show": [
+                "water reservoir"
+              ],
+              "queries_en": [
+                "high voltage power lines",
+                "electrical transmission tower power lines",
+                "power lines"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Normalize Timing Probe": {
+    "storyboard": {
+      "narration": "Zapora wodna gromadzi masę wody na wysokości. Spadająca rzeka napędza potężną turbinę. W obracającym się generatorze powstaje prąd. Transformator przesyła całą energię dalej. Prąd trafia bezpośrednio do sieci energetycznej.",
+      "scenes": [
+        {
+          "scene_id": "S1",
+          "narration": "Zapora wodna gromadzi masę wody na wysokości.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb"
+          ],
+          "shots": [
+            {
+              "shot_id": "S1-A",
+              "visual_intent": "concrete dam holding a large water reservoir",
+              "must_show": [
+                "hydroelectric dam",
+                "water reservoir"
+              ],
+              "must_not_show": [
+                "turbines",
+                "generators"
+              ],
+              "queries_en": [
+                "hydroelectric dam reservoir structure",
+                "concrete water retention dam",
+                "hydroelectric dam"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S2",
+          "narration": "Spadająca rzeka napędza potężną turbinę.",
+          "evidence_ids": [
+            "E1",
+            "E7"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb",
+            "1ce9fd47-e3a4-4f4e-86d5-52d381cadbd0"
+          ],
+          "shots": [
+            {
+              "shot_id": "S2-A",
+              "visual_intent": "water turbine spinning inside a hydroelectric power plant",
+              "must_show": [
+                "water turbine"
+              ],
+              "must_not_show": [
+                "transformers"
+              ],
+              "queries_en": [
+                "water turbine runner inside power plant",
+                "hydroelectric turbine water flow",
+                "water turbine"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S3",
+          "narration": "W obracającym się generatorze powstaje prąd.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb"
+          ],
+          "shots": [
+            {
+              "shot_id": "S3-A",
+              "visual_intent": "large electrical generator inside a power plant machine hall",
+              "must_show": [
+                "electric generator",
+                "machine hall"
+              ],
+              "must_not_show": [
+                "external river landscape"
+              ],
+              "queries_en": [
+                "hydroelectric generator machine hall",
+                "electric power generator equipment",
+                "electric generator"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S4",
+          "narration": "Transformator przesyła całą energię dalej.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb"
+          ],
+          "shots": [
+            {
+              "shot_id": "S4-A",
+              "visual_intent": "electrical transformer station near a power plant",
+              "must_show": [
+                "electrical transformer"
+              ],
+              "must_not_show": [
+                "water dam"
+              ],
+              "queries_en": [
+                "power station electrical transformer",
+                "high voltage transformer substation",
+                "electrical transformer"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S5",
+          "narration": "Prąd trafia bezpośrednio do sieci energetycznej.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "3ee09d4c-c3de-4420-a26a-cb6fa611a8bb"
+          ],
+          "shots": [
+            {
+              "shot_id": "S5-A",
+              "visual_intent": "high voltage power lines transmitting electricity",
+              "must_show": [
+                "power lines"
+              ],
+              "must_not_show": [
+                "water reservoir"
+              ],
+              "queries_en": [
+                "high voltage power lines",
+                "electrical transmission tower power lines",
+                "power lines"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Build Script Prompt": {
+    "language_code": "pl",
+    "target_duration_seconds": 15
+  },
+  "response": {
+    "body": {
+      "candidates": [
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "{\"narrations\":[\"Zapora wodna gromadzi masę wody na wysokości.\", \"Spadająca rzeka napędza potężną turbinę.\", \"W obracającym się generatorze powstaje prąd.\", \"Transformator przesyła energię dalej.\", \"Prąd trafia bezpośrednio do sieci energetycznej.\"]}",
+                "thoughtSignature": "El4KXAFpFH0THLaK2foqa1LJDa58DfMF6XnzSNeIkQJ5bWctx5wfv18hZZxeZYMu9Ox5+ObS2MqJ70I0nGlXIWtyA6uoLBccrDFhSQNSVoQC89tQRkBrwsmkvV8/1ced"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      ],
+      "usageMetadata": {
+        "promptTokenCount": 582,
+        "candidatesTokenCount": 68,
+        "totalTokenCount": 650,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 582
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "responseId": "HLeyaobUCqbWxN8PubXwsAE"
+    },
+    "headers": {
+      "x-gemini-service-tier": "standard",
+      "content-type": "application/json; charset=UTF-8",
+      "vary": "Origin, X-Origin, Referer",
+      "date": "Tue, 22 Sep 2026 17:13:29 GMT",
+      "server": "scaffolding on HTTPServer2",
+      "x-xss-protection": "0",
+      "x-frame-options": "SAMEORIGIN",
+      "x-content-type-options": "nosniff",
+      "server-timing": "gfet4t7; dur=29504",
+      "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+      "connection": "close",
+      "transfer-encoding": "chunked"
+    },
+    "statusCode": 200,
+    "statusMessage": "OK"
+  }
+}
