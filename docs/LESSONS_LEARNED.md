@@ -409,3 +409,14 @@ Prevention:
 - non-photo maps/summary graphics remain fail-closed even when every topic keyword matches;
 - when a storyboard explicitly requires an operating plant/station, museum/manufacturing/transport context may be treated as a contradiction, but never as a global blacklist;
 - before another full job, replay the entire saved candidate pool and simulate the actual database selection ordering, not just candidate eligibility.
+
+
+50. A hidden process inside a closed object is not a hard depicted subject.
+A fresh PL15 asked M8 to prove both flowing water and a penstock in one real photograph even though the storyboard explicitly placed the water flow inside the closed penstock. The scorer correctly failed; weakening it or merely broadening retrieval would have converted an unphotographable contract into false acceptance.
+
+Prevention:
+- when a process/current/flow occurs inside or through a closed conduit or machine, use the concrete enclosure/equipment as the primary visible subject unless transparent/open/cutaway/exposed visibility is explicit;
+- apply the rule before final storyboard persistence, including bounded repair and final canonicalization paths;
+- when the visible enclosure has a meaningful operating domain, retain that domain on broad fallback retrieval so a generic conduit/cable/penstock does not drift into unrelated contexts;
+- keep query provenance separate from effective provider query;
+- do not add machinery-specific retrieval suffixes to generic infrastructure unless evidence proves they improve results.

@@ -600,3 +600,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - M8 live export matches repo `nodes/connections/settings`; other 31 workflow rows unchanged by fingerprint.
 - No restart/credential change; Publisher/Studio 200, n8n restart 0, worker healthy restart 0.
 - Runtime proof of v54 is still pending. Exactly one fresh PL15 is next; final product acceptance is still blocked until its exact MP4 passes technical, semantic visual and audio review.
+
+
+## PL15 v54 runtime failure and hidden-process fix — tested, not deployed — 2026-09-22
+
+- Fresh job `763b1c91-c765-414f-bfa2-7edd9b7bd11a` proves M5 v99 and M8 v54 runtime. M4-M7 passed; M8 execution 9253 on v54 failed S2-A after all 45 searches; M9 did not run.
+- S2 had an impossible hard visual contract: `flowing water` + `penstock` while the intent places the flow inside a closed penstock. M8 correctly rejected all candidates.
+- Tested M5 correction promotes a closed conduit/machine to the primary visible subject when a hidden process occurs inside/through it, unless transparent/open/cutaway/exposed visibility is explicit.
+- Tested M8 correction preserves explicit local operating-domain context for closed infrastructure, so corrected S2 q3 keeps provenance `penstock` but searches `hydroelectric penstock`.
+- Current targeted live/scorer evidence yields 5 compliant hydroelectric penstock candidates. No scorer threshold or semantic gate was weakened.
+- Validation: 158/158 tests PASS; M5 55 and M8 10 Code-node syntax checks PASS; JSON/diff checks PASS.
+- Production remains M5 v99 `8317622a-7d47-4cc5-8c40-f3f76caebf42` / M8 v54 `818d2c37-28db-488b-b7b7-f0e047a29f30` until scoped deployment.

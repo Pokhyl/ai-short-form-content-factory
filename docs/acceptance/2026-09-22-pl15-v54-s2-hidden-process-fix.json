@@ -1,0 +1,129 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "job_id": "763b1c91-c765-414f-bfa2-7edd9b7bd11a",
+  "topic": "jak działa elektrownia wodna?",
+  "language": "pl",
+  "duration_seconds": 15,
+  "executions": {
+    "parent": {
+      "id": 9235,
+      "status": "error",
+      "workflowVersionId": "f3ef8cbf-1c56-4048-9fdf-feb073de96df"
+    },
+    "M4": {
+      "id": 9236,
+      "status": "success",
+      "workflowVersionId": "3cf94dd2-8c3b-4585-ae88-6315a2685ff7"
+    },
+    "M5": {
+      "id": 9239,
+      "status": "success",
+      "workflowVersionId": "8317622a-7d47-4cc5-8c40-f3f76caebf42"
+    },
+    "M6": {
+      "id": 9245,
+      "status": "success",
+      "workflowVersionId": "98e671f3-a0dc-42fa-81e9-4c9524a05e6a"
+    },
+    "M7": {
+      "id": 9246,
+      "status": "success",
+      "workflowVersionId": "91fbac4f-f40d-4d75-9111-3e4ed01bd9ff"
+    },
+    "M8": {
+      "id": 9253,
+      "status": "error",
+      "workflowVersionId": "818d2c37-28db-488b-b7b7-f0e047a29f30"
+    },
+    "M9": null
+  },
+  "production_before_fix": {
+    "M5": {
+      "versionCounter": 99,
+      "activeVersionId": "8317622a-7d47-4cc5-8c40-f3f76caebf42"
+    },
+    "M8": {
+      "versionCounter": 54,
+      "activeVersionId": "818d2c37-28db-488b-b7b7-f0e047a29f30"
+    }
+  },
+  "visual_run": {
+    "id": "eeb600a5-5d06-478b-a348-9955916fb11a",
+    "status": "failed",
+    "expected_shot_count": 5,
+    "expected_search_count": 45,
+    "failure_reason": "M8 visuals failed: no compliant relevant visual candidate for shot S2-A",
+    "searches": {
+      "total": 45,
+      "candidates": 305,
+      "pexels": {
+        "count": 15,
+        "result_count": 120
+      },
+      "pixabay": {
+        "count": 15,
+        "result_count": 120
+      },
+      "wikimedia": {
+        "count": 15,
+        "result_count": 65
+      }
+    }
+  },
+  "exact_s2": {
+    "narration": "Następnie spada w dół.",
+    "visual_intent": "Water falling down through a penstock in a hydroelectric plant",
+    "must_show_before": [
+      "flowing water",
+      "penstock"
+    ],
+    "queries_before": [
+      "flowing water falling through penstock",
+      "water dropping inside hydroelectric plant",
+      "flowing water"
+    ],
+    "root_cause": "The storyboard made an internal process inside a closed penstock a hard visible subject. A real photo cannot normally depict both flowing water inside the closed penstock and the penstock itself. M8 correctly rejected candidates; weakening the scorer would be wrong."
+  },
+  "systemic_fix": {
+    "M5": [
+      "When a process/action-like primary occurs through/inside a closed conduit or machine, promote the concrete enclosure/equipment to primary must_show unless the intent explicitly requests transparent/open/cutaway/exposed visibility.",
+      "Apply in initial validator, bounded repaired validators and final canonicalizer.",
+      "Re-anchor final queries to the normalized primary. Exact S2 becomes must_show [penstock], with q3 provenance query penstock."
+    ],
+    "M8": [
+      "Treat closed infrastructure heads (penstock, pipe, pipeline, conduit, duct, hose, tube, cable, wire) as domain-scoped for local context inference.",
+      "Keep machinery-only equipment suffix unchanged. Exact S2 q3 becomes provider_query hydroelectric penstock, not hydroelectric penstock equipment.",
+      "Preserve original query provenance."
+    ]
+  },
+  "targeted_evidence": {
+    "broad_penstock": "Broad Commons penstock search returned context-ambiguous Yuzawa penstock station images.",
+    "hydroelectric_penstock": "Production-shaped Commons query hydroelectric penstock returned hydro-plant penstock imagery.",
+    "scorer_check": {
+      "query": "penstock",
+      "provider_query": "hydroelectric penstock",
+      "domain_context_terms": [
+        "hydroelectric"
+      ],
+      "eligible_count": 5,
+      "eligible_asset_ids": [
+        "163228837",
+        "163228760",
+        "91714839",
+        "151215705",
+        "152479318"
+      ]
+    }
+  },
+  "validation": {
+    "node_tests": "158/158 PASS",
+    "M5_code_node_syntax": "55/55 PASS",
+    "M8_code_node_syntax": "10/10 PASS",
+    "M5_json_parse": "PASS",
+    "M8_json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "deployment": "NOT YET DEPLOYED at this checkpoint",
+  "next_step": "Commit/push tested M5+M8 fix, deploy only M5 and M8 with backups/protected-row verification, then exactly one fresh PL15 through M9 and manual final MP4 acceptance."
+}

@@ -829,3 +829,36 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - n8n CLI printed its generic restart advisory after `publish:workflow`; runtime execution version, not that advisory, is the acceptance proof.
 - Zero active project executions after deploy.
 - Exact next step: **one** fresh PL15 `jak działa elektrownia wodna?` / `pl` / 15s via Studio path. Require M5 v99 and M8 v54 runtime IDs, M4-M9 completion, then exact final MP4 technical + visual + audio review before EN30.
+
+
+### Fresh PL15 exercised M8 v54; S2 hidden-process visual contract fixed — tested, NOT DEPLOYED — 2026-09-22
+
+- Fresh PL15 job `763b1c91-c765-414f-bfa2-7edd9b7bd11a`:
+  - parent 9235 ERROR;
+  - M4 9236 PASS;
+  - M5 9239 PASS on v99 `8317622a-7d47-4cc5-8c40-f3f76caebf42`;
+  - M6 9245 PASS;
+  - M7 9246 PASS;
+  - M8 9253 ERROR on **v54 `818d2c37-28db-488b-b7b7-f0e047a29f30`**;
+  - M9 absent.
+- M8 v54 runtime is therefore proven. It completed all **45/45** searches, 305 candidates total: Pexels 15/120, Pixabay 15/120, Wikimedia 15/65.
+- Terminal failure: `M8 visuals failed: no compliant relevant visual candidate for shot S2-A`.
+- Exact S2 narration is `Następnie spada w dół.`; storyboard demanded visual intent `Water falling down through a penstock in a hydroelectric plant`, must_show `["flowing water","penstock"]`.
+- Root cause is upstream photographability, not a scorer threshold: water flowing **inside a closed penstock** is normally not directly visible in a real photo, so requiring both as hard depicted subjects makes a valid shot impossible. M8 correctly failed closed.
+- Systemic M5 fix:
+  - for process/action-like primaries occurring through/inside a closed conduit or machine, promote the concrete conduit/machine to primary must_show unless the intent explicitly requests transparent/open/cutaway/exposed visibility;
+  - apply the same rule in initial validation, both bounded storyboard validators, and final canonicalization;
+  - final query canonicalization follows the promoted subject. Exact S2 becomes primary `penstock` and q3 provenance query `penstock`.
+- Systemic M8 fix:
+  - closed infrastructure heads `penstock/pipe/pipeline/conduit/duct/hose/tube/cable/wire` retain an explicit local operating domain just like domain-scoped machinery;
+  - action words such as fall/drop/flow/through cannot become domains;
+  - machinery-only `equipment` fallback remains machinery-only. Exact S2 q3 becomes effective provider query `hydroelectric penstock`, NOT `hydroelectric penstock equipment`;
+  - original storyboard query provenance remains immutable.
+- Targeted Commons proof:
+  - broad `penstock` is context-ambiguous;
+  - `hydroelectric penstock` returns real hydro-plant penstocks;
+  - current M8 scorer accepts **5** exact hydroelectric-penstock candidates for the corrected S2 context (asset IDs only recorded as evidence, never production rules): 163228837, 163228760, 91714839, 151215705, 152479318.
+- Regression/validation: **158/158 tests PASS**, M5 55/55 Code-node syntax PASS, M8 10/10 Code-node syntax PASS, both workflow JSON parses PASS, `git diff --check` PASS.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v54-s2-hidden-process-fix.json`.
+- **Not deployed yet at this checkpoint.** Production remains M5 v99 / M8 v54.
+- Exact next step: commit/push this tested M5+M8 fix, scoped deploy only those two workflows with backups/protected-row comparison, then exactly one fresh PL15. Do not rerun failed job `763b1c91...`.
