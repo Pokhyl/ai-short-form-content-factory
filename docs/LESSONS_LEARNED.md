@@ -569,3 +569,14 @@ Prevention:
 - enforce scene-level word bounds, evidence and semantic preservation without requiring per-scene terminal punctuation;
 - require the joined narration, not each segment, to have a normal beginning and complete terminal punctuation;
 - keep alignment token-based so mid-sentence visual cuts remain precisely timeable.
+
+
+60. A broad primary subject is not enough when the storyboard requests a visually distinctive component.
+A candidate can correctly depict a water stream or water turbine while still being wrong for a shot that specifically requires a penstock, runner blades, or an operating shaft.
+
+Prevention:
+- keep `must_show` as the broad visible subject contract;
+- derive a separate hard detail gate only for concrete component terms shared by the visual intent and the most-specific query;
+- never promote arbitrary adjectives, action words, locations, or topic terms into hard detail gates;
+- add missing detail terms to provider retrieval without rewriting original query provenance;
+- if no saved/provider candidate proves the required detail, fail closed rather than selecting a generic subject image.

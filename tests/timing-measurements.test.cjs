@@ -356,6 +356,7 @@ test('precision retry sees original meaning even when failed draft lost an objec
   'Build Timing Repair 2':{target_precision_words:12,target_scene_word_counts:[7,5]},
   'Repair Storyboard Timing 2':{candidates:[{content:{parts:[{text:JSON.stringify(failed)}]}}]},
   'Normalize Timing Probe':{storyboard:{scenes:original.map(narration=>({narration}))}},
+  'Validate Repaired Storyboard':{storyboard:{scenes:original.map(narration=>({narration}))}},
  };
  const code=workflow.nodes.find(n=>n.name==='Build Timing Precision Retry').parameters.jsCode;
  const out=new Function('$',code)(name=>({first:()=>({json:rows[name]})})).json;

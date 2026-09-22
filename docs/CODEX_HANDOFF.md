@@ -1467,3 +1467,25 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
   - S5 PASS.
 - Therefore this job is NOT accepted even though machine QA passed.
 - Next: inspect saved M8 candidate pools for S2/S3/S4, fix only the demonstrated selection defects, deterministic regressions, M8-only deploy, one new PL15.
+
+
+### M8 visual-detail anchors from PL15 execution 9601 — tested, NOT DEPLOYED — 2026-09-23
+
+- Source job `8ce87adb-3952-43cb-ab1d-7a1b2d549651`, M8 execution `9601`, visual_run `cfb7a60e-ed47-408f-85f9-3bbaa7626648`.
+- Manual acceptance proved S2/S3/S4 were false-positive selections despite M8/machine QA PASS.
+- Root issue: broad `must_show` subject evidence could score 100 while the distinctive visible component in `visual_intent` was absent.
+- Fix is generic and provider-independent:
+  - derive visual-detail anchors only from component terms shared by `visual_intent` and first specific query;
+  - do not make arbitrary adjectives/location words into hard gates;
+  - add missing detail anchors only to effective provider query;
+  - require detail evidence in scorer strong metadata;
+  - explicit operation intent conflicts with museum/exhibit context.
+- Exact 9601 regression:
+  - S2 Pexels 12496885 now rejects: missing `penstock,pipe`;
+  - S3 Pexels 12270481 now rejects: missing `blade,runner`;
+  - S4 Wikimedia 19189428 now rejects: museum conflict + missing `shaft`.
+- Synthetic correctly grounded penstock-flow, runner-blades, and operating-shaft metadata all PASS.
+- Compatibility: focused M8 47/47 PASS; full suite **265/265 PASS**.
+- Old deterministic 9229 replay remains terminal-success with 0 provider calls, same selected five assets and pool counts 1/5/5/8/4.
+- `tests/timing-measurements.test.cjs` only received a missing current M5 mock (`Validate Repaired Storyboard`) so the old fixture matches already-deployed M5 behavior; production M5 was not changed.
+- Next: commit/push, then M8-only deploy.

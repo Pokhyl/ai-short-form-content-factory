@@ -878,3 +878,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Manual visual FAIL on S2/S3/S4; S1/S5 PASS.
 - Current blocker is M8 visual ranking/eligibility for water-flow, turbine-blade, and operating-turbine scenes.
 - No new PL15 until M8 is fixed from saved execution `9601` data.
+
+
+## M8 visual-detail fix tested — 2026-09-23
+
+- Current production remains M5 v111 / M6 v8 / M8 v61.
+- Local M8 fix rejects the exact S2/S3/S4 false positives from job `8ce87adb-3952-43cb-ab1d-7a1b2d549651`.
+- Specific hard visual-detail anchors are component-only and derived generically from storyboard intent + first query.
+- Full suite 265/265 PASS.
+- Old deterministic 9229 selections/pools unchanged.
+- Fix not deployed yet; next action is M8-only deploy after Git checkpoint.

@@ -1,0 +1,134 @@
+{
+  "date": "2026-09-23",
+  "status": "tested_not_deployed",
+  "source": {
+    "job_id": "8ce87adb-3952-43cb-ab1d-7a1b2d549651",
+    "m8_execution_id": 9601,
+    "visual_run_id": "cfb7a60e-ed47-408f-85f9-3bbaa7626648",
+    "searches": "45/45",
+    "provider_results": 288
+  },
+  "manual_failures": {
+    "S2": {
+      "selected": [
+        "pexels",
+        "12496885"
+      ],
+      "intent": "powerful water stream falling down through penstock pipes",
+      "new_detail_terms": [
+        "penstock",
+        "pipe"
+      ],
+      "new_result": "REJECT missing_visual_detail_anchor:penstock,pipe"
+    },
+    "S3": {
+      "selected": [
+        "pexels",
+        "12270481"
+      ],
+      "intent": "industrial water turbine runner blades inside a power plant",
+      "new_detail_terms": [
+        "blade",
+        "runner"
+      ],
+      "new_result": "REJECT missing_visual_detail_anchor:blade,runner"
+    },
+    "S4": {
+      "selected": [
+        "wikimedia",
+        "19189428"
+      ],
+      "intent": "rotating water turbine shaft in operation",
+      "new_detail_terms": [
+        "shaft"
+      ],
+      "new_result": "REJECT conflicting_non_operational_context:museum + missing_visual_detail_anchor:shaft"
+    }
+  },
+  "fix": {
+    "topic_specific": false,
+    "hardcoded_asset_ids": false,
+    "providers": [
+      "pixabay",
+      "pexels",
+      "wikimedia"
+    ],
+    "detail_source": "component terms shared by visual_intent and first specific query",
+    "query_behavior": "only missing component detail terms are added to provider_query; original query provenance unchanged",
+    "scorer_behavior": "strong metadata must prove required component detail; explicit operation intent conflicts with non-operational museum/exhibit context"
+  },
+  "validation": {
+    "focused_m8": "47/47 PASS",
+    "full_suite": "265/265 PASS",
+    "git_diff_check": "PASS",
+    "workflow_json": "PASS",
+    "old_9229_replay": {
+      "provider_calls": 0,
+      "terminal_failure": null,
+      "selected": [
+        [
+          "S1-A",
+          "wikimedia",
+          "172815415"
+        ],
+        [
+          "S2-A",
+          "wikimedia",
+          "39943534"
+        ],
+        [
+          "S3-A",
+          "pexels",
+          "12270481"
+        ],
+        [
+          "S4-A",
+          "wikimedia",
+          "34396499"
+        ],
+        [
+          "S5-A",
+          "wikimedia",
+          "27207173"
+        ]
+      ],
+      "eligible_pools": [
+        [
+          "S1-A",
+          1
+        ],
+        [
+          "S2-A",
+          5
+        ],
+        [
+          "S3-A",
+          5
+        ],
+        [
+          "S4-A",
+          8
+        ],
+        [
+          "S5-A",
+          4
+        ]
+      ]
+    }
+  },
+  "production_before_deploy": {
+    "M5": {
+      "versionCounter": 111,
+      "activeVersionId": "31eaa7a9-98d1-44b6-bec6-416ef388753b"
+    },
+    "M6": {
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "M8": {
+      "versionCounter": 61,
+      "activeVersionId": "a73aefbc-4c8e-4458-8ef2-c48bbce3a957"
+    }
+  },
+  "next_step": "Commit/push and deploy only M8 after active execution count is zero."
+}

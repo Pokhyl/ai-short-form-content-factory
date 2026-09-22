@@ -172,20 +172,68 @@ Manual visual checks: FAIL
 
 This PL15 is NOT accepted despite machine QA passing.
 
+## M8 visual-detail fix tested locally
+
+Source evidence:
+- job `8ce87adb-3952-43cb-ab1d-7a1b2d549651`
+- M8 execution `9601`
+- visual_run `cfb7a60e-ed47-408f-85f9-3bbaa7626648`
+
+Demonstrated selection defects:
+- S2 selected Pexels `12496885`: generic rocky brook + thin blue tube; intent required powerful falling water through penstock pipes.
+- S3 selected Pexels `12270481`: generic turbine/generator hall; intent required turbine runner blades.
+- S4 selected Wikimedia `19189428`: Deutsches Museum 1840 turbine; intent required rotating water-turbine shaft in operation.
+
+Root cause:
+- `must_show` correctly described the broad primary object, but M8 did not require the specific visible component/detail that distinguished the requested shot from generic subject imagery.
+
+Tested fix:
+- infer hard visual-detail anchors only from component terms shared by `visual_intent` and the most-specific first query;
+- preserve existing domain/must_show semantics;
+- add missing component anchors to effective provider queries without rewriting original query provenance;
+- require the same component evidence in scorer metadata;
+- treat explicit `in operation` intent as operational context so museum/exhibit imagery conflicts;
+- keep generic shots unaffected when no specific component detail is present.
+
+Exact current anchors:
+- S2: `penstock + pipe`
+- S3: `blade + runner`
+- S4: `shaft`
+
+Validation:
+- exact 9601 regression tests: PASS;
+- focused M8 compatibility tests: 47/47 PASS;
+- full suite: 265/265 PASS;
+- old deterministic 9229 replay: terminal PASS, provider calls 0, selected assets unchanged:
+  - S1 Wikimedia 172815415
+  - S2 Wikimedia 39943534
+  - S3 Pexels 12270481
+  - S4 Wikimedia 34396499
+  - S5 Wikimedia 27207173
+- old 9229 eligible pool counts unchanged: 1 / 5 / 5 / 8 / 4.
+
+This M8 fix is tested but NOT deployed yet.
+
 ## Immediate next step
 
-1. Read this PLAN before changing production.
-2. Do NOT create a new PL15 yet.
-3. Use saved DB/provider/execution data from M8 execution `9601` / visual_run `cfb7a60e-ed47-408f-85f9-3bbaa7626648`.
-4. Inspect candidate pools and rejection/selection reasons for S2/S3/S4.
-5. Determine why M8 preferred the wrong images and whether better saved candidates already exist.
-6. Fix only the demonstrated visual-selection defects in M8.
-7. Add deterministic regressions from this exact job.
-8. Run focused tests + full suite + old deterministic replays.
-9. Update PLAN/handoff/evidence and commit/push.
-10. Deploy ONLY M8 after active project execution count is zero.
-11. Verify live M8 == Git and all non-M8 workflows unchanged.
-12. Run exactly one new PL15.
+1. Commit and push the tested M8 visual-detail fix and regressions.
+2. Read this PLAN before production deployment.
+3. Verify Git clean and active project execution count = 0.
+4. Deploy ONLY M8.
+5. Before deployment:
+   - export published M8 backup;
+   - fingerprint every non-M8 workflow.
+6. After deployment verify:
+   - M8 version increments exactly once;
+   - live M8 nodes/connections/settings == Git;
+   - all non-M8 workflows unchanged;
+   - Publisher 200;
+   - Studio 200;
+   - n8n restart count unchanged;
+   - media worker healthy.
+7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
+8. Run exactly ONE fresh PL15.
+9. Manually review the actual final MP4 before proceeding to EN30.
 
 ## Acceptance sequence after PL15
 
