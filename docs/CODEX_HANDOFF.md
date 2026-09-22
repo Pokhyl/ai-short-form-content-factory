@@ -907,3 +907,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Validation: **160/160 PASS**, M5 55/55 Code-node syntax PASS, JSON parse PASS, `git diff --check` PASS.
 - Evidence: `docs/acceptance/2026-09-22-pl15-v100-timing-direction-fix.json`.
 - Production is still M5 v100 / M8 v55 at this checkpoint. Next: commit/push, deploy **M5 only**, verify M8/protected rows unchanged, then exactly one fresh PL15.
+
+
+### M5 v101 deployed — direction-safe late timing targets — 2026-09-22
+
+- Source commit: `ef614ab20f64d75b7073cd344a60466cc9ad8cca`.
+- M5 published v101, activeVersionId `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f`.
+- M8 intentionally unchanged: v55 `5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8`.
+- M5 backup: `.backups/m5-before-direction-safe-timing-20260922-070159.json`.
+- All other 31 workflow rows (including M8) unchanged: fingerprint `07f4e3bc61e679e8ba1b0ff5677373d9` before/after.
+- Published M5 export matches repo exactly for nodes/connections/settings.
+- Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0. No active project executions before/after.
+- CLI restart advisory is generic; runtime proof is pending.
+- Exact next step: one fresh PL15. Require M5 v101 runtime; if it reaches M8 require exact v55; then M9 and final MP4 acceptance before EN30.

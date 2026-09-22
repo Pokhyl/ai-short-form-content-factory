@@ -631,3 +631,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Tested fix makes both late timing builders direction-safe. Exact replay now produces 23 words / 176 chars, scene targets [5,5,4,4,5], for the same 14208ms input.
 - Validation: 160/160 tests PASS; M5 55/55 Code-node syntax PASS; JSON/diff checks PASS. No timing tolerance or acceptance gate changed.
 - Production remains M5 v100 `8cc07108-bc76-43f3-b97e-071fbca26148` and M8 v55 `5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8` until M5-only deploy.
+
+
+## M5 v101 deployment checkpoint — 2026-09-22
+
+- M5 active v101 `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f`; M8 remains v55 `5ae1fa70-219c-4ea2-84d5-8882c3a4dbd8`.
+- M5 backup: `.backups/m5-before-direction-safe-timing-20260922-070159.json`.
+- Protected 31-workflow fingerprint unchanged: `07f4e3bc61e679e8ba1b0ff5677373d9`.
+- Live M5 nodes/connections/settings match repo. Publisher/Studio 200; n8n restart 0; worker healthy restart 0; zero active executions.
+- Next: exactly one fresh PL15 for runtime proof and continuation through M8/M9.
