@@ -792,3 +792,27 @@ Exact next step:
 - EN30 remains prohibited until fresh PL15 final visual/audio QA. No new permission or credential is required; use existing SSH alias. Production versions stay v99/v53 and worker full-fit image unchanged.
 
 Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match repository; inventory 32 total/15 active; zero active project executions; Publisher/Studio HTTP 200; n8n and worker restart 0; worker healthy on unchanged `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`. Final retained suite 110/110 PASS and diff check PASS. This checkpoint is not final product acceptance.
+
+### M8 v53 saved-response recovery fix tested — NOT DEPLOYED — 2026-09-22
+
+- Continued from the immutable failed PL15 `b36a7c19-3427-4d67-9e2b-50d0acb4d717` / M8 execution `9229`; no new full pipeline job was spent during diagnosis.
+- Reconstructed the unfinished Codex work from the clean v99/v53 checkpoint plus saved execution responses. Existing live S5 combined-query evidence on VPS (`.review/pl15-v51/s5-paired-live.json`) proves the current scorer can accept real transformer + overhead-line photos when retrieval includes both mandatory visible objects.
+- Scoped M8 correction:
+  - preserve secondary noun heads (for example `water reservoir`) instead of reducing them to a generic modifier;
+  - Wikimedia secondary-object evidence is depiction-oriented: title/object + short direct caption + only category segments independent of the primary subject. A contextual category such as `Peechi Dam reservoir` no longer proves that the reservoir is visible;
+  - maps are explicitly non-photographic;
+  - carry an operating domain only across immediately adjacent machinery scenes when the next machinery shot has no own domain; an explicit new domain wins;
+  - for singleton bare-machinery fallback, add additional visible secondary `must_show` objects to **provider_query only**. Original storyboard query/provenance remains immutable. Exact S5 q3 becomes `substation electrical transformer power lines equipment`;
+  - museum/exhibit/manufacturing/transport metadata is a conflict only when the storyboard explicitly requests an operating plant/station/facility. This is not a blanket venue blacklist.
+- Full existing + new regression suite: **128/128 PASS**; `git diff --check` PASS; M8 JSON parse PASS.
+- Replayed the complete saved M8 pool, **335 candidates**, with fresh planner contexts and the new scorer. Eligible counts: **S1=1, S2=11, S3=3, S4=3, S5=4**. No shot is empty.
+- Exact simulated production selections using deployed `factory.select_visuals()` ordering:
+  - S1 Wikimedia `172815415` `Tri An Hydroelectric Dam And Its Reservoir.jpg`;
+  - S2 Wikimedia `42498812` `CONDOTTA FORZATA FEDIO.png`;
+  - S3 Pexels `12270481`;
+  - S4 Wikimedia `68099788` `Dam generator without rotor.jpg`;
+  - S5 Wikimedia `27207173` `Chantecoq-FR-45-B-08.JPG`.
+- Source-level semantic review completed for these exact picks. The earlier false positives are now fail-closed: keyword map 94068077, contextual-category-only Peechi reservoir, museum/display turbine runner, and manufacturing/transport generator imagery for operational scenes.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v99-v53-m8-context-fix.json`.
+- **Not deployed at this checkpoint.** Production remains M5 v99 `8317622a-7d47-4cc5-8c40-f3f76caebf42` / M8 v53 `0953f69f-e982-467e-95e0-35161a613771`.
+- Exact next step: fetch/verify remote, commit+push this tested M8 fix, deploy **only M8** with backup and protected-row comparison, then exactly one fresh PL15 through M9 and exact final MP4 visual/audio acceptance. EN30 remains blocked until that PL15 is accepted.

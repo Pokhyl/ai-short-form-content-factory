@@ -398,3 +398,14 @@ Execution 9221 had useful measured short scene alternatives, but the final dynam
 
 48. A local scorer regression fix needs whole-run replay before another live job.
 Execution 9229 stopped at S1, but replay of all 335 candidates also found an empty S5 pool and a singleton S4 domain omission. A secondary-head experiment made the exact S1 source eligible but also admitted an unverified PNG summary. It was reverted without deployment. Keep experiments explicitly separate from production evidence and avoid spending a new complete job when later known pools remain empty.
+
+49. Provider taxonomy is context, not proof that every named object is depicted.
+A Commons category can correctly classify a file under both a dam and its reservoir even when the frame shows only the dam face/spillway. Using that category as direct evidence for an independent secondary `must_show` produced a semantic false positive.
+
+Prevention:
+- keep primary classification evidence separate from secondary depicted-object evidence;
+- for a secondary visible object, prefer title/object/direct short caption and only taxonomy segments independent of the primary subject;
+- preserve meaningful secondary noun heads instead of discarding them as generic anchors;
+- non-photo maps/summary graphics remain fail-closed even when every topic keyword matches;
+- when a storyboard explicitly requires an operating plant/station, museum/manufacturing/transport context may be treated as a contradiction, but never as a global blacklist;
+- before another full job, replay the entire saved candidate pool and simulate the actual database selection ordering, not just candidate eligibility.

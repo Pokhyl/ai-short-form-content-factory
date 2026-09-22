@@ -582,3 +582,12 @@ This section supersedes older M8 snapshots above where they conflict.
 - EN30 remains prohibited until fresh PL15 final visual/audio QA. No new permission or credential is required; use existing SSH alias. Production versions stay v99/v53 and worker full-fit image unchanged.
 
 Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match repository; inventory 32 total/15 active; zero active project executions; Publisher/Studio HTTP 200; n8n and worker restart 0; worker healthy on unchanged `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`. Final retained suite 110/110 PASS and diff check PASS. This checkpoint is not final product acceptance.
+
+## M8 saved-response context/retrieval fix — tested, not deployed — 2026-09-22
+
+- Source job `b36a7c19-3427-4d67-9e2b-50d0acb4d717`, M8 execution `9229`, remains the immutable diagnostic source: 45 searches / 335 candidates / terminal S1-A.
+- The retained M8 correction resolves the three known saved-run gaps without weakening score thresholds: S1 depicted secondary evidence, S4 adjacent machinery operating context, and S5 paired-object retrieval.
+- Full suite **128/128 PASS**; full saved-response replay now has eligible counts S1=1, S2=11, S3=3, S4=3, S5=4.
+- Exact simulated selections were source-reviewed; contextual-category-only reservoir, non-photo map, museum/display machinery and manufacturing/transport substitutions are fail-closed for the relevant operational scenes.
+- Evidence: `docs/acceptance/2026-09-22-pl15-v99-v53-m8-context-fix.json`.
+- Production is still M5 v99 / M8 v53 until the following scoped M8 deployment checkpoint. No fresh PL15 has been spent on this tested source state yet.

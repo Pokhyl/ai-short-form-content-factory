@@ -1,0 +1,159 @@
+{
+  "date": "2026-09-22",
+  "status": "tested_not_deployed",
+  "source_job": {
+    "job_id": "b36a7c19-3427-4d67-9e2b-50d0acb4d717",
+    "executions": {
+      "intake": 9223,
+      "parent": 9224,
+      "M4": 9225,
+      "M5": 9226,
+      "M6": 9227,
+      "M7": 9228,
+      "M8": 9229,
+      "M9": null
+    },
+    "runtime_versions": {
+      "M5": "8317622a-7d47-4cc5-8c40-f3f76caebf42",
+      "M8": "0953f69f-e982-467e-95e0-35161a613771"
+    },
+    "m8_searches": 45,
+    "m8_candidates": 335,
+    "terminal_failure": "S1-A missing_secondary_subject_context"
+  },
+  "systemic_causes": [
+    "Secondary must_show filtering could remove a meaningful noun head such as reservoir and then accept contextual category text as if it proved the visible secondary object.",
+    "Singleton/adjacent machinery could lose the operating domain between consecutive mechanism scenes.",
+    "A bare machinery fallback searched only the primary object, so S5 could not retrieve a frame containing both transformer and power lines.",
+    "Maps and non-operational museum/manufacturing/transport contexts could survive topical metadata despite being wrong for a requested operating scene."
+  ],
+  "fixes": [
+    "Preserve the secondary noun head and evaluate secondary compounds against separate depiction-oriented evidence.",
+    "For Wikimedia secondary must_show evidence, use title/object, short direct caption, and category segments independent of the primary subject; primary-context categories alone cannot prove the secondary visible object.",
+    "Treat maps as non-photographic Wikimedia assets.",
+    "Carry an established operating domain only across adjacent machinery scenes when the next machinery shot has no own domain; an explicit new domain overrides the inherited one.",
+    "For singleton bare-machinery fallback only, add additional visible secondary must_show objects to provider_query while preserving immutable storyboard query provenance.",
+    "Reject museum/exhibit/manufacturing/transport context only when it conflicts with a storyboard that explicitly requires operating plant/station/facility context; no blanket venue blacklist."
+  ],
+  "validation": {
+    "node_tests": "128/128 PASS",
+    "git_diff_check": "PASS",
+    "m8_json_parse": "PASS",
+    "full_saved_candidate_replay": {
+      "candidate_count": 335,
+      "eligible_counts": {
+        "S1-A": 1,
+        "S2-A": 11,
+        "S3-A": 3,
+        "S4-A": 3,
+        "S5-A": 4
+      }
+    }
+  },
+  "simulated_production_selection": [
+    {
+      "shot": "S1-A",
+      "provider": "wikimedia",
+      "id": "172815415",
+      "q": 1,
+      "score": 100,
+      "rank": 3,
+      "w": 1600,
+      "h": 1067,
+      "title": "File:Tri An Hydroelectric Dam And Its Reservoir.jpg",
+      "pq": "hydroelectric dam reservoir",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Tri_An_Hydroelectric_Dam_And_Its_Reservoir.jpg",
+      "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/Tri_An_Hydroelectric_Dam_And_Its_Reservoir.jpg/1920px-Tri_An_Hydroelectric_Dam_And_Its_Reservoir.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/Tri_An_Hydroelectric_Dam_And_Its_Reservoir.jpg/1920px-Tri_An_Hydroelectric_Dam_And_Its_Reservoir.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "targeted": false
+    },
+    {
+      "shot": "S2-A",
+      "provider": "wikimedia",
+      "id": "42498812",
+      "q": 1,
+      "score": 100,
+      "rank": 5,
+      "w": 1600,
+      "h": 2431,
+      "title": "File:CONDOTTA FORZATA FEDIO.png",
+      "pq": "water pipeline penstock",
+      "source_url": "https://commons.wikimedia.org/wiki/File:CONDOTTA_FORZATA_FEDIO.png",
+      "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/CONDOTTA_FORZATA_FEDIO.png/1920px-CONDOTTA_FORZATA_FEDIO.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/CONDOTTA_FORZATA_FEDIO.png/1920px-CONDOTTA_FORZATA_FEDIO.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "targeted": false
+    },
+    {
+      "shot": "S3-A",
+      "provider": "pexels",
+      "id": "12270481",
+      "q": 3,
+      "score": 100,
+      "rank": 2,
+      "w": 2571,
+      "h": 4043,
+      "title": null,
+      "pq": "hydroelectric water turbine equipment",
+      "source_url": "https://www.pexels.com/photo/industrial-machineries-inside-the-building-12270481/",
+      "download_url": "https://images.pexels.com/photos/12270481/pexels-photo-12270481.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "preview_url": "https://images.pexels.com/photos/12270481/pexels-photo-12270481.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "targeted": false
+    },
+    {
+      "shot": "S4-A",
+      "provider": "wikimedia",
+      "id": "68099788",
+      "q": 2,
+      "score": 91,
+      "rank": 1,
+      "w": 1600,
+      "h": 1200,
+      "title": "File:Dam generator without rotor.jpg",
+      "pq": "hydroelectric generator rotor",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Dam_generator_without_rotor.jpg",
+      "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/Dam_generator_without_rotor.jpg/1920px-Dam_generator_without_rotor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/Dam_generator_without_rotor.jpg/1920px-Dam_generator_without_rotor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "targeted": false
+    },
+    {
+      "shot": "S5-A",
+      "provider": "wikimedia",
+      "id": "27207173",
+      "q": 3,
+      "score": 100,
+      "rank": 7,
+      "w": 1600,
+      "h": 2161,
+      "title": "File:Chantecoq-FR-45-B-08.JPG",
+      "pq": "substation electrical transformer power lines equipment",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Chantecoq-FR-45-B-08.JPG",
+      "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Chantecoq-FR-45-B-08.JPG/1920px-Chantecoq-FR-45-B-08.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Chantecoq-FR-45-B-08.JPG/1920px-Chantecoq-FR-45-B-08.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "targeted": true
+    }
+  ],
+  "source_review": {
+    "S1-A": "Wikimedia 172815415 Tri An Hydroelectric Dam And Its Reservoir: exact source inspection shows dam and impounded reservoir water.",
+    "S2-A": "Wikimedia 42498812 CONDOTTA FORZATA FEDIO: exact source inspection shows hydroelectric penstock/pressure pipe.",
+    "S3-A": "Pexels 12270481: provider description is an expansive view of industrial turbines inside a hydroelectric power station.",
+    "S4-A": "Wikimedia 68099788 Dam generator without rotor: exact source image shows a large Glen Canyon Dam hydroelectric generator stator in the powerhouse during repair, not a museum/manufacturing substitute.",
+    "S5-A": "Wikimedia 27207173 Chantecoq-FR-45-B-08: exact source image shows transformer tower plus overhead power lines; Commons categories independently support substation, overhead lines and transformer tower."
+  },
+  "known_rejected_risks": [
+    "Wikimedia 94068077 map/summary is rejected as non-photographic.",
+    "Peechi Dam photos whose contextual category says reservoir but image/caption does not show the reservoir are rejected for missing secondary subject context.",
+    "HydroelectricTurbineRunner.png museum/display runner is rejected when storyboard requires an operating plant scene.",
+    "Historical generator manufacturing/transport imagery is rejected when storyboard requires an operating power-station scene."
+  ],
+  "production_before_deploy": {
+    "M5": {
+      "versionCounter": 99,
+      "activeVersionId": "8317622a-7d47-4cc5-8c40-f3f76caebf42"
+    },
+    "M8": {
+      "versionCounter": 53,
+      "activeVersionId": "0953f69f-e982-467e-95e0-35161a613771"
+    }
+  },
+  "next_step": "Commit/push tested M8 fix, deploy only M8 with backup and other-workflow hash proof, then run exactly one fresh PL15 and perform exact final MP4 technical/visual/audio acceptance before EN30."
+}

@@ -130,12 +130,13 @@ test('context derives from arbitrary storyboard vocabulary, not hydro topic rule
  assert.equal(rows.find(r=>r.shot_uuid==='c'&&r.query_index===2).provider_query,'marine engine equipment');
  assert.ok(!code('Build Wikimedia Requests').includes('hydroelectric'));
 });
-test('exact rejected final-frame assets fail while museum water runner remains eligible',()=>{
+test('exact rejected final-frame assets fail, including museum machinery for an operational shot',()=>{
  const rows=requests('Wikimedia',shots);
  for(const f of fixtures){
   const ctx={...f.ctx,domain_context_terms:rows.find(r=>r.shot_key===f.ctx.shot_key).domain_context_terms};
   const c=normalize(ctx,f.body);
-  assert.equal(c.rejected,f.scene!=='S2',f.scene);
+  assert.equal(c.rejected,true,f.scene);
+  if(f.scene==='S2')assert.match(c.rejection_reason,/conflicting_non_operational_context/);
   if(['S3','S4'].includes(f.scene))assert.match(c.rejection_reason,/missing_storyboard_domain_context/);
   if(f.scene==='S5')assert.match(c.rejection_reason,/depicts_surface/);
  }
@@ -152,14 +153,32 @@ test('hydroelectric generator metadata satisfies electric-generator subject with
  assert.equal(c.rejected,false,c.rejection_reason);
 });
 
-test('actual domain evidence accepts a museum generator without museum blacklist',()=>{
+test('museum context conflicts with an explicitly operational power-plant shot',()=>{
  const f=structuredClone(fixtures.find(f=>f.scene==='S4'));
  const page=Object.values(f.body.query.pages)[0];
  page.title='File:Hydroelectric electric generator.jpg';
  page.imageinfo[0].extmetadata.ObjectName={value:'Hydroelectric electric generator'};
  page.imageinfo[0].extmetadata.Categories={value:'Hydroelectric generators|Museum exhibits'};
  const c=normalize({...f.ctx,domain_context_terms:['hydroelectric']},f.body);
- assert.equal(c.rejected,false);
+ assert.equal(c.rejected,true);
+ assert.match(c.rejection_reason,/conflicting_non_operational_context/);
+});
+
+test('museum context remains allowed when the storyboard actually requests a museum display',()=>{
+ const f=structuredClone(fixtures.find(f=>f.scene==='S4'));
+ const page=Object.values(f.body.query.pages)[0];
+ page.title='File:Hydroelectric electric generator.jpg';
+ page.imageinfo[0].extmetadata.ObjectName={value:'Hydroelectric electric generator'};
+ page.imageinfo[0].extmetadata.Categories={value:'Hydroelectric generators|Museum exhibits'};
+ const c=normalize({
+   ...f.ctx,
+   query:'hydroelectric electric generator',
+   visual_intent:'Hydroelectric electric generator museum exhibit',
+   must_show:['electric generator'],
+   must_not_show:[],
+   domain_context_terms:['hydroelectric'],
+ },f.body);
+ assert.equal(c.rejected,false,c.rejection_reason);
 });
 test('sign photographs remain allowed when signage is the requested visible subject',()=>{
  const f=fixtures.find(f=>f.scene==='S5');
