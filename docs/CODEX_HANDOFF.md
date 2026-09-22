@@ -1047,3 +1047,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-pl15-v101-short-anchor-fix.json`.
 - Production remains M5 v101 / M8 v57 at this checkpoint. M8 v57 is deployed but still lacks runtime proof because this fresh job stopped in M5.
 - Next: commit/push, deploy only M5 with backup/protected-row fingerprint, then exactly one fresh PL15. Do not duplicate the failed job and do not run EN30 before PL15 HUMAN PASS.
+
+
+### M5 v102 deployed — short visual-anchor canonicalization — 2026-09-22
+
+- Source commit: `b587b9851a35d69f5821efc6a3c5f1a6c1567ffb`.
+- Backup: `.backups/m5-before-short-anchor-20260922-084041.json`.
+- Published only `VideoM5Storyboard001`: v102, activeVersionId `fd54c08f-7bd4-480d-9959-27d882ca7c63`.
+- M8 remains v57 `ecb6889c-b8b7-4a01-8f30-8e9a41f8213b`.
+- Other 31 workflow rows unchanged: `31|2f234f6267907cab81488589a4d74b36` before/after.
+- Published M5 export matches repository for nodes/connections/settings.
+- Publisher 200; Studio 200; n8n running restart 0; media worker healthy restart 0.
+- CLI restart advisory is generic; no restart performed. Runtime execution version is proof.
+- Next: exactly one fresh PL15; require M5 v102 and M8 v57 runtime, then exact final MP4 technical/visual/audio acceptance before EN30.

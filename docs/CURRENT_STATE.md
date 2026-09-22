@@ -688,3 +688,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Validation: 193/193 tests PASS; M5 55/55 Code-node syntax PASS; JSON/diff checks PASS.
 - Production still M5 v101 `0181e4e3-ae95-4a37-afd2-9b4bd5ca7f4f` / M8 v57 `ecb6889c-b8b7-4a01-8f30-8e9a41f8213b`.
 - M8 v57 runtime proof remains pending because the job never reached M8. HUMAN PASS false; EN30 blocked.
+
+
+## M5 v102 production checkpoint — 2026-09-22
+
+- M5 active v102 `fd54c08f-7bd4-480d-9959-27d882ca7c63` from commit `b587b9851a35d69f5821efc6a3c5f1a6c1567ffb`.
+- M8 remains v57 `ecb6889c-b8b7-4a01-8f30-8e9a41f8213b`.
+- Backup `.backups/m5-before-short-anchor-20260922-084041.json`.
+- Other 31 workflows unchanged by exact fingerprint; live M5 core matches repo; Publisher/Studio healthy; no restart/credential change.
+- One fresh PL15 is next. HUMAN PASS false; EN30 blocked.

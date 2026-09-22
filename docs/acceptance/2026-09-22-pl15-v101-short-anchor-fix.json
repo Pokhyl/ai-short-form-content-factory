@@ -90,5 +90,26 @@
       "activeVersionId": "ecb6889c-b8b7-4a01-8f30-8e9a41f8213b"
     }
   },
-  "next_step": "Commit/push, deploy only M5, then exactly one fresh PL15 for M5 v102 and M8 v57 runtime plus final acceptance."
+  "next_step": "Exactly one fresh PL15; prove M5 v102 and M8 v57 runtime, then exact final technical, visual and audio acceptance.",
+  "deployment": {
+    "status": "deployed",
+    "source_commit": "b587b9851a35d69f5821efc6a3c5f1a6c1567ffb",
+    "backup": ".backups/m5-before-short-anchor-20260922-084041.json",
+    "M5": {
+      "versionCounter": 102,
+      "activeVersionId": "fd54c08f-7bd4-480d-9959-27d882ca7c63"
+    },
+    "M8_unchanged": {
+      "versionCounter": 57,
+      "activeVersionId": "ecb6889c-b8b7-4a01-8f30-8e9a41f8213b"
+    },
+    "other_workflows_fingerprint_before": "31|2f234f6267907cab81488589a4d74b36",
+    "other_workflows_fingerprint_after": "31|2f234f6267907cab81488589a4d74b36",
+    "live_core_match": true,
+    "publisher_http": 200,
+    "studio_http": 200,
+    "n8n_restart_count": 0,
+    "media_worker_health": "healthy",
+    "media_worker_restart_count": 0
+  }
 }
