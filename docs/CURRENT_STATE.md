@@ -591,3 +591,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Exact simulated selections were source-reviewed; contextual-category-only reservoir, non-photo map, museum/display machinery and manufacturing/transport substitutions are fail-closed for the relevant operational scenes.
 - Evidence: `docs/acceptance/2026-09-22-pl15-v99-v53-m8-context-fix.json`.
 - Production is still M5 v99 / M8 v53 until the following scoped M8 deployment checkpoint. No fresh PL15 has been spent on this tested source state yet.
+
+
+## M8 v54 deployment checkpoint — 2026-09-22
+
+- `VideoM8Visuals001` is now published as v54, activeVersionId `818d2c37-28db-488b-b7b7-f0e047a29f30`, from commit `7177050c90acf301e3705caaa4ab68c43983efad`.
+- M5 remains v99 `8317622a-7d47-4cc5-8c40-f3f76caebf42`.
+- M8 live export matches repo `nodes/connections/settings`; other 31 workflow rows unchanged by fingerprint.
+- No restart/credential change; Publisher/Studio 200, n8n restart 0, worker healthy restart 0.
+- Runtime proof of v54 is still pending. Exactly one fresh PL15 is next; final product acceptance is still blocked until its exact MP4 passes technical, semantic visual and audio review.

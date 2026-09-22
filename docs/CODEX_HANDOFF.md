@@ -816,3 +816,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-pl15-v99-v53-m8-context-fix.json`.
 - **Not deployed at this checkpoint.** Production remains M5 v99 `8317622a-7d47-4cc5-8c40-f3f76caebf42` / M8 v53 `0953f69f-e982-467e-95e0-35161a613771`.
 - Exact next step: fetch/verify remote, commit+push this tested M8 fix, deploy **only M8** with backup and protected-row comparison, then exactly one fresh PL15 through M9 and exact final MP4 visual/audio acceptance. EN30 remains blocked until that PL15 is accepted.
+
+
+### M8 v54 deployed — context/retrieval correction — 2026-09-22
+
+- Source commit: `7177050c90acf301e3705caaa4ab68c43983efad` (`fix: preserve visual context across hydro scenes`).
+- Exact pre-deploy published backup: `.backups/m8-before-context-fix-20260922-062346.json`.
+- Published **only** `VideoM8Visuals001`: versionCounter **54**, activeVersionId `818d2c37-28db-488b-b7b7-f0e047a29f30`. M5 remains v99 `8317622a-7d47-4cc5-8c40-f3f76caebf42`.
+- Published M8 export matches repository exactly for `nodes`, `connections` and `settings`.
+- Other 31 workflow rows unchanged: fingerprint `68385db0baf235f5f92e4b822b8698af` before/after.
+- Publisher HTTP 200; Studio HTTP 200; n8n running restart 0; media-worker healthy restart 0 on unchanged `sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec`. No service restart, credential change or unrelated workflow publication.
+- n8n CLI printed its generic restart advisory after `publish:workflow`; runtime execution version, not that advisory, is the acceptance proof.
+- Zero active project executions after deploy.
+- Exact next step: **one** fresh PL15 `jak działa elektrownia wodna?` / `pl` / 15s via Studio path. Require M5 v99 and M8 v54 runtime IDs, M4-M9 completion, then exact final MP4 technical + visual + audio review before EN30.

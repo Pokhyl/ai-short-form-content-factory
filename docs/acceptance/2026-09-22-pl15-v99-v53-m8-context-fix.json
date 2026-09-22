@@ -1,6 +1,6 @@
 {
   "date": "2026-09-22",
-  "status": "tested_not_deployed",
+  "status": "deployed_pending_runtime_proof",
   "source_job": {
     "job_id": "b36a7c19-3427-4d67-9e2b-50d0acb4d717",
     "executions": {
@@ -155,5 +155,25 @@
       "activeVersionId": "0953f69f-e982-467e-95e0-35161a613771"
     }
   },
-  "next_step": "Commit/push tested M8 fix, deploy only M8 with backup and other-workflow hash proof, then run exactly one fresh PL15 and perform exact final MP4 technical/visual/audio acceptance before EN30."
+  "next_step": "Run exactly one fresh PL15; require runtime proof of M5 v99 and M8 v54, then M4-M9 PASS plus exact final MP4 technical/visual/audio acceptance before EN30.",
+  "deployment": {
+    "workflow_id": "VideoM8Visuals001",
+    "versionCounter": 54,
+    "activeVersionId": "818d2c37-28db-488b-b7b7-f0e047a29f30",
+    "backup": ".backups/m8-before-context-fix-20260922-062346.json",
+    "other_workflows": {
+      "count": 31,
+      "fingerprint_before": "68385db0baf235f5f92e4b822b8698af",
+      "fingerprint_after": "68385db0baf235f5f92e4b822b8698af"
+    },
+    "published_export_match": "nodes/connections/settings exact match",
+    "publisher_http": 200,
+    "studio_http": 200,
+    "n8n_restart_count": 0,
+    "media_worker_health": "healthy",
+    "media_worker_restart_count": 0,
+    "media_worker_image": "sha256:11d5b351609b40f9e5c46362a59ff2c620a403503bbb8f6e8ae0f57c57eef7ec",
+    "active_project_executions_after": 0,
+    "service_restart_performed": false
+  }
 }
