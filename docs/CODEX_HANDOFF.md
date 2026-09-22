@@ -1209,3 +1209,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Evidence: `docs/acceptance/2026-09-22-m8-execution-9229-deterministic-replay.json`.
 - Production at this checkpoint: M5 v105 `56bcb365-4180-4ff4-b3c9-6732e2c7cfb5`; M8 still v58 `05df9dcc-404c-4a78-9b2a-e45e930b9dc6`.
 - Next: commit/push current M8 replay/scorer changes, deploy **only M8** with backup/fingerprint/live-export verification, then exactly **one** fresh PL15 and full technical + visual + audio acceptance.
+
+
+### M8 v59 deployed after deterministic execution-9229 acceptance — 2026-09-22
+
+- Source commit: `cb656d9d0dc7aaea5f79583024a6a77b08cbb7f1`.
+- Published backup: `.backups/m8-before-9229-replay-20260922-161125.json`.
+- Published only `VideoM8Visuals001`: versionCounter **59**, activeVersionId `96b3a6b9-b5ef-4a28-a68a-5c3c928b8185`.
+- M5 remains v105 `56bcb365-4180-4ff4-b3c9-6732e2c7cfb5`.
+- Other 31 workflow rows unchanged: `31|43dd29f6c061d01e45a4811fb862a2ce` before/after.
+- Published M8 nodes/connections/settings match repository.
+- Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
+- CLI restart advisory is generic; no restart performed. Runtime execution version is the acceptance proof.
+- Next: exactly one fresh PL15, then exact technical + scene-by-scene visual + audio review.

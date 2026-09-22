@@ -762,3 +762,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Temporary search workflows removed; original job 9229-source unchanged.
 - Production remains M5 v105 / M8 v58. Current M8 WIP is not deployed yet.
 - Next action: commit/push and deploy only M8, then exactly one fresh PL15.
+
+
+## M8 v59 production checkpoint — 2026-09-22
+
+- M8 v59 activeVersionId `96b3a6b9-b5ef-4a28-a68a-5c3c928b8185` from commit `cb656d9d0dc7aaea5f79583024a6a77b08cbb7f1`.
+- M5 remains v105 `56bcb365-4180-4ff4-b3c9-6732e2c7cfb5`.
+- Backup `.backups/m8-before-9229-replay-20260922-161125.json`.
+- Other 31 workflow fingerprint unchanged; live M8 core matches repo; Publisher/Studio healthy; no restart.
+- Exactly one fresh PL15 is now authorized by the deterministic replay acceptance.
