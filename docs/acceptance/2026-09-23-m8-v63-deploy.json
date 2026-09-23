@@ -1,0 +1,48 @@
+{
+  "date": "2026-09-23",
+  "status": "m8_v63_deployed_verified",
+  "workflow": "VideoM8Visuals001",
+  "git_fix_commit": "a8217556fe573b01b3c34cce71c0cdf256cb5b1d",
+  "before": {
+    "versionCounter": 62,
+    "activeVersionId": "90329f54-40fd-4382-92fd-2fd1e9ecea01"
+  },
+  "after": {
+    "versionCounter": 63,
+    "activeVersionId": "7256ee89-8b9a-47df-bdc9-66bd2136df35"
+  },
+  "backup": ".backups/m8-before-9640-20260923-060948.json",
+  "other_workflows": {
+    "count": 31,
+    "fingerprint_before": "31|32241746eba2f4470b60db4bebbf74f3",
+    "fingerprint_after": "31|32241746eba2f4470b60db4bebbf74f3",
+    "unchanged": true
+  },
+  "unchanged_versions": {
+    "M5": {
+      "versionCounter": 117,
+      "activeVersionId": "e368d875-ebae-4c7b-ab38-6683c218a1d4"
+    },
+    "M6": {
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "M9": {
+      "versionCounter": 1,
+      "activeVersionId": "5b6c937c-1767-4c3e-99c4-31ea38a26961"
+    }
+  },
+  "live_core_match": true,
+  "publisher_http": 200,
+  "studio_http": 200,
+  "n8n": {
+    "status": "running",
+    "restart_count": 0
+  },
+  "media_worker": {
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0
+  },
+  "next_step": "Run exactly one fresh PL15 and manually review the actual rendered MP4 before EN30."
+}

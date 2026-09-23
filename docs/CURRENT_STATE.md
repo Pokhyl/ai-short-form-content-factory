@@ -1051,3 +1051,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
   - S3 q3 -> 2 eligible Commons assets;
   - S4 q3 -> 2 eligible Commons assets.
 - Next: M8-only deploy, then one fresh PL15.
+
+
+## M8 v63 deployed — 2026-09-23
+
+- M8 v63 activeVersionId `7256ee89-8b9a-47df-bdc9-66bd2136df35`.
+- M5 v117 / M6 v8 / M9 v1 unchanged.
+- Non-M8 workflow fingerprint unchanged.
+- Live M8 == Git; Publisher/Studio 200; no restarts.
+- Next: exactly one fresh PL15 only.

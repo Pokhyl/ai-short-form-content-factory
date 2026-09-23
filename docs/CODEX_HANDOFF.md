@@ -1737,3 +1737,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
     - S3 eligible 2: `33715545`, `33715543`;
     - S4 eligible 2: `33760010`, `34186551`.
 - Next: commit/push, M8-only deploy with backup/fingerprint, then one fresh PL15.
+
+
+### M8 v63 retrieval-planning fix deployed — 2026-09-23
+
+- Git fix commit: `a8217556fe573b01b3c34cce71c0cdf256cb5b1d`.
+- Before: M8 v62 `90329f54-40fd-4382-92fd-2fd1e9ecea01`.
+- After: M8 v63 `7256ee89-8b9a-47df-bdc9-66bd2136df35`.
+- Backup: `.backups/m8-before-9640-20260923-060948.json`.
+- Non-M8 fingerprint before/after identical: `31|32241746eba2f4470b60db4bebbf74f3`.
+- M5 remained v117; M6 v8; M9 v1.
+- Live M8 core == Git.
+- Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
+- Next: exactly one fresh PL15 and full manual acceptance.

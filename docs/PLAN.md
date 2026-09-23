@@ -490,22 +490,35 @@ Validation:
   - S4 q3: 2 eligible assets, IDs `33760010`, `34186551`.
 - no production mutation has occurred yet.
 
+## M8 v63 deployed and verified
+
+- M8 v63 activeVersionId `7256ee89-8b9a-47df-bdc9-66bd2136df35`.
+- M5 v117 / M6 v8 / M9 v1 unchanged.
+- Published backup: `.backups/m8-before-9640-20260923-060948.json`.
+- Non-M8 workflow fingerprint unchanged:
+  `31|32241746eba2f4470b60db4bebbf74f3`.
+- Live M8 nodes/connections/settings == Git: PASS.
+- Publisher 200; Studio 200.
+- n8n running, restart 0.
+- media worker healthy, restart 0.
+
 ## Immediate next step
 
-1. Read this PLAN before production action.
-2. Commit and push the validated M8 planner fix and evidence.
-3. Verify active project executions = 0.
-4. Export published M8 backup and fingerprint all non-M8 workflows.
-5. Deploy ONLY M8.
-6. Verify:
-   - M8 version increments exactly once;
-   - live M8 nodes/connections/settings == Git;
-   - non-M8 workflow fingerprint unchanged;
-   - Publisher/Studio 200;
-   - no unexpected restarts.
-7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
-8. Run exactly one fresh PL15.
-9. Follow that one job to terminal state and manually review the real MP4 before proceeding to EN30.
+1. Read this PLAN before the next production action.
+2. Verify Git clean and active project execution count = 0.
+3. Run exactly ONE fresh PL15 on M5 v117 / M6 v8 / M8 v63 / M9 v1.
+4. Follow that job only to terminal state. Do not create another acceptance job while it runs.
+5. If it reaches machine QA:
+   - inspect the actual rendered MP4 technically;
+   - review audio/narration continuity;
+   - review every scene visual against narration.
+6. If manual PL15 acceptance passes:
+   - update PLAN/handoff/evidence and commit/push;
+   - proceed to EN30.
+7. If it fails:
+   - record the exact demonstrated blocker;
+   - fix only that blocker;
+   - no EN30 and no parallel PL15.
 
 ## Acceptance sequence after PL15
 
