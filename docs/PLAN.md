@@ -328,20 +328,37 @@ Exact root cause:
 - only after hybrid selection does the node run `assertSemanticPreservation`, which rejected the chosen hybrid with `2, allowed 1`;
 - word-count remains guidance; real TTS is the acceptance authority, so semantically invalid options must be excluded before DP rather than poisoning the whole retry.
 
+## M5 9629 semantic-filtered exact-word hybrid tested locally
+
+Fix:
+- changed ONLY `Validate Final Word Count Retry`;
+- every retry/base/pre_final scene option is validated against the immutable `Normalize Timing Probe` scene before entering deterministic DP;
+- semantic-invalid options are excluded before numeric word-count optimization;
+- a scene with no semantic-valid option fails closed;
+- semantic thresholds, word-count guidance, and real-TTS timing gates are unchanged.
+
+Exact regression:
+- job `fd7d4a16-cb18-4871-b5ba-c53ef2126c63`;
+- execution `9629`;
+- provider retry equal to immutable original remains eligible;
+- invalid filler variants cannot re-enter through base/pre_final hybrid choices.
+
+Validation:
+- exact 9629 tests: 2/2 PASS;
+- full suite: 271/271 PASS;
+- workflow JSON parse: PASS;
+- `git diff --check`: PASS.
+
 ## Immediate next step
 
-1. Read this PLAN before code change.
-2. Modify ONLY `Validate Final Word Count Retry`.
-3. Validate every retry/base/pre_final scene option against the immutable `Normalize Timing Probe` scene before adding it to the DP.
-4. Exclude semantic-invalid options; fail closed if a scene has no valid option.
-5. Add an exact `9629` regression proving the original retry remains eligible and invalid expanded options cannot re-enter via hybrid.
-6. Run focused tests + full suite + JSON/diff checks.
-7. Update PLAN/handoff/evidence; commit/push.
-8. Verify active project executions = 0.
-9. Deploy ONLY M5 with backup and non-M5 fingerprint.
-10. Verify live M5 == Git and services healthy.
-11. Update PLAN/Git deploy checkpoint.
-12. Run exactly one new PL15.
+1. Commit/push the tested 9629 fix and evidence.
+2. Read this PLAN again before production change.
+3. Verify active project execution count = 0.
+4. Export published M5 backup and fingerprint all non-M5 workflows.
+5. Deploy ONLY M5.
+6. Verify live M5 == Git, M5 version increments exactly once, non-M5 fingerprint unchanged, Publisher/Studio 200, and service health/restarts unchanged.
+7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
+8. Run exactly one fresh PL15.
 
 ## Acceptance sequence after PL15
 

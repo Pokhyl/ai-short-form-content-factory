@@ -1638,3 +1638,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - The DP could select a numerically closer but semantically invalid hybrid; only the finished hybrid was checked.
 - Fix scope: this validator only. Filter every option with the existing immutable semantic guard before DP. Do not weaken semantic thresholds or word-count/timing gates.
 - No new PL15 until regression + full suite + M5-only deploy.
+
+
+### M5 execution 9629 semantic-filtered exact-word hybrid fix tested — 2026-09-23
+
+- Scope: only `Validate Final Word Count Retry`.
+- Root cause: retry/base/pre_final options were entered into deterministic word-count DP before immutable semantic validation.
+- Fix: each option now passes the existing immutable semantic guard before DP; invalid options are excluded; no valid option => fail closed.
+- Semantic thresholds and timing gates were not weakened.
+- Exact 9629 regression: 2/2 PASS.
+- Full suite: 271/271 PASS.
+- JSON parse and git diff checks PASS.
+- Next: commit/push, M5-only deploy, then one fresh PL15.

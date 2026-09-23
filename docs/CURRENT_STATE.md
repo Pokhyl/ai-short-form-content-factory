@@ -989,3 +989,10 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Provider final word-count retry was valid and matched immutable original.
 - Deterministic hybrid admitted semantic-invalid base/pre_final options before DP.
 - Current action: filter hybrid options semantically before DP in `Validate Final Word Count Retry`; no new PL15 yet.
+
+
+## M5 9629 fix tested — 2026-09-23
+
+- `Validate Final Word Count Retry` now filters retry/base/pre_final options semantically before DP.
+- Exact 9629 regression 2/2 PASS; full suite 271/271 PASS.
+- Not yet production-complete until M5-only deploy is verified.
