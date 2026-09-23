@@ -1,5 +1,9 @@
 # AI Short-Form Content Factory — Production Plan
 
+## Current M8 v68 smoke — 2026-09-23
+
+Job ec85da0d-3947-4b02-b29d-a666094e2009 created (en15 lighthouse, gemini). M5 v126 / M6 v8 / M8 v68 active 4f9709cb-b819-417f-8991-fc2c3a4eaebc; worker image 4118f3f06c98. Creation checkpoint precedes run request. NEXT: launch once and trace this exact job; inspect actual state before resuming. No additional job while unresolved.
+
 ## M8 v68 deployed — 2026-09-23
 
 - Published source be0db87 only to M8: v68 activeVersionId 4f9709cb-b819-417f-8991-fc2c3a4eaebc. Published/current source verified equal Git; non-M8 workflow fingerprint unchanged eab3729c9a1c9f3a5e7bb0a870f96473.
