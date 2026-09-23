@@ -360,7 +360,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "\nconst STOP = new Set([\n  'the','and','for','with','from','into','onto','over','under','this','that','these','those',\n  'show','showing','display','displaying','view','close','macro','image','photo','video','scene',\n  'a','an','of','to','in','on','at','as','by','is','are','be','or'\n]);\n\nfunction stem(token) {\n  let t = String(token || '').toLowerCase().replace(/^'+|'+$/g,'');\n  if (t === 'houses') return 'house';\n  if (t.endsWith('ies') && t.length > 5) return t.slice(0,-3) + 'y';\n  if (t.endsWith('ing') && t.length > 6) {\n    t = t.slice(0,-3);\n    if (/([bcdfghjklmnpqrstvwxyz])\\1$/.test(t)) t=t.slice(0,-1);\n    return t;\n  }\n  if (t.endsWith('ed') && t.length > 5) {\n    t=t.slice(0,-2);\n    if (/([bcdfghjklmnpqrstvwxyz])\\1$/.test(t)) t=t.slice(0,-1);\n    return t;\n  }\n  if (/(?:ses|xes|zes|ches|shes)$/.test(t) && t.length > 5) return t.slice(0,-2);\n  if (t.endsWith('s') && t.length > 3 && !t.endsWith('ss')) return t.slice(0,-1);\n  return t;\n}\n\nfunction tokenSequence(value) {\n  return String(value || '')\n    .toLowerCase()\n    .replace(/[^a-z0-9]+/g,' ')\n    .split(/\\s+/)\n    .map(stem)\n    .filter((t) => t.length >= 2 && !STOP.has(t));\n}\n\nfunction terms(value) {\n  return [...new Set(tokenSequence(value))];\n}\n\nconst GENERIC_OBJECT_EQUIVALENTS = [\n  ['device','equipment','receiver','instrument','unit','apparatus'],\n];\n\nfunction expandGenericObjectEquivalents(set) {\n  for (const group of GENERIC_OBJECT_EQUIVALENTS) {\n    if (group.some((term) => set.has(term))) {\n      for (const term of group) set.add(term);\n    }\n  }\n  return set;\n}\n\nfunction semanticSet(value) {\n  const seq = tokenSequence(value);\n  const set = expandGenericObjectEquivalents(new Set(seq));\n  // A powerhouse is the generating-building sense of a power station.\n  // Expand only from the specific compound to its components; never make\n  // a generic station imply a powerhouse.\n  if (set.has('powerhouse')) {\n    set.add('power');\n    set.add('station');\n    set.add('powerstation');\n  }\n  if (set.has('hydroelectric') || set.has('hydroelectricity') || set.has('hydropower')) {\n    set.add('hydro');\n    set.add('water');\n  }\n  if (set.has('home')) set.add('house');\n  if (set.has('house')) set.add('home');\n  if (set.has('reservoir')) set.add('water');\n  // A penstock is a pressure pipeline/conduit; expand only from the more\n  // specific term so a generic pipeline never implies a hydro penstock.\n  if (set.has('penstock')) { set.add('pipeline'); set.add('pipe'); }\n  for (let i=0;i+1<seq.length;i++) {\n    const joined=seq[i] + seq[i+1];\n    if (joined.length >= 5) set.add(joined);\n  }\n  return set;\n}\n\nfunction ratioAgainst(value,set) {\n  const ts = terms(value);\n  if (!ts.length) return 0;\n  let matched = 0;\n  for (const t of ts) if (set.has(t)) matched++;\n  return matched / ts.length;\n}\n\nfunction average(values) {\n  if (!values.length) return 0;\n  return values.reduce((a,b) => a+b,0) / values.length;\n}\n\nfunction conceptThreshold(tokenCount) {\n  const n=Number(tokenCount || 0);\n  if (n <= 1) return 1;\n  return Math.ceil(n * 0.60) / n;\n}\n\nfunction scoreCandidate(ctx, metadataText, mediaType, width, height, providerRank, extraReject='', strongMetadataText='', secondaryMetadataText='') {\n  const metaSet = semanticSet(metadataText);\n  const strongSet = semanticSet(strongMetadataText || metadataText);\n  const secondarySet = semanticSet(secondaryMetadataText || strongMetadataText || metadataText);\n  // Context/lifecycle evidence may use concise direct-caption metadata; primary depiction proof remains on strongSet.\n  const contextSet = new Set([...strongSet, ...secondarySet]);\n  const querySet = semanticSet(ctx.query);\n  const mustShow = Array.isArray(ctx.must_show) ? ctx.must_show.map(String) : [];\n  const mustNot = Array.isArray(ctx.must_not_show) ? ctx.must_not_show.map(String) : [];\n\n  const mustRatios = mustShow.map((x) => ratioAgainst(x,strongSet));\n  const mustMeta = average(mustRatios);\n  const queryMeta = ratioAgainst(ctx.query,strongSet);\n  const intentMeta = ratioAgainst(ctx.visual_intent,metaSet);\n  const queryMust = average(mustShow.map((x) => ratioAgainst(x,querySet)));\n  const mustProfiles = mustShow.map((value,index) => {\n    const allTerms = terms(value);\n    return {index,value,allTerms};\n  });\n  const mustSatisfied = mustProfiles.map((profile,index) =>\n    mustRatios[index] >= conceptThreshold(profile.allTerms.length)\n  );\n  const strongMustCount = mustSatisfied.filter(Boolean).length;\n  const requiredMustCount = mustShow.length > 0 ? 1 : 0;\n  const domainContext = Array.isArray(ctx.domain_context_terms)\n    ? ctx.domain_context_terms.map(String)\n    : [];\n  const visualDetailTerms = Array.isArray(ctx.visual_detail_terms)\n    ? ctx.visual_detail_terms.map(String).filter(Boolean)\n    : [];\n  const visualDetailTokens = [...new Set(\n    visualDetailTerms.flatMap((value) => terms(value))\n  )];\n\n  const GENERIC_ANCHORS = new Set([\n    'machine','equipment','system','factory','industrial','industry',\n    'process','manufactur','material','device','receiver','instrument','unit','apparatus',\n    'mouthpart','component','part','chamber','reservoir',\n    'pool','basin','drop','droplet','surface','texture','detail',\n    'portable','handheld','navigator','navigation',\n    'runner','rotor',\n    'plant','room','laboratory',\n    'lab','cleanroom','tool','work','worker','table','object','result',\n    'finish','modern','large','small','electric','electrical','residential'\n  ].map(stem));\n\n  const secondaryGenericAnchors = new Set(GENERIC_ANCHORS);\n\n  const MACHINERY_HEADS = new Set([\n    'turbine','generator','transformer','engine','motor','pump',\n    'compressor','reactor','gearbox','inverter'\n  ].map(stem));\n  const DOMAIN_SCOPED_FORM_MODIFIERS = [\n    'water','hydro','hydraulic','steam','gas','wind','power'\n  ].map(stem);\n  const rawPrimaryTerms = mustProfiles[0]?.allTerms ?? [];\n  const primaryHeadTerm = rawPrimaryTerms.length\n    ? rawPrimaryTerms[rawPrimaryTerms.length - 1]\n    : '';\n  if (domainContext.length && MACHINERY_HEADS.has(primaryHeadTerm)) {\n    for (const modifier of DOMAIN_SCOPED_FORM_MODIFIERS) {\n      GENERIC_ANCHORS.add(modifier);\n    }\n  }\n\n  const anchorTerms = terms(mustShow.join(' '))\n    .filter((term) => !GENERIC_ANCHORS.has(term));\n  const matchedAnchorCount = anchorTerms.filter((term) => strongSet.has(term)).length;\n\n  const primaryMust = mustProfiles[0] ?? null;\n  const primaryMustRatio = primaryMust\n    ? Number(mustRatios[primaryMust.index] ?? 0)\n    : 0;\n  const primaryMustThreshold = primaryMust\n    ? conceptThreshold(primaryMust.allTerms.length)\n    : 1;\n  const primaryDistinctiveTerms = primaryMust\n    ? primaryMust.allTerms.filter((term) => !GENERIC_ANCHORS.has(term))\n    : [];\n  const primaryMatchedDistinctive = primaryDistinctiveTerms\n    .filter((term) => strongSet.has(term)).length;\n  // Compound subjects need the same 60% concept coverage as other concepts.\n  // Form descriptors above are excluded; one shared word cannot turn an\n  // unrelated subject into the requested compound entity.\n  const primaryRequiredDistinctive = primaryDistinctiveTerms.length > 0\n    ? Math.ceil(primaryDistinctiveTerms.length * 0.60) : 0;\n  const primaryDistinctiveCoverage = primaryDistinctiveTerms.length > 0\n    ? primaryMatchedDistinctive / primaryDistinctiveTerms.length\n    : 0;\n  const primaryContextSupported =\n    primaryDistinctiveTerms.length > 0 &&\n    primaryMatchedDistinctive >= primaryRequiredDistinctive &&\n    (\n      queryMeta >= 0.20 ||\n      intentMeta >= 0.20\n    );\n  const primarySemanticSatisfied =\n    !primaryMust ||\n    primaryMust.allTerms.length === 0 ||\n    primaryMustRatio >= primaryMustThreshold ||\n    primaryContextSupported;\n\n  let rejected = false;\n  const reasons = [];\n\n  // Presentation/lifecycle context is not a blanket blacklist. It becomes a\n  // contradiction only when the storyboard explicitly asks for machinery in\n  // an operating plant/station/facility and the candidate is instead strong-\n  // metadata classified as a museum/exhibit/manufacturing/transport scene.\n  const intentSet = semanticSet(ctx.visual_intent);\n  const operationalSettingTerms = [\n    'station','plant','facility','powerhouse','substation','switchyard',\n    'operat','operation'\n  ].map(stem);\n  const nonOperationalContextTerms = [\n    'museum','exhibit','exhibition','display','manufactur','transport','showroom',\n    'disused','decommissioned','abandoned','inactive','retired'\n  ].map(stem);\n  const requiresOperationalSetting = operationalSettingTerms.some((term) => intentSet.has(term));\n  if (requiresOperationalSetting) {\n    const conflicting = nonOperationalContextTerms.filter(\n      (term) => contextSet.has(term) && !intentSet.has(term)\n    );\n    if (conflicting.length) {\n      rejected = true;\n      reasons.push('conflicting_non_operational_context:' + conflicting.join(','));\n    }\n  }\n\n  // A storyboard that explicitly places machinery in a plant/station/facility\n  // needs positive setting evidence, not merely the absence of a museum/factory\n  // contradiction. This prevents a generator+turbine from an aircraft, vehicle,\n  // or unrelated standalone machine from satisfying \"inside power plant\".\n  const operationalLocationTerms = [\n    'station','plant','facility','powerhouse','substation','switchyard'\n  ].map(stem);\n  const explicitOperationalLocations = operationalLocationTerms.filter(\n    (term) => intentSet.has(term)\n  );\n  const powerTerm = stem('power');\n  const powerFacilityTerms = ['station','plant','powerhouse'].map(stem);\n  const powerFacilityIntent =\n    intentSet.has(powerTerm) &&\n    explicitOperationalLocations.some((term) => powerFacilityTerms.includes(term));\n  const powerFacilitySupported =\n    contextSet.has(powerTerm) &&\n    powerFacilityTerms.some((term) => contextSet.has(term));\n  const explicitOperationalLocationSupported =\n    explicitOperationalLocations.some((term) => contextSet.has(term));\n  const alternativeGridSettingTerms = ['substation','switchyard'].map(stem);\n  const alternativeGridSettingSupported =\n    explicitOperationalLocations.some(\n      (term) =>\n        alternativeGridSettingTerms.includes(term) &&\n        contextSet.has(term)\n    );\n\n  const generationHallSupported =\n    contextSet.has(stem('hall')) &&\n    (\n      contextSet.has(stem('generator')) ||\n      contextSet.has(stem('turbine'))\n    ) &&\n    (\n      contextSet.has(stem('station')) ||\n      contextSet.has(stem('plant')) ||\n      contextSet.has(stem('facility')) ||\n      contextSet.has(stem('powerhouse')) ||\n      contextSet.has(stem('hydroelectric')) ||\n      contextSet.has(stem('steam'))\n    );\n\n  const operationalSettingSupported =\n    explicitOperationalLocations.length === 0 ||\n    (\n      powerFacilityIntent\n        ? (\n            powerFacilitySupported ||\n            alternativeGridSettingSupported ||\n            generationHallSupported\n          )\n        : explicitOperationalLocationSupported\n    );\n  if (\n    requiresOperationalSetting &&\n    MACHINERY_HEADS.has(primaryHeadTerm) &&\n    explicitOperationalLocations.length > 0 &&\n    !operationalSettingSupported\n  ) {\n    rejected = true;\n    reasons.push('missing_operational_setting_context');\n  }\n\n  const domainTokenSatisfied = (wanted) => {\n    const target = stem(wanted);\n    if (!target) return false;\n    if (strongSet.has(target)) return true;\n    if (target.length < 4) return false;\n    return [...strongSet].some((actual) =>\n      actual.length >= 4 &&\n      (actual.startsWith(target) || target.startsWith(actual))\n    );\n  };\n  const missingDomain = domainContext.filter(\n    (term) => !terms(term).every((token) => domainTokenSatisfied(token))\n  );\n  if (missingDomain.length) {\n    rejected = true;\n    reasons.push('missing_storyboard_domain_context:' + missingDomain.join(','));\n  }\n\n\n  const matchedVisualDetailTokens = visualDetailTokens.filter(\n    (term) => strongSet.has(term)\n  );\n  const requiredVisualDetailCount = visualDetailTokens.length > 0\n    ? Math.ceil(visualDetailTokens.length * 0.60)\n    : 0;\n  if (\n    visualDetailTokens.length > 0 &&\n    matchedVisualDetailTokens.length < requiredVisualDetailCount\n  ) {\n    rejected = true;\n    reasons.push(\n      'missing_visual_detail_anchor:' + visualDetailTerms.join(',')\n    );\n  }\n\n\n  const forbiddenGenericModifiers = new Set([\n    'large','small','modern','old','industrial',\n    'electric','electrical','power','equipment','machine','machinery',\n    'system','device','unit','apparatus','inside','outside','interior','exterior'\n  ].map(stem));\n  for (const forbidden of mustNot) {\n    const ft = terms(forbidden);\n    if (!ft.length) continue;\n    const r = ratioAgainst(forbidden,metaSet);\n    const head = ft[ft.length - 1];\n    const distinctiveModifiers = ft.slice(0,-1).filter(\n      (term) => !forbiddenGenericModifiers.has(term)\n    );\n    // A compound exclusion such as \"coal power plant\" must not fire merely\n    // because generic head/context words (\"power plant\") overlap.\n    const distinctiveSatisfied =\n      ft.length === 1 ||\n      distinctiveModifiers.length === 0 ||\n      distinctiveModifiers.some((term) => metaSet.has(term));\n    if (r >= conceptThreshold(ft.length) && distinctiveSatisfied) {\n      rejected = true;\n      reasons.push('must_not_show:' + forbidden);\n    }\n  }\n\n  const secondaryMustRatios = mustRatios.slice(1);\n  const secondaryMustEvidence = secondaryMustRatios.some((ratio,index) => {\n    const profile = mustProfiles[index + 1];\n    return ratio >= conceptThreshold(profile?.allTerms?.length || 0);\n  });\n\n  const strongQueryEvidence =\n    queryMeta >= conceptThreshold(terms(ctx.query).length) &&\n    matchedAnchorCount >= 1;\n\n  // The fallback query may be an ambiguous body part/object word. Require\n  // independent storyboard context as well when it is supplied, so a query\n  // match alone cannot substitute another subject from an unrelated domain.\n  const secondaryContextProfiles = mustProfiles.slice(1)\n    .map((profile) => {\n      const headTerm = profile.allTerms.length\n        ? profile.allTerms[profile.allTerms.length - 1]\n        : '';\n      return {\n        ...profile,\n        contextTerms: profile.allTerms.filter(\n          (term) =>\n            (!secondaryGenericAnchors.has(term) || term === headTerm) &&\n            !primaryDistinctiveTerms.includes(term)\n        ),\n      };\n    })\n    .filter((profile) => profile.contextTerms.length > 0);\n  const secondaryContextSupported = secondaryContextProfiles.some((profile) => {\n    const matched = profile.contextTerms.filter((term) => secondarySet.has(term)).length;\n    return matched / profile.contextTerms.length >= conceptThreshold(profile.contextTerms.length);\n  });\n  if (secondaryContextProfiles.length > 0 && !secondaryContextSupported) {\n    rejected = true;\n    reasons.push('missing_secondary_subject_context');\n  }\n\n  if (\n    primaryMust &&\n    primaryMust.allTerms.length > 0 &&\n    primaryDistinctiveTerms.length > 0 &&\n    primaryMatchedDistinctive < primaryRequiredDistinctive\n  ) {\n    rejected = true;\n    reasons.push('missing_primary_subject_anchor:' + primaryMust.value);\n  } else if (\n    primaryMust &&\n    !primarySemanticSatisfied &&\n    !strongQueryEvidence\n  ) {\n    rejected = true;\n    reasons.push('insufficient_primary_subject_coverage:' + primaryMust.value);\n  }\n\n  if (\n    requiredMustCount > 0 &&\n    strongMustCount < requiredMustCount &&\n    !strongQueryEvidence &&\n    !primarySemanticSatisfied &&\n    !secondaryMustEvidence\n  ) {\n    rejected = true;\n    reasons.push('insufficient_must_show_concept_coverage');\n  }\n\n  if (queryMeta < 0.25 && intentMeta < 0.20) {\n    rejected = true;\n    reasons.push('insufficient_query_intent_metadata_match');\n  }\n\n  if (\n    anchorTerms.length > 0 &&\n    matchedAnchorCount < 1\n  ) {\n    rejected = true;\n    reasons.push('missing_distinctive_domain_anchor');\n  }\n\n  if (extraReject) {\n    rejected = true;\n    reasons.push(extraReject);\n  }\n\n  const w = Number(width);\n  const h = Number(height);\n  if (!(w > 0 && h > 0)) {\n    rejected = true;\n    reasons.push('invalid_dimensions');\n  }\n  const portraitEnough = w > 0 && h > 0 && (h * 3 >= w * 4);\n\n  let score =\n    10 +\n    Math.round(35 * mustMeta) +\n    Math.round(20 * primaryMustRatio) +\n    Math.round(25 * queryMeta) +\n    Math.round(15 * intentMeta) +\n    Math.round(5 * queryMust) +\n    Math.max(0,11 - Number(providerRank || 99));\n\n  if (String(ctx.preferred_media_type) === mediaType) score += 12;\n\n  if (portraitEnough) {\n    const aspect = h / w;\n    if (aspect >= (16/9)) score += 12;\n    else if (aspect >= 1.5) score += 9;\n    else score += 6;\n  }\n\n  score = Math.max(0,Math.min(100,score));\n\n  return {\n    relevance_score: score,\n    rejected,\n    rejection_reason: reasons.join('; ') || null,\n  };\n}\n\nconst ctx = $('Build Wikimedia Requests').item.json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object' ? response.body : {};\nconst status = Number(response.statusCode ?? response.status ?? 0);\n\nconst headers = response.headers && typeof response.headers === 'object' ? response.headers : {};\nconst pagesObj = status === 200 && body?.query?.pages && typeof body.query.pages === 'object' ? body.query.pages : {};\nconst pages = Object.values(pagesObj).sort((a,b) => Number(a?.index || 999)-Number(b?.index || 999));\nconst candidates = [];\n\nfunction stripHtml(value) {\n  return String(value || '').replace(/<[^>]*>/g,' ').replace(/&[^;]+;/g,' ');\n}\nfunction metaValue(meta,key) {\n  return meta?.[key]?.value ?? '';\n}\nfunction acceptedLicense(name) {\n  return /^(CC0|CC BY([ -]|$)|CC BY-SA([ -]|$)|Public domain|PDM)/i.test(String(name || '').trim());\n}\nfunction licenseFallback(name) {\n  const n=String(name || '').trim();\n  if (/^CC0/i.test(n)) return 'https://creativecommons.org/publicdomain/zero/1.0/';\n  if (/^CC BY-SA 4\\.0/i.test(n)) return 'https://creativecommons.org/licenses/by-sa/4.0/';\n  if (/^CC BY 4\\.0/i.test(n)) return 'https://creativecommons.org/licenses/by/4.0/';\n  if (/^Public domain/i.test(n) || /^PDM/i.test(n)) return 'https://commons.wikimedia.org/wiki/Commons:Public_domain';\n  return 'https://commons.wikimedia.org/wiki/Commons:Licensing';\n}\n\nfunction primaryDepictionCore(value) {\n  let text=stripHtml(value)\n    .replace(/^File:\\s*/i,' ')\n    .replace(/\\s+/g,' ')\n    .trim();\n  if (!text) return '';\n\n  // HAER and similar titles put the depicted subject before a dash and then\n  // append location/collection context. Keep the depicted clause.\n  text=text.split(/\\s+-\\s+/)[0].trim();\n\n  // These relations commonly describe source, purpose or nearby context rather\n  // than the object visible in the frame. Context after them may still score\n  // intent, but it cannot establish the primary depicted subject.\n  const relation=/\\b(?:constructed\\s+to\\s+(?:carry|convey|feed|supply)|designed\\s+to\\s+(?:carry|convey|feed|supply)|installation\\s+for|for|from|next\\s+to|near|vicinity\\s+of)\\b/i;\n  const match=relation.exec(text);\n  if (match && match.index > 0) text=text.slice(0,match.index).trim();\n  return text;\n}\n\nconst WIKIMEDIA_DEPICTION_DESCRIPTOR_TERMS=new Set([\n  'water','electric','electrical','concrete','industrial','modern','large','small',\n  'high','low','overhead','underground','residential','power'\n].map(stem));\nconst WIKIMEDIA_MACHINERY_HEADS=new Set([\n  'turbine','generator','transformer','engine','motor','pump',\n  'compressor','reactor','gearbox','inverter'\n].map(stem));\nconst WIKIMEDIA_COMPONENT_TERMS=new Set([\n  'case','casing','pit','governor','shaft','rotor','stator','runner',\n  'housing','bearing','coupling','impeller'\n].map(stem));\nconst WIKIMEDIA_SURFACE_TERMS=new Set([\n  'sign','signage','notice','plaque','nameplate','label','door'\n].map(stem));\n\nfunction primaryDepictionFailure(ctx,title,objectName,shortDescription,categories) {\n  const primary=String((ctx.must_show || [])[0] || '').trim();\n  const primaryTerms=terms(primary);\n  if (!primaryTerms.length) return null;\n\n  const head=primaryTerms[primaryTerms.length-1];\n  const requestedSurface =\n    primaryTerms.some((term) => WIKIMEDIA_SURFACE_TERMS.has(term));\n  const coreText=[\n    primaryDepictionCore(title),\n    primaryDepictionCore(objectName),\n    primaryDepictionCore(shortDescription),\n    ...(requestedSurface ? [String(categories || '')] : []),\n  ].filter(Boolean).join(' ');\n  const coreSet=semanticSet(coreText);\n\n  let required=primaryTerms.filter(\n    (term) => !WIKIMEDIA_DEPICTION_DESCRIPTOR_TERMS.has(term)\n  );\n  if (!required.includes(head)) required.push(head);\n  required=[...new Set(required)];\n\n  const matched=required.filter((term)=>coreSet.has(term)).length;\n\n  const directCoreText=[\n    primaryDepictionCore(title),\n    primaryDepictionCore(objectName),\n  ].filter(Boolean).join(' ');\n  const directCoreSet=semanticSet(directCoreText);\n  const conflictingDirectMachinery=[...WIKIMEDIA_MACHINERY_HEADS].filter(\n    (machineryHead) =>\n      machineryHead !== head &&\n      directCoreSet.has(machineryHead)\n  );\n  const requestedHeadDirect=directCoreSet.has(head);\n  const directHallContext=directCoreSet.has(stem('hall'));\n\n  const machineryCategorySupportsPrimary =\n    WIKIMEDIA_MACHINERY_HEADS.has(head) &&\n    String(categories || '')\n      .split('|')\n      .map((value) => stripHtml(value).trim())\n      .filter(Boolean)\n      .some((segment) => {\n        const set=semanticSet(segment);\n        if (!set.has(head)) return false;\n        const categoryMatched=required.filter((term)=>set.has(term)).length;\n        if (\n          required.length === 0 ||\n          categoryMatched / required.length < conceptThreshold(required.length)\n        ) {\n          return false;\n        }\n\n        // A contextual machinery category cannot override a different machine\n        // explicitly named as the photographed subject. The narrow exception\n        // is a turbine/generator hall where the title is the setting and the\n        // category explicitly ties the requested and named machinery together.\n        if (\n          conflictingDirectMachinery.length > 0 &&\n          !requestedHeadDirect\n        ) {\n          const hallAssemblySupported =\n            directHallContext &&\n            conflictingDirectMachinery.every(\n              (machineryHead) => set.has(machineryHead)\n            );\n          if (!hallAssemblySupported) return false;\n        }\n\n        return true;\n      });\n  if (\n    required.length > 0 &&\n    matched / required.length < conceptThreshold(required.length) &&\n    !machineryCategorySupportsPrimary\n  ) {\n    return 'wikimedia_primary_only_contextual_metadata';\n  }\n\n  const spatialSource=[title,objectName].filter(Boolean).join(' ');\n  const primaryBackgroundPattern=new RegExp(\n    '\\\\b' + head + '(?:s|es)?\\\\b[^.;]{0,64}\\\\(\\\\s*background\\\\s*\\\\)',\n    'i'\n  );\n  const primaryForegroundPattern=new RegExp(\n    '\\\\b' + head + '(?:s|es)?\\\\b[^.;]{0,64}\\\\(\\\\s*foreground\\\\s*\\\\)',\n    'i'\n  );\n  const intentSetForSpatial=semanticSet(ctx.visual_intent);\n  if (\n    primaryBackgroundPattern.test(spatialSource) &&\n    !primaryForegroundPattern.test(spatialSource) &&\n    !intentSetForSpatial.has('background')\n  ) {\n    return 'wikimedia_primary_background_only';\n  }\n\n  if (WIKIMEDIA_MACHINERY_HEADS.has(head)) {\n    const rawCore=String(coreText || '').toLowerCase().replace(/[^a-z0-9]+/g,' ');\n    const componentPattern=new RegExp(\n      '\\\\b' + head + '\\\\s+(case|casing|pit|governor|shaft|rotor|stator|runner|housing|bearing|coupling|impeller)\\\\b',\n      'i'\n    );\n    const componentMatch=componentPattern.exec(rawCore);\n    if (componentMatch) {\n      const component=stem(componentMatch[1]);\n      const intentSet=semanticSet(ctx.visual_intent);\n      if (\n        WIKIMEDIA_COMPONENT_TERMS.has(component) &&\n        !intentSet.has(component)\n      ) {\n        return 'wikimedia_unrequested_component_view:' + component;\n      }\n    }\n  }\n\n  return null;\n}\n\nfor (let i=0;i<pages.length;i++) {\n  const p = pages[i] || {};\n  const info = Array.isArray(p.imageinfo) ? p.imageinfo[0] : null;\n  if (!info) continue;\n\n  const mime = String(info.mime || '').toLowerCase();\n  const supportedPhotoMimes = new Set(['image/jpeg','image/png','image/webp']);\n  const supportedVideoMimes = new Set(['video/mp4','video/webm']);\n  const thumbUrlForType = String(info.thumburl || '');\n  const hasWebRasterThumb = /\\.(?:jpe?g|png|webp)(?:\\?|$)/i.test(thumbUrlForType);\n  const supportedPhotoSource =\n    supportedPhotoMimes.has(mime) ||\n    (mime === 'image/tiff' && hasWebRasterThumb);\n  if (ctx.endpoint_kind === 'video' && !supportedVideoMimes.has(mime)) continue;\n  if (ctx.endpoint_kind !== 'video' && !supportedPhotoSource) continue;\n\n  const ext = info.extmetadata && typeof info.extmetadata === 'object' ? info.extmetadata : {};\n  const licenseName = String(metaValue(ext,'LicenseShortName') || '').trim();\n  if (!acceptedLicense(licenseName)) continue;\n  const licenseUrl = String(metaValue(ext,'LicenseUrl') || licenseFallback(licenseName)).trim();\n\n  const description = stripHtml(metaValue(ext,'ImageDescription'));\n  const objectName = stripHtml(metaValue(ext,'ObjectName'));\n  const categories = stripHtml(metaValue(ext,'Categories'));\n  const artist = stripHtml(metaValue(ext,'Artist')).trim();\n  const metadataText = [p.title,objectName,description,categories].filter(Boolean).join(' ');\n\n  let mediaType;\n  let downloadUrl;\n  let previewUrl = String(info.thumburl || '');\n  let width;\n  let height;\n  let durationMs = null;\n  let extraReject = '';\n\n  if (ctx.endpoint_kind === 'video') {\n    mediaType='video';\n    downloadUrl=String(info.url || '');\n    width=Number(info.width || 0);\n    height=Number(info.height || 0);\n    durationMs=Math.round(Number(info.duration || 0)*1000);\n    if (!(durationMs > 0)) continue;\n    if (Number(info.size || 0) > 80*1024*1024) extraReject='wikimedia_video_over_80mb';\n  } else {\n    downloadUrl=String(info.thumburl || info.url || '');\n    width=Number(info.thumbwidth || info.width || 0);\n    height=Number(info.thumbheight || info.height || 0);\n    mediaType='photo';\n\n    const nonPhotoWords = /\\b(diagrams?|schematics?|infographics?|flowcharts?|vectors?|clipart|drawings?|renders?|rendering|plots?|charts?|maps?|book covers?|brochures?|posters?|slides?|documents?|manuals?|crystal structures?|molecular structures?|atomic structures?|unit cells?|lattice diagrams?)\\b/i;\n    const assetTypeEvidence = [p.title,objectName,categories].filter(Boolean).join(' ');\n    if (\n      mime.includes('svg') ||\n      nonPhotoWords.test(assetTypeEvidence)\n    ) {\n      extraReject='wikimedia_non_photographic_asset';\n    }\n  }\n\n  if (!downloadUrl.startsWith('https://') || !(width > 0 && height > 0)) continue;\n\n  // Long Commons descriptions often contain taxonomy/history and contrasts\n  // about subjects that are not depicted. A concise direct caption may support\n  // secondary/context evidence, but it is not strong primary depiction proof.\n  const shortDirectDescription =\n    description && description.length <= 280 ? description : '';\n  // Strong depicted-subject evidence stays on title/object/categories.\n  // A short prose description may contain taxonomy, comparisons or background\n  // context about objects that are not actually depicted.\n  const strongMetadataText = [\n    p.title,\n    objectName,\n    categories,\n  ].filter(Boolean).join(' ');\n\n  // For a SECONDARY must_show, a contextual category such as\n  // \"Peechi Dam reservoir\" must not by itself prove that the reservoir is\n  // actually visible. Keep title/object, a short direct caption, and only\n  // category segments independent of the primary subject.\n  const primaryEvidenceTerms = terms((ctx.must_show || [])[0] || '');\n  const categorySegments = String(metaValue(ext,'Categories') || '')\n    .split('|')\n    .map((value) => stripHtml(value).trim())\n    .filter(Boolean);\n  const independentCategorySegments = categorySegments\n    .filter((value) => {\n      const set = semanticSet(value);\n      return !primaryEvidenceTerms.some((term) => set.has(term));\n    });\n\n  const categorySupportsConcept = (value,segments) => {\n    const conceptTerms=terms(value);\n    if (!conceptTerms.length) return false;\n    const meaningful=conceptTerms.filter(\n      (term) => !WIKIMEDIA_DEPICTION_DESCRIPTOR_TERMS.has(term)\n    );\n    const required=meaningful.length ? meaningful : conceptTerms;\n    return segments.some((segment) => {\n      const set=semanticSet(segment);\n      const matched=required.filter((term) => set.has(term)).length;\n      return matched / required.length >= conceptThreshold(required.length);\n    });\n  };\n\n  const mustShowValues=Array.isArray(ctx.must_show)\n    ? ctx.must_show.map(String).filter(Boolean)\n    : [];\n  const pairedCategoryDepictionSupported =\n    mustShowValues.length > 1 &&\n    categorySupportsConcept(mustShowValues[0],categorySegments) &&\n    mustShowValues.slice(1).some(\n      (value) => categorySupportsConcept(value,independentCategorySegments)\n    );\n\n  const primaryDepictionReject=primaryDepictionFailure(\n    ctx,\n    p.title,\n    objectName,\n    shortDirectDescription,\n    categories\n  );\n  if (primaryDepictionReject && !pairedCategoryDepictionSupported) {\n    extraReject=[extraReject,primaryDepictionReject].filter(Boolean).join('; ');\n  }\n\n  const secondaryMetadataText = [\n    p.title,\n    objectName,\n    shortDirectDescription,\n    independentCategorySegments.join(' '),\n  ].filter(Boolean).join(' ');\n\n  // A photo of signage is not evidence that its named equipment is visible.\n  // These depiction classes are allowed when the shot actually requests them.\n  const depictionEvidence = [p.title, objectName, categories].join(' ');\n  const depictedSurface = /\\b(signs?|signage|notices?|plaques?|nameplates?|labels?|doors?)\\b/i;\n  if (mediaType === 'photo' && depictedSurface.test(depictionEvidence) &&\n      !depictedSurface.test((ctx.must_show || []).join(' '))) {\n    extraReject = [extraReject,'wikimedia_depicts_surface_not_requested_subject'].filter(Boolean).join('; ');\n  }\n\n  const scored = scoreCandidate(\n    ctx,\n    metadataText,\n    mediaType,\n    width,\n    height,\n    i+1,\n    extraReject,\n    strongMetadataText,\n    secondaryMetadataText\n  );\n\n  candidates.push({\n    provider_asset_id:String(p.pageid),\n    provider_rank:i+1,\n    media_type:mediaType,\n    source_url:String(info.descriptionurl || info.descriptionshorturl || ''),\n    download_url:downloadUrl,\n    preview_url:previewUrl || null,\n    author:artist || null,\n    author_url:String(info.descriptionurl || '') || null,\n    license_name:licenseName,\n    license_url:licenseUrl,\n    width,\n    height,\n    duration_ms:durationMs,\n    metadata_text:metadataText,\n    relevance_score:scored.relevance_score,\n    rejected:scored.rejected,\n    rejection_reason:scored.rejection_reason,\n    metadata:{\n      title:p.title ?? null,\n      mime,\n      original_bytes:info.size ?? null,\n      credit:stripHtml(metaValue(ext,'Credit')) || null,\n      attribution_required:metaValue(ext,'AttributionRequired') || null,\n      query:ctx.query,\n    },\n  });\n}\n\nreturn {json:{\n  visual_run_id:ctx.visual_run_id,\n  shot_uuid:ctx.shot_uuid,\n  provider:'wikimedia',\n  query_index:ctx.query_index,\n  query_text:ctx.query,\n  provider_query_text:String(ctx.provider_query || ctx.query || '').trim(),\n  endpoint_kind:ctx.endpoint_kind,\n  http_status:status,\n  response_headers:{\n    'retry-after':headers['retry-after'] ?? null,\n    'cache-control':headers['cache-control'] ?? null,\n    'date':headers.date ?? null,\n    'content-type':headers['content-type'] ?? null,\n    'provider-degraded':status === 200 ? null : true,\n  },\n  candidates,\n}};"
+        "jsCode": "\nconst STOP = new Set([\n  'the','and','for','with','from','into','onto','over','under','this','that','these','those',\n  'show','showing','display','displaying','view','close','macro','image','photo','video','scene',\n  'a','an','of','to','in','on','at','as','by','is','are','be','or'\n]);\n\nfunction stem(token) {\n  let t = String(token || '').toLowerCase().replace(/^'+|'+$/g,'');\n  if (t === 'houses') return 'house';\n  if (t.endsWith('ies') && t.length > 5) return t.slice(0,-3) + 'y';\n  if (t.endsWith('ing') && t.length > 6) {\n    t = t.slice(0,-3);\n    if (/([bcdfghjklmnpqrstvwxyz])\\1$/.test(t)) t=t.slice(0,-1);\n    return t;\n  }\n  if (t.endsWith('ed') && t.length > 5) {\n    t=t.slice(0,-2);\n    if (/([bcdfghjklmnpqrstvwxyz])\\1$/.test(t)) t=t.slice(0,-1);\n    return t;\n  }\n  if (/(?:ses|xes|zes|ches|shes)$/.test(t) && t.length > 5) return t.slice(0,-2);\n  if (t.endsWith('s') && t.length > 3 && !t.endsWith('ss')) return t.slice(0,-1);\n  return t;\n}\n\nfunction tokenSequence(value) {\n  return String(value || '')\n    .toLowerCase()\n    .replace(/[^a-z0-9]+/g,' ')\n    .split(/\\s+/)\n    .map(stem)\n    .filter((t) => t.length >= 2 && !STOP.has(t));\n}\n\nfunction terms(value) {\n  return [...new Set(tokenSequence(value))];\n}\n\nconst GENERIC_OBJECT_EQUIVALENTS = [\n  ['device','equipment','receiver','instrument','unit','apparatus'],\n];\n\nfunction expandGenericObjectEquivalents(set) {\n  for (const group of GENERIC_OBJECT_EQUIVALENTS) {\n    if (group.some((term) => set.has(term))) {\n      for (const term of group) set.add(term);\n    }\n  }\n  return set;\n}\n\nfunction semanticSet(value) {\n  const seq = tokenSequence(value);\n  const set = expandGenericObjectEquivalents(new Set(seq));\n  // A powerhouse is the generating-building sense of a power station.\n  // Expand only from the specific compound to its components; never make\n  // a generic station imply a powerhouse.\n  if (set.has('powerhouse')) {\n    set.add('power');\n    set.add('station');\n    set.add('powerstation');\n  }\n  if (set.has('hydroelectric') || set.has('hydroelectricity') || set.has('hydropower')) {\n    set.add('hydro');\n    set.add('water');\n  }\n  if (set.has('home')) set.add('house');\n  if (set.has('house')) set.add('home');\n  if (set.has('reservoir')) set.add('water');\n  // A penstock is a pressure pipeline/conduit; expand only from the more\n  // specific term so a generic pipeline never implies a hydro penstock.\n  if (set.has('penstock')) { set.add('pipeline'); set.add('pipe'); }\n  for (let i=0;i+1<seq.length;i++) {\n    const joined=seq[i] + seq[i+1];\n    if (joined.length >= 5) set.add(joined);\n  }\n  return set;\n}\n\nfunction ratioAgainst(value,set) {\n  const ts = terms(value);\n  if (!ts.length) return 0;\n  let matched = 0;\n  for (const t of ts) if (set.has(t)) matched++;\n  return matched / ts.length;\n}\n\nfunction average(values) {\n  if (!values.length) return 0;\n  return values.reduce((a,b) => a+b,0) / values.length;\n}\n\nfunction conceptThreshold(tokenCount) {\n  const n=Number(tokenCount || 0);\n  if (n <= 1) return 1;\n  return Math.ceil(n * 0.60) / n;\n}\n\nfunction scoreCandidate(ctx, metadataText, mediaType, width, height, providerRank, extraReject='', strongMetadataText='', secondaryMetadataText='') {\n  const metaSet = semanticSet(metadataText);\n  const strongSet = semanticSet(strongMetadataText || metadataText);\n  const secondarySet = semanticSet(secondaryMetadataText || strongMetadataText || metadataText);\n  // Context/lifecycle evidence may use concise direct-caption metadata; primary depiction proof remains on strongSet.\n  const contextSet = new Set([...strongSet, ...secondarySet]);\n  const querySet = semanticSet(ctx.query);\n  const mustShow = Array.isArray(ctx.must_show) ? ctx.must_show.map(String) : [];\n  const mustNot = Array.isArray(ctx.must_not_show) ? ctx.must_not_show.map(String) : [];\n\n  const mustRatios = mustShow.map((x) => ratioAgainst(x,strongSet));\n  const mustMeta = average(mustRatios);\n  const queryMeta = ratioAgainst(ctx.query,strongSet);\n  const intentMeta = ratioAgainst(ctx.visual_intent,metaSet);\n  const queryMust = average(mustShow.map((x) => ratioAgainst(x,querySet)));\n  const mustProfiles = mustShow.map((value,index) => {\n    const allTerms = terms(value);\n    return {index,value,allTerms};\n  });\n  const mustSatisfied = mustProfiles.map((profile,index) =>\n    mustRatios[index] >= conceptThreshold(profile.allTerms.length)\n  );\n  const strongMustCount = mustSatisfied.filter(Boolean).length;\n  const requiredMustCount = mustShow.length > 0 ? 1 : 0;\n  const domainContext = Array.isArray(ctx.domain_context_terms)\n    ? ctx.domain_context_terms.map(String)\n    : [];\n  const visualDetailTerms = Array.isArray(ctx.visual_detail_terms)\n    ? ctx.visual_detail_terms.map(String).filter(Boolean)\n    : [];\n  const visualDetailTokens = [...new Set(\n    visualDetailTerms.flatMap((value) => terms(value))\n  )];\n\n  const GENERIC_ANCHORS = new Set([\n    'machine','equipment','system','factory','industrial','industry',\n    'process','manufactur','material','device','receiver','instrument','unit','apparatus',\n    'mouthpart','component','part','chamber','reservoir',\n    'pool','basin','drop','droplet','surface','texture','detail',\n    'portable','handheld','navigator','navigation',\n    'runner','rotor',\n    'plant','room','laboratory',\n    'lab','cleanroom','tool','work','worker','table','object','result',\n    'finish','modern','large','small','electric','electrical','residential'\n  ].map(stem));\n\n  const secondaryGenericAnchors = new Set(GENERIC_ANCHORS);\n\n  const MACHINERY_HEADS = new Set([\n    'turbine','generator','transformer','engine','motor','pump',\n    'compressor','reactor','gearbox','inverter'\n  ].map(stem));\n  const DOMAIN_SCOPED_FORM_MODIFIERS = [\n    'water','hydro','hydraulic','steam','gas','wind','power'\n  ].map(stem);\n  const rawPrimaryTerms = mustProfiles[0]?.allTerms ?? [];\n  const primaryHeadTerm = rawPrimaryTerms.length\n    ? rawPrimaryTerms[rawPrimaryTerms.length - 1]\n    : '';\n  if (domainContext.length && MACHINERY_HEADS.has(primaryHeadTerm)) {\n    for (const modifier of DOMAIN_SCOPED_FORM_MODIFIERS) {\n      GENERIC_ANCHORS.add(modifier);\n    }\n  }\n\n  const anchorTerms = terms(mustShow.join(' '))\n    .filter((term) => !GENERIC_ANCHORS.has(term));\n  const matchedAnchorCount = anchorTerms.filter((term) => strongSet.has(term)).length;\n\n  const primaryMust = mustProfiles[0] ?? null;\n  const primaryMustRatio = primaryMust\n    ? Number(mustRatios[primaryMust.index] ?? 0)\n    : 0;\n  const primaryMustThreshold = primaryMust\n    ? conceptThreshold(primaryMust.allTerms.length)\n    : 1;\n  const primaryDistinctiveTerms = primaryMust\n    ? primaryMust.allTerms.filter((term) => !GENERIC_ANCHORS.has(term))\n    : [];\n  const primaryMatchedDistinctive = primaryDistinctiveTerms\n    .filter((term) => strongSet.has(term)).length;\n  // Compound subjects need the same 60% concept coverage as other concepts.\n  // Form descriptors above are excluded; one shared word cannot turn an\n  // unrelated subject into the requested compound entity.\n  const primaryRequiredDistinctive = primaryDistinctiveTerms.length > 0\n    ? Math.ceil(primaryDistinctiveTerms.length * 0.60) : 0;\n  const primaryDistinctiveCoverage = primaryDistinctiveTerms.length > 0\n    ? primaryMatchedDistinctive / primaryDistinctiveTerms.length\n    : 0;\n  const primaryContextSupported =\n    primaryDistinctiveTerms.length > 0 &&\n    primaryMatchedDistinctive >= primaryRequiredDistinctive &&\n    (\n      queryMeta >= 0.20 ||\n      intentMeta >= 0.20\n    );\n  const primarySemanticSatisfied =\n    !primaryMust ||\n    primaryMust.allTerms.length === 0 ||\n    primaryMustRatio >= primaryMustThreshold ||\n    primaryContextSupported;\n\n  let rejected = false;\n  const reasons = [];\n\n  // Presentation/lifecycle context is not a blanket blacklist. It becomes a\n  // contradiction only when the storyboard explicitly asks for machinery in\n  // an operating plant/station/facility and the candidate is instead strong-\n  // metadata classified as a museum/exhibit/manufacturing/transport scene.\n  const intentSet = semanticSet(ctx.visual_intent);\n  const operationalSettingTerms = [\n    'station','plant','facility','powerhouse','substation','switchyard',\n    'operat','operation'\n  ].map(stem);\n  const nonOperationalContextTerms = [\n    'museum','exhibit','exhibition','display','manufactur','transport','showroom',\n    'disused','decommissioned','abandoned','inactive','retired'\n  ].map(stem);\n  const requiresOperationalSetting = operationalSettingTerms.some((term) => intentSet.has(term));\n  if (requiresOperationalSetting) {\n    const conflicting = nonOperationalContextTerms.filter(\n      (term) => contextSet.has(term) && !intentSet.has(term)\n    );\n    if (conflicting.length) {\n      rejected = true;\n      reasons.push('conflicting_non_operational_context:' + conflicting.join(','));\n    }\n  }\n\n  // A storyboard that explicitly places machinery in a plant/station/facility\n  // needs positive setting evidence, not merely the absence of a museum/factory\n  // contradiction. This prevents a generator+turbine from an aircraft, vehicle,\n  // or unrelated standalone machine from satisfying \"inside power plant\".\n  const operationalLocationTerms = [\n    'station','plant','facility','powerhouse','substation','switchyard'\n  ].map(stem);\n  const explicitOperationalLocations = operationalLocationTerms.filter(\n    (term) => intentSet.has(term)\n  );\n  const powerTerm = stem('power');\n  const powerFacilityTerms = ['station','plant','powerhouse'].map(stem);\n  const powerFacilityIntent =\n    intentSet.has(powerTerm) &&\n    explicitOperationalLocations.some((term) => powerFacilityTerms.includes(term));\n  const powerFacilitySupported =\n    contextSet.has(powerTerm) &&\n    powerFacilityTerms.some((term) => contextSet.has(term));\n  const explicitOperationalLocationSupported =\n    explicitOperationalLocations.some((term) => contextSet.has(term));\n  const alternativeGridSettingTerms = ['substation','switchyard'].map(stem);\n  const alternativeGridSettingSupported =\n    explicitOperationalLocations.some(\n      (term) =>\n        alternativeGridSettingTerms.includes(term) &&\n        contextSet.has(term)\n    );\n\n  const generationHallSupported =\n    contextSet.has(stem('hall')) &&\n    (\n      contextSet.has(stem('generator')) ||\n      contextSet.has(stem('turbine'))\n    ) &&\n    (\n      contextSet.has(stem('station')) ||\n      contextSet.has(stem('plant')) ||\n      contextSet.has(stem('facility')) ||\n      contextSet.has(stem('powerhouse')) ||\n      contextSet.has(stem('hydroelectric')) ||\n      contextSet.has(stem('steam'))\n    );\n\n  const operationalSettingSupported =\n    explicitOperationalLocations.length === 0 ||\n    (\n      powerFacilityIntent\n        ? (\n            powerFacilitySupported ||\n            alternativeGridSettingSupported ||\n            generationHallSupported\n          )\n        : explicitOperationalLocationSupported\n    );\n  if (\n    requiresOperationalSetting &&\n    MACHINERY_HEADS.has(primaryHeadTerm) &&\n    explicitOperationalLocations.length > 0 &&\n    !operationalSettingSupported\n  ) {\n    rejected = true;\n    reasons.push('missing_operational_setting_context');\n  }\n\n  const domainTokenSatisfied = (wanted) => {\n    const target = stem(wanted);\n    if (!target) return false;\n    if (strongSet.has(target)) return true;\n    if (target.length < 4) return false;\n    return [...strongSet].some((actual) =>\n      actual.length >= 4 &&\n      (actual.startsWith(target) || target.startsWith(actual))\n    );\n  };\n  const missingDomain = domainContext.filter(\n    (term) => !terms(term).every((token) => domainTokenSatisfied(token))\n  );\n  if (missingDomain.length) {\n    rejected = true;\n    reasons.push('missing_storyboard_domain_context:' + missingDomain.join(','));\n  }\n\n\n  const matchedVisualDetailTokens = visualDetailTokens.filter(\n    (term) => strongSet.has(term)\n  );\n  const requiredVisualDetailCount = visualDetailTokens.length > 0\n    ? Math.ceil(visualDetailTokens.length * 0.60)\n    : 0;\n  if (\n    visualDetailTokens.length > 0 &&\n    matchedVisualDetailTokens.length < requiredVisualDetailCount\n  ) {\n    rejected = true;\n    reasons.push(\n      'missing_visual_detail_anchor:' + visualDetailTerms.join(',')\n    );\n  }\n\n\n  const forbiddenGenericModifiers = new Set([\n    'large','small','modern','old','industrial',\n    'electric','electrical','power','equipment','machine','machinery',\n    'system','device','unit','apparatus','inside','outside','interior','exterior'\n  ].map(stem));\n  for (const forbidden of mustNot) {\n    const ft = terms(forbidden);\n    if (!ft.length) continue;\n    const r = ratioAgainst(forbidden,metaSet);\n    const head = ft[ft.length - 1];\n    const distinctiveModifiers = ft.slice(0,-1).filter(\n      (term) => !forbiddenGenericModifiers.has(term)\n    );\n    // A compound exclusion such as \"coal power plant\" must not fire merely\n    // because generic head/context words (\"power plant\") overlap.\n    const distinctiveSatisfied =\n      ft.length === 1 ||\n      distinctiveModifiers.length === 0 ||\n      distinctiveModifiers.some((term) => metaSet.has(term));\n    if (r >= conceptThreshold(ft.length) && distinctiveSatisfied) {\n      rejected = true;\n      reasons.push('must_not_show:' + forbidden);\n    }\n  }\n\n  const secondaryMustRatios = mustRatios.slice(1);\n  const secondaryMustEvidence = secondaryMustRatios.some((ratio,index) => {\n    const profile = mustProfiles[index + 1];\n    return ratio >= conceptThreshold(profile?.allTerms?.length || 0);\n  });\n\n  const strongQueryEvidence =\n    queryMeta >= conceptThreshold(terms(ctx.query).length) &&\n    matchedAnchorCount >= 1;\n\n  // The fallback query may be an ambiguous body part/object word. Require\n  // independent storyboard context as well when it is supplied, so a query\n  // match alone cannot substitute another subject from an unrelated domain.\n  const secondaryContextProfiles = mustProfiles.slice(1)\n    .map((profile) => {\n      const headTerm = profile.allTerms.length\n        ? profile.allTerms[profile.allTerms.length - 1]\n        : '';\n      return {\n        ...profile,\n        contextTerms: profile.allTerms.filter(\n          (term) =>\n            (!secondaryGenericAnchors.has(term) || term === headTerm) &&\n            !primaryDistinctiveTerms.includes(term)\n        ),\n      };\n    })\n    .filter((profile) => profile.contextTerms.length > 0);\n  const secondaryContextSupported = secondaryContextProfiles.some((profile) => {\n    const matched = profile.contextTerms.filter((term) => secondarySet.has(term)).length;\n    return matched / profile.contextTerms.length >= conceptThreshold(profile.contextTerms.length);\n  });\n  if (secondaryContextProfiles.length > 0 && !secondaryContextSupported) {\n    rejected = true;\n    reasons.push('missing_secondary_subject_context');\n  }\n\n  if (\n    primaryMust &&\n    primaryMust.allTerms.length > 0 &&\n    primaryDistinctiveTerms.length > 0 &&\n    primaryMatchedDistinctive < primaryRequiredDistinctive\n  ) {\n    rejected = true;\n    reasons.push('missing_primary_subject_anchor:' + primaryMust.value);\n  } else if (\n    primaryMust &&\n    !primarySemanticSatisfied &&\n    !strongQueryEvidence\n  ) {\n    rejected = true;\n    reasons.push('insufficient_primary_subject_coverage:' + primaryMust.value);\n  }\n\n  if (\n    requiredMustCount > 0 &&\n    strongMustCount < requiredMustCount &&\n    !strongQueryEvidence &&\n    !primarySemanticSatisfied &&\n    !secondaryMustEvidence\n  ) {\n    rejected = true;\n    reasons.push('insufficient_must_show_concept_coverage');\n  }\n\n  if (queryMeta < 0.25 && intentMeta < 0.20) {\n    rejected = true;\n    reasons.push('insufficient_query_intent_metadata_match');\n  }\n\n  if (\n    anchorTerms.length > 0 &&\n    matchedAnchorCount < 1\n  ) {\n    rejected = true;\n    reasons.push('missing_distinctive_domain_anchor');\n  }\n\n  if (extraReject) {\n    rejected = true;\n    reasons.push(extraReject);\n  }\n\n  const w = Number(width);\n  const h = Number(height);\n  if (!(w > 0 && h > 0)) {\n    rejected = true;\n    reasons.push('invalid_dimensions');\n  }\n  const portraitEnough = w > 0 && h > 0 && (h * 3 >= w * 4);\n\n  let score =\n    10 +\n    Math.round(35 * mustMeta) +\n    Math.round(20 * primaryMustRatio) +\n    Math.round(25 * queryMeta) +\n    Math.round(15 * intentMeta) +\n    Math.round(5 * queryMust) +\n    Math.max(0,11 - Number(providerRank || 99));\n\n  if (String(ctx.preferred_media_type) === mediaType) score += 12;\n\n  if (portraitEnough) {\n    const aspect = h / w;\n    if (aspect >= (16/9)) score += 12;\n    else if (aspect >= 1.5) score += 9;\n    else score += 6;\n  }\n\n  score = Math.max(0,Math.min(100,score));\n\n  return {\n    relevance_score: score,\n    rejected,\n    rejection_reason: reasons.join('; ') || null,\n  };\n}\n\nconst ctx = $('Build Wikimedia Requests').item.json;\nconst response = $json ?? {};\nconst body = response.body && typeof response.body === 'object' ? response.body : {};\nconst status = Number(response.statusCode ?? response.status ?? 0);\n\nconst headers = response.headers && typeof response.headers === 'object' ? response.headers : {};\nconst pagesObj = status === 200 && body?.query?.pages && typeof body.query.pages === 'object' ? body.query.pages : {};\nconst pages = Object.values(pagesObj).sort((a,b) => Number(a?.index || 999)-Number(b?.index || 999));\nconst candidates = [];\n\nfunction stripHtml(value) {\n  return String(value || '').replace(/<[^>]*>/g,' ').replace(/&[^;]+;/g,' ');\n}\nfunction metaValue(meta,key) {\n  return meta?.[key]?.value ?? '';\n}\nfunction acceptedLicense(name) {\n  return /^(CC0|CC BY([ -]|$)|CC BY-SA([ -]|$)|Public domain|PDM)/i.test(String(name || '').trim());\n}\nfunction licenseFallback(name) {\n  const n=String(name || '').trim();\n  if (/^CC0/i.test(n)) return 'https://creativecommons.org/publicdomain/zero/1.0/';\n  if (/^CC BY-SA 4\\.0/i.test(n)) return 'https://creativecommons.org/licenses/by-sa/4.0/';\n  if (/^CC BY 4\\.0/i.test(n)) return 'https://creativecommons.org/licenses/by/4.0/';\n  if (/^Public domain/i.test(n) || /^PDM/i.test(n)) return 'https://commons.wikimedia.org/wiki/Commons:Public_domain';\n  return 'https://commons.wikimedia.org/wiki/Commons:Licensing';\n}\n\nfunction primaryDepictionCore(value) {\n  let text=stripHtml(value)\n    .replace(/^File:\\s*/i,' ')\n    .replace(/\\s+/g,' ')\n    .trim();\n  if (!text) return '';\n\n  // HAER and similar titles put the depicted subject before a dash and then\n  // append location/collection context. Keep the depicted clause.\n  text=text.split(/\\s+-\\s+/)[0].trim();\n\n  // These relations commonly describe source, purpose or nearby context rather\n  // than the object visible in the frame. Context after them may still score\n  // intent, but it cannot establish the primary depicted subject.\n  const relation=/\\b(?:constructed\\s+to\\s+(?:carry|convey|feed|supply)|designed\\s+to\\s+(?:carry|convey|feed|supply)|installation\\s+for|for|from|next\\s+to|near|vicinity\\s+of)\\b/i;\n  const match=relation.exec(text);\n  if (match && match.index > 0) text=text.slice(0,match.index).trim();\n  return text;\n}\n\nfunction hasCatalogContext(value) {\n  return /\\b(?:title supplied by cataloger|print in album|album volume|catalog(?:ue)? record|chief engineer set)\\b/i\n    .test(stripHtml(value));\n}\n\nfunction directDepictionCueIndex(value) {\n  const text=stripHtml(value);\n  const patterns=[\n    /\\b(?:detail|context|general|perspective|interior|exterior|aerial|close[- ]?up)\\s+view\\b/i,\n    /\\bview\\s+of\\b/i,\n    /\\b(?:showing|shows?|depicts?|photograph\\s+of|photo\\s+of)\\b/i,\n    /\\bsee\\b/i,\n  ];\n  const indexes=patterns\n    .map((pattern) => {\n      const match=pattern.exec(text);\n      return match ? match.index : -1;\n    })\n    .filter((index) => index >= 0);\n  return indexes.length ? Math.min(...indexes) : -1;\n}\n\nfunction catalogAwareTitleCore(value,catalogContext) {\n  const core=primaryDepictionCore(value);\n  if (!catalogContext) return core;\n  return directDepictionCueIndex(core) >= 0 ? core : '';\n}\n\nfunction catalogAwareDescriptionCore(value,catalogContext) {\n  const text=stripHtml(value).replace(/\\s+/g,' ').trim();\n  if (!catalogContext) return primaryDepictionCore(text);\n  const cueIndex=directDepictionCueIndex(text);\n  if (cueIndex < 0) return '';\n  return primaryDepictionCore(text.slice(cueIndex));\n}\n\nconst WIKIMEDIA_DEPICTION_DESCRIPTOR_TERMS=new Set([\n  'water','electric','electrical','concrete','industrial','modern','large','small',\n  'high','low','overhead','underground','residential','power'\n].map(stem));\nconst WIKIMEDIA_MACHINERY_HEADS=new Set([\n  'turbine','generator','transformer','engine','motor','pump',\n  'compressor','reactor','gearbox','inverter'\n].map(stem));\nconst WIKIMEDIA_COMPONENT_TERMS=new Set([\n  'case','casing','pit','governor','shaft','rotor','stator','runner',\n  'housing','bearing','coupling','impeller'\n].map(stem));\nconst WIKIMEDIA_SURFACE_TERMS=new Set([\n  'sign','signage','notice','plaque','nameplate','label','door'\n].map(stem));\n\nfunction primaryDepictionFailure(ctx,title,objectName,shortDescription,categories) {\n  const primary=String((ctx.must_show || [])[0] || '').trim();\n  const primaryTerms=terms(primary);\n  if (!primaryTerms.length) return null;\n\n  const head=primaryTerms[primaryTerms.length-1];\n  const requestedSurface =\n    primaryTerms.some((term) => WIKIMEDIA_SURFACE_TERMS.has(term));\n  const catalogContext=hasCatalogContext(shortDescription);\n  const titleCore=catalogAwareTitleCore(title,catalogContext);\n  const objectCore=catalogAwareTitleCore(objectName,catalogContext);\n  const descriptionCore=catalogAwareDescriptionCore(shortDescription,catalogContext);\n  const coreText=[\n    titleCore,\n    objectCore,\n    descriptionCore,\n    ...(requestedSurface ? [String(categories || '')] : []),\n  ].filter(Boolean).join(' ');\n  const coreSet=semanticSet(coreText);\n\n  let required=primaryTerms.filter(\n    (term) => !WIKIMEDIA_DEPICTION_DESCRIPTOR_TERMS.has(term)\n  );\n  if (!required.includes(head)) required.push(head);\n  required=[...new Set(required)];\n\n  const matched=required.filter((term)=>coreSet.has(term)).length;\n\n  const directCoreText=[\n    titleCore,\n    objectCore,\n  ].filter(Boolean).join(' ');\n  const directCoreSet=semanticSet(directCoreText);\n  const conflictingDirectMachinery=[...WIKIMEDIA_MACHINERY_HEADS].filter(\n    (machineryHead) =>\n      machineryHead !== head &&\n      directCoreSet.has(machineryHead)\n  );\n  const requestedHeadDirect=directCoreSet.has(head);\n  const directHallContext=directCoreSet.has(stem('hall'));\n\n  const machineryCategorySupportsPrimary =\n    WIKIMEDIA_MACHINERY_HEADS.has(head) &&\n    String(categories || '')\n      .split('|')\n      .map((value) => stripHtml(value).trim())\n      .filter(Boolean)\n      .some((segment) => {\n        const set=semanticSet(segment);\n        if (!set.has(head)) return false;\n        const categoryMatched=required.filter((term)=>set.has(term)).length;\n        if (\n          required.length === 0 ||\n          categoryMatched / required.length < conceptThreshold(required.length)\n        ) {\n          return false;\n        }\n\n        // A contextual machinery category cannot override a different machine\n        // explicitly named as the photographed subject. The narrow exception\n        // is a turbine/generator hall where the title is the setting and the\n        // category explicitly ties the requested and named machinery together.\n        if (\n          conflictingDirectMachinery.length > 0 &&\n          !requestedHeadDirect\n        ) {\n          const hallAssemblySupported =\n            directHallContext &&\n            conflictingDirectMachinery.every(\n              (machineryHead) => set.has(machineryHead)\n            );\n          if (!hallAssemblySupported) return false;\n        }\n\n        return true;\n      });\n  if (\n    required.length > 0 &&\n    matched / required.length < conceptThreshold(required.length) &&\n    !machineryCategorySupportsPrimary\n  ) {\n    return 'wikimedia_primary_only_contextual_metadata';\n  }\n\n  const spatialSource=[title,objectName].filter(Boolean).join(' ');\n  const primaryBackgroundPattern=new RegExp(\n    '\\\\b' + head + '(?:s|es)?\\\\b[^.;]{0,64}\\\\(\\\\s*background\\\\s*\\\\)',\n    'i'\n  );\n  const primaryForegroundPattern=new RegExp(\n    '\\\\b' + head + '(?:s|es)?\\\\b[^.;]{0,64}\\\\(\\\\s*foreground\\\\s*\\\\)',\n    'i'\n  );\n  const intentSetForSpatial=semanticSet(ctx.visual_intent);\n  if (\n    primaryBackgroundPattern.test(spatialSource) &&\n    !primaryForegroundPattern.test(spatialSource) &&\n    !intentSetForSpatial.has('background')\n  ) {\n    return 'wikimedia_primary_background_only';\n  }\n\n  if (WIKIMEDIA_MACHINERY_HEADS.has(head)) {\n    const rawCore=String(coreText || '').toLowerCase().replace(/[^a-z0-9]+/g,' ');\n    const componentPattern=new RegExp(\n      '\\\\b' + head + '\\\\s+(case|casing|pit|governor|shaft|rotor|stator|runner|housing|bearing|coupling|impeller)\\\\b',\n      'i'\n    );\n    const componentMatch=componentPattern.exec(rawCore);\n    if (componentMatch) {\n      const component=stem(componentMatch[1]);\n      const intentSet=semanticSet(ctx.visual_intent);\n      if (\n        WIKIMEDIA_COMPONENT_TERMS.has(component) &&\n        !intentSet.has(component)\n      ) {\n        return 'wikimedia_unrequested_component_view:' + component;\n      }\n    }\n  }\n\n  return null;\n}\n\nfor (let i=0;i<pages.length;i++) {\n  const p = pages[i] || {};\n  const info = Array.isArray(p.imageinfo) ? p.imageinfo[0] : null;\n  if (!info) continue;\n\n  const mime = String(info.mime || '').toLowerCase();\n  const supportedPhotoMimes = new Set(['image/jpeg','image/png','image/webp']);\n  const supportedVideoMimes = new Set(['video/mp4','video/webm']);\n  const thumbUrlForType = String(info.thumburl || '');\n  const hasWebRasterThumb = /\\.(?:jpe?g|png|webp)(?:\\?|$)/i.test(thumbUrlForType);\n  const supportedPhotoSource =\n    supportedPhotoMimes.has(mime) ||\n    (mime === 'image/tiff' && hasWebRasterThumb);\n  if (ctx.endpoint_kind === 'video' && !supportedVideoMimes.has(mime)) continue;\n  if (ctx.endpoint_kind !== 'video' && !supportedPhotoSource) continue;\n\n  const ext = info.extmetadata && typeof info.extmetadata === 'object' ? info.extmetadata : {};\n  const licenseName = String(metaValue(ext,'LicenseShortName') || '').trim();\n  if (!acceptedLicense(licenseName)) continue;\n  const licenseUrl = String(metaValue(ext,'LicenseUrl') || licenseFallback(licenseName)).trim();\n\n  const description = stripHtml(metaValue(ext,'ImageDescription'));\n  const objectName = stripHtml(metaValue(ext,'ObjectName'));\n  const categories = stripHtml(metaValue(ext,'Categories'));\n  const artist = stripHtml(metaValue(ext,'Artist')).trim();\n  const metadataText = [p.title,objectName,description,categories].filter(Boolean).join(' ');\n\n  let mediaType;\n  let downloadUrl;\n  let previewUrl = String(info.thumburl || '');\n  let width;\n  let height;\n  let durationMs = null;\n  let extraReject = '';\n\n  if (ctx.endpoint_kind === 'video') {\n    mediaType='video';\n    downloadUrl=String(info.url || '');\n    width=Number(info.width || 0);\n    height=Number(info.height || 0);\n    durationMs=Math.round(Number(info.duration || 0)*1000);\n    if (!(durationMs > 0)) continue;\n    if (Number(info.size || 0) > 80*1024*1024) extraReject='wikimedia_video_over_80mb';\n  } else {\n    downloadUrl=String(info.thumburl || info.url || '');\n    width=Number(info.thumbwidth || info.width || 0);\n    height=Number(info.thumbheight || info.height || 0);\n    mediaType='photo';\n\n    const nonPhotoWords = /\\b(diagrams?|schematics?|infographics?|flowcharts?|vectors?|clipart|drawings?|renders?|rendering|plots?|charts?|maps?|book covers?|brochures?|posters?|slides?|documents?|manuals?|crystal structures?|molecular structures?|atomic structures?|unit cells?|lattice diagrams?)\\b/i;\n    const assetTypeEvidence = [p.title,objectName,categories].filter(Boolean).join(' ');\n    if (\n      mime.includes('svg') ||\n      nonPhotoWords.test(assetTypeEvidence)\n    ) {\n      extraReject='wikimedia_non_photographic_asset';\n    }\n  }\n\n  if (!downloadUrl.startsWith('https://') || !(width > 0 && height > 0)) continue;\n\n  // Long Commons descriptions often contain taxonomy/history and contrasts\n  // about subjects that are not depicted. A concise direct caption may support\n  // secondary/context evidence, but it is not strong primary depiction proof.\n  const shortDirectDescription =\n    description && description.length <= 280 ? description : '';\n  // Strong depicted-subject evidence stays on title/object/categories.\n  // A short prose description may contain taxonomy, comparisons or background\n  // context about objects that are not actually depicted.\n  const strongMetadataText = [\n    p.title,\n    objectName,\n    categories,\n  ].filter(Boolean).join(' ');\n\n  // For a SECONDARY must_show, a contextual category such as\n  // \"Peechi Dam reservoir\" must not by itself prove that the reservoir is\n  // actually visible. Keep title/object, a short direct caption, and only\n  // category segments independent of the primary subject.\n  const primaryEvidenceTerms = terms((ctx.must_show || [])[0] || '');\n  const categorySegments = String(metaValue(ext,'Categories') || '')\n    .split('|')\n    .map((value) => stripHtml(value).trim())\n    .filter(Boolean);\n  const independentCategorySegments = categorySegments\n    .filter((value) => {\n      const set = semanticSet(value);\n      return !primaryEvidenceTerms.some((term) => set.has(term));\n    });\n\n  const categorySupportsConcept = (value,segments) => {\n    const conceptTerms=terms(value);\n    if (!conceptTerms.length) return false;\n    const meaningful=conceptTerms.filter(\n      (term) => !WIKIMEDIA_DEPICTION_DESCRIPTOR_TERMS.has(term)\n    );\n    const required=meaningful.length ? meaningful : conceptTerms;\n    return segments.some((segment) => {\n      const set=semanticSet(segment);\n      const matched=required.filter((term) => set.has(term)).length;\n      return matched / required.length >= conceptThreshold(required.length);\n    });\n  };\n\n  const mustShowValues=Array.isArray(ctx.must_show)\n    ? ctx.must_show.map(String).filter(Boolean)\n    : [];\n  const pairedCategoryDepictionSupported =\n    mustShowValues.length > 1 &&\n    categorySupportsConcept(mustShowValues[0],categorySegments) &&\n    mustShowValues.slice(1).some(\n      (value) => categorySupportsConcept(value,independentCategorySegments)\n    );\n\n  const primaryDepictionReject=primaryDepictionFailure(\n    ctx,\n    p.title,\n    objectName,\n    shortDirectDescription,\n    categories\n  );\n  if (primaryDepictionReject && !pairedCategoryDepictionSupported) {\n    extraReject=[extraReject,primaryDepictionReject].filter(Boolean).join('; ');\n  }\n\n  const secondaryMetadataText = [\n    p.title,\n    objectName,\n    shortDirectDescription,\n    independentCategorySegments.join(' '),\n  ].filter(Boolean).join(' ');\n\n  // A photo of signage is not evidence that its named equipment is visible.\n  // These depiction classes are allowed when the shot actually requests them.\n  const depictionEvidence = [p.title, objectName, categories].join(' ');\n  const depictedSurface = /\\b(signs?|signage|notices?|plaques?|nameplates?|labels?|doors?)\\b/i;\n  if (mediaType === 'photo' && depictedSurface.test(depictionEvidence) &&\n      !depictedSurface.test((ctx.must_show || []).join(' '))) {\n    extraReject = [extraReject,'wikimedia_depicts_surface_not_requested_subject'].filter(Boolean).join('; ');\n  }\n\n  const scored = scoreCandidate(\n    ctx,\n    metadataText,\n    mediaType,\n    width,\n    height,\n    i+1,\n    extraReject,\n    strongMetadataText,\n    secondaryMetadataText\n  );\n\n  candidates.push({\n    provider_asset_id:String(p.pageid),\n    provider_rank:i+1,\n    media_type:mediaType,\n    source_url:String(info.descriptionurl || info.descriptionshorturl || ''),\n    download_url:downloadUrl,\n    preview_url:previewUrl || null,\n    author:artist || null,\n    author_url:String(info.descriptionurl || '') || null,\n    license_name:licenseName,\n    license_url:licenseUrl,\n    width,\n    height,\n    duration_ms:durationMs,\n    metadata_text:metadataText,\n    relevance_score:scored.relevance_score,\n    rejected:scored.rejected,\n    rejection_reason:scored.rejection_reason,\n    metadata:{\n      title:p.title ?? null,\n      mime,\n      original_bytes:info.size ?? null,\n      credit:stripHtml(metaValue(ext,'Credit')) || null,\n      attribution_required:metaValue(ext,'AttributionRequired') || null,\n      query:ctx.query,\n    },\n  });\n}\n\nreturn {json:{\n  visual_run_id:ctx.visual_run_id,\n  shot_uuid:ctx.shot_uuid,\n  provider:'wikimedia',\n  query_index:ctx.query_index,\n  query_text:ctx.query,\n  provider_query_text:String(ctx.provider_query || ctx.query || '').trim(),\n  endpoint_kind:ctx.endpoint_kind,\n  http_status:status,\n  response_headers:{\n    'retry-after':headers['retry-after'] ?? null,\n    'cache-control':headers['cache-control'] ?? null,\n    'date':headers.date ?? null,\n    'content-type':headers['content-type'] ?? null,\n    'provider-degraded':status === 200 ? null : true,\n  },\n  candidates,\n}};"
       },
       "id": "m8-normalize-wikimedia",
       "name": "Normalize Wikimedia",
@@ -409,8 +409,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        3740,
-        0
+        4180,
+        120
       ],
       "credentials": {
         "postgres": {
@@ -430,7 +430,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3960,
+        5940,
         0
       ],
       "onError": "continueErrorOutput"
@@ -463,7 +463,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        4180,
+        6160,
         0
       ],
       "onError": "continueRegularOutput"
@@ -478,7 +478,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4400,
+        6380,
         0
       ],
       "onError": "continueErrorOutput"
@@ -513,7 +513,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        4620,
+        6600,
         0
       ]
     },
@@ -530,8 +530,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        4840,
-        -120
+        6820,
+        0
       ],
       "credentials": {
         "postgres": {
@@ -554,8 +554,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        5060,
-        -120
+        7040,
+        0
       ],
       "onError": "continueErrorOutput",
       "credentials": {
@@ -578,8 +578,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        5500,
-        -120
+        7480,
+        0
       ],
       "credentials": {
         "postgres": {
@@ -915,9 +915,249 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        5280,
-        -120
+        7260,
+        0
       ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "m8-gemini-mode",
+              "leftValue": "={{ $json.visual_validation_mode }}",
+              "rightValue": "gemini",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "m8-route-visual-validation-mode",
+      "name": "Route Visual Validation Mode",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT shot_count,candidate_sets_json\nFROM factory.get_gemini_visual_candidate_sets($1::uuid,55,3);",
+        "options": {
+          "queryReplacement": "={{ [ $('Begin Visuals').first().json.visual_run_id ] }}"
+        }
+      },
+      "id": "m8-get-gemini-candidates",
+      "name": "Get Gemini Candidate Sets",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        4180,
+        -220
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const row=$input.first().json;\nlet sets=row.candidate_sets_json;\nif(typeof sets==='string') sets=JSON.parse(sets);\nif(!Array.isArray(sets) || !sets.length) throw new Error('Gemini candidate_sets_json is empty');\nif(Number(row.shot_count)!==sets.length) throw new Error('Gemini candidate-set count mismatch');\nreturn sets.map((set)=>({json:set}));"
+      },
+      "id": "m8-expand-gemini-candidates",
+      "name": "Expand Gemini Candidate Sets",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4400,
+        -220
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://shorts-v2-media-worker-1:3001/visual-previews",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ candidates: $json.candidates.map((c) => ({ provider: c.provider, provider_asset_id: c.provider_asset_id, preview_url: c.preview_url })) }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000,
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 300
+            }
+          }
+        }
+      },
+      "id": "m8-fetch-gemini-previews",
+      "name": "Fetch Gemini Previews",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        4620,
+        -220
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx=$('Expand Gemini Candidate Sets').item.json;\nconst response=$json??{};\nconst body=response.body&&typeof response.body==='object'?response.body:response;\nconst status=Number(response.statusCode??response.status??0);\nif(status!==200 || body.status!=='ready') {\n  throw new Error('Gemini preview fetch failed: ' + String(body.message||body.error||status||'unknown'));\n}\nconst previews=Array.isArray(body.previews)?body.previews:[];\nconst candidates=Array.isArray(ctx.candidates)?ctx.candidates:[];\nif(previews.length!==candidates.length || !candidates.length || candidates.length>3) {\n  throw new Error('Gemini preview count mismatch');\n}\nconst previewByIndex=new Map(previews.map((p)=>[Number(p.candidate_index),p]));\nconst parts=[];\nparts.push({text:[\n  'You are validating actual image pixels for a short-form video scene.',\n  'Ignore filenames, metadata, titles and presumed source context. Judge only what is visibly present in each image.',\n  'Scene visual_intent: ' + String(ctx.visual_intent||''),\n  'Required visible concepts (must_show): ' + JSON.stringify(ctx.must_show||[]),\n  'Forbidden visible concepts (must_not_show): ' + JSON.stringify(ctx.must_not_show||[]),\n  'Evaluate every candidate independently.',\n  'A candidate passes only when the required subject(s) are clearly visible, the visual intent is directly represented, and no forbidden concept is visibly present.',\n  'Do not infer hidden equipment, off-camera objects, historical context, or objects mentioned only by signage/text.',\n  'Return JSON only in this exact shape:',\n  '{\"evaluations\":[{\"candidate_index\":1,\"must_show_visible\":true,\"must_not_show_clear\":true,\"intent_match\":true,\"match_score\":0,\"reason\":\"short concrete visual reason\"}]}',\n  'match_score must be an integer 0-100. Include exactly one evaluation for every candidate index.'\n].join('\\n')});\nfor(const candidate of candidates){\n  const index=Number(candidate.candidate_index);\n  const preview=previewByIndex.get(index);\n  if(!preview || !preview.data_base64 || !preview.mime_type) {\n    throw new Error('Gemini preview missing for candidate ' + index);\n  }\n  parts.push({text:'Candidate ' + index + ':'});\n  parts.push({inlineData:{mimeType:String(preview.mime_type),data:String(preview.data_base64)},mediaResolution:{level:'MEDIA_RESOLUTION_LOW'}});\n}\nreturn {json:{\n  visual_run_id:String(ctx.visual_run_id),\n  shot_uuid:String(ctx.shot_uuid),\n  shot_key:String(ctx.shot_key),\n  scene_order:Number(ctx.scene_order),\n  shot_order:Number(ctx.shot_order),\n  visual_intent:String(ctx.visual_intent||''),\n  must_show:Array.isArray(ctx.must_show)?ctx.must_show:[],\n  must_not_show:Array.isArray(ctx.must_not_show)?ctx.must_not_show:[],\n  candidates,\n  preview_fingerprints:previews.map((p)=>({\n    candidate_index:Number(p.candidate_index),\n    sha256:String(p.sha256||''),\n    bytes:Number(p.bytes||0),\n    mime_type:String(p.mime_type||'')\n  })),\n  gemini_body:{\n    contents:[{role:'user',parts}],\n    generationConfig:{\n      responseMimeType:'application/json',\n      candidateCount:1,\n      temperature:0,\n      maxOutputTokens:700\n    }\n  }\n}};"
+      },
+      "id": "m8-build-gemini-request",
+      "name": "Build Gemini Vision Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4840,
+        -220
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json.gemini_body) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 120000,
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 500
+            }
+          }
+        }
+      },
+      "id": "m8-gemini-vision",
+      "name": "Gemini Validate Visuals",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        5060,
+        -220
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zsRz2tvE57EKe8zy",
+          "name": "Gemini Text"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ctx=$('Build Gemini Vision Request').item.json;\nconst source=$json??{};\nconst status=Number(source.statusCode??source.status??0);\nconst body=source.body&&typeof source.body==='object'?source.body:source;\nif(status<200 || status>=300 || body.error) {\n  throw new Error('Gemini Vision request failed: ' + String(body?.error?.message||body?.message||source?.error?.message||status||'unknown'));\n}\nconst text=(body?.candidates?.[0]?.content?.parts||[])\n  .map((part)=>typeof part?.text==='string'?part.text:'')\n  .join('')\n  .trim();\nif(!text) throw new Error('Gemini Vision returned no JSON text');\nlet parsed;\ntry { parsed=JSON.parse(text); } catch (_) { throw new Error('Gemini Vision returned malformed JSON'); }\nconst rows=Array.isArray(parsed?.evaluations)?parsed.evaluations:null;\nif(!rows || rows.length!==ctx.candidates.length) throw new Error('Gemini Vision evaluation count mismatch');\nconst seen=new Set();\nconst evaluations=rows.map((row)=>{\n  const candidateIndex=Number(row?.candidate_index);\n  const score=Number(row?.match_score);\n  if(!Number.isInteger(candidateIndex) || candidateIndex<1 || candidateIndex>ctx.candidates.length || seen.has(candidateIndex)) {\n    throw new Error('Gemini Vision candidate_index is invalid');\n  }\n  seen.add(candidateIndex);\n  if(typeof row?.must_show_visible!=='boolean' || typeof row?.must_not_show_clear!=='boolean' || typeof row?.intent_match!=='boolean') {\n    throw new Error('Gemini Vision boolean evidence is invalid');\n  }\n  if(!Number.isInteger(score) || score<0 || score>100) throw new Error('Gemini Vision match_score is invalid');\n  const reason=String(row?.reason||'').trim();\n  if(!reason || reason.length>500) throw new Error('Gemini Vision reason is invalid');\n  const visionPass=\n    row.must_show_visible===true &&\n    row.must_not_show_clear===true &&\n    row.intent_match===true &&\n    score>=70;\n  return {\n    candidate_index:candidateIndex,\n    must_show_visible:row.must_show_visible,\n    must_not_show_clear:row.must_not_show_clear,\n    intent_match:row.intent_match,\n    match_score:score,\n    vision_pass:visionPass,\n    reason\n  };\n}).sort((a,b)=>a.candidate_index-b.candidate_index);\nreturn {json:{\n  visual_run_id:ctx.visual_run_id,\n  shot_uuid:ctx.shot_uuid,\n  shot_key:ctx.shot_key,\n  scene_order:ctx.scene_order,\n  shot_order:ctx.shot_order,\n  candidates:ctx.candidates,\n  preview_fingerprints:ctx.preview_fingerprints,\n  model:'gemini-3.5-flash-lite',\n  evaluations,\n  usage_metadata:body.usageMetadata??null\n}};"
+      },
+      "id": "m8-parse-gemini-vision",
+      "name": "Parse Gemini Vision Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5280,
+        -220
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const rows=$input.all().map((item)=>item.json);\nconst expected=Number($('Begin Visuals').first().json.shot_count);\nif(rows.length!==expected) throw new Error('Gemini scene validation count mismatch');\nrows.sort((a,b)=>Number(a.scene_order)-Number(b.scene_order)||Number(a.shot_order)-Number(b.shot_order));\nconst used=new Set();\nconst selections=[];\nfor(const row of rows){\n  const candidates=Array.isArray(row.candidates)?row.candidates:[];\n  const byIndex=new Map(candidates.map((candidate)=>[Number(candidate.candidate_index),candidate]));\n  const ranked=(Array.isArray(row.evaluations)?row.evaluations:[])\n    .filter((evaluation)=>evaluation.vision_pass===true)\n    .sort((a,b)=>Number(b.match_score)-Number(a.match_score)||Number(a.candidate_index)-Number(b.candidate_index));\n  let chosen=null;\n  for(const evaluation of ranked){\n    const candidate=byIndex.get(Number(evaluation.candidate_index));\n    if(!candidate) continue;\n    const assetKey=String(candidate.provider)+':'+String(candidate.provider_asset_id);\n    if(used.has(assetKey)) continue;\n    chosen={candidate,evaluation,assetKey};\n    break;\n  }\n  if(!chosen) {\n    throw new Error('no Gemini-approved unique visual candidate for shot ' + String(row.shot_key||row.shot_uuid));\n  }\n  used.add(chosen.assetKey);\n  selections.push({\n    shot_uuid:String(row.shot_uuid),\n    candidate_id:String(chosen.candidate.candidate_id),\n    validation_evidence:{\n      vision_pass:true,\n      model:String(row.model),\n      candidate_index:Number(chosen.evaluation.candidate_index),\n      match_score:Number(chosen.evaluation.match_score),\n      must_show_visible:chosen.evaluation.must_show_visible,\n      must_not_show_clear:chosen.evaluation.must_not_show_clear,\n      intent_match:chosen.evaluation.intent_match,\n      reason:String(chosen.evaluation.reason),\n      preview_sha256:String((row.preview_fingerprints||[]).find((p)=>Number(p.candidate_index)===Number(chosen.evaluation.candidate_index))?.sha256||''),\n      evaluated_candidates:(row.evaluations||[]).map((e)=>({\n        candidate_index:Number(e.candidate_index),\n        vision_pass:e.vision_pass===true,\n        match_score:Number(e.match_score),\n        reason:String(e.reason)\n      })),\n      usage_metadata:row.usage_metadata??null\n    }\n  });\n}\nreturn [{json:{\n  visual_run_id:String($('Begin Visuals').first().json.visual_run_id),\n  selections\n}}];"
+      },
+      "id": "m8-collect-gemini-selections",
+      "name": "Collect Gemini Selections",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5500,
+        -220
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT selection_count,selections_json\nFROM factory.commit_gemini_visual_selections($1::uuid,55,$2::jsonb);",
+        "options": {
+          "queryReplacement": "={{ [ $json.visual_run_id, JSON.stringify($json.selections) ] }}"
+        }
+      },
+      "id": "m8-commit-gemini-selections",
+      "name": "Commit Gemini Selections",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        5720,
+        -220
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT visual_validation_mode\nFROM factory.jobs\nWHERE id=$1::uuid;",
+        "options": {
+          "queryReplacement": "={{ [ $('When Executed by Another Workflow').first().json.job_id ] }}"
+        }
+      },
+      "id": "m8-load-visual-validation-mode",
+      "name": "Load Visual Validation Mode",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        3740,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gQ3TDSsTe7Tn2X8B",
+          "name": "Video Factory Postgres"
+        }
+      },
+      "onError": "continueErrorOutput"
     }
   ],
   "connections": {
@@ -1360,7 +1600,7 @@
       "main": [
         [
           {
-            "node": "Select Visuals",
+            "node": "Load Visual Validation Mode",
             "type": "main",
             "index": 0
           }
@@ -1396,6 +1636,172 @@
           }
         ],
         []
+      ]
+    },
+    "Route Visual Validation Mode": {
+      "main": [
+        [
+          {
+            "node": "Get Gemini Candidate Sets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Select Visuals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Gemini Candidate Sets": {
+      "main": [
+        [
+          {
+            "node": "Expand Gemini Candidate Sets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expand Gemini Candidate Sets": {
+      "main": [
+        [
+          {
+            "node": "Fetch Gemini Previews",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Gemini Previews": {
+      "main": [
+        [
+          {
+            "node": "Build Gemini Vision Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Gemini Vision Request": {
+      "main": [
+        [
+          {
+            "node": "Gemini Validate Visuals",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Validate Visuals": {
+      "main": [
+        [
+          {
+            "node": "Parse Gemini Vision Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Gemini Vision Result": {
+      "main": [
+        [
+          {
+            "node": "Collect Gemini Selections",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect Gemini Selections": {
+      "main": [
+        [
+          {
+            "node": "Commit Gemini Selections",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit Gemini Selections": {
+      "main": [
+        [
+          {
+            "node": "Expand Selected Visuals",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Visual Validation Mode": {
+      "main": [
+        [
+          {
+            "node": "Route Visual Validation Mode",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },

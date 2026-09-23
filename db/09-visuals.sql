@@ -148,12 +148,40 @@ CREATE TABLE IF NOT EXISTS factory.visual_selections (
     candidate_id uuid NOT NULL UNIQUE REFERENCES factory.visual_candidates(id) ON DELETE RESTRICT,
     provider text NOT NULL,
     provider_asset_id text NOT NULL,
+    validation_mode text NOT NULL DEFAULT 'metadata',
+    validation_evidence jsonb NOT NULL DEFAULT '{}'::jsonb,
     selected_at timestamptz NOT NULL DEFAULT now(),
 
     CONSTRAINT visual_selection_provider
         CHECK (provider IN ('pixabay','pexels','wikimedia')),
+    CONSTRAINT visual_selection_validation_mode
+        CHECK (validation_mode IN ('metadata','gemini')),
     UNIQUE (visual_run_id, provider, provider_asset_id)
 );
+
+ALTER TABLE factory.visual_selections
+    ADD COLUMN IF NOT EXISTS validation_mode text;
+ALTER TABLE factory.visual_selections
+    ADD COLUMN IF NOT EXISTS validation_evidence jsonb;
+
+UPDATE factory.visual_selections
+   SET validation_mode='metadata'
+ WHERE validation_mode IS NULL;
+UPDATE factory.visual_selections
+   SET validation_evidence='{}'::jsonb
+ WHERE validation_evidence IS NULL;
+
+ALTER TABLE factory.visual_selections
+    ALTER COLUMN validation_mode SET DEFAULT 'metadata',
+    ALTER COLUMN validation_mode SET NOT NULL,
+    ALTER COLUMN validation_evidence SET DEFAULT '{}'::jsonb,
+    ALTER COLUMN validation_evidence SET NOT NULL;
+
+ALTER TABLE factory.visual_selections
+    DROP CONSTRAINT IF EXISTS visual_selection_validation_mode;
+ALTER TABLE factory.visual_selections
+    ADD CONSTRAINT visual_selection_validation_mode
+    CHECK (validation_mode IN ('metadata','gemini'));
 
 -- Local diagram candidates are generated from the immutable storyboard.
 -- They are not external provider search results, so search_id is nullable.
@@ -840,7 +868,9 @@ BEGIN
             shot_id,
             candidate_id,
             provider,
-            provider_asset_id
+            provider_asset_id,
+            validation_mode,
+            validation_evidence
         )
         VALUES (
             v_run.id,
@@ -848,7 +878,12 @@ BEGIN
             v_shot.id,
             v_candidate.id,
             v_candidate.provider,
-            v_candidate.provider_asset_id
+            v_candidate.provider_asset_id,
+            'metadata',
+            jsonb_build_object(
+                'source','deterministic_metadata',
+                'relevance_score',v_candidate.relevance_score
+            )
         )
         RETURNING id INTO v_selection_id;
 
@@ -874,6 +909,11 @@ BEGIN
                 'height',v_candidate.height,
                 'duration_ms',v_candidate.duration_ms,
                 'relevance_score',v_candidate.relevance_score,
+                'visual_validation_mode','metadata',
+                'validation_evidence',jsonb_build_object(
+                    'source','deterministic_metadata',
+                    'relevance_score',v_candidate.relevance_score
+                ),
                 'visual_intent',v_shot.visual_intent,
                 'must_show',v_shot.must_show,
                 'must_not_show',v_shot.must_not_show
@@ -896,6 +936,417 @@ BEGIN
     RETURN QUERY SELECT v_count,v_selected;
 END;
 $$;
+
+
+CREATE OR REPLACE FUNCTION factory.get_gemini_visual_candidate_sets(
+    p_visual_run_id uuid,
+    p_min_relevance_score integer DEFAULT 55,
+    p_limit_per_shot integer DEFAULT 3
+)
+RETURNS TABLE (
+    shot_count integer,
+    candidate_sets_json jsonb
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_run factory.visual_runs%ROWTYPE;
+    v_job factory.jobs%ROWTYPE;
+    v_shot record;
+    v_candidates jsonb;
+    v_sets jsonb := '[]'::jsonb;
+    v_count integer := 0;
+    v_search_count integer;
+BEGIN
+    SELECT *
+      INTO v_run
+      FROM factory.visual_runs
+     WHERE id=p_visual_run_id
+     FOR UPDATE;
+
+    IF NOT FOUND OR v_run.status <> 'running' THEN
+        RAISE EXCEPTION 'visual run is not active'
+            USING ERRCODE='22023';
+    END IF;
+
+    SELECT *
+      INTO v_job
+      FROM factory.jobs
+     WHERE id=v_run.job_id;
+
+    IF NOT FOUND OR v_job.visual_validation_mode <> 'gemini' THEN
+        RAISE EXCEPTION 'job is not configured for Gemini visual validation'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF p_min_relevance_score < 0 OR p_min_relevance_score > 1000 THEN
+        RAISE EXCEPTION 'invalid minimum visual relevance score'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF p_limit_per_shot < 1 OR p_limit_per_shot > 3 THEN
+        RAISE EXCEPTION 'Gemini candidate limit must be between 1 and 3'
+            USING ERRCODE='22023';
+    END IF;
+
+    SELECT count(*)::integer
+      INTO v_search_count
+      FROM factory.visual_searches
+     WHERE visual_run_id=v_run.id;
+
+    IF v_search_count <> v_run.expected_search_count THEN
+        RAISE EXCEPTION 'visual search coverage incomplete: got %, expected %',
+            v_search_count,v_run.expected_search_count
+            USING ERRCODE='22023';
+    END IF;
+
+    IF EXISTS (
+        SELECT 1
+        FROM factory.visual_selections
+        WHERE visual_run_id=v_run.id
+    ) THEN
+        RAISE EXCEPTION 'visual selections already exist'
+            USING ERRCODE='22023';
+    END IF;
+
+    FOR v_shot IN
+        SELECT sh.*,sc.scene_order
+        FROM factory.shots sh
+        JOIN factory.scenes sc ON sc.id=sh.scene_id
+        WHERE sh.job_id=v_run.job_id
+        ORDER BY sc.scene_order,sh.shot_order,sh.id
+    LOOP
+        WITH eligible AS (
+            SELECT
+                vc.*,
+                vq.query_index,
+                CASE WHEN vq.query_index <= 2 THEN 0 ELSE 1 END AS query_bucket,
+                CASE
+                    WHEN vc.media_type=v_shot.preferred_media_type THEN 0
+                    WHEN v_shot.preferred_media_type='diagram' AND vc.media_type='photo' THEN 1
+                    ELSE 2
+                END AS media_bucket,
+                abs((vc.width::numeric / vc.height::numeric) - (9.0::numeric / 16.0::numeric)) AS aspect_distance,
+                COALESCE(
+                    NULLIF(vc.preview_url,''),
+                    CASE WHEN vc.media_type='photo' THEN vc.download_url ELSE NULL END
+                ) AS vision_preview_url
+            FROM factory.visual_candidates vc
+            JOIN factory.visual_searches vq ON vq.id=vc.search_id
+            WHERE vc.visual_run_id=v_run.id
+              AND vc.shot_id=v_shot.id
+              AND vc.rejected=false
+              AND vc.provider <> 'local_diagram'
+              AND vc.relevance_score >= p_min_relevance_score
+              AND (
+                  (v_shot.preferred_media_type='video' AND vc.media_type='video')
+                  OR
+                  (v_shot.preferred_media_type='photo' AND vc.media_type='photo')
+              )
+              AND COALESCE(
+                    NULLIF(vc.preview_url,''),
+                    CASE WHEN vc.media_type='photo' THEN vc.download_url ELSE NULL END
+                  ) IS NOT NULL
+        ),
+        dedup AS (
+            SELECT DISTINCT ON (provider,provider_asset_id)
+                *
+            FROM eligible
+            ORDER BY
+                provider,
+                provider_asset_id,
+                query_bucket,
+                media_bucket,
+                relevance_score DESC,
+                aspect_distance ASC,
+                provider_rank ASC,
+                (width::bigint * height::bigint) DESC,
+                id ASC
+        ),
+        ranked AS (
+            SELECT
+                d.*,
+                row_number() OVER (
+                    ORDER BY
+                        query_bucket,
+                        media_bucket,
+                        relevance_score DESC,
+                        aspect_distance ASC,
+                        provider_rank ASC,
+                        (width::bigint * height::bigint) DESC,
+                        provider ASC,
+                        provider_asset_id ASC,
+                        id ASC
+                ) AS candidate_index
+            FROM dedup d
+        )
+        SELECT COALESCE(
+            jsonb_agg(
+                jsonb_build_object(
+                    'candidate_index',candidate_index,
+                    'candidate_id',id::text,
+                    'provider',provider,
+                    'provider_asset_id',provider_asset_id,
+                    'media_type',media_type,
+                    'source_url',source_url,
+                    'download_url',download_url,
+                    'preview_url',vision_preview_url,
+                    'author',author,
+                    'author_url',author_url,
+                    'license_name',license_name,
+                    'license_url',license_url,
+                    'width',width,
+                    'height',height,
+                    'duration_ms',duration_ms,
+                    'relevance_score',relevance_score
+                )
+                ORDER BY candidate_index
+            ),
+            '[]'::jsonb
+        )
+        INTO v_candidates
+        FROM ranked
+        WHERE candidate_index <= p_limit_per_shot;
+
+        IF jsonb_array_length(v_candidates) = 0 THEN
+            RAISE EXCEPTION 'no Gemini-previewable relevant visual candidate for shot %',
+                v_shot.shot_key
+                USING ERRCODE='22023';
+        END IF;
+
+        v_sets := v_sets || jsonb_build_array(
+            jsonb_build_object(
+                'visual_run_id',v_run.id::text,
+                'shot_uuid',v_shot.id::text,
+                'shot_key',v_shot.shot_key,
+                'scene_order',v_shot.scene_order,
+                'shot_order',v_shot.shot_order,
+                'preferred_media_type',v_shot.preferred_media_type,
+                'visual_intent',v_shot.visual_intent,
+                'must_show',v_shot.must_show,
+                'must_not_show',v_shot.must_not_show,
+                'candidates',v_candidates
+            )
+        );
+        v_count := v_count + 1;
+    END LOOP;
+
+    IF v_count <> v_run.expected_shot_count THEN
+        RAISE EXCEPTION 'Gemini candidate-set count mismatch'
+            USING ERRCODE='22023';
+    END IF;
+
+    RETURN QUERY SELECT v_count,v_sets;
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION factory.commit_gemini_visual_selections(
+    p_visual_run_id uuid,
+    p_min_relevance_score integer,
+    p_selections jsonb
+)
+RETURNS TABLE (
+    selection_count integer,
+    selections_json jsonb
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_run factory.visual_runs%ROWTYPE;
+    v_job factory.jobs%ROWTYPE;
+    v_item jsonb;
+    v_shot factory.shots%ROWTYPE;
+    v_scene_order integer;
+    v_candidate factory.visual_candidates%ROWTYPE;
+    v_selection_id uuid;
+    v_count integer := 0;
+    v_selected jsonb := '[]'::jsonb;
+    v_seen_shots text[] := ARRAY[]::text[];
+    v_seen_assets text[] := ARRAY[]::text[];
+    v_shot_id uuid;
+    v_candidate_id uuid;
+    v_asset_key text;
+    v_evidence jsonb;
+BEGIN
+    SELECT *
+      INTO v_run
+      FROM factory.visual_runs
+     WHERE id=p_visual_run_id
+     FOR UPDATE;
+
+    IF NOT FOUND OR v_run.status <> 'running' THEN
+        RAISE EXCEPTION 'visual run is not active'
+            USING ERRCODE='22023';
+    END IF;
+
+    SELECT *
+      INTO v_job
+      FROM factory.jobs
+     WHERE id=v_run.job_id;
+
+    IF NOT FOUND OR v_job.visual_validation_mode <> 'gemini' THEN
+        RAISE EXCEPTION 'job is not configured for Gemini visual validation'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF p_min_relevance_score < 0 OR p_min_relevance_score > 1000 THEN
+        RAISE EXCEPTION 'invalid minimum visual relevance score'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF jsonb_typeof(p_selections) <> 'array'
+       OR jsonb_array_length(p_selections) <> v_run.expected_shot_count THEN
+        RAISE EXCEPTION 'Gemini selection payload count mismatch'
+            USING ERRCODE='22023';
+    END IF;
+
+    IF EXISTS (
+        SELECT 1
+        FROM factory.visual_selections
+        WHERE visual_run_id=v_run.id
+    ) THEN
+        RAISE EXCEPTION 'visual selections already exist'
+            USING ERRCODE='22023';
+    END IF;
+
+    FOR v_item IN
+        SELECT value
+        FROM jsonb_array_elements(p_selections)
+    LOOP
+        v_shot_id := (v_item->>'shot_uuid')::uuid;
+        v_candidate_id := (v_item->>'candidate_id')::uuid;
+        v_evidence := COALESCE(v_item->'validation_evidence','{}'::jsonb);
+
+        IF v_shot_id::text = ANY(v_seen_shots) THEN
+            RAISE EXCEPTION 'duplicate Gemini selection shot'
+                USING ERRCODE='22023';
+        END IF;
+
+        IF jsonb_typeof(v_evidence) <> 'object'
+           OR COALESCE((v_evidence->>'vision_pass')::boolean,false) <> true
+           OR btrim(COALESCE(v_evidence->>'model','')) = '' THEN
+            RAISE EXCEPTION 'Gemini validation evidence is not a passing object'
+                USING ERRCODE='22023';
+        END IF;
+
+        SELECT *
+          INTO v_shot
+          FROM factory.shots
+         WHERE id=v_shot_id
+           AND job_id=v_run.job_id;
+
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Gemini selection shot does not belong to job'
+                USING ERRCODE='22023';
+        END IF;
+
+        SELECT sc.scene_order
+          INTO v_scene_order
+          FROM factory.scenes sc
+         WHERE sc.id=v_shot.scene_id;
+
+        SELECT *
+          INTO v_candidate
+          FROM factory.visual_candidates
+         WHERE id=v_candidate_id
+           AND visual_run_id=v_run.id
+           AND shot_id=v_shot.id
+           AND rejected=false
+           AND provider <> 'local_diagram'
+           AND relevance_score >= p_min_relevance_score;
+
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Gemini-selected candidate is not eligible'
+                USING ERRCODE='22023';
+        END IF;
+
+        IF NOT (
+            (v_shot.preferred_media_type='video' AND v_candidate.media_type='video')
+            OR
+            (v_shot.preferred_media_type='photo' AND v_candidate.media_type='photo')
+        ) THEN
+            RAISE EXCEPTION 'Gemini-selected candidate media type is incompatible'
+                USING ERRCODE='22023';
+        END IF;
+
+        v_asset_key := v_candidate.provider || ':' || v_candidate.provider_asset_id;
+        IF v_asset_key = ANY(v_seen_assets) THEN
+            RAISE EXCEPTION 'Gemini selections reuse the same provider asset'
+                USING ERRCODE='22023';
+        END IF;
+
+        INSERT INTO factory.visual_selections (
+            visual_run_id,
+            job_id,
+            shot_id,
+            candidate_id,
+            provider,
+            provider_asset_id,
+            validation_mode,
+            validation_evidence
+        )
+        VALUES (
+            v_run.id,
+            v_run.job_id,
+            v_shot.id,
+            v_candidate.id,
+            v_candidate.provider,
+            v_candidate.provider_asset_id,
+            'gemini',
+            v_evidence
+        )
+        RETURNING id INTO v_selection_id;
+
+        v_selected := v_selected || jsonb_build_array(
+            jsonb_build_object(
+                'selection_id',v_selection_id::text,
+                'shot_uuid',v_shot.id::text,
+                'shot_key',v_shot.shot_key,
+                'scene_order',v_scene_order,
+                'preferred_media_type',v_shot.preferred_media_type,
+                'candidate_id',v_candidate.id::text,
+                'provider',v_candidate.provider,
+                'provider_asset_id',v_candidate.provider_asset_id,
+                'media_type',v_candidate.media_type,
+                'source_url',v_candidate.source_url,
+                'download_url',v_candidate.download_url,
+                'preview_url',v_candidate.preview_url,
+                'author',v_candidate.author,
+                'author_url',v_candidate.author_url,
+                'license_name',v_candidate.license_name,
+                'license_url',v_candidate.license_url,
+                'width',v_candidate.width,
+                'height',v_candidate.height,
+                'duration_ms',v_candidate.duration_ms,
+                'relevance_score',v_candidate.relevance_score,
+                'visual_validation_mode','gemini',
+                'validation_evidence',v_evidence,
+                'visual_intent',v_shot.visual_intent,
+                'must_show',v_shot.must_show,
+                'must_not_show',v_shot.must_not_show
+            )
+        );
+
+        v_seen_shots := array_append(v_seen_shots,v_shot.id::text);
+        v_seen_assets := array_append(v_seen_assets,v_asset_key);
+        v_count := v_count + 1;
+    END LOOP;
+
+    IF v_count <> v_run.expected_shot_count THEN
+        RAISE EXCEPTION 'Gemini visual selection count mismatch'
+            USING ERRCODE='22023';
+    END IF;
+
+    UPDATE factory.jobs
+       SET status='visuals_selected',
+           updated_at=now()
+     WHERE id=v_run.job_id;
+
+    RETURN QUERY SELECT v_count,v_selected;
+END;
+$$;
+
 
 CREATE OR REPLACE FUNCTION factory.record_visual_asset(
     p_visual_run_id uuid,

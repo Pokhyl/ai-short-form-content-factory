@@ -36,9 +36,15 @@ EXPECTED_MODEL_SHA256 = (
 )
 MAX_JSON_BODY_BYTES = 20 * 1024 * 1024
 MAX_VISUAL_BYTES = 80 * 1024 * 1024
+MAX_VISION_PREVIEW_BYTES = 3 * 1024 * 1024
+MAX_VISION_PREVIEW_TOTAL_BYTES = 8 * 1024 * 1024
+VISION_PREVIEW_MIME_TYPES = {'image/jpeg', 'image/png', 'image/webp'}
 WIKIMEDIA_DOWNLOAD_LOCK = threading.Lock()
 WIKIMEDIA_LAST_DOWNLOAD_AT = 0.0
 WIKIMEDIA_MIN_DOWNLOAD_INTERVAL_SECONDS = 8.0
+WIKIMEDIA_PREVIEW_DOWNLOAD_LOCK = threading.Lock()
+WIKIMEDIA_PREVIEW_LAST_DOWNLOAD_AT = 0.0
+WIKIMEDIA_PREVIEW_MIN_DOWNLOAD_INTERVAL_SECONDS = 1.0
 ALIGNMENT_EXECUTION_LOCK = threading.Lock()
 VISUAL_MEDIA_TYPES = {"photo", "video", "diagram"}
 VISUAL_PROVIDERS = {"pixabay", "pexels", "wikimedia"}
@@ -736,6 +742,75 @@ def _validate_visual_url(provider, value):
         raise ValueError("visual download host is not allowed")
 
     return parsed.geturl()
+
+
+
+def _fetch_visual_preview_inner(provider, preview_url):
+    safe_url = _validate_visual_url(provider, preview_url)
+    request = urllib.request.Request(
+        safe_url,
+        headers={
+            "User-Agent": "ai-short-form-content-factory/1.0",
+            "Accept": "image/jpeg,image/png,image/webp",
+        },
+        method="GET",
+    )
+
+    with urllib.request.urlopen(request, timeout=30) as response:
+        final_url = response.geturl()
+        _validate_visual_url(provider, final_url)
+
+        content_type = str(
+            response.headers.get("Content-Type") or ""
+        ).split(";", 1)[0].strip().lower()
+        if content_type not in VISION_PREVIEW_MIME_TYPES:
+            raise ValueError(
+                "visual preview must be jpeg, png or webp"
+            )
+
+        raw_length = response.headers.get("Content-Length")
+        if raw_length:
+            try:
+                content_length = int(raw_length)
+            except ValueError as exc:
+                raise ValueError("invalid preview Content-Length") from exc
+            if content_length <= 0 or content_length > MAX_VISION_PREVIEW_BYTES:
+                raise ValueError("visual preview size is outside allowed bounds")
+
+        data = response.read(MAX_VISION_PREVIEW_BYTES + 1)
+        if not data:
+            raise ValueError("visual preview is empty")
+        if len(data) > MAX_VISION_PREVIEW_BYTES:
+            raise ValueError("visual preview exceeds maximum allowed size")
+
+    return {
+        "mime_type": content_type,
+        "bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "data_base64": base64.b64encode(data).decode("ascii"),
+        "final_url": final_url,
+    }
+
+
+def fetch_visual_preview(provider, preview_url):
+    global WIKIMEDIA_PREVIEW_LAST_DOWNLOAD_AT
+
+    if provider != "wikimedia":
+        return _fetch_visual_preview_inner(provider, preview_url)
+
+    with WIKIMEDIA_PREVIEW_DOWNLOAD_LOCK:
+        now = time.monotonic()
+        wait_seconds = (
+            WIKIMEDIA_PREVIEW_MIN_DOWNLOAD_INTERVAL_SECONDS
+            - (now - WIKIMEDIA_PREVIEW_LAST_DOWNLOAD_AT)
+        )
+        if wait_seconds > 0:
+            time.sleep(wait_seconds)
+        try:
+            return _fetch_visual_preview_inner(provider, preview_url)
+        finally:
+            WIKIMEDIA_PREVIEW_LAST_DOWNLOAD_AT = time.monotonic()
+
 
 
 def ffprobe_visual(path: Path, media_type: str):
@@ -2252,6 +2327,55 @@ class Handler(BaseHTTPRequestHandler):
 
         self._json(201, result)
 
+    def _handle_visual_previews_post(self):
+        payload = self._read_json_body()
+        candidates = payload.get("candidates")
+        if not isinstance(candidates, list) or not 1 <= len(candidates) <= 3:
+            raise ValueError("candidates must contain between 1 and 3 items")
+
+        previews = []
+        total_bytes = 0
+        for index, candidate in enumerate(candidates, start=1):
+            if not isinstance(candidate, dict):
+                raise ValueError("preview candidate must be an object")
+
+            provider = str(candidate.get("provider") or "").strip().lower()
+            preview_url = str(candidate.get("preview_url") or "").strip()
+            provider_asset_id = str(
+                candidate.get("provider_asset_id") or ""
+            ).strip()
+
+            if provider not in VISUAL_PROVIDERS:
+                raise ValueError("unsupported visual provider")
+            if not provider_asset_id:
+                raise ValueError("provider_asset_id is required")
+            if not preview_url:
+                raise ValueError("preview_url is required")
+
+            preview = fetch_visual_preview(provider, preview_url)
+            total_bytes += int(preview["bytes"])
+            if total_bytes > MAX_VISION_PREVIEW_TOTAL_BYTES:
+                raise ValueError("combined visual previews exceed maximum size")
+
+            previews.append(
+                {
+                    "candidate_index": index,
+                    "provider": provider,
+                    "provider_asset_id": provider_asset_id,
+                    **preview,
+                }
+            )
+
+        self._json(
+            200,
+            {
+                "status": "ready",
+                "preview_count": len(previews),
+                "total_bytes": total_bytes,
+                "previews": previews,
+            },
+        )
+
     def _handle_visual_post(self, job_id, shot_id):
         final_dir = VISUAL_ROOT / job_id / shot_id
         metadata_path = final_dir / "metadata.json"
@@ -2457,6 +2581,24 @@ class Handler(BaseHTTPRequestHandler):
         self._json(201, result)
 
     def do_POST(self):
+        if self.path == "/visual-previews":
+            try:
+                self._handle_visual_previews_post()
+            except (
+                ValueError,
+                OSError,
+                urllib.error.URLError,
+                urllib.error.HTTPError,
+            ) as exc:
+                self._json(
+                    422,
+                    {
+                        "error": "visual_preview_failed",
+                        "message": str(exc),
+                    },
+                )
+            return
+
         if self.path == "/voiceover-probe":
             self._handle_voiceover_probe_post()
             return

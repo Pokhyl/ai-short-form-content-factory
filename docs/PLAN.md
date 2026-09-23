@@ -1301,7 +1301,7 @@ Product decision:
 - Do not intentionally degrade `metadata` mode; it is the lower-cost path with less semantic assurance.
 - Gemini must validate still frames/images, not the complete rendered video.
 - Gemini validation input is limited to the candidate image plus the scene contract (`visual_intent`, `must_show`, and relevant exclusions).
-- Gemini mode is bounded to at most 3 candidate validation calls per scene. A failed candidate advances to the next eligible M8 candidate; no unbounded retries.
+- Gemini mode is bounded to at most 3 candidate images per scene and validates them in one Gemini request per scene. This reduces request-rate usage while still allowing deterministic fallback among approved candidates; no unbounded retries.
 - Existing deterministic metadata/scoring remains the retrieval/pre-filter layer in both modes.
 - The mode must persist with the job from Studio/intake through M8 so behavior is explicit and reproducible.
 - No new acceptance job until implementation, regression tests, deployment, and live verification are complete.
@@ -1327,3 +1327,20 @@ Implementation checkpoint:
 - Workflow JSON parse: PASS.
 - `git diff --check`: PASS.
 - Phase 1 is not deployed yet; next step is the M8 Gemini branch and bounded 3-candidate validation before any deployment.
+
+
+Phase 2 implementation checkpoint:
+- M8 now routes by the persisted job mode after visual search collection.
+- `metadata` continues through the existing deterministic `factory.select_visuals` path.
+- `gemini` obtains up to 3 deduplicated eligible candidates per shot, fetches bounded image previews through media-worker, and sends all candidates for one scene in a single Gemini request.
+- Gemini image parts explicitly use `MEDIA_RESOLUTION_LOW` to reduce media-token usage.
+- Gemini output is parsed fail-closed. A candidate passes only when required concepts are visible, forbidden concepts are clear, intent matches, and score is at least 70.
+- Cross-scene provider-asset reuse is prevented; the collector falls back to another Gemini-approved candidate when available.
+- Final Gemini validation evidence is persisted on `visual_selections`.
+- Existing Gemini credential is reused; no new secret was introduced.
+- Media-worker preview endpoint accepts 1-3 images, image MIME types only, max 3 MiB each / 8 MiB total.
+- SQL migration/function syntax was verified inside a rollback-only transaction against the production PostgreSQL engine: PASS.
+- media-worker `py_compile`: PASS.
+- focused Node regressions including the existing Wikimedia depiction work: 63/63 PASS.
+- `git diff --check`: PASS.
+- Full regression suite is the next gate; nothing from Phase 2 is deployed yet.

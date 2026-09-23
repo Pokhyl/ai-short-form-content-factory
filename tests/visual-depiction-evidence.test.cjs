@@ -284,3 +284,60 @@ test('9229 regression: generator unit title cannot become a water turbine from c
   assert.equal(c.rejected,true);
   assert.match(c.rejection_reason,/wikimedia_primary_only_contextual_metadata/);
 });
+
+
+test('current PL15 S5 catalog title cannot prove transformer when direct caption depicts survey equipment',()=>{
+  const ctx={
+    query:'power transmission lines transformer',
+    visual_intent:'Power transmission lines and electrical transformer station',
+    must_show:['electrical transformer'],
+    must_not_show:['wind turbine','nuclear cooling tower'],
+    domain_context_terms:[],
+  };
+  const c=normalize(ctx,body({
+    id:136934049,
+    title:'Contract No. 150, Installation of a Waterwheel, Generator, Switchgear, Transformer, Substation, and the Construction of a Transmission Line, Winsor Dam Power Plant, Belchertown, gen - DPLA - 4a0239e6a4d811578be7dc63cd8e7b0b.jpg',
+    objectName:'Contract No. 150, Installation of a Waterwheel, Generator, Switchgear, Transformer, Substation, and the Construction of a Transmission Line, Winsor Dam Power Plant, Belchertown, gen - DPLA - 4a0239e6a4d811578be7dc63cd8e7b0b',
+    categories:'Media contributed by the Digital Public Library of America|Media contributed by Massachusetts Archives|Files from the Massachusetts Water Resources Authority',
+    description:'Title supplied by cataloger. Print in album volume MDWSC, Contract 150, Winsor Dam Power Plant, Installation of Equipment, Quabbin Reservoir, Volume 1, Chief Engineer set. See surveying level in foreground, center.',
+  }));
+  assert.equal(c.rejected,true);
+  assert.match(c.rejection_reason,/wikimedia_primary_only_contextual_metadata/);
+});
+
+test('current PL15 S1 archival album context cannot turn reservoir construction collection text into depicted reservoir',()=>{
+  const ctx={
+    query:'concrete dam',
+    visual_intent:'Large water reservoir behind a concrete dam',
+    must_show:['water reservoir','concrete dam'],
+    must_not_show:['wind turbine','dry riverbed'],
+    domain_context_terms:[],
+  };
+  const c=normalize(ctx,body({
+    id:124944982,
+    title:'Wachusett Reservoir, Quinapoxet River concrete dam, Oakdale, West Boylston, Mass., Nov. 13, 1905 - DPLA - 13c16a2e721109e65ef5d33b8e6fa856.jpg',
+    objectName:'Wachusett Reservoir, Quinapoxet River concrete dam, Oakdale, West Boylston, Mass., Nov. 13, 1905 - DPLA - 13c16a2e721109e65ef5d33b8e6fa856',
+    categories:'Quinapoxet River|Wachusett Reservoir construction images from the Massachusetts Metropolitan Water and Sewerage Board|Photographs MWW Wachusett Reservoir construction, Vol. 10.',
+    description:'Print in album Photographs MWW Wachusett Reservoir construction, Vol. 10.',
+  }));
+  assert.equal(c.rejected,true);
+  assert.match(c.rejection_reason,/wikimedia_primary_only_contextual_metadata/);
+});
+
+test('archival catalog metadata still allows an explicitly depictive title or caption',()=>{
+  const ctx={
+    query:'hydroelectric generator turbine shaft',
+    visual_intent:'Electrical generator connected to turbine shaft',
+    must_show:['electric generator','turbine shaft'],
+    must_not_show:[],
+    domain_context_terms:['hydroelectric'],
+  };
+  const c=normalize(ctx,body({
+    id:34522651,
+    title:'DETAIL VIEW OF GENERATOR BAY, GENERATOR ROOM, SHOWING TURBINE-GENERATOR DRIVE SHAFT IN FOREGROUND - Nine Mile Hydroelectric Development',
+    objectName:'DETAIL VIEW OF GENERATOR BAY, GENERATOR ROOM, SHOWING TURBINE-GENERATOR DRIVE SHAFT IN FOREGROUND',
+    categories:'Hydroelectric generators|Historic American Engineering Record images',
+    description:'Title supplied by cataloger. Detail view of generator bay showing turbine-generator drive shaft in foreground.',
+  }));
+  assert.equal(c.rejected,false,c.rejection_reason);
+});
