@@ -1392,3 +1392,9 @@ M5 transient-provider hardening checkpoint:
 - No new model, credential, provider, or paid dependency was introduced.
 - Focused M5 regression suite: 14/14 PASS.
 - Next gate: full Node regression suite + diff check. Deploy only M5 if clean.
+
+M5 retry hardening full-regression checkpoint:
+- Full Node regression suite after the retry change: 316/316 PASS.
+- `git diff --check`: PASS.
+- Source checkpoint: `324be11`.
+- Next gate: verify zero active publisher executions, back up the currently published M5, deploy/publish only M5, verify published nodes/connections/settings match Git, then rerun one controlled Gemini-mode smoke job.
