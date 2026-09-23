@@ -1,0 +1,36 @@
+{
+  "date": "2026-09-23",
+  "job_id": "19044bf3-ba7f-43e3-85cc-87a70463e249",
+  "m5_execution_id": 9822,
+  "status": "failed",
+  "error": "M5 script workflow failed: 11 [line 259]",
+  "root_cause": {
+    "stage": "Validate Final Measured Word Count Compliance Retry",
+    "target_words": 36,
+    "target_scene_word_counts": [10, 5, 4, 7, 10],
+    "measured_valid_draft_words": 32,
+    "measured_valid_draft_ms": 13128,
+    "compliance_returned_scene_word_counts": [10, 5, 4, 8, 11],
+    "explanation": "Gemini violated the hard 2-10 scene-word contract and padded the expansion with unsupported descriptive/quantity words. The validator failed immediately on the 11-word scene before its existing deterministic semantic hybrid could consider earlier validated drafts."
+  },
+  "fix": {
+    "workflow": "VideoM5Storyboard001",
+    "prompt": "When expansion is needed, preserve semantic-valid content and prefer grammar-only connector/function words before any new content word; explicitly forbid invented properties, materials, quantities, intensifiers, locations and objects.",
+    "validator": "Out-of-bound model scene candidates are now excluded from the existing deterministic semantic hybrid instead of causing an immediate terminal throw. The 2-10 hard bound remains enforced on every candidate admitted to the hybrid.",
+    "no_new_retry": true,
+    "no_timing_gate_relaxation": true,
+    "no_semantic_gate_relaxation": true,
+    "no_speed_change": true
+  },
+  "validation": {
+    "focused_word_count_tests": "6/6 PASS",
+    "node_suite": "337/337 PASS",
+    "alignment_dtw": "7/7 PASS",
+    "render_fit": "3/3 PASS",
+    "git_diff_check": "PASS"
+  },
+  "production": {
+    "deployed": false,
+    "next": "commit and push, verify zero active executions, back up and deploy only M5, verify published source, then create one controlled Gemini smoke"
+  }
+}

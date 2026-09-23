@@ -1,5 +1,15 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M5 9822 final word-count compliance — source fix verified, 2026-09-23
+
+- v69 smoke job 19044bf3-ba7f-43e3-85cc-87a70463e249 is terminal script_failed before M6: M3 9818 PASS, M4 9820 PASS, M5 9822 ERROR. It did not exercise M8 v69.
+- Exact failure: final word-count compliance target was 36 words with per-scene targets [10,5,4,7,10]. The latest semantic-valid 32-word draft measured 13128ms. Gemini compliance returned scene counts [10,5,4,8,11]; scene 5 violated the hard 10-word cap and padded with unsupported descriptive/quantity content. n8n surfaced only `11 [line 259]`.
+- Source fix keeps the same single bounded compliance branch. Expansion prompts now require preserving semantic-valid content and using grammar-only connector/function words before any new content word; invented properties, materials, quantities, intensifiers, locations and objects are explicitly forbidden.
+- Validators no longer terminal-fail merely because the model returned an out-of-bound scene. That model option is excluded from the existing deterministic semantic hybrid; only 2-10 word, lexical, semantic-valid options can enter the DP. Timing, semantic, scene-bound and no-repeat gates remain unchanged.
+- Regression reproduces an 11-word returned scene and proves it is excluded while a valid exact-count hybrid is recovered. Focused 6/6 PASS; full Node 337/337 PASS; DTW 7/7 PASS; render-fit 3/3 PASS; git diff --check PASS.
+- Evidence: acceptance/2026-09-23-m5-9822-word-count.json.
+- NOT deployed yet. NEXT: commit/push, verify zero active publisher executions, back up and deploy only M5, verify published source, then one controlled en15 lighthouse Gemini smoke.
+
 ## Current v69 smoke job — 2026-09-23
 
 Job 19044bf3-ba7f-43e3-85cc-87a70463e249 created via M3 (topic how does a lighthouse work?, en, 15s, visual_validation_mode gemini). M8 v69 active d073d7d8-3490-468a-bb6a-79771d367059. Creation returned HTTP 201. NEXT: launch this exact job once via /factory/run and trace it to terminal. Do not create another job while unresolved.
