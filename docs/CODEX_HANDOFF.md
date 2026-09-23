@@ -1946,5 +1946,5 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Scoped to both storyboard repair builders only.
 - Stripped anaphoric validator diagnostics are expanded before the next model repair.
 - No validator weakening and no topic-specific vocabulary.
-- Focused 30/30, full 295/295, M5 Code nodes 59/59, JSON/diff PASS.
+- Focused 35/35, full 295/295, M5 Code nodes 59/59, JSON/diff PASS.
 - Next: M5-only deploy, then one fresh PL15.

@@ -1231,5 +1231,5 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Both storyboard repair builders now expand stripped anaphoric validator diagnostics into a generic antecedent-preservation instruction.
 - Unrelated validation errors are unchanged.
 - Validators remain strict; no topic-specific logic.
-- Focused 30/30, full 295/295, JSON/diff/59 M5 Code nodes PASS.
+- Focused 35/35, full 295/295, JSON/diff/59 M5 Code nodes PASS.
 - Pending M5-only deploy.
