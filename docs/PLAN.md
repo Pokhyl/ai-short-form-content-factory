@@ -1,5 +1,12 @@
 # AI Short-Form Content Factory — Production Plan
 
+## DTW media-worker deployed — 2026-09-23
+
+- Deployed source 1f45ad3 only to shorts-v2 media-worker. Live /worker/server.py equals Git; SHA256 e672e125a10115581acf748bfa8477d9a84d1eac253566f5d8e0191961099da1. New image sha256:4118f3f06c98cb37cf1985bfb97b56d1c1ec7088d8e7c76726d7e209e2393ec2.
+- Zero active n8n executions before deploy. Backup /opt/ai-short-form-content-factory/.backups/media-worker-before-9802-dtw.py SHA256 a3d07f116c32f251bc6191cb7452a74a53c89d052ad7c53bf9812b965ee14714; previous image sha256:64e96a07a1d5438cbe8ffea28c815a36e4be1480ad3ded270c7839e75ab4d0d8 retained for rollback.
+- Container running, restart count 0. M5 v126 / M6 v8 / M8 v67 unchanged. Exact-audio replay already passed; 7 Python + 329 Node regressions passed.
+- NEXT: verify healthy, then create exactly one fresh Gemini en15 lighthouse smoke and trace it. Failed prior job remains immutable. No complete-pipeline acceptance yet.
+
 ## M7 9802 exact-audio replay PASS — source fix, 2026-09-23
 
 - Artifact integrity confirmed: voiceover 796f8592-7a94-4de4-bbb6-1d26fc3ba070, 14736ms, SHA256 35a8fa2dd2b3e1f6e2f68dc2038867b7599508857cbc4c15bb829e89aa9f174a. No M5/M6 artifact mismatch. Default Whisper final lexical end is 16350ms (1614ms overrun).
