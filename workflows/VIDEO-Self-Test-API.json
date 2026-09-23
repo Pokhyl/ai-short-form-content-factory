@@ -670,7 +670,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT j.id::text AS job_id,\n       j.status,\n       j.topic,\n       j.language_code AS language,\n       j.target_duration_seconds AS duration,\n       (j.status='machine_qa_passed') AS ready,\n       CASE WHEN j.status='machine_qa_passed'\n            THEN '/webhook/factory/review?job_id=' || j.id::text\n            ELSE NULL\n       END AS review_path,\n       j.created_at,\n       j.updated_at\nFROM factory.jobs j\nORDER BY j.created_at DESC\nLIMIT 1;",
+        "query": "SELECT j.id::text AS job_id,\n       j.status,\n       j.topic,\n       j.language_code AS language,\n       j.target_duration_seconds AS duration,\n       j.visual_validation_mode,\n       (j.status='machine_qa_passed') AS ready,\n       CASE WHEN j.status='machine_qa_passed'\n            THEN '/webhook/factory/review?job_id=' || j.id::text\n            ELSE NULL\n       END AS review_path,\n       j.created_at,\n       j.updated_at\nFROM factory.jobs j\nORDER BY j.created_at DESC\nLIMIT 1;",
         "options": {}
       },
       "id": "self-load-latest",

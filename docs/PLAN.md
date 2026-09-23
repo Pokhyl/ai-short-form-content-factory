@@ -1314,3 +1314,16 @@ Implementation order:
 5. Preserve the existing metadata-only route unchanged when `visual_validation_mode=metadata`.
 6. Add deterministic tests for routing, call bound, PASS/FAIL/fallback, malformed Gemini response, and no-Gemini behavior.
 7. Deploy only the components changed by this feature, verify live state, then run one controlled comparison job per mode.
+
+
+Implementation checkpoint:
+- Decision is committed in Git as `398738e`.
+- Phase 1 source implementation is complete locally:
+  - jobs persist `visual_validation_mode` with default `metadata`;
+  - intake accepts explicit `metadata|gemini` while remaining backward-compatible when the field is omitted;
+  - Studio exposes the selector and submits it;
+  - latest-job API returns the saved mode.
+- Focused tests: 7/7 PASS.
+- Workflow JSON parse: PASS.
+- `git diff --check`: PASS.
+- Phase 1 is not deployed yet; next step is the M8 Gemini branch and bounded 3-candidate validation before any deployment.

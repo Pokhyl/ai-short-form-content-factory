@@ -57,6 +57,12 @@ video { width:100%; max-height:78vh; margin-top:20px; border-radius:14px; backgr
         </div>
       </div>
 
+      <label for="visualValidationMode">Visual quality</label>
+      <select id="visualValidationMode">
+        <option value="metadata" selected>Standard — metadata validation</option>
+        <option value="gemini">Gemini Vision — higher visual accuracy</option>
+      </select>
+
       <button id="submit" type="submit">Create video</button>
     </form>
 
@@ -122,6 +128,7 @@ async function loadLatestJob() {
     if (data.topic) document.getElementById('topic').value = data.topic;
     if (data.language) document.getElementById('language').value = data.language;
     if (data.duration) document.getElementById('duration').value = String(data.duration);
+    if (data.visual_validation_mode) document.getElementById('visualValidationMode').value = data.visual_validation_mode;
 
     const state = String(data.status || 'unknown');
 
@@ -162,6 +169,7 @@ form.addEventListener('submit', async (e) => {
     topic: document.getElementById('topic').value.trim(),
     language: document.getElementById('language').value,
     duration: Number(document.getElementById('duration').value),
+    visual_validation_mode: document.getElementById('visualValidationMode').value,
   };
 
   try {
