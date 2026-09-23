@@ -2980,7 +2980,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const errorObject =\n  $json.error && typeof $json.error === 'object' && !Array.isArray($json.error)\n    ? $json.error\n    : {};\nconst message = String(\n  errorObject.message ||\n  $json.message ||\n  $json.description ||\n  ''\n).trim();\nreturn {json:{\n  ...$json,\n  compliance_retry:\n    message.includes('final measured word-count retry too far from target before TTS'),\n  compliance_retry_error_message: message,\n}};"
+        "jsCode": "const rawError = $json.error;\nconst errorObject =\n  rawError && typeof rawError === 'object' && !Array.isArray(rawError)\n    ? rawError\n    : {};\nconst errorString = typeof rawError === 'string' ? rawError.trim() : '';\nconst message = String(\n  errorObject.message ||\n  errorObject.description ||\n  errorString ||\n  $json.message ||\n  $json.description ||\n  ''\n).trim();\n\nconst explicitRetryMessage =\n  message.includes('final measured word-count retry too far from target before TTS');\nconst n8nStrippedRetryMessage =\n  /^got \\d+, target \\d+, allowed delta \\d+(?: \\[line \\d+\\])*$/u.test(message);\n\nreturn {json:{\n  ...$json,\n  compliance_retry: explicitRetryMessage || n8nStrippedRetryMessage,\n  compliance_retry_error_message: message,\n}};"
       },
       "id": "video-m5-classify-final-measured-word-compliance",
       "name": "Classify Final Measured Word Count Retry Failure",

@@ -27,12 +27,30 @@ test('9660 failure is classified for exactly one compliance retry',()=>{
   );
   assert.equal(retry.compliance_retry,true);
 
+  const execution9687=runCode(
+    'Classify Final Measured Word Count Retry Failure',
+    {error:'got 27, target 31, allowed delta 2 [line 431]'},
+    {}
+  );
+  assert.equal(execution9687.compliance_retry,true);
+  assert.equal(
+    execution9687.compliance_retry_error_message,
+    'got 27, target 31, allowed delta 2 [line 431]'
+  );
+
   const other=runCode(
     'Classify Final Measured Word Count Retry Failure',
     {error:{message:'semantic content changed'}},
     {}
   );
   assert.equal(other.compliance_retry,false);
+
+  const unrelatedString=runCode(
+    'Classify Final Measured Word Count Retry Failure',
+    {error:'Gemini HTTP 503: overloaded'},
+    {}
+  );
+  assert.equal(unrelatedString.compliance_retry,false);
 });
 
 test('9660 compliance builder reports the exact failed provider counts and hard targets',()=>{

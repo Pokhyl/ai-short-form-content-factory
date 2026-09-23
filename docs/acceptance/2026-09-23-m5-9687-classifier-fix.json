@@ -1,0 +1,23 @@
+{
+  "date": "2026-09-23",
+  "status": "m5_9687_classifier_fix_validated_predeploy",
+  "source_job_id": "bfac49a7-bde2-4ec0-85fc-7dd9b6afbc36",
+  "source_execution_id": 9687,
+  "source_error": "got 27, target 31, allowed delta 2 [line 431]",
+  "fix_scope": "Classify Final Measured Word Count Retry Failure only",
+  "change": {
+    "accepts_object_error": true,
+    "accepts_string_error": true,
+    "retry_class_stays_narrow": true,
+    "string_retry_pattern": "^got N, target N, allowed delta N [line N]$",
+    "unrelated_string_errors_retry": false
+  },
+  "tests": {
+    "focused": "10/10 PASS",
+    "full_suite": "293/293 PASS",
+    "workflow_json_parse": "PASS",
+    "m5_code_nodes": "59/59 syntax PASS",
+    "git_diff_check": "PASS"
+  },
+  "next_step": "Commit/push, verify zero active executions, back up live M5 v119, fingerprint all non-M5 workflows, deploy only M5, verify exactly one version increment and live core equality, then run exactly one fresh PL15."
+}

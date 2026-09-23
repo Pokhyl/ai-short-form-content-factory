@@ -873,3 +873,28 @@ Fix scope:
 4. Focused tests, full suite, diff/JSON/Code-node checks.
 5. Checkpoint before M5-only deploy.
 6. No new PL15 until fix is tested and deployed.
+
+
+## M5 execution 9687 classifier fix validated
+
+Change:
+- `Classify Final Measured Word Count Retry Failure` now normalizes both object-form and string-form `$json.error`;
+- the old full retry message still qualifies;
+- n8n's stripped string form qualifies only when it exactly matches `got <N>, target <N>, allowed delta <N> [line <N>]`;
+- unrelated string errors such as provider 503 remain non-retry failures;
+- no retry loop was added and no timing/semantic validator was weakened.
+
+Validation:
+- focused compliance/provider tests: 10/10 PASS;
+- full suite: 293/293 PASS;
+- M5 Code nodes: 59/59 syntax PASS;
+- workflow JSON parse: PASS;
+- `git diff --check`: PASS.
+
+Next:
+1. Commit/push this tested M5 fix.
+2. Verify active project executions = 0.
+3. Export published M5 v119 backup and capture non-M5 workflow fingerprint.
+4. Deploy only M5 and publish current version; expect exactly v120.
+5. Verify live M5 nodes/connections/settings == Git; non-M5 fingerprint unchanged; Publisher/Studio 200; no container restart.
+6. Run exactly one fresh PL15 and follow it to terminal state.

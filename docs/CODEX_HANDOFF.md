@@ -1880,3 +1880,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Classifier output: `compliance_retry=false`, `compliance_retry_error_message=""` (ref 857).
 - Current classifier discards string-form errors because it only builds `errorObject` for object-form `$json.error`.
 - Fix only classifier normalization; do not broaden retries to unrelated failures.
+
+
+### M5 9687 classifier fix validated — predeploy
+
+- Fix only `Classify Final Measured Word Count Retry Failure`.
+- Supports object/string `$json.error`; exact stripped n8n word-count error is retryable, unrelated strings are not.
+- Focused 10/10, full 293/293, M5 Code nodes 59/59, JSON/diff PASS.
+- Next: M5-only deploy, then exactly one fresh PL15.

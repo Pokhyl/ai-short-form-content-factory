@@ -1165,3 +1165,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - The classifier only parsed object-form errors, produced an empty classification message, and set `compliance_retry=false`.
 - The existing bounded compliance retry branch therefore did not run.
 - Fix is limited to classifier error normalization; retry eligibility must remain narrow.
+
+
+## M5 9687 classifier fix tested — 2026-09-23
+
+- String-form n8n validation errors are now normalized in the final measured word-count retry classifier.
+- Retry eligibility remains narrow: only the existing full message or the exact stripped `got N, target N, allowed delta N [line N]` format.
+- Unrelated string errors remain fail-closed.
+- Focused 10/10, full 293/293, JSON/diff/59 M5 Code nodes PASS.
+- Not production-complete until M5-only deploy is verified.
