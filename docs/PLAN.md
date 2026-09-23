@@ -1159,3 +1159,23 @@ Next:
 5. Full tests + deterministic render check.
 6. Deploy only the responsible render component/workflow.
 7. Then run exactly one fresh PL15.
+
+
+## Render letterbox root cause and safe fill strategy
+
+Confirmed current renderer:
+- `_render_segment` uses proportional `force_original_aspect_ratio=decrease`;
+- then pads to 1080x1920 with `color=black`;
+- this exactly explains the manual cropdetect/letterbox failure.
+
+Do NOT simply restore hard center crop:
+- historical PL15 v44 manual review already documented that center-crop removed important edge content from selected visuals;
+- commit `fbce953` intentionally switched from center crop to full-source fit for that reason.
+
+Updated fix strategy:
+1. Preserve the complete source as a proportional foreground.
+2. Fill the entire 1080x1920 background with a center-cropped copy of the same source.
+3. Blur the fill background so it does not compete with the foreground.
+4. No black padding and no foreground distortion.
+5. Update `render-fit-regression.py` to require both edge-landmark preservation and non-black full-frame fill.
+6. Keep machine QA, provenance, audio and semantic/visual gates unchanged.

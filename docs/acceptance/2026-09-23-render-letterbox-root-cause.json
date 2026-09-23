@@ -1,0 +1,22 @@
+{
+  "date": "2026-09-23",
+  "status": "render_letterbox_root_cause_and_strategy",
+  "current_renderer": {
+    "scale": "force_original_aspect_ratio=decrease",
+    "padding": "pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black",
+    "effect": "preserves full source but introduces black bars for non-9:16 assets"
+  },
+  "history": {
+    "prior_center_crop": "force_original_aspect_ratio=increase + crop=1080:1920",
+    "known_failure": "PL15 v44 manual review documented important subject/edge loss under hard center crop",
+    "full_fit_commit": "fbce953"
+  },
+  "chosen_strategy": "preserve the full foreground with proportional contain scaling and fill the remaining 9:16 canvas with a blurred, center-cropped copy of the same source",
+  "why": [
+    "removes black letterboxing",
+    "preserves edge content and source geometry",
+    "avoids the previously documented destructive center-crop failure",
+    "remains generic for arbitrary source aspect ratios and topics"
+  ],
+  "fix_scope": "services/media-worker/server.py _render_segment plus render-fit regression only; M5/M6/M8/M9 workflow logic and QA gates unchanged"
+}

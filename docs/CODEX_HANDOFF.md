@@ -1972,3 +1972,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Manual acceptance fails because render uses letterbox/contain for still images.
 - Actual cropdetect heights: S1 1620, S2 1384, S3 1698, S4 720, S5 1820 inside a 1920-high frame.
 - Fix render scaling generically to cover/fill 9:16 without distortion; keep QA/gates intact.
+
+
+### Render letterbox root cause
+
+- Current `_render_segment`: contain scaling + black 1080x1920 padding.
+- Historical hard center crop previously lost important edge subjects, so do not revert to it.
+- Safe generic strategy: blurred cover background from the same asset + full proportional foreground overlay.
+- Regression must prove 1080x1920 output, preserved left/right edge landmarks, and no black top/bottom fill.

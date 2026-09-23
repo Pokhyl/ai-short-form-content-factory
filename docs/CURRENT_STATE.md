@@ -1257,3 +1257,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Cropdetect from final MP4: S1 1080x1620, S2 1080x1384, S3 1080x1698, S4 1080x720, S5 1080x1820.
 - S4 leaves 600 black rows at both top and bottom.
 - Next: generic M9/media-worker scale/crop fix; do not accept this PL15 and do not start another acceptance job yet.
+
+
+## Render root cause confirmed — 2026-09-23
+
+- Current media worker intentionally uses contain + black pad.
+- Hard center crop is not an acceptable rollback: it previously caused important edge-object loss.
+- Chosen generic fix: blurred full-frame background + complete proportional foreground.
+- Scope: media-worker renderer and its render-fit regression only.
