@@ -1450,3 +1450,9 @@ Gemini preview 429 fix checkpoint:
 - M8 `Build Gemini Vision Request` prunes missing previews, renumbers surviving candidate indices consistently, and sends only successfully fetched pixels to Gemini. Gemini pass threshold/booleans remain unchanged.
 - Focused Gemini tests: 15/15 PASS. media-worker `py_compile`: PASS. `git diff --check`: PASS.
 - Next gate: full Node regression suite, then targeted media-worker + M8 deploy and one controlled post-fix smoke job. Do not reuse the failed job as acceptance evidence.
+
+Gemini preview 429 full-regression checkpoint:
+- Full Node regression suite after the partial-preview fix: 320/320 PASS.
+- `git diff --check`: PASS.
+- Source checkpoint: `0e79080`.
+- Next gate: verify zero active publisher executions, back up current M8 and media-worker image/source, deploy only media-worker + `VideoM8Visuals001`, verify exact live source/state, then run one controlled Gemini smoke job.
