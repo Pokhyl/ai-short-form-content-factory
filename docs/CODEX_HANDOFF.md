@@ -1950,23 +1950,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Next: M5-only deploy, then one fresh PL15.
 
 
-### M5 v122 deployed — execution 9699 repair-error normalization
-
-- Published M5 v122 `4a9a48fd-985c-4f77-b592-44a0945377dd`.
-- Backup `.backups/m5-before-9699-anaphoric-20260923-135204.json`, SHA256 `a7ff82d9608b05cd8648d856dd9f2023adcd7208dd47d55f1f4cb814a4f20628`.
-- Other 31 workflow fingerprint unchanged: `31|cfacbe4e094739b106490c3c93ec2506`.
-- Published M5 nodes/connections/settings match Git.
-- M6 v8, M8 v64, M9 v1 unchanged.
-- Publisher/Studio 200; no n8n/media-worker restart; active executions 0.
-- Next: one fresh PL15 only.
-
-
 ### M5 v122 deployed — repair-error normalization — 2026-09-23
 
 - Fix commit `b0d97efa9b72`.
-- Published only M5: v122 `4a9a48fd-985c-4f77-b592-44a0945377dd`.
-- Backup `.backups/m5-before-9699-repair-error-20260923-135152.json`, SHA256 `a7ff82d9608b05cd8648d856dd9f2023adcd7208dd47d55f1f4cb814a4f20628`.
+- Published M5 v122 `4a9a48fd-985c-4f77-b592-44a0945377dd`; M6 v8, M8 v64, M9 v1 unchanged.
+- Equivalent predeploy backups:
+  - `.backups/m5-before-9699-repair-error-20260923-135152.json`
+  - `.backups/m5-before-9699-anaphoric-20260923-135204.json`
+- Both backups SHA256 `a7ff82d9608b05cd8648d856dd9f2023adcd7208dd47d55f1f4cb814a4f20628`.
 - Non-M5 fingerprint unchanged: `31|cfacbe4e094739b106490c3c93ec2506`.
-- M6 v8, M8 v64, M9 v1 unchanged.
-- Live M5 == Git; Publisher/Studio 200; no n8n/media-worker restart; supporting services healthy; active executions 0.
+- Published M5 nodes/connections/settings match Git.
+- Publisher/Studio 200; no n8n/media-worker restart; supporting services healthy; active executions 0.
 - Next: one fresh PL15 only.
