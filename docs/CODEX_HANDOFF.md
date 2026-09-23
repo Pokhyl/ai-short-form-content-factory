@@ -1675,3 +1675,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Helper bug: no lexical match between English primary and non-English narration was treated as positive antecedent evidence.
 - Fix scope: only three storyboard validators. No-match => no inherited-primary restriction; positive terminal lexical matches remain restricted.
 - No new PL15 until regression/full suite/M5-only deploy.
+
+
+### M5 execution 9633 cross-language antecedent fix tested — 2026-09-23
+
+- Scope: only the three storyboard validators using `previousVisualPrimaryIsLikelyTerminalAntecedent`.
+- No lexical match between English visual primary and non-English narration is no longer treated as positive antecedent evidence.
+- Positive terminal lexical matches remain restricted; existing generator anaphora regression still rejects drift.
+- Exact 9633 scenario now passes.
+- Focused scene tests: 13/13 PASS.
+- Full suite: 273/273 PASS.
+- JSON parse and git diff checks PASS.
+- Next: commit/push, M5-only deploy, one fresh PL15.

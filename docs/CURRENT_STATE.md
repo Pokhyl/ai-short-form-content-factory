@@ -1012,3 +1012,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Job `72af62de-3c64-4b48-bf6b-c1395e07abed` failed before M6.
 - False anaphora restriction: no lexical grounding for English `water reservoir` in Polish narration was treated as positive antecedent evidence.
 - Planned fix: no-match => restriction does not apply; positive terminal matches remain fail-closed.
+
+
+## M5 9633 fix tested — 2026-09-23
+
+- Cross-language no-match no longer invents antecedent certainty.
+- Positive terminal lexical matches remain fail-closed.
+- Exact 9633 regression PASS.
+- Full suite 273/273 PASS.
+- Not production-complete until M5-only deploy is verified.

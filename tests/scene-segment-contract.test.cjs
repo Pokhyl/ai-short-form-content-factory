@@ -266,3 +266,65 @@ test('repair prompts preserve continuous visual-cut contract and resolve inherit
     assert.doesNotMatch(code,/must not start as a continuation fragment/);
   }
 });
+
+
+test('9633 regression: cross-language no-match cannot invent previous visual primary as antecedent',()=>{
+  const fixture=JSON.parse(
+    fs.readFileSync('tests/fixtures/m5-9537-scene-segments.json')
+  );
+  const parsed=JSON.parse(
+    fixture.response.body.candidates[0].content.parts[0].text
+  );
+
+  parsed.scenes[0].narration='Ogromny zbiornik wodny gromadzi wodę,';
+  parsed.scenes[0].shots[0].visual_intent=
+    'Large water reservoir behind a concrete dam capturing river water';
+  parsed.scenes[0].shots[0].must_show=['water reservoir','concrete dam'];
+  parsed.scenes[0].shots[0].must_not_show=['turbines','generators'];
+  parsed.scenes[0].shots[0].queries_en=[
+    'large water reservoir behind concrete dam',
+    'aerial view hydroelectric reservoir',
+    'water reservoir'
+  ];
+
+  parsed.scenes[1].narration='która spada z wysokości.';
+  parsed.scenes[1].shots[0].visual_intent=
+    'Water falling through a massive penstock pipe in a hydroelectric facility';
+  parsed.scenes[1].shots[0].must_show=['penstock pipe'];
+  parsed.scenes[1].shots[0].must_not_show=['turbines','generators'];
+  parsed.scenes[1].shots[0].queries_en=[
+    'water falling through penstock pipe',
+    'hydroelectric penstock pipe',
+    'penstock pipe'
+  ];
+
+  parsed.narration=parsed.scenes.map(s=>s.narration).join(' ');
+  fixture.response.body.candidates[0].content.parts[0].text=
+    JSON.stringify(parsed);
+
+  const out=run9537(fixture);
+  assert.deepEqual(
+    out.storyboard.scenes[1].shots[0].must_show,
+    ['penstock pipe']
+  );
+});
+
+test('all storyboard validators require positive lexical evidence before inherited-primary restriction',()=>{
+  for(const name of [
+    'Validate Storyboard',
+    'Validate Repaired Storyboard',
+    'Validate Repaired Storyboard 2',
+  ]){
+    const code=byName[name].parameters.jsCode;
+    assert.match(
+      code,
+      /if \(!matchingIndexes\.length\) return false;/,
+      name
+    );
+    assert.match(
+      code,
+      /return Math\.max\(\.\.\.matchingIndexes\) === narrationTerms\.length - 1;/,
+      name
+    );
+  }
+});

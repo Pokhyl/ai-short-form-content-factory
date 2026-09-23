@@ -386,20 +386,34 @@ Exact root cause:
 - this falsely rejects a legitimate visual transition to falling water / penstock pipe;
 - the original generator-anaphora regression remains detectable because `generator` is a real cognate and is positively found at the end of the previous narration.
 
+## M5 9633 cross-language antecedent fix tested locally
+
+Fix:
+- changed only the three storyboard validators containing `previousVisualPrimaryIsLikelyTerminalAntecedent`;
+- no lexical match between English visual primary and non-English narration now means no inherited-primary restriction;
+- positive terminal lexical matches remain fail-closed exactly as before;
+- no topic-specific vocabulary or translation table was added.
+
+Exact regression:
+- `... gromadzi wodę,` + `która spada...` may move from reservoir visual to penstock/falling-water visual;
+- existing generator `Który...` subject-drift regression still rejects visual-primary drift.
+
+Validation:
+- focused scene-segment tests: 13/13 PASS;
+- full suite: 273/273 PASS;
+- workflow JSON parse: PASS;
+- `git diff --check`: PASS.
+
 ## Immediate next step
 
-1. Read this PLAN before code change.
-2. Change only the three storyboard validators containing `previousVisualPrimaryIsLikelyTerminalAntecedent`.
-3. If the previous visual primary cannot be positively located in narration, return `false` instead of inventing antecedent certainty.
-4. Keep positive terminal matches fail-closed exactly as before.
-5. Add exact `9633` regression:
-   - `... gromadzi wodę,` + `która spada...` may change primary from reservoir to penstock/falling water;
-   - existing generator `Który...` subject-drift regression must still fail.
-6. Run focused scene tests + full suite + JSON/diff checks.
-7. Update PLAN/handoff/evidence; commit/push.
-8. Deploy ONLY M5 after active project executions = 0.
-9. Verify live state and non-M5 fingerprint.
-10. One fresh PL15 only after deploy checkpoint is in GitHub.
+1. Commit/push the tested 9633 fix and evidence.
+2. Read this PLAN again before production change.
+3. Verify active project execution count = 0.
+4. Export published M5 backup and fingerprint all non-M5 workflows.
+5. Deploy ONLY M5.
+6. Verify live M5 == Git, M5 increments exactly once, non-M5 fingerprint unchanged, Publisher/Studio 200, service health/restarts unchanged.
+7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
+8. Run exactly one fresh PL15.
 
 ## Acceptance sequence after PL15
 
