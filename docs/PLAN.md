@@ -1,5 +1,9 @@
 # AI Short-Form Content Factory — Production Plan
 
+## Post-DTW smoke in M8 — 2026-09-23
+
+Job 360aba8c-ce92-499e-8f01-504726d352dd: M3 9803 PASS; coordinator 9804; M4 9805 PASS; M5 9806 PASS; M6 9807 PASS; M7 9808 PASS; M8 9809 RUNNING at this checkpoint. Production M5 v126 / M6 v8 / M8 v67; worker image 4118f3f06c98. NEXT: trace existing M8 9809 to terminal and inspect actual Gemini evidence. Do not create another job. M7 success alone does not prove that the new DTW branch was exercised; inspect saved alignment metadata before claiming that.
+
 ## Current post-DTW smoke — 2026-09-23
 
 Job 360aba8c-ce92-499e-8f01-504726d352dd created: en15 lighthouse, visual_validation_mode gemini. Media-worker health verified healthy; image 4118f3f06c98; M5 v126 / M6 v8 / M8 v67. Creation persisted before run request. NEXT: run this exact job once and trace it; query actual state before resuming. No additional jobs while unresolved.
