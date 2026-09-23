@@ -1406,3 +1406,11 @@ M5 retry hardening production deployment checkpoint:
 - Restarted only `ai-short-form-n8n` because the CLI explicitly required restart for published changes to take effect.
 - Post-restart published M5 matches Git exactly for `nodes`, `connections`, and `settings`; container state is running.
 - Next gate: rerun one controlled `gemini` visual-validation smoke job and confirm it passes M5 and reaches the M8 Gemini pixel-validation path.
+
+Gemini visual smoke blocker — job `00a38d43-1086-4b6c-abb6-da9762f6cc66`:
+- M4 `9728`, M5 `9733`, M6 `9744`, and M7 `9745` all completed successfully; M8 execution `9746` failed.
+- Exact M8 failure: `no Gemini-previewable relevant visual candidate for shot S2-A`.
+- S2 storyboard intent: lamp fixture inside the lighthouse lantern room. Searches returned 24 Pexels + 24 Pixabay candidates; Wikimedia returned 0 for all three queries.
+- Every S2 candidate was metadata-rejected before Gemini could inspect pixels. Several otherwise plausible Pexels lighthouse-lamp candidates were rejected by `missing_primary_subject_anchor:lamp fixture` / `insufficient_must_show_concept_coverage`.
+- Root architectural issue: Gemini mode currently inherits the metadata-mode `rejected=false` gate, so metadata false negatives can prevent Vision from seeing any candidate. The fix must keep hard safety/media rejects but allow bounded semantic-review candidates into Gemini; do not weaken the metadata-mode selection path.
+- Next gate: implement/test a Gemini-only candidate eligibility policy in `get_gemini_visual_candidate_sets`, then deploy M8/DB only and rerun one post-fix controlled Gemini job.
