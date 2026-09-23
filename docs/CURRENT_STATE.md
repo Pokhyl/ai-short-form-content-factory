@@ -1,5 +1,9 @@
 # Current State
 
+## Current post-DTW smoke — 2026-09-23
+
+Job 360aba8c-ce92-499e-8f01-504726d352dd created: en15 lighthouse, visual_validation_mode gemini. Media-worker health verified healthy; image 4118f3f06c98; M5 v126 / M6 v8 / M8 v67. Creation persisted before run request. NEXT: run this exact job once and trace it; query actual state before resuming. No additional jobs while unresolved.
+
 ## DTW media-worker deployed — 2026-09-23
 
 - Deployed source 1f45ad3 only to shorts-v2 media-worker. Live /worker/server.py equals Git; SHA256 e672e125a10115581acf748bfa8477d9a84d1eac253566f5d8e0191961099da1. New image sha256:4118f3f06c98cb37cf1985bfb97b56d1c1ec7088d8e7c76726d7e209e2393ec2.
