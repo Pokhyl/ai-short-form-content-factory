@@ -1214,3 +1214,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M5 == Git; Publisher/Studio 200; restart 0; supporting services healthy.
 - Active project executions = 0.
 - Next: exactly one fresh PL15.
+
+
+## Current blocker: M5 execution 9699 — 2026-09-23
+
+- Job `d0d127b8-c70a-4cef-b3ae-1dc2cc43e104` is terminal `script_failed`.
+- Initial / repair1 / repair2 visual-primary failures: power lines -> transformer station -> electrical substation, each replacing inherited `electric generator`.
+- S5 narration starts with `który` and does not explicitly name a new visual primary; validator correctly rejects the switches.
+- Repair 2 received only stripped `A -> B [line 698]` diagnostics.
+- Candidate fix already exists uncommitted in shared working tree: generic stripped-error normalization in both repair builders plus regression test.
+- Validate before commit/deploy; keep validator strict.

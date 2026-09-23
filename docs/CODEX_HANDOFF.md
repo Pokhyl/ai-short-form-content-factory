@@ -1929,3 +1929,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - M6 v8, M8 v64, M9 v1 unchanged.
 - Live M5 == Git; Publisher/Studio 200; no n8n/media-worker restart; supporting services healthy; active executions 0.
 - Next: one fresh PL15 only.
+
+
+### M5 execution 9699 blocker checkpoint — 2026-09-23
+
+- PL15 job `d0d127b8-c70a-4cef-b3ae-1dc2cc43e104`: M4 PASS, M5 v121 FAIL, later stages absent.
+- Anaphoric S5 should preserve prior generator primary; initial/repair1/repair2 instead switched to power lines / transformer station / electrical substation.
+- Validator correctly rejected all three.
+- n8n passed stripped `A -> B [line N]` error text to repair logic.
+- Shared working tree already contains an uncommitted generic error-normalization candidate + regression test from a parallel process.
+- Next: docs-only checkpoint, then validate candidate; no new job.

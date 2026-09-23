@@ -1014,3 +1014,51 @@ Immediate next step:
 3. Follow only that job to terminal state.
 4. If machine QA passes, inspect exact MP4 technically and manually before EN30.
 5. If it fails, checkpoint the exact blocker before any new change.
+
+
+## Fresh PL15 on M5 v121 — execution 9699 blocker checkpoint
+
+Job: `d0d127b8-c70a-4cef-b3ae-1dc2cc43e104`
+
+Pipeline:
+- M4 PASS
+- M5 v121 execution `9699`: FAIL
+- M6/M7/M8/M9 did not run
+- script_run: `b97c46b5-0b89-47de-a14d-1879eaffe669`
+
+Exact sequence:
+- initial storyboard rejected: `electric generator -> power lines [line 698]`
+- first repair rejected: `electric generator -> transformer station [line 698]`
+- second repair rejected: `electric generator -> electrical substation [line 698]`
+- final failing node: `Validate Repaired Storyboard 2`
+
+Scene context:
+- S4 narration: `Obracający się wirnik porusza generator,`
+- S4 primary: `electric generator`
+- S5 narration: `który wytwarza czystą energię elektryczną.`
+- S5 does not explicitly name a new concrete visual primary.
+- The validator is correct: the likely inherited primary is the generator.
+
+Confirmed repair-path defect:
+- all three model attempts violate the existing anaphoric visual-primary contract;
+- Repair 2 received only the stripped diagnostic `electric generator -> transformer station [line 698]`;
+- n8n removed the descriptive validator prefix, leaving an opaque `A -> B [line N]` message;
+- the validator must remain fail-closed.
+
+Candidate fix scope:
+- normalize stripped `A -> B [line N]` errors in both storyboard repair builders into an explicit generic anaphoric visual-primary diagnosis;
+- no generator/substation/hydropower hardcoding;
+- no validator weakening.
+
+Shared working-tree note:
+- a parallel process has already placed an uncommitted candidate implementation and regression test in the working tree;
+- do not overwrite it;
+- validate it before fix commit/deploy.
+
+Next:
+1. Commit this docs/evidence blocker checkpoint only.
+2. Run focused regression tests on the existing candidate fix.
+3. Run full suite, JSON/diff/M5 Code-node checks.
+4. If all PASS, record tested fix, commit/push code+test+docs.
+5. M5-only deploy after zero-active check/backup/fingerprint.
+6. No new PL15 before verified deploy.

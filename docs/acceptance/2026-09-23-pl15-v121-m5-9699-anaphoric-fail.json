@@ -1,0 +1,37 @@
+{
+  "date": "2026-09-23",
+  "status": "pl15_v121_m5_9699_anaphoric_failure_confirmed",
+  "job_id": "d0d127b8-c70a-4cef-b3ae-1dc2cc43e104",
+  "m5_execution_id": 9699,
+  "script_run_id": "b97c46b5-0b89-47de-a14d-1879eaffe669",
+  "pipeline": {
+    "M4": "passed",
+    "M5": "failed",
+    "M6": "not_run",
+    "M7": "not_run",
+    "M8": "not_run",
+    "M9": "not_run"
+  },
+  "failure_node": "Validate Repaired Storyboard 2",
+  "attempt_sequence": [
+    "initial: electric generator -> power lines [line 698]",
+    "repair 1: electric generator -> transformer station [line 698]",
+    "repair 2: electric generator -> electrical substation [line 698]"
+  ],
+  "scene_context": {
+    "S4_narration": "Obracający się wirnik porusza generator,",
+    "S4_primary": "electric generator",
+    "S5_narration": "który wytwarza czystą energię elektryczną.",
+    "S5_final_primary": "electrical substation"
+  },
+  "confirmed_facts": [
+    "S5 begins with an anaphoric relative pronoun and does not explicitly name a new concrete visual primary.",
+    "The deterministic validator correctly requires preserving the likely inherited generator primary.",
+    "All three model attempts changed the visual primary away from the inherited generator.",
+    "Repair 2 received only the stripped validator message 'electric generator -> transformer station [line 698]' rather than the descriptive anaphoric-validator prefix."
+  ],
+  "root_cause": "The model repair path repeatedly violates the existing anaphoric visual-primary contract, while n8n also strips the descriptive validator prefix before repair, leaving only an opaque A -> B [line N] diagnostic. The validator itself is correct and must remain fail-closed.",
+  "candidate_fix_scope": "Generic normalization of stripped A -> B [line N] validator errors inside both storyboard repair builders into an explicit anaphoric visual-primary diagnosis. No topic-specific vocabulary and no validator weakening.",
+  "working_tree_note": "An uncommitted candidate fix and regression test are already present in the shared working tree from a parallel process; they must be validated before commit/deploy.",
+  "next_step": "Commit this blocker checkpoint only; then validate the existing candidate fix with focused/full tests, JSON/diff/Code-node checks, and only then commit/push the fix."
+}
