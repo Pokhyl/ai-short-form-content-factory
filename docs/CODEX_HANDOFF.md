@@ -1888,3 +1888,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Supports object/string `$json.error`; exact stripped n8n word-count error is retryable, unrelated strings are not.
 - Focused 10/10, full 293/293, M5 Code nodes 59/59, JSON/diff PASS.
 - Next: M5-only deploy, then exactly one fresh PL15.
+
+
+### M5 v120 deployed — execution 9687 classifier fix — 2026-09-23
+
+- Fix commit `6bbacc5a740a296f2d7bf0009bc5eaff41de9359`.
+- Published only M5: v120 `28f7440c-9410-4143-8962-352f967cfe1f`; v119 was `bad8d367-3399-4ada-87c4-3a6d6c044b62`.
+- Backup `.backups/m5-before-9687-classifier-20260923-131636.json`, SHA256 `4a512505d75848a7f432cf4dc328bd0f5113c502f877ff0d19cbd6661402c50e`.
+- Other 31 workflow fingerprint unchanged: `31|cfacbe4e094739b106490c3c93ec2506`.
+- Published M5 nodes/connections/settings match Git.
+- M6 v8, M8 v64, M9 v1 unchanged.
+- Publisher/Studio 200; no n8n/media-worker restart; supporting services healthy; active project executions 0.
+- Next: one fresh PL15 only.

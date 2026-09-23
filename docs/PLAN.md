@@ -898,3 +898,31 @@ Next:
 4. Deploy only M5 and publish current version; expect exactly v120.
 5. Verify live M5 nodes/connections/settings == Git; non-M5 fingerprint unchanged; Publisher/Studio 200; no container restart.
 6. Run exactly one fresh PL15 and follow it to terminal state.
+
+
+## M5 v120 classifier fix deployed and verified
+
+Production:
+- M5 v120 / `28f7440c-9410-4143-8962-352f967cfe1f`
+- M6 v8 / `0bcabe39-ae90-42fe-842b-8a56ad238709`
+- M8 v64 / `88b9f81a-6d41-452b-8a35-082b7c088006`
+- M9 v1 / `5b6c937c-1767-4c3e-99c4-31ea38a26961`
+
+Deploy verification:
+- M5 incremented exactly once: v119 -> v120.
+- Published backup: `.backups/m5-before-9687-classifier-20260923-131636.json`.
+- Backup SHA256: `4a512505d75848a7f432cf4dc328bd0f5113c502f877ff0d19cbd6661402c50e`.
+- non-M5 fingerprint unchanged: `31|cfacbe4e094739b106490c3c93ec2506`.
+- live M5 nodes/connections/settings == Git: PASS.
+- Publisher 200; Studio 200.
+- n8n running, restart 0.
+- media worker running/healthy, restart 0.
+- Postgres and SearXNG healthy.
+- active project executions = 0.
+
+Immediate next step:
+1. Verify Git clean and active project executions = 0.
+2. Run exactly ONE fresh PL15 on v120/v64.
+3. Follow only that job to terminal state.
+4. If it reaches M9 machine PASS, perform exact MP4 technical/audio/visual review before EN30.
+5. If it fails, checkpoint the exact new blocker before any new fix or retry.

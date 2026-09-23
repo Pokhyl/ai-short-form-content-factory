@@ -1174,3 +1174,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Unrelated string errors remain fail-closed.
 - Focused 10/10, full 293/293, JSON/diff/59 M5 Code nodes PASS.
 - Not production-complete until M5-only deploy is verified.
+
+
+## M5 v120 deployed and verified — 2026-09-23
+
+- M5 v120 activeVersionId `28f7440c-9410-4143-8962-352f967cfe1f`.
+- M6 v8 / M8 v64 / M9 v1 unchanged.
+- Backup `.backups/m5-before-9687-classifier-20260923-131636.json`, SHA256 `4a512505d75848a7f432cf4dc328bd0f5113c502f877ff0d19cbd6661402c50e`.
+- Other 31 workflows unchanged by fingerprint `31|cfacbe4e094739b106490c3c93ec2506`.
+- Live M5 == Git; Publisher/Studio 200; n8n restart 0; media worker healthy restart 0.
+- Active project executions = 0.
+- Next: exactly one fresh PL15.
