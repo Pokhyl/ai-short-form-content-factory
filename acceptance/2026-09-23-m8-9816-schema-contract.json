@@ -29,8 +29,14 @@
     "git_diff_check": "PASS"
   },
   "production": {
-    "deployed": false,
-    "active_m8": "v68 / 4f9709cb-b819-417f-8991-fc2c3a4eaebc",
-    "next": "commit and push source, then deploy only M8 after zero-active verification and run one controlled Gemini smoke"
+    "deployed": true,
+    "active_m8": "v69 / d073d7d8-3490-468a-bb6a-79771d367059",
+    "backup": ".backups/m8-before-9816-schema.json",
+    "backup_sha256": "7c653e16a852e6354a180f61aaf341ace038c07f6d91ac07fcfc32c2e875fc1a",
+    "published_source_equal_git": true,
+    "publisher_healthz": 200,
+    "publisher_restart_count": 0,
+    "non_m8_fingerprint_unchanged": "69a9cde4d28611881f2cbf64d21958b3",
+    "next": "run exactly one controlled Gemini smoke and trace it to terminal"
   }
 }

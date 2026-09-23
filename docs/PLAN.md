@@ -1,5 +1,13 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M8 v69 structured-output fix deployed — 2026-09-23
+
+- Source commit c6f0445 is published only to VideoM8Visuals001 as v69, activeVersionId d073d7d8-3490-468a-bb6a-79771d367059.
+- Predeploy published backup: .backups/m8-before-9816-schema.json, SHA256 7c653e16a852e6354a180f61aaf341ace038c07f6d91ac07fcfc32c2e875fc1a.
+- Zero active executions before deploy. Publisher restarted once as required by n8n CLI; healthz 200, container restart count 0.
+- Published M8 nodes/connections/settings equal Git. Non-M8 workflow fingerprint stayed 69a9cde4d28611881f2cbf64d21958b3. Active executions after verification: 0.
+- NEXT: create exactly one controlled en15 lighthouse Gemini smoke and trace that exact job to terminal. Do not create a second job while unresolved.
+
 ## M8 9816 malformed Gemini JSON — source fix verified, 2026-09-23
 
 - Controlled job ec85da0d-3947-4b02-b29d-a666094e2009 is terminal: M3 9810 PASS, M4 9812 PASS, M5 9813 PASS, M6 9814 PASS, M7 9815 PASS, M8 9816 ERROR; no M9.
