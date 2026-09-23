@@ -1475,3 +1475,11 @@ M5 execution 9783 full-regression checkpoint:
 - Full Node regression suite after precision count-mismatch fallback: 321/321 PASS.
 - `git diff --check`: PASS.
 - Next gate: commit/push, verify zero active publisher executions, back up current published M5, deploy/publish only M5, verify live workflow matches Git, then run one controlled Gemini smoke job.
+
+M5 execution 9783 production deployment checkpoint:
+- Pre-deploy active publisher executions: 0.
+- Backup: `.backups/m5-before-precision-count-fix-20260923-182436.json` SHA256 `3a1337530511ef641cc00bd8792d86e1232c56bc62a378a753963db0724599be`.
+- Published only `VideoM5Storyboard001`; active version `945c1dd0-900c-4aca-9fbb-b1333a56b0fb`.
+- Restarted only publisher n8n because CLI required it.
+- Published M5 matches Git exactly for nodes/connections/settings; n8n is running.
+- Next gate: one controlled Gemini smoke job through M5→M8. No additional test jobs until its result is known.
