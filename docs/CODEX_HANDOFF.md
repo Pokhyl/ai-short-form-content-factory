@@ -1,5 +1,11 @@
 # Codex handoff — production video factory
 
+## Active smoke job — 2026-09-23
+
+- Created job 03ca6223-29b4-4782-95b3-e968a5ced556 via M3: topic how does a lighthouse work?, en, 15s, visual_validation_mode gemini.
+- Target production M5 v125 / 9d92b100-7739-4eed-9bf4-093395c3db32, M6 v8, M8 v67.
+- NEXT: launch/trace this exact job via /factory/run and stored executions. Do not create another job. This creation checkpoint precedes the run request; query job/stage state before resuming to avoid duplicate launch.
+
 ## M5 v125 deployed — 2026-09-23
 
 - Source 6c0e7d0 deployed only to VideoM5Storyboard001. Active M5 v125: 9d92b100-7739-4eed-9bf4-093395c3db32. Published nodes/connections and current nodes/connections/settings equal Git.
