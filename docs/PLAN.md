@@ -1456,3 +1456,11 @@ Gemini preview 429 full-regression checkpoint:
 - `git diff --check`: PASS.
 - Source checkpoint: `0e79080`.
 - Next gate: verify zero active publisher executions, back up current M8 and media-worker image/source, deploy only media-worker + `VideoM8Visuals001`, verify exact live source/state, then run one controlled Gemini smoke job.
+
+Gemini preview 429 production deployment checkpoint:
+- Pre-deploy active publisher executions: 0.
+- Backups: `.backups/m8-before-partial-preview-20260923-181146.json` SHA256 `538046898905fb193afa4429f2a7c8a62b73e64c1d437bc803acb3f6e805e7b1`; `.backups/media-worker-server-before-partial-preview-20260923-181146.py` SHA256 `c52093c18f6292d14554a31ade79f12dd6502cccf1a40381d41035413717d062`.
+- media-worker rebuilt/recreated only for the per-candidate preview fail-soft behavior; live source SHA256 `a3d07f116c32f251bc6191cb7452a74a53c89d052ad7c53bf9812b965ee14714`, image `sha256:64e96a07a1d5438cbe8ffea28c815a36e4be1480ad3ded270c7839e75ab4d0d8`, health `healthy`, restart count 0.
+- Published only `VideoM8Visuals001`; active version `21599d8f-f0c9-48c8-af86-ba9e297cdd5a`. Restarted only publisher n8n because CLI required it.
+- Published M8 matches Git exactly for nodes/connections/settings.
+- Next gate: start one controlled Gemini smoke job and verify it reaches actual Gemini pixel validation without the previous 429 scene-drop failure. No acceptance sequence yet.

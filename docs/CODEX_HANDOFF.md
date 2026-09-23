@@ -2038,3 +2038,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Applied current `db/09-visuals.sql`; published only `VideoM8Visuals001`, active version `271d4c60-29b3-4ec9-b0e1-cf4f48baade3`; restarted only publisher n8n because CLI required it.
 - Live M8 published nodes/connections/settings match Git. Review helper behavior verified: accepted=0, semantic-soft=1, hard must-not=99, non-photo=99.
 - Controlled smoke job `dba2ef8f-84f6-4676-b75e-12d5b7d96dab` is the only post-fix test job. At last check M4 had succeeded and M5 was running. Do not create another test job; continue tracing this exact job.
+
+
+## 2026-09-23 — Gemini preview 429 production fix
+- Smoke job `dba2ef8f-84f6-4676-b75e-12d5b7d96dab` failed in M8 `9757` because two `/visual-previews` calls wrapped upstream 429s into 422s; only 3/5 scenes reached Gemini, so Collect failed on scene-count mismatch.
+- media-worker now handles preview download failures per candidate, returns successfully fetched previews when at least one remains, and fails only when all previews fail. M8 prunes missing previews and renumbers surviving candidate indices before Gemini.
+- Focused Gemini tests 15/15 PASS; full Node suite 320/320 PASS; `git diff --check` PASS.
+- Production media-worker image `sha256:64e96a07a1d5438cbe8ffea28c815a36e4be1480ad3ded270c7839e75ab4d0d8`, live source SHA256 `a3d07f116c32f251bc6191cb7452a74a53c89d052ad7c53bf9812b965ee14714`, healthy/restart 0.
+- M8 active version `21599d8f-f0c9-48c8-af86-ba9e297cdd5a`; published nodes/connections/settings match Git.
+- Next: one controlled post-fix Gemini smoke job only; verify actual `validation_evidence` before acceptance sequence.
