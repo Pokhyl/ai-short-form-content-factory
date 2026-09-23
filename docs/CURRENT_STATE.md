@@ -1233,3 +1233,25 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Validators remain strict; no topic-specific logic.
 - Focused 35/35, full 295/295, JSON/diff/59 M5 Code nodes PASS.
 - Pending M5-only deploy.
+
+
+## M5 v122 deployed and verified — 2026-09-23
+
+- M5 v122 activeVersionId `4a9a48fd-985c-4f77-b592-44a0945377dd`.
+- M6 v8 / M8 v64 / M9 v1 unchanged.
+- Backup `.backups/m5-before-9699-anaphoric-20260923-135204.json`, SHA256 `a7ff82d9608b05cd8648d856dd9f2023adcd7208dd47d55f1f4cb814a4f20628`.
+- Other 31 workflows unchanged by fingerprint `31|cfacbe4e094739b106490c3c93ec2506`.
+- Published M5 == Git; Publisher/Studio 200; n8n restart 0; media worker healthy restart 0.
+- Active project executions = 0.
+- Next: exactly one fresh PL15.
+
+
+## M5 v122 deployed and verified — 2026-09-23
+
+- M5 v122 activeVersionId `4a9a48fd-985c-4f77-b592-44a0945377dd`.
+- M6 v8 / M8 v64 / M9 v1 unchanged.
+- Backup `.backups/m5-before-9699-repair-error-20260923-135152.json`, SHA256 `a7ff82d9608b05cd8648d856dd9f2023adcd7208dd47d55f1f4cb814a4f20628`.
+- Other 31 workflows unchanged by fingerprint `31|cfacbe4e094739b106490c3c93ec2506`.
+- Live M5 == Git; Publisher/Studio 200; restart 0; supporting services healthy.
+- Active project executions = 0.
+- Next: exactly one fresh PL15.

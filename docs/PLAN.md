@@ -1080,3 +1080,59 @@ Validation:
 - `git diff --check`: PASS.
 
 Next: commit/push the tested fix, then M5-only deploy with zero-active check, backup and non-M5 fingerprint. No new PL15 before verified deploy.
+
+
+## M5 v122 repair-error normalization deployed and verified
+
+Production:
+- M5 v122 / `4a9a48fd-985c-4f77-b592-44a0945377dd`
+- M6 v8 / `0bcabe39-ae90-42fe-842b-8a56ad238709`
+- M8 v64 / `88b9f81a-6d41-452b-8a35-082b7c088006`
+- M9 v1 / `5b6c937c-1767-4c3e-99c4-31ea38a26961`
+
+Deploy verification:
+- M5 incremented exactly once: v121 -> v122.
+- Published backup: `.backups/m5-before-9699-anaphoric-20260923-135204.json`.
+- Backup SHA256: `a7ff82d9608b05cd8648d856dd9f2023adcd7208dd47d55f1f4cb814a4f20628`.
+- import left v122 active with activeVersionId `4a9a48fd-985c-4f77-b592-44a0945377dd`; no extra publish command was issued.
+- published M5 nodes/connections/settings == Git: PASS.
+- non-M5 fingerprint unchanged: `31|cfacbe4e094739b106490c3c93ec2506`.
+- Publisher 200; Studio 200.
+- n8n running, restart 0.
+- media worker running/healthy, restart 0.
+- active project executions = 0.
+
+Immediate next step:
+1. Commit/push this deploy checkpoint.
+2. Verify Git clean and active project executions = 0.
+3. Run exactly ONE fresh PL15 on v122/v64.
+4. Follow only that job to terminal state.
+5. If machine QA passes, inspect the exact MP4 technically and manually before EN30.
+6. If it fails, checkpoint the exact blocker before any new change.
+
+
+## M5 v122 repair-error normalization deployed and verified
+
+Production:
+- M5 v122 / `4a9a48fd-985c-4f77-b592-44a0945377dd`
+- M6 v8 / `0bcabe39-ae90-42fe-842b-8a56ad238709`
+- M8 v64 / `88b9f81a-6d41-452b-8a35-082b7c088006`
+- M9 v1 / `5b6c937c-1767-4c3e-99c4-31ea38a26961`
+
+Deploy verification:
+- M5 incremented exactly once: v121 -> v122.
+- Backup: `.backups/m5-before-9699-repair-error-20260923-135152.json`.
+- Backup SHA256: `a7ff82d9608b05cd8648d856dd9f2023adcd7208dd47d55f1f4cb814a4f20628`.
+- non-M5 fingerprint unchanged: `31|cfacbe4e094739b106490c3c93ec2506`.
+- live M5 nodes/connections/settings == Git: PASS.
+- Publisher 200; Studio 200.
+- n8n restart 0; media worker healthy restart 0.
+- Postgres/SearXNG healthy.
+- active project executions = 0.
+
+Immediate next step:
+1. Verify Git clean and active project executions = 0.
+2. Run exactly ONE fresh PL15 on v122/v64.
+3. Follow only that job to terminal state.
+4. If machine QA passes, inspect exact MP4 technically and manually before EN30.
+5. If it fails, checkpoint the exact new blocker before any new change.
