@@ -2,7 +2,7 @@
 
 ## Current M8 v68 smoke — 2026-09-23
 
-Job ec85da0d-3947-4b02-b29d-a666094e2009 created (en15 lighthouse, gemini). M5 v126 / M6 v8 / M8 v68 active 4f9709cb-b819-417f-8991-fc2c3a4eaebc; worker image 4118f3f06c98. Creation checkpoint precedes run request. NEXT: launch once and trace this exact job; inspect actual state before resuming. No additional job while unresolved.
+Job ec85da0d-3947-4b02-b29d-a666094e2009 created (en15 lighthouse, gemini). M5 v126 / M6 v8 / M8 v68 active 4f9709cb-b819-417f-8991-fc2c3a4eaebc; worker image 4118f3f06c98. Run accepted. M3 9810 PASS; coordinator 9811; M4 9812 PASS; M5 9813 PASS; M6 9814 PASS; M7 9815 PASS; M8 9816 RUNNING at this checkpoint. NEXT: trace M8 9816 to terminal and inspect Gemini evidence; do not launch this job again or create another job while unresolved.
 
 ## M8 v68 deployed — 2026-09-23
 
