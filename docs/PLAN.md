@@ -1,5 +1,13 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M5 v128 structural-routing fix deployed — 2026-09-23
+
+- Source 79d3103 published only to VideoM5Storyboard001 as v128, activeVersionId 18e33555-e7e7-4ed4-8c86-d87752a42f69.
+- Backup .backups/m5-before-9833-fix.json SHA256 346395894958caf263989f82ca41970617c3dddbd50a9e39a3729b1f96aaed74.
+- Zero active executions before deploy. Publisher restart completed; healthz 200, restart count 0.
+- Published M5 nodes/connections/settings equal Git. Non-M5 fingerprint remains e01dde3463a9ea3f5b5c693865ab3726. Active executions after verification: 0.
+- NEXT: create exactly one controlled en15 lighthouse Gemini smoke and trace it to terminal.
+
 ## M5 9833 structural-repair routing — source fix verified, 2026-09-23
 
 - Job 39ccba65-a380-4d1b-86f7-98c862307ecb is terminal script_failed: M3 9828 PASS, M4 9830 PASS, M5 9833 ERROR; no M6/M7/M8/M9.
