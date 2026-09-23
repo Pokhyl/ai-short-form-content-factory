@@ -2334,6 +2334,7 @@ class Handler(BaseHTTPRequestHandler):
             raise ValueError("candidates must contain between 1 and 3 items")
 
         previews = []
+        failures = []
         total_bytes = 0
         for index, candidate in enumerate(candidates, start=1):
             if not isinstance(candidate, dict):
@@ -2352,11 +2353,37 @@ class Handler(BaseHTTPRequestHandler):
             if not preview_url:
                 raise ValueError("preview_url is required")
 
-            preview = fetch_visual_preview(provider, preview_url)
-            total_bytes += int(preview["bytes"])
-            if total_bytes > MAX_VISION_PREVIEW_TOTAL_BYTES:
-                raise ValueError("combined visual previews exceed maximum size")
+            try:
+                preview = fetch_visual_preview(provider, preview_url)
+            except (
+                ValueError,
+                OSError,
+                urllib.error.URLError,
+                urllib.error.HTTPError,
+            ) as exc:
+                failures.append(
+                    {
+                        "candidate_index": index,
+                        "provider": provider,
+                        "provider_asset_id": provider_asset_id,
+                        "error": str(exc),
+                    }
+                )
+                continue
 
+            preview_bytes = int(preview["bytes"])
+            if total_bytes + preview_bytes > MAX_VISION_PREVIEW_TOTAL_BYTES:
+                failures.append(
+                    {
+                        "candidate_index": index,
+                        "provider": provider,
+                        "provider_asset_id": provider_asset_id,
+                        "error": "combined visual previews exceed maximum size",
+                    }
+                )
+                continue
+
+            total_bytes += preview_bytes
             previews.append(
                 {
                     "candidate_index": index,
@@ -2366,13 +2393,19 @@ class Handler(BaseHTTPRequestHandler):
                 }
             )
 
+        if not previews:
+            raise ValueError("no visual previews could be fetched")
+
         self._json(
             200,
             {
                 "status": "ready",
+                "requested_count": len(candidates),
                 "preview_count": len(previews),
+                "failure_count": len(failures),
                 "total_bytes": total_bytes,
                 "previews": previews,
+                "failures": failures,
             },
         )
 

@@ -317,3 +317,54 @@ test('Gemini selection evidence records when Vision rescued a metadata-rejected 
   assert.equal(evidence.review_bucket, 1);
   assert.match(evidence.metadata_rejection_reason, /missing_primary_subject_anchor/);
 });
+
+
+test('partial preview fetch keeps usable candidates and renumbers them for Gemini', () => {
+  const ctx = {
+    visual_run_id: 'run',
+    shot_uuid: 'shot',
+    shot_key: 'S2-A',
+    scene_order: 2,
+    shot_order: 1,
+    visual_intent: 'Lighthouse lamp in lantern room',
+    must_show: ['lamp fixture'],
+    must_not_show: ['flame'],
+    candidates: [
+      { candidate_index: 1, candidate_id: 'c1', provider: 'wikimedia', provider_asset_id: 'w1' },
+      { candidate_index: 2, candidate_id: 'c2', provider: 'pexels', provider_asset_id: 'p2' },
+      { candidate_index: 3, candidate_id: 'c3', provider: 'pexels', provider_asset_id: 'p3' },
+    ],
+  };
+  const result = runCode('Build Gemini Vision Request', {
+    json: {
+      statusCode: 200,
+      body: {
+        status: 'ready',
+        requested_count: 3,
+        preview_count: 2,
+        failure_count: 1,
+        failures: [{ candidate_index: 1, provider: 'wikimedia', provider_asset_id: 'w1', error: 'HTTP Error 429' }],
+        previews: [
+          { candidate_index: 2, provider_asset_id: 'p2', mime_type: 'image/jpeg', data_base64: 'YQ==', sha256: '1'.repeat(64), bytes: 1 },
+          { candidate_index: 3, provider_asset_id: 'p3', mime_type: 'image/webp', data_base64: 'Yg==', sha256: '2'.repeat(64), bytes: 1 },
+        ],
+      },
+    },
+    refs: {
+      'Expand Gemini Candidate Sets': { item: { json: ctx } },
+    },
+  });
+  assert.deepEqual(result.json.candidates.map((c) => c.candidate_index), [1, 2]);
+  assert.deepEqual(result.json.candidates.map((c) => c.candidate_id), ['c2', 'c3']);
+  assert.equal(result.json.preview_failures.length, 1);
+  assert.equal(result.json.gemini_body.contents[0].parts.filter((part) => part.inlineData).length, 2);
+});
+
+test('media worker keeps per-candidate preview failures but fails when every preview fails', () => {
+  const source = fs.readFileSync(path.join(root, 'services', 'media-worker', 'server.py'), 'utf8');
+  assert.match(source, /failures = \[\]/);
+  assert.match(source, /failures\.append\(/);
+  assert.match(source, /if not previews:/);
+  assert.match(source, /raise ValueError\("no visual previews could be fetched"\)/);
+  assert.match(source, /"failure_count": len\(failures\)/);
+});
