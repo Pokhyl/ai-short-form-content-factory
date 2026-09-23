@@ -1215,3 +1215,27 @@ Next:
 3. Recreate only `shorts-v2-media-worker-1`.
 4. Verify running/healthy, restart count, image/source match, supporting services unchanged.
 5. Run exactly one fresh PL15 and manually review the actual final MP4.
+
+
+## Blurred-fill media-worker deployed and verified
+
+Deployment:
+- only Compose service `media-worker` rebuilt/recreated;
+- old image: `sha256:74433bc72ce63976434949c8c5144bf6f79596adb689d381db4155191b741220`;
+- new image: `sha256:40d31f96de302b8bf0f69bd07e5d9dac2d82a8ed8e102fc0a1c383ea4129fd3c`;
+- rollback image recorded in `.backups/worker-before-blurred-fill-20260923-141837.txt`.
+
+Verification:
+- worker running / healthy / restart 0;
+- live `/worker/server.py` SHA256 matches Git exactly: `c6ee183981d45283f99f52a835906a9546af9bdba9fdf2b71ca672c97a2fae91`;
+- Postgres, SearXNG and n8n container IDs unchanged;
+- active project executions = 0;
+- Publisher 200; Studio 200;
+- Git clean and HEAD == origin/main.
+
+Immediate next:
+1. Commit/push this deploy checkpoint.
+2. Run exactly ONE fresh PL15.
+3. Follow only that job to terminal state.
+4. If machine QA passes, inspect exact final MP4 frames, cropdetect and audio before deciding acceptance.
+5. If PL15 passes manual acceptance, checkpoint and proceed to EN30.

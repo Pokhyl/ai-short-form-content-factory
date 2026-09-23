@@ -1274,3 +1274,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - All five exact failed PL15 assets render as full 1080x1920 content by cropdetect.
 - Full Node suite 295/295; Python compile and diff checks PASS.
 - Not production-complete until the media-worker-only deploy is verified.
+
+
+## Blurred-fill media-worker live — 2026-09-23
+
+- New worker image `sha256:40d31f96de302b8bf0f69bd07e5d9dac2d82a8ed8e102fc0a1c383ea4129fd3c`.
+- Live server.py exactly matches Git.
+- Worker healthy, restart 0.
+- Supporting containers unchanged.
+- Publisher/Studio 200; active executions 0.
+- Next: one fresh PL15 and manual MP4 review.

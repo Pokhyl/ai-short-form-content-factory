@@ -1989,3 +1989,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Exact failed PL15 assets all produce full-frame cropdetect `1080:1920:0:0`.
 - Regression 3/3, Node 295/295, Python compile/diff PASS.
 - Next: media-worker-only rebuild/recreate, then one fresh PL15 and manual MP4 review.
+
+
+### Blurred-fill media-worker deployed
+
+- Only `shorts-v2-media-worker-1` recreated.
+- New image `sha256:40d31f96de302b8bf0f69bd07e5d9dac2d82a8ed8e102fc0a1c383ea4129fd3c`.
+- Live source hash == Git `c6ee183981d45283f99f52a835906a9546af9bdba9fdf2b71ca672c97a2fae91`.
+- Worker healthy/restart 0; Postgres/SearXNG/n8n unchanged; Publisher/Studio 200.
+- Next: exactly one fresh PL15, then actual MP4 manual acceptance.
