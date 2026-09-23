@@ -1070,3 +1070,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Gemini hard retry returned 22 words instead of 29; existing semantic hybrid could only reach 26.
 - Timing/semantic gates remain unchanged.
 - Next: bounded compliance retry + deterministic 9660 regression; no new PL15 before M5 fix/deploy.
+
+
+## M5 9660 compliance fix ready for deploy — 2026-09-23
+
+- One bounded final exact-word compliance retry implemented.
+- No timing/semantic gate weakened.
+- Full suite 288/288 PASS.
+- M5 graph PASS; 59/59 Code-node syntax PASS.
+- Pending: commit/push then M5-only production deploy.

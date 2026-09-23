@@ -1763,3 +1763,17 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Semantic hybrid could recover only 26 words; validator correctly failed at delta 3 > allowed 2.
 - Root cause: bounded provider response did not comply with exact word-count contract.
 - Fix direction: one additional bounded compliance retry only for this exact non-compliance condition, with explicit previous counts and hard per-line counts; same semantic/timing gates remain.
+
+
+### M5 9660 bounded word-count compliance retry implemented — 2026-09-23
+
+- Added one bounded compliance retry only after the existing final exact-word validator fails with `too far from target before TTS`.
+- The classifier does not retry provider, parse, or semantic failures.
+- Compliance prompt includes actual previous returned counts, exact hard total/per-scene counts, immutable originals, and current semantic-valid narration.
+- Compliance validator reuses the same semantic/word-count logic and cannot loop.
+- Exact 9660 regression fixture: `tests/fixtures/m5-9660-final-word-count-compliance.json`.
+- Regression test: `tests/m5-9660-final-word-count-compliance.test.cjs`.
+- Focused tests 10/10 PASS.
+- Full suite 288/288 PASS.
+- M5 graph PASS (132 nodes); Code-node syntax 59/59 PASS; diff/JSON checks PASS.
+- Next: M5-only deploy, verify, then one fresh PL15.

@@ -18,6 +18,7 @@ const pairs=[
   ['Repair Final Word Count','Validate Final Word Count Retry'],
   ['Repair Final Measured Correction','Validate Final Measured Correction'],
   ['Repair Final Measured Word Count','Validate Final Measured Word Count Retry'],
+  ['Repair Final Measured Word Count Compliance','Validate Final Measured Word Count Compliance Retry'],
 ];
 
 test('all Gemini HTTP nodes expose errors on main output so n8n retry detector can see json.error',()=>{
@@ -42,7 +43,8 @@ test('all Gemini validators preserve provider failure after transient retries an
     'Validate Final Duration Repair':'Prepare Script Failure',
     'Validate Final Word Count Retry':'Prepare Script Failure',
     'Validate Final Measured Correction':'Prepare Script Failure',
-    'Validate Final Measured Word Count Retry':'Prepare Script Failure',
+    'Validate Final Measured Word Count Retry':'Classify Final Measured Word Count Retry Failure',
+    'Validate Final Measured Word Count Compliance Retry':'Prepare Script Failure',
   };
 
   for(const [httpName,validatorName] of pairs){

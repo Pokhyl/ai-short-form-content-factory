@@ -527,25 +527,47 @@ Verified provider-contract failure:
 
 Current blocker is not TTS stochasticity and not the timing tolerance. It is non-compliance of the bounded final exact-word Gemini retry.
 
+## M5 execution 9660 fix implemented and tested
+
+Implemented:
+- existing final exact-word validator still fails closed when the semantic-valid nearest total is too far from target;
+- only that exact `too far from target before TTS` error is classified for one extra bounded compliance retry;
+- all provider/parse/semantic errors continue to script failure;
+- compliance retry receives previous returned total/per-scene counts, immutable original narration, current semantic-valid narration, exact hard total and exact hard per-scene counts;
+- compliance retry cannot loop: its validator success goes to existing Probe 5 and its error goes directly to script failure.
+
+Execution 9660 deterministic regression:
+- previous Gemini response detected as 22 words with [8,4,3,3,4];
+- required counts [10,6,4,4,5], total 29;
+- semantic-valid exact 29-word response passes the same final validator;
+- repeated noncompliant 22-word response still fails closed.
+
+Validation:
+- focused compliance/provider tests: 10/10 PASS;
+- full project suite: 288/288 PASS;
+- M5 graph validation: PASS, 132 nodes;
+- M5 Code-node syntax: 59/59 PASS;
+- `git diff --check`: PASS;
+- M5 JSON parse: PASS.
+
 ## Immediate next step
 
-1. Do NOT create another acceptance job.
-2. Keep timing and semantic gates unchanged.
-3. Add one bounded final word-count compliance retry only for the specific `too far from target before TTS` condition.
-4. The compliance retry must receive:
-   - exact previous returned counts;
-   - exact required total;
-   - hard per-scene counts;
-   - immutable original narration;
-   - current semantic-valid narration;
-   - explicit feedback that the previous response violated the count contract.
-5. All other validator/provider/semantic errors must continue directly to script failure.
-6. Validate the compliance response with the same semantic and word-count validator used by the existing final retry.
-7. Add deterministic regression from execution `9660`.
-8. Run focused tests + complete suite + syntax/graph checks.
-9. Update PLAN/handoff/evidence; commit/push.
-10. Deploy ONLY M5 after active project execution count = 0 and verify live M5 == Git / all non-M5 workflows unchanged.
-11. Run exactly one fresh PL15 after deployment.
+1. Commit/push the M5 compliance fix and regression fixture/tests.
+2. Read this PLAN before production change.
+3. Verify Git clean, active project execution count = 0, and current production versions.
+4. Deploy ONLY M5.
+5. Before deploy export published M5 backup and fingerprint all non-M5 workflows.
+6. After deploy verify:
+   - M5 version increments exactly once;
+   - live M5 nodes/connections/settings == Git;
+   - non-M5 fingerprint unchanged;
+   - Publisher/Studio healthy;
+   - n8n/media-worker restart counts unchanged.
+7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
+8. Run exactly one fresh PL15.
+9. Follow only that job to terminal state; no parallel acceptance job.
+10. If machine QA passes, inspect actual MP4 technically + audio + every scene visual.
+11. If it fails, fix only the exact demonstrated blocker.
 
 ## Acceptance sequence after PL15
 

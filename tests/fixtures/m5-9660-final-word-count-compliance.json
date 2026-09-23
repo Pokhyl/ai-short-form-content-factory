@@ -1,0 +1,770 @@
+{
+  "source": {
+    "execution_id": 9660,
+    "job_id": "6aa86246-ec15-4514-a688-d150129d35ad",
+    "script_run_id": "a5985b2f-c8b6-4342-9ea9-57b00f9a2f35",
+    "failure": "final measured word-count retry too far from target before TTS: got 26, target 29, allowed delta 2"
+  },
+  "build_script_prompt": {
+    "script_run_id": "a5985b2f-c8b6-4342-9ea9-57b00f9a2f35",
+    "model": "gemini-3.5-flash-lite",
+    "topic": "jak działa elektrownia wodna?",
+    "language_code": "pl",
+    "target_duration_seconds": 15,
+    "word_min": 21,
+    "word_max": 33,
+    "target_words": 27,
+    "target_scenes": 5,
+    "target_shots": 5,
+    "evidence_map": {
+      "E1": "28b38e90-7c29-4fef-80d3-1a1eec5f23ec",
+      "E2": "98e4d737-9877-489d-89f6-c1bb0a9bb4c1",
+      "E3": "105c5afa-8794-4621-8f8e-48d9741f06b0",
+      "E4": "20877d22-722e-4737-8d36-a35f09b587ff",
+      "E5": "9eabdbc6-0903-4279-b1c7-aceb8c94f82c",
+      "E6": "34cd7a10-5b65-496f-bef2-881042c4b7e8"
+    },
+    "system_message": "You create factual short-form video scripts and executable visual storyboards. Use ONLY the evidence provided in the user message. Do not use outside knowledge, hidden memory, Google Search, URL fetching, or assumptions. Every scene narration must be supported by one or more evidence IDs from the supplied evidence list. If the supplied evidence cannot support a complete factual script, return JSON object {\"error\":\"INSUFFICIENT_EVIDENCE\"} and nothing else. Return valid JSON only. No markdown, comments, or prose outside JSON.",
+    "user_message": "TOPIC: jak działa elektrownia wodna?\nOUTPUT LANGUAGE: Polish (pl)\nTARGET DURATION: 15 seconds\nNARRATION WORD RANGE: 21-33 words\nTARGET NARRATION WORD COUNT: exactly 27 words if possible; never exceed the allowed range\nEXACT SCENE COUNT: 5\nEXACT TOTAL SHOT COUNT: 5\n\nOUTPUT CONTRACT:\n{\"narration\":\"continuous narration in the requested output language\",\"scenes\":[{\"scene_id\":\"S1\",\"narration\":\"exact contiguous narration segment\",\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S1-A\",\"visual_intent\":\"concrete visible subject/action/mechanism in English\",\"must_show\":[\"concrete required visual concept\"],\"must_not_show\":[\"specific conflicting visual if relevant\"],\"queries_en\":[\"precise technical query\",\"broader physical fallback query\",\"encyclopedic synonym query\"],\"preferred_media_type\":\"photo\"}]}]}\n\nRULES:\n- narration must equal all scene narration strings joined in scene order with one space;\n- scene_id values must be sequential S1, S2, S3...;\n- every scene must cite 1-4 valid evidence_ids from the supplied list;\n- each scene must contain exactly 1 shot;\n- each scene narration must be an exact contiguous segment of the continuous narration with 2-10 words; scene boundaries MAY occur inside a sentence because they are visual cut points, so a segment may start lowercase or end with comma/no terminal punctuation; the joined scene narrations must form natural complete narration that starts normally and ends with . ! ? or …;\n- if a scene narration segment begins with a relative/anaphoric word such as which/that/it, który/która/które, который/которая/которое, який/яка/яке, first resolve what noun/result the pronoun actually refers to; do NOT assume it refers to the previous shot primary when the previous narration introduced another referent after that primary; if it does refer to the previous visual primary, keep that primary unless the current segment explicitly names a new concrete primary; never switch to an object unrelated to the actual referent/current clause;\n- visual metadata must be grounded in the current narration segment plus the immediately preceding unfinished clause when the scene cut occurs inside one sentence;\n- shot_id must start with its scene_id, for example S2-A or S2-B;\n- each shot must have a concrete visual_intent, at least one must_show concept, and exactly 3 distinct English queries;\n- CRITICAL LANGUAGE SPLIT: narration/scenes use OUTPUT LANGUAGE, but ALL visual metadata fields (visual_intent, every must_show item, every must_not_show item, and every queries_en item) MUST be written in English only regardless of OUTPUT LANGUAGE;\n- never translate visual metadata into Polish, Russian, or Ukrainian; only spoken narration uses the requested non-English language;\n- visual_intent must prefer a directly searchable real physical subject/result; for a specialized process, show the exact equipment if common, otherwise show the immediate physical input/output that proves the step;\n- must_show must contain 1-3 SHORT independent English visual anchors, each 1-3 words; do not put a whole sentence/action phrase in one must_show item;\n- must_show[0] must identify the concrete main subject of the narration: use the complete common name of the whole object, organism, equipment, place, or visible material; never a detached body part, generic droplet/texture, action, or hidden reaction when the scene is about a larger identifiable subject;\n- prefer ONE precise identifying must_show anchor; add another only when essential to distinguish the visible subject, not for decoration, background, camera angle or invisible/internal details. Every supplied anchor is a requirement, not an optional keyword.\n- secondary must_show anchors must add an independent visible subject/context; never restate, synonymize, or describe a component/detail of must_show[0] (for example water turbine + turbine blades);\n- when the narrated process is invisible inside an object or organism, show that same object or organism in relevant physical context. Do not invent a visibly different substitute that merely shares a texture or broad scientific category.\n- when a flow/current/reaction happens through or inside a CLOSED conduit or machine, make that conduit/machine the primary must_show; do not require hidden contents/process to be visible unless visual_intent explicitly says transparent/open/cutaway/exposed.\n- avoid generic secondary anchors when a more specific visible subject is available, but do not invent equipment that is not supported by the narration or evidence;\n- must_show[0] MUST be a concrete searchable physical subject, material, object, place, equipment item, or visible result that should actually appear in the frame; never use only an abstract process, action, or generic descriptor as must_show[0];\n- put optional context, process, location, material, result, or equipment anchors after the primary physical subject;\n- queries_en items 1 and 2 must contain at least one distinctive term from must_show[0]; query 3 is the robust physical-subject fallback and must center must_show[0];\n- queries_en must contain exactly 3 distinct English queries: (1) precise process/equipment anchored to must_show[0], (2) broader process/result query anchored to must_show[0], (3) must_show[0] itself as a short 1-4 word physical-subject fallback; process specificity belongs in queries 1 and 2;\n- at least two of the three queries must contain a distinctive term from the primary subject or a specific contextual anchor, not only generic words;\n- avoid the word photo in queries unless it is part of an established proper phrase; search nouns are more important than presentation words;\n- must_show must describe directly visible objects, equipment, materials, attributes, actions, or physical results that can be verified in a real photo/video;\n- each English query must be concise, factual, concrete, and 2-10 words and must describe what should literally be visible;\n- avoid generic filler queries such as beautiful/stunning scenery, nature background, wallpaper, or broad topic-only searches;\n- preferred_media_type must be photo only; use a real photograph of the exact object, equipment, material, place, or physical result described;\n- prioritize semantic accuracy over motion; do not request video in this production mode;\n- when narration describes an invisible mechanism, choose a real physical object, machine, experiment, process step, or visible result that directly represents it instead of a text explanation card;\n- for invisible or abstract mechanisms, anchor the visual to a concrete supported object, apparatus, material, location, or visible result rather than an abstract label;\n- every query must include enough specific qualifiers to disambiguate ambiguous nouns and keep the search tied to the intended visible subject;\n- if a likely visual confusion exists, populate must_not_show with concise conflicting visible concepts;\n- never replace a technical process with decorative stock imagery;\n- do not use filler search words such as stunning, beautiful, scenery, wallpaper, aesthetic, background, cinematic, generic nature, icon, vector, clipart, illustration, diagram, schematic, or infographic;\n- never name a media provider, asset ID, URL, filename, or preselected image/video in a shot;\n- preferred_media_type must be exactly photo;\n- every scene must directly advance the answer to TOPIC; evidence-supported side facts are still forbidden when they do not help answer TOPIC;\n- do not spend a scene on generic praise, benefits, environmental/economic impact, history, outro, summary, or broad context unless TOPIC explicitly asks for that aspect;\n- for how/process/mechanism topics, keep a causal/operational sequence from input or condition through mechanism/components to the final output/result; the last scene must complete that mechanism/result instead of switching to generic benefits;\n- each scene must add a distinct necessary fact; never repeat the same causal step or paraphrase another scene merely to fill the required scene count;\n- do not add facts that are not supported by the cited evidence IDs;\n- do not mention evidence IDs in the spoken narration;\n- make narration natural, idiomatic, and native-sounding in the requested language for one continuous voiceover; avoid code-switching and words borrowed from another requested-language variant;\n- for Ukrainian output, use standard Ukrainian vocabulary only; do not insert Russian lexical forms;\n- count the narration words before returning JSON; target exactly 27 words and never return outside 21-33 words;\n- do not underfill the narration: when a character range is supplied, prefer the middle of that range rather than the minimum;\n\nEVIDENCE:\n[{\"id\":\"E1\",\"source_domain\":\"pl.wikipedia.org\",\"title\":\"Elektrownia wodna – Wikipedia, wolna encyklopedia\",\"source_url\":\"https://pl.wikipedia.org/wiki/Elektrownia_wodna\",\"snippet\":\"Elektrownia wodna (fachowo hydroelektrownia przepływowa) – zakład przemysłowy zamieniający energię potencjalną wody na elektryczną.\",\"content\":\"Przejdź do zawartościZ Wikipedii, wolnej encyklopedii[//thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Hydroelectric_dam-letters.svg/330px-Hydroelectric_dam-letters.svg.png?utm_source=pl.wikipedia.org&utm_campaign=parser&utm_content=thumbnail]https://pl.wikipedia.org/wiki/Plik:Hydroelectric_dam-letters.svgElektrowniawodna – schemat. A – zbiornik wodny, B – budynek siłowni, C – turbina, D –generator, E – kratownica, F – kanał doprowadzający, G – transformator, H –rzeka[//thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Itaipu.jpg/330px-Itaipu.jpg?utm_source=pl.wikipedia.org&utm_campaign=parser&utm_content=thumbnail]https://pl.wikipedia.org/wiki/Plik:Itaipu.jpgElektrowniawodna Itaipu [https://pl.wikipedia.org/wiki/Itaipu] w Ameryce Południowej[https://pl.wikipedia.org/wiki/Ameryka_Południowa]Elektrownia wodna (fachowo hydroelektrownia przepływowa) – zakład przemysłowyzamieniający energię potencjalną[https://pl.wikipedia.org/wiki/Energia_potencjalna] wody na elektryczną[https://pl.wikipedia.org/wiki/Energia_elektryczna].Elektrownie wodne są najintensywniej wykorzystywanym źródłem odnawialnej energii[https://pl.wikipedia.org/wiki/Odnawialne_źródła_energii]. W 2022 rokudostarczyły łącznie 4334,2 TWh [https://pl.wikipedia.org/wiki/Kilowatogodzina]energii elektrycznej, co stanowiło 14,9% całkowitej produkcji energiielektrycznej na świecie[1]. Największe elektrownie wodne mają moc, któraprzekracza 10 GW [https://pl.wikipedia.org/wiki/Wat][2]. Brazylia[https://pl.wikipedia.org/wiki/Brazylia] i Kanada[https://pl.wikipedia.org/wiki/Kanada] uzyskują około 60% swojej energiielektrycznej z elektrowni wodnych, Wenezuela[https://pl.wikipedia.org/wiki/Wenezuela] około 80%, a Norwegia[https://pl.wikipedia.org/wiki/Norwegia] blisko 87%. W Polsce w 2022 rokuenergetyka wodna [https://pl.wikipedia.org/wiki/Energetyka_wodna] odpowiadała za1,1% produkcji energii elektrycznej[1].Elektrownie wodne są stosunkowo tanim źródłem energii i mogą szybko zmieniaćgenerowaną moc w zależności od zapotrzebowania. Ich wadą jest ograniczona liczbalokalizacji, w których można je budować. Ponadto budowa zapór[https://pl.wikipedia.org/wiki/Zapora_wodna] dla elektrowni wodnych pociąga zasobą zahamowanie naturalnego biegu rzeki i tworzenie zbiorników retencyjnych[https://pl.wikipedia.org/wiki/Zbiornik_retencyjny], drastycznie zmieniającychśrodowisko[2].HISTORIA[edytuj [/w/index.php?title=Elektrownia_wodna&veaction=edit&section=1] | edytujkod [/w/index.php?title=Elektrownia_wodna&action=edit&section=1]][//thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Information_icon4.svg/20px-Information_icon4.svg.png?utm_source=pl.wikipedia.org&utm_campaign=parser&utm_content=thumbnail] Osobneartykuły: koło wodne [https://pl.wikipedia.org/wiki/Koło_wodne] i turbinaFrancisa [https://pl.wikipedia.org/wiki/Turbina_Francisa].Energia wodna [https://pl.wikipedia.org/wiki/Energia_wodna] była używana wmłynach wodnych [https://pl.wikipedia.org/wiki/Młyn_wodny] od czasówstarożytnych. Po wynalezieniu generatora elektrycznego[https://pl.wikipedia.org/wiki/Generator_elektryczny], możliwe stało sięwykorzystanie jej do wytwarzania elektryczności. Pierwsze elektrownie wodnepowstały w drugiej połowie XIX wieku. Do 1890 roku w USA[https://pl.wikipedia.org/wiki/Stany_Zjednoczone] powstało ich ponad 200[3]. Mocwiększości z nich wynosiła kilka kilowatów.W 1920 roku około 40% energii elektrycznej w USA było produkowane welektrowniach wodnych. Elektrownie te stawały się stopniowo coraz większe, copociągnęło za sobą konieczność wprowadzenia prawnych regulacji dotyczących ichwpływu na środowisko. W 1936 powstała Zapora Hoovera[https://pl.wikipedia.org/wiki/Zapora_Hoovera] o mocy 2074 MW, a w 1942 ZaporaGrand Coulee [https://pl.wikipedia.org/wiki/Zapora_Grand_Coulee] o mocy 6809MW[4]. Kolejny rekord, 14 GW, ustanowiła Zapora Itaipu[https://pl.wikipedia.org/wiki/Itaipu] uruchomiona w 1984 w Ameryce Południowej.Aktualnie największą moc, 22,5 GW, ma Tama Trzech Przełomów[https://pl.wikipedia.org/wiki/Tama_Trzech_Przełomów] w Chinach[https://pl.wikipedia.org/wiki/Chińska_Republika_Ludowa].TYPY ELEKTROWNI WODNYCH[edytuj [/w/index.php?title=Elektrownia_wodna&veaction=edit&section=2] | edytujkod [/w/index.php?title=Elektrownia_wodna&action=edit&section=2]]ZAPOROWE[edytuj [/w/index.php?title=Elektrownia_wodna&veaction=edit&section=3] | edytujkod [/w/index.php?title=Elektrownia_wodna&action=edit&section=3]][//thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/ThreeGorgesDam-China2009.jpg/250px-ThreeGorgesDam-China2009.jpg?utm_source=pl.wikipedia.org&utm_campaign=parser&utm_content=thumbnail]https://pl.wikipedia.org/wiki/Plik:ThreeGorgesDam-China2009.jpgZaporaTrzech Przełomów [https://pl.wikipedia.org/wiki/Tama_Trzech_Przełomów] –największa elektrownia wodna na świecie.Ponieważ źródłem energii elektrycznej w elektrowniach wodnych jest energiapotencjalna [https://pl.wikipedia.org/wiki/Energia_potencjalna] wody, ilość tejenergii jest proporcjonalna do wysokości, jaką traci woda w obrębie elektrowni.Aby zwiększyć tę energię, buduje się wysokie zapory[https://pl.wikipedia.org/wiki/Zapora_wodna], które umożliwiają spiętrzeniewody. Przykładowo, zapora Itaipu ma wysokość 196 metrów.ELEKTROWNIE SZCZYTOWO-POMPOWE[edytuj [/w/index.php?title=Elektrownia_wodna&veaction=edit&section=4] | edytujkod [/w/index.php?title=Elektrownia_wodna&action=edit&section=4]][//thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Dlouhe_strane_horni_nadrz.jpg/250px-Dlouhe_strane_horni_nadrz.jpg?utm_source=pl.wikipedia.org&utm_campaign=parser&utm_content=thumbnail]https://pl.wikipedia.org/wiki/Plik:Dlouhe_strane_horni_nadrz.jpgGórnyzbiornik elektrowni Dlouhé Stráně w Czechach.[//thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Information_icon4.svg/20px-Information_icon4.svg.png?utm_source=pl.wikipedia.org&utm_campaign=parser&utm_content=thumbnail] Osobnyartykuł: Elektrownia szczytowo-pompowa[https://pl.wikipedia.org/wiki/Elektrownia_szczytowo-pompowa].Elektrownie szczytowo pompowe służą do dostosowywania produkcji\"},{\"id\":\"E2\",\"source_domain\":\"wikanabioenergia.pl\",\"title\":\"Jak działa elektrownia wodna krok po kroku\",\"source_url\":\"https://wikanabioenergia.pl/jak-dziala-elektrownia-wodna-krok-po-kroku\",\"snippet\":\"Sep 19, 2025 · Jak działa elektrownia wodna krok po kroku? – Odkryj tajemnice niezwykłych ⁢potęg⁣ natury W dobie rosnącej potrzeby ‍odnawialnych źródeł energii, elektrownie wodne stają się kluczowym⁤ elementem globalnego systemu energetycznego. Dlaczego?\",\"content\":\"* Home [https://wikanabioenergia.pl/] * Archiwum [https://wikanabioenergia.pl/archiwum] * Kategorie [https://wikanabioenergia.pl/kategorie] * Lista artykułów [https://wikanabioenergia.pl/lista-artykulow] * Polityka Prywatności [https://wikanabioenergia.pl/polityka-prywatnosci] * Redakcja [https://wikanabioenergia.pl/redakcja] * Kontakt [https://wikanabioenergia.pl/wp-content/uploads/2026/06/kontakt.jpg]ZalogujWitamy! Zaloguj się na swoje kontoZapomniałeś hasła? sprowadź pomocOdzyskiwanie hasłaOdzyskaj swoje hasłoHasło zostanie wysłane e-mailem.Strona główna [https://wikanabioenergia.pl/] Energia wodna[https://wikanabioenergia.pl/cv/energia-wodna] Jak działa elektrownia wodna krokpo kroku[data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDY4IiBoZWlnaHQ9IjcxMSIgdmlld0JveD0iMCAwIDEwNjggNzExIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBzdHlsZT0iZmlsbDojY2ZkNGRiO2ZpbGwtb3BhY2l0eTogMC4xOyIvPjwvc3ZnPg==]https://wikanabioenergia.pl/wp-content/uploads/2024/11/wikanabioenergia-24.jpg * Energia wodna [https://wikanabioenergia.pl/cv/energia-wodna]3.5/5 - (2 votes)Jak działa elektrownia wodna krok po kroku? – Odkryj tajemnice niezwykłych⁢potęg⁣ naturyW dobie rosnącej potrzeby ‍odnawialnych źródeł energii, elektrownie wodne stająsię kluczowym⁤ elementem globalnego systemu energetycznego. Dlaczego? Ponieważwykorzystują⁢ one siłę wody, przekształcając jej ruch w czystą energię⁢elektryczną, ⁤co przyczynia się do zrównoważonego rozwoju i ⁢ochrony środowiska.W naszych poszukiwaniach wiedzy na temat tych nowoczesnych technologii, wartoprzyjrzeć się, jak naprawdę działają ⁣elektrownie wodne. W tym artykule krok pokroku odkryjemy mechanizmy,które kryją się za tym fenomenem oraz przedstawimyich znaczenie w⁤ kontekście zarówno lokalnym,jak i globalnym. Przygotujcie sięna ‌fascynującą podróż w głąb wód i technologii!Nawigacja:ToggleJAK DZIAŁA‍ ELEKTROWNIA ⁢WODNA KROK PO KROKUElektrownia wodna wykorzystuje⁣ energię wody ⁤do wytwarzania⁤ energiielektrycznej. Proces ten składa się z kilku kluczowych etapów, które dokładnie⁢opisują, jak woda zmienia się w energię elektryczną.1. zbieranie wodyPierwszym krokiem jest gromadzenie wody w zbiorniku, który jest często tworzony⁣poprzez budowę tam. Zbiornik ten pełni rolę akumulatora, gromadząc wodę na⁤wysokości, co pozwala na wykorzystanie jej potencjału.2. Spadek wodyGdy woda spada z wysokości, jej energia potencjalna przekształca się w energię⁢kinetyczną.W elektrowniach wodnych woda kierowana⁢ jest przez turbinę, którazamienia ⁤tę energię kinetyczną na mechaniczną. Proces ten ma miejsce dziękizastosowaniu: * turbiny wodne –⁤ specjalne urządzenia, które konwertują energię wody na ruch obrotowy. * Generator – zamienia energię mechaniczną na elektryczną.3. Wytwarzanie ‌energii elektrycznejRuch obrotowy turbiny napędza generator, który produkuje ‌prąd elektryczny. Wtym‌ etapie ważne jest, aby ⁤generator działał sprawnie, co zapewnia ‌efektywne‍wytwarzanie energii. Proces ten można zobrazować w formie tabeli:ElementFunkcjaTurbinaKonwertuje energię wody na ruch obrotowy.GeneratorProdukujeenergię elektryczną z ruchu turbiny.4. Dystrybucja⁢ energiiPo wytworzeniu energii elektrycznej, prąd trafia do sieci energetycznej, skądjest ‌dystrybuowany do ⁤odbiorców. Przekazywanie energii odbywa się za pomocątransformatorów, które ⁢zwiększają napięcie, aby zminimalizować straty energii wtrakcie transportu.5. Zrównoważony rozwójElektrownie wodne są formą odnawialnego źródła‌ energii, co oznacza, że‌ ichdziałalność jest znacznie bardziej ekologiczna niż tradycyjne ⁣elektrowniewęglowe. zrównoważony rozwój, efektywne ‌zarządzanie wodami i ochrona lokalnychekosystemów są ⁣kluczowymi elementami podczas budowy i eksploatacji elektrowniwodnych.PODSTAWOWE ZASADY DZIAŁANIA‍ ELEKTROWNI WODNEJElektrownie wodne wykorzystują energię wody do produkcji energii elektrycznej.Sercem każdej elektrowni jest tamy, która tworzy ‌zbiornik wodny, a takżerusztowania, urządzenia do sterowania przepływem wody oraz generatory, ‍któreprzekształcają energię mechaniczną w elektryczną.Główne ⁣zasady działania elektrowni wodnej obejmują: * Zbieranie‍ wody: Woda gromadzi się w zbiorniku, gdzie jej poziom jest regularnie kontrolowany. * Przepływ przez turbinę: Woda spada przez turbinę, co powoduje jej obrót.Im ⁣większy ⁣przepływ, tym więcej energii można uzyskać. * Generacja energii: ‌Turbina jest ⁣połączona ⁤z generatorem, który przekształca ruch ⁤obrotowy w energię elektryczną. * Regulacja przepływu: Przepływ wody można regulować za pomocą⁢ zapór, co pozwala na ‌zarządzanie produkcją energii w ⁤zależności od zapotrzebowania.Ważnym aspektem elektrowni wodnej jest również jej wpływ na środowisko[https://wikanabioenergia.pl/elektrownie-szczytowo-pompowe-srodowisko].Opóźnieniew naturalnym przepływie rzeki, spowodowane ⁣budową tam, może mieć konsekwencjedla lokalnej fauny i flory.Dlatego nowoczesne elektrownie często stosujątechnologie mające na celu minimalizację negatywnego ‍wpływu ‌na ekosystem.Aby zrozumieć, w jaki sposób elektrownie wodne ‌przyczyniają się do produkcjienergii, można zaprezentować zestawienie kluczowych zalet i wad:ZaletyWadyOdnawialne źródło energiiWpływ na środowiskoNiska emisja CO2Wysokiekoszty budowyStabilność produkcjiZmiany w ekosystemachPodsumowując, elektrownie wodne‌ to połączenie ⁤zaawansowanej technologii inaturalnych zasobów, które razem przyczyniają ‌się do zrównoważonej produkcjienergii. Zrozumienie ich zasad działania ‍jest kluczowe w kontekście globalnejtranzycji na odnawialne ⁢źródła energii.RODZAJE ELEKTROWNI WODNYCH I ICH ZASTOSOWANIAElektrownie wodne to kluczowy element zrównoważonej ⁣produkcji ⁣energii. Wzależności od lokalizacji, ‍zasobów wodnych oraz technologii, można wyróżnićkilka podstawowych⁢ typów elektrowni⁤ wodnych: * Elektrownie⁢ szczytowo-pompowe – wykorzystują nadmiar energii w okresach niskiego zapotrzebowania do pompowania wody w górę do zbiornika, a następnie w okresach szczytowego zapotrzebowania generują energię elektryczną. * E\"},{\"id\":\"E3\",\"source_domain\":\"wodnypark.tychy.pl\",\"title\":\"Wodna Akademia - edukacyjna, interaktywna strefa multimedialna w Wodnym ParkuTychy\",\"source_url\":\"https://wodnypark.tychy.pl/wodna-akademia\",\"snippet\":\"Wodna Akademia podzielona jest na pięć zróżnicowanych scenograficznie stref tematycznych, układających się w spójną trasę, zaprezentowanych w trzech stopniach trudności. Motywem przewodnim jest woda\",\"content\":\"WODNA AKADEMIA - MULTIMEDIALNA STREFA EDUKACYJNAWITAMY W WYJĄTKOWEJ PRZESTRZENI EDUKACYJNO-ROZRYWKOWEJ, W KTÓREJ NAUKA SPOTYKASIĘ Z ZABAWĄ!TO INTERAKTYWNA KRAINA WIEDZY O WODZIE, STWORZONA Z MYŚLĄ O ODKRYWANIU,DOŚWIADCZANIU I INSPIROWANIU. PIĘĆ TEMATYCZNYCH STREF, 34 MULTIMEDIALNESTANOWISKA I FASCYNUJĄCE EKSPERYMENTY SPRAWIAJĄ, ŻE POZNAWANIE TAJEMNIC ŻYWIOŁUWODY STAJE SIĘ PRAWDZIWĄ PRZYGODĄ DLA DZIECI I DOROSŁYCH.[/files//atrakcje/WodnaAkademia6.jpg][/files//atrakcje/WodnaAkademia5.jpg] Zwiedzanie Wodnej Akademii zaczynamy od Tajemnic Głębin – tu czeka podróż wczasie do początków życia na Ziemi. Wsiądź do Batyskafu, spójrz przez peryskop iodkryj świat pradawnych stworzeń ukrytych w morskich otchłaniach. Następnieprzenosimy się do strefy Wodnych Żywiołów, gdzie można poczuć potęgę wody –zobaczyć, jak powstają wiry i jak natura potrafi zaskakiwać swoją siłą. Nazakończenie odwiedzamy Naturę Wody – fascynującą przestrzeń, która odsłaniasekrety hydrosfery. Tu dowiesz się, jak woda tworzy życie, jak krąży wprzyrodzie i dlaczego jest najcenniejszym skarbem naszej planety.W Wodnej Akademii znajduje się także Ścieżka Odkrywców, która umożliwiaposzerzenie swojej wiedzy. Treści Ścieżki Odkrywców podzielone zostały na 3grupy – filozofia, kultura i sztuka, natura oraz nauka i technika.[/files/atrakcje/WodnaAkademia3.jpg][/files/atrakcje/WodnaAkademia4.jpg]W kolejnej strefie – Wodnej Energii – można przekonać się, jak potężna ipożyteczna potrafi być woda. Zwiedzający zobaczą, jak działa elektrownia wodna isami uruchomią turbinę, by poczuć moc natury w praktyce. Ostatnia część trasy –Woda a życie – pokazuje, jak kluczową rolę woda odgrywa w naszym codziennymfunkcjonowaniu. To miejsce, w którym każdy zrozumie, że bez niej nie byłobyżycia – ani na Ziemi, ani w nas samych.Na koniec jest okazja do zrobienia pamiątkowego zdjęcia w wodnej fotobudce iwysłania go na swój adres mailowy! A po zapoznaniu się z atrakcjami WodnejAkademii można odpocząć w strefie Wodnego Relaksu, gdzie na wygodnych pufach ikanapach, w towarzystwie krabów i rozgwiazd, można obejrzeć film pokazującywodne życie rafy koralowej, wyświetlany na podwieszanym pod sufitem ekranie.DLA KOGO?Dla wszystkich - zapraszamy rodziny z dziećmi w wieku od 6 do 18 lat, a takżegrupy zorganizowane (klasy szkolne) na wycieczki z Szalonym Doktorem, któryoprowadzi Was przez tajemniczy i magiczny świat wody!ZAREZERWUJ WYCIECZKĘ W WODNEJ AKADEMII - +48 785 253 434 LUBBIURO@WODNYPARK.TYCHY.PL[javascript:void(location.href='mailto:'+String.fromCharCode(98,105,105,117,114,111,64,119,111,100,110,121,112,97,114,107,46,116,121,99,104,121,46,112,108))] WYBIERZ JEDNĄ Z OPCJI WYCIECZKI: * Zwariowane Eksperymenty Szalonego Doktora Wodnego (dwugodzinna wycieczka ze zwiedzaniem Wodnej Akademii oraz szalonymi eksperymentami Doktora Wodnego) * Najpierw nauka, potem zabawa (dwugodzinna wycieczka ze zwiedzaniem Wodnej Akademii + dwie godziny zabawy w Strefie Rekreacji Wodnego Parku Tychy) * Jak wyprodukować prąd i ciepło ze ścieków? Od oczyszczalni ścieków do odnawialnej energii (wycieczka z zakresu edukacji ekologicznej do jednej z najnowocześniejszych oczyszczalni ścieków w Polsce, w Tychach-Urbanowicach + wizyta w Wodnej Akademii)Bądź na bieżąco z wydarzeniami i promocjami, zapisz się do naszego newsletteraWodny Park Tychy [/files/logotypy/wpt-newsletter.png]Informacja o cookiesKlikając “Zgoda” akceptujesz zapisywanie wszystkich danych cookie na twoimurządzeniu. Pozwalają one na zbieranie treści analitycznych oraz na wyświetlaniereklam dopasowanych do Twoich zainteresowań. Więcej informacji o cookie wpolityce prywatności [/polityka-prywatnosci].Zgoda Ustawienia\"},{\"id\":\"E4\",\"source_domain\":\"solarnia.pl\",\"title\":\"Jak działa elektrownia wodna? Sekrety energii z wody\",\"source_url\":\"https://solarnia.pl/jak-dziala-elektrownia-wodna-sekrety-energii-z-wody\",\"snippet\":\"Nov 5, 2025 · Witaj w artykule, który w przystępny sposób wyjaśni, jak działa elektrownia wodna. Dowiesz się, jak energia płynącej wody jest przekształcana w prąd elektryczny, poznasz kluczowe komponenty każdej hydroelektrowni oraz odkryjesz różnice między poszczególnymi typami tych fascynujących obiektów, od największych zapór po małe elektrownie rzeczne.\",\"content\":\"* / › * Elektrownie [/kategorie/elektrownie] › * Jak działa elektrownia wodna? Sekrety energii z wodyJAK DZIAŁA ELEKTROWNIA WODNA? SEKRETY ENERGII Z WODYAutor Nataniel Majewski[https://cdn.solarnia.pl/unsafe/rs:fit:60/q:80/plain/blog-assets/avatar/avatar-13510-zjAA3II1uR/80353fd88aecac60e30a2aabb6c01441.webp]/autorzy/nataniel-majewskiNataniel Majewski [/autorzy/nataniel-majewski] • 5 listopada 2025Jak działa elektrownia wodna? Sekrety energii z wody[https://cdn.solarnia.pl/unsafe/rs:fit:1280/q:75/plain/blog-assets/thumbnail/95407c9268b42fdaa2cc76c2fbad0ed9/jak-dziala-elektrownia-wodna-sekrety-energii-z-wody.webp]Spis treści * Jak elektrownia wodna zamienia wodę w prąd elektryczny? * Od rzeki do gniazdka: Jak woda staje się prądem? * Energia ukryta w płynącej wodzie podstawowa zasada działania * Krok po kroku: Ścieżka kropli wody przez hydroelektrownię * Zapora, turbina, generator: Poznaj kluczowe elementy tej układanki * Nie każda elektrownia wodna jest taka sama: Jakie są ich rodzaje? * Elektrownie przepływowe: Siła naturalnego nurtu rzeki * Elektrownie zaporowe: Kontrolowana moc dzięki sztucznym jeziorom * Elektrownie szczytowo-pompowe: Jak działają gigantyczne \\\"akumulatory\\\" dla Polski? * Serce elektrowni: Jakie turbiny wprawiają wodę w ruch? * Turbina Kaplana: Idealna na niziny i duże przepływy * Turbina Francisa: Wszechstronne rozwiązanie dla średnich spadków * Turbina Peltona: Mistrzyni w wykorzystaniu energii z górskich potoków * Hydroenergetyka w Polsce: Gdzie tkwi nasz wodny potencjał? * Największe elektrownie wodne w Polsce: Żarnowiec, Solina i Włocławek na mapie * Niewykorzystana szansa? Ile energii drzemie jeszcze w polskich rzekach * Małe Elektrownie Wodne (MEW) lokalna energia z niewielkich cieków * Blaski i cienie energii z wody: Co musisz wiedzieć o zaletach i wadach? * Dlaczego energia wodna jest uważana za \\\"zieloną\\\"? Zalety dla klimatu i portfela * Jaka jest cena czystej energii? Negatywny wpływ na rzeki i ekosystemy * Przyszłość hydroenergetyki: Czy woda pozostanie kluczowym elementem miksu energetycznego?Witaj w artykule, który w przystępny sposób wyjaśni, jak działa elektrowniawodna[https://solarnia.pl/male-elektrownie-wodne-stabilna-inwestycja-na-lata-przewodnik].Dowiesz się, jak energia płynącej wody jest przekształcana w prąd elektryczny,poznasz kluczowe komponenty każdej hydroelektrowni oraz odkryjesz różnice międzyposzczególnymi typami tych fascynujących obiektów, od największych zapór po małeelektrownie rzeczne.JAK ELEKTROWNIA WODNA ZAMIENIA WODĘ W PRĄD ELEKTRYCZNY? * Hydroelektrownia przekształca energię potencjalną spiętrzonej wody w energię elektryczną. * Kluczowe elementy to zapora (spiętrzająca wodę), turbina (wprawiana w ruch wodą) i generator (wytwarzający prąd). * Wyróżnia się elektrownie przepływowe, zaporowe oraz szczytowo-pompowe, pełniące funkcję magazynów energii. * Hydroenergetyka jest odnawialnym źródłem energii, ale jej budowa wiąże się ze znaczną ingerencją w środowisko naturalne. * W Polsce potencjał hydroenergetyczny jest wykorzystywany w około 15%, głównie w dorzeczu Wisły.OD RZEKI DO GNIAZDKA: JAK WODA STAJE SIĘ PRĄDEM?Zawsze fascynowało mnie, jak coś tak naturalnego i wszechobecnego jak woda możebyć źródłem energii elektrycznej, która zasila nasze domy i przemysł. Procesten, choć na pierwszy rzut oka skomplikowany, opiera się na prostych zasadachfizyki i jest niczym innym, jak przemyślanym ciągiem przemian energetycznych.Pozwól, że opowiem Ci o tym krok po kroku.ENERGIA UKRYTA W PŁYNĄCEJ WODZIE PODSTAWOWA ZASADA DZIAŁANIAPodstawą działania każdej elektrowni wodnej jest wykorzystanie energiipotencjalnej spiętrzonej wody. Wyobraź sobie wodę zgromadzoną wysoko nadpoziomem rzeki ma ona potencjał, aby wykonać pracę, podobnie jak kamieńpodniesiony na wysokość. Kluczowa jest tu różnica wysokości, czyli tak zwanyspad wody. Im większy spad, tym większa energia potencjalna, którą woda możeprzekształcić w energię kinetyczną, gdy zacznie swobodnie spadać. To właśnie taenergia kinetyczna jest później zamieniana na energię mechaniczną, a wkonsekwencji na energię elektryczną.KROK PO KROKU: ŚCIEŻKA KROPLI WODY PRZEZ HYDROELEKTROWNIĘCały proces to precyzyjnie zaprojektowany cykl. Na początku mamy wodę, którajest spiętrzona za pomocą zapory. To właśnie ta zapora tworzy wspomniany spad igromadzi wodę w zbiorniku. Następnie, woda ta jest kierowana specjalnymikanałami, zwanymi rurociągami lub sztolniami, na łopatki turbiny. To właśnie tenmoment jest kluczowy woda, uderzając w łopatki, wprawia turbinę w ruch obrotowy.Energia kinetyczna wody zostaje przekształcona w energię mechaniczną obracającejsię turbiny. Dalej, energia mechaniczna z obracającej się turbiny napędzagenerator, który wytwarza energię elektryczną. Na koniec, zanim prąd trafi donaszych domów, przechodzi przez transformator, gdzie jego parametry sądostosowywane do wymogów sieci przesyłowej. To naprawdę fascynujący łańcuchprzemian!ZAPORA, TURBINA, GENERATOR: POZNAJ KLUCZOWE ELEMENTY TEJ UKŁADANKIAby w pełni zrozumieć, jak to wszystko działa, musimy przyjrzeć się trzemgłównym bohaterom tej opowieści: * Zapora: To fundament każdej hydroelektrowni. Jej głównym zadaniem jest spiętrzenie wody i stworzenie niezbędnego spadu. Bez zapory nie byłoby odpowiedniej różnicy wysokości, a co za tym idzie wystarczającej energii potencjalnej do efektywnej produkcji prądu. Zapora pełni również często funkcje retencyjne, przeciwpowodziowe i rekreacyjne. * Turbina: Można ją nazwać sercem elektrowni wodnej. To właśnie ona, obracając się pod naporem wody, zamienia energię kinetyczną płynu na energię mechaniczną ruchu obrotowego. Istnieje wiele typów turbin, dostosowanych do różnych warunków, o czym opowiem za chwilę. * Generator: Jeśli turbina to serce mechaniczne, to generator jest \\\"elektrycznym sercem\\\". Połączony z turbiną, przekształca energię mechaniczną jej obrotu w energię elektryczną. Działa na zasadzie indukcji elektromagnetycznej, czyli ruchu przewodnika w polu magnetycznym. * Transformator: Choć często pomijany\"},{\"id\":\"E5\",\"source_domain\":\"lepiej.tauron.pl\",\"title\":\"Elektrownie wodne – jak działają? | Lepiej TAURON\",\"source_url\":\"https://lepiej.tauron.pl/zielona-energia/elektrownie-wodne-na-czym-polega-ich-dzialanie\",\"snippet\":\"Jul 18, 2024 · Elektrownie wodne (hydroelektrownie) wytwarzają prąd elektryczny bez spalania paliw kopalnych. Wykorzystują odnawialne źródło energii (OZE), którym jest energia kinetyczna wody. Poznaj podstawowe typy hydroelektrowni. Dowiedz się, jak działają. W tym artykule znajdziesz też odpowiedź na pytanie, czy elektrownia wodna jest ekologiczna.\",\"content\":\"×Oszczędzanie[https://lepiej.tauron.pl/wp-content/uploads/2026/04/lampka-scaled-1.png]JAŚNIEJ OOSZCZĘDZANIUSprawdź[https://lepiej.tauron.pl/kategoria/jasniej-o-oszczedzaniu/]Skip to main contentsluchawki[https://lepiej.tauron.pl/wp-content/themes/tauron-ju/dist/images/48x48xshow_playlist.png.pagespeed.ic.r1XOCYwmbE.png]--------------------------------------------------------------------------------Posłuchaj artykułów0:000:00Posłuchaj kolejnych artykułów [https://lepiej.tauron.pl/nasza-playlista/]Pomóż nam stać się jeszcze lepszymiWYPEŁNIJ KRÓTKĄ ANKIETĘWyświetl ankietę strzalka[https://lepiej.tauron.pl/wp-content/themes/tauron-ju/dist/images/arrow2.svg]×Answered (0)Partially Answered (0)Marked for Review (0)Not Answered (0)Marked & Answered (0)Not Visited (0)1clock.png[https://lepiej.tauron.pl/wp-content/plugins/quiz-master-next/assets/xclock.png.pagespeed.ic.AoPRH0U_wM.png]Time's upODNAWIALNE ŹRÓDŁA ENERGII--------------------------------------------------------------------------------18 lipca 2024 rokuZespół Lepiej.[https://lepiej.tauron.pl/wp-content/uploads/2021/09/96x96xlepiej-team2-150x150.png.pagespeed.ic.e79cC_qeS0.png]Zespół Lepiej.--------------------------------------------------------------------------------oko [https://lepiej.tauron.pl/wp-content/themes/tauron-ju/dist/images/eye.svg]10470ELEKTROWNIE WODNE – NA CZYM POLEGA ICH DZIAŁANIE?Zespół Lepiej.[https://lepiej.tauron.pl/wp-content/uploads/2021/09/96x96xlepiej-team2-150x150.png.pagespeed.ic.e79cC_qeS0.png]Zespół Lepiej.--------------------------------------------------------------------------------Elektrownie wodne (hydroelektrownie) wytwarzają prąd elektryczny bez spalaniapaliw kopalnych. Wykorzystują odnawialne źródło energii (OZE), którym jestenergia kinetyczna wody. Poznaj podstawowe typy hydroelektrowni. Dowiedz się,jak działają. W tym artykule znajdziesz też odpowiedź na pytanie, czyelektrownia wodna jest ekologiczna.[https://lepiej.tauron.pl/wp-content/uploads/2024/07/elektrownie-wodne.png]-------------------------------------------------------------------------------- Spis treściJAK ELEKTROWNIA WODNA PRODUKUJE PRĄD?Elektrownia wodna to konstrukcja budowlana z zestawem urządzeń, które są wstanie zamienić energię kinetyczną wody na energię elektryczną. Sercemhydroelektrowni jest turbina wodna połączona z generatorem prądu.Aby wprawić w ruch turbinę, potrzebna jest woda pod odpowiednim ciśnieniem,wytworzonym przez jej spiętrzenie za pomocą budowli hydrotechnicznej. Spiętrzona woda trafia specjalnymi kanałami do wirnika turbiny wprawiając go wruch. Obracająca się turbina napędza generator. . Wytworzony w generatorze prądpłynie do transformatora, gdzie uzyskuje odpowiednie parametry, dostosowane dowymogów sieci przesyłowych.[https://lepiej.tauron.pl/wp-content/uploads/2024/07/Elektrownia-wodna-infografika-Tauron-1024x536.png]ELEKTROWNIA WODNA PRZEPŁYWOWA KONTRA ELEKTROWNIA WODNA ZBIORNIKOWADwa najpopularniejsze typy hydroelektrowni to elektrownia wodna przepływowa ielektrownia wodna zbiornikowa. Oba typy instalacji wykorzystują wody śródlądowe(rzeki i jeziora), ale różnią się konstrukcją i możliwościami kumulowania iprzetwarzania energii kinetycznej wody.JAK DZIAŁA ELEKTROWNIA WODNA PRZEPŁYWOWA?Aby wprawić w ruch turbinę (a w następstwie generator) hydroelektrowniprzepływowej, potrzebne jest ciśnienie hydrostatyczne. Można je uzyskać dziękispiętrzeniu wody przy pomocy budowli hydrotechnicznej. Elektrownia wodnaprzepływowa pracuje przy stałym poziomie piętrzenia wody, a jej moc jest zależnaod wysokości piętrzenia i ilości wody napływającej do turbiny.Zdarza się, że elektrownie wodne przepływowe budowane są w kaskadzie, wniewielkiej odległości, jedna bezpośrednio za drugą. Jednak aby wykorzystaćekonomicznie zjawisko kaskady, pierwsza z nich musi być elektrownią zbiornikową.Zrzut większej ilości wody ze zbiornika umożliwia pracę całej kaskady wszczytach energetycznych, w okresach największego zapotrzebowania na energięelektryczną.JAK DZIAŁA ELEKTROWNIA WODNA ZBIORNIKOWA?Aby wprawić w ruch turbinę (a w następstwie generator) hydroelektrownizbiornikowej, identycznie jak w przypadku elektrowni przepływowej, potrzebnejest ciśnienie hydrostatyczne. Uzyskiwane jest również dzięki spiętrzeniu wodyprzy pomocy budowli hydrotechnicznej, w tym przypadku przy pomocy zapory wodnej.Różnica pomiędzy elektrownią wodą przepływową a zbiornikową polega na tym, żeelektrownia wodna pracuje przy stałym poziomie piętrzenia, a elektrownia wodnazbiornikowa pracuje przy różnych poziomach piętrzenia, wykorzystując retencjęwody w zbiorniku. Pracuje w okresach największego zapotrzebowania na energięelektryczną, a w okresach niskiego zapotrzebowania gromadzi „paliwo” wzbiorniku. Jej moc jest zależna zarówno od wysokości piętrzenia, jak i ilości wody napływającej do turbiny.CZYM RÓŻNI SIĘ ELEKTROWNIA WODNA ZBIORNIKOWA OD SZCZYTOWO-POMPOWEJ?Elektrownia wodna szczytowo-pompowa to również elektrownia zbiornikowa.Zasadnicza różnica polega na tym, że klasyczna elektrownia zbiornikowa posiadajeden zbiornik, a elektrownia szczytowo-pompowa posiada dwa zbiorniki: zbiornikgórny i dolny. W okresach, gdy jest niskie zapotrzebowanie na energięelektryczną i jej ceny są bardzo niskie, woda jest zasysana przy pomocypompo-turbiny z dolnego zbiornika do górnego, a następnie w okresach gdy jestwysokie zapotrzebowanie na energię elektryczną i jest ona droga, woda jestprzepompowywana z górnego zbiornika do dolnego. Praca elektrowniszczytowo-pompowej jest dla krajowego systemu elektroenergetycznego bardzokorzystna, ponieważ jest to naturalny magazyn energii możliwej do wykorzystaniaw sytuacji kryzysowej w systemie.HYDROELEKTROWNIE PŁYWOWEDo produkcji prądu można wykorzystać także przypływy i odpływy morza. Wrejonach, w których są one szczególnie intensywne, powstają zapory z turbinami igeneratorami prądu. Elektrownie pływowe pracują tylko przez kilka godzin nadobę, gdy siła przepływu wody jest wystarczająca do poruszania łopat wirnikówturbin.PODZIEMNE HYDROELEKTROWNIE SZC\"},{\"id\":\"E6\",\"source_domain\":\"slowhop.com\",\"title\":\"offroadhouse, Wrzeszczyn - Slowhop\",\"source_url\":\"https://slowhop.com/cs/mista/5819-offroadhouse.html\",\"snippet\":\"Rezervujte offroadhouse na adrese Wrzeszczyn na Slowhopu. Před mnoha lety jsem s otcovou pomocí začal přestavovat přepravní kontejner na svůj vlastní.\",\"content\":\"Kde budu odpočívat?--------------------------------------------------------------------------------Jak u nás odpočívat--------------------------------------------------------------------------------Pro děti--------------------------------------------------------------------------------Kde budete snítoffroadhouse--------------------------------------------------------------------------------Více fotografií--------------------------------------------------------------------------------Filmy--------------------------------------------------------------------------------Před mnoha lety jsem s otcovou pomocí začal přestavovat přepravní kontejner nasvůj vlastní plovoucí dům. Měl se vznášet ve velkoměstě. Pak se naše životy aplány změnily, ale dnes je dům přesně tím, čím měl být – jen na jiném místě.Spojuje strohý tvar s přírodní krásou okolí v malebném Wrzeszczynu. Místo aby sevznášel na vodě ve městě, levituje v korunách stromů. Zde je ještě efektivnějšía umožňuje vám uniknout rutině a najít si perfektní náladu. Vychutnejte si života každou běžnou činnost. Je to místo, které vám připomíná, že každodenní životstojí za to zjednodušit. Když vás zbytečné rozptýlení neodvádí od tohodůležitého, můžete cítit skutečné uspokojení. Klid se přirozeně dostaví ve vašímysli i těle. Pokud hledáte útočiště, kde můžete trávit čas společně – nebopokud sníte o tom, že se ubytujete sami – zveme vás. Dům má vše, co potřebujete,a stále je to pravděpodobně nejminimalističtější ubytování ve Slowhopu.--------------------------------------------------------------------------------Kde budete odpočívatStudiová chata s velkým oknem s výhledem do přírody. Minimalistická a funkční,vybavená praktickými řešeními. Vizuálně čistý prostor nekonkuruje přírodě, kteráproniká okny.Výsuvná manželská postel se schovává v zásuvce. Když jsme doma, obvykle je vždyrozložená, protože slouží jako pohovka. Polštáře na schodu/parapetu vytvářejímísto k sezení. Koupelna se nachází za zdí vedle postele.Záměrně nepoužíváme žaluzie; v noci jsou okny vidět hvězdy.--------------------------------------------------------------------------------Jak se skvěle najístBěhem letní sezóny jsou biopotraviny k dispozici na farmě Kowalowe Skały, kteráje vzdálená jen pár minut chůze – objednejte si prosím předem u majiteleKowalowe Skały. Perla Západu a restaurace v Jelení Hoře jsou vzdálené jen párminut jízdy autem.--------------------------------------------------------------------------------Jak u nás odpočívatNemůžete dělat absolutně nic, a to je na tom to nejlepší ;)Oblast nabízí turistické/běžecké stezky, cyklostezky a stezky krajinářskýmparkem Údolí Bobru. Doporučujeme turistické stezky začínající ve Wleni aPilchowice. Můžete si také prohlédnout místní historické a přírodní památky:– Knížecí hrad ve Wleni s přírodní rezervací Góra Zamkowa,– přehradu, most a železniční tunel v Pilchowice,– pískovcové skalní útvary v okolních lesích,– Knížecí věž v Siedlęcině,– železniční stanici Nielestno a železniční most – místo natáčení první scény zfilmu „Jak jsem rozpoutal druhou světovou válku“.Údolí Bobru má skvělé sousedy – Kaczawské předhůří a pohoří, údolí Jelení Hory aJizerské hory. V dosahu je jednodenní výlet do Země vyhaslých sopek (15 minutautem) nebo na stezky v Jizerských horách (asi půl hodiny jízdy).--------------------------------------------------------------------------------Jak zabavit dětiPotok, jezero, divoká zvěř, táborák, houpací síť.--------------------------------------------------------------------------------Pro digitální nomádyKlid, ticho, příroda, pohodlí. LTE internet od T-Mobile obvykle funguje dobře –stačí na online schůzky – ale občas jsme zaznamenali výpadky vysílacíspolečnosti, takže pro velmi důležitou schůzku se vyplatí mít alternativu,například příjemnou kavárnu v Jelení Hoře. V areálu máme vysílací anténu, takžemůžeme pracovat z terasy nebo houpací sítě.--------------------------------------------------------------------------------4.9•Počet hodnocení: 8--------------------------------------------------------------------------------Nadiia5•16 Sep 2026Wszystko było super! Dom znajduje się w przepięknej i bardzo spokojnej okolicy.Gospodarz był niezwykle miły i pomocny. Zawsze mogliśmy się do niego zwrócić,gdy czegoś potrzebowaliśmy. Cały pobyt przebiegł bez żadnych problemów i bardzodobrze go wspominamy. Zdecydowanie polecamy!--------------------------------------------------------------------------------Alina4•7 Sep 2026Bardzo doceniam koncept oraz wyjątkową estetykę tego miejsca – domek jest pięknyi las za oknem też. Warto jednak wiedzieć, że wyposażenie jest niezwykleminimalistyczne, co może wpływać na komfort pobytu. Brak rolet powoduje, żesłońce budzi już o świcie, a po zmroku przy zapalonym świetle może brakowaćnieco prywatności. Zdjęcia dają wrażenie, że domek jest w srodku lasu, tymczasemjest przy drodze, nie jakoś mocno uczęszczanej, ale jednak. Podobnie w łazience– ze względu na specyficzną, minimalistyczną konstrukcję drzwi (duże szpary,brak pełnego domknięcia), akustyka i prywatność są ograniczone. W kuchni jestwszystko, szafy są fajnie schowane, jest miejsce na rzeczy. To wspaniałe miejscedla miłośników natury i minimalistycznego designu, ale dobrze przyjechać tu zeświadomością jego specyfiki, stąd mój obszerny komentarz. Dziękuję i pozdrawiam,było na pewno wyjątkowo :)--------------------------------------------------------------------------------Oskar5•4 Aug 2026Jeden z moich ulubionych wyjazdów, aż żałuję, że na tak krótko pojechałem. PanJózef super gospodarz! Bardzo pomocny i uprzejmy, chętnie służy pomocą ipodpowiada co fajnego zobaczyć w okolicy. Natura magiczna, a sam domek wewspaniałym otoczeniu. Jeśli szukasz miejsca na odpoczynek, to lepszego nieznajdziesz!:)--------------------------------------------------------------------------------Małgorzata5•19 Jul 2026Wspaniały pobyt w wyjątkowym miejscu. Szukaliśmy czegoś, gdzie moglibyśmy sięzrelaksować w absolutnej ciszy i wśród natury i to był zdecydowanie strzał \"}]"
+  },
+  "normalize_timing_probe": {
+    "script_run_id": "a5985b2f-c8b6-4342-9ea9-57b00f9a2f35",
+    "model": "gemini-3.5-flash-lite",
+    "storyboard": {
+      "narration": "Woda gromadzi się w specjalnym zbiorniku za tamą. Następnie spada z wysokości, poruszając turbinę wodną, która napędza generator i wytwarza prąd elektryczny.",
+      "scenes": [
+        {
+          "scene_id": "S1",
+          "narration": "Woda gromadzi się w specjalnym zbiorniku za tamą.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "28b38e90-7c29-4fef-80d3-1a1eec5f23ec"
+          ],
+          "shots": [
+            {
+              "shot_id": "S1-A",
+              "visual_intent": "Large water reservoir behind a concrete dam",
+              "must_show": [
+                "water reservoir",
+                "dam"
+              ],
+              "must_not_show": [
+                "turbines",
+                "generators"
+              ],
+              "queries_en": [
+                "water reservoir behind dam",
+                "hydroelectric dam reservoir",
+                "water reservoir"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S2",
+          "narration": "Następnie spada z wysokości,",
+          "evidence_ids": [
+            "E4"
+          ],
+          "evidence_uuids": [
+            "20877d22-722e-4737-8d36-a35f09b587ff"
+          ],
+          "shots": [
+            {
+              "shot_id": "S2-A",
+              "visual_intent": "Water falling from a high elevation in a hydro plant channel",
+              "must_show": [
+                "falling water"
+              ],
+              "must_not_show": [
+                "wind turbines",
+                "solar panels"
+              ],
+              "queries_en": [
+                "water falling from elevation pipeline",
+                "hydroelectric water drop channel",
+                "falling water"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S3",
+          "narration": "poruszając turbinę wodną,",
+          "evidence_ids": [
+            "E2"
+          ],
+          "evidence_uuids": [
+            "98e4d737-9877-489d-89f6-c1bb0a9bb4c1"
+          ],
+          "shots": [
+            {
+              "shot_id": "S3-A",
+              "visual_intent": "Industrial water turbine runner mechanism",
+              "must_show": [
+                "water turbine"
+              ],
+              "must_not_show": [
+                "solar panels",
+                "wind turbine"
+              ],
+              "queries_en": [
+                "industrial water turbine runner",
+                "water turbine blades mechanism",
+                "water turbine"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S4",
+          "narration": "która napędza generator",
+          "evidence_ids": [
+            "E2"
+          ],
+          "evidence_uuids": [
+            "98e4d737-9877-489d-89f6-c1bb0a9bb4c1"
+          ],
+          "shots": [
+            {
+              "shot_id": "S4-A",
+              "visual_intent": "Large electric generator inside power plant powerhouse",
+              "must_show": [
+                "electric generator"
+              ],
+              "must_not_show": [
+                "water reservoir",
+                "dam wall"
+              ],
+              "queries_en": [
+                "electric generator powerhouse machinery",
+                "hydroelectric generator unit",
+                "electric generator"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S5",
+          "narration": "i wytwarza prąd elektryczny.",
+          "evidence_ids": [
+            "E5"
+          ],
+          "evidence_uuids": [
+            "9eabdbc6-0903-4279-b1c7-aceb8c94f82c"
+          ],
+          "shots": [
+            {
+              "shot_id": "S5-A",
+              "visual_intent": "High voltage electrical transformer and power lines outdoors",
+              "must_show": [
+                "power lines",
+                "transformer"
+              ],
+              "must_not_show": [
+                "water turbine",
+                "water reservoir"
+              ],
+              "queries_en": [
+                "high voltage electrical transformer power lines",
+                "power lines transformer",
+                "power lines"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        }
+      ]
+    },
+    "narration_word_count": 22,
+    "scene_count": 5,
+    "shot_count": 5,
+    "usage": {
+      "promptTokenCount": 13528,
+      "candidatesTokenCount": 555,
+      "totalTokenCount": 14083,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 13528
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "measured_duration_ms": 11616,
+    "target_duration_ms": 15000,
+    "tolerance_ms": 750,
+    "duration_delta_ms": 3384,
+    "timing_ok": false,
+    "origin_probe_attempt": 1
+  },
+  "build_final_measured_correction": {
+    "script_run_id": "a5985b2f-c8b6-4342-9ea9-57b00f9a2f35",
+    "model": "gemini-3.5-flash-lite",
+    "base_storyboard": {
+      "narration": "Woda gromadzi się w specjalnym zbiorniku znajdującym się za tamą. Następnie spada z dużej wysokości, poruszając turbinę wodną, która napędza generator i skutecznie wytwarza prąd elektryczny.",
+      "scenes": [
+        {
+          "scene_id": "S1",
+          "narration": "Woda gromadzi się w specjalnym zbiorniku znajdującym się za tamą.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "28b38e90-7c29-4fef-80d3-1a1eec5f23ec"
+          ],
+          "shots": [
+            {
+              "shot_id": "S1-A",
+              "visual_intent": "Large water reservoir behind a concrete dam",
+              "must_show": [
+                "water reservoir",
+                "dam"
+              ],
+              "must_not_show": [
+                "turbines",
+                "generators"
+              ],
+              "queries_en": [
+                "water reservoir behind dam",
+                "hydroelectric dam reservoir",
+                "water reservoir"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S2",
+          "narration": "Następnie spada z dużej wysokości,",
+          "evidence_ids": [
+            "E4"
+          ],
+          "evidence_uuids": [
+            "20877d22-722e-4737-8d36-a35f09b587ff"
+          ],
+          "shots": [
+            {
+              "shot_id": "S2-A",
+              "visual_intent": "Water falling from a high elevation in a hydro plant channel",
+              "must_show": [
+                "falling water"
+              ],
+              "must_not_show": [
+                "wind turbines",
+                "solar panels"
+              ],
+              "queries_en": [
+                "water falling from elevation pipeline",
+                "hydroelectric water drop channel",
+                "falling water"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S3",
+          "narration": "poruszając turbinę wodną,",
+          "evidence_ids": [
+            "E2"
+          ],
+          "evidence_uuids": [
+            "98e4d737-9877-489d-89f6-c1bb0a9bb4c1"
+          ],
+          "shots": [
+            {
+              "shot_id": "S3-A",
+              "visual_intent": "Industrial water turbine runner mechanism",
+              "must_show": [
+                "water turbine"
+              ],
+              "must_not_show": [
+                "solar panels",
+                "wind turbine"
+              ],
+              "queries_en": [
+                "industrial water turbine runner",
+                "water turbine blades mechanism",
+                "water turbine"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S4",
+          "narration": "która napędza generator",
+          "evidence_ids": [
+            "E2"
+          ],
+          "evidence_uuids": [
+            "98e4d737-9877-489d-89f6-c1bb0a9bb4c1"
+          ],
+          "shots": [
+            {
+              "shot_id": "S4-A",
+              "visual_intent": "Large electric generator inside power plant powerhouse",
+              "must_show": [
+                "electric generator"
+              ],
+              "must_not_show": [
+                "water reservoir",
+                "dam wall"
+              ],
+              "queries_en": [
+                "electric generator powerhouse machinery",
+                "hydroelectric generator unit",
+                "electric generator"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S5",
+          "narration": "i skutecznie wytwarza prąd elektryczny.",
+          "evidence_ids": [
+            "E5"
+          ],
+          "evidence_uuids": [
+            "9eabdbc6-0903-4279-b1c7-aceb8c94f82c"
+          ],
+          "shots": [
+            {
+              "shot_id": "S5-A",
+              "visual_intent": "High voltage electrical transformer and power lines outdoors",
+              "must_show": [
+                "power lines",
+                "transformer"
+              ],
+              "must_not_show": [
+                "water turbine",
+                "water reservoir"
+              ],
+              "queries_en": [
+                "high voltage electrical transformer power lines",
+                "power lines transformer",
+                "power lines"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        }
+      ]
+    },
+    "prior_usage": {
+      "promptTokenCount": 17708,
+      "candidatesTokenCount": 3310,
+      "totalTokenCount": 21018
+    },
+    "target_duration_ms": 15000,
+    "repair_target_duration_ms": 14600,
+    "tolerance_ms": 800,
+    "target_chars": 211,
+    "target_words": 29,
+    "target_scene_word_counts": [
+      10,
+      6,
+      4,
+      4,
+      5
+    ],
+    "system_message": "You perform one final timing correction for a short narration. Return only JSON with one key named narrations containing exactly 5 strings. The immutable original_narration is the factual meaning source. current_narration is only an unaccepted timing draft. Do not add new facts. Preserve original subjects, actions, required objects and causal direction. Do not change any visual or evidence fields because they are not part of this response.",
+    "user_message": "LANGUAGE: pl\nCURRENT MEASURED TTS: 13128 ms\nTARGET TTS WINDOW CENTER: 15000 ms\nMEASURED CORRECTION AIM: 14600 ms using the latest real TTS samples\nDIRECTION: make the complete narration LONGER\nCURRENT TOTAL: 26 words, 190 characters including spaces\nTARGET TOTAL: about 29 words and about 211 characters including spaces\n\nLINES:\n[{\"scene\":1,\"target_words\":10,\"original_narration\":\"Woda gromadzi się w specjalnym zbiorniku za tamą.\",\"current_narration\":\"Woda gromadzi się w specjalnym zbiorniku znajdującym się za tamą.\"},{\"scene\":2,\"target_words\":6,\"original_narration\":\"Następnie spada z wysokości,\",\"current_narration\":\"Następnie spada z dużej wysokości,\"},{\"scene\":3,\"target_words\":4,\"original_narration\":\"poruszając turbinę wodną,\",\"current_narration\":\"poruszając turbinę wodną,\"},{\"scene\":4,\"target_words\":4,\"original_narration\":\"która napędza generator\",\"current_narration\":\"która napędza generator\"},{\"scene\":5,\"target_words\":5,\"original_narration\":\"i wytwarza prąd elektryczny.\",\"current_narration\":\"i skutecznie wytwarza prąd elektryczny.\"}]\n\nRULES:\n- return exactly 5 narration strings in the same order;\n- preserve original_narration meaning for each line; current_narration may contain errors and is not a semantic source;\n- reuse original terminology when possible; do not replace concrete meaning with generic motion, force, size or decorative adjectives;\n- each line is a contiguous visual narration segment and may begin/end mid-sentence; joined in order, the lines must form one natural complete narration ending with . ! ? or …;\n- treat each target_words value as a preference, not a hard constraint; redistribute words to keep each line complete and natural;\n- aim near 29 total words; preserving original meaning overrides an exact count;\n- approximate character target is 211 characters including spaces;\n- use word counts only as timing guidance; real TTS measurement decides acceptance;\n- do not duplicate clauses or add unsupported details;\n- for Ukrainian use standard Ukrainian only; no Russian lexical/spelling forms;\n- output only JSON: {\"narrations\":[\"...\"]}."
+  },
+  "validate_final_measured_correction": {
+    "script_run_id": "a5985b2f-c8b6-4342-9ea9-57b00f9a2f35",
+    "model": "gemini-3.5-flash-lite",
+    "storyboard": {
+      "narration": "Woda gromadzi się w specjalnym zbiorniku znajdującym się za tamą. Następnie spada z dużej wysokości, poruszając turbinę wodną, która napędza generator i skutecznie wytwarza prąd elektryczny.",
+      "scenes": [
+        {
+          "scene_id": "S1",
+          "narration": "Woda gromadzi się w specjalnym zbiorniku znajdującym się za tamą.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "28b38e90-7c29-4fef-80d3-1a1eec5f23ec"
+          ],
+          "shots": [
+            {
+              "shot_id": "S1-A",
+              "visual_intent": "Large water reservoir behind a concrete dam",
+              "must_show": [
+                "water reservoir",
+                "dam"
+              ],
+              "must_not_show": [
+                "turbines",
+                "generators"
+              ],
+              "queries_en": [
+                "water reservoir behind dam",
+                "hydroelectric dam reservoir",
+                "water reservoir"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S2",
+          "narration": "Następnie spada z dużej wysokości,",
+          "evidence_ids": [
+            "E4"
+          ],
+          "evidence_uuids": [
+            "20877d22-722e-4737-8d36-a35f09b587ff"
+          ],
+          "shots": [
+            {
+              "shot_id": "S2-A",
+              "visual_intent": "Water falling from a high elevation in a hydro plant channel",
+              "must_show": [
+                "falling water"
+              ],
+              "must_not_show": [
+                "wind turbines",
+                "solar panels"
+              ],
+              "queries_en": [
+                "water falling from elevation pipeline",
+                "hydroelectric water drop channel",
+                "falling water"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S3",
+          "narration": "poruszając turbinę wodną,",
+          "evidence_ids": [
+            "E2"
+          ],
+          "evidence_uuids": [
+            "98e4d737-9877-489d-89f6-c1bb0a9bb4c1"
+          ],
+          "shots": [
+            {
+              "shot_id": "S3-A",
+              "visual_intent": "Industrial water turbine runner mechanism",
+              "must_show": [
+                "water turbine"
+              ],
+              "must_not_show": [
+                "solar panels",
+                "wind turbine"
+              ],
+              "queries_en": [
+                "industrial water turbine runner",
+                "water turbine blades mechanism",
+                "water turbine"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S4",
+          "narration": "która napędza generator",
+          "evidence_ids": [
+            "E2"
+          ],
+          "evidence_uuids": [
+            "98e4d737-9877-489d-89f6-c1bb0a9bb4c1"
+          ],
+          "shots": [
+            {
+              "shot_id": "S4-A",
+              "visual_intent": "Large electric generator inside power plant powerhouse",
+              "must_show": [
+                "electric generator"
+              ],
+              "must_not_show": [
+                "water reservoir",
+                "dam wall"
+              ],
+              "queries_en": [
+                "electric generator powerhouse machinery",
+                "hydroelectric generator unit",
+                "electric generator"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S5",
+          "narration": "i skutecznie wytwarza prąd elektryczny.",
+          "evidence_ids": [
+            "E5"
+          ],
+          "evidence_uuids": [
+            "9eabdbc6-0903-4279-b1c7-aceb8c94f82c"
+          ],
+          "shots": [
+            {
+              "shot_id": "S5-A",
+              "visual_intent": "High voltage electrical transformer and power lines outdoors",
+              "must_show": [
+                "power lines",
+                "transformer"
+              ],
+              "must_not_show": [
+                "water turbine",
+                "water reservoir"
+              ],
+              "queries_en": [
+                "high voltage electrical transformer power lines",
+                "power lines transformer",
+                "power lines"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        }
+      ]
+    },
+    "narration_word_count": 26,
+    "target_word_count": 29,
+    "word_count_exact": false,
+    "semantic_valid": true,
+    "semantic_validation_error": null,
+    "scene_count": 5,
+    "shot_count": 5,
+    "usage": {
+      "promptTokenCount": 18319,
+      "candidatesTokenCount": 3370,
+      "totalTokenCount": 21689
+    }
+  },
+  "build_final_measured_word_count_retry": {
+    "script_run_id": "a5985b2f-c8b6-4342-9ea9-57b00f9a2f35",
+    "model": "gemini-3.5-flash-lite",
+    "base_storyboard": {
+      "narration": "Woda gromadzi się w specjalnym zbiorniku znajdującym się za tamą. Następnie spada z dużej wysokości, poruszając turbinę wodną, która napędza generator i skutecznie wytwarza prąd elektryczny.",
+      "scenes": [
+        {
+          "scene_id": "S1",
+          "narration": "Woda gromadzi się w specjalnym zbiorniku znajdującym się za tamą.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "28b38e90-7c29-4fef-80d3-1a1eec5f23ec"
+          ],
+          "shots": [
+            {
+              "shot_id": "S1-A",
+              "visual_intent": "Large water reservoir behind a concrete dam",
+              "must_show": [
+                "water reservoir",
+                "dam"
+              ],
+              "must_not_show": [
+                "turbines",
+                "generators"
+              ],
+              "queries_en": [
+                "water reservoir behind dam",
+                "hydroelectric dam reservoir",
+                "water reservoir"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S2",
+          "narration": "Następnie spada z dużej wysokości,",
+          "evidence_ids": [
+            "E4"
+          ],
+          "evidence_uuids": [
+            "20877d22-722e-4737-8d36-a35f09b587ff"
+          ],
+          "shots": [
+            {
+              "shot_id": "S2-A",
+              "visual_intent": "Water falling from a high elevation in a hydro plant channel",
+              "must_show": [
+                "falling water"
+              ],
+              "must_not_show": [
+                "wind turbines",
+                "solar panels"
+              ],
+              "queries_en": [
+                "water falling from elevation pipeline",
+                "hydroelectric water drop channel",
+                "falling water"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S3",
+          "narration": "poruszając turbinę wodną,",
+          "evidence_ids": [
+            "E2"
+          ],
+          "evidence_uuids": [
+            "98e4d737-9877-489d-89f6-c1bb0a9bb4c1"
+          ],
+          "shots": [
+            {
+              "shot_id": "S3-A",
+              "visual_intent": "Industrial water turbine runner mechanism",
+              "must_show": [
+                "water turbine"
+              ],
+              "must_not_show": [
+                "solar panels",
+                "wind turbine"
+              ],
+              "queries_en": [
+                "industrial water turbine runner",
+                "water turbine blades mechanism",
+                "water turbine"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S4",
+          "narration": "która napędza generator",
+          "evidence_ids": [
+            "E2"
+          ],
+          "evidence_uuids": [
+            "98e4d737-9877-489d-89f6-c1bb0a9bb4c1"
+          ],
+          "shots": [
+            {
+              "shot_id": "S4-A",
+              "visual_intent": "Large electric generator inside power plant powerhouse",
+              "must_show": [
+                "electric generator"
+              ],
+              "must_not_show": [
+                "water reservoir",
+                "dam wall"
+              ],
+              "queries_en": [
+                "electric generator powerhouse machinery",
+                "hydroelectric generator unit",
+                "electric generator"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S5",
+          "narration": "i skutecznie wytwarza prąd elektryczny.",
+          "evidence_ids": [
+            "E5"
+          ],
+          "evidence_uuids": [
+            "9eabdbc6-0903-4279-b1c7-aceb8c94f82c"
+          ],
+          "shots": [
+            {
+              "shot_id": "S5-A",
+              "visual_intent": "High voltage electrical transformer and power lines outdoors",
+              "must_show": [
+                "power lines",
+                "transformer"
+              ],
+              "must_not_show": [
+                "water turbine",
+                "water reservoir"
+              ],
+              "queries_en": [
+                "high voltage electrical transformer power lines",
+                "power lines transformer",
+                "power lines"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        }
+      ]
+    },
+    "prior_usage": {
+      "promptTokenCount": 18319,
+      "candidatesTokenCount": 3370,
+      "totalTokenCount": 21689
+    },
+    "target_words": 29,
+    "target_scene_word_counts": [
+      10,
+      6,
+      4,
+      4,
+      5
+    ],
+    "system_message": "You correct narration length after a measured TTS miss. Return only JSON with one key named narrations containing exactly 5 strings. The immutable original_narration is the factual source. current_narration is only an unaccepted timing draft. Preserve original meaning, order, language, subjects, actions, required objects and causal direction. Do not add new facts. The combined narrations must contain exactly 29 whitespace-separated words.",
+    "user_message": "LANGUAGE: pl\nTARGET TOTAL WORDS (HARD): exactly 29\n\nLINES:\n[{\"scene\":1,\"target_words\":10,\"original_narration\":\"Woda gromadzi się w specjalnym zbiorniku za tamą.\",\"current_words\":10,\"current_narration\":\"Woda gromadzi się w specjalnym zbiorniku znajdującym się za tamą.\"},{\"scene\":2,\"target_words\":6,\"original_narration\":\"Następnie spada z wysokości,\",\"current_words\":5,\"current_narration\":\"Następnie spada z dużej wysokości,\"},{\"scene\":3,\"target_words\":4,\"original_narration\":\"poruszając turbinę wodną,\",\"current_words\":3,\"current_narration\":\"poruszając turbinę wodną,\"},{\"scene\":4,\"target_words\":4,\"original_narration\":\"która napędza generator\",\"current_words\":3,\"current_narration\":\"która napędza generator\"},{\"scene\":5,\"target_words\":5,\"original_narration\":\"i wytwarza prąd elektryczny.\",\"current_words\":5,\"current_narration\":\"i skutecznie wytwarza prąd elektryczny.\"}]\n\nRULES:\n- return exactly 5 strings in the same order;\n- the combined total across all strings MUST equal exactly 29 whitespace-separated words;\n- target_words is a preferred per-line distribution; redistribute words between lines when needed, but the combined total must stay exactly 29;\n- each line must be a contiguous visual narration segment of 2-10 words; it may begin/end mid-sentence; joined in order, all lines must form one natural complete narration ending with . ! ? or …;\n- preserve original_narration meaning for each corresponding line; current_narration may contain mistakes;\n- reuse original terminology when possible; never pad with generic adjectives or substitute vague motion/force for the original mechanism;\n- do not add facts, examples, explanations, labels, or commentary;\n- for Ukrainian use standard Ukrainian only; never use Russian spelling;\n- do not add filler or remove required objects merely to reach a numeric count;\n- before output, silently recount all strings by whitespace and revise until the combined total is exactly 29;\n- output only {\"narrations\":[\"...\"]}."
+  },
+  "repair_final_measured_word_count": {
+    "body": {
+      "candidates": [
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "{\"narrations\":[\"Woda gromadzi się w specjalnym zbiorniku za tamą.\",\"Następnie spada z wysokości,\",\"poruszając turbinę wodną,\",\"która napędza generator\",\"i wytwarza prąd elektryczny.\"]}",
+                "thoughtSignature": "El4KXAFpFH0TWtMrVSvSSm6f0TzbXv/fim1YlmBZo2A/rt4d+x0bjxUZ/CVBbpL0oirIVtNO9Koo2+lreFCIjDCFrctxQVzly/yVU3ONDFzVtGBMxFJYxPe+cveYE3ec"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      ],
+      "usageMetadata": {
+        "promptTokenCount": 584,
+        "candidatesTokenCount": 53,
+        "totalTokenCount": 637,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 584
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "responseId": "qoqzapvUILKO28oP4p_40AU"
+    },
+    "headers": {
+      "x-gemini-service-tier": "standard",
+      "content-type": "application/json; charset=UTF-8",
+      "vary": "Origin, X-Origin, Referer",
+      "date": "Wed, 23 Sep 2026 08:15:38 GMT",
+      "server": "scaffolding on HTTPServer2",
+      "x-xss-protection": "0",
+      "x-frame-options": "SAMEORIGIN",
+      "x-content-type-options": "nosniff",
+      "server-timing": "gfet4t7; dur=648",
+      "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+      "connection": "close",
+      "transfer-encoding": "chunked"
+    },
+    "statusCode": 200,
+    "statusMessage": "OK"
+  }
+}
