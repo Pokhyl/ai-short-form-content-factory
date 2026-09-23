@@ -1352,3 +1352,11 @@ Full regression checkpoint:
 - `git diff --check`: PASS.
 - Source checkpoint before deployment: `d5bde05`.
 - Next gate: isolated n8n workflow import/schema check, then production migration + targeted M3/M8/API/Studio/media-worker deployment and live verification. No acceptance job before those checks pass.
+
+
+Isolated n8n validation checkpoint:
+- The current M8 workflow imported successfully into a clean isolated n8n 2.37.10 SQLite instance.
+- This validates the exported workflow shape/new node definitions without touching production.
+- Production check immediately before deployment: no active `new/running/waiting` publisher executions; target workflow IDs remain `VideoM3Intake001`, `VideoM8Visuals001`, and `VideoSelfTestApi001`.
+- Studio is bind-mounted read-only from this repository into the live Caddy container, so the committed Studio selector source is already the file served by Caddy; no Caddy restart is required.
+- Next: production DB migrations, media-worker rebuild/recreate, then publish only M3/M8/Self-Test-API and verify exact live source/state before any job.
