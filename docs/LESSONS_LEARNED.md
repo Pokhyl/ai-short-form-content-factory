@@ -590,3 +590,6 @@ Prevention:
 - allow a changed primary only when its concrete noun is explicitly grounded in the current narration segment;
 - keep unmentioned object switches fail-closed;
 - make prompts and validators use the same rule.
+
+62. Per-scene semantic validity does not guarantee continuous narration after mixing drafts.
+Execution 9788 moved “continuously” across a visual cut in one draft. Combining that draft with the older preceding scene duplicated the word. Validate scene boundaries during hybrid assembly and after joining; preserve intentional original repeats. Regression fixtures must be tracked in Git, not only in ignored operator review folders.

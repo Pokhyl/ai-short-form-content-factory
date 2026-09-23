@@ -1,0 +1,16 @@
+{
+  "execution_id": 9788,
+  "job_id": "8cd3ffb3-1439-4d21-a0fe-9298f043e4c7",
+  "confirmed_defect": "Hybrid repeats continuously across S4/S5 after cross-draft boundary movement",
+  "regression_before": {
+    "tests": 3,
+    "fail": 3
+  },
+  "regression_after": {
+    "tests": 324,
+    "pass": 324
+  },
+  "deployed": false,
+  "duration_failure_fixed": false,
+  "next_step": "Investigate exact-count prompt noncompliance and nearest-count fallback bypass of bounded compliance retry using execution 9788."
+}

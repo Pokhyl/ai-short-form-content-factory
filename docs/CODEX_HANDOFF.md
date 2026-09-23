@@ -1,8 +1,18 @@
 # Codex handoff — production video factory
 
-## Resume here — authoritative live checkpoint, 2026-09-23
+## Execution 9788 — verified source fix, 2026-09-23
 
-This section supersedes older status/next-step sections below; those are historical chronology.
+- Confirmed separate narration defect: final measured hybrid combined S4 ending “rotates continuously” from one draft with S5 starting “continuously to guide” from another. Each scene passed its semantic guard, but the joined text repeated “continuously continuously”. This is NOT proof that duplication caused the duration miss.
+- Fixed all three exact-word hybrid validators: exclude newly repeated words across scene boundaries during option assembly and reject them in the final joined result; repetitions present at the same original boundary remain permitted. No topic-specific rule, text padding, speech-rate change, or weaker duration gate.
+- Saved-data regression: all 3 tests fail on pre-fix HEAD with the exact duplicated phrase and pass after the fix. Full regression now 324/324 PASS; git diff --check PASS.
+- Reproducibility defect also fixed: a visual regression depended on ignored .review/pl15-v54/penstock-domain-live.json. Retrieved the existing public Wikimedia query data from VPS, committed it as tests/fixtures/wikimedia-hydroelectric-penstock.json, and pointed the test there. No new provider request or secret copied.
+- Duration investigation: original 29-word probe 13224ms; initial stability 12600/12408ms; later 30-word probes 13344/13704/13344ms. Final correction targets were 33 then 32 words; fallback continued with 30. Both provider exact-count retries returned 29 words. Existing nearest-word fallback permitted another under-target synthesis. No accepted audio for this job.
+- Production is UNCHANGED: M5 v124 active 945c1dd0-900c-4aca-9fbb-b1333a56b0fb; M6 v8 active 0bcabe39-ae90-42fe-842b-8a56ad238709; M8 v67 active 21599d8f-f0c9-48c8-af86-ba9e297cdd5a. This source fix is NOT deployed. No new job was started.
+- NEXT: continue from saved execution 9788; determine why the provider repeats 29 words and why the bounded compliance branch was bypassed by the nearest-word fallback. Reproduce and fix that duration-repair failure without weakening semantic/timing gates or adding blind retry loops. Then deploy tested M5 changes with existing safeguards and run one controlled Gemini smoke. Do not resume old M8 v53 work or repeat the boundary diagnosis.
+
+## Earlier live refresh — production baseline, 2026-09-23
+
+This baseline is superseded by the execution 9788 source-fix checkpoint above.
 Refreshed local main from origin/main at 4ae5c3f335166f6b0609b1e102b24c0b89923f01; verified production read-only on 2026-09-23.
 
 - Active production: M5 v124 / 945c1dd0-900c-4aca-9fbb-b1333a56b0fb; M6 v8 / 0bcabe39-ae90-42fe-842b-8a56ad238709; M8 v67 / 21599d8f-f0c9-48c8-af86-ba9e297cdd5a. These counters/activeVersionIds were read directly from n8n.

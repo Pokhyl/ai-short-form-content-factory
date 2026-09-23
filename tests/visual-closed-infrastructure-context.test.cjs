@@ -47,7 +47,7 @@ for(const provider of ['Pixabay','Pexels','Wikimedia']){
 }
 
 test('Wikimedia hydroelectric-penstock live response yields compliant candidates with current scorer',()=>{
-  const body=JSON.parse(fs.readFileSync('.review/pl15-v54/penstock-domain-live.json'))['hydroelectric penstock'];
+  const body=JSON.parse(fs.readFileSync('tests/fixtures/wikimedia-hydroelectric-penstock.json'));
   const ctx=requests('Wikimedia').find(r=>r.query_index===3);
   const lookup=name=>{
     if(name==='Build Wikimedia Requests') return {item:{json:ctx}};
