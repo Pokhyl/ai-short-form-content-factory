@@ -963,3 +963,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Non-M5 workflow fingerprint unchanged.
 - Live M5 == Git; Publisher/Studio 200; no restarts.
 - Next: exactly one fresh PL15.
+
+## M5 9621 pre-TTS punctuation canonicalization tested — 2026-09-23
+
+- Fresh PL15 `94f5e4ff-b6b3-4ebf-b161-98deb3c7bbe7` failed in M5 execution `9621` at accepted voiceover candidate registration.
+- Root cause: probe-3 TTS/ledger used 189-char narration with three `,.` artifacts; final canonicalizer then changed it to 186 chars, so exact-audio usage no longer matched final narration.
+- Local fix canonicalizes visual-cut punctuation in Prepare Timing Probe 1–5 before TTS/usage reservation.
+- Focused exact-audio 8/8 PASS; full suite 269/269 PASS.
+- Production remains M5 v114 / M6 v8 / M8 v62 until deploy.

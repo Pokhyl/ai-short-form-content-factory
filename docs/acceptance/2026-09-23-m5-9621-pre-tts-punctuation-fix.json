@@ -1,0 +1,54 @@
+{
+  "date": "2026-09-23",
+  "status": "tested_not_deployed",
+  "job_id": "94f5e4ff-b6b3-4ebf-b161-98deb3c7bbe7",
+  "m5_execution_id": 9621,
+  "script_run_id": "9279883f-70e2-4d8c-88d8-c40452eddb00",
+  "production_at_failure": {
+    "versionCounter": 114,
+    "activeVersionId": "34b07b1f-2b22-4c6c-a68e-54e5e05fab22"
+  },
+  "failure": "candidate provider usage is not a committed matching M5 TTS call",
+  "accepted_candidate": {
+    "source": "origin",
+    "origin_probe_attempt": 3,
+    "usage_idempotency_key": "m5-tts-probe:9279883f-70e2-4d8c-88d8-c40452eddb00:3",
+    "duration_ms": 15624,
+    "audio_sha256": "2fe4f1ac078e040dc0a084fa5326438edbe4b24e54c9b87857afbdab7f80e764"
+  },
+  "ledger": {
+    "id": 875,
+    "state": "committed",
+    "provider": "google_cloud_tts",
+    "sku_family": "chirp3_hd",
+    "usage_unit": "characters",
+    "amount": 189,
+    "stage": "M5_TIMING_PROBE",
+    "attempt": 3
+  },
+  "exact_mismatch": {
+    "tts_narration_chars": 189,
+    "final_narration_chars": 186,
+    "removed_artifacts": 3,
+    "artifact": ",.",
+    "explanation": "Final canonicalization mutated narration after the exact MP3 had already been synthesized and accounted."
+  },
+  "fix": {
+    "scope": "Prepare Timing Probe 1-5",
+    "rule": "Apply the same visual-cut punctuation canonicalization before character_count, usage reservation and TTS; rebuild top-level narration from normalized scenes.",
+    "db_validation_changed": false
+  },
+  "tests": {
+    "focused_exact_audio": {
+      "passed": 8,
+      "failed": 0
+    },
+    "full_suite": {
+      "passed": 269,
+      "failed": 0
+    },
+    "diff_check": "PASS",
+    "workflow_json": "PASS"
+  },
+  "next_step": "Commit/push, deploy only M5 after active=0, verify live equality and non-M5 fingerprint, then one fresh PL15."
+}

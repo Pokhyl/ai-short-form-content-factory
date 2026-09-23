@@ -249,15 +249,57 @@ Validation before deploy:
 - full suite 268/268 PASS;
 - exact 9617 missing-branch regression PASS.
 
+## Latest fresh PL15 result
+
+Job: `94f5e4ff-b6b3-4ebf-b161-98deb3c7bbe7`
+
+Pipeline:
+- M4 PASS
+- M5 v114 FAIL, execution `9621`
+- M6/M8/M9 did not run
+- script_run `9279883f-70e2-4d8c-88d8-c40452eddb00`
+- terminal reason: `candidate provider usage is not a committed matching M5 TTS call`
+
+Exact root cause:
+- accepted MP3 came from probe 3 with usage key `m5-tts-probe:9279883f-70e2-4d8c-88d8-c40452eddb00:3`;
+- ledger row 875 for that key is committed and otherwise valid, with `amount=189` characters;
+- exact probe-3 TTS narration was 189 characters and contained three malformed visual-cut endings `,.`;
+- after TTS, `Canonicalize Final Storyboard` removed those three extra periods and produced a 186-character final narration;
+- `register_voiceover_candidate` correctly requires committed usage amount to equal `char_length(final narration)`, so it rejected the 189-character provider usage for the 186-character final text;
+- therefore the defect was post-TTS narration mutation, not the ledger or DB validation.
+
+## M5 9621 pre-TTS punctuation canonicalization tested locally
+
+Fix:
+- all five `Prepare Timing Probe` nodes clone the storyboard and apply the same deterministic `normalizeVisualCutPunctuation` used by final canonicalization before TTS;
+- top-level narration is rebuilt from the normalized scene narrations before `character_count`, usage reservation, and Google TTS;
+- stability probes inherit the already-normalized storyboard;
+- final canonicalization becomes idempotent with respect to visual-cut punctuation;
+- DB candidate/usage validation is unchanged and remains fail-closed.
+
+Exact regression:
+- 9621 malformed narration: 189 chars before cleanup;
+- normalized narration: 186 chars before TTS;
+- every Prepare Timing Probe 1–5 outputs exactly the 186-char canonical narration;
+- every `character_count` equals the actual normalized narration length;
+- no `,.`, `;.`, or `:.` artifact reaches TTS.
+
+Validation:
+- focused exact-audio tests: 8/8 PASS;
+- full suite: 269/269 PASS;
+- `git diff --check`: PASS;
+- workflow JSON parse: PASS.
+
 ## Immediate next step
 
-1. Read this PLAN before production action.
-2. Commit/push the deployment checkpoint.
-3. Verify Git clean and active project execution count = 0.
-4. Run exactly ONE fresh PL15 on M5 v114 / M6 v8 / M8 v62.
-5. Follow only that job to terminal state.
-6. If it reaches M9 PASS, inspect the actual rendered MP4 technically, audio-wise, and scene-by-scene visually before EN30.
-7. If it fails, fix only that exact demonstrated blocker from saved execution data.
+1. Commit/push the tested 9621 fix and evidence.
+2. Read this PLAN again before production change.
+3. Verify active project execution count = 0.
+4. Export published M5 backup and fingerprint all non-M5 workflows.
+5. Deploy ONLY M5.
+6. Verify live M5 == Git, M5 version increments exactly once, non-M5 fingerprint unchanged, Publisher/Studio 200, and service health/restarts unchanged.
+7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
+8. Run exactly one fresh PL15.
 
 ## Acceptance sequence after PL15
 

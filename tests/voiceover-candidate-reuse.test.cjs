@@ -220,3 +220,56 @@ test('media worker provides isolated candidate store, metadata and promote route
   assert.match(source,/os\.link\(candidate_path, final_path\)/);
   assert.match(source,/_voiceover_candidate_job_id\("\/promote"\)/);
 });
+
+
+test('9621 regression: every M5 timing probe canonicalizes visual-cut punctuation before TTS usage accounting',()=>{
+  const source={
+    script_run_id:'9279883f-70e2-4d8c-88d8-c40452eddb00',
+    model:'gemini-3.5-flash-lite',
+    storyboard:{
+      narration:'Woda gromadzi się w wielkim zbiorniku za tamą. Następnie spada z dużej wysokości,. Poruszając turbinę wodną,. Która napędza generator,. Wytwarzając czystą i ekologiczną energię elektryczną.',
+      scenes:[
+        {scene_id:'S1',narration:'Woda gromadzi się w wielkim zbiorniku za tamą.',shots:[{shot_id:'S1-A'}]},
+        {scene_id:'S2',narration:'Następnie spada z dużej wysokości,.',shots:[{shot_id:'S2-A'}]},
+        {scene_id:'S3',narration:'Poruszając turbinę wodną,.',shots:[{shot_id:'S3-A'}]},
+        {scene_id:'S4',narration:'Która napędza generator,.',shots:[{shot_id:'S4-A'}]},
+        {scene_id:'S5',narration:'Wytwarzając czystą i ekologiczną energię elektryczną.',shots:[{shot_id:'S5-A'}]},
+      ],
+    },
+    narration_word_count:25,
+    scene_count:5,
+    shot_count:5,
+    usage:{},
+  };
+  const expected='Woda gromadzi się w wielkim zbiorniku za tamą. Następnie spada z dużej wysokości, Poruszając turbinę wodną, Która napędza generator, Wytwarzając czystą i ekologiczną energię elektryczną.';
+  assert.equal(expected.length,186);
+
+  const refs={
+    'Build Script Prompt':{language_code:'pl',target_duration_seconds:15},
+    'When Executed by Another Workflow':{job_id:'94f5e4ff-b6b3-4ebf-b161-98deb3c7bbe7'},
+  };
+  const $=name=>({first:()=>({json:refs[name]})});
+
+  for(const name of [
+    'Prepare Timing Probe',
+    'Prepare Timing Probe 2',
+    'Prepare Timing Probe 3',
+    'Prepare Timing Probe 4',
+    'Prepare Timing Probe 5',
+  ]){
+    const out=new Function(
+      '$','$json',
+      m5By[name].parameters.jsCode
+    )($,structuredClone(source)).json;
+
+    assert.equal(out.storyboard.narration,expected,name);
+    assert.equal(out.character_count,186,name);
+    assert.equal(out.character_count,Array.from(out.storyboard.narration).length,name);
+    assert.equal(
+      out.storyboard.narration,
+      out.storyboard.scenes.map(scene=>scene.narration).join(' '),
+      name
+    );
+    assert.doesNotMatch(out.storyboard.narration,/[,;:]\s*[.!?…]+/u,name);
+  }
+});

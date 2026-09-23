@@ -1600,3 +1600,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - M6 remained v8; M8 remained v62.
 - Live M5 core == Git; Publisher/Studio 200; n8n restart 0; worker healthy restart 0.
 - Next: exactly one fresh PL15.
+
+### M5 execution 9621 exact-audio usage mismatch fixed locally — 2026-09-23
+
+- Job `94f5e4ff-b6b3-4ebf-b161-98deb3c7bbe7`, M5 execution `9621`, script_run `9279883f-70e2-4d8c-88d8-c40452eddb00`, production M5 v114.
+- Accepted candidate source was probe 3, usage key `m5-tts-probe:9279883f-70e2-4d8c-88d8-c40452eddb00:3`, duration 15624 ms.
+- Ledger row 875 is committed with amount 189 characters and correct provider/job/SKU/stage.
+- Probe-3 narration was 189 chars because three scene cuts ended `,.`.
+- Final canonicalizer removed those three extra periods after synthesis, yielding 186 chars.
+- DB correctly rejected registering 189-char provider usage against a 186-char final narration.
+- Fix: Prepare Timing Probe 1–5 now run the same visual-cut punctuation normalization before TTS and usage accounting, rebuild top-level narration, and calculate character_count from that exact normalized text.
+- DB validation remains unchanged.
+- Focused exact-audio 8/8 PASS; full suite 269/269 PASS; static checks PASS.
+- Next: M5-only deploy, then one fresh PL15.
