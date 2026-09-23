@@ -1,5 +1,14 @@
 # AI Short-Form Content Factory — Production Plan
 
+## Gemini smoke 9809 — all five scenes visually reviewed, 2026-09-23
+
+- Job 360aba8c-ce92-499e-8f01-504726d352dd terminal visual failure. M4 9805, M5 9806, M6 9807, M7 9808 PASS; M8 9809 FAIL; no M9. Visual run 52eaa0a4-36a1-4d39-ae6f-b5af9ceda46a: 45 searches, 322 candidates, 0 committed selections.
+- Gemini actually reviewed 3 images for EACH of 5 scenes (15 images total). Approved counts S1=1, S2=0, S3=0, S4=3, S5=3. First failure “no Gemini-approved unique visual candidate for shot S2-A”. Exact assets, preview hashes and reasons saved in acceptance/2026-09-23-m8-9809-gemini-evidence.json.
+- S2 top candidates were household pipe lamp, defective unlit bulb, and bulb icon; none showed a glowing lamp inside a lighthouse lantern room. S3 top candidates were household floor/desk lamps and an exterior lamp; none satisfied lighthouse interior machinery. Gemini rejected them; do not weaken that gate.
+- M7 this run used standard alignment (DTW not needed): audio 15336ms, global coverage 1.0, lexical end 15000ms, overrun 0. The DTW-specific proof remains the exact-file replay of 9802.
+- NEXT: fix pre-Vision retrieval/context ranking for explicitly requested settings. M8 currently scopes domain extraction to a head whitelist; bulb/fixture fail to carry lighthouse context into broad searches/metadata gates. Derive explicitly stated setting from scene intent plus planned query evidence, not a lighthouse-specific rule. Replay saved S2/S3 requests/candidates before any new job.
+- Active production remains M5 v126 205d2b88-026c-4597-815a-74eeadcd7a9f / M6 v8 0bcabe39-ae90-42fe-842b-8a56ad238709 / M8 v67 21599d8f-f0c9-48c8-af86-ba9e297cdd5a; media-worker image 4118f3f06c98. No visual acceptance yet.
+
 ## Post-DTW smoke in M8 — 2026-09-23
 
 Job 360aba8c-ce92-499e-8f01-504726d352dd: M3 9803 PASS; coordinator 9804; M4 9805 PASS; M5 9806 PASS; M6 9807 PASS; M7 9808 PASS; M8 9809 RUNNING at this checkpoint. Production M5 v126 / M6 v8 / M8 v67; worker image 4118f3f06c98. NEXT: trace existing M8 9809 to terminal and inspect actual Gemini evidence. Do not create another job. M7 success alone does not prove that the new DTW branch was exercised; inspect saved alignment metadata before claiming that.

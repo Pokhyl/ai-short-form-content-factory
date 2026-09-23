@@ -1,0 +1,687 @@
+{
+  "job_id": "360aba8c-ce92-499e-8f01-504726d352dd",
+  "execution_id": 9809,
+  "visual_run_id": "52eaa0a4-36a1-4d39-ae6f-b5af9ceda46a",
+  "status": "failed",
+  "searches": 45,
+  "candidates": 322,
+  "selections": 0,
+  "failure": "no Gemini-approved unique visual candidate for shot S2-A",
+  "scenes": [
+    {
+      "shot_key": "S1-A",
+      "shot_uuid": "ef53c0c8-44a9-4470-97a8-f1dc83609b00",
+      "candidates": [
+        {
+          "width": 3109,
+          "author": "Masood Aslami",
+          "height": 4663,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@masoodaslami",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/low-angle-shot-of-a-red-lighthouse-against-blue-sky-17165108/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/17165108/pexels-photo-17165108.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "e54f89eb-ee62-4efc-b275-4ad9a9d13302",
+          "download_url": "https://images.pexels.com/photos/17165108/pexels-photo-17165108.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "17165108",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Ynhockey",
+          "height": 2463,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Lighthouse_Tower_06.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Lighthouse_Tower_06.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Lighthouse_Tower_06.jpg/1920px-Lighthouse_Tower_06.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "53ccf059-e348-4ce1-b096-474db51f23fb",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Lighthouse_Tower_06.jpg/1920px-Lighthouse_Tower_06.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "123378718",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Ynhockey",
+          "height": 2397,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Lighthouse_Tower_07.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Lighthouse_Tower_07.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Lighthouse_Tower_07.jpg/1920px-Lighthouse_Tower_07.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "e77c86f0-ecca-4dd6-9df2-c47aab9e5870",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Lighthouse_Tower_07.jpg/1920px-Lighthouse_Tower_07.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 0,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "123378717",
+          "metadata_rejection_reason": null
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "7912f3b038fb478a8906df974508264c4742f1925eb1a698448538778905ed6d",
+          "bytes": 8166,
+          "mime_type": "image/webp"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "c59899df6f73eb6e7750446c86e991b27ab0121be3cbd52e8ef489d73df39478",
+          "bytes": 1152544,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "2d21c0ad74553c1fdd66bb83ae09c65c07e8300d39b2068fdfebb3aa7afa4a00",
+          "bytes": 1207518,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 90,
+          "vision_pass": true,
+          "reason": "The image clearly shows a red lighthouse tower against the sky."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": false,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 0,
+          "vision_pass": false,
+          "reason": "The image shows modern high-rise apartment buildings, not a lighthouse tower."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": false,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 0,
+          "vision_pass": false,
+          "reason": "The image shows modern skyscrapers with balconies, not a coastal lighthouse."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1015,
+        "candidatesTokenCount": 163,
+        "totalTokenCount": 1178,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 780
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 235
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "shot_key": "S2-A",
+      "shot_uuid": "5e519a92-ecd2-4225-ba00-a103748767f9",
+      "candidates": [
+        {
+          "width": 3456,
+          "author": "Marcelo Chagas",
+          "height": 5184,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@marcelochagas",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/pipe-lamp-on-wall-3324439/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/3324439/pexels-photo-3324439.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "d884aaa6-5c42-4378-8f61-a81f27de01a2",
+          "download_url": "https://images.pexels.com/photos/3324439/pexels-photo-3324439.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "3324439",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Encik Tekateki",
+          "height": 3589,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Defective_China_Lamp_Bulb_from_normal_usage.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Defective_China_Lamp_Bulb_from_normal_usage.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://upload.wikimedia.org/wikipedia/commons/3/37/Defective_China_Lamp_Bulb_from_normal_usage.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "candidate_id": "7c53a471-21a7-48c5-87fc-fb38e9af4d05",
+          "download_url": "https://upload.wikimedia.org/wikipedia/commons/3/37/Defective_China_Lamp_Bulb_from_normal_usage.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "128169485",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Tommaso.sansone91",
+          "height": 1600,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Led_light_bulb_-_led_lamp_2.png",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Led_light_bulb_-_led_lamp_2.png",
+          "duration_ms": null,
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/Led_light_bulb_-_led_lamp_2.png/1920px-Led_light_bulb_-_led_lamp_2.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "050be19b-60b3-454f-be69-d3b22195b03e",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/Led_light_bulb_-_led_lamp_2.png/1920px-Led_light_bulb_-_led_lamp_2.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC0",
+          "review_bucket": 0,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "76345839",
+          "metadata_rejection_reason": null
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "3f2758b75b5e039d6aad160e3bdf1d812d1c3db1a90ca8b5ae9321e62164a514",
+          "bytes": 18384,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "c7a544efe2dcdd0d9ff618c70563e11cc28872fc9b596190bffa548a32d0ecfb",
+          "bytes": 599172,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "1f73a1f1ede8f5b3da32f56bc4e9d027347eb553d573d397027220561bc47093",
+          "bytes": 68732,
+          "mime_type": "image/png"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 40,
+          "vision_pass": false,
+          "reason": "shows bright lamp bulbs mounted on a brick wall, but lacks the lighthouse lantern room context"
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 20,
+          "vision_pass": false,
+          "reason": "shows a close-up of a light bulb, but it is not glowing and lacks the lighthouse lantern room context"
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 0,
+          "vision_pass": false,
+          "reason": "shows a graphic icon of a light bulb rather than an actual lamp inside a lighthouse lantern room"
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1027,
+        "candidatesTokenCount": 182,
+        "totalTokenCount": 1209,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 791
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 236
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "shot_key": "S3-A",
+      "shot_uuid": "e8f05588-e20a-4306-8c65-0716c062b7dc",
+      "candidates": [
+        {
+          "width": 1920,
+          "author": "Alex Nguyen",
+          "height": 2560,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@alex-nguyen-667768861",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/a-lamp-standing-by-the-wall-18109261/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/18109261/pexels-photo-18109261.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "715004a0-038c-465b-b61b-39e4ab440d4a",
+          "download_url": "https://images.pexels.com/photos/18109261/pexels-photo-18109261.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 85,
+          "metadata_rejected": true,
+          "provider_asset_id": "18109261",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:lamp fixture; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 3000,
+          "author": "Florence",
+          "height": 4000,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@florence-1768458",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/rustic-lighthouse-lamp-by-the-sea-30285137/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "d2ff2580-4e8c-4c50-a896-c8440c0cb495",
+          "download_url": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 80,
+          "metadata_rejected": true,
+          "provider_asset_id": "30285137",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:lamp fixture; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 3333,
+          "author": "Amine İspir",
+          "height": 5000,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@amineispir",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/lamp-on-a-desk-15664927/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/15664927/pexels-photo-15664927.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "20a0a798-5862-4bd6-8713-7905cec511c5",
+          "download_url": "https://images.pexels.com/photos/15664927/pexels-photo-15664927.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 79,
+          "metadata_rejected": true,
+          "provider_asset_id": "15664927",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:lamp fixture; insufficient_must_show_concept_coverage; insufficient_query_intent_metadata_match"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "3d5e5b4c034d211f51d44d973f536621ebe973589398ea466abcc43450300ec0",
+          "bytes": 10139,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "0bd94025339b3aa61244f98acc071ad990e38717cece75e50f1101a34a5f5463",
+          "bytes": 14955,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "ec8f609720af0b74b30a5679c44a595d315e5e70ad6f302b1c9ecec11dc571b8",
+          "bytes": 10319,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 20,
+          "vision_pass": false,
+          "reason": "Shows a multi-bulb indoor floor lamp rather than lighthouse machinery."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": false,
+          "intent_match": false,
+          "match_score": 10,
+          "vision_pass": false,
+          "reason": "Shows a lighthouse lamp fixture outdoors with an ocean view background, violating the forbidden exterior view concept."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 15,
+          "vision_pass": false,
+          "reason": "Shows a standard household table lamp, not lighthouse interior machinery."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1029,
+        "candidatesTokenCount": 169,
+        "totalTokenCount": 1198,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 237
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 792
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "shot_key": "S4-A",
+      "shot_uuid": "107e8d1e-6715-4412-b870-45277ea1b3f5",
+      "candidates": [
+        {
+          "width": 4160,
+          "author": "Connor Scott McManus",
+          "height": 6240,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@connorscottmcmanus",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/close-up-of-a-device-12951942/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/12951942/pexels-photo-12951942.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "33d0665f-9a02-4269-9265-16c77cd514b0",
+          "download_url": "https://images.pexels.com/photos/12951942/pexels-photo-12951942.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "12951942",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Rick Obst",
+          "height": 1200,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Interior_view_of_the_Fresnel_lens_at_Umpqua_River_Lighthouse_Lighthouse_(44394416280).jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Interior_view_of_the_Fresnel_lens_at_Umpqua_River_Lighthouse_Lighthouse_(44394416280).jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Interior_view_of_the_Fresnel_lens_at_Umpqua_River_Lighthouse_Lighthouse_%2844394416280%29.jpg/1920px-Interior_view_of_the_Fresnel_lens_at_Umpqua_River_Lighthouse_Lighthouse_%2844394416280%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "25bae74d-aeac-4bb0-82d2-1cfd8293e009",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Interior_view_of_the_Fresnel_lens_at_Umpqua_River_Lighthouse_Lighthouse_%2844394416280%29.jpg/1920px-Interior_view_of_the_Fresnel_lens_at_Umpqua_River_Lighthouse_Lighthouse_%2844394416280%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC BY 2.0",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "97140774",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Rick Obst",
+          "height": 1200,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Interior_of_the_Fresnel_lens_at_the_Umpqua_River_Lighthouse_(45487546554).jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Interior_of_the_Fresnel_lens_at_the_Umpqua_River_Lighthouse_(45487546554).jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Interior_of_the_Fresnel_lens_at_the_Umpqua_River_Lighthouse_%2845487546554%29.jpg/1920px-Interior_of_the_Fresnel_lens_at_the_Umpqua_River_Lighthouse_%2845487546554%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "eac808dd-a9a5-4a1f-9274-8b4f283db499",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Interior_of_the_Fresnel_lens_at_the_Umpqua_River_Lighthouse_%2845487546554%29.jpg/1920px-Interior_of_the_Fresnel_lens_at_the_Umpqua_River_Lighthouse_%2845487546554%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC BY 2.0",
+          "review_bucket": 0,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "97140783",
+          "metadata_rejection_reason": null
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "02cea8dca25265e527e73c12b47318b955fb008cd4fb8ded04ce05ed0054849b",
+          "bytes": 19998,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "79244c830227a221e1c1c639c75365279e6cfba25e28c5b30310510cf20d5a70",
+          "bytes": 694551,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "b686ba96cc674461788286c821eb40ad36075997d08559c339ce9dbcd8cf156d",
+          "bytes": 700322,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 90,
+          "vision_pass": true,
+          "reason": "A blue Fresnel lens array is clearly visible with no plain glass windows shown."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "A complex glass Fresnel lens array with red and clear sections is prominently featured."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "Interior view of a lighthouse showing a complete array of Fresnel lenses."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1029,
+        "candidatesTokenCount": 168,
+        "totalTokenCount": 1197,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 792
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 237
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "shot_key": "S5-A",
+      "shot_uuid": "6bda3ac1-4bdb-4b8d-ab1a-4db18afe30f6",
+      "candidates": [
+        {
+          "width": 2925,
+          "author": "Maximilian Orlowsky",
+          "height": 4388,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@maximilian-orlowsky-515733",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/bright-lighthouse-illuminating-night-sky-32846091/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/32846091/pexels-photo-32846091.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "79a6e1cb-1968-491a-86d0-5e320387be90",
+          "download_url": "https://images.pexels.com/photos/32846091/pexels-photo-32846091.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "32846091",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 2828,
+          "author": "Erik Mclean",
+          "height": 4242,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@introspectivedsgn",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/beacon-with-shiny-light-rays-on-shore-at-night-6194252/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/6194252/pexels-photo-6194252.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "f4a9ce45-30da-499c-85e4-4be967c41236",
+          "download_url": "https://images.pexels.com/photos/6194252/pexels-photo-6194252.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "6194252",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 4672,
+          "author": "✰ Saul Bandera Brotheridge",
+          "height": 7008,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@thephotosaccount",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/dramatic-nighttime-lighthouse-with-radiant-beams-36345402/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "24a4e8b4-4327-4d5a-9375-7d21dc441b21",
+          "download_url": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "36345402",
+          "metadata_rejection_reason": null
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "a9edb70841e293ef839969a028ea739e1ca7921cfbc9af826ef2ce03719b901a",
+          "bytes": 5797,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "f77d1cb026cb10731cb3b311d0ad995fe85fc43a272e1d329fd07c5e091b04b0",
+          "bytes": 15779,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "e15cd653c3c9f309d3cab0a0687358731d922f2224531e264b7808a531436c3d",
+          "bytes": 4922,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 85,
+          "vision_pass": true,
+          "reason": "The image clearly shows a lighthouse emitting multiple beams of light against a dark night sky, perfectly representing the visual intent without any daytime sky."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 80,
+          "vision_pass": true,
+          "reason": "A lighthouse is visible at night shining light beams across the landscape, but it lacks the sea from the visual intent."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 75,
+          "vision_pass": true,
+          "reason": "Shows lighthouse beams shining out into the dark night, though it lacks the sea context specified in the visual intent."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1022,
+        "candidatesTokenCount": 284,
+        "totalTokenCount": 1306,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 780
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 242
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    }
+  ]
+}
