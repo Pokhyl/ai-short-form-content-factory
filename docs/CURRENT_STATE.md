@@ -1224,3 +1224,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Repair 2 received only stripped `A -> B [line 698]` diagnostics.
 - Candidate fix already exists uncommitted in shared working tree: generic stripped-error normalization in both repair builders plus regression test.
 - Validate before commit/deploy; keep validator strict.
+
+
+## M5 9699 candidate fix tested — 2026-09-23
+
+- Both storyboard repair builders now expand stripped anaphoric validator diagnostics into a generic antecedent-preservation instruction.
+- Unrelated validation errors are unchanged.
+- Validators remain strict; no topic-specific logic.
+- Focused 30/30, full 295/295, JSON/diff/59 M5 Code nodes PASS.
+- Pending M5-only deploy.

@@ -328,3 +328,63 @@ test('all storyboard validators require positive lexical evidence before inherit
     );
   }
 });
+
+
+test('9699 repair builders expand stripped anaphoric validator errors generically',()=>{
+  const ctx={
+    script_run_id:'run-9699',
+    model:'gemini-3.5-flash-lite',
+    system_message:'SYSTEM',
+    user_message:'BASE USER MESSAGE',
+    target_scenes:5,
+    target_shots:5,
+    target_words:27,
+  };
+  const response=text=>({
+    statusCode:200,
+    body:{candidates:[{content:{parts:[{text}]}}]},
+  });
+  const run=(name,$json,values)=>{
+    const $=nodeName=>({
+      first:()=>({json:values[nodeName]}),
+    });
+    return new Function('$','$json',byName[name].parameters.jsCode)($,$json).json;
+  };
+  const stripped='previous machine '+String.fromCharCode(45,62)+' unrelated object [line 698]';
+
+  const first=run(
+    'Build Storyboard Repair',
+    {error:stripped},
+    {
+      'Build Script Prompt':ctx,
+      'Generate Storyboard':response('{"narration":"x","scenes":[]}'),
+    }
+  );
+  assert.match(first.user_message,/Anaphoric visual-primary mismatch/);
+  assert.match(first.user_message,/previous primary "previous machine"/);
+  assert.match(first.user_message,/Rejected current primary: "unrelated object"/);
+
+  const second=run(
+    'Build Storyboard Repair 2',
+    {error:stripped},
+    {
+      'Build Script Prompt':ctx,
+      'Repair Storyboard':response('{"narration":"x","scenes":[]}'),
+      'Generate Storyboard':response('{"narration":"x","scenes":[]}'),
+      'Validate Storyboard':{error:'first validation failed'},
+    }
+  );
+  assert.match(second.user_message,/Anaphoric visual-primary mismatch/);
+  assert.match(second.user_message,/do not merely rename the unrelated object/);
+
+  const unrelated=run(
+    'Build Storyboard Repair',
+    {error:'visual metadata must be English'},
+    {
+      'Build Script Prompt':ctx,
+      'Generate Storyboard':response('{"narration":"x","scenes":[]}'),
+    }
+  );
+  assert.match(unrelated.user_message,/visual metadata must be English/);
+  assert.doesNotMatch(unrelated.user_message,/Anaphoric visual-primary mismatch/);
+});

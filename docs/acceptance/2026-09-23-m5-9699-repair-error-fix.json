@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-23",
+  "status": "m5_9699_repair_error_normalization_validated_predeploy",
+  "source_job_id": "d0d127b8-c70a-4cef-b3ae-1dc2cc43e104",
+  "source_execution_id": 9699,
+  "scope": [
+    "Build Storyboard Repair",
+    "Build Storyboard Repair 2"
+  ],
+  "behavior": [
+    "expand stripped anaphoric validator diagnostics into an explicit antecedent-preservation repair instruction",
+    "leave unrelated validation errors unchanged",
+    "keep validators and fail-closed gates unchanged",
+    "use no topic-specific vocabulary"
+  ],
+  "tests": {
+    "focused_scene_visual": "35/35 PASS",
+    "full_suite": "295/295 PASS",
+    "m5_code_nodes": "59/59 syntax PASS",
+    "workflow_json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "next_step": "Commit and push the tested fix, then perform an M5-only deploy with zero active executions, published backup and non-M5 fingerprint verification."
+}

@@ -1939,3 +1939,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - n8n passed stripped `A -> B [line N]` error text to repair logic.
 - Shared working tree already contains an uncommitted generic error-normalization candidate + regression test from a parallel process.
 - Next: docs-only checkpoint, then validate candidate; no new job.
+
+
+### M5 9699 repair-error normalization validated — predeploy
+
+- Scoped to both storyboard repair builders only.
+- Stripped anaphoric validator diagnostics are expanded before the next model repair.
+- No validator weakening and no topic-specific vocabulary.
+- Focused 30/30, full 295/295, M5 Code nodes 59/59, JSON/diff PASS.
+- Next: M5-only deploy, then one fresh PL15.

@@ -1062,3 +1062,21 @@ Next:
 4. If all PASS, record tested fix, commit/push code+test+docs.
 5. M5-only deploy after zero-active check/backup/fingerprint.
 6. No new PL15 before verified deploy.
+
+
+## M5 execution 9699 repair-error normalization validated
+
+Implemented only in `Build Storyboard Repair` and `Build Storyboard Repair 2`:
+- stripped anaphoric validator diagnostics are expanded into an explicit antecedent-preservation repair instruction;
+- unrelated validation errors pass through unchanged;
+- no topic-specific vocabulary;
+- storyboard validators and fail-closed gates are unchanged.
+
+Validation:
+- focused scene/visual tests: 35/35 PASS;
+- full suite: 295/295 PASS;
+- M5 Code nodes: 59/59 syntax PASS;
+- workflow JSON parse: PASS;
+- `git diff --check`: PASS.
+
+Next: commit/push the tested fix, then M5-only deploy with zero-active check, backup and non-M5 fingerprint. No new PL15 before verified deploy.
