@@ -1,6 +1,21 @@
 # AI Short-Form Content Factory — Production Plan
 
-Updated: 2026-09-22
+## Resume here — authoritative live checkpoint, 2026-09-23
+
+This section supersedes older status/next-step sections below; those are historical chronology.
+Refreshed local main from origin/main at 4ae5c3f335166f6b0609b1e102b24c0b89923f01; verified production read-only on 2026-09-23.
+
+- Active production: M5 v124 / 945c1dd0-900c-4aca-9fbb-b1333a56b0fb; M6 v8 / 0bcabe39-ae90-42fe-842b-8a56ad238709; M8 v67 / 21599d8f-f0c9-48c8-af86-ba9e297cdd5a. These counters/activeVersionIds were read directly from n8n.
+- Latest controlled Gemini smoke: job 8cd3ffb3-1439-4d21-a0fe-9298f043e4c7, topic “how does a lighthouse work?”, en, 15s. It is TERMINAL script_failed, not still running.
+- M3 execution 9785 PASS; M4 9787 PASS; M5 9788 ERROR. Script run 6a4849f6-2548-4ddb-b3f1-f217f22b58cf completed 2026-09-23T20:27:33.165278+02:00.
+- Exact failure: “M5 script workflow failed: M5 timing repair still outside target: got 13344ms, target 15000ms, tolerance 800ms”. Execution reached timing probe 5 and Prepare Final Timing Failure 5, then Raise Script Failure. Final audio is 1656ms short (856ms beyond tolerance). The measured duration gate rejected it; the underlying repair/convergence cause is NOT yet diagnosed. No runtime fix made in this checkpoint.
+- This job never reached M6–M9; it provides no Gemini pixel-validation or final-media acceptance evidence. The previous precision-count mismatch fix must not be called the cause without inspecting execution 9788.
+- NEXT: inspect saved M5 execution 9788 timing/repair outputs, compare accepted narration and measurements across probes, and reproduce the specific failure before changing the duration-repair logic. Use stored evidence first; do not launch another smoke job merely to replace this failed result. After a verified fix, follow targeted deployment safeguards and run one controlled Gemini smoke through M8. Acceptance sequence remains pending.
+- Existing implementation includes metadata/gemini visual modes, per-candidate preview failure handling, and exact accepted M5 audio reuse in M6. Preserve these changes. Last recorded full regression: 321/321 PASS before this smoke; not rerun for this documentation-only refresh.
+- Old local pre-refresh M8 v53 work was preserved in local stash 103e61a5cf870b25c43f4c51d21b09fb17ff8d31 (“preserve obsolete local M8 v53 WIP before 2026-09-23 main refresh”). It is obsolete, not applied/deployed, and is NOT required to resume from GitHub. Do not apply it over current main.
+- Evidence: [live resume checkpoint](acceptance/2026-09-23-resume-smoke-9788.json). No new job, workflow deployment, or production mutation in this checkpoint.
+
+Updated: 2026-09-23
 
 ## Source of truth and execution rules
 

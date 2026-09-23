@@ -1,0 +1,32 @@
+{
+  "checked_at_utc": "2026-09-23T19:04:58.518014+00:00",
+  "source_commit": "4ae5c3f335166f6b0609b1e102b24c0b89923f01",
+  "verification": "Read-only publisher status API, n8n workflow/execution tables, project script_runs, decoded execution 9788 node names and terminal error",
+  "production": {
+    "M5": {
+      "counter": 124,
+      "activeVersionId": "945c1dd0-900c-4aca-9fbb-b1333a56b0fb"
+    },
+    "M6": {
+      "counter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "M8": {
+      "counter": 67,
+      "activeVersionId": "21599d8f-f0c9-48c8-af86-ba9e297cdd5a"
+    }
+  },
+  "job_id": "8cd3ffb3-1439-4d21-a0fe-9298f043e4c7",
+  "status": "script_failed",
+  "executions": {
+    "M3": 9785,
+    "M4": 9787,
+    "M5": 9788
+  },
+  "script_run_id": "6a4849f6-2548-4ddb-b3f1-f217f22b58cf",
+  "failure_reason": "M5 script workflow failed: M5 timing repair still outside target: got 13344ms, target 15000ms, tolerance 800ms",
+  "root_cause_status": "Duration gate failure confirmed; repair convergence root cause not yet investigated",
+  "next_step": "Inspect stored M5 execution 9788 probe/repair outputs and reproduce failure before fixing; no replacement smoke job yet",
+  "changes": "Documentation only; no production changes or new jobs",
+  "tests": "Prior recorded 321/321 PASS; not rerun for documentation-only checkpoint"
+}
