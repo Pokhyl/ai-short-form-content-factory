@@ -2020,3 +2020,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Publisher restart was required once after CLI publish to register production webhooks; after restart M3 mode validation and latest-job mode output were verified.
 - Full Node suite before deployment: 316/316 PASS. Isolated n8n import of current M8: PASS. Active publisher executions after deployment: 0.
 - Next: one controlled non-acceptance Gemini-mode job to exercise the live credential/request/selection path before any acceptance run.
+
+
+## 2026-09-23 — M5 Gemini 503 hardening
+- Controlled Gemini visual-validation smoke job `21e30e0c-2ee2-491e-bd57-2eebb92e25e3` failed before M8 in M5 execution `9724` with Gemini 503 high-demand after the existing 3x/5s HTTP retries.
+- M5 source now uses `retryOnFail=true`, `maxTries=5`, `waitBetweenTries=10000` on all 11 Gemini HTTP nodes. Same `gemini-3.5-flash-lite` model and existing `Gemini Text` credential; no new provider/model/secret.
+- Focused M5 tests: 14/14 PASS. Full Node suite: 316/316 PASS. `git diff --check`: PASS.
+- Production backup: `.backups/m5-before-retry-hardening-20260923-172916.json`, SHA256 `6a65810d4bf204036520a96a058c2c299788fae904ba00d7514eba5036c34492`.
+- Published only `VideoM5Storyboard001`; active version `b54a2f65-7fd7-40f0-a803-12106aa408f7`.
+- `ai-short-form-n8n` restarted once because n8n CLI stated published changes require restart while running.
+- Published M5 matches Git for nodes/connections/settings. Next: one controlled Gemini-mode smoke job; do not start acceptance sequence until actual M8 Gemini evidence is verified.

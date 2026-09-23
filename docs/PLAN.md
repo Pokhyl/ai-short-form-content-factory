@@ -1398,3 +1398,11 @@ M5 retry hardening full-regression checkpoint:
 - `git diff --check`: PASS.
 - Source checkpoint: `324be11`.
 - Next gate: verify zero active publisher executions, back up the currently published M5, deploy/publish only M5, verify published nodes/connections/settings match Git, then rerun one controlled Gemini-mode smoke job.
+
+M5 retry hardening production deployment checkpoint:
+- Pre-deploy active publisher executions: 0.
+- Backed up the previously published M5 to `.backups/m5-before-retry-hardening-20260923-172916.json` (SHA256 `6a65810d4bf204036520a96a058c2c299788fae904ba00d7514eba5036c34492`).
+- Imported/published only `VideoM5Storyboard001`; new active version ID is `b54a2f65-7fd7-40f0-a803-12106aa408f7`.
+- Restarted only `ai-short-form-n8n` because the CLI explicitly required restart for published changes to take effect.
+- Post-restart published M5 matches Git exactly for `nodes`, `connections`, and `settings`; container state is running.
+- Next gate: rerun one controlled `gemini` visual-validation smoke job and confirm it passes M5 and reaches the M8 Gemini pixel-validation path.
