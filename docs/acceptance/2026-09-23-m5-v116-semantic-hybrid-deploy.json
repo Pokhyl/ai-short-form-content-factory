@@ -1,0 +1,48 @@
+{
+  "date": "2026-09-23",
+  "status": "deployed_verified",
+  "workflow": "VideoM5Storyboard001",
+  "commit": "a1c07eb2518b291ad75a1fc6b7ad31dc83777544",
+  "before": {
+    "versionCounter": 115,
+    "activeVersionId": "4ec491e1-fb68-4c5e-8125-c6d501e7d48d"
+  },
+  "after": {
+    "versionCounter": 116,
+    "activeVersionId": "64654d56-c7c8-481f-8bd3-37e37cc27289"
+  },
+  "backup": ".backups/m5-before-9629-20260923-052246.json",
+  "other_workflows": {
+    "count": 31,
+    "fingerprint_before": "31|6d5bcd9e4ad7e94f6f9907f52426c741",
+    "fingerprint_after": "31|6d5bcd9e4ad7e94f6f9907f52426c741",
+    "unchanged": true
+  },
+  "unchanged_versions": {
+    "M6": {
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "M8": {
+      "versionCounter": 62,
+      "activeVersionId": "90329f54-40fd-4382-92fd-2fd1e9ecea01"
+    },
+    "M9": {
+      "versionCounter": 1,
+      "activeVersionId": "5b6c937c-1767-4c3e-99c4-31ea38a26961"
+    }
+  },
+  "live_core_match": true,
+  "publisher_http": 200,
+  "studio_http": 200,
+  "n8n": {
+    "status": "running",
+    "restart_count": 0
+  },
+  "media_worker": {
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0
+  },
+  "next_step": "Run exactly one fresh PL15."
+}

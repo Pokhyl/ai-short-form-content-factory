@@ -52,8 +52,8 @@ Constraints:
 ## Current production state
 
 Current verified production versions:
-- M5 Script/Storyboard: v115
-  - activeVersionId: `4ec491e1-fb68-4c5e-8125-c6d501e7d48d`
+- M5 Script/Storyboard: v116
+  - activeVersionId: `64654d56-c7c8-481f-8bd3-37e37cc27289`
 - M6 Voiceover: v8
   - activeVersionId: `0bcabe39-ae90-42fe-842b-8a56ad238709`
 - M8 Visuals: v62
@@ -349,16 +349,40 @@ Validation:
 - workflow JSON parse: PASS;
 - `git diff --check`: PASS.
 
+## M5 v116 semantic-filtered exact-word hybrid deployed and verified
+
+Production:
+- M5 v116: `64654d56-c7c8-481f-8bd3-37e37cc27289`
+- M6 v8 unchanged
+- M8 v62 unchanged
+- M9 v1 unchanged
+
+Deployment verification:
+- published backup: `.backups/m5-before-9629-20260923-052246.json`
+- non-M5 workflow fingerprint before/after: `31|6d5bcd9e4ad7e94f6f9907f52426c741`
+- live M5 nodes/connections/settings == Git: PASS
+- Publisher 200
+- Studio 200
+- n8n restart count 0
+- media worker healthy, restart count 0
+
 ## Immediate next step
 
-1. Commit/push the tested 9629 fix and evidence.
-2. Read this PLAN again before production change.
-3. Verify active project execution count = 0.
-4. Export published M5 backup and fingerprint all non-M5 workflows.
-5. Deploy ONLY M5.
-6. Verify live M5 == Git, M5 version increments exactly once, non-M5 fingerprint unchanged, Publisher/Studio 200, and service health/restarts unchanged.
-7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
-8. Run exactly one fresh PL15.
+1. Read this PLAN before the next production action.
+2. Verify Git clean and active project execution count = 0.
+3. Run exactly ONE fresh PL15 on M5 v116 / M6 v8 / M8 v62 / M9 v1.
+4. Follow that single job to terminal state. Do not create another job while it is running.
+5. If it reaches machine QA:
+   - inspect the actual rendered MP4 technically;
+   - review scene-by-scene visual grounding against narration;
+   - review audio/narration continuity.
+6. If it fails:
+   - inspect saved execution/provider data from that exact job;
+   - fix only the demonstrated blocker;
+   - regression test;
+   - deploy only the affected workflow;
+   - update PLAN/Git;
+   - then one new acceptance job.
 
 ## Acceptance sequence after PL15
 

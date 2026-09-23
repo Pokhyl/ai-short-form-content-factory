@@ -1650,3 +1650,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Full suite: 271/271 PASS.
 - JSON parse and git diff checks PASS.
 - Next: commit/push, M5-only deploy, then one fresh PL15.
+
+
+### M5 v116 semantic-filtered exact-word hybrid deployed — 2026-09-23
+
+- Commit `a1c07eb2518b291ad75a1fc6b7ad31dc83777544`.
+- M5 v116 activeVersionId `64654d56-c7c8-481f-8bd3-37e37cc27289`.
+- Backup `.backups/m5-before-9629-20260923-052246.json`.
+- Non-M5 fingerprint unchanged: `31|6d5bcd9e4ad7e94f6f9907f52426c741`.
+- M6 v8, M8 v62, M9 v1 unchanged.
+- Live M5 == Git.
+- Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
+- Next: exactly one fresh PL15.

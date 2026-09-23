@@ -996,3 +996,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - `Validate Final Word Count Retry` now filters retry/base/pre_final options semantically before DP.
 - Exact 9629 regression 2/2 PASS; full suite 271/271 PASS.
 - Not yet production-complete until M5-only deploy is verified.
+
+
+## M5 v116 deployed and verified — 2026-09-23
+
+- M5 v116 `64654d56-c7c8-481f-8bd3-37e37cc27289`.
+- M6 v8 / M8 v62 / M9 v1 unchanged.
+- Live M5 matches Git; non-M5 fingerprint unchanged.
+- Publisher/Studio 200; no n8n restart; media worker healthy.
+- Next: one fresh PL15 only.
