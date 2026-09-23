@@ -971,3 +971,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Local fix canonicalizes visual-cut punctuation in Prepare Timing Probe 1–5 before TTS/usage reservation.
 - Focused exact-audio 8/8 PASS; full suite 269/269 PASS.
 - Production remains M5 v114 / M6 v8 / M8 v62 until deploy.
+
+
+## M5 v115 deployed and verified — 2026-09-23
+
+- M5 v115 `4ec491e1-fb68-4c5e-8125-c6d501e7d48d`.
+- M6 v8, M8 v62, M9 v1 unchanged.
+- Live M5 matches Git.
+- Non-M5 fingerprint unchanged.
+- Publisher/Studio 200; no n8n restart; media worker healthy.
+- Next action: exactly one fresh PL15.

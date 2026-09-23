@@ -52,12 +52,12 @@ Constraints:
 ## Current production state
 
 Current verified production versions:
-- M5 Script/Storyboard: v111
-  - activeVersionId: `31eaa7a9-98d1-44b6-bec6-416ef388753b`
+- M5 Script/Storyboard: v115
+  - activeVersionId: `4ec491e1-fb68-4c5e-8125-c6d501e7d48d`
 - M6 Voiceover: v8
   - activeVersionId: `0bcabe39-ae90-42fe-842b-8a56ad238709`
-- M8 Visuals: v61
-  - activeVersionId: `a73aefbc-4c8e-4458-8ef2-c48bbce3a957`
+- M8 Visuals: v62
+  - activeVersionId: `90329f54-40fd-4382-92fd-2fd1e9ecea01`
 
 M5 v111 deployment verification:
 - published backup: `.backups/m5-before-anaphoric-20260922-210414.json`
@@ -290,16 +290,41 @@ Validation:
 - `git diff --check`: PASS;
 - workflow JSON parse: PASS.
 
+## M5 v115 pre-TTS punctuation fix deployed and verified
+
+Production:
+- M5 v115: `4ec491e1-fb68-4c5e-8125-c6d501e7d48d`
+- M6 v8 unchanged
+- M8 v62 unchanged
+- M9 v1 unchanged
+
+Deployment verification:
+- published backup: `.backups/m5-before-pretts-punct-20260923-041956.json`
+- non-M5 workflow fingerprint: `31|6d5bcd9e4ad7e94f6f9907f52426c741`, unchanged from v114 checkpoint
+- live M5 nodes/connections/settings == Git: PASS
+- Publisher 200
+- Studio 200
+- n8n restart count 0
+- media worker healthy, restart count 0
+- active project executions after verification: 0
+
 ## Immediate next step
 
-1. Commit/push the tested 9621 fix and evidence.
-2. Read this PLAN again before production change.
-3. Verify active project execution count = 0.
-4. Export published M5 backup and fingerprint all non-M5 workflows.
-5. Deploy ONLY M5.
-6. Verify live M5 == Git, M5 version increments exactly once, non-M5 fingerprint unchanged, Publisher/Studio 200, and service health/restarts unchanged.
-7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
-8. Run exactly one fresh PL15.
+1. Read this PLAN before the next production action.
+2. Verify Git clean and active project execution count = 0.
+3. Run exactly ONE fresh PL15 on M5 v115 / M6 v8 / M8 v62 / M9 v1.
+4. Follow that single job to terminal state. Do not create another job while it is running.
+5. If it reaches machine QA:
+   - inspect the actual rendered MP4 technically;
+   - review scene-by-scene visual grounding against narration;
+   - review audio/narration continuity.
+6. If it fails:
+   - inspect saved execution/provider data from that exact job;
+   - fix only the demonstrated blocker;
+   - regression test;
+   - deploy only the affected workflow;
+   - update PLAN/Git;
+   - then one new acceptance job.
 
 ## Acceptance sequence after PL15
 

@@ -1613,3 +1613,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - DB validation remains unchanged.
 - Focused exact-audio 8/8 PASS; full suite 269/269 PASS; static checks PASS.
 - Next: M5-only deploy, then one fresh PL15.
+
+
+### M5 v115 pre-TTS punctuation fix deployed — 2026-09-23
+
+- Commit: `b007aa89c85aed89c0a504815a9221798d682f38`.
+- M5 v115 activeVersionId `4ec491e1-fb68-4c5e-8125-c6d501e7d48d`.
+- Backup: `.backups/m5-before-pretts-punct-20260923-041956.json`.
+- Non-M5 fingerprint remains `31|6d5bcd9e4ad7e94f6f9907f52426c741`.
+- M6 v8, M8 v62, M9 v1 unchanged.
+- Live M5 == Git.
+- Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
+- Active project executions verified at 0.
+- Next: exactly one fresh PL15.
