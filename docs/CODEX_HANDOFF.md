@@ -1,5 +1,13 @@
 # Codex handoff — production video factory
 
+## M8 explicit setting fix — source verified, 2026-09-23
+
+- Actual 9809 S2/S3 request contexts had empty domain_context_terms despite explicit lighthouse settings. Request builders now derive explicitly stated locations (inside/within/interior-of/room-of/hall-of) for any subject and corroborate terms against existing planned queries. Original query provenance remains unchanged; provider queries retain the setting.
+- No lighthouse-specific mapping or expanded subject whitelist. Regression also verifies hospital/microscope setting and excludes unsupported decoration terms.
+- Replayed saved Pexels responses: exact household assets 3324439, 18109261, 15664927 now receive metadata rejection rather than accepted ranking. Gemini soft-review policy remains unchanged: metadata rejection alone is not claimed as permanent exclusion from Vision.
+- Seven focused tests PASS; full Node suite 336/336 PASS. Saved public provider fixture tests/fixtures/m8-9809-pexels-context.json contains no headers/credentials. Existing Python DTW 7/7 PASS.
+- NOT deployed yet. Active M8 v67 21599d8f-f0c9-48c8-af86-ba9e297cdd5a, M5 v126, M6 v8. Latest job 360aba8c-ce92-499e-8f01-504726d352dd terminal at M8 9809. NEXT: backup/verify idle, deploy only tested M8, verify exact source and run one controlled Gemini smoke. A valid replacement asset is not yet proven.
+
 ## Gemini smoke 9809 — all five scenes visually reviewed, 2026-09-23
 
 - Job 360aba8c-ce92-499e-8f01-504726d352dd terminal visual failure. M4 9805, M5 9806, M6 9807, M7 9808 PASS; M8 9809 FAIL; no M9. Visual run 52eaa0a4-36a1-4d39-ae6f-b5af9ceda46a: 45 searches, 322 candidates, 0 committed selections.

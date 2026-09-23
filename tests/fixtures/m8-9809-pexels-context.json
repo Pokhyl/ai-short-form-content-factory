@@ -1,0 +1,1274 @@
+[
+  {
+    "request": {
+      "visual_run_id": "52eaa0a4-36a1-4d39-ae6f-b5af9ceda46a",
+      "shot_uuid": "5e519a92-ecd2-4225-ba00-a103748767f9",
+      "shot_key": "S2-A",
+      "scene_order": 2,
+      "query_index": 1,
+      "query": "lighthouse lamp illumination",
+      "provider_query": "lighthouse lamp illumination",
+      "provider": "pexels",
+      "endpoint_kind": "photo",
+      "preferred_media_type": "photo",
+      "visual_intent": "A bright lamp glowing inside a lighthouse lantern room",
+      "must_show": [
+        "lamp bulb"
+      ],
+      "must_not_show": [
+        "dark room"
+      ],
+      "primary_repeated": false,
+      "domain_context_terms": [],
+      "visual_detail_terms": [],
+      "retrieval_structure_terms": []
+    },
+    "response": {
+      "statusCode": 200,
+      "body": {
+        "page": 1,
+        "per_page": 8,
+        "photos": [
+          {
+            "id": 3876307,
+            "width": 2718,
+            "height": 4118,
+            "url": "https://www.pexels.com/photo/modern-beacon-against-night-sky-3876307/",
+            "photographer": "Tomas Anunziata",
+            "photographer_url": "https://www.pexels.com/@tomas-anunziata-129267",
+            "photographer_id": 129267,
+            "avg_color": "#1C3945",
+            "src": {
+              "original": "https://images.pexels.com/photos/3876307/pexels-photo-3876307.jpeg",
+              "large2x": "https://images.pexels.com/photos/3876307/pexels-photo-3876307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/3876307/pexels-photo-3876307.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/3876307/pexels-photo-3876307.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/3876307/pexels-photo-3876307.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/3876307/pexels-photo-3876307.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/3876307/pexels-photo-3876307.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/3876307/pexels-photo-3876307.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Contemporary design of round lighthouse post with glowing light bulb on top against dark blue sky on street at night"
+          },
+          {
+            "id": 20146489,
+            "width": 2701,
+            "height": 3602,
+            "url": "https://www.pexels.com/photo/model-of-lighthouse-with-lights-20146489/",
+            "photographer": "Евгений Шухман",
+            "photographer_url": "https://www.pexels.com/@zh-ru",
+            "photographer_id": 70198808,
+            "avg_color": "#362223",
+            "src": {
+              "original": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg",
+              "large2x": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A cozy, warm-lit miniature lighthouse creating vivid shadows on a shelf."
+          },
+          {
+            "id": 4237056,
+            "width": 3456,
+            "height": 5184,
+            "url": "https://www.pexels.com/photo/low-angle-shot-of-a-lighthouse-4237056/",
+            "photographer": "Christian Naccarato",
+            "photographer_url": "https://www.pexels.com/@lifeofnacchi",
+            "photographer_id": 1038265,
+            "avg_color": "#252D3A",
+            "src": {
+              "original": "https://images.pexels.com/photos/4237056/pexels-photo-4237056.jpeg",
+              "large2x": "https://images.pexels.com/photos/4237056/pexels-photo-4237056.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/4237056/pexels-photo-4237056.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/4237056/pexels-photo-4237056.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/4237056/pexels-photo-4237056.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/4237056/pexels-photo-4237056.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/4237056/pexels-photo-4237056.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/4237056/pexels-photo-4237056.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Low-angle view of an illuminated tower against a dusky sky in Peschiera del Garda, Italy."
+          },
+          {
+            "id": 30101075,
+            "width": 3147,
+            "height": 4720,
+            "url": "https://www.pexels.com/photo/lighthouse-illuminated-at-night-through-trees-30101075/",
+            "photographer": "Jose Pompa",
+            "photographer_url": "https://www.pexels.com/@jose-pompa-2148444545",
+            "photographer_id": 2148444545,
+            "avg_color": "#1A1A1A",
+            "src": {
+              "original": "https://images.pexels.com/photos/30101075/pexels-photo-30101075.jpeg",
+              "large2x": "https://images.pexels.com/photos/30101075/pexels-photo-30101075.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/30101075/pexels-photo-30101075.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/30101075/pexels-photo-30101075.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/30101075/pexels-photo-30101075.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/30101075/pexels-photo-30101075.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/30101075/pexels-photo-30101075.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/30101075/pexels-photo-30101075.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A lighthouse beams through dark tree silhouettes, showcasing its guiding light at night."
+          },
+          {
+            "id": 39592408,
+            "width": 2715,
+            "height": 3620,
+            "url": "https://www.pexels.com/photo/majestic-white-lighthouse-at-sunset-39592408/",
+            "photographer": "İbrahim KARASU",
+            "photographer_url": "https://www.pexels.com/@iibrahimkarasu",
+            "photographer_id": 834945825,
+            "avg_color": "#777F8C",
+            "src": {
+              "original": "https://images.pexels.com/photos/39592408/pexels-photo-39592408.jpeg",
+              "large2x": "https://images.pexels.com/photos/39592408/pexels-photo-39592408.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/39592408/pexels-photo-39592408.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/39592408/pexels-photo-39592408.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/39592408/pexels-photo-39592408.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/39592408/pexels-photo-39592408.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/39592408/pexels-photo-39592408.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/39592408/pexels-photo-39592408.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A towering white lighthouse against a pastel sky captured at sunset."
+          },
+          {
+            "id": 36345402,
+            "width": 4672,
+            "height": 7008,
+            "url": "https://www.pexels.com/photo/dramatic-nighttime-lighthouse-with-radiant-beams-36345402/",
+            "photographer": "✰ Saul Bandera Brotheridge",
+            "photographer_url": "https://www.pexels.com/@thephotosaccount",
+            "photographer_id": 392995749,
+            "avg_color": "#101211",
+            "src": {
+              "original": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg",
+              "large2x": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A lighthouse casting vibrant light beams at night, creating a dramatic effect."
+          },
+          {
+            "id": 35109032,
+            "width": 2323,
+            "height": 2842,
+            "url": "https://www.pexels.com/photo/lighthouse-under-milky-way-night-sky-landscape-35109032/",
+            "photographer": "Horacio  Lander",
+            "photographer_url": "https://www.pexels.com/@horacio-lander-1239977167",
+            "photographer_id": 1239977167,
+            "avg_color": "#2B2E35",
+            "src": {
+              "original": "https://images.pexels.com/photos/35109032/pexels-photo-35109032.jpeg",
+              "large2x": "https://images.pexels.com/photos/35109032/pexels-photo-35109032.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/35109032/pexels-photo-35109032.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/35109032/pexels-photo-35109032.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/35109032/pexels-photo-35109032.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/35109032/pexels-photo-35109032.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/35109032/pexels-photo-35109032.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/35109032/pexels-photo-35109032.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Scenic view of a lighthouse illuminated under the starry night sky with the Milky Way visible."
+          },
+          {
+            "id": 33967855,
+            "width": 2815,
+            "height": 3543,
+            "url": "https://www.pexels.com/photo/illuminated-lighthouse-against-deep-blue-sky-33967855/",
+            "photographer": "ela sultan",
+            "photographer_url": "https://www.pexels.com/@ela-sultan-2154769390",
+            "photographer_id": 2154769390,
+            "avg_color": "#144999",
+            "src": {
+              "original": "https://images.pexels.com/photos/33967855/pexels-photo-33967855.jpeg",
+              "large2x": "https://images.pexels.com/photos/33967855/pexels-photo-33967855.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/33967855/pexels-photo-33967855.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/33967855/pexels-photo-33967855.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/33967855/pexels-photo-33967855.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/33967855/pexels-photo-33967855.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/33967855/pexels-photo-33967855.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/33967855/pexels-photo-33967855.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A lighthouse stands tall against a vivid blue sky, its torches aglow."
+          }
+        ],
+        "total_results": 8000,
+        "next_page": "https://api.pexels.com/v1/v1/search?orientation=portrait&page=2&per_page=8&query=lighthouse+lamp+illumination"
+      }
+    }
+  },
+  {
+    "request": {
+      "visual_run_id": "52eaa0a4-36a1-4d39-ae6f-b5af9ceda46a",
+      "shot_uuid": "5e519a92-ecd2-4225-ba00-a103748767f9",
+      "shot_key": "S2-A",
+      "scene_order": 2,
+      "query_index": 2,
+      "query": "bright warning light equipment lamp bulb",
+      "provider_query": "bright warning light equipment lamp bulb",
+      "provider": "pexels",
+      "endpoint_kind": "photo",
+      "preferred_media_type": "photo",
+      "visual_intent": "A bright lamp glowing inside a lighthouse lantern room",
+      "must_show": [
+        "lamp bulb"
+      ],
+      "must_not_show": [
+        "dark room"
+      ],
+      "primary_repeated": false,
+      "domain_context_terms": [],
+      "visual_detail_terms": [],
+      "retrieval_structure_terms": []
+    },
+    "response": {
+      "statusCode": 200,
+      "body": {
+        "page": 1,
+        "per_page": 8,
+        "photos": [
+          {
+            "id": 20510940,
+            "width": 4016,
+            "height": 5653,
+            "url": "https://www.pexels.com/photo/lamp-on-a-wall-20510940/",
+            "photographer": "Chris F",
+            "photographer_url": "https://www.pexels.com/@chris-f-38966",
+            "photographer_id": 38966,
+            "avg_color": "#351E10",
+            "src": {
+              "original": "https://images.pexels.com/photos/20510940/pexels-photo-20510940.jpeg",
+              "large2x": "https://images.pexels.com/photos/20510940/pexels-photo-20510940.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/20510940/pexels-photo-20510940.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/20510940/pexels-photo-20510940.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/20510940/pexels-photo-20510940.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/20510940/pexels-photo-20510940.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/20510940/pexels-photo-20510940.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/20510940/pexels-photo-20510940.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A glowing outdoor lantern illuminates a no parking anytime sign on a wooden wall at night."
+          },
+          {
+            "id": 1070603,
+            "width": 3280,
+            "height": 4928,
+            "url": "https://www.pexels.com/photo/closeup-photo-of-turned-on-pendant-light-1070603/",
+            "photographer": "Phil Nguyen",
+            "photographer_url": "https://www.pexels.com/@baphi",
+            "photographer_id": 387181,
+            "avg_color": "#A38638",
+            "src": {
+              "original": "https://images.pexels.com/photos/1070603/pexels-photo-1070603.jpeg",
+              "large2x": "https://images.pexels.com/photos/1070603/pexels-photo-1070603.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/1070603/pexels-photo-1070603.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/1070603/pexels-photo-1070603.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/1070603/pexels-photo-1070603.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/1070603/pexels-photo-1070603.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/1070603/pexels-photo-1070603.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/1070603/pexels-photo-1070603.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Yellow-lit hanging light fixture providing a warm vintage glow, perfect for cozy interiors."
+          },
+          {
+            "id": 5870973,
+            "width": 3024,
+            "height": 4032,
+            "url": "https://www.pexels.com/photo/an-orange-pendant-lamp-5870973/",
+            "photographer": "Andre Moura",
+            "photographer_url": "https://www.pexels.com/@oandremoura",
+            "photographer_id": 1251397,
+            "avg_color": "#180F17",
+            "src": {
+              "original": "https://images.pexels.com/photos/5870973/pexels-photo-5870973.png",
+              "large2x": "https://images.pexels.com/photos/5870973/pexels-photo-5870973.png?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/5870973/pexels-photo-5870973.png?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/5870973/pexels-photo-5870973.png?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/5870973/pexels-photo-5870973.png?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/5870973/pexels-photo-5870973.png?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/5870973/pexels-photo-5870973.png?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/5870973/pexels-photo-5870973.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Illuminated bulbs in a geometric cage design casting a warm glow."
+          },
+          {
+            "id": 35388619,
+            "width": 2992,
+            "height": 3928,
+            "url": "https://www.pexels.com/photo/close-up-of-a-vintage-edison-light-bulb-35388619/",
+            "photographer": "I'm  Reyaansh",
+            "photographer_url": "https://www.pexels.com/@i-m-reyaansh-1162486",
+            "photographer_id": 1162486,
+            "avg_color": "#544325",
+            "src": {
+              "original": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg",
+              "large2x": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Warm glow of a vintage Edison bulb in a dimly lit setting, showcasing its filament."
+          },
+          {
+            "id": 28572526,
+            "width": 3789,
+            "height": 5304,
+            "url": "https://www.pexels.com/photo/modern-scandinavian-interior-lighting-design-28572526/",
+            "photographer": "Jakub Zerdzicki",
+            "photographer_url": "https://www.pexels.com/@jakubzerdzicki",
+            "photographer_id": 494676239,
+            "avg_color": "#79715E",
+            "src": {
+              "original": "https://images.pexels.com/photos/28572526/pexels-photo-28572526.jpeg",
+              "large2x": "https://images.pexels.com/photos/28572526/pexels-photo-28572526.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/28572526/pexels-photo-28572526.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/28572526/pexels-photo-28572526.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/28572526/pexels-photo-28572526.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/28572526/pexels-photo-28572526.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/28572526/pexels-photo-28572526.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/28572526/pexels-photo-28572526.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Stylish Scandinavian-inspired interior lighting featuring geometric designs and warm ambiance."
+          },
+          {
+            "id": 355978,
+            "width": 4000,
+            "height": 6000,
+            "url": "https://www.pexels.com/photo/turned-off-clear-hanging-lamp-355978/",
+            "photographer": "Pixabay",
+            "photographer_url": "https://www.pexels.com/@pixabay",
+            "photographer_id": 2659,
+            "avg_color": "#8F6C5A",
+            "src": {
+              "original": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg",
+              "large2x": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A round light bulb brightly illuminated, hanging indoors with a blurred brick background."
+          },
+          {
+            "id": 3324439,
+            "width": 3456,
+            "height": 5184,
+            "url": "https://www.pexels.com/photo/pipe-lamp-on-wall-3324439/",
+            "photographer": "Marcelo Chagas",
+            "photographer_url": "https://www.pexels.com/@marcelochagas",
+            "photographer_id": 861665,
+            "avg_color": "#603115",
+            "src": {
+              "original": "https://images.pexels.com/photos/3324439/pexels-photo-3324439.jpeg",
+              "large2x": "https://images.pexels.com/photos/3324439/pexels-photo-3324439.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/3324439/pexels-photo-3324439.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/3324439/pexels-photo-3324439.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/3324439/pexels-photo-3324439.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/3324439/pexels-photo-3324439.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/3324439/pexels-photo-3324439.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/3324439/pexels-photo-3324439.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A vintage pipe lamp with Edison bulbs mounted on a rustic brick wall."
+          },
+          {
+            "id": 3736816,
+            "width": 2000,
+            "height": 3000,
+            "url": "https://www.pexels.com/photo/brown-and-blue-glass-pendant-lamp-3736816/",
+            "photographer": "Madison Inouye",
+            "photographer_url": "https://www.pexels.com/@mdsnmdsnmdsn",
+            "photographer_id": 54196,
+            "avg_color": "#2C1E13",
+            "src": {
+              "original": "https://images.pexels.com/photos/3736816/pexels-photo-3736816.jpeg",
+              "large2x": "https://images.pexels.com/photos/3736816/pexels-photo-3736816.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/3736816/pexels-photo-3736816.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/3736816/pexels-photo-3736816.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/3736816/pexels-photo-3736816.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/3736816/pexels-photo-3736816.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/3736816/pexels-photo-3736816.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/3736816/pexels-photo-3736816.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Multiple vintage Edison lightbulbs glowing warmly against a dark backdrop."
+          }
+        ],
+        "total_results": 8000,
+        "next_page": "https://api.pexels.com/v1/v1/search?orientation=portrait&page=2&per_page=8&query=bright+warning+light+equipment+lamp+bulb"
+      }
+    }
+  },
+  {
+    "request": {
+      "visual_run_id": "52eaa0a4-36a1-4d39-ae6f-b5af9ceda46a",
+      "shot_uuid": "5e519a92-ecd2-4225-ba00-a103748767f9",
+      "shot_key": "S2-A",
+      "scene_order": 2,
+      "query_index": 3,
+      "query": "lamp bulb",
+      "provider_query": "lamp bulb",
+      "provider": "pexels",
+      "endpoint_kind": "photo",
+      "preferred_media_type": "photo",
+      "visual_intent": "A bright lamp glowing inside a lighthouse lantern room",
+      "must_show": [
+        "lamp bulb"
+      ],
+      "must_not_show": [
+        "dark room"
+      ],
+      "primary_repeated": false,
+      "domain_context_terms": [],
+      "visual_detail_terms": [],
+      "retrieval_structure_terms": []
+    },
+    "response": {
+      "statusCode": 200,
+      "body": {
+        "page": 1,
+        "per_page": 8,
+        "photos": [
+          {
+            "id": 355978,
+            "width": 4000,
+            "height": 6000,
+            "url": "https://www.pexels.com/photo/turned-off-clear-hanging-lamp-355978/",
+            "photographer": "Pixabay",
+            "photographer_url": "https://www.pexels.com/@pixabay",
+            "photographer_id": 2659,
+            "avg_color": "#8F6C5A",
+            "src": {
+              "original": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg",
+              "large2x": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/355978/pexels-photo-355978.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A round light bulb brightly illuminated, hanging indoors with a blurred brick background."
+          },
+          {
+            "id": 30094297,
+            "width": 3565,
+            "height": 5209,
+            "url": "https://www.pexels.com/photo/vintage-edison-bulb-hanging-from-twisted-rope-30094297/",
+            "photographer": "MESSALA CIULLA",
+            "photographer_url": "https://www.pexels.com/@messalaciulla",
+            "photographer_id": 261351,
+            "avg_color": "#696460",
+            "src": {
+              "original": "https://images.pexels.com/photos/30094297/pexels-photo-30094297.jpeg",
+              "large2x": "https://images.pexels.com/photos/30094297/pexels-photo-30094297.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/30094297/pexels-photo-30094297.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/30094297/pexels-photo-30094297.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/30094297/pexels-photo-30094297.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/30094297/pexels-photo-30094297.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/30094297/pexels-photo-30094297.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/30094297/pexels-photo-30094297.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Close-up of a vintage Edison bulb hanging from a decorative rope indoors."
+          },
+          {
+            "id": 5561129,
+            "width": 2629,
+            "height": 3943,
+            "url": "https://www.pexels.com/photo/modern-urban-lamps-5561129/",
+            "photographer": "Rye Bon",
+            "photographer_url": "https://www.pexels.com/@rye-bon-3017353",
+            "photographer_id": 3017353,
+            "avg_color": "#232C2E",
+            "src": {
+              "original": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg",
+              "large2x": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Stylish modern pendant lights with industrial design hanging in a moody urban interior setting."
+          },
+          {
+            "id": 27581418,
+            "width": 3024,
+            "height": 4032,
+            "url": "https://www.pexels.com/photo/ceiling-light-27581418/",
+            "photographer": "Paris",
+            "photographer_url": "https://www.pexels.com/@paris-1498643061",
+            "photographer_id": 1498643061,
+            "avg_color": "#292824",
+            "src": {
+              "original": "https://images.pexels.com/photos/27581418/pexels-photo-27581418.jpeg",
+              "large2x": "https://images.pexels.com/photos/27581418/pexels-photo-27581418.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/27581418/pexels-photo-27581418.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/27581418/pexels-photo-27581418.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/27581418/pexels-photo-27581418.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/27581418/pexels-photo-27581418.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/27581418/pexels-photo-27581418.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/27581418/pexels-photo-27581418.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Stylish hanging light fixture with glass bulb design enhancing a modern room setting."
+          },
+          {
+            "id": 5337502,
+            "width": 3625,
+            "height": 5437,
+            "url": "https://www.pexels.com/photo/hanging-light-bulbs-5337502/",
+            "photographer": "ROMAN ODINTSOV",
+            "photographer_url": "https://www.pexels.com/@roman-odintsov",
+            "photographer_id": 2678846,
+            "avg_color": "#C3C4C0",
+            "src": {
+              "original": "https://images.pexels.com/photos/5337502/pexels-photo-5337502.jpeg",
+              "large2x": "https://images.pexels.com/photos/5337502/pexels-photo-5337502.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/5337502/pexels-photo-5337502.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/5337502/pexels-photo-5337502.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/5337502/pexels-photo-5337502.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/5337502/pexels-photo-5337502.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/5337502/pexels-photo-5337502.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/5337502/pexels-photo-5337502.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Close-up of vintage hanging light bulbs with visible filaments, providing warm illumination."
+          },
+          {
+            "id": 14805376,
+            "width": 4000,
+            "height": 6000,
+            "url": "https://www.pexels.com/photo/a-heart-shaped-edison-light-bulb-14805376/",
+            "photographer": "GirlvsGlobe86",
+            "photographer_url": "https://www.pexels.com/@girlvsglobe86-300284270",
+            "photographer_id": 300284270,
+            "avg_color": "#744F49",
+            "src": {
+              "original": "https://images.pexels.com/photos/14805376/pexels-photo-14805376.jpeg",
+              "large2x": "https://images.pexels.com/photos/14805376/pexels-photo-14805376.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/14805376/pexels-photo-14805376.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/14805376/pexels-photo-14805376.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/14805376/pexels-photo-14805376.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/14805376/pexels-photo-14805376.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/14805376/pexels-photo-14805376.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/14805376/pexels-photo-14805376.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A close-up view of a heart-shaped Edison light bulb with a glowing filament, providing a warm ambiance."
+          },
+          {
+            "id": 7474124,
+            "width": 4201,
+            "height": 5251,
+            "url": "https://www.pexels.com/photo/retro-lamps-illuminating-cozy-cafeteria-7474124/",
+            "photographer": "Valeria Boltneva",
+            "photographer_url": "https://www.pexels.com/@valeriya",
+            "photographer_id": 665,
+            "avg_color": "#5D4E41",
+            "src": {
+              "original": "https://images.pexels.com/photos/7474124/pexels-photo-7474124.jpeg",
+              "large2x": "https://images.pexels.com/photos/7474124/pexels-photo-7474124.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/7474124/pexels-photo-7474124.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/7474124/pexels-photo-7474124.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/7474124/pexels-photo-7474124.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/7474124/pexels-photo-7474124.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/7474124/pexels-photo-7474124.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/7474124/pexels-photo-7474124.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Bunch of vintage electric light bulbs hanging on wires and glowing inside cozy cafe"
+          },
+          {
+            "id": 2538501,
+            "width": 2508,
+            "height": 3344,
+            "url": "https://www.pexels.com/photo/turned-on-black-metal-framed-light-bulbs-2538501/",
+            "photographer": "Eduardo Valentin",
+            "photographer_url": "https://www.pexels.com/@edivalen",
+            "photographer_id": 1282189,
+            "avg_color": "#1A1817",
+            "src": {
+              "original": "https://images.pexels.com/photos/2538501/pexels-photo-2538501.png",
+              "large2x": "https://images.pexels.com/photos/2538501/pexels-photo-2538501.png?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/2538501/pexels-photo-2538501.png?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/2538501/pexels-photo-2538501.png?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/2538501/pexels-photo-2538501.png?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/2538501/pexels-photo-2538501.png?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/2538501/pexels-photo-2538501.png?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/2538501/pexels-photo-2538501.png?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Stylish geometric pendant lights with soft glowing bulbs, ideal for contemporary interiors."
+          }
+        ],
+        "total_results": 8000,
+        "next_page": "https://api.pexels.com/v1/v1/search?orientation=portrait&page=2&per_page=8&query=lamp+bulb"
+      }
+    }
+  },
+  {
+    "request": {
+      "visual_run_id": "52eaa0a4-36a1-4d39-ae6f-b5af9ceda46a",
+      "shot_uuid": "e8f05588-e20a-4306-8c65-0716c062b7dc",
+      "shot_key": "S3-A",
+      "scene_order": 3,
+      "query_index": 1,
+      "query": "lighthouse interior lamp system",
+      "provider_query": "lighthouse interior lamp system",
+      "provider": "pexels",
+      "endpoint_kind": "photo",
+      "preferred_media_type": "photo",
+      "visual_intent": "Interior machinery room of a lighthouse with lamps and optics",
+      "must_show": [
+        "lamp fixture"
+      ],
+      "must_not_show": [
+        "exterior view"
+      ],
+      "primary_repeated": false,
+      "domain_context_terms": [],
+      "visual_detail_terms": [],
+      "retrieval_structure_terms": []
+    },
+    "response": {
+      "statusCode": 200,
+      "body": {
+        "page": 1,
+        "per_page": 8,
+        "photos": [
+          {
+            "id": 20146489,
+            "width": 2701,
+            "height": 3602,
+            "url": "https://www.pexels.com/photo/model-of-lighthouse-with-lights-20146489/",
+            "photographer": "Евгений Шухман",
+            "photographer_url": "https://www.pexels.com/@zh-ru",
+            "photographer_id": 70198808,
+            "avg_color": "#362223",
+            "src": {
+              "original": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg",
+              "large2x": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/20146489/pexels-photo-20146489.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A cozy, warm-lit miniature lighthouse creating vivid shadows on a shelf."
+          },
+          {
+            "id": 39191844,
+            "width": 4284,
+            "height": 5712,
+            "url": "https://www.pexels.com/photo/decorative-lighthouse-wall-hanging-with-inspiring-quote-39191844/",
+            "photographer": "silvia lusetti",
+            "photographer_url": "https://www.pexels.com/@silvialus",
+            "photographer_id": 141945158,
+            "avg_color": "#A69F97",
+            "src": {
+              "original": "https://images.pexels.com/photos/39191844/pexels-photo-39191844.jpeg",
+              "large2x": "https://images.pexels.com/photos/39191844/pexels-photo-39191844.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/39191844/pexels-photo-39191844.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/39191844/pexels-photo-39191844.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/39191844/pexels-photo-39191844.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/39191844/pexels-photo-39191844.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/39191844/pexels-photo-39191844.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/39191844/pexels-photo-39191844.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Wooden wall decor with lighthouse and inspiring quote for coastal home style."
+          },
+          {
+            "id": 20146490,
+            "width": 3024,
+            "height": 4032,
+            "url": "https://www.pexels.com/photo/lighthouse-lamp-on-table-20146490/",
+            "photographer": "Евгений Шухман",
+            "photographer_url": "https://www.pexels.com/@zh-ru",
+            "photographer_id": 70198808,
+            "avg_color": "#52443B",
+            "src": {
+              "original": "https://images.pexels.com/photos/20146490/pexels-photo-20146490.jpeg",
+              "large2x": "https://images.pexels.com/photos/20146490/pexels-photo-20146490.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/20146490/pexels-photo-20146490.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/20146490/pexels-photo-20146490.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/20146490/pexels-photo-20146490.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/20146490/pexels-photo-20146490.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/20146490/pexels-photo-20146490.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/20146490/pexels-photo-20146490.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Warmly lit shelf displaying a model lighthouse and plant in a cozy setting."
+          },
+          {
+            "id": 4551843,
+            "width": 2832,
+            "height": 4240,
+            "url": "https://www.pexels.com/photo/white-and-black-robot-toy-4551843/",
+            "photographer": "cottonbro studio",
+            "photographer_url": "https://www.pexels.com/@cottonbro",
+            "photographer_id": 1437723,
+            "avg_color": "#6B675C",
+            "src": {
+              "original": "https://images.pexels.com/photos/4551843/pexels-photo-4551843.jpeg",
+              "large2x": "https://images.pexels.com/photos/4551843/pexels-photo-4551843.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/4551843/pexels-photo-4551843.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/4551843/pexels-photo-4551843.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/4551843/pexels-photo-4551843.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/4551843/pexels-photo-4551843.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/4551843/pexels-photo-4551843.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/4551843/pexels-photo-4551843.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Stylish speakers and lighting fixtures showcased in a window display."
+          },
+          {
+            "id": 27283628,
+            "width": 3896,
+            "height": 5844,
+            "url": "https://www.pexels.com/photo/a-white-and-orange-lighthouse-with-a-blue-sky-27283628/",
+            "photographer": "Mario Amé",
+            "photographer_url": "https://www.pexels.com/@imperioame",
+            "photographer_id": 922925,
+            "avg_color": "#9EACB5",
+            "src": {
+              "original": "https://images.pexels.com/photos/27283628/pexels-photo-27283628.jpeg",
+              "large2x": "https://images.pexels.com/photos/27283628/pexels-photo-27283628.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/27283628/pexels-photo-27283628.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/27283628/pexels-photo-27283628.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/27283628/pexels-photo-27283628.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/27283628/pexels-photo-27283628.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/27283628/pexels-photo-27283628.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/27283628/pexels-photo-27283628.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A striking lighthouse with vibrant orange and white stripes stands tall against a clear blue sky."
+          },
+          {
+            "id": 26560426,
+            "width": 4000,
+            "height": 6000,
+            "url": "https://www.pexels.com/photo/white-lighthouse-tower-26560426/",
+            "photographer": "dom free",
+            "photographer_url": "https://www.pexels.com/@dom-free-894764197",
+            "photographer_id": 894764197,
+            "avg_color": "#ADB8BE",
+            "src": {
+              "original": "https://images.pexels.com/photos/26560426/pexels-photo-26560426.jpeg",
+              "large2x": "https://images.pexels.com/photos/26560426/pexels-photo-26560426.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/26560426/pexels-photo-26560426.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/26560426/pexels-photo-26560426.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/26560426/pexels-photo-26560426.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/26560426/pexels-photo-26560426.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/26560426/pexels-photo-26560426.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/26560426/pexels-photo-26560426.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A towering white lighthouse stands against a cloudy sky, offering maritime guidance."
+          },
+          {
+            "id": 1077325,
+            "width": 3036,
+            "height": 4048,
+            "url": "https://www.pexels.com/photo/photo-of-black-mesh-spiral-stairs-1077325/",
+            "photographer": "Shalom Shore",
+            "photographer_url": "https://www.pexels.com/@shalom-shore",
+            "photographer_id": 408430,
+            "avg_color": "#595149",
+            "src": {
+              "original": "https://images.pexels.com/photos/1077325/pexels-photo-1077325.jpeg",
+              "large2x": "https://images.pexels.com/photos/1077325/pexels-photo-1077325.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/1077325/pexels-photo-1077325.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/1077325/pexels-photo-1077325.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/1077325/pexels-photo-1077325.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/1077325/pexels-photo-1077325.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/1077325/pexels-photo-1077325.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/1077325/pexels-photo-1077325.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Captivating view of an iron spiral staircase inside a historic lighthouse in Kinnakeet, NC."
+          },
+          {
+            "id": 30285137,
+            "width": 3000,
+            "height": 4000,
+            "url": "https://www.pexels.com/photo/rustic-lighthouse-lamp-by-the-sea-30285137/",
+            "photographer": "Florence",
+            "photographer_url": "https://www.pexels.com/@florence-1768458",
+            "photographer_id": 1768458,
+            "avg_color": "#979EA6",
+            "src": {
+              "original": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg",
+              "large2x": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A weathered lighthouse lamp stands by the ocean under a clear blue sky."
+          }
+        ],
+        "total_results": 8000,
+        "next_page": "https://api.pexels.com/v1/v1/search?orientation=portrait&page=2&per_page=8&query=lighthouse+interior+lamp+system"
+      }
+    }
+  },
+  {
+    "request": {
+      "visual_run_id": "52eaa0a4-36a1-4d39-ae6f-b5af9ceda46a",
+      "shot_uuid": "e8f05588-e20a-4306-8c65-0716c062b7dc",
+      "shot_key": "S3-A",
+      "scene_order": 3,
+      "query_index": 2,
+      "query": "lighthouse equipment room lamp fixture",
+      "provider_query": "lighthouse equipment room lamp fixture",
+      "provider": "pexels",
+      "endpoint_kind": "photo",
+      "preferred_media_type": "photo",
+      "visual_intent": "Interior machinery room of a lighthouse with lamps and optics",
+      "must_show": [
+        "lamp fixture"
+      ],
+      "must_not_show": [
+        "exterior view"
+      ],
+      "primary_repeated": false,
+      "domain_context_terms": [],
+      "visual_detail_terms": [],
+      "retrieval_structure_terms": []
+    },
+    "response": {
+      "statusCode": 200,
+      "body": {
+        "page": 1,
+        "per_page": 8,
+        "photos": [
+          {
+            "id": 8733371,
+            "width": 3249,
+            "height": 4548,
+            "url": "https://www.pexels.com/photo/lamps-on-the-ceiling-8733371/",
+            "photographer": "Ilya Melnikov",
+            "photographer_url": "https://www.pexels.com/@ilya-melnikov-80195105",
+            "photographer_id": 80195105,
+            "avg_color": "#35302C",
+            "src": {
+              "original": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg",
+              "large2x": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Warm illuminated pendant lights casting shadows in a dark room, creating a modern ambiance."
+          },
+          {
+            "id": 18109261,
+            "width": 1920,
+            "height": 2560,
+            "url": "https://www.pexels.com/photo/a-lamp-standing-by-the-wall-18109261/",
+            "photographer": "Alex Nguyen",
+            "photographer_url": "https://www.pexels.com/@alex-nguyen-667768861",
+            "photographer_id": 667768861,
+            "avg_color": "#1E1A19",
+            "src": {
+              "original": "https://images.pexels.com/photos/18109261/pexels-photo-18109261.jpeg",
+              "large2x": "https://images.pexels.com/photos/18109261/pexels-photo-18109261.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/18109261/pexels-photo-18109261.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/18109261/pexels-photo-18109261.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/18109261/pexels-photo-18109261.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/18109261/pexels-photo-18109261.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/18109261/pexels-photo-18109261.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/18109261/pexels-photo-18109261.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A vintage lamp illuminates a textured wall in a dark, cozy room, creating a warm ambiance."
+          },
+          {
+            "id": 6925111,
+            "width": 3631,
+            "height": 5439,
+            "url": "https://www.pexels.com/photo/photo-of-hanging-black-lights-6925111/",
+            "photographer": "Pavel Danilyuk",
+            "photographer_url": "https://www.pexels.com/@pavel-danilyuk",
+            "photographer_id": 2297095,
+            "avg_color": "#B9B7B3",
+            "src": {
+              "original": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg",
+              "large2x": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Five industrial-style hanging lamps with blurred artistic wall decor in the background."
+          },
+          {
+            "id": 15664927,
+            "width": 3333,
+            "height": 5000,
+            "url": "https://www.pexels.com/photo/lamp-on-a-desk-15664927/",
+            "photographer": "Amine İspir",
+            "photographer_url": "https://www.pexels.com/@amineispir",
+            "photographer_id": 42373961,
+            "avg_color": "#372D2B",
+            "src": {
+              "original": "https://images.pexels.com/photos/15664927/pexels-photo-15664927.jpeg",
+              "large2x": "https://images.pexels.com/photos/15664927/pexels-photo-15664927.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/15664927/pexels-photo-15664927.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/15664927/pexels-photo-15664927.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/15664927/pexels-photo-15664927.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/15664927/pexels-photo-15664927.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/15664927/pexels-photo-15664927.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/15664927/pexels-photo-15664927.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Warm desk lamp casting soft light on a cluttered workspace with a dark, cozy ambiance."
+          },
+          {
+            "id": 31495423,
+            "width": 6336,
+            "height": 9504,
+            "url": "https://www.pexels.com/photo/vintage-spotlight-in-elegant-interior-setting-31495423/",
+            "photographer": "Zafer Erdoğan",
+            "photographer_url": "https://www.pexels.com/@zafer-erdogan-49915050",
+            "photographer_id": 49915050,
+            "avg_color": "#38261A",
+            "src": {
+              "original": "https://images.pexels.com/photos/31495423/pexels-photo-31495423.jpeg",
+              "large2x": "https://images.pexels.com/photos/31495423/pexels-photo-31495423.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/31495423/pexels-photo-31495423.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/31495423/pexels-photo-31495423.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/31495423/pexels-photo-31495423.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/31495423/pexels-photo-31495423.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/31495423/pexels-photo-31495423.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/31495423/pexels-photo-31495423.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A classic vintage spotlight stands on a decorative floor in a sophisticated interior."
+          },
+          {
+            "id": 35388619,
+            "width": 2992,
+            "height": 3928,
+            "url": "https://www.pexels.com/photo/close-up-of-a-vintage-edison-light-bulb-35388619/",
+            "photographer": "I'm  Reyaansh",
+            "photographer_url": "https://www.pexels.com/@i-m-reyaansh-1162486",
+            "photographer_id": 1162486,
+            "avg_color": "#544325",
+            "src": {
+              "original": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg",
+              "large2x": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/35388619/pexels-photo-35388619.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Warm glow of a vintage Edison bulb in a dimly lit setting, showcasing its filament."
+          },
+          {
+            "id": 36831241,
+            "width": 4032,
+            "height": 6048,
+            "url": "https://www.pexels.com/photo/vintage-studio-spotlight-on-tripod-stand-36831241/",
+            "photographer": "🇻🇳🇻🇳 Việt Anh Nguyễn 🇻🇳🇻🇳",
+            "photographer_url": "https://www.pexels.com/@vi-t-anh-nguy-n-2150409023",
+            "photographer_id": 2150409023,
+            "avg_color": "#161118",
+            "src": {
+              "original": "https://images.pexels.com/photos/36831241/pexels-photo-36831241.jpeg",
+              "large2x": "https://images.pexels.com/photos/36831241/pexels-photo-36831241.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/36831241/pexels-photo-36831241.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/36831241/pexels-photo-36831241.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/36831241/pexels-photo-36831241.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/36831241/pexels-photo-36831241.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/36831241/pexels-photo-36831241.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/36831241/pexels-photo-36831241.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A vintage spotlight mounted on a tripod, casting warm light in a dimly lit studio setting."
+          },
+          {
+            "id": 30285137,
+            "width": 3000,
+            "height": 4000,
+            "url": "https://www.pexels.com/photo/rustic-lighthouse-lamp-by-the-sea-30285137/",
+            "photographer": "Florence",
+            "photographer_url": "https://www.pexels.com/@florence-1768458",
+            "photographer_id": 1768458,
+            "avg_color": "#979EA6",
+            "src": {
+              "original": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg",
+              "large2x": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A weathered lighthouse lamp stands by the ocean under a clear blue sky."
+          }
+        ],
+        "total_results": 8000,
+        "next_page": "https://api.pexels.com/v1/v1/search?orientation=portrait&page=2&per_page=8&query=lighthouse+equipment+room+lamp+fixture"
+      }
+    }
+  },
+  {
+    "request": {
+      "visual_run_id": "52eaa0a4-36a1-4d39-ae6f-b5af9ceda46a",
+      "shot_uuid": "e8f05588-e20a-4306-8c65-0716c062b7dc",
+      "shot_key": "S3-A",
+      "scene_order": 3,
+      "query_index": 3,
+      "query": "lamp fixture",
+      "provider_query": "lamp fixture",
+      "provider": "pexels",
+      "endpoint_kind": "photo",
+      "preferred_media_type": "photo",
+      "visual_intent": "Interior machinery room of a lighthouse with lamps and optics",
+      "must_show": [
+        "lamp fixture"
+      ],
+      "must_not_show": [
+        "exterior view"
+      ],
+      "primary_repeated": false,
+      "domain_context_terms": [],
+      "visual_detail_terms": [],
+      "retrieval_structure_terms": []
+    },
+    "response": {
+      "statusCode": 200,
+      "body": {
+        "page": 1,
+        "per_page": 8,
+        "photos": [
+          {
+            "id": 30561628,
+            "width": 4160,
+            "height": 6240,
+            "url": "https://www.pexels.com/photo/modern-hanging-pendant-lights-in-a-cozy-interior-30561628/",
+            "photographer": "Ziad Madkour",
+            "photographer_url": "https://www.pexels.com/@madkourfujifilm",
+            "photographer_id": 611017041,
+            "avg_color": "#122A2A",
+            "src": {
+              "original": "https://images.pexels.com/photos/30561628/pexels-photo-30561628.jpeg",
+              "large2x": "https://images.pexels.com/photos/30561628/pexels-photo-30561628.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/30561628/pexels-photo-30561628.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/30561628/pexels-photo-30561628.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/30561628/pexels-photo-30561628.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/30561628/pexels-photo-30561628.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/30561628/pexels-photo-30561628.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/30561628/pexels-photo-30561628.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "A trio of stylish pendant lights hanging indoors, casting a warm glow in a modern setting."
+          },
+          {
+            "id": 13108827,
+            "width": 1875,
+            "height": 2812,
+            "url": "https://www.pexels.com/photo/photo-of-black-hanging-lights-13108827/",
+            "photographer": "Jepoy Fabian",
+            "photographer_url": "https://www.pexels.com/@jepoyous",
+            "photographer_id": 76904349,
+            "avg_color": "#3D2813",
+            "src": {
+              "original": "https://images.pexels.com/photos/13108827/pexels-photo-13108827.jpeg",
+              "large2x": "https://images.pexels.com/photos/13108827/pexels-photo-13108827.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/13108827/pexels-photo-13108827.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/13108827/pexels-photo-13108827.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/13108827/pexels-photo-13108827.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/13108827/pexels-photo-13108827.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/13108827/pexels-photo-13108827.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/13108827/pexels-photo-13108827.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Modern black pendant lights hanging indoors, casting a warm glow."
+          },
+          {
+            "id": 207438,
+            "width": 4000,
+            "height": 4638,
+            "url": "https://www.pexels.com/photo/close-up-black-pendant-lamp-near-trees-207438/",
+            "photographer": "Pixabay",
+            "photographer_url": "https://www.pexels.com/@pixabay",
+            "photographer_id": 2659,
+            "avg_color": "#5C5D5C",
+            "src": {
+              "original": "https://images.pexels.com/photos/207438/pexels-photo-207438.jpeg",
+              "large2x": "https://images.pexels.com/photos/207438/pexels-photo-207438.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/207438/pexels-photo-207438.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/207438/pexels-photo-207438.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/207438/pexels-photo-207438.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/207438/pexels-photo-207438.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/207438/pexels-photo-207438.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/207438/pexels-photo-207438.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Stylish outdoor lamps illuminating a cozy evening ambiance."
+          },
+          {
+            "id": 8733371,
+            "width": 3249,
+            "height": 4548,
+            "url": "https://www.pexels.com/photo/lamps-on-the-ceiling-8733371/",
+            "photographer": "Ilya Melnikov",
+            "photographer_url": "https://www.pexels.com/@ilya-melnikov-80195105",
+            "photographer_id": 80195105,
+            "avg_color": "#35302C",
+            "src": {
+              "original": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg",
+              "large2x": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/8733371/pexels-photo-8733371.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Warm illuminated pendant lights casting shadows in a dark room, creating a modern ambiance."
+          },
+          {
+            "id": 35569124,
+            "width": 3024,
+            "height": 4032,
+            "url": "https://www.pexels.com/photo/modern-hanging-pendant-lights-against-yellow-ceiling-35569124/",
+            "photographer": "Hasel photos",
+            "photographer_url": "https://www.pexels.com/@haselann",
+            "photographer_id": 794850,
+            "avg_color": "#BB8032",
+            "src": {
+              "original": "https://images.pexels.com/photos/35569124/pexels-photo-35569124.jpeg",
+              "large2x": "https://images.pexels.com/photos/35569124/pexels-photo-35569124.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/35569124/pexels-photo-35569124.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/35569124/pexels-photo-35569124.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/35569124/pexels-photo-35569124.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/35569124/pexels-photo-35569124.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/35569124/pexels-photo-35569124.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/35569124/pexels-photo-35569124.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Artistic display of modern pendant lights with an industrial design against a vibrant yellow ceiling."
+          },
+          {
+            "id": 6925111,
+            "width": 3631,
+            "height": 5439,
+            "url": "https://www.pexels.com/photo/photo-of-hanging-black-lights-6925111/",
+            "photographer": "Pavel Danilyuk",
+            "photographer_url": "https://www.pexels.com/@pavel-danilyuk",
+            "photographer_id": 2297095,
+            "avg_color": "#B9B7B3",
+            "src": {
+              "original": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg",
+              "large2x": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/6925111/pexels-photo-6925111.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Five industrial-style hanging lamps with blurred artistic wall decor in the background."
+          },
+          {
+            "id": 5561129,
+            "width": 2629,
+            "height": 3943,
+            "url": "https://www.pexels.com/photo/modern-urban-lamps-5561129/",
+            "photographer": "Rye Bon",
+            "photographer_url": "https://www.pexels.com/@rye-bon-3017353",
+            "photographer_id": 3017353,
+            "avg_color": "#232C2E",
+            "src": {
+              "original": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg",
+              "large2x": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/5561129/pexels-photo-5561129.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Stylish modern pendant lights with industrial design hanging in a moody urban interior setting."
+          },
+          {
+            "id": 14682688,
+            "width": 3941,
+            "height": 4624,
+            "url": "https://www.pexels.com/photo/hanging-lighted-wooden-lamp-14682688/",
+            "photographer": "Claudia Schmalz",
+            "photographer_url": "https://www.pexels.com/@claudia-schmalz-3928374",
+            "photographer_id": 3928374,
+            "avg_color": "#5B5350",
+            "src": {
+              "original": "https://images.pexels.com/photos/14682688/pexels-photo-14682688.jpeg",
+              "large2x": "https://images.pexels.com/photos/14682688/pexels-photo-14682688.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+              "large": "https://images.pexels.com/photos/14682688/pexels-photo-14682688.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+              "medium": "https://images.pexels.com/photos/14682688/pexels-photo-14682688.jpeg?auto=compress&cs=tinysrgb&h=350",
+              "small": "https://images.pexels.com/photos/14682688/pexels-photo-14682688.jpeg?auto=compress&cs=tinysrgb&h=130",
+              "portrait": "https://images.pexels.com/photos/14682688/pexels-photo-14682688.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800",
+              "landscape": "https://images.pexels.com/photos/14682688/pexels-photo-14682688.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+              "tiny": "https://images.pexels.com/photos/14682688/pexels-photo-14682688.jpeg?auto=compress&cs=tinysrgb&dpr=1&fit=crop&h=200&w=280"
+            },
+            "liked": false,
+            "alt": "Chic boho-style lights hang from the ceiling, illuminating a modern indoor space."
+          }
+        ],
+        "total_results": 8000,
+        "next_page": "https://api.pexels.com/v1/v1/search?orientation=portrait&page=2&per_page=8&query=lamp+fixture"
+      }
+    }
+  }
+]
