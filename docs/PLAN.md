@@ -1290,3 +1290,27 @@ Next:
 4. Add exact regressions for contextual/catalog title false positives while preserving direct descriptive title/photo positives.
 5. Full tests + deterministic 9229 and current regressions.
 6. M8-only deploy, then one fresh PL15.
+
+
+## 2026-09-23 — selectable visual validation mode
+
+Product decision:
+- Studio exposes a user-selectable visual validation mode for each job.
+- `metadata` mode keeps the current deterministic M8 metadata/scoring path and does not call Gemini Vision.
+- `gemini` mode adds pixel-level validation of selected visual candidates before they become final scene assets.
+- Do not intentionally degrade `metadata` mode; it is the lower-cost path with less semantic assurance.
+- Gemini must validate still frames/images, not the complete rendered video.
+- Gemini validation input is limited to the candidate image plus the scene contract (`visual_intent`, `must_show`, and relevant exclusions).
+- Gemini mode is bounded to at most 3 candidate validation calls per scene. A failed candidate advances to the next eligible M8 candidate; no unbounded retries.
+- Existing deterministic metadata/scoring remains the retrieval/pre-filter layer in both modes.
+- The mode must persist with the job from Studio/intake through M8 so behavior is explicit and reproducible.
+- No new acceptance job until implementation, regression tests, deployment, and live verification are complete.
+
+Implementation order:
+1. Persist `visual_validation_mode = metadata | gemini` on the job and expose it in Studio/intake.
+2. Extend M8 selection so Gemini mode can evaluate up to the top 3 eligible candidates per scene instead of committing the first metadata winner immediately.
+3. Reuse the existing n8n Gemini credential; do not introduce another secret.
+4. Parse Gemini response fail-closed and persist validation evidence with the selected asset.
+5. Preserve the existing metadata-only route unchanged when `visual_validation_mode=metadata`.
+6. Add deterministic tests for routing, call bound, PASS/FAIL/fallback, malformed Gemini response, and no-Gemini behavior.
+7. Deploy only the components changed by this feature, verify live state, then run one controlled comparison job per mode.
