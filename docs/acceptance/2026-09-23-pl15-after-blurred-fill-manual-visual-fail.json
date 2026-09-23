@@ -1,0 +1,82 @@
+{
+  "date": "2026-09-23",
+  "status": "pl15_after_blurred_fill_machine_pass_manual_visual_fail",
+  "job_id": "33aa659d-e6b6-4529-8e41-8dd830f3b920",
+  "executions": {
+    "M3": 9708,
+    "M4": 9710,
+    "M5": 9711,
+    "M6": 9712,
+    "M7": 9713,
+    "M8": 9714,
+    "M9": 9715
+  },
+  "production_versions": {
+    "M5": {"versionCounter": 122, "activeVersionId": "4a9a48fd-985c-4f77-b592-44a0945377dd"},
+    "M6": {"versionCounter": 8, "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"},
+    "M8": {"versionCounter": 64, "activeVersionId": "88b9f81a-6d41-452b-8a35-082b7c088006"},
+    "M9": {"versionCounter": 1, "activeVersionId": "5b6c937c-1767-4c3e-99c4-31ea38a26961"}
+  },
+  "machine_result": "machine_qa_passed",
+  "render": {
+    "render_id": "09b2d159-cbbf-4b3e-9c15-2c51e4158136",
+    "render_run_id": "8735fcb2-c3fa-4a65-9c70-e2a460a1df73",
+    "storage_path": "/data/renders/33aa659d-e6b6-4529-8e41-8dd830f3b920/final.mp4",
+    "sha256": "f042e93193ad9a64b97299bc095d4e1b94388658a0143bb7519ec90570749379",
+    "bytes": 1793699,
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "duration_ms": 14784,
+    "audio_duration_ms": 14784
+  },
+  "render_fill_review": {
+    "result": "PASS",
+    "cropdetect": {
+      "S1": "1080:1900:0:0",
+      "S2": "1080:1920:0:0",
+      "S3": "1080:1920:0:0",
+      "S4": "1080:1920:0:0",
+      "S5": "1080:1920:0:0"
+    },
+    "note": "S1 residual dark edge is intrinsic to the historical source image; black renderer letterboxing is removed. Blurred fill is visible around non-9:16 foregrounds."
+  },
+  "audio_review": {
+    "result": "PASS",
+    "whisper_transcript": "Woda gromadzona jest w wielkim zbiorniku za tamą. Następnie spada z dużej wysokości, uderzając bezpośrednio w turbinę wodną, która napędza nowoczesny generator wytwarzający czysty prąd elektryczny.",
+    "continuous": true,
+    "matches_storyboard": true
+  },
+  "visual_review": {
+    "S1": {
+      "result": "FAIL",
+      "intent": "Large water reservoir behind a concrete dam",
+      "asset": "wikimedia:124944982",
+      "observed": "Historical small concrete dam/weir scene; no large reservoir visibly established behind the dam."
+    },
+    "S2": {
+      "result": "PASS",
+      "asset": "wikimedia:81510447",
+      "observed": "Clearly visible hydro penstock pipes descending steeply."
+    },
+    "S3": {
+      "result": "PASS",
+      "asset": "pexels:12270481",
+      "observed": "Industrial hydro turbine/generator hall machinery."
+    },
+    "S4": {
+      "result": "PASS",
+      "asset": "wikimedia:34522651",
+      "observed": "Hydroelectric generator bay / turbine-generator drive shaft machinery."
+    },
+    "S5": {
+      "result": "FAIL",
+      "intent": "Power transmission lines and electrical transformer station",
+      "asset": "wikimedia:136934049",
+      "observed": "Archival forest clearing/survey scene with tripod; no electrical transformer or transformer station visibly depicted. Matching transformer/substation/transmission terms come from the contract/album title, not the photographed subject."
+    }
+  },
+  "manual_result": "FAIL",
+  "confirmed_progress": "The renderer letterbox blocker is fixed in production. Remaining failure is M8 visual depiction grounding, especially Wikimedia contextual/catalog titles being treated as primary depiction evidence.",
+  "next_step": "Checkpoint this manual fail, then inspect exact M8 strong/secondary metadata construction for Wikimedia selected assets 124944982 and 136934049. Fix depiction grounding without asset/topic hardcoding and without weakening existing scorer gates. Do not run another PL15 before tested/deployed fix."
+}

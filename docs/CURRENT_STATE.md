@@ -1284,3 +1284,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Supporting containers unchanged.
 - Publisher/Studio 200; active executions 0.
 - Next: one fresh PL15 and manual MP4 review.
+
+
+## Current blocker: M8 contextual Wikimedia depiction false positives — 2026-09-23
+
+- Fresh PL15 `33aa659d-e6b6-4529-8e41-8dd830f3b920` passed machine QA.
+- Blurred-fill renderer is confirmed fixed in the actual production MP4.
+- Audio is correct and continuous.
+- Manual visuals fail S1 and S5.
+- S5 is decisive: Wikimedia 136934049 is visually a forest/survey-tripod archive photo, but its catalog title mentions transformer/substation/transmission and M8 accepted those contextual words as depiction evidence.
+- Next: tighten generic Wikimedia primary-depiction grounding; M8 scorer stays fail-closed and no new PL15 before deploy.

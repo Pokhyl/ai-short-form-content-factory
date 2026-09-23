@@ -1998,3 +1998,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live source hash == Git `c6ee183981d45283f99f52a835906a9546af9bdba9fdf2b71ca672c97a2fae91`.
 - Worker healthy/restart 0; Postgres/SearXNG/n8n unchanged; Publisher/Studio 200.
 - Next: exactly one fresh PL15, then actual MP4 manual acceptance.
+
+
+### PL15 after blurred-fill deploy — render fixed, M8 visual grounding still fails
+
+- Job `33aa659d-e6b6-4529-8e41-8dd830f3b920`, M4-M9 all PASS, machine QA PASS.
+- Actual final MP4 confirms blurred fill removed renderer letterboxing; S2-S5 cropdetect full 1080x1920.
+- Audio/continuous Polish narration PASS.
+- Manual S2/S3/S4 visuals PASS.
+- Manual S1 FAIL: small historical dam/weir does not visibly establish requested large reservoir.
+- Manual S5 FAIL: archival forest/survey tripod image contains no visible transformer/substation; catalog title supplied those terms.
+- Next blocker is generic Wikimedia catalog/context metadata being allowed to prove primary depiction in M8.

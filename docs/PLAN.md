@@ -1239,3 +1239,54 @@ Immediate next:
 3. Follow only that job to terminal state.
 4. If machine QA passes, inspect exact final MP4 frames, cropdetect and audio before deciding acceptance.
 5. If PL15 passes manual acceptance, checkpoint and proceed to EN30.
+
+
+## Fresh PL15 after blurred-fill deploy — machine PASS, manual visual FAIL
+
+Job: `33aa659d-e6b6-4529-8e41-8dd830f3b920`
+
+Pipeline:
+- M3 9708 PASS
+- M4 9710 PASS
+- M5 v122 9711 PASS
+- M6 v8 9712 PASS
+- M7 9713 PASS
+- M8 v64 9714 PASS
+- M9 v1 9715 PASS
+- status: `machine_qa_passed`
+
+Final MP4:
+- SHA256 `f042e93193ad9a64b97299bc095d4e1b94388658a0143bb7519ec90570749379`
+- 1080x1920 H.264/AAC, 30 fps
+- duration/audio: 14784 / 14784 ms.
+
+Renderer/manual format check:
+- blurred-fill fix works on the actual production MP4;
+- cropdetect: S1 1080x1900, S2-S5 1080x1920;
+- S1's remaining dark edge is embedded in the historical source itself, not renderer black padding;
+- no previous top/bottom letterbox behavior remains.
+
+Audio manual check: PASS.
+Whisper:
+`Woda gromadzona jest w wielkim zbiorniku za tamą. Następnie spada z dużej wysokości, uderzając bezpośrednio w turbinę wodną, która napędza nowoczesny generator wytwarzający czysty prąd elektryczny.`
+
+Visual manual check:
+- S1 Wikimedia 124944982: FAIL. Historical small dam/weir scene does not visibly establish the requested large reservoir behind the dam.
+- S2 Wikimedia 81510447: PASS. Clear hydro penstock pipes.
+- S3 Pexels 12270481: PASS. Industrial hydro machinery.
+- S4 Wikimedia 34522651: PASS. Hydroelectric generator bay / turbine-generator shaft.
+- S5 Wikimedia 136934049: FAIL. Actual photo shows a forest clearing/survey tripod; no transformer or transformer station is visibly depicted. Transformer/substation/transmission terms are catalog/contract context, not the photographed subject.
+
+Manual acceptance: FAIL.
+
+Confirmed progress:
+- render letterboxing is fixed in production;
+- remaining blocker is M8 depiction grounding for contextual Wikimedia catalog metadata.
+
+Next:
+1. Inspect exact Wikimedia M8 strong/secondary metadata construction for selected 124944982 and 136934049.
+2. Prove why contextual title/catalog terms satisfy primary subject.
+3. Tighten generic depiction grounding only; no asset IDs, hydro terms or topic-specific blacklists.
+4. Add exact regressions for contextual/catalog title false positives while preserving direct descriptive title/photo positives.
+5. Full tests + deterministic 9229 and current regressions.
+6. M8-only deploy, then one fresh PL15.
