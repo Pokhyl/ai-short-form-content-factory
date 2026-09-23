@@ -1423,3 +1423,9 @@ Gemini candidate-review implementation checkpoint:
 - Focused Gemini tests: 13/13 PASS.
 - Rollback-only production-engine replay of failed visual run `60514425-ca72-491c-bfd1-e0c4288bd300`: helper buckets were accepted=0, semantic-soft=1, must-not=99, non-photo=99, unknown=99; S2-A now produced 3 bounded Pexels candidates for actual Vision review instead of failing before Gemini.
 - Next gate: full regression + diff check, then DB/M8-only deploy and one post-fix controlled Gemini job.
+
+Gemini candidate-review full-regression checkpoint:
+- Full Node regression suite after the Gemini-only review policy change: 318/318 PASS.
+- `git diff --check`: PASS; working tree was clean before this documentation update.
+- Source checkpoint: `5d6604c`.
+- Next gate: verify zero active publisher executions and current M8 production version, back up published M8 and current DB functions/schema, deploy only `db/09-visuals.sql` + `VideoM8Visuals001`, verify exact live state, then run one post-fix Gemini smoke job.
