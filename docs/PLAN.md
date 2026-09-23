@@ -1378,3 +1378,11 @@ Production deployment checkpoint — selectable Gemini visual validation:
 - Studio live HTML is serving the new visual-quality selector.
 - Active publisher executions after deployment: 0.
 - Next: one controlled non-acceptance Gemini-mode test job to exercise the actual M8 Gemini credential/request/selection path. Poll in short verified steps; no long blind wait.
+
+
+Controlled Gemini-mode smoke-test blocker — 2026-09-23:
+- Job `21e30e0c-2ee2-491e-bd57-2eebb92e25e3` failed before M8, in M5 execution `9724`.
+- Exact provider failure: Gemini HTTP 503 `This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.`
+- `Generate Storyboard` already had n8n transient retry enabled (`retryOnFail=true`, `maxTries=3`, `waitBetweenTries=5000`), so the provider remained unavailable through all existing attempts.
+- This is not a Gemini visual-validation/M8 failure. Do not change M8 for this blocker.
+- Next gate: harden M5 transient-provider retry without adding a new paid service/model, run focused regression tests, deploy only M5 if clean, then rerun one controlled Gemini-mode smoke job.
