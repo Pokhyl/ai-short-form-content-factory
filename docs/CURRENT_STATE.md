@@ -1038,3 +1038,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - S3 and S4 both had zero eligible candidates.
 - Confirmed issue is retrieval planning, not missing source material: Commons has suitable generator+turbine-unit and generator-interior photos under structurally better queries.
 - Planned fix: remove process/output pseudo-domains and enrich provider queries with paired-machinery `unit` and inside-location `interior`; scorer unchanged.
+
+
+## M8 9640 retrieval-planning fix validated — 2026-09-23
+
+- Production still M8 v62 until deploy.
+- Planner-only fix removes output/process pseudo-domains and adds structural retrieval terms for exact 9640 S3/S4.
+- Scorer unchanged.
+- Full suite 283/283 PASS.
+- Deterministic 9229 replay PASS.
+- Live current-query diagnostic:
+  - S3 q3 -> 2 eligible Commons assets;
+  - S4 q3 -> 2 eligible Commons assets.
+- Next: M8-only deploy, then one fresh PL15.

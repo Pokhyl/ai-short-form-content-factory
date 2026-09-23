@@ -1,0 +1,48 @@
+{
+  "date": "2026-09-23",
+  "status": "m8_9640_retrieval_fix_validated_predeploy",
+  "source_job_id": "835c8fc3-7d0b-425f-ab9e-62c19788c8a3",
+  "source_execution_id": 9640,
+  "source_visual_run_id": "27cf596d-0c2f-4e3c-a021-41f6db8a6217",
+  "production_m8_before_deploy": {
+    "versionCounter": 62,
+    "activeVersionId": "90329f54-40fd-4382-92fd-2fd1e9ecea01"
+  },
+  "fix_scope": "M8 request planners only; scorer/eligibility thresholds unchanged",
+  "changes": [
+    "exclude electricity/energy/current/voltage/output from hard machinery domain inference",
+    "paired machinery retrieval adds machinery heads plus unit",
+    "repeated output-focused machinery inside an operating location adds location plus interior to provider query only"
+  ],
+  "generated_queries": {
+    "S3_q3": "hydroelectric generator turbine unit",
+    "S4_q3": "hydroelectric plant interior electrical generator"
+  },
+  "tests": {
+    "focused_9640": "10/10 PASS",
+    "full_suite": "283/283 PASS",
+    "m8_9229_deterministic_replay": "PASS",
+    "git_diff_check": "PASS",
+    "workflow_json_parse": "PASS"
+  },
+  "live_non_mutating_diagnostic": {
+    "provider": "Wikimedia Commons",
+    "S3": {
+      "provider_query": "hydroelectric generator turbine unit",
+      "eligible_count": 2,
+      "eligible_ids": [
+        "33715545",
+        "33715543"
+      ]
+    },
+    "S4": {
+      "provider_query": "hydroelectric plant interior electrical generator",
+      "eligible_count": 2,
+      "eligible_ids": [
+        "33760010",
+        "34186551"
+      ]
+    }
+  },
+  "next_step": "Commit/push, M8-only deploy with backup and non-M8 fingerprint, then exactly one fresh PL15."
+}

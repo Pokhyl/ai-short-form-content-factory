@@ -1714,3 +1714,26 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
   - hydro generator plant/station interiors.
 - Scorer remains fail-closed; fix request planning only.
 - No new PL15 until M8 regression/full suite/live diagnostic/M8-only deploy.
+
+
+### M8 execution 9640 retrieval-planning fix validated locally — 2026-09-23
+
+- Source job: `835c8fc3-7d0b-425f-ab9e-62c19788c8a3`.
+- Source M8 execution: `9640`; visual_run `27cf596d-0c2f-4e3c-a021-41f6db8a6217`.
+- Production remains M8 v62 until deploy.
+- Root cause:
+  - process/output vocabulary such as `electricity` was promoted into hard generator domain context;
+  - S3 paired machinery lacked a structural `unit` retrieval form;
+  - S4 output-focused inside-plant scene lacked a location/interior retrieval form.
+- Fix modifies only Build Pixabay/Pexels/Wikimedia Requests. Scorers and eligibility thresholds are unchanged.
+- Exact generated current queries:
+  - S3 q3 `hydroelectric generator turbine unit`;
+  - S4 q3 `hydroelectric plant interior electrical generator`.
+- Validation:
+  - exact 9640 planner tests 10/10 PASS;
+  - full suite 283/283 PASS;
+  - old deterministic 9229 replay PASS with same five selected assets;
+  - live non-mutating Wikimedia/current scorer:
+    - S3 eligible 2: `33715545`, `33715543`;
+    - S4 eligible 2: `33760010`, `34186551`.
+- Next: commit/push, M8-only deploy with backup/fingerprint, then one fresh PL15.

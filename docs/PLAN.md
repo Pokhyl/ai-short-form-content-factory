@@ -465,21 +465,47 @@ Live diagnostic evidence (no production mutation):
 - `hydroelectric power station interior generator` returned generator-room images.
 Therefore fix retrieval planning, not QA thresholds.
 
+## M8 9640 retrieval-planning fix validated locally
+
+Scope:
+- request planners only;
+- scorer and eligibility thresholds unchanged.
+
+Changes:
+- generic output/process words `electricity`, `energy`, `current`, `voltage`, `output` are no longer promoted into hard machinery domain context;
+- when a shot has 2+ machinery heads, retrieval keeps those machinery heads and adds `unit` as provider-query structure only;
+- for a repeated output-focused machinery scene explicitly inside/interior an operating location, retrieval prefixes the location plus `interior`; these are not hard scorer domains;
+- original storyboard `query` provenance is unchanged.
+
+Exact 9640 generated queries:
+- S3 q3: `hydroelectric generator turbine unit`
+- S4 q3: `hydroelectric plant interior electrical generator`
+
+Validation:
+- focused 9640 planner regressions: 10/10 PASS;
+- full suite: 283/283 PASS;
+- deterministic M8 execution 9229 replay: PASS with the same five accepted assets;
+- live non-mutating Wikimedia + current scorer:
+  - S3 q3: 2 eligible assets, IDs `33715545`, `33715543`;
+  - S4 q3: 2 eligible assets, IDs `33760010`, `34186551`.
+- no production mutation has occurred yet.
+
 ## Immediate next step
 
-1. Read this PLAN before code change.
-2. Modify only M8 request planners; keep scorer/eligibility thresholds unchanged.
-3. Exclude generic process/output terms from repeated machinery domain inference (including electricity/energy/current/voltage).
-4. For retrieval only:
-   - when must_show contains 2+ machinery heads, include those heads plus `unit`;
-   - when visual_intent says inside/interior an operating location, include that location plus `interior`.
-5. Keep these as provider-query enrichment only; do not promote them to hard scorer domains.
-6. Add exact 9640 planner regressions for S3/S4.
-7. Run focused tests + full suite + old 9229 replay.
-8. Run a non-mutating live Wikimedia diagnostic using the new generated queries and current scorer; require at least one eligible S3 and S4 candidate.
-9. Update PLAN/handoff/evidence; commit/push.
-10. Deploy ONLY M8 after active executions = 0 and verify non-M8 fingerprint.
-11. One fresh PL15 only after deploy checkpoint is in GitHub.
+1. Read this PLAN before production action.
+2. Commit and push the validated M8 planner fix and evidence.
+3. Verify active project executions = 0.
+4. Export published M8 backup and fingerprint all non-M8 workflows.
+5. Deploy ONLY M8.
+6. Verify:
+   - M8 version increments exactly once;
+   - live M8 nodes/connections/settings == Git;
+   - non-M8 workflow fingerprint unchanged;
+   - Publisher/Studio 200;
+   - no unexpected restarts.
+7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
+8. Run exactly one fresh PL15.
+9. Follow that one job to terminal state and manually review the real MP4 before proceeding to EN30.
 
 ## Acceptance sequence after PL15
 
