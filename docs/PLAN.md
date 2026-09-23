@@ -351,14 +351,51 @@ Validated fix:
 - focused 11/11 PASS;
 - full suite 267/267 PASS.
 
+## Latest fresh PL15 result
+
+Job: `a3da9db9-d818-4a83-a217-48ff080637f1`
+
+Pipeline:
+- M4 PASS
+- M5 v113 FAIL, execution `9617`
+- M6/M8/M9 did not run
+- script_run `8a92462c-bc7b-431f-9873-f6c256e37d66`
+- terminal reason: `Node 'Validate Repaired Storyboard' hasn't been executed`
+
+Exact root cause:
+- `Build Timing Precision Retry` eagerly read `Validate Repaired Storyboard.storyboard` as its fallback;
+- in this job the initial storyboard was valid, so that repair-validation branch never executed;
+- `Normalize Timing Probe.storyboard` had already executed and contained the exact validated storyboard that actually entered TTS;
+- therefore the precision retry depended on a branch-specific node unnecessarily.
+
+## M5 9617 branch-safe precision fallback tested locally
+
+Fix:
+- `Build Timing Precision Retry` now uses `Normalize Timing Probe.storyboard` as the fallback source;
+- this source is guaranteed to exist before any timing repair path;
+- it preserves the actual validated storyboard that entered TTS regardless of whether initial storyboard repair branches executed.
+
+Regression:
+- exact 9617 branch condition is reproduced by omitting `Validate Repaired Storyboard` from the test fixture;
+- precision retry still builds successfully;
+- unusable timing-repair root falls back to the measured valid storyboard.
+
+Validation:
+- focused timing tests: 16/16 PASS;
+- full suite: 268/268 PASS;
+- `git diff --check`: PASS;
+- workflow JSON parse: PASS.
+
 ## Immediate next step
 
-1. Read this PLAN before production action.
-2. Verify Git clean and active project execution count = 0.
-3. Run exactly ONE fresh PL15 on M5 v113 / M6 v8 / M8 v62.
-4. Follow only that job to terminal state.
-5. If it reaches M9 PASS, inspect the actual rendered MP4 technically, audio-wise, and scene-by-scene visually before any EN30 run.
-6. If it fails, fix only that exact demonstrated blocker from saved execution data.
+1. Commit/push the tested 9617 fix and evidence.
+2. Read this PLAN again before production change.
+3. Verify active project execution count = 0.
+4. Export published M5 backup and fingerprint all non-M5 workflows.
+5. Deploy ONLY M5.
+6. Verify live M5 == Git, M5 version increments exactly once, non-M5 fingerprint unchanged, Publisher/Studio 200, and service health/restarts unchanged.
+7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
+8. Run exactly one fresh PL15.
 
 ## Acceptance sequence after PL15
 

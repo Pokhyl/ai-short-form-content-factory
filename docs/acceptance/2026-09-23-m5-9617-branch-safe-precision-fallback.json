@@ -1,0 +1,27 @@
+{
+  "date": "2026-09-23",
+  "status": "tested_not_deployed",
+  "job_id": "a3da9db9-d818-4a83-a217-48ff080637f1",
+  "m5_execution_id": 9617,
+  "script_run_id": "8a92462c-bc7b-431f-9873-f6c256e37d66",
+  "production_at_failure": {
+    "versionCounter": 113,
+    "activeVersionId": "8e841105-87de-4816-8a15-224ec30b4350"
+  },
+  "failure": "Node 'Validate Repaired Storyboard' hasn't been executed",
+  "root_cause": "Build Timing Precision Retry eagerly read a branch-specific repaired-storyboard validator even when the initial storyboard had been valid and that branch never executed.",
+  "fix": "Use Normalize Timing Probe.storyboard as the fallback because it is guaranteed on every timing-repair path and is the validated storyboard that actually entered TTS.",
+  "tests": {
+    "focused_timing": {
+      "passed": 16,
+      "failed": 0
+    },
+    "full_suite": {
+      "passed": 268,
+      "failed": 0
+    },
+    "diff_check": "PASS",
+    "workflow_json": "PASS"
+  },
+  "next_step": "Commit/push, deploy only M5 after active=0, verify live equality and non-M5 fingerprint, then one fresh PL15."
+}

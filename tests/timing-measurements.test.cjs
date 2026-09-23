@@ -356,13 +356,56 @@ test('precision retry sees original meaning even when failed draft lost an objec
   'Build Timing Repair 2':{target_precision_words:12,target_scene_word_counts:[7,5]},
   'Repair Storyboard Timing 2':{candidates:[{content:{parts:[{text:JSON.stringify(failed)}]}}]},
   'Normalize Timing Probe':{storyboard:{scenes:original.map(narration=>({narration}))}},
-  'Validate Repaired Storyboard':{storyboard:{scenes:original.map(narration=>({narration}))}},
  };
  const code=workflow.nodes.find(n=>n.name==='Build Timing Precision Retry').parameters.jsCode;
  const out=new Function('$',code)(name=>({first:()=>({json:rows[name]})})).json;
  for(const sentence of original)assert.ok(out.user_message.includes(sentence));
  assert.deepEqual(out.target_scene_word_counts,[7,5]);
  assert.deepEqual(out.base_storyboard,failed); // prompts restore meaning; no unmeasured text substitution
+});
+
+
+test('9617 regression: precision retry falls back to the measured valid storyboard without requiring an unexecuted repair-validation branch',()=>{
+ const original=['Woda gromadzi się w zbiorniku.','Spadająca woda napędza turbinę.'];
+ const invalidRoot=[
+  {narration:'Woda gromadzi się w zbiorniku.'},
+  {narration:'Spadająca woda napędza turbinę.'},
+ ];
+ const rows={
+  'Build Script Prompt':{language_code:'pl'},
+  'Build Timing Repair 2':{
+    script_run_id:'run-9617',
+    model:'test',
+    prior_usage:{},
+    target_precision_words:10,
+    target_scene_word_counts:[5,5],
+  },
+  'Repair Storyboard Timing 2':{
+    candidates:[{content:{parts:[{text:JSON.stringify(invalidRoot)}]}}],
+  },
+  'Normalize Timing Probe':{
+    storyboard:{
+      narration:original.join(' '),
+      scenes:original.map((narration,i)=>({
+        scene_id:'S'+(i+1),
+        narration,
+        shots:[{shot_id:'S'+(i+1)+'-A'}],
+      })),
+    },
+  },
+ };
+ const code=workflow.nodes.find(n=>n.name==='Build Timing Precision Retry').parameters.jsCode;
+ const out=new Function('$',code)(name=>{
+   if(!rows[name])throw new Error("Node '"+name+"' hasn't been executed");
+   return {first:()=>({json:rows[name]})};
+ }).json;
+ assert.equal(out.precision_base_fallback_used,true);
+ assert.deepEqual(
+   out.base_storyboard.scenes.map(scene=>scene.narration),
+   original
+ );
+ assert.ok(out.user_message.includes(original[0]));
+ assert.ok(out.user_message.includes(original[1]));
 });
 
 

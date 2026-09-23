@@ -948,3 +948,10 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Non-M5 workflow fingerprint unchanged.
 - Live M5 == Git; Publisher/Studio 200; no restarts.
 - Next action: exactly one fresh PL15.
+
+## M5 9617 branch-safe precision fallback tested — 2026-09-23
+
+- Fresh PL15 `a3da9db9-d818-4a83-a217-48ff080637f1` failed in M5 execution `9617` because `Build Timing Precision Retry` read an unexecuted `Validate Repaired Storyboard` branch.
+- Local fix uses guaranteed `Normalize Timing Probe.storyboard` instead.
+- Focused timing 16/16 PASS; full suite 268/268 PASS.
+- Production remains M5 v113 / M6 v8 / M8 v62 until deploy.

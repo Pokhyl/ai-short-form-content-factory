@@ -1580,3 +1580,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - M6 remained v8; M8 remained v62.
 - Live M5 core == Git; Publisher/Studio 200; n8n restart 0; worker healthy restart 0.
 - Next: exactly one fresh PL15.
+
+### M5 execution 9617 branch-specific fallback failure fixed locally — 2026-09-23
+
+- Job `a3da9db9-d818-4a83-a217-48ff080637f1`, M5 execution `9617`, M5 v113.
+- Failure: `Build Timing Precision Retry` required `Validate Repaired Storyboard`, but that branch had not executed because the initial storyboard was already valid.
+- Root fix: fallback now comes from guaranteed `Normalize Timing Probe.storyboard`, the validated storyboard that actually entered TTS.
+- Regression reproduces the missing repair-validation branch and confirms unusable timing-repair output still falls back correctly.
+- Focused timing 16/16 PASS; full suite 268/268 PASS; static checks PASS.
+- Next: M5-only deploy, then one fresh PL15.
