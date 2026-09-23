@@ -1483,3 +1483,7 @@ M5 execution 9783 production deployment checkpoint:
 - Restarted only publisher n8n because CLI required it.
 - Published M5 matches Git exactly for nodes/connections/settings; n8n is running.
 - Next gate: one controlled Gemini smoke job through M5→M8. No additional test jobs until its result is known.
+
+Controlled post-M5-fix Gemini smoke job:
+- Started job `8cd3ffb3-1439-4d21-a0fe-9298f043e4c7` (`how does a lighthouse work?`, en, 15s, `gemini`).
+- M3 execution `9785` succeeded; M4 execution `9787` is currently running. Do not create another job; continue tracing this exact job.
