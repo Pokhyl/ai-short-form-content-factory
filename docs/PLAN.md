@@ -611,21 +611,45 @@ Exact root cause from M5 execution 9672:
 - This validator behavior contradicts the continuous-narration/visual-cut contract.
 - Search of current M5 code found this forced sentence-surface normalization only in `Validate Timing Precision Retry`.
 
+## M5 execution 9672 continuity fix implemented and tested
+
+Implemented only in `Validate Timing Precision Retry`:
+- removed forced capitalization of every visual segment start;
+- removed forced terminal punctuation on every visual segment;
+- each segment now receives whitespace normalization only;
+- existing semantic fallback/anti-runaway checks remain unchanged;
+- existing joined narration completeness gate remains unchanged.
+
+Exact execution 9672 regression proves:
+- Gemini precision response keeps mid-sentence visual cuts:
+  - `Elektrownia wodna gromadzi wodę`
+  - `w wielkim zbiorniku za tamą.`
+  - `Spadająca masa cieczy napędza`
+  - `turbinę wodną, która następnie`
+  - `porusza generator wytwarzający czysty prąd elektryczny.`
+- validator output preserves these exact surfaces;
+- joined narration equals the original continuous narration;
+- artificial `napędza. Turbinę` and `następnie. Porusza` breaks are absent.
+
+Validation:
+- focused continuity/precision/scene tests: 18/18 PASS;
+- full project suite: 290/290 PASS;
+- M5 graph: PASS, 132 nodes;
+- M5 Code-node syntax: 59/59 PASS;
+- diff/JSON checks: PASS.
+
 ## Immediate next step
 
-1. Do NOT run EN30 or another PL15 yet.
-2. Fix only `Validate Timing Precision Retry`:
-   - normalize whitespace only for each visual narration segment;
-   - do not uppercase scene starts;
-   - do not append terminal punctuation per scene;
-   - keep the existing joined-narration requirement: the complete joined narration must start normally and end with sentence punctuation.
-3. Add deterministic regression from execution 9672 proving the exact Gemini response remains one continuous narration.
-4. Confirm no other late M5 validator forces sentence punctuation per visual segment.
-5. Run focused tests, full suite, M5 graph and Code-node syntax.
-6. Update PLAN/handoff/evidence; commit/push.
-7. Deploy ONLY M5 after active project execution count = 0 with backup/fingerprint/live==Git verification.
-8. Run exactly one fresh PL15.
-9. Manually review its actual MP4, audio continuity and every visual scene before EN30.
+1. Commit/push M5 continuity fix + 9672 regression.
+2. Read PLAN before production change.
+3. Verify Git clean, active project executions = 0, production versions.
+4. Deploy ONLY M5 with published backup and non-M5 workflow fingerprint.
+5. Verify M5 increments exactly once, live core == Git, non-M5 unchanged, services healthy.
+6. Update PLAN/handoff/evidence; commit/push deploy checkpoint.
+7. Run exactly one fresh PL15.
+8. Follow only that job to terminal state.
+9. If machine QA passes, inspect actual MP4 technically, check final canonical narration/audio silences, and review every visual scene.
+10. Do not proceed to EN30 unless PL15 passes manual acceptance.
 
 ## Acceptance sequence after PL15
 

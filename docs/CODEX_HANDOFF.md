@@ -1802,3 +1802,17 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Exact execution evidence proves Gemini precision response was correct; `Validate Timing Precision Retry.normalizeSentenceSurface` itself uppercased every segment and appended `.` to every visual cut.
 - This is the first node where good continuous narration becomes five sentence-like fragments.
 - Current fix scope: remove forced per-segment sentence normalization from that validator only; retain joined-narration completeness and all semantic/timing gates.
+
+
+### M5 9672 precision continuity fix implemented — 2026-09-23
+
+- Root cause was local to `Validate Timing Precision Retry.normalizeSentenceSurface`.
+- Removed forced per-segment capitalization and terminal periods; visual segments are whitespace-normalized only.
+- Joined narration still must start normally and end as one complete utterance.
+- Semantic/fallback/timing gates unchanged.
+- Exact regression fixture: `tests/fixtures/m5-9672-precision-continuity.json`.
+- Regression test: `tests/m5-9672-precision-continuity.test.cjs`.
+- Focused tests 18/18 PASS.
+- Full suite 290/290 PASS.
+- M5 graph PASS (132 nodes); Code-node syntax 59/59 PASS.
+- Next: M5-only deploy, then one fresh PL15.

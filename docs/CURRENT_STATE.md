@@ -1096,3 +1096,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Root cause is `Validate Timing Precision Retry.normalizeSentenceSurface`: it adds periods/capitalization at every visual cut.
 - Gemini precision response itself preserved correct continuous segment surfaces.
 - No EN30/new PL15 until M5 validator regression is fixed/tested/deployed.
+
+
+## M5 9672 continuity fix ready for deploy — 2026-09-23
+
+- Forced per-scene punctuation/capitalization removed from precision validator.
+- Exact 9672 regression preserves continuous narration across visual cuts.
+- Full suite 290/290 PASS.
+- M5 graph PASS; 59/59 Code-node syntax PASS.
+- Pending: commit/push, M5-only deploy, one fresh PL15.

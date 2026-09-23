@@ -1,0 +1,35 @@
+{
+  "date": "2026-09-23",
+  "status": "fix_tested_not_yet_deployed",
+  "source_execution_id": 9672,
+  "job_id": "ab79e346-a7d7-45c4-9bc9-a82212bab1c4",
+  "root_cause": "Validate Timing Precision Retry forced every visual segment into sentence form by uppercasing and appending terminal punctuation.",
+  "fix": {
+    "node": "Validate Timing Precision Retry",
+    "removed": [
+      "forced segment capitalization",
+      "forced per-segment terminal punctuation"
+    ],
+    "retained": [
+      "whitespace normalization",
+      "semantic guards",
+      "fallback logic",
+      "anti-runaway envelope",
+      "joined complete-narration gate"
+    ]
+  },
+  "regression": {
+    "fixture": "tests/fixtures/m5-9672-precision-continuity.json",
+    "test": "tests/m5-9672-precision-continuity.test.cjs",
+    "expected_joined_narration": "Elektrownia wodna gromadzi wodę w wielkim zbiorniku za tamą. Spadająca masa cieczy napędza turbinę wodną, która następnie porusza generator wytwarzający czysty prąd elektryczny."
+  },
+  "tests": {
+    "focused": "18/18 PASS",
+    "full_suite": "290/290 PASS",
+    "m5_graph": "PASS (132 nodes)",
+    "m5_code_syntax": "59/59 PASS",
+    "diff_check": "PASS",
+    "json_parse": "PASS"
+  },
+  "next_step": "Commit/push, deploy only M5, verify, run one fresh PL15."
+}
