@@ -1,5 +1,11 @@
 # Codex handoff — production video factory
 
+## M5 v126 deployed — 2026-09-23
+
+- Published c264500 to M5 only: v126 activeVersionId 205d2b88-026c-4597-815a-74eeadcd7a9f. Published nodes/connections and current nodes/connections/settings verified equal Git. Other workflows unchanged; publisher health OK after required restart.
+- Zero active executions before deploy. VPS backup /opt/ai-short-form-content-factory/.backups/m5-before-9796-fix-20260923-192313.json SHA256 709f498f7619389745b98cebdfb9d6087fb072cee0c69d3c7c0ed72dd9f9625f.
+- Full tests 329/329 PASS. M6 v8 / M8 v67 unchanged. NEXT: exactly one controlled Gemini en15 lighthouse smoke; preserve job ID immediately, then trace to terminal. No passing smoke claimed yet.
+
 ## Execution 9796 repair diagnostics — source verified, 2026-09-23
 
 - Both storyboard repair prompts now recompute every scene's word count from the candidate JSON and include scene_id, actual count, min/max, valid flag. Explicitly request repair of every invalid count even if the first error concerned metadata. This preserves scene identity when n8n strips the exception prefix and exposes latent violations before the next bounded retry.
