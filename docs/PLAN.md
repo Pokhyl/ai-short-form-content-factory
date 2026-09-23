@@ -1,5 +1,14 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M8 9816 malformed Gemini JSON — source fix verified, 2026-09-23
+
+- Controlled job ec85da0d-3947-4b02-b29d-a666094e2009 is terminal: M3 9810 PASS, M4 9812 PASS, M5 9813 PASS, M6 9814 PASS, M7 9815 PASS, M8 9816 ERROR; no M9.
+- Exact M8 failure was not a visual-quality rejection. Gemini returned HTTP 200 but one scene response contained malformed JSON: `{"candidate_index_3,...}`. Parse Gemini Vision Result correctly failed closed; the missing parsed scene then surfaced as `Gemini scene validation count mismatch`.
+- Source fix adds `generationConfig.responseJsonSchema` to the existing Gemini Vision request. The schema constrains the evaluations envelope and candidate_index/boolean evidence/match_score/reason fields. Existing parser validation, 70 score floor, uniqueness, metadata evidence and fail-closed behavior remain unchanged. No topic-specific rule, JSON string repair, blind retry loop or visual-gate relaxation.
+- Validation: focused Gemini 15/15 PASS; full Node 336/336 PASS; DTW Python 7/7 PASS; render-fit 3/3 PASS; git diff --check PASS.
+- Evidence: acceptance/2026-09-23-m8-9816-schema-contract.json.
+- NOT deployed yet. Production remains M5 v126 / M6 v8 / M8 v68 4f9709cb-b819-417f-8991-fc2c3a4eaebc. NEXT: commit/push this tested source, verify zero active publisher executions, back up/deploy only M8, verify published source, then run exactly one controlled Gemini smoke.
+
 ## Current M8 v68 smoke — 2026-09-23
 
 Job ec85da0d-3947-4b02-b29d-a666094e2009 created (en15 lighthouse, gemini). M5 v126 / M6 v8 / M8 v68 active 4f9709cb-b819-417f-8991-fc2c3a4eaebc; worker image 4118f3f06c98. Run accepted. M3 9810 PASS; coordinator 9811; M4 9812 PASS; M5 9813 PASS; M6 9814 PASS; M7 9815 PASS; M8 9816 RUNNING at this checkpoint. NEXT: trace M8 9816 to terminal and inspect Gemini evidence; do not launch this job again or create another job while unresolved.

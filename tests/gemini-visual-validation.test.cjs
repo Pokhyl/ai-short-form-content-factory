@@ -87,6 +87,20 @@ test('one Gemini request evaluates all candidate images for a scene at low media
     'MEDIA_RESOLUTION_LOW',
   ]);
   assert.equal(result.json.candidates.length, 2);
+  const schema = result.json.gemini_body.generationConfig.responseJsonSchema;
+  assert.equal(schema.type, 'object');
+  assert.deepEqual(schema.required, ['evaluations']);
+  assert.equal(schema.properties.evaluations.type, 'array');
+  assert.deepEqual(schema.properties.evaluations.items.required, [
+    'candidate_index',
+    'must_show_visible',
+    'must_not_show_clear',
+    'intent_match',
+    'match_score',
+    'reason',
+  ]);
+  assert.equal(schema.properties.evaluations.items.additionalProperties, false);
+  assert.equal(schema.additionalProperties, false);
 });
 
 test('Gemini parser recomputes pass fail-closed with a 70 score floor', () => {

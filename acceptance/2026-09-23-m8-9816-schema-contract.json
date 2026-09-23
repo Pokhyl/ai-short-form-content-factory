@@ -1,0 +1,36 @@
+{
+  "date": "2026-09-23",
+  "job_id": "ec85da0d-3947-4b02-b29d-a666094e2009",
+  "m8_execution_id": 9816,
+  "m8_version": 68,
+  "status": "failed",
+  "error": "M8 visuals failed: Gemini scene validation count mismatch",
+  "root_cause": {
+    "node": "Parse Gemini Vision Result",
+    "provider_status": 200,
+    "provider_model": "gemini-3.5-flash-lite",
+    "provider_failure": "Gemini Vision returned malformed JSON",
+    "malformed_fragment": "{\"candidate_index_3,\"must_show_visible\":true,...}",
+    "effect": "one scene produced no parsed validation row; Collect Gemini Selections received fewer rows than the expected five scenes"
+  },
+  "fix": {
+    "file": "workflows/VIDEO-M8-Multi-Source-Visuals.json",
+    "node": "Build Gemini Vision Request",
+    "change": "add responseJsonSchema for the evaluations envelope and every evaluation field while preserving the existing fail-closed parser and selection gates",
+    "no_relaxation": true,
+    "no_topic_specific_rule": true,
+    "no_retry_loop_added": true
+  },
+  "validation": {
+    "focused_gemini_tests": "15/15 PASS",
+    "node_suite": "336/336 PASS",
+    "alignment_dtw": "7/7 PASS",
+    "render_fit": "3/3 PASS",
+    "git_diff_check": "PASS"
+  },
+  "production": {
+    "deployed": false,
+    "active_m8": "v68 / 4f9709cb-b819-417f-8991-fc2c3a4eaebc",
+    "next": "commit and push source, then deploy only M8 after zero-active verification and run one controlled Gemini smoke"
+  }
+}
