@@ -1,0 +1,22 @@
+{
+  "date": "2026-09-23",
+  "status": "m5_failed_confirmed_root_cause",
+  "job_id": "fd7d4a16-cb18-4871-b5ba-c53ef2126c63",
+  "m5_execution_id": 9629,
+  "m5_version": {
+    "versionCounter": 115,
+    "activeVersionId": "4ec491e1-fb68-4c5e-8125-c6d501e7d48d"
+  },
+  "script_run_id": "2a2f9f43-4fd6-4f0b-af2e-6a7cfbcf500b",
+  "failure": "M5 script workflow failed: 2, allowed 1 [line 216]",
+  "provider_retry": {
+    "status": "valid",
+    "description": "Repair Final Word Count returned the immutable original narration exactly."
+  },
+  "root_cause": {
+    "node": "Validate Final Word Count Retry",
+    "description": "retry/base/pre_final scene options enter deterministic word-count DP before immutable per-option semantic validation; a numerically attractive invalid option can be selected and only then rejected."
+  },
+  "fix_scope": "Filter each DP option through the existing immutable semantic guard before insertion; fail closed if no semantic-valid option exists. No threshold weakening.",
+  "next_step": "Implement exact 9629 regression, full suite, M5-only deploy, then one fresh PL15."
+}

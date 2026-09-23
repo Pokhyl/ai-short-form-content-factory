@@ -308,23 +308,40 @@ Deployment verification:
 - media worker healthy, restart count 0
 - active project executions after verification: 0
 
+## Latest fresh PL15 result
+
+Job: `fd7d4a16-cb18-4871-b5ba-c53ef2126c63`
+
+Pipeline:
+- M4 PASS
+- M5 v115 FAIL, execution `9629`
+- M6/M8/M9 did not run
+- script_run `2a2f9f43-4fd6-4f0b-af2e-6a7cfbcf500b`
+- terminal reason: `M5 script workflow failed: 2, allowed 1 [line 216]`
+
+Exact root cause:
+- `Repair Final Word Count` returned the immutable original narration exactly;
+- that retry itself is semantically valid;
+- `Validate Final Word Count Retry` then builds a deterministic word-count hybrid from `retry`, `base`, and `pre_final` scene options;
+- those options are inserted into the DP before per-option immutable semantic validation;
+- the DP can therefore select a numerically attractive but semantically invalid scene option;
+- only after hybrid selection does the node run `assertSemanticPreservation`, which rejected the chosen hybrid with `2, allowed 1`;
+- word-count remains guidance; real TTS is the acceptance authority, so semantically invalid options must be excluded before DP rather than poisoning the whole retry.
+
 ## Immediate next step
 
-1. Read this PLAN before the next production action.
-2. Verify Git clean and active project execution count = 0.
-3. Run exactly ONE fresh PL15 on M5 v115 / M6 v8 / M8 v62 / M9 v1.
-4. Follow that single job to terminal state. Do not create another job while it is running.
-5. If it reaches machine QA:
-   - inspect the actual rendered MP4 technically;
-   - review scene-by-scene visual grounding against narration;
-   - review audio/narration continuity.
-6. If it fails:
-   - inspect saved execution/provider data from that exact job;
-   - fix only the demonstrated blocker;
-   - regression test;
-   - deploy only the affected workflow;
-   - update PLAN/Git;
-   - then one new acceptance job.
+1. Read this PLAN before code change.
+2. Modify ONLY `Validate Final Word Count Retry`.
+3. Validate every retry/base/pre_final scene option against the immutable `Normalize Timing Probe` scene before adding it to the DP.
+4. Exclude semantic-invalid options; fail closed if a scene has no valid option.
+5. Add an exact `9629` regression proving the original retry remains eligible and invalid expanded options cannot re-enter via hybrid.
+6. Run focused tests + full suite + JSON/diff checks.
+7. Update PLAN/handoff/evidence; commit/push.
+8. Verify active project executions = 0.
+9. Deploy ONLY M5 with backup and non-M5 fingerprint.
+10. Verify live M5 == Git and services healthy.
+11. Update PLAN/Git deploy checkpoint.
+12. Run exactly one new PL15.
 
 ## Acceptance sequence after PL15
 

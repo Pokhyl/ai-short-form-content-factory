@@ -1626,3 +1626,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
 - Active project executions verified at 0.
 - Next: exactly one fresh PL15.
+
+
+### Fresh PL15 M5 v115 failed in semantic-unfiltered exact-word hybrid — 2026-09-23
+
+- Job `fd7d4a16-cb18-4871-b5ba-c53ef2126c63`.
+- M5 execution `9629`; script_run `2a2f9f43-4fd6-4f0b-af2e-6a7cfbcf500b`.
+- Terminal: `2, allowed 1 [line 216]`.
+- `Repair Final Word Count` returned the immutable original scene narrations exactly.
+- Failure was introduced after provider output: `Validate Final Word Count Retry` inserted retry/base/pre_final options into its deterministic DP before immutable semantic validation.
+- The DP could select a numerically closer but semantically invalid hybrid; only the finished hybrid was checked.
+- Fix scope: this validator only. Filter every option with the existing immutable semantic guard before DP. Do not weaken semantic thresholds or word-count/timing gates.
+- No new PL15 until regression + full suite + M5-only deploy.

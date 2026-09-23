@@ -981,3 +981,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Non-M5 fingerprint unchanged.
 - Publisher/Studio 200; no n8n restart; media worker healthy.
 - Next action: exactly one fresh PL15.
+
+
+## Current blocker: M5 execution 9629 — 2026-09-23
+
+- Job `fd7d4a16-cb18-4871-b5ba-c53ef2126c63` failed in M5 v115 before M6.
+- Provider final word-count retry was valid and matched immutable original.
+- Deterministic hybrid admitted semantic-invalid base/pre_final options before DP.
+- Current action: filter hybrid options semantically before DP in `Validate Final Word Count Retry`; no new PL15 yet.
