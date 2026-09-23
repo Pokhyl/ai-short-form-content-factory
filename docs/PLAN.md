@@ -1437,3 +1437,10 @@ Gemini candidate-review production deployment checkpoint:
 - Restarted only `ai-short-form-n8n` because n8n CLI required restart for published changes to take effect.
 - Published M8 matches Git exactly for nodes/connections/settings. Live review helper returns accepted=0, semantic-soft=1, hard must-not=99, non-photographic=99.
 - Started one controlled post-fix Gemini smoke job: `dba2ef8f-84f6-4676-b75e-12d5b7d96dab` (`how does a lighthouse work?`, en, 15s, gemini). M3 succeeded; M4 is currently running. Continue with short state checks only; no additional test job.
+
+Post-deploy Gemini smoke failure — job `dba2ef8f-84f6-4676-b75e-12d5b7d96dab`:
+- M5 `9754`, M6 `9755`, M7 `9756` succeeded; M8 execution `9757` failed.
+- Exact failure: `Gemini scene validation count mismatch`.
+- Execution replay shows 5 candidate sets entered preview fetch, but only 3 reached Gemini validation. `Build Gemini Vision Request` routed 2 items to error because `/visual-previews` returned 422 wrapping upstream HTTP 429 `Too Many Requests (015d12c)`.
+- Affected shots were S2-A and S3-A. Each had usable fallback candidates, but the media-worker aborted the whole scene preview request on the first candidate download error, so Gemini never saw the remaining candidates.
+- Root fix: preview fetching must be per-candidate fail-soft while remaining fail-closed at scene level: continue after an individual preview download failure, pass only successfully fetched candidates to Gemini, and fail the scene only when zero previews remain. Candidate indices must be renumbered consistently after pruning. No weakening of Gemini pass criteria or metadata-mode selection.
