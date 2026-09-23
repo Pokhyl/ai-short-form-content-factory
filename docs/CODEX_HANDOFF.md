@@ -1569,3 +1569,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Preserved: old generator -> transformer bad case stays rejected; 9609 explicit generator switch stays accepted.
 - Validation: focused 11/11 PASS; full suite 267/267 PASS; diff/JSON checks PASS.
 - Next: M5-only deploy after active project execution count is zero, then one fresh PL15.
+
+### M5 v113 deployed — 2026-09-23
+
+- Deployed only M5 after active project execution count was 0.
+- Before: v112 `d7eab2c2-c0a6-4258-9c17-4a28a706a701`.
+- After: v113 `8e841105-87de-4816-8a15-224ec30b4350`.
+- Backup: `.backups/m5-before-antecedent-20260923-035512.json`.
+- Non-M5 workflow fingerprint unchanged: `31|6d5bcd9e4ad7e94f6f9907f52426c741`.
+- M6 remained v8; M8 remained v62.
+- Live M5 core == Git; Publisher/Studio 200; n8n restart 0; worker healthy restart 0.
+- Next: exactly one fresh PL15.

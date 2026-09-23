@@ -328,46 +328,37 @@ Required refinement:
 
 No new PL15 until this M5 refinement is tested/deployed.
 
-## M5 9613 antecedent-position fix tested locally
+## M5 9613 antecedent-position fix deployed
 
-Source:
-- job `d74ebc77-dfe1-4440-8d06-357b584785d2`
-- M5 execution `9613`
-- production M5 at failure: v112 `d7eab2c2-c0a6-4258-9c17-4a28a706a701`
+Production:
+- M5 v113: `8e841105-87de-4816-8a15-224ec30b4350`
+- M6 v8: `0bcabe39-ae90-42fe-842b-8a56ad238709`
+- M8 v62: `90329f54-40fd-4382-92fd-2fd1e9ecea01`
 
-Exact failure:
-- previous S3 narration: `Następnie generator wytwarza prąd elektryczny,`
-- previous visual primary: `electrical generator`
-- next S4 narration: `który trafia do sieci`
-- the next relative pronoun refers to the later noun `prąd elektryczny`, not the earlier generator.
+Deploy verification:
+- published backup: `.backups/m5-before-antecedent-20260923-035512.json`
+- non-M5 workflow fingerprint before/after: `31|6d5bcd9e4ad7e94f6f9907f52426c741`
+- live M5 nodes/connections/settings == Git: PASS
+- Publisher 200
+- Studio 200
+- n8n restart count 0
+- media worker healthy, restart count 0
 
-Local fix:
-- in all three storyboard validators, inherited-primary enforcement now checks whether the previous visual primary is the terminal lexical referent in the previous narration cut;
-- if the previous primary is followed by later lexical content, the next leading anaphor is not automatically forced to inherit that visual primary;
-- if the previous primary cannot be lexically located, behavior stays conservative/fail-closed;
-- current-scene explicit-object switching remains allowed only when the new visual primary is actually named in the current narration.
-
-Preserved regressions:
-- old bad case `... generator, / Który wytwarza prąd.` -> transformer remains REJECT;
-- execution 9609 `... turbiny, / która ... generator` -> generator remains PASS;
-- exact 9613 antecedent-position case now PASS.
-
-Validation:
-- focused `scene-segment-contract`: 11/11 PASS;
-- full suite: 267/267 PASS;
-- `git diff --check`: PASS;
-- workflow JSON parse: PASS.
+Validated fix:
+- exact 9613 antecedent-position regression PASS;
+- old generator -> transformer bad case remains REJECT;
+- execution 9609 explicit generator switch remains PASS;
+- focused 11/11 PASS;
+- full suite 267/267 PASS.
 
 ## Immediate next step
 
-1. Read this PLAN before production change.
-2. Commit/push the tested M5 fix and evidence.
-3. Verify active project execution count = 0.
-4. Export published M5 backup and fingerprint all non-M5 workflows.
-5. Deploy ONLY M5.
-6. Verify M5 version increments exactly once, live M5 equals Git, non-M5 fingerprint is unchanged, Publisher/Studio are 200, and service health/restart counts are unchanged.
-7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
-8. Run exactly one fresh PL15.
+1. Read this PLAN before production action.
+2. Verify Git clean and active project execution count = 0.
+3. Run exactly ONE fresh PL15 on M5 v113 / M6 v8 / M8 v62.
+4. Follow only that job to terminal state.
+5. If it reaches M9 PASS, inspect the actual rendered MP4 technically, audio-wise, and scene-by-scene visually before any EN30 run.
+6. If it fails, fix only that exact demonstrated blocker from saved execution data.
 
 ## Acceptance sequence after PL15
 

@@ -940,3 +940,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Old transformer rejection and 9609 explicit-object regression preserved.
 - Focused 11/11 PASS; full suite 267/267 PASS.
 - Fix not deployed yet.
+
+## M5 v113 deployed — 2026-09-23
+
+- M5 v113 activeVersionId `8e841105-87de-4816-8a15-224ec30b4350`.
+- M6 v8 and M8 v62 unchanged.
+- Non-M5 workflow fingerprint unchanged.
+- Live M5 == Git; Publisher/Studio 200; no restarts.
+- Next action: exactly one fresh PL15.
