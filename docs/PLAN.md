@@ -1,5 +1,12 @@
 # AI Short-Form Content Factory — Production Plan
 
+## Smoke 03ca6223 — terminal result, 2026-09-23
+
+- Job 03ca6223-29b4-4782-95b3-e968a5ced556 is script_failed. M3 9793 PASS, coordinator 9794 ERROR, M4 9795 PASS, M5 9796 ERROR on active v125 / 9d92b100-7739-4eed-9bf4-093395c3db32. Script run 6ec11461-fd82-4660-869c-680964c320f7.
+- Initial storyboard failed S1-A preferred_media_type; first repair then exposed S5 length 11 words against maximum 10. Both repairs retained identical narrations. n8n reduced the second validator error to “11, maximum 10 [line 499]”, losing scene identity/context.
+- The smoke never reached timing correction, M6, or M8, so it does not validate the v125 timing routing fix end-to-end.
+- NEXT: make both storyboard repair prompts report all per-scene word-count violations from the saved candidate, with exact scene IDs and bounds; reproduce execution 9796. Do not just create another job or weaken the 10-word scene bound. Production remains v125; no further deployment yet.
+
 ## Active smoke job — 2026-09-23
 
 - Created job 03ca6223-29b4-4782-95b3-e968a5ced556 via M3: topic how does a lighthouse work?, en, 15s, visual_validation_mode gemini.
