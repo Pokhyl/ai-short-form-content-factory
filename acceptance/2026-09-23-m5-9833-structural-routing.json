@@ -1,0 +1,49 @@
+{
+  "date": "2026-09-23",
+  "job_id": "39ccba65-a380-4d1b-86f7-98c862307ecb",
+  "m5_execution_id": 9833,
+  "status": "failed",
+  "error": "M5 script workflow failed: 13 [line 251]",
+  "root_cause": {
+    "stage": "Validate Final Duration Repair",
+    "measured_duration_ms": 12288,
+    "target_duration_ms": 15000,
+    "tolerance_ms": 800,
+    "target_words": 37,
+    "target_scene_word_counts": [5, 5, 8, 9, 10],
+    "provider_returned_scene_word_counts": [5, 5, 8, 9, 13],
+    "provider_filler_examples": ["very", "carefully", "far", "intensely", "swiftly", "dark", "safely"],
+    "explanation": "The provider violated the existing 2-10 scene bound. Validate Final Duration Repair threw immediately, so the draft terminated before the already-existing Route Final Duration Word Count -> Build Final Word Count Retry bounded repair could handle it."
+  },
+  "fix": {
+    "builders": [
+      "Build Final Duration Repair",
+      "Build Final Word Count Retry",
+      "Build Final Measured Correction"
+    ],
+    "prompt_change": "Expansion must preserve semantic-valid content and prefer grammatical glue/function words; descriptive properties, materials, quantities, degree/intensity, locations and new objects are forbidden as timing padding.",
+    "validators": [
+      "Validate Final Duration Repair",
+      "Validate Final Measured Correction",
+      "Validate Final Word Count Retry"
+    ],
+    "routing_change": "Textual structural violations are recorded as structural_valid=false and semantic_valid=false so the existing bounded word-count repair branch is used. Provider/HTTP/JSON/context failures still throw. Invalid drafts never proceed to TTS.",
+    "bounded_retry_count_changed": false,
+    "timing_gate_relaxed": false,
+    "semantic_gate_relaxed": false,
+    "scene_bound_relaxed": false,
+    "speech_speed_changed": false
+  },
+  "validation": {
+    "focused_tests": "28/28 PASS",
+    "node_suite": "339/339 PASS",
+    "alignment_dtw": "7/7 PASS",
+    "render_fit": "3/3 PASS",
+    "git_diff_check": "PASS"
+  },
+  "production": {
+    "deployed": false,
+    "active_m5_before": "v127 / 726a4c13-e945-4e9d-983f-6775e8dc1191",
+    "next": "commit/push, verify zero active executions, deploy only M5, verify published source, then one controlled smoke"
+  }
+}

@@ -1,5 +1,16 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M5 9833 structural-repair routing — source fix verified, 2026-09-23
+
+- Job 39ccba65-a380-4d1b-86f7-98c862307ecb is terminal script_failed: M3 9828 PASS, M4 9830 PASS, M5 9833 ERROR; no M6/M7/M8/M9.
+- Exact failure: after a real 12288ms measurement against 15000ms ±800ms, Final Duration Repair targeted about 37 words with scene guidance [5,5,8,9,10]. Gemini returned [5,5,8,9,13]; S5 exceeded the unchanged 10-word hard bound and added timing filler such as swiftly/dark/safely. Validate Final Duration Repair immediately threw `13 [line 251]`.
+- The workflow already had the correct bounded recovery route: Route Final Duration Word Count false branch -> Build Final Word Count Retry. The structural throw happened before that route, so it was a routing defect rather than absence of a repair mechanism.
+- Fix: Final Duration/Measured builders now explicitly forbid factual/descriptive timing padding and prefer grammatical glue/function words. Validate Final Duration Repair and Validate Final Measured Correction now return `structural_valid=false` / `semantic_valid=false` for invalid model text, which sends it to the existing bounded repair; provider/HTTP/JSON/context failures still throw and invalid drafts never reach TTS. Validate Final Word Count Retry also excludes over-bound provider options before its existing semantic DP.
+- No retry count, TTS speed, timing tolerance, semantic threshold or 2-10 scene bound was relaxed.
+- Regression covers both final timing branches and confirms an over-limit draft routes to the existing repair. Focused 28/28 PASS; full Node 339/339 PASS; DTW 7/7 PASS; render-fit 3/3 PASS; git diff --check PASS.
+- Evidence: acceptance/2026-09-23-m5-9833-structural-routing.json.
+- NOT deployed yet. NEXT: commit/push, verify zero active executions, back up/deploy only M5, verify source, then one controlled Gemini smoke.
+
 ## Current M5 v127 / M8 v69 smoke — 2026-09-23
 
 Job 39ccba65-a380-4d1b-86f7-98c862307ecb created via M3 (how does a lighthouse work?, en, 15s, Gemini visual validation), HTTP 201. Production targets: M5 v127 / 726a4c13-e945-4e9d-983f-6775e8dc1191; M6 v8; M8 v69 / d073d7d8-3490-468a-bb6a-79771d367059. NEXT: launch this exact job once via /factory/run and trace it to terminal. Do not create another job while unresolved.

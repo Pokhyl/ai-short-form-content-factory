@@ -355,6 +355,69 @@ test('9192 regression: first final duration semantic miss is routed into the exi
   assert.equal(workflow.connections['Route Final Duration Word Count'].main[1][0].node,'Build Final Word Count Retry');
 });
 
+test('9833 regression: over-limit final timing drafts route to the existing bounded word-count repair',()=>{
+  const candidate=[
+    'Woda gromadzi się bardzo spokojnie stale wysoko bezpiecznie szeroko długo za dużą tamą.',
+    'Woda napędza turbinę wodną.',
+    'Turbina obraca generator prądu.',
+    'Transformator przekazuje energię dalej.',
+    'Prąd trafia do sieci.',
+  ];
+  assert.equal(candidate[0].split(/\s+/u).length,13);
+
+  for (const [validator,builder,route,repair] of [
+    [
+      'Validate Final Duration Repair',
+      'Build Final Duration Repair',
+      'Route Final Duration Word Count',
+      'Build Final Word Count Retry',
+    ],
+    [
+      'Validate Final Measured Correction',
+      'Build Final Measured Correction',
+      'Route Final Measured Word Count',
+      'Build Final Measured Word Count Retry',
+    ],
+  ]) {
+    const out=runLateFinalValidator(validator,builder,candidate);
+    assert.equal(out.structural_valid,false,validator);
+    assert.equal(out.semantic_valid,false,validator);
+    assert.match(
+      out.structural_validation_error,
+      /scene 1 narration length outside 2-10 words: 13/,
+      validator
+    );
+    assert.match(
+      out.semantic_validation_error,
+      /scene 1 narration length outside 2-10 words: 13/,
+      validator
+    );
+    assert.equal(
+      workflow.connections[route].main[1][0].node,
+      repair,
+      route
+    );
+  }
+});
+
+test('final timing expansion prompts forbid factual padding and prefer grammar-only expansion',()=>{
+  for (const name of [
+    'Build Final Duration Repair',
+    'Build Final Word Count Retry',
+    'Build Final Measured Correction',
+    'Build Final Measured Word Count Retry',
+    'Build Final Measured Word Count Compliance Retry',
+  ]) {
+    const js=byName[name].parameters.jsCode;
+    assert.match(js,/grammatical glue\/function words|grammar-only connector\/function words/,name);
+    assert.match(
+      js,
+      /invent descriptive properties, materials, quantities|inventing adjectives, materials, quantities/,
+      name
+    );
+  }
+});
+
 test('late measured correction semantic miss also uses its single bounded retry',()=>{
   const candidate=[
     'Ogromna woda spokojnie gromadzi się za tamą.',
