@@ -1,5 +1,16 @@
 # Codex handoff — production video factory
 
+## M7 9802 exact-audio replay PASS — source fix, 2026-09-23
+
+- Artifact integrity confirmed: voiceover 796f8592-7a94-4de4-bbb6-1d26fc3ba070, 14736ms, SHA256 35a8fa2dd2b3e1f6e2f68dc2038867b7599508857cbc4c15bb829e89aa9f174a. No M5/M6 artifact mismatch. Default Whisper final lexical end is 16350ms (1614ms overrun).
+- Diagnostic word segmentation (-ml 1) did not fix the default offsets. DTW on the same installed model/audio produced in-range token emission points; default offsets remain wrong even with DTW enabled, so simply adding a CLI flag is insufficient.
+- Source fix: one DTW fallback only for the specific terminal-overrun failure. Convert monotonic DTW emission points (10ms units) into contiguous token intervals ending at each point; preserve heuristic offsets and original-pass evidence. Reject missing/nonmonotonic/out-of-audio DTW values and changed recognized transcript. Existing lexical-coverage and scene-timing gates remain mandatory. No timestamp scaling, forced clipping, model/provider switch, or job mutation.
+- Actual candidate-code replay inside the current media-worker container on the exact production MP3 PASS: 5 scenes, global coverage 0.989899, S3 coverage 0.947368, lexical end 14380ms, overrun 0. ASR still recognizes Fresnel as Fresno; this passes existing coverage policy, not exact transcription. Manual audio/visual acceptance remains pending.
+- Evidence: acceptance/2026-09-23-m7-9802-dtw-replay.json and tracked tests/fixtures/m7-9802-alignment.json. Python DTW regression 7/7 PASS; Node 329/329 PASS; py_compile/diff-check PASS.
+- DTW interpretation source: https://github.com/ggml-org/whisper.cpp/blob/master/include/whisper.h (t_dtw token emission point) and src/whisper.cpp (10ms units). Installed CLI supports -dtw small -nfa; same pinned ggml-small model used.
+- NOT deployed yet. Production M5 v126 active 205d2b88-026c-4597-815a-74eeadcd7a9f / M6 v8 / M8 v67 unchanged. Job 7b5ed96e-36f0-4b19-84b9-bebcf5520138 remains failed at M7 9802.
+- NEXT: back up current media-worker source/image, verify no active runs, deploy only media-worker and verify source/health. Then one fresh controlled Gemini smoke; do not mutate/restart the failed job.
+
 ## v126 smoke terminal — M5/M6 PASS, M7 FAIL, 2026-09-23
 
 - Job 7b5ed96e-36f0-4b19-84b9-bebcf5520138: M3 9797 PASS; coordinator 9798; M4 9799 PASS; M5 9800 PASS on v126 205d2b88-026c-4597-815a-74eeadcd7a9f; M6 9801 PASS; M7 9802 ERROR. No M8/M9.

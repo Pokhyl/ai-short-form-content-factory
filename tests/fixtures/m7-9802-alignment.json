@@ -1,0 +1,1489 @@
+{
+  "job_id": "7b5ed96e-36f0-4b19-84b9-bebcf5520138",
+  "execution_id": 9802,
+  "audio_sha256": "35a8fa2dd2b3e1f6e2f68dc2038867b7599508857cbc4c15bb829e89aa9f174a",
+  "audio_duration_ms": 14736,
+  "scenes": [
+    {
+      "narration": "Lighthouses utilize tall towers",
+      "scene_key": "S1",
+      "scene_uuid": "8a62d5e7-9af3-4e4a-870f-e4ae8faa45d6"
+    },
+    {
+      "narration": "to elevate powerful lamps high",
+      "scene_key": "S2",
+      "scene_uuid": "d40ea200-cb48-46f0-a9c7-38c624ec6eee"
+    },
+    {
+      "narration": "above the horizon. A specialized Fresnel lens",
+      "scene_key": "S3",
+      "scene_uuid": "9d87604c-dc29-4670-9fa1-a97f1e77f4d6"
+    },
+    {
+      "narration": "concentrates the light into a focused beam, rotating in circles",
+      "scene_key": "S4",
+      "scene_uuid": "57c9fc4b-e1f2-4df3-bc7f-06f3798345fa"
+    },
+    {
+      "narration": "to create a unique flashing navigational warning for mariners.",
+      "scene_key": "S5",
+      "scene_uuid": "4b890435-9e24-416b-9747-3907b0e97321"
+    }
+  ],
+  "whisper": {
+    "transcription": [
+      {
+        "timestamps": {
+          "from": "00:00:00,000",
+          "to": "00:00:04,580"
+        },
+        "offsets": {
+          "from": 0,
+          "to": 4580
+        },
+        "text": " Lighthouses utilize tall towers to elevate powerful lamps high above the",
+        "tokens": [
+          {
+            "text": "[_BEG_]",
+            "timestamps": {
+              "from": "00:00:00,000",
+              "to": "00:00:00,000"
+            },
+            "offsets": {
+              "from": 0,
+              "to": 0
+            },
+            "id": 50364,
+            "p": 0.811155,
+            "t_dtw": -1
+          },
+          {
+            "text": " Light",
+            "timestamps": {
+              "from": "00:00:00,050",
+              "to": "00:00:00,350"
+            },
+            "offsets": {
+              "from": 50,
+              "to": 350
+            },
+            "id": 8279,
+            "p": 0.958035,
+            "t_dtw": -1
+          },
+          {
+            "text": "houses",
+            "timestamps": {
+              "from": "00:00:00,600",
+              "to": "00:00:00,770"
+            },
+            "offsets": {
+              "from": 600,
+              "to": 770
+            },
+            "id": 29578,
+            "p": 0.990492,
+            "t_dtw": -1
+          },
+          {
+            "text": " utilize",
+            "timestamps": {
+              "from": "00:00:00,770",
+              "to": "00:00:01,270"
+            },
+            "offsets": {
+              "from": 770,
+              "to": 1270
+            },
+            "id": 16117,
+            "p": 0.956089,
+            "t_dtw": -1
+          },
+          {
+            "text": " tall",
+            "timestamps": {
+              "from": "00:00:01,270",
+              "to": "00:00:01,550"
+            },
+            "offsets": {
+              "from": 1270,
+              "to": 1550
+            },
+            "id": 6764,
+            "p": 0.997765,
+            "t_dtw": -1
+          },
+          {
+            "text": " towers",
+            "timestamps": {
+              "from": "00:00:01,550",
+              "to": "00:00:01,950"
+            },
+            "offsets": {
+              "from": 1550,
+              "to": 1950
+            },
+            "id": 25045,
+            "p": 0.997936,
+            "t_dtw": -1
+          },
+          {
+            "text": " to",
+            "timestamps": {
+              "from": "00:00:02,000",
+              "to": "00:00:02,190"
+            },
+            "offsets": {
+              "from": 2000,
+              "to": 2190
+            },
+            "id": 281,
+            "p": 0.979064,
+            "t_dtw": -1
+          },
+          {
+            "text": " elevate",
+            "timestamps": {
+              "from": "00:00:02,190",
+              "to": "00:00:02,870"
+            },
+            "offsets": {
+              "from": 2190,
+              "to": 2870
+            },
+            "id": 33054,
+            "p": 0.975896,
+            "t_dtw": -1
+          },
+          {
+            "text": " powerful",
+            "timestamps": {
+              "from": "00:00:02,970",
+              "to": "00:00:03,360"
+            },
+            "offsets": {
+              "from": 2970,
+              "to": 3360
+            },
+            "id": 4005,
+            "p": 0.950583,
+            "t_dtw": -1
+          },
+          {
+            "text": " lamps",
+            "timestamps": {
+              "from": "00:00:03,360",
+              "to": "00:00:03,760"
+            },
+            "offsets": {
+              "from": 3360,
+              "to": 3760
+            },
+            "id": 34887,
+            "p": 0.959327,
+            "t_dtw": -1
+          },
+          {
+            "text": " high",
+            "timestamps": {
+              "from": "00:00:03,760",
+              "to": "00:00:04,040"
+            },
+            "offsets": {
+              "from": 3760,
+              "to": 4040
+            },
+            "id": 1090,
+            "p": 0.98159,
+            "t_dtw": -1
+          },
+          {
+            "text": " above",
+            "timestamps": {
+              "from": "00:00:04,040",
+              "to": "00:00:04,400"
+            },
+            "offsets": {
+              "from": 4040,
+              "to": 4400
+            },
+            "id": 3673,
+            "p": 0.989506,
+            "t_dtw": -1
+          },
+          {
+            "text": " the",
+            "timestamps": {
+              "from": "00:00:04,400",
+              "to": "00:00:04,550"
+            },
+            "offsets": {
+              "from": 4400,
+              "to": 4550
+            },
+            "id": 264,
+            "p": 0.985011,
+            "t_dtw": -1
+          },
+          {
+            "text": "[_TT_229]",
+            "timestamps": {
+              "from": "00:00:04,580",
+              "to": "00:00:04,580"
+            },
+            "offsets": {
+              "from": 4580,
+              "to": 4580
+            },
+            "id": 50593,
+            "p": 0.0165508,
+            "t_dtw": -1
+          }
+        ]
+      },
+      {
+        "timestamps": {
+          "from": "00:00:04,580",
+          "to": "00:00:09,320"
+        },
+        "offsets": {
+          "from": 4580,
+          "to": 9320
+        },
+        "text": " horizon. A specialized Fresno lens concentrates the light into a focused",
+        "tokens": [
+          {
+            "text": " horizon",
+            "timestamps": {
+              "from": "00:00:05,080",
+              "to": "00:00:05,120"
+            },
+            "offsets": {
+              "from": 5080,
+              "to": 5120
+            },
+            "id": 18046,
+            "p": 0.998443,
+            "t_dtw": -1
+          },
+          {
+            "text": ".",
+            "timestamps": {
+              "from": "00:00:05,180",
+              "to": "00:00:05,400"
+            },
+            "offsets": {
+              "from": 5180,
+              "to": 5400
+            },
+            "id": 13,
+            "p": 0.979481,
+            "t_dtw": -1
+          },
+          {
+            "text": " A",
+            "timestamps": {
+              "from": "00:00:05,400",
+              "to": "00:00:05,480"
+            },
+            "offsets": {
+              "from": 5400,
+              "to": 5480
+            },
+            "id": 316,
+            "p": 0.940665,
+            "t_dtw": -1
+          },
+          {
+            "text": " specialized",
+            "timestamps": {
+              "from": "00:00:05,480",
+              "to": "00:00:06,390"
+            },
+            "offsets": {
+              "from": 5480,
+              "to": 6390
+            },
+            "id": 19813,
+            "p": 0.983352,
+            "t_dtw": -1
+          },
+          {
+            "text": " Fres",
+            "timestamps": {
+              "from": "00:00:06,390",
+              "to": "00:00:06,720"
+            },
+            "offsets": {
+              "from": 6390,
+              "to": 6720
+            },
+            "id": 42618,
+            "p": 0.980568,
+            "t_dtw": -1
+          },
+          {
+            "text": "no",
+            "timestamps": {
+              "from": "00:00:06,720",
+              "to": "00:00:06,880"
+            },
+            "offsets": {
+              "from": 6720,
+              "to": 6880
+            },
+            "id": 1771,
+            "p": 0.880966,
+            "t_dtw": -1
+          },
+          {
+            "text": " lens",
+            "timestamps": {
+              "from": "00:00:06,880",
+              "to": "00:00:07,210"
+            },
+            "offsets": {
+              "from": 6880,
+              "to": 7210
+            },
+            "id": 6765,
+            "p": 0.964056,
+            "t_dtw": -1
+          },
+          {
+            "text": " concent",
+            "timestamps": {
+              "from": "00:00:07,210",
+              "to": "00:00:07,790"
+            },
+            "offsets": {
+              "from": 7210,
+              "to": 7790
+            },
+            "id": 5512,
+            "p": 0.993625,
+            "t_dtw": -1
+          },
+          {
+            "text": "rates",
+            "timestamps": {
+              "from": "00:00:07,790",
+              "to": "00:00:08,210"
+            },
+            "offsets": {
+              "from": 7790,
+              "to": 8210
+            },
+            "id": 12507,
+            "p": 0.998323,
+            "t_dtw": -1
+          },
+          {
+            "text": " the",
+            "timestamps": {
+              "from": "00:00:08,210",
+              "to": "00:00:08,400"
+            },
+            "offsets": {
+              "from": 8210,
+              "to": 8400
+            },
+            "id": 264,
+            "p": 0.969662,
+            "t_dtw": -1
+          },
+          {
+            "text": " light",
+            "timestamps": {
+              "from": "00:00:08,400",
+              "to": "00:00:08,670"
+            },
+            "offsets": {
+              "from": 8400,
+              "to": 8670
+            },
+            "id": 1442,
+            "p": 0.981897,
+            "t_dtw": -1
+          },
+          {
+            "text": " into",
+            "timestamps": {
+              "from": "00:00:08,670",
+              "to": "00:00:08,880"
+            },
+            "offsets": {
+              "from": 8670,
+              "to": 8880
+            },
+            "id": 666,
+            "p": 0.994139,
+            "t_dtw": -1
+          },
+          {
+            "text": " a",
+            "timestamps": {
+              "from": "00:00:08,880",
+              "to": "00:00:08,930"
+            },
+            "offsets": {
+              "from": 8880,
+              "to": 8930
+            },
+            "id": 257,
+            "p": 0.999256,
+            "t_dtw": -1
+          },
+          {
+            "text": " focused",
+            "timestamps": {
+              "from": "00:00:08,930",
+              "to": "00:00:09,320"
+            },
+            "offsets": {
+              "from": 8930,
+              "to": 9320
+            },
+            "id": 5178,
+            "p": 0.986822,
+            "t_dtw": -1
+          },
+          {
+            "text": "[_TT_466]",
+            "timestamps": {
+              "from": "00:00:09,320",
+              "to": "00:00:09,320"
+            },
+            "offsets": {
+              "from": 9320,
+              "to": 9320
+            },
+            "id": 50830,
+            "p": 0.186863,
+            "t_dtw": -1
+          }
+        ]
+      },
+      {
+        "timestamps": {
+          "from": "00:00:09,320",
+          "to": "00:00:13,960"
+        },
+        "offsets": {
+          "from": 9320,
+          "to": 13960
+        },
+        "text": " beam, rotating in circles to create a unique flashing navigational warning for",
+        "tokens": [
+          {
+            "text": " beam",
+            "timestamps": {
+              "from": "00:00:09,370",
+              "to": "00:00:09,580"
+            },
+            "offsets": {
+              "from": 9370,
+              "to": 9580
+            },
+            "id": 14269,
+            "p": 0.999859,
+            "t_dtw": -1
+          },
+          {
+            "text": ",",
+            "timestamps": {
+              "from": "00:00:09,590",
+              "to": "00:00:09,710"
+            },
+            "offsets": {
+              "from": 9590,
+              "to": 9710
+            },
+            "id": 11,
+            "p": 0.912816,
+            "t_dtw": -1
+          },
+          {
+            "text": " rotating",
+            "timestamps": {
+              "from": "00:00:09,920",
+              "to": "00:00:10,270"
+            },
+            "offsets": {
+              "from": 9920,
+              "to": 10270
+            },
+            "id": 19627,
+            "p": 0.996227,
+            "t_dtw": -1
+          },
+          {
+            "text": " in",
+            "timestamps": {
+              "from": "00:00:10,270",
+              "to": "00:00:10,400"
+            },
+            "offsets": {
+              "from": 10270,
+              "to": 10400
+            },
+            "id": 294,
+            "p": 0.991183,
+            "t_dtw": -1
+          },
+          {
+            "text": " circles",
+            "timestamps": {
+              "from": "00:00:10,400",
+              "to": "00:00:10,880"
+            },
+            "offsets": {
+              "from": 10400,
+              "to": 10880
+            },
+            "id": 13040,
+            "p": 0.999504,
+            "t_dtw": -1
+          },
+          {
+            "text": " to",
+            "timestamps": {
+              "from": "00:00:10,880",
+              "to": "00:00:10,960"
+            },
+            "offsets": {
+              "from": 10880,
+              "to": 10960
+            },
+            "id": 281,
+            "p": 0.998639,
+            "t_dtw": -1
+          },
+          {
+            "text": " create",
+            "timestamps": {
+              "from": "00:00:11,020",
+              "to": "00:00:11,420"
+            },
+            "offsets": {
+              "from": 11020,
+              "to": 11420
+            },
+            "id": 1884,
+            "p": 0.999519,
+            "t_dtw": -1
+          },
+          {
+            "text": " a",
+            "timestamps": {
+              "from": "00:00:11,420",
+              "to": "00:00:11,480"
+            },
+            "offsets": {
+              "from": 11420,
+              "to": 11480
+            },
+            "id": 257,
+            "p": 0.999028,
+            "t_dtw": -1
+          },
+          {
+            "text": " unique",
+            "timestamps": {
+              "from": "00:00:11,480",
+              "to": "00:00:11,830"
+            },
+            "offsets": {
+              "from": 11480,
+              "to": 11830
+            },
+            "id": 3845,
+            "p": 0.999394,
+            "t_dtw": -1
+          },
+          {
+            "text": " flashing",
+            "timestamps": {
+              "from": "00:00:11,890",
+              "to": "00:00:12,440"
+            },
+            "offsets": {
+              "from": 11890,
+              "to": 12440
+            },
+            "id": 31049,
+            "p": 0.92912,
+            "t_dtw": -1
+          },
+          {
+            "text": " navig",
+            "timestamps": {
+              "from": "00:00:12,440",
+              "to": "00:00:12,780"
+            },
+            "offsets": {
+              "from": 12440,
+              "to": 12780
+            },
+            "id": 7407,
+            "p": 0.981371,
+            "t_dtw": -1
+          },
+          {
+            "text": "ational",
+            "timestamps": {
+              "from": "00:00:12,780",
+              "to": "00:00:13,260"
+            },
+            "offsets": {
+              "from": 12780,
+              "to": 13260
+            },
+            "id": 1478,
+            "p": 0.999809,
+            "t_dtw": -1
+          },
+          {
+            "text": " warning",
+            "timestamps": {
+              "from": "00:00:13,260",
+              "to": "00:00:13,800"
+            },
+            "offsets": {
+              "from": 13260,
+              "to": 13800
+            },
+            "id": 9164,
+            "p": 0.995167,
+            "t_dtw": -1
+          },
+          {
+            "text": " for",
+            "timestamps": {
+              "from": "00:00:13,800",
+              "to": "00:00:13,960"
+            },
+            "offsets": {
+              "from": 13800,
+              "to": 13960
+            },
+            "id": 337,
+            "p": 0.935397,
+            "t_dtw": -1
+          },
+          {
+            "text": "[_TT_698]",
+            "timestamps": {
+              "from": "00:00:13,960",
+              "to": "00:00:13,960"
+            },
+            "offsets": {
+              "from": 13960,
+              "to": 13960
+            },
+            "id": 51062,
+            "p": 0.322336,
+            "t_dtw": -1
+          }
+        ]
+      },
+      {
+        "timestamps": {
+          "from": "00:00:13,960",
+          "to": "00:00:16,400"
+        },
+        "offsets": {
+          "from": 13960,
+          "to": 16400
+        },
+        "text": " mariners.",
+        "tokens": [
+          {
+            "text": " marin",
+            "timestamps": {
+              "from": "00:00:14,560",
+              "to": "00:00:15,460"
+            },
+            "offsets": {
+              "from": 14560,
+              "to": 15460
+            },
+            "id": 34652,
+            "p": 0.840867,
+            "t_dtw": -1
+          },
+          {
+            "text": "ers",
+            "timestamps": {
+              "from": "00:00:15,460",
+              "to": "00:00:16,350"
+            },
+            "offsets": {
+              "from": 15460,
+              "to": 16350
+            },
+            "id": 433,
+            "p": 0.999767,
+            "t_dtw": -1
+          },
+          {
+            "text": ".",
+            "timestamps": {
+              "from": "00:00:16,350",
+              "to": "00:00:16,360"
+            },
+            "offsets": {
+              "from": 16350,
+              "to": 16360
+            },
+            "id": 13,
+            "p": 0.958455,
+            "t_dtw": -1
+          },
+          {
+            "text": "[_TT_820]",
+            "timestamps": {
+              "from": "00:00:16,400",
+              "to": "00:00:16,400"
+            },
+            "offsets": {
+              "from": 16400,
+              "to": 16400
+            },
+            "id": 51184,
+            "p": 0.0923281,
+            "t_dtw": -1
+          }
+        ]
+      }
+    ]
+  },
+  "dtw_whisper": {
+    "transcription": [
+      {
+        "timestamps": {
+          "from": "00:00:00,000",
+          "to": "00:00:04,580"
+        },
+        "offsets": {
+          "from": 0,
+          "to": 4580
+        },
+        "text": " Lighthouses utilize tall towers to elevate powerful lamps high above the",
+        "tokens": [
+          {
+            "text": "[_BEG_]",
+            "timestamps": {
+              "from": "00:00:00,000",
+              "to": "00:00:00,000"
+            },
+            "offsets": {
+              "from": 0,
+              "to": 0
+            },
+            "id": 50364,
+            "p": 0.793179,
+            "t_dtw": -1
+          },
+          {
+            "text": " Light",
+            "timestamps": {
+              "from": "00:00:00,050",
+              "to": "00:00:00,350"
+            },
+            "offsets": {
+              "from": 50,
+              "to": 350
+            },
+            "id": 8279,
+            "p": 0.955662,
+            "t_dtw": 76
+          },
+          {
+            "text": "houses",
+            "timestamps": {
+              "from": "00:00:00,600",
+              "to": "00:00:00,770"
+            },
+            "offsets": {
+              "from": 600,
+              "to": 770
+            },
+            "id": 29578,
+            "p": 0.991348,
+            "t_dtw": 104
+          },
+          {
+            "text": " utilize",
+            "timestamps": {
+              "from": "00:00:00,770",
+              "to": "00:00:01,270"
+            },
+            "offsets": {
+              "from": 770,
+              "to": 1270
+            },
+            "id": 16117,
+            "p": 0.953283,
+            "t_dtw": 146
+          },
+          {
+            "text": " tall",
+            "timestamps": {
+              "from": "00:00:01,270",
+              "to": "00:00:01,550"
+            },
+            "offsets": {
+              "from": 1270,
+              "to": 1550
+            },
+            "id": 6764,
+            "p": 0.997645,
+            "t_dtw": 190
+          },
+          {
+            "text": " towers",
+            "timestamps": {
+              "from": "00:00:01,550",
+              "to": "00:00:01,950"
+            },
+            "offsets": {
+              "from": 1550,
+              "to": 1950
+            },
+            "id": 25045,
+            "p": 0.997853,
+            "t_dtw": 234
+          },
+          {
+            "text": " to",
+            "timestamps": {
+              "from": "00:00:02,000",
+              "to": "00:00:02,500"
+            },
+            "offsets": {
+              "from": 2000,
+              "to": 2500
+            },
+            "id": 281,
+            "p": 0.978806,
+            "t_dtw": 250
+          },
+          {
+            "text": " elevate",
+            "timestamps": {
+              "from": "00:00:02,500",
+              "to": "00:00:02,800"
+            },
+            "offsets": {
+              "from": 2500,
+              "to": 2800
+            },
+            "id": 33054,
+            "p": 0.971154,
+            "t_dtw": 282
+          },
+          {
+            "text": " powerful",
+            "timestamps": {
+              "from": "00:00:02,800",
+              "to": "00:00:03,360"
+            },
+            "offsets": {
+              "from": 2800,
+              "to": 3360
+            },
+            "id": 4005,
+            "p": 0.945002,
+            "t_dtw": 330
+          },
+          {
+            "text": " lamps",
+            "timestamps": {
+              "from": "00:00:03,360",
+              "to": "00:00:03,760"
+            },
+            "offsets": {
+              "from": 3360,
+              "to": 3760
+            },
+            "id": 34887,
+            "p": 0.952164,
+            "t_dtw": 370
+          },
+          {
+            "text": " high",
+            "timestamps": {
+              "from": "00:00:03,760",
+              "to": "00:00:04,040"
+            },
+            "offsets": {
+              "from": 3760,
+              "to": 4040
+            },
+            "id": 1090,
+            "p": 0.980275,
+            "t_dtw": 404
+          },
+          {
+            "text": " above",
+            "timestamps": {
+              "from": "00:00:04,040",
+              "to": "00:00:04,400"
+            },
+            "offsets": {
+              "from": 4040,
+              "to": 4400
+            },
+            "id": 3673,
+            "p": 0.988412,
+            "t_dtw": 436
+          },
+          {
+            "text": " the",
+            "timestamps": {
+              "from": "00:00:04,400",
+              "to": "00:00:04,550"
+            },
+            "offsets": {
+              "from": 4400,
+              "to": 4550
+            },
+            "id": 264,
+            "p": 0.986453,
+            "t_dtw": 456
+          },
+          {
+            "text": "[_TT_229]",
+            "timestamps": {
+              "from": "00:00:04,580",
+              "to": "00:00:04,580"
+            },
+            "offsets": {
+              "from": 4580,
+              "to": 4580
+            },
+            "id": 50593,
+            "p": 0.0180636,
+            "t_dtw": -1
+          }
+        ]
+      },
+      {
+        "timestamps": {
+          "from": "00:00:04,580",
+          "to": "00:00:09,320"
+        },
+        "offsets": {
+          "from": 4580,
+          "to": 9320
+        },
+        "text": " horizon. A specialized Fresno lens concentrates the light into a focused",
+        "tokens": [
+          {
+            "text": " horizon",
+            "timestamps": {
+              "from": "00:00:05,080",
+              "to": "00:00:05,120"
+            },
+            "offsets": {
+              "from": 5080,
+              "to": 5120
+            },
+            "id": 18046,
+            "p": 0.998306,
+            "t_dtw": 498
+          },
+          {
+            "text": ".",
+            "timestamps": {
+              "from": "00:00:05,180",
+              "to": "00:00:05,400"
+            },
+            "offsets": {
+              "from": 5180,
+              "to": 5400
+            },
+            "id": 13,
+            "p": 0.980827,
+            "t_dtw": 592
+          },
+          {
+            "text": " A",
+            "timestamps": {
+              "from": "00:00:05,400",
+              "to": "00:00:05,480"
+            },
+            "offsets": {
+              "from": 5400,
+              "to": 5480
+            },
+            "id": 316,
+            "p": 0.93188,
+            "t_dtw": 614
+          },
+          {
+            "text": " specialized",
+            "timestamps": {
+              "from": "00:00:05,480",
+              "to": "00:00:06,390"
+            },
+            "offsets": {
+              "from": 5480,
+              "to": 6390
+            },
+            "id": 19813,
+            "p": 0.982375,
+            "t_dtw": 668
+          },
+          {
+            "text": " Fres",
+            "timestamps": {
+              "from": "00:00:06,390",
+              "to": "00:00:06,720"
+            },
+            "offsets": {
+              "from": 6390,
+              "to": 6720
+            },
+            "id": 42618,
+            "p": 0.981214,
+            "t_dtw": 698
+          },
+          {
+            "text": "no",
+            "timestamps": {
+              "from": "00:00:06,720",
+              "to": "00:00:06,880"
+            },
+            "offsets": {
+              "from": 6720,
+              "to": 6880
+            },
+            "id": 1771,
+            "p": 0.872681,
+            "t_dtw": 716
+          },
+          {
+            "text": " lens",
+            "timestamps": {
+              "from": "00:00:06,880",
+              "to": "00:00:07,210"
+            },
+            "offsets": {
+              "from": 6880,
+              "to": 7210
+            },
+            "id": 6765,
+            "p": 0.960638,
+            "t_dtw": 746
+          },
+          {
+            "text": " concent",
+            "timestamps": {
+              "from": "00:00:07,210",
+              "to": "00:00:07,790"
+            },
+            "offsets": {
+              "from": 7210,
+              "to": 7790
+            },
+            "id": 5512,
+            "p": 0.993352,
+            "t_dtw": 786
+          },
+          {
+            "text": "rates",
+            "timestamps": {
+              "from": "00:00:07,790",
+              "to": "00:00:08,210"
+            },
+            "offsets": {
+              "from": 7790,
+              "to": 8210
+            },
+            "id": 12507,
+            "p": 0.99834,
+            "t_dtw": 818
+          },
+          {
+            "text": " the",
+            "timestamps": {
+              "from": "00:00:08,210",
+              "to": "00:00:08,400"
+            },
+            "offsets": {
+              "from": 8210,
+              "to": 8400
+            },
+            "id": 264,
+            "p": 0.970102,
+            "t_dtw": 838
+          },
+          {
+            "text": " light",
+            "timestamps": {
+              "from": "00:00:08,400",
+              "to": "00:00:08,670"
+            },
+            "offsets": {
+              "from": 8400,
+              "to": 8670
+            },
+            "id": 1442,
+            "p": 0.984771,
+            "t_dtw": 856
+          },
+          {
+            "text": " into",
+            "timestamps": {
+              "from": "00:00:08,670",
+              "to": "00:00:08,880"
+            },
+            "offsets": {
+              "from": 8670,
+              "to": 8880
+            },
+            "id": 666,
+            "p": 0.993896,
+            "t_dtw": 874
+          },
+          {
+            "text": " a",
+            "timestamps": {
+              "from": "00:00:08,880",
+              "to": "00:00:08,930"
+            },
+            "offsets": {
+              "from": 8880,
+              "to": 8930
+            },
+            "id": 257,
+            "p": 0.999298,
+            "t_dtw": 894
+          },
+          {
+            "text": " focused",
+            "timestamps": {
+              "from": "00:00:08,930",
+              "to": "00:00:09,320"
+            },
+            "offsets": {
+              "from": 8930,
+              "to": 9320
+            },
+            "id": 5178,
+            "p": 0.986843,
+            "t_dtw": 924
+          },
+          {
+            "text": "[_TT_466]",
+            "timestamps": {
+              "from": "00:00:09,320",
+              "to": "00:00:09,320"
+            },
+            "offsets": {
+              "from": 9320,
+              "to": 9320
+            },
+            "id": 50830,
+            "p": 0.18452,
+            "t_dtw": -1
+          }
+        ]
+      },
+      {
+        "timestamps": {
+          "from": "00:00:09,320",
+          "to": "00:00:13,960"
+        },
+        "offsets": {
+          "from": 9320,
+          "to": 13960
+        },
+        "text": " beam, rotating in circles to create a unique flashing navigational warning for",
+        "tokens": [
+          {
+            "text": " beam",
+            "timestamps": {
+              "from": "00:00:09,370",
+              "to": "00:00:09,580"
+            },
+            "offsets": {
+              "from": 9370,
+              "to": 9580
+            },
+            "id": 14269,
+            "p": 0.999851,
+            "t_dtw": 966
+          },
+          {
+            "text": ",",
+            "timestamps": {
+              "from": "00:00:09,590",
+              "to": "00:00:09,710"
+            },
+            "offsets": {
+              "from": 9590,
+              "to": 9710
+            },
+            "id": 11,
+            "p": 0.924609,
+            "t_dtw": 1006
+          },
+          {
+            "text": " rotating",
+            "timestamps": {
+              "from": "00:00:09,920",
+              "to": "00:00:10,270"
+            },
+            "offsets": {
+              "from": 9920,
+              "to": 10270
+            },
+            "id": 19627,
+            "p": 0.995706,
+            "t_dtw": 1056
+          },
+          {
+            "text": " in",
+            "timestamps": {
+              "from": "00:00:10,270",
+              "to": "00:00:10,400"
+            },
+            "offsets": {
+              "from": 10270,
+              "to": 10400
+            },
+            "id": 294,
+            "p": 0.990469,
+            "t_dtw": 1076
+          },
+          {
+            "text": " circles",
+            "timestamps": {
+              "from": "00:00:10,400",
+              "to": "00:00:10,880"
+            },
+            "offsets": {
+              "from": 10400,
+              "to": 10880
+            },
+            "id": 13040,
+            "p": 0.999455,
+            "t_dtw": 1102
+          },
+          {
+            "text": " to",
+            "timestamps": {
+              "from": "00:00:10,880",
+              "to": "00:00:10,960"
+            },
+            "offsets": {
+              "from": 10880,
+              "to": 10960
+            },
+            "id": 281,
+            "p": 0.998944,
+            "t_dtw": 1130
+          },
+          {
+            "text": " create",
+            "timestamps": {
+              "from": "00:00:11,020",
+              "to": "00:00:11,420"
+            },
+            "offsets": {
+              "from": 11020,
+              "to": 11420
+            },
+            "id": 1884,
+            "p": 0.99947,
+            "t_dtw": 1162
+          },
+          {
+            "text": " a",
+            "timestamps": {
+              "from": "00:00:11,420",
+              "to": "00:00:11,480"
+            },
+            "offsets": {
+              "from": 11420,
+              "to": 11480
+            },
+            "id": 257,
+            "p": 0.998959,
+            "t_dtw": 1172
+          },
+          {
+            "text": " unique",
+            "timestamps": {
+              "from": "00:00:11,480",
+              "to": "00:00:11,830"
+            },
+            "offsets": {
+              "from": 11480,
+              "to": 11830
+            },
+            "id": 3845,
+            "p": 0.999295,
+            "t_dtw": 1206
+          },
+          {
+            "text": " flashing",
+            "timestamps": {
+              "from": "00:00:11,890",
+              "to": "00:00:12,440"
+            },
+            "offsets": {
+              "from": 11890,
+              "to": 12440
+            },
+            "id": 31049,
+            "p": 0.913558,
+            "t_dtw": 1260
+          },
+          {
+            "text": " navig",
+            "timestamps": {
+              "from": "00:00:12,440",
+              "to": "00:00:12,780"
+            },
+            "offsets": {
+              "from": 12440,
+              "to": 12780
+            },
+            "id": 7407,
+            "p": 0.980451,
+            "t_dtw": 1296
+          },
+          {
+            "text": "ational",
+            "timestamps": {
+              "from": "00:00:12,780",
+              "to": "00:00:13,260"
+            },
+            "offsets": {
+              "from": 12780,
+              "to": 13260
+            },
+            "id": 1478,
+            "p": 0.999794,
+            "t_dtw": 1336
+          },
+          {
+            "text": " warning",
+            "timestamps": {
+              "from": "00:00:13,260",
+              "to": "00:00:13,800"
+            },
+            "offsets": {
+              "from": 13260,
+              "to": 13800
+            },
+            "id": 9164,
+            "p": 0.99485,
+            "t_dtw": 1372
+          },
+          {
+            "text": " for",
+            "timestamps": {
+              "from": "00:00:13,800",
+              "to": "00:00:13,960"
+            },
+            "offsets": {
+              "from": 13800,
+              "to": 13960
+            },
+            "id": 337,
+            "p": 0.91851,
+            "t_dtw": 1394
+          },
+          {
+            "text": "[_TT_698]",
+            "timestamps": {
+              "from": "00:00:13,960",
+              "to": "00:00:13,960"
+            },
+            "offsets": {
+              "from": 13960,
+              "to": 13960
+            },
+            "id": 51062,
+            "p": 0.31795,
+            "t_dtw": -1
+          }
+        ]
+      },
+      {
+        "timestamps": {
+          "from": "00:00:13,960",
+          "to": "00:00:16,400"
+        },
+        "offsets": {
+          "from": 13960,
+          "to": 16400
+        },
+        "text": " mariners.",
+        "tokens": [
+          {
+            "text": " marin",
+            "timestamps": {
+              "from": "00:00:14,560",
+              "to": "00:00:15,460"
+            },
+            "offsets": {
+              "from": 14560,
+              "to": 15460
+            },
+            "id": 34652,
+            "p": 0.835334,
+            "t_dtw": 1414
+          },
+          {
+            "text": "ers",
+            "timestamps": {
+              "from": "00:00:15,460",
+              "to": "00:00:16,350"
+            },
+            "offsets": {
+              "from": 15460,
+              "to": 16350
+            },
+            "id": 433,
+            "p": 0.999763,
+            "t_dtw": 1438
+          },
+          {
+            "text": ".",
+            "timestamps": {
+              "from": "00:00:16,350",
+              "to": "00:00:16,360"
+            },
+            "offsets": {
+              "from": 16350,
+              "to": 16360
+            },
+            "id": 13,
+            "p": 0.961845,
+            "t_dtw": 1470
+          },
+          {
+            "text": "[_TT_820]",
+            "timestamps": {
+              "from": "00:00:16,400",
+              "to": "00:00:16,400"
+            },
+            "offsets": {
+              "from": 16400,
+              "to": 16400
+            },
+            "id": 51184,
+            "p": 0.0872806,
+            "t_dtw": -1
+          }
+        ]
+      }
+    ]
+  }
+}

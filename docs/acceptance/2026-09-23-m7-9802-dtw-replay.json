@@ -1,0 +1,56 @@
+{
+  "job_id": "7b5ed96e-36f0-4b19-84b9-bebcf5520138",
+  "original_execution_id": 9802,
+  "diagnostic_only": true,
+  "audio_sha256": "35a8fa2dd2b3e1f6e2f68dc2038867b7599508857cbc4c15bb829e89aa9f174a",
+  "summary": {
+    "transcript": "Lighthouses utilize tall towers to elevate powerful lamps high above the horizon. A specialized Fresno lens concentrates the light into a focused beam, rotating in circles to create a unique flashing navigational warning for mariners.",
+    "normalized_match": false,
+    "alignment_method": "whisper_token_sequence_match",
+    "global_coverage": 0.989899,
+    "lexical_token_count": 35,
+    "lexical_start_ms": 0,
+    "lexical_end_ms": 14380,
+    "lexical_end_ms_raw": 14380,
+    "terminal_overrun_ms": 0,
+    "scene_timings": [
+      {
+        "scene_uuid": "8a62d5e7-9af3-4e4a-870f-e4ae8faa45d6",
+        "scene_key": "S1",
+        "start_ms": 0,
+        "end_ms": 2340,
+        "coverage": 1.0
+      },
+      {
+        "scene_uuid": "d40ea200-cb48-46f0-a9c7-38c624ec6eee",
+        "scene_key": "S2",
+        "start_ms": 2340,
+        "end_ms": 4040,
+        "coverage": 1.0
+      },
+      {
+        "scene_uuid": "9d87604c-dc29-4670-9fa1-a97f1e77f4d6",
+        "scene_key": "S3",
+        "start_ms": 4040,
+        "end_ms": 7460,
+        "coverage": 0.947368
+      },
+      {
+        "scene_uuid": "57c9fc4b-e1f2-4df3-bc7f-06f3798345fa",
+        "scene_key": "S4",
+        "start_ms": 7460,
+        "end_ms": 11020,
+        "coverage": 1.0
+      },
+      {
+        "scene_uuid": "4b890435-9e24-416b-9747-3907b0e97321",
+        "scene_key": "S5",
+        "start_ms": 11020,
+        "end_ms": 14380,
+        "coverage": 1.0
+      }
+    ],
+    "timing_source": "dtw_emission_intervals",
+    "standard_timing_failure": "whisper lexical timing exceeds audio duration beyond tolerance: 1614ms"
+  }
+}

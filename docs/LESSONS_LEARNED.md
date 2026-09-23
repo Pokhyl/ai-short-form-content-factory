@@ -593,3 +593,5 @@ Prevention:
 
 62. Per-scene semantic validity does not guarantee continuous narration after mixing drafts.
 Execution 9788 moved “continuously” across a visual cut in one draft. Combining that draft with the older preceding scene duplicated the word. Validate scene boundaries during hybrid assembly and after joining; preserve intentional original repeats. Regression fixtures must be tracked in Git, not only in ignored operator review folders.
+
+63. Verify exact audio identity before changing alignment tolerances. Execution 9802 used the correct MP3, but Whisper heuristic offsets extended beyond it. Word-level output did not repair those offsets. A separate bounded DTW pass produced usable emission points; consuming t_dtw requires explicit unit/interval conversion and strict monotonic/bounds checks, not merely enabling the flag. Preserve both passes and keep failed jobs immutable.

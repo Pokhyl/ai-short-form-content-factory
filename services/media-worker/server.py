@@ -620,6 +620,36 @@ def _build_scene_timings(
     }
 
 
+def _dtw_timed_payload(payload, audio_duration_ms):
+    """Use monotonic DTW token emission points (10ms units) as interval ends.
+
+    Each interval starts at the preceding emitted text token. Original heuristic
+    offsets are retained as evidence; no timestamp is scaled or clipped to fit.
+    """
+    result = json.loads(json.dumps(payload))
+    previous_ms = 0
+    count = 0
+    for segment in result.get("transcription") or []:
+        for token in segment.get("tokens") or []:
+            text = str(token.get("text") or "").strip()
+            if not text or (text.startswith("[_") and text.endswith("]")):
+                continue
+            point = token.get("t_dtw")
+            if not isinstance(point, int) or isinstance(point, bool) or point < 0:
+                raise ValueError("DTW text token has no valid emission timestamp")
+            end_ms = point * 10
+            if end_ms < previous_ms or end_ms > audio_duration_ms:
+                raise ValueError("DTW emission timestamp is nonmonotonic or outside audio")
+            token["standard_offsets"] = token.get("offsets")
+            token["offsets"] = {"from": previous_ms, "to": end_ms}
+            previous_ms = end_ms
+            count += 1
+    if not count:
+        raise ValueError("DTW returned no timed text tokens")
+    result["timing_source"] = "dtw_emission_intervals"
+    return result
+
+
 def run_local_alignment(
     audio_path: Path,
     language_code: str,
@@ -688,12 +718,44 @@ def run_local_alignment(
     with output_json.open("r", encoding="utf-8") as handle:
         whisper_payload = json.load(handle)
 
-    summary = _build_scene_timings(
-        narration,
-        scenes,
-        whisper_payload,
-        audio_duration_ms,
-    )
+    try:
+        summary = _build_scene_timings(
+            narration, scenes, whisper_payload, audio_duration_ms,
+        )
+    except ValueError as exc:
+        if not str(exc).startswith(
+            "whisper lexical timing exceeds audio duration beyond tolerance:"
+        ):
+            raise
+        # One alternative alignment on the exact same audio. Do not retry
+        # content mismatches or relax the terminal-overrun acceptance gate.
+        standard_payload = whisper_payload
+        dtw_base = work_dir / "whisper-dtw"
+        subprocess.run(
+            [
+                str(WHISPER_CLI), "-m", str(WHISPER_MODEL),
+                "-f", str(wav_path), "-l", language_code,
+                "-sow", "-ojf", "-dtw", "small", "-nfa",
+                "-of", str(dtw_base),
+            ],
+            check=True, capture_output=True, text=True, timeout=240,
+        )
+        with dtw_base.with_suffix(".json").open("r", encoding="utf-8") as handle:
+            dtw_payload = json.load(handle)
+        def transcript_of(value):
+            return normalize_alignment_text("".join(
+                str(row.get("text") or "")
+                for row in value.get("transcription") or []
+            ))
+        if transcript_of(dtw_payload) != transcript_of(standard_payload):
+            raise ValueError("DTW retry changed the recognized transcript")
+        whisper_payload = _dtw_timed_payload(dtw_payload, audio_duration_ms)
+        summary = _build_scene_timings(
+            narration, scenes, whisper_payload, audio_duration_ms,
+        )
+        summary["timing_source"] = "dtw_emission_intervals"
+        summary["standard_timing_failure"] = str(exc)
+        whisper_payload["standard_pass"] = standard_payload
 
     return whisper_payload, summary
 
