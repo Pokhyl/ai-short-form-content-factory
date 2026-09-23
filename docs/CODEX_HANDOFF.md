@@ -1900,3 +1900,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - M6 v8, M8 v64, M9 v1 unchanged.
 - Publisher/Studio 200; no n8n/media-worker restart; supporting services healthy; active project executions 0.
 - Next: one fresh PL15 only.
+
+
+### M5 execution 9692 — final-duration prompt/validator mismatch
+
+- Job `4dc1af7d-0ec9-4af5-8557-e926beef4cac`; M4 PASS, M5 v120 FAIL, later stages absent.
+- Build Final Duration Repair: measured 12096 ms, target 15000 ms, target words 27, scene targets `[10,5,4,3,5]`.
+- Gemini response scene counts `[11,7,5,7,6]`; S1 violated PL15 max 10.
+- Prompt says target_words is a preference but omits hard 2-10 scene bound; validator correctly rejects >10.
+- Fix only prompt contract; do not weaken validator.

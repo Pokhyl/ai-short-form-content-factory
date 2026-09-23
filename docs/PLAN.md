@@ -926,3 +926,40 @@ Immediate next step:
 3. Follow only that job to terminal state.
 4. If it reaches M9 machine PASS, perform exact MP4 technical/audio/visual review before EN30.
 5. If it fails, checkpoint the exact new blocker before any new fix or retry.
+
+
+## Fresh PL15 on M5 v120 — execution 9692 failed; root cause proven
+
+Job: `4dc1af7d-0ec9-4af5-8557-e926beef4cac`
+
+Pipeline:
+- M4 PASS
+- M5 v120 execution `9692`: FAIL
+- M6/M7/M8/M9 did not run
+- script_run: `50024835-3e15-4405-b33c-6fa5ef2cec3a`
+- terminal error: `11 [line 251]`
+
+Exact final-duration evidence:
+- measured TTS: 12096 ms
+- target: 15000 ms
+- internal repair aim: 14600 ms
+- current narration: 22 words
+- target narration: about 27 words
+- builder target scene counts: `[10,5,4,3,5]`
+- validator PL15 hard scene bound: 2-10 words
+- Gemini returned scene counts: `[11,7,5,7,6]`
+- S1 response had 11 words.
+
+Confirmed contract defect:
+- `Build Final Duration Repair` correctly clamps calculated scene targets to max 10;
+- its prompt then says every per-scene `target_words` is only a preference and does not state the hard 2-10 scene bound;
+- Gemini therefore produced S1 with 11 words;
+- `Validate Final Duration Repair` correctly rejected it at the hard max check.
+
+Fix scope:
+1. Keep per-scene target_words as soft timing guidance.
+2. Add explicit HARD structural rule: every returned scene must remain within 2-`maxSceneWords` words.
+3. Do not weaken validator, semantic preservation, timing or sentence-continuity gates.
+4. Add exact 9692 regression.
+5. Focused/full tests, JSON/diff/Code-node checks.
+6. Checkpoint before M5-only deploy; no new PL15 before deploy.

@@ -1185,3 +1185,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M5 == Git; Publisher/Studio 200; n8n restart 0; media worker healthy restart 0.
 - Active project executions = 0.
 - Next: exactly one fresh PL15.
+
+
+## Current blocker: M5 execution 9692 — 2026-09-23
+
+- Fresh PL15 job `4dc1af7d-0ec9-4af5-8557-e926beef4cac` failed in `Validate Final Duration Repair`.
+- Builder targets were `[10,5,4,3,5]`; PL15 hard scene bound is 2-10 words.
+- Gemini returned scene counts `[11,7,5,7,6]`; S1 exceeded the hard bound.
+- Root cause is prompt/validator mismatch: prompt calls per-scene targets preferences but omits the absolute 2-10 hard bound.
+- Fix prompt contract only; keep validator fail-closed.

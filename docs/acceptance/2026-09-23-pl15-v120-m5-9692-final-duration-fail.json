@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-23",
+  "status": "pl15_v120_m5_9692_final_duration_contract_failure",
+  "job_id": "4dc1af7d-0ec9-4af5-8557-e926beef4cac",
+  "m5_execution_id": 9692,
+  "script_run_id": "50024835-3e15-4405-b33c-6fa5ef2cec3a",
+  "pipeline": {
+    "M4": "passed",
+    "M5": "failed",
+    "M6": "not_run",
+    "M7": "not_run",
+    "M8": "not_run",
+    "M9": "not_run"
+  },
+  "failure": "M5 script workflow failed: 11 [line 251]",
+  "failure_node": "Validate Final Duration Repair",
+  "validator_rule": "For PL15 every scene must contain 2-10 words; line 251 throws when a scene exceeds maxSceneWords=10.",
+  "build_final_duration": {
+    "measured_ms": 12096,
+    "target_ms": 15000,
+    "repair_target_ms": 14600,
+    "current_total_words": 22,
+    "target_total_words": 27,
+    "target_scene_word_counts": [10,5,4,3,5]
+  },
+  "gemini_response_scene_word_counts": [11,7,5,7,6],
+  "gemini_response_scene_1": "Nowoczesna elektrownia wodna gromadzi wodę w dużym zbiorniku usytuowanym za tamą.",
+  "root_cause": "Build Final Duration Repair computes per-scene targets clamped to maxSceneWords=10, but its prompt explicitly says each target_words value is only a preference and never states the validator's hard 2-10 words per-scene bound. Gemini therefore returned an 11-word scene, which the validator correctly rejected.",
+  "fix_scope": "Align the final-duration repair prompt with the existing validator by stating the hard per-scene 2-maxSceneWords bound while keeping per-scene target_words soft for semantic naturalness. Do not weaken validator or semantic gates.",
+  "next_step": "Add exact 9692 regression for prompt/validator contract, update Build Final Duration Repair prompt, run focused/full tests, checkpoint before M5-only deploy."
+}
