@@ -199,6 +199,21 @@ test('final duration builder tolerates skipped Probe 2 after semantic fallback',
   assert.match(out.user_message,/CURRENT MEASURED TTS: 13368 ms/);
 });
 
+test('9692 regression: late timing prompts enforce the PL15 hard scene bound while keeping targets as guidance',()=>{
+  for(const name of ['Build Final Duration Repair','Build Final Measured Correction']){
+    const out=runLateTimingBuilderWithSkippedProbes(name);
+    assert.ok(out.target_scene_word_counts.every(n=>n>=2&&n<=10),JSON.stringify(out));
+    assert.match(
+      out.user_message,
+      /HARD STRUCTURAL BOUND: every returned narration string must contain between 2 and 10 whitespace-separated words inclusive/
+    );
+    assert.match(
+      out.user_message,
+      /treat each target_words value as timing guidance rather than an exact count/
+    );
+  }
+});
+
 test('final measured correction tolerates skipped Probe 2 and Probe 3',()=>{
   const out=runLateTimingBuilderWithSkippedProbes('Build Final Measured Correction');
   assert.equal(out.script_run_id,'run');

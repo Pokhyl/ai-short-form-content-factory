@@ -1194,3 +1194,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Gemini returned scene counts `[11,7,5,7,6]`; S1 exceeded the hard bound.
 - Root cause is prompt/validator mismatch: prompt calls per-scene targets preferences but omits the absolute 2-10 hard bound.
 - Fix prompt contract only; keep validator fail-closed.
+
+
+## M5 9692 late-timing prompt fix tested — 2026-09-23
+
+- Both late-timing builders now expose the same hard scene bound that validators already enforce.
+- PL15 hard bound: 2-10 words per scene.
+- target_words remain soft timing guidance.
+- Focused 37/37, full 294/294, JSON/diff/59 Code nodes PASS.
+- Not production-complete until M5-only deploy is verified.

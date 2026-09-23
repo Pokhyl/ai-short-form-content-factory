@@ -1909,3 +1909,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Gemini response scene counts `[11,7,5,7,6]`; S1 violated PL15 max 10.
 - Prompt says target_words is a preference but omits hard 2-10 scene bound; validator correctly rejects >10.
 - Fix only prompt contract; do not weaken validator.
+
+
+### M5 9692 scene-bound contract fix validated — predeploy
+
+- Fixed prompt/validator mismatch in both late-timing builders.
+- PL15 prompts now explicitly enforce 2-10 words per returned scene while keeping target_words soft.
+- No validator or semantic/timing gate was weakened.
+- Validation: focused 37/37, full 294/294, M5 Code nodes 59/59, JSON/diff PASS.
+- Next: M5-only deploy, then exactly one fresh PL15.

@@ -963,3 +963,27 @@ Fix scope:
 4. Add exact 9692 regression.
 5. Focused/full tests, JSON/diff/Code-node checks.
 6. Checkpoint before M5-only deploy; no new PL15 before deploy.
+
+
+## M5 execution 9692 late-timing scene-bound fix validated
+
+Change:
+- `Build Final Duration Repair` and `Build Final Measured Correction` now explicitly state a HARD per-scene structural bound;
+- for PL15 every returned narration segment must remain within 2-10 whitespace-separated words;
+- per-scene `target_words` remain soft timing guidance inside that hard bound;
+- validator, semantic preservation, timing acceptance and narration-continuity rules are unchanged.
+
+Validation:
+- focused late-timing + semantic tests: 37/37 PASS;
+- full suite: 294/294 PASS;
+- M5 Code nodes: 59/59 syntax PASS;
+- workflow JSON parse: PASS;
+- `git diff --check`: PASS.
+
+Next:
+1. Commit/push this tested M5 fix.
+2. Verify active project executions = 0.
+3. Export published M5 v120 backup and capture non-M5 fingerprint.
+4. Deploy only M5; expect exactly v121.
+5. Verify live M5 == Git, non-M5 fingerprint unchanged, Publisher/Studio 200, no restart.
+6. Run exactly one fresh PL15 and follow it to terminal state.
