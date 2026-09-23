@@ -2030,3 +2030,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Published only `VideoM5Storyboard001`; active version `b54a2f65-7fd7-40f0-a803-12106aa408f7`.
 - `ai-short-form-n8n` restarted once because n8n CLI stated published changes require restart while running.
 - Published M5 matches Git for nodes/connections/settings. Next: one controlled Gemini-mode smoke job; do not start acceptance sequence until actual M8 Gemini evidence is verified.
+
+
+## 2026-09-23 — Gemini candidate-review production deployment
+- Gemini-only candidate eligibility fix is live. Metadata-mode selection remains unchanged.
+- Production backups: `.backups/m8-before-gemini-review-20260923-175157.json` SHA256 `46482f42900ce0f4a1313d51945af28c13061ad21ec6e8836a3d3b3d25b70a4e`; `.backups/factory-schema-before-gemini-review-20260923-175157.sql` SHA256 `17baaddf71ae9ce05ab8e5c80eb52421688affec2b0bfc8b7f78e3fee94deff5`.
+- Applied current `db/09-visuals.sql`; published only `VideoM8Visuals001`, active version `271d4c60-29b3-4ec9-b0e1-cf4f48baade3`; restarted only publisher n8n because CLI required it.
+- Live M8 published nodes/connections/settings match Git. Review helper behavior verified: accepted=0, semantic-soft=1, hard must-not=99, non-photo=99.
+- Controlled smoke job `dba2ef8f-84f6-4676-b75e-12d5b7d96dab` is the only post-fix test job. At last check M4 had succeeded and M5 was running. Do not create another test job; continue tracing this exact job.
