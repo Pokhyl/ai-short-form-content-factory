@@ -2009,3 +2009,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Manual S1 FAIL: small historical dam/weir does not visibly establish requested large reservoir.
 - Manual S5 FAIL: archival forest/survey tripod image contains no visible transformer/substation; catalog title supplied those terms.
 - Next blocker is generic Wikimedia catalog/context metadata being allowed to prove primary depiction in M8.
+
+### Selectable Gemini visual validation deployed — 2026-09-23
+- Added per-job `visual_validation_mode = metadata | gemini` from Studio/intake through M8.
+- `metadata` keeps the existing deterministic M8 path and does not call Gemini.
+- `gemini` evaluates up to 3 eligible image candidates per shot in one Gemini Vision request using `MEDIA_RESOLUTION_LOW`, fail-closed parsing, score >=70, and explicit must_show/must_not_show/intent checks.
+- Gemini validation evidence is persisted with the final visual selection; cross-scene provider-asset reuse remains blocked.
+- Production DB migration applied; media-worker preview endpoint deployed and live-tested; M3 v3, M8 v65, Self Test API v4 published.
+- Published target workflow exports match Git nodes/connections/settings; non-target workflow fingerprint remained unchanged.
+- Publisher restart was required once after CLI publish to register production webhooks; after restart M3 mode validation and latest-job mode output were verified.
+- Full Node suite before deployment: 316/316 PASS. Isolated n8n import of current M8: PASS. Active publisher executions after deployment: 0.
+- Next: one controlled non-acceptance Gemini-mode job to exercise the live credential/request/selection path before any acceptance run.

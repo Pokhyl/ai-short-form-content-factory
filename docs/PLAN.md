@@ -1360,3 +1360,21 @@ Isolated n8n validation checkpoint:
 - Production check immediately before deployment: no active `new/running/waiting` publisher executions; target workflow IDs remain `VideoM3Intake001`, `VideoM8Visuals001`, and `VideoSelfTestApi001`.
 - Studio is bind-mounted read-only from this repository into the live Caddy container, so the committed Studio selector source is already the file served by Caddy; no Caddy restart is required.
 - Next: production DB migrations, media-worker rebuild/recreate, then publish only M3/M8/Self-Test-API and verify exact live source/state before any job.
+
+Production deployment checkpoint — selectable Gemini visual validation:
+- Production DB migration applied successfully: jobs now persist `visual_validation_mode`; visual selections persist `validation_mode` and `validation_evidence`; Gemini candidate/commit functions are live.
+- media-worker rebuilt and recreated only for the bounded `/visual-previews` endpoint. Live image: `sha256:d24abec8545dbdbfe3d75bec7d370b728e043d4373e6d39544569d10a77cc54a`; restart count 0; health `healthy`; live `/worker/server.py` SHA matches Git source.
+- Live preview endpoint was exercised against a real Pexels preview and returned one bounded WebP preview successfully.
+- Published only target n8n workflows:
+  - M3 Intake v3;
+  - M8 Multi-Source Visuals v65;
+  - Self Test API v4.
+- Published exports for all three match Git exactly for nodes/connections/settings.
+- Non-target workflow fingerprint remained unchanged: `29|57e0fed4a6d13bed63ef6fb752071d64`.
+- Publisher n8n was restarted once only after CLI publish because production webhooks were not registered until restart. After restart:
+  - POST `/webhook/jobs` accepts `visual_validation_mode=gemini`;
+  - invalid mode rejects with the exact validation error;
+  - GET `/webhook/factory/latest` returns persisted `visual_validation_mode`.
+- Studio live HTML is serving the new visual-quality selector.
+- Active publisher executions after deployment: 0.
+- Next: one controlled non-acceptance Gemini-mode test job to exercise the actual M8 Gemini credential/request/selection path. Poll in short verified steps; no long blind wait.
