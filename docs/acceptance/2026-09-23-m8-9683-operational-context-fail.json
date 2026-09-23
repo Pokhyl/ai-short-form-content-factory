@@ -1,0 +1,43 @@
+{
+  "date": "2026-09-23",
+  "status": "m8_9683_operational_context_failure_confirmed",
+  "job_id": "a6d8d4dc-c30c-41ef-b816-0301fdfd1cda",
+  "m8_execution_id": 9683,
+  "visual_run_id": "02a9de5e-17f1-49b1-b51b-e575ef1d0bc4",
+  "production_versions": {
+    "M5": {"versionCounter": 119, "activeVersionId": "bad8d367-3399-4ada-87c4-3a6d6c044b62"},
+    "M6": {"versionCounter": 8, "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"},
+    "M8": {"versionCounter": 63, "activeVersionId": "7256ee89-8b9a-47df-bdc9-66bd2136df35"},
+    "M9": {"versionCounter": 1, "activeVersionId": "5b6c937c-1767-4c3e-99c4-31ea38a26961"}
+  },
+  "pipeline": {
+    "M4": "passed",
+    "M5": "passed",
+    "M6": "passed",
+    "M7": "passed",
+    "M8": "failed",
+    "M9": "not_run"
+  },
+  "failure": "M8 visuals failed: no compliant relevant visual candidate for shot S4-A",
+  "eligible_counts": {"S1": 10, "S2": 2, "S3": 2, "S4": 0, "S5": 3},
+  "s4_contract": {
+    "narration": "który produkuje prąd,",
+    "visual_intent": "electric power generation equipment in hydro plant",
+    "must_show": ["electric generator"],
+    "queries_en": [
+      "electric power generation hydro plant",
+      "power generator equipment",
+      "electric generator"
+    ]
+  },
+  "demonstrated_candidate": {
+    "provider": "wikimedia",
+    "provider_asset_id": "135264822",
+    "metadata_evidence": "Wienerbruck hydro power plant, Generator 2 ... in working condition; category Hydroelectric generators",
+    "score": 81,
+    "rejection_reason": "missing_operational_setting_context"
+  },
+  "root_cause": "Wikimedia short direct caption is intentionally available as secondary/context evidence, but operational-setting validation checks only strongSet (title/object/categories) instead of context evidence. Therefore explicit plant/working-condition evidence in the direct caption is ignored.",
+  "fix_scope": "M8 scorer context/lifecycle evidence only; primary-subject proof, must_show, domain, thresholds and retrieval planning remain unchanged.",
+  "next_step": "Add exact regression including disused negative, use combined strong+secondary metadata only for operational context/lifecycle, run focused/full/9229 regressions, then checkpoint before any deploy."
+}

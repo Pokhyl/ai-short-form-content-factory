@@ -706,3 +706,48 @@ After all four pass:
 - record final evidence;
 - create final Git checkpoint/tag;
 - stop development.
+
+## Fresh PL15 v119/v63 failure — M8 execution 9683
+
+Job: `a6d8d4dc-c30c-41ef-b816-0301fdfd1cda`
+
+Pipeline:
+- M4 PASS
+- M5 execution 9680 on v119: PASS
+- M6 execution 9681 on v8: PASS
+- M7 execution 9682: PASS
+- M8 execution 9683 on v63: FAIL
+- M9 did not run
+- visual_run: `02a9de5e-17f1-49b1-b51b-e575ef1d0bc4`
+
+Eligible pools:
+- S1: 10
+- S2: 2
+- S3: 2
+- S4: 0
+- S5: 3
+
+Exact S4:
+- narration: `który produkuje prąd,`
+- visual intent: `electric power generation equipment in hydro plant`
+- must_show: `electric generator`
+- provider searches completed 9/9 for S4.
+
+Demonstrated valid-context candidate:
+- Wikimedia `135264822`
+- direct caption states Wienerbruck hydro power plant / Generator 2 / `in working condition`
+- category includes `Hydroelectric generators`
+- current scorer: 81, rejected only for `missing_operational_setting_context`.
+
+Confirmed code defect:
+- Wikimedia intentionally exposes a short direct caption through secondary/context metadata;
+- operational-setting validation checks only `strongSet` (title/object/categories);
+- therefore explicit plant/working-condition context in the direct caption is ignored.
+- Primary depiction gates are not the problem and must not be weakened.
+
+Next:
+1. Add exact 9683 positive regression and a `disused` negative.
+2. Use combined strong + secondary metadata only for operational location/lifecycle evidence.
+3. Keep primary subject, must_show, domain, thresholds and retrieval unchanged.
+4. Focused tests -> full suite -> deterministic 9229 replay -> diff/JSON checks.
+5. No new PL15 before fix is tested, checkpointed and deployed.

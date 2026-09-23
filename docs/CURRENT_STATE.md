@@ -1113,3 +1113,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - M6 v8 / M8 v63 / M9 v1 unchanged.
 - Live M5 == Git and non-M5 fingerprint unchanged.
 - Next: one fresh PL15 and full manual acceptance.
+
+
+## Current blocker: M8 execution 9683 — 2026-09-23
+
+- Post-v119 PL15 job `a6d8d4dc-c30c-41ef-b816-0301fdfd1cda`.
+- M4/M5/M6/M7 passed; M8 v63 execution `9683` failed S4-A; M9 did not run.
+- Eligible pools: S1=10, S2=2, S3=2, S4=0, S5=3.
+- Wikimedia `135264822` is a hydro generator whose direct caption explicitly says `hydro power plant` and `in working condition`, but it is rejected only as `missing_operational_setting_context`.
+- Root cause: the scorer has secondary/context metadata for short direct captions, but operational-setting checks use only strong primary metadata.
+- Fix scope is operational context/lifecycle evidence only. Do not weaken primary depiction, must_show, domain or score thresholds.
+- Evidence: `docs/acceptance/2026-09-23-m8-9683-operational-context-fail.json`.

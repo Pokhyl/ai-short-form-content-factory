@@ -1828,3 +1828,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - M6 v8 / M8 v63 / M9 v1 unchanged.
 - Live M5 == Git; Publisher/Studio 200; n8n restart 0; worker healthy restart 0.
 - Next: exactly one fresh PL15.
+
+
+### Fresh PL15 v119/v63 — M8 9683 operational-context failure — 2026-09-23
+
+- Job `a6d8d4dc-c30c-41ef-b816-0301fdfd1cda`: M4/M5/M6/M7 PASS, M8 v63 execution `9683` FAIL, M9 absent.
+- visual_run `02a9de5e-17f1-49b1-b51b-e575ef1d0bc4`; eligible S1=10, S2=2, S3=2, S4=0, S5=3.
+- S4 requires an electric generator in a hydro plant.
+- Wikimedia `135264822` has direct caption `Wienerbruck hydro power plant, Generator 2 ... in working condition` and Hydroelectric generators category, but current scorer rejects it only for `missing_operational_setting_context`.
+- Exact defect: Wikimedia short direct caption is already designated secondary/context evidence, yet operational-setting validation consults only strong title/object/category metadata.
+- Planned scoped fix: combine strong + secondary metadata only for operational location/lifecycle checks; keep primary depiction/domain/must_show thresholds unchanged; add `disused` negative regression.
+- Do not start another acceptance job before this blocker is tested and deployed.
