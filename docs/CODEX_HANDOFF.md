@@ -1589,3 +1589,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Regression reproduces the missing repair-validation branch and confirms unusable timing-repair output still falls back correctly.
 - Focused timing 16/16 PASS; full suite 268/268 PASS; static checks PASS.
 - Next: M5-only deploy, then one fresh PL15.
+
+### M5 v114 deployed — 2026-09-23
+
+- Branch-safe precision fallback fix deployed only to M5.
+- Before: v113 `8e841105-87de-4816-8a15-224ec30b4350`.
+- After: v114 `34b07b1f-2b22-4c6c-a68e-54e5e05fab22`.
+- Backup: `.backups/m5-before-branch-safe-20260923-040114.json`.
+- Non-M5 fingerprint unchanged: `31|6d5bcd9e4ad7e94f6f9907f52426c741`.
+- M6 remained v8; M8 remained v62.
+- Live M5 core == Git; Publisher/Studio 200; n8n restart 0; worker healthy restart 0.
+- Next: exactly one fresh PL15.

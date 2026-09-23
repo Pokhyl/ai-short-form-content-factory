@@ -955,3 +955,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Local fix uses guaranteed `Normalize Timing Probe.storyboard` instead.
 - Focused timing 16/16 PASS; full suite 268/268 PASS.
 - Production remains M5 v113 / M6 v8 / M8 v62 until deploy.
+
+## M5 v114 deployed — 2026-09-23
+
+- M5 v114 activeVersionId `34b07b1f-2b22-4c6c-a68e-54e5e05fab22`.
+- M6 v8 and M8 v62 unchanged.
+- Non-M5 workflow fingerprint unchanged.
+- Live M5 == Git; Publisher/Studio 200; no restarts.
+- Next: exactly one fresh PL15.

@@ -228,115 +228,15 @@ M8 v62 deploy verification:
 - n8n restart count 0
 - media worker healthy, restart count 0
 
-## Latest fresh PL15 result
-
-Job: `5429bbe8-9b13-4fe6-b3f4-9b6c36d5a9dc`
-
-Pipeline result:
-- M4 PASS
-- M5 v111 FAIL, execution `9609`
-- M6/M8/M9 did not run
-- script_run `576153a6-ed87-4c1f-ac4a-c894b4169fa7`
-- terminal reason: `water turbine -> electric generator [line 588]`
-
-Exact storyboard evidence:
-- S3 narration: `na łopatki turbiny,`
-- S3 visual primary: `water turbine`
-- S4 narration: `która wprawia w ruch generator`
-- S4 visual primary: `electric generator`
-
-Root cause:
-- current anaphoric visual guard requires every scene beginning with an inherited referent to keep the previous scene primary;
-- that is too strict when the current narration segment explicitly names a new concrete object;
-- here Polish `która` refers to the turbine, but `generator` is explicitly named in the same segment, so focusing the S4 visual on the generator is semantically grounded;
-- the previous bad case `Który wytwarza prąd.` -> `power transformer` remains invalid because transformer is not named in that segment.
-
-No new PL15 may be started until this M5 guard is corrected and verified.
-
-## M5 anaphoric explicit-object fix tested locally
-
-Source:
-- job `5429bbe8-9b13-4fe6-b3f4-9b6c36d5a9dc`
-- M5 execution `9609`
-- old failure: `water turbine -> electric generator [line 588]`
-
-Corrected rule:
-- an anaphoric scene may keep the previous visual primary; OR
-- may switch to a new concrete primary only when that primary is explicitly named in the current narration segment;
-- switching to an unmentioned object remains fail-closed.
-
-Exact replay:
-- provider calls: 0
-- exact saved repair response from execution 9609
-- result: PASS
-- S3: `na łopatki turbiny,` -> `water turbine`
-- S4: `która wprawia w ruch generator` -> `electric generator`
-- 5 scenes / 5 shots / 23 words
-
-Preserved regression:
-- `Który wytwarza prąd.` cannot switch generator -> transformer because transformer is not named in that narration segment.
-
-Validation:
-- focused scene-segment tests: 10/10 PASS
-- all three storyboard validators contain the corrected rule
-- full suite: 266/266 PASS
-- workflow JSON/diff checks: PASS
-
-The M5 explicit-object anaphora fix is now deployed and verified live.
+## M5 9617 branch-safe precision fallback deployed
 
 Production:
-- M5 v112: `d7eab2c2-c0a6-4258-9c17-4a28a706a701`
-- M6 v8: `0bcabe39-ae90-42fe-842b-8a56ad238709`
-- M8 v62: `90329f54-40fd-4382-92fd-2fd1e9ecea01`
-
-M5 v112 deploy verification:
-- backup: `.backups/m5-before-anaphora-explicit-20260922-222941.json`
-- non-M5 workflow fingerprint before/after: `31|6d5bcd9e4ad7e94f6f9907f52426c741`
-- live M5 nodes/connections/settings == Git: PASS
-- Publisher 200
-- Studio 200
-- n8n restart count 0
-- media worker healthy, restart count 0
-
-## Latest fresh PL15 result
-
-Job: `d74ebc77-dfe1-4440-8d06-357b584785d2`
-
-Pipeline:
-- M4 PASS
-- M5 v112 FAIL, execution `9613`
-- M6/M8/M9 did not run
-- script_run `160b2de8-16ff-4e83-97d0-8d19fdb6a757`
-
-Exact continuity:
-- S3 narration: `Następnie generator wytwarza prąd elektryczny,`
-- S3 visual primary: `electrical generator`
-- S4 narration: `który trafia do sieci`
-- S4 attempted visual primary: transformer/substation + transmission lines
-
-New root cause:
-- the anaphoric guard assumes the next relative pronoun refers to the previous scene's visual primary;
-- here the previous narration introduces `prąd elektryczny` after `generator`, so Polish `który` refers to the electric current, not the generator;
-- forcing generator as the inherited visual subject is therefore grammatically wrong.
-
-Required refinement:
-- determine whether the previous visual primary is actually the likely terminal antecedent in the previous narration;
-- enforce inherited-primary preservation only when that primary is the terminal/last grounded referent, or when lexical evidence is unavailable and fail-closed behavior is required;
-- if the previous visual primary is followed by later lexical content, do not assume the next anaphor refers to it;
-- preserve old regression `... generator, / Który wytwarza prąd.` -> transformer REJECT;
-- preserve 9609 regression `... turbiny, / która ... generator` -> generator PASS.
-
-No new PL15 until this M5 refinement is tested/deployed.
-
-## M5 9613 antecedent-position fix deployed
-
-Production:
-- M5 v113: `8e841105-87de-4816-8a15-224ec30b4350`
+- M5 v114: `34b07b1f-2b22-4c6c-a68e-54e5e05fab22`
 - M6 v8: `0bcabe39-ae90-42fe-842b-8a56ad238709`
 - M8 v62: `90329f54-40fd-4382-92fd-2fd1e9ecea01`
 
 Deploy verification:
-- published backup: `.backups/m5-before-antecedent-20260923-035512.json`
+- published backup: `.backups/m5-before-branch-safe-20260923-040114.json`
 - non-M5 workflow fingerprint before/after: `31|6d5bcd9e4ad7e94f6f9907f52426c741`
 - live M5 nodes/connections/settings == Git: PASS
 - Publisher 200
@@ -344,58 +244,20 @@ Deploy verification:
 - n8n restart count 0
 - media worker healthy, restart count 0
 
-Validated fix:
-- exact 9613 antecedent-position regression PASS;
-- old generator -> transformer bad case remains REJECT;
-- execution 9609 explicit generator switch remains PASS;
-- focused 11/11 PASS;
-- full suite 267/267 PASS.
-
-## Latest fresh PL15 result
-
-Job: `a3da9db9-d818-4a83-a217-48ff080637f1`
-
-Pipeline:
-- M4 PASS
-- M5 v113 FAIL, execution `9617`
-- M6/M8/M9 did not run
-- script_run `8a92462c-bc7b-431f-9873-f6c256e37d66`
-- terminal reason: `Node 'Validate Repaired Storyboard' hasn't been executed`
-
-Exact root cause:
-- `Build Timing Precision Retry` eagerly read `Validate Repaired Storyboard.storyboard` as its fallback;
-- in this job the initial storyboard was valid, so that repair-validation branch never executed;
-- `Normalize Timing Probe.storyboard` had already executed and contained the exact validated storyboard that actually entered TTS;
-- therefore the precision retry depended on a branch-specific node unnecessarily.
-
-## M5 9617 branch-safe precision fallback tested locally
-
-Fix:
-- `Build Timing Precision Retry` now uses `Normalize Timing Probe.storyboard` as the fallback source;
-- this source is guaranteed to exist before any timing repair path;
-- it preserves the actual validated storyboard that entered TTS regardless of whether initial storyboard repair branches executed.
-
-Regression:
-- exact 9617 branch condition is reproduced by omitting `Validate Repaired Storyboard` from the test fixture;
-- precision retry still builds successfully;
-- unusable timing-repair root falls back to the measured valid storyboard.
-
-Validation:
-- focused timing tests: 16/16 PASS;
-- full suite: 268/268 PASS;
-- `git diff --check`: PASS;
-- workflow JSON parse: PASS.
+Validation before deploy:
+- focused timing 16/16 PASS;
+- full suite 268/268 PASS;
+- exact 9617 missing-branch regression PASS.
 
 ## Immediate next step
 
-1. Commit/push the tested 9617 fix and evidence.
-2. Read this PLAN again before production change.
-3. Verify active project execution count = 0.
-4. Export published M5 backup and fingerprint all non-M5 workflows.
-5. Deploy ONLY M5.
-6. Verify live M5 == Git, M5 version increments exactly once, non-M5 fingerprint unchanged, Publisher/Studio 200, and service health/restarts unchanged.
-7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
-8. Run exactly one fresh PL15.
+1. Read this PLAN before production action.
+2. Commit/push the deployment checkpoint.
+3. Verify Git clean and active project execution count = 0.
+4. Run exactly ONE fresh PL15 on M5 v114 / M6 v8 / M8 v62.
+5. Follow only that job to terminal state.
+6. If it reaches M9 PASS, inspect the actual rendered MP4 technically, audio-wise, and scene-by-scene visually before EN30.
+7. If it fails, fix only that exact demonstrated blocker from saved execution data.
 
 ## Acceptance sequence after PL15
 
