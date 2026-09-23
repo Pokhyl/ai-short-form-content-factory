@@ -1,5 +1,9 @@
 # AI Short-Form Content Factory — Production Plan
 
+## Current v69 smoke job — 2026-09-23
+
+Job 19044bf3-ba7f-43e3-85cc-87a70463e249 created via M3 (topic how does a lighthouse work?, en, 15s, visual_validation_mode gemini). M8 v69 active d073d7d8-3490-468a-bb6a-79771d367059. Creation returned HTTP 201. NEXT: launch this exact job once via /factory/run and trace it to terminal. Do not create another job while unresolved.
+
 ## M8 v69 structured-output fix deployed — 2026-09-23
 
 - Source commit c6f0445 is published only to VideoM8Visuals001 as v69, activeVersionId d073d7d8-3490-468a-bb6a-79771d367059.
