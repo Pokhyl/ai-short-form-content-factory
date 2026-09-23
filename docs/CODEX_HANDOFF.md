@@ -1839,3 +1839,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Exact defect: Wikimedia short direct caption is already designated secondary/context evidence, yet operational-setting validation consults only strong title/object/category metadata.
 - Planned scoped fix: combine strong + secondary metadata only for operational location/lifecycle checks; keep primary depiction/domain/must_show thresholds unchanged; add `disused` negative regression.
 - Do not start another acceptance job before this blocker is tested and deployed.
+
+
+### M8 9683 operational-context fix validated — predeploy — 2026-09-23
+
+- Root cause confirmed: Wikimedia direct caption was already designated secondary/context evidence, but operational-setting validation ignored it.
+- Scoped fix adds explicit context evidence while keeping primary depiction on strong metadata.
+- Pixabay/Pexels operational evidence source remains unchanged.
+- Added fail-closed lifecycle conflicts for disused/decommissioned/abandoned/inactive/retired machinery.
+- Exact 9683 positive candidate passes; disused negative and caption-only-primary negative reject.
+- Validation: focused 42/42, full 293/293, deterministic 9229 12/12, M8 Code nodes 10/10, JSON/diff PASS.
+- 9229 assets and eligible pools remain exactly unchanged.
+- Next: commit/push, M8-only deploy and exactly one fresh PL15.

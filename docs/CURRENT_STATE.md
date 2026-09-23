@@ -1124,3 +1124,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Root cause: the scorer has secondary/context metadata for short direct captions, but operational-setting checks use only strong primary metadata.
 - Fix scope is operational context/lifecycle evidence only. Do not weaken primary depiction, must_show, domain or score thresholds.
 - Evidence: `docs/acceptance/2026-09-23-m8-9683-operational-context-fail.json`.
+
+
+## M8 9683 operational-context fix tested — 2026-09-23
+
+- Fix is limited to operational setting/lifecycle evidence.
+- Wikimedia may use its concise direct caption as context evidence, but not as primary depiction proof.
+- Pixabay/Pexels operational evidence behavior is unchanged.
+- `disused/decommissioned/abandoned/inactive/retired` explicitly conflict with an operational machinery shot.
+- Exact positive/negative 9683 regressions PASS.
+- Focused 42/42, full 293/293, 9229 replay 12/12 PASS.
+- 9229 selected assets and eligible counts unchanged.
+- JSON/diff/M8 Code-node syntax PASS.
+- Not production-complete until M8-only deploy is verified.

@@ -1,0 +1,42 @@
+{
+  "date": "2026-09-23",
+  "status": "m8_9683_operational_context_fix_validated_predeploy",
+  "source_job_id": "a6d8d4dc-c30c-41ef-b816-0301fdfd1cda",
+  "source_execution_id": 9683,
+  "source_visual_run_id": "02a9de5e-17f1-49b1-b51b-e575ef1d0bc4",
+  "production_m8_before_deploy": {
+    "versionCounter": 63,
+    "activeVersionId": "7256ee89-8b9a-47df-bdc9-66bd2136df35"
+  },
+  "fix_scope": "M8 operational context/lifecycle evidence only",
+  "changes": [
+    "Pixabay and Pexels operational context behavior remains on strong metadata only",
+    "Wikimedia operational context combines strong metadata with already-existing concise secondary/direct-caption metadata",
+    "primary depiction, must_show, domain and scoring thresholds remain unchanged",
+    "disused/decommissioned/abandoned/inactive/retired lifecycle evidence is an explicit non-operational conflict"
+  ],
+  "exact_9683_regression": {
+    "positive": "Wikimedia 135264822 hydro generator in working condition is accepted by operational-context gate",
+    "negative": "same generator context marked disused remains rejected",
+    "primary_proof_guard": "caption-only generator mention still cannot prove the primary depicted generator"
+  },
+  "tests": {
+    "focused": "42/42 PASS",
+    "full_suite": "293/293 PASS",
+    "m8_9229_replay": "12/12 PASS",
+    "m8_code_nodes": "10/10 syntax PASS",
+    "workflow_json_parse": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "m8_9229_expected_unchanged": {
+    "selected": [
+      ["S1-A", "wikimedia", "172815415"],
+      ["S2-A", "wikimedia", "39943534"],
+      ["S3-A", "pexels", "12270481"],
+      ["S4-A", "wikimedia", "34396499"],
+      ["S5-A", "wikimedia", "27207173"]
+    ],
+    "eligible_counts": [1,5,5,8,4]
+  },
+  "next_step": "Commit/push, then M8-only deployment with zero active project executions, backup, protected non-M8 fingerprint and live verification."
+}

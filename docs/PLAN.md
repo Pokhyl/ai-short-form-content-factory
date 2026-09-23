@@ -751,3 +751,36 @@ Next:
 3. Keep primary subject, must_show, domain, thresholds and retrieval unchanged.
 4. Focused tests -> full suite -> deterministic 9229 replay -> diff/JSON checks.
 5. No new PL15 before fix is tested, checkpointed and deployed.
+
+
+## M8 execution 9683 operational-context fix validated
+
+Scoped fix:
+- operational context/lifecycle checks now use an explicit `contextSet`;
+- Pixabay and Pexels keep their previous operational-context evidence source (`strongSet`);
+- Wikimedia alone combines `strongSet` with the already-existing concise direct-caption/secondary metadata;
+- primary depiction, must_show, domain context, visual-detail and relevance thresholds are unchanged;
+- `disused/decommissioned/abandoned/inactive/retired` are explicit non-operational lifecycle conflicts.
+
+Exact regression:
+- Wikimedia `135264822` with direct caption `hydro power plant ... in working condition` now satisfies the S4 operational setting;
+- equivalent metadata marked `disused` is rejected;
+- caption-only mention of a generator still cannot prove the primary depicted subject.
+
+Validation:
+- focused operational/context + 9601 + 9640 tests: 42/42 PASS;
+- full suite: 293/293 PASS;
+- deterministic 9229 replay: 12/12 PASS;
+- selected 9229 assets unchanged: 172815415 / 39943534 / Pexels 12270481 / 34396499 / 27207173;
+- 9229 eligible counts unchanged: 1 / 5 / 5 / 8 / 4;
+- M8 Code nodes: 10/10 syntax PASS;
+- workflow JSON parse: PASS;
+- `git diff --check`: PASS.
+
+Next:
+1. Commit/push this tested M8 fix.
+2. Verify active project executions = 0.
+3. Export published M8 backup and capture non-M8 fingerprint.
+4. Deploy only M8; version must increment exactly once.
+5. Verify live M8 == Git, non-M8 fingerprint unchanged, Publisher/Studio 200, containers healthy, no restart.
+6. Then run exactly one fresh PL15.
