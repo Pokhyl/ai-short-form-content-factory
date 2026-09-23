@@ -1560,3 +1560,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Required refinement: enforce that inheritance only when the previous visual primary is the likely terminal antecedent of the previous narration. If later lexical content follows the previous primary, do not force that primary onto the anaphoric scene.
 - Keep fail-closed behavior when the previous primary cannot be lexically located.
 - Next: deterministic 9613 regression, tests, M5-only deploy.
+
+### M5 execution 9613 antecedent-position fix tested — 2026-09-23
+
+- Job `d74ebc77-dfe1-4440-8d06-357b584785d2`, M5 execution `9613`, production M5 v112.
+- Failure: S3 `Następnie generator wytwarza prąd elektryczny,` followed by S4 `który trafia do sieci`; the old guard wrongly treated `generator` as the inherited antecedent although the later lexical referent is `prąd elektryczny`.
+- Fix applied to all three storyboard validators: inherited-primary preservation is enforced only when the previous visual primary is the terminal lexical referent, or when lexical grounding cannot be located and conservative fail-closed behavior is required.
+- Preserved: old generator -> transformer bad case stays rejected; 9609 explicit generator switch stays accepted.
+- Validation: focused 11/11 PASS; full suite 267/267 PASS; diff/JSON checks PASS.
+- Next: M5-only deploy after active project execution count is zero, then one fresh PL15.

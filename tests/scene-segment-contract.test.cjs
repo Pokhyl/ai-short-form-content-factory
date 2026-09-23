@@ -116,7 +116,53 @@ test('anaphoric scene cannot switch visual primary away from previous scene subj
 
   assert.throws(
     ()=>run9537(fixture),
-    /anaphoric scene visual subject must preserve previous primary or explicitly name the new primary/
+    /anaphoric scene visual subject must preserve the likely inherited previous primary or explicitly name a new current primary/
+  );
+});
+
+test('9613 regression: leading pronoun may refer to a later previous-clause noun instead of previous visual primary',()=>{
+  const fixture=JSON.parse(
+    fs.readFileSync('tests/fixtures/m5-9537-scene-segments.json')
+  );
+  const parsed=JSON.parse(
+    fixture.response.body.candidates[0].content.parts[0].text
+  );
+
+  parsed.scenes[2].narration=
+    'Następnie generator wytwarza prąd elektryczny,';
+  parsed.scenes[2].shots[0].visual_intent=
+    'Large electrical generator driven by turbine in power station';
+  parsed.scenes[2].shots[0].must_show=[
+    'electrical generator',
+    'turbine shaft'
+  ];
+  parsed.scenes[2].shots[0].queries_en=[
+    'hydroelectric generator machine',
+    'electric generator in power plant',
+    'electrical generator'
+  ];
+
+  parsed.scenes[3].narration='który trafia do sieci';
+  parsed.scenes[3].shots[0].visual_intent=
+    'Power substation equipment and transmission lines connected to power grid';
+  parsed.scenes[3].shots[0].must_show=[
+    'power substation',
+    'transmission lines'
+  ];
+  parsed.scenes[3].shots[0].queries_en=[
+    'power substation equipment',
+    'electrical transmission grid',
+    'power substation'
+  ];
+
+  parsed.narration=parsed.scenes.map(s=>s.narration).join(' ');
+  fixture.response.body.candidates[0].content.parts[0].text=
+    JSON.stringify(parsed);
+
+  const out=run9537(fixture);
+  assert.equal(
+    out.storyboard.scenes[3].shots[0].must_show[0],
+    'power substation'
   );
 });
 
@@ -214,8 +260,9 @@ test('repair prompts preserve continuous visual-cut contract and resolve inherit
   for(const name of ['Build Storyboard Repair','Build Storyboard Repair 2']){
     const code=byName[name].parameters.jsCode;
     assert.match(code,/MAY start as a continuation fragment/);
-    assert.match(code,/only that explicitly named object may become the new visual primary/);
-    assert.match(code,/never switch to an unmentioned object/);
+    assert.match(code,/resolve its actual antecedent from the previous narration/);
+    assert.match(code,/do not force the previous shot primary/);
+    assert.match(code,/never use an object unrelated to the actual antecedent\/current clause/);
     assert.doesNotMatch(code,/must not start as a continuation fragment/);
   }
 });

@@ -931,3 +931,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - M8 v62 was not reached.
 - Current blocker: M5 assumes a leading relative pronoun refers to previous visual primary even when a later noun/result in previous narration is the actual antecedent.
 - No new PL15 until deterministic antecedent-position refinement is tested and deployed.
+
+## M5 9613 antecedent-position fix tested — 2026-09-23
+
+- Current production: M5 v112 / M6 v8 / M8 v62.
+- Local M5 fix handles a leading anaphor whose true antecedent is a later noun in the previous narration cut rather than the previous visual primary.
+- Exact 9613 regression PASS.
+- Old transformer rejection and 9609 explicit-object regression preserved.
+- Focused 11/11 PASS; full suite 267/267 PASS.
+- Fix not deployed yet.

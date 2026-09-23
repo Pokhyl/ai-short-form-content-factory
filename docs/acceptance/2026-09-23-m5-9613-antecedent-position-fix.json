@@ -1,0 +1,37 @@
+{
+  "date": "2026-09-23",
+  "status": "tested_not_deployed",
+  "job_id": "d74ebc77-dfe1-4440-8d06-357b584785d2",
+  "m5_execution_id": 9613,
+  "production_at_failure": {
+    "versionCounter": 112,
+    "activeVersionId": "d7eab2c2-c0a6-4258-9c17-4a28a706a701"
+  },
+  "root_cause": {
+    "previous_scene_narration": "Następnie generator wytwarza prąd elektryczny,",
+    "previous_visual_primary": "electrical generator",
+    "next_scene_narration": "który trafia do sieci",
+    "explanation": "The leading relative pronoun refers to the later noun 'prąd elektryczny', so the previous visual primary is not the terminal antecedent."
+  },
+  "fix": {
+    "scope": "three M5 storyboard validators",
+    "rule": "Enforce inherited visual primary only when the previous visual primary is the terminal lexical referent; remain conservative when it cannot be lexically located.",
+    "preserved_regressions": [
+      "generator -> transformer on 'Który wytwarza prąd.' remains rejected",
+      "9609 turbine -> explicitly named generator remains accepted"
+    ]
+  },
+  "tests": {
+    "focused": {
+      "passed": 11,
+      "failed": 0
+    },
+    "full_suite": {
+      "passed": 267,
+      "failed": 0
+    },
+    "diff_check": "PASS",
+    "workflow_json": "PASS"
+  },
+  "next_step": "Commit/push, deploy only M5 after active=0, verify live equality and non-M5 fingerprint, then one fresh PL15."
+}
