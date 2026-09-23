@@ -1918,3 +1918,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - No validator or semantic/timing gate was weakened.
 - Validation: focused 37/37, full 294/294, M5 Code nodes 59/59, JSON/diff PASS.
 - Next: M5-only deploy, then exactly one fresh PL15.
+
+
+### M5 v121 deployed — late-timing scene-bound fix — 2026-09-23
+
+- Fix commit `48b78dc903689e7ca7f1c5a0bc0e15468a573cb1`.
+- Published only M5: v121 `692ceedd-a51c-45c5-bf1e-c85814129e4d`.
+- Backup `.backups/m5-before-9692-scene-bound-20260923-133216.json`, SHA256 `92098a8015c357dfb373dba9f2f84899e22f0913e85401369c12f238183e9f51`.
+- Non-M5 fingerprint unchanged: `31|cfacbe4e094739b106490c3c93ec2506`.
+- M6 v8, M8 v64, M9 v1 unchanged.
+- Live M5 == Git; Publisher/Studio 200; no n8n/media-worker restart; supporting services healthy; active executions 0.
+- Next: one fresh PL15 only.

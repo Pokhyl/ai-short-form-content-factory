@@ -1203,3 +1203,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - target_words remain soft timing guidance.
 - Focused 37/37, full 294/294, JSON/diff/59 Code nodes PASS.
 - Not production-complete until M5-only deploy is verified.
+
+
+## M5 v121 deployed and verified — 2026-09-23
+
+- M5 v121 activeVersionId `692ceedd-a51c-45c5-bf1e-c85814129e4d`.
+- M6 v8 / M8 v64 / M9 v1 unchanged.
+- Backup `.backups/m5-before-9692-scene-bound-20260923-133216.json`, SHA256 `92098a8015c357dfb373dba9f2f84899e22f0913e85401369c12f238183e9f51`.
+- Other 31 workflows unchanged by fingerprint `31|cfacbe4e094739b106490c3c93ec2506`.
+- Live M5 == Git; Publisher/Studio 200; restart 0; supporting services healthy.
+- Active project executions = 0.
+- Next: exactly one fresh PL15.

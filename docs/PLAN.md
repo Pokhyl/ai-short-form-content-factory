@@ -987,3 +987,30 @@ Next:
 4. Deploy only M5; expect exactly v121.
 5. Verify live M5 == Git, non-M5 fingerprint unchanged, Publisher/Studio 200, no restart.
 6. Run exactly one fresh PL15 and follow it to terminal state.
+
+
+## M5 v121 late-timing scene-bound fix deployed and verified
+
+Production:
+- M5 v121 / `692ceedd-a51c-45c5-bf1e-c85814129e4d`
+- M6 v8 / `0bcabe39-ae90-42fe-842b-8a56ad238709`
+- M8 v64 / `88b9f81a-6d41-452b-8a35-082b7c088006`
+- M9 v1 / `5b6c937c-1767-4c3e-99c4-31ea38a26961`
+
+Deploy verification:
+- M5 incremented exactly once: v120 -> v121.
+- Backup: `.backups/m5-before-9692-scene-bound-20260923-133216.json`.
+- Backup SHA256: `92098a8015c357dfb373dba9f2f84899e22f0913e85401369c12f238183e9f51`.
+- non-M5 fingerprint unchanged: `31|cfacbe4e094739b106490c3c93ec2506`.
+- live M5 nodes/connections/settings == Git: PASS.
+- Publisher 200; Studio 200.
+- n8n restart 0; media worker healthy restart 0.
+- Postgres/SearXNG healthy.
+- active project executions = 0.
+
+Immediate next step:
+1. Verify Git clean and active project executions = 0.
+2. Run exactly ONE fresh PL15 on v121/v64.
+3. Follow only that job to terminal state.
+4. If machine QA passes, inspect exact MP4 technically and manually before EN30.
+5. If it fails, checkpoint the exact blocker before any new change.
