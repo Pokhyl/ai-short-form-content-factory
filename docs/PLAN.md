@@ -818,3 +818,34 @@ Deploy verification:
 4. If it reaches machine QA, inspect the exact final MP4 technically, audio/narration continuity and S1-S5 visual correspondence.
 5. If PL15 passes manual acceptance, checkpoint and proceed to EN30.
 6. If it fails, checkpoint the exact blocker before any new fix; do not start another PL15.
+
+
+## Fresh PL15 on M5 v119 / M8 v64 — M5 execution 9687 failed
+
+Job: `bfac49a7-bde2-4ec0-85fc-7dd9b6afbc36`
+
+Pipeline:
+- M4 PASS
+- M5 v119 execution `9687`: FAIL
+- M6/M7/M8/M9 did not run
+- script_run: `e0bed2f3-7cce-4004-83b9-ced1db6b75de`
+- terminal job status: `script_failed`
+
+Exact failure:
+- `got 27, target 31, allowed delta 2 [line 431]`.
+
+Execution-tail evidence:
+- final measured correction ran;
+- final measured word-count retry ran;
+- `Classify Final Measured Word Count Retry Failure` ran;
+- `Route Final Measured Word Count Compliance Retry` ran;
+- no Build/Repair/Validate compliance-retry node executed;
+- execution routed to Prepare Script Failure -> Fail Script -> Raise Script Failure.
+
+No root cause is claimed yet.
+
+Immediate next step:
+1. Inspect exact 9687 classifier/router data and the v119 classifier conditions.
+2. Prove why the bounded compliance retry was not entered for 27 vs target 31.
+3. Record the proven root cause before changing M5.
+4. Do not start another PL15.

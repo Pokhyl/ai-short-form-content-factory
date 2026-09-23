@@ -1148,3 +1148,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M8 == Git; Publisher/Studio 200; n8n restart 0; media worker healthy restart 0.
 - Active project executions = 0.
 - Next: exactly one fresh PL15 on v119/v64 and full manual acceptance if it reaches M9.
+
+
+## Current blocker: fresh PL15 M5 execution 9687 — 2026-09-23
+
+- Job `bfac49a7-bde2-4ec0-85fc-7dd9b6afbc36` is terminal `script_failed`.
+- M4 passed; M5 v119 execution `9687` failed; M6-M9 did not run.
+- Error: `got 27, target 31, allowed delta 2 [line 431]`.
+- Classifier and compliance-route nodes executed, but the bounded compliance Build/Repair/Validate branch did not.
+- Root cause is not yet proven. No M5 change is authorized until exact classifier/router data is inspected.

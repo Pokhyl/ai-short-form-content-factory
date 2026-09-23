@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-23",
+  "status": "pl15_v119_v64_m5_failure_confirmed",
+  "job_id": "bfac49a7-bde2-4ec0-85fc-7dd9b6afbc36",
+  "production_versions": {
+    "M5": {"versionCounter": 119, "activeVersionId": "bad8d367-3399-4ada-87c4-3a6d6c044b62"},
+    "M6": {"versionCounter": 8, "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"},
+    "M8": {"versionCounter": 64, "activeVersionId": "88b9f81a-6d41-452b-8a35-082b7c088006"},
+    "M9": {"versionCounter": 1, "activeVersionId": "5b6c937c-1767-4c3e-99c4-31ea38a26961"}
+  },
+  "pipeline": {
+    "M4": "passed",
+    "M5": "failed",
+    "M6": "not_run",
+    "M7": "not_run",
+    "M8": "not_run",
+    "M9": "not_run"
+  },
+  "m5_execution_id": 9687,
+  "script_run_id": "e0bed2f3-7cce-4004-83b9-ced1db6b75de",
+  "failure": "M5 script workflow failed: got 27, target 31, allowed delta 2 [line 431]",
+  "execution_last_node": "Raise Script Failure",
+  "execution_tail": [
+    "Build Final Measured Correction",
+    "Repair Final Measured Correction",
+    "Validate Final Measured Correction",
+    "Route Final Measured Word Count",
+    "Build Final Measured Word Count Retry",
+    "Repair Final Measured Word Count",
+    "Validate Final Measured Word Count Retry",
+    "Classify Final Measured Word Count Retry Failure",
+    "Route Final Measured Word Count Compliance Retry",
+    "Prepare Script Failure",
+    "Fail Script",
+    "Raise Script Failure"
+  ],
+  "observed_fact": "No Build/Repair/Validate Final Measured Word Count Compliance Retry node executed in execution 9687.",
+  "root_cause_status": "not_yet_proven",
+  "next_step": "Inspect exact classifier/router inputs and outputs from execution 9687; do not start another PL15 or modify M5 until the reason the bounded compliance branch was not entered is proven."
+}

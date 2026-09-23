@@ -1863,3 +1863,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - M5 v119, M6 v8 and M9 v1 unchanged.
 - Publisher/Studio 200; no n8n/media-worker restart; supporting services healthy; active project executions 0.
 - Next: one fresh PL15 only; if machine PASS, perform exact MP4 technical/audio/visual review before EN30.
+
+
+### Fresh PL15 v119/v64 — M5 9687 failure — 2026-09-23
+
+- Job `bfac49a7-bde2-4ec0-85fc-7dd9b6afbc36`: M4 PASS, M5 v119 execution `9687` FAIL; M6-M9 absent.
+- Exact terminal error: `got 27, target 31, allowed delta 2 [line 431]`.
+- Execution reached final measured word-count retry classification and compliance routing, but did not execute the bounded compliance Build/Repair/Validate nodes.
+- This is a factual failure checkpoint only; root cause remains unproven.
+- Next: inspect exact 9687 classifier/router values and current v119 conditions; no new job and no speculative fix.
