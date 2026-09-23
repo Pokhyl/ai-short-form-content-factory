@@ -1687,3 +1687,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Full suite: 273/273 PASS.
 - JSON parse and git diff checks PASS.
 - Next: commit/push, M5-only deploy, one fresh PL15.
+
+
+### M5 v117 cross-language antecedent fix deployed — 2026-09-23
+
+- Commit `f5a7eec5b2f847c3fe4d1c04dcf33570a92a2930`.
+- M5 v117 activeVersionId `e368d875-ebae-4c7b-ab38-6683c218a1d4`.
+- Backup `.backups/m5-before-9633-20260923-053041.json`.
+- Non-M5 fingerprint unchanged: `31|6d5bcd9e4ad7e94f6f9907f52426c741`.
+- M6 v8, M8 v62, M9 v1 unchanged.
+- Live M5 == Git.
+- Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
+- Next: exactly one fresh PL15.

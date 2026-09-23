@@ -1021,3 +1021,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Exact 9633 regression PASS.
 - Full suite 273/273 PASS.
 - Not production-complete until M5-only deploy is verified.
+
+
+## M5 v117 deployed and verified — 2026-09-23
+
+- M5 v117 `e368d875-ebae-4c7b-ab38-6683c218a1d4`.
+- M6 v8 / M8 v62 / M9 v1 unchanged.
+- Live M5 matches Git; non-M5 fingerprint unchanged.
+- Publisher/Studio 200; no n8n restart; media worker healthy.
+- Next: one fresh PL15 only.
