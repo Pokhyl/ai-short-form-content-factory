@@ -11,10 +11,16 @@
     "versionCounter": 122,
     "activeVersionId": "4a9a48fd-985c-4f77-b592-44a0945377dd"
   },
-  "backup": {
-    "path": ".backups/m5-before-9699-repair-error-20260923-135152.json",
-    "sha256": "a7ff82d9608b05cd8648d856dd9f2023adcd7208dd47d55f1f4cb814a4f20628"
-  },
+  "backups": [
+    {
+      "path": ".backups/m5-before-9699-repair-error-20260923-135152.json",
+      "sha256": "a7ff82d9608b05cd8648d856dd9f2023adcd7208dd47d55f1f4cb814a4f20628"
+    },
+    {
+      "path": ".backups/m5-before-9699-anaphoric-20260923-135204.json",
+      "sha256": "a7ff82d9608b05cd8648d856dd9f2023adcd7208dd47d55f1f4cb814a4f20628"
+    }
+  ],
   "other_workflows": {
     "count": 31,
     "fingerprint_before": "31|cfacbe4e094739b106490c3c93ec2506",
@@ -31,7 +37,9 @@
     "publisher_http": 200,
     "studio_http": 200,
     "active_project_executions": 0,
+    "n8n_status": "running",
     "n8n_restart_count": 0,
+    "media_worker_status": "running",
     "media_worker_health": "healthy",
     "media_worker_restart_count": 0,
     "postgres_health": "healthy",

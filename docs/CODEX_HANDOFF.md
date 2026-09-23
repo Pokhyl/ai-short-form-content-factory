@@ -1962,3 +1962,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Published M5 nodes/connections/settings match Git.
 - Publisher/Studio 200; no n8n/media-worker restart; supporting services healthy; active executions 0.
 - Next: one fresh PL15 only.
+
+
+### PL15 v122/v64 machine PASS but manual render FAIL
+
+- Job `e8d662c9-cd28-4228-9169-6ac875ff0d16` reached `machine_qa_passed`.
+- Final MP4 is technically valid 1080x1920 H.264/AAC, 14.496 s, continuous Polish narration.
+- Selected visuals are topic-relevant.
+- Manual acceptance fails because render uses letterbox/contain for still images.
+- Actual cropdetect heights: S1 1620, S2 1384, S3 1698, S4 720, S5 1820 inside a 1920-high frame.
+- Fix render scaling generically to cover/fill 9:16 without distortion; keep QA/gates intact.

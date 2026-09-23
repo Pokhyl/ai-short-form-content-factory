@@ -1,0 +1,56 @@
+{
+  "date": "2026-09-23",
+  "status": "pl15_v122_v64_machine_pass_manual_visual_fail",
+  "job_id": "e8d662c9-cd28-4228-9169-6ac875ff0d16",
+  "executions": {
+    "M4": 9702,
+    "M5": 9703,
+    "M6": 9704,
+    "M7": 9705,
+    "M8": 9706,
+    "M9": 9707
+  },
+  "production_versions": {
+    "M5": {"versionCounter": 122, "activeVersionId": "4a9a48fd-985c-4f77-b592-44a0945377dd"},
+    "M6": {"versionCounter": 8, "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"},
+    "M8": {"versionCounter": 64, "activeVersionId": "88b9f81a-6d41-452b-8a35-082b7c088006"},
+    "M9": {"versionCounter": 1, "activeVersionId": "5b6c937c-1767-4c3e-99c4-31ea38a26961"}
+  },
+  "machine_result": "machine_qa_passed",
+  "render": {
+    "render_id": "4c44c237-34a4-4451-90ac-1ce8d6d16d14",
+    "render_run_id": "e586d4d3-68d2-4bfd-8002-7dd83b27b0fa",
+    "storage_path": "/data/renders/e8d662c9-cd28-4228-9169-6ac875ff0d16/final.mp4",
+    "sha256": "c5c889531ab2f90a7ec57b6be2eeed4439aa3ae32f0ad297a18d793755781e4f",
+    "bytes": 1738373,
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "duration_ms": 14496,
+    "audio_duration_ms": 14496
+  },
+  "audio_review": {
+    "whisper_transcript": "Woda gromadzi się w dużym zbiorniku za zaporą, spadając, napędza turbinę wodną, która następnie wprawia w ruch generator. Wytworzony w ten sposób, prąd trafia bezpośrednio do sieci energetycznej.",
+    "content_matches_storyboard": true,
+    "continuous_voiceover": true
+  },
+  "visual_review": {
+    "S1": "relevant dam/reservoir image; visible top/bottom letterboxing",
+    "S2": "relevant concrete dam image; visible top/bottom letterboxing",
+    "S3": "relevant hydro machinery/turbine hall image; visible top/bottom letterboxing",
+    "S4": "relevant hydro generator image; severe letterboxing",
+    "S5": "relevant power-grid image; mild letterboxing",
+    "cropdetect": {
+      "S1": "1080:1620:0:150",
+      "S2": "1080:1384:0:268",
+      "S3": "1080:1698:0:110",
+      "S4": "1080:720:0:600",
+      "S5": "1080:1820:0:50"
+    }
+  },
+  "manual_result": "FAIL",
+  "failure": "9:16 canvas is correct, but rendered still photos are fitted with black top/bottom letterboxing instead of filling the vertical frame; S4 leaves only 720 of 1920 rows as image content.",
+  "next_step": "Inspect M9/media-worker still-image render scaling and fix the generic fit/contain behavior to fill 9:16 without distortion, preserving center-safe crop and all existing QA. No new acceptance job before tested/deployed fix."
+}

@@ -1110,3 +1110,52 @@ Immediate next step:
 3. Follow only that job to terminal state.
 4. If machine QA passes, inspect the exact MP4 technically and manually before EN30.
 5. If it fails, checkpoint the exact new blocker before any new change.
+
+
+## Fresh PL15 v122/v64 — machine PASS, manual visual FAIL
+
+Job: `e8d662c9-cd28-4228-9169-6ac875ff0d16`
+
+Pipeline:
+- M4 execution 9702 PASS
+- M5 v122 execution 9703 PASS
+- M6 v8 execution 9704 PASS
+- M7 execution 9705 PASS
+- M8 v64 execution 9706 PASS
+- M9 v1 execution 9707 PASS
+- job status: `machine_qa_passed`
+
+Final MP4:
+- `/data/renders/e8d662c9-cd28-4228-9169-6ac875ff0d16/final.mp4`
+- SHA256 `c5c889531ab2f90a7ec57b6be2eeed4439aa3ae32f0ad297a18d793755781e4f`
+- 1080x1920, H.264 + AAC, 30 fps
+- video/audio duration: 14496 ms / 14496 ms
+- Whisper review matches the intended continuous Polish narration.
+
+Manual visual review:
+- S1 dam/reservoir: relevant.
+- S2 concrete dam: relevant.
+- S3 hydro machinery/turbine hall: relevant.
+- S4 hydro generator: relevant.
+- S5 power grid: relevant.
+- BUT all five still images are letterboxed vertically instead of filling the 9:16 frame.
+
+Measured content crops from the actual rendered MP4:
+- S1: `crop=1080:1620:0:150`
+- S2: `crop=1080:1384:0:268`
+- S3: `crop=1080:1698:0:110`
+- S4: `crop=1080:720:0:600`
+- S5: `crop=1080:1820:0:50`
+
+S4 is the clearest failure: only 720 of 1920 vertical pixels contain the photo; the rest is black bars.
+
+Manual acceptance: FAIL.
+
+Next:
+1. Inspect M9/media-worker still-image scaling.
+2. Fix generic still-image rendering to fill 1080x1920 without distortion, using safe crop rather than black-bar contain.
+3. Keep all existing machine QA and semantic/visual gates.
+4. Add regression for landscape/square stills rendered to 9:16.
+5. Full tests + deterministic render check.
+6. Deploy only the responsible render component/workflow.
+7. Then run exactly one fresh PL15.

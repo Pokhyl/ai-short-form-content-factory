@@ -1247,3 +1247,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M5 == Git; Publisher/Studio 200; n8n restart 0; media worker healthy restart 0.
 - Postgres/SearXNG healthy; active project executions = 0.
 - Next: exactly one fresh PL15.
+
+
+## Current blocker: render letterboxing after machine QA PASS — 2026-09-23
+
+- Job `e8d662c9-cd28-4228-9169-6ac875ff0d16` passed M4-M9 and machine QA.
+- Audio/content review passes.
+- Manual frame review fails because still images are rendered with black top/bottom bars inside the 1080x1920 canvas.
+- Cropdetect from final MP4: S1 1080x1620, S2 1080x1384, S3 1080x1698, S4 1080x720, S5 1080x1820.
+- S4 leaves 600 black rows at both top and bottom.
+- Next: generic M9/media-worker scale/crop fix; do not accept this PL15 and do not start another acceptance job yet.
