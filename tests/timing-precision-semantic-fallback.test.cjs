@@ -115,3 +115,33 @@ test('valid precision lines remain untouched and do not report semantic fallback
   assert.deepEqual(out.precision_semantic_sources,['precision','precision']);
   assert.deepEqual(out.storyboard.scenes.map(x=>x.narration),candidate);
 });
+
+
+test('9783 regression: merged precision response falls back to five validated visual-cut scenes',()=>{
+  const original=[
+    'Lighthouses use powerful lamps',
+    'at their summits to guide ships.',
+    'A special Fresnel lens concentrates',
+    'the light into a narrow beam, which then',
+    'rotates continuously to create distinct flashes for mariners.',
+  ];
+  const base=[
+    'Lighthouses use powerful lamps located at their high summits to guide ships safely.',
+    'A special multi-tiered Fresnel lens concentrates',
+    'this bright light into a narrow beam, which then',
+    'rotates continuously in a circle to create',
+    'distinct flashes for mariners.',
+  ];
+  const merged=[
+    'Lighthouses use powerful lamps at their summits to guide ships.',
+    'A special Fresnel lens concentrates the light into a narrow beam, which then rotates continuously to create distinct flashes for mariners.',
+  ];
+  const out=run({original,base,candidate:merged,language:'en'});
+  assert.equal(out.precision_response_count_mismatch,true);
+  assert.equal(out.precision_semantic_fallback_used,true);
+  assert.equal(out.storyboard.scenes.length,5);
+  assert.deepEqual(out.storyboard.scenes.map(x=>x.narration),original);
+  assert.deepEqual(out.precision_semantic_sources,[
+    'original','original','original','original','original'
+  ]);
+});

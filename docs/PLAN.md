@@ -1464,3 +1464,14 @@ Gemini preview 429 production deployment checkpoint:
 - Published only `VideoM8Visuals001`; active version `21599d8f-f0c9-48c8-af86-ba9e297cdd5a`. Restarted only publisher n8n because CLI required it.
 - Published M8 matches Git exactly for nodes/connections/settings.
 - Next gate: start one controlled Gemini smoke job and verify it reaches actual Gemini pixel validation without the previous 429 scene-drop failure. No acceptance sequence yet.
+
+M5 execution 9783 precision-count fix checkpoint:
+- Exact failure was a malformed precision response shape: Gemini returned 2 complete narration strings for a 5-scene visual-cut storyboard (`precision narration count mismatch: 2, target 5`).
+- M5 now discards ambiguous partial precision mappings when response count differs from scene count and falls back per scene only to the already validated base scene or immutable original scene; semantic guards remain mandatory and no new text is invented.
+- Added regression for execution 9783 lighthouse output. Focused precision fallback tests: 4/4 PASS. `git diff --check`: PASS.
+- Next gate: full Node regression suite, commit/push, then deploy only M5 and run one controlled Gemini smoke job through M8.
+
+M5 execution 9783 full-regression checkpoint:
+- Full Node regression suite after precision count-mismatch fallback: 321/321 PASS.
+- `git diff --check`: PASS.
+- Next gate: commit/push, verify zero active publisher executions, back up current published M5, deploy/publish only M5, verify live workflow matches Git, then run one controlled Gemini smoke job.
