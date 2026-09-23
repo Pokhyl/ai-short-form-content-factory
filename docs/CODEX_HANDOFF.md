@@ -1,5 +1,12 @@
 # Codex handoff — production video factory
 
+## M5 v125 deployed — 2026-09-23
+
+- Source 6c0e7d0 deployed only to VideoM5Storyboard001. Active M5 v125: 9d92b100-7739-4eed-9bf4-093395c3db32. Published nodes/connections and current nodes/connections/settings equal Git.
+- Zero active n8n executions before deployment. Backup on VPS: /opt/ai-short-form-content-factory/.backups/m5-before-9788-fix-20260923-191758.json; SHA256 5fb99fc323a2fec845fe3f4f353464496131ecbdd30af871be5ddc230f427cb7.
+- Non-M5 workflow fingerprint unchanged: fe751e1fbffc4e8a6668b648bdf2af4e. M6 v8 / M8 v67 unchanged. Only publisher n8n restarted, as required by publish CLI.
+- Full regression 327/327 PASS. NEXT: one controlled en15 lighthouse Gemini smoke on v125; trace exact new job to terminal state. No acceptance claim yet.
+
 ## Execution 9788 — bounded timing correction fix, 2026-09-23
 
 - Confirmed routing defect: nearest-word fallback could reuse the exact already-measured failing narration, report success, bypass the existing bounded compliance retry, and spend another TTS call without a text correction.
