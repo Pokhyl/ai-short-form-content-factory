@@ -784,3 +784,37 @@ Next:
 4. Deploy only M8; version must increment exactly once.
 5. Verify live M8 == Git, non-M8 fingerprint unchanged, Publisher/Studio 200, containers healthy, no restart.
 6. Then run exactly one fresh PL15.
+
+
+## M8 v64 operational-context fix deployed and verified
+
+Production:
+- M5 v119 / `bad8d367-3399-4ada-87c4-3a6d6c044b62`
+- M6 v8 / `0bcabe39-ae90-42fe-842b-8a56ad238709`
+- M8 v64 / `88b9f81a-6d41-452b-8a35-082b7c088006`
+- M9 v1 / `5b6c937c-1767-4c3e-99c4-31ea38a26961`
+
+Deploy verification:
+- M8 version incremented exactly once: v63 -> v64.
+- Published backup: `.backups/m8-before-9683-context-20260923-123042.json`.
+- Backup SHA256: `f535079c5f3ff6f538fc29c20c4a3635a106707227e76a7d3567c28d6ae5fd47`.
+- non-M8 fingerprint before/after unchanged: `31|935f3b89581cc695b22bca91b315f846`.
+- live M8 nodes/connections/settings == Git: PASS.
+- Publisher 200; Studio 200.
+- n8n running, restart count 0.
+- media worker running/healthy, restart count 0.
+- Postgres and SearXNG healthy.
+- active project executions after verification: 0.
+- no unrelated workflow, credential, service or container changed.
+
+## Immediate next step after M8 v64
+
+1. Verify Git clean and active project executions = 0.
+2. Run exactly ONE fresh PL15:
+   - topic: `jak działa elektrownia wodna?`
+   - language: `pl`
+   - duration: 15
+3. Follow only that job to terminal state.
+4. If it reaches machine QA, inspect the exact final MP4 technically, audio/narration continuity and S1-S5 visual correspondence.
+5. If PL15 passes manual acceptance, checkpoint and proceed to EN30.
+6. If it fails, checkpoint the exact blocker before any new fix; do not start another PL15.

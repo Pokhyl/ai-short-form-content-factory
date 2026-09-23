@@ -1137,3 +1137,14 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - 9229 selected assets and eligible counts unchanged.
 - JSON/diff/M8 Code-node syntax PASS.
 - Not production-complete until M8-only deploy is verified.
+
+
+## M8 v64 deployed and verified — 2026-09-23
+
+- M8 v64 activeVersionId `88b9f81a-6d41-452b-8a35-082b7c088006`.
+- M5 v119 / M6 v8 / M9 v1 unchanged.
+- Backup `.backups/m8-before-9683-context-20260923-123042.json`, SHA256 `f535079c5f3ff6f538fc29c20c4a3635a106707227e76a7d3567c28d6ae5fd47`.
+- Other 31 workflows unchanged by fingerprint `31|935f3b89581cc695b22bca91b315f846`.
+- Live M8 == Git; Publisher/Studio 200; n8n restart 0; media worker healthy restart 0.
+- Active project executions = 0.
+- Next: exactly one fresh PL15 on v119/v64 and full manual acceptance if it reaches M9.

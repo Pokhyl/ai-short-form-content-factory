@@ -1,0 +1,43 @@
+{
+  "date": "2026-09-23",
+  "status": "m8_v64_deployed_verified",
+  "workflow": "VideoM8Visuals001",
+  "git_fix_commit": "25cde17424ce0c46c81cef0c4213c4e2019dcfaa",
+  "before": {
+    "versionCounter": 63,
+    "activeVersionId": "7256ee89-8b9a-47df-bdc9-66bd2136df35"
+  },
+  "after": {
+    "versionCounter": 64,
+    "activeVersionId": "88b9f81a-6d41-452b-8a35-082b7c088006"
+  },
+  "backup": {
+    "path": ".backups/m8-before-9683-context-20260923-123042.json",
+    "sha256": "f535079c5f3ff6f538fc29c20c4a3635a106707227e76a7d3567c28d6ae5fd47"
+  },
+  "other_workflows": {
+    "count": 31,
+    "fingerprint_before": "31|935f3b89581cc695b22bca91b315f846",
+    "fingerprint_after": "31|935f3b89581cc695b22bca91b315f846",
+    "unchanged": true
+  },
+  "unchanged_versions": {
+    "M5": {"versionCounter": 119, "activeVersionId": "bad8d367-3399-4ada-87c4-3a6d6c044b62"},
+    "M6": {"versionCounter": 8, "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"},
+    "M9": {"versionCounter": 1, "activeVersionId": "5b6c937c-1767-4c3e-99c4-31ea38a26961"}
+  },
+  "verification": {
+    "live_nodes_connections_settings_equal_git": true,
+    "publisher_http": 200,
+    "studio_http": 200,
+    "active_project_executions": 0,
+    "n8n_status": "running",
+    "n8n_restart_count": 0,
+    "media_worker_status": "running",
+    "media_worker_health": "healthy",
+    "media_worker_restart_count": 0,
+    "postgres_health": "healthy",
+    "searxng_health": "healthy"
+  },
+  "next_step": "Run exactly one fresh PL15 on M5 v119 / M6 v8 / M8 v64 / M9 v1 and follow it to terminal state."
+}

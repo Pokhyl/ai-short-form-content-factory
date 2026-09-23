@@ -1851,3 +1851,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Validation: focused 42/42, full 293/293, deterministic 9229 12/12, M8 Code nodes 10/10, JSON/diff PASS.
 - 9229 assets and eligible pools remain exactly unchanged.
 - Next: commit/push, M8-only deploy and exactly one fresh PL15.
+
+
+### M8 v64 deployed — operational-context evidence fix — 2026-09-23
+
+- Fix commit `25cde17424ce0c46c81cef0c4213c4e2019dcfaa`.
+- Published only M8: v64 `88b9f81a-6d41-452b-8a35-082b7c088006`; v63 was `7256ee89-8b9a-47df-bdc9-66bd2136df35`.
+- Backup `.backups/m8-before-9683-context-20260923-123042.json`, SHA256 `f535079c5f3ff6f538fc29c20c4a3635a106707227e76a7d3567c28d6ae5fd47`.
+- Other 31 workflow fingerprint unchanged: `31|935f3b89581cc695b22bca91b315f846`.
+- Published M8 nodes/connections/settings match Git.
+- M5 v119, M6 v8 and M9 v1 unchanged.
+- Publisher/Studio 200; no n8n/media-worker restart; supporting services healthy; active project executions 0.
+- Next: one fresh PL15 only; if machine PASS, perform exact MP4 technical/audio/visual review before EN30.
