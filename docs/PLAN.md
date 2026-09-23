@@ -1414,3 +1414,12 @@ Gemini visual smoke blocker — job `00a38d43-1086-4b6c-abb6-da9762f6cc66`:
 - Every S2 candidate was metadata-rejected before Gemini could inspect pixels. Several otherwise plausible Pexels lighthouse-lamp candidates were rejected by `missing_primary_subject_anchor:lamp fixture` / `insufficient_must_show_concept_coverage`.
 - Root architectural issue: Gemini mode currently inherits the metadata-mode `rejected=false` gate, so metadata false negatives can prevent Vision from seeing any candidate. The fix must keep hard safety/media rejects but allow bounded semantic-review candidates into Gemini; do not weaken the metadata-mode selection path.
 - Next gate: implement/test a Gemini-only candidate eligibility policy in `get_gemini_visual_candidate_sets`, then deploy M8/DB only and rerun one post-fix controlled Gemini job.
+
+Gemini candidate-review implementation checkpoint:
+- Added `factory.gemini_visual_review_bucket(...)` for Gemini mode only: metadata-accepted candidates rank first; explicit semantic metadata misses are reviewable by Vision; unknown/hard rejects fail closed with bucket 99.
+- Hard rejects such as `must_not_show:*`, non-photographic assets, invalid/unknown future rejection reasons remain ineligible.
+- `get_gemini_visual_candidate_sets` and `commit_gemini_visual_selections` use the same review policy; metadata-mode `factory.select_visuals` is unchanged.
+- Candidate JSON now carries `metadata_rejected`, `metadata_rejection_reason`, and `review_bucket`; final Gemini validation evidence persists whether Vision rescued a metadata-rejected candidate.
+- Focused Gemini tests: 13/13 PASS.
+- Rollback-only production-engine replay of failed visual run `60514425-ca72-491c-bfd1-e0c4288bd300`: helper buckets were accepted=0, semantic-soft=1, must-not=99, non-photo=99, unknown=99; S2-A now produced 3 bounded Pexels candidates for actual Vision review instead of failing before Gemini.
+- Next gate: full regression + diff check, then DB/M8-only deploy and one post-fix controlled Gemini job.

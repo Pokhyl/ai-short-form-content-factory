@@ -240,3 +240,80 @@ test('DB persists Gemini validation evidence on final visual selection', () => {
   assert.match(sql, /COALESCE\(\(v_evidence->>'vision_pass'\)::boolean,false\) <> true/);
   assert.match(sql, /'gemini',\s*v_evidence/s);
 });
+
+
+test('Gemini-only candidate review can rescue metadata semantic false negatives but stays fail-closed for hard rejects', () => {
+  const sql = fs.readFileSync(path.join(root, 'db', '09-visuals.sql'), 'utf8');
+  assert.match(sql, /factory\.gemini_visual_review_bucket/);
+  assert.match(sql, /missing_primary_subject_anchor:%/);
+  assert.match(sql, /insufficient_must_show_concept_coverage/);
+  assert.match(sql, /missing_storyboard_domain_context:%/);
+  assert.match(sql, /RETURN 99;/);
+  assert.match(
+    sql,
+    /factory\.gemini_visual_review_bucket\(vc\.rejected,vc\.rejection_reason\) < 99/
+  );
+  assert.match(
+    sql,
+    /factory\.gemini_visual_review_bucket\(rejected,rejection_reason\) < 99/
+  );
+  assert.match(sql, /review_bucket,\s*query_bucket,\s*media_bucket/s);
+  assert.doesNotMatch(
+    sql.match(/CREATE OR REPLACE FUNCTION factory\.get_gemini_visual_candidate_sets[\s\S]*?CREATE OR REPLACE FUNCTION factory\.commit_gemini_visual_selections/)?.[0] || '',
+    /AND vc\.rejected=false/
+  );
+  assert.match(
+    node(m8, 'Select Visuals').parameters.query,
+    /factory\.select_visuals\(\$1::uuid,55\)/
+  );
+});
+
+test('Gemini selection evidence records when Vision rescued a metadata-rejected candidate', () => {
+  const rows = [{
+    json: {
+      shot_uuid: '11111111-1111-4111-8111-111111111111',
+      shot_key: 'S1-A',
+      scene_order: 1,
+      shot_order: 1,
+      model: 'gemini-3.5-flash-lite',
+      candidates: [{
+        candidate_index: 1,
+        candidate_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+        provider: 'pexels',
+        provider_asset_id: 'a1',
+        metadata_rejected: true,
+        metadata_rejection_reason: 'missing_primary_subject_anchor:lamp fixture; insufficient_must_show_concept_coverage',
+        review_bucket: 1,
+      }],
+      preview_fingerprints: [{ candidate_index: 1, sha256: 'a'.repeat(64) }],
+      evaluations: [{
+        candidate_index: 1,
+        vision_pass: true,
+        match_score: 88,
+        must_show_visible: true,
+        must_not_show_clear: true,
+        intent_match: true,
+        reason: 'The required subject is visibly present.',
+      }],
+    },
+  }];
+
+  const result = runCode('Collect Gemini Selections', {
+    inputItems: rows,
+    refs: {
+      'Begin Visuals': {
+        first: () => ({
+          json: {
+            shot_count: 1,
+            visual_run_id: '99999999-9999-4999-8999-999999999999',
+          },
+        }),
+      },
+    },
+  });
+
+  const evidence = result[0].json.selections[0].validation_evidence;
+  assert.equal(evidence.metadata_rejected, true);
+  assert.equal(evidence.review_bucket, 1);
+  assert.match(evidence.metadata_rejection_reason, /missing_primary_subject_anchor/);
+});

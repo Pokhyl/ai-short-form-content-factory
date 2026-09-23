@@ -938,6 +938,49 @@ END;
 $$;
 
 
+CREATE OR REPLACE FUNCTION factory.gemini_visual_review_bucket(
+    p_rejected boolean,
+    p_rejection_reason text
+)
+RETURNS integer
+LANGUAGE plpgsql
+IMMUTABLE
+AS $$
+DECLARE
+    v_reason text;
+BEGIN
+    IF COALESCE(p_rejected,false)=false THEN
+        RETURN 0;
+    END IF;
+
+    IF NULLIF(btrim(COALESCE(p_rejection_reason,'')),'') IS NULL THEN
+        RETURN 99;
+    END IF;
+
+    FOR v_reason IN
+        SELECT btrim(value)
+        FROM regexp_split_to_table(p_rejection_reason,';') AS value
+    LOOP
+        IF v_reason LIKE 'missing_primary_subject_anchor:%'
+           OR v_reason LIKE 'insufficient_primary_subject_coverage:%'
+           OR v_reason='insufficient_must_show_concept_coverage'
+           OR v_reason='insufficient_query_intent_metadata_match'
+           OR v_reason='missing_distinctive_domain_anchor'
+           OR v_reason='missing_secondary_subject_context'
+           OR v_reason LIKE 'missing_storyboard_domain_context:%'
+           OR v_reason LIKE 'missing_visual_detail_anchor:%'
+           OR v_reason='missing_operational_setting_context' THEN
+            CONTINUE;
+        END IF;
+
+        RETURN 99;
+    END LOOP;
+
+    RETURN 1;
+END;
+$$;
+
+
 CREATE OR REPLACE FUNCTION factory.get_gemini_visual_candidate_sets(
     p_visual_run_id uuid,
     p_min_relevance_score integer DEFAULT 55,
@@ -1021,6 +1064,7 @@ BEGIN
                 vc.*,
                 vq.query_index,
                 CASE WHEN vq.query_index <= 2 THEN 0 ELSE 1 END AS query_bucket,
+                factory.gemini_visual_review_bucket(vc.rejected,vc.rejection_reason) AS review_bucket,
                 CASE
                     WHEN vc.media_type=v_shot.preferred_media_type THEN 0
                     WHEN v_shot.preferred_media_type='diagram' AND vc.media_type='photo' THEN 1
@@ -1035,7 +1079,7 @@ BEGIN
             JOIN factory.visual_searches vq ON vq.id=vc.search_id
             WHERE vc.visual_run_id=v_run.id
               AND vc.shot_id=v_shot.id
-              AND vc.rejected=false
+              AND factory.gemini_visual_review_bucket(vc.rejected,vc.rejection_reason) < 99
               AND vc.provider <> 'local_diagram'
               AND vc.relevance_score >= p_min_relevance_score
               AND (
@@ -1055,6 +1099,7 @@ BEGIN
             ORDER BY
                 provider,
                 provider_asset_id,
+                review_bucket,
                 query_bucket,
                 media_bucket,
                 relevance_score DESC,
@@ -1068,6 +1113,7 @@ BEGIN
                 d.*,
                 row_number() OVER (
                     ORDER BY
+                        review_bucket,
                         query_bucket,
                         media_bucket,
                         relevance_score DESC,
@@ -1098,7 +1144,10 @@ BEGIN
                     'width',width,
                     'height',height,
                     'duration_ms',duration_ms,
-                    'relevance_score',relevance_score
+                    'relevance_score',relevance_score,
+                    'metadata_rejected',rejected,
+                    'metadata_rejection_reason',rejection_reason,
+                    'review_bucket',review_bucket
                 )
                 ORDER BY candidate_index
             ),
@@ -1252,7 +1301,7 @@ BEGIN
          WHERE id=v_candidate_id
            AND visual_run_id=v_run.id
            AND shot_id=v_shot.id
-           AND rejected=false
+           AND factory.gemini_visual_review_bucket(rejected,rejection_reason) < 99
            AND provider <> 'local_diagram'
            AND relevance_score >= p_min_relevance_score;
 
