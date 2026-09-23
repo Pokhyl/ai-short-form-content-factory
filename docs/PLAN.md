@@ -550,24 +550,40 @@ Validation:
 - `git diff --check`: PASS;
 - M5 JSON parse: PASS.
 
+## M5 v118 compliance fix deployed and verified
+
+Production:
+- M5: v118 / `346ad9c2-1cc2-4c8d-ac37-6ae540b1fff1`
+- M6: v8 / `0bcabe39-ae90-42fe-842b-8a56ad238709`
+- M8: v63 / `7256ee89-8b9a-47df-bdc9-66bd2136df35`
+- M9: v1 / `5b6c937c-1767-4c3e-99c4-31ea38a26961`
+
+Deploy verification:
+- published backup: `.backups/m5-before-9660-compliance-20260923-083302.json`
+- non-M5 fingerprint before/after: `31|c27d87623ffd8872701cef34695d8265`
+- live M5 nodes/connections/settings == Git: PASS
+- Publisher 200
+- Studio 200
+- n8n running, restart count 0
+- media worker healthy, restart count 0
+
 ## Immediate next step
 
-1. Commit/push the M5 compliance fix and regression fixture/tests.
-2. Read this PLAN before production change.
-3. Verify Git clean, active project execution count = 0, and current production versions.
-4. Deploy ONLY M5.
-5. Before deploy export published M5 backup and fingerprint all non-M5 workflows.
-6. After deploy verify:
-   - M5 version increments exactly once;
-   - live M5 nodes/connections/settings == Git;
-   - non-M5 fingerprint unchanged;
-   - Publisher/Studio healthy;
-   - n8n/media-worker restart counts unchanged.
-7. Update PLAN/handoff/evidence and commit/push deployment checkpoint.
-8. Run exactly one fresh PL15.
-9. Follow only that job to terminal state; no parallel acceptance job.
-10. If machine QA passes, inspect actual MP4 technically + audio + every scene visual.
-11. If it fails, fix only the exact demonstrated blocker.
+1. Read this PLAN before the next production action.
+2. Verify Git clean and active project execution count = 0.
+3. Run exactly ONE fresh PL15 on M5 v118 / M6 v8 / M8 v63 / M9 v1.
+4. Follow only that job to terminal state.
+5. If it reaches machine QA:
+   - inspect actual MP4 technically;
+   - review audio/narration continuity;
+   - review every scene visual against narration.
+6. If manual PL15 acceptance passes:
+   - update PLAN/handoff/evidence and commit/push;
+   - proceed to EN30.
+7. If it fails:
+   - record exact blocker;
+   - fix only that blocker;
+   - no EN30 and no parallel PL15.
 
 ## Acceptance sequence after PL15
 
