@@ -1179,3 +1179,39 @@ Updated fix strategy:
 4. No black padding and no foreground distortion.
 5. Update `render-fit-regression.py` to require both edge-landmark preservation and non-black full-frame fill.
 6. Keep machine QA, provenance, audio and semantic/visual gates unchanged.
+
+
+## Blurred-fill still-image renderer fix validated
+
+Implemented:
+- still-image foreground remains complete and proportional;
+- the same source fills 1080x1920 behind it using cover + center crop + Gaussian blur;
+- black padding is removed;
+- hard foreground crop is not reintroduced;
+- video-media branch is unchanged in this scoped fix.
+
+Regression:
+- real FFmpeg `render-fit-regression.py`: 3/3 PASS for 1600x1611, 1920x1080 and 1080x1920;
+- synthetic left/right edge landmarks remain visible;
+- top/bottom fill probes are non-black.
+
+Exact failed PL15 assets rendered offline with the candidate:
+- S1 `crop=1080:1920:0:0`
+- S2 `crop=1080:1920:0:0`
+- S3 `crop=1080:1920:0:0`
+- S4 `crop=1080:1920:0:0`
+- S5 `crop=1080:1920:0:0`
+- manual S2/S4 spot-check confirms complete foreground preserved with blurred fill and no black bars.
+
+Validation:
+- Python compile PASS;
+- render-fit regression PASS;
+- full Node suite 295/295 PASS;
+- `git diff --check` PASS.
+
+Next:
+1. Commit/push tested renderer + regression + evidence.
+2. Capture current media-worker image/health and build only media-worker.
+3. Recreate only `shorts-v2-media-worker-1`.
+4. Verify running/healthy, restart count, image/source match, supporting services unchanged.
+5. Run exactly one fresh PL15 and manually review the actual final MP4.

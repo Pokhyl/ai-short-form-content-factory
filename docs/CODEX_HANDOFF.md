@@ -1980,3 +1980,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Historical hard center crop previously lost important edge subjects, so do not revert to it.
 - Safe generic strategy: blurred cover background from the same asset + full proportional foreground overlay.
 - Regression must prove 1080x1920 output, preserved left/right edge landmarks, and no black top/bottom fill.
+
+
+### Still-image blurred-fill renderer fix — validated predeploy
+
+- Replaces black pad for still images with blurred cover background + full proportional foreground.
+- Does not restore destructive center crop.
+- Exact failed PL15 assets all produce full-frame cropdetect `1080:1920:0:0`.
+- Regression 3/3, Node 295/295, Python compile/diff PASS.
+- Next: media-worker-only rebuild/recreate, then one fresh PL15 and manual MP4 review.

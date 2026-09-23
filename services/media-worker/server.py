@@ -1081,18 +1081,28 @@ def _render_segment(asset_path, media_type, duration_ms, output_path):
         raise ValueError("render segment duration must be positive")
 
     duration_seconds = duration_ms / 1000.0
-    scale_filter = (
-        "scale=1080:1920:force_original_aspect_ratio=decrease:force_divisible_by=2:"
-        "in_range=full:out_range=tv,"
-        if media_type != "video"
-        else "scale=1080:1920:force_original_aspect_ratio=decrease:force_divisible_by=2,"
-    )
-    filter_graph = (
-        "[0:v]"
-        + scale_filter
-        + "pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,"
-        + "fps=30,format=yuv420p,setsar=1[v]"
-    )
+    if media_type != "video":
+        filter_graph = (
+            "[0:v]split=2[bg][fg];"
+            "[bg]"
+            "scale=1080:1920:force_original_aspect_ratio=increase:force_divisible_by=2:"
+            "in_range=full:out_range=tv,"
+            "crop=1080:1920,"
+            "gblur=sigma=30:steps=2[bgfill];"
+            "[fg]"
+            "scale=1080:1920:force_original_aspect_ratio=decrease:force_divisible_by=2:"
+            "in_range=full:out_range=tv[foreground];"
+            "[bgfill][foreground]"
+            "overlay=(W-w)/2:(H-h)/2,"
+            "fps=30,format=yuv420p,setsar=1[v]"
+        )
+    else:
+        filter_graph = (
+            "[0:v]"
+            "scale=1080:1920:force_original_aspect_ratio=decrease:force_divisible_by=2,"
+            "pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,"
+            "fps=30,format=yuv420p,setsar=1[v]"
+        )
 
     command = ["ffmpeg", "-nostdin", "-y"]
 

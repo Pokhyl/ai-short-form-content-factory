@@ -1,0 +1,42 @@
+{
+  "date": "2026-09-23",
+  "status": "render_blurred_fill_fix_validated_predeploy",
+  "scope": "still-image rendering in services/media-worker/server.py plus render-fit regression",
+  "behavior": {
+    "foreground": "complete source preserved with proportional contain scaling",
+    "background": "same source scaled to cover 1080x1920, center-cropped and Gaussian blurred",
+    "black_padding": false,
+    "foreground_distortion": false
+  },
+  "regression": {
+    "synthetic_cases": ["1600x1611", "1920x1080", "1080x1920"],
+    "edge_landmarks_preserved": true,
+    "full_frame_no_black_bars": true,
+    "result": "3/3 PASS"
+  },
+  "actual_pl15_assets": {
+    "job_id": "e8d662c9-cd28-4228-9169-6ac875ff0d16",
+    "cropdetect": {
+      "S1": "1080:1920:0:0",
+      "S2": "1080:1920:0:0",
+      "S3": "1080:1920:0:0",
+      "S4": "1080:1920:0:0",
+      "S5": "1080:1920:0:0"
+    },
+    "manual_spot_check": "S2 and S4 preserve the complete original foreground and replace black bars with blurred source fill"
+  },
+  "validation": {
+    "python_compile": "PASS",
+    "render_fit_regression": "PASS",
+    "node_full_suite": "295/295 PASS",
+    "git_diff_check": "PASS"
+  },
+  "unchanged": [
+    "M5/M6/M8/M9 workflow logic",
+    "machine QA gates",
+    "audio handling",
+    "visual selection and semantic gates",
+    "video-media branch"
+  ],
+  "next_step": "Commit/push tested fix, rebuild/recreate only shorts-v2 media-worker, verify health/image/live source, then run exactly one fresh PL15."
+}

@@ -1265,3 +1265,12 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Hard center crop is not an acceptable rollback: it previously caused important edge-object loss.
 - Chosen generic fix: blurred full-frame background + complete proportional foreground.
 - Scope: media-worker renderer and its render-fit regression only.
+
+
+## Blurred-fill renderer fix tested — predeploy
+
+- Still photos now keep the complete source as foreground and use a blurred cover copy behind it.
+- Synthetic FFmpeg regression preserves edge content and removes black letterbox.
+- All five exact failed PL15 assets render as full 1080x1920 content by cropdetect.
+- Full Node suite 295/295; Python compile and diff checks PASS.
+- Not production-complete until the media-worker-only deploy is verified.
