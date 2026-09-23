@@ -1,5 +1,11 @@
 # Current State
 
+## M8 v68 deployed — 2026-09-23
+
+- Published source be0db87 only to M8: v68 activeVersionId 4f9709cb-b819-417f-8991-fc2c3a4eaebc. Published/current source verified equal Git; non-M8 workflow fingerprint unchanged eab3729c9a1c9f3a5e7bb0a870f96473.
+- Zero active executions before deploy. VPS backup /opt/ai-short-form-content-factory/.backups/m8-before-9809-setting.json SHA256 c26f166c7f883f29e00bcb58cc24a472d41ae36c46c2c2d90e92d9bdc05aef2d. Only publisher restarted; health OK.
+- M5 v126 / M6 v8 and worker image 4118f3f06c98 unchanged. Tests 336 Node + 7 Python PASS. NEXT: one controlled Gemini en15 lighthouse smoke; do not claim new assets validated until its actual Vision result.
+
 ## M8 explicit setting fix — source verified, 2026-09-23
 
 - Actual 9809 S2/S3 request contexts had empty domain_context_terms despite explicit lighthouse settings. Request builders now derive explicitly stated locations (inside/within/interior-of/room-of/hall-of) for any subject and corroborate terms against existing planned queries. Original query provenance remains unchanged; provider queries retain the setting.
