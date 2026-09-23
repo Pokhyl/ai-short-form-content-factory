@@ -1429,3 +1429,11 @@ Gemini candidate-review full-regression checkpoint:
 - `git diff --check`: PASS; working tree was clean before this documentation update.
 - Source checkpoint: `5d6604c`.
 - Next gate: verify zero active publisher executions and current M8 production version, back up published M8 and current DB functions/schema, deploy only `db/09-visuals.sql` + `VideoM8Visuals001`, verify exact live state, then run one post-fix Gemini smoke job.
+
+Gemini candidate-review production deployment checkpoint:
+- Pre-deploy active publisher executions: 0.
+- Backups created: `.backups/m8-before-gemini-review-20260923-175157.json` (SHA256 `46482f42900ce0f4a1313d51945af28c13061ad21ec6e8836a3d3b3d25b70a4e`) and `.backups/factory-schema-before-gemini-review-20260923-175157.sql` (SHA256 `17baaddf71ae9ce05ab8e5c80eb52421688affec2b0bfc8b7f78e3fee94deff5`).
+- Applied current `db/09-visuals.sql` and published only `VideoM8Visuals001`; active version is `271d4c60-29b3-4ec9-b0e1-cf4f48baade3`.
+- Restarted only `ai-short-form-n8n` because n8n CLI required restart for published changes to take effect.
+- Published M8 matches Git exactly for nodes/connections/settings. Live review helper returns accepted=0, semantic-soft=1, hard must-not=99, non-photographic=99.
+- Started one controlled post-fix Gemini smoke job: `dba2ef8f-84f6-4676-b75e-12d5b7d96dab` (`how does a lighthouse work?`, en, 15s, gemini). M3 succeeded; M4 is currently running. Continue with short state checks only; no additional test job.
