@@ -1,5 +1,11 @@
 # Codex handoff — production video factory
 
+## Execution 9796 repair diagnostics — source verified, 2026-09-23
+
+- Both storyboard repair prompts now recompute every scene's word count from the candidate JSON and include scene_id, actual count, min/max, valid flag. Explicitly request repair of every invalid count even if the first error concerned metadata. This preserves scene identity when n8n strips the exception prefix and exposes latent violations before the next bounded retry.
+- Regression reproduces S5=11, max=10 from execution 9796 in both repair builders. Full suite 329/329 PASS; git diff --check PASS. No extra retries, model changes, or relaxed gates.
+- Production still M5 v125 / 9d92b100-7739-4eed-9bf4-093395c3db32; latest job 03ca6223-29b4-4782-95b3-e968a5ced556 failed M5 9796 before TTS. NEXT: deploy tested M5 repair-diagnostics change with backup/zero-active/exact-source verification, then one controlled smoke.
+
 ## Smoke 03ca6223 — terminal result, 2026-09-23
 
 - Job 03ca6223-29b4-4782-95b3-e968a5ced556 is script_failed. M3 9793 PASS, coordinator 9794 ERROR, M4 9795 PASS, M5 9796 ERROR on active v125 / 9d92b100-7739-4eed-9bf4-093395c3db32. Script run 6ec11461-fd82-4660-869c-680964c320f7.
