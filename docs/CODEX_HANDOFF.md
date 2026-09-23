@@ -1790,3 +1790,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M5 core exactly matches Git.
 - Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
 - Next: exactly one fresh PL15.
+
+
+### PL15 ab79e346 — machine QA pass, manual narration continuity fail — 2026-09-23
+
+- Job `ab79e346-a7d7-45c4-9bc9-a82212bab1c4` reached `machine_qa_passed`.
+- M5 execution `9672` used v118; M8 execution `9675` used v63; M9 execution `9676` used v1.
+- Technical MP4 PASS: 1080x1920, H.264/yuv420p/30fps, AAC, 15.066667 s, full decode clean.
+- Alignment lexical PASS: global coverage 1.000, 23 tokens, audio 15.048 s.
+- Manual audio continuity FAIL because final narration contains artificial scene-boundary sentence breaks.
+- Exact execution evidence proves Gemini precision response was correct; `Validate Timing Precision Retry.normalizeSentenceSurface` itself uppercased every segment and appended `.` to every visual cut.
+- This is the first node where good continuous narration becomes five sentence-like fragments.
+- Current fix scope: remove forced per-segment sentence normalization from that validator only; retain joined-narration completeness and all semantic/timing gates.

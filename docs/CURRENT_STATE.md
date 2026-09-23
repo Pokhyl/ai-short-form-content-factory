@@ -1088,3 +1088,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Non-M5 workflow fingerprint unchanged.
 - Live M5 == Git; Publisher/Studio 200; no restarts.
 - Next: one fresh PL15 only.
+
+
+## Current blocker — M5 precision validator destroys continuous narration — 2026-09-23
+
+- Fresh PL15 `ab79e346-a7d7-45c4-9bc9-a82212bab1c4` is machine-QA PASS but manual acceptance FAIL.
+- Root cause is `Validate Timing Precision Retry.normalizeSentenceSurface`: it adds periods/capitalization at every visual cut.
+- Gemini precision response itself preserved correct continuous segment surfaces.
+- No EN30/new PL15 until M5 validator regression is fixed/tested/deployed.

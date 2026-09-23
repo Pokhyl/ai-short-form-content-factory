@@ -567,23 +567,65 @@ Deploy verification:
 - n8n running, restart count 0
 - media worker healthy, restart count 0
 
+## Fresh PL15 manual acceptance failure — execution 9672
+
+Job: `ab79e346-a7d7-45c4-9bc9-a82212bab1c4`
+
+Pipeline:
+- M4 execution 9671: PASS
+- M5 execution 9672 on v118 `346ad9c2-1cc2-4c8d-ac37-6ae540b1fff1`: PASS
+- M6 execution 9673 on v8: PASS
+- M7 execution 9674: PASS
+- M8 execution 9675 on v63: PASS
+- M9 execution 9676 on v1: PASS
+- job status: `machine_qa_passed`
+
+Technical render: PASS
+- 1080x1920
+- H.264 / yuv420p / 30 fps
+- AAC mono 24 kHz
+- duration 15.066667 s
+- full decode clean
+
+Lexical alignment: PASS
+- global coverage 1.000
+- 23 lexical tokens
+- audio duration 15.048 s
+- alignment method `whisper_token_sequence_match`
+
+Manual narration/audio continuity: FAIL
+- final canonical narration contains artificial sentence breaks at visual cuts:
+  - `Spadająca masa cieczy napędza. Turbinę wodną...`
+  - `...która następnie. Porusza generator...`
+- silence detection on the actual final MP3 found internal pauses including approximately 0.776 s, 0.458 s and 0.992 s around these scene boundaries.
+
+Exact root cause from M5 execution 9672:
+- `Validate Storyboard` and `Normalize Timing Probe` preserved one natural continuous narration with mid-sentence visual cuts.
+- Gemini `Repair Timing Precision Retry` also returned the correct segment surfaces without added periods:
+  - `Elektrownia wodna gromadzi wodę`
+  - `w wielkim zbiorniku za tamą.`
+  - `Spadająca masa cieczy napędza`
+  - `turbinę wodną, która następnie`
+  - `porusza generator wytwarzający czysty prąd elektryczny.`
+- `Validate Timing Precision Retry` then called `normalizeSentenceSurface`, which uppercased every segment start and appended a terminal period to every segment.
+- This validator behavior contradicts the continuous-narration/visual-cut contract.
+- Search of current M5 code found this forced sentence-surface normalization only in `Validate Timing Precision Retry`.
+
 ## Immediate next step
 
-1. Read this PLAN before the next production action.
-2. Verify Git clean and active project execution count = 0.
-3. Run exactly ONE fresh PL15 on M5 v118 / M6 v8 / M8 v63 / M9 v1.
-4. Follow only that job to terminal state.
-5. If it reaches machine QA:
-   - inspect actual MP4 technically;
-   - review audio/narration continuity;
-   - review every scene visual against narration.
-6. If manual PL15 acceptance passes:
-   - update PLAN/handoff/evidence and commit/push;
-   - proceed to EN30.
-7. If it fails:
-   - record exact blocker;
-   - fix only that blocker;
-   - no EN30 and no parallel PL15.
+1. Do NOT run EN30 or another PL15 yet.
+2. Fix only `Validate Timing Precision Retry`:
+   - normalize whitespace only for each visual narration segment;
+   - do not uppercase scene starts;
+   - do not append terminal punctuation per scene;
+   - keep the existing joined-narration requirement: the complete joined narration must start normally and end with sentence punctuation.
+3. Add deterministic regression from execution 9672 proving the exact Gemini response remains one continuous narration.
+4. Confirm no other late M5 validator forces sentence punctuation per visual segment.
+5. Run focused tests, full suite, M5 graph and Code-node syntax.
+6. Update PLAN/handoff/evidence; commit/push.
+7. Deploy ONLY M5 after active project execution count = 0 with backup/fingerprint/live==Git verification.
+8. Run exactly one fresh PL15.
+9. Manually review its actual MP4, audio continuity and every visual scene before EN30.
 
 ## Acceptance sequence after PL15
 

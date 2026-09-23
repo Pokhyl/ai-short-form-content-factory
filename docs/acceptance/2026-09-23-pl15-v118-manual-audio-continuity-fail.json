@@ -1,0 +1,70 @@
+{
+  "date": "2026-09-23",
+  "status": "machine_qa_pass_manual_audio_continuity_fail",
+  "job_id": "ab79e346-a7d7-45c4-9bc9-a82212bab1c4",
+  "executions": {
+    "M4": 9671,
+    "M5": 9672,
+    "M6": 9673,
+    "M7": 9674,
+    "M8": 9675,
+    "M9": 9676
+  },
+  "production_versions": {
+    "M5": {
+      "versionCounter": 118,
+      "activeVersionId": "346ad9c2-1cc2-4c8d-ac37-6ae540b1fff1"
+    },
+    "M6": {
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "M8": {
+      "versionCounter": 63,
+      "activeVersionId": "7256ee89-8b9a-47df-bdc9-66bd2136df35"
+    },
+    "M9": {
+      "versionCounter": 1,
+      "activeVersionId": "5b6c937c-1767-4c3e-99c4-31ea38a26961"
+    }
+  },
+  "technical_render": {
+    "status": "PASS",
+    "duration_seconds": 15.066667,
+    "width": 1080,
+    "height": 1920,
+    "video_codec": "h264",
+    "pix_fmt": "yuv420p",
+    "fps": "30/1",
+    "audio_codec": "aac",
+    "sample_rate": 24000,
+    "channels": 1,
+    "full_decode": "PASS"
+  },
+  "alignment": {
+    "status": "PASS",
+    "global_coverage": 1.0,
+    "lexical_token_count": 23,
+    "audio_duration_ms": 15048,
+    "alignment_method": "whisper_token_sequence_match",
+    "audio_sha256": "51b1065a828e49006e0390e7661a5cdda41a95f7d68a337e53ecdebff6ac7657"
+  },
+  "manual_audio": {
+    "status": "FAIL",
+    "bad_final_narration": "Elektrownia wodna gromadzi wodę. W wielkim zbiorniku za tamą. Spadająca masa cieczy napędza. Turbinę wodną, która następnie. Porusza generator wytwarzający czysty prąd elektryczny.",
+    "internal_silences_seconds": [
+      0.563333,
+      0.775542,
+      0.458167,
+      0.99175
+    ]
+  },
+  "root_cause": {
+    "node": "Validate Timing Precision Retry",
+    "function": "normalizeSentenceSurface",
+    "behavior": "uppercases every visual segment start and appends terminal period to every segment",
+    "gemini_response_was_continuous": true,
+    "first_divergence_node": "Validate Timing Precision Retry"
+  },
+  "fix_scope": "Remove forced per-scene sentence surface normalization; retain whitespace normalization and joined complete-narration gate."
+}
