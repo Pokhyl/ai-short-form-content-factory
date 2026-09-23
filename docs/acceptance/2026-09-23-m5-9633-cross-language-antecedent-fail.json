@@ -1,0 +1,20 @@
+{
+  "date": "2026-09-23",
+  "status": "m5_failed_confirmed_root_cause",
+  "job_id": "72af62de-3c64-4b48-bf6b-c1395e07abed",
+  "m5_execution_id": 9633,
+  "m5_version": {
+    "versionCounter": 116,
+    "activeVersionId": "64654d56-c7c8-481f-8bd3-37e37cc27289"
+  },
+  "script_run_id": "b43017d9-d18f-49ae-9396-9f80ee389826",
+  "failure": "water reservoir -> penstock pipe [line 696]",
+  "observed_attempts": [
+    "Validate Storyboard: water reservoir -> falling water",
+    "Validate Repaired Storyboard: water reservoir -> penstock pipe",
+    "Validate Repaired Storyboard 2: water reservoir -> penstock pipe"
+  ],
+  "root_cause": "previousVisualPrimaryIsLikelyTerminalAntecedent returns true when the English visual primary cannot be lexically located in non-English narration, incorrectly treating absence of evidence as positive antecedent evidence.",
+  "fix_scope": "Three storyboard validators only. No lexical match => inherited restriction false; positive terminal match behavior unchanged.",
+  "next_step": "Add exact 9633 regression, full suite, M5-only deploy, then one fresh PL15."
+}

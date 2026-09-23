@@ -1005,3 +1005,10 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M5 matches Git; non-M5 fingerprint unchanged.
 - Publisher/Studio 200; no n8n restart; media worker healthy.
 - Next: one fresh PL15 only.
+
+
+## Current blocker: M5 execution 9633 — 2026-09-23
+
+- Job `72af62de-3c64-4b48-bf6b-c1395e07abed` failed before M6.
+- False anaphora restriction: no lexical grounding for English `water reservoir` in Polish narration was treated as positive antecedent evidence.
+- Planned fix: no-match => restriction does not apply; positive terminal matches remain fail-closed.

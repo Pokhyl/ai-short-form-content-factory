@@ -366,23 +366,40 @@ Deployment verification:
 - n8n restart count 0
 - media worker healthy, restart count 0
 
+## Latest fresh PL15 result
+
+Job: `72af62de-3c64-4b48-bf6b-c1395e07abed`
+
+Pipeline:
+- M4 PASS
+- M5 v116 FAIL, execution `9633`
+- M6/M8/M9 did not run
+- script_run `b43017d9-d18f-49ae-9396-9f80ee389826`
+- terminal reason: `water reservoir -> penstock pipe [line 696]`
+
+Exact root cause:
+- S1 narration ended `... gromadzi wodę,`;
+- S2 began `która spada z wysokości.`;
+- Polish relative pronoun `która` refers to terminal noun `wodę`, not to the S1 visual primary `water reservoir`;
+- `previousVisualPrimaryIsLikelyTerminalAntecedent` tries to locate the English visual primary inside non-English narration;
+- when no lexical match is found it currently returns `true` (fail-closed), which incorrectly asserts that the previous visual primary is the antecedent;
+- this falsely rejects a legitimate visual transition to falling water / penstock pipe;
+- the original generator-anaphora regression remains detectable because `generator` is a real cognate and is positively found at the end of the previous narration.
+
 ## Immediate next step
 
-1. Read this PLAN before the next production action.
-2. Verify Git clean and active project execution count = 0.
-3. Run exactly ONE fresh PL15 on M5 v116 / M6 v8 / M8 v62 / M9 v1.
-4. Follow that single job to terminal state. Do not create another job while it is running.
-5. If it reaches machine QA:
-   - inspect the actual rendered MP4 technically;
-   - review scene-by-scene visual grounding against narration;
-   - review audio/narration continuity.
-6. If it fails:
-   - inspect saved execution/provider data from that exact job;
-   - fix only the demonstrated blocker;
-   - regression test;
-   - deploy only the affected workflow;
-   - update PLAN/Git;
-   - then one new acceptance job.
+1. Read this PLAN before code change.
+2. Change only the three storyboard validators containing `previousVisualPrimaryIsLikelyTerminalAntecedent`.
+3. If the previous visual primary cannot be positively located in narration, return `false` instead of inventing antecedent certainty.
+4. Keep positive terminal matches fail-closed exactly as before.
+5. Add exact `9633` regression:
+   - `... gromadzi wodę,` + `która spada...` may change primary from reservoir to penstock/falling water;
+   - existing generator `Który...` subject-drift regression must still fail.
+6. Run focused scene tests + full suite + JSON/diff checks.
+7. Update PLAN/handoff/evidence; commit/push.
+8. Deploy ONLY M5 after active project executions = 0.
+9. Verify live state and non-M5 fingerprint.
+10. One fresh PL15 only after deploy checkpoint is in GitHub.
 
 ## Acceptance sequence after PL15
 

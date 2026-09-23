@@ -1662,3 +1662,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M5 == Git.
 - Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
 - Next: exactly one fresh PL15.
+
+
+### Fresh PL15 M5 v116 failed on false cross-language antecedent inference — 2026-09-23
+
+- Job `72af62de-3c64-4b48-bf6b-c1395e07abed`.
+- M5 execution `9633`; script_run `b43017d9-d18f-49ae-9396-9f80ee389826`.
+- All three storyboard attempts failed the same anaphora guard:
+  - initial `water reservoir -> falling water`;
+  - repair 1/2 `water reservoir -> penstock pipe`.
+- S1 ends with Polish `wodę`; S2 begins `która...`, so the pronoun refers to water, not the English visual primary `water reservoir`.
+- Helper bug: no lexical match between English primary and non-English narration was treated as positive antecedent evidence.
+- Fix scope: only three storyboard validators. No-match => no inherited-primary restriction; positive terminal lexical matches remain restricted.
+- No new PL15 until regression/full suite/M5-only deploy.
