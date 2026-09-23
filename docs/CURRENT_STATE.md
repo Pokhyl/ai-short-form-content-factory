@@ -1060,3 +1060,13 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Non-M8 workflow fingerprint unchanged.
 - Live M8 == Git; Publisher/Studio 200; no restarts.
 - Next: exactly one fresh PL15 only.
+
+
+## Current blocker: M5 execution 9660 — exact word-count compliance
+
+- Fresh PL15 job `6aa86246-ec15-4514-a688-d150129d35ad` failed in M5 v117.
+- 26-word narration is genuinely too short (12.984 / 13.200 / 13.128 s).
+- Target 29 is justified.
+- Gemini hard retry returned 22 words instead of 29; existing semantic hybrid could only reach 26.
+- Timing/semantic gates remain unchanged.
+- Next: bounded compliance retry + deterministic 9660 regression; no new PL15 before M5 fix/deploy.

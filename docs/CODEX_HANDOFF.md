@@ -1750,3 +1750,16 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M8 core == Git.
 - Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
 - Next: exactly one fresh PL15 and full manual acceptance.
+
+
+### M5 execution 9660 — final exact-word provider non-compliance — 2026-09-23
+
+- Job: `6aa86246-ec15-4514-a688-d150129d35ad`.
+- M5 execution `9660`, v117 `e368d875-ebae-4c7b-ab38-6683c218a1d4`.
+- script_run `a5985b2f-c8b6-4342-9ea9-57b00f9a2f35`.
+- 26-word final narration measured 12.984 / 13.200 / 13.128 s and is genuinely below the PL15 final timing window; do not weaken timing tolerance.
+- Final measured correction target was 29 words.
+- Hard exact retry received scene targets [10,6,4,4,5] but Gemini returned 22 words [8,4,3,3,4].
+- Semantic hybrid could recover only 26 words; validator correctly failed at delta 3 > allowed 2.
+- Root cause: bounded provider response did not comply with exact word-count contract.
+- Fix direction: one additional bounded compliance retry only for this exact non-compliance condition, with explicit previous counts and hard per-line counts; same semantic/timing gates remain.

@@ -502,23 +502,50 @@ Validation:
 - n8n running, restart 0.
 - media worker healthy, restart 0.
 
+## Latest fresh PL15 failure — M5 execution 9660
+
+Job: `6aa86246-ec15-4514-a688-d150129d35ad`
+
+- M5 production version: v117 / `e368d875-ebae-4c7b-ab38-6683c218a1d4`.
+- M5 execution: `9660`.
+- script_run: `a5985b2f-c8b6-4342-9ea9-57b00f9a2f35`.
+- Terminal job state: `script_failed`.
+- Failure: `final measured word-count retry too far from target before TTS: got 26, target 29, allowed delta 2`.
+
+Verified timing evidence for the final 26-word narration:
+- Probe 4: 12.984 s
+- Stability A: 13.200 s
+- Stability B: 13.128 s
+- PL15 final M6 lower timing bound is approximately 14.2 s, so allowing 26 words through would be an invalid weakening of the gate.
+
+Verified provider-contract failure:
+- measured correction correctly requested LONGER / about 29 words;
+- hard exact retry required total 29 with scene targets `[10,6,4,4,5]`;
+- Gemini 3.5 Flash Lite returned only 22 words with counts `[8,4,3,3,4]`;
+- deterministic semantic hybrid could recover only 26 words, still 3 short;
+- therefore current validator correctly failed closed.
+
+Current blocker is not TTS stochasticity and not the timing tolerance. It is non-compliance of the bounded final exact-word Gemini retry.
+
 ## Immediate next step
 
-1. Read this PLAN before the next production action.
-2. Verify Git clean and active project execution count = 0.
-3. Run exactly ONE fresh PL15 on M5 v117 / M6 v8 / M8 v63 / M9 v1.
-4. Follow that job only to terminal state. Do not create another acceptance job while it runs.
-5. If it reaches machine QA:
-   - inspect the actual rendered MP4 technically;
-   - review audio/narration continuity;
-   - review every scene visual against narration.
-6. If manual PL15 acceptance passes:
-   - update PLAN/handoff/evidence and commit/push;
-   - proceed to EN30.
-7. If it fails:
-   - record the exact demonstrated blocker;
-   - fix only that blocker;
-   - no EN30 and no parallel PL15.
+1. Do NOT create another acceptance job.
+2. Keep timing and semantic gates unchanged.
+3. Add one bounded final word-count compliance retry only for the specific `too far from target before TTS` condition.
+4. The compliance retry must receive:
+   - exact previous returned counts;
+   - exact required total;
+   - hard per-scene counts;
+   - immutable original narration;
+   - current semantic-valid narration;
+   - explicit feedback that the previous response violated the count contract.
+5. All other validator/provider/semantic errors must continue directly to script failure.
+6. Validate the compliance response with the same semantic and word-count validator used by the existing final retry.
+7. Add deterministic regression from execution `9660`.
+8. Run focused tests + complete suite + syntax/graph checks.
+9. Update PLAN/handoff/evidence; commit/push.
+10. Deploy ONLY M5 after active project execution count = 0 and verify live M5 == Git / all non-M5 workflows unchanged.
+11. Run exactly one fresh PL15 after deployment.
 
 ## Acceptance sequence after PL15
 
