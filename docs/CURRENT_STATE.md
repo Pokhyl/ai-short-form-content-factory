@@ -1105,3 +1105,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Full suite 290/290 PASS.
 - M5 graph PASS; 59/59 Code-node syntax PASS.
 - Pending: commit/push, M5-only deploy, one fresh PL15.
+
+
+## M5 v119 deployed — 2026-09-23
+
+- M5 v119 activeVersionId `bad8d367-3399-4ada-87c4-3a6d6c044b62`.
+- M6 v8 / M8 v63 / M9 v1 unchanged.
+- Live M5 == Git and non-M5 fingerprint unchanged.
+- Next: one fresh PL15 and full manual acceptance.

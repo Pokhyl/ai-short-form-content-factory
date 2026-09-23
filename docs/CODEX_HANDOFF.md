@@ -1816,3 +1816,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Full suite 290/290 PASS.
 - M5 graph PASS (132 nodes); Code-node syntax 59/59 PASS.
 - Next: M5-only deploy, then one fresh PL15.
+
+
+### M5 v119 continuity fix deployed — 2026-09-23
+
+- Deployed only M5 after active project executions were 0.
+- Before v118 `346ad9c2-1cc2-4c8d-ac37-6ae540b1fff1`.
+- After v119 `bad8d367-3399-4ada-87c4-3a6d6c044b62`.
+- Backup: `.backups/m5-before-9672-continuity-20260923-085258.json`.
+- Non-M5 fingerprint unchanged: `31|c27d87623ffd8872701cef34695d8265`.
+- M6 v8 / M8 v63 / M9 v1 unchanged.
+- Live M5 == Git; Publisher/Studio 200; n8n restart 0; worker healthy restart 0.
+- Next: exactly one fresh PL15.

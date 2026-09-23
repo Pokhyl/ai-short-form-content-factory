@@ -1,0 +1,47 @@
+{
+  "date": "2026-09-23",
+  "status": "deployed_verified",
+  "workflow": "VideoM5Storyboard001",
+  "before": {
+    "versionCounter": 118,
+    "activeVersionId": "346ad9c2-1cc2-4c8d-ac37-6ae540b1fff1"
+  },
+  "after": {
+    "versionCounter": 119,
+    "activeVersionId": "bad8d367-3399-4ada-87c4-3a6d6c044b62"
+  },
+  "backup": ".backups/m5-before-9672-continuity-20260923-085258.json",
+  "other_workflows": {
+    "count": 31,
+    "fingerprint_before": "31|c27d87623ffd8872701cef34695d8265",
+    "fingerprint_after": "31|c27d87623ffd8872701cef34695d8265",
+    "unchanged": true
+  },
+  "live_core_match": true,
+  "publisher_http": 200,
+  "studio_http": 200,
+  "n8n": {
+    "status": "running",
+    "restart_count": 0
+  },
+  "media_worker": {
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0
+  },
+  "unchanged_versions": {
+    "M6": {
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    "M8": {
+      "versionCounter": 63,
+      "activeVersionId": "7256ee89-8b9a-47df-bdc9-66bd2136df35"
+    },
+    "M9": {
+      "versionCounter": 1,
+      "activeVersionId": "5b6c937c-1767-4c3e-99c4-31ea38a26961"
+    }
+  },
+  "next_step": "Run exactly one fresh PL15 and complete manual acceptance."
+}

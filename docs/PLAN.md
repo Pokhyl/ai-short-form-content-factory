@@ -638,18 +638,36 @@ Validation:
 - M5 Code-node syntax: 59/59 PASS;
 - diff/JSON checks: PASS.
 
+## M5 v119 continuity fix deployed and verified
+
+Production:
+- M5: v119 / `bad8d367-3399-4ada-87c4-3a6d6c044b62`
+- M6: v8 / `0bcabe39-ae90-42fe-842b-8a56ad238709`
+- M8: v63 / `7256ee89-8b9a-47df-bdc9-66bd2136df35`
+- M9: v1 / `5b6c937c-1767-4c3e-99c4-31ea38a26961`
+
+Deploy verification:
+- published backup: `.backups/m5-before-9672-continuity-20260923-085258.json`
+- non-M5 fingerprint before/after: `31|c27d87623ffd8872701cef34695d8265`
+- live M5 nodes/connections/settings == Git: PASS
+- Publisher 200
+- Studio 200
+- n8n restart count 0
+- media worker healthy, restart count 0
+
 ## Immediate next step
 
-1. Commit/push M5 continuity fix + 9672 regression.
-2. Read PLAN before production change.
-3. Verify Git clean, active project executions = 0, production versions.
-4. Deploy ONLY M5 with published backup and non-M5 workflow fingerprint.
-5. Verify M5 increments exactly once, live core == Git, non-M5 unchanged, services healthy.
-6. Update PLAN/handoff/evidence; commit/push deploy checkpoint.
-7. Run exactly one fresh PL15.
-8. Follow only that job to terminal state.
-9. If machine QA passes, inspect actual MP4 technically, check final canonical narration/audio silences, and review every visual scene.
-10. Do not proceed to EN30 unless PL15 passes manual acceptance.
+1. Read PLAN before the next production action.
+2. Verify Git clean and active project executions = 0.
+3. Run exactly ONE fresh PL15 on M5 v119 / M6 v8 / M8 v63 / M9 v1.
+4. Follow only that job to terminal state.
+5. If machine QA passes:
+   - inspect actual final MP4 technically;
+   - verify canonical narration remains continuous;
+   - inspect actual audio silence/pause structure;
+   - review every visual scene against narration.
+6. If PL15 passes manual acceptance, checkpoint GitHub and proceed to EN30.
+7. If it fails, record and fix only the exact demonstrated blocker; no parallel job.
 
 ## Acceptance sequence after PL15
 
