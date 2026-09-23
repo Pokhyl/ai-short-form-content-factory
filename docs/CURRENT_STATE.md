@@ -1030,3 +1030,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M5 matches Git; non-M5 fingerprint unchanged.
 - Publisher/Studio 200; no n8n restart; media worker healthy.
 - Next: one fresh PL15 only.
+
+
+## Current blocker: M8 execution 9640 — 2026-09-23
+
+- Job `835c8fc3-7d0b-425f-ab9e-62c19788c8a3`: M5/M6 PASS, M8 FAIL.
+- S3 and S4 both had zero eligible candidates.
+- Confirmed issue is retrieval planning, not missing source material: Commons has suitable generator+turbine-unit and generator-interior photos under structurally better queries.
+- Planned fix: remove process/output pseudo-domains and enrich provider queries with paired-machinery `unit` and inside-location `interior`; scorer unchanged.

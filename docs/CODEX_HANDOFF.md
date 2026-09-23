@@ -1699,3 +1699,18 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Live M5 == Git.
 - Publisher 200; Studio 200; n8n restart 0; media worker healthy restart 0.
 - Next: exactly one fresh PL15.
+
+
+### Fresh PL15 reached M8 v62; S3/S4 retrieval failure — 2026-09-23
+
+- Job `835c8fc3-7d0b-425f-ab9e-62c19788c8a3`.
+- M5 v117 PASS; M6 v8 PASS.
+- M8 execution `9640`, visual_run `27cf596d-0c2f-4e3c-a021-41f6db8a6217`, FAIL on S3.
+- Eligible pools: S1=8, S2=6, S3=0, S4=0, S5=10.
+- S3 requires generator + turbine in a power-station context; S4 requires generator inside plant.
+- Current requests overconstrain repeated generator shots with `electricity` as a hard domain and do not express paired-machinery `unit` / inside-location `interior` structure.
+- Non-mutating Commons diagnostics proved suitable assets are available when the same storyboard intent is queried structurally:
+  - turbine-generator-unit interiors;
+  - hydro generator plant/station interiors.
+- Scorer remains fail-closed; fix request planning only.
+- No new PL15 until M8 regression/full suite/live diagnostic/M8-only deploy.

@@ -421,23 +421,65 @@ Deployment verification:
 - n8n restart count 0
 - media worker healthy, restart count 0
 
+## Latest fresh PL15 result
+
+Job: `835c8fc3-7d0b-425f-ab9e-62c19788c8a3`
+
+Pipeline:
+- M5 v117 PASS
+- M6 v8 PASS
+- M8 v62 FAIL, execution `9640`
+- M9 did not run
+- visual_run `27cf596d-0c2f-4e3c-a021-41f6db8a6217`
+- terminal: `no compliant relevant visual candidate for shot S3-A`
+
+Observed M8 pools:
+- S1: 8 eligible
+- S2: 6 eligible
+- S3: 0 eligible
+- S4: 0 eligible
+- S5: 10 eligible
+
+S3 contract:
+- narration: `Turbina napędza generator,`
+- primary: `electric generator`
+- secondary: `turbine machine`
+- intent: generator connected to turbine in a power station
+
+S4 contract:
+- narration: `Który produkuje prąd.`
+- primary: `electrical generator`
+- intent: electrical generator/equipment generating electricity inside a plant
+
+Confirmed retrieval root causes:
+1. repeated machinery domain inference promotes output/process words such as `electricity` into `domain_context_terms`; this creates a hard metadata gate even though `electricity` is not the machinery domain;
+2. provider queries omit structural retrieval terms already implied by the storyboard:
+   - two mandatory machinery subjects need a combined `... unit` retrieval form;
+   - `inside ... plant/station` needs an `... interior` retrieval form;
+3. scorer behavior is correct to reject the currently returned weak/museum/diagram/context-only results.
+
+Live diagnostic evidence (no production mutation):
+- generic query `hydroelectric generator turbine unit interior` immediately returned real turbine-generator-unit interiors;
+- `hydroelectric generator turbine unit power station` returned turbine-generator units;
+- `hydroelectric plant interior generator` returned real generator installations/interiors;
+- `hydroelectric power station interior generator` returned generator-room images.
+Therefore fix retrieval planning, not QA thresholds.
+
 ## Immediate next step
 
-1. Read this PLAN before the next production action.
-2. Verify Git clean and active project execution count = 0.
-3. Run exactly ONE fresh PL15 on M5 v117 / M6 v8 / M8 v62 / M9 v1.
-4. Follow that single job to terminal state. Do not create another job while it is running.
-5. If it reaches machine QA:
-   - inspect the actual rendered MP4 technically;
-   - review scene-by-scene visual grounding against narration;
-   - review audio/narration continuity.
-6. If it fails:
-   - inspect saved execution/provider data from that exact job;
-   - fix only the demonstrated blocker;
-   - regression test;
-   - deploy only the affected workflow;
-   - update PLAN/Git;
-   - then one new acceptance job.
+1. Read this PLAN before code change.
+2. Modify only M8 request planners; keep scorer/eligibility thresholds unchanged.
+3. Exclude generic process/output terms from repeated machinery domain inference (including electricity/energy/current/voltage).
+4. For retrieval only:
+   - when must_show contains 2+ machinery heads, include those heads plus `unit`;
+   - when visual_intent says inside/interior an operating location, include that location plus `interior`.
+5. Keep these as provider-query enrichment only; do not promote them to hard scorer domains.
+6. Add exact 9640 planner regressions for S3/S4.
+7. Run focused tests + full suite + old 9229 replay.
+8. Run a non-mutating live Wikimedia diagnostic using the new generated queries and current scorer; require at least one eligible S3 and S4 candidate.
+9. Update PLAN/handoff/evidence; commit/push.
+10. Deploy ONLY M8 after active executions = 0 and verify non-M8 fingerprint.
+11. One fresh PL15 only after deploy checkpoint is in GitHub.
 
 ## Acceptance sequence after PL15
 

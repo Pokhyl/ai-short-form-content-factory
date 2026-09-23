@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-23",
+  "status": "m8_failed_confirmed_retrieval_root_cause",
+  "job_id": "835c8fc3-7d0b-425f-ab9e-62c19788c8a3",
+  "m8_execution_id": 9640,
+  "visual_run_id": "27cf596d-0c2f-4e3c-a021-41f6db8a6217",
+  "m8_version": {
+    "versionCounter": 62,
+    "activeVersionId": "90329f54-40fd-4382-92fd-2fd1e9ecea01"
+  },
+  "failure": "M8 visuals failed: no compliant relevant visual candidate for shot S3-A",
+  "eligible_counts": {
+    "S1": 8,
+    "S2": 6,
+    "S3": 0,
+    "S4": 0,
+    "S5": 10
+  },
+  "root_causes": [
+    "electricity/output process vocabulary promoted into repeated machinery domain_context_terms",
+    "paired mandatory machinery not enriched with unit in retrieval",
+    "inside plant/station intent not enriched with interior in retrieval"
+  ],
+  "diagnostic_queries": [
+    {
+      "query": "hydroelectric generator turbine unit interior",
+      "evidence": "returned real turbine-generator-unit interior photos including Wilson Dam generator floor"
+    },
+    {
+      "query": "hydroelectric generator turbine unit power station",
+      "evidence": "returned real turbine-generator units"
+    },
+    {
+      "query": "hydroelectric plant interior generator",
+      "evidence": "returned real hydroelectric generator installation/interior photos"
+    },
+    {
+      "query": "hydroelectric power station interior generator",
+      "evidence": "returned generator-room images"
+    }
+  ],
+  "fix_scope": "M8 request planners only; scorer and eligibility thresholds unchanged.",
+  "next_step": "Implement generic retrieval enrichment, regression/full suite/9229 replay, live non-mutating diagnostic, M8-only deploy."
+}
