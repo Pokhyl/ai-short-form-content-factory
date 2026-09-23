@@ -26,8 +26,8 @@ test('all Gemini HTTP nodes expose errors on main output so n8n retry detector c
     const node=byName[httpName];
     assert.equal(node.type,'n8n-nodes-base.httpRequest',httpName);
     assert.equal(node.retryOnFail,true,httpName);
-    assert.equal(node.maxTries,3,httpName);
-    assert.equal(node.waitBetweenTries,5000,httpName);
+    assert.equal(node.maxTries,5,httpName);
+    assert.equal(node.waitBetweenTries,10000,httpName);
     assert.equal(node.onError,'continueRegularOutput',httpName);
   }
 });

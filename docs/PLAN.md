@@ -1386,3 +1386,9 @@ Controlled Gemini-mode smoke-test blocker — 2026-09-23:
 - `Generate Storyboard` already had n8n transient retry enabled (`retryOnFail=true`, `maxTries=3`, `waitBetweenTries=5000`), so the provider remained unavailable through all existing attempts.
 - This is not a Gemini visual-validation/M8 failure. Do not change M8 for this blocker.
 - Next gate: harden M5 transient-provider retry without adding a new paid service/model, run focused regression tests, deploy only M5 if clean, then rerun one controlled Gemini-mode smoke job.
+
+M5 transient-provider hardening checkpoint:
+- All 11 Gemini HTTP nodes in M5 keep the same model/credential/error routing but now use `maxTries=5` and `waitBetweenTries=10000` instead of 3/5000.
+- No new model, credential, provider, or paid dependency was introduced.
+- Focused M5 regression suite: 14/14 PASS.
+- Next gate: full Node regression suite + diff check. Deploy only M5 if clean.
