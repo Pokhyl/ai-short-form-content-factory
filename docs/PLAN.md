@@ -1,5 +1,9 @@
 # AI Short-Form Content Factory — Production Plan
 
+## Current M5 v128 / M8 v69 smoke — 2026-09-23
+
+Job 3a181937-0ece-4338-b200-582eebea358a created via M3 (how does a lighthouse work?, en, 15s, Gemini visual validation), HTTP 201. Production targets: M5 v128 / 18e33555-e7e7-4ed4-8c86-d87752a42f69; M6 v8; M8 v69 / d073d7d8-3490-468a-bb6a-79771d367059. NEXT: launch this exact job once via /factory/run and trace it to terminal. Do not create another job while unresolved.
+
 ## M5 v128 structural-routing fix deployed — 2026-09-23
 
 - Source 79d3103 published only to VideoM5Storyboard001 as v128, activeVersionId 18e33555-e7e7-4ed4-8c86-d87752a42f69.
