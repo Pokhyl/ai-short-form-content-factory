@@ -1,5 +1,13 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M5 v127 timing-expansion fix deployed — 2026-09-23
+
+- Source 1939e57 published only to VideoM5Storyboard001 as v127, activeVersionId 726a4c13-e945-4e9d-983f-6775e8dc1191.
+- Backup .backups/m5-before-9822-fix.json SHA256 d0325f1578d78fb05ac788a400091292cbfb38b5fcc6dfbf0683f96b6ed4e809.
+- Zero active executions before deploy. Publisher restarted once as required by n8n CLI; healthz 200, restart count 0.
+- Published M5 nodes/connections/settings equal Git. Non-M5 fingerprint remained e01dde3463a9ea3f5b5c693865ab3726. Active executions after verification: 0.
+- NEXT: create exactly one controlled en15 lighthouse Gemini smoke and trace that exact job to terminal.
+
 ## M5 9822 final word-count compliance — source fix verified, 2026-09-23
 
 - v69 smoke job 19044bf3-ba7f-43e3-85cc-87a70463e249 is terminal script_failed before M6: M3 9818 PASS, M4 9820 PASS, M5 9822 ERROR. It did not exercise M8 v69.

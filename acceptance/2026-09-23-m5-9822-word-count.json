@@ -30,7 +30,14 @@
     "git_diff_check": "PASS"
   },
   "production": {
-    "deployed": false,
-    "next": "commit and push, verify zero active executions, back up and deploy only M5, verify published source, then create one controlled Gemini smoke"
+    "deployed": true,
+    "active_m5": "v127 / 726a4c13-e945-4e9d-983f-6775e8dc1191",
+    "backup": ".backups/m5-before-9822-fix.json",
+    "backup_sha256": "d0325f1578d78fb05ac788a400091292cbfb38b5fcc6dfbf0683f96b6ed4e809",
+    "published_source_equal_git": true,
+    "publisher_healthz": 200,
+    "publisher_restart_count": 0,
+    "non_m5_fingerprint_unchanged": "e01dde3463a9ea3f5b5c693865ab3726",
+    "next": "create exactly one controlled Gemini smoke and trace it to terminal"
   }
 }
