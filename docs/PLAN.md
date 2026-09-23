@@ -1344,3 +1344,11 @@ Phase 2 implementation checkpoint:
 - focused Node regressions including the existing Wikimedia depiction work: 63/63 PASS.
 - `git diff --check`: PASS.
 - Full regression suite is the next gate; nothing from Phase 2 is deployed yet.
+
+
+Full regression checkpoint:
+- Full Node suite: 316/316 PASS.
+- media-worker `py_compile`: PASS.
+- `git diff --check`: PASS.
+- Source checkpoint before deployment: `d5bde05`.
+- Next gate: isolated n8n workflow import/schema check, then production migration + targeted M3/M8/API/Studio/media-worker deployment and live verification. No acceptance job before those checks pass.
