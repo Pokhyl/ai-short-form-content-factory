@@ -1157,3 +1157,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Error: `got 27, target 31, allowed delta 2 [line 431]`.
 - Classifier and compliance-route nodes executed, but the bounded compliance Build/Repair/Validate branch did not.
 - Root cause is not yet proven. No M5 change is authorized until exact classifier/router data is inspected.
+
+
+## M5 9687 root cause proven — 2026-09-23
+
+- n8n delivered the final word-count validator error as a string in `$json.error`.
+- The classifier only parsed object-form errors, produced an empty classification message, and set `compliance_retry=false`.
+- The existing bounded compliance retry branch therefore did not run.
+- Fix is limited to classifier error normalization; retry eligibility must remain narrow.

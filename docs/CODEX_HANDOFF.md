@@ -1872,3 +1872,11 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Execution reached final measured word-count retry classification and compliance routing, but did not execute the bounded compliance Build/Repair/Validate nodes.
 - This is a factual failure checkpoint only; root cause remains unproven.
 - Next: inspect exact 9687 classifier/router values and current v119 conditions; no new job and no speculative fix.
+
+
+### M5 execution 9687 root cause — proven
+
+- Raw execution evidence: `$json.error` = string `got 27, target 31, allowed delta 2 [line 431]` (ref 1684).
+- Classifier output: `compliance_retry=false`, `compliance_retry_error_message=""` (ref 857).
+- Current classifier discards string-form errors because it only builds `errorObject` for object-form `$json.error`.
+- Fix only classifier normalization; do not broaden retries to unrelated failures.

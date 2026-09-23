@@ -849,3 +849,27 @@ Immediate next step:
 2. Prove why the bounded compliance retry was not entered for 27 vs target 31.
 3. Record the proven root cause before changing M5.
 4. Do not start another PL15.
+
+
+## M5 execution 9687 — root cause proven
+
+Production evidence:
+- classifier input carried `$json.error` as the string:
+  `got 27, target 31, allowed delta 2 [line 431]`;
+- raw execution ref for that value: `1684`;
+- `Classify Final Measured Word Count Retry Failure` output:
+  - `compliance_retry=false`
+  - `compliance_retry_error_message=""` (raw ref `857`).
+
+Confirmed code defect:
+- classifier only treats `$json.error` as usable when it is an object;
+- string-form n8n errors are discarded before classification;
+- therefore the existing bounded compliance retry was skipped even though the failure came from the final measured word-count retry path.
+
+Fix scope:
+1. Normalize string-form and object-form `$json.error`.
+2. Keep the existing retry class narrow; do not retry arbitrary M5 failures.
+3. Add exact regression for execution 9687 string-form error.
+4. Focused tests, full suite, diff/JSON/Code-node checks.
+5. Checkpoint before M5-only deploy.
+6. No new PL15 until fix is tested and deployed.

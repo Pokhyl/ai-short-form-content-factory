@@ -1,0 +1,20 @@
+{
+  "date": "2026-09-23",
+  "status": "m5_9687_root_cause_proven",
+  "job_id": "bfac49a7-bde2-4ec0-85fc-7dd9b6afbc36",
+  "m5_execution_id": 9687,
+  "script_run_id": "e0bed2f3-7cce-4004-83b9-ced1db6b75de",
+  "failure": "got 27, target 31, allowed delta 2 [line 431]",
+  "classifier_node": "Classify Final Measured Word Count Retry Failure",
+  "router_node": "Route Final Measured Word Count Compliance Retry",
+  "production_observation": {
+    "raw_error_value_ref": 1684,
+    "raw_error_value": "got 27, target 31, allowed delta 2 [line 431]",
+    "classifier_output_compliance_retry": false,
+    "classifier_output_error_message_ref": 857,
+    "classifier_output_error_message": ""
+  },
+  "root_cause": "The classifier only reads $json.error when it is an object. In execution 9687 n8n supplied $json.error as a string, so errorObject became empty, message became empty, compliance_retry was false, and the existing bounded compliance retry branch was skipped.",
+  "fix_scope": "M5 classifier input normalization only. Accept string or object error representations; do not broaden the eligible retry condition beyond the existing final measured word-count too-far-from-target class.",
+  "next_step": "Add regression for string-form n8n error, update classifier to normalize string/object error payloads, run focused/full tests, then checkpoint before M5-only deploy."
+}
