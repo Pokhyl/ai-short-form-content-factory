@@ -1,5 +1,13 @@
 # Codex handoff — production video factory
 
+## v126 smoke terminal — M5/M6 PASS, M7 FAIL, 2026-09-23
+
+- Job 7b5ed96e-36f0-4b19-84b9-bebcf5520138: M3 9797 PASS; coordinator 9798; M4 9799 PASS; M5 9800 PASS on v126 205d2b88-026c-4597-815a-74eeadcd7a9f; M6 9801 PASS; M7 9802 ERROR. No M8/M9.
+- M5 produced a 35-word repaired narration. Probe 3 measured 15288ms; stability measurements 14976/14736ms. This run passed via timing probe 3; it did not exercise the new final measured compliance branch.
+- M6 run d0169f12-e797-4689-9379-629f259a65c1 reused M5 TTS usage key m5-tts-stability-b:f32ce056-73af-4d53-a856-180c94b99c66:3, ledger 1000. Voiceover ID 796f8592-7a94-4de4-bbb6-1d26fc3ba070.
+- M7 alignment run 13d76b67-193b-4554-8e3f-31bca8a2d1c4 failed: “whisper lexical timing exceeds audio duration beyond tolerance: 1614ms”.
+- NEXT: inspect exact stored voiceover artifact/duration and Whisper timing evidence to distinguish artifact mismatch from aligner overrun. Do not weaken tolerance or launch another full job. Production M5 v126 / M6 v8 / M8 v67 unchanged; 329 tests last PASS.
+
 ## Current smoke — M5 v126, 2026-09-23
 
 Created job 7b5ed96e-36f0-4b19-84b9-bebcf5520138 (en15 lighthouse, gemini). Run this exact job once, then trace terminal status. Creation was persisted before /factory/run: check stage/execution state before resuming. M5 active 205d2b88-026c-4597-815a-74eeadcd7a9f; M6 v8; M8 v67. Do not create another job while this one is unresolved.
