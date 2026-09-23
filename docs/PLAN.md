@@ -1,5 +1,13 @@
 # AI Short-Form Content Factory — Production Plan
 
+## Execution 9788 — bounded timing correction fix, 2026-09-23
+
+- Confirmed routing defect: nearest-word fallback could reuse the exact already-measured failing narration, report success, bypass the existing bounded compliance retry, and spend another TTS call without a text correction.
+- Fixed final measured retry/compliance validators: compare joined candidate with saved Probe 4 narration and out-of-window measurement. An unchanged failing draft now raises M5_UNCHANGED_TIMING_DRAFT. The first validator routes that marker to the existing one-shot compliance branch; the compliance validator fails closed if still unchanged. New candidate text still requires actual TTS measurement. No added loop or timing/semantic relaxation.
+- Focused execution-9788 regressions 6/6 PASS; full Node suite 327/327 PASS; git diff --check PASS.
+- Source includes the previous boundary-duplication fix. Production still M5 v124 active 945c1dd0-900c-4aca-9fbb-b1333a56b0fb; M6 v8 and M8 v67 unchanged. Neither M5 fix deployed yet.
+- NEXT: verify zero active publisher executions, back up published M5, deploy only VideoM5Storyboard001 and verify published source; then one controlled Gemini-mode smoke. A passing smoke is not yet claimed.
+
 ## Execution 9788 — verified source fix, 2026-09-23
 
 - Confirmed separate narration defect: final measured hybrid combined S4 ending “rotates continuously” from one draft with S5 starting “continuously to guide” from another. Each scene passed its semantic guard, but the joined text repeated “continuously continuously”. This is NOT proof that duplication caused the duration miss.

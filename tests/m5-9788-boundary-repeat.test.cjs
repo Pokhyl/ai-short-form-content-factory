@@ -27,3 +27,28 @@ for(const [validator,builder,repair] of [
   assert.equal(out.narration_word_count,30);
  });
 }
+
+for (const [validator,builder] of [
+ ['Validate Final Measured Word Count Retry','Build Final Measured Word Count Retry'],
+ ['Validate Final Measured Word Count Compliance Retry','Build Final Measured Word Count Compliance Retry'],
+]) {
+ test('9788 does not re-synthesize a known failing unchanged draft: '+validator,()=>{
+  const rows={
+   [builder]:{base_storyboard:storyboard(base),target_words:32,target_scene_word_counts:[4,5,7,8,8],prior_usage:{}},
+   'Build Final Measured Correction':{base_storyboard:storyboard(base)},
+   'Normalize Timing Probe':{storyboard:storyboard(original)},
+   'Normalize Timing Probe 4':{storyboard:storyboard(base),measured_duration_ms:13704,target_duration_ms:15000,tolerance_ms:750},
+   'Build Script Prompt':{language_code:'en',target_duration_seconds:15},
+  };
+  const $=name=>{if(!rows[name])throw Error('absent branch');return {first:()=>({json:rows[name]})};};
+  const response={statusCode:200,body:{candidates:[{content:{parts:[{text:JSON.stringify({narrations:retry})}]}}]}};
+  const code=workflow.nodes.find(n=>n.name===validator).parameters.jsCode;
+  assert.throws(()=>new Function('$','$json',code)($,response),/M5_UNCHANGED_TIMING_DRAFT/);
+ });
+}
+test('9788 unchanged measured draft routes to the existing bounded compliance retry',()=>{
+ const code=workflow.nodes.find(n=>n.name==='Classify Final Measured Word Count Retry Failure').parameters.jsCode;
+ for(const error of ['M5_UNCHANGED_TIMING_DRAFT measured failing narration requires a text correction before another TTS probe [line 500]',{message:'M5_UNCHANGED_TIMING_DRAFT measured failing narration'}]){
+  assert.equal(new Function('$json',code)({error}).json.compliance_retry,true);
+ }
+});
