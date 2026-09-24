@@ -1,5 +1,12 @@
 # Current State
 
+## v132 smoke terminal / change of repair strategy — 2026-09-24
+
+- Job 959ccc58-868c-439f-8cb1-5bdc03b37158 terminal script_failed: M3 9916 PASS, M4 9918 PASS, M5 9919 ERROR, script run 61fa6ad7-e6c6-4cdd-8814-45f818df96d7. Exact final 34 words vs required 36-42. No TTS/M6-M9.
+- Schema requests returned HTTP 200; structural fields are now present. Remaining failure is word-count/segmentation compliance: initial long scenes were repaired by shortening the narration; second repair ended at 34 total words despite explicit total diagnostics.
+- Two prompt/string-count attempts did not solve this class. NEXT strategy: schema-constrained per-scene word arrays with exact dynamically allocated cardinalities, converted deterministically to existing narration strings before the unchanged semantic/word/duration validators. No invented padding, relaxed bounds or extra retries.
+- Active production M5 v132 35e707f8-53e3-41c2-8aeb-cea85730701a / M8 v69 d073d7d8-3490-468a-bb6a-79771d367059. No active smoke; do not relaunch the failed job.
+
 ## Current v132 smoke — 2026-09-24
 
 Created job 959ccc58-868c-439f-8cb1-5bdc03b37158 (how does a lighthouse work?, en, 15s, gemini). M5 v132 active 35e707f8-53e3-41c2-8aeb-cea85730701a; M6 v8; M8 v69. Creation checkpoint precedes run request. NEXT: launch once and trace this exact job; query actual state before resuming, do not create another job while unresolved.

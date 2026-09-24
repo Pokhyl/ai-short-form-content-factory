@@ -1,0 +1,13 @@
+{
+  "job_id": "959ccc58-868c-439f-8cb1-5bdc03b37158",
+  "execution_id": 9919,
+  "status": "script_failed",
+  "reason": "34, required 36-42",
+  "provider_statuses": [
+    200,
+    200,
+    200
+  ],
+  "schema_accepted": true,
+  "next_strategy": "constrain lexical word-array cardinality; join into existing internal narration contract; retain all gates"
+}
