@@ -1,0 +1,37 @@
+{
+  "date":"2026-09-24",
+  "job_id":"d320d5cb-962e-4a23-8862-552bae58d09a",
+  "m5_execution_id":9864,
+  "status":"failed",
+  "error":"M5 timing repair still outside target: got 13344ms, target 15000ms, tolerance 800ms",
+  "root_cause":{
+    "build_script_prompt":{"word_min":36,"word_max":42,"target_words":38},
+    "initial_generated_words":30,
+    "initial_tts_ms":12024,
+    "final_probe_words":34,
+    "final_probe_ms":13344,
+    "explanation":"The calibrated English budget reached production, but the initial storyboard validators still used a legacy 70%-135% anti-runaway envelope. Therefore a 30-word draft was accepted even though the requested range was 36-42, and too little evidence-grounded semantic content was frozen before TTS."
+  },
+  "fix":{
+    "validators":["Validate Storyboard","Validate Repaired Storyboard","Validate Repaired Storyboard 2"],
+    "before":"hard range derived from 70% of word_min to 135% of word_max",
+    "after":"hard range is the requested word_min-word_max, additionally bounded only by structural scene capacity",
+    "repair_path":"Validate Storyboard -> Build Storyboard Repair -> Validate Repaired Storyboard -> Build Storyboard Repair 2 -> Validate Repaired Storyboard 2",
+    "new_retry_added":false,
+    "tts_speed_changed":false,
+    "timing_tolerance_changed":false,
+    "semantic_gate_relaxed":false
+  },
+  "validation":{
+    "focused_budget_tests":"3/3 PASS",
+    "node_suite":"342/342 PASS",
+    "alignment_dtw":"7/7 PASS",
+    "render_fit":"3/3 PASS",
+    "git_diff_check":"PASS"
+  },
+  "production":{
+    "deployed":false,
+    "active_m5_before":"v129 / 04764504-c7e8-41bc-9bbe-3b3895333245",
+    "next":"commit/push, deploy only M5 after zero-active verification, then one controlled smoke"
+  }
+}

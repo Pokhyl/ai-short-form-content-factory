@@ -1,5 +1,16 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M5 9864 initial requested-range gate — source fix verified, 2026-09-24
+
+- v129 smoke job d320d5cb-962e-4a23-8862-552bae58d09a reached M5 execution 9864 and failed after final Probe 5 at 13344ms versus 15000ms ±800ms.
+- The new English calibration was active: Build Script Prompt produced word_min 36, word_max 42, target 38. Gemini nevertheless returned only 30 words, and the initial validator accepted it.
+- Root cause: Validate Storyboard / Validate Repaired Storyboard / Validate Repaired Storyboard 2 still enforced the legacy 70%-135% anti-runaway envelope rather than the requested narration range. That allowed an underfilled draft into TTS and froze too little evidence-grounded semantic content.
+- Fix: all three initial storyboard validators now require the actual requested word_min-word_max (subject only to structural scene capacity). Underfilled/overfilled text is sent through the already-existing two bounded storyboard repairs; no new retry was added.
+- No TTS speed, timing tolerance, semantic threshold, scene cap, or provider was changed.
+- Validation: focused 3/3 PASS; full Node 342/342 PASS; DTW 7/7 PASS; render-fit 3/3 PASS; git diff --check PASS.
+- Evidence: acceptance/2026-09-24-m5-9864-initial-word-gate.json.
+- NOT deployed yet. NEXT: commit/push, verify zero active executions, back up/deploy only M5, verify published source, then one controlled en15 Gemini smoke.
+
 ## Current M5 v129 / M8 v69 smoke — 2026-09-24
 
 Job d320d5cb-962e-4a23-8862-552bae58d09a created via M3 (how does a lighthouse work?, en, 15s, Gemini visual validation), HTTP 201. Production targets: M5 v129 / 04764504-c7e8-41bc-9bbe-3b3895333245; M6 v8; M8 v69 / d073d7d8-3490-468a-bb6a-79771d367059. NEXT: launch this exact job once via /factory/run and trace it to terminal. Do not create another job while unresolved.

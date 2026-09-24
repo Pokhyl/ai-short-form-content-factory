@@ -52,6 +52,34 @@ test('English initial word budget matches measured production TTS pace',()=>{
   }
 });
 
+test('initial storyboard validators enforce the requested word range before TTS',()=>{
+  const byName=Object.fromEntries(workflow.nodes.map(n=>[n.name,n]));
+  for(const name of [
+    'Validate Storyboard',
+    'Validate Repaired Storyboard',
+    'Validate Repaired Storyboard 2',
+  ]){
+    const js=byName[name].parameters.jsCode;
+    assert.match(js,/Number\(ctx\.word_min\)/,name);
+    assert.match(js,/Number\(ctx\.word_max\)/,name);
+    assert.doesNotMatch(js,/word_min\) \* 0\.70/,name);
+    assert.doesNotMatch(js,/word_max\) \* 1\.35/,name);
+    assert.match(js,/canonical narration word count outside requested range/,name);
+  }
+  assert.equal(
+    workflow.connections['Validate Storyboard'].main[1][0].node,
+    'Build Storyboard Repair'
+  );
+  assert.equal(
+    workflow.connections['Validate Repaired Storyboard'].main[1][0].node,
+    'Build Storyboard Repair 2'
+  );
+  assert.equal(
+    workflow.connections['Validate Repaired Storyboard 2'].main[1][0].node,
+    'Prepare Script Failure'
+  );
+});
+
 test('non-English speech budgets are unchanged by English calibration',()=>{
   const pl=build('pl',15);
   const ru=build('ru',15);

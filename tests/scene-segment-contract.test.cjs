@@ -272,6 +272,7 @@ test('9633 regression: cross-language no-match cannot invent previous visual pri
   const fixture=JSON.parse(
     fs.readFileSync('tests/fixtures/m5-9537-scene-segments.json')
   );
+  fixture['Build Script Prompt'].word_min=18;
   const parsed=JSON.parse(
     fixture.response.body.candidates[0].content.parts[0].text
   );
