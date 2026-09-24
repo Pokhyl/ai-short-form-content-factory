@@ -1,0 +1,13 @@
+{
+  "job_id": "f868467c-6d25-4db1-ad49-9bcd28654d9d",
+  "m8_execution": 9940,
+  "m8_version": 70,
+  "http_node_elapsed_ms": 147434,
+  "failure": "The connection was aborted, perhaps the server is offline",
+  "partial_collector_executed": false,
+  "google_api_connectivity": {
+    "http_status_without_credentials": 403,
+    "seconds": 0.100281
+  },
+  "next": "Bounded provider diagnostic before another full job"
+}

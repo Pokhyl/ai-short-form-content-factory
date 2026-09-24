@@ -1,5 +1,14 @@
 # Current State
 
+## M8 9940 terminal provider failure — 2026-09-24
+
+- Job f868467c-6d25-4db1-ad49-9bcd28654d9d terminal: M3 9934 / M4 9936 / M5 9937 / M6 9938 / M7 9939 PASS; M8 9940 ERROR; no M9. Failed job remains immutable.
+- New single-scene loop reached Gemini request; first scene exhausted bounded HTTP retry and parsing failed with exact “The connection was aborted, perhaps the server is offline”. Collector did not execute on partial results: previous count-mismatch masking is fixed. HTTP node total time147434ms. No scene Vision PASS claimed.
+- VPS can reach Google API normally: unauthenticated models request returned expected403 in0.10s. This rules out a general DNS/TLS outage, not a model-specific overload. Prior M8 9932 had three explicit high-demand503 failures plus one aborted connection.
+- Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v70 abc02f16-0754-49cd-8d32-1adbe439e0aa; unchanged worker. Full Node363/native loop PASS.
+- NEXT: diagnose provider availability with a bounded direct request using the existing credential before another costly full smoke. Do not change model, weaken Vision, or repeatedly launch jobs during the same provider outage. No successful MP4 yet.
+
+
 ## Current v70 smoke — 2026-09-24
 
 Created job `f868467c-6d25-4db1-ad49-9bcd28654d9d`: how does a lighthouse work?, en15, gemini. Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v70 abc02f16-0754-49cd-8d32-1adbe439e0aa. Run accepted exactly once. M3 9934 PASS; coordinator 9935 RUNNING; M4 9936 PASS; M5 9937 PASS; M6 9938 PASS; M7 9939 PASS; M8 9940 RUNNING. M5 passed probe1; final word-slot branch not exercised. Script run 15d2da37-9e44-485c-a4ca-d7719272e93c; TTS ledgers1076–1078. Voiceover 9e4391e0-2c75-4a1b-92a3-21a788282f3b, 15288ms, SHA256 37844c7f5f69d2ed23ce404dfb743d7c775577635daec6ec906080d284548109. NEXT: trace this exact job; query actual state before resuming. Do not relaunch or create another job while unresolved.
