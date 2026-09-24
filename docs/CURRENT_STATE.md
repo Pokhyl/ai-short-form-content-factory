@@ -2,7 +2,7 @@
 
 ## Current provider-recovery smoke — 2026-09-24
 
-Created job `566f4716-888e-46ab-a12d-810c9742fcd2`: how does a lighthouse work?, en15, gemini. Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v70 abc02f16-0754-49cd-8d32-1adbe439e0aa. Run accepted exactly once. M3 9942 PASS; coordinator9943 RUNNING; M4 9944 PASS; M5 9945 PASS; M6 9946 PASS; M7 9947 RUNNING at checkpoint. NEXT: trace this exact job; query actual state before resuming. Do not relaunch or create another job while unresolved.
+Created job `566f4716-888e-46ab-a12d-810c9742fcd2`: how does a lighthouse work?, en15, gemini. Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v70 abc02f16-0754-49cd-8d32-1adbe439e0aa. Run accepted exactly once. M3 9942 PASS; coordinator9943 RUNNING; M4 9944 PASS; M5 9945 PASS; M6 9946 PASS; M7 9947 PASS; M8 9948 RUNNING. Searches45/candidates316/selections0 at checkpoint. Voiceover0b37edaa-526a-425b-a07c-b7c2a5d7375c,14736ms,SHA256780cdf92a837331f61182cd0a9c5aa29f13827d5c60b30b89b6422d653c1479b. NEXT: trace this exact job; query actual state before resuming. Do not relaunch or create another job while unresolved.
 
 
 ## Provider recovery confirmed — 2026-09-24
