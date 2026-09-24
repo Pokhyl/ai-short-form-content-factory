@@ -1,5 +1,10 @@
 # Current State
 
+## Current v135/v71 smoke — 2026-09-24
+
+Created job `b372ee5e-a9a5-45ad-9381-e3bff004d9d9`: how does a lighthouse work?, en15, gemini. Active M5v135 f33831c7-34f5-42f4-b634-7ba4ea64b4fc / M6v8 / M8v71 8f894dcd-b852-4388-af7e-2dbafac73cbf. Creation persisted before launch. NEXT: run once then trace; query actual state before resuming. No other job while unresolved.
+
+
 ## M5 v135 / M8 v71 deployed — 2026-09-24
 
 - Source d1707a8 deployed only to M5 and M8. M5v135 activeVersionId f33831c7-34f5-42f4-b634-7ba4ea64b4fc; M8v71 activeVersionId8f894dcd-b852-4388-af7e-2dbafac73cbf. Both current/published sources match Git. Other workflow fingerprint unchanged c0d31621cc8a6462fb91459a29090869. Publisher restarted once as required, health OK.
