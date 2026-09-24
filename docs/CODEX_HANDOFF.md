@@ -1,5 +1,9 @@
 # Codex handoff — production video factory
 
+## Current v132 smoke — 2026-09-24
+
+Created job 959ccc58-868c-439f-8cb1-5bdc03b37158 (how does a lighthouse work?, en, 15s, gemini). M5 v132 active 35e707f8-53e3-41c2-8aeb-cea85730701a; M6 v8; M8 v69. Creation checkpoint precedes run request. NEXT: launch once and trace this exact job; query actual state before resuming, do not create another job while unresolved.
+
 ## M5 v132 deployed — 2026-09-24
 
 - Source 56d6d1d published only to M5 as v132 activeVersionId 35e707f8-53e3-41c2-8aeb-cea85730701a. Published nodes/connections and current nodes/connections/settings match Git. Other workflows unchanged (fingerprint c6d5e86eab4558051e8b77d36bbfd7da); publisher health OK after required restart.
