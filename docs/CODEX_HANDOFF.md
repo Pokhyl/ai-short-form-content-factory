@@ -1,5 +1,14 @@
 # Codex handoff — production video factory
 
+## M5 9910 structured-output/repair fix — verified source, 2026-09-24
+
+- Saved output confirms preferred_media_type was MISSING in all five shots in both generation and first repair; only second repair added photo, leaving 34 total words. This consumed the bounded repairs on structural omissions while the total-count violation stayed hidden.
+- M5 initial and both repair HTTP requests now send responseJsonSchema, using the same supported API field already active in M8. Schema requires storyboard fields, exact scene/shot/query counts, photo-only enum and existing array bounds. The alternative INSUFFICIENT_EVIDENCE response remains supported. Semantic, word-count and duration validators are unchanged.
+- Both repair builders additionally report total words, requested min/max, target, delta and validity from ALL scene narrations; 9910 explicitly reports 34 / 36-42, target 38, delta +4, invalid even when the first reported error is missing media type.
+- Saved fixture tests/fixtures/m5-9910-storyboard-repair.json. Regression 3/3 PASS; full Node 348/348 PASS; DTW 7/7 PASS; render-fit 3/3 PASS in existing media-worker (local FFmpeg unavailable); diff-check PASS.
+- Evidence: acceptance/2026-09-24-m5-9910-structured-repair.json. No change to providers, retries, quality gates or current M8.
+- NOT deployed yet: M5 v131 active 0b4ba2f6-708d-4fe6-a194-13b2002fb338; M8 v69 d073d7d8-3490-468a-bb6a-79771d367059. NEXT: idle check/backup, deploy only M5, compare published source and other-workflow fingerprint, then one controlled Gemini smoke.
+
 ## Resume 2026-09-24 — M5 9910 terminal confirmed
 
 - Refreshed clean main to 3a9096157b3439752d4c3a5032926f544ed849c3. Actual production confirmed M5 v131 0b4ba2f6-708d-4fe6-a194-13b2002fb338, M6 v8 0bcabe39-ae90-42fe-842b-8a56ad238709, M8 v69 d073d7d8-3490-468a-bb6a-79771d367059.

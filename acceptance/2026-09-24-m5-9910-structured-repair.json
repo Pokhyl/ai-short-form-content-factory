@@ -1,0 +1,29 @@
+{
+  "job_id": "debbf9ba-f15b-471f-8e96-c0b198e70b77",
+  "execution_id": 9910,
+  "status": "script_failed",
+  "root_cause": [
+    "preferred_media_type missing in initial and first repair responses",
+    "first-error validation hid total underfill behind missing media type",
+    "repair diagnostics omitted total requested-range validity"
+  ],
+  "fix": [
+    "responseJsonSchema on initial and both bounded repair requests",
+    "complete total-word diagnostics in both repairs"
+  ],
+  "tests": {
+    "node": {
+      "passed": 348
+    },
+    "dtw": {
+      "passed": 7
+    },
+    "render_fit": {
+      "passed": 3,
+      "environment": "existing media-worker container"
+    },
+    "diff_check": "PASS"
+  },
+  "deployed": false,
+  "schema_reference": "https://ai.google.dev/gemini-api/docs/generate-content/structured-output"
+}

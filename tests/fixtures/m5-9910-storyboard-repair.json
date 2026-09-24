@@ -1,0 +1,385 @@
+{
+  "Generate Storyboard": {
+    "narration": "A lighthouse is a tall physical structure designed to emit light. Inside, a system of lamps and lenses creates a powerful beacon. This bright beam serves as a navigational aid to guide ships safely.",
+    "scenes": [
+      {
+        "scene_id": "S1",
+        "narration": "A lighthouse is a tall physical structure designed to emit light.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S1-A",
+            "visual_intent": "Tall lighthouse tower standing on a rocky coastal shore",
+            "must_show": [
+              "lighthouse tower"
+            ],
+            "must_not_show": [
+              "interior lamps"
+            ],
+            "queries_en": [
+              "lighthouse tower coastal structure",
+              "tall lighthouse building exterior",
+              "lighthouse tower"
+            ]
+          }
+        ]
+      },
+      {
+        "scene_id": "S2",
+        "narration": "Inside, a system of lamps and lenses creates a powerful beacon.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S2-A",
+            "visual_intent": "Large rotating lens and lamp assembly inside lighthouse lantern room",
+            "must_show": [
+              "lighthouse lens"
+            ],
+            "must_not_show": [
+              "computer screen"
+            ],
+            "queries_en": [
+              "lighthouse lamp and lens system",
+              "lighthouse lantern room optics",
+              "lighthouse lens"
+            ]
+          }
+        ]
+      },
+      {
+        "scene_id": "S3",
+        "narration": "This bright beam serves as a navigational aid",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S3-A",
+            "visual_intent": "Bright beam of light shining from a lighthouse tower across the sea",
+            "must_show": [
+              "light beam"
+            ],
+            "must_not_show": [
+              "indoor room"
+            ],
+            "queries_en": [
+              "lighthouse light beam beacon",
+              "navigational light beam at night",
+              "light beam"
+            ]
+          }
+        ]
+      },
+      {
+        "scene_id": "S4",
+        "narration": "to guide ships safely.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S4-A",
+            "visual_intent": "Cargo ship navigating past a coastal lighthouse tower",
+            "must_show": [
+              "cargo ship",
+              "lighthouse tower"
+            ],
+            "must_not_show": [
+              "interior equipment"
+            ],
+            "queries_en": [
+              "ship near coastal lighthouse",
+              "maritime navigation lighthouse and ship",
+              "cargo ship"
+            ]
+          }
+        ]
+      },
+      {
+        "scene_id": "S5",
+        "narration": "Mariners rely on this warning.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S5-A",
+            "visual_intent": "Mariner looking out at sea near a coastal lighthouse beacon",
+            "must_show": [
+              "lighthouse beacon"
+            ],
+            "must_not_show": [
+              "indoor office"
+            ],
+            "queries_en": [
+              "maritime pilot lighthouse beacon",
+              "lighthouse navigational aid view",
+              "lighthouse beacon"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Repair Storyboard": {
+    "narration": "A lighthouse is a tall tower built to emit light. Inside, lamps and lenses create a powerful beam. This bright beacon aids maritime navigation. Ships avoid dangerous coastal hazards. Mariners rely on these warnings.",
+    "scenes": [
+      {
+        "scene_id": "S1",
+        "narration": "A lighthouse is a tall tower built to emit light.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S1-A",
+            "visual_intent": "Tall lighthouse tower standing on a rocky coastal shore",
+            "must_show": [
+              "lighthouse tower"
+            ],
+            "must_not_show": [
+              "interior lamps"
+            ],
+            "queries_en": [
+              "lighthouse tower coastal structure",
+              "tall lighthouse building exterior",
+              "lighthouse tower"
+            ]
+          }
+        ]
+      },
+      {
+        "scene_id": "S2",
+        "narration": "Inside, lamps and lenses create a powerful beam.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S2-A",
+            "visual_intent": "Large rotating lens and lamp assembly inside lighthouse lantern room",
+            "must_show": [
+              "lighthouse lens"
+            ],
+            "must_not_show": [
+              "computer screen"
+            ],
+            "queries_en": [
+              "lighthouse lamp and lens system",
+              "lighthouse lantern room optics",
+              "lighthouse lens"
+            ]
+          }
+        ]
+      },
+      {
+        "scene_id": "S3",
+        "narration": "This bright beacon aids maritime navigation.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S3-A",
+            "visual_intent": "Bright beam of light shining from a lighthouse tower across the sea",
+            "must_show": [
+              "light beam"
+            ],
+            "must_not_show": [
+              "indoor room"
+            ],
+            "queries_en": [
+              "lighthouse light beam beacon",
+              "navigational light beam at night",
+              "light beam"
+            ]
+          }
+        ]
+      },
+      {
+        "scene_id": "S4",
+        "narration": "Ships avoid dangerous coastal hazards.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S4-A",
+            "visual_intent": "Cargo ship navigating past a coastal lighthouse tower",
+            "must_show": [
+              "cargo ship",
+              "lighthouse tower"
+            ],
+            "must_not_show": [
+              "interior equipment"
+            ],
+            "queries_en": [
+              "ship near coastal lighthouse",
+              "maritime navigation lighthouse and ship",
+              "cargo ship"
+            ]
+          }
+        ]
+      },
+      {
+        "scene_id": "S5",
+        "narration": "Mariners rely on these warnings.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S5-A",
+            "visual_intent": "Mariner looking out at sea near a coastal lighthouse beacon",
+            "must_show": [
+              "lighthouse beacon"
+            ],
+            "must_not_show": [
+              "indoor office"
+            ],
+            "queries_en": [
+              "maritime pilot lighthouse beacon",
+              "lighthouse navigational aid view",
+              "lighthouse beacon"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Repair Storyboard 2": {
+    "narration": "A lighthouse is a tall tower built to emit light. Inside, lamps and lenses create a powerful beam. This bright beacon aids maritime navigation. Ships avoid dangerous coastal hazards. Mariners rely on these warnings.",
+    "scenes": [
+      {
+        "scene_id": "S1",
+        "narration": "A lighthouse is a tall tower built to emit light.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S1-A",
+            "visual_intent": "Tall lighthouse tower standing on a rocky coastal shore",
+            "must_show": [
+              "lighthouse tower"
+            ],
+            "must_not_show": [
+              "interior lamps"
+            ],
+            "queries_en": [
+              "lighthouse tower coastal structure",
+              "tall lighthouse building exterior",
+              "lighthouse tower"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S2",
+        "narration": "Inside, lamps and lenses create a powerful beam.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S2-A",
+            "visual_intent": "Large rotating lens and lamp assembly inside lighthouse lantern room",
+            "must_show": [
+              "lighthouse lens"
+            ],
+            "must_not_show": [
+              "computer screen"
+            ],
+            "queries_en": [
+              "lighthouse lamp and lens system",
+              "lighthouse lantern room optics",
+              "lighthouse lens"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S3",
+        "narration": "This bright beacon aids maritime navigation.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S3-A",
+            "visual_intent": "Bright beam of light shining from a lighthouse tower across the sea",
+            "must_show": [
+              "light beam"
+            ],
+            "must_not_show": [
+              "indoor room"
+            ],
+            "queries_en": [
+              "lighthouse light beam beacon",
+              "navigational light beam at night",
+              "light beam"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S4",
+        "narration": "Ships avoid dangerous coastal hazards.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S4-A",
+            "visual_intent": "Cargo ship navigating past a coastal lighthouse tower",
+            "must_show": [
+              "cargo ship",
+              "lighthouse tower"
+            ],
+            "must_not_show": [
+              "interior equipment"
+            ],
+            "queries_en": [
+              "ship near coastal lighthouse",
+              "maritime navigation lighthouse and ship",
+              "cargo ship"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S5",
+        "narration": "Mariners rely on these warnings.",
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S5-A",
+            "visual_intent": "Mariner looking out at sea near a coastal lighthouse beacon",
+            "must_show": [
+              "lighthouse beacon"
+            ],
+            "must_not_show": [
+              "indoor office"
+            ],
+            "queries_en": [
+              "maritime pilot lighthouse beacon",
+              "lighthouse navigational aid view",
+              "lighthouse beacon"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      }
+    ]
+  }
+}
