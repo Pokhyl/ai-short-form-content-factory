@@ -1,5 +1,12 @@
 # Current State
 
+## M5 v135 / M8 v71 deployed — 2026-09-24
+
+- Source d1707a8 deployed only to M5 and M8. M5v135 activeVersionId f33831c7-34f5-42f4-b634-7ba4ea64b4fc; M8v71 activeVersionId8f894dcd-b852-4388-af7e-2dbafac73cbf. Both current/published sources match Git. Other workflow fingerprint unchanged c0d31621cc8a6462fb91459a29090869. Publisher restarted once as required, health OK.
+- Zero active executions before deploy. Backups: .backups/m5-before-9948-contract.json SHA256b1731c67a4dfae19cf4de53440a7fe42c9006e12a29cbc63ab27823fdfabef7b; .backups/m8-before-9948-contract.json SHA256cd71b7691227d1884766668a2d203ab302363bd5f0046b4723fb0d499a28250c. M6v8/worker unchanged.
+- Validation371 Node +7 DTW PASS. NEXT: one fresh en15 Gemini smoke; persist ID before launch. No successful MP4 acceptance yet.
+
+
 ## M8 9948 intent-subject / M5 ambient exclusion fix — source verified, 2026-09-24
 
 - All three M8 request builders now preserve a simple explicitly stated leading subject from visual_intent when absent from must_show. It feeds the existing domain/context query and metadata gate. Exact S4 adds ship to all requests; exact S5 adds lighthouse, including the broad fallback. Planned query provenance remains unchanged. No topic/asset mappings; ambiguous action/context is not inferred from the topic.

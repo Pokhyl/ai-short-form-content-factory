@@ -1,0 +1,17 @@
+{
+  "source_commit": "d1707a8",
+  "M5": {
+    "version": 135,
+    "active_version_id": "f33831c7-34f5-42f4-b634-7ba4ea64b4fc",
+    "backup_sha256": "b1731c67a4dfae19cf4de53440a7fe42c9006e12a29cbc63ab27823fdfabef7b"
+  },
+  "M8": {
+    "version": 71,
+    "active_version_id": "8f894dcd-b852-4388-af7e-2dbafac73cbf",
+    "backup_sha256": "cd71b7691227d1884766668a2d203ab302363bd5f0046b4723fb0d499a28250c"
+  },
+  "source_match": true,
+  "other_fingerprint": "c0d31621cc8a6462fb91459a29090869",
+  "node_tests": 371,
+  "dtw_tests": 7
+}
