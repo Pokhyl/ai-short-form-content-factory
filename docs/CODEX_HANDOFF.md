@@ -1,5 +1,13 @@
 # Codex handoff — production video factory
 
+## Resume 2026-09-24 — M5 9910 terminal confirmed
+
+- Refreshed clean main to 3a9096157b3439752d4c3a5032926f544ed849c3. Actual production confirmed M5 v131 0b4ba2f6-708d-4fe6-a194-13b2002fb338, M6 v8 0bcabe39-ae90-42fe-842b-8a56ad238709, M8 v69 d073d7d8-3490-468a-bb6a-79771d367059.
+- Existing job debbf9ba-f15b-471f-8e96-c0b198e70b77 is terminal script_failed; M5 execution 9910 ERROR, script_run a62a18cb-c496-4533-80e0-af7049597887. Never relaunch this job.
+- Exact final failure: “34, required 36-42 [line 860]”. No M6-M9. Initial scene exceeded 10 words; first repair corrected that but retained invalid preferred_media_type; second repair fixed that while preserving the underfilled 34-word narration.
+- Repair diagnostics currently expose per-scene counts but not total requested-range violations hidden behind first-error validation. M5 HTTP requests enforce JSON MIME only, unlike M8's explicit responseJsonSchema, so invalid photo enum also consumes bounded repairs.
+- NEXT: add complete total-count diagnostics and schema-constrained storyboard structure/photo enum to initial+repair requests, preserve INSUFFICIENT_EVIDENCE branch and all validators, regression-test saved 9910 data, then full suite/targeted M5 deploy/one smoke. No current active job; no new job created during refresh.
+
 ## Current M8 v68 smoke — 2026-09-23
 
 Job ec85da0d-3947-4b02-b29d-a666094e2009 created (en15 lighthouse, gemini). M5 v126 / M6 v8 / M8 v68 active 4f9709cb-b819-417f-8991-fc2c3a4eaebc; worker image 4118f3f06c98. Run accepted. M3 9810 PASS; coordinator 9811; M4 9812 PASS; M5 9813 PASS; M6 9814 PASS; M7 9815 PASS; M8 9816 RUNNING at this checkpoint. NEXT: trace M8 9816 to terminal and inspect Gemini evidence; do not launch this job again or create another job while unresolved.
