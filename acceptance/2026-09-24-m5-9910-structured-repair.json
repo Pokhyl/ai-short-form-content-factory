@@ -24,6 +24,15 @@
     },
     "diff_check": "PASS"
   },
-  "deployed": false,
-  "schema_reference": "https://ai.google.dev/gemini-api/docs/generate-content/structured-output"
+  "deployed": true,
+  "schema_reference": "https://ai.google.dev/gemini-api/docs/generate-content/structured-output",
+  "source_commit": "56d6d1d",
+  "production_M5": {
+    "counter": 132,
+    "activeVersionId": "35e707f8-53e3-41c2-8aeb-cea85730701a"
+  },
+  "backup": ".backups/m5-before-9910-schema.json",
+  "backup_sha256": "82e663cf17cdcbfd50d6e6c930db17766313311d4a09922418dc4d68a6891cc5",
+  "published_source_matches": true,
+  "other_workflows_unchanged": true
 }

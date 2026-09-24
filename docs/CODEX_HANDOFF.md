@@ -1,5 +1,12 @@
 # Codex handoff — production video factory
 
+## M5 v132 deployed — 2026-09-24
+
+- Source 56d6d1d published only to M5 as v132 activeVersionId 35e707f8-53e3-41c2-8aeb-cea85730701a. Published nodes/connections and current nodes/connections/settings match Git. Other workflows unchanged (fingerprint c6d5e86eab4558051e8b77d36bbfd7da); publisher health OK after required restart.
+- Zero active executions before deployment. VPS backup .backups/m5-before-9910-schema.json SHA256 82e663cf17cdcbfd50d6e6c930db17766313311d4a09922418dc4d68a6891cc5.
+- M6 v8 / M8 v69 d073d7d8-3490-468a-bb6a-79771d367059 unchanged. Full validation 348 Node, 7 DTW, 3 render-fit PASS.
+- NEXT: one controlled Gemini en15 lighthouse smoke. Previous job debbf9ba-f15b-471f-8e96-c0b198e70b77 is terminal, not a resumable active job.
+
 ## M5 9910 structured-output/repair fix — verified source, 2026-09-24
 
 - Saved output confirms preferred_media_type was MISSING in all five shots in both generation and first repair; only second repair added photo, leaving 34 total words. This consumed the bounded repairs on structural omissions while the total-count violation stayed hidden.
