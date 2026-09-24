@@ -23,5 +23,14 @@
     "dtw_passed": 7,
     "render_fit_previous_unchanged_worker": 3
   },
-  "deployed": false
+  "deployed": true,
+  "source_commit": "a0f12fa",
+  "production_M5": {
+    "counter": 133,
+    "activeVersionId": "872d0329-8c5d-4302-aaf1-8b041388c5e8"
+  },
+  "published_source_matches": true,
+  "other_workflows_unchanged": true,
+  "backup": ".backups/m5-before-9919-word-arrays.json",
+  "backup_sha256": "36ec22b3f0c3c5824db35ac416582057812e46fd921bd721c5763eaf8d9d6c2a"
 }

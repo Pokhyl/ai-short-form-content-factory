@@ -1,5 +1,11 @@
 # Current State
 
+## M5 v133 word-array contract deployed — 2026-09-24
+
+- Source a0f12fa deployed only to M5: v133 activeVersionId 872d0329-8c5d-4302-aaf1-8b041388c5e8. Published/current source matches Git; non-M5 fingerprint unchanged c6d5e86eab4558051e8b77d36bbfd7da. Publisher healthy after required restart.
+- Zero active executions before deployment. VPS backup .backups/m5-before-9919-word-arrays.json SHA256 36ec22b3f0c3c5824db35ac416582057812e46fd921bd721c5763eaf8d9d6c2a.
+- M6 v8 and M8 v69 unchanged. Validation 355 Node + 7 DTW PASS; render-fit 3/3 on unchanged worker. NEXT: one controlled Gemini en15 lighthouse smoke, persist its ID before run and inspect exact generation/QA results. No successful E2E claimed yet.
+
 ## M5 word-array output contract — source verified, 2026-09-24
 
 - Changed provider representation rather than adding another count prompt/retry: each scene emits narration_words with exactly its schema-allocated item count (en15 target38 => [8,8,8,7,7]). Each item must be one whitespace-free lexical word with attached punctuation.
