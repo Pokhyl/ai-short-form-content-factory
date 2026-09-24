@@ -1,5 +1,10 @@
 # Codex handoff — production video factory
 
+## Current provider-recovery smoke — 2026-09-24
+
+Created job `566f4716-888e-46ab-a12d-810c9742fcd2`: how does a lighthouse work?, en15, gemini. Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v70 abc02f16-0754-49cd-8d32-1adbe439e0aa. Creation persisted before launch. NEXT: run once then trace; query actual state before resuming. No other job while unresolved.
+
+
 ## Provider recovery confirmed — 2026-09-24
 
 - One direct diagnostic request with exact saved M8 9940 S1-A payload, same existing Gemini credential/model, returned HTTP200 in1.358s. Payload41569bytes, responseId B4m1aq6CNsXfnsEPmbKQuQk, three evaluations scores90/95/90, all required booleans true. Usage1284tokens. No credentials or image payload persisted to repository; evidence acceptance/2026-09-24-m8-9940-direct-recovery.json.
