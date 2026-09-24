@@ -1,5 +1,13 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M5 v129 English budget fix deployed — 2026-09-24
+
+- Source d4f1bb9 published only to VideoM5Storyboard001 as v129, activeVersionId 04764504-c7e8-41bc-9bbe-3b3895333245.
+- Backup .backups/m5-before-9847-budget.json SHA256 8f55bf27c48511dc935fc5e0c85bdbe7fd9fe1dc305d87593ffffdc55b559650.
+- Zero active executions before deploy. Publisher restart completed; healthz 200, restart count 0.
+- Published M5 nodes/connections/settings equal Git. Non-M5 fingerprint remains e01dde3463a9ea3f5b5c693865ab3726. Active executions after verification: 0.
+- NEXT: create exactly one controlled en15 lighthouse Gemini smoke and trace it to terminal.
+
 ## M5 9847 English speech-budget calibration — source fix verified, 2026-09-24
 
 - Job 3a181937-0ece-4338-b200-582eebea358a is terminal script_failed in M5 execution 9847; M6-M9 did not run.
