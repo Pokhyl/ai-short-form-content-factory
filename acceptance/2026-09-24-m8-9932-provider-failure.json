@@ -22,5 +22,15 @@
   "selected_voiceover_duration_ms": 14304,
   "m5_version": 134,
   "m8_version": 69,
-  "next": "Bounded M8 transient retry; preserve Vision gates."
+  "next": "Bounded M8 transient retry; preserve Vision gates.",
+  "fix_deployment": {
+    "source_commit": "7e189fc",
+    "version": 70,
+    "active_version_id": "abc02f16-0754-49cd-8d32-1adbe439e0aa",
+    "source_match": true,
+    "non_m8_unchanged": true,
+    "backup_sha256": "30bba1b6d5af7bd89fce40618073f072921e0b2a84b0c6306994bdf3b9689b82",
+    "node_tests": 363,
+    "native_loop_runtime": "PASS"
+  }
 }

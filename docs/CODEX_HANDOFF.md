@@ -1,5 +1,12 @@
 # Codex handoff — production video factory
 
+## M8 v70 deployed — 2026-09-24
+
+- Source 7e189fc published only to M8: v70 activeVersionId `abc02f16-0754-49cd-8d32-1adbe439e0aa`. Current/published source matches Git; non-M8 fingerprint unchanged 5d4b9927849111bd94e5f29b09bc75dc. Publisher restarted as CLI required; health OK.
+- Zero active executions before deployment. Backup `.backups/m8-before-9932-scene-retry.json`, SHA256 30bba1b6d5af7bd89fce40618073f072921e0b2a84b0c6306994bdf3b9689b82. M5 v134 / M6 v8 and worker unchanged.
+- Full Node 363 PASS and native n8n loop runtime PASS. NEXT: one fresh en15 Gemini smoke, persist ID before launch and trace it. No successful MP4 acceptance yet.
+
+
 ## M8 9932 transient retry — source verified, 2026-09-24
 
 - Gemini Vision HTTP now surfaces non-2xx errors (`neverError=false`) and has bounded 5-attempt retry, 5000ms delay. Same provider/model/credential, <=3 images per scene, unchanged parser and Vision gates.
