@@ -1,5 +1,9 @@
 # Codex handoff — production video factory
 
+## Current v133 smoke — 2026-09-24
+
+Created job a872e916-6143-44c6-b68c-515860415f03 (how does a lighthouse work?, en15, gemini). M5 v133 active 872d0329-8c5d-4302-aaf1-8b041388c5e8; M6 v8; M8 v69. Creation checkpoint precedes run request. NEXT: launch once and trace this exact job; query live state before resuming. No additional jobs while unresolved.
+
 ## M5 v133 word-array contract deployed — 2026-09-24
 
 - Source a0f12fa deployed only to M5: v133 activeVersionId 872d0329-8c5d-4302-aaf1-8b041388c5e8. Published/current source matches Git; non-M5 fingerprint unchanged c6d5e86eab4558051e8b77d36bbfd7da. Publisher healthy after required restart.
