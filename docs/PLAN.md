@@ -1,5 +1,14 @@
 # AI Short-Form Content Factory — Production Plan
 
+## v134 smoke terminal at M8 9932 — 2026-09-24
+
+- Job 950862ca-2b65-4a6b-8603-a355980a36fb terminal: M3 9924 PASS, M4 9926 PASS, M5 9928 PASS, M6 9930 PASS, M7 9931 PASS, M8 9932 ERROR; no M9. Do not relaunch.
+- M8 completed 45 searches / 327 candidates / 0 committed selections. Vision S3-A returned two evaluations: candidate1 PASS95; candidate2 FAIL30 because exterior coastline violated its explicit constraint. Other four scenes failed provider calls: three high-demand errors, one connection aborted. Collector reported generic scene-validation-count mismatch; this is not evidence of four semantic rejections.
+- Confirmed configuration gap: Gemini Validate Visuals has no retryOnFail and neverError=true, so transient provider responses reach parsing without retry. M5 already has bounded transient retry. NEXT: implement bounded M8 transient request retries with accurate failure propagation, regression/full tests, targeted M8 deployment, then one fresh job.
+- Audio passed correctly: selected M6 voiceover 60ae4c5f-0ca5-49a5-bff0-56d78685e717 is 14304ms, SHA256 b296bfab5c236c7c44c66297bd6a7998f57654acc4b72e1f86eacbcbb701b31c. M5 diagnostic 13416ms is the median, NOT the selected artifact duration. No duration-gate defect established.
+- Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v69 d073d7d8-3490-468a-bb6a-79771d367059. Worker unchanged. No MP4 acceptance yet.
+
+
 ## Current v134 smoke — 2026-09-24
 
 Created job `950862ca-2b65-4a6b-8603-a355980a36fb`: how does a lighthouse work?, en15, gemini. M5 v134 `a03f1e50-e829-49e7-836a-dc59c1dd192d`; M6 v8; M8 v69. Run accepted exactly once. M3 9924 PASS; coordinator 9925 RUNNING; M4 9926 PASS; M5 9928 PASS; M6 9930 PASS; M7 9931 PASS; M8 9932 RUNNING. M5 passed on probe3; new final word-slot branch was not exercised in this job. Script run 1d6765ea-5c03-4d2e-8047-7df70f667292; TTS ledgers 1070–1075 committed. NEXT: trace this exact job through remaining stages; query actual state before resuming. Do not relaunch it or create another job while unresolved.

@@ -1,0 +1,26 @@
+{
+  "job_id": "950862ca-2b65-4a6b-8603-a355980a36fb",
+  "executions": {
+    "M3": 9924,
+    "M4": 9926,
+    "M5": 9928,
+    "M6": 9930,
+    "M7": 9931,
+    "M8": 9932
+  },
+  "searches": 45,
+  "candidates": 327,
+  "selections": 0,
+  "provider_failures": {
+    "high_demand": 3,
+    "connection_aborted": 1
+  },
+  "S3_A_scores": [
+    95,
+    30
+  ],
+  "selected_voiceover_duration_ms": 14304,
+  "m5_version": 134,
+  "m8_version": 69,
+  "next": "Bounded M8 transient retry; preserve Vision gates."
+}
