@@ -1,5 +1,12 @@
 # AI Short-Form Content Factory — Production Plan
 
+## Provider recovery confirmed — 2026-09-24
+
+- One direct diagnostic request with exact saved M8 9940 S1-A payload, same existing Gemini credential/model, returned HTTP200 in1.358s. Payload41569bytes, responseId B4m1aq6CNsXfnsEPmbKQuQk, three evaluations scores90/95/90, all required booleans true. Usage1284tokens. No credentials or image payload persisted to repository; evidence acceptance/2026-09-24-m8-9940-direct-recovery.json.
+- This establishes that the exact payload is valid and provider responds now. It does NOT turn failed job f868467c-6d25-4db1-ad49-9bcd28654d9d into a passing run or prove full pipeline recovery.
+- Source/production unchanged: M5 v134 / M6 v8 / M8 v70. NEXT: one fresh controlled smoke, persist ID before launch. No source change/deploy needed for a recovered transient provider outage.
+
+
 ## M8 9940 terminal provider failure — 2026-09-24
 
 - Job f868467c-6d25-4db1-ad49-9bcd28654d9d terminal: M3 9934 / M4 9936 / M5 9937 / M6 9938 / M7 9939 PASS; M8 9940 ERROR; no M9. Failed job remains immutable.
