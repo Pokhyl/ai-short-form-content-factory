@@ -1,5 +1,13 @@
 # Current State
 
+## M5 9923 correction — source verified, 2026-09-24
+
+- The two existing final measured exact-count calls now emit `narration_words` keyed by scene, with schema-enforced per-scene array sizes. Adapters reject missing slots, embedded sentences and punctuation-only padding, then join words before unchanged semantic/hybrid/timing checks. No added calls or retries.
+- Existing single compliance branch also handles malformed word slots. Its diagnostics can read the new representation. Known failing narration comparison now ignores punctuation/case, so a comma-only edit cannot consume another probe.
+- Regression covers exact 9923 41-word comma-only draft and measured 13944ms, structural target [9,9,9,8,8], valid string reconstruction, invalid slots and bounded routing. Full Node 361/361 PASS; DTW 7/7 PASS; diff-check PASS. Worker/render unchanged (last render-fit 3/3 PASS).
+- Not deployed yet: active M5 v133 872d0329-8c5d-4302-aaf1-8b041388c5e8; M6 v8; M8 v69. NEXT: zero-active/backup M5-only deployment, exact published-source/other-workflow verification, one fresh smoke. Failed job a872e916-6143-44c6-b68c-515860415f03 remains immutable.
+
+
 ## M5 9923 terminal — 2026-09-24
 
 - Job `a872e916-6143-44c6-b68c-515860415f03` failed: M3 9920 PASS, coordinator 9921 ERROR, M4 9922 PASS, M5 9923 ERROR; no M6–M9. Do not relaunch.
