@@ -1,5 +1,14 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M8 9948 terminal semantic evidence — 2026-09-24
+
+- Job566f4716-888e-46ab-a12d-810c9742fcd2 terminal at M8 9948. M3 9942/M4 9944/M5 9945/M6 9946/M7 9947 PASS; no M9. 45 searches,316 candidates,0 committed selections. Do not relaunch.
+- M8 v70 loop parsed all five scenes correctly. S1 approved3; S2 approved0; S3 approved1; S4 approved0; S5 approved0. Thus provider recovery and five-scene loop proven; semantic acceptance still FAIL.
+- Saved exact sets/evaluations in acceptance/2026-09-24-m8-9948-vision-evidence.json. S4 intent requires a ship near a lighthouse, but all planned queries omit ship and must_show only navigational beacon. S5 intent requires a lighthouse near rocks; must_show only coastal rocks; generic rock fallbacks outrank the explicit subject. S2 forbids generic darkness, excluding a lamp against a dark background; two other lamps were correctly rejected as unlit.
+- NEXT: carry explicitly stated intent subject into M8 query/context relevance when absent from must_show, generically without topic mappings; preserve full intent/Vision gates. Extend M5 diffuse-context exclusion rule for bare lighting/background states, preserving explicit conflicting scene states. Replay saved contracts/provider evidence and full regressions before targeted deploy.
+- Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v70 abc02f16-0754-49cd-8d32-1adbe439e0aa. Latest audio14736ms passed; no MP4 acceptance yet.
+
+
 ## Current provider-recovery smoke — 2026-09-24
 
 Created job `566f4716-888e-46ab-a12d-810c9742fcd2`: how does a lighthouse work?, en15, gemini. Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v70 abc02f16-0754-49cd-8d32-1adbe439e0aa. Run accepted exactly once. M3 9942 PASS; coordinator9943 RUNNING; M4 9944 PASS; M5 9945 PASS; M6 9946 PASS; M7 9947 PASS; M8 9948 RUNNING. Searches45/candidates316/selections0 at checkpoint. Voiceover0b37edaa-526a-425b-a07c-b7c2a5d7375c,14736ms,SHA256780cdf92a837331f61182cd0a9c5aa29f13827d5c60b30b89b6422d653c1479b. NEXT: trace this exact job; query actual state before resuming. Do not relaunch or create another job while unresolved.

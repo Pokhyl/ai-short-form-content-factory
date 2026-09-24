@@ -1,0 +1,628 @@
+{
+  "job_id": "566f4716-888e-46ab-a12d-810c9742fcd2",
+  "execution": 9948,
+  "sets": [
+    {
+      "shot_key": "S1-A",
+      "visual_intent": "A tall lighthouse structure standing near the coastline",
+      "must_show": [
+        "lighthouse tower"
+      ],
+      "must_not_show": [
+        "interior mechanisms"
+      ],
+      "candidates": [
+        {
+          "width": 3550,
+          "author": "Joseph Russo",
+          "height": 5681,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@joseph-russo-430180075",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/a-white-lighthouse-with-a-red-roof-and-a-blue-sky-27640580/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/27640580/pexels-photo-27640580.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "d65b17b5-d97c-4bb0-ab5d-26b38c441c9b",
+          "download_url": "https://images.pexels.com/photos/27640580/pexels-photo-27640580.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "27640580",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 4997,
+          "author": "ArtHouse Studio",
+          "height": 7492,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@arthousestudio",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/dyrholaey-lighthouse-on-snowy-ground-on-cloudy-day-4338256/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/4338256/pexels-photo-4338256.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "5297d119-de6a-484c-a4d8-974c84e7fe66",
+          "download_url": "https://images.pexels.com/photos/4338256/pexels-photo-4338256.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "4338256",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 3000,
+          "author": "tiago alves",
+          "height": 4000,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@tiago-alves-710726839",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/old-brick-tower-standing-against-a-clear-sky-19650905/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/19650905/pexels-photo-19650905.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "3bd6dae8-c0ee-4a0d-86ec-74eeacc82815",
+          "download_url": "https://images.pexels.com/photos/19650905/pexels-photo-19650905.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "19650905",
+          "metadata_rejection_reason": null
+        }
+      ]
+    },
+    {
+      "shot_key": "S2-A",
+      "visual_intent": "A lamp system inside a lighthouse illuminating its surroundings",
+      "must_show": [
+        "lighthouse lamp"
+      ],
+      "must_not_show": [
+        "darkness"
+      ],
+      "candidates": [
+        {
+          "width": 4000,
+          "author": "S. Deniz",
+          "height": 6000,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@s-deniz-310264642",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/vintage-baecon-used-in-a-lighthouse-14199476/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/14199476/pexels-photo-14199476.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "0bfc6d3d-4a9f-4e8a-b663-5e2f1003297d",
+          "download_url": "https://images.pexels.com/photos/14199476/pexels-photo-14199476.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "14199476",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 3000,
+          "author": "Florence",
+          "height": 4000,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@florence-1768458",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/rustic-lighthouse-lamp-by-the-sea-30285137/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "b10deaa1-f630-4294-bffb-8b61a985cd8d",
+          "download_url": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "30285137",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Pedro Sim\u00f5es  from Lisboa, Portugal",
+          "height": 2409,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Lighthouse_lamp.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Lighthouse_lamp.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "preview_url": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Lighthouse_lamp.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "candidate_id": "40af4ebf-1e9a-4ef6-affe-7f0d111863e9",
+          "download_url": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Lighthouse_lamp.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license_name": "CC BY 2.0",
+          "review_bucket": 0,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "8247318",
+          "metadata_rejection_reason": null
+        }
+      ]
+    },
+    {
+      "shot_key": "S3-A",
+      "visual_intent": "Glass lenses inside a lighthouse optic apparatus",
+      "must_show": [
+        "lighthouse lens"
+      ],
+      "must_not_show": [
+        "broken glass"
+      ],
+      "candidates": [
+        {
+          "width": 4160,
+          "author": "Connor Scott McManus",
+          "height": 6240,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@connorscottmcmanus",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/close-up-of-a-device-12951942/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/12951942/pexels-photo-12951942.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "12a6be39-69a9-406a-837c-99275f1140a9",
+          "download_url": "https://images.pexels.com/photos/12951942/pexels-photo-12951942.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 90,
+          "metadata_rejected": true,
+          "provider_asset_id": "12951942",
+          "metadata_rejection_reason": "missing_storyboard_domain_context:optic; missing_primary_subject_anchor:lighthouse lens; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 3981,
+          "author": "Tito Cruz",
+          "height": 5972,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@tito-cruz-683760261",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/lens-in-a-camera-17919952/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/17919952/pexels-photo-17919952.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "042d5ebb-527b-4807-868d-61f023977bed",
+          "download_url": "https://images.pexels.com/photos/17919952/pexels-photo-17919952.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 80,
+          "metadata_rejected": true,
+          "provider_asset_id": "17919952",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:lighthouse lens; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 3024,
+          "author": "Andre Moura",
+          "height": 4032,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@oandremoura",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/black-framed-glass-with-reflection-of-sun-4591175/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/4591175/pexels-photo-4591175.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "b7310a32-454a-4742-866d-d48a1dd58005",
+          "download_url": "https://images.pexels.com/photos/4591175/pexels-photo-4591175.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 79,
+          "metadata_rejected": true,
+          "provider_asset_id": "4591175",
+          "metadata_rejection_reason": "missing_storyboard_domain_context:optic; missing_primary_subject_anchor:lighthouse lens; insufficient_must_show_concept_coverage"
+        }
+      ]
+    },
+    {
+      "shot_key": "S4-A",
+      "visual_intent": "A ship navigating safely near a coastal lighthouse beacon",
+      "must_show": [
+        "navigational beacon"
+      ],
+      "must_not_show": [
+        "airplanes"
+      ],
+      "candidates": [
+        {
+          "width": 7277,
+          "author": "Engin Akyurt",
+          "height": 9702,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@enginakyurt",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/lighthouse-beacon-against-ocean-waves-in-antalya-33653730/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/33653730/pexels-photo-33653730.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "4cedbc92-0d07-42e7-b797-2119f9218c9f",
+          "download_url": "https://images.pexels.com/photos/33653730/pexels-photo-33653730.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 72,
+          "metadata_rejected": true,
+          "provider_asset_id": "33653730",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:navigational beacon; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 2760,
+          "author": "Ma\u00ebl  BALLAND",
+          "height": 3456,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@toulouse",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/lighthouse-in-sea-in-overcast-weather-4484211/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/4484211/pexels-photo-4484211.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "1f5e22f2-e433-4a05-9aa9-5426d5945e6d",
+          "download_url": "https://images.pexels.com/photos/4484211/pexels-photo-4484211.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 64,
+          "metadata_rejected": true,
+          "provider_asset_id": "4484211",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:navigational beacon; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 2160,
+          "author": "Yusuf Emir Han",
+          "height": 3608,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@yusuf-emir-han-1599402950",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/lonely-lighthouse-by-rocky-coastline-29866077/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/29866077/pexels-photo-29866077.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "20e49ca8-d221-4b1d-8797-7f8fe4ef528b",
+          "download_url": "https://images.pexels.com/photos/29866077/pexels-photo-29866077.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 57,
+          "metadata_rejected": true,
+          "provider_asset_id": "29866077",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:navigational beacon; insufficient_must_show_concept_coverage; missing_distinctive_domain_anchor"
+        }
+      ]
+    },
+    {
+      "shot_key": "S5-A",
+      "visual_intent": "A lighthouse marking dangerous coastal rocks and reefs",
+      "must_show": [
+        "coastal rocks"
+      ],
+      "must_not_show": [
+        "calm sandy beach"
+      ],
+      "candidates": [
+        {
+          "width": 4160,
+          "author": "Ionut Vlad",
+          "height": 6240,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@lessmondaysstudio",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/tranquil-coastal-rocks-meeting-turquoise-sea-37438538/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/37438538/pexels-photo-37438538.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "c2847ebd-27b7-47b8-8a4e-619263d53a04",
+          "download_url": "https://images.pexels.com/photos/37438538/pexels-photo-37438538.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "37438538",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Richard West",
+          "height": 1200,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Coastal_Northumberland_,_Harkess_Rocks,_Bamburgh_-_geograph.org.uk_-_2599167.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Coastal_Northumberland_,_Harkess_Rocks,_Bamburgh_-_geograph.org.uk_-_2599167.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+          "preview_url": "https://upload.wikimedia.org/wikipedia/commons/4/49/Coastal_Northumberland_%2C_Harkess_Rocks%2C_Bamburgh_-_geograph.org.uk_-_2599167.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "candidate_id": "a5d22bc3-dca7-4f19-bce5-aaf74aa0ce16",
+          "download_url": "https://upload.wikimedia.org/wikipedia/commons/4/49/Coastal_Northumberland_%2C_Harkess_Rocks%2C_Bamburgh_-_geograph.org.uk_-_2599167.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "license_name": "CC BY-SA 2.0",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "109884658",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "James Allan",
+          "height": 1200,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Coastal_rocks_-_geograph.org.uk_-_2624330.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Coastal_rocks_-_geograph.org.uk_-_2624330.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Coastal_rocks_-_geograph.org.uk_-_2624330.jpg/1920px-Coastal_rocks_-_geograph.org.uk_-_2624330.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "30284e26-4194-48e6-a8fe-442d68cfb270",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Coastal_rocks_-_geograph.org.uk_-_2624330.jpg/1920px-Coastal_rocks_-_geograph.org.uk_-_2624330.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC BY-SA 2.0",
+          "review_bucket": 0,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "110052365",
+          "metadata_rejection_reason": null
+        }
+      ]
+    }
+  ],
+  "vision": [
+    {
+      "shot_key": "S1-A",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 85,
+          "vision_pass": true,
+          "reason": "Shows the top portion of a lighthouse tower clearly without any interior mechanisms."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "Shows a tall lighthouse structure near a snowy coastline clearly with no interior mechanisms."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 90,
+          "vision_pass": true,
+          "reason": "Shows a tall brick lighthouse tower clearly against the sky without any forbidden interior concepts."
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "8afb56b8d291a73e46472fddb3569138753228e0249697210c772c1844362a7b",
+          "bytes": 10266,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "dbcd336b9043eb331a979fe994ab519557562a26bd6a29544e1dee57496f0f76",
+          "bytes": 8857,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "2a4110d4f2368990bbe8604b5133ec3d8bcc3e7767f72c03644949d091bd19fa",
+          "bytes": 10360,
+          "mime_type": "image/webp"
+        }
+      ]
+    },
+    {
+      "shot_key": "S2-A",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 40,
+          "vision_pass": false,
+          "reason": "Shows a lighthouse lamp indoors without any illumination effect."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 50,
+          "vision_pass": false,
+          "reason": "Shows an outdoor lighthouse lamp fixture that is turned off."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_not_show_clear": false,
+          "intent_match": false,
+          "match_score": 30,
+          "vision_pass": false,
+          "reason": "Shows a lighthouse lamp, but it is set against a stark darkness background violating the negative constraint."
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "48d93e32fcc16434d23ef4acefa737e8b5f479d59b19404d53e356a903ccbc46",
+          "bytes": 23576,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "0bd94025339b3aa61244f98acc071ad990e38717cece75e50f1101a34a5f5463",
+          "bytes": 14955,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "9cb84f79d340fe97956c9f822d92f7a510ea5328722a81029e19c194b17489a2",
+          "bytes": 401373,
+          "mime_type": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "shot_key": "S3-A",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "Clear depiction of a blue lighthouse Fresnel lens apparatus without any broken glass."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": false,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 10,
+          "vision_pass": false,
+          "reason": "Shows a camera lens aperture rather than a lighthouse optic apparatus."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": false,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 20,
+          "vision_pass": false,
+          "reason": "Shows a backlit circular optical device or porthole, not a distinct lighthouse lens."
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "02cea8dca25265e527e73c12b47318b955fb008cd4fb8ded04ce05ed0054849b",
+          "bytes": 19998,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "d5e11d251f95197f7803010e9cb36fa91d8b60987f6e1279e515f860b52cb1a9",
+          "bytes": 4906,
+          "mime_type": "image/webp"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "72698d5baf5c17cd8074c3751e9053d3ca267f28e1e11cf7147849a7ef53df30",
+          "bytes": 9014,
+          "mime_type": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "shot_key": "S4-A",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 40,
+          "vision_pass": false,
+          "reason": "Shows a navigational beacon in water, but no ship is visible."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 40,
+          "vision_pass": false,
+          "reason": "Shows a navigational beacon, but no ship is present."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 40,
+          "vision_pass": false,
+          "reason": "Shows a navigational beacon near a coast, but no ship is navigating."
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "a1eff84190283d40d965d2f98197d5fb11cef7f34880711de1248179014661ea",
+          "bytes": 26459,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "7ae3d8a92d78508c6774217b59ed9a32db7b0dbd9c82d9dc1ffd6c6d33b35b86",
+          "bytes": 12755,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "4602ab1bf151400d6846c9e4c3ba0d9da5acc7487c5864784dfc2811efe9b6db",
+          "bytes": 8754,
+          "mime_type": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "shot_key": "S5-A",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 40,
+          "vision_pass": false,
+          "reason": "Coastal rocks and ocean are visible, but there is no lighthouse."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 30,
+          "vision_pass": false,
+          "reason": "Coastal rocks and ocean are present, but a lighthouse is missing."
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "336c5ec8f102d954ca15e45e20e40e4a65fb63157077dcb7cc1e52d4a8150545",
+          "bytes": 21204,
+          "mime_type": "image/webp"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "f9fe69ceffae6d7f6860906e1b03599eeea5b2bddbd187d03793137178d571ac",
+          "bytes": 607939,
+          "mime_type": "image/jpeg"
+        }
+      ]
+    }
+  ]
+}

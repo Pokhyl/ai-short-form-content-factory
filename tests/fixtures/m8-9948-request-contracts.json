@@ -1,0 +1,353 @@
+[
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "f3ed2c16-b9ed-4b4b-9ee9-615da3a7da0a",
+    "shot_key": "S1-A",
+    "scene_order": 1,
+    "query_index": 1,
+    "query": "tall lighthouse tower structure",
+    "provider_query": "tall lighthouse tower structure",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "A tall lighthouse structure standing near the coastline",
+    "must_show": [
+      "lighthouse tower"
+    ],
+    "must_not_show": [
+      "interior mechanisms"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "f3ed2c16-b9ed-4b4b-9ee9-615da3a7da0a",
+    "shot_key": "S1-A",
+    "scene_order": 1,
+    "query_index": 2,
+    "query": "coastal lighthouse building exterior",
+    "provider_query": "coastal lighthouse building exterior",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "A tall lighthouse structure standing near the coastline",
+    "must_show": [
+      "lighthouse tower"
+    ],
+    "must_not_show": [
+      "interior mechanisms"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "f3ed2c16-b9ed-4b4b-9ee9-615da3a7da0a",
+    "shot_key": "S1-A",
+    "scene_order": 1,
+    "query_index": 3,
+    "query": "lighthouse tower",
+    "provider_query": "lighthouse tower",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "A tall lighthouse structure standing near the coastline",
+    "must_show": [
+      "lighthouse tower"
+    ],
+    "must_not_show": [
+      "interior mechanisms"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "eaee28fc-6852-4c56-9c4c-2528cd648cf9",
+    "shot_key": "S2-A",
+    "scene_order": 2,
+    "query_index": 1,
+    "query": "lighthouse lamp system equipment",
+    "provider_query": "lighthouse lamp system equipment",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "A lamp system inside a lighthouse illuminating its surroundings",
+    "must_show": [
+      "lighthouse lamp"
+    ],
+    "must_not_show": [
+      "darkness"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "eaee28fc-6852-4c56-9c4c-2528cd648cf9",
+    "shot_key": "S2-A",
+    "scene_order": 2,
+    "query_index": 2,
+    "query": "lamp mechanism inside lighthouse",
+    "provider_query": "lamp mechanism inside lighthouse",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "A lamp system inside a lighthouse illuminating its surroundings",
+    "must_show": [
+      "lighthouse lamp"
+    ],
+    "must_not_show": [
+      "darkness"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "eaee28fc-6852-4c56-9c4c-2528cd648cf9",
+    "shot_key": "S2-A",
+    "scene_order": 2,
+    "query_index": 3,
+    "query": "lighthouse lamp",
+    "provider_query": "lighthouse lamp",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "A lamp system inside a lighthouse illuminating its surroundings",
+    "must_show": [
+      "lighthouse lamp"
+    ],
+    "must_not_show": [
+      "darkness"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "2270a139-3dcf-4d3f-8195-fe4bd06daad8",
+    "shot_key": "S3-A",
+    "scene_order": 3,
+    "query_index": 1,
+    "query": "lighthouse glass lens optic system",
+    "provider_query": "lighthouse glass lens optic system",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "Glass lenses inside a lighthouse optic apparatus",
+    "must_show": [
+      "lighthouse lens"
+    ],
+    "must_not_show": [
+      "broken glass"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [
+      "optic"
+    ],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "2270a139-3dcf-4d3f-8195-fe4bd06daad8",
+    "shot_key": "S3-A",
+    "scene_order": 3,
+    "query_index": 2,
+    "query": "fresnel lens lighthouse equipment",
+    "provider_query": "optic fresnel lens lighthouse equipment",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "Glass lenses inside a lighthouse optic apparatus",
+    "must_show": [
+      "lighthouse lens"
+    ],
+    "must_not_show": [
+      "broken glass"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [
+      "optic"
+    ],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "2270a139-3dcf-4d3f-8195-fe4bd06daad8",
+    "shot_key": "S3-A",
+    "scene_order": 3,
+    "query_index": 3,
+    "query": "lighthouse lens",
+    "provider_query": "optic lighthouse lens",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "Glass lenses inside a lighthouse optic apparatus",
+    "must_show": [
+      "lighthouse lens"
+    ],
+    "must_not_show": [
+      "broken glass"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [
+      "optic"
+    ],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "172266c4-4df0-4fa6-b7e3-d8fd963c5d21",
+    "shot_key": "S4-A",
+    "scene_order": 4,
+    "query_index": 1,
+    "query": "maritime navigational beacon lighthouse",
+    "provider_query": "maritime navigational beacon lighthouse",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "A ship navigating safely near a coastal lighthouse beacon",
+    "must_show": [
+      "navigational beacon"
+    ],
+    "must_not_show": [
+      "airplanes"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "172266c4-4df0-4fa6-b7e3-d8fd963c5d21",
+    "shot_key": "S4-A",
+    "scene_order": 4,
+    "query_index": 2,
+    "query": "navigational aid lighthouse sea",
+    "provider_query": "navigational aid lighthouse sea",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "A ship navigating safely near a coastal lighthouse beacon",
+    "must_show": [
+      "navigational beacon"
+    ],
+    "must_not_show": [
+      "airplanes"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "172266c4-4df0-4fa6-b7e3-d8fd963c5d21",
+    "shot_key": "S4-A",
+    "scene_order": 4,
+    "query_index": 3,
+    "query": "navigational beacon",
+    "provider_query": "navigational beacon",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "A ship navigating safely near a coastal lighthouse beacon",
+    "must_show": [
+      "navigational beacon"
+    ],
+    "must_not_show": [
+      "airplanes"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "ed7fc907-d295-42d9-86f8-31e42a1cb3ba",
+    "shot_key": "S5-A",
+    "scene_order": 5,
+    "query_index": 1,
+    "query": "lighthouse marking dangerous reefs coastal rocks",
+    "provider_query": "lighthouse marking dangerous reefs coastal rocks",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "A lighthouse marking dangerous coastal rocks and reefs",
+    "must_show": [
+      "coastal rocks"
+    ],
+    "must_not_show": [
+      "calm sandy beach"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "ed7fc907-d295-42d9-86f8-31e42a1cb3ba",
+    "shot_key": "S5-A",
+    "scene_order": 5,
+    "query_index": 2,
+    "query": "rocky coastline hazard lighthouse coastal rocks",
+    "provider_query": "rocky coastline hazard lighthouse coastal rocks",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "A lighthouse marking dangerous coastal rocks and reefs",
+    "must_show": [
+      "coastal rocks"
+    ],
+    "must_not_show": [
+      "calm sandy beach"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  },
+  {
+    "visual_run_id": "56ed87c3-9402-4c03-86b5-ff9d6adc81fa",
+    "shot_uuid": "ed7fc907-d295-42d9-86f8-31e42a1cb3ba",
+    "shot_key": "S5-A",
+    "scene_order": 5,
+    "query_index": 3,
+    "query": "coastal rocks",
+    "provider_query": "coastal rocks",
+    "provider": "pexels",
+    "endpoint_kind": "photo",
+    "preferred_media_type": "photo",
+    "visual_intent": "A lighthouse marking dangerous coastal rocks and reefs",
+    "must_show": [
+      "coastal rocks"
+    ],
+    "must_not_show": [
+      "calm sandy beach"
+    ],
+    "primary_repeated": false,
+    "domain_context_terms": [],
+    "visual_detail_terms": [],
+    "retrieval_structure_terms": []
+  }
+]
