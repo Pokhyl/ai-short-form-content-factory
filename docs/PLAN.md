@@ -1,5 +1,10 @@
 # AI Short-Form Content Factory — Production Plan
 
+## Current v70 smoke — 2026-09-24
+
+Created job `f868467c-6d25-4db1-ad49-9bcd28654d9d`: how does a lighthouse work?, en15, gemini. Active M5 v134 a03f1e50-e829-49e7-836a-dc59c1dd192d / M6 v8 / M8 v70 abc02f16-0754-49cd-8d32-1adbe439e0aa. Creation persisted before launch. NEXT: run once then trace; query actual state before resuming. No other job while unresolved.
+
+
 ## M8 v70 deployed — 2026-09-24
 
 - Source 7e189fc published only to M8: v70 activeVersionId `abc02f16-0754-49cd-8d32-1adbe439e0aa`. Current/published source matches Git; non-M8 fingerprint unchanged 5d4b9927849111bd94e5f29b09bc75dc. Publisher restarted as CLI required; health OK.
