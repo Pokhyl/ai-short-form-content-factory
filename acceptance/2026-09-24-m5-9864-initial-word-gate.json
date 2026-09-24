@@ -30,8 +30,14 @@
     "git_diff_check":"PASS"
   },
   "production":{
-    "deployed":false,
-    "active_m5_before":"v129 / 04764504-c7e8-41bc-9bbe-3b3895333245",
-    "next":"commit/push, deploy only M5 after zero-active verification, then one controlled smoke"
+    "deployed":true,
+    "active_m5":"v130 / f6e328cd-707b-48ef-b8f4-7ce7cc19c17d",
+    "backup":".backups/m5-before-9864-gate.json",
+    "backup_sha256":"240f83d624d36761182d4cb3663935ebab8a2584485b48d0faa4c5bec791ccde",
+    "published_source_equal_git":true,
+    "publisher_healthz":200,
+    "publisher_restart_count":0,
+    "non_m5_fingerprint_unchanged":"e01dde3463a9ea3f5b5c693865ab3726",
+    "next":"create exactly one controlled en15 Gemini smoke and trace it to terminal"
   }
 }

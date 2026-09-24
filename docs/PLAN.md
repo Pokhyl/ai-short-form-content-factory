@@ -1,5 +1,13 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M5 v130 requested-range gate deployed — 2026-09-24
+
+- Source bb2bcb2 published only to VideoM5Storyboard001 as v130, activeVersionId f6e328cd-707b-48ef-b8f4-7ce7cc19c17d.
+- Backup .backups/m5-before-9864-gate.json SHA256 240f83d624d36761182d4cb3663935ebab8a2584485b48d0faa4c5bec791ccde.
+- Zero active executions before deploy. Publisher restart completed; healthz 200, restart count 0.
+- Published M5 nodes/connections/settings equal Git. Non-M5 fingerprint remains e01dde3463a9ea3f5b5c693865ab3726. Active executions after verification: 0.
+- NEXT: create exactly one controlled en15 lighthouse Gemini smoke and trace it to terminal.
+
 ## M5 9864 initial requested-range gate — source fix verified, 2026-09-24
 
 - v129 smoke job d320d5cb-962e-4a23-8862-552bae58d09a reached M5 execution 9864 and failed after final Probe 5 at 13344ms versus 15000ms ±800ms.
