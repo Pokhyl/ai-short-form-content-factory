@@ -1,0 +1,27 @@
+{
+  "job_id": "a872e916-6143-44c6-b68c-515860415f03",
+  "execution_ids": {
+    "M3": 9920,
+    "coordinator": 9921,
+    "M4": 9922,
+    "M5": 9923
+  },
+  "status": "script_failed",
+  "m5_active_version": "872d0329-8c5d-4302-aaf1-8b041388c5e8",
+  "initial_words": 38,
+  "final_target_words": 43,
+  "final_actual_words": 41,
+  "probe4_ms": [
+    13944,
+    13944,
+    13944
+  ],
+  "probe5_ms": [
+    12528,
+    12828,
+    13128
+  ],
+  "target_ms": 15000,
+  "tolerance_ms": 800,
+  "next": "Fix late exact-count output contract and punctuation-only no-op; retain all gates."
+}

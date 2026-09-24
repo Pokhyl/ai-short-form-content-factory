@@ -1,5 +1,15 @@
 # Codex handoff — production video factory
 
+## M5 9923 terminal — 2026-09-24
+
+- Job `a872e916-6143-44c6-b68c-515860415f03` failed: M3 9920 PASS, coordinator 9921 ERROR, M4 9922 PASS, M5 9923 ERROR; no M6–M9. Do not relaunch.
+- M5 v133 `872d0329-8c5d-4302-aaf1-8b041388c5e8`; M6 v8; M8 v69 `d073d7d8-3490-468a-bb6a-79771d367059` unchanged.
+- Initial structural word-array contract worked: 38 words, probe 12048ms. Early timing drafts added unsupported descriptive terms and were rejected by existing semantic guards.
+- Later exact-count repairs still use unconstrained strings: requested 43 words ([9,9,9,8,8]), returned 41. Probe4 stayed 13944ms. Final retry returned original38 and hybrid/no-op guard rejected it; compliance changed only a comma, retained41 and reached probe5 12528/12828/13128ms. Final target 15000±800ms failed.
+- Confirmed defects: late provider representation does not enforce its count contract; punctuation-only changes bypass the no-op guard. Neither duration nor semantic tolerance should change.
+- NEXT: structural count contract for existing late exact-count repairs plus lexical no-op detection; saved-response regressions, full tests, M5-only safe deploy, then exactly one fresh smoke. No successful MP4/visual acceptance yet.
+
+
 ## Current v133 smoke — 2026-09-24
 
 Created job a872e916-6143-44c6-b68c-515860415f03 (how does a lighthouse work?, en15, gemini). M5 v133 active 872d0329-8c5d-4302-aaf1-8b041388c5e8; M6 v8; M8 v69. Creation checkpoint precedes run request. NEXT: launch once and trace this exact job; query live state before resuming. No additional jobs while unresolved.
