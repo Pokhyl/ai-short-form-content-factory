@@ -1053,7 +1053,7 @@
           "response": {
             "response": {
               "fullResponse": true,
-              "neverError": true
+              "neverError": false
             }
           },
           "timeout": 120000,
@@ -1079,7 +1079,10 @@
           "name": "Gemini Text"
         }
       },
-      "onError": "continueRegularOutput"
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1158,6 +1161,20 @@
         }
       },
       "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "ebae0efc-d87d-41b5-b222-568a98b844ea",
+      "name": "Loop Gemini Scene Validation",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4880,
+        20
+      ]
     }
   ],
   "connections": {
@@ -1707,7 +1724,7 @@
       "main": [
         [
           {
-            "node": "Gemini Validate Visuals",
+            "node": "Loop Gemini Scene Validation",
             "type": "main",
             "index": 0
           }
@@ -1736,7 +1753,7 @@
       "main": [
         [
           {
-            "node": "Collect Gemini Selections",
+            "node": "Loop Gemini Scene Validation",
             "type": "main",
             "index": 0
           }
@@ -1798,6 +1815,24 @@
         [
           {
             "node": "Prepare Visual Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Gemini Scene Validation": {
+      "main": [
+        [
+          {
+            "node": "Collect Gemini Selections",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gemini Validate Visuals",
             "type": "main",
             "index": 0
           }

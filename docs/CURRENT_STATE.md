@@ -1,5 +1,13 @@
 # Current State
 
+## M8 9932 transient retry — source verified, 2026-09-24
+
+- Gemini Vision HTTP now surfaces non-2xx errors (`neverError=false`) and has bounded 5-attempt retry, 5000ms delay. Same provider/model/credential, <=3 images per scene, unchanged parser and Vision gates.
+- Installed n8n engine checks only first returned item's error for retry, and caps waitBetweenTries at 5000ms. Therefore added native splitInBatches v3, batchSize1: each scene independently requests/retries/parses; success loops to next scene; done collects all parsed results. Exhausted errors go to existing failure branch, avoiding misleading partial-collection count errors. No reset or retry cycle was added around the loop.
+- Full Node 363/363 PASS; DTW 7/7 last PASS; worker unchanged. Installed native loop runtime regression PASS (five single-scene iterations, exact five-result collection), without provider calls or importing test workflows. Regression source tests/n8n-gemini-loop-runtime.cjs.
+- Not deployed yet. M5 v134 / M6 v8 / M8 v69 unchanged. NEXT: zero-active/backup, deploy only M8, verify published source + non-M8 fingerprint, then one fresh smoke. Latest failed job 950862ca-2b65-4a6b-8603-a355980a36fb remains immutable.
+
+
 ## v134 smoke terminal at M8 9932 — 2026-09-24
 
 - Job 950862ca-2b65-4a6b-8603-a355980a36fb terminal: M3 9924 PASS, M4 9926 PASS, M5 9928 PASS, M6 9930 PASS, M7 9931 PASS, M8 9932 ERROR; no M9. Do not relaunch.

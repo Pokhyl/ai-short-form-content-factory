@@ -382,3 +382,33 @@ test('media worker keeps per-candidate preview failures but fails when every pre
   assert.match(source, /raise ValueError\("no visual previews could be fetched"\)/);
   assert.match(source, /"failure_count": len\(failures\)/);
 });
+
+test('9932 provider retries run for one scene and only completed scenes reach collection', () => {
+  const loop=node(m8,'Loop Gemini Scene Validation');
+  assert.equal(loop.type,'n8n-nodes-base.splitInBatches');
+  assert.equal(loop.typeVersion,3);
+  assert.equal(loop.parameters.batchSize,1);
+  assert.deepEqual(loop.parameters.options,{}); // no reset / unbounded retry loop
+  assert.equal(m8.connections['Build Gemini Vision Request'].main[0][0].node,loop.name);
+  assert.equal(m8.connections[loop.name].main[1][0].node,'Gemini Validate Visuals');
+  assert.equal(m8.connections['Parse Gemini Vision Result'].main[0][0].node,loop.name);
+  assert.equal(m8.connections[loop.name].main[0][0].node,'Collect Gemini Selections');
+  assert.equal(m8.connections['Parse Gemini Vision Result'].main[1][0].node,'Prepare Visual Failure');
+  const request=node(m8,'Gemini Validate Visuals');
+  assert.equal(request.retryOnFail,true);
+  assert.equal(request.maxTries,5);
+  assert.equal(request.waitBetweenTries,5000); // installed engine maximum
+  assert.equal(request.parameters.options.response.response.neverError,false);
+});
+
+test('9932 exhausted provider failures remain errors rather than semantic rejections', () => {
+  const errors=[
+    {statusCode:503,body:{error:{message:'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.'}}},
+    {error:{message:'The connection was aborted, perhaps the server is offline'}},
+  ];
+  for(const json of errors){
+    assert.throws(()=>runCode('Parse Gemini Vision Result',{
+      json,refs:{'Build Gemini Vision Request':{item:{json:{shot_key:'S2-A',candidates:[{}]}}}},
+    }),/high demand|connection was aborted/);
+  }
+});
