@@ -1,5 +1,13 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M5 v131 diffuse-context fix deployed — 2026-09-24
+
+- Source 405673c published only to VideoM5Storyboard001 as v131, activeVersionId 0b4ba2f6-708d-4fe6-a194-13b2002fb338.
+- Backup .backups/m5-before-9892-context.json SHA256 42473c19842dc3288f9d8134181232c79e911c440861c352c3f7ca81bd9d9840.
+- Zero active executions before deploy. Publisher restart completed; healthz 200, restart count 0.
+- Published M5 nodes/connections/settings equal Git. Non-M5 fingerprint remains e01dde3463a9ea3f5b5c693865ab3726. M8 remains v69 d073d7d8-3490-468a-bb6a-79771d367059.
+- NEXT: create exactly one controlled en15 lighthouse Gemini smoke and trace it to terminal.
+
 ## M8 9892 diffuse-context false exclusion — M5 source fix verified, 2026-09-24
 
 - Job 6f41542b-b6db-46c5-9342-0f98435a08ca passed M3 9879, M4 9881, M5 9884, M6 9888 and M7 9889. M8 9892 failed; M9 did not run.
