@@ -1,5 +1,14 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M5 word-array output contract — source verified, 2026-09-24
+
+- Changed provider representation rather than adding another count prompt/retry: each scene emits narration_words with exactly its schema-allocated item count (en15 target38 => [8,8,8,7,7]). Each item must be one whitespace-free lexical word with attached punctuation.
+- Provider schema alternatives bind each scene_id to its exact cardinality. Three existing validators deterministically join arrays into the established narration strings, then execute unchanged evidence, language, semantic, word-range, scene and pacing checks. Missing words, embedded sentences, and punctuation-only padding fail closed. INSUFFICIENT_EVIDENCE remains a schema alternative.
+- Only initial storyboard generation/its two existing repairs use this representation. DB contract, timing-repair interfaces, narration semantics, TTS and quality thresholds are unchanged.
+- Regression: all three adapters preserve an existing valid production narration exactly and reject malformed token arrays; schema allocates the calibrated target exactly. Node 355/355 PASS; DTW 7/7 PASS; render-fit 3/3 passed earlier this turn on unchanged worker; diff-check PASS.
+- Current production still M5 v132 active 35e707f8-53e3-41c2-8aeb-cea85730701a / M8 v69. Job 959ccc58-868c-439f-8cb1-5bdc03b37158 terminal M5 9919.
+- NEXT: commit/push, idle/backup M5-only deploy, exact source/non-M5 verification, then one Gemini smoke. Runtime provider-schema acceptance and completed smoke not yet claimed.
+
 ## v132 smoke terminal / change of repair strategy — 2026-09-24
 
 - Job 959ccc58-868c-439f-8cb1-5bdc03b37158 terminal script_failed: M3 9916 PASS, M4 9918 PASS, M5 9919 ERROR, script run 61fa6ad7-e6c6-4cdd-8814-45f818df96d7. Exact final 34 words vs required 36-42. No TTS/M6-M9.

@@ -9,5 +9,19 @@
     200
   ],
   "schema_accepted": true,
-  "next_strategy": "constrain lexical word-array cardinality; join into existing internal narration contract; retain all gates"
+  "next_strategy": "constrain lexical word-array cardinality; join into existing internal narration contract; retain all gates",
+  "source_fix": "per-scene schema-sized lexical arrays, reconstructed before existing validators",
+  "english15_word_allocation": [
+    8,
+    8,
+    8,
+    7,
+    7
+  ],
+  "tests": {
+    "node_passed": 355,
+    "dtw_passed": 7,
+    "render_fit_previous_unchanged_worker": 3
+  },
+  "deployed": false
 }
