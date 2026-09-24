@@ -1,5 +1,14 @@
 # Current State
 
+## M8 9948 intent-subject / M5 ambient exclusion fix — source verified, 2026-09-24
+
+- All three M8 request builders now preserve a simple explicitly stated leading subject from visual_intent when absent from must_show. It feeds the existing domain/context query and metadata gate. Exact S4 adds ship to all requests; exact S5 adds lighthouse, including the broad fallback. Planned query provenance remains unchanged. No topic/asset mappings; ambiguous action/context is not inferred from the topic.
+- Saved Pexels replay confirms exact rock-only37438538 no longer passes the lighthouse-intent metadata gate. This is not a claim of a new Vision-approved selection. Requests/responses saved in tests/fixtures/m8-9948-*.json; no headers/credentials.
+- M5 extends its existing diffuse-context normalizer to bare darkness/brightness/shadow(s). It preserves concrete unlit lamp, daytime scene, night scene, broken glass constraints. Generation + both repair prompts match. Existing visual_intent and Vision criteria remain unchanged.
+- Node371/371 PASS; DTW7/7 PASS; diff-check PASS. Generic train/platform and already represented subject regressions prevent topic-specific behavior and added decorative requirements.
+- Not deployed yet: M5v134 / M8v70. NEXT: zero-active, backup both changed workflows, deploy only M5+M8, exact-source/non-target verification, then one new smoke. Latest failed job566f4716-888e-46ab-a12d-810c9742fcd2 remains immutable.
+
+
 ## M8 9948 terminal semantic evidence — 2026-09-24
 
 - Job566f4716-888e-46ab-a12d-810c9742fcd2 terminal at M8 9948. M3 9942/M4 9944/M5 9945/M6 9946/M7 9947 PASS; no M9. 45 searches,316 candidates,0 committed selections. Do not relaunch.
