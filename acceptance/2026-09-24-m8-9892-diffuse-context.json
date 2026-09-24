@@ -1,0 +1,54 @@
+{
+  "date":"2026-09-24",
+  "job_id":"6f41542b-b6db-46c5-9342-0f98435a08ca",
+  "m8_execution_id":9892,
+  "status":"failed",
+  "error":"no Gemini-approved unique visual candidate for shot S2-A",
+  "pipeline_before_failure":{
+    "m3_execution":9879,
+    "m4_execution":9881,
+    "m5_execution":9884,
+    "m6_execution":9888,
+    "m7_execution":9889,
+    "all_passed":true
+  },
+  "root_cause":{
+    "shot_key":"S2-A",
+    "visual_intent":"Inside the lighthouse lamp room showing lighting equipment.",
+    "must_show":["lighthouse lamp room"],
+    "must_not_show":["exterior landscape"],
+    "candidate_1":{
+      "provider":"pexels",
+      "provider_asset_id":"14199476",
+      "must_show_visible":true,
+      "must_not_show_clear":false,
+      "intent_match":false,
+      "match_score":40,
+      "reason":"Shows the lighthouse lamp equipment inside, but the large windows clearly reveal an exterior landscape outside."
+    },
+    "explanation":"The candidate contained the required interior lamp equipment. It was rejected because M5 encoded incidental exterior landscape visible through windows as a hard must_not_show conflict. This is a storyboard-contract defect, not a Gemini JSON or M8 execution defect."
+  },
+  "fix":{
+    "workflow":"VideoM5Storyboard001",
+    "generation":"Initial and both bounded storyboard-repair prompts now restrict must_not_show to concrete conflicting subjects or truly mutually exclusive scene states and explicitly forbid generic background, landscape, or scenery exclusions.",
+    "canonicalization":"Canonicalize Final Storyboard removes diffuse-context exclusions whose head is background, landscape, or scenery before commit.",
+    "preserved_hard_exclusions":["wind turbine","daytime scene","exterior tower"],
+    "m8_changed":false,
+    "vision_threshold_changed":false,
+    "uniqueness_gate_changed":false,
+    "provider_changed":false
+  },
+  "validation":{
+    "focused_regression":"3/3 PASS",
+    "node_suite":"345/345 PASS",
+    "alignment_dtw":"7/7 PASS",
+    "render_fit":"3/3 PASS",
+    "git_diff_check":"PASS"
+  },
+  "production":{
+    "deployed":false,
+    "active_m5_before":"v130 / f6e328cd-707b-48ef-b8f4-7ce7cc19c17d",
+    "active_m8":"v69 / d073d7d8-3490-468a-bb6a-79771d367059",
+    "next":"commit/push, verify zero active executions, deploy only M5, verify published source, then one controlled smoke"
+  }
+}

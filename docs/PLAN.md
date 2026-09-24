@@ -1,5 +1,18 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M8 9892 diffuse-context false exclusion — M5 source fix verified, 2026-09-24
+
+- Job 6f41542b-b6db-46c5-9342-0f98435a08ca passed M3 9879, M4 9881, M5 9884, M6 9888 and M7 9889. M8 9892 failed; M9 did not run.
+- Exact M8 terminal: `no Gemini-approved unique visual candidate for shot S2-A`.
+- S2-A requested `lighthouse lamp room` with visual intent `Inside the lighthouse lamp room showing lighting equipment.` but M5 also emitted `must_not_show: ["exterior landscape"]`.
+- Candidate Pexels 14199476 visibly contained the required lighthouse lamp equipment inside. Gemini rejected it only because large windows also showed exterior landscape: must_show_visible=true, must_not_show_clear=false, intent_match=false, score 40.
+- Root cause is M5 storyboard metadata, not M8 Vision: incidental background/context visible through windows was encoded as a hard conflict.
+- Fix: initial and both bounded storyboard-repair prompts restrict must_not_show to concrete conflicting subjects or truly mutually exclusive scene states and forbid generic background/landscape/scenery exclusions. Final storyboard canonicalization additionally removes exclusions headed by background, landscape, or scenery before commit.
+- Real exclusions remain intact, including wind turbine, daytime scene, exterior tower. M8 v69, Gemini threshold, uniqueness and providers are unchanged.
+- Validation: focused 3/3 PASS; full Node 345/345 PASS; DTW 7/7 PASS; render-fit 3/3 PASS; git diff --check PASS.
+- Evidence: acceptance/2026-09-24-m8-9892-diffuse-context.json.
+- NOT deployed yet. NEXT: commit/push, verify zero active executions, back up/deploy only M5, verify source, then one controlled en15 Gemini smoke.
+
 ## Current M5 v130 / M8 v69 smoke — 2026-09-24
 
 Job 6f41542b-b6db-46c5-9342-0f98435a08ca created via M3 (how does a lighthouse work?, en, 15s, Gemini visual validation), HTTP 201. Production targets: M5 v130 / f6e328cd-707b-48ef-b8f4-7ce7cc19c17d; M6 v8; M8 v69 / d073d7d8-3490-468a-bb6a-79771d367059. NEXT: launch this exact job once via /factory/run and trace it to terminal. Do not create another job while unresolved.
