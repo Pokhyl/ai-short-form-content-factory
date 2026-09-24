@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-24",
+  "job_id": "3a181937-0ece-4338-b200-582eebea358a",
+  "m5_execution_id": 9847,
+  "status": "failed",
+  "error": "M5 script workflow failed: got 34, target 38, allowed delta 2",
+  "root_cause": {
+    "stage": "Validate Final Measured Word Count Compliance Retry",
+    "initial_narration_words": 29,
+    "initial_tts_ms": 10248,
+    "latest_semantic_valid_words": 34,
+    "latest_semantic_valid_tts_ms": 13224,
+    "target_duration_ms": 15000,
+    "tolerance_ms": 800,
+    "late_target_words": 38,
+    "closest_semantic_valid_words": 34,
+    "explanation": "English initial speech budget was calibrated too low for the current TTS voice. M5 allowed a 29-word initial script for 15 seconds, freezing too little evidence-grounded semantic content. Late timing repair then had to invent padding to approach 38 words, which the semantic guard correctly rejected."
+  },
+  "production_comparison": {
+    "execution_id": 9813,
+    "same_language_duration_topic_class": "en / 15s / lighthouse",
+    "31_words_ms": 12456,
+    "36_words_ms": 14016,
+    "conclusion": "Current English TTS requires materially more than the previous 2.2 words/sec target to approach the unchanged timing window."
+  },
+  "fix": {
+    "workflow": "VideoM5Storyboard001",
+    "english_speech_rate_before": {"min": 1.8, "max": 2.6, "target": 2.2},
+    "english_speech_rate_after": {"min": 2.4, "max": 2.8, "target": 2.55},
+    "en_15_word_budget_after": {"min": 36, "max": 42, "target": 38},
+    "reason": "Generate enough evidence-grounded factual content before semantic freezing and TTS timing repair.",
+    "floating_point_fix": "Rate-derived integer bounds now use a small epsilon so mathematically integral limits such as 45*2.8 resolve to 126 instead of 125.",
+    "other_languages_changed": false,
+    "timing_gate_relaxed": false,
+    "semantic_gate_relaxed": false,
+    "tts_speed_changed": false
+  },
+  "validation": {
+    "focused_budget_tests": "2/2 PASS",
+    "node_suite": "341/341 PASS",
+    "alignment_dtw": "7/7 PASS",
+    "render_fit": "3/3 PASS",
+    "git_diff_check": "PASS"
+  },
+  "production": {
+    "deployed": false,
+    "active_m5_before": "v128 / 18e33555-e7e7-4ed4-8c86-d87752a42f69",
+    "next": "commit/push, verify zero active executions, deploy only M5, verify published source, then one controlled smoke"
+  }
+}

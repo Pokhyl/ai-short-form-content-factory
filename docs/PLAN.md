@@ -1,5 +1,18 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M5 9847 English speech-budget calibration — source fix verified, 2026-09-24
+
+- Job 3a181937-0ece-4338-b200-582eebea358a is terminal script_failed in M5 execution 9847; M6-M9 did not run.
+- Exact terminal: `got 34, target 38, allowed delta 2` in the final measured word-count compliance path.
+- Production evidence shows the failure is upstream calibration, not absence of late repair: initial 29 words measured 10248ms; latest semantic-valid 34 words measured 13224ms against 15000ms with unchanged 800ms tolerance. The late 38-word target could not be reached without semantic padding.
+- Same en15 lighthouse production history (execution 9813) measured 31 words at 12456ms and 36 words at 14016ms. Therefore the previous English prompt target 2.2 words/sec materially underfilled the current TTS voice before semantic freezing.
+- Fix changes only English initial speech budget from min/max/target 1.8/2.6/2.2 to 2.4/2.8/2.55 words/sec. For 15s this means 36-42 words, target 38, so additional content must be evidence-grounded during initial script generation instead of invented during timing repair.
+- Added floating-point-safe integer bounds so exact limits such as 45*2.8 resolve to 126 rather than 125. Polish/Russian/Ukrainian budgets are explicitly regression-tested unchanged.
+- No timing tolerance, semantic threshold, TTS speed, retry count, or scene word cap was relaxed.
+- Validation: focused budget 2/2 PASS; full Node 341/341 PASS; DTW 7/7 PASS; render-fit 3/3 PASS; git diff --check PASS.
+- Evidence: acceptance/2026-09-24-m5-9847-english-budget.json.
+- NOT deployed yet. NEXT: commit/push, verify zero active executions, back up/deploy only M5, verify source, then one controlled en15 Gemini smoke.
+
 ## Current M5 v128 / M8 v69 smoke — 2026-09-23
 
 Job 3a181937-0ece-4338-b200-582eebea358a created via M3 (how does a lighthouse work?, en, 15s, Gemini visual validation), HTTP 201. Production targets: M5 v128 / 18e33555-e7e7-4ed4-8c86-d87752a42f69; M6 v8; M8 v69 / d073d7d8-3490-468a-bb6a-79771d367059. NEXT: launch this exact job once via /factory/run and trace it to terminal. Do not create another job while unresolved.
