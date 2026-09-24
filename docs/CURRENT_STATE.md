@@ -2,7 +2,7 @@
 
 ## Current v134 smoke — 2026-09-24
 
-Created job `950862ca-2b65-4a6b-8603-a355980a36fb`: how does a lighthouse work?, en15, gemini. M5 v134 `a03f1e50-e829-49e7-836a-dc59c1dd192d`; M6 v8; M8 v69. Run accepted exactly once. M3 9924 PASS; coordinator 9925 RUNNING; M4 9926 PASS; M5 9928 RUNNING at checkpoint. NEXT: trace this exact job through remaining stages; query actual state before resuming. Do not relaunch it or create another job while unresolved.
+Created job `950862ca-2b65-4a6b-8603-a355980a36fb`: how does a lighthouse work?, en15, gemini. M5 v134 `a03f1e50-e829-49e7-836a-dc59c1dd192d`; M6 v8; M8 v69. Run accepted exactly once. M3 9924 PASS; coordinator 9925 RUNNING; M4 9926 PASS; M5 9928 PASS; M6 9930 PASS; M7 9931 PASS; M8 9932 RUNNING. M5 passed on probe3; new final word-slot branch was not exercised in this job. Script run 1d6765ea-5c03-4d2e-8047-7df70f667292; TTS ledgers 1070–1075 committed. NEXT: trace this exact job through remaining stages; query actual state before resuming. Do not relaunch it or create another job while unresolved.
 
 
 ## M5 v134 deployed — 2026-09-24
