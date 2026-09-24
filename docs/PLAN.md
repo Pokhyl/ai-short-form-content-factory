@@ -1,5 +1,12 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M5 v134 deployed — 2026-09-24
+
+- Source 7770993 published to M5 only: v134 activeVersionId `a03f1e50-e829-49e7-836a-dc59c1dd192d`. Current nodes/connections/settings and published nodes/connections match Git. Non-M5 fingerprint unchanged c6d5e86eab4558051e8b77d36bbfd7da. Publisher restarted as CLI required; health OK.
+- Zero active executions before deploy; backup `.backups/m5-before-9923-word-slots.json`, SHA256 d64a419f15c7015cf344fb1da2a010ac7373cef1033c0710520d0b6f1a14075e. M6 v8 / M8 v69 and worker unchanged.
+- Full regression 361 Node + 7 DTW PASS; no new MP4 acceptance yet. NEXT: one fresh Gemini en15 smoke, persist ID before run, then trace exact job to terminal.
+
+
 ## M5 9923 correction — source verified, 2026-09-24
 
 - The two existing final measured exact-count calls now emit `narration_words` keyed by scene, with schema-enforced per-scene array sizes. Adapters reject missing slots, embedded sentences and punctuation-only padding, then join words before unchanged semantic/hybrid/timing checks. No added calls or retries.

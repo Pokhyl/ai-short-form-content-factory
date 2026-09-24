@@ -23,5 +23,15 @@
   ],
   "target_ms": 15000,
   "tolerance_ms": 800,
-  "next": "Fix late exact-count output contract and punctuation-only no-op; retain all gates."
+  "next": "Fix late exact-count output contract and punctuation-only no-op; retain all gates.",
+  "fix_deployment": {
+    "source_commit": "7770993",
+    "m5_version": 134,
+    "active_version_id": "a03f1e50-e829-49e7-836a-dc59c1dd192d",
+    "backup_sha256": "d64a419f15c7015cf344fb1da2a010ac7373cef1033c0710520d0b6f1a14075e",
+    "source_match": true,
+    "non_m5_unchanged": true,
+    "node_tests_passed": 361,
+    "dtw_tests_passed": 7
+  }
 }
