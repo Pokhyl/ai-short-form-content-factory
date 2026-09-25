@@ -1,3 +1,13 @@
+## Fresh uk45 smoke after primary-intent prompt fix — 2026-09-25
+
+- Previous fresh smoke `4bb1aa3c-c735-4d5b-9ac2-bcf6e720afc1` failed in M5 execution `10108`: `S7-A visual metadata must be English and primary must_show must match English visual_intent`. Exact repaired S7 used `must_show[0]="microchip surface"` while visual_intent said `integrated circuit ...`; both are English, but the local contract requires the primary phrase to be represented in the intent.
+- Generic fix does not weaken the validator: initial and both bounded repair prompts now require `visual_intent` to contain `must_show[0]` verbatim as one contiguous English phrase rather than replacing it with a synonym/alternate technical name.
+- Full Node suite: **412/412 PASS**. Git commit: `450d599cf363`.
+- Deployed M5 only after zero-active check. Backup: `.backups/m5-before-450d599-20260925-212647.json`, SHA256 `e1ffbd1d365967dbbf7cbc7c625a16e82cebdcaaece9f64bca591d8fdd46cef8`.
+- Live M5 activeVersionId: `ee5021d6-e989-4837-81e9-796f6731c966`. M6 remains `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8 remains `ecc2d163-8090-4094-947d-03b84747ba40`. Current/published M5 match Git; publisher/studio HTTP200.
+- Created exactly one fresh RAM uk45 Gemini smoke and have not launched it yet: `b75d99cc-7e96-4306-9ea1-b8ab598010b9`.
+- NEXT: launch this exact job once and trace to terminal; do not create another smoke while unresolved.
+
 ## Fresh uk45 smoke after initial word-count rigidity fix — 2026-09-25
 
 - Previous fresh smoke `1737fc7e-74ea-4330-8961-18d658721bcd` failed in M5 execution `10095`: `storyboard word-array count mismatch for S13`. Exact provider output had a natural 6-word S13 while the deterministic allocation demanded 5; all bounded storyboard attempts kept the natural 6-word line. The failure was caused by rigid per-scene count acceptance, not by scene bounds or total narration range.
