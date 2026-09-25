@@ -2,7 +2,7 @@
 
 ## Current uk45 verification job — 2026-09-25
 
-Created `521324af-81b4-4848-b008-8d1b4616804a` for the user's exact RAM topic, Ukrainian45s, Gemini visual mode. Active M5v136 `6b396630-13f8-4bf2-9435-87af2d052cc4`, M8v72 `ecc2d163-8090-4094-947d-03b84747ba40`, M6v8. ID persisted before launch. NEXT: run once and trace this job; no other smoke while unresolved. Old failed86f9735d is immutable.
+Created `521324af-81b4-4848-b008-8d1b4616804a` for the user's exact RAM topic, Ukrainian45s, Gemini visual mode. Active M5v136 `6b396630-13f8-4bf2-9435-87af2d052cc4`, M8v72 `ecc2d163-8090-4094-947d-03b84747ba40`, M6v8. Run accepted exactly once. M3 10039 / M4 10041 / M5 10042 / M6 10043 success; coordinator10040 and M7 10044 running at checkpoint. Original uk45 M5 request failure resolved in production. NEXT: trace this same job through M7–M9 and final-media QA; no other smoke while unresolved. Old failed86f9735d is immutable.
 
 ## M5 v136 deployed — 2026-09-25
 

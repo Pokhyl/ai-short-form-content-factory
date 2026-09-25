@@ -1,0 +1,19 @@
+{
+  "job_id": "521324af-81b4-4848-b008-8d1b4616804a",
+  "language": "uk",
+  "duration_seconds": 45,
+  "topic": "как работает оперативная память",
+  "M5_version": 136,
+  "M5_activeVersionId": "6b396630-13f8-4bf2-9435-87af2d052cc4",
+  "M8_version": 72,
+  "executions": {
+    "M3": 10039,
+    "coordinator": 10040,
+    "M4": 10041,
+    "M5": 10042,
+    "M6": 10043,
+    "M7": 10044
+  },
+  "verified": "M3/M4/M5/M6 success; M7 running",
+  "next": "Trace same job to terminal and inspect final media. No new job."
+}
