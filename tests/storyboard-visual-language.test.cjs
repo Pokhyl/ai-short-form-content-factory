@@ -159,6 +159,7 @@ test('all bounded storyboard validators enforce the same English visual contract
     'Validate Storyboard',
     'Validate Repaired Storyboard',
     'Validate Repaired Storyboard 2',
+    'Validate Narration Language Repair',
   ]) {
     const code=byName[name].parameters.jsCode;
     assert.match(code,/ENGLISH_VISUAL_METADATA_GUARD_START/,name);

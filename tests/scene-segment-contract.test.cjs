@@ -392,7 +392,7 @@ test('9699 repair builders expand stripped anaphoric validator errors genericall
 
 
 test('photo storyboard guard allows diagrams only when shown on a physical display surface',()=>{
-  for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2']){
+  for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2','Validate Narration Language Repair']){
     const code=byName[name].parameters.jsCode;
     assert.match(code,/representationalPattern = \/\\b\(diagram\|schematic\|infographic\|flowchart\)\\b\/i/,name);
     assert.match(code,/physicalPresentationPattern = \/\\b\(screen\|monitor\|display\|whiteboard\|projection\|projector\)\\b\/i/,name);
