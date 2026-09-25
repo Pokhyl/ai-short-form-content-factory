@@ -1,5 +1,31 @@
 # AI Short-Form Content Factory — Production Plan
 
+## RESUME HERE — 2026-09-25, limit checkpoint
+
+**Factory is NOT accepted. No final MP4 for the user's uk45 case. Read this section before historical checkpoints.**
+
+### Production and latest terminal job
+
+- Production M5 **v136**, activeVersionId `6b396630-13f8-4bf2-9435-87af2d052cc4`, source67022f3; M6v8 `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8v72 `ecc2d163-8090-4094-947d-03b84747ba40`. Worker unchanged. Deployment evidence `acceptance/2026-09-25-m5-v136-deploy.json`.
+- Exact user case: RAM, Ukrainian45s, Gemini. Fresh job `521324af-81b4-4848-b008-8d1b4616804a` is now terminal **visuals_failed**. M3 10039, M4 10041, M5 10042, M6 10043, M7 10044 success; coordinator10040 error; M8 **10045** error: `no Gemini-approved unique visual candidate for shot S5-A [line23]`. M9 never ran. Searches117, candidates824 at last count. Do not rerun this job.
+- Original job86f9735d/M5 10033 failed with reproducible Gemini400 INVALID_ARGUMENT due to provider admission of nested bounded-array schema. M5v136 compact schema resolves that; real uk45 M5 now passes. Exact counts/local semantic gates unchanged. Provider admission en15/pl30/uk45/ru60 HTTP200; local16 language/duration regressions verified. These are NOT four E2E passes.
+- Separate confirmed narration defect: M5 10042 initial and repaired text contains Russian forms and filler in Ukrainian. Evidence `acceptance/2026-09-25-uk45-10042-language-gap.json`. This run would fail manual acceptance regardless of M8.
+
+### Current Git source: language review implemented, NOT DEPLOYED
+
+- New generic language/grammar/filler review for en/pl/ru/uk before TTS; one bounded repair followed by another review; exact final narration reviewed again after timing before accepted audio storage. Same Gemini model/credential. Quotes constrained to exact source scene excerpts via enum; findings derive pass/fail. Provider/invalid review fails closed. Accepted narration/audio are not rewritten by the review.
+- Existing transient-retry output routing and original-draft fallback preserved. Initial and no-draft repair errors retain real provider reason.
+- **403/403 Node tests PASS**, all Code nodes compile, graph references valid, diff-check PASS. Added tests `tests/m5-language-review.test.cjs`, actual provider replay fixture `tests/fixtures/m5-10042-language-review.json` (bad uk45 rejected, four correct language controls accepted). Existing audio-reuse test updated to require final review before storage.
+- **DO NOT DEPLOY THIS LANGUAGE CHANGE YET:** live bounded language repair returned200 but local validator correctly rejected `storyboard word-array count mismatch for S8`. Full response/schema in `acceptance/2026-09-25-m5-language-repair-replay.json`. No quality gate was weakened to accept it. Previous weaker reviewer fixed spelling but missed filler; current stricter reviewer catches filler/missing conjunction too.
+
+### Exact next steps
+
+1. Finish bounded language repair so it satisfies existing per-scene lexical counts. Consider the already-used final-repair representation: narration_words object keyed by scene ID with exact-length arrays, preserving the base storyboard metadata, then replay the full existing validator. This is a proposed next implementation, not completed work. Replay saved10042 before any deployment; verify second language review passes too.
+2. Inspect **exact M8 execution10045 S5-A** candidates/Vision evidence. Its contract is `internal solid state drive installed inside computer`, must_show `solid state drive`, narration `Накопичувач дає повільний доступ тут.` Determine whether rejection/retrieval/uniqueness is correct; do not guess, bypass the gate or substitute an unrelated asset. Persist evidence.
+3. Only after fixes verified: zero-active check, backup/publish modified workflow(s) only, exact published-source/non-target checks, one fresh same-user-case uk45 smoke. Save ID before one launch, continue to real MP4 plus manual QA. Never treat the lighthouse en15 as overall acceptance.
+
+All durable evidence is in repository. Useful ephemeral VPS/local files are optional diagnostics only; no credentials saved. Failed jobs remain immutable.
+
 ## ACTIVE: uk45 narration quality defect confirmed — 2026-09-25
 
 Current job521324af passed M5 10042/M6 10043/M7 10044 and is collecting visuals. Manual text inspection confirms Russian lexical/spelling forms in requested Ukrainian: “Процессор”, “ячейка”, “енергозависимая”, plus filler. Exact Generate Storyboard and Repair Storyboard outputs prove this predates timing. Existing alphabet/common-word heuristic and prompt-only instruction are insufficient. This run is NOT semantically accepted even if it renders.

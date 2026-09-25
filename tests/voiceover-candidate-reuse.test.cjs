@@ -103,8 +103,9 @@ test('M5 still fails timing when none of the real synthesized files is in the fi
 test('M5 persists the accepted audio candidate before committing the storyboard',()=>{
   assert.equal(
     m5.connections['Canonicalize Final Storyboard'].main[0][0].node,
-    'Store Accepted Voiceover Candidate'
+    'Build Narration Language Review Final'
   );
+  assert.equal(m5.connections['Validate Narration Language Review Final'].main[0][0].node,'Store Accepted Voiceover Candidate');
   assert.equal(
     m5.connections['Store Accepted Voiceover Candidate'].main[0][0].node,
     'Normalize Accepted Voiceover Candidate'

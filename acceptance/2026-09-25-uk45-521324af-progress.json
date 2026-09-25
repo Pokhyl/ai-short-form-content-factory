@@ -12,8 +12,11 @@
     "M4": 10041,
     "M5": 10042,
     "M6": 10043,
-    "M7": 10044
+    "M7": 10044,
+    "M8": 10045
   },
-  "verified": "M3/M4/M5/M6 success; M7 running",
-  "next": "Trace same job to terminal and inspect final media. No new job."
+  "verified": "M3/M4/M5/M6/M7 success; M8 failed; M9 not run. Manual narration QA also failed.",
+  "next": "Do not rerun this failed job. Finish pending language-repair regression and inspect exact M8 10045 S5 candidates before any new smoke.",
+  "status": "visuals_failed",
+  "failure_reason": "M8 visuals failed: no Gemini-approved unique visual candidate for shot S5-A [line 23]"
 }

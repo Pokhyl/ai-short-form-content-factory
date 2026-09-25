@@ -1,0 +1,209 @@
+[
+  {
+    "language_code": "uk",
+    "narration": "Оперативна пам'ять це важлива частина системи. Вона діє як швидкий буфер даних. Між диском та процесором дані рухаються. Процессор працює дуже швидко завжди. Накопичувач дає повільний доступ тут. Тому пам'ять зберігає все швидко. Фізично це мікросхеми на платі. Кожна ячейка має транзистор конденсатор. Конденсатор надійно зберігає один біт. Система читає цілі сторінки зразу. Живлення тримає заряди усіх конденсаторів. Вимкнення струму повністю очищує дані. Тому це енергозависимая робоча область.",
+    "review_quotes": [
+      "Оперативна пам'ять це важлива частина системи.",
+      "Вона діє як швидкий буфер даних.",
+      "Між диском та процесором дані рухаються.",
+      "Процессор працює дуже швидко завжди.",
+      "Накопичувач дає повільний доступ тут.",
+      "Тому пам'ять зберігає все швидко.",
+      "Фізично це мікросхеми на платі.",
+      "Кожна ячейка має транзистор конденсатор.",
+      "Конденсатор надійно зберігає один біт.",
+      "Система читає цілі сторінки зразу.",
+      "Живлення тримає заряди усіх конденсаторів.",
+      "Вимкнення струму повністю очищує дані.",
+      "Тому це енергозависимая робоча область."
+    ],
+    "expected_pass": false,
+    "http_status": 200,
+    "response": {
+      "candidates": [
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "{\n  \"language\": \"uk\",\n  \"issues\": [\n    {\n      \"quote\": \"Процессор працює дуже швидко завжди.\",\n      \"category\": \"filler\",\n      \"explanation\": \"The adverbs 'дуже' and 'завжди' are meaningless fillers added to meet a word count.\"\n    },\n    {\n      \"quote\": \"Накопичувач дає повільний доступ тут.\",\n      \"category\": \"filler\",\n      \"explanation\": \"The spatial modifier 'тут' lacks a referent and acts as padding.\"\n    },\n    {\n      \"quote\": \"Кожна ячейка має транзистор конденсатор.\",\n      \"category\": \"grammar\",\n      \"explanation\": \"Missing conjunction between coordinated nouns 'транзистор' and 'condenser'.\"\n    },\n    {\n      \"quote\": \"Тому це енергозависимая робоча область.\",\n      \"category\": \"wrong_language\",\n      \"explanation\": \"Contains a Russian lexical intrusion ('энергозависимая').\"\n    }\n  ]\n}"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      ],
+      "usageMetadata": {
+        "promptTokenCount": 500,
+        "candidatesTokenCount": 238,
+        "totalTokenCount": 738,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 500
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "responseId": "GZi2aoaoGoKa3boPsq2YqA0"
+    }
+  },
+  {
+    "language_code": "uk",
+    "narration": "Оперативна пам’ять тимчасово зберігає дані, з якими працює процесор. Після вимкнення живлення ці дані втрачаються.",
+    "review_quotes": [
+      "Оперативна пам’ять тимчасово зберігає дані, з якими працює процесор. Після вимкнення живлення ці дані втрачаються."
+    ],
+    "expected_pass": true,
+    "http_status": 200,
+    "response": {
+      "candidates": [
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "{\n  \"language\": \"uk\",\n  \"issues\": []\n}"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      ],
+      "usageMetadata": {
+        "promptTokenCount": 253,
+        "candidatesTokenCount": 17,
+        "totalTokenCount": 270,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 253
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "responseId": "Gpi2atiHJ6GF7M8PsY-9gA0"
+    }
+  },
+  {
+    "language_code": "en",
+    "narration": "Random-access memory temporarily stores data used by the processor. Its contents are lost when power is removed.",
+    "review_quotes": [
+      "Random-access memory temporarily stores data used by the processor. Its contents are lost when power is removed."
+    ],
+    "expected_pass": true,
+    "http_status": 200,
+    "response": {
+      "candidates": [
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "{\n  \"language\": \"en\",\n  \"issues\": []\n}"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      ],
+      "usageMetadata": {
+        "promptTokenCount": 229,
+        "candidatesTokenCount": 17,
+        "totalTokenCount": 246,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 229
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "responseId": "G5i2asy6DoKa3boPsq2YqA0"
+    }
+  },
+  {
+    "language_code": "pl",
+    "narration": "Pamięć operacyjna tymczasowo przechowuje dane używane przez procesor. Po wyłączeniu zasilania dane te znikają.",
+    "review_quotes": [
+      "Pamięć operacyjna tymczasowo przechowuje dane używane przez procesor. Po wyłączeniu zasilania dane te znikają."
+    ],
+    "expected_pass": true,
+    "http_status": 200,
+    "response": {
+      "candidates": [
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "{\n  \"language\": \"pl\",\n  \"issues\": []\n}"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      ],
+      "usageMetadata": {
+        "promptTokenCount": 251,
+        "candidatesTokenCount": 17,
+        "totalTokenCount": 268,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 251
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "responseId": "HJi2arTjHPaevdIPjIeIaA"
+    }
+  },
+  {
+    "language_code": "ru",
+    "narration": "Оперативная память временно хранит данные, с которыми работает процессор. После отключения питания эти данные теряются.",
+    "review_quotes": [
+      "Оперативная память временно хранит данные, с которыми работает процессор. После отключения питания эти данные теряются."
+    ],
+    "expected_pass": true,
+    "http_status": 200,
+    "response": {
+      "candidates": [
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "{\n  \"language\": \"ru\",\n  \"issues\": []\n}"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      ],
+      "usageMetadata": {
+        "promptTokenCount": 235,
+        "candidatesTokenCount": 17,
+        "totalTokenCount": 252,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 235
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "responseId": "HZi2arDqGLCPxN8P8ZO9sAI"
+    }
+  }
+]

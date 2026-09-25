@@ -1,0 +1,155 @@
+{
+  "variant": "uk-498",
+  "http_status": 200,
+  "seconds": 49.558,
+  "schema": {
+    "anyOf": [
+      {
+        "type": "object",
+        "properties": {
+          "scenes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "scene_id": {
+                  "type": "string"
+                },
+                "narration_words": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                  }
+                },
+                "evidence_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "shots": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "shot_id": {
+                        "type": "string"
+                      },
+                      "visual_intent": {
+                        "type": "string"
+                      },
+                      "must_show": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "must_not_show": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "queries_en": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "preferred_media_type": {
+                        "type": "string",
+                        "enum": [
+                          "photo"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "shot_id",
+                      "visual_intent",
+                      "must_show",
+                      "must_not_show",
+                      "queries_en",
+                      "preferred_media_type"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "scene_id",
+                "narration_words",
+                "evidence_ids",
+                "shots"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 13,
+            "maxItems": 13
+          }
+        },
+        "required": [
+          "scenes"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "INSUFFICIENT_EVIDENCE"
+            ]
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false
+      }
+    ]
+  },
+  "response": {
+    "candidates": [
+      {
+        "content": {
+          "parts": [
+            {
+              "text": "{\n  \"scenes\": [\n    {\n      \"scene_id\": \"S1\",\n      \"narration_words\": [\n        \"Оперативна\",\n        \"пам'ять\",\n        \"це\",\n        \"важлива\",\n        \"частина\",\n        \"системи.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S1-A\",\n          \"visual_intent\": \"computer motherboard showing installed RAM modules\",\n          \"must_show\": [\n            \"computer motherboard\"\n          ],\n          \"must_not_show\": [\n            \"office desk\"\n          ],\n          \"queries_en\": [\n            \"computer motherboard with RAM slots\",\n            \"motherboard memory slots\",\n            \"computer motherboard\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S2\",\n      \"narration_words\": [\n        \"Вона\",\n        \"діє\",\n        \"як\",\n        \"швидкий\",\n        \"буфер\",\n        \"даних.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S2-A\",\n          \"visual_intent\": \"close-up view of memory module stick showing microchips\",\n          \"must_show\": [\n            \"memory module\"\n          ],\n          \"must_not_show\": [\n            \"cpu socket\"\n          ],\n          \"queries_en\": [\n            \"memory module close up\",\n            \"RAM stick microchips\",\n            \"RAM memory module\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S3\",\n      \"narration_words\": [\n        \"Між\",\n        \"диском\",\n        \"та\",\n        \"процесором\",\n        \"дані\",\n        \"рухаються.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S3-A\",\n          \"visual_intent\": \"central processing unit chip mounted on motherboard\",\n          \"must_show\": [\n            \"processor chip\"\n          ],\n          \"must_not_show\": [\n            \"computer screen\"\n          ],\n          \"queries_en\": [\n            \"processor chip on motherboard\",\n            \"CPU socket\",\n            \"central processing unit\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S4\",\n      \"narration_words\": [\n        \"Процесор\",\n        \"працює\",\n        \"на\",\n        \"високій\",\n        \"швидкості.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S4-A\",\n          \"visual_intent\": \"microprocessor chip viewed from top\",\n          \"must_show\": [\n            \"microprocessor chip\"\n          ],\n          \"must_not_show\": [\n            \"keyboard\"\n          ],\n          \"queries_en\": [\n            \"microprocessor chip top view\",\n            \"CPU processor\",\n            \"computer processor\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S5\",\n      \"narration_words\": [\n        \"Накопичувач\",\n        \"має\",\n        \"повільний\",\n        \"доступ\",\n        \"зараз.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S5-A\",\n          \"visual_intent\": \"internal solid state drive installed inside computer\",\n          \"must_show\": [\n            \"solid state drive\"\n          ],\n          \"must_not_show\": [\n            \"computer mouse\"\n          ],\n          \"queries_en\": [\n            \"solid state drive storage\",\n            \"SSD storage drive\",\n            \"internal SSD drive\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S6\",\n      \"narration_words\": [\n        \"Тому\",\n        \"пам'ять\",\n        \"зберігає\",\n        \"все\",\n        \"швидко.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S6-A\",\n          \"visual_intent\": \"RAM module installed inside motherboard slot\",\n          \"must_show\": [\n            \"RAM module\"\n          ],\n          \"must_not_show\": [\n            \"power supply\"\n          ],\n          \"queries_en\": [\n            \"RAM module in slot\",\n            \"memory stick installed\",\n            \"RAM memory stick\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S7\",\n      \"narration_words\": [\n        \"Фізично\",\n        \"це\",\n        \"мікросхеми\",\n        \"на\",\n        \"платі.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S7-A\",\n          \"visual_intent\": \"microchips soldered on printed circuit board\",\n          \"must_show\": [\n            \"printed circuit board\"\n          ],\n          \"must_not_show\": [\n            \"cooling fan\"\n          ],\n          \"queries_en\": [\n            \"printed circuit board microchips\",\n            \"RAM board chips\",\n            \"circuit board RAM\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S8\",\n      \"narration_words\": [\n        \"Кожна\",\n        \"ячейка\",\n        \"має\",\n        \"транзистор\",\n        \"й\",\n        \"конденсатор.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S8-A\",\n          \"visual_intent\": \"macro view showing silicon microchip surface\",\n          \"must_show\": [\n            \"silicon microchip\"\n          ],\n          \"must_not_show\": [\n            \"cable wires\"\n          ],\n          \"queries_en\": [\n            \"silicon microchip macro\",\n            \"microchip surface close up\",\n            \"integrated circuit silicon\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S9\",\n      \"narration_words\": [\n        \"Конденсатор\",\n        \"надійно\",\n        \"зберігає\",\n        \"один\",\n        \"біт.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S9-A\",\n          \"visual_intent\": \"close up of electronic components on board\",\n          \"must_show\": [\n            \"electronic components\"\n          ],\n          \"must_not_show\": [\n            \"computer monitor\"\n          ],\n          \"queries_en\": [\n            \"electronic components on board\",\n            \"circuit board capacitors\",\n            \"board electronic parts\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S10\",\n      \"narration_words\": [\n        \"Система\",\n        \"читає\",\n        \"цілі\",\n        \"сторінки\",\n        \"зразу.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S10-A\",\n          \"visual_intent\": \"RAM memory module shown from an angled view\",\n          \"must_show\": [\n            \"RAM memory module\"\n          ],\n          \"must_not_show\": [\n            \"computer case\"\n          ],\n          \"queries_en\": [\n            \"RAM memory module angled view\",\n            \"memory module sticks\",\n            \"RAM card\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S11\",\n      \"narration_words\": [\n        \"Живлення\",\n        \"тримає\",\n        \"заряди\",\n        \"усіх\",\n        \"конденсаторів.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S11-A\",\n          \"visual_intent\": \"motherboard powered components illuminated\",\n          \"must_show\": [\n            \"motherboard\"\n          ],\n          \"must_not_show\": [\n            \"empty desk\"\n          ],\n          \"queries_en\": [\n            \"motherboard powered components\",\n            \"computer motherboard active\",\n            \"motherboard power circuit\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S12\",\n      \"narration_words\": [\n        \"Вимкнення\",\n        \"струму\",\n        \"повністю\",\n        \"очищує\",\n        \"дані.\"\n      ],\n      \"evidence_ids\": [\n        \"E7\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S12-A\",\n          \"visual_intent\": \"computer power button in off state\",\n          \"must_show\": [\n            \"power button\"\n          ],\n          \"must_not_show\": [\n            \"running monitor\"\n          ],\n          \"queries_en\": [\n            \"computer power button\",\n            \"PC power switch\",\n            \"power button off\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S13\",\n      \"narration_words\": [\n        \"Тому\",\n        \"це\",\n        \"енергозалежна\",\n        \"робоча\",\n        \"область.\"\n      ],\n      \"evidence_ids\": [\n        \"E7\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S13-A\",\n          \"visual_intent\": \"RAM module inserted in motherboard slot\",\n          \"must_show\": [\n            \"RAM module\"\n          ],\n          \"must_not_show\": [\n            \"keyboard and mouse\"\n          ],\n          \"queries_en\": [\n            \"RAM module in motherboard slot\",\n            \"memory slot installation\",\n            \"RAM stick slot\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    }\n  ]\n}"
+            }
+          ],
+          "role": "model"
+        },
+        "finishReason": "STOP",
+        "index": 0
+      }
+    ],
+    "usageMetadata": {
+      "promptTokenCount": 20047,
+      "candidatesTokenCount": 2704,
+      "totalTokenCount": 22751,
+      "cachedContentTokenCount": 15813,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 20047
+        }
+      ],
+      "cacheTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 15813
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "modelVersion": "gemini-3.5-flash-lite",
+    "responseId": "QJi2atb4MfbfnsEPybWH4Aw"
+  },
+  "local_validation": {
+    "passed": false,
+    "error": "storyboard word-array count mismatch for S8"
+  },
+  "production_deployed": false
+}
