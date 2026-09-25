@@ -1,3 +1,12 @@
+## M5 natural-language fix deployed; fresh uk45 smoke created — 2026-09-25
+
+- Deployed current M5 source from Git `db44031` after zero-active check. Pre-deploy backup: `.backups/m5-before-natural-20260925-205421.json`, SHA256 `a8e011137b10953c806d815762fd657050f297b91aa11da24b26d5bb09693d71`.
+- Current and published M5 nodes/connections/settings match Git exactly; M5 now has 145 nodes. New live M5 activeVersionId: `9cc773fd-51b9-425b-8657-6cd352b914d1`.
+- Non-target versions unchanged: M6 `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8 `ecc2d163-8090-4094-947d-03b84747ba40`. Publisher and Studio HTTP200; zero active executions after deploy.
+- Created one fresh exact-case smoke and have **not launched it yet**: job `89b75578-eeb2-4f92-92e0-6632309a6f19`, RAM topic, `uk`, 45s, Gemini visual validation.
+- Stale-created job `572344a8-3ba0-485b-8e20-a3dccef9c67b` remains unlaunched and must not be used.
+- NEXT: launch `89b75578-eeb2-4f92-92e0-6632309a6f19` exactly once through `/webhook/factory/run`, then trace this same job M3→M9 to terminal. Do not create or launch another smoke while it is unresolved.
+
 ## Provider replay closes current pre-deploy blockers — 2026-09-25
 
 - Strengthened natural language repair was replayed against the exact saved M5 execution 10042 context using the existing production Gemini credential through an isolated temporary n8n diagnostic workflow. HTTP200 response corrected the four flagged scenes to natural Ukrainian, including `комірка`, retained `транзистор` + `конденсатор`, and removed filler. The current full M5 validator accepted the repaired storyboard.
