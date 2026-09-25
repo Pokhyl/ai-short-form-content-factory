@@ -1,5 +1,9 @@
 # Lessons Learned
 
+## 2026-09-25: verify each required visual concept
+
+A model aggregate PASS can contradict its own explanation. Require indexed evidence for every must_show concept and derive aggregate visibility in code. Replay the exact false-positive image bytes before deployment, then inspect every scene in the actual rendered MP4. The old missing-beam S3 was rejected by the revised checks; fresh job4b6a5e27 passed all five visual scenes. Keep technical/ASR audio evidence distinct from subjective listening.
+
 Updated: 2026-09-19
 
 1. A restored DB is not automatically production-ready.

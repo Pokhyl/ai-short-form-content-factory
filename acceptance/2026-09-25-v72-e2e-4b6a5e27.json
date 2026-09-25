@@ -1,0 +1,834 @@
+{
+  "job_id": "4b6a5e27-7409-4075-8699-408e0ef5b16f",
+  "review_url": "https://publisher.hodor.com.pl/webhook/factory/review?job_id=4b6a5e27-7409-4075-8699-408e0ef5b16f",
+  "selections": [
+    {
+      "shot_key": "S1-A",
+      "narration": "A coastal tower houses a bright light.",
+      "visual_intent": "Coastal lighthouse tower standing near the sea",
+      "must_show": [
+        "lighthouse tower"
+      ],
+      "provider": "pexels",
+      "provider_asset_id": "19193758",
+      "source_url": "https://www.pexels.com/photo/lighthouse-on-sea-coast-19193758/",
+      "validation_evidence": {
+        "model": "gemini-3.5-flash-lite",
+        "reason": "The image clearly shows a coastal lighthouse tower standing near the sea.",
+        "match_score": 100,
+        "vision_pass": true,
+        "intent_match": true,
+        "review_bucket": 0,
+        "preview_sha256": "6a8847c35ef7a6d2508c1da51782e30578d24c350eba0e9b5bbafb9c9ac1db75",
+        "usage_metadata": {
+          "serviceTier": "standard",
+          "totalTokenCount": 1494,
+          "promptTokenCount": 1121,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 780
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 341
+            }
+          ],
+          "candidatesTokenCount": 373
+        },
+        "candidate_index": 1,
+        "must_show_checks": [
+          {
+            "concept": "lighthouse tower",
+            "visible": true,
+            "evidence": "A tall lighthouse tower stands near the coastal ground.",
+            "concept_index": 1
+          }
+        ],
+        "metadata_rejected": false,
+        "must_show_visible": true,
+        "must_not_show_clear": true,
+        "evaluated_candidates": [
+          {
+            "reason": "The image clearly shows a coastal lighthouse tower standing near the sea.",
+            "match_score": 100,
+            "vision_pass": true,
+            "candidate_index": 1,
+            "must_show_checks": [
+              {
+                "concept": "lighthouse tower",
+                "visible": true,
+                "evidence": "A tall lighthouse tower stands near the coastal ground.",
+                "concept_index": 1
+              }
+            ]
+          },
+          {
+            "reason": "No lighthouse tower is visible; the scene depicts modern city skyscrapers.",
+            "match_score": 0,
+            "vision_pass": false,
+            "candidate_index": 2,
+            "must_show_checks": [
+              {
+                "concept": "lighthouse tower",
+                "visible": false,
+                "evidence": "Only modern high-rise apartment buildings are shown.",
+                "concept_index": 1
+              }
+            ]
+          },
+          {
+            "reason": "No lighthouse tower is present, only high-rise urban architecture.",
+            "match_score": 0,
+            "vision_pass": false,
+            "candidate_index": 3,
+            "must_show_checks": [
+              {
+                "concept": "lighthouse tower",
+                "visible": false,
+                "evidence": "Only urban residential high-rise buildings are visible.",
+                "concept_index": 1
+              }
+            ]
+          }
+        ],
+        "metadata_rejection_reason": null
+      }
+    },
+    {
+      "shot_key": "S2-A",
+      "narration": "Lenses concentrate lamp output into beams.",
+      "visual_intent": "Close-up of a lighthouse Fresnel lens inside the lantern room",
+      "must_show": [
+        "Fresnel lens"
+      ],
+      "provider": "wikimedia",
+      "provider_asset_id": "52211602",
+      "source_url": "https://commons.wikimedia.org/wiki/File:2015_Little_Red_Lighthouse_annual_tour_(09)_lantern_and_fresnel_lens.jpg",
+      "validation_evidence": {
+        "model": "gemini-3.5-flash-lite",
+        "reason": "Direct close-up view of a Fresnel lens inside the lantern room without any forbidden elements.",
+        "match_score": 100,
+        "vision_pass": true,
+        "intent_match": true,
+        "review_bucket": 0,
+        "preview_sha256": "02f95308ceeeade6de9e8d014f9cd42d6c8d2b4943b82c679475142d273311c9",
+        "usage_metadata": {
+          "serviceTier": "standard",
+          "totalTokenCount": 1559,
+          "promptTokenCount": 1138,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 792
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 346
+            }
+          ],
+          "candidatesTokenCount": 421
+        },
+        "candidate_index": 1,
+        "must_show_checks": [
+          {
+            "concept": "Fresnel lens",
+            "visible": true,
+            "evidence": "A clear close-up of a stepped glass lighthouse Fresnel lens inside the lantern room is prominently visible.",
+            "concept_index": 1
+          }
+        ],
+        "metadata_rejected": false,
+        "must_show_visible": true,
+        "must_not_show_clear": true,
+        "evaluated_candidates": [
+          {
+            "reason": "Direct close-up view of a Fresnel lens inside the lantern room without any forbidden elements.",
+            "match_score": 100,
+            "vision_pass": true,
+            "candidate_index": 1,
+            "must_show_checks": [
+              {
+                "concept": "Fresnel lens",
+                "visible": true,
+                "evidence": "A clear close-up of a stepped glass lighthouse Fresnel lens inside the lantern room is prominently visible.",
+                "concept_index": 1
+              }
+            ]
+          },
+          {
+            "reason": "Shows an exterior view of the lighthouse, violating forbidden concepts and missing the required lens interior.",
+            "match_score": 0,
+            "vision_pass": false,
+            "candidate_index": 2,
+            "must_show_checks": [
+              {
+                "concept": "Fresnel lens",
+                "visible": false,
+                "evidence": "Only an exterior view of the lighthouse tower is shown; the interior and Fresnel lens are not visible.",
+                "concept_index": 1
+              }
+            ]
+          },
+          {
+            "reason": "It is an exterior aerial/ground-level view of the lighthouse, which violates the forbidden concept 'exterior view'.",
+            "match_score": 20,
+            "vision_pass": false,
+            "candidate_index": 3,
+            "must_show_checks": [
+              {
+                "concept": "Fresnel lens",
+                "visible": true,
+                "evidence": "A small lens is visible inside the lantern top, but it is an exterior shot.",
+                "concept_index": 1
+              }
+            ]
+          }
+        ],
+        "metadata_rejection_reason": null
+      }
+    },
+    {
+      "shot_key": "S3-A",
+      "narration": "The optical apparatus rotates to produce flashes.",
+      "visual_intent": "Rotating lighthouse lens mechanism inside the tower",
+      "must_show": [
+        "rotating lens"
+      ],
+      "provider": "pexels",
+      "provider_asset_id": "12951942",
+      "source_url": "https://www.pexels.com/photo/close-up-of-a-device-12951942/",
+      "validation_evidence": {
+        "model": "gemini-3.5-flash-lite",
+        "reason": "Shows a large blue lighthouse lens mechanism clearly.",
+        "match_score": 90,
+        "vision_pass": true,
+        "intent_match": true,
+        "review_bucket": 1,
+        "preview_sha256": "02cea8dca25265e527e73c12b47318b955fb008cd4fb8ded04ce05ed0054849b",
+        "usage_metadata": {
+          "serviceTier": "standard",
+          "totalTokenCount": 1512,
+          "promptTokenCount": 1128,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 340
+            },
+            {
+              "modality": "IMAGE",
+              "tokenCount": 788
+            }
+          ],
+          "candidatesTokenCount": 384
+        },
+        "candidate_index": 1,
+        "must_show_checks": [
+          {
+            "concept": "rotating lens",
+            "visible": true,
+            "evidence": "A blue concentric glass Fresnel lens apparatus is clearly visible inside the room.",
+            "concept_index": 1
+          }
+        ],
+        "metadata_rejected": true,
+        "must_show_visible": true,
+        "must_not_show_clear": true,
+        "evaluated_candidates": [
+          {
+            "reason": "Shows a large blue lighthouse lens mechanism clearly.",
+            "match_score": 90,
+            "vision_pass": true,
+            "candidate_index": 1,
+            "must_show_checks": [
+              {
+                "concept": "rotating lens",
+                "visible": true,
+                "evidence": "A blue concentric glass Fresnel lens apparatus is clearly visible inside the room.",
+                "concept_index": 1
+              }
+            ]
+          },
+          {
+            "reason": "Does not show a lighthouse lens mechanism.",
+            "match_score": 0,
+            "vision_pass": false,
+            "candidate_index": 2,
+            "must_show_checks": [
+              {
+                "concept": "rotating lens",
+                "visible": false,
+                "evidence": "No lighthouse lens is visible; only a ship-style airtight door.",
+                "concept_index": 1
+              }
+            ]
+          },
+          {
+            "reason": "Shows only the exterior of a lighthouse top, not the interior mechanism.",
+            "match_score": 30,
+            "vision_pass": false,
+            "candidate_index": 3,
+            "must_show_checks": [
+              {
+                "concept": "rotating lens",
+                "visible": false,
+                "evidence": "Only the exterior top of a lighthouse tower is visible from the outside, with no visible internal lens mechanism.",
+                "concept_index": 1
+              }
+            ]
+          }
+        ],
+        "metadata_rejection_reason": "missing_storyboard_domain_context:tower; missing_primary_subject_anchor:rotating lens; insufficient_must_show_concept_coverage"
+      }
+    },
+    {
+      "shot_key": "S4-A",
+      "narration": "Mariners identify each beacon by unique patterns.",
+      "visual_intent": "Lighthouse shining a bright beam across the sea at night",
+      "must_show": [
+        "lighthouse beam"
+      ],
+      "provider": "pexels",
+      "provider_asset_id": "32846091",
+      "source_url": "https://www.pexels.com/photo/bright-lighthouse-illuminating-night-sky-32846091/",
+      "validation_evidence": {
+        "model": "gemini-3.5-flash-lite",
+        "reason": "Lighthouse shining bright beams at night is clearly depicted.",
+        "match_score": 90,
+        "vision_pass": true,
+        "intent_match": true,
+        "review_bucket": 0,
+        "preview_sha256": "a9edb70841e293ef839969a028ea739e1ca7921cfbc9af826ef2ce03719b901a",
+        "usage_metadata": {
+          "serviceTier": "standard",
+          "totalTokenCount": 1520,
+          "promptTokenCount": 1123,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 780
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 343
+            }
+          ],
+          "candidatesTokenCount": 397
+        },
+        "candidate_index": 1,
+        "must_show_checks": [
+          {
+            "concept": "lighthouse beam",
+            "visible": true,
+            "evidence": "Multiple bright light beams radiate outward from the lighthouse top against a dark night sky.",
+            "concept_index": 1
+          }
+        ],
+        "metadata_rejected": false,
+        "must_show_visible": true,
+        "must_not_show_clear": true,
+        "evaluated_candidates": [
+          {
+            "reason": "Lighthouse shining bright beams at night is clearly depicted.",
+            "match_score": 90,
+            "vision_pass": true,
+            "candidate_index": 1,
+            "must_show_checks": [
+              {
+                "concept": "lighthouse beam",
+                "visible": true,
+                "evidence": "Multiple bright light beams radiate outward from the lighthouse top against a dark night sky.",
+                "concept_index": 1
+              }
+            ]
+          },
+          {
+            "reason": "Lighthouse light beams are visible at night, though the sea is not clearly visible.",
+            "match_score": 85,
+            "vision_pass": true,
+            "candidate_index": 2,
+            "must_show_checks": [
+              {
+                "concept": "lighthouse beam",
+                "visible": true,
+                "evidence": "Bright beams of light emanate from the lighthouse lantern room at night.",
+                "concept_index": 1
+              }
+            ]
+          },
+          {
+            "reason": "Lighthouse beams are visible at night, but the foreground is a dirt road rather than the sea.",
+            "match_score": 80,
+            "vision_pass": true,
+            "candidate_index": 3,
+            "must_show_checks": [
+              {
+                "concept": "lighthouse beam",
+                "visible": true,
+                "evidence": "Bright light beams shine outward from the lighthouse tower against the night sky.",
+                "concept_index": 1
+              }
+            ]
+          }
+        ],
+        "metadata_rejection_reason": null
+      }
+    },
+    {
+      "shot_key": "S5-A",
+      "narration": "This system warns ships of dangerous coasts.",
+      "visual_intent": "Lighthouse marking a dangerous rocky shoreline and crashing waves",
+      "must_show": [
+        "rocky coastline"
+      ],
+      "provider": "pexels",
+      "provider_asset_id": "19064765",
+      "source_url": "https://www.pexels.com/photo/waves-by-the-rocky-shore-19064765/",
+      "validation_evidence": {
+        "model": "gemini-3.5-flash-lite",
+        "reason": "A lighthouse is visible above a dangerous rocky shoreline with crashing white waves.",
+        "match_score": 95,
+        "vision_pass": true,
+        "intent_match": true,
+        "review_bucket": 0,
+        "preview_sha256": "2833a9810aa68ca12c034553a345c6274cb22043c27daf114e2807b0ff883e9c",
+        "usage_metadata": {
+          "serviceTier": "standard",
+          "totalTokenCount": 1384,
+          "promptTokenCount": 1132,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 344
+            },
+            {
+              "modality": "IMAGE",
+              "tokenCount": 788
+            }
+          ],
+          "candidatesTokenCount": 252
+        },
+        "candidate_index": 3,
+        "must_show_checks": [
+          {
+            "concept": "rocky coastline",
+            "visible": true,
+            "evidence": "Rugged rocky cliffs and coastline formations are clearly visible.",
+            "concept_index": 1
+          }
+        ],
+        "metadata_rejected": false,
+        "must_show_visible": true,
+        "must_not_show_clear": true,
+        "evaluated_candidates": [
+          {
+            "reason": "Rocky coastline and lighthouse are visible, but the water is calm rather than showing crashing waves.",
+            "match_score": 60,
+            "vision_pass": false,
+            "candidate_index": 1,
+            "must_show_checks": [
+              {
+                "concept": "rocky coastline",
+                "visible": true,
+                "evidence": "A rocky coastline is clearly visible in the foreground and along the breakwater.",
+                "concept_index": 1
+              }
+            ]
+          },
+          {
+            "reason": "A lighthouse and rocks are present, but the water is completely calm with no crashing waves.",
+            "match_score": 40,
+            "vision_pass": false,
+            "candidate_index": 2,
+            "must_show_checks": [
+              {
+                "concept": "rocky coastline",
+                "visible": true,
+                "evidence": "Rocky shoreline rocks are visible in the foreground and near the lighthouse pier.",
+                "concept_index": 1
+              }
+            ]
+          },
+          {
+            "reason": "A lighthouse is visible above a dangerous rocky shoreline with crashing white waves.",
+            "match_score": 95,
+            "vision_pass": true,
+            "candidate_index": 3,
+            "must_show_checks": [
+              {
+                "concept": "rocky coastline",
+                "visible": true,
+                "evidence": "Rugged rocky cliffs and coastline formations are clearly visible.",
+                "concept_index": 1
+              }
+            ]
+          }
+        ],
+        "metadata_rejection_reason": null
+      }
+    }
+  ],
+  "executions": [
+    {
+      "id": 9991,
+      "status": "success",
+      "workflowId": "VideoM3Intake001"
+    },
+    {
+      "id": 9992,
+      "status": "success",
+      "workflowId": "VideoSelfTestApi001"
+    },
+    {
+      "id": 9993,
+      "status": "success",
+      "workflowId": "VideoM4Research001"
+    },
+    {
+      "id": 9994,
+      "status": "success",
+      "workflowId": "VideoM5Storyboard001"
+    },
+    {
+      "id": 9995,
+      "status": "success",
+      "workflowId": "VideoM6Voiceover001"
+    },
+    {
+      "id": 9996,
+      "status": "success",
+      "workflowId": "VideoM7Alignment001"
+    },
+    {
+      "id": 9997,
+      "status": "success",
+      "workflowId": "VideoM8Visuals001"
+    },
+    {
+      "id": 10013,
+      "status": "success",
+      "workflowId": "VideoM9RenderQa001"
+    }
+  ],
+  "versions": [
+    {
+      "id": "VideoM6Voiceover001",
+      "versionCounter": 8,
+      "activeVersionId": "0bcabe39-ae90-42fe-842b-8a56ad238709"
+    },
+    {
+      "id": "VideoM8Visuals001",
+      "versionCounter": 72,
+      "activeVersionId": "ecc2d163-8090-4094-947d-03b84747ba40"
+    },
+    {
+      "id": "VideoM5Storyboard001",
+      "versionCounter": 135,
+      "activeVersionId": "f33831c7-34f5-42f4-b634-7ba4ea64b4fc"
+    },
+    {
+      "id": "VideoM9RenderQa001",
+      "versionCounter": 1,
+      "activeVersionId": "5b6c937c-1767-4c3e-99c4-31ea38a26961"
+    }
+  ],
+  "manifest": {
+    "status": "ready",
+    "job_id": "4b6a5e27-7409-4075-8699-408e0ef5b16f",
+    "storage_path": "/data/renders/4b6a5e27-7409-4075-8699-408e0ef5b16f/final.mp4",
+    "manifest_path": "/data/renders/4b6a5e27-7409-4075-8699-408e0ef5b16f/manifest.json",
+    "sha256": "dda23d3858b55a62c09d9d20686e0f15b1f205fd59aef8a61e38c42dc2314dfd",
+    "bytes": 1367320,
+    "width": 1080,
+    "height": 1920,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "pix_fmt": "yuv420p",
+    "fps_num": 30,
+    "fps_den": 1,
+    "duration_ms": 14833,
+    "video_stream_count": 1,
+    "audio_stream_count": 1,
+    "audio_duration_ms": 14808,
+    "duration_delta_ms": 25,
+    "input_audio_sha256": "660c6c436aaa29d62b8cbd7eaa12a0d87faa8587fbcf3d8bc35a112a7f11277c",
+    "segments": [
+      {
+        "scene_uuid": "d314841d-4ff8-4190-bc02-e25ec69a3d01",
+        "shot_uuid": "cef6f3d9-58b2-45be-b5a9-5b84e9f80f40",
+        "visual_asset_id": "5fa5c629-3d51-4b06-8d5c-ab708412a5b1",
+        "segment_order": 1,
+        "start_ms": 0,
+        "end_ms": 2650,
+        "duration_ms": 2650,
+        "asset_sha256": "1a2d0d9851e354443e63623506af1d813ef9c90bd872d847398f10eeab6c503d",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "b5bef1c1-be3f-4287-bad0-b06c86e3b173",
+        "shot_uuid": "07bae5d7-0f39-435b-bab6-af4908afe8f1",
+        "visual_asset_id": "0d047958-599e-4181-833a-1f57e3899c3e",
+        "segment_order": 2,
+        "start_ms": 2650,
+        "end_ms": 5070,
+        "duration_ms": 2420,
+        "asset_sha256": "02f95308ceeeade6de9e8d014f9cd42d6c8d2b4943b82c679475142d273311c9",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "40c1c0ae-b457-4ae5-aa98-d1e616dd7dc2",
+        "shot_uuid": "ab3ebea1-2864-4f0b-9910-89a345d65de9",
+        "visual_asset_id": "f48ad317-ec35-4081-b1d5-7440aff9faa7",
+        "segment_order": 3,
+        "start_ms": 5070,
+        "end_ms": 8140,
+        "duration_ms": 3070,
+        "asset_sha256": "490bd744e32235ebd15b95474ad968007277960ff581f13fd78aa9b4b8cedcc3",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "84dd05bb-b0a2-4d74-a1f7-58b41d806c07",
+        "shot_uuid": "d069c5de-b4c9-41e3-b231-96636992a0ac",
+        "visual_asset_id": "af2438f0-7521-4468-8eac-f5518416557c",
+        "segment_order": 4,
+        "start_ms": 8140,
+        "end_ms": 12150,
+        "duration_ms": 4010,
+        "asset_sha256": "3308bbf06ce9eeb0a4a24fc3021b7197b3a0282103f1906fb70e51620c6df919",
+        "media_type": "photo"
+      },
+      {
+        "scene_uuid": "97609a64-53ca-4b8f-99b0-8fbf687ea7ee",
+        "shot_uuid": "c9f07bb0-3a51-47cf-81d1-f83577b89ab8",
+        "visual_asset_id": "09fef253-9e6d-41d2-a904-d8a55f90c213",
+        "segment_order": 5,
+        "start_ms": 12150,
+        "end_ms": 14808,
+        "duration_ms": 2658,
+        "asset_sha256": "15afc8c93de079108838052dcdaff6dd375285c3e898dc05268a4f7e4d19c138",
+        "media_type": "photo"
+      }
+    ],
+    "qa_gates": {
+      "video_dimensions": true,
+      "video_codec": true,
+      "audio_codec": true,
+      "stream_counts": true,
+      "duration_match": true,
+      "scene_coverage": true,
+      "asset_hashes": true,
+      "source_audio_excluded": true
+    },
+    "qa_passed": true
+  },
+  "alignment": [
+    {
+      "transcript": "A coastal tower houses a bright light, lenses concentrate lamp output into beams, the optical apparatus rotates to produce flashes, mariners identify each beacon by unique patterns. This system warns ships of dangerous coasts.",
+      "normalized_match": true,
+      "global_coverage": 1.0,
+      "lexical_start_ms": 50,
+      "lexical_end_ms": 14808,
+      "audio_duration_ms": 14808,
+      "audio_sha256": "660c6c436aaa29d62b8cbd7eaa12a0d87faa8587fbcf3d8bc35a112a7f11277c"
+    }
+  ],
+  "published_source_matches": {
+    "VideoM5Storyboard001": true,
+    "VideoM8Visuals001": true
+  },
+  "ffprobe": {
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "h264",
+        "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+        "profile": "High",
+        "codec_type": "video",
+        "codec_tag_string": "avc1",
+        "codec_tag": "0x31637661",
+        "width": 1080,
+        "height": 1920,
+        "coded_width": 1080,
+        "coded_height": 1920,
+        "closed_captions": 0,
+        "film_grain": 0,
+        "has_b_frames": 2,
+        "sample_aspect_ratio": "1:1",
+        "display_aspect_ratio": "9:16",
+        "pix_fmt": "yuv420p",
+        "level": 40,
+        "color_range": "tv",
+        "color_space": "bt470bg",
+        "chroma_location": "center",
+        "field_order": "progressive",
+        "refs": 1,
+        "is_avc": "true",
+        "nal_length_size": "4",
+        "id": "0x1",
+        "r_frame_rate": "30/1",
+        "avg_frame_rate": "30/1",
+        "time_base": "1/15360",
+        "start_pts": 0,
+        "start_time": "0.000000",
+        "duration_ts": 227840,
+        "duration": "14.833333",
+        "bit_rate": "633220",
+        "bits_per_raw_sample": "8",
+        "nb_frames": "445",
+        "extradata_size": 50,
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0,
+          "non_diegetic": 0,
+          "captions": 0,
+          "descriptions": 0,
+          "metadata": 0,
+          "dependent": 0,
+          "still_image": 0,
+          "multilayer": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "VideoHandler",
+          "vendor_id": "[0][0][0][0]",
+          "encoder": "Lavc61.19.101 libx264"
+        }
+      },
+      {
+        "index": 1,
+        "codec_name": "aac",
+        "codec_long_name": "AAC (Advanced Audio Coding)",
+        "profile": "LC",
+        "codec_type": "audio",
+        "codec_tag_string": "mp4a",
+        "codec_tag": "0x6134706d",
+        "sample_fmt": "fltp",
+        "sample_rate": "24000",
+        "channels": 1,
+        "channel_layout": "mono",
+        "bits_per_sample": 0,
+        "initial_padding": 0,
+        "id": "0x2",
+        "r_frame_rate": "0/0",
+        "avg_frame_rate": "0/0",
+        "time_base": "1/24000",
+        "start_pts": 0,
+        "start_time": "0.000000",
+        "duration_ts": 355392,
+        "duration": "14.808000",
+        "bit_rate": "96933",
+        "nb_frames": "349",
+        "extradata_size": 5,
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0,
+          "non_diegetic": 0,
+          "captions": 0,
+          "descriptions": 0,
+          "metadata": 0,
+          "dependent": 0,
+          "still_image": 0,
+          "multilayer": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "SoundHandler",
+          "vendor_id": "[0][0][0][0]"
+        }
+      }
+    ],
+    "format": {
+      "filename": "/data/renders/4b6a5e27-7409-4075-8699-408e0ef5b16f/final.mp4",
+      "nb_streams": 2,
+      "nb_programs": 0,
+      "nb_stream_groups": 0,
+      "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+      "format_long_name": "QuickTime / MOV",
+      "start_time": "0.000000",
+      "duration": "14.833333",
+      "size": "1367320",
+      "bit_rate": "737431",
+      "probe_score": 100,
+      "tags": {
+        "major_brand": "isom",
+        "minor_version": "512",
+        "compatible_brands": "isomiso2avc1mp41",
+        "encoder": "Lavf61.7.103"
+      }
+    }
+  },
+  "final_sha256": "dda23d3858b55a62c09d9d20686e0f15b1f205fd59aef8a61e38c42dc2314dfd",
+  "health": "{\"status\":\"ok\"}",
+  "audio_ffmpeg_log": "Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/data/renders/4b6a5e27-7409-4075-8699-408e0ef5b16f/final.mp4':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomiso2avc1mp41\n    encoder         : Lavf61.7.103\n  Duration: 00:00:14.83, start: 0.000000, bitrate: 737 kb/s\n  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 1080x1920 [SAR 1:1 DAR 9:16], 633 kb/s, 30 fps, 30 tbr, 15360 tbn (default)\n      Metadata:\n        handler_name    : VideoHandler\n        vendor_id       : [0][0][0][0]\n        encoder         : Lavc61.19.101 libx264\n  Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 24000 Hz, mono, fltp, 96 kb/s (default)\n      Metadata:\n        handler_name    : SoundHandler\n        vendor_id       : [0][0][0][0]\n[Parsed_volumedetect_0 @ 0x64ed2b789ec0] n_samples: 0\nStream mapping:\n  Stream #0:1 -> #0:0 (aac (native) -> pcm_s16le (native))\nPress [q] to stop, [?] for help\nOutput #0, null, to 'pipe:':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomiso2avc1mp41\n    encoder         : Lavf61.7.103\n  Stream #0:0(und): Audio: pcm_s16le, 24000 Hz, mono, s16, 384 kb/s (default)\n      Metadata:\n        handler_name    : SoundHandler\n        vendor_id       : [0][0][0][0]\n        encoder         : Lavc61.19.101 pcm_s16le\n[Parsed_volumedetect_0 @ 0x72fc18001cc0] n_samples: 356352\n[Parsed_volumedetect_0 @ 0x72fc18001cc0] mean_volume: -25.0 dB\n[Parsed_volumedetect_0 @ 0x72fc18001cc0] max_volume: -6.2 dB\n[Parsed_volumedetect_0 @ 0x72fc18001cc0] histogram_6db: 17\n[Parsed_volumedetect_0 @ 0x72fc18001cc0] histogram_7db: 41\n[Parsed_volumedetect_0 @ 0x72fc18001cc0] histogram_8db: 125\n[Parsed_volumedetect_0 @ 0x72fc18001cc0] histogram_9db: 234\n[out#0/null @ 0x64ed2b74abc0] video:0KiB audio:696KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown\nsize=N/A time=00:00:14.84 bitrate=N/A speed= 619x    \n",
+  "final_checks": {
+    "node": "376/376 PASS",
+    "alignment_dtw": "7/7 PASS",
+    "render_fit": "{\"input_size\": [1600, 1611], \"output_size\": [1080, 1920], \"edge_landmarks_preserved\": true, \"full_frame_no_black_bars\": true}\n{\"input_size\": [1920, 1080], \"output_size\": [1080, 1920], \"edge_landmarks_preserved\": true, \"full_frame_no_black_bars\": true}\n{\"input_size\": [1080, 1920], \"output_size\": [1080, 1920], \"edge_landmarks_preserved\": true, \"full_frame_no_black_bars\": true}"
+  },
+  "manual_visual_qa": {
+    "status": "PASS",
+    "method": "Actual final MP4 frames inspected in browser, not source thumbnails",
+    "frames": [
+      {
+        "scene": 1,
+        "time_seconds": 1.303856,
+        "observation": "Coastal lighthouse tower on rocky ground; subject visible.",
+        "status": "PASS"
+      },
+      {
+        "scene": 2,
+        "time_seconds": 3.504114,
+        "observation": "Fresnel lens and lamp assembly inside lantern room; subject visible.",
+        "status": "PASS"
+      },
+      {
+        "scene": 3,
+        "time_seconds": 7.355424,
+        "observation": "Concentric Fresnel lens on mechanical rotating base inside; apparatus visible. Still photograph does not establish motion.",
+        "status": "PASS"
+      },
+      {
+        "scene": 4,
+        "time_seconds": 9.349156,
+        "observation": "Lighthouse at night with visible outward light beams.",
+        "status": "PASS"
+      },
+      {
+        "scene": 5,
+        "time_seconds": 13.201805,
+        "observation": "Lighthouse above rugged rocky coast with white breaking waves.",
+        "status": "PASS"
+      }
+    ],
+    "presentation": "Source subjects preserved with blur fill in vertical canvas; no placeholders or unrelated assets observed."
+  },
+  "audio_qa": {
+    "technical_and_asr": "PASS",
+    "mean_volume_db": -25.0,
+    "max_volume_db": -6.2,
+    "silence_events_at_minus45db_min_0_4s": 0,
+    "decode_exit_code": 0,
+    "subjective_listening_performed": false
+  },
+  "acceptance_scope": "Single en15 lighthouse E2E: M3-M9, technical MP4/audio and manual five-scene visual QA PASS. Subjective audio listening not performed; no claim of all-topic production acceptance."
+}

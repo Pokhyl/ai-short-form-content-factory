@@ -1,5 +1,21 @@
 # AI Short-Form Content Factory — Production Plan
 
+## Latest verified result — 2026-09-25: E2E + visual QA PASS
+
+This section supersedes all historical NEXT instructions below. The current smoke is complete; do not relaunch it or start another smoke automatically.
+
+- Job `4b6a5e27-7409-4075-8699-408e0ef5b16f`, “how does a lighthouse work?”, en15, Gemini. All executions success: M3 `9991`, coordinator `9992`, M4 `9993`, M5 `9994`, M6 `9995`, M7 `9996`, M8 `9997`, M9 `10013`.
+- Active production: M5 **v135** / `f33831c7-34f5-42f4-b634-7ba4ea64b4fc`; M6 **v8** / `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8 **v72** / `ecc2d163-8090-4094-947d-03b84747ba40`. M5/M8 published nodes/connections verified equal to Git; publisher health OK. Worker unchanged.
+- Real MP4: 1080×1920, H.264/yuv420p, 30fps, AAC; video14.833333s, audio14.808s, delta25ms; SHA256 `dda23d3858b55a62c09d9d20686e0f15b1f205fd59aef8a61e38c42dc2314dfd`. All machine QA gates pass.
+- Manual actual-MP4 visual QA **5/5 PASS**: S1 coastal tower at1.303856s; S2 interior Fresnel lens at3.504114s; S3 lens with mechanical rotating base at7.355424s; S4 visible lighthouse beams at9.349156s; S5 rocky coast/breaking waves at13.201805s. S3 is a still photograph of apparatus, not observed motion.
+- Audio technical/ASR PASS: exact normalized transcript, coverage1.000; decode successful, mean−25.0dB, peak−6.2dB, no silence ≥0.4s at−45dB. **Subjective listening was not performed.** Do not describe it as listened-to approval.
+- Final regression: Node376/376, alignment DTW7/7, live worker render-fit3/3 PASS. Full manifest, exact selected asset URLs/IDs, per-concept Vision evidence, execution correlation, production versions, ffprobe and audio measurements: `acceptance/2026-09-25-v72-e2e-4b6a5e27.json`.
+- Root cause resolved: old aggregate Vision PASS could contradict missing-required-concept evidence. M8v72 requires complete per-concept checks and computes visibility in code; exact old S3 replay rejected, fresh E2E passed. Prior `b372ee5e-a9a5-45ad-9381-e3bff004d9d9` remains machine-PASS/manual-FAIL, immutable.
+- Review: https://publisher.hodor.com.pl/webhook/factory/review?job_id=4b6a5e27-7409-4075-8699-408e0ef5b16f
+- Continuation: no unresolved code defect from this smoke. If subjective audio approval is required, listen to this existing MP4; do not regenerate. This single en15 result does not certify every topic or earlier PL15/EN30 acceptance.
+
+## Historical checkpoints (superseded by the result above)
+
 ## Current v72 smoke — 2026-09-25
 
 Created job `4b6a5e27-7409-4075-8699-408e0ef5b16f`: how does a lighthouse work?, en15, gemini. Active M5v135 f33831c7-34f5-42f4-b634-7ba4ea64b4fc / M6v8 / M8v72 ecc2d163-8090-4094-947d-03b84747ba40. Run accepted exactly once. Exact job correlation: M3 9991 PASS; coordinator9992 RUNNING; M4 9993 PASS; M5 9994 PASS; M6 9995 PASS; M7 9996 RUNNING at checkpoint. Other executions9957–9990 belong to different jobs and must not be treated as this smoke. NEXT: trace this exact job; do not relaunch or create another job while unresolved.
