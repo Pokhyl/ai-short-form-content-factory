@@ -90,7 +90,68 @@ test('10053 regression: singular primary matches plural English visual-intent no
     ['processor'],
     ['keyboard'],
     ['processor close up','computer processor','processor']
-  ),/primary must_show must match English visual_intent/);
+  ),/primary must_show must match visual_intent/);
+});
+
+
+
+test('non-English storyboard may anchor primary through detailed and fallback English queries',()=>{
+  assert.doesNotThrow(()=>guard(
+    {language_code:'uk'},
+    'S1-A',
+    'software workspace showing workflow platform on display',
+    ['computer monitor','software workspace'],
+    ['smartphone'],
+    ['computer monitor showing workflow platform','software workspace on display','computer monitor']
+  ));
+});
+
+
+
+for (const sample of [
+  {
+    language_code:'uk',
+    shot:'software-display',
+    visual:'software workspace showing workflow platform on display',
+    primary:['computer monitor'],
+    queries:['computer monitor showing workflow platform','software workspace on display','computer monitor'],
+  },
+  {
+    language_code:'pl',
+    shot:'industrial-equipment',
+    visual:'industrial machine room with rotating assembly',
+    primary:['water pump'],
+    queries:['water pump inside machine room','rotating industrial assembly','water pump'],
+  },
+  {
+    language_code:'ru',
+    shot:'wildlife',
+    visual:'flower meadow with a pollinating insect',
+    primary:['honey bee'],
+    queries:['honey bee on flower meadow','pollinating insect on flowers','honey bee'],
+  },
+]) {
+  test('cross-domain visual primary rescue: '+sample.shot,()=>{
+    assert.doesNotThrow(()=>guard(
+      {language_code:sample.language_code},
+      'S1-A',
+      sample.visual,
+      sample.primary,
+      [],
+      sample.queries
+    ));
+  });
+}
+
+test('primary mismatch still fails when only fallback query carries the requested subject',()=>{
+  assert.throws(()=>guard(
+    {language_code:'uk'},
+    'S1-A',
+    'software workspace showing workflow platform on display',
+    ['computer monitor'],
+    [],
+    ['automation interface workspace','software platform screen','computer monitor']
+  ),/primary must_show must match/);
 });
 
 test('all bounded storyboard validators enforce the same English visual contract',()=>{

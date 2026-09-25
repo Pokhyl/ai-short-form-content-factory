@@ -389,3 +389,13 @@ test('9699 repair builders expand stripped anaphoric validator errors genericall
   assert.match(unrelated.user_message,/visual metadata must be English/);
   assert.doesNotMatch(unrelated.user_message,/Anaphoric visual-primary mismatch/);
 });
+
+
+test('photo storyboard guard allows diagrams only when shown on a physical display surface',()=>{
+  for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2']){
+    const code=byName[name].parameters.jsCode;
+    assert.match(code,/representationalPattern = \/\\b\(diagram\|schematic\|infographic\|flowchart\)\\b\/i/,name);
+    assert.match(code,/physicalPresentationPattern = \/\\b\(screen\|monitor\|display\|whiteboard\|projection\|projector\)\\b\/i/,name);
+    assert.match(code,/hasRepresentationalContent && !representedOnPhysicalSurface/,name);
+  }
+});
