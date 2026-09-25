@@ -94,3 +94,42 @@ test('live 10042 natural repair replay preserves meaning and passes second revie
  assert.equal(final.language_review.passed,true);
  assert.deepEqual(final.language_review.issues,[]);
 });
+
+
+test('final spoken-language QA treats punctuation-only grammar and filler as advisory',()=>{
+ const finalCtx={
+  source,
+  language_code:'uk',
+  narration:'Райдуга це дивовижне атмосферне оптичне явище.',
+  review_quotes:['Райдуга це дивовижне атмосферне оптичне явище.'],
+ };
+ const runFinal=(issues)=>new Function('$','$json',n['Validate Narration Language Review Final'].parameters.jsCode)(
+  ()=>({first:()=>({json:finalCtx})}),
+  response({language:'uk',issues})
+ ).json;
+ const out=runFinal([
+  {quote:finalCtx.review_quotes[0],category:'grammar',explanation:'Відсутня кома або тире між частинами речення.'},
+  {quote:finalCtx.review_quotes[0],category:'filler',explanation:'Можливе стилістичне нагромадження означень.'},
+ ]);
+ assert.equal(out.language_review.passed,true);
+ assert.equal(out.language_review.blocking_issues.length,0);
+ assert.equal(out.language_review.advisory_issues.length,2);
+});
+
+test('final spoken-language QA still blocks audible grammar, wrong language and meaning change',()=>{
+ const finalCtx={
+  source,
+  language_code:'uk',
+  narration:'Поточний текст.',
+  review_quotes:['Поточний текст.'],
+ };
+ const validate=(issue)=>new Function('$','$json',n['Validate Narration Language Review Final'].parameters.jsCode)(
+  ()=>({first:()=>({json:finalCtx})}),
+  response({language:'uk',issues:[issue]})
+ );
+ for(const issue of [
+  {quote:'Поточний текст.',category:'wrong_language',explanation:'Foreign lexical form.'},
+  {quote:'Поточний текст.',category:'meaning_change',explanation:'Meaning was changed.'},
+  {quote:'Поточний текст.',category:'grammar',explanation:'Incorrect verb agreement changes the spoken sentence.'},
+ ]) assert.throws(()=>validate(issue),/M5_LANGUAGE_QA_FAILED/);
+});
