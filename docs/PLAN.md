@@ -2,7 +2,7 @@
 
 ## Current v72 smoke — 2026-09-25
 
-Created job `4b6a5e27-7409-4075-8699-408e0ef5b16f`: how does a lighthouse work?, en15, gemini. Active M5v135 f33831c7-34f5-42f4-b634-7ba4ea64b4fc / M6v8 / M8v72 ecc2d163-8090-4094-947d-03b84747ba40. Creation persisted before launch. NEXT: run once then trace; query actual state before resuming. No other job while unresolved.
+Created job `4b6a5e27-7409-4075-8699-408e0ef5b16f`: how does a lighthouse work?, en15, gemini. Active M5v135 f33831c7-34f5-42f4-b634-7ba4ea64b4fc / M6v8 / M8v72 ecc2d163-8090-4094-947d-03b84747ba40. Run accepted exactly once. Exact job correlation: M3 9991 PASS; coordinator9992 RUNNING; M4 9993 PASS; M5 9994 PASS; M6 9995 PASS; M7 9996 RUNNING at checkpoint. Other executions9957–9990 belong to different jobs and must not be treated as this smoke. NEXT: trace this exact job; do not relaunch or create another job while unresolved.
 
 
 ## M8 v72 deployed — 2026-09-25
