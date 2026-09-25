@@ -22,11 +22,16 @@ for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validat
   assert.equal(out.storyboard.narration,expected);assert.equal(out.narration_word_count,22);
   assert.ok(out.storyboard.scenes.every(s=>typeof s.narration==='string'&&!('narration_words' in s)));
  });
- test(name+' rejects missing words, sentences in one item, and punctuation padding',()=>{
-  for(const mode of ['short','sentence','punctuation']){
+ test(name+' accepts bounded scene-count drift but rejects nonlexical word items',()=>{
+  {
    const {f,parsed}=make();
-   if(mode==='short')parsed.scenes[0].narration_words.pop();
-   else parsed.scenes[0].narration_words[0]=mode==='sentence'?'two words':'.';
+   parsed.scenes[0].narration_words.pop();
+   const out=run(name,f,parsed);
+   assert.equal(out.storyboard.scenes[0].narration,parsed.scenes[0].narration_words.join(' '));
+  }
+  for(const mode of ['sentence','punctuation']){
+   const {f,parsed}=make();
+   parsed.scenes[0].narration_words[0]=mode==='sentence'?'two words':'.';
    assert.throws(()=>run(name,f,parsed),/word-array/);
   }
  });

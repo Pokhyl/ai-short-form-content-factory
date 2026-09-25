@@ -16,9 +16,9 @@ for(const language_code of ['en','pl','ru','uk']) for(const duration of [15,30,4
   assert.deepEqual(scenes.items.properties.shots.items.properties.preferred_media_type.enum,['photo']);
   for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2']){
    const body={scenes:c.scene_word_targets.map((count,i)=>({scene_id:'S'+(i+1),narration_words:Array(count).fill('word')}))};
-   body.scenes[body.scenes.length-1].narration_words.pop();
+   body.scenes[body.scenes.length-1].narration_words=['word'];
    const response={statusCode:200,body:{candidates:[{content:{parts:[{text:JSON.stringify(body)}]}}]}};
-   assert.throws(()=>new Function('$','$json',nodes[name].parameters.jsCode)(()=>({first:()=>({json:c})}),response),/word-array count mismatch/);
+   assert.throws(()=>new Function('$','$json',nodes[name].parameters.jsCode)(()=>({first:()=>({json:c})}),response),/word-array scene bound mismatch/);
   }
  });
 }
