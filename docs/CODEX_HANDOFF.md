@@ -1,5 +1,11 @@
 # Codex handoff — production video factory
 
+## ACTIVE: uk45 narration quality defect confirmed — 2026-09-25
+
+Current job521324af passed M5 10042/M6 10043/M7 10044 and is collecting visuals. Manual text inspection confirms Russian lexical/spelling forms in requested Ukrainian: “Процессор”, “ячейка”, “енергозависимая”, plus filler. Exact Generate Storyboard and Repair Storyboard outputs prove this predates timing. Existing alphabet/common-word heuristic and prompt-only instruction are insufficient. This run is NOT semantically accepted even if it renders.
+
+Evidence: `acceptance/2026-09-25-uk45-10042-language-gap.json`. NEXT: generic language/fluency review with bounded repair before TTS and final exact-narration verification, same provider/model; preserve all timing/visual gates. Do not patch a RAM/Ukrainian word list. Wait for current job terminal before deployment/new smoke. Production M5v136/M8v72 unchanged.
+
 ## Current uk45 verification job — 2026-09-25
 
 Created `521324af-81b4-4848-b008-8d1b4616804a` for the user's exact RAM topic, Ukrainian45s, Gemini visual mode. Active M5v136 `6b396630-13f8-4bf2-9435-87af2d052cc4`, M8v72 `ecc2d163-8090-4094-947d-03b84747ba40`, M6v8. Run accepted exactly once. M3 10039 / M4 10041 / M5 10042 / M6 10043 success; coordinator10040 and M7 10044 running at checkpoint. Original uk45 M5 request failure resolved in production. NEXT: trace this same job through M7–M9 and final-media QA; no other smoke while unresolved. Old failed86f9735d is immutable.
