@@ -1,5 +1,12 @@
 # Current State
 
+## M8 per-concept Vision fix — source tested, 2026-09-25
+
+- Provider must return indexed visible/evidence checks for EACH must_show concept. M8 derives aggregate visibility from all checks instead of trusting the model's aggregate boolean. Missing/duplicate/out-of-range/nonboolean/empty checks fail closed. Selected and evaluated-candidate evidence preserves each concept check. Score70, intent, exclusions, uniqueness and three-image limit unchanged.
+- Prompt explicitly distinguishes a visible effect from apparatus capability. Output token cap4096 accommodates bounded per-concept evidence; no extra requests/models/providers. Old aggregate-only9955 response now rejected; missing-beam evidence rejects despite aggregate true/score90.
+- Full Node375/375 PASS; diff-check PASS. Production still M8v71, M5v135. NEXT: bounded exact S3 image-request replay with new schema on existing credential; persist result, then safe M8-only deploy if verified. Existing b372ee5e job remains machine-pass/manual-FAIL.
+
+
 ## Manual S3 QA FAIL confirmed — 2026-09-25
 
 - Existing machine-passed job b372ee5e-a9a5-45ad-9381-e3bff004d9d9 is NOT semantically accepted. Actual final MP4 inspected in browser at6.96826s: Fresnel lens rings and lamp bulbs visible, no emitted focused beam. Exact asset Wikimedia153722322, segment3 5340–8400ms. The scene explicitly requires both Fresnel lens and light beam.

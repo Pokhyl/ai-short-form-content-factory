@@ -93,7 +93,7 @@ test('one Gemini request evaluates all candidate images for a scene at low media
   assert.equal(schema.properties.evaluations.type, 'array');
   assert.deepEqual(schema.properties.evaluations.items.required, [
     'candidate_index',
-    'must_show_visible',
+    'must_show_checks',
     'must_not_show_clear',
     'intent_match',
     'match_score',
@@ -105,6 +105,7 @@ test('one Gemini request evaluates all candidate images for a scene at low media
 
 test('Gemini parser recomputes pass fail-closed with a 70 score floor', () => {
   const ctx = {
+    must_show:['required subject'],
     visual_run_id: 'run',
     shot_uuid: 'shot',
     shot_key: 'S1-A',
@@ -118,8 +119,8 @@ test('Gemini parser recomputes pass fail-closed with a 70 score floor', () => {
   };
   const payload = {
     evaluations: [
-      { candidate_index: 1, must_show_visible: true, must_not_show_clear: true, intent_match: true, match_score: 85, reason: 'Required subject is clearly visible.' },
-      { candidate_index: 2, must_show_visible: true, must_not_show_clear: true, intent_match: true, match_score: 60, reason: 'Subject is too weak and distant.' },
+      { candidate_index: 1, must_show_checks:[{concept_index:1,visible:true,evidence:'Required subject visible.'}], must_not_show_clear: true, intent_match: true, match_score: 85, reason: 'Required subject is clearly visible.' },
+      { candidate_index: 2, must_show_checks:[{concept_index:1,visible:true,evidence:'Subject visible but distant.'}], must_not_show_clear: true, intent_match: true, match_score: 60, reason: 'Subject is too weak and distant.' },
     ],
   };
   const result = runCode('Parse Gemini Vision Result', {
