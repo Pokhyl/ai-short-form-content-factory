@@ -1,0 +1,20 @@
+{
+  "job_id": "86f9735d-08ec-47e7-bb25-00bce7e4070c",
+  "topic": "как работает оперативная память",
+  "language": "uk",
+  "duration_seconds": 45,
+  "execution_id": 10033,
+  "stage": "M5",
+  "provider_error": {
+    "http_status": 400,
+    "status": "INVALID_ARGUMENT",
+    "message": "Request contains an invalid argument."
+  },
+  "reported_failure": "M5 script workflow failed: first Gemini output is empty [line 53]",
+  "finding": "Generate Storyboard returned a provider request error. Repair handling replaced this with a misleading empty-output error. Exact invalid request field is not yet identified. This is not an M8 visual rejection.",
+  "production": {
+    "M5": "v135",
+    "M8": "v72"
+  },
+  "next_step": "Inspect exact M5 request/schema for this uk45 execution, compare supported duration schemas, reproduce request validation, fix generically and add cross-duration/language regression before deployment."
+}

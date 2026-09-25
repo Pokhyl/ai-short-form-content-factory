@@ -1,5 +1,11 @@
 # Codex handoff — production video factory
 
+## ACTIVE BLOCKER — user uk45 RAM job, 2026-09-25
+
+The en15 lighthouse acceptance below is a single-case result, NOT factory completion. User job `86f9735d-08ec-47e7-bb25-00bce7e4070c` (RAM, Ukrainian,45s) failed in M5 execution `10033`. Exact Generate Storyboard error is Gemini HTTP400 INVALID_ARGUMENT: “Request contains an invalid argument.” Repair handling masks it as “first Gemini output is empty [line53]”. Exact invalid request field is not yet diagnosed; do not claim a language or duration root cause without replay evidence. M8 never ran for this job.
+
+NEXT: inspect this exact M5 request/schema, reproduce the request validation failure, fix generically and verify across supported language/duration contracts. Preserve failed job immutable. Do not use another lighthouse success as factory acceptance. Production unchanged M5v135/M8v72. Evidence: `acceptance/2026-09-25-uk45-10033-failure.json`.
+
 ## Latest verified result — 2026-09-25: E2E + visual QA PASS
 
 This section supersedes all historical NEXT instructions below. The current smoke is complete; do not relaunch it or start another smoke automatically.
