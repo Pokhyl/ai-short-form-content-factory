@@ -1,5 +1,11 @@
 # Codex handoff — production video factory
 
+## M5 v136 deployed — 2026-09-25
+
+Published source67022f3 to M5 only: v136 activeVersionId `6b396630-13f8-4bf2-9435-87af2d052cc4`. Zero active executions before deploy; current published nodes/connections match Git; all non-M5 workflow fingerprint unchanged `4cafa3fb1f7bc03f09b0d3b20001cd9e`. Backup/hash in `acceptance/2026-09-25-m5-v136-deploy.json`. Publisher restarted as CLI requires; health OK. M6v8/M8v72/worker unchanged.
+
+Live schema replay initial validators: pl30/uk45 PASS; en15/ru60 correctly reject generic/non-photographic visual requests (semantic repair still required). All four provider requests accepted; do not call this four completed videos. NEXT: one new uk45 RAM smoke on v136, persist ID then run once.
+
 ## M5 10033 fix verified in source — 2026-09-25
 
 - Exact uk45 request reproducibly returns Gemini400 INVALID_ARGUMENT with the old nested bounded-array schema. Grouping scene alternatives or using one scene shape while retaining nested array bounds still returns400. Same prompt/model/credential with one scene shape and only the outer scene count returns200. This localizes the failure to provider schema admission; Gemini does not expose the internal limit.

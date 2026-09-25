@@ -1,0 +1,10 @@
+{
+  "M5_version": 136,
+  "activeVersionId": "6b396630-13f8-4bf2-9435-87af2d052cc4",
+  "source_commit": "67022f37486e5a5be2708bc0c221aafaaaef37b5",
+  "backup": "/opt/ai-short-form-content-factory/.backups/m5-before-10033-schema.json",
+  "backup_sha256": "bb81dc41397ae4cdfe16ff0a6ddbcd06267d1323d6084ec5687c3d13afd8bac1",
+  "non_target_fingerprint_unchanged": "4cafa3fb1f7bc03f09b0d3b20001cd9e",
+  "published_source_matches": true,
+  "health": "ok"
+}
