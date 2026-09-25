@@ -1,0 +1,41 @@
+{
+  "source_execution": 9955,
+  "shot_key": "S3-A",
+  "source_commit": "26fd735",
+  "request_bytes": 896329,
+  "diagnostic_only": true,
+  "preview_fingerprints": [
+    {
+      "candidate_index": 1,
+      "sha256": "6091ecd5d085135e78cdfa2f4cf05a4157434ccfef0329f2132bfce76060952a",
+      "bytes": 650067,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "candidate_index": 2,
+      "sha256": "02cea8dca25265e527e73c12b47318b955fb008cd4fb8ded04ce05ed0054849b",
+      "bytes": 19998,
+      "mime_type": "image/jpeg"
+    }
+  ],
+  "http_status": 200,
+  "response_id": "Dwy2aubHN7KexN8PgYXnOQ",
+  "usage_metadata": {
+    "promptTokenCount": 868,
+    "candidatesTokenCount": 354,
+    "totalTokenCount": 1222,
+    "promptTokensDetails": [
+      {
+        "modality": "IMAGE",
+        "tokenCount": 520
+      },
+      {
+        "modality": "TEXT",
+        "tokenCount": 348
+      }
+    ],
+    "serviceTier": "standard"
+  },
+  "result_text": "{\n  \"evaluations\": [\n    {\n      \"candidate_index\": 1,\n      \"must_show_checks\": [\n        {\n          \"concept_index\": 1,\n          \"visible\": true,\n          \"evidence\": \"A distinct stepped Fresnel lens structure is clearly visible with light refracting through it.\"\n        },\n        {\n          \"concept_index\": 2,\n          \"visible\": false,\n          \"evidence\": \"Light bulbs are present, but a concentrated bright light beam is not visibly emitted or shown.\"\n        }\n      ],\n      \"must_not_show_clear\": true,\n      \"intent_match\": false,\n      \"match_score\": 50,\n      \"reason\": \"The Fresnel lens is visible, but the concentrated light beam is missing.\"\n    },\n    {\n      \"candidate_index\": 2,\n      \"must_show_checks\": [\n        {\n          \"concept_index\": 1,\n          \"visible\": true,\n          \"evidence\": \"A blue-tinted Fresnel lens apparatus is clearly visible.\"\n        },\n        {\n          \"concept_index\": 2,\n          \"visible\": false,\n          \"evidence\": \"The lens assembly is visible, but a concentrated light beam is not shown.\"\n        }\n      ],\n      \"must_not_show_clear\": true,\n      \"intent_match\": false,\n      \"match_score\": 50,\n      \"reason\": \"The Fresnel lens is shown, but no bright light beam is visible.\"\n    }\n  ]\n}",
+  "elapsed_seconds": 2.862
+}

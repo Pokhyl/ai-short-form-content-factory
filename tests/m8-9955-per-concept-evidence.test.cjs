@@ -28,3 +28,11 @@ test('missing duplicate out-of-range or nonboolean concept checks fail closed',(
   assert.throws(()=>parse({...source,must_show_checks:bad}),/per-concept evidence/);
  }
 });
+
+test('exact-image live Gemini replay rejects both missing-beam candidates',()=>{
+ const replay=JSON.parse(fs.readFileSync('acceptance/2026-09-25-m8-9955-per-concept-replay.json'));
+ assert.equal(replay.http_status,200);
+ const result=new Function('$','$json',code)(()=>({item:{json:request}}),{statusCode:200,body:{candidates:[{content:{parts:[{text:replay.result_text}]}}]}}).json;
+ assert.equal(result.evaluations.length,2);
+ assert(result.evaluations.every(e=>!e.vision_pass&&!e.must_show_checks.find(c=>c.concept==='light beam').visible));
+});

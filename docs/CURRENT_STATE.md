@@ -1,5 +1,12 @@
 # Current State
 
+## Exact S3 Vision replay PASS for rejection — 2026-09-25
+
+- Revised request26fd735 on the exact9955 S3 preview bytes returned HTTP200 in2.862s, responseId Dwy2aubHN7KexN8PgYXnOQ. Both candidates explicitly mark Fresnel lens=true, light beam=false, intent=false, score50. The previously false-positive Wikimedia153722322 is now rejected. No image replacement, scene relaxation or model change.
+- Saved response and preview SHA256 in acceptance/2026-09-25-m8-9955-per-concept-replay.json. Current parser replay rejects both candidates; full Node376/376 PASS; diff-check PASS. This is regression proof, NOT full-job acceptance.
+- Production still M8v71 / M5v135. NEXT: zero-active/backup M8-only deploy, published-source/non-target verification, then one fresh smoke. Existing machine-pass/manual-FAIL job remains immutable.
+
+
 ## M8 per-concept Vision fix — source tested, 2026-09-25
 
 - Provider must return indexed visible/evidence checks for EACH must_show concept. M8 derives aggregate visibility from all checks instead of trusting the model's aggregate boolean. Missing/duplicate/out-of-range/nonboolean/empty checks fail closed. Selected and evaluated-candidate evidence preserves each concept check. Score70, intent, exclusions, uniqueness and three-image limit unchanged.
