@@ -1,0 +1,58 @@
+{
+  "case": "M5 execution 10042 language repair replay",
+  "input_job_id": "521324af-81b4-4848-b008-8d1b4616804a",
+  "language": "uk",
+  "duration_seconds": 45,
+  "repair_provider": {
+    "http_status": 200,
+    "model": "gemini-3.5-flash-lite",
+    "response": {
+      "narrations": {
+        "S4": "Процесор працює швидко.",
+        "S5": "Накопичувач дає повільний доступ.",
+        "S8": "Кожна комірка має транзистор і конденсатор.",
+        "S13": "Тому це енергозалежна робоча область."
+      }
+    },
+    "usage": {
+      "promptTokenCount": 763,
+      "candidatesTokenCount": 63,
+      "totalTokenCount": 826,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 763
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  },
+  "repaired_narration": "Оперативна пам'ять це важлива частина системи. Вона діє як швидкий буфер даних. Між диском та процесором дані рухаються. Процесор працює швидко. Накопичувач дає повільний доступ. Тому пам'ять зберігає все швидко. Фізично це мікросхеми на платі. Кожна комірка має транзистор і конденсатор. Конденсатор надійно зберігає один біт. Система читає цілі сторінки зразу. Живлення тримає заряди усіх конденсаторів. Вимкнення струму повністю очищує дані. Тому це енергозалежна робоча область.",
+  "language_repair_reference": {
+    "S4": "Процессор працює дуже швидко завжди.",
+    "S5": "Накопичувач дає повільний доступ тут.",
+    "S8": "Кожна ячейка має транзистор конденсатор.",
+    "S13": "Тому це енергозависимая робоча область."
+  },
+  "second_review_provider": {
+    "http_status": 200,
+    "model": "gemini-3.5-flash-lite",
+    "response": {
+      "language": "uk",
+      "issues": []
+    },
+    "usage": {
+      "promptTokenCount": 680,
+      "candidatesTokenCount": 17,
+      "totalTokenCount": 697,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 680
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  },
+  "expected_second_review_pass": true
+}

@@ -67,3 +67,30 @@ test('retry language review can reject semantic drift after repair',()=>{
  const $=()=>({first:()=>({json:build})});
  assert.throws(()=>validate($,response({language:'uk',issues:[{quote:'Кожна комірка має лише транзистор.',category:'meaning_change',explanation:'The capacitor concept was dropped.'}]})),/M5_LANGUAGE_QA_FAILED/);
 });
+
+test('live 10042 natural repair replay preserves meaning and passes second review',()=>{
+ const c=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-language-repair-context.json'));
+ const initial=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-language-review.json')).find(x=>x.expected_pass===false);
+ const issues=JSON.parse(initial.response.candidates[0].content.parts[0].text).issues;
+ const live=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-natural-language-repair.json'));
+ const buildRepair=new Function('$','$json',n['Build Narration Language Repair'].parameters.jsCode)(
+  ()=>({first:()=>({json:c})}),
+  {storyboard:c.base_storyboard,language_review:{passed:false,language:'uk',narration:c.base_storyboard.narration,issues}}
+ ).json;
+ const provider={statusCode:live.repair_provider.http_status,body:{candidates:[{content:{parts:[{text:JSON.stringify(live.repair_provider.response)}]}}]}};
+ const repaired=new Function('$','$json',n['Validate Narration Language Repair'].parameters.jsCode)(
+  name=>({first:()=>({json:name==='Build Narration Language Repair'?buildRepair:c})}),
+  provider
+ ).json;
+ assert.equal(repaired.storyboard.narration,live.repaired_narration);
+ assert.match(repaired.storyboard.scenes.find(s=>s.scene_id==='S8').narration,/комірка.*транзистор.*конденсатор/u);
+ const reviewBuild=new Function('$','$json',n['Build Narration Language Review Retry'].parameters.jsCode)(
+  ()=>({first:()=>({json:c})}),repaired
+ ).json;
+ const reviewProvider={statusCode:live.second_review_provider.http_status,body:{candidates:[{content:{parts:[{text:JSON.stringify(live.second_review_provider.response)}]}}]}};
+ const final=new Function('$','$json',n['Validate Narration Language Review Retry'].parameters.jsCode)(
+  ()=>({first:()=>({json:reviewBuild})}),reviewProvider
+ ).json;
+ assert.equal(final.language_review.passed,true);
+ assert.deepEqual(final.language_review.issues,[]);
+});

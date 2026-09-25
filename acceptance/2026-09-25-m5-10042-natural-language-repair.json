@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-09-25",
+  "source_head_before_evidence_commit": "b2f6927341b1",
+  "production_deployed": false,
+  "production_m5_source": "67022f3",
+  "production_m5_activeVersionId": "3974ebc9-e477-48e5-ae61-2c1f33d95bda",
+  "case": "M5 execution 10042 language repair replay",
+  "finding": "Natural narration-string repair removes exact-slot pressure. Exact saved 10042 uk45 defects were repaired with HTTP 200; the current full M5 validator accepted the repaired storyboard and the current second language/meaning review returned no issues. This is a provider replay, not an E2E production pass.",
+  "repair_response": {
+    "narrations": {
+      "S4": "Процесор працює швидко.",
+      "S5": "Накопичувач дає повільний доступ.",
+      "S8": "Кожна комірка має транзистор і конденсатор.",
+      "S13": "Тому це енергозалежна робоча область."
+    }
+  },
+  "repaired_narration": "Оперативна пам'ять це важлива частина системи. Вона діє як швидкий буфер даних. Між диском та процесором дані рухаються. Процесор працює швидко. Накопичувач дає повільний доступ. Тому пам'ять зберігає все швидко. Фізично це мікросхеми на платі. Кожна комірка має транзистор і конденсатор. Конденсатор надійно зберігає один біт. Система читає цілі сторінки зразу. Живлення тримає заряди усіх конденсаторів. Вимкнення струму повністю очищує дані. Тому це енергозалежна робоча область.",
+  "second_review_response": {
+    "language": "uk",
+    "issues": []
+  },
+  "temporary_diagnostic_workflows_removed": true,
+  "node_test_suite": "407/407 PASS before evidence fixture was added",
+  "visual_context_finding": "Current M5 source preserves S5 third query \"internal SSD drive\"; offline current M8 planners pass that exact query unchanged to Pexels, Pixabay and Wikimedia. No M8 source change was required for this context loss."
+}

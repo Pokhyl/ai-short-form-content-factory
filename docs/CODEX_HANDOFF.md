@@ -1,3 +1,12 @@
+## Provider replay closes current pre-deploy blockers — 2026-09-25
+
+- Strengthened natural language repair was replayed against the exact saved M5 execution 10042 context using the existing production Gemini credential through an isolated temporary n8n diagnostic workflow. HTTP200 response corrected the four flagged scenes to natural Ukrainian, including `комірка`, retained `транзистор` + `конденсатор`, and removed filler. The current full M5 validator accepted the repaired storyboard.
+- A second live language/meaning review of that repaired storyboard returned `issues: []`; the current `Validate Narration Language Review Retry` accepted it. Evidence: `acceptance/2026-09-25-m5-10042-natural-language-repair.json`; replay fixture: `tests/fixtures/m5-10042-natural-language-repair.json`. Temporary diagnostic workflows were deleted after execution.
+- Exact S5 installation-context path is now regression-tested end-to-end through source planners: M5 preserves `internal SSD drive` instead of replacing it with the context-free primary fallback; current M8 Pexels/Pixabay/Wikimedia request builders preserve that query as the third effective provider query. Added `tests/m8-10045-installation-context.test.cjs`. No M8 source change is required for this specific context-loss defect.
+- Full Node suite now **411/411 PASS**. Git diff check passes.
+- Production remains on M5 source `67022f3` (activeVersionId changed earlier to `3974ebc9-e477-48e5-ae61-2c1f33d95bda` by same-source republish), M6v8, M8v72. Current source changes are still not deployed at this checkpoint.
+- NEXT: zero-active check; back up and publish current M5 only; restart publisher as required; verify published source + M6/M8 invariance. Then create one new RAM uk45 Gemini job, persist its ID, launch once, trace M3→M9 to terminal and manually inspect final MP4. Do not run stale-created job `572344a8-3ba0-485b-8e20-a3dccef9c67b`.
+
 ## WIP after Codex handoff — 2026-09-25
 
 - Synced to remote main `c7b04ab` before continuing. Production source remains M5 `67022f3` / M6v8 / M8v72; current Git M5 changes below are **NOT DEPLOYED**.
