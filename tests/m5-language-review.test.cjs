@@ -44,14 +44,26 @@ test('live exact 10042 language replay rejects defective draft and accepts four 
   assert.equal(result.language_review.passed,f.expected_pass);
  }
 });
-test('targeted language repair preserves untouched scenes and rejects packed words or extra scenes',()=>{
+test('targeted language repair preserves untouched scenes without forcing exact word slots',()=>{
  const c=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-language-repair-context.json'));
- const slots=Object.fromEntries(c.base_storyboard.scenes.filter(s=>c.repair_scene_ids.includes(s.scene_id)).map(s=>[s.scene_id,s.narration.split(/\s+/)]));
- const validate=words=>new Function('$','$json',n['Validate Narration Language Repair'].parameters.jsCode)(()=>({first:()=>({json:c})}),response({narration_words:words})).json;
- const out=validate(slots);
+ const narrations=Object.fromEntries(c.base_storyboard.scenes.filter(s=>c.repair_scene_ids.includes(s.scene_id)).map(s=>[s.scene_id,s.narration]));
+ const $=name=>({first:()=>({json:name==='Build Narration Language Repair'?c:c})});
+ const validate=values=>new Function('$','$json',n['Validate Narration Language Repair'].parameters.jsCode)($,response({narrations:values})).json;
+ const out=validate(narrations);
  assert.deepEqual(out.storyboard.scenes.map(s=>s.narration),c.base_storyboard.scenes.map(s=>s.narration));
- const packed=structuredClone(slots);packed.S8[4]='two words';assert.throws(()=>validate(packed),/one lexical word/);
- assert.throws(()=>validate({...slots,S99:['extra']}),/SLOT_CONTRACT/);
- const missing=structuredClone(slots);delete missing.S8;assert.throws(()=>validate(missing),/SLOT_CONTRACT/);
- const short=structuredClone(slots);short.S8.pop();assert.throws(()=>validate(short),/count mismatch/);
+ assert.deepEqual(Object.keys(out.language_repair_reference).sort(),c.repair_scene_ids.slice().sort());
+ assert.throws(()=>validate({...narrations,S99:'extra scene'}),/REPAIR_CONTRACT/);
+ const missing=structuredClone(narrations);delete missing.S8;assert.throws(()=>validate(missing),/REPAIR_CONTRACT/);
+ const short={...narrations,S8:'Одне.'};assert.throws(()=>validate(short),/invalid repaired narration/);
+ const long={...narrations,S8:Array.from({length:15},(_,i)=>'слово'+i).join(' ')+'.'};assert.throws(()=>validate(long),/invalid repaired narration/);
+});
+
+test('retry language review can reject semantic drift after repair',()=>{
+ const repaired={...source,language_repair_reference:{S8:'Кожна комірка має транзистор та конденсатор.'},storyboard:{narration:'Кожна комірка має лише транзистор.',scenes:[{scene_id:'S8',narration:'Кожна комірка має лише транзистор.'}]}};
+ const build=new Function('$','$json',n['Build Narration Language Review Retry'].parameters.jsCode)(()=>({first:()=>({json:{language_code:'uk'}})}),repaired).json;
+ assert.equal(build.reference_pairs.length,1);
+ assert.equal(build.reference_pairs[0].original,'Кожна комірка має транзистор та конденсатор.');
+ const validate=new Function('$','$json',n['Validate Narration Language Review Retry'].parameters.jsCode);
+ const $=()=>({first:()=>({json:build})});
+ assert.throws(()=>validate($,response({language:'uk',issues:[{quote:'Кожна комірка має лише транзистор.',category:'meaning_change',explanation:'The capacitor concept was dropped.'}]})),/M5_LANGUAGE_QA_FAILED/);
 });
