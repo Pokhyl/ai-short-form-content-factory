@@ -3770,5 +3770,11 @@
       }
     }
   ],
-  "checks": "394/394 Node PASS; all 16 language/duration local contracts tested. HTTP200 indicates schema admission, not semantic/E2E acceptance."
+  "checks": "394/394 Node PASS; all 16 language/duration local contracts tested. HTTP200 indicates schema admission, not semantic/E2E acceptance.",
+  "initial_validator_replay": {
+    "en15": "rejected: generic/non-photographic visual request in S4-A",
+    "pl30": "PASS",
+    "uk45": "PASS",
+    "ru60": "rejected: generic/non-photographic visual request in S2-A"
+  }
 }

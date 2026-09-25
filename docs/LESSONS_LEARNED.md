@@ -1,5 +1,11 @@
 # Lessons Learned
 
+## 2026-09-25: a 15-second smoke misses long-schema failures
+
+The same M5 provider schema worked for en15 but rejected a real uk45 request with HTTP400 INVALID_ARGUMENT. Reproduce the exact request and isolate schema admission before assuming language/content failure. A single scene shape with only an outer array count was accepted for en15/pl30/uk45/ru60; preserve exact lexical and structural constraints in deterministic local validation. Provider HTTP200 is not semantic or E2E acceptance: en15/ru60 diagnostic drafts still failed visual-contract validation. Test all supported language/duration contracts and explicitly track remaining E2E coverage.
+
+Do not change HTTP nodes from continueRegularOutput merely to route errors: the deployed n8n retry detector depends on json.error on that output. Preserve the original provider failure in repair builders when there is no usable draft, retaining the existing original-draft fallback for transient repair errors.
+
 ## 2026-09-25: verify each required visual concept
 
 A model aggregate PASS can contradict its own explanation. Require indexed evidence for every must_show concept and derive aggregate visibility in code. Replay the exact false-positive image bytes before deployment, then inspect every scene in the actual rendered MP4. The old missing-beam S3 was rejected by the revised checks; fresh job4b6a5e27 passed all five visual scenes. Keep technical/ASR audio evidence distinct from subjective listening.
