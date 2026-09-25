@@ -1,3 +1,13 @@
+## Fresh uk45 smoke 89b75578 failed at M5; generic guard fix ready — 2026-09-25
+
+- Fresh job `89b75578-eeb2-4f92-92e0-6632309a6f19` was launched exactly once after M5 deployment and ended `script_failed`.
+- M3 execution 10049 PASS; M4 10051 PASS; M5 execution 10053 failed. Script run `3e14d996-ce6d-4774-8ba8-84e89413076b` failure: `S7-A visual metadata must be English and primary must_show must match English visual_intent [line 217]`.
+- Exact failing S7 metadata was already English and semantically aligned: visual_intent `Macro photo of semiconductor microchips on a circuit board.`, primary must_show `microchip`. Root cause was the validator's exact-token comparison: singular `microchip` did not equal plural `microchips`.
+- Source fix is generic and narrow: primary-vs-intent English token matching now accepts only conservative singular/plural inflections (s/es/y→ies) in all four M5 storyboard validators; unrelated subjects still fail. No RAM/topic mapping was added.
+- Evidence: `acceptance/2026-09-25-m5-10053-singular-plural-guard.json`. Focused visual-language suite 17/17 PASS; full Node suite **412/412 PASS**.
+- This fix is **NOT DEPLOYED YET** at this checkpoint. Failed job 89b75578 is immutable and must not be relaunched.
+- NEXT: commit/push this regression fix, zero-active check, back up + publish M5 only, verify M6/M8 invariance, then create one new uk45 RAM Gemini smoke and launch it exactly once.
+
 ## M5 natural-language fix deployed; fresh uk45 smoke created — 2026-09-25
 
 - Deployed current M5 source from Git `db44031` after zero-active check. Pre-deploy backup: `.backups/m5-before-natural-20260925-205421.json`, SHA256 `a8e011137b10953c806d815762fd657050f297b91aa11da24b26d5bb09693d71`.

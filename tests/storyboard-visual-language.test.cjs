@@ -74,6 +74,25 @@ test('English visual metadata remains valid for non-English narration',()=>{
   ));
 });
 
+test('10053 regression: singular primary matches plural English visual-intent noun',()=>{
+  assert.doesNotThrow(()=>guard(
+    {language_code:'uk'},
+    'S7-A',
+    'Macro photo of semiconductor microchips on a circuit board.',
+    ['microchip','circuit board'],
+    ['keyboard'],
+    ['semiconductor microchip on circuit board','microchip integrated circuit','microchip']
+  ));
+  assert.throws(()=>guard(
+    {language_code:'uk'},
+    'S7-A',
+    'Macro photo of semiconductor microchips on a circuit board.',
+    ['processor'],
+    ['keyboard'],
+    ['processor close up','computer processor','processor']
+  ),/primary must_show must match English visual_intent/);
+});
+
 test('all bounded storyboard validators enforce the same English visual contract',()=>{
   for(const name of [
     'Validate Storyboard',

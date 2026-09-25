@@ -1,0 +1,23 @@
+{
+  "date": "2026-09-25",
+  "job_id": "89b75578-eeb2-4f92-92e0-6632309a6f19",
+  "script_run_id": "3e14d996-ce6d-4774-8ba8-84e89413076b",
+  "n8n_execution_id": 10053,
+  "terminal_job_status": "script_failed",
+  "failure": "M5 script workflow failed: S7-A visual metadata must be English and primary must_show must match English visual_intent [line 217]",
+  "observed_s7": {
+    "visual_intent": "Macro photo of semiconductor microchips on a circuit board.",
+    "must_show": [
+      "microchip",
+      "circuit board"
+    ],
+    "queries_en": [
+      "semiconductor microchip on circuit board",
+      "microchip integrated circuit",
+      "microchip"
+    ]
+  },
+  "root_cause": "The English visual metadata guard required exact token equality between primary must_show and visual_intent. The valid singular primary 'microchip' did not equal plural intent token 'microchips'.",
+  "source_fix": "Use conservative English singular/plural equivalence (s/es/y→ies) only for primary-vs-intent token matching. Unrelated subjects remain rejected. Applied identically to all four M5 storyboard validators.",
+  "verification": "Focused storyboard visual-language tests 17/17 PASS; full Node suite 412/412 PASS. Production deployment not yet performed at this evidence checkpoint."
+}
