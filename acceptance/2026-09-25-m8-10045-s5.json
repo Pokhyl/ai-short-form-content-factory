@@ -1,0 +1,140 @@
+{
+  "execution_id": 10045,
+  "job_id": "521324af-81b4-4848-b008-8d1b4616804a",
+  "S5": [
+    {
+      "visual_run_id": "267e10cd-4300-4f23-bc3f-d3422fc0a44a",
+      "shot_uuid": "4b0c3523-0288-4991-bcf6-154615a9ce3b",
+      "shot_key": "S5-A",
+      "scene_order": 5,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 4457,
+          "author": "Keifer Costa",
+          "height": 6685,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@keifercosta",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/black-samsung-solid-state-drive-on-white-surface-11216304/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/11216304/pexels-photo-11216304.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "796cf98b-c314-4908-b9d5-94526a748efd",
+          "download_url": "https://images.pexels.com/photos/11216304/pexels-photo-11216304.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "11216304",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Jacek Halicki",
+          "height": 1074,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:2023_Nap%C4%99d_SSD_Lexar_NM620_1TB_(3).jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2023_Nap%C4%99d_SSD_Lexar_NM620_1TB_(3).jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/2023_Nap%C4%99d_SSD_Lexar_NM620_1TB_%283%29.jpg/1920px-2023_Nap%C4%99d_SSD_Lexar_NM620_1TB_%283%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "20108368-9733-4c31-aba8-0db4f3d3823a",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/2023_Nap%C4%99d_SSD_Lexar_NM620_1TB_%283%29.jpg/1920px-2023_Nap%C4%99d_SSD_Lexar_NM620_1TB_%283%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "140443322",
+          "metadata_rejection_reason": null
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "5cec7f983979fa270f1f4ced63a360f2c4e45c8c91e6413021a4c1d5631d47dd",
+          "bytes": 4680,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "c571150ecd9f6013987d622ad934ff3e189e9a18e2817a9f0baf07b303d0e5e3",
+          "bytes": 404966,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "solid state drive",
+              "visible": true,
+              "evidence": "A solid state drive is visible on a surface, but it is not installed inside a computer."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 50,
+          "vision_pass": false,
+          "reason": "The solid state drive is shown externally on a surface rather than installed inside a computer."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "solid state drive",
+              "visible": true,
+              "evidence": "Two solid state drives are shown isolated on a white background, not installed inside a computer."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 40,
+          "vision_pass": false,
+          "reason": "The solid state drives are displayed isolated on a white background and not inside a computer."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 854,
+        "candidatesTokenCount": 279,
+        "totalTokenCount": 1133,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 334
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 520
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    }
+  ],
+  "contract": {
+    "shot_key": "S5-A",
+    "visual_intent": "internal solid state drive installed inside computer",
+    "must_show": [
+      "solid state drive"
+    ],
+    "must_not_show": [
+      "computer mouse"
+    ],
+    "queries_en": [
+      "solid state drive storage",
+      "SSD storage drive",
+      "solid state drive"
+    ]
+  },
+  "finding": "Both previews contain SSDs but fail the required installed-inside-computer intent. All three planned queries omit that installation context. This is not a missing SSD primary or a uniqueness collision; do not bypass Vision. Exact asset frames not manually inspected yet."
+}

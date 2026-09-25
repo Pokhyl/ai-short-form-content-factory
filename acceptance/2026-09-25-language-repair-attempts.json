@@ -1,0 +1,625 @@
+{
+  "production_deployed": false,
+  "attempts": [
+    {
+      "variant": "exact_slots_all_scenes",
+      "http_status": 200,
+      "seconds": 2.201,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "narration_words": {
+            "type": "object",
+            "properties": {
+              "S1": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 6,
+                "maxItems": 6
+              },
+              "S2": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 6,
+                "maxItems": 6
+              },
+              "S3": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 6,
+                "maxItems": 6
+              },
+              "S4": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S5": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S6": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S7": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S8": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S9": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S10": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S11": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S12": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S13": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              }
+            },
+            "required": [
+              "S1",
+              "S2",
+              "S3",
+              "S4",
+              "S5",
+              "S6",
+              "S7",
+              "S8",
+              "S9",
+              "S10",
+              "S11",
+              "S12",
+              "S13"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "narration_words"
+        ],
+        "additionalProperties": false
+      },
+      "response": {
+        "candidates": [
+          {
+            "content": {
+              "parts": [
+                {
+                  "text": "{\"narration_words\":{\"S1\":[\"Оперативна\",\"пам'ять\",\"це\",\"важлива\",\"частина\",\"системи.\"],\"S2\":[\"Вона\",\"діє\",\"як\",\"швидкий\",\"буфер\",\"даних.\"],\"S3\":[\"Між\",\"диском\",\"та\",\"процесором\",\"дані\",\"рухаються.\"],\"S4\":[\"Процесор\",\"працює\",\"швидко\",\"за\",\"запитом.\"],\"S5\":[\"Накопичувач\",\"дає\",\"повільний\",\"доступ\",\"даним.\"],\"S6\":[\"Тому\",\"пам'ять\",\"зберігає\",\"все\",\"швидко.\"],\"S7\":[\"Фізично\",\"це\",\"мікросхеми\",\"на\",\"платі.\"],\"S8\":[\"Кожна\",\"комірка\",\"має\",\"транзистор\",\"конденсатор.\"],\"S9\":[\"Конденсатор\",\"надійно\",\"зберігає\",\"один\",\"біт.\"],\"S10\":[\"Система\",\"читає\",\"цілі\",\"сторінки\",\"зразу.\"],\"S11\":[\"Живлення\",\"тримає\",\"заряди\",\"усіх\",\"конденсаторів.\"],\"S12\":[\"Вимкнення\",\"струму\",\"повністю\",\"очищує\",\"дані.\"],\"S13\":[\"Тому\",\"це\",\"енергозалежна\",\"робоча\",\"область.\"]}}"
+                }
+              ],
+              "role": "model"
+            },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 20120,
+          "candidatesTokenCount": 305,
+          "totalTokenCount": 20425,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 20120
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "modelVersion": "gemini-3.5-flash-lite",
+        "responseId": "Nti2au-LK43nnsEPqPyC8Aw"
+      },
+      "verification": "Local structural PASS; language defects remain."
+    },
+    {
+      "variant": "compact_all_scenes",
+      "http_status": 200,
+      "seconds": 1.867,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "narration_words": {
+            "type": "object",
+            "properties": {
+              "S1": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 6,
+                "maxItems": 6
+              },
+              "S2": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 6,
+                "maxItems": 6
+              },
+              "S3": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 6,
+                "maxItems": 6
+              },
+              "S4": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S5": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S6": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S7": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S8": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S9": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S10": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S11": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S12": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S13": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              }
+            },
+            "required": [
+              "S1",
+              "S2",
+              "S3",
+              "S4",
+              "S5",
+              "S6",
+              "S7",
+              "S8",
+              "S9",
+              "S10",
+              "S11",
+              "S12",
+              "S13"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "narration_words"
+        ],
+        "additionalProperties": false
+      },
+      "response": {
+        "candidates": [
+          {
+            "content": {
+              "parts": [
+                {
+                  "text": "{\"narration_words\":{\"S1\":[\"Оперативна\",\"пам'ять\",\"це\",\"важлива\",\"частина\",\"системи.\"],\"S2\":[\"Вона\",\"діє\",\"як\",\"швидкий\",\"буфер\",\"даних.\"],\"S3\":[\"Між\",\"диском\",\"та\",\"процесором\",\"дані\",\"рухаються.\"],\"S4\":[\"Процесор\",\"працює\",\"на\",\"високій\",\"швидкості.\"],\"S5\":[\"Накопичувач\",\"дає\",\"нам\",\"повільний\",\"доступ.\"],\"S6\":[\"Тому\",\"пам'ять\",\"зберігає\",\"все\",\"швидко.\"],\"S7\":[\"Фізично\",\"це\",\"мікросхеми\",\"на\",\"платі.\"],\"S8\":[\"Кожна\",\"ячейка\",\"має\",\"транзистор\",\"конденсатор.\"],\"S9\":[\"Конденсатор\",\"надійно\",\"зберігає\",\"один\",\"біт.\"],\"S10\":[\"Система\",\"читає\",\"цілі\",\"сторінки\",\"зразу.\"],\"S11\":[\"Живлення\",\"тримає\",\"заряди\",\"усіх\",\"конденсаторів.\"],\"S12\":[\"Вимкнення\",\"струму\",\"повністю\",\"очищує\",\"дані.\"],\"S13\":[\"Тому\",\"це\",\"енергозалежна\",\"робоча\",\"область.\"]}}"
+                }
+              ],
+              "role": "model"
+            },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 801,
+          "candidatesTokenCount": 305,
+          "totalTokenCount": 1106,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 801
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "modelVersion": "gemini-3.5-flash-lite",
+        "responseId": "jNi2aqPqKfW-xN8Pl9jf4AI"
+      },
+      "verification": "Local structural PASS; second language review rejects S8."
+    },
+    {
+      "variant": "targeted_scenes",
+      "http_status": 200,
+      "seconds": 1.212,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "narration_words": {
+            "type": "object",
+            "properties": {
+              "S4": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S5": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S8": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S13": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 5,
+                "maxItems": 5
+              }
+            },
+            "required": [
+              "S4",
+              "S5",
+              "S8",
+              "S13"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "narration_words"
+        ],
+        "additionalProperties": false
+      },
+      "response": {
+        "candidates": [
+          {
+            "content": {
+              "parts": [
+                {
+                  "text": "{\n  \"narration_words\": {\n    \"S4\": [\n      \"Процесор\",\n      \"працює\",\n      \"швидко\",\n      \"і\",\n      \"ефективно.\"\n    ],\n    \"S5\": [\n      \"Накопичувач\",\n      \"надає\",\n      \"значно\",\n      \"повільніший\",\n      \"доступ.\"\n    ],\n    \"S8\": [\n      \"Кожна\",\n      \"ячейка\",\n      \"містить\",\n      \"транзистор\",\n      \"та конденсатор.\"\n    ],\n    \"S13\": [\n      \"Тому\",\n      \"це\",\n      \"енергозалежна\",\n      \"робоча\",\n      \"область.\"\n    ]\n  }\n}"
+                }
+              ],
+              "role": "model"
+            },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 662,
+          "candidatesTokenCount": 192,
+          "totalTokenCount": 854,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 662
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "modelVersion": "gemini-3.5-flash-lite",
+        "responseId": "_Ni2apbXOZ-1kdUP-vz76Ag"
+      },
+      "verification": "Local validator rejects multiword array item in S8."
+    },
+    {
+      "variant": "targeted_no_whitespace_pattern",
+      "http_status": 200,
+      "seconds": 1.143,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "narration_words": {
+            "type": "object",
+            "properties": {
+              "S4": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^\\S+$",
+                  "description": "One lexical word only; no whitespace. Punctuation remains attached."
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S5": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^\\S+$",
+                  "description": "One lexical word only; no whitespace. Punctuation remains attached."
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S8": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^\\S+$",
+                  "description": "One lexical word only; no whitespace. Punctuation remains attached."
+                },
+                "minItems": 5,
+                "maxItems": 5
+              },
+              "S13": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^\\S+$",
+                  "description": "One lexical word only; no whitespace. Punctuation remains attached."
+                },
+                "minItems": 5,
+                "maxItems": 5
+              }
+            },
+            "required": [
+              "S4",
+              "S5",
+              "S8",
+              "S13"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "narration_words"
+        ],
+        "additionalProperties": false
+      },
+      "response": {
+        "candidates": [
+          {
+            "content": {
+              "parts": [
+                {
+                  "text": "{\n  \"narration_words\": {\n    \"S4\": [\n      \"Процесор\",\n      \"працює\",\n      \"швидко\",\n      \"завжди\",\n      \"сьогодні.\"\n    ],\n    \"S5\": [\n      \"Накопичувач\",\n      \"дає\",\n      \"повільний\",\n      \"доступ\",\n      \"тепер.\"\n    ],\n    \"S8\": [\n      \"Кожна\",\n      \"ячейка\",\n      \"має\",\n      \"транзистор\",\n      \"також.\"\n    ],\n    \"S13\": [\n      \"Тому\",\n      \"це\",\n      \"енергозалежна\",\n      \"робоча\",\n      \"область.\"\n    ]\n  }\n}"
+                }
+              ],
+              "role": "model"
+            },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 662,
+          "candidatesTokenCount": 191,
+          "totalTokenCount": 853,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 662
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "modelVersion": "gemini-3.5-flash-lite",
+        "responseId": "Stm2avC3K6-G28oP-_ia4QE"
+      },
+      "verification": "Local structural PASS, manual language/meaning FAIL: filler remains and S8 drops capacitor. NOT ACCEPTED."
+    }
+  ],
+  "compact_attempt_second_language_review": {
+    "variant": "uk-497",
+    "http_status": 200,
+    "seconds": 1.146,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "language": {
+          "type": "string",
+          "enum": [
+            "uk"
+          ]
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "quote": {
+                "type": "string",
+                "enum": [
+                  "Оперативна пам'ять це важлива частина системи.",
+                  "Вона діє як швидкий буфер даних.",
+                  "Між диском та процесором дані рухаються.",
+                  "Процесор працює на високій швидкості.",
+                  "Накопичувач дає нам повільний доступ.",
+                  "Тому пам'ять зберігає все швидко.",
+                  "Фізично це мікросхеми на платі.",
+                  "Кожна ячейка має транзистор конденсатор.",
+                  "Конденсатор надійно зберігає один біт.",
+                  "Система читає цілі сторінки зразу.",
+                  "Живлення тримає заряди усіх конденсаторів.",
+                  "Вимкнення струму повністю очищує дані.",
+                  "Тому це енергозалежна робоча область."
+                ]
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "wrong_language",
+                  "grammar",
+                  "filler"
+                ]
+              },
+              "explanation": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "quote",
+              "category",
+              "explanation"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "language",
+        "issues"
+      ],
+      "additionalProperties": false
+    },
+    "response": {
+      "candidates": [
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "{\n  \"language\": \"uk\",\n  \"issues\": [\n    {\n      \"quote\": \"Кожна ячейка має транзистор конденсатор.\",\n      \"category\": \"grammar\",\n      \"explanation\": \"Відсутнє сполучник або розділовий знак між однорідними іменниками (транзистор та конденсатор), а також русизм 'ячейка'.\"\n    }\n  ]\n}"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      ],
+      "usageMetadata": {
+        "promptTokenCount": 504,
+        "candidatesTokenCount": 94,
+        "totalTokenCount": 598,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 504
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "modelVersion": "gemini-3.5-flash-lite",
+      "responseId": "yNi2aoeeOdGvkdUP6qCnuAo"
+    }
+  }
+}

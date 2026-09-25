@@ -1,0 +1,435 @@
+{
+  "script_run_id": "8f7190a4-45bc-4dc6-baeb-da1f4ea1651f",
+  "model": "gemini-3.5-flash-lite",
+  "topic": "как работает оперативная память",
+  "language_code": "uk",
+  "target_duration_seconds": 45,
+  "word_min": 27,
+  "word_max": 108,
+  "target_words": 68,
+  "scene_word_targets": [
+    6,
+    6,
+    6,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5
+  ],
+  "target_scenes": 13,
+  "target_shots": 13,
+  "evidence_map": {
+    "E1": "c4c0d3bd-17e5-47e6-a0b7-d6589db8049b",
+    "E2": "d73623cb-5556-40b5-8b19-7572e167c9ab",
+    "E3": "d8ba3f0c-ee74-4165-9395-6fd0fdc7c5d9",
+    "E4": "5b28bcc0-1852-4e6c-9aa0-9be17a2e97bc",
+    "E5": "b755fbb2-e262-49ef-9275-81d8b533836a",
+    "E6": "9fa6d218-61da-4330-a0af-dd280eb5b125",
+    "E7": "bcc6968e-8eff-4e12-926c-d7479458242d",
+    "E8": "0d8c7288-8fb1-49e3-98d7-5f909bf2ad9a",
+    "E9": "3da3fc72-f285-4bd2-83c0-313f27335c68"
+  },
+  "base_storyboard": {
+    "scenes": [
+      {
+        "scene_id": "S1",
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S1-A",
+            "visual_intent": "computer motherboard showing installed RAM modules",
+            "must_show": [
+              "computer motherboard"
+            ],
+            "must_not_show": [
+              "office desk"
+            ],
+            "queries_en": [
+              "computer motherboard with RAM slots",
+              "motherboard memory slots",
+              "computer motherboard"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Оперативна пам'ять це важлива частина системи."
+      },
+      {
+        "scene_id": "S2",
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S2-A",
+            "visual_intent": "close-up view of memory module stick showing microchips",
+            "must_show": [
+              "memory module"
+            ],
+            "must_not_show": [
+              "cpu socket"
+            ],
+            "queries_en": [
+              "memory module close up",
+              "RAM stick microchips",
+              "RAM memory module"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Вона діє як швидкий буфер даних."
+      },
+      {
+        "scene_id": "S3",
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S3-A",
+            "visual_intent": "central processing unit chip mounted on motherboard",
+            "must_show": [
+              "processor chip"
+            ],
+            "must_not_show": [
+              "computer screen"
+            ],
+            "queries_en": [
+              "processor chip on motherboard",
+              "CPU socket",
+              "central processing unit"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Між диском та процесором дані рухаються."
+      },
+      {
+        "scene_id": "S4",
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S4-A",
+            "visual_intent": "microprocessor chip viewed from top",
+            "must_show": [
+              "microprocessor chip"
+            ],
+            "must_not_show": [
+              "keyboard"
+            ],
+            "queries_en": [
+              "microprocessor chip top view",
+              "CPU processor",
+              "computer processor"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Процессор працює дуже швидко завжди."
+      },
+      {
+        "scene_id": "S5",
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S5-A",
+            "visual_intent": "internal solid state drive installed inside computer",
+            "must_show": [
+              "solid state drive"
+            ],
+            "must_not_show": [
+              "computer mouse"
+            ],
+            "queries_en": [
+              "solid state drive storage",
+              "SSD storage drive",
+              "internal SSD drive"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Накопичувач дає повільний доступ тут."
+      },
+      {
+        "scene_id": "S6",
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S6-A",
+            "visual_intent": "RAM module installed inside motherboard slot",
+            "must_show": [
+              "RAM module"
+            ],
+            "must_not_show": [
+              "power supply"
+            ],
+            "queries_en": [
+              "RAM module in slot",
+              "memory stick installed",
+              "RAM memory stick"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Тому пам'ять зберігає все швидко."
+      },
+      {
+        "scene_id": "S7",
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S7-A",
+            "visual_intent": "microchips soldered on printed circuit board",
+            "must_show": [
+              "printed circuit board"
+            ],
+            "must_not_show": [
+              "cooling fan"
+            ],
+            "queries_en": [
+              "printed circuit board microchips",
+              "RAM board chips",
+              "circuit board RAM"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Фізично це мікросхеми на платі."
+      },
+      {
+        "scene_id": "S8",
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S8-A",
+            "visual_intent": "macro view showing silicon microchip surface",
+            "must_show": [
+              "silicon microchip"
+            ],
+            "must_not_show": [
+              "cable wires"
+            ],
+            "queries_en": [
+              "silicon microchip macro",
+              "microchip surface close up",
+              "integrated circuit silicon"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Кожна ячейка має транзистор конденсатор."
+      },
+      {
+        "scene_id": "S9",
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S9-A",
+            "visual_intent": "close up of electronic components on board",
+            "must_show": [
+              "electronic components"
+            ],
+            "must_not_show": [
+              "computer monitor"
+            ],
+            "queries_en": [
+              "electronic components on board",
+              "circuit board capacitors",
+              "board electronic parts"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Конденсатор надійно зберігає один біт."
+      },
+      {
+        "scene_id": "S10",
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S10-A",
+            "visual_intent": "RAM memory module shown from an angled view",
+            "must_show": [
+              "RAM memory module"
+            ],
+            "must_not_show": [
+              "computer case"
+            ],
+            "queries_en": [
+              "RAM memory module angled view",
+              "memory module sticks",
+              "RAM card"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Система читає цілі сторінки зразу."
+      },
+      {
+        "scene_id": "S11",
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S11-A",
+            "visual_intent": "motherboard powered components illuminated",
+            "must_show": [
+              "motherboard"
+            ],
+            "must_not_show": [
+              "empty desk"
+            ],
+            "queries_en": [
+              "motherboard powered components",
+              "computer motherboard active",
+              "motherboard power circuit"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Живлення тримає заряди усіх конденсаторів."
+      },
+      {
+        "scene_id": "S12",
+        "evidence_ids": [
+          "E4"
+        ],
+        "shots": [
+          {
+            "shot_id": "S12-A",
+            "visual_intent": "computer power button in off state",
+            "must_show": [
+              "power button"
+            ],
+            "must_not_show": [
+              "running monitor"
+            ],
+            "queries_en": [
+              "computer power button",
+              "PC power switch",
+              "power button off"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Вимкнення струму повністю очищує дані."
+      },
+      {
+        "scene_id": "S13",
+        "evidence_ids": [
+          "E5"
+        ],
+        "shots": [
+          {
+            "shot_id": "S13-A",
+            "visual_intent": "RAM module inserted in motherboard slot",
+            "must_show": [
+              "RAM module"
+            ],
+            "must_not_show": [
+              "keyboard and mouse"
+            ],
+            "queries_en": [
+              "RAM module in motherboard slot",
+              "memory slot installation",
+              "RAM stick slot"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ],
+        "narration": "Тому це енергозависимая робоча область."
+      }
+    ],
+    "narration": "Оперативна пам'ять це важлива частина системи. Вона діє як швидкий буфер даних. Між диском та процесором дані рухаються. Процессор працює дуже швидко завжди. Накопичувач дає повільний доступ тут. Тому пам'ять зберігає все швидко. Фізично це мікросхеми на платі. Кожна ячейка має транзистор конденсатор. Конденсатор надійно зберігає один біт. Система читає цілі сторінки зразу. Живлення тримає заряди усіх конденсаторів. Вимкнення струму повністю очищує дані. Тому це енергозависимая робоча область."
+  },
+  "repair_scene_ids": [
+    "S4",
+    "S5",
+    "S8",
+    "S13"
+  ],
+  "response_json_schema": {
+    "type": "object",
+    "properties": {
+      "narration_words": {
+        "type": "object",
+        "properties": {
+          "S4": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\S+$",
+              "description": "One lexical word only; no whitespace. Punctuation remains attached."
+            },
+            "minItems": 5,
+            "maxItems": 5
+          },
+          "S5": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\S+$",
+              "description": "One lexical word only; no whitespace. Punctuation remains attached."
+            },
+            "minItems": 5,
+            "maxItems": 5
+          },
+          "S8": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\S+$",
+              "description": "One lexical word only; no whitespace. Punctuation remains attached."
+            },
+            "minItems": 5,
+            "maxItems": 5
+          },
+          "S13": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\S+$",
+              "description": "One lexical word only; no whitespace. Punctuation remains attached."
+            },
+            "minItems": 5,
+            "maxItems": 5
+          }
+        },
+        "required": [
+          "S4",
+          "S5",
+          "S8",
+          "S13"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "required": [
+      "narration_words"
+    ],
+    "additionalProperties": false
+  }
+}

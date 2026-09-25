@@ -44,3 +44,14 @@ test('live exact 10042 language replay rejects defective draft and accepts four 
   assert.equal(result.language_review.passed,f.expected_pass);
  }
 });
+test('targeted language repair preserves untouched scenes and rejects packed words or extra scenes',()=>{
+ const c=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-language-repair-context.json'));
+ const slots=Object.fromEntries(c.base_storyboard.scenes.filter(s=>c.repair_scene_ids.includes(s.scene_id)).map(s=>[s.scene_id,s.narration.split(/\s+/)]));
+ const validate=words=>new Function('$','$json',n['Validate Narration Language Repair'].parameters.jsCode)(()=>({first:()=>({json:c})}),response({narration_words:words})).json;
+ const out=validate(slots);
+ assert.deepEqual(out.storyboard.scenes.map(s=>s.narration),c.base_storyboard.scenes.map(s=>s.narration));
+ const packed=structuredClone(slots);packed.S8[4]='two words';assert.throws(()=>validate(packed),/one lexical word/);
+ assert.throws(()=>validate({...slots,S99:['extra']}),/SLOT_CONTRACT/);
+ const missing=structuredClone(slots);delete missing.S8;assert.throws(()=>validate(missing),/SLOT_CONTRACT/);
+ const short=structuredClone(slots);short.S8.pop();assert.throws(()=>validate(short),/count mismatch/);
+});

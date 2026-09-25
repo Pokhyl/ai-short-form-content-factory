@@ -1,5 +1,22 @@
 # Codex handoff — production video factory
 
+## LATEST RESUME POINT — 2026-09-25 (supersedes older resume sections)
+
+**All work is saved; the factory remains unaccepted. Do not deploy current M5 HEAD yet.**
+
+- Production is still M5v136 `6b396630-13f8-4bf2-9435-87af2d052cc4` from source67022f3; M6v8; M8v72 `ecc2d163-8090-4094-947d-03b84747ba40`; worker unchanged. Git HEAD contains an explicitly UNDEPLOYED language-review/repair implementation. Live M5 is therefore intentionally different from HEAD.
+- Latest real smoke `521324af-81b4-4848-b008-8d1b4616804a` is terminal visuals_failed. M3 10039/M4 10041/M5 10042/M6 10043/M7 10044 PASS; M8 10045 FAIL; coordinator10040 error; M9 not run. Original M5 HTTP400 issue is fixed; this does not mean the complete uk45 case is fixed.
+- **M8 10045 S5 evidence now inspected and saved:** `acceptance/2026-09-25-m8-10045-s5.json`. Both admitted previews contain SSDs, but both are isolated/external rather than installed inside a computer. Vision correctly rejects the stated intent (scores50/40, intent_match=false). All three planned queries omit installation context: `solid state drive storage`, `SSD storage drive`, `solid state drive`. Exact candidates Pexels11216304 / Wikimedia140443322. This is a context mismatch, not an SSD absence or uniqueness collision. Actual asset images have not yet been manually inspected. Do not bypass Vision or declare a retrieval fix without checking the contract/search path.
+- Generic language review catches exact bad10042 and passes four clean-language controls; quotes enum prevents fabricated quotations. One repair is bounded, followed by re-review, and a final review guards post-timing narration before audio storage. **404/404 Node tests PASS** including exact-slot adapter rejection of packed words/extra scenes and preservation of untouched scenes.
+- **Language repair is STILL NOT semantically verified.** Implemented narration-only exact slots for flagged scene IDs; metadata and unflagged scenes preserved. Tried full-scene slots, compact prompt, targeted slots, and no-whitespace pattern. Exact request/response evidence: `acceptance/2026-09-25-language-repair-attempts.json`; input contract: `tests/fixtures/m5-10042-language-repair-context.json`. Pattern variant gets HTTP200 and passes structural validator, but produces filler and drops capacitor from S8. Never call that PASS. Earlier compact variant's second language review correctly rejected S8. No additional smoke was created.
+
+**Next work, in order:**
+1. Resolve language-repair representation/meaning preservation before deployment. Do not keep adding topic/word-specific substitutions or accept formal word-count success as language quality. Evidence indicates rigid per-scene exact slots can drive unnatural/meaning-changing output; assess this against actual requirements before changing any count gate. Preserve total timing, factual/visual meaning and quality gates. Replay saved10042, full validator AND second language review, with no production job required.
+2. Resolve the saved S5 intent/query installation-context mismatch generically, after exact-image/contract inspection. Language repair intentionally does not change visual metadata, so it does not solve S5.
+3. Once verified, zero-active check, back up only modified workflows, publish/verify non-target invariance, then one fresh RAM uk45 E2E with persisted ID and manual final QA. Failed jobs immutable; do not rerun521324af or86f9735d. No claimed factory-wide acceptance from lighthouse en15.
+
+There are no missing credentials in repo and no required evidence left only in chat or /tmp. Historical notes below retain old next steps; this section is authoritative.
+
 ## RESUME HERE — 2026-09-25, limit checkpoint
 
 **Factory is NOT accepted. No final MP4 for the user's uk45 case. Read this section before historical checkpoints.**
