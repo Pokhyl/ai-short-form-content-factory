@@ -1,0 +1,1114 @@
+{
+  "job_id": "b372ee5e-a9a5-45ad-9381-e3bff004d9d9",
+  "execution": 9955,
+  "manual_visual_status": "FAIL",
+  "observed_S3_time_seconds": 6.96826,
+  "observed_S3": "Fresnel lens rings and lamp bulbs visible; no emitted focused beam visible.",
+  "requests": [
+    {
+      "shot_key": "S1-A",
+      "visual_intent": "A tall lighthouse structure standing near the coastline as a navigational aid.",
+      "must_show": [
+        "lighthouse"
+      ],
+      "must_not_show": [
+        "indoor room",
+        "lens mechanism"
+      ],
+      "candidates": [
+        {
+          "width": 3152,
+          "author": "Edwin Lopez",
+          "height": 5602,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@edwinlopez",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/a-lighthouse-built-near-the-trees-7188111/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/7188111/pexels-photo-7188111.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "531fa6c8-9f86-4e1f-b17b-922a0c886a7b",
+          "download_url": "https://images.pexels.com/photos/7188111/pexels-photo-7188111.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "7188111",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 3550,
+          "author": "Joseph Russo",
+          "height": 5681,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@joseph-russo-430180075",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/a-white-lighthouse-with-a-red-roof-and-a-blue-sky-27640580/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/27640580/pexels-photo-27640580.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "6834e582-6f5c-4854-8e63-3c54043e5378",
+          "download_url": "https://images.pexels.com/photos/27640580/pexels-photo-27640580.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "27640580",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 4140,
+          "author": "Mathias Reding",
+          "height": 6211,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@matreding",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/lighthouse-under-white-clouds-12069451/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/12069451/pexels-photo-12069451.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "45bef225-fc1b-46d6-8104-8fd878581842",
+          "download_url": "https://images.pexels.com/photos/12069451/pexels-photo-12069451.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "12069451",
+          "metadata_rejection_reason": null
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "084115a724a6d8a23f944f6ab08dbbcc6ff0a2347ab69e92e64143439eeec3cc",
+          "bytes": 13001,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "8afb56b8d291a73e46472fddb3569138753228e0249697210c772c1844362a7b",
+          "bytes": 10266,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "51422f16642b92c183d28e72a28e7b40d04d8b3c5b3a311994cbaf6463a4fe10",
+          "bytes": 4290,
+          "mime_type": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "shot_key": "S2-A",
+      "visual_intent": "A specialized lamp and lens system inside a lighthouse.",
+      "must_show": [
+        "lamp and lens"
+      ],
+      "must_not_show": [],
+      "candidates": [
+        {
+          "width": 1600,
+          "author": "Muhammad Imran Saeed  from City of London, Canada",
+          "height": 2134,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Fresnel_Lens_housing_the_lamp_at_Chantry_Island_Lighthouse_(27274573498).jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Fresnel_Lens_housing_the_lamp_at_Chantry_Island_Lighthouse_(27274573498).jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Fresnel_Lens_housing_the_lamp_at_Chantry_Island_Lighthouse_%2827274573498%29.jpg/1920px-Fresnel_Lens_housing_the_lamp_at_Chantry_Island_Lighthouse_%2827274573498%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "98cbda43-772c-48ed-9db7-d7945e60eef9",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Fresnel_Lens_housing_the_lamp_at_Chantry_Island_Lighthouse_%2827274573498%29.jpg/1920px-Fresnel_Lens_housing_the_lamp_at_Chantry_Island_Lighthouse_%2827274573498%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC BY 2.0",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "76004366",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 3000,
+          "author": "Florence",
+          "height": 4000,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@florence-1768458",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/rustic-lighthouse-lamp-by-the-sea-30285137/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "7de02984-cd08-440a-958f-63f322fc506d",
+          "download_url": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 88,
+          "metadata_rejected": true,
+          "provider_asset_id": "30285137",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:lamp and lens; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 4160,
+          "author": "Connor Scott McManus",
+          "height": 6240,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@connorscottmcmanus",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/close-up-of-a-device-12951942/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/12951942/pexels-photo-12951942.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "e1205c0e-c529-44b5-9567-483f56141cda",
+          "download_url": "https://images.pexels.com/photos/12951942/pexels-photo-12951942.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 83,
+          "metadata_rejected": true,
+          "provider_asset_id": "12951942",
+          "metadata_rejection_reason": "missing_storyboard_domain_context:lighthouse; missing_primary_subject_anchor:lamp and lens; insufficient_must_show_concept_coverage"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "e93bdaf034bbeb838e53ca62cb7b580c73d85bdc2474ee51e4573178a1b55b87",
+          "bytes": 920206,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "0bd94025339b3aa61244f98acc071ad990e38717cece75e50f1101a34a5f5463",
+          "bytes": 14955,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "02cea8dca25265e527e73c12b47318b955fb008cd4fb8ded04ce05ed0054849b",
+          "bytes": 19998,
+          "mime_type": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "shot_key": "S3-A",
+      "visual_intent": "A Fresnel lens concentrating light into a bright beam.",
+      "must_show": [
+        "Fresnel lens",
+        "light beam"
+      ],
+      "must_not_show": [
+        "radar screen"
+      ],
+      "candidates": [
+        {
+          "width": 1600,
+          "author": "Seeekeer2",
+          "height": 1043,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Pachena_light_source_and_Fresnel_lens.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Pachena_light_source_and_Fresnel_lens.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Pachena_light_source_and_Fresnel_lens.jpg/1920px-Pachena_light_source_and_Fresnel_lens.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "f41600e8-45af-4fef-8e68-44da5b9599b4",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Pachena_light_source_and_Fresnel_lens.jpg/1920px-Pachena_light_source_and_Fresnel_lens.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC BY 4.0",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "153722322",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 4160,
+          "author": "Connor Scott McManus",
+          "height": 6240,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@connorscottmcmanus",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/close-up-of-a-device-12951942/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/12951942/pexels-photo-12951942.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "8599a14b-803c-4aa3-9f0d-290dedc2d8b0",
+          "download_url": "https://images.pexels.com/photos/12951942/pexels-photo-12951942.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "12951942",
+          "metadata_rejection_reason": "missing_secondary_subject_context"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "6091ecd5d085135e78cdfa2f4cf05a4157434ccfef0329f2132bfce76060952a",
+          "bytes": 650067,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "02cea8dca25265e527e73c12b47318b955fb008cd4fb8ded04ce05ed0054849b",
+          "bytes": 19998,
+          "mime_type": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "shot_key": "S4-A",
+      "visual_intent": "A rotating lighthouse beam sweeping across the dark sea.",
+      "must_show": [
+        "rotating lens",
+        "light beam"
+      ],
+      "must_not_show": [
+        "daytime sun"
+      ],
+      "candidates": [
+        {
+          "width": 4672,
+          "author": "\u2730 Saul Bandera Brotheridge",
+          "height": 7008,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@thephotosaccount",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/dramatic-nighttime-lighthouse-with-radiant-beams-36345402/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "f4df074f-8f1a-42cd-9d14-658284c24ec8",
+          "download_url": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 84,
+          "metadata_rejected": true,
+          "provider_asset_id": "36345402",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:rotating lens"
+        },
+        {
+          "width": 2925,
+          "author": "Maximilian Orlowsky",
+          "height": 4388,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@maximilian-orlowsky-515733",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/bright-lighthouse-illuminating-night-sky-32846091/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/32846091/pexels-photo-32846091.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "2c6bd697-c460-45ae-ad8b-86a2aad9668e",
+          "download_url": "https://images.pexels.com/photos/32846091/pexels-photo-32846091.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 78,
+          "metadata_rejected": true,
+          "provider_asset_id": "32846091",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:rotating lens"
+        },
+        {
+          "width": 2828,
+          "author": "Erik Mclean",
+          "height": 4242,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@introspectivedsgn",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/beacon-with-shiny-light-rays-on-shore-at-night-6194252/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/6194252/pexels-photo-6194252.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "bc982521-0915-4c32-8070-ba114aa6dfb1",
+          "download_url": "https://images.pexels.com/photos/6194252/pexels-photo-6194252.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 72,
+          "metadata_rejected": true,
+          "provider_asset_id": "6194252",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:rotating lens"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "e15cd653c3c9f309d3cab0a0687358731d922f2224531e264b7808a531436c3d",
+          "bytes": 4922,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "a9edb70841e293ef839969a028ea739e1ca7921cfbc9af826ef2ce03719b901a",
+          "bytes": 5797,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "f77d1cb026cb10731cb3b311d0ad995fe85fc43a272e1d329fd07c5e091b04b0",
+          "bytes": 15779,
+          "mime_type": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "shot_key": "S5-A",
+      "visual_intent": "Coastal waters and rocks where ships navigate safely using a beacon.",
+      "must_show": [
+        "coastal waters"
+      ],
+      "must_not_show": [
+        "interior electronics"
+      ],
+      "candidates": [
+        {
+          "width": 1600,
+          "author": "Eric Jones",
+          "height": 1086,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Sun%27s_reflection_in_Irish_Coastal_Waters_-_geograph.org.uk_-_6619365.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Sun%27s_reflection_in_Irish_Coastal_Waters_-_geograph.org.uk_-_6619365.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Sun%27s_reflection_in_Irish_Coastal_Waters_-_geograph.org.uk_-_6619365.jpg/1920px-Sun%27s_reflection_in_Irish_Coastal_Waters_-_geograph.org.uk_-_6619365.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "aee2c750-efaf-418b-85b2-3a8d000fed5b",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Sun%27s_reflection_in_Irish_Coastal_Waters_-_geograph.org.uk_-_6619365.jpg/1920px-Sun%27s_reflection_in_Irish_Coastal_Waters_-_geograph.org.uk_-_6619365.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC BY-SA 2.0",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "151889576",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 4912,
+          "author": "\u041f\u0430\u0432\u0435\u043b  \u0425\u043b\u044b\u0441\u0442\u0443\u043d\u043e\u0432",
+          "height": 7360,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@paul",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/green-navigation-buoy-in-tranquil-blue-sea-35767035/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/35767035/pexels-photo-35767035.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "55314b52-c0c9-48f2-bda1-a6caadd2791b",
+          "download_url": "https://images.pexels.com/photos/35767035/pexels-photo-35767035.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 84,
+          "metadata_rejected": true,
+          "provider_asset_id": "35767035",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:coastal waters; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 3362,
+          "author": "T\u00e2m",
+          "height": 5974,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@tam-1929770475",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/lone-buoy-floating-in-calm-sea-waters-of-vietnam-29458966/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/29458966/pexels-photo-29458966.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "1a13c318-af30-4473-a4ff-b9aeeee91f1d",
+          "download_url": "https://images.pexels.com/photos/29458966/pexels-photo-29458966.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 82,
+          "metadata_rejected": true,
+          "provider_asset_id": "29458966",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:coastal waters; insufficient_must_show_concept_coverage"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "82d487b06a524db4139df7d8c619a1c06f0db0181f32ebd41c7bea929e387713",
+          "bytes": 326099,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "d1192c352fca9b76773d927bd0532b40d0f1ea6ef066f2b5a6f7a941e6d8e03a",
+          "bytes": 11908,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "39846f39f99664122089c75d10c20c34dcd923ccaec5f8b57fe367da77d565ca",
+          "bytes": 8211,
+          "mime_type": "image/jpeg"
+        }
+      ]
+    }
+  ],
+  "evaluations": [
+    {
+      "visual_run_id": "9f7fc0b5-3df7-443f-a5b1-e21c6a9e95a2",
+      "shot_uuid": "9821cdd7-8537-4353-b74a-d35f8ce13ad9",
+      "shot_key": "S1-A",
+      "scene_order": 1,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 3152,
+          "author": "Edwin Lopez",
+          "height": 5602,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@edwinlopez",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/a-lighthouse-built-near-the-trees-7188111/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/7188111/pexels-photo-7188111.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "531fa6c8-9f86-4e1f-b17b-922a0c886a7b",
+          "download_url": "https://images.pexels.com/photos/7188111/pexels-photo-7188111.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "7188111",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 3550,
+          "author": "Joseph Russo",
+          "height": 5681,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@joseph-russo-430180075",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/a-white-lighthouse-with-a-red-roof-and-a-blue-sky-27640580/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/27640580/pexels-photo-27640580.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "6834e582-6f5c-4854-8e63-3c54043e5378",
+          "download_url": "https://images.pexels.com/photos/27640580/pexels-photo-27640580.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "27640580",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 4140,
+          "author": "Mathias Reding",
+          "height": 6211,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@matreding",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/lighthouse-under-white-clouds-12069451/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/12069451/pexels-photo-12069451.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "45bef225-fc1b-46d6-8104-8fd878581842",
+          "download_url": "https://images.pexels.com/photos/12069451/pexels-photo-12069451.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "12069451",
+          "metadata_rejection_reason": null
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "084115a724a6d8a23f944f6ab08dbbcc6ff0a2347ab69e92e64143439eeec3cc",
+          "bytes": 13001,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "8afb56b8d291a73e46472fddb3569138753228e0249697210c772c1844362a7b",
+          "bytes": 10266,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "51422f16642b92c183d28e72a28e7b40d04d8b3c5b3a311994cbaf6463a4fe10",
+          "bytes": 4290,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 90,
+          "vision_pass": true,
+          "reason": "Shows a tall white lighthouse structure surrounded by foliage."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 85,
+          "vision_pass": true,
+          "reason": "Shows the top portion of a tall white lighthouse against a blue sky."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "Clearly shows a tall lighthouse structure standing against the sky."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1039,
+        "candidatesTokenCount": 247,
+        "totalTokenCount": 1286,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 242
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 797
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "visual_run_id": "9f7fc0b5-3df7-443f-a5b1-e21c6a9e95a2",
+      "shot_uuid": "1867bbb2-2f38-4c74-a3e6-28e9a165b05c",
+      "shot_key": "S2-A",
+      "scene_order": 2,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 1600,
+          "author": "Muhammad Imran Saeed  from City of London, Canada",
+          "height": 2134,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Fresnel_Lens_housing_the_lamp_at_Chantry_Island_Lighthouse_(27274573498).jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Fresnel_Lens_housing_the_lamp_at_Chantry_Island_Lighthouse_(27274573498).jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Fresnel_Lens_housing_the_lamp_at_Chantry_Island_Lighthouse_%2827274573498%29.jpg/1920px-Fresnel_Lens_housing_the_lamp_at_Chantry_Island_Lighthouse_%2827274573498%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "98cbda43-772c-48ed-9db7-d7945e60eef9",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Fresnel_Lens_housing_the_lamp_at_Chantry_Island_Lighthouse_%2827274573498%29.jpg/1920px-Fresnel_Lens_housing_the_lamp_at_Chantry_Island_Lighthouse_%2827274573498%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC BY 2.0",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "76004366",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 3000,
+          "author": "Florence",
+          "height": 4000,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@florence-1768458",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/rustic-lighthouse-lamp-by-the-sea-30285137/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "7de02984-cd08-440a-958f-63f322fc506d",
+          "download_url": "https://images.pexels.com/photos/30285137/pexels-photo-30285137.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 88,
+          "metadata_rejected": true,
+          "provider_asset_id": "30285137",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:lamp and lens; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 4160,
+          "author": "Connor Scott McManus",
+          "height": 6240,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@connorscottmcmanus",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/close-up-of-a-device-12951942/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/12951942/pexels-photo-12951942.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "e1205c0e-c529-44b5-9567-483f56141cda",
+          "download_url": "https://images.pexels.com/photos/12951942/pexels-photo-12951942.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 83,
+          "metadata_rejected": true,
+          "provider_asset_id": "12951942",
+          "metadata_rejection_reason": "missing_storyboard_domain_context:lighthouse; missing_primary_subject_anchor:lamp and lens; insufficient_must_show_concept_coverage"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "e93bdaf034bbeb838e53ca62cb7b580c73d85bdc2474ee51e4573178a1b55b87",
+          "bytes": 920206,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "0bd94025339b3aa61244f98acc071ad990e38717cece75e50f1101a34a5f5463",
+          "bytes": 14955,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "02cea8dca25265e527e73c12b47318b955fb008cd4fb8ded04ce05ed0054849b",
+          "bytes": 19998,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 100,
+          "vision_pass": true,
+          "reason": "The image clearly shows a specialized lamp and complex glass lens system inside a lighthouse room overlooking the ocean."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "The image clearly shows a smaller specialized lighthouse lamp and lens fixture outdoors with an ocean view."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "The image clearly shows a large blue-tinted specialized lighthouse lens and lamp system."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1027,
+        "candidatesTokenCount": 268,
+        "totalTokenCount": 1295,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 235
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 792
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "visual_run_id": "9f7fc0b5-3df7-443f-a5b1-e21c6a9e95a2",
+      "shot_uuid": "a2ce95b0-5bd5-4b39-b298-1534f57271fa",
+      "shot_key": "S3-A",
+      "scene_order": 3,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 1600,
+          "author": "Seeekeer2",
+          "height": 1043,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Pachena_light_source_and_Fresnel_lens.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Pachena_light_source_and_Fresnel_lens.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Pachena_light_source_and_Fresnel_lens.jpg/1920px-Pachena_light_source_and_Fresnel_lens.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "f41600e8-45af-4fef-8e68-44da5b9599b4",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Pachena_light_source_and_Fresnel_lens.jpg/1920px-Pachena_light_source_and_Fresnel_lens.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC BY 4.0",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "153722322",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 4160,
+          "author": "Connor Scott McManus",
+          "height": 6240,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@connorscottmcmanus",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/close-up-of-a-device-12951942/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/12951942/pexels-photo-12951942.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "8599a14b-803c-4aa3-9f0d-290dedc2d8b0",
+          "download_url": "https://images.pexels.com/photos/12951942/pexels-photo-12951942.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "12951942",
+          "metadata_rejection_reason": "missing_secondary_subject_context"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "6091ecd5d085135e78cdfa2f4cf05a4157434ccfef0329f2132bfce76060952a",
+          "bytes": 650067,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "02cea8dca25265e527e73c12b47318b955fb008cd4fb8ded04ce05ed0054849b",
+          "bytes": 19998,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 90,
+          "vision_pass": true,
+          "reason": "The image clearly shows a Fresnel lens and light bulbs, but lacks a clearly visible focused light beam."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 85,
+          "vision_pass": true,
+          "reason": "A blue Fresnel lens is visible, though a concentrated light beam is not clearly emitted."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 757,
+        "candidatesTokenCount": 183,
+        "totalTokenCount": 940,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 520
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 237
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "visual_run_id": "9f7fc0b5-3df7-443f-a5b1-e21c6a9e95a2",
+      "shot_uuid": "8f24f468-6ad8-4c6d-8687-ad6020c541c7",
+      "shot_key": "S4-A",
+      "scene_order": 4,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 4672,
+          "author": "\u2730 Saul Bandera Brotheridge",
+          "height": 7008,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@thephotosaccount",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/dramatic-nighttime-lighthouse-with-radiant-beams-36345402/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "f4df074f-8f1a-42cd-9d14-658284c24ec8",
+          "download_url": "https://images.pexels.com/photos/36345402/pexels-photo-36345402.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 84,
+          "metadata_rejected": true,
+          "provider_asset_id": "36345402",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:rotating lens"
+        },
+        {
+          "width": 2925,
+          "author": "Maximilian Orlowsky",
+          "height": 4388,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@maximilian-orlowsky-515733",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/bright-lighthouse-illuminating-night-sky-32846091/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/32846091/pexels-photo-32846091.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "2c6bd697-c460-45ae-ad8b-86a2aad9668e",
+          "download_url": "https://images.pexels.com/photos/32846091/pexels-photo-32846091.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 78,
+          "metadata_rejected": true,
+          "provider_asset_id": "32846091",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:rotating lens"
+        },
+        {
+          "width": 2828,
+          "author": "Erik Mclean",
+          "height": 4242,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@introspectivedsgn",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/beacon-with-shiny-light-rays-on-shore-at-night-6194252/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/6194252/pexels-photo-6194252.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "bc982521-0915-4c32-8070-ba114aa6dfb1",
+          "download_url": "https://images.pexels.com/photos/6194252/pexels-photo-6194252.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 72,
+          "metadata_rejected": true,
+          "provider_asset_id": "6194252",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:rotating lens"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "e15cd653c3c9f309d3cab0a0687358731d922f2224531e264b7808a531436c3d",
+          "bytes": 4922,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "a9edb70841e293ef839969a028ea739e1ca7921cfbc9af826ef2ce03719b901a",
+          "bytes": 5797,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "f77d1cb026cb10731cb3b311d0ad995fe85fc43a272e1d329fd07c5e091b04b0",
+          "bytes": 15779,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "shows a rotating lighthouse lens and light beam sweeping across the dark scene without daytime sun"
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "shows a clear rotating lighthouse lens and multiple light beams against a dark night sky"
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 90,
+          "vision_pass": true,
+          "reason": "shows a lighthouse tower with a glowing lens and beams projecting outward at night"
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1021,
+        "candidatesTokenCount": 171,
+        "totalTokenCount": 1192,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 780
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 241
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "visual_run_id": "9f7fc0b5-3df7-443f-a5b1-e21c6a9e95a2",
+      "shot_uuid": "2ebe91e3-ff0f-4ed7-bf39-a46d4f87c337",
+      "shot_key": "S5-A",
+      "scene_order": 5,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 1600,
+          "author": "Eric Jones",
+          "height": 1086,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Sun%27s_reflection_in_Irish_Coastal_Waters_-_geograph.org.uk_-_6619365.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Sun%27s_reflection_in_Irish_Coastal_Waters_-_geograph.org.uk_-_6619365.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Sun%27s_reflection_in_Irish_Coastal_Waters_-_geograph.org.uk_-_6619365.jpg/1920px-Sun%27s_reflection_in_Irish_Coastal_Waters_-_geograph.org.uk_-_6619365.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "candidate_id": "aee2c750-efaf-418b-85b2-3a8d000fed5b",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Sun%27s_reflection_in_Irish_Coastal_Waters_-_geograph.org.uk_-_6619365.jpg/1920px-Sun%27s_reflection_in_Irish_Coastal_Waters_-_geograph.org.uk_-_6619365.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "license_name": "CC BY-SA 2.0",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "151889576",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 4912,
+          "author": "\u041f\u0430\u0432\u0435\u043b  \u0425\u043b\u044b\u0441\u0442\u0443\u043d\u043e\u0432",
+          "height": 7360,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@paul",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/green-navigation-buoy-in-tranquil-blue-sea-35767035/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/35767035/pexels-photo-35767035.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "55314b52-c0c9-48f2-bda1-a6caadd2791b",
+          "download_url": "https://images.pexels.com/photos/35767035/pexels-photo-35767035.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 84,
+          "metadata_rejected": true,
+          "provider_asset_id": "35767035",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:coastal waters; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 3362,
+          "author": "T\u00e2m",
+          "height": 5974,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@tam-1929770475",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/lone-buoy-floating-in-calm-sea-waters-of-vietnam-29458966/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/29458966/pexels-photo-29458966.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "1a13c318-af30-4473-a4ff-b9aeeee91f1d",
+          "download_url": "https://images.pexels.com/photos/29458966/pexels-photo-29458966.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 82,
+          "metadata_rejected": true,
+          "provider_asset_id": "29458966",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:coastal waters; insufficient_must_show_concept_coverage"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "82d487b06a524db4139df7d8c619a1c06f0db0181f32ebd41c7bea929e387713",
+          "bytes": 326099,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "d1192c352fca9b76773d927bd0532b40d0f1ea6ef066f2b5a6f7a941e6d8e03a",
+          "bytes": 11908,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "39846f39f99664122089c75d10c20c34dcd923ccaec5f8b57fe367da77d565ca",
+          "bytes": 8211,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 40,
+          "vision_pass": false,
+          "reason": "Shows coastal waters and land, but lacks rocks and a navigation beacon."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 90,
+          "vision_pass": true,
+          "reason": "Shows coastal waters with a green navigation beacon and a distant ship."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 85,
+          "vision_pass": true,
+          "reason": "Shows coastal waters with a yellow navigation beacon floating in the sea."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1024,
+        "candidatesTokenCount": 165,
+        "totalTokenCount": 1189,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 784
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 240
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    }
+  ]
+}

@@ -1,5 +1,13 @@
 # AI Short-Form Content Factory — Production Plan
 
+## Manual S3 QA FAIL confirmed — 2026-09-25
+
+- Existing machine-passed job b372ee5e-a9a5-45ad-9381-e3bff004d9d9 is NOT semantically accepted. Actual final MP4 inspected in browser at6.96826s: Fresnel lens rings and lamp bulbs visible, no emitted focused beam. Exact asset Wikimedia153722322, segment3 5340–8400ms. The scene explicitly requires both Fresnel lens and light beam.
+- Gemini9955 gave aggregate must_show_visible=true/PASS90 while its own reason says “lacks a clearly visible focused light beam”. This confirms a false-positive aggregate Vision check, not a retrieval timeout or technical render failure. Saved exact scene contracts/evaluations in acceptance/2026-09-25-m8-9955-per-concept-gap.json.
+- NEXT: replace model-generated aggregate must_show visibility with indexed checks for every required concept; derive aggregate/pass in code, reject missing/duplicate/malformed checks. Preserve the scene requirements, score threshold and uniqueness gate. Replay exact S3 with revised schema before targeted M8 deploy/new smoke.
+- M3–M9 machine success and existing MP4 remain valid technical evidence; do not alter/relabel the immutable run. Manual audio listening not claimed. Active M5v135/M8v71 unchanged; Git source d1707a8.
+
+
 ## E2E machine PASS; manual QA pending — 2026-09-25
 
 - Job b372ee5e-a9a5-45ad-9381-e3bff004d9d9 completed all stages: M3 9949 / coordinator9950 / M4 9951 / M5 9952 / M6 9953 / M7 9954 / M8 9955 / M9 9956 success. Real final MP4 exists. Do not rerun or create a new job before finishing this review.
