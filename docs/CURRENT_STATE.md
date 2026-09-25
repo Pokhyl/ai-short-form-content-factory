@@ -1,5 +1,13 @@
 # Current State
 
+## M5 10033 fix verified in source — 2026-09-25
+
+- Exact uk45 request reproducibly returns Gemini400 INVALID_ARGUMENT with the old nested bounded-array schema. Grouping scene alternatives or using one scene shape while retaining nested array bounds still returns400. Same prompt/model/credential with one scene shape and only the outer scene count returns200. This localizes the failure to provider schema admission; Gemini does not expose the internal limit.
+- Changed the provider schema for ALL durations/languages to one scene shape without nested array bounds. Exact scene/word allocations and existing local shot/query/evidence/semantic gates remain authoritative and unchanged. No topic-specific branch, model switch or local gate relaxation.
+- Initial repair now preserves the original provider error. Second repair preserves it when no usable draft exists, while retaining the already-tested original-draft fallback after a transient repair failure. HTTP retry settings unchanged.
+- Live schema admission: en15/pl30/uk45/ru60 all HTTP200. Offline all16 language/duration contracts plus existing regressions:394/394 PASS. Evidence `acceptance/2026-09-25-m5-10033-schema-replay.json`. This is NOT four E2E passes.
+- Production still M5v135/M8v72. NEXT: zero-active check, backup/publish M5 only, compare published source and non-target versions, then one fresh RAM uk45 job. Failed job86f9735d remains immutable.
+
 ## ACTIVE BLOCKER — user uk45 RAM job, 2026-09-25
 
 The en15 lighthouse acceptance below is a single-case result, NOT factory completion. User job `86f9735d-08ec-47e7-bb25-00bce7e4070c` (RAM, Ukrainian,45s) failed in M5 execution `10033`. Exact Generate Storyboard error is Gemini HTTP400 INVALID_ARGUMENT: “Request contains an invalid argument.” Repair handling masks it as “first Gemini output is empty [line53]”. Exact invalid request field is not yet diagnosed; do not claim a language or duration root cause without replay evidence. M8 never ran for this job.

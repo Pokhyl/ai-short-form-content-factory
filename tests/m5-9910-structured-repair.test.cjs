@@ -26,7 +26,7 @@ test('all three storyboard requests send constrained schema and retain evidence 
   const refuse=schema.anyOf.find(x=>x.required.includes('error'));
   assert.equal(story.properties.scenes.minItems,5);
   assert.equal(story.properties.scenes.maxItems,5);
-  assert.deepEqual(story.properties.scenes.items.anyOf[0].properties.shots.items.properties.preferred_media_type.enum,['photo']);
+  assert.deepEqual(story.properties.scenes.items.properties.shots.items.properties.preferred_media_type.enum,['photo']);
   assert.deepEqual(refuse.properties.error.enum,['INSUFFICIENT_EVIDENCE']);
  }
 });

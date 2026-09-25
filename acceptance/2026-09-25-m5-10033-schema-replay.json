@@ -1,0 +1,3774 @@
+{
+  "execution_id": 10033,
+  "model": "gemini-3.5-flash-lite",
+  "variants": [
+    {
+      "variant": "original",
+      "http_status": 400,
+      "seconds": 0.679,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "scenes": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S1"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 6,
+                          "maxItems": 6
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S2"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 6,
+                          "maxItems": 6
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S3"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 6,
+                          "maxItems": 6
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S4"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 5,
+                          "maxItems": 5
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S5"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 5,
+                          "maxItems": 5
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S6"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 5,
+                          "maxItems": 5
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S7"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 5,
+                          "maxItems": 5
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S8"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 5,
+                          "maxItems": 5
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S9"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 5,
+                          "maxItems": 5
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S10"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 5,
+                          "maxItems": 5
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S11"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 5,
+                          "maxItems": 5
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S12"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 5,
+                          "maxItems": 5
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S13"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 5,
+                          "maxItems": 5
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "minItems": 13,
+                "maxItems": 13
+              }
+            },
+            "required": [
+              "scenes"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "string",
+                "enum": [
+                  "INSUFFICIENT_EVIDENCE"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "response": {
+        "error": {
+          "code": 400,
+          "message": "Request contains an invalid argument.",
+          "status": "INVALID_ARGUMENT"
+        }
+      }
+    },
+    {
+      "variant": "grouped_equal_word_counts",
+      "http_status": 400,
+      "seconds": 0.935,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "scenes": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S1",
+                            "S2",
+                            "S3"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 6,
+                          "maxItems": 6
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scene_id": {
+                          "type": "string",
+                          "enum": [
+                            "S4",
+                            "S5",
+                            "S6",
+                            "S7",
+                            "S8",
+                            "S9",
+                            "S10",
+                            "S11",
+                            "S12",
+                            "S13"
+                          ]
+                        },
+                        "narration_words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                          },
+                          "minItems": 5,
+                          "maxItems": 5
+                        },
+                        "evidence_ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1,
+                          "maxItems": 4
+                        },
+                        "shots": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "shot_id": {
+                                "type": "string"
+                              },
+                              "visual_intent": {
+                                "type": "string"
+                              },
+                              "must_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 1,
+                                "maxItems": 3
+                              },
+                              "must_not_show": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 6
+                              },
+                              "queries_en": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "minItems": 3,
+                                "maxItems": 3
+                              },
+                              "preferred_media_type": {
+                                "type": "string",
+                                "enum": [
+                                  "photo"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "shot_id",
+                              "visual_intent",
+                              "must_show",
+                              "must_not_show",
+                              "queries_en",
+                              "preferred_media_type"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "minItems": 1,
+                          "maxItems": 1
+                        }
+                      },
+                      "required": [
+                        "scene_id",
+                        "narration_words",
+                        "evidence_ids",
+                        "shots"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "minItems": 13,
+                "maxItems": 13
+              }
+            },
+            "required": [
+              "scenes"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "string",
+                "enum": [
+                  "INSUFFICIENT_EVIDENCE"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "response": {
+        "error": {
+          "code": 400,
+          "message": "Request contains an invalid argument.",
+          "status": "INVALID_ARGUMENT"
+        }
+      }
+    },
+    {
+      "variant": "single_scene_schema",
+      "http_status": 400,
+      "seconds": 0.885,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "scenes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "scene_id": {
+                      "type": "string"
+                    },
+                    "narration_words": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                      },
+                      "minItems": 5,
+                      "maxItems": 6
+                    },
+                    "evidence_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "minItems": 1,
+                      "maxItems": 4
+                    },
+                    "shots": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "shot_id": {
+                            "type": "string"
+                          },
+                          "visual_intent": {
+                            "type": "string"
+                          },
+                          "must_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "minItems": 1,
+                            "maxItems": 3
+                          },
+                          "must_not_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "minItems": 0,
+                            "maxItems": 6
+                          },
+                          "queries_en": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "minItems": 3,
+                            "maxItems": 3
+                          },
+                          "preferred_media_type": {
+                            "type": "string",
+                            "enum": [
+                              "photo"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "shot_id",
+                          "visual_intent",
+                          "must_show",
+                          "must_not_show",
+                          "queries_en",
+                          "preferred_media_type"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "minItems": 1,
+                      "maxItems": 1
+                    }
+                  },
+                  "required": [
+                    "scene_id",
+                    "narration_words",
+                    "evidence_ids",
+                    "shots"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 13,
+                "maxItems": 13
+              }
+            },
+            "required": [
+              "scenes"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "string",
+                "enum": [
+                  "INSUFFICIENT_EVIDENCE"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "response": {
+        "error": {
+          "code": 400,
+          "message": "Request contains an invalid argument.",
+          "status": "INVALID_ARGUMENT"
+        }
+      }
+    },
+    {
+      "variant": "object_scenes_exact",
+      "http_status": 400,
+      "seconds": 0.878,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "scenes": {
+                "type": "object",
+                "properties": {
+                  "S1": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S1"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 6,
+                        "maxItems": 6
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "S2": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S2"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 6,
+                        "maxItems": 6
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "S3": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S3"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 6,
+                        "maxItems": 6
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "S4": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S4"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 5,
+                        "maxItems": 5
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "S5": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S5"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 5,
+                        "maxItems": 5
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "S6": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S6"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 5,
+                        "maxItems": 5
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "S7": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S7"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 5,
+                        "maxItems": 5
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "S8": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S8"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 5,
+                        "maxItems": 5
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "S9": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S9"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 5,
+                        "maxItems": 5
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "S10": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S10"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 5,
+                        "maxItems": 5
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "S11": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S11"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 5,
+                        "maxItems": 5
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "S12": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S12"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 5,
+                        "maxItems": 5
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "S13": {
+                    "type": "object",
+                    "properties": {
+                      "scene_id": {
+                        "type": "string",
+                        "enum": [
+                          "S13"
+                        ]
+                      },
+                      "narration_words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                        },
+                        "minItems": 5,
+                        "maxItems": 5
+                      },
+                      "evidence_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 4
+                      },
+                      "shots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "shot_id": {
+                              "type": "string"
+                            },
+                            "visual_intent": {
+                              "type": "string"
+                            },
+                            "must_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 1,
+                              "maxItems": 3
+                            },
+                            "must_not_show": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 0,
+                              "maxItems": 6
+                            },
+                            "queries_en": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "minItems": 3,
+                              "maxItems": 3
+                            },
+                            "preferred_media_type": {
+                              "type": "string",
+                              "enum": [
+                                "photo"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "shot_id",
+                            "visual_intent",
+                            "must_show",
+                            "must_not_show",
+                            "queries_en",
+                            "preferred_media_type"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                      }
+                    },
+                    "required": [
+                      "scene_id",
+                      "narration_words",
+                      "evidence_ids",
+                      "shots"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "S1",
+                  "S2",
+                  "S3",
+                  "S4",
+                  "S5",
+                  "S6",
+                  "S7",
+                  "S8",
+                  "S9",
+                  "S10",
+                  "S11",
+                  "S12",
+                  "S13"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "scenes"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "string",
+                "enum": [
+                  "INSUFFICIENT_EVIDENCE"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "response": {
+        "error": {
+          "code": 400,
+          "message": "Request contains an invalid argument.",
+          "status": "INVALID_ARGUMENT"
+        }
+      }
+    },
+    {
+      "variant": "minimal_schema",
+      "http_status": 200,
+      "seconds": 1.172,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok"
+        ]
+      },
+      "response": {
+        "candidates": [
+          {
+            "content": {
+              "parts": [
+                {
+                  "text": "{\"ok\":true}"
+                }
+              ],
+              "role": "model"
+            },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 18380,
+          "candidatesTokenCount": 5,
+          "totalTokenCount": 18385,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 18380
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "modelVersion": "gemini-3.5-flash-lite",
+        "responseId": "O5S2aoiiPMafkdUPw5Cl2Qs"
+      }
+    },
+    {
+      "variant": "no_schema",
+      "http_status": 200,
+      "seconds": 5.801,
+      "schema": null,
+      "response": {
+        "candidates": [
+          {
+            "content": {
+              "parts": [
+                {
+                  "text": "{\"scenes\":[{\"scene_id\":\"S1\",\"narration_words\":[\"Оперативна\",\"пам'ять\",\"це\",\"важлива\",\"частина\",\"комп'ютера.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S1-A\",\"visual_intent\":\"Computer motherboard with installed RAM modules\",\"must_show\":[\"computer motherboard\"],\"must_not_show\":[\"laptop computer\"],\"queries_en\":[\"computer motherboard with RAM modules\",\"motherboard memory slots and RAM\",\"computer motherboard overview photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S2\",\"narration_words\":[\"Вона\",\"виступає\",\"буфером\",\"між\",\"накопичувачем\",\"і\",\"процесором.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S2-A\",\"visual_intent\":\"Simplified data flow diagram between drive and processor\",\"must_show\":[\"data flow diagram\"],\"must_not_show\":[\"computer keyboard\"],\"queries_en\":[\"data flow diagram between storage and processor\",\"computer architecture memory schema\",\"simplified memory work diagram\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S3\",\"narration_words\":[\"Дані\",\"з\",\"диска\",\"спершу\",\"зчитуються\",\"туди.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S3-A\",\"visual_intent\":\"Hard disk drive connected to computer system board\",\"must_show\":[\"hard disk drive\"],\"must_not_show\":[\"optical disc drive\"],\"queries_en\":[\"hard disk drive storage device\",\"computer hard drive connection\",\"internal hard drive photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S4\",\"narration_words\":[\"Процессор\",\"отримує\",\"швидкий\",\"доступ\",\"даних.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S4-A\",\"visual_intent\":\"Central processing unit installed on motherboard socket\",\"must_show\":[\"central processing unit\"],\"must_not_show\":[\"computer monitor\"],\"queries_en\":[\"central processing unit on motherboard socket\",\"CPU chip installed in system\",\"microprocessor processor socket photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S5\",\"narration_words\":[\"Фізично\",\"це\",\"набір\",\"мікросхем\",\"пам'яті.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S5-A\",\"visual_intent\":\"RAM memory stick showing soldered microchips on circuit board\",\"must_show\":[\"RAM memory stick\"],\"must_not_show\":[\"power supply unit\"],\"queries_en\":[\"RAM memory stick with microchips\",\"memory module microchips soldered on PCB\",\"RAM stick close up photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S6\",\"narration_words\":[\"Кожна\",\"мікросхема\",\"складається\",\"з\",\"шарів.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S6-A\",\"visual_intent\":\"Internal layered structure of silicon semiconductor chip\",\"must_show\":[\"silicon semiconductor chip\"],\"must_not_show\":[\"wooden board\"],\"queries_en\":[\"silicon semiconductor chip internal layers\",\"microchip microscopic silicon layers\",\"integrated circuit chip cross section\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S7\",\"narration_words\":[\"Кожен\",\"шар\",\"містить\",\"матриці\",\"ячеєк.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S7-A\",\"visual_intent\":\"Microscopic rectangular memory cell matrix array on silicon\",\"must_show\":[\"memory cell matrix\"],\"must_not_show\":[\"computer keyboard\"],\"queries_en\":[\"memory cell matrix array on silicon\",\"RAM memory cell structure grid\",\"semiconductor memory matrix photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S8\",\"narration_words\":[\"Одна\",\"ячейка\",\"зберігає\",\"один\",\"біт.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S8-A\",\"visual_intent\":\"Schematic diagram of single dynamic RAM memory cell\",\"must_show\":[\"memory cell diagram\"],\"must_not_show\":[\"computer mouse\"],\"queries_en\":[\"dynamic RAM memory cell schematic diagram\",\"transistor and capacitor cell circuit\",\"DRAM memory cell diagram photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S9\",\"narration_words\":[\"Транзистор\",\"працює\",\"як\",\"електричний\",\"ключ.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S9-A\",\"visual_intent\":\"Field effect transistor electronic component close up\",\"must_show\":[\"field effect transistor\"],\"must_not_show\":[\"resistor component\"],\"queries_en\":[\"field effect transistor electronic component\",\"transistor switch close up photo\",\"electronic transistor semiconductor device\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S10\",\"narration_words\":[\"Конденсатор\",\"зберігає\",\"електричний\",\"заряд\",\"даних.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S10-A\",\"visual_intent\":\"Electronic capacitor component mounted on circuit board\",\"must_show\":[\"electronic capacitor\"],\"must_not_show\":[\"plastic connector\"],\"queries_en\":[\"electronic capacitor component on board\",\"capacitor electrical energy storage photo\",\"ceramic capacitor component close up\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S11\",\"narration_words\":[\"Спереду\",\"считывается\",\"вся\",\"страница\",\"цілком.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S11-A\",\"visual_intent\":\"Simplified memory page array schema during read operation\",\"must_show\":[\"memory array schema\"],\"must_not_show\":[\"computer monitor screen\"],\"queries_en\":[\"memory array schema page reading\",\"DRAM page read operation diagram\",\"memory matrix read schema photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S12\",\"narration_words\":[\"Під час\",\"читання\",\"заряд\",\"конденсаторів\",\"опустошується.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S12-A\",\"visual_intent\":\"Schematic diagram showing memory array read discharge process\",\"must_show\":[\"memory array diagram\"],\"must_not_show\":[\"computer keyboard\"],\"queries_en\":[\"memory array read operation diagram\",\"RAM read discharge process schema\",\"memory cell read circuit diagram\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S13\",\"narration_words\":[\"Потім\",\"сторінка\",\"переписується\",\"і\",\"заряджається.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S13-A\",\"visual_intent\":\"Schematic diagram showing memory array write recharge process\",\"must_show\":[\"memory write diagram\"],\"must_not_show\":[\"computer mouse\"],\"queries_en\":[\"memory array write operation diagram\",\"RAM write recharge process schema\",\"memory cell write circuit diagram\"],\"preferred_media_type\":\"photo\"}]}]}"
+                }
+              ],
+              "role": "model"
+            },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 18380,
+          "candidatesTokenCount": 1483,
+          "totalTokenCount": 19863,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 18380
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "modelVersion": "gemini-3.5-flash-lite",
+        "responseId": "PZS2arKPB9rYxs0P4d_bqQE"
+      }
+    },
+    {
+      "variant": "single_scene_outer_count_only",
+      "http_status": 200,
+      "seconds": 6.193,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "scenes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "scene_id": {
+                      "type": "string"
+                    },
+                    "narration_words": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                      }
+                    },
+                    "evidence_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "shots": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "shot_id": {
+                            "type": "string"
+                          },
+                          "visual_intent": {
+                            "type": "string"
+                          },
+                          "must_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "must_not_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "queries_en": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "preferred_media_type": {
+                            "type": "string",
+                            "enum": [
+                              "photo"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "shot_id",
+                          "visual_intent",
+                          "must_show",
+                          "must_not_show",
+                          "queries_en",
+                          "preferred_media_type"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "scene_id",
+                    "narration_words",
+                    "evidence_ids",
+                    "shots"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 13,
+                "maxItems": 13
+              }
+            },
+            "required": [
+              "scenes"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "string",
+                "enum": [
+                  "INSUFFICIENT_EVIDENCE"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "response": {
+        "candidates": [
+          {
+            "content": {
+              "parts": [
+                {
+                  "text": "{\"scenes\":[{\"scene_id\":\"S1\",\"narration_words\":[\"Оперативна\",\"пам'ять\",\"це\",\"важлива\",\"частина\",\"комп'ютера.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S1-A\",\"visual_intent\":\"computer system hardware motherboard layout\",\"must_show\":[\"motherboard\"],\"must_not_show\":[\"laptop screen\"],\"queries_en\":[\"computer motherboard hardware layout\",\"system board computer electronics\",\"computer motherboard photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S2\",\"narration_words\":[\"Вона\",\"виступає\",\"буфером\",\"між\",\"накопичувачем\",\"процесором.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S2-A\",\"visual_intent\":\"central processor unit socket on motherboard\",\"must_show\":[\"processor\"],\"must_not_show\":[\"computer monitor\"],\"queries_en\":[\"cpu processor socket motherboard\",\"central processing unit hardware\",\"computer processor chip photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S3\",\"narration_words\":[\"Дані\",\"спершу\",\"зчитуються\",\"з\",\"диска\",\"туди.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S3-A\",\"visual_intent\":\"internal solid state drive installed in computer\",\"must_show\":[\"solid state drive\"],\"must_not_show\":[\"optical disk drive\"],\"queries_en\":[\"internal solid state drive ssd\",\"ssd storage drive hardware\",\"solid state drive photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S4\",\"narration_words\":[\"Процессор\",\"отримає\",\"швидкий\",\"доступ\",\"даним.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S4-A\",\"visual_intent\":\"computer processor chip installed on motherboard socket\",\"must_show\":[\"processor\"],\"must_not_show\":[\"power supply unit\"],\"queries_en\":[\"computer processor cpu chip\",\"processor installed on motherboard\",\"cpu chip photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S5\",\"narration_words\":[\"Фізично\",\"пам'ять\",\"це\",\"набір\",\"мікросхем.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S5-A\",\"visual_intent\":\" RAM memory module microchips soldered on a circuit board\",\"must_show\":[\"memory module\"],\"must_not_show\":[\"graphics card\"],\"queries_en\":[\"RAM memory module circuit board\",\"memory chips on ram stick\",\"ram module photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S6\",\"narration_words\":[\"Кожна\",\"мікросхема\",\"має\",\"шари\",\"ячеєк.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S6-A\",\"visual_intent\":\"close up view of memory chip microcircuitry layers\",\"must_show\":[\"microchip\"],\"must_not_show\":[\"cable wires\"],\"queries_en\":[\"semiconductor microchip silicon die\",\"integrated circuit chip close up\",\"microchip semiconductor photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S7\",\"narration_words\":[\"Одна\",\"ячейка\",\"зберігає\",\"один\",\"біт.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S7-A\",\"visual_intent\":\"microscopic semiconductor memory cell transistor capacitor diagram view\",\"must_show\":[\"transistor\"],\"must_not_show\":[\"computer fan\"],\"queries_en\":[\"transistor capacitor memory cell\",\"semiconductor cell electronics\",\"memory cell transistor photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S8\",\"narration_words\":[\"Конденсатор\",\"завжди\",\"зберігає\",\"потрібну\",\"інформацію.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S8-A\",\"visual_intent\":\"electronic capacitor components on a circuit board\",\"must_show\":[\"capacitor\"],\"must_not_show\":[\"display monitor\"],\"queries_en\":[\"electronic capacitor on circuit board\",\"capacitors electronics hardware\",\"capacitor component photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S9\",\"narration_words\":[\"Транзистор\",\"працює\",\"як\",\"електричний\",\"ключ.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S9-A\",\"visual_intent\":\"electronic transistor semiconductor component closeup\",\"must_show\":[\"transistor\"],\"must_not_show\":[\"keyboard peripheral\"],\"queries_en\":[\"electronic transistor semiconductor component\",\"transistor hardware part\",\"transistor electronic component photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S10\",\"narration_words\":[\"Считывается\",\"вся\",\"страница\",\"чипа\",\"целиком.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S10-A\",\"visual_intent\":\"memory chip silicon surface matrix grid layout\",\"must_show\":[\"microchip\"],\"must_not_show\":[\"power cord\"],\"queries_en\":[\"memory chip surface silicon die\",\"semiconductor wafer grid\",\"silicon chip surface photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S11\",\"narration_words\":[\"Цей\",\"процес\",\"потребує\",\"постійного\",\"живлення.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S11-A\",\"visual_intent\":\"computer power supply unit cables connected to motherboard\",\"must_show\":[\"power supply unit\"],\"must_not_show\":[\"computer mouse\"],\"queries_en\":[\"computer power supply cables\",\"power supply unit internal hardware\",\"power supply unit photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S12\",\"narration_words\":[\"Вимкнення\",\"живлення\",\"повністю\",\"очищує\",\"пам'ять.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S12-A\",\"visual_intent\":\"powered down dark computer motherboard without lights\",\"must_show\":[\"motherboard\"],\"must_not_show\":[\" lit rgb LEDs\"],\"queries_en\":[\"powered down computer motherboard\",\"dark system board electronics\",\"motherboard hardware photo\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S13\",\"narration_words\":[\"Дані\",\"зникають\",\"після\",\"вимкнення\",\"комп'ютера.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S13-A\",\"visual_intent\":\"turned off desktop computer tower casing interior\",\"must_show\":[\"computer case\"],\"must_not_show\":[\" glowing screen\"],\"queries_en\":[\"turned off computer case interior\",\"desktop computer tower hardware\",\"computer case internal photo\"],\"preferred_media_type\":\"photo\"}]}]}"
+                }
+              ],
+              "role": "model"
+            },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 18380,
+          "candidatesTokenCount": 1424,
+          "totalTokenCount": 19804,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 18380
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "modelVersion": "gemini-3.5-flash-lite",
+        "responseId": "bpS2atTlKr6gxN8P-O6jyQw"
+      }
+    },
+    {
+      "variant": "single_scene_no_array_bounds",
+      "http_status": 200,
+      "seconds": 13.108,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "scenes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "scene_id": {
+                      "type": "string"
+                    },
+                    "narration_words": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                      }
+                    },
+                    "evidence_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "shots": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "shot_id": {
+                            "type": "string"
+                          },
+                          "visual_intent": {
+                            "type": "string"
+                          },
+                          "must_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "must_not_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "queries_en": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "preferred_media_type": {
+                            "type": "string",
+                            "enum": [
+                              "photo"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "shot_id",
+                          "visual_intent",
+                          "must_show",
+                          "must_not_show",
+                          "queries_en",
+                          "preferred_media_type"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "scene_id",
+                    "narration_words",
+                    "evidence_ids",
+                    "shots"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "scenes"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "string",
+                "enum": [
+                  "INSUFFICIENT_EVIDENCE"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "response": {
+        "candidates": [
+          {
+            "content": {
+              "parts": [
+                {
+                  "text": "{\n  \"scenes\": [\n    {\n      \"scene_id\": \"S1\",\n      \"narration_words\": [\n        \"Оперативна\",\n        \"память\",\n        \"це\",\n        \"важлива\",\n        \"частина\",\n        \"комп'ютера.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S1-A\",\n          \"visual_intent\": \"Close-up photo of RAM memory module installed in a computer motherboard slot\",\n          \"must_show\": [\n            \"memory module\",\n            \"computer motherboard\"\n          ],\n          \"must_not_show\": [\n            \"abstract graphics\"\n          ],\n          \"queries_en\": [\n            \"RAM memory module on motherboard\",\n            \"computer RAM stick installed in slot\",\n            \"memory module\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S2\",\n      \"narration_words\": [\n        \"Вона\",\n        \"працює\",\n        \"як\",\n        \"швидкий\",\n        \"буфер\",\n        \"даних.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S2-A\",\n          \"visual_intent\": \"Detailed photo of RAM chip surface showing internal silicon layers\",\n          \"must_show\": [\n            \"memory chip\",\n            \"circuit board\"\n          ],\n          \"must_not_show\": [\n            \"blurry background\"\n          ],\n          \"queries_en\": [\n            \"RAM memory microchip close-up\",\n            \"computer memory chip layers\",\n            \"memory chip\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S3\",\n      \"narration_words\": [\n        \"Дані\",\n        \"надходять\",\n        \"сюди\",\n        \"з\",\n        \"накопичувача\",\n        \"спочатку.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S3-A\",\n          \"visual_intent\": \"Photo of a solid-state drive connected to a computer system\",\n          \"must_show\": [\n            \"solid-state drive\",\n            \"motherboard\"\n          ],\n          \"must_not_show\": [\n            \"empty casing\"\n          ],\n          \"queries_en\": [\n            \"solid-state drive on motherboard\",\n            \"computer storage drive hardware\",\n            \"solid-state drive\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S4\",\n      \"narration_words\": [\n        \"Процессор\",\n        \"швидко\",\n        \"одержує\",\n        \"потрібну\",\n        \"інформацію.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S4-A\",\n          \"visual_intent\": \"Photo of computer central processing unit installed under a cooling fan\",\n          \"must_show\": [\n            \"central processing unit\",\n            \"cooling fan\"\n          ],\n          \"must_not_show\": [\n            \"vintage hardware\"\n          ],\n          \"queries_en\": [\n            \"central processing unit on motherboard\",\n            \"computer processor under cooler\",\n            \"central processing unit\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S5\",\n      \"narration_words\": [\n        \"Фізично\",\n        \"це\",\n        \"набір\",\n        \"мікросхем\",\n        \"пам'яті.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S5-A\",\n          \"visual_intent\": \"Macro photo of memory chips soldered onto a circuit board strip\",\n          \"must_show\": [\n            \"memory module\",\n            \"microchips\"\n          ],\n          \"must_not_show\": [\n            \"power supply\"\n          ],\n          \"queries_en\": [\n            \"microchips on memory module\",\n            \"RAM stick circuit board details\",\n            \"memory module\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S6\",\n      \"narration_words\": [\n        \"Кожна\",\n        \"комірка\",\n        \"зберігає\",\n        \"один\",\n        \"біт.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S6-A\",\n          \"visual_intent\": \"Diagrammatic micro photo representing a dynamic memory cell array\",\n          \"must_show\": [\n            \"memory chip\",\n            \"matrix layout\"\n          ],\n          \"must_not_show\": [\n            \"blurry text\"\n          ],\n          \"queries_en\": [\n            \"dynamic memory cell array diagram\",\n            \"memory chip internal cell matrix\",\n            \"memory chip\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S7\",\n      \"narration_words\": [\n        \"Транзистор\",\n        \"діє\",\n        \"як\",\n        \"електричний\",\n        \"ключ.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S7-A\",\n          \"visual_intent\": \"Close-up photo of electronic transistors on a printed circuit board\",\n          \"must_show\": [\n            \"electronic transistor\",\n            \"circuit board\"\n          ],\n          \"must_not_show\": [\n            \"abstract vectors\"\n          ],\n          \"queries_en\": [\n            \"electronic transistor on circuit board\",\n            \"microscopic transistor switch component\",\n            \"electronic transistor\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S8\",\n      \"narration_words\": [\n        \"Конденсатор\",\n        \"надійно\",\n        \"утримує\",\n        \"потрібний\",\n        \"заряд.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S8-A\",\n          \"visual_intent\": \"Macro photo of surface-mounted capacitors on a computer RAM module\",\n          \"must_show\": [\n            \"surface capacitor\",\n            \"circuit board\"\n          ],\n          \"must_not_show\": [\n            \"damaged components\"\n          ],\n          \"queries_en\": [\n            \"surface capacitor on RAM module\",\n            \"electronic capacitor component close-up\",\n            \"surface capacitor\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S9\",\n      \"narration_words\": [\n        \"Заряд\",\n        \"визначає\",\n        \"логічну\",\n        \"одиницю\",\n        \"нуль.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S9-A\",\n          \"visual_intent\": \"Close-up photo of electronic logic circuit traces on a green board\",\n          \"must_show\": [\n            \"logic circuit\",\n            \"circuit traces\"\n          ],\n          \"must_not_show\": [\n            \"blurry graphics\"\n          ],\n          \"queries_en\": [\n            \"logic circuit traces on board\",\n            \"electronic logic state chip details\",\n            \"logic circuit\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S10\",\n      \"narration_words\": [\n        \"Співробітники\",\n        \"зчитують\",\n        \"всю\",\n        \"сторінку\",\n        \"повністю.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S10-A\",\n          \"visual_intent\": \"Photo of a RAM module showing amplifier lines at the edge\",\n          \"must_show\": [\n            \"memory module\",\n            \"connector pins\"\n          ],\n          \"must_not_show\": [\n            \"broken pins\"\n          ],\n          \"queries_en\": [\n            \"memory module connector pins close-up\",\n            \"RAM stick gold contact pins\",\n            \"memory module\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S11\",\n      \"narration_words\": [\n        \"Процес\",\n        \"читання\",\n        \"очищає\",\n        \"заряджений\",\n        \"конденсатор.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S11-A\",\n          \"visual_intent\": \"Detailed macro photo of memory microchip pins during electrical testing\",\n          \"must_show\": [\n            \"microchip pins\",\n            \"circuit board\"\n          ],\n          \"must_not_show\": [\n            \"hand tools\"\n          ],\n          \"queries_en\": [\n            \"microchip pins during electrical test\",\n            \"RAM chip contact pins close-up\",\n            \"microchip pins\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S12\",\n      \"narration_words\": [\n        \"Сторінку\",\n        \"потрібно\",\n        \"одразу\",\n        \"переписати\",\n        \"знову.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S12-A\",\n          \"visual_intent\": \"Photo of automated soldering equipment manufacturing a memory stick\",\n          \"must_show\": [\n            \"manufacturing equipment\",\n            \"circuit board\"\n          ],\n          \"must_not_show\": [\n            \"human hands\"\n          ],\n          \"queries_en\": [\n            \"manufacturing equipment for RAM modules\",\n            \"automated circuit board production line\",\n            \"manufacturing equipment\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S13\",\n      \"narration_words\": [\n        \"Дані\",\n        \"зникають\",\n        \"після\",\n        \"вимкнення\",\n        \"живлення.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S13-A\",\n          \"visual_intent\": \"Photo of an unpowered computer system with dark interior components\",\n          \"must_show\": [\n            \"computer system\",\n            \"motherboard\"\n          ],\n          \"must_not_show\": [\n            \"active lights\"\n          ],\n          \"queries_en\": [\n            \"unpowered computer system components\",\n            \"dark computer motherboard inside case\",\n            \"computer system\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    }\n  ]\n}"
+                }
+              ],
+              "role": "model"
+            },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 18380,
+          "candidatesTokenCount": 2879,
+          "totalTokenCount": 21259,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 18380
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "modelVersion": "gemini-3.5-flash-lite",
+        "responseId": "dJS2aqWQMsnfxs0Pgb_DYQ"
+      }
+    },
+    {
+      "variant": "en15",
+      "http_status": 200,
+      "seconds": 3.929,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "scenes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "scene_id": {
+                      "type": "string"
+                    },
+                    "narration_words": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                      }
+                    },
+                    "evidence_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "shots": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "shot_id": {
+                            "type": "string"
+                          },
+                          "visual_intent": {
+                            "type": "string"
+                          },
+                          "must_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "must_not_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "queries_en": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "preferred_media_type": {
+                            "type": "string",
+                            "enum": [
+                              "photo"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "shot_id",
+                          "visual_intent",
+                          "must_show",
+                          "must_not_show",
+                          "queries_en",
+                          "preferred_media_type"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "scene_id",
+                    "narration_words",
+                    "evidence_ids",
+                    "shots"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 5,
+                "maxItems": 5
+              }
+            },
+            "required": [
+              "scenes"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "string",
+                "enum": [
+                  "INSUFFICIENT_EVIDENCE"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "response": {
+        "candidates": [
+          {
+            "content": {
+              "parts": [
+                {
+                  "text": "{\n  \"scenes\": [\n    {\n      \"scene_id\": \"S1\",\n      \"narration_words\": [\n        \"RAM\",\n        \"acts\",\n        \"as\",\n        \"a\",\n        \"buffer\",\n        \"between\",\n        \"the\",\n        \"storage\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S1-A\",\n          \"visual_intent\": \"Show computer storage and memory module buffer architecture in operation.\",\n          \"must_show\": [\n            \"RAM module\",\n            \"circuit board\"\n          ],\n          \"must_not_show\": [\n            \"smartphone screen\",\n            \"isolated processor\"\n          ],\n          \"queries_en\": [\n            \"RAM module circuit board\",\n            \"computer memory hardware module\",\n            \"RAM module\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S2\",\n      \"narration_words\": [\n        \"and\",\n        \"processor\",\n        \"holding\",\n        \"data\",\n        \"needed\",\n        \"by\",\n        \"the\",\n        \"CPU\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S2-A\",\n          \"visual_intent\": \"Show computer processor socket and RAM memory chips on motherboard.\",\n          \"must_show\": [\n            \"computer processor\",\n            \"motherboard\"\n          ],\n          \"must_not_show\": [\n            \"external hard drive\",\n            \"power supply unit\"\n          ],\n          \"queries_en\": [\n            \"computer processor motherboard\",\n            \"CPU processor socket\",\n            \"computer processor\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S3\",\n      \"narration_words\": [\n        \"until\",\n        \"processed\",\n        \"physically\",\n        \"consisting\",\n        \"of\",\n        \"microchips\",\n        \"on\",\n        \"boards\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S3-A\",\n          \"visual_intent\": \"Show microchips soldered onto a memory circuit board.\",\n          \"must_show\": [\n            \"microchips\",\n            \"circuit board\"\n          ],\n          \"must_not_show\": [\n            \"computer monitor\",\n            \"keyboard\"\n          ],\n          \"queries_en\": [\n            \"microchips on memory board\",\n            \"memory microchips soldered\",\n            \"microchips\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S4\",\n      \"narration_words\": [\n        \"where\",\n        \"each\",\n        \"tiny\",\n        \"cell\",\n        \"contains\",\n        \"one\",\n        \"transistor\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S4-A\",\n          \"visual_intent\": \"Show close-up schematic or view of memory cell transistor and capacitor structure.\",\n          \"must_show\": [\n            \"transistor\",\n            \"microchip\"\n          ],\n          \"must_not_show\": [\n            \"computer case\",\n            \"cooling fan\"\n          ],\n          \"queries_en\": [\n            \"memory cell transistor structure\",\n            \"transistor and capacitor cell\",\n            \"transistor\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S5\",\n      \"narration_words\": [\n        \"and\",\n        \"one\",\n        \"capacitor\",\n        \"storing\",\n        \"binary\",\n        \"information\",\n        \"bits.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S5-A\",\n          \"visual_intent\": \"Show detailed diagram or close-up of memory cell capacitor storing data bits.\",\n          \"must_show\": [\n            \"capacitor\",\n            \"circuit diagram\"\n          ],\n          \"must_not_show\": [\n            \"computer mouse\",\n            \"power cable\"\n          ],\n          \"queries_en\": [\n            \"memory cell capacitor diagram\",\n            \"capacitor binary storage cell\",\n            \"capacitor\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    }\n  ]\n}"
+                }
+              ],
+              "role": "model"
+            },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 18360,
+          "candidatesTokenCount": 1143,
+          "totalTokenCount": 19503,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 18360
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "modelVersion": "gemini-3.5-flash-lite",
+        "responseId": "6pS2asSVB9SXvdIPnvLL4Q4"
+      }
+    },
+    {
+      "variant": "pl30",
+      "http_status": 200,
+      "seconds": 6.483,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "scenes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "scene_id": {
+                      "type": "string"
+                    },
+                    "narration_words": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                      }
+                    },
+                    "evidence_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "shots": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "shot_id": {
+                            "type": "string"
+                          },
+                          "visual_intent": {
+                            "type": "string"
+                          },
+                          "must_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "must_not_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "queries_en": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "preferred_media_type": {
+                            "type": "string",
+                            "enum": [
+                              "photo"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "shot_id",
+                          "visual_intent",
+                          "must_show",
+                          "must_not_show",
+                          "queries_en",
+                          "preferred_media_type"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "scene_id",
+                    "narration_words",
+                    "evidence_ids",
+                    "shots"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 9,
+                "maxItems": 9
+              }
+            },
+            "required": [
+              "scenes"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "string",
+                "enum": [
+                  "INSUFFICIENT_EVIDENCE"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "response": {
+        "candidates": [
+          {
+            "content": {
+              "parts": [
+                {
+                  "text": "{\n  \"scenes\": [\n    {\n      \"scene_id\": \"S1\",\n      \"narration_words\": [\n        \"Operatywna\",\n        \"pamięć\",\n        \"komputera\",\n        \"to\",\n        \"kluczowy\",\n        \"bufer.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S1-A\",\n          \"visual_intent\": \"RAM memory module installed in a computer motherboard\",\n          \"must_show\": [\n            \"memory module\",\n            \"motherboard\"\n          ],\n          \"must_not_show\": [\n            \"isolated processor\"\n          ],\n          \"queries_en\": [\n            \"RAM memory module on motherboard\",\n            \"computer memory module slot\",\n            \"RAM memory module\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S2\",\n      \"narration_words\": [\n        \"Dane\",\n        \"trafiają\",\n        \"tam\",\n        \"z\",\n        \"dysку\",\n        \"przed\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S2-A\",\n          \"visual_intent\": \"Solid state drive storage device inside a computer system\",\n          \"must_show\": [\n            \"solid state drive\",\n            \"computer storage\"\n          ],\n          \"must_not_show\": [\n            \"monitor screen\"\n          ],\n          \"queries_en\": [\n            \"solid state drive storage device\",\n            \"computer storage drive hardware\",\n            \"solid state drive\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S3\",\n      \"narration_words\": [\n        \"przetwarzaniem\",\n        \"przez\",\n        \"szybki\",\n        \"centralny\",\n        \"procesor\",\n        \"komputera.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S3-A\",\n          \"visual_intent\": \"Central processing unit chip installed on a computer motherboard socket\",\n          \"must_show\": [\n            \"central processing unit\",\n            \"motherboard socket\"\n          ],\n          \"must_not_show\": [\n            \"power supply unit\"\n          ],\n          \"queries_en\": [\n            \"central processing unit chip socket\",\n            \"computer processor on motherboard\",\n            \"central processing unit\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S4\",\n      \"narration_words\": [\n        \"Fizycznie\",\n        \"układ\",\n        \"stanowią\",\n        \"mikroschhemy\",\n        \"na\",\n        \"płycie.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S4-A\",\n          \"visual_intent\": \"Integrated circuit chips soldered onto a memory circuit board\",\n          \"must_show\": [\n            \"integrated circuit\",\n            \"circuit board\"\n          ],\n          \"must_not_show\": [\n            \"computer keyboard\"\n          ],\n          \"queries_en\": [\n            \"integrated circuit chips on memory board\",\n            \"microchips on memory module\",\n            \"integrated circuit\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S5\",\n      \"narration_words\": [\n        \"Każda\",\n        \"pojedyncza\",\n        \"komórka\",\n        \"pamięci\",\n        \"zawiera\",\n        \"jeden\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S5-A\",\n          \"visual_intent\": \"Microscopic view of semiconductor memory cell matrix layers\",\n          \"must_show\": [\n            \"semiconductor memory\",\n            \"silicon chip\"\n          ],\n          \"must_not_show\": [\n            \"external computer case\"\n          ],\n          \"queries_en\": [\n            \"semiconductor memory cell matrix layer\",\n            \"microchip silicon surface layers\",\n            \"semiconductor memory\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S6\",\n      \"narration_words\": [\n        \"tranzystor\",\n        \"oraz\",\n        \"mały\",\n        \"kondensator\",\n        \"przechowujący\",\n        \"ładunek.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S6-A\",\n          \"visual_intent\": \"Electronic transistor and capacitor components on a circuit board\",\n          \"must_show\": [\n            \"electronic transistor\",\n            \"circuit board\"\n          ],\n          \"must_not_show\": [\n            \"optical disc drive\"\n          ],\n          \"queries_en\": [\n            \"electronic transistor and capacitor components\",\n            \"transistor and capacitor on board\",\n            \"electronic transistor\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S7\",\n      \"narration_words\": [\n        \"Naładowany\",\n        \"kondensator\",\n        \"oznacza\",\n        \"jedynkę\",\n        \"w\",\n        \"systemie.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S7-A\",\n          \"visual_intent\": \"Close up of an electronic capacitor mounted on a circuit board\",\n          \"must_show\": [\n            \"electronic capacitor\",\n            \"circuit board\"\n          ],\n          \"must_not_show\": [\n            \"computer cooling fan\"\n          ],\n          \"queries_en\": [\n            \"electronic capacitor on circuit board\",\n            \"mounted capacitor component\",\n            \"electronic capacitor\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S8\",\n      \"narration_words\": [\n        \"Rozładowany\",\n        \"kondensator\",\n        \"reprezentuje\",\n        \"natomiast\",\n        \"cyfrowe\",\n        \"zero.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S8-A\",\n          \"visual_intent\": \"Detailed view of electronic circuit microcomponents and traces\",\n          \"must_show\": [\n            \"microcomponents\",\n            \"circuit traces\"\n          ],\n          \"must_not_show\": [\n            \"computer power cord\"\n          ],\n          \"queries_en\": [\n            \"microcomponents and circuit traces\",\n            \"electronic microcomponents on board\",\n            \"microcomponents\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S9\",\n      \"narration_words\": [\n        \"Cała\",\n        \"informacja\",\n        \"gasi\",\n        \"się\",\n        \"po\",\n        \"wyłączeniu.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\",\n        \"E7\",\n        \"E8\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S9-A\",\n          \"visual_intent\": \"Turned off computer system with dark unlit screen and components\",\n          \"must_show\": [\n            \"computer system\",\n            \"dark screen\"\n          ],\n          \"must_not_show\": [\n            \"illuminated running display\"\n          ],\n          \"queries_en\": [\n            \"turned off computer system dark screen\",\n            \"powered down computer hardware\",\n            \"computer system\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    }\n  ]\n}"
+                }
+              ],
+              "role": "model"
+            },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 18368,
+          "candidatesTokenCount": 2022,
+          "totalTokenCount": 20390,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 18368
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "modelVersion": "gemini-3.5-flash-lite",
+        "responseId": "7ZS2aoPkOb2FvdIPltabGA"
+      }
+    },
+    {
+      "variant": "uk45",
+      "http_status": 200,
+      "seconds": 8.174,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "scenes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "scene_id": {
+                      "type": "string"
+                    },
+                    "narration_words": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                      }
+                    },
+                    "evidence_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "shots": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "shot_id": {
+                            "type": "string"
+                          },
+                          "visual_intent": {
+                            "type": "string"
+                          },
+                          "must_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "must_not_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "queries_en": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "preferred_media_type": {
+                            "type": "string",
+                            "enum": [
+                              "photo"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "shot_id",
+                          "visual_intent",
+                          "must_show",
+                          "must_not_show",
+                          "queries_en",
+                          "preferred_media_type"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "scene_id",
+                    "narration_words",
+                    "evidence_ids",
+                    "shots"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 13,
+                "maxItems": 13
+              }
+            },
+            "required": [
+              "scenes"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "string",
+                "enum": [
+                  "INSUFFICIENT_EVIDENCE"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "response": {
+        "candidates": [
+          {
+            "content": {
+              "parts": [
+                {
+                  "text": "{\n  \"scenes\": [\n    {\n      \"scene_id\": \"S1\",\n      \"narration_words\": [\n        \"Оперативна\",\n        \"пам'ять\",\n        \"це\",\n        \"важлива\",\n        \"частина\",\n        \"системи.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S1-A\",\n          \"visual_intent\": \"Displaying a computer system motherboard inside a PC case\",\n          \"must_show\": [\n            \"computer system\"\n          ],\n          \"must_not_show\": [\n            \"outdoor scenery\"\n          ],\n          \"queries_en\": [\n            \"computer system motherboard inside case\",\n            \"computer system hardware interior\",\n            \"computer system\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S2\",\n      \"narration_words\": [\n        \"Вона\",\n        \"діє\",\n        \"як\",\n        \"швидкий\",\n        \"буфер\",\n        \"даних.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S2-A\",\n          \"visual_intent\": \"Showing memory buffer data processing concept on a computer circuit board\",\n          \"must_show\": [\n            \"computer circuit board\"\n          ],\n          \"must_not_show\": [\n            \"handwritten notes\"\n          ],\n          \"queries_en\": [\n            \"computer circuit board buffer data\",\n            \"computer circuit board hardware component\",\n            \"computer circuit board\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S3\",\n      \"narration_words\": [\n        \"Дані\",\n        \"зчитуються\",\n        \"спочатку\",\n        \"з\",\n        \"накопичувача\",\n        \"сюди.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S3-A\",\n          \"visual_intent\": \"Solid state drive storage unit connected to a motherboard\",\n          \"must_show\": [\n            \"solid state drive\"\n          ],\n          \"must_not_show\": [\n            \"abstract graphics\"\n          ],\n          \"queries_en\": [\n            \"solid state drive storage unit\",\n            \"solid state drive hardware device\",\n            \"solid state drive\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S4\",\n      \"narration_words\": [\n        \"Процессор\",\n        \"швидко\",\n        \"отримує\",\n        \"потрібні\",\n        \"дані.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S4-A\",\n          \"visual_intent\": \"Close-up of a central processor unit mounted on a motherboard socket\",\n          \"must_show\": [\n            \"central processor unit\"\n          ],\n          \"must_not_show\": [\n            \"blurry background\"\n          ],\n          \"queries_en\": [\n            \"central processor unit on socket\",\n            \"central processor unit chip\",\n            \"central processor unit\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S5\",\n      \"narration_words\": [\n        \"Фізично\",\n        \"це\",\n        \"набір\",\n        \"мікросхем\",\n        \"пам'яті.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S5-A\",\n          \"visual_intent\": \"Memory module board showing soldered microchips on the surface\",\n          \"must_show\": [\n            \"memory module\"\n          ],\n          \"must_not_show\": [\n            \"vintage vacuum tubes\"\n          ],\n          \"queries_en\": [\n            \"memory module with microchips\",\n            \"memory module hardware board\",\n            \"memory module\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S6\",\n      \"narration_words\": [\n        \"Кожна\",\n        \"комірка\",\n        \"зберігає\",\n        \"один\",\n        \"біт.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S6-A\",\n          \"visual_intent\": \"Microscopic view or silicon wafer layout of memory cells\",\n          \"must_show\": [\n            \"silicon wafer\"\n          ],\n          \"must_not_show\": [\n            \"organic tissue\"\n          ],\n          \"queries_en\": [\n            \"silicon wafer microchip layout\",\n            \"silicon wafer semiconductor surface\",\n            \"silicon wafer\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S7\",\n      \"narration_words\": [\n        \"Транзистор\",\n        \"діє\",\n        \"як\",\n        \"електричний\",\n        \"ключ.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S7-A\",\n          \"visual_intent\": \"Close-up shot of a surface mounted electronic transistor on a circuit board\",\n          \"must_show\": [\n            \"electronic transistor\"\n          ],\n          \"must_not_show\": [\n            \"mechanical gears\"\n          ],\n          \"queries_en\": [\n            \"electronic transistor on circuit board\",\n            \"electronic transistor component\",\n            \"electronic transistor\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S8\",\n      \"narration_words\": [\n        \"Конденсатор\",\n        \"надійно\",\n        \"зберігає\",\n        \"потрібний\",\n        \"заряд.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S8-A\",\n          \"visual_intent\": \"Electronic capacitor mounted on a computer circuit board\",\n          \"must_show\": [\n            \"electronic capacitor\"\n          ],\n          \"must_not_show\": [\n            \"battery pack\"\n          ],\n          \"queries_en\": [\n            \"electronic capacitor on circuit board\",\n            \"electronic capacitor component\",\n            \"electronic capacitor\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S9\",\n      \"narration_words\": [\n        \"Дані\",\n        \"зчитуються\",\n        \"цілою\",\n        \"сторінкою\",\n        \"одразу.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S9-A\",\n          \"visual_intent\": \"Detailed view of memory module chips during data read operation\",\n          \"must_show\": [\n            \"memory module\"\n          ],\n          \"must_not_show\": [\n            \"optical disc\"\n          ],\n          \"queries_en\": [\n            \"memory module chips data read\",\n            \"memory module electronic layout\",\n            \"memory module\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S10\",\n      \"narration_words\": [\n        \"Зрив\",\n        \"заряду\",\n        \"вимагає\",\n        \"перезапису\",\n        \"сторінки.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S10-A\",\n          \"visual_intent\": \"RAM stick module installed in a motherboard memory slot\",\n          \"must_show\": [\n            \"motherboard memory slot\"\n          ],\n          \"must_not_show\": [\n            \"power supply unit\"\n          ],\n          \"queries_en\": [\n            \"motherboard memory slot with module\",\n            \"motherboard memory slot connector\",\n            \"motherboard memory slot\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S11\",\n      \"narration_words\": [\n        \"Затримки\",\n        \"операцій\",\n        \"називають\",\n        \"теж\",\n        \"таймінгами.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S11-A\",\n          \"visual_intent\": \"Computer RAM module with printed specifications label visible\",\n          \"must_show\": [\n            \"RAM module\"\n          ],\n          \"must_not_show\": [\n            \"computer mouse\"\n          ],\n          \"queries_en\": [\n            \"RAM module with specifications label\",\n            \"RAM module hardware stick\",\n            \"RAM module\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S12\",\n      \"narration_words\": [\n        \"Чип\",\n        \"SPD\",\n        \"зберігає\",\n        \"параметри\",\n        \"модуля.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S12-A\",\n          \"visual_intent\": \"Small integrated circuit chip on a RAM memory stick\",\n          \"must_show\": [\n            \"integrated circuit chip\"\n          ],\n          \"must_not_show\": [\n            \"external hard drive\"\n          ],\n          \"queries_en\": [\n            \"integrated circuit chip on RAM\",\n            \"integrated circuit chip component\",\n            \"integrated circuit chip\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    },\n    {\n      \"scene_id\": \"S13\",\n      \"narration_words\": [\n        \"Система\",\n        \"швидко\",\n        \"запускає\",\n        \"всі\",\n        \"програми.\"\n      ],\n      \"evidence_ids\": [\n        \"E1\"\n      ],\n      \"shots\": [\n        {\n          \"shot_id\": \"S13-A\",\n          \"visual_intent\": \"Running desktop computer setup with glowing internal hardware components\",\n          \"must_show\": [\n            \"desktop computer\"\n          ],\n          \"must_not_show\": [\n            \"smartphone screen\"\n          ],\n          \"queries_en\": [\n            \"desktop computer internal hardware\",\n            \"desktop computer components running\",\n            \"desktop computer\"\n          ],\n          \"preferred_media_type\": \"photo\"\n        }\n      ]\n    }\n  ]\n}"
+                }
+              ],
+              "role": "model"
+            },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 18380,
+          "candidatesTokenCount": 2768,
+          "totalTokenCount": 21148,
+          "cachedContentTokenCount": 15763,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 18380
+            }
+          ],
+          "cacheTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 15763
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "modelVersion": "gemini-3.5-flash-lite",
+        "responseId": "9JS2atzkH6K4nsEPxJOL6A0"
+      }
+    },
+    {
+      "variant": "ru60",
+      "http_status": 200,
+      "seconds": 9.568,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "scenes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "scene_id": {
+                      "type": "string"
+                    },
+                    "narration_words": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Exactly one whitespace-free lexical word; punctuation stays attached to its word."
+                      }
+                    },
+                    "evidence_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "shots": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "shot_id": {
+                            "type": "string"
+                          },
+                          "visual_intent": {
+                            "type": "string"
+                          },
+                          "must_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "must_not_show": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "queries_en": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "preferred_media_type": {
+                            "type": "string",
+                            "enum": [
+                              "photo"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "shot_id",
+                          "visual_intent",
+                          "must_show",
+                          "must_not_show",
+                          "queries_en",
+                          "preferred_media_type"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "scene_id",
+                    "narration_words",
+                    "evidence_ids",
+                    "shots"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 17,
+                "maxItems": 17
+              }
+            },
+            "required": [
+              "scenes"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "string",
+                "enum": [
+                  "INSUFFICIENT_EVIDENCE"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "response": {
+        "candidates": [
+          {
+            "content": {
+              "parts": [
+                {
+                  "text": "{\"scenes\":[{\"scene_id\":\"S1\",\"narration_words\":[\"Оперативная\",\"память\",\"это\",\"важная\",\"часть\",\"компьютера.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S1-A\",\"visual_intent\":\"A computer system motherboard showing major components in close-up\",\"must_show\":[\"computer motherboard\",\"chips\"],\"must_not_show\":[\"office desk\"],\"queries_en\":[\"computer motherboard with components\",\"motherboard hardware parts\",\"computer motherboard\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S2\",\"narration_words\":[\"Она\",\"служит\",\"буфером\",\"между\",\"диском\",\"процессором.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S2-A\",\"visual_intent\":\"Diagram or hardware arrangement showing data path between storage and processor\",\"must_show\":[\"computer processor\",\"circuit board\"],\"must_not_show\":[\"abstract graphics\"],\"queries_en\":[\"computer central processor chip\",\"processor on motherboard\",\"computer processor\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S3\",\"narration_words\":[\"Данные\",\"считываются\",\"туда\",\"для\",\"быстрой\",\"обработки.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S3-A\",\"visual_intent\":\"Close-up view of memory microchips soldered onto a circuit board module\",\"must_show\":[\"memory module\",\"chips\"],\"must_not_show\":[\"abstract waveforms\"],\"queries_en\":[\"memory module microchips soldered\",\"RAM stick close up\",\"memory module\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S4\",\"narration_words\":[\"Процессор\",\"получает\",\"быстрый\",\"доступ\",\"к\",\"данным.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S4-A\",\"visual_intent\":\"Microchip surface layers and structure viewed under magnification\",\"must_show\":[\"microchip\",\"layers\"],\"must_not_show\":[\"blurry background\"],\"queries_en\":[\"microchip internal silicon layers\",\"semiconductor chip surface\",\"microchip\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S5\",\"narration_words\":[\"Физически\",\"память\",\"это\",\"микросхемы\",\"на\",\"плате.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S5-A\",\"visual_intent\":\"Detailed schematic illustration of a dynamic memory cell with transistor and capacitor\",\"must_show\":[\"memory cell\",\"transistor\"],\"must_not_show\":[\"text labels\"],\"queries_en\":[\"dynamic memory cell schematic diagram\",\"RAM cell circuit diagram\",\"memory cell\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S6\",\"narration_words\":[\"Микросхема\",\"состоит\",\"из\",\"множества\",\"слоев\",\"ячеек.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S6-A\",\"visual_intent\":\"Schematic grid array of memory cells representing a page\",\"must_show\":[\"cell array\",\"matrix\"],\"must_not_show\":[\"random text\"],\"queries_en\":[\"memory cell array grid\",\"RAM page matrix diagram\",\"cell array\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S7\",\"narration_words\":[\"Одна\",\"ячейка\",\"хранит\",\"один\",\"бит\",\"информации.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S7-A\",\"visual_intent\":\"Close-up of a memory microchip package on a printed circuit board\",\"must_show\":[\"microchip\",\"circuit board\"],\"must_not_show\":[\"old vacuum tubes\"],\"queries_en\":[\"memory microchip on printed circuit board\",\"RAM chip package\",\"microchip\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S8\",\"narration_words\":[\"Ее\",\"основу\",\"составляют\",\"транзистор\",\"и\",\"конденсатор.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S8-A\",\"visual_intent\":\"Detailed view of tiny electronic components mounted on a memory stick PCB\",\"must_show\":[\"circuit board\",\"components\"],\"must_not_show\":[\"blurry objects\"],\"queries_en\":[\"memory stick printed circuit board\",\"RAM module surface components\",\"circuit board\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S9\",\"narration_words\":[\"Конденсатор\",\"надежно\",\"хранит\",\"заряд\",\"как\",\"единицу.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S9-A\",\"visual_intent\":\"Amplifiers and traces positioned at the ends of vertical lines in a memory chip\",\"must_show\":[\"amplifiers\",\"traces\"],\"must_not_show\":[\"abstract art\"],\"queries_en\":[\"memory chip sense amplifiers\",\"RAM column amplifiers\",\"amplifiers\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S10\",\"narration_words\":[\"Транзистор\",\"работает\",\"как\",\"электрический\",\"ключ\",\"здесь.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S10-A\",\"visual_intent\":\"Close-up shot of a small electronic switch component on a green circuit board\",\"must_show\":[\"electronic switch\",\"circuit board\"],\"must_not_show\":[\"blurry elements\"],\"queries_en\":[\"electronic transistor switch on circuit board\",\"transistor component closeup\",\"electronic switch\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S11\",\"narration_words\":[\"Считывание\",\"данных\",\"опустошает\",\"заряды\",\"на\",\"конденсаторах.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S11-A\",\"visual_intent\":\"Close-up of a RAM module showing pin contacts and soldered microchips\",\"must_show\":[\"RAM module\",\"pins\"],\"must_not_show\":[\"damaged hardware\"],\"queries_en\":[\"RAM module pin contacts\",\"memory stick gold pins\",\"RAM module\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S12\",\"narration_words\":[\"Поэтому\",\"страницу\",\"приходится\",\"постоянно\",\"заново\",\"переписывать.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S12-A\",\"visual_intent\":\"Electronics laboratory setup demonstrating testing of memory module performance\",\"must_show\":[\"testing equipment\",\"memory module\"],\"must_not_show\":[\"oscilloscope waveforms\"],\"queries_en\":[\"memory module testing equipment\",\"RAM stick in test rig\",\"testing equipment\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S13\",\"narration_words\":[\"Напряжение\",\"на\",\"столбцах\",\"заряжает\",\"конденсаторы\",\"снова.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S13-A\",\"visual_intent\":\"Power supply unit components showing capacitors and voltage regulators on a board\",\"must_show\":[\"voltage regulator\",\"capacitors\"],\"must_not_show\":[\"wires only\"],\"queries_en\":[\"voltage regulator capacitors on circuit board\",\"power supply circuit components\",\"voltage regulator\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S14\",\"narration_words\":[\"Задержки\",\"между\",\"этими\",\"операциями\",\"называют\",\"таймингами.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S14-A\",\"visual_intent\":\"Close-up of a small integrated circuit chip labeled SPD on a RAM stick\",\"must_show\":[\"SPD chip\",\"RAM stick\"],\"must_not_show\":[\"abstract graphs\"],\"queries_en\":[\"SPD microchip on RAM stick\",\"memory module SPD chip closeup\",\"SPD chip\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S15\",\"narration_words\":[\"Микросхема\",\"SPD\",\"хранит\",\"параметры\",\"всего\",\"модуля.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S15-A\",\"visual_intent\":\"Modern memory module installed in a computer motherboard memory slot\",\"must_show\":[\"memory slot\",\"motherboard\"],\"must_not_show\":[\"empty slots\"],\"queries_en\":[\"memory module in motherboard slot\",\"RAM slot connection\",\"memory slot\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S16\",\"narration_words\":[\"Биос\",\"выставляет\",\"настройки\",\"согласно\",\"этой\",\"микросхеме.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S16-A\",\"visual_intent\":\"Computer motherboard BIOS chip on a printed circuit board surface\",\"must_show\":[\"BIOS chip\",\"motherboard\"],\"must_not_show\":[\"screen display\"],\"queries_en\":[\"motherboard BIOS chip closeup\",\"BIOS integrated circuit\",\"BIOS chip\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S17\",\"narration_words\":[\"Вся\",\"система\",\"благодаря\",\"этому\",\"работает\",\"быстро.\"],\"evidence_ids\":[\"E1\"],\"shots\":[{\"shot_id\":\"S17-A\",\"visual_intent\":\"Fully assembled modern personal computer interior with illuminated cooling and hardware\",\"must_show\":[\"computer interior\",\"hardware\"],\"must_not_show\":[\"monitors\"],\"queries_en\":[\"modern computer interior hardware\",\"assembled PC components\",\"computer interior\"],\"preferred_media_type\":\"photo\"}]}]}"
+                }
+              ],
+              "role": "model"
+            },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 18390,
+          "candidatesTokenCount": 1974,
+          "totalTokenCount": 20364,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 18390
+            }
+          ],
+          "serviceTier": "standard"
+        },
+        "modelVersion": "gemini-3.5-flash-lite",
+        "responseId": "_JS2apGhI9LGnsEPkoqDgAk"
+      }
+    }
+  ],
+  "checks": "394/394 Node PASS; all 16 language/duration local contracts tested. HTTP200 indicates schema admission, not semantic/E2E acceptance."
+}

@@ -31,18 +31,15 @@ for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validat
   }
  });
 }
-test('English 15s schema mechanically allocates 38 word items across five scenes',()=>{
+test('English 15s contract allocates 38 word items across five scenes',()=>{
  const f=JSON.parse(fs.readFileSync('tests/fixtures/m5-9537-scene-segments.json'));
  const source=f['Begin Script']||{};
  // Use a minimal valid evidence input, independent of the production fixture's language.
  const evidence=[1,2,3].map(i=>({evidence_ref:'E'+i,evidence_uuid:'00000000-0000-4000-8000-00000000000'+i,source_domain:'example.com',source_url:'https://example.com/'+i,title:'Evidence',snippet:'Fact',content:'Fact'}));
  const out=new Function('$json',nodes['Build Script Prompt'].parameters.jsCode)({...source,script_run_id:'test',topic:'a physical process',language_code:'en',target_duration_seconds:15,evidence_json:evidence}).json;
  assert.deepEqual(out.scene_word_targets,[8,8,8,7,7]);
- const schemas=out.response_json_schema.anyOf[0].properties.scenes.items.anyOf;
- assert.equal(schemas.length,5);
- for(let i=0;i<schemas.length;i++){
-  assert.deepEqual(schemas[i].properties.scene_id.enum,['S'+(i+1)]);
-  assert.equal(schemas[i].properties.narration_words.minItems,out.scene_word_targets[i]);
-  assert.equal(schemas[i].properties.narration_words.maxItems,out.scene_word_targets[i]);
- }
+ const scenes=out.response_json_schema.anyOf[0].properties.scenes;
+ assert.equal(scenes.minItems,5);assert.equal(scenes.maxItems,5);
+ assert.equal(scenes.items.properties.narration_words.items.type,'string');
+ assert.ok(!('anyOf' in scenes.items));
 });
