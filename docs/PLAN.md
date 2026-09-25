@@ -1,3 +1,10 @@
+## Fresh uk45 smoke created after cbf20e9 deploy — 2026-09-25
+
+- Deployed current M5 source from Git `cbf20e9` after zero-active check. Backup: `.backups/m5-before-cbf20e9-20260925-210527.json`, SHA256 `2ede9a1ef858054e6a8f4c1cc677617155da1b686f50d752928725590269c13d`.
+- Live M5 current/published nodes/connections/settings match Git; activeVersionId `8854663c-f007-45b2-9d7f-999186acfbd2`. M6 remains `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8 remains `ecc2d163-8090-4094-947d-03b84747ba40`. Publisher/Studio HTTP200; zero active executions after deploy.
+- Created exactly one new RAM uk45 Gemini smoke and have not launched it yet: `9c4865b2-6642-4230-bc18-ec03eb21c189`.
+- NEXT: launch this exact job once via `/webhook/factory/run`, then trace it to terminal. Do not create or launch another smoke while unresolved.
+
 ## Fresh uk45 smoke 89b75578 failed at M5; generic guard fix ready — 2026-09-25
 
 - Fresh job `89b75578-eeb2-4f92-92e0-6632309a6f19` was launched exactly once after M5 deployment and ended `script_failed`.
