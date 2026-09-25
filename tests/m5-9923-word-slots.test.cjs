@@ -37,17 +37,20 @@ for(const suffix of ['Retry','Compliance Retry']){
   assert.throws(()=>run(validator,response({narration_words:short}),values),/M5_WORD_SLOT_CONTRACT/);
  });
 }
-test('9923 requested 43 words are represented as exact provider array cardinalities',()=>{
- const ctx={base_storyboard:storyboard(measured),target_words:43,target_scene_word_counts:[9,9,9,8,8]};
- const values={'Build Final Measured Correction':ctx,'Normalize Timing Probe':{storyboard:storyboard(original)},'Build Script Prompt':{language_code:'en',target_duration_seconds:15}};
- const out=run('Build Final Measured Word Count Retry',{storyboard:storyboard(measured)},values);
- const props=out.response_json_schema.properties.narration_words.properties;
- assert.deepEqual(Object.values(props).map(x=>x.minItems),[9,9,9,8,8]);
- assert.deepEqual(Object.values(props).map(x=>x.maxItems),[9,9,9,8,8]);
- for(const name of ['Repair Final Measured Word Count','Repair Final Measured Word Count Compliance']){
-  const body=JSON.parse(new Function('$json','return '+nodes[name].body.slice(3,-2))(out));
-  assert.deepEqual(body.generationConfig.responseJsonSchema,out.response_json_schema);
- }
+test('final measured retry uses natural narration strings instead of exact provider slots',()=>{
+ const ctx={target_words:43,target_scene_word_counts:[9,9,9,8,8]};
+ const base={script_run_id:'x',model:'gemini',storyboard:{scenes:Array.from({length:5},(_,i)=>({scene_id:'S'+(i+1),narration:'one two three four five six seven eight'}))},usage:{}};
+ const values={
+  'Build Final Measured Correction':ctx,
+  'Normalize Timing Probe':{storyboard:base.storyboard},
+  'Build Script Prompt':{language_code:'en',target_duration_seconds:15},
+ };
+ const out=run('Build Final Measured Word Count Retry',base,values);
+ assert.equal(out.response_json_schema.properties.narrations.type,'array');
+ assert.equal(out.response_json_schema.properties.narrations.minItems,5);
+ assert.equal(out.response_json_schema.properties.narrations.maxItems,5);
+ assert.equal(out.response_json_schema.properties.narration_words,undefined);
+ assert.match(out.system_message,/natural narration strings|never add filler/i);
 });
 
 test('malformed slots use the existing single compliance branch',()=>{
