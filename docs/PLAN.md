@@ -1,3 +1,15 @@
+## Fresh uk45 smoke after M8 repeated-context fix — 2026-09-25
+
+- Previous smoke `b75d99cc-7e96-4306-9ea1-b8ab598010b9` reached M8 and failed in execution `10138`: `no Gemini-previewable relevant visual candidate for shot S9-A`.
+- Exact S9-A storyboard: primary `circuit board`, intent `printed circuit board traces and signal lines`. Old M8 planner incorrectly injected global repeated-storyboard terms `components,module,motherboard,ram` into all three provider queries, producing hard `missing_storyboard_domain_context` rejects even for strong circuit-board candidates.
+- Generic fix: cross-shot repeated context is now a hard domain gate only for domain-scoped machinery/closed-infrastructure heads. Generic repeated objects such as `circuit board` no longer inherit unrelated global vocabulary. Existing machinery/infrastructure domain behavior remains intact.
+- Exact replay of execution 10138 with current request builders gives S9-A provider queries unchanged: `circuit board signal lines`, `motherboard traces close up circuit board`, `circuit board`; `domain_context_terms=[]` for Pixabay/Pexels/Wikimedia.
+- Full Node suite: **415/415 PASS**. Git commit: `409bd5741622`.
+- Deployed M8 only after zero-active check. Backup: `.backups/m8-before-409bd57-20260925-214546.json`, SHA256 `c2df53ae1d39e7a2063886bbeaea339fb5351522ce9c4ff66253c8c780529883`.
+- Live M8 activeVersionId: `22c3eb24-646e-4e39-b219-46753a0b9171`. M5 remains `ee5021d6-e989-4837-81e9-796f6731c966`; M6 remains `0bcabe39-ae90-42fe-842b-8a56ad238709`. Current/published M8 match Git; publisher/studio HTTP200.
+- Created exactly one fresh RAM uk45 Gemini smoke and have not launched it yet: `26e3a898-fe38-47c0-98da-1d8c3c072f5a`.
+- NEXT: launch this exact job once and trace to terminal; do not create another smoke while unresolved.
+
 ## Fresh uk45 smoke after primary-intent prompt fix — 2026-09-25
 
 - Previous fresh smoke `4bb1aa3c-c735-4d5b-9ac2-bcf6e720afc1` failed in M5 execution `10108`: `S7-A visual metadata must be English and primary must_show must match English visual_intent`. Exact repaired S7 used `must_show[0]="microchip surface"` while visual_intent said `integrated circuit ...`; both are English, but the local contract requires the primary phrase to be represented in the intent.
