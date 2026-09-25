@@ -1,3 +1,12 @@
+## Fresh uk45 smoke after final measured semantic fix — 2026-09-25
+
+- Fixed M5 final measured word-count retry so it returns natural narration strings instead of exact per-scene word slots. The semantic guard remains unchanged/fail-closed; the fix removes pressure to invent filler merely to satisfy slot cardinality.
+- Full Node suite: **412/412 PASS**. Git commit: `47a40cd30b04`.
+- Deployed M5 only after zero-active check. Backup: `.backups/m5-before-47a40cd-20260925-211555.json`, SHA256 `788d33a137716a030812af02cf7f2e0e14b2155037eba648de2472b44c5274bd`.
+- Live M5 activeVersionId: `f2fa600c-a4ef-4d38-a58f-0d079c8295d8`. M6 remains `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8 remains `ecc2d163-8090-4094-947d-03b84747ba40`. Current/published M5 match Git; publisher/studio HTTP200.
+- Created exactly one fresh RAM uk45 Gemini smoke and have not launched it yet: `1737fc7e-74ea-4330-8961-18d658721bcd`.
+- NEXT: launch this exact job once, trace to terminal, do not create another smoke while unresolved.
+
 ## Fresh uk45 smoke created after cbf20e9 deploy — 2026-09-25
 
 - Deployed current M5 source from Git `cbf20e9` after zero-active check. Backup: `.backups/m5-before-cbf20e9-20260925-210527.json`, SHA256 `2ede9a1ef858054e6a8f4c1cc677617155da1b686f50d752928725590269c13d`.
