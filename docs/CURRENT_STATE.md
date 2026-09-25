@@ -1,3 +1,13 @@
+## Fresh uk45 smoke after initial word-count rigidity fix — 2026-09-25
+
+- Previous fresh smoke `1737fc7e-74ea-4330-8961-18d658721bcd` failed in M5 execution `10095`: `storyboard word-array count mismatch for S13`. Exact provider output had a natural 6-word S13 while the deterministic allocation demanded 5; all bounded storyboard attempts kept the natural 6-word line. The failure was caused by rigid per-scene count acceptance, not by scene bounds or total narration range.
+- Generic fix: initial/repair `narration_words` arrays remain lexical and bounded (2–14 words, 2–10 for 15s), but exact per-scene allocation is now guidance rather than an acceptance gate. Total narration hard range remains enforced before TTS; measured TTS still owns final duration. No semantic/language/visual gates were weakened.
+- Full Node suite: **412/412 PASS**. Git commit: `a3a31aadec7a`.
+- Deployed M5 only after zero-active check. Backup: `.backups/m5-before-a3a31aa-20260925-212216.json`, SHA256 `4be0621ba95f5bf20b452175ad3ebc93a555f0cdee937205725390394bf34cd5`.
+- Live M5 activeVersionId: `b655d4c5-ed03-4403-a4ae-8b5c6f61a26a`. M6 remains `0bcabe39-ae90-42fe-842b-8a56ad238709`; M8 remains `ecc2d163-8090-4094-947d-03b84747ba40`. Current/published M5 match Git; publisher/studio HTTP200.
+- Created exactly one fresh RAM uk45 Gemini smoke and have not launched it yet: `4bb1aa3c-c735-4d5b-9ac2-bcf6e720afc1`.
+- NEXT: launch this exact job once and trace to terminal; do not create another smoke while unresolved.
+
 ## Fresh uk45 smoke after final measured semantic fix — 2026-09-25
 
 - Fixed M5 final measured word-count retry so it returns natural narration strings instead of exact per-scene word slots. The semantic guard remains unchanged/fail-closed; the fix removes pressure to invent filler merely to satisfy slot cardinality.
