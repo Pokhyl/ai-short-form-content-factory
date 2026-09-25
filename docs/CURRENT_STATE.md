@@ -1,5 +1,9 @@
 # Current State
 
+## Current uk45 verification job — 2026-09-25
+
+Created `521324af-81b4-4848-b008-8d1b4616804a` for the user's exact RAM topic, Ukrainian45s, Gemini visual mode. Active M5v136 `6b396630-13f8-4bf2-9435-87af2d052cc4`, M8v72 `ecc2d163-8090-4094-947d-03b84747ba40`, M6v8. ID persisted before launch. NEXT: run once and trace this job; no other smoke while unresolved. Old failed86f9735d is immutable.
+
 ## M5 v136 deployed — 2026-09-25
 
 Published source67022f3 to M5 only: v136 activeVersionId `6b396630-13f8-4bf2-9435-87af2d052cc4`. Zero active executions before deploy; current published nodes/connections match Git; all non-M5 workflow fingerprint unchanged `4cafa3fb1f7bc03f09b0d3b20001cd9e`. Backup/hash in `acceptance/2026-09-25-m5-v136-deploy.json`. Publisher restarted as CLI requires; health OK. M6v8/M8v72/worker unchanged.
