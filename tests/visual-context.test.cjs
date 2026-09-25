@@ -257,3 +257,16 @@ for(const provider of ['Pixabay','Pexels','Wikimedia']) test(provider+': closed 
  assert.equal(rows[1].provider_query,'hydroelectric penstock pipe');
  assert.equal(rows[2].provider_query,'penstock pipe');
 });
+
+for(const provider of ['Pixabay','Pexels','Wikimedia'])test(provider+': repeated generic primary does not borrow context from unrelated shots',()=>{
+ const sample=[
+  {shot_uuid:'s5',shot_key:'S5-A',scene_order:5,preferred_media_type:'photo',must_show:['memory chips'],must_not_show:[],visual_intent:'memory chips on a RAM module',queries_en:['memory chips RAM module','motherboard memory chips','memory chips']},
+  {shot_uuid:'s9',shot_key:'S9-A',scene_order:9,preferred_media_type:'photo',must_show:['circuit board'],must_not_show:[],visual_intent:'printed circuit board traces and signal lines',queries_en:['circuit board signal lines','motherboard traces close up circuit board','circuit board']},
+  {shot_uuid:'s12',shot_key:'S12-A',scene_order:12,preferred_media_type:'photo',must_show:['circuit board'],must_not_show:[],visual_intent:'RAM module circuit board details and components',queries_en:['circuit board details RAM','memory module components circuit board','circuit board']},
+  {shot_uuid:'s13',shot_key:'S13-A',scene_order:13,preferred_media_type:'photo',must_show:['computer hardware'],must_not_show:[],visual_intent:'computer hardware with RAM module and motherboard',queries_en:['computer hardware RAM module','motherboard components computer hardware','computer hardware']},
+ ];
+ const rows=requests(provider,sample).filter(r=>r.shot_key==='S9-A');
+ assert.equal(rows.length,3);
+ assert.deepEqual(rows[0].domain_context_terms,[]);
+ assert.equal(rows[2].provider_query,'circuit board');
+});
