@@ -1,5 +1,12 @@
 # AI Short-Form Content Factory — Production Plan
 
+## M8 v72 deployed — 2026-09-25
+
+- Published per-concept source26fd735 (verified replay/tests acf4c3d) to M8 only: v72 activeVersionId ecc2d163-8090-4094-947d-03b84747ba40. Current/published source matches Git; non-M8 fingerprint unchanged01742d9a61643a402f66f71ffbe47227. Publisher restarted as required; health OK.
+- Zero active executions before deploy. Backup .backups/m8-before-9955-per-concept.json SHA25640db9b8b7dfec626a669a2e249cd31c1e331d9f765d2ba9fb0fc018671b8ac4d. M5v135/M6v8/worker unchanged.
+- Node376 PASS; exact-image S3 Gemini replay rejects missing beam as required. NEXT: one new en15 Gemini smoke, persist ID before launch, inspect every required-concept result and final MP4. Prior b372ee5e remains machine-PASS/manual-FAIL.
+
+
 ## Exact S3 Vision replay PASS for rejection — 2026-09-25
 
 - Revised request26fd735 on the exact9955 S3 preview bytes returned HTTP200 in2.862s, responseId Dwy2aubHN7KexN8PgYXnOQ. Both candidates explicitly mark Fresnel lens=true, light beam=false, intent=false, score50. The previously false-positive Wikimedia153722322 is now rejected. No image replacement, scene relaxation or model change.
