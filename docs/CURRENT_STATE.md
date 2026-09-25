@@ -1,5 +1,14 @@
 # Current State
 
+## E2E machine PASS; manual QA pending — 2026-09-25
+
+- Job b372ee5e-a9a5-45ad-9381-e3bff004d9d9 completed all stages: M3 9949 / coordinator9950 / M4 9951 / M5 9952 / M6 9953 / M7 9954 / M8 9955 / M9 9956 success. Real final MP4 exists. Do not rerun or create a new job before finishing this review.
+- MP4 manifest saved acceptance/2026-09-25-b372ee5e-render-manifest.json:1080x1920,H.264,yuv420p,30fps,AAC,14976ms,5 photo segments,all machine gates true; SHA2567c9f837f5eadca55e75aaa06fbfee8471465500c09d0868f711e84551b2d164b. Path /data/renders/b372ee5e-a9a5-45ad-9381-e3bff004d9d9/final.mp4.
+- Review https://publisher.hodor.com.pl/webhook/factory/review?job_id=b372ee5e-a9a5-45ad-9381-e3bff004d9d9 opened in in-app browser. Native player seekable range is0..0; playback completed but click-seeking did not change currentTime. Do not claim intermediate frames inspected from a failed seek.
+- Selected assets: S1 Pexels12069451; S2 Wikimedia76004366; S3 Wikimedia153722322; S4 Pexels36345402; S5 Pexels35767035. S3 Gemini score90/PASS but reason explicitly says a clearly visible focused light beam is absent, despite required light beam. Manual exact S3 frame/asset inspection is next; final semantic acceptance NOT yet claimed. S5 observed final frame is a navigation buoy with a distant ship, consistent with its beacon/coastal-water contract.
+- Active M5v135 f33831c7-34f5-42f4-b634-7ba4ea64b4fc / M6v8 / M8v71 8f894dcd-b852-4388-af7e-2dbafac73cbf. Latest371 Node +7DTW PASS. NEXT: inspect exact S3 plus remaining frames and audio evidence, resolve any confirmed defect, save acceptance and final checks. Never claim manual listening from ASR alone.
+
+
 ## Current v135/v71 smoke — 2026-09-24
 
 Created job `b372ee5e-a9a5-45ad-9381-e3bff004d9d9`: how does a lighthouse work?, en15, gemini. Active M5v135 f33831c7-34f5-42f4-b634-7ba4ea64b4fc / M6v8 / M8v71 8f894dcd-b852-4388-af7e-2dbafac73cbf. Creation persisted before launch. NEXT: run once then trace; query actual state before resuming. No other job while unresolved.

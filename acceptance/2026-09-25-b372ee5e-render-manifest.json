@@ -1,0 +1,89 @@
+{
+  "status": "ready",
+  "job_id": "b372ee5e-a9a5-45ad-9381-e3bff004d9d9",
+  "storage_path": "/data/renders/b372ee5e-a9a5-45ad-9381-e3bff004d9d9/final.mp4",
+  "manifest_path": "/data/renders/b372ee5e-a9a5-45ad-9381-e3bff004d9d9/manifest.json",
+  "sha256": "7c9f837f5eadca55e75aaa06fbfee8471465500c09d0868f711e84551b2d164b",
+  "bytes": 1186106,
+  "width": 1080,
+  "height": 1920,
+  "video_codec": "h264",
+  "audio_codec": "aac",
+  "pix_fmt": "yuv420p",
+  "fps_num": 30,
+  "fps_den": 1,
+  "duration_ms": 14976,
+  "video_stream_count": 1,
+  "audio_stream_count": 1,
+  "audio_duration_ms": 14976,
+  "duration_delta_ms": 0,
+  "input_audio_sha256": "704a5b8e66307e047adc886af86e570e248af7bb8f9b14140d8fc3a35b13507d",
+  "segments": [
+    {
+      "scene_uuid": "653514e2-9132-41c9-abeb-aa8b228d230c",
+      "shot_uuid": "9821cdd7-8537-4353-b74a-d35f8ce13ad9",
+      "visual_asset_id": "263f69b0-9992-4b0a-bde0-197bae60809e",
+      "segment_order": 1,
+      "start_ms": 0,
+      "end_ms": 3430,
+      "duration_ms": 3430,
+      "asset_sha256": "0d1e4771b5d3b93cbad6915b60dbd2cbcc2b9f71a82eea5fdaed0e2715f370e6",
+      "media_type": "photo"
+    },
+    {
+      "scene_uuid": "dc04e5e1-ac02-4907-b669-5551268c649a",
+      "shot_uuid": "1867bbb2-2f38-4c74-a3e6-28e9a165b05c",
+      "visual_asset_id": "2c2b768b-d9a0-46e4-b853-1edf9d652d87",
+      "segment_order": 2,
+      "start_ms": 3430,
+      "end_ms": 5340,
+      "duration_ms": 1910,
+      "asset_sha256": "e93bdaf034bbeb838e53ca62cb7b580c73d85bdc2474ee51e4573178a1b55b87",
+      "media_type": "photo"
+    },
+    {
+      "scene_uuid": "3637b44d-c398-4112-8965-0f239e36fe96",
+      "shot_uuid": "a2ce95b0-5bd5-4b39-b298-1534f57271fa",
+      "visual_asset_id": "7a01dda8-c370-473d-817c-d189d79c10bf",
+      "segment_order": 3,
+      "start_ms": 5340,
+      "end_ms": 8400,
+      "duration_ms": 3060,
+      "asset_sha256": "6091ecd5d085135e78cdfa2f4cf05a4157434ccfef0329f2132bfce76060952a",
+      "media_type": "photo"
+    },
+    {
+      "scene_uuid": "d4140425-5859-4304-8884-35c49d446d87",
+      "shot_uuid": "8f24f468-6ad8-4c6d-8687-ad6020c541c7",
+      "visual_asset_id": "f5aad5af-74ab-4217-b681-bd97b05bf3c4",
+      "segment_order": 4,
+      "start_ms": 8400,
+      "end_ms": 11100,
+      "duration_ms": 2700,
+      "asset_sha256": "64df87c1364e74c654d459af6f2ed78257d34ce237d504f8bbc9ed429f99c30e",
+      "media_type": "photo"
+    },
+    {
+      "scene_uuid": "f9b5a3e5-7680-4ad5-b592-6d0c79f34bc5",
+      "shot_uuid": "2ebe91e3-ff0f-4ed7-bf39-a46d4f87c337",
+      "visual_asset_id": "d426cdde-dbe0-4f9e-b87e-e39a97d8e137",
+      "segment_order": 5,
+      "start_ms": 11100,
+      "end_ms": 14976,
+      "duration_ms": 3876,
+      "asset_sha256": "cefc9e4db9ab43d0fd99091279e08271af1dff895dba498c2e19633035ad5782",
+      "media_type": "photo"
+    }
+  ],
+  "qa_gates": {
+    "video_dimensions": true,
+    "video_codec": true,
+    "audio_codec": true,
+    "stream_counts": true,
+    "duration_match": true,
+    "scene_coverage": true,
+    "asset_hashes": true,
+    "source_audio_excluded": true
+  },
+  "qa_passed": true
+}
