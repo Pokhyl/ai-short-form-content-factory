@@ -48,6 +48,15 @@ test('Gemini candidate planner is capped at three candidates per shot', () => {
   assert.match(sql, /candidate_index <= p_limit_per_shot/);
 });
 
+
+test('Gemini candidate planner diversifies providers before taking second choices', () => {
+  const sql = fs.readFileSync(path.join(root, 'db', '09-visuals.sql'), 'utf8');
+  const fn = sql.match(/CREATE OR REPLACE FUNCTION factory\.get_gemini_visual_candidate_sets[\s\S]*?CREATE OR REPLACE FUNCTION factory\.commit_gemini_visual_selections/)?.[0] || '';
+  assert.match(fn, /PARTITION BY provider/);
+  assert.match(fn, /provider_candidate_rank,/);
+  assert.match(fn, /candidate_index <= p_limit_per_shot/);
+});
+
 test('one Gemini request evaluates all candidate images for a scene at low media resolution', () => {
   const ctx = {
     visual_run_id: 'run',
@@ -209,6 +218,46 @@ test('collector avoids reusing one provider asset across two scenes', () => {
   assert.equal(result[0].json.selections.length, 2);
   assert.equal(result[0].json.selections[0].candidate_id, 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa');
   assert.equal(result[0].json.selections[1].candidate_id, 'dddddddd-dddd-4ddd-8ddd-dddddddddddd');
+});
+
+
+test('collector reserves a shared sole candidate for the shot that has no alternative', () => {
+  const rows = [
+    {
+      json: {
+        shot_uuid: '11111111-1111-4111-8111-111111111111',
+        shot_key: 'S1-A', scene_order: 1, shot_order: 1, model: 'gemini-3.5-flash-lite',
+        candidates: [
+          {candidate_index:1,candidate_id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',provider:'pexels',provider_asset_id:'shared'},
+          {candidate_index:2,candidate_id:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',provider:'pixabay',provider_asset_id:'alternative'},
+        ],
+        preview_fingerprints: [],
+        evaluations: [
+          {candidate_index:1,vision_pass:true,match_score:100,must_show_visible:true,must_not_show_clear:true,intent_match:true,reason:'best shared'},
+          {candidate_index:2,vision_pass:true,match_score:90,must_show_visible:true,must_not_show_clear:true,intent_match:true,reason:'usable alternative'},
+        ],
+      },
+    },
+    {
+      json: {
+        shot_uuid: '22222222-2222-4222-8222-222222222222',
+        shot_key: 'S2-A', scene_order: 2, shot_order: 1, model: 'gemini-3.5-flash-lite',
+        candidates: [
+          {candidate_index:1,candidate_id:'cccccccc-cccc-4ccc-8ccc-cccccccccccc',provider:'pexels',provider_asset_id:'shared'},
+        ],
+        preview_fingerprints: [],
+        evaluations: [
+          {candidate_index:1,vision_pass:true,match_score:100,must_show_visible:true,must_not_show_clear:true,intent_match:true,reason:'only valid asset'},
+        ],
+      },
+    },
+  ];
+  const result=runCode('Collect Gemini Selections',{
+    inputItems:rows,
+    refs:{'Begin Visuals':{first:()=>({json:{shot_count:2,visual_run_id:'99999999-9999-4999-8999-999999999999'}})}},
+  });
+  assert.equal(result[0].json.selections[0].candidate_id,'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb');
+  assert.equal(result[0].json.selections[1].candidate_id,'cccccccc-cccc-4ccc-8ccc-cccccccccccc');
 });
 
 test('collector fails when a scene has no Gemini-approved candidate', () => {

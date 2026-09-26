@@ -1108,11 +1108,30 @@ BEGIN
                 (width::bigint * height::bigint) DESC,
                 id ASC
         ),
+        provider_ranked AS (
+            SELECT
+                d.*,
+                row_number() OVER (
+                    PARTITION BY provider
+                    ORDER BY
+                        review_bucket,
+                        query_bucket,
+                        media_bucket,
+                        relevance_score DESC,
+                        aspect_distance ASC,
+                        provider_rank ASC,
+                        (width::bigint * height::bigint) DESC,
+                        provider_asset_id ASC,
+                        id ASC
+                ) AS provider_candidate_rank
+            FROM dedup d
+        ),
         ranked AS (
             SELECT
                 d.*,
                 row_number() OVER (
                     ORDER BY
+                        provider_candidate_rank,
                         review_bucket,
                         query_bucket,
                         media_bucket,
@@ -1124,7 +1143,7 @@ BEGIN
                         provider_asset_id ASC,
                         id ASC
                 ) AS candidate_index
-            FROM dedup d
+            FROM provider_ranked d
         )
         SELECT COALESCE(
             jsonb_agg(
