@@ -42,18 +42,18 @@ function storyboard(lines){
   };
 }
 
-function run9629(){
+function run9629({baseLines=base,preFinalLines=preFinal,responseLines=immutable}={}){
   const rows={
     'Build Final Word Count Retry':{
       script_run_id:'2a2f9f43-4fd6-4f0b-af2e-6a7cfbcf500b',
       model:'gemini-3.5-flash-lite',
-      base_storyboard:storyboard(base),
+      base_storyboard:storyboard(baseLines),
       prior_usage:{promptTokenCount:100,candidatesTokenCount:20,totalTokenCount:120},
       target_words:31,
       target_scene_word_counts:[9,7,3,3,9],
     },
     'Build Final Duration Repair':{
-      base_storyboard:storyboard(preFinal),
+      base_storyboard:storyboard(preFinalLines),
     },
     'Build Script Prompt':{
       language_code:'pl',
@@ -71,7 +71,7 @@ function run9629(){
     statusCode:200,
     body:{
       candidates:[{
-        content:{parts:[{text:JSON.stringify({narrations:immutable})}]},
+        content:{parts:[{text:JSON.stringify({narrations:responseLines})}]},
       }],
       usageMetadata:{promptTokenCount:540,candidatesTokenCount:75,totalTokenCount:615},
     },
@@ -100,4 +100,27 @@ test('exact-word DP is explicitly semantic-filtered before state expansion',()=>
   assert.match(code,/const addSemanticOption = \(text,count,source\)/);
   assert.match(code,/assertSemanticPreservation\(\s*originalSemanticScenes\[i\]\?\.narration/s);
   assert.match(code,/has no semantic-valid narration option/);
+});
+
+
+test('10534 regression: over-limit final-duration source cannot abort a valid bounded word-count repair',()=>{
+  const overLimitBase=[...base];
+  overLimitBase[2]='kręci tę bardzo konkretną dużą turbinę wodną w tym układzie teraz';
+  assert.equal(overLimitBase[2].trim().split(/\s+/u).length,11);
+
+  const out=run9629({baseLines:overLimitBase,responseLines:immutable});
+  assert.equal(out.scene_count,5);
+  assert.ok(out.storyboard.scenes.every(
+    scene=>scene.narration.trim().split(/\s+/u).length<=10
+  ));
+  assert.doesNotMatch(
+    out.storyboard.scenes[2].narration,
+    /konkretną dużą turbinę wodną/
+  );
+});
+
+test('final word-count retry filters invalid source drafts inside semantic option selection',()=>{
+  assert.doesNotMatch(code,/base final-duration scene .*narration length outside/s);
+  assert.doesNotMatch(code,/pre-final scene .*narration length outside/s);
+  assert.match(code,/if \(count < 2 \|\| count > maxSceneWords\) return;/);
 });
