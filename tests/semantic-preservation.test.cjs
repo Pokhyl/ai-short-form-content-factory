@@ -400,7 +400,7 @@ test('9833 regression: over-limit final timing drafts route to the existing boun
   }
 });
 
-test('final timing expansion prompts forbid factual padding and prefer grammar-only expansion',()=>{
+test('final timing expansion prompts forbid factual padding and allow natural same-proposition expansion',()=>{
   for (const name of [
     'Build Final Duration Repair',
     'Build Final Word Count Retry',
@@ -409,10 +409,16 @@ test('final timing expansion prompts forbid factual padding and prefer grammar-o
     'Build Final Measured Word Count Compliance Retry',
   ]) {
     const js=byName[name].parameters.jsCode;
-    assert.match(js,/grammatical glue\/function words|grammar-only connector\/function words|grammatical restructuring, articles, prepositions, auxiliaries/,name);
+    assert.match(js,/expand the SAME already-stated proposition|same proposition naturally|grammatical restructuring/,name);
     assert.match(
       js,
-      /invent descriptive properties, materials, quantities|inventing adjectives, materials, quantities/,
+      /do not add a new fact or new object|Do not add a new fact or new object|do not introduce a new fact or new object|invent descriptive properties, materials, quantities|inventing adjectives, materials, quantities/,
+      name
+    );
+
+    assert.match(
+      js,
+      /intensifiers|decorative adjectives\/adverbs/,
       name
     );
   }

@@ -83,9 +83,9 @@ test('9660 compliance builder reports the exact failed provider counts and hard 
     /REQUIRED PER-SCENE WORD COUNTS \(HARD\): \[10,6,4,4,5\]/
   );
   assert.match(out.user_message,/adjacent scene boundaries MAY move/);
-  assert.match(out.system_message,/grammatical restructuring, articles, prepositions, auxiliaries/);
-  assert.match(out.user_message,/articles, prepositions, auxiliaries, conjunctions/);
-  assert.match(out.user_message,/never reach the count by inventing adjectives, materials, quantities, intensifiers, locations or new objects/);
+  assert.match(out.system_message,/expand the SAME already-stated proposition/);
+  assert.match(out.user_message,/rewrite the same proposition naturally/);
+  assert.match(out.user_message,/never reach the count with intensifiers, decorative adjectives\/adverbs, or redundant closing phrases/);
 });
 
 test('9660 compliance validator accepts a semantic-valid exact 29-word repair',()=>{
