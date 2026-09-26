@@ -82,7 +82,9 @@ test('9660 compliance builder reports the exact failed provider counts and hard 
     out.user_message,
     /REQUIRED PER-SCENE WORD COUNTS \(HARD\): \[10,6,4,4,5\]/
   );
-  assert.match(out.user_message,/adjacent scene boundaries MAY move/);
+  assert.match(out.system_message,/never move or borrow content words from adjacent scenes/);
+  assert.match(out.user_message,/do not move or borrow content words from the previous or next scene/);
+  assert.doesNotMatch(out.user_message,/adjacent scene boundaries MAY move/);
   assert.match(out.system_message,/expand the SAME already-stated proposition/);
   assert.match(out.user_message,/rewrite the same proposition naturally/);
   assert.match(out.user_message,/never reach the count with intensifiers, decorative adjectives\/adverbs, generic qualifiers, or redundant closing phrases/);
@@ -303,4 +305,64 @@ test('M5 graph has one bounded compliance branch and no retry loop',()=>{
       .some(x=>x.node==='Build Final Measured Word Count Compliance Retry')
   );
   assert.ok(allTargets.includes('Prepare Timing Probe 5'));
+});
+
+
+test('10902-style exact-count semantic miss is routed into the semantic-safe hybrid',()=>{
+  const build=runCode(
+    'Build Final Measured Word Count Compliance Retry',
+    {compliance_retry:true},
+    {
+      'Build Final Measured Word Count Retry':fixture.build_final_measured_word_count_retry,
+      'Repair Final Measured Word Count':fixture.repair_final_measured_word_count,
+      'Normalize Timing Probe':fixture.normalize_timing_probe,
+      'Build Script Prompt':fixture.build_script_prompt,
+    }
+  );
+
+  const good=[
+    'Woda gromadzi się w specjalnym zbiorniku znajdującym się za tamą.',
+    'Następnie spada w dół z wysokości,',
+    'poruszając tę turbinę wodną,',
+    'która napędza ten generator',
+    'i skutecznie wytwarza prąd elektryczny.',
+  ];
+  const bad=[
+    'Samochód jedzie szybko przez miasto obok domu podczas jasnego dnia.',
+    ...good.slice(1),
+  ];
+  assert.deepEqual(bad.map(x=>x.trim().split(/\s+/u).length),[10,6,4,4,5]);
+
+  const measuredStoryboard=JSON.parse(JSON.stringify(fixture.normalize_timing_probe.storyboard));
+  measuredStoryboard.scenes=measuredStoryboard.scenes.map((scene,index)=>({
+    ...scene,
+    narration:good[index],
+  }));
+  measuredStoryboard.narration=good.join(' ');
+
+  const response={
+    statusCode:200,
+    body:{
+      candidates:[{content:{parts:[{text:JSON.stringify({narrations:bad})}]}}],
+      usageMetadata:{promptTokenCount:600,candidatesTokenCount:80,totalTokenCount:680},
+    },
+  };
+
+  const out=runCode(
+    'Validate Final Measured Word Count Compliance Retry',
+    response,
+    {
+      'Build Final Measured Word Count Compliance Retry':build,
+      'Build Script Prompt':fixture.build_script_prompt,
+      'Build Final Measured Correction':fixture.build_final_measured_correction,
+      'Normalize Timing Probe':fixture.normalize_timing_probe,
+      'Normalize Timing Probe 2':{storyboard:measuredStoryboard},
+    }
+  );
+
+  assert.equal(out.narration_word_count,29);
+  assert.equal(out.word_count_exact,true);
+  assert.equal(out.deterministic_word_hybrid_used,true);
+  assert.equal(out.storyboard.scenes[0].narration,good[0]);
+  assert.notEqual(out.storyboard.scenes[0].narration,bad[0]);
 });
