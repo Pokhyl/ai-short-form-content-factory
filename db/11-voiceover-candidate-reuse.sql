@@ -93,7 +93,7 @@ DECLARE
     v_sku text;
     v_expected_path text;
     v_target_ms integer;
-    v_tolerance_ms integer;
+    v_min_duration_ms integer;
     v_candidate_id uuid;
 BEGIN
     SELECT *
@@ -183,16 +183,20 @@ BEGIN
     END IF;
 
     v_target_ms := v_job.target_duration_seconds * 1000;
-    v_tolerance_ms := GREATEST(
-        750,
-        round(v_target_ms * 0.05)::integer
-    ) + 50;
+    v_min_duration_ms := CASE v_target_ms
+        WHEN 15000 THEN 14208
+        WHEN 30000 THEN 28464
+        WHEN 45000 THEN 42864
+        WHEN 60000 THEN 58176
+        ELSE NULL
+    END;
 
     IF p_duration_ms IS NULL
-       OR abs(p_duration_ms - v_target_ms) > v_tolerance_ms THEN
+       OR p_duration_ms < v_min_duration_ms
+       OR p_duration_ms > v_target_ms THEN
         RAISE EXCEPTION
-            'voiceover candidate duration outside final tolerance: got % ms, target % ms, tolerance % ms',
-            p_duration_ms,v_target_ms,v_tolerance_ms
+            'voiceover candidate duration outside observed product window: got % ms, allowed %..% ms',
+            p_duration_ms,v_min_duration_ms,v_target_ms
             USING ERRCODE='22023';
     END IF;
 
@@ -289,7 +293,7 @@ DECLARE
     v_reuse boolean := false;
     v_expected_candidate_path text;
     v_target_ms integer;
-    v_tolerance_ms integer;
+    v_min_duration_ms integer;
 BEGIN
     SELECT *
       INTO v_job
@@ -367,10 +371,13 @@ BEGIN
         v_expected_candidate_path :=
             '/data/voiceover-candidates/' || p_job_id::text || '/accepted.mp3';
         v_target_ms := v_job.target_duration_seconds * 1000;
-        v_tolerance_ms := GREATEST(
-            750,
-            round(v_target_ms * 0.05)::integer
-        ) + 50;
+        v_min_duration_ms := CASE v_target_ms
+            WHEN 15000 THEN 14208
+            WHEN 30000 THEN 28464
+            WHEN 45000 THEN 42864
+            WHEN 60000 THEN 58176
+            ELSE NULL
+        END;
 
         IF v_candidate.script_run_id <> v_script.script_run_id
            OR v_candidate.narration <> v_script.narration
@@ -378,7 +385,8 @@ BEGIN
            OR v_candidate.voice_name <> v_voice
            OR v_candidate.sku_family <> v_sku
            OR v_candidate.storage_path <> v_expected_candidate_path
-           OR abs(v_candidate.duration_ms - v_target_ms) > v_tolerance_ms
+           OR v_candidate.duration_ms < v_min_duration_ms
+           OR v_candidate.duration_ms > v_target_ms
            OR NOT FOUND
            OR v_usage.state <> 'committed'
            OR v_usage.id <> v_candidate.usage_ledger_id

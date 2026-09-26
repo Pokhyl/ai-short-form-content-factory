@@ -46,19 +46,20 @@ const p1={
   usage:{},
 };
 
-test('short sparse-punctuation narration enters cadence-first repair before lexical padding',()=>{
+test('short narration gets one bounded semantic expansion aimed inside the observed window',()=>{
   const $=name=>{
     assert.equal(name,'Build Script Prompt');
     return {first:()=>({json:ctx})};
   };
   const out=new Function('$','$json',code('Build Timing Repair'))($,p1).json;
 
-  assert.match(out.system_message,/cadence-first repair/i);
-  assert.match(out.system_message,/avoid descriptive modifiers, intensifiers and filler/i);
-  assert.match(out.user_message,/CURRENT SENTENCE ENDS: 4/);
-  assert.match(out.user_message,/CADENCE-FIRST PASS:/);
-  assert.match(out.user_message,/KEEP LEXICAL CONTENT close to the current 46 words/);
-  assert.match(out.user_message,/split long clauses into natural short sentences/i);
+  assert.match(out.system_message,/Lengthen only through natural same-proposition grammar/);
+  assert.match(out.system_message,/Never pad with descriptive modifiers/);
+  assert.match(out.user_message,/ACCEPTABLE AUDIO DURATION: 28464\.\.30000 ms/);
+  assert.match(out.user_message,/MEASURED TARGET WORD COUNT: about 57 words/);
+  assert.match(out.user_message,/one semantic-safe rewrite/);
+  assert.match(out.user_message,/no new facts, filler/);
+  assert.doesNotMatch(out.user_message,/CADENCE-FIRST PASS/);
 });
 
 test('second timing repair respects LONGER direction and stays cadence-first when pauses are sparse',()=>{

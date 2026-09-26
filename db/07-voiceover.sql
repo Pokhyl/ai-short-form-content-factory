@@ -276,7 +276,7 @@ DECLARE
     v_voiceover_id uuid;
     v_expected_path text;
     v_target_duration_ms integer;
-    v_duration_tolerance_ms integer;
+    v_min_duration_ms integer;
 BEGIN
     SELECT *
       INTO v_run
@@ -305,15 +305,21 @@ BEGIN
     END IF;
 
     v_target_duration_ms := v_job.target_duration_seconds * 1000;
-    v_duration_tolerance_ms := GREATEST(
-        750,
-        round(v_target_duration_ms * 0.05)::integer
-    ) + 50;
+    v_min_duration_ms := CASE v_target_duration_ms
+        WHEN 15000 THEN 14208
+        WHEN 30000 THEN 28464
+        WHEN 45000 THEN 42864
+        WHEN 60000 THEN 58176
+        ELSE NULL
+    END;
 
-    IF abs(p_duration_ms - v_target_duration_ms) > v_duration_tolerance_ms THEN
+    -- Minimums are the observed production voiceover lower bounds.
+    IF p_duration_ms IS NULL
+       OR p_duration_ms < v_min_duration_ms
+       OR p_duration_ms > v_target_duration_ms THEN
         RAISE EXCEPTION
-            'voiceover duration outside target tolerance: got % ms, target % ms, tolerance % ms',
-            p_duration_ms,v_target_duration_ms,v_duration_tolerance_ms
+            'voiceover duration outside observed product window: got % ms, allowed %..% ms',
+            p_duration_ms,v_min_duration_ms,v_target_duration_ms
             USING ERRCODE='22023';
     END IF;
 

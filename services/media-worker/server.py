@@ -234,65 +234,6 @@ def ffprobe_audio(path: Path):
     }
 
 
-def pad_mp3_to_minimum_duration(path: Path, minimum_duration_ms: int):
-    probe = ffprobe_audio(path)
-    current_duration_ms = probe["duration_ms"]
-
-    if minimum_duration_ms <= current_duration_ms:
-        return {
-            **probe,
-            "source_duration_ms": current_duration_ms,
-            "padding_ms": 0,
-        }
-
-    padding_ms = minimum_duration_ms - current_duration_ms
-    if padding_ms > 1600:
-        raise ValueError("voiceover padding exceeds 1600ms safety cap")
-
-    padded_path = path.with_name(path.stem + ".padded.tmp.mp3")
-    try:
-        subprocess.run(
-            [
-                "ffmpeg",
-                "-nostdin",
-                "-y",
-                "-i",
-                str(path),
-                "-af",
-                "apad",
-                "-t",
-                f"{minimum_duration_ms / 1000.0:.3f}",
-                "-c:a",
-                "libmp3lame",
-                "-b:a",
-                "192k",
-                str(padded_path),
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
-        padded_probe = ffprobe_audio(padded_path)
-        if (
-            padded_probe["duration_ms"] < minimum_duration_ms
-            or padded_probe["duration_ms"] > minimum_duration_ms + 150
-        ):
-            raise ValueError(
-                "padded voiceover duration outside requested minimum window"
-            )
-        os.replace(padded_path, path)
-    finally:
-        padded_path.unlink(missing_ok=True)
-
-    final_probe = ffprobe_audio(path)
-    return {
-        **final_probe,
-        "source_duration_ms": current_duration_ms,
-        "padding_ms": final_probe["duration_ms"] - current_duration_ms,
-    }
-
-
 def file_sha256(path: Path):
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -1340,6 +1281,12 @@ def ffprobe_render(path: Path):
 
     if duration_ms <= 0:
         raise ValueError("render duration must be positive")
+    try:
+        muxed_audio_duration_ms = round(float(audio.get("duration") or 0) * 1000)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("render audio stream duration is invalid") from exc
+    if muxed_audio_duration_ms <= 0:
+        raise ValueError("render audio stream duration must be positive")
 
     return {
         "width": width,
@@ -1350,6 +1297,7 @@ def ffprobe_render(path: Path):
         "fps_num": fps_num,
         "fps_den": fps_den,
         "duration_ms": duration_ms,
+        "muxed_audio_duration_ms": muxed_audio_duration_ms,
         "video_stream_count": len(video_streams),
         "audio_stream_count": len(audio_streams),
     }
@@ -1466,11 +1414,16 @@ def render_final_video(
     if audio_probe["duration_ms"] != audio_duration_ms:
         raise ValueError("render voiceover duration mismatch")
 
-    render_tolerance_ms = max(750, round(target_duration_ms * 0.05)) + 50
+    minimum_audio_ms = {
+        15000: 14208,
+        30000: 28464,
+        45000: 42864,
+        60000: 58176,
+    }.get(target_duration_ms)
     if (
-        target_duration_ms <= 0
+        minimum_audio_ms is None
+        or audio_duration_ms < minimum_audio_ms
         or audio_duration_ms > target_duration_ms
-        or target_duration_ms - audio_duration_ms > render_tolerance_ms
     ):
         raise ValueError("render target/audio duration contract is invalid")
 
@@ -1521,8 +1474,10 @@ def render_final_video(
             raise ValueError("render segments are not contiguous")
         if end_ms <= start_ms or end_ms > target_duration_ms:
             raise ValueError("render segment bounds are invalid")
-        if speech_start_ms < start_ms or speech_end_ms > end_ms:
-            raise ValueError("speech timing is outside render segment")
+        if (speech_start_ms < start_ms
+                or speech_end_ms > end_ms
+                or speech_end_ms > audio_duration_ms):
+            raise ValueError("speech timing is outside render/audio segment")
         if speech_end_ms <= speech_start_ms:
             raise ValueError("speech timing has non-positive duration")
 
@@ -1681,6 +1636,8 @@ def render_final_video(
             and probe["audio_stream_count"] == 1,
         "duration_match":
             duration_delta_ms <= 100,
+        "audio_duration_match":
+            abs(probe["muxed_audio_duration_ms"] - audio_duration_ms) <= 100,
         "scene_coverage":
             len(segment_manifest) == len(scenes)
             and segment_manifest[0]["start_ms"] == 0
@@ -2116,8 +2073,6 @@ class Handler(BaseHTTPRequestHandler):
     def _handle_voiceover_candidate_post(self, job_id):
         candidate_dir = VOICEOVER_CANDIDATE_ROOT / job_id
         candidate_path = candidate_dir / "accepted.mp3"
-        minimum_duration_ms = None
-
         if candidate_path.exists():
             self._json(
                 409,
@@ -2134,18 +2089,8 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(encoded, str) or not encoded:
                 raise ValueError("audio_base64 is required")
 
-            minimum_duration_raw = payload.get("minimum_duration_ms")
-            if minimum_duration_raw is not None:
-                try:
-                    minimum_duration_ms = int(minimum_duration_raw)
-                except (TypeError, ValueError) as exc:
-                    raise ValueError(
-                        "minimum_duration_ms must be an integer"
-                    ) from exc
-                if minimum_duration_ms <= 0:
-                    raise ValueError(
-                        "minimum_duration_ms must be positive"
-                    )
+            if "minimum_duration_ms" in payload:
+                raise ValueError("audio padding is not part of the candidate contract")
 
             try:
                 audio_bytes = base64.b64decode(encoded, validate=True)
@@ -2179,35 +2124,14 @@ class Handler(BaseHTTPRequestHandler):
                     handle.flush()
                     os.fsync(handle.fileno())
 
-                source_probe = ffprobe_audio(candidate_path)
-                if (
-                    minimum_duration_ms is not None
-                    and minimum_duration_ms < source_probe["duration_ms"]
-                ):
-                    raise ValueError(
-                        "minimum_duration_ms cannot be shorter than source audio"
-                    )
-
-                probe = (
-                    pad_mp3_to_minimum_duration(
-                        candidate_path,
-                        minimum_duration_ms,
-                    )
-                    if minimum_duration_ms is not None
-                    else {
-                        **source_probe,
-                        "source_duration_ms": source_probe["duration_ms"],
-                        "padding_ms": 0,
-                    }
-                )
-                final_bytes = candidate_path.read_bytes()
-                sha256 = hashlib.sha256(final_bytes).hexdigest()
+                probe = ffprobe_audio(candidate_path)
+                sha256 = hashlib.sha256(audio_bytes).hexdigest()
                 result = {
                     "status": "ready",
                     "job_id": job_id,
                     "storage_path": str(candidate_path),
                     "sha256": sha256,
-                    "bytes": len(final_bytes),
+                    "bytes": len(audio_bytes),
                     **probe,
                 }
             except Exception:

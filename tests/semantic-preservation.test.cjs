@@ -141,9 +141,9 @@ test('first timing validator is semantic fail-closed and rejects duplicate scene
   assert.match(code,/first timing repair produced duplicate scene narration/);
 });
 
-test('first timing validation failure routes to Repair 2 before another TTS probe', () => {
+test('first timing semantic validation fails closed after the sole repair', () => {
   const outputs=workflow.connections['Validate Timing Repair'].main;
-  assert.equal(outputs[1][0].node,'Build Timing Repair 2');
+  assert.equal(outputs[1][0].node,'Prepare Script Failure');
   assert.equal(outputs[0][0].node,'Prepare Timing Probe 2');
 });
 

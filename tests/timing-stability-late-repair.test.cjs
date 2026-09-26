@@ -40,16 +40,15 @@ test('final measured retry uses bounded nearest semantic hybrid before real prob
   );
 });
 
-test('every narration candidate gets three real TTS syntheses before any text repair decision',()=>{
-  for(const name of [
-    'Route Timing Within Target',
-    'Route Timing Within Target 2',
-    'Route Timing Within Target 3',
-    'Route Timing Within Target 4',
-    'Route Timing Within Target 5',
-  ]) {
-    const out=workflow.connections[name].main;
-    assert.equal(out[0][0].node,'Prepare Timing Stability Probe',name);
-    assert.equal(out[1][0].node,'Prepare Timing Stability Probe',name);
-  }
+test('only an in-window initial voice gets stability probes; short voices get one semantic repair',()=>{
+  const first=workflow.connections['Route Timing Within Target'].main;
+  const second=workflow.connections['Route Timing Within Target 2'].main;
+  assert.equal(first[0][0].node,'Prepare Timing Stability Probe');
+  assert.equal(first[1][0].node,'Build Timing Repair');
+  assert.equal(second[0][0].node,'Prepare Timing Stability Probe');
+  assert.equal(second[1][0].node,'Prepare Final Timing Failure');
+  assert.equal(
+    workflow.connections['Route Stability Origin 2'].main[0][0].node,
+    'Prepare Final Timing Failure'
+  );
 });

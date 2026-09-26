@@ -102,48 +102,48 @@ test('M5 still fails timing when none of the real synthesized files is in the fi
 
 
 
-test('10935 regression: 26.976s TTS is padding-eligible for a 30s product without rewriting narration',()=>{
+test('10935 regression: 26.976s cannot be silently padded into a 30s product',()=>{
   const code=m5By['Normalize Timing Stability B'].parameters.jsCode;
-  const audio=(ch)=>ch.repeat(256);
   const refs={
     'Prepare Timing Stability Probe B':{
-      script_run_id:'run-10935',
-      model:'gemini',
-      storyboard:{narration:'sample'},
-      narration_word_count:52,
-      scene_count:9,
-      shot_count:9,
-      usage:{},
-      target_duration_ms:30000,
-      requested_tolerance_ms:1550,
-      stability_original_ms:26976,
-      stability_a_measured_duration_ms:27048,
-      origin_probe_attempt:5,
-      locale:'uk-UA',
-      voice_name:'uk-UA-Chirp3-HD-Enceladus',
-      sku_family:'chirp3_hd',
-      stability_b_usage_key:'m5-b',
+      script_run_id:'run-10935',model:'gemini',storyboard:{narration:'sample'},
+      narration_word_count:52,scene_count:9,shot_count:9,usage:{},
+      target_duration_ms:30000,requested_tolerance_ms:1550,
+      stability_original_ms:26976,stability_a_measured_duration_ms:27048,
+      origin_probe_attempt:5,stability_b_usage_key:'m5-b',
     },
     'Prepare Timing Probe 5':{probe_usage_key:'m5-origin'},
-    'Normalize TTS Timing Probe 5':{audio_base64:audio('A')},
+    'Normalize TTS Timing Probe 5':{audio_base64:'A'.repeat(256)},
     'Prepare Timing Stability Probe':{stability_usage_key:'m5-a'},
-    'Normalize TTS Timing Stability':{audio_base64:audio('B')},
-    'Normalize TTS Timing Stability B':{audio_base64:audio('C')},
+    'Normalize TTS Timing Stability':{audio_base64:'B'.repeat(256)},
+    'Normalize TTS Timing Stability B':{audio_base64:'C'.repeat(256)},
   };
   const $=name=>({first:()=>({json:refs[name]})});
-  const out=new Function('$','$json',code)(
-    $,
-    {statusCode:200,body:{status:'ready',duration_ms:26700}}
-  ).json;
-
-  assert.equal(out.stability_final_tolerance_ms,1550);
-  assert.equal(out.stability_minimum_duration_ms,28450);
-  assert.equal(out.stability_max_padding_ms,1500);
-  assert.equal(out.timing_stability_ok,true);
-  assert.equal(out.accepted_voiceover_candidate.source,'stability_a');
-  assert.equal(out.accepted_voiceover_candidate.duration_ms,27048);
-  assert.equal(out.accepted_voiceover_candidate.minimum_duration_ms,28450);
-  assert.equal(out.accepted_voiceover_candidate.padding_ms,1402);
+  const out=new Function('$','$json',code)($,
+    {statusCode:200,body:{status:'ready',duration_ms:26700}}).json;
+  assert.equal(out.stability_minimum_duration_ms,28464);
+  assert.equal(out.timing_stability_ok,false);
+  assert.equal(out.accepted_voiceover_candidate,null);
+  assert.equal(
+    m5.connections['Route Timing Within Target'].main[1][0].node,
+    'Build Timing Repair'
+  );
+  assert.equal(
+    m5.connections['Route Timing Within Target 2'].main[1][0].node,
+    'Prepare Final Timing Failure'
+  );
+  assert.equal(
+    m5.connections['Route Stability Origin 2'].main[0][0].node,
+    'Prepare Final Timing Failure'
+  );
+  assert.equal(
+    m5.connections['Validate Timing Repair'].main[1][0].node,
+    'Prepare Script Failure'
+  );
+  const repair=m5By['Build Timing Repair'].parameters.jsCode;
+  assert.match(repair,/desiredDurationMs/);
+  assert.match(repair,/one semantic-safe rewrite/);
+  assert.match(repair,/no new facts, filler/);
 });
 
 test('M5 persists the accepted audio candidate before committing the storyboard',()=>{
@@ -215,7 +215,7 @@ test('M6 promoted-candidate normalizer requires exact persisted metadata',()=>{
       reuse_candidate:true,
       candidate_audio_sha256:sha,
       candidate_bytes:12345,
-      candidate_duration_ms:15336,
+      candidate_duration_ms:14736,
       candidate_sample_rate:24000,
       candidate_channels:1,
       candidate_codec:'mp3',
@@ -233,7 +233,7 @@ test('M6 promoted-candidate normalizer requires exact persisted metadata',()=>{
         storage_path:'/data/voiceovers/'+job+'/final.mp3',
         sha256:sha,
         bytes:12345,
-        duration_ms:15336,
+        duration_ms:14736,
         sample_rate:24000,
         channels:1,
         codec:'mp3',
@@ -322,125 +322,132 @@ test('9621 regression: every M5 timing probe canonicalizes visual-cut punctuatio
 });
 
 
-test('M5 can pad a slightly short real TTS file into the existing final timing window',()=>{
-  const m5Code=m5By['Normalize Timing Stability B'].parameters.jsCode;
-  assert.match(m5Code,/const minimumAcceptedDurationMs = targetMs - finalToleranceMs/);
-  assert.match(m5Code,/const maxPaddingMs = Math\.min\(finalToleranceMs, 1500\)/);
-  assert.match(m5Code,/paddingRenderable/);
-  assert.match(m5Code,/minimum_duration_ms/);
-  assert.match(m5By['Store Accepted Voiceover Candidate'].parameters.jsonBody,/minimum_duration_ms/);
-
-  const db=fs.readFileSync('db/11-voiceover-candidate-reuse.sql','utf8');
-  assert.match(db,/abs\(p_duration_ms - v_target_ms\) > v_tolerance_ms/);
-  assert.match(db,/abs\(v_candidate\.duration_ms - v_target_ms\) > v_tolerance_ms/);
-  assert.doesNotMatch(m6By['Begin Voiceover'].parameters.query,/max_render_padding_ms/);
+test('M5/M6 use the same observed one-sided audio window without padding',()=>{
+  const code=m5By['Normalize Timing Stability B'].parameters.jsCode;
+  assert.match(code,/15000: 14208, 30000: 28464, 45000: 42864, 60000: 58176/);
+  assert.doesNotMatch(code,/paddingRenderable|padding_ms|acceptedCandidate\\.minimum_duration_ms/);
+  assert.doesNotMatch(
+    m5By['Store Accepted Voiceover Candidate'].parameters.jsonBody,
+    /minimum_duration_ms/
+  );
+  const worker=fs.readFileSync('services/media-worker/server.py','utf8');
+  assert.doesNotMatch(worker,/def pad_mp3_to_minimum_duration/);
+  assert.match(worker,/audio padding is not part of the candidate contract/);
+  const candidateSql=fs.readFileSync('db/11-voiceover-candidate-reuse.sql','utf8');
+  const finalSql=fs.readFileSync('db/07-voiceover.sql','utf8');
+  for(const source of [candidateSql,finalSql,worker]) {
+    assert.match(source,/28464/);
+    assert.match(source,/58176/);
+  }
+  assert.match(
+    m6By['Normalize Promoted M5 Candidate'].parameters.jsCode,
+    /durationMs >= minimumDurationMs && durationMs <= targetDurationMs/
+  );
 });
 
-test('render contract keeps audio duration separate from exact target video duration',()=>{
+test('factory.begin_render returns both durations and extends only the visual coverage',()=>{
   const sql=fs.readFileSync('db/10-render-qa.sql','utf8');
   const m9=JSON.parse(fs.readFileSync('workflows/VIDEO-M9-Render-Machine-QA.json','utf8'));
-  const m9By=Object.fromEntries(m9.nodes.map(n=>[n.name,n]));
-  const worker=fs.readFileSync('services/media-worker/server.py','utf8');
-
-  assert.doesNotMatch(sql,/audio_duration_ms integer,\s*target_duration_ms integer,/s);
+  const by=Object.fromEntries(m9.nodes.map(n=>[n.name,n]));
+  assert.match(sql,/audio_duration_ms integer,\s*target_duration_ms integer,/s);
   assert.match(sql,/lead\(st\.start_ms\).*?v_target_duration_ms/s);
+  assert.match(sql,/end_ms > v_voice\.duration_ms/);
   assert.match(sql,/v_previous_end <> v_target_duration_ms/);
-
-  assert.match(m9By['Begin Render'].parameters.query,/target_duration_seconds \* 1000 AS target_duration_ms/);
-  assert.match(m9By['Begin Render'].parameters.query,/JOIN factory\.jobs/);
-  assert.match(m9By['Run Deterministic Render'].parameters.jsonBody,/target_duration_ms/);
-  assert.match(m9By['Validate Render Result'].parameters.jsCode,/expectedAudioDuration/);
-  assert.match(m9By['Validate Render Result'].parameters.jsCode,/expectedVideoDuration/);
-
-  assert.match(worker,/def render_final_video\([\s\S]*?target_duration_ms,/);
-  assert.match(worker,/f"\{target_duration_ms \/ 1000\.0:\.3f\}"/);
-  assert.match(worker,/segment_manifest\[-1\]\["end_ms"\] == target_duration_ms/);
-  assert.match(worker,/"target_duration_ms": target_duration_ms/);
+  assert.match(by['Begin Render'].parameters.query,/audio_duration_ms, target_duration_ms/);
+  assert.match(by['Run Deterministic Render'].parameters.jsonBody,
+    /target_duration_ms: target, scenes/);
+  assert.match(by['Validate Render Result'].parameters.jsCode,
+    /expectedAudioDuration/);
+  assert.match(by['Validate Render Result'].parameters.jsCode,
+    /expectedVideoDuration/);
+  assert.match(by['Validate Render Result'].parameters.jsCode,
+    /muxed_audio_duration_ms/);
+  assert.match(sql,/muxed_audio_duration_ms/);
+  assert.match(sql,/audio_duration_match/);
 });
 
+test('M9 machine QA compares the video to target and the audio stream to actual audio',()=>{
+  const w=JSON.parse(fs.readFileSync('workflows/VIDEO-M9-Render-Machine-QA.json','utf8'));
+  const code=w.nodes.find(n=>n.name==='Validate Render Result').parameters.jsCode;
+  const job='11111111-1111-4111-8111-111111111111';
+  const scene='22222222-2222-4222-8222-222222222222';
+  const shot='33333333-3333-4333-8333-333333333333';
+  const asset='44444444-4444-4444-8444-444444444444';
+  const sha='a'.repeat(64);
+  const segment={
+    scene_uuid:scene,shot_uuid:shot,visual_asset_id:asset,asset_sha256:sha,
+    segment_order:1,start_ms:0,end_ms:30000,duration_ms:30000,
+  };
+  const ctx={
+    render_run_id:'55555555-5555-4555-8555-555555555555',
+    audio_sha256:sha,audio_duration_ms:28800,target_duration_ms:30000,
+    expected_scene_count:1,
+    scenes_json:[{...segment,segment_start_ms:0,segment_end_ms:30000}],
+  };
+  const $=name=>({first:()=>({json:
+    name==='Begin Render'?ctx:{job_id:job}})});
+  const base={
+    status:'ready',job_id:job,sha256:sha,bytes:1000,width:1080,height:1920,
+    storage_path:'/data/renders/'+job+'/final.mp4',
+    manifest_path:'/data/renders/'+job+'/manifest.json',
+    video_codec:'h264',audio_codec:'aac',pix_fmt:'yuv420p',
+    fps_num:30,fps_den:1,video_stream_count:1,audio_stream_count:1,
+    audio_duration_ms:28800,muxed_audio_duration_ms:28822,
+    target_duration_ms:30000,duration_ms:30000,duration_delta_ms:0,
+    input_audio_sha256:sha,segments:[segment],qa_passed:true,
+    qa_gates:{
+      video_dimensions:true,video_codec:true,audio_codec:true,
+      stream_counts:true,duration_match:true,audio_duration_match:true,
+      scene_coverage:true,asset_hashes:true,source_audio_excluded:true,
+    },
+  };
+  const run=body=>new Function('$','$json',code)($,
+    {statusCode:201,body}).json.render_success;
+  assert.equal(run(base),true);
+  assert.equal(run({...base,duration_ms:28800,duration_delta_ms:1200}),false);
+  assert.equal(run({...base,muxed_audio_duration_ms:27000}),false);
+  assert.equal(run({...base,segments:[{...segment,end_ms:28800}]}),false);
+});
 
-test('10935 regression: slightly short 30s TTS is padded only to the existing final window',()=>{
+test('30s candidate inside production range is reused byte-for-byte with no narration rewrite',()=>{
   const code=m5By['Normalize Timing Stability B'].parameters.jsCode;
-  const audio=(ch)=>ch.repeat(256);
+  const audio=ch=>ch.repeat(256);
   const refs={
     'Prepare Timing Stability Probe B':{
-      script_run_id:'run-10935',
-      model:'gemini',
-      storyboard:{narration:'sample'},
-      narration_word_count:52,
-      scene_count:9,
-      shot_count:9,
-      usage:{},
-      target_duration_ms:30000,
-      requested_tolerance_ms:1550,
-      stability_original_ms:26976,
-      stability_a_measured_duration_ms:27048,
-      origin_probe_attempt:5,
-      locale:'uk-UA',
-      voice_name:'uk-UA-Chirp3-HD-Enceladus',
-      sku_family:'chirp3_hd',
-      stability_b_usage_key:'m5-b',
+      script_run_id:'run',model:'gemini',
+      storyboard:{narration:'Natural script stays unchanged'},
+      narration_word_count:5,scene_count:1,shot_count:1,usage:{},
+      target_duration_ms:30000,requested_tolerance_ms:1550,
+      stability_original_ms:28584,stability_a_measured_duration_ms:28800,
+      origin_probe_attempt:1,stability_b_usage_key:'m5-b',
     },
-    'Prepare Timing Probe 5':{probe_usage_key:'m5-origin'},
-    'Normalize TTS Timing Probe 5':{audio_base64:audio('A')},
+    'Prepare Timing Probe':{probe_usage_key:'m5-origin'},
+    'Normalize TTS Timing Probe':{audio_base64:audio('A')},
     'Prepare Timing Stability Probe':{stability_usage_key:'m5-a'},
     'Normalize TTS Timing Stability':{audio_base64:audio('B')},
     'Normalize TTS Timing Stability B':{audio_base64:audio('C')},
   };
   const $=name=>({first:()=>({json:refs[name]})});
-  const out=new Function('$','$json',code)(
-    $,
-    {statusCode:200,body:{status:'ready',duration_ms:26700}}
-  ).json;
-
-  assert.equal(out.stability_final_tolerance_ms,1550);
-  assert.equal(out.stability_minimum_duration_ms,28450);
-  assert.equal(out.stability_max_padding_ms,1500);
-  assert.equal(out.timing_stability_ok,true);
-  assert.equal(out.accepted_voiceover_candidate.source,'stability_a');
-  assert.equal(out.accepted_voiceover_candidate.duration_ms,27048);
-  assert.equal(out.accepted_voiceover_candidate.minimum_duration_ms,28450);
-  assert.equal(out.accepted_voiceover_candidate.padding_ms,1402);
-  assert.equal(out.accepted_voiceover_candidate.audio_base64,audio('B'));
-
-  const store=m5By['Store Accepted Voiceover Candidate'];
-  assert.match(store.parameters.jsonBody,/minimum_duration_ms/);
+  const result=new Function('$','$json',code)($,
+    {statusCode:200,body:{status:'ready',duration_ms:29000}}).json;
+  assert.equal(result.timing_stability_ok,true);
+  assert.equal(result.accepted_voiceover_candidate.source,'stability_b');
+  assert.equal(result.accepted_voiceover_candidate.duration_ms,29000);
+  assert.equal(result.accepted_voiceover_candidate.audio_base64,audio('C'));
+  assert.equal(result.storyboard.narration,'Natural script stays unchanged');
 });
 
-test('M5 refuses padding that would exceed the bounded 1500ms repair cap',()=>{
-  const code=m5By['Normalize Timing Stability B'].parameters.jsCode;
-  const audio=(ch)=>ch.repeat(256);
-  const refs={
-    'Prepare Timing Stability Probe B':{
-      script_run_id:'run-too-short',
-      model:'gemini',
-      storyboard:{narration:'sample'},
-      narration_word_count:45,
-      scene_count:9,
-      shot_count:9,
-      usage:{},
-      target_duration_ms:30000,
-      requested_tolerance_ms:1550,
-      stability_original_ms:26000,
-      stability_a_measured_duration_ms:26500,
-      origin_probe_attempt:5,
-      locale:'uk-UA',
-      voice_name:'uk-UA-Chirp3-HD-Enceladus',
-      sku_family:'chirp3_hd',
-      stability_b_usage_key:'m5-b',
-    },
-    'Prepare Timing Probe 5':{probe_usage_key:'m5-origin'},
-    'Normalize TTS Timing Probe 5':{audio_base64:audio('A')},
-    'Prepare Timing Stability Probe':{stability_usage_key:'m5-a'},
-    'Normalize TTS Timing Stability':{audio_base64:audio('B')},
-    'Normalize TTS Timing Stability B':{audio_base64:audio('C')},
+test('overlong M5 voice is rejected even if it is inside the old symmetric tolerance',()=>{
+  const code=m5By['Normalize Timing Probe'].parameters.jsCode;
+  const ctx={
+    script_run_id:'run',model:'model',storyboard:{narration:'spoken'},
+    narration_word_count:1,scene_count:1,shot_count:1,usage:{},
+    target_duration_ms:30000,tolerance_ms:2000,probe_attempt:1,
   };
-  const $=name=>({first:()=>({json:refs[name]})});
-  const out=new Function('$','$json',code)(
-    $,
-    {statusCode:200,body:{status:'ready',duration_ms:26400}}
-  ).json;
-
-  assert.equal(out.timing_stability_ok,false);
-  assert.equal(out.accepted_voiceover_candidate,null);
+  const $=()=>({first:()=>({json:ctx})});
+  const run=ms=>new Function('$','$json',code)($,
+    {statusCode:200,body:{status:'ready',duration_ms:ms}}).json.timing_ok;
+  assert.equal(run(29000),true);
+  assert.equal(run(27000),false);
+  assert.equal(run(30100),false);
 });

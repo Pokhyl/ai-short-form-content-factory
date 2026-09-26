@@ -37,7 +37,7 @@ test('all Gemini validators preserve provider failure after transient retries an
     'Validate Storyboard':'Build Storyboard Repair',
     'Validate Repaired Storyboard':'Build Storyboard Repair 2',
     'Validate Repaired Storyboard 2':'Prepare Script Failure',
-    'Validate Timing Repair':'Build Timing Repair 2',
+    'Validate Timing Repair':'Prepare Script Failure',
     'Validate Timing Repair 2':'Build Timing Precision Retry',
     'Validate Timing Precision Retry':'Prepare Script Failure',
     'Validate Final Duration Repair':'Prepare Script Failure',

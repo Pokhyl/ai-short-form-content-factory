@@ -67,3 +67,15 @@ test('9948 bare ambient darkness is not an unlit subject or explicit scene-state
  assert.deepEqual(normalize(['darkness','brightness','shadow','shadows','unlit lamp','daytime scene','night scene','broken glass']),['unlit lamp','daytime scene','night scene','broken glass']);
  for(const name of ['Build Script Prompt','Build Storyboard Repair','Build Storyboard Repair 2'])assert.match(byName[name].parameters.jsCode,/bare darkness\/brightness\/shadows/);
 });
+
+test('visual prompts require mutually consistent, grounded photo criteria',()=>{
+  const initial=byName['Build Script Prompt'].parameters.jsCode;
+  assert.match(initial,/do not invent a desk, room, outdoor scene/);
+  assert.match(initial,/same concrete subject unless the narration explicitly introduces another/);
+  assert.match(initial,/at least one plausible real photograph satisfying visual_intent/);
+  for(const name of ['Build Storyboard Repair','Build Storyboard Repair 2']){
+    const code=byName[name].parameters.jsCode;
+    assert.match(code,/do not invent an ungrounded location or arrangement/);
+    assert.match(code,/plausible real photograph whose visible subject, setting, queries/);
+  }
+});

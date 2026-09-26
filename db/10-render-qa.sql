@@ -79,6 +79,9 @@ CREATE TABLE IF NOT EXISTS factory.machine_qa (
     CONSTRAINT machine_qa_gates_object CHECK (jsonb_typeof(gates)='object')
 );
 
+-- Changing the OUT row type requires dropping the old signature first.
+DROP FUNCTION IF EXISTS factory.begin_render(uuid);
+
 CREATE OR REPLACE FUNCTION factory.begin_render(
     p_job_id uuid
 )
@@ -87,6 +90,7 @@ RETURNS TABLE (
     voiceover_path text,
     audio_sha256 text,
     audio_duration_ms integer,
+    target_duration_ms integer,
     expected_scene_count integer,
     scenes_json jsonb
 )
@@ -100,7 +104,7 @@ DECLARE
     v_asset_count integer;
     v_scenes jsonb;
     v_target_duration_ms integer;
-    v_duration_tolerance_ms integer;
+    v_min_duration_ms integer;
 BEGIN
     SELECT *
       INTO v_job
@@ -129,17 +133,20 @@ BEGIN
     END IF;
 
     v_target_duration_ms := v_job.target_duration_seconds * 1000;
-    v_duration_tolerance_ms := GREATEST(
-        750,
-        round(v_target_duration_ms * 0.05)::integer
-    ) + 50;
+    v_min_duration_ms := CASE v_target_duration_ms
+        WHEN 15000 THEN 14208
+        WHEN 30000 THEN 28464
+        WHEN 45000 THEN 42864
+        WHEN 60000 THEN 58176
+        ELSE NULL
+    END;
 
     IF v_voice.duration_ms <= 0
        OR v_voice.duration_ms > v_target_duration_ms
-       OR v_target_duration_ms - v_voice.duration_ms > v_duration_tolerance_ms THEN
+       OR v_voice.duration_ms < v_min_duration_ms THEN
         RAISE EXCEPTION
-            'voiceover duration is outside renderable product window: got % ms, target % ms, tolerance % ms',
-            v_voice.duration_ms,v_target_duration_ms,v_duration_tolerance_ms
+            'voiceover duration outside observed product window: got % ms, allowed %..% ms',
+            v_voice.duration_ms,v_min_duration_ms,v_target_duration_ms
             USING ERRCODE='22023';
     END IF;
 
@@ -241,6 +248,7 @@ BEGIN
            OR seg_end <= seg_start
            OR start_ms < seg_start
            OR end_ms > seg_end
+           OR end_ms > v_voice.duration_ms
            OR seg_end > v_target_duration_ms
            OR (seg_end - seg_start) > (
                6500 + CASE
@@ -273,6 +281,7 @@ BEGIN
         v_voice.storage_path,
         v_voice.audio_sha256,
         v_voice.duration_ms,
+        v_target_duration_ms,
         v_scene_count,
         v_scenes;
 END;
@@ -300,8 +309,6 @@ DECLARE
     v_duration_ms integer;
     v_delta integer;
     v_target_duration_ms integer;
-    v_target_delta_ms integer;
-    v_duration_tolerance_ms integer;
     v_segment jsonb;
     v_scene_id uuid;
     v_shot_id uuid;
@@ -357,15 +364,10 @@ BEGIN
     v_duration_ms := COALESCE((p_result->>'duration_ms')::integer,0);
     v_target_duration_ms := v_job.target_duration_seconds * 1000;
     v_delta := abs(v_duration_ms - v_target_duration_ms);
-    v_duration_tolerance_ms := GREATEST(
-        750,
-        round(v_target_duration_ms * 0.05)::integer
-    ) + 50;
-    v_target_delta_ms := abs(v_duration_ms - v_target_duration_ms);
     v_gates := jsonb_set(
         COALESCE(p_result->'qa_gates','{}'::jsonb),
         '{target_duration}',
-        to_jsonb(v_target_delta_ms <= v_duration_tolerance_ms),
+        to_jsonb(v_delta <= 100),
         true
     );
 
@@ -375,6 +377,7 @@ BEGIN
        OR COALESCE(p_result->>'manifest_path','') <> v_expected_manifest_path
        OR lower(COALESCE(p_result->>'input_audio_sha256','')) <> v_voice.audio_sha256
        OR COALESCE((p_result->>'audio_duration_ms')::integer,0) <> v_voice.duration_ms
+       OR abs(COALESCE((p_result->>'muxed_audio_duration_ms')::integer,0) - v_voice.duration_ms) > 100
        OR COALESCE((p_result->>'target_duration_ms')::integer,0) <> v_target_duration_ms
        OR lower(COALESCE(p_result->>'sha256','')) !~ '^[0-9a-f]{64}$'
        OR COALESCE((p_result->>'bytes')::bigint,0) <= 0
@@ -388,8 +391,7 @@ BEGIN
        OR COALESCE((p_result->>'video_stream_count')::integer,0) <> 1
        OR COALESCE((p_result->>'audio_stream_count')::integer,0) <> 1
        OR v_duration_ms <= 0
-       OR v_delta > 100
-       OR v_target_delta_ms > v_duration_tolerance_ms THEN
+       OR v_delta > 100 THEN
         RAISE EXCEPTION 'render metadata or machine QA failed'
             USING ERRCODE='22023';
     END IF;
@@ -400,6 +402,7 @@ BEGIN
         AND COALESCE((v_gates->>'audio_codec')::boolean,false)
         AND COALESCE((v_gates->>'stream_counts')::boolean,false)
         AND COALESCE((v_gates->>'duration_match')::boolean,false)
+        AND COALESCE((v_gates->>'audio_duration_match')::boolean,false)
         AND COALESCE((v_gates->>'scene_coverage')::boolean,false)
         AND COALESCE((v_gates->>'asset_hashes')::boolean,false)
         AND COALESCE((v_gates->>'source_audio_excluded')::boolean,false)

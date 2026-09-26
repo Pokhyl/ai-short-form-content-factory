@@ -1803,3 +1803,15 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Manual visuals fail S1 and S5.
 - S5 is decisive: Wikimedia 136934049 is visually a forest/survey-tripod archive photo, but its catalog title mentions transformer/substation/transmission and M8 accepted those contextual words as depiction evidence.
 - Next: tighten generic Wikimedia primary-depiction grounding; M8 scorer stays fail-closed and no new PL15 before deploy.
+
+
+## 2026-09-27 — bounded voiceover and exact render contract (offline checkpoint)
+
+- Starting Git state for this pass: main at 43ca6b3, with only pre-existing .tmp/ untracked; the three handoff changes had already been committed as 8f17a0f.
+- The 8f17a0f candidate path padded short MP3s with silence. This pass removes padding. An accepted M5 candidate is the exact MP3 promoted by M6; no voice speed changes.
+- Audio acceptance is one-sided: no longer than target and no shorter than observed production bounds 14208/28464/42864/58176 ms for 15/30/45/60 s. Production DB evidence changed the 30 s bound from the handoff's approximate 28584 ms to 28464 ms: one machine-QA-passed job has 28464 ms audio; a recent barometer job has 28512 ms.
+- M5 sends an obviously short first synthesis to one semantic-safe expansion. Failed expansion validation or a second out-of-window candidate terminates; old multiple timing-repair branches are no longer reachable through this path.
+- factory.begin_render() now returns actual audio and product target durations. Speech remains within the audio; the final visual segment ends at the product target. M9 passes both durations; worker muxes unmodified narration and a target-length video. QA checks separately the final video (<=100 ms), muxed audio versus source audio (<=100 ms), scene coverage, codecs, dimensions, 30 fps, SHA and asset uniqueness.
+- Earlier job 38cc57d3-6dfd-4e84-9f2e-dc9eba31944a was created before this pass and failed M8 because S3 required a weather station on a desk while three Gemini-reviewed photos showed outdoor stations. Vision correctly rejected them. Generic M5 visual prompt constraints now discourage invented settings and mutually inconsistent photo requirements. Production behavior of this prompt change is still unobserved.
+- Offline evidence: focused timing tests passed; full n8n-image Node suite 460/460 after the final route edit, real 30 s two-scene FFmpeg regression PASS (including 27 s and >30 s rejection, unchanged source audio), render-fit regression PASS, isolated Postgres 18 schema initialization and old->new begin_render signature migration PASS. The full suite was re-run after the final route edit and passed.
+- Next gate: git diff --check, focused and full tests, commit/push; check zero active production executions, take workflow and DB/worker backups, deploy only M5/M6/M9 and the changed SQL/worker, compare active nodes/connections/settings with Git, and check worker health. Only then launch one new UK30 barometer Gemini smoke; never reuse failed IDs.
