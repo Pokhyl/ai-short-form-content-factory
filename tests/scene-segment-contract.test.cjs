@@ -473,3 +473,58 @@ test('all M5 visual acceptance paths enforce the hidden-internal photo retrievab
     assert.match(code,/photo visual_intent requests hidden\/internal detail/,name);
   }
 });
+
+
+test('photo-only visual contract rejects an explicitly internal secondary component without a visible-access view',()=>{
+  const fixture=JSON.parse(
+    fs.readFileSync('tests/fixtures/m5-9537-scene-segments.json')
+  );
+  const parsed=JSON.parse(
+    fixture.response.body.candidates[0].content.parts[0].text
+  );
+  parsed.scenes[1].shots[0]={
+    shot_id:'S2-A',
+    visual_intent:'door lock showing internal spring loaded pins',
+    must_show:['door lock','spring loaded pins'],
+    must_not_show:['digital keypad'],
+    queries_en:[
+      'door lock internal pins',
+      'door lock pin mechanism',
+      'door lock',
+    ],
+    preferred_media_type:'photo',
+  };
+  fixture.response.body.candidates[0].content.parts[0].text=
+    JSON.stringify(parsed);
+
+  assert.throws(
+    ()=>run9537(fixture),
+    /internal component a required secondary subject without an explicit open, cutaway, exposed, transparent, or disassembled view/
+  );
+});
+
+test('photo-only internal-secondary guard does not reject a visible installed object merely labeled internal',()=>{
+  const fixture=JSON.parse(
+    fs.readFileSync('tests/fixtures/m5-9537-scene-segments.json')
+  );
+  const parsed=JSON.parse(
+    fixture.response.body.candidates[0].content.parts[0].text
+  );
+  parsed.scenes[1].shots[0]={
+    shot_id:'S2-A',
+    visual_intent:'internal solid state drive installed inside computer',
+    must_show:['solid state drive'],
+    must_not_show:['computer mouse'],
+    queries_en:[
+      'solid state drive storage',
+      'SSD storage drive',
+      'solid state drive',
+    ],
+    preferred_media_type:'photo',
+  };
+  fixture.response.body.candidates[0].content.parts[0].text=
+    JSON.stringify(parsed);
+
+  const out=run9537(fixture);
+  assert.equal(out.scene_count,5);
+});
