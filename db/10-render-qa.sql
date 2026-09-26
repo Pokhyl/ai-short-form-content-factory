@@ -134,9 +134,11 @@ BEGIN
         round(v_target_duration_ms * 0.05)::integer
     ) + 50;
 
-    IF abs(v_voice.duration_ms - v_target_duration_ms) > v_duration_tolerance_ms THEN
+    IF v_voice.duration_ms <= 0
+       OR v_voice.duration_ms > v_target_duration_ms
+       OR v_target_duration_ms - v_voice.duration_ms > v_duration_tolerance_ms THEN
         RAISE EXCEPTION
-            'voiceover duration is outside product target: got % ms, target % ms, tolerance % ms',
+            'voiceover duration is outside renderable product window: got % ms, target % ms, tolerance % ms',
             v_voice.duration_ms,v_target_duration_ms,v_duration_tolerance_ms
             USING ERRCODE='22023';
     END IF;
@@ -172,7 +174,7 @@ BEGIN
             END AS segment_start_ms,
             COALESCE(
                 lead(st.start_ms) OVER (ORDER BY sc.scene_order,sh.shot_order),
-                v_voice.duration_ms
+                v_target_duration_ms
             ) AS segment_end_ms,
             va.id AS visual_asset_id,
             va.storage_path AS asset_path,
@@ -226,7 +228,7 @@ BEGIN
                 CASE WHEN sc.scene_order=1 THEN 0 ELSE st.start_ms END AS seg_start,
                 COALESCE(
                     lead(st.start_ms) OVER (ORDER BY sc.scene_order,sh.shot_order),
-                    v_voice.duration_ms
+                    v_target_duration_ms
                 ) AS seg_end
             FROM factory.scenes sc
             JOIN factory.scene_timings st ON st.scene_id=sc.id
@@ -239,8 +241,14 @@ BEGIN
            OR seg_end <= seg_start
            OR start_ms < seg_start
            OR end_ms > seg_end
-           OR seg_end > v_voice.duration_ms
-           OR (seg_end - seg_start) > 6500
+           OR seg_end > v_target_duration_ms
+           OR (seg_end - seg_start) > (
+               6500 + CASE
+                   WHEN seg_end = v_target_duration_ms
+                   THEN v_target_duration_ms - v_voice.duration_ms
+                   ELSE 0
+               END
+           )
     ) THEN
         RAISE EXCEPTION 'render segment timing coverage is invalid'
             USING ERRCODE='22023';
@@ -347,8 +355,8 @@ BEGIN
         '/data/renders/' || v_run.job_id::text || '/manifest.json';
 
     v_duration_ms := COALESCE((p_result->>'duration_ms')::integer,0);
-    v_delta := abs(v_duration_ms - v_voice.duration_ms);
     v_target_duration_ms := v_job.target_duration_seconds * 1000;
+    v_delta := abs(v_duration_ms - v_target_duration_ms);
     v_duration_tolerance_ms := GREATEST(
         750,
         round(v_target_duration_ms * 0.05)::integer
@@ -366,6 +374,8 @@ BEGIN
        OR COALESCE(p_result->>'storage_path','') <> v_expected_render_path
        OR COALESCE(p_result->>'manifest_path','') <> v_expected_manifest_path
        OR lower(COALESCE(p_result->>'input_audio_sha256','')) <> v_voice.audio_sha256
+       OR COALESCE((p_result->>'audio_duration_ms')::integer,0) <> v_voice.duration_ms
+       OR COALESCE((p_result->>'target_duration_ms')::integer,0) <> v_target_duration_ms
        OR lower(COALESCE(p_result->>'sha256','')) !~ '^[0-9a-f]{64}$'
        OR COALESCE((p_result->>'bytes')::bigint,0) <= 0
        OR COALESCE((p_result->>'width')::integer,0) <> 1080
@@ -445,7 +455,7 @@ BEGIN
                     lead(st.start_ms) OVER (
                         ORDER BY sc.scene_order,sh.shot_order
                     ),
-                    v_voice.duration_ms
+                    v_target_duration_ms
                 ) AS expected_end,
                 va.sha256 AS expected_sha
             FROM factory.scenes sc
@@ -486,7 +496,7 @@ BEGIN
     END LOOP;
 
     IF v_count <> v_run.expected_scene_count
-       OR v_previous_end <> v_voice.duration_ms THEN
+       OR v_previous_end <> v_target_duration_ms THEN
         RAISE EXCEPTION 'render segment coverage incomplete'
             USING ERRCODE='22023';
     END IF;

@@ -54,7 +54,7 @@ function runStabilityB(ctx,bMs) {
 test('PL15 exact-audio handoff accepts one real in-window synthesis because that exact MP3 is reused in M6',()=>{
   const out=runStabilityB({
     target_duration_ms:15000,
-    stability_original_ms:15576,
+    stability_original_ms:14736,
     stability_a_measured_duration_ms:16704,
     requested_tolerance_ms:750,
     origin_probe_attempt:1,
@@ -66,12 +66,12 @@ test('PL15 exact-audio handoff accepts one real in-window synthesis because that
     shot_count:5,
     usage:{},
   },13536);
-  assert.equal(out.stability_median_ms,15576);
+  assert.equal(out.stability_median_ms,14736);
   assert.equal(out.stability_within_final_count,1);
   assert.equal(out.stability_required_within_final,1);
   assert.equal(out.timing_stability_ok,true);
   assert.equal(out.accepted_voiceover_candidate.source,'origin');
-  assert.equal(out.accepted_voiceover_candidate.duration_ms,15576);
+  assert.equal(out.accepted_voiceover_candidate.duration_ms,14736);
   assert.equal(
     out.accepted_voiceover_candidate.usage_idempotency_key,
     'm5-origin'
@@ -81,8 +81,8 @@ test('PL15 exact-audio handoff accepts one real in-window synthesis because that
 test('exact-audio handoff selects the closest in-window synthesis when more than one is valid',()=>{
   const out=runStabilityB({
     target_duration_ms:15000,
-    stability_original_ms:15576,
-    stability_a_measured_duration_ms:15600,
+    stability_original_ms:14736,
+    stability_a_measured_duration_ms:14400,
     requested_tolerance_ms:750,
     origin_probe_attempt:1,
     script_run_id:'run',
@@ -97,7 +97,7 @@ test('exact-audio handoff selects the closest in-window synthesis when more than
   assert.equal(out.stability_required_within_final,1);
   assert.equal(out.timing_stability_ok,true);
   assert.equal(out.accepted_voiceover_candidate.source,'origin');
-  assert.equal(out.accepted_voiceover_candidate.duration_ms,15576);
+  assert.equal(out.accepted_voiceover_candidate.duration_ms,14736);
 });
 
 test('PL15 regression: correction interpolates from 17.136s median, not 15.144s first sample',()=>{

@@ -234,6 +234,65 @@ def ffprobe_audio(path: Path):
     }
 
 
+def pad_mp3_to_minimum_duration(path: Path, minimum_duration_ms: int):
+    probe = ffprobe_audio(path)
+    current_duration_ms = probe["duration_ms"]
+
+    if minimum_duration_ms <= current_duration_ms:
+        return {
+            **probe,
+            "source_duration_ms": current_duration_ms,
+            "padding_ms": 0,
+        }
+
+    padding_ms = minimum_duration_ms - current_duration_ms
+    if padding_ms > 1600:
+        raise ValueError("voiceover padding exceeds 1600ms safety cap")
+
+    padded_path = path.with_name(path.stem + ".padded.tmp.mp3")
+    try:
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-nostdin",
+                "-y",
+                "-i",
+                str(path),
+                "-af",
+                "apad",
+                "-t",
+                f"{minimum_duration_ms / 1000.0:.3f}",
+                "-c:a",
+                "libmp3lame",
+                "-b:a",
+                "192k",
+                str(padded_path),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        padded_probe = ffprobe_audio(padded_path)
+        if (
+            padded_probe["duration_ms"] < minimum_duration_ms
+            or padded_probe["duration_ms"] > minimum_duration_ms + 150
+        ):
+            raise ValueError(
+                "padded voiceover duration outside requested minimum window"
+            )
+        os.replace(padded_path, path)
+    finally:
+        padded_path.unlink(missing_ok=True)
+
+    final_probe = ffprobe_audio(path)
+    return {
+        **final_probe,
+        "source_duration_ms": current_duration_ms,
+        "padding_ms": final_probe["duration_ms"] - current_duration_ms,
+    }
+
+
 def file_sha256(path: Path):
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -1391,6 +1450,7 @@ def render_final_video(
     job_id,
     input_audio_sha256,
     audio_duration_ms,
+    target_duration_ms,
     scenes,
     final_dir: Path,
 ):
@@ -1405,6 +1465,14 @@ def render_final_video(
     audio_probe = ffprobe_audio(audio_path)
     if audio_probe["duration_ms"] != audio_duration_ms:
         raise ValueError("render voiceover duration mismatch")
+
+    render_tolerance_ms = max(750, round(target_duration_ms * 0.05)) + 50
+    if (
+        target_duration_ms <= 0
+        or audio_duration_ms > target_duration_ms
+        or target_duration_ms - audio_duration_ms > render_tolerance_ms
+    ):
+        raise ValueError("render target/audio duration contract is invalid")
 
     if not isinstance(scenes, list) or not scenes:
         raise ValueError("render scenes must be a non-empty array")
@@ -1451,7 +1519,7 @@ def render_final_video(
             raise ValueError("render scene order is not sequential")
         if start_ms != previous_end:
             raise ValueError("render segments are not contiguous")
-        if end_ms <= start_ms or end_ms > audio_duration_ms:
+        if end_ms <= start_ms or end_ms > target_duration_ms:
             raise ValueError("render segment bounds are invalid")
         if speech_start_ms < start_ms or speech_end_ms > end_ms:
             raise ValueError("speech timing is outside render segment")
@@ -1533,8 +1601,8 @@ def render_final_video(
         )
         previous_end = end_ms
 
-    if previous_end != audio_duration_ms:
-        raise ValueError("render segments do not cover the full voiceover")
+    if previous_end != target_duration_ms:
+        raise ValueError("render segments do not cover the full target duration")
     if len(asset_hashes) != len(scenes):
         raise ValueError("render asset hashes are not unique")
 
@@ -1587,7 +1655,7 @@ def render_final_video(
             "-b:a",
             "192k",
             "-t",
-            f"{audio_duration_ms / 1000.0:.3f}",
+            f"{target_duration_ms / 1000.0:.3f}",
             "-movflags",
             "+faststart",
             str(temp_final_path),
@@ -1599,7 +1667,7 @@ def render_final_video(
     )
 
     probe = ffprobe_render(temp_final_path)
-    duration_delta_ms = abs(probe["duration_ms"] - audio_duration_ms)
+    duration_delta_ms = abs(probe["duration_ms"] - target_duration_ms)
 
     qa_gates = {
         "video_dimensions":
@@ -1616,7 +1684,7 @@ def render_final_video(
         "scene_coverage":
             len(segment_manifest) == len(scenes)
             and segment_manifest[0]["start_ms"] == 0
-            and segment_manifest[-1]["end_ms"] == audio_duration_ms,
+            and segment_manifest[-1]["end_ms"] == target_duration_ms,
         "asset_hashes":
             len(asset_hashes) == len(scenes),
         "source_audio_excluded":
@@ -1641,6 +1709,7 @@ def render_final_video(
         "bytes": final_path.stat().st_size,
         **probe,
         "audio_duration_ms": audio_duration_ms,
+        "target_duration_ms": target_duration_ms,
         "duration_delta_ms": duration_delta_ms,
         "input_audio_sha256": input_audio_sha256,
         "segments": segment_manifest,
@@ -2047,6 +2116,7 @@ class Handler(BaseHTTPRequestHandler):
     def _handle_voiceover_candidate_post(self, job_id):
         candidate_dir = VOICEOVER_CANDIDATE_ROOT / job_id
         candidate_path = candidate_dir / "accepted.mp3"
+        minimum_duration_ms = None
 
         if candidate_path.exists():
             self._json(
@@ -2063,6 +2133,19 @@ class Handler(BaseHTTPRequestHandler):
             encoded = payload.get("audio_base64")
             if not isinstance(encoded, str) or not encoded:
                 raise ValueError("audio_base64 is required")
+
+            minimum_duration_raw = payload.get("minimum_duration_ms")
+            if minimum_duration_raw is not None:
+                try:
+                    minimum_duration_ms = int(minimum_duration_raw)
+                except (TypeError, ValueError) as exc:
+                    raise ValueError(
+                        "minimum_duration_ms must be an integer"
+                    ) from exc
+                if minimum_duration_ms <= 0:
+                    raise ValueError(
+                        "minimum_duration_ms must be positive"
+                    )
 
             try:
                 audio_bytes = base64.b64decode(encoded, validate=True)
@@ -2096,14 +2179,35 @@ class Handler(BaseHTTPRequestHandler):
                     handle.flush()
                     os.fsync(handle.fileno())
 
-                probe = ffprobe_audio(candidate_path)
-                sha256 = hashlib.sha256(audio_bytes).hexdigest()
+                source_probe = ffprobe_audio(candidate_path)
+                if (
+                    minimum_duration_ms is not None
+                    and minimum_duration_ms < source_probe["duration_ms"]
+                ):
+                    raise ValueError(
+                        "minimum_duration_ms cannot be shorter than source audio"
+                    )
+
+                probe = (
+                    pad_mp3_to_minimum_duration(
+                        candidate_path,
+                        minimum_duration_ms,
+                    )
+                    if minimum_duration_ms is not None
+                    else {
+                        **source_probe,
+                        "source_duration_ms": source_probe["duration_ms"],
+                        "padding_ms": 0,
+                    }
+                )
+                final_bytes = candidate_path.read_bytes()
+                sha256 = hashlib.sha256(final_bytes).hexdigest()
                 result = {
                     "status": "ready",
                     "job_id": job_id,
                     "storage_path": str(candidate_path),
                     "sha256": sha256,
-                    "bytes": len(audio_bytes),
+                    "bytes": len(final_bytes),
                     **probe,
                 }
             except Exception:
@@ -2690,14 +2794,17 @@ class Handler(BaseHTTPRequestHandler):
             ).strip().lower()
             try:
                 audio_duration_ms = int(payload.get("audio_duration_ms"))
+                target_duration_ms = int(payload.get("target_duration_ms"))
             except (TypeError, ValueError) as exc:
-                raise ValueError("audio_duration_ms must be an integer") from exc
+                raise ValueError("audio_duration_ms and target_duration_ms must be integers") from exc
 
             scenes = payload.get("scenes")
             if not re.fullmatch(r"[0-9a-f]{64}", input_audio_sha256):
                 raise ValueError("input_audio_sha256 is invalid")
             if audio_duration_ms <= 0:
                 raise ValueError("audio_duration_ms must be positive")
+            if target_duration_ms <= 0:
+                raise ValueError("target_duration_ms must be positive")
             if not isinstance(scenes, list) or not scenes:
                 raise ValueError("scenes must be a non-empty array")
 
@@ -2717,6 +2824,7 @@ class Handler(BaseHTTPRequestHandler):
                 job_id,
                 input_audio_sha256,
                 audio_duration_ms,
+                target_duration_ms,
                 scenes,
                 final_dir,
             )
