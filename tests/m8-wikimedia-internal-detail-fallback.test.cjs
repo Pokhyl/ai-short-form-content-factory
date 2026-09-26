@@ -98,3 +98,70 @@ test('Commons ordinary exterior primary-subject photo still fails the secondary 
   assert.equal(candidate.rejected,true);
   assert.match(candidate.rejection_reason,/missing_secondary_subject_context/);
 });
+
+
+test('Commons non-internal secondary fallback also retrieves the primary broadly while retaining all must_show',()=>{
+  const scaleShot={
+    ...shot,
+    shot_key:'S2-A',
+    visual_intent:'A close up photo of a mercury barometer scale measuring atmospheric pressure.',
+    must_show:['mercury barometer','graduated scale'],
+    must_not_show:['digital display'],
+    queries_en:[
+      'mercury barometer pressure scale',
+      'barometer atmospheric pressure gauge',
+      'graduated scale',
+    ],
+  };
+  const $=()=>({first:()=>({json:{visual_run_id:'run',shots_json:[scaleShot]}})});
+  const wiki=new Function('$',code('Build Wikimedia Requests'))($).map(x=>x.json);
+  const final=wiki.find(r=>r.query_index===3);
+
+  assert.equal(final.query,'graduated scale');
+  assert.equal(final.provider_query,'mercury barometer');
+  assert.deepEqual(final.must_show,['mercury barometer','graduated scale']);
+});
+
+
+test('Commons repeated multi-word primary keeps broad final fallback without changing must_show',()=>{
+  const scaleShot={
+    ...shot,
+    shot_uuid:'88888888-8888-4888-8888-888888888888',
+    shot_key:'S2-A',
+    scene_order:2,
+    visual_intent:'A close up photo of a mercury barometer scale measuring atmospheric pressure.',
+    must_show:['mercury barometer','graduated scale'],
+    must_not_show:['digital display'],
+    queries_en:[
+      'mercury barometer pressure scale',
+      'barometer atmospheric pressure gauge',
+      'graduated scale',
+    ],
+  };
+  const instrumentShot={
+    ...shot,
+    shot_uuid:'99999999-9999-4999-8999-999999999999',
+    shot_key:'S3-A',
+    scene_order:3,
+    visual_intent:'A barometer instrument measuring the air pressure of the atmosphere.',
+    must_show:['mercury barometer'],
+    must_not_show:['computer'],
+    queries_en:[
+      'mercury barometer air pressure display',
+      'barometer measuring atmospheric force',
+      'mercury barometer',
+    ],
+  };
+  const $=()=>({first:()=>({json:{visual_run_id:'run',shots_json:[scaleShot,instrumentShot]}})});
+  const wiki=new Function('$',code('Build Wikimedia Requests'))($).map(x=>x.json);
+  const scaleFinal=wiki.find(r=>r.shot_key==='S2-A' && r.query_index===3);
+  const instrumentFinal=wiki.find(r=>r.shot_key==='S3-A' && r.query_index===3);
+
+  assert.equal(scaleFinal.query,'graduated scale');
+  assert.equal(scaleFinal.provider_query,'mercury barometer');
+  assert.deepEqual(scaleFinal.must_show,['mercury barometer','graduated scale']);
+
+  assert.equal(instrumentFinal.query,'mercury barometer');
+  assert.equal(instrumentFinal.provider_query,'mercury barometer');
+  assert.deepEqual(instrumentFinal.must_show,['mercury barometer']);
+});

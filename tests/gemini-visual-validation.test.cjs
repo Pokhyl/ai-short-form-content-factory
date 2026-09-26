@@ -321,7 +321,7 @@ test('Gemini-only candidate review can rescue metadata semantic false negatives 
     sql,
     /factory\.gemini_visual_review_bucket\(rejected,rejection_reason\) < 99/
   );
-  assert.match(sql, /review_bucket,\s*query_bucket,\s*media_bucket/s);
+  assert.match(sql, /review_bucket,\s*cross_shot_asset_bucket,\s*query_bucket,\s*media_bucket/s);
   assert.doesNotMatch(
     sql.match(/CREATE OR REPLACE FUNCTION factory\.get_gemini_visual_candidate_sets[\s\S]*?CREATE OR REPLACE FUNCTION factory\.commit_gemini_visual_selections/)?.[0] || '',
     /AND vc\.rejected=false/
@@ -461,4 +461,18 @@ test('9932 exhausted provider failures remain errors rather than semantic reject
       json,refs:{'Build Gemini Vision Request':{item:{json:{shot_key:'S2-A',candidates:[{}]}}}},
     }),/high demand|connection was aborted/);
   }
+});
+
+
+test('Gemini candidate planner spends bounded review slots on unseen cross-shot assets before duplicates', () => {
+  const sql = fs.readFileSync(path.join(root, 'db', '09-visuals.sql'), 'utf8');
+  const fn = sql.match(/CREATE OR REPLACE FUNCTION factory\.get_gemini_visual_candidate_sets[\s\S]*?CREATE OR REPLACE FUNCTION factory\.commit_gemini_visual_selections/)?.[0] || '';
+
+  assert.match(fn, /v_reviewed_assets text\[\] := ARRAY\[\]::text\[\]/);
+  assert.match(fn, /cross_shot_asset_bucket/);
+  assert.match(fn, /review_bucket,\s*cross_shot_asset_bucket,\s*query_bucket,\s*media_bucket/s);
+  assert.match(fn, /vc\.provider \|\| ':' \|\| vc\.provider_asset_id\) = ANY\(v_reviewed_assets\)/);
+  assert.match(fn, /array_append\(v_reviewed_assets,v_asset_key\)/);
+  assert.match(fn, /candidate_index <= p_limit_per_shot/);
+  assert.match(fn, /p_limit_per_shot < 1 OR p_limit_per_shot > 3/);
 });

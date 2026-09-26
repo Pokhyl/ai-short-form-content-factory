@@ -1000,6 +1000,9 @@ DECLARE
     v_sets jsonb := '[]'::jsonb;
     v_count integer := 0;
     v_search_count integer;
+    v_reviewed_assets text[] := ARRAY[]::text[];
+    v_candidate jsonb;
+    v_asset_key text;
 BEGIN
     SELECT *
       INTO v_run
@@ -1066,6 +1069,10 @@ BEGIN
                 CASE WHEN vq.query_index <= 2 THEN 0 ELSE 1 END AS query_bucket,
                 factory.gemini_visual_review_bucket(vc.rejected,vc.rejection_reason) AS review_bucket,
                 CASE
+                    WHEN (vc.provider || ':' || vc.provider_asset_id) = ANY(v_reviewed_assets)
+                    THEN 1 ELSE 0
+                END AS cross_shot_asset_bucket,
+                CASE
                     WHEN vc.media_type=v_shot.preferred_media_type THEN 0
                     WHEN v_shot.preferred_media_type='diagram' AND vc.media_type='photo' THEN 1
                     ELSE 2
@@ -1115,6 +1122,7 @@ BEGIN
                     PARTITION BY provider
                     ORDER BY
                         review_bucket,
+                        cross_shot_asset_bucket,
                         query_bucket,
                         media_bucket,
                         relevance_score DESC,
@@ -1133,6 +1141,7 @@ BEGIN
                     ORDER BY
                         provider_candidate_rank,
                         review_bucket,
+                        cross_shot_asset_bucket,
                         query_bucket,
                         media_bucket,
                         relevance_score DESC,
@@ -1181,6 +1190,22 @@ BEGIN
                 v_shot.shot_key
                 USING ERRCODE='22023';
         END IF;
+
+        -- The final collector requires unique provider assets across shots.
+        -- Spend bounded Vision slots on unseen assets first when review quality
+        -- is otherwise equal; keep seen assets as fallback rather than banning them.
+        FOR v_candidate IN
+            SELECT value
+            FROM jsonb_array_elements(v_candidates)
+        LOOP
+            v_asset_key :=
+                NULLIF(v_candidate->>'provider','') || ':' ||
+                NULLIF(v_candidate->>'provider_asset_id','');
+            IF v_asset_key IS NOT NULL
+               AND NOT (v_asset_key = ANY(v_reviewed_assets)) THEN
+                v_reviewed_assets := array_append(v_reviewed_assets,v_asset_key);
+            END IF;
+        END LOOP;
 
         v_sets := v_sets || jsonb_build_array(
             jsonb_build_object(
