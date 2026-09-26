@@ -126,5 +126,27 @@ class DtwOrchestration(unittest.TestCase):
                     worker.run_local_alignment(Path("/exact.mp3"), "en", narration, fixture["scenes"], 14736, directory)
 
 
+
+
+class AlignmentNumberNormalization(unittest.TestCase):
+    def test_century_ordinals_match_uppercase_roman_asr_across_languages(self):
+        pairs = [
+            ("in the seventeenth century", "in the XVII century"),
+            ("w siedemnastym wieku", "w XVII wieku"),
+            ("в семнадцатом веке", "в XVII веке"),
+            ("у сімнадцятому столітті", "у XVII столітті"),
+        ]
+        for expected, asr in pairs:
+            self.assertEqual(
+                worker.normalize_alignment_text(expected),
+                worker.normalize_alignment_text(asr),
+            )
+
+    def test_single_english_i_is_not_treated_as_roman_one(self):
+        self.assertEqual(
+            worker.normalize_alignment_text("I work"),
+            "iwork",
+        )
+
 if __name__ == "__main__":
     unittest.main()

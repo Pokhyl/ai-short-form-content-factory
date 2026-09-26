@@ -151,6 +151,23 @@ ALIGNMENT_NUMBER_VALUES.update({
     "дев’яноста":90,"дев'яноста":90,
     "тисячі":1000,"тисячу":1000,
 })
+ALIGNMENT_ORDINAL_PREFIX_VALUES = {
+    # English 11th-20th
+    "eleventh":11,"twelfth":12,"thirteenth":13,"fourteenth":14,"fifteenth":15,
+    "sixteenth":16,"seventeenth":17,"eighteenth":18,"nineteenth":19,"twentieth":20,
+    # Polish inflected ordinal stems
+    "jedenast":11,"dwunast":12,"trzynast":13,"czternast":14,"piętnast":15,
+    "pietnast":15,"szesnast":16,"siedemnast":17,"osiemnast":18,
+    "dziewiętnast":19,"dziewietnast":19,"dwudziest":20,
+    # Russian inflected ordinal stems
+    "одиннадцат":11,"двенадцат":12,"тринадцат":13,"четырнадцат":14,
+    "пятнадцат":15,"шестнадцат":16,"семнадцат":17,"восемнадцат":18,
+    "девятнадцат":19,"двадцат":20,
+    # Ukrainian inflected ordinal stems
+    "одинадцят":11,"дванадцят":12,"тринадцят":13,"чотирнадцят":14,
+    "пятнадцят":15,"шістнадцят":16,"сімнадцят":17,"вісімнадцят":18,
+    "девятнадцят":19,"двадцят":20,
+}
 _MODEL_SHA256_CACHE = None
 
 
@@ -245,8 +262,38 @@ def whisper_model_sha256():
     return digest
 
 
+def _roman_numeral_to_int(token):
+    values = {"I":1,"V":5,"X":10,"L":50,"C":100,"D":500,"M":1000}
+    total = 0
+    previous = 0
+    for char in reversed(token):
+        value = values[char]
+        if value < previous:
+            total -= value
+        else:
+            total += value
+            previous = value
+    return total
+
+
+def _replace_alignment_roman_numerals(value):
+    text = str(value or "")
+    def replace(match):
+        token = match.group(0)
+        value = _roman_numeral_to_int(token)
+        if value <= 0 or value > 3999:
+            return token
+        return str(value)
+    # Require uppercase and at least two Roman characters so English pronoun
+    # "I" and ordinary lowercase words are never interpreted as numbers.
+    return re.sub(r"(?<![\w])(?:[IVXLCDM]{2,})(?![\w])", replace, text)
+
+
 def _alignment_lexemes(value):
-    normalized = unicodedata.normalize("NFKC", str(value or "")).casefold()
+    normalized = unicodedata.normalize(
+        "NFKC",
+        _replace_alignment_roman_numerals(value),
+    ).casefold()
     # Whisper may preserve an apostrophe in the segment transcript while
     # dropping it at token boundaries (for example Ukrainian в'язкою).
     # Apostrophes are punctuation, not lexical content, so remove common
@@ -281,6 +328,19 @@ def _canonical_alignment_lexemes(lexemes):
         token = lexemes[index]
         if token.isdigit():
             out.append(str(int(token)))
+            index += 1
+            continue
+
+        ordinal_value = next(
+            (
+                value
+                for prefix, value in ALIGNMENT_ORDINAL_PREFIX_VALUES.items()
+                if token.startswith(prefix)
+            ),
+            None,
+        )
+        if ordinal_value is not None:
+            out.append(str(ordinal_value))
             index += 1
             continue
 
