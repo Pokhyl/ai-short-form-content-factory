@@ -85,7 +85,15 @@ test('9660 compliance builder reports the exact failed provider counts and hard 
   assert.match(out.user_message,/adjacent scene boundaries MAY move/);
   assert.match(out.system_message,/expand the SAME already-stated proposition/);
   assert.match(out.user_message,/rewrite the same proposition naturally/);
-  assert.match(out.user_message,/never reach the count with intensifiers, decorative adjectives\/adverbs, or redundant closing phrases/);
+  assert.match(out.user_message,/never reach the count with intensifiers, decorative adjectives\/adverbs, generic qualifiers, or redundant closing phrases/);
+  assert.match(out.system_message,/ONLY semantic source/);
+  assert.match(out.user_message,/output only the narration_words JSON object/);
+  assert.doesNotMatch(out.system_message,/key named narrations/);
+  assert.doesNotMatch(out.user_message,/return exactly .* strings/);
+  assert.doesNotMatch(out.user_message,/five strings/);
+  assert.doesNotMatch(out.user_message,/CURRENT SEMANTIC-VALID FULL NARRATION/);
+  assert.doesNotMatch(out.user_message,/current_narration/);
+  assert.doesNotMatch(out.user_message,/previous_attempt"/);
 });
 
 test('9660 compliance validator accepts a semantic-valid exact 29-word repair',()=>{
