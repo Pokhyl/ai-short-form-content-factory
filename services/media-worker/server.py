@@ -300,6 +300,19 @@ def _canonical_alignment_lexemes(lexemes):
 def normalize_alignment_text(value):
     return "".join(_canonical_alignment_lexemes(_alignment_lexemes(value)))
 
+
+def normalize_recognized_speech(value):
+    """Normalize ASR speech while excluding bracketed non-speech annotations.
+
+    Whisper can emit localized markers such as [music] or [muzyka] on one
+    decoding pass but omit them on another pass over the exact same audio.
+    These annotations are not recognized spoken words and must not make the
+    DTW timing retry look like a lexical transcript change.
+    """
+    text = str(value or "")
+    text = re.sub(r"\[[^\[\]\n]{1,80}\]", " ", text)
+    return normalize_alignment_text(text)
+
 def _lexical_tokens(whisper_payload):
     raw_rows = []
     pending_boundary = True
@@ -743,7 +756,7 @@ def run_local_alignment(
         with dtw_base.with_suffix(".json").open("r", encoding="utf-8") as handle:
             dtw_payload = json.load(handle)
         def transcript_of(value):
-            return normalize_alignment_text("".join(
+            return normalize_recognized_speech("".join(
                 str(row.get("text") or "")
                 for row in value.get("transcription") or []
             ))

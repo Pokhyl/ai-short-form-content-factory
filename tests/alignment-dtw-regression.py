@@ -54,6 +54,36 @@ class DtwOrchestration(unittest.TestCase):
             self.assertEqual(result["terminal_overrun_ms"], 0)
 
 
+
+
+    def test_retry_ignores_non_speech_annotation_only_difference(self):
+        import tempfile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            standard = json.loads(json.dumps(fixture["whisper"]))
+            standard["transcription"].append({
+                "text": " [music]",
+                "tokens": [
+                    {"text": " [", "offsets": {"from": 16200, "to": 16200}},
+                    {"text": "music", "offsets": {"from": 16200, "to": 16300}},
+                    {"text": "]", "offsets": {"from": 16300, "to": 16350}},
+                ],
+            })
+            (directory / "whisper.json").write_text(json.dumps(standard))
+            def fake_run(command, **kwargs):
+                if "-dtw" in command:
+                    (directory / "whisper-dtw.json").write_text(json.dumps(fixture["dtw_whisper"]))
+            with patch.object(worker, "WHISPER_CLI", Path(__file__)), patch.object(worker, "whisper_model_sha256"), patch.object(worker.subprocess, "run", side_effect=fake_run):
+                payload, result = worker.run_local_alignment(Path("/exact.mp3"), "en", narration, fixture["scenes"], 14736, directory)
+            self.assertEqual(result["timing_source"], "dtw_emission_intervals")
+            self.assertIn("standard_pass", payload)
+
+    def test_retry_still_rejects_real_lexical_change_after_annotation_normalization(self):
+        left = worker.normalize_recognized_speech("The pump moves water. [music]")
+        right = worker.normalize_recognized_speech("The turbine moves water.")
+        self.assertNotEqual(left, right)
+
     def test_valid_default_alignment_does_not_retry(self):
         import tempfile
         from unittest.mock import patch
