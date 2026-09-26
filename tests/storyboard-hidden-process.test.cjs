@@ -107,7 +107,7 @@ test('generation and storyboard repair prompts explicitly forbid hidden-process 
 
 test('final canonicalizer reanchors queries to the normalized primary subject',()=>{
   const src=nodeCode('Canonicalize Final Storyboard');
-  assert.match(src,/const mustShow = normalizeMustShowAnchors\(rawMustShow, visualIntent\)/);
+  assert.match(src,/const mustShow = normalizeMustShowAnchors\(rawMustShow, visualIntent, shotId\)/);
   assert.match(src,/return primary;/);
   assert.match(src,/shot\.queries_en = queries;/);
 });

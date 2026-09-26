@@ -399,3 +399,77 @@ test('photo storyboard guard allows diagrams only when shown on a physical displ
     assert.match(code,/hasRepresentationalContent && !representedOnPhysicalSurface/,name);
   }
 });
+
+
+test('photo-only visual contract rejects hidden compact-object interiors without an explicit visible view',()=>{
+  const fixture=JSON.parse(
+    fs.readFileSync('tests/fixtures/m5-9537-scene-segments.json')
+  );
+  const parsed=JSON.parse(
+    fixture.response.body.candidates[0].content.parts[0].text
+  );
+  parsed.scenes[1].shots[0]={
+    shot_id:'S2-A',
+    visual_intent:'water turbine interior showing runner blades and shaft',
+    must_show:['water turbine'],
+    must_not_show:['solar panel'],
+    queries_en:[
+      'water turbine runner blades',
+      'hydroelectric water turbine',
+      'water turbine',
+    ],
+    preferred_media_type:'photo',
+  };
+  fixture.response.body.candidates[0].content.parts[0].text=
+    JSON.stringify(parsed);
+
+  assert.throws(
+    ()=>run9537(fixture),
+    /photo visual_intent requests hidden\/internal detail without an explicit open, cutaway, exposed, transparent, or disassembled view/
+  );
+});
+
+test('photo-only visual contract allows explicit cutaway and ordinary spatial inside context',()=>{
+  const fixture=JSON.parse(
+    fs.readFileSync('tests/fixtures/m5-9537-scene-segments.json')
+  );
+  const parsed=JSON.parse(
+    fixture.response.body.candidates[0].content.parts[0].text
+  );
+  parsed.scenes[1].shots[0]={
+    shot_id:'S2-A',
+    visual_intent:'water turbine cutaway showing runner blades and shaft',
+    must_show:['water turbine'],
+    must_not_show:['solar panel'],
+    queries_en:[
+      'water turbine runner blades',
+      'hydroelectric water turbine',
+      'water turbine',
+    ],
+    preferred_media_type:'photo',
+  };
+  fixture.response.body.candidates[0].content.parts[0].text=
+    JSON.stringify(parsed);
+
+  const out=run9537(fixture);
+  assert.equal(out.scene_count,5);
+  assert.match(
+    out.storyboard.scenes[2].shots[0].visual_intent,
+    /inside a power station hall/
+  );
+});
+
+test('all M5 visual acceptance paths enforce the hidden-internal photo retrievability guard',()=>{
+  for(const name of [
+    'Validate Storyboard',
+    'Validate Repaired Storyboard',
+    'Validate Repaired Storyboard 2',
+    'Canonicalize Final Storyboard',
+    'Validate Narration Language Repair',
+  ]){
+    const code=byName[name].parameters.jsCode;
+    assert.match(code,/requestsHiddenInternalView/,name);
+    assert.match(code,/explicitlyInsidePrimary/,name);
+    assert.match(code,/photo visual_intent requests hidden\/internal detail/,name);
+  }
+});

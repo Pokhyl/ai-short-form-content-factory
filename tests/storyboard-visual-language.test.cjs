@@ -293,7 +293,7 @@ test('all bounded storyboard validators normalize redundant secondary anchors',(
   ]) {
     const code=byName[name].parameters.jsCode;
     assert.match(code,/MUST_SHOW_SECONDARY_GUARD_START/,name);
-    assert.match(code,/normalizeMustShowAnchors\(rawMustShow, visualIntent\)/,name);
+    assert.match(code,/normalizeMustShowAnchors\(rawMustShow, visualIntent, shotId\)/,name);
   }
 });
 
