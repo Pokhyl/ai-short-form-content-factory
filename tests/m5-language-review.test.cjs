@@ -96,6 +96,46 @@ test('live 10042 natural repair replay preserves meaning and passes second revie
 });
 
 
+
+
+test('retry spoken-language QA treats punctuation-only grammar and filler as advisory',()=>{
+ const retryCtx={
+  source,
+  language_code:'uk',
+  narration:'Барометр це прилад для вимірювання атмосферного тиску.',
+  review_quotes:['Барометр це прилад для вимірювання атмосферного тиску.'],
+ };
+ const runRetry=(issues)=>new Function('$','$json',n['Validate Narration Language Review Retry'].parameters.jsCode)(
+  ()=>({first:()=>({json:retryCtx})}),
+  response({language:'uk',issues})
+ ).json;
+ const out=runRetry([
+  {quote:retryCtx.review_quotes[0],category:'grammar',explanation:'Пропущено кома перед підйменником або зворотом, оскільки відсутня необхідна розділова вказівка.'},
+  {quote:retryCtx.review_quotes[0],category:'filler',explanation:'Стилістичне зауваження без зміни вимови.'},
+ ]);
+ assert.equal(out.language_review.passed,true);
+ assert.equal(out.language_review.blocking_issues.length,0);
+ assert.equal(out.language_review.advisory_issues.length,2);
+});
+
+test('retry spoken-language QA still blocks audible grammar, wrong language and meaning change',()=>{
+ const retryCtx={
+  source,
+  language_code:'uk',
+  narration:'Поточний текст.',
+  review_quotes:['Поточний текст.'],
+ };
+ const validate=(issue)=>new Function('$','$json',n['Validate Narration Language Review Retry'].parameters.jsCode)(
+  ()=>({first:()=>({json:retryCtx})}),
+  response({language:'uk',issues:[issue]})
+ );
+ for(const issue of [
+  {quote:'Поточний текст.',category:'wrong_language',explanation:'Foreign lexical form.'},
+  {quote:'Поточний текст.',category:'meaning_change',explanation:'Meaning was changed.'},
+  {quote:'Поточний текст.',category:'grammar',explanation:'Incorrect verb agreement changes the spoken sentence.'},
+ ]) assert.throws(()=>validate(issue),/M5_LANGUAGE_QA_FAILED/);
+});
+
 test('final spoken-language QA treats punctuation-only grammar and filler as advisory',()=>{
  const finalCtx={
   source,
