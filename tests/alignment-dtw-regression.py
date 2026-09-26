@@ -79,6 +79,20 @@ class DtwOrchestration(unittest.TestCase):
             self.assertEqual(result["timing_source"], "dtw_emission_intervals")
             self.assertIn("standard_pass", payload)
 
+
+
+    def test_retry_allows_tiny_same_audio_decoder_variance(self):
+        self.assertTrue(worker.recognized_transcripts_consistent(
+            "Сосуд Дьюара сохраняет температуру. [музыка]",
+            "Сосуд диор сохраняет температуру.",
+        ))
+
+    def test_retry_rejects_material_transcript_change(self):
+        self.assertFalse(worker.recognized_transcripts_consistent(
+            "The pump moves water through the pipe.",
+            "The turbine invents extra words in the scene.",
+        ))
+
     def test_retry_still_rejects_real_lexical_change_after_annotation_normalization(self):
         left = worker.normalize_recognized_speech("The pump moves water. [music]")
         right = worker.normalize_recognized_speech("The turbine moves water.")

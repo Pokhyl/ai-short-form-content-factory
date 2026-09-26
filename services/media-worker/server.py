@@ -313,6 +313,33 @@ def normalize_recognized_speech(value):
     text = re.sub(r"\[[^\[\]\n]{1,80}\]", " ", text)
     return normalize_alignment_text(text)
 
+
+def recognized_transcripts_consistent(left, right):
+    """Allow one localized ASR spelling variant on the exact same audio.
+
+    DTW can decode one spoken word differently (typically a proper noun)
+    while preserving the same lexical sequence. Insertions, deletions, or
+    multiple changed lexical items remain rejected.
+    """
+    def lexemes(value):
+        text = str(value or "")
+        text = re.sub(r"\[[^\[\]\n]{1,80}\]", " ", text)
+        return _canonical_alignment_lexemes(_alignment_lexemes(text))
+
+    left_lexemes = lexemes(left)
+    right_lexemes = lexemes(right)
+    if not left_lexemes or not right_lexemes:
+        return False
+    if left_lexemes == right_lexemes:
+        return True
+    if len(left_lexemes) != len(right_lexemes):
+        return False
+    mismatches = sum(
+        left_token != right_token
+        for left_token, right_token in zip(left_lexemes, right_lexemes)
+    )
+    return mismatches <= 1
+
 def _lexical_tokens(whisper_payload):
     raw_rows = []
     pending_boundary = True
@@ -756,11 +783,14 @@ def run_local_alignment(
         with dtw_base.with_suffix(".json").open("r", encoding="utf-8") as handle:
             dtw_payload = json.load(handle)
         def transcript_of(value):
-            return normalize_recognized_speech("".join(
+            return "".join(
                 str(row.get("text") or "")
                 for row in value.get("transcription") or []
-            ))
-        if transcript_of(dtw_payload) != transcript_of(standard_payload):
+            )
+        if not recognized_transcripts_consistent(
+            transcript_of(dtw_payload),
+            transcript_of(standard_payload),
+        ):
             raise ValueError("DTW retry changed the recognized transcript")
         whisper_payload = _dtw_timed_payload(dtw_payload, audio_duration_ms)
         summary = _build_scene_timings(
