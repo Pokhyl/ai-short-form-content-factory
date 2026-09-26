@@ -111,11 +111,12 @@ test('retry spoken-language QA treats punctuation-only grammar and filler as adv
  ).json;
  const out=runRetry([
   {quote:retryCtx.review_quotes[0],category:'grammar',explanation:'Пропущено кома перед підйменником або зворотом, оскільки відсутня необхідна розділова вказівка.'},
+  {quote:retryCtx.review_quotes[0],category:'grammar',explanation:"Дієприслівниковий зворот не виділено комою."},
   {quote:retryCtx.review_quotes[0],category:'filler',explanation:'Стилістичне зауваження без зміни вимови.'},
  ]);
  assert.equal(out.language_review.passed,true);
  assert.equal(out.language_review.blocking_issues.length,0);
- assert.equal(out.language_review.advisory_issues.length,2);
+ assert.equal(out.language_review.advisory_issues.length,3);
 });
 
 test('retry spoken-language QA still blocks audible grammar, wrong language and meaning change',()=>{
