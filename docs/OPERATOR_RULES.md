@@ -23,6 +23,14 @@
 - After any timeout or interrupted call, inspect the actual system state in a new short call before retrying or continuing.
 - Never repeat the same failed long call blindly.
 - Report the concrete last verified state rather than saying that work is still running in the background.
+- Anti-hang pacing is mandatory: make at most one tool call at a time, then immediately send a short user-visible result before starting the next call.
+- Before every tool call, state in one short sentence exactly what is being checked or changed.
+- Default timeout for reads, status checks, searches, git state, and other control-plane calls is 10 seconds or less unless the operation genuinely requires more.
+- Do not issue a second tool call immediately after a result without first reporting that result to the user.
+- Never batch multiple independent inspections into one long opaque call just to reduce message count.
+- Keep tool output narrowly scoped; prefer exact files, exact line ranges, exact IDs, and small result sets.
+- If a long operation is unavoidable, start it separately, report that it was started, and inspect its actual state with a later short call instead of blocking the chat.
+- If the user sends a new message while work is in progress, answer that message before making any further tool call.
 
 
 ## Production smoke discipline
