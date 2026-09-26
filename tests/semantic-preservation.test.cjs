@@ -257,7 +257,7 @@ test('word-count targets remain guidance until measured TTS proves final correct
   );
   assert.match(
     byName['Validate Final Measured Word Count Retry'].parameters.jsCode,
-    /allowedNearDelta = Math\.max\(2, Math\.ceil\(targetWords \* 0\.05\)\)/
+    /allowedNearDelta = Math\.max\(2, Math\.ceil\(targetWords \* 0\.08\)\)/
   );
   assert.match(
     byName['Validate Final Measured Word Count Retry'].parameters.jsCode,
@@ -269,7 +269,7 @@ test('word-count targets remain guidance until measured TTS proves final correct
 test('9137 regression: a far nearest hybrid still cannot reach Probe 5', () => {
   const code=byName['Validate Final Measured Word Count Retry'].parameters.jsCode;
   assert.match(code,/const exact = states\.get\(targetWords\)/);
-  assert.match(code,/allowedNearDelta = Math\.max\(2, Math\.ceil\(targetWords \* 0\.05\)\)/);
+  assert.match(code,/allowedNearDelta = Math\.max\(2, Math\.ceil\(targetWords \* 0\.08\)\)/);
   assert.match(code,/Math\.abs\(nearestTotal - targetWords\) > allowedNearDelta/);
   assert.match(code,/final measured word-count retry too far from target before TTS/);
   assert.match(code,/narrations = nearest\.lines;/);
@@ -409,7 +409,7 @@ test('final timing expansion prompts forbid factual padding and prefer grammar-o
     'Build Final Measured Word Count Compliance Retry',
   ]) {
     const js=byName[name].parameters.jsCode;
-    assert.match(js,/grammatical glue\/function words|grammar-only connector\/function words/,name);
+    assert.match(js,/grammatical glue\/function words|grammar-only connector\/function words|grammatical restructuring, articles, prepositions, auxiliaries/,name);
     assert.match(
       js,
       /invent descriptive properties, materials, quantities|inventing adjectives, materials, quantities/,

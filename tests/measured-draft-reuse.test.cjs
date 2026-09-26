@@ -57,3 +57,12 @@ test('9516 regression: semantic-invalid base option cannot re-enter final measur
    f['Build Final Measured Word Count Retry'].base_storyboard.scenes[2].narration
  );
 });
+
+
+test('10457 regression: 41-word semantic candidate is inside the 45-word Probe 5 window',()=>{
+ const target=45,current=41;
+ const allowed=Math.max(2,Math.ceil(target*0.08));
+ assert.equal(allowed,4);
+ assert.ok(Math.abs(current-target)<=allowed);
+ assert.match(code,/allowedNearDelta = Math\.max\(2, Math\.ceil\(targetWords \* 0\.08\)\)/);
+});

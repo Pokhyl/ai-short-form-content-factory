@@ -30,7 +30,7 @@ test('failed three-sample stability from origin 4 goes to measured correction, n
 
 test('final measured retry uses bounded nearest semantic hybrid before real probe 5',()=>{
   const code=byName['Validate Final Measured Word Count Retry'].parameters.jsCode;
-  assert.match(code,/allowedNearDelta = Math\.max\(2, Math\.ceil\(targetWords \* 0\.05\)\)/);
+  assert.match(code,/allowedNearDelta = Math\.max\(2, Math\.ceil\(targetWords \* 0\.08\)\)/);
   assert.match(code,/narrations = nearest\.lines/);
   assert.match(code,/Probe 5 \+ stability remains the actual timing gate/);
   assert.doesNotMatch(code,/final measured exact-word retry missed required total before TTS/);

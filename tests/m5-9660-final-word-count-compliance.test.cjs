@@ -82,9 +82,9 @@ test('9660 compliance builder reports the exact failed provider counts and hard 
     out.user_message,
     /REQUIRED PER-SCENE WORD COUNTS \(HARD\): \[10,6,4,4,5\]/
   );
-  assert.match(out.user_message,/DO NOT redistribute words between scenes/);
-  assert.match(out.system_message,/grammar-only connector\/function words/);
-  assert.match(out.user_message,/add only grammatical glue\/function words first/);
+  assert.match(out.user_message,/adjacent scene boundaries MAY move/);
+  assert.match(out.system_message,/grammatical restructuring, articles, prepositions, auxiliaries/);
+  assert.match(out.user_message,/articles, prepositions, auxiliaries, conjunctions/);
   assert.match(out.user_message,/never reach the count by inventing adjectives, materials, quantities, intensifiers, locations or new objects/);
 });
 
