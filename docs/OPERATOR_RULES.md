@@ -33,3 +33,8 @@
 - Do not launch the next production smoke until the current blocker has been closed by focused verification and the relevant full test suite, and the exact changed workflow/service has been deployed and its active version verified.
 - Never run a blind battery of production smokes hoping that a different input will pass. One smoke at a time; finish the exact current job and its blocker before creating the next one.
 - Do not weaken validation gates merely to make the next smoke pass. Improve generation, retrieval, normalization, or repair logic while preserving the acceptance contract.
+
+## Start-of-work check
+
+- Before starting any technical work on this project, read `docs/OPERATOR_RULES.md` first and follow it as the active operating contract.
+- Before making changes, verify the current branch, HEAD, and `git status` so concurrent or uncommitted work is not overwritten.
