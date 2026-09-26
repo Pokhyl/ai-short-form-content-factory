@@ -29,9 +29,17 @@ for(const suffix of ['Retry','Compliance Retry']){
   const words=Object.fromEntries(original.map((s,i)=>['S'+(i+1),s.split(' ')]));
   const out=run(validator,response({narration_words:words}),values);
   assert.equal(out.storyboard.narration,original.join(' '));
-  for(const bad of ['two words','...',null]){
+  for(const bad of ['two words',null]){
    const copy=structuredClone(words);copy.S1[0]=bad;
    assert.throws(()=>run(validator,response({narration_words:copy}),values),/M5_WORD_SLOT_CONTRACT/);
+  }
+  const punctuation=structuredClone(words);punctuation.S1[1]='—';
+  if(suffix==='Compliance Retry'){
+   const recovered=run(validator,response({narration_words:punctuation}),values);
+   assert.equal(recovered.storyboard.narration,original.join(' '));
+   assert.equal(recovered.deterministic_word_hybrid_used,true);
+  } else {
+   assert.throws(()=>run(validator,response({narration_words:punctuation}),values),/M5_WORD_SLOT_CONTRACT/);
   }
   const short=structuredClone(words);short.S1.pop();
   assert.throws(()=>run(validator,response({narration_words:short}),values),/M5_WORD_SLOT_CONTRACT/);
