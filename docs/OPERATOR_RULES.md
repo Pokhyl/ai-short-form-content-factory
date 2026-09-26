@@ -23,3 +23,13 @@
 - After any timeout or interrupted call, inspect the actual system state in a new short call before retrying or continuing.
 - Never repeat the same failed long call blindly.
 - Report the concrete last verified state rather than saying that work is still running in the background.
+
+
+## Production smoke discipline
+
+- A failed production job is immutable. Never rerun the same failed job ID.
+- When a production smoke exposes a blocker, do not immediately launch another smoke after a narrow one-off patch.
+- First reproduce and understand the exact blocker offline or from the failed execution data, implement a generic fix, and add a regression test that covers the failure class rather than only the observed topic/job.
+- Do not launch the next production smoke until the current blocker has been closed by focused verification and the relevant full test suite, and the exact changed workflow/service has been deployed and its active version verified.
+- Never run a blind battery of production smokes hoping that a different input will pass. One smoke at a time; finish the exact current job and its blocker before creating the next one.
+- Do not weaken validation gates merely to make the next smoke pass. Improve generation, retrieval, normalization, or repair logic while preserving the acceptance contract.
