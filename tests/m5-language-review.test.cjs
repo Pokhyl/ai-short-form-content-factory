@@ -86,6 +86,31 @@ test('unfinished dependent phrase is routed to bounded storyboard repair in all 
  assert.equal(w.connections['Validate Storyboard'].main[1][0].node,'Build Storyboard Repair');
 });
 
+test('11270 regression: a single failed language repair gets one bounded retry and retains strict validation',()=>{
+ const c=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-language-repair-context.json'));
+ const original=Object.fromEntries(c.base_storyboard.scenes.filter(scene=>c.repair_scene_ids.includes(scene.scene_id)).map(scene=>[scene.scene_id,scene.narration]));
+ const bad={narrations:{...original,S8:'Кожна ячейka має транзистор конденсатор.'}};
+ const provider=response(bad);
+ const base={...c,user_message:'Original repair request',response_json_schema:c.response_json_schema};
+ const error={error:{message:'Ukrainian narration contains Russian lexical/spelling forms'}};
+ let retry;
+ const $=name=>({first:()=>({json:({'Build Narration Language Repair':base,'Repair Narration Language':provider,'Build Script Prompt':c,'Build Narration Language Repair Retry':retry})[name]})});
+ retry=new Function('$','$json',n['Build Narration Language Repair Retry'].parameters.jsCode)($,error).json;
+ assert.deepEqual(retry.repair_scene_ids,c.repair_scene_ids);
+ assert.match(retry.user_message,/ячейka/);
+ assert.match(retry.user_message,/Ukrainian narration contains Russian lexical\/spelling forms/);
+ assert.match(retry.user_message,/noun\/adjective\/verb agreement/);
+ const validate=new Function('$','$json',n['Validate Narration Language Repair Retry'].parameters.jsCode);
+ assert.throws(()=>validate($,provider),/Ukrainian narration contains Russian lexical\/spelling forms/);
+ const accepted=validate($,response({narrations:original})).json;
+ assert.equal(accepted.storyboard.narration,c.base_storyboard.narration);
+ assert.deepEqual(n['Repair Narration Language Retry'].credentials,n['Repair Narration Language'].credentials);
+ assert.deepEqual(n['Repair Narration Language Retry'].parameters,n['Repair Narration Language'].parameters);
+ assert.equal(w.connections['Validate Narration Language Repair'].main[1][0].node,'Build Narration Language Repair Retry');
+ assert.equal(w.connections['Validate Narration Language Repair Retry'].main[1][0].node,'Prepare Script Failure');
+ assert.equal(w.connections['Validate Narration Language Repair Retry'].main[0][0].node,'Build Narration Language Review Retry');
+});
+
 test('targeted language repair preserves untouched scenes without forcing exact word slots',()=>{
  const c=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-language-repair-context.json'));
  const narrations=Object.fromEntries(c.base_storyboard.scenes.filter(s=>c.repair_scene_ids.includes(s.scene_id)).map(s=>[s.scene_id,s.narration]));
