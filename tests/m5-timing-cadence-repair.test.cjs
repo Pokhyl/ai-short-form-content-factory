@@ -129,3 +129,16 @@ test('rejected first timing rewrite gets one bounded retry from original narrati
   assert.throws(()=>new Function('$','$json',code('Build Timing Repair 2'))($,{error:'Gemini provider unavailable'}),/outside terminal-scene word bound/);
   assert.throws(()=>new Function('$','$json',code('Build Timing Repair 2'))($,{error:'semantic preservation violation'}),/outside terminal-scene word bound/);
 });
+
+
+test('11226 timing replies preserve every spoken word when repairing a short final visual cut',()=>{
+ const fixture=JSON.parse(fs.readFileSync('tests/fixtures/m5-11226-timing-boundary.json'));
+ for(const [name,provider] of [['Validate Timing Repair','Repair Storyboard Timing'],['Validate Timing Repair 2','Repair Storyboard Timing 2']]){
+  const candidate=JSON.parse(fixture[provider].body.candidates[0].content.parts[0].text);
+  const $=key=>({first:()=>({json:fixture[key]})});
+  const result=new Function('$','$json',code(name))($,fixture[provider]).json;
+  assert.equal(result.storyboard.narration,candidate.narration);
+  assert.equal(result.storyboard.scenes.map(scene=>scene.narration).join(' '),candidate.narration);
+  assert.ok(result.storyboard.scenes[8].narration.split(/\s+/u).length>=6);
+ }
+});

@@ -1,0 +1,381 @@
+{
+  "Build Script Prompt": {
+    "script_run_id": "33776c5c-8251-4af9-b0d0-10e287700d98",
+    "model": "gemini-3.5-flash-lite",
+    "language_code": "uk",
+    "target_duration_seconds": 30,
+    "word_min": 18,
+    "word_max": 72,
+    "target_scenes": 9,
+    "target_shots": 9,
+    "evidence_map": {
+      "E1": "9df1f574-76f2-406a-a744-8124af07ec79",
+      "E2": "72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157",
+      "E3": "e5616566-406c-441c-8689-eb3ab79a3552",
+      "E4": "c63e4b4f-1e27-40a4-8719-5dbb75db4186",
+      "E5": "a69c68d8-f1ed-4b26-836c-f4d6ffd3138f",
+      "E6": "26b6cd90-17d6-4e99-b790-79ae5d14c19c",
+      "E7": "148cb4ac-f784-4003-9854-387c7da166d8",
+      "E8": "01ac9caf-624e-4808-8b0a-51351624a559"
+    }
+  },
+  "Normalize Timing Probe": {
+    "storyboard": {
+      "narration": "Велосипедний насос є стандартним механічним інструментом. Він складається з циліндра та рухомого поршня. Під час ходу вгору поршень всмоктує повітря. А під час низхідного ходу витісняє його. Штуцер надійно з'єднується з вентилем на колесі. Існують різні типи клапанів як Presta чи Schrader. Стиснене повітря надходить у шинну камеру. Вбудований манометр допомагає контролювати точний тиск. Після накачування насос просто від'єднується.",
+      "scenes": [
+        {
+          "scene_id": "S1",
+          "narration": "Велосипедний насос є стандартним механічним інструментом.",
+          "evidence_ids": [
+            "E1",
+            "E3"
+          ],
+          "evidence_uuids": [
+            "9df1f574-76f2-406a-a744-8124af07ec79",
+            "e5616566-406c-441c-8689-eb3ab79a3552"
+          ],
+          "shots": [
+            {
+              "shot_id": "S1-A",
+              "visual_intent": "A bicycle pump resting on a surface",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "electric compressor"
+              ],
+              "queries_en": [
+                "bicycle pump device",
+                "manual bicycle pump tool",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S2",
+          "narration": "Він складається з циліндра та рухомого поршня.",
+          "evidence_ids": [
+            "E2",
+            "E3"
+          ],
+          "evidence_uuids": [
+            "72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157",
+            "e5616566-406c-441c-8689-eb3ab79a3552"
+          ],
+          "shots": [
+            {
+              "shot_id": "S2-A",
+              "visual_intent": "A bicycle pump showing its cylinder body and handle",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "car tire"
+              ],
+              "queries_en": [
+                "bicycle pump cylinder",
+                "hand bicycle pump mechanism",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S3",
+          "narration": "Під час ходу вгору поршень всмоктує повітря.",
+          "evidence_ids": [
+            "E2",
+            "E3"
+          ],
+          "evidence_uuids": [
+            "72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157",
+            "e5616566-406c-441c-8689-eb3ab79a3552"
+          ],
+          "shots": [
+            {
+              "shot_id": "S3-A",
+              "visual_intent": "A close-up of a bicycle pump being pulled upward",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "inflated ball"
+              ],
+              "queries_en": [
+                "bicycle pump handle up",
+                "manual bicycle pump operation",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S4",
+          "narration": "А під час низхідного ходу витісняє його.",
+          "evidence_ids": [
+            "E2",
+            "E3"
+          ],
+          "evidence_uuids": [
+            "72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157",
+            "e5616566-406c-441c-8689-eb3ab79a3552"
+          ],
+          "shots": [
+            {
+              "shot_id": "S4-A",
+              "visual_intent": "A bicycle pump handle being pushed downward",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "open valve"
+              ],
+              "queries_en": [
+                "bicycle pump stroke down",
+                "compressing bicycle pump",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S5",
+          "narration": "Штуцер надійно з'єднується з вентилем на колесі.",
+          "evidence_ids": [
+            "E1",
+            "E2"
+          ],
+          "evidence_uuids": [
+            "9df1f574-76f2-406a-a744-8124af07ec79",
+            "72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157"
+          ],
+          "shots": [
+            {
+              "shot_id": "S5-A",
+              "visual_intent": "A bicycle pump nozzle connected to a tire valve",
+              "must_show": [
+                "bicycle pump",
+                "tire valve"
+              ],
+              "must_not_show": [
+                "car engine"
+              ],
+              "queries_en": [
+                "bicycle pump valve connection",
+                "pump nozzle on tire valve",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S6",
+          "narration": "Існують різні типи клапанів як Presta чи Schrader.",
+          "evidence_ids": [
+            "E3",
+            "E4"
+          ],
+          "evidence_uuids": [
+            "e5616566-406c-441c-8689-eb3ab79a3552",
+            "c63e4b4f-1e27-40a4-8719-5dbb75db4186"
+          ],
+          "shots": [
+            {
+              "shot_id": "S6-A",
+              "visual_intent": "A bicycle tire valve representing Presta and Schrader types",
+              "must_show": [
+                "tire valve"
+              ],
+              "must_not_show": [
+                "flat tire"
+              ],
+              "queries_en": [
+                "bicycle tire valve types",
+                "Presta and Schrader valves tire valve",
+                "tire valve"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S7",
+          "narration": "Стиснене повітря надходить у шинну камеру.",
+          "evidence_ids": [
+            "E2",
+            "E3"
+          ],
+          "evidence_uuids": [
+            "72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157",
+            "e5616566-406c-441c-8689-eb3ab79a3552"
+          ],
+          "shots": [
+            {
+              "shot_id": "S7-A",
+              "visual_intent": "A bicycle tire being inflated with a pump hose attached",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "empty road"
+              ],
+              "queries_en": [
+                "inflating bicycle tire",
+                "bicycle pump hose connected to wheel",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S8",
+          "narration": "Вбудований манометр допомагає контролювати точний",
+          "evidence_ids": [
+            "E2",
+            "E3"
+          ],
+          "evidence_uuids": [
+            "72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157",
+            "e5616566-406c-441c-8689-eb3ab79a3552"
+          ],
+          "shots": [
+            {
+              "shot_id": "S8-A",
+              "visual_intent": "A pressure gauge on a bicycle pump showing readings",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "digital clock"
+              ],
+              "queries_en": [
+                "bicycle pump pressure gauge",
+                "pump manometer dial",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S9",
+          "narration": "тиск. Після накачування насос просто від'єднується.",
+          "evidence_ids": [
+            "E1",
+            "E5"
+          ],
+          "evidence_uuids": [
+            "9df1f574-76f2-406a-a744-8124af07ec79",
+            "a69c68d8-f1ed-4b26-836c-f4d6ffd3138f"
+          ],
+          "shots": [
+            {
+              "shot_id": "S9-A",
+              "visual_intent": "A bicycle pump being disconnected from the wheel valve",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "damaged pump"
+              ],
+              "queries_en": [
+                "disconnecting bicycle pump",
+                "bicycle pump valve removal",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Build Timing Repair": {
+    "script_run_id": "33776c5c-8251-4af9-b0d0-10e287700d98",
+    "model": "gemini-3.5-flash-lite",
+    "prior_usage": {
+      "promptTokenCount": 732,
+      "candidatesTokenCount": 59,
+      "totalTokenCount": 791,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 732
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  },
+  "Build Timing Repair 2": {
+    "script_run_id": "33776c5c-8251-4af9-b0d0-10e287700d98",
+    "model": "gemini-3.5-flash-lite",
+    "prior_usage": {
+      "promptTokenCount": 6632,
+      "candidatesTokenCount": 1792,
+      "totalTokenCount": 8424
+    }
+  },
+  "Repair Storyboard Timing": {
+    "statusCode": 200,
+    "body": {
+      "candidates": [
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "{\"narration\":\"Велосипедний насос є стандартним інструментом. Він складається з циліндра та поршня. Під час ходу вгору поршень всмоктує повітря. А під час низхідного ходу витісняє його. Штуцер з'єднується з вентилем на колесі. Існують типи клапанів Presta чи Schrader. Стиснене повітря надходить у шинну камеру. Манометр допомагає контролювати точний тиск. Після накачування насос швидко від'єднується.\",\"scenes\":[{\"scene_id\":\"S1\",\"narration\":\"Велосипедний насос є стандартним інструментом.\",\"evidence_ids\":[\"E1\",\"E3\"],\"evidence_uuids\":[\"9df1f574-76f2-406a-a744-8124af07ec79\",\"e5616566-406c-441c-8689-eb3ab79a3552\"],\"shots\":[{\"shot_id\":\"S1-A\",\"visual_intent\":\"A bicycle pump resting on a surface\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"electric compressor\"],\"queries_en\":[\"bicycle pump device\",\"manual bicycle pump tool\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S2\",\"narration\":\"Він складається з циліндра та поршня.\",\"evidence_ids\":[\"E2\",\"E3\"],\"evidence_uuids\":[\"72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157\",\"e5616566-406c-441c-8689-eb3ab79a3552\"],\"shots\":[{\"shot_id\":\"S2-A\",\"visual_intent\":\"A bicycle pump showing its cylinder body and handle\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"car tire\"],\"queries_en\":[\"bicycle pump cylinder\",\"hand bicycle pump mechanism\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S3\",\"narration\":\"Під час ходу вгору поршень всмоктує повітря.\",\"evidence_ids\":[\"E2\",\"E3\"],\"evidence_uuids\":[\"72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157\",\"e5616566-406c-441c-8689-eb3ab79a3552\"],\"shots\":[{\"shot_id\":\"S3-A\",\"visual_intent\":\"A close-up of a bicycle pump being pulled upward\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"inflated ball\"],\"queries_en\":[\"bicycle pump handle up\",\"manual bicycle pump operation\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S4\",\"narration\":\"А під час низхідного ходу витісняє його.\",\"evidence_ids\":[\"E2\",\"E3\"],\"evidence_uuids\":[\"72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157\",\"e5616566-406c-441c-8689-eb3ab79a3552\"],\"shots\":[{\"shot_id\":\"S4-A\",\"visual_intent\":\"A bicycle pump handle being pushed downward\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"open valve\"],\"queries_en\":[\"bicycle pump stroke down\",\"compressing bicycle pump\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S5\",\"narration\":\"Штуцер з'єднується з вентилем на колесі.\",\"evidence_ids\":[\"E1\",\"E2\"],\"evidence_uuids\":[\"9df1f574-76f2-406a-a744-8124af07ec79\",\"72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157\"],\"shots\":[{\"shot_id\":\"S5-A\",\"visual_intent\":\"A bicycle pump nozzle connected to a tire valve\",\"must_show\":[\"bicycle pump\",\"tire valve\"],\"must_not_show\":[\"car engine\"],\"queries_en\":[\"bicycle pump valve connection\",\"pump nozzle on tire valve\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S6\",\"narration\":\"Існують типи клапанів Presta чи Schrader.\",\"evidence_ids\":[\"E3\",\"E4\"],\"evidence_uuids\":[\"e5616566-406c-441c-8689-eb3ab79a3552\",\"c63e4b4f-1e27-40a4-8719-5dbb75db4186\"],\"shots\":[{\"shot_id\":\"S6-A\",\"visual_intent\":\"A bicycle tire valve representing Presta and Schrader types\",\"must_show\":[\"tire valve\"],\"must_not_show\":[\"flat tire\"],\"queries_en\":[\"bicycle tire valve types\",\"Presta and Schrader valves tire valve\",\"tire valve\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S7\",\"narration\":\"Стиснене повітря надходить у шинну камеру.\",\"evidence_ids\":[\"E2\",\"E3\"],\"evidence_uuids\":[\"72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157\",\"e5616566-406c-441c-8689-eb3ab79a3552\"],\"shots\":[{\"shot_id\":\"S7-A\",\"visual_intent\":\"A bicycle tire being inflated with a pump hose attached\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"empty road\"],\"queries_en\":[\"inflating bicycle tire\",\"bicycle pump hose connected to wheel\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S8\",\"narration\":\"Манометр допомагає контролювати точний тиск.\",\"evidence_ids\":[\"E2\",\"E3\"],\"evidence_uuids\":[\"72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157\",\"e5616566-406c-441c-8689-eb3ab79a3552\"],\"shots\":[{\"shot_id\":\"S8-A\",\"visual_intent\":\"A pressure gauge on a bicycle pump showing readings\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"digital clock\"],\"queries_en\":[\"bicycle pump pressure gauge\",\"pump manometer dial\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S9\",\"narration\":\"Після накачування насос швидко від'єднується.\",\"evidence_ids\":[\"E1\",\"E5\"],\"evidence_uuids\":[\"9df1f574-76f2-406a-a744-8124af07ec79\",\"a69c68d8-f1ed-4b26-836c-f4d6ffd3138f\"],\"shots\":[{\"shot_id\":\"S9-A\",\"visual_intent\":\"A bicycle pump being disconnected from the wheel valve\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"damaged pump\"],\"queries_en\":[\"disconnecting bicycle pump\",\"bicycle pump valve removal\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]}]}"
+              }
+            ]
+          }
+        }
+      ],
+      "usageMetadata": {
+        "promptTokenCount": 5900,
+        "candidatesTokenCount": 1733,
+        "totalTokenCount": 7633,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5900
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    }
+  },
+  "Repair Storyboard Timing 2": {
+    "statusCode": 200,
+    "body": {
+      "candidates": [
+        {
+          "content": {
+            "parts": [
+              {
+                "text": "{\"narration\":\"Велосипедний насос є стандартним інструментом. Він складається з циліндра та поршня. Під час ходу вгору поршень всмоктує повітря. А під час низхідного ходу витісняє його. Штуцер з'єднується з вентилем на колесі. Існують типи клапанів Presta чи Schrader. Стиснене повітря надходить у камеру. Вбудований манометр контролює точний тиск. Після накачування насос легко від'єднується.\",\"scenes\":[{\"scene_id\":\"S1\",\"narration\":\"Велосипедний насос є стандартним інструментом.\",\"evidence_ids\":[\"E1\",\"E3\"],\"evidence_uuids\":[\"9df1f574-76f2-406a-a744-8124af07ec79\",\"e5616566-406c-441c-8689-eb3ab79a3552\"],\"shots\":[{\"shot_id\":\"S1-A\",\"visual_intent\":\"A bicycle pump resting on a surface\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"electric compressor\"],\"queries_en\":[\"bicycle pump device\",\"manual bicycle pump tool\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S2\",\"narration\":\"Він складається з циліндра та поршня.\",\"evidence_ids\":[\"E2\",\"E3\"],\"evidence_uuids\":[\"72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157\",\"e5616566-406c-441c-8689-eb3ab79a3552\"],\"shots\":[{\"shot_id\":\"S2-A\",\"visual_intent\":\"A bicycle pump showing its cylinder body and handle\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"car tire\"],\"queries_en\":[\"bicycle pump cylinder\",\"hand bicycle pump mechanism\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S3\",\"narration\":\"Під час ходу вгору поршень всмоктує повітря.\",\"evidence_ids\":[\"E2\",\"E3\"],\"evidence_uuids\":[\"72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157\",\"e5616566-406c-441c-8689-eb3ab79a3552\"],\"shots\":[{\"shot_id\":\"S3-A\",\"visual_intent\":\"A close-up of a bicycle pump being pulled upward\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"inflated ball\"],\"queries_en\":[\"bicycle pump handle up\",\"manual bicycle pump operation\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S4\",\"narration\":\"А під час низхідного ходу витісняє його.\",\"evidence_ids\":[\"E2\",\"E3\"],\"evidence_uuids\":[\"72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157\",\"e5616566-406c-441c-8689-eb3ab79a3552\"],\"shots\":[{\"shot_id\":\"S4-A\",\"visual_intent\":\"A bicycle pump handle being pushed downward\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"open valve\"],\"queries_en\":[\"bicycle pump stroke down\",\"compressing bicycle pump\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S5\",\"narration\":\"Штуцер з'єднується з вентилем на колесі.\",\"evidence_ids\":[\"E1\",\"E2\"],\"evidence_uuids\":[\"9df1f574-76f2-406a-a744-8124af07ec79\",\"72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157\"],\"shots\":[{\"shot_id\":\"S5-A\",\"visual_intent\":\"A bicycle pump nozzle connected to a tire valve\",\"must_show\":[\"bicycle pump\",\"tire valve\"],\"must_not_show\":[\"car engine\"],\"queries_en\":[\"bicycle pump valve connection\",\"pump nozzle on tire valve\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S6\",\"narration\":\"Існують типи клапанів Presta чи Schrader.\",\"evidence_ids\":[\"E3\",\"E4\"],\"evidence_uuids\":[\"e5616566-406c-441c-8689-eb3ab79a3552\",\"c63e4b4f-1e27-40a4-8719-5dbb75db4186\"],\"shots\":[{\"shot_id\":\"S6-A\",\"visual_intent\":\"A bicycle tire valve representing Presta and Schrader types\",\"must_show\":[\"tire valve\"],\"must_not_show\":[\"flat tire\"],\"queries_en\":[\"bicycle tire valve types\",\"Presta and Schrader valves tire valve\",\"tire valve\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S7\",\"narration\":\"Стиснене повітря надходить у камеру.\",\"evidence_ids\":[\"E2\",\"E3\"],\"evidence_uuids\":[\"72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157\",\"e5616566-406c-441c-8689-eb3ab79a3552\"],\"shots\":[{\"shot_id\":\"S7-A\",\"visual_intent\":\"A bicycle tire being inflated with a pump hose attached\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"empty road\"],\"queries_en\":[\"inflating bicycle tire\",\"bicycle pump hose connected to wheel\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S8\",\"narration\":\"Вбудований манометр контролює точний тиск.\",\"evidence_ids\":[\"E2\",\"E3\"],\"evidence_uuids\":[\"72d8f3e8-9ddf-4d2e-afbc-7d38fe5a0157\",\"e5616566-406c-441c-8689-eb3ab79a3552\"],\"shots\":[{\"shot_id\":\"S8-A\",\"visual_intent\":\"A pressure gauge on a bicycle pump showing readings\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"digital clock\"],\"queries_en\":[\"bicycle pump pressure gauge\",\"pump manometer dial\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]},{\"scene_id\":\"S9\",\"narration\":\"Після накачування насос легко від'єднується.\",\"evidence_ids\":[\"E1\",\"E5\"],\"evidence_uuids\":[\"9df1f574-76f2-406a-a744-8124af07ec79\",\"a69c68d8-f1ed-4b26-836c-f4d6ffd3138f\"],\"shots\":[{\"shot_id\":\"S9-A\",\"visual_intent\":\"A bicycle pump being disconnected from the wheel valve\",\"must_show\":[\"bicycle pump\"],\"must_not_show\":[\"damaged pump\"],\"queries_en\":[\"disconnecting bicycle pump\",\"bicycle pump valve removal\",\"bicycle pump\"],\"preferred_media_type\":\"photo\"}]}]}"
+              }
+            ]
+          }
+        }
+      ],
+      "usageMetadata": {
+        "promptTokenCount": 2603,
+        "candidatesTokenCount": 1727,
+        "totalTokenCount": 4330,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2603
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    }
+  }
+}
