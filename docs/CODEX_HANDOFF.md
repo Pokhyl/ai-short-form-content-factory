@@ -2686,3 +2686,7 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Correction 9729d53 pushed; full JS 485/485, Python alignment 14/14, render-fit and audit PASS, diff check clean. Predeploy backup .backups/m5-before-visual-anchor-alignment-20260927-215657.json. Published/active M5 version 93be1126-083d-431f-8c68-05f43de372ba matches Git nodes/connections/settings, worker healthy. Publisher restart and HTTP readiness pending at checkpoint.
 
 - n8n health 200, zero active executions after restart. One new immutable compass smoke 25d7c03e-bfd9-43eb-aeea-3f7e5cdac751 (uk30, Gemini) created and started once; M4 researching at checkpoint. Track this job until terminal; never rerun any failed job.
+
+- Compass smoke 25d7c03e-bfd9-43eb-aeea-3f7e5cdac751 passed M5 execution 11238 and M6 execution 11239 on the new visual-anchor version. The accepted M5 candidate and final M6 voiceover have identical SHA256 48419b8f5f7a24a3cf0fe641b997e789e8eff51f9016beb743674962521f3e2d and measured audio duration 29,904 ms, inside unchanged gate. M7 execution 11240 is running at this checkpoint. Track same job to final M9; never create another job while this one is active.
+
+- M7 execution 11240 succeeded on compass smoke; nine scene timings from 40 to 29,360 ms with minimum lexical coverage 0.951 against 29,904 ms audio. M8 execution 11241 is running, job visuals_collecting. Continue monitoring this exact job; once rendered, run production media audit and verify draft/inbox only.
