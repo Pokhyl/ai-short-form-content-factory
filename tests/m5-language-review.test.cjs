@@ -74,6 +74,22 @@ test('targeted language repair preserves untouched scenes without forcing exact 
  const long={...narrations,S8:Array.from({length:15},(_,i)=>'слово'+i).join(' ')+'.'};assert.throws(()=>validate(long),/invalid repaired narration/);
 });
 
+test('language cleanup preserves narration while extending short 30-second final visual cut',()=>{
+ const c=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-language-repair-context.json'));
+ const base=structuredClone(c.base_storyboard);
+ base.scenes=base.scenes.slice(0,9);
+ base.scenes[7].narration='допомагає стежити за погодою';
+ base.scenes[8].narration='через рух на циферблатну стрілку. Корисно!';
+ base.narration=base.scenes.map(scene=>scene.narration).join(' ');
+ const context={...c,base_storyboard:base,repair_scene_ids:['S9'],target_duration_seconds:30,target_scenes:9,target_shots:base.scenes.reduce((sum,scene)=>sum+scene.shots.length,0),word_min:9,word_max:120};
+ const provider=response({narrations:{S9:'через рух стрілки циферблата.'}});
+ const $=name=>({first:()=>({json:name==='Build Narration Language Repair'?context:context})});
+ const out=new Function('$','$json',n['Validate Narration Language Repair'].parameters.jsCode)($,provider).json;
+ assert.equal(out.storyboard.scenes[7].narration,'допомагає стежити');
+ assert.equal(out.storyboard.scenes[8].narration,'за погодою через рух стрілки циферблата.');
+ assert.equal(out.storyboard.narration,base.scenes.slice(0,7).map(scene=>scene.narration).join(' ')+' допомагає стежити за погодою через рух стрілки циферблата.');
+ assert.equal(out.language_repair_reference.S9,base.scenes[8].narration);
+});
 test('retry language review can reject semantic drift after repair',()=>{
  const repaired={...source,language_repair_reference:{S8:'Кожна комірка має транзистор та конденсатор.'},storyboard:{narration:'Кожна комірка має лише транзистор.',scenes:[{scene_id:'S8',narration:'Кожна комірка має лише транзистор.'}]}};
  const build=new Function('$','$json',n['Build Narration Language Review Retry'].parameters.jsCode)(()=>({first:()=>({json:{language_code:'uk'}})}),repaired).json;
