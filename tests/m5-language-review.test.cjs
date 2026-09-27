@@ -60,6 +60,32 @@ test('run-on 30+ second storyboard is rejected before language repair and TTS',(
  assert.equal(w.connections['Validate Storyboard'].main[1][0].node,'Build Storyboard Repair');
 });
 
+test('unfinished dependent phrase is routed to bounded storyboard repair in all supported languages',()=>{
+ const c=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-language-repair-context.json'));
+ const inputs=[
+  ['uk','Газові хмари стискалися під дією.','Газові хмари стискалися.'],
+  ['ru','Газовые облака сжимались под действием.','Газовые облака сжимались.'],
+  ['pl','Chmury gazu kurczyły się pod wpływem.','Chmury gazu kurczyły się.'],
+  ['en','Gas clouds contracted under the influence of.','Gas clouds contracted.'],
+ ];
+ for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2']){
+  const code=n[name].parameters.jsCode;
+  assert.match(code,/continuous narration has an unfinished dependent phrase/);
+  for(const [language_code,broken,complete] of inputs){
+   const storyboard=structuredClone(c.base_storyboard);
+   const base=storyboard.scenes[0].narration;
+   const $=()=>({first:()=>({json:{...c,language_code}})});
+   storyboard.narration=storyboard.scenes.map(scene=>scene.narration).join(' ')+ ' '+broken;
+   assert.throws(()=>new Function('$','$json',code)($,response(storyboard)),/continuous narration has an unfinished dependent phrase/);
+   storyboard.narration=storyboard.scenes.map(scene=>scene.narration).join(' ')+' '+complete;
+   try{new Function('$','$json',code)($,response(storyboard));}catch(error){assert.doesNotMatch(error.message,/unfinished dependent phrase/);}
+   assert.equal(storyboard.scenes[0].narration,base);
+  }
+ }
+ for(const name of ['Build Storyboard Repair','Build Storyboard Repair 2'])assert.match(n[name].parameters.jsCode,/remove the unfinished modifier while retaining the supported fact/);
+ assert.equal(w.connections['Validate Storyboard'].main[1][0].node,'Build Storyboard Repair');
+});
+
 test('targeted language repair preserves untouched scenes without forcing exact word slots',()=>{
  const c=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-language-repair-context.json'));
  const narrations=Object.fromEntries(c.base_storyboard.scenes.filter(s=>c.repair_scene_ids.includes(s.scene_id)).map(s=>[s.scene_id,s.narration]));
