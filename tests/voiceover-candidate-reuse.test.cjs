@@ -138,7 +138,7 @@ test('10935 regression: 26.976s cannot be silently padded into a 30s product',()
   );
   assert.equal(
     m5.connections['Validate Timing Repair'].main[1][0].node,
-    'Prepare Script Failure'
+    'Build Timing Repair 2'
   );
   const repair=m5By['Build Timing Repair'].parameters.jsCode;
   assert.match(repair,/desiredDurationMs/);

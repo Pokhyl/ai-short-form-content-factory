@@ -141,10 +141,11 @@ test('first timing validator is semantic fail-closed and rejects duplicate scene
   assert.match(code,/first timing repair produced duplicate scene narration/);
 });
 
-test('first timing semantic validation fails closed after the sole repair', () => {
+test('first invalid timing rewrite gets one bounded recovery and then fails closed', () => {
   const outputs=workflow.connections['Validate Timing Repair'].main;
-  assert.equal(outputs[1][0].node,'Prepare Script Failure');
+  assert.equal(outputs[1][0].node,'Build Timing Repair 2');
   assert.equal(outputs[0][0].node,'Prepare Timing Probe 2');
+  assert.equal(workflow.connections['Validate Timing Repair 2'].main[1][0].node,'Prepare Script Failure');
 });
 
 test('initial storyboard prompt keeps every scene on the user topic and mechanism', () => {
@@ -155,7 +156,7 @@ test('initial storyboard prompt keeps every scene on the user topic and mechanis
   assert.match(code,/each scene must add a distinct necessary fact/);
 });
 
-test('Repair 2 fallback regenerates from immutable original without consuming failed draft as truth', () => {
+test('semantic rejection cannot trigger second timing rewrite', () => {
   const code=byName['Build Timing Repair 2'].parameters.jsCode;
   const original=[
     'Elektrownia wodna zamienia energię spiętrzonej wody na prąd.',
@@ -194,12 +195,7 @@ test('Repair 2 fallback regenerates from immutable original without consuming fa
     if(name==='Normalize Timing Stability B') return {all:()=>{throw Error('not executed')}};
     return {first:()=>({json:rows[name]})};
   };
-  const out=new Function('$','$json',code)($,{error:{message:'semantic reject'}}).json;
-  assert.equal(out.semantic_fallback_from_first_repair,true);
-  assert.match(out.user_message,/SEMANTIC FALLBACK/);
-  assert.ok(out.user_message.includes(original[0]));
-  assert.equal(out.prior_usage.totalTokenCount,42);
-  assert.ok(out.target_precision_words>=10 && out.target_precision_words<=50);
+  assert.throws(()=>new Function('$','$json',code)($,{error:{message:'semantic reject'}}),/outside terminal-scene word bound/);
 });
 
 test('all late timing builders carry immutable original narration', () => {

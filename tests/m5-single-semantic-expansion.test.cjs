@@ -63,7 +63,8 @@ test('the failed mixed-script draft is rejected even before another voiceover is
   assert.equal(detect('Барометр працює з ртуттю.'),false);
   assert.equal(detect('Барометр прогнозує погоdy.'),true);
   assert.equal(detect('Поgоdy залежать від тиску.'),true);
-  assert.equal(workflow.connections['Validate Timing Repair'].main[1][0].node,'Prepare Script Failure');
+  assert.equal(workflow.connections['Validate Timing Repair'].main[1][0].node,'Build Timing Repair 2');
+  assert.equal(workflow.connections['Validate Timing Repair 2'].main[1][0].node,'Prepare Script Failure');
   for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2','Validate Timing Repair','Validate Narration Language Repair']) {
     assert.match(code(name),/Script=Cyrillic/,name);
   }

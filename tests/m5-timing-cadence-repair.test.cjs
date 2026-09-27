@@ -106,3 +106,26 @@ test('real 11116 short voice recalibrates to measured speech rate rather than on
   assert.match(output.user_message,/MEASURED TARGET WORD COUNT: about 57 words/);
   assert.doesNotMatch(output.user_message,/CADENCE-FIRST PASS/);
 });
+
+test('rejected first timing rewrite gets one bounded retry from original narration',()=>{
+  const original={...p1,measured_duration_ms:35736,narration_word_count:55};
+  const $=name=>{
+    if(name==='Build Script Prompt')return {first:()=>({json:ctx})};
+    if(name==='Normalize Timing Probe')return {first:()=>({json:original})};
+    if(name==='Normalize Timing Stability B')return {all:()=>{throw new Error('not executed')}};
+    if(name==='Build Timing Repair')return {first:()=>({json:{prior_usage:{}}})};
+    if(name==='Repair Storyboard Timing')return {first:()=>({json:{body:{usageMetadata:{promptTokenCount:100}}}})};
+    throw new Error('unexpected node '+name);
+  };
+  const out=new Function('$','$json',code('Build Timing Repair 2'))($,{error:'4, minimum 6 [line 177]'}).json;
+  assert.equal(out.semantic_fallback_from_first_repair,true);
+  assert.match(out.user_message,/SEMANTIC FALLBACK: the previous timing rewrite was rejected before TTS/);
+  assert.match(out.system_message,/Shorten wording/);
+  assert.match(out.user_message,/make narration SHORTER/);
+  assert.equal(out.target_scene_word_counts.reduce((a,b)=>a+b,0),out.target_precision_words);
+  assert.ok(out.target_scene_word_counts.at(-1)>=6);
+  assert.equal(workflow.connections['Validate Timing Repair'].main[1][0].node,'Build Timing Repair 2');
+  assert.equal(workflow.connections['Validate Timing Repair 2'].main[1][0].node,'Prepare Script Failure');
+  assert.throws(()=>new Function('$','$json',code('Build Timing Repair 2'))($,{error:'Gemini provider unavailable'}),/outside terminal-scene word bound/);
+  assert.throws(()=>new Function('$','$json',code('Build Timing Repair 2'))($,{error:'semantic preservation violation'}),/outside terminal-scene word bound/);
+});
