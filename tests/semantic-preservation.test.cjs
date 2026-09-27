@@ -195,7 +195,7 @@ test('semantic rejection cannot trigger second timing rewrite', () => {
     if(name==='Normalize Timing Stability B') return {all:()=>{throw Error('not executed')}};
     return {first:()=>({json:rows[name]})};
   };
-  assert.throws(()=>new Function('$','$json',code)($,{error:{message:'semantic reject'}}),/outside terminal-scene word bound/);
+  assert.throws(()=>new Function('$','$json',code)($,{error:{message:'semantic reject'}}),/outside bounded structural\/semantic retry/);
 });
 
 test('all late timing builders carry immutable original narration', () => {

@@ -1,0 +1,335 @@
+{
+  "Build Script Prompt": {
+    "script_run_id": "4f2091c1-7148-4fa2-b9a4-51b0d1dbb663",
+    "model": "gemini-3.5-flash-lite",
+    "topic": "як працює велосипедний насос",
+    "language_code": "uk",
+    "target_duration_seconds": 30,
+    "word_min": 18,
+    "word_max": 72,
+    "target_scenes": 9,
+    "target_shots": 9
+  },
+  "Normalize Timing Probe": {
+    "script_run_id": "4f2091c1-7148-4fa2-b9a4-51b0d1dbb663",
+    "model": "gemini-3.5-flash-lite",
+    "storyboard": {
+      "narration": "Велосипедний насос це важливий аксесуар для безпеки. Він створює тиск за допомогою поршневого механізму. Під час ходу вгору поршень всмоктує повітря. Односторонній клапан дозволяє повітрю надходити всередину циліндра. Під час низхідного ходу повітря витісняється назовні. Шланг з'єднує насос з ніпелем велосипедної камери. Повітря потрапляє в шинну камеру колеса. Вбудований манометр допомагає контролювати тиск. Це забезпечує безпечну і комфортну їзду.",
+      "scenes": [
+        {
+          "scene_id": "S1",
+          "narration": "Велосипедний насос це важливий аксесуар для безпеки.",
+          "evidence_ids": [
+            "E1"
+          ],
+          "evidence_uuids": [
+            "43b727da-6452-4562-8537-04d32cb20cf7"
+          ],
+          "shots": [
+            {
+              "shot_id": "S1-A",
+              "visual_intent": "A bicycle pump resting near a bicycle wheel on asphalt pavement.",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "car engine"
+              ],
+              "queries_en": [
+                "bicycle pump on asphalt pavement",
+                "portable bicycle pump near wheel",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S2",
+          "narration": "Він створює тиск за допомогою поршневого механізму.",
+          "evidence_ids": [
+            "E1",
+            "E4"
+          ],
+          "evidence_uuids": [
+            "43b727da-6452-4562-8537-04d32cb20cf7",
+            "bd60a6d2-443b-40ca-8ce2-01e430e51749"
+          ],
+          "shots": [
+            {
+              "shot_id": "S2-A",
+              "visual_intent": "A bicycle pump piston mechanism showing internal structure.",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "digital screen"
+              ],
+              "queries_en": [
+                "bicycle pump piston mechanism interior",
+                "hand pump cylinder and piston",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S3",
+          "narration": "Під час ходу вгору поршень всмоктує повітря.",
+          "evidence_ids": [
+            "E2"
+          ],
+          "evidence_uuids": [
+            "140e3fc8-4f9d-4a92-bbf4-2adf68b08d9f"
+          ],
+          "shots": [
+            {
+              "shot_id": "S3-A",
+              "visual_intent": "A bicycle pump handle pulled upward during the intake stroke.",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "electric motor"
+              ],
+              "queries_en": [
+                "bicycle pump handle pulled up",
+                "hand air pump intake stroke",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S4",
+          "narration": "Односторонній клапан дозволяє повітрю надходити всередину циліндра.",
+          "evidence_ids": [
+            "E2",
+            "E4"
+          ],
+          "evidence_uuids": [
+            "140e3fc8-4f9d-4a92-bbf4-2adf68b08d9f",
+            "bd60a6d2-443b-40ca-8ce2-01e430e51749"
+          ],
+          "shots": [
+            {
+              "shot_id": "S4-A",
+              "visual_intent": "A close-up view of a bicycle pump valve and cylinder.",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "car tire"
+              ],
+              "queries_en": [
+                "bicycle pump valve check mechanism",
+                "air pump one-way valve part",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S5",
+          "narration": "Під час низхідного ходу повітря витісняється назовні.",
+          "evidence_ids": [
+            "E2"
+          ],
+          "evidence_uuids": [
+            "140e3fc8-4f9d-4a92-bbf4-2adf68b08d9f"
+          ],
+          "shots": [
+            {
+              "shot_id": "S5-A",
+              "visual_intent": "A bicycle pump handle being pushed downward to compress air.",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "water hose"
+              ],
+              "queries_en": [
+                "bicycle pump handle pushed down",
+                "air pump compression stroke",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S6",
+          "narration": "Шланг з'єднує насос з ніпелем велосипедної камери.",
+          "evidence_ids": [
+            "E2",
+            "E4"
+          ],
+          "evidence_uuids": [
+            "140e3fc8-4f9d-4a92-bbf4-2adf68b08d9f",
+            "bd60a6d2-443b-40ca-8ce2-01e430e51749"
+          ],
+          "shots": [
+            {
+              "shot_id": "S6-A",
+              "visual_intent": "A bicycle pump hose connected to a bicycle tire valve.",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "basketball"
+              ],
+              "queries_en": [
+                "bicycle pump hose attached to valve",
+                "pump nozzle connected to bicycle inner tube",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S7",
+          "narration": "Повітря потрапляє в шинну камеру колеса.",
+          "evidence_ids": [
+            "E2"
+          ],
+          "evidence_uuids": [
+            "140e3fc8-4f9d-4a92-bbf4-2adf68b08d9f"
+          ],
+          "shots": [
+            {
+              "shot_id": "S7-A",
+              "visual_intent": "A bicycle wheel tire being inflated by a pump.",
+              "must_show": [
+                "bicycle tire"
+              ],
+              "must_not_show": [
+                "airplane wheel"
+              ],
+              "queries_en": [
+                "bicycle tire inflation process",
+                "bicycle wheel with valve stem",
+                "bicycle tire"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S8",
+          "narration": "Вбудований манометр допомагає контролювати тиск.",
+          "evidence_ids": [
+            "E2",
+            "E3"
+          ],
+          "evidence_uuids": [
+            "140e3fc8-4f9d-4a92-bbf4-2adf68b08d9f",
+            "05043d0d-d837-4699-b7f9-fe75cf96bfca"
+          ],
+          "shots": [
+            {
+              "shot_id": "S8-A",
+              "visual_intent": "A pressure gauge on a bicycle floor pump displaying tire pressure.",
+              "must_show": [
+                "bicycle pump"
+              ],
+              "must_not_show": [
+                "clock"
+              ],
+              "queries_en": [
+                "bicycle pump pressure gauge dial",
+                "floor pump manometer gauge",
+                "bicycle pump"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        },
+        {
+          "scene_id": "S9",
+          "narration": "Це забезпечує безпечну і комфортну їзду.",
+          "evidence_ids": [
+            "E1",
+            "E3"
+          ],
+          "evidence_uuids": [
+            "43b727da-6452-4562-8537-04d32cb20cf7",
+            "05043d0d-d837-4699-b7f9-fe75cf96bfca"
+          ],
+          "shots": [
+            {
+              "shot_id": "S9-A",
+              "visual_intent": "A cyclist riding a bicycle safely on a paved road.",
+              "must_show": [
+                "bicycle"
+              ],
+              "must_not_show": [
+                "mountain climbing"
+              ],
+              "queries_en": [
+                "cyclist riding bicycle on road",
+                "bicycle on asphalt road",
+                "bicycle"
+              ],
+              "preferred_media_type": "photo"
+            }
+          ]
+        }
+      ]
+    },
+    "narration_word_count": 59,
+    "measured_duration_ms": 37584,
+    "target_duration_ms": 30000,
+    "tolerance_ms": 2000,
+    "usage": {
+      "promptTokenCount": 632,
+      "candidatesTokenCount": 36,
+      "totalTokenCount": 668,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 632
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  },
+  "Build Timing Repair": {
+    "prior_usage": {
+      "promptTokenCount": 632,
+      "candidatesTokenCount": 36,
+      "totalTokenCount": 668,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 632
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  },
+  "Repair Storyboard Timing": {
+    "body": {
+      "usageMetadata": {
+        "promptTokenCount": 5166,
+        "candidatesTokenCount": 1582,
+        "totalTokenCount": 6748,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5166
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    }
+  },
+  "incoming": {
+    "error": {
+      "message": "coverage 0.400, required >= 0.600 [line 576]"
+    }
+  }
+}

@@ -126,8 +126,8 @@ test('rejected first timing rewrite gets one bounded retry from original narrati
   assert.ok(out.target_scene_word_counts.at(-1)>=6);
   assert.equal(workflow.connections['Validate Timing Repair'].main[1][0].node,'Build Timing Repair 2');
   assert.equal(workflow.connections['Validate Timing Repair 2'].main[1][0].node,'Prepare Script Failure');
-  assert.throws(()=>new Function('$','$json',code('Build Timing Repair 2'))($,{error:'Gemini provider unavailable'}),/outside terminal-scene word bound/);
-  assert.throws(()=>new Function('$','$json',code('Build Timing Repair 2'))($,{error:'semantic preservation violation'}),/outside terminal-scene word bound/);
+  assert.throws(()=>new Function('$','$json',code('Build Timing Repair 2'))($,{error:'Gemini provider unavailable'}),/outside bounded structural\/semantic retry/);
+  assert.throws(()=>new Function('$','$json',code('Build Timing Repair 2'))($,{error:'semantic preservation violation'}),/outside bounded structural\/semantic retry/);
 });
 
 
@@ -141,4 +141,17 @@ test('11226 timing replies preserve every spoken word when repairing a short fin
   assert.equal(result.storyboard.scenes.map(scene=>scene.narration).join(' '),candidate.narration);
   assert.ok(result.storyboard.scenes[8].narration.split(/\s+/u).length>=6);
  }
+});
+
+
+test('11230 semantic coverage failure gets one bounded retry from original, provider failures remain terminal',()=>{
+ const f=JSON.parse(fs.readFileSync('tests/fixtures/m5-11230-semantic-coverage.json'));
+ const $=name=>{if(!f[name])throw new Error('unavailable node '+name);return {first:()=>({json:f[name]})};};
+ const build=new Function('$','$json',code('Build Timing Repair 2'));
+ const out=build($,f.incoming).json;
+ assert.equal(out.semantic_fallback_from_first_repair,true);
+ assert.match(out.user_message,/coverage 0\.400, required >= 0\.600/);
+ assert.match(out.user_message,/Односторонній клапан|поршневого механізму/u);
+ assert.equal(out.target_scene_word_counts.at(-1)>=6,true);
+ assert.throws(()=>build($,{error:{description:'Gemini provider unavailable'}}),/outside bounded structural\/semantic retry/);
 });
