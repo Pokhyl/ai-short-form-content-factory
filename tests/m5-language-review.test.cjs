@@ -44,6 +44,22 @@ test('live exact 10042 language replay rejects defective draft and accepts four 
   assert.equal(result.language_review.passed,f.expected_pass);
  }
 });
+test('run-on 30+ second storyboard is rejected before language repair and TTS',()=>{
+ const c=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-language-repair-context.json'));
+ const storyboard=structuredClone(c.base_storyboard);
+ for(const scene of storyboard.scenes)scene.narration=scene.narration.replace(/[.!?…]/gu,'');
+ storyboard.narration=storyboard.scenes.map(scene=>scene.narration).join(' ');
+ const $=()=>({first:()=>({json:c})});
+ assert.throws(()=>new Function('$','$json',n['Validate Storyboard'].parameters.jsCode)($,response(storyboard)),/continuous narration has fewer than three natural complete sentences/);
+ for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2']){
+  assert.match(n[name].parameters.jsCode,/continuous narration has fewer than three natural complete sentences/);
+ }
+ for(const name of ['Build Storyboard Repair','Build Storyboard Repair 2']){
+  assert.match(n[name].parameters.jsCode,/placing punctuation at natural clause boundaries/);
+ }
+ assert.equal(w.connections['Validate Storyboard'].main[1][0].node,'Build Storyboard Repair');
+});
+
 test('targeted language repair preserves untouched scenes without forcing exact word slots',()=>{
  const c=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-language-repair-context.json'));
  const narrations=Object.fromEntries(c.base_storyboard.scenes.filter(s=>c.repair_scene_ids.includes(s.scene_id)).map(s=>[s.scene_id,s.narration]));
