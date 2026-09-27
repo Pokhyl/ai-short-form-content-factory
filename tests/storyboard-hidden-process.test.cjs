@@ -114,6 +114,52 @@ test('generation and repair keep rarely photographed actions in narration instea
   }
 });
 
+test('photo-only storyboard rejects diagrammatic depictions as well as diagrams',()=>{
+  for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2','Validate Narration Language Repair']){
+    const src=nodeCode(name);
+    const match=src.match(/const representationalPattern = (\/[^;]+\/i);/);
+    assert.ok(match,name+' representational guard missing');
+    const pattern=Function('return '+match[1])();
+    assert.ok(pattern.test('diagrammatic representation of a magnetic field'));
+    assert.ok(pattern.test('schematic representation of a circuit'));
+    assert.equal(pattern.test('physical globe showing a compass'),false);
+  }
+});
+
+test('final visual scene has enough spoken words for independent ASR coverage',()=>{
+  for(const name of [
+    'Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2',
+    'Validate Timing Repair','Validate Timing Repair 2','Validate Narration Language Repair'
+  ]){
+    const src=nodeCode(name);
+    assert.match(src,/const minSceneWords = i === scenes.length - 1 && Number\(ctx.target_duration_seconds\) === 30 \? 6 : 2;/);
+    assert.doesNotThrow(()=>new Function(src),name+' JS syntax');
+  }
+  for(const name of [
+    'Build Script Prompt','Build Storyboard Repair','Build Storyboard Repair 2',
+    'Build Timing Repair','Build Timing Repair 2'
+  ]){
+    const src=nodeCode(name);
+    assert.match(src,/For 30-second videos, the final scene narration must contain at least 6 spoken words/);
+    assert.doesNotThrow(()=>new Function(src),name+' JS syntax');
+  }
+});
+
+test('30-second word plan reserves six words for the terminal scene without adding speech',()=>{
+  const src=nodeCode('Build Script Prompt');
+  const start=src.indexOf('const sceneWordTargets =');
+  const end=src.indexOf('const maxSegmentWords =',start);
+  assert.ok(start>=0 && end>start);
+  const allocate=new Function('targetWords','density','duration',src.slice(start,end)+'; return sceneWordTargets;');
+  const long=allocate(53,{targetScenes:9},30);
+  assert.equal(long.reduce((a,b)=>a+b,0),53);
+  assert.equal(long.at(-1),6);
+  assert.equal(long.at(-2),5);
+  const short=allocate(27,{targetScenes:5},15);
+  assert.equal(short.reduce((a,b)=>a+b,0),27);
+  assert.deepEqual(short,[6,6,5,5,5]);
+});
+
 test('final canonicalizer reanchors queries to the normalized primary subject',()=>{
   const src=nodeCode('Canonicalize Final Storyboard');
   assert.match(src,/const mustShow = normalizeMustShowAnchors\(rawMustShow, visualIntent, shotId\)/);

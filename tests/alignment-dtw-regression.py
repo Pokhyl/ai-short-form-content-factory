@@ -9,6 +9,23 @@ spec.loader.exec_module(worker)
 fixture = json.loads(Path("tests/fixtures/m7-9802-alignment.json").read_text())
 narration = " ".join(s["narration"] for s in fixture["scenes"])
 
+short_scene_fixture = json.loads(Path("tests/fixtures/m7-short-terminal-scene.json").read_text())
+
+class ShortTerminalSceneRegression(unittest.TestCase):
+    def test_short_last_scene_is_fragile_under_one_whisper_word_error(self):
+        scenes = short_scene_fixture["scenes"]
+        narration = " ".join(scene["narration"] for scene in scenes)
+        with self.assertRaisesRegex(ValueError, r"scene S9 lexical coverage below 0.85: 0.7917"):
+            worker._build_scene_timings(narration, scenes, short_scene_fixture["whisper"], 29856)
+        extended = json.loads(json.dumps(scenes))
+        previous_words = extended[-2]["narration"].split()
+        extended[-2]["narration"] = " ".join(previous_words[:-2])
+        extended[-1]["narration"] = " ".join(previous_words[-2:]) + " " + extended[-1]["narration"]
+        self.assertEqual(narration, " ".join(scene["narration"] for scene in extended))
+        result = worker._build_scene_timings(narration, extended, short_scene_fixture["whisper"], 29856)
+        self.assertGreaterEqual(result["scene_timings"][-1]["coverage"], 0.85)
+        self.assertEqual(result["scene_timings"][-1]["end_ms"], 29856)
+
 class DtwRegression(unittest.TestCase):
     def test_saved_default_alignment_fails(self):
         with self.assertRaisesRegex(ValueError, "1614ms"):

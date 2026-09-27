@@ -24,7 +24,7 @@ test('initial Ukrainian 30-second request uses observed sentence cadence and wor
   const uk30 = build('uk',30);
   assert.equal(uk30.target_words,53);
   assert.deepEqual([uk30.word_min,uk30.word_max],[18,72]);
-  assert.deepEqual(uk30.scene_word_targets,[6,6,6,6,6,6,6,6,5]);
+  assert.deepEqual(uk30.scene_word_targets,[6,6,6,6,6,6,6,5,6]);
   assert.equal(build('uk',45).target_words,68);
   assert.equal(build('pl',30).target_words,54);
   assert.match(uk30.user_message,/specific causal details from those sources/);
