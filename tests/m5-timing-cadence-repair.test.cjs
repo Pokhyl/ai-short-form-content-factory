@@ -56,9 +56,11 @@ test('short narration gets one bounded semantic expansion aimed inside the obser
   assert.match(out.system_message,/Lengthen only through natural same-proposition grammar/);
   assert.match(out.system_message,/Never pad with descriptive modifiers/);
   assert.match(out.user_message,/ACCEPTABLE AUDIO DURATION: 28464\.\.32000 ms/);
-  assert.match(out.user_message,/MEASURED TARGET WORD COUNT: about 55 words/);
+  assert.match(out.user_message,/MEASURED TARGET WORD COUNT: about 57 words/);
   assert.match(out.user_message,/one semantic-safe rewrite/);
+  assert.match(out.user_message,/calibrated from this exact measured voice/);
   assert.match(out.user_message,/no unsupported new facts, filler/);
+  assert.match(out.user_message,/never delete a verb to make space for a modifier/);
   assert.doesNotMatch(out.user_message,/CADENCE-FIRST PASS/);
 });
 
@@ -93,4 +95,14 @@ test('second timing repair keeps explicit shortening instruction when measured n
   assert.match(out.system_message,/Shorten wording without deleting a necessary argument/i);
   assert.doesNotMatch(out.system_message,/This is cadence-first/i);
   assert.match(out.user_message,/direction from current version: make narration SHORTER/);
+});
+
+test('real 11116 short voice recalibrates to measured speech rate rather than one-word-per-scene cap',()=>{
+  const source={...p1,measured_duration_ms:21936,narration_word_count:43,storyboard:{...storyboard,narration:'Барометр — це вимірювальний прилад для визначення атмосферного тиску на поверхню Землі. Традиційний ртутний прилад складається зі скляної трубки з ртуттю. Атмосферний тиск штовхає рідину вгору, утворюючи стовп певної висоти. Існують також анероїди з металевою коробкою, що змінює свою форму від коливань тиску.'}};
+  const $=name=>({first:()=>({json:ctx})});
+  const output=new Function('$','$json',code('Build Timing Repair'))($,source).json;
+  assert.match(output.user_message,/CURRENT MEASURED TTS: 21936 ms/);
+  assert.match(output.user_message,/CURRENT WORDS: 43/);
+  assert.match(output.user_message,/MEASURED TARGET WORD COUNT: about 57 words/);
+  assert.doesNotMatch(output.user_message,/CADENCE-FIRST PASS/);
 });

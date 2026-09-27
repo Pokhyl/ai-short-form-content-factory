@@ -1,3 +1,10 @@
+## 2026-09-27 — current production status and next acceptance gate
+
+- Git `2541096` is deployed for nominal-versus-actual voice duration: requested 30 seconds accepts measured 28,464–32,000ms; rendered video duration follows the longer of nominal duration and measured audio. This is verified offline and deployed, but there is no passing new production video.
+- One post-deploy smoke `968f9224-be35-42af-bd6f-4990a596482b` is immutable `script_failed`, M5 execution `11116`: 43 words, 21,936ms; Gemini returned 46 words, dropped an essential verb, semantic gate rejected coverage 0.500. It never reached M6/M9.
+- Root cause in M5 timing request: measured cadence implied about 57 words for 29,232ms, but an arbitrary +1 lexical word per scene cap limited the requested target to 52. A generic measured-calibration correction passed full JS and Python regressions and is awaiting M5-only deployment; do not claim provider compliance or full production PASS until a permitted *new* smoke reaches M9.
+- The one authorized smoke has been used. Do not create or launch a second smoke unless the user explicitly authorizes one. Never rerun failed jobs. Existing `.tmp/` must remain untouched.
+
 ## Timing contract production checkpoint — 2026-09-27 (authoritative; supersedes older NEXT items)
 
 - Git `fc9d0f0` deployed the end-to-end timing contract: strict observed M5/M6 audio window; M6 byte-for-byte accepted candidate reuse; separate audio/target durations from `factory.begin_render()` through M9; last visual extends to target; media worker keeps audio unmodified and renders target-duration MP4; QA checks audio and video against their respective durations. DB functions, M5/M6/M9, and worker were deployed; the 30-second real FFmpeg regression passes. This contract has **not** produced a new accepted production MP4 yet.

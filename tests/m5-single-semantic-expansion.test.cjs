@@ -50,7 +50,7 @@ test('one measured expansion stays within scene capacity and supplies only cited
   assert.doesNotMatch(out.user_message,/Uncited detail/);
   assert.match(out.user_message,/no unsupported new facts, filler/);
   const target=Number(out.user_message.match(/MEASURED TARGET WORD COUNT: about (\d+) words/)[1]);
-  assert.equal(target,54, '45 words at 22.584s can request at most nine extra words across nine scenes');
+  assert.equal(target,58, '45 words at 22.584s recalibrates to the measured voice; added lexical words may include grammar while new facts remain bounded per scene');
   assert.match(out.user_message,/at most one new content word per scene/);
 });
 
