@@ -349,3 +349,27 @@ test('all bounded storyboard validators canonicalize permitted leading modifiers
     assert.ok(mapPos>=0 && guardPos>mapPos,name);
   }
 });
+
+
+test('11234 compass visual anchor aligns only with a subject present in intent and detailed query',()=>{
+ const rows=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/m5-11234-compass-visual-anchors.json')));
+ for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2','Validate Narration Language Repair']){
+  const code=byName[name].parameters.jsCode;
+  const begin=code.indexOf('// ENGLISH_VISUAL_METADATA_GUARD_START');
+  const end=code.indexOf('// ENGLISH_VISUAL_METADATA_GUARD_END');
+  const align=new Function(code.slice(begin,end)+'\nreturn alignEnglishPrimaryAnchor;')();
+  const check=visualGuard(name);
+  for(const row of rows){
+   const anchors=align(structuredClone(row.must_show),row.visual_intent,row.queries_en);
+   assert.doesNotThrow(()=>check({language_code:'uk'},row.shot_id,row.visual_intent,anchors,[],row.queries_en),name+' '+row.stage+' '+row.shot_id);
+   assert.match(anchors[0],/compass/u);
+   if(row.must_show[0]==='magnetic compass' && !row.visual_intent.includes('magnetic compass'))assert.notEqual(anchors[0],row.must_show[0]);
+  }
+  const unrelated=align(['processor'],'Macro photo of semiconductor microchips on a board',['processor close up','computer processor','processor']);
+  assert.equal(unrelated[0],'processor');
+  assert.throws(()=>check({language_code:'uk'},'S1-A','Macro photo of semiconductor microchips on a board',unrelated,[],['processor close up','computer processor','processor']),/primary must_show must match/);
+  const fallback=align(['computer monitor'],'software workspace showing workflow platform on display',['automation interface workspace','software platform screen','computer monitor']);
+  assert.equal(fallback[0],'computer monitor');
+  assert.throws(()=>check({language_code:'uk'},'S1-A','software workspace showing workflow platform on display',fallback,[],['automation interface workspace','software platform screen','computer monitor']),/primary must_show must match/);
+ }
+});

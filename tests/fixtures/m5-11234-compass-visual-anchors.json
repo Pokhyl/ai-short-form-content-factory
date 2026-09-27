@@ -1,0 +1,80 @@
+[
+  {
+    "stage": "Generate Storyboard",
+    "shot_id": "S7-A",
+    "visual_intent": "A liquid-filled baseplate compass resting on a wooden table.",
+    "must_show": [
+      "magnetic compass"
+    ],
+    "queries_en": [
+      "liquid filled baseplate compass",
+      "outdoor navigation compass",
+      "magnetic compass"
+    ]
+  },
+  {
+    "stage": "Generate Storyboard",
+    "shot_id": "S8-A",
+    "visual_intent": "A detailed view of a liquid-damped compass capsule and dial.",
+    "must_show": [
+      "magnetic compass"
+    ],
+    "queries_en": [
+      "liquid damped compass capsule",
+      "compass capsule fluid detail",
+      "magnetic compass"
+    ]
+  },
+  {
+    "stage": "Repair Storyboard",
+    "shot_id": "S7-A",
+    "visual_intent": "A liquid-filled baseplate compass resting on a wooden table.",
+    "must_show": [
+      "liquid-filled baseplate compass"
+    ],
+    "queries_en": [
+      "liquid-filled baseplate compass resting on a wooden table",
+      "outdoor navigation compass on wooden surface",
+      "liquid-filled baseplate compass"
+    ]
+  },
+  {
+    "stage": "Repair Storyboard",
+    "shot_id": "S8-A",
+    "visual_intent": "A detailed view of a liquid-damped compass capsule and dial.",
+    "must_show": [
+      "magnetic compass"
+    ],
+    "queries_en": [
+      "liquid damped compass capsule",
+      "compass capsule fluid detail",
+      "magnetic compass"
+    ]
+  },
+  {
+    "stage": "Repair Storyboard 2",
+    "shot_id": "S7-A",
+    "visual_intent": "A liquid-filled baseplate compass resting on a wooden table.",
+    "must_show": [
+      "magnetic compass"
+    ],
+    "queries_en": [
+      "liquid-filled baseplate compass resting on a wooden table",
+      "outdoor navigation compass on wooden surface",
+      "magnetic compass"
+    ]
+  },
+  {
+    "stage": "Repair Storyboard 2",
+    "shot_id": "S8-A",
+    "visual_intent": "A detailed view of a magnetic compass capsule and dial.",
+    "must_show": [
+      "magnetic compass"
+    ],
+    "queries_en": [
+      "liquid damped compass capsule",
+      "compass capsule fluid detail",
+      "magnetic compass"
+    ]
+  }
+]
