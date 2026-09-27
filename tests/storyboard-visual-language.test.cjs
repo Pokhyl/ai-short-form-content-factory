@@ -335,6 +335,40 @@ test('short-anchor canonicalization preserves already valid specific anchors',()
   assert.equal(normalize('residential houses'),'residential houses');
 });
 
+test('11259 regression: non-visible leading states leave a concrete short visual anchor',()=>{
+ for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2']){
+  const normalize=shortMustShowNormalizer(name);
+  assert.equal(normalize('neutral hydrogen gas cloud'),'hydrogen gas cloud');
+  assert.equal(normalize('ionized hydrogen gas cloud'),'hydrogen gas cloud');
+  assert.equal(normalize('primordial hydrogen gas cloud'),'hydrogen gas cloud');
+  assert.equal(normalize('hydroelectric power plant building'),'hydroelectric power plant building');
+ }
+ for(const name of ['Build Storyboard Repair','Build Storyboard Repair 2'])
+  assert.match(byName[name].parameters.jsCode,/complete visible object name/);
+});
+
+test('bounded repairs report every overlong visual anchor and non-photo intent together',()=>{
+ const candidate={scenes:[
+  {scene_id:'S4',narration_words:['Газові','хмари.'],shots:[{shot_id:'S4-A',must_show:['neutral hydrogen gas cloud'],visual_intent:'neutral hydrogen gas cloud in space'}]},
+  {scene_id:'S5',narration_words:['Мікрохвильове','випромінювання.'],shots:[{shot_id:'S5-A',must_show:['cosmic microwave background radiation map'],visual_intent:'cosmic microwave background radiation map showing fluctuations'}]},
+  {scene_id:'S7',narration_words:['Перші','зорі.'],shots:[{shot_id:'S7-A',must_show:['first brilliant young stars'],visual_intent:'young stars in space'}]},
+ ]};
+ const response={body:{candidates:[{content:{parts:[{text:JSON.stringify(candidate)}]}}]}};
+ const context={system_message:'system',user_message:'user',target_duration_seconds:30,word_min:4,word_max:100,target_words:50,scene_word_targets:[]};
+ const validation={error:{message:'S4-A must_show items must be short domain anchors'}};
+ const $=name=>({first:()=>({json:({
+  'Build Script Prompt':context,'Generate Storyboard':response,'Repair Storyboard':response,'Validate Storyboard':validation,
+ })[name]})});
+ for(const name of ['Build Storyboard Repair','Build Storyboard Repair 2']){
+  const output=new Function('$','$json',byName[name].parameters.jsCode)($,validation).json.user_message;
+  const section=output.split('VISUAL ANCHOR AND PHOTO CHECK (all invalid shots in previous output):')[1].split('Fix EVERY listed shot.')[0];
+  const issues=JSON.parse(section.trim());
+  assert.deepEqual(issues.map(issue=>issue.shot_id),['S4-A','S5-A','S7-A']);
+  assert.equal(issues[1].non_photo_intent,candidate.scenes[1].shots[0].visual_intent);
+  assert.deepEqual(issues[0].overlong_must_show,['neutral hydrogen gas cloud']);
+ }
+});
+
 test('all bounded storyboard validators canonicalize permitted leading modifiers before the hard short-anchor guard',()=>{
   for(const name of [
     'Validate Storyboard',
