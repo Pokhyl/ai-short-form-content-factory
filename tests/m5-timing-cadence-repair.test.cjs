@@ -59,7 +59,7 @@ test('short narration gets one bounded semantic expansion aimed inside the obser
   assert.match(out.user_message,/MEASURED TARGET WORD COUNT: about 57 words/);
   assert.match(out.user_message,/one semantic-safe rewrite/);
   assert.match(out.user_message,/calibrated from this exact measured voice/);
-  assert.match(out.user_message,/no unsupported new facts, filler/);
+  assert.match(out.user_message,/never add unsupported facts, generic praise, filler/);
   assert.match(out.user_message,/never delete a verb to make space for a modifier/);
   assert.doesNotMatch(out.user_message,/CADENCE-FIRST PASS/);
 });

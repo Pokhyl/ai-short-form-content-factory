@@ -22,15 +22,15 @@ function build(language_code, target_duration_seconds) {
 
 test('initial Ukrainian 30-second request uses observed sentence cadence and word budget without changing the audio gate', () => {
   const uk30 = build('uk',30);
-  assert.equal(uk30.target_words,45);
+  assert.equal(uk30.target_words,53);
   assert.deepEqual([uk30.word_min,uk30.word_max],[18,72]);
-  assert.deepEqual(uk30.scene_word_targets,Array(9).fill(5));
+  assert.deepEqual(uk30.scene_word_targets,[6,6,6,6,6,6,6,6,5]);
   assert.equal(build('uk',45).target_words,68);
   assert.equal(build('pl',30).target_words,54);
   assert.match(uk30.user_message,/specific causal details from those sources/);
   assert.match(uk30.user_message,/prefer 7-9 natural complete sentences/);
-  assert.match(uk30.user_message,/count the narration words before returning JSON; target about 45 words/);
-  assert.doesNotMatch(uk30.user_message,/target exactly 45 words/);
+  assert.match(uk30.user_message,/count the narration words before returning JSON; target about 53 words/);
+  assert.doesNotMatch(uk30.user_message,/target exactly 53 words/);
 });
 
 test('one measured expansion stays within scene capacity and supplies only cited research', () => {
@@ -48,10 +48,10 @@ test('one measured expansion stays within scene capacity and supplies only cited
   assert.match(out.user_message,/CITED RESEARCH EVIDENCE/);
   assert.match(out.user_message,/A pressure change moves the indicator/);
   assert.doesNotMatch(out.user_message,/Uncited detail/);
-  assert.match(out.user_message,/no unsupported new facts, filler/);
+  assert.match(out.user_message,/never add unsupported facts, generic praise, filler/);
   const target=Number(out.user_message.match(/MEASURED TARGET WORD COUNT: about (\d+) words/)[1]);
   assert.equal(target,58, '45 words at 22.584s recalibrates to the measured voice; added lexical words may include grammar while new facts remain bounded per scene');
-  assert.match(out.user_message,/at most one new content word per scene/);
+  assert.match(out.user_message,/up to two evidence-supported content words per scene/);
 });
 
 test('the failed mixed-script draft is rejected even before another voiceover is synthesized', () => {
@@ -67,4 +67,26 @@ test('the failed mixed-script draft is rejected even before another voiceover is
   for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2','Validate Timing Repair','Validate Narration Language Repair']) {
     assert.match(code(name),/Script=Cyrillic/,name);
   }
+});
+
+test('short measured Ukrainian speech asks for supported causal detail without lowering audio sanity', () => {
+  const ctx=build('uk',30);
+  const scenes=Array.from({length:9},(_,i)=>({
+    scene_id:'S'+(i+1),narration:i===0
+      ? 'Реальний механізм швидко реагує на тиск.'
+      : 'Реальний механізм реагує на тиск.',
+    evidence_ids:['E1'],shots:[{shot_id:'S'+(i+1)+'-A'}],
+  }));
+  const measured={script_run_id:'run',model:'gemini',measured_duration_ms:24504,
+    target_duration_ms:30000,usage:{},storyboard:{
+      narration:scenes.map(s=>s.narration).join(' '),scenes,
+    }};
+  const $=name=>({first:()=>({json:ctx})});
+  const request=new Function('$','$json',code('Build Timing Repair'))($,measured).json;
+  assert.match(request.user_message,/MEASURED TARGET WORD COUNT: about 55 words/);
+  assert.match(request.user_message,/up to two evidence-supported content words per scene/);
+  assert.match(request.user_message,/never add unsupported facts, generic praise, filler/);
+  const gates=code('Normalize Timing Probe 2');
+  assert.match(gates,/28464/);
+  assert.match(gates,/32000/);
 });
