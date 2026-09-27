@@ -2614,3 +2614,10 @@ Checkpoint verification: M5 v99 and M8 v53 live nodes/connections/settings match
 - Newly authorized single production job `904ce24d-f9d2-458d-aea3-74590fa2259d` is immutable `script_failed`; M5 execution `11154`, active version `59edd314-c54f-467a-9c15-cc57c0d3db85`. Do not rerun this job. It failed before audio/M8/M9, so it does not validate the preceding M8 retrieval fix.
 - Initial nine-scene narration contained six complete sentences, but visual scene cuts S1-S3 fell inside its first sentence. Grammar reviewer correctly flagged missing punctuation. Gemini language repair inserted full stops at S1 and S2 boundaries, yielding fragments `прилад для вимірювання. Атмосферного тиску...`, which the mandatory second language review correctly rejected.
 - Generic correction: for ordinary grammar repairs of an original with sufficient complete sentences, restore original sentence boundaries across visual scene cuts and restore lowercase initial next-scene letters when they were lowercase originally; keep the subsequent language review unchanged. True run-on drafts with too few original sentences can still acquire new sentence breaks. Added regression of the saved failure class plus run-on preservation. No new job has been launched after this failed smoke.
+
+## 2026-09-27 — M5 sentence continuity deployed
+
+- Fix commit `6a361f4` pushed main; focused regression 2/2, full n8n Docker JS suite 474/474, Python FFmpeg render-fit PASS, `git diff --check` PASS.
+- M5 pre-deploy backup `.backups/m5-before-sentence-continuity-20260927-115800.json`, SHA256 `ea707120cf126ac5f7f04a28a87c8183d5403c110f13ddad31609c7e82488f1f`.
+- Imported and published only M5; active version `8ce124a8-a769-4de7-b77d-c8efae98b126`. Restarted only publisher n8n as CLI required. M5/M8 active current nodes/connections/settings and published nodes/connections match Git. Publisher health HTTP 200, media-worker healthy, zero active executions before new smoke.
+- New single post-fix smoke `b94bd101-fa42-48c1-8bf7-a125ca5baab3` created once and started once; M5 execution `11158` running at time of this checkpoint. Track this exact job to terminal state; never rerun failed jobs.
