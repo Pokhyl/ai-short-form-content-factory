@@ -57,6 +57,10 @@ def audit(job_id, target):
     video_sha, audio_sha = sha(video), sha(voice)
     segments = manifest["segments"]
     expected_scenes = {15: 5, 30: 9, 45: 13, 60: 17}[target]
+    min_audio_ms, max_audio_ms = {
+        15: (14208, 15768), 30: (28464, 32000),
+        45: (42864, 46128), 60: (58176, 61656),
+    }[target]
     gates = {
         "manifest_video_hash": video_sha == manifest["sha256"],
         "manifest_voice_hash": audio_sha == manifest["input_audio_sha256"],
@@ -68,19 +72,24 @@ def audit(job_id, target):
             videos[0]["r_frame_rate"] == "30/1")),
         "audio_format": len(audios) == 1 and audios[0]["codec_name"] == "aac",
         "narration_preserved": correlation >= 0.99 and abs(len(source) - len(final)) <= 1600,
-        "target_duration": abs(manifest["audio_duration_ms"] - target * 1000)
-                           <= max(750, target * 50) + 50,
+        "accepted_audio_window": min_audio_ms <= manifest["audio_duration_ms"] <= max_audio_ms,
+        "target_duration_contract": manifest["target_duration_ms"] == max(
+            target * 1000, manifest["audio_duration_ms"]),
         "mux_duration": abs(round(float(probe["format"]["duration"]) * 1000)
-                            - manifest["audio_duration_ms"]) <= 100,
+                            - manifest["target_duration_ms"]) <= 100,
+        "audio_stream_duration": len(audios) == 1 and abs(
+            round(float(audios[0]["duration"]) * 1000)
+            - manifest["audio_duration_ms"]) <= 100,
         "scene_density": len(segments) == expected_scenes,
         "unique_assets": len({s["asset_sha256"] for s in segments}) == expected_scenes,
         "contiguous_coverage": bool(segments) and segments[0]["start_ms"] == 0
-            and segments[-1]["end_ms"] == manifest["audio_duration_ms"]
+            and segments[-1]["end_ms"] == manifest["target_duration_ms"]
             and all(a["end_ms"] == b["start_ms"] for a, b in zip(segments, segments[1:])),
     }
     return {"job_id": job_id, "sha256": video_sha, "bytes": video.stat().st_size,
             "duration_ms": round(float(probe["format"]["duration"]) * 1000),
             "audio_duration_ms": manifest["audio_duration_ms"],
+            "target_duration_ms": manifest["target_duration_ms"],
             "audio_correlation": correlation, "scene_count": len(segments),
             "gates": gates, "passed": all(gates.values())}
 

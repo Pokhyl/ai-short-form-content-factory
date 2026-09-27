@@ -105,6 +105,15 @@ test('generation and storyboard repair prompts explicitly forbid hidden-process 
   }
 });
 
+test('generation and repair keep rarely photographed actions in narration instead of making them photo gates',()=>{
+  for(const name of ['Build Script Prompt','Build Storyboard Repair','Build Storyboard Repair 2']){
+    const src=nodeCode(name);
+    assert.match(src,/short-lived, hidden, or rarely photographed action/);
+    assert.match(src,/leave the action in narration unless a real photograph of that action is realistically searchable/);
+    assert.match(src,/Do not demand the action in visual_intent merely because narration describes it/);
+  }
+});
+
 test('final canonicalizer reanchors queries to the normalized primary subject',()=>{
   const src=nodeCode('Canonicalize Final Storyboard');
   assert.match(src,/const mustShow = normalizeMustShowAnchors\(rawMustShow, visualIntent, shotId\)/);
