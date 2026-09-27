@@ -143,7 +143,7 @@ test('10935 regression: 26.976s cannot be silently padded into a 30s product',()
   const repair=m5By['Build Timing Repair'].parameters.jsCode;
   assert.match(repair,/desiredDurationMs/);
   assert.match(repair,/one semantic-safe rewrite/);
-  assert.match(repair,/no new facts, filler/);
+  assert.match(repair,/no unsupported new facts, filler/);
 });
 
 test('M5 persists the accepted audio candidate before committing the storyboard',()=>{
