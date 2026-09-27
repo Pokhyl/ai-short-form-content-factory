@@ -22,15 +22,15 @@ function build(language_code, target_duration_seconds) {
 
 test('initial Ukrainian 30-second request uses observed sentence cadence and word budget without changing the audio gate', () => {
   const uk30 = build('uk',30);
-  assert.equal(uk30.target_words,53);
+  assert.equal(uk30.target_words,60);
   assert.deepEqual([uk30.word_min,uk30.word_max],[18,72]);
-  assert.deepEqual(uk30.scene_word_targets,[6,6,6,6,6,6,6,5,6]);
+  assert.deepEqual(uk30.scene_word_targets,[7,7,7,7,7,7,6,6,6]);
   assert.equal(build('uk',45).target_words,68);
   assert.equal(build('pl',30).target_words,54);
   assert.match(uk30.user_message,/specific causal details from those sources/);
   assert.match(uk30.user_message,/prefer 7-9 natural complete sentences/);
-  assert.match(uk30.user_message,/count the narration words before returning JSON; target about 53 words/);
-  assert.doesNotMatch(uk30.user_message,/target exactly 53 words/);
+  assert.match(uk30.user_message,/count the narration words before returning JSON; target about 60 words/);
+  assert.doesNotMatch(uk30.user_message,/target exactly 60 words/);
 });
 
 test('one measured expansion stays within scene capacity and supplies only cited research', () => {
