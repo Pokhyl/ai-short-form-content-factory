@@ -20,14 +20,17 @@ function build(language_code, target_duration_seconds) {
   }).json;
 }
 
-test('initial Ukrainian 30-second word target uses observed voiceover calibration without changing the audio gate', () => {
+test('initial Ukrainian 30-second request uses observed sentence cadence and word budget without changing the audio gate', () => {
   const uk30 = build('uk',30);
-  assert.equal(uk30.target_words,54);
+  assert.equal(uk30.target_words,45);
   assert.deepEqual([uk30.word_min,uk30.word_max],[18,72]);
-  assert.deepEqual(uk30.scene_word_targets,Array(9).fill(6));
+  assert.deepEqual(uk30.scene_word_targets,Array(9).fill(5));
   assert.equal(build('uk',45).target_words,68);
   assert.equal(build('pl',30).target_words,54);
   assert.match(uk30.user_message,/specific causal details from those sources/);
+  assert.match(uk30.user_message,/prefer 7-9 natural complete sentences/);
+  assert.match(uk30.user_message,/count the narration words before returning JSON; target about 45 words/);
+  assert.doesNotMatch(uk30.user_message,/target exactly 45 words/);
 });
 
 test('one measured expansion stays within scene capacity and supplies only cited research', () => {
