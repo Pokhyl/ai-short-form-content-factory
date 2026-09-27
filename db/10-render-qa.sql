@@ -105,6 +105,8 @@ DECLARE
     v_scenes jsonb;
     v_target_duration_ms integer;
     v_min_duration_ms integer;
+    v_max_duration_ms integer;
+    v_render_duration_ms integer;
 BEGIN
     SELECT *
       INTO v_job
@@ -141,14 +143,24 @@ BEGIN
         ELSE NULL
     END;
 
+    v_max_duration_ms := CASE v_target_duration_ms
+        WHEN 15000 THEN 15768
+        WHEN 30000 THEN 32000
+        WHEN 45000 THEN 46128
+        WHEN 60000 THEN 61656
+        ELSE NULL
+    END;
+
     IF v_voice.duration_ms <= 0
-       OR v_voice.duration_ms > v_target_duration_ms
+       OR v_voice.duration_ms > v_max_duration_ms
        OR v_voice.duration_ms < v_min_duration_ms THEN
         RAISE EXCEPTION
             'voiceover duration outside observed product window: got % ms, allowed %..% ms',
-            v_voice.duration_ms,v_min_duration_ms,v_target_duration_ms
+            v_voice.duration_ms,v_min_duration_ms,v_max_duration_ms
             USING ERRCODE='22023';
     END IF;
+
+    v_render_duration_ms := greatest(v_target_duration_ms,v_voice.duration_ms);
 
     SELECT count(*)::integer
       INTO v_scene_count
@@ -181,7 +193,7 @@ BEGIN
             END AS segment_start_ms,
             COALESCE(
                 lead(st.start_ms) OVER (ORDER BY sc.scene_order,sh.shot_order),
-                v_target_duration_ms
+                v_render_duration_ms
             ) AS segment_end_ms,
             va.id AS visual_asset_id,
             va.storage_path AS asset_path,
@@ -235,7 +247,7 @@ BEGIN
                 CASE WHEN sc.scene_order=1 THEN 0 ELSE st.start_ms END AS seg_start,
                 COALESCE(
                     lead(st.start_ms) OVER (ORDER BY sc.scene_order,sh.shot_order),
-                    v_target_duration_ms
+                    v_render_duration_ms
                 ) AS seg_end
             FROM factory.scenes sc
             JOIN factory.scene_timings st ON st.scene_id=sc.id
@@ -249,11 +261,11 @@ BEGIN
            OR start_ms < seg_start
            OR end_ms > seg_end
            OR end_ms > v_voice.duration_ms
-           OR seg_end > v_target_duration_ms
+           OR seg_end > v_render_duration_ms
            OR (seg_end - seg_start) > (
                6500 + CASE
-                   WHEN seg_end = v_target_duration_ms
-                   THEN v_target_duration_ms - v_voice.duration_ms
+                   WHEN seg_end = v_render_duration_ms
+                   THEN v_render_duration_ms - v_voice.duration_ms
                    ELSE 0
                END
            )
@@ -281,7 +293,7 @@ BEGIN
         v_voice.storage_path,
         v_voice.audio_sha256,
         v_voice.duration_ms,
-        v_target_duration_ms,
+        v_render_duration_ms,
         v_scene_count,
         v_scenes;
 END;
@@ -309,6 +321,7 @@ DECLARE
     v_duration_ms integer;
     v_delta integer;
     v_target_duration_ms integer;
+    v_render_duration_ms integer;
     v_segment jsonb;
     v_scene_id uuid;
     v_shot_id uuid;
@@ -363,7 +376,8 @@ BEGIN
 
     v_duration_ms := COALESCE((p_result->>'duration_ms')::integer,0);
     v_target_duration_ms := v_job.target_duration_seconds * 1000;
-    v_delta := abs(v_duration_ms - v_target_duration_ms);
+    v_render_duration_ms := greatest(v_target_duration_ms,v_voice.duration_ms);
+    v_delta := abs(v_duration_ms - v_render_duration_ms);
     v_gates := jsonb_set(
         COALESCE(p_result->'qa_gates','{}'::jsonb),
         '{target_duration}',
@@ -378,7 +392,8 @@ BEGIN
        OR lower(COALESCE(p_result->>'input_audio_sha256','')) <> v_voice.audio_sha256
        OR COALESCE((p_result->>'audio_duration_ms')::integer,0) <> v_voice.duration_ms
        OR abs(COALESCE((p_result->>'muxed_audio_duration_ms')::integer,0) - v_voice.duration_ms) > 100
-       OR COALESCE((p_result->>'target_duration_ms')::integer,0) <> v_target_duration_ms
+       OR COALESCE((p_result->>'requested_duration_ms')::integer,0) <> v_target_duration_ms
+       OR COALESCE((p_result->>'target_duration_ms')::integer,0) <> v_render_duration_ms
        OR lower(COALESCE(p_result->>'sha256','')) !~ '^[0-9a-f]{64}$'
        OR COALESCE((p_result->>'bytes')::bigint,0) <= 0
        OR COALESCE((p_result->>'width')::integer,0) <> 1080
@@ -458,7 +473,7 @@ BEGIN
                     lead(st.start_ms) OVER (
                         ORDER BY sc.scene_order,sh.shot_order
                     ),
-                    v_target_duration_ms
+                    v_render_duration_ms
                 ) AS expected_end,
                 va.sha256 AS expected_sha
             FROM factory.scenes sc
@@ -499,7 +514,7 @@ BEGIN
     END LOOP;
 
     IF v_count <> v_run.expected_scene_count
-       OR v_previous_end <> v_target_duration_ms THEN
+       OR v_previous_end <> v_render_duration_ms THEN
         RAISE EXCEPTION 'render segment coverage incomplete'
             USING ERRCODE='22023';
     END IF;

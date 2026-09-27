@@ -94,6 +94,7 @@ DECLARE
     v_expected_path text;
     v_target_ms integer;
     v_min_duration_ms integer;
+    v_max_duration_ms integer;
     v_candidate_id uuid;
 BEGIN
     SELECT *
@@ -190,13 +191,20 @@ BEGIN
         WHEN 60000 THEN 58176
         ELSE NULL
     END;
+    v_max_duration_ms := CASE v_target_ms
+        WHEN 15000 THEN 15768
+        WHEN 30000 THEN 32000
+        WHEN 45000 THEN 46128
+        WHEN 60000 THEN 61656
+        ELSE NULL
+    END;
 
     IF p_duration_ms IS NULL
        OR p_duration_ms < v_min_duration_ms
-       OR p_duration_ms > v_target_ms THEN
+       OR p_duration_ms > v_max_duration_ms THEN
         RAISE EXCEPTION
             'voiceover candidate duration outside observed product window: got % ms, allowed %..% ms',
-            p_duration_ms,v_min_duration_ms,v_target_ms
+            p_duration_ms,v_min_duration_ms,v_max_duration_ms
             USING ERRCODE='22023';
     END IF;
 
@@ -294,6 +302,7 @@ DECLARE
     v_expected_candidate_path text;
     v_target_ms integer;
     v_min_duration_ms integer;
+    v_max_duration_ms integer;
 BEGIN
     SELECT *
       INTO v_job
@@ -378,6 +387,13 @@ BEGIN
             WHEN 60000 THEN 58176
             ELSE NULL
         END;
+        v_max_duration_ms := CASE v_target_ms
+            WHEN 15000 THEN 15768
+            WHEN 30000 THEN 32000
+            WHEN 45000 THEN 46128
+            WHEN 60000 THEN 61656
+            ELSE NULL
+        END;
 
         IF v_candidate.script_run_id <> v_script.script_run_id
            OR v_candidate.narration <> v_script.narration
@@ -386,7 +402,7 @@ BEGIN
            OR v_candidate.sku_family <> v_sku
            OR v_candidate.storage_path <> v_expected_candidate_path
            OR v_candidate.duration_ms < v_min_duration_ms
-           OR v_candidate.duration_ms > v_target_ms
+           OR v_candidate.duration_ms > v_max_duration_ms
            OR NOT FOUND
            OR v_usage.state <> 'committed'
            OR v_usage.id <> v_candidate.usage_ledger_id

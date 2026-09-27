@@ -1,4 +1,4 @@
-"""Real FFmpeg regression: natural audio ends before exact product video target."""
+"""Real FFmpeg regression: natural audio ends before or slightly beyond the nominal product target."""
 import importlib.util
 import subprocess
 import tempfile
@@ -79,7 +79,7 @@ with tempfile.TemporaryDirectory() as tmp:
     render_dir = media_worker.RENDER_ROOT / JOB_ID
     render_dir.mkdir(parents=True)
     result = media_worker.render_final_video(
-        JOB_ID, audio_sha, audio["duration_ms"], 30000, scenes, render_dir,
+        JOB_ID, audio_sha, audio["duration_ms"], 30000, 30000, scenes, render_dir,
     )
     assert result["audio_duration_ms"] == audio["duration_ms"]
     assert result["target_duration_ms"] == 30000
@@ -99,13 +99,38 @@ with tempfile.TemporaryDirectory() as tmp:
     assert audio_path.read_bytes() == source_bytes
     assert media_worker.file_sha256(render_dir / "final.mp4") == result["sha256"]
 
-    for too_short_or_long in (27.0, 30.1):
+    # Real MP3 over nominal duration: preserve speech and render the extra frames.
+    synth(audio_path, 30.84)
+    long_audio = media_worker.ffprobe_audio(audio_path)
+    long_ms = long_audio["duration_ms"]
+    assert 30000 < long_ms <= 32000, long_audio
+    long_sha = media_worker.file_sha256(audio_path)
+    long_bytes = audio_path.read_bytes()
+    scenes[-1]["segment_end_ms"] = long_ms
+    scenes[-1]["speech_end_ms"] = long_ms - 100
+    long_dir = media_worker.RENDER_ROOT / "over-nominal"
+    long_dir.mkdir(parents=True)
+    long_result = media_worker.render_final_video(
+        JOB_ID, long_sha, long_ms, long_ms, 30000, scenes, long_dir,
+    )
+    assert long_result["requested_duration_ms"] == 30000
+    assert long_result["audio_duration_ms"] == long_ms
+    assert long_result["target_duration_ms"] == long_ms
+    assert abs(long_result["duration_ms"] - long_ms) <= 100, long_result
+    assert abs(long_result["muxed_audio_duration_ms"] - long_ms) <= 100
+    assert long_result["segments"][-1]["end_ms"] == long_ms
+    assert audio_path.read_bytes() == long_bytes
+    assert media_worker.file_sha256(audio_path) == long_sha
+    scenes[-1]["segment_end_ms"] = 30000
+    scenes[-1]["speech_end_ms"] = 28380
+
+    for too_short_or_long in (27.0, 32.5):
         synth(audio_path, too_short_or_long)
         before = media_worker.ffprobe_audio(audio_path)["duration_ms"]
         try:
             media_worker.render_final_video(
                 JOB_ID, media_worker.file_sha256(audio_path),
-                before, 30000, scenes, render_dir,
+                before, 30000, 30000, scenes, render_dir,
             )
         except ValueError as exc:
             assert "render target/audio duration contract" in str(exc), exc

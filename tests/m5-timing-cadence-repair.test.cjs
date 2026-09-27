@@ -55,7 +55,7 @@ test('short narration gets one bounded semantic expansion aimed inside the obser
 
   assert.match(out.system_message,/Lengthen only through natural same-proposition grammar/);
   assert.match(out.system_message,/Never pad with descriptive modifiers/);
-  assert.match(out.user_message,/ACCEPTABLE AUDIO DURATION: 28464\.\.30000 ms/);
+  assert.match(out.user_message,/ACCEPTABLE AUDIO DURATION: 28464\.\.32000 ms/);
   assert.match(out.user_message,/MEASURED TARGET WORD COUNT: about 55 words/);
   assert.match(out.user_message,/one semantic-safe rewrite/);
   assert.match(out.user_message,/no unsupported new facts, filler/);

@@ -277,6 +277,7 @@ DECLARE
     v_expected_path text;
     v_target_duration_ms integer;
     v_min_duration_ms integer;
+    v_max_duration_ms integer;
 BEGIN
     SELECT *
       INTO v_run
@@ -313,13 +314,21 @@ BEGIN
         ELSE NULL
     END;
 
-    -- Minimums are the observed production voiceover lower bounds.
+    v_max_duration_ms := CASE v_target_duration_ms
+        WHEN 15000 THEN 15768
+        WHEN 30000 THEN 32000
+        WHEN 45000 THEN 46128
+        WHEN 60000 THEN 61656
+        ELSE NULL
+    END;
+
+    -- Bounds track observed production; the 30-second upper limit is 32 seconds.
     IF p_duration_ms IS NULL
        OR p_duration_ms < v_min_duration_ms
-       OR p_duration_ms > v_target_duration_ms THEN
+       OR p_duration_ms > v_max_duration_ms THEN
         RAISE EXCEPTION
             'voiceover duration outside observed product window: got % ms, allowed %..% ms',
-            p_duration_ms,v_min_duration_ms,v_target_duration_ms
+            p_duration_ms,v_min_duration_ms,v_max_duration_ms
             USING ERRCODE='22023';
     END IF;
 

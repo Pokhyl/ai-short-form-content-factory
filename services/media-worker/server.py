@@ -1399,6 +1399,7 @@ def render_final_video(
     input_audio_sha256,
     audio_duration_ms,
     target_duration_ms,
+    requested_duration_ms,
     scenes,
     final_dir: Path,
 ):
@@ -1419,11 +1420,19 @@ def render_final_video(
         30000: 28464,
         45000: 42864,
         60000: 58176,
-    }.get(target_duration_ms)
+    }.get(requested_duration_ms)
+    maximum_audio_ms = {
+        15000: 15768,
+        30000: 32000,
+        45000: 46128,
+        60000: 61656,
+    }.get(requested_duration_ms)
     if (
         minimum_audio_ms is None
+        or maximum_audio_ms is None
         or audio_duration_ms < minimum_audio_ms
-        or audio_duration_ms > target_duration_ms
+        or audio_duration_ms > maximum_audio_ms
+        or target_duration_ms != max(requested_duration_ms, audio_duration_ms)
     ):
         raise ValueError("render target/audio duration contract is invalid")
 
@@ -1666,6 +1675,7 @@ def render_final_video(
         "bytes": final_path.stat().st_size,
         **probe,
         "audio_duration_ms": audio_duration_ms,
+        "requested_duration_ms": requested_duration_ms,
         "target_duration_ms": target_duration_ms,
         "duration_delta_ms": duration_delta_ms,
         "input_audio_sha256": input_audio_sha256,
@@ -2719,8 +2729,9 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 audio_duration_ms = int(payload.get("audio_duration_ms"))
                 target_duration_ms = int(payload.get("target_duration_ms"))
+                requested_duration_ms = int(payload.get("requested_duration_ms"))
             except (TypeError, ValueError) as exc:
-                raise ValueError("audio_duration_ms and target_duration_ms must be integers") from exc
+                raise ValueError("audio_duration_ms, requested_duration_ms and target_duration_ms must be integers") from exc
 
             scenes = payload.get("scenes")
             if not re.fullmatch(r"[0-9a-f]{64}", input_audio_sha256):
@@ -2749,6 +2760,7 @@ class Handler(BaseHTTPRequestHandler):
                 input_audio_sha256,
                 audio_duration_ms,
                 target_duration_ms,
+                requested_duration_ms,
                 scenes,
                 final_dir,
             )

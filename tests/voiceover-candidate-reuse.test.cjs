@@ -322,7 +322,7 @@ test('9621 regression: every M5 timing probe canonicalizes visual-cut punctuatio
 });
 
 
-test('M5/M6 use the same observed one-sided audio window without padding',()=>{
+test('M5/M6 use the same observed bounded audio window without padding',()=>{
   const code=m5By['Normalize Timing Stability B'].parameters.jsCode;
   assert.match(code,/15000: 14208, 30000: 28464, 45000: 42864, 60000: 58176/);
   assert.doesNotMatch(code,/paddingRenderable|padding_ms|acceptedCandidate\\.minimum_duration_ms/);
@@ -341,7 +341,7 @@ test('M5/M6 use the same observed one-sided audio window without padding',()=>{
   }
   assert.match(
     m6By['Normalize Promoted M5 Candidate'].parameters.jsCode,
-    /durationMs >= minimumDurationMs && durationMs <= targetDurationMs/
+    /durationMs >= minimumDurationMs && durationMs <= maximumDurationMs/
   );
 });
 
@@ -350,12 +350,12 @@ test('factory.begin_render returns both durations and extends only the visual co
   const m9=JSON.parse(fs.readFileSync('workflows/VIDEO-M9-Render-Machine-QA.json','utf8'));
   const by=Object.fromEntries(m9.nodes.map(n=>[n.name,n]));
   assert.match(sql,/audio_duration_ms integer,\s*target_duration_ms integer,/s);
-  assert.match(sql,/lead\(st\.start_ms\).*?v_target_duration_ms/s);
+  assert.match(sql,/lead\(st\.start_ms\).*?v_render_duration_ms/s);
   assert.match(sql,/end_ms > v_voice\.duration_ms/);
-  assert.match(sql,/v_previous_end <> v_target_duration_ms/);
+  assert.match(sql,/v_previous_end <> v_render_duration_ms/);
   assert.match(by['Begin Render'].parameters.query,/audio_duration_ms, target_duration_ms/);
   assert.match(by['Run Deterministic Render'].parameters.jsonBody,
-    /target_duration_ms: target, scenes/);
+    /target_duration_ms: target, requested_duration_ms:/);
   assert.match(by['Validate Render Result'].parameters.jsCode,
     /expectedAudioDuration/);
   assert.match(by['Validate Render Result'].parameters.jsCode,
@@ -380,7 +380,7 @@ test('M9 machine QA compares the video to target and the audio stream to actual 
   };
   const ctx={
     render_run_id:'55555555-5555-4555-8555-555555555555',
-    audio_sha256:sha,audio_duration_ms:28800,target_duration_ms:30000,
+    audio_sha256:sha,audio_duration_ms:28800,target_duration_ms:30000,requested_duration_ms:30000,
     expected_scene_count:1,
     scenes_json:[{...segment,segment_start_ms:0,segment_end_ms:30000}],
   };
@@ -393,7 +393,7 @@ test('M9 machine QA compares the video to target and the audio stream to actual 
     video_codec:'h264',audio_codec:'aac',pix_fmt:'yuv420p',
     fps_num:30,fps_den:1,video_stream_count:1,audio_stream_count:1,
     audio_duration_ms:28800,muxed_audio_duration_ms:28822,
-    target_duration_ms:30000,duration_ms:30000,duration_delta_ms:0,
+    target_duration_ms:30000,requested_duration_ms:30000,duration_ms:30000,duration_delta_ms:0,
     input_audio_sha256:sha,segments:[segment],qa_passed:true,
     qa_gates:{
       video_dimensions:true,video_codec:true,audio_codec:true,
@@ -407,6 +407,26 @@ test('M9 machine QA compares the video to target and the audio stream to actual 
   assert.equal(run({...base,duration_ms:28800,duration_delta_ms:1200}),false);
   assert.equal(run({...base,muxed_audio_duration_ms:27000}),false);
   assert.equal(run({...base,segments:[{...segment,end_ms:28800}]}),false);
+  const longMs=30864;
+  const longCtx={
+    ...ctx, audio_duration_ms:longMs,target_duration_ms:longMs,
+    scenes_json:[{...segment,segment_start_ms:0,segment_end_ms:longMs}],
+  };
+  const $long=name=>({first:()=>({json:
+    name==='Begin Render'?longCtx:{job_id:job}})});
+  const longSegment={...segment,end_ms:longMs,duration_ms:longMs};
+  const longBody={
+    ...base,audio_duration_ms:longMs,muxed_audio_duration_ms:longMs+22,
+    target_duration_ms:longMs,duration_ms:longMs,duration_delta_ms:0,
+    segments:[longSegment],
+  };
+  const runLong=body=>new Function('$','$json',code)($long,
+    {statusCode:201,body}).json.render_success;
+  assert.equal(runLong(longBody),true);
+  assert.equal(runLong({...longBody,duration_ms:30000,duration_delta_ms:864}),false);
+  assert.equal(runLong({...longBody,muxed_audio_duration_ms:30000}),false);
+  assert.equal(runLong({...longBody,requested_duration_ms:32000}),false);
+
 });
 
 test('30s candidate inside production range is reused byte-for-byte with no narration rewrite',()=>{
@@ -437,7 +457,7 @@ test('30s candidate inside production range is reused byte-for-byte with no narr
   assert.equal(result.storyboard.narration,'Natural script stays unchanged');
 });
 
-test('overlong M5 voice is rejected even if it is inside the old symmetric tolerance',()=>{
+test('M5 accepts a natural 30.864s voice and rejects beyond the 32s ceiling',()=>{
   const code=m5By['Normalize Timing Probe'].parameters.jsCode;
   const ctx={
     script_run_id:'run',model:'model',storyboard:{narration:'spoken'},
@@ -449,5 +469,6 @@ test('overlong M5 voice is rejected even if it is inside the old symmetric toler
     {statusCode:200,body:{status:'ready',duration_ms:ms}}).json.timing_ok;
   assert.equal(run(29000),true);
   assert.equal(run(27000),false);
-  assert.equal(run(30100),false);
+  assert.equal(run(30864),true);
+  assert.equal(run(32001),false);
 });
