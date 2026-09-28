@@ -1,3 +1,14 @@
+## 2026-09-29 — M8 core-intent semantics fix live
+
+- Immutable acceptance smoke `4fb165b9-9e1c-4ba1-a1c4-5f857029c20d` (`jak działa ładowarka indukcyjna`, pl30/gemini) is terminal `visuals_failed`; never rerun it. Visual run `139069fe-6222-4967-8e2f-071b49470af4` failed on S1-A in M8 execution `11484`.
+- Exact S1-A contract: visual_intent=`A wireless charging pad placed on a wooden desk surface.`, must_show=`["wireless charging pad"]`, must_not_show=`["smartwatch"]`.
+- Raw Vision evidence confirms the blocker: Wikimedia `68169881` was an actual wireless charging pad with `must_show_visible=true` and `must_not_show_clear=true`, but Gemini returned `intent_match=false`, score 40, solely because the support surface was not visibly wooden (`Shows a wireless charging pad, but the surface is not a wooden desk.`).
+- Commit `e9ac24b` fixes the semantic mismatch without changing gates: `intent_match` now distinguishes core scene semantics from incidental presentation details such as surface material/color, desk/background style, lighting, framing and exact placement unless explicitly required by `must_show` or necessary for functional-domain identity.
+- Verification: targeted `gemini-visual-validation` 20/20 PASS; full JS 507/507 PASS; workflow JSON PASS; `git diff --check` PASS. The 70 score floor, must_show, must_not_show, intent_match, uniqueness and provider hard-reject gates remain unchanged.
+- Production M8 `VideoM8Visuals001` is active version `5353da37-dc85-4ddb-8afd-eaeae459d9e5`; publisher restart exit=0; `/healthz`=200; live nodes/connections/settings exactly match Git (`SOURCE_MATCH=true`).
+- Before deployment, 3 pre-existing M8 CLI orphan processes (~3h old) were removed by exact cmdline/PID checks. Successful import/publish CLI wrappers were also terminated only after DB confirmed the state change, leaving no duplicate M8 CLI operation.
+- Next gate: exactly one fresh independent different-topic pl30/gemini acceptance smoke after docs commit/push; persist ID before launch, launch once, trace M4→M9, and audit the exact final MP4 if machine QA passes.
+
 ## 2026-09-28 — M5 interaction-subject fix live
 
 - Commit `2feca53` is deployed as production `VideoM5Storyboard001`, active version `15cba962-ce9d-45d4-932d-f5a353e0982b`.

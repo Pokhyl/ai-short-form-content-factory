@@ -1,3 +1,11 @@
+## 2026-09-29 — validate deployed M8 core-intent semantics fix
+
+1. Treat smoke `4fb165b9-9e1c-4ba1-a1c4-5f857029c20d` (`jak działa ładowarka indukcyjna`, pl30/gemini) as immutable `visuals_failed`; never rerun it.
+2. Commit `e9ac24b` is live in `VideoM8Visuals001` as active version `5353da37-dc85-4ddb-8afd-eaeae459d9e5`; do not redeploy unless Git changes.
+3. Create exactly one fresh independent different-topic pl30/gemini smoke, persist its ID before launch, launch that exact ID once, and never rerun it if it fails.
+4. Trace M4→M9. Preserve exact candidate/Vision evidence for any M8 failure; do not lower the 70 score floor or bypass must_show, intent_match, must_not_show, uniqueness, or provider hard-reject gates.
+5. If machine QA passes, run `scripts/audit_final_media.py` on the exact final MP4 and inspect selected visuals before product acceptance.
+
 ## 2026-09-28 — validate live M5 interaction-subject fix
 
 1. Create exactly one fresh independent pl30/gemini acceptance smoke after deployed commit `2feca53`; persist its ID before launch.
