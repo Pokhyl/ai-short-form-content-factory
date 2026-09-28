@@ -1,3 +1,8 @@
+## 2026-09-28 — shared Gemini helper deployed; run one acceptance smoke
+- Deployment gate complete: helper v1 and M5 v188 are published, source-equal to Git, n8n healthy, zero active executions.
+- Next: create exactly one fresh different-topic 30s Gemini job, persist its ID, launch once, and trace M3->M9 to terminal.
+- If it fails, diagnose and fix the generic failing contract/provider path before creating another smoke. Do not weaken semantic, language, timing, or visual gates.
+
 ## 2026-09-28 — next gate: deploy shared Gemini helper
 1. Commit/push the tested shared-helper change without `.tmp/` or backup artifacts.
 2. With zero active executions, stop production n8n once, import/publish `VideoGeminiResilient001` first, then import/publish M5, restart n8n, and verify health plus live source equality to Git.

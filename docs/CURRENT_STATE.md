@@ -1,3 +1,10 @@
+## 2026-09-28 — shared Gemini helper deployed
+- Commit `7a796ab` deployed to production.
+- `VideoGeminiResilient001`: v1, active `e78e465d-2c8c-4fd6-bc78-3e6ea0018f16`.
+- M5: v188, active `fb0e0da3-57b6-441b-a831-c2faadb68711`.
+- Live nodes/connections/settings for helper and M5 match Git exactly; n8n /healthz=200; active executions=0.
+- Next acceptance gate: exactly one fresh different-topic 30s Gemini smoke, trace M3->M9 to terminal; never rerun failed job IDs.
+
 ## 2026-09-28 — shared Gemini resilience prepared, not yet deployed
 - Production M5 is still v187 / active version `10707d7c-837d-43d0-8eac-f1f77fe57f53`.
 - Smoke `b4a80ba5-7406-4a5a-96a1-1e3d3ab98f69` failed terminally in M5 execution 11381 after all three current storyboard provider batches returned Gemini `high demand`; do not rerun this job.
