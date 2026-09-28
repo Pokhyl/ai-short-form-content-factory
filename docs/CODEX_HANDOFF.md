@@ -1,3 +1,7 @@
+## 2026-09-28 — new smoke explicitly authorized by user
+
+- The user explicitly removed the previous no-next-smoke limit. With M4 `af187b9a-d607-4517-b3e1-5ef5c4b0a640`, M5 `839d2f5e-c128-4692-b94e-bd0f108259d5`, zero active executions and healthy worker, created new uk30/gemini theory job `0cbab7c2-691a-49cb-8ce7-fa53fcfe3f22` via `/webhook/jobs` HTTP201 and launched it **once** via `/webhook/factory/run` HTTP202. Trace this exact ID to terminal and audit actual MP4 if passed. Never rerun earlier failed jobs.
+
 ## 2026-09-28 — immutable smoke `ab14993c` and generic M5 visual fix
 
 - The one fresh theory smoke `ab14993c-0032-4368-9ef5-3b71c368a389` is terminal `script_failed`. M4 execution `11341` PASS, supplied nine cosmology references (no sitcom sources), so the research disambiguation worked on this case. M5 execution `11342` FAIL before TTS: `S6-A contains generic/non-photographic visual request`. Initial Gemini proposed a digital cosmic-background map (correctly rejected); both bounded repairs proposed a photographable astrophysical antenna but query 2 said `radio telescope background signals`, rejected solely by the aesthetic `background` word filter. Never rerun this job.
