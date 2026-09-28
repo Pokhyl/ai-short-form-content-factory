@@ -1,3 +1,9 @@
+## 2026-09-28 — helper v3 live acceptance
+1. Helper v3 deployment is complete and source-equal; do not redeploy unless Git changes.
+2. Create one fresh different-topic pl30/gemini smoke, persist ID before launch, launch once, trace to terminal.
+3. If M3-M9 reaches machine QA PASS, run corrected `scripts/audit_final_media.py` on the exact final MP4 and record hashes/durations/gates.
+4. If all five provider batches still end in 503, do not add more rapid model retries; implement deferred provider availability/resume so jobs wait for recovery instead of terminally failing during a long Gemini capacity outage.
+
 ## 2026-09-28 — deploy helper v3 after M4 v8 production proof
 1. Commit/push helper v3 + provider regression + corrected 34s audit contract; do not touch `.tmp/`.
 2. With zero active executions, import/publish only `VideoGeminiResilient001`, restart n8n, verify helper live source equals Git and /healthz=200. M4 remains v8 and M5 remains v188.
