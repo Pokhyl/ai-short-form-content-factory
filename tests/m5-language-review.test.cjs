@@ -16,18 +16,32 @@ for(const suffix of ['',' Retry',' Final']) {
   assert.deepEqual(out.storyboard,source.storyboard);assert.deepEqual(out.accepted_voiceover_candidate,source.accepted_voiceover_candidate);assert.equal(out.language_review.passed,true);
  });
 }
-test('language repair bounded to one pass; final and retry rejects cannot reach audio commit',()=>{
+test('new review findings receive one bounded second repair, then terminal review',()=>{
  const issues=[{quote:source.storyboard.narration,category:'wrong_language',explanation:'wrong language'}];
  assert.equal(run('Validate Narration Language Review',response({language:'uk',issues})).language_review.passed,false);
- for(const suffix of [' Retry',' Final']) {
-  const name='Validate Narration Language Review'+suffix;
-  assert.throws(()=>run(name,response({language:'uk',issues})),/M5_LANGUAGE_QA_FAILED/);
-  assert.equal(w.connections[name].main[1][0].node,'Prepare Script Failure');
- }
+ const pending=run('Validate Narration Language Review Retry',response({language:'uk',issues}));
+ assert.equal(pending.language_review.passed,false);
+ assert.deepEqual(pending.storyboard,source.storyboard);
+ assert.deepEqual(pending.accepted_voiceover_candidate,source.accepted_voiceover_candidate);
+ assert.equal(w.connections['Validate Narration Language Review Retry'].main[0][0].node,'Route Narration Language Second Pass');
+ assert.equal(w.connections['Route Narration Language Second Pass'].main[1][0].node,'Build Narration Language Repair Second Pass');
+ assert.equal(w.connections['Validate Narration Language Repair Second Pass'].main[0][0].node,'Build Narration Language Review Second Pass');
+ assert.throws(()=>new Function('$','$json',n['Validate Narration Language Review Second Pass'].parameters.jsCode)(()=>({first:()=>({json:ctx})}),response({language:'uk',issues})),/M5_LANGUAGE_QA_FAILED/);
+ assert.equal(w.connections['Validate Narration Language Review Second Pass'].main[1][0].node,'Prepare Script Failure');
  assert.equal(w.connections['Route Narration Language PASS'].main[1][0].node,'Build Narration Language Repair');
- assert.equal(w.connections['Validate Narration Language Repair'].main[0][0].node,'Build Narration Language Review Retry');
  for(const name of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2'])assert.equal(w.connections[name].main[0][0].node,'Build Narration Language Review');
  assert.equal(w.connections['Canonicalize Final Storyboard'].main[0][0].node,'Build Narration Language Review Final');
+});
+test('second repair only requests newly flagged scene and retains previously corrected narration',()=>{
+ const scenes=[{scene_id:'S4',narration:'Температура поступово спадала.',shots:[{must_show:'thermometer'}],evidence_ids:['E1']},{scene_id:'S7',narration:'реликтове випромінювання.',shots:[{must_show:'radio antenna'}],evidence_ids:['E2']}];
+ const current={storyboard:{narration:scenes.map(s=>s.narration).join(' '),scenes},language_review:{passed:false,issues:[{quote:scenes[1].narration,category:'wrong_language',explanation:'foreign spelling'}]}};
+ const originalContext={language_code:'uk',topic:'unrelated scientific topic'};
+ const $=()=>({first:()=>({json:originalContext})});
+ const built=new Function('$','$json',n['Build Narration Language Repair Second Pass'].parameters.jsCode)($,current).json;
+ assert.deepEqual(built.repair_scene_ids,['S7']);
+ assert.deepEqual(Object.keys(built.response_json_schema.properties.narrations.properties),['S7']);
+ assert.equal(built.base_storyboard.scenes[0].narration,scenes[0].narration);
+ assert.equal(built.base_storyboard.scenes[1].narration,scenes[1].narration);
 });
 test('new requests retain model, credentials and bounded provider retries',()=>{
  for(const name of ['Review Narration Language','Review Narration Language Retry','Review Narration Language Final','Repair Narration Language']){
@@ -148,7 +162,7 @@ test('retry language review can reject semantic drift after repair',()=>{
  assert.equal(build.reference_pairs[0].original,'Кожна комірка має транзистор та конденсатор.');
  const validate=new Function('$','$json',n['Validate Narration Language Review Retry'].parameters.jsCode);
  const $=()=>({first:()=>({json:build})});
- assert.throws(()=>validate($,response({language:'uk',issues:[{quote:'Кожна комірка має лише транзистор.',category:'meaning_change',explanation:'The capacitor concept was dropped.'}]})),/M5_LANGUAGE_QA_FAILED/);
+ assert.equal(validate($,response({language:'uk',issues:[{quote:'Кожна комірка має лише транзистор.',category:'meaning_change',explanation:'The capacitor concept was dropped.'}]})).json.language_review.passed,false);
 });
 
 test('live 10042 natural repair replay preserves meaning and passes second review',()=>{
@@ -217,7 +231,7 @@ test('retry spoken-language QA still blocks audible grammar, wrong language and 
   {quote:'Поточний текст.',category:'wrong_language',explanation:'Foreign lexical form.'},
   {quote:'Поточний текст.',category:'meaning_change',explanation:'Meaning was changed.'},
   {quote:'Поточний текст.',category:'grammar',explanation:'Incorrect verb agreement changes the spoken sentence.'},
- ]) assert.throws(()=>validate(issue),/M5_LANGUAGE_QA_FAILED/);
+ ]) assert.equal(validate(issue).json.language_review.passed,false);
 });
 
 test('final spoken-language QA treats punctuation-only grammar and filler as advisory',()=>{
