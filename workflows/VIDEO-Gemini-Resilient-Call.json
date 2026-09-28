@@ -233,7 +233,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ 'https://generativelanguage.googleapis.com/v1beta/models/' + ($('When Executed by Another Workflow').first().json.primary_model || 'gemini-3.5-flash-lite') + ':generateContent' }}",
+        "url": "={{ 'https://generativelanguage.googleapis.com/v1beta/models/' + 'gemini-3.8-flash' + ':generateContent' }}",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "googlePalmApi",
         "sendBody": true,

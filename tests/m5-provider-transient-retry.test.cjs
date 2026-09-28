@@ -53,7 +53,7 @@ test('shared Gemini helper uses bounded 2x5s batches with 30s and 60s transient 
   assert.equal(helperByName['Wait 60s'].parameters.unit,'seconds');
   assert.match(helperByName['Gemini Fallback'].parameters.url,/gemini-3\.1-flash-lite/);
   assert.match(helperByName['Gemini Primary'].parameters.url,/primary_model/);
-  assert.match(helperByName['Gemini Final'].parameters.url,/primary_model/);
+  assert.match(helperByName['Gemini Final'].parameters.url,/gemini-3\.8-flash/);
 });
 
 test('shared helper retries only transient provider failures and preserves successful or non-transient responses',()=>{

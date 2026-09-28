@@ -1,3 +1,9 @@
+## 2026-09-28 — helper v1 verified, 3.8 final fallback prepared
+- Smoke `9e62f5f4-4866-4c7d-bc7a-434233128477` failed terminally in M5 after helper execution 11386 exhausted 3.5 -> 30s -> 3.1 -> 60s -> 3.5 with Gemini `high demand`. Do not rerun this job.
+- Shared helper architecture itself executed correctly in production. The remaining issue is model availability, not routing.
+- Working-tree helper change replaces the third batch with stable/free structured-output `gemini-3.8-flash`, giving actual model diversification: 3.5 -> 3.1 -> 3.8. M5 validators remain unchanged.
+- Validation: provider 8/8 PASS; full JS 503/503 PASS; n8n 2.37.10 dry import PASS. Not deployed yet.
+
 ## 2026-09-28 — shared Gemini helper deployed
 - Commit `7a796ab` deployed to production.
 - `VideoGeminiResilient001`: v1, active `e78e465d-2c8c-4fd6-bc78-3e6ea0018f16`.

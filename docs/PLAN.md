@@ -1,3 +1,8 @@
+## 2026-09-28 — deploy Gemini 3.8 final fallback
+- Commit/push helper-only 3.8 final-fallback change plus docs/tests; do not touch `.tmp/`.
+- With zero active executions, import/publish helper only, restart n8n, verify helper source equals Git and /healthz=200.
+- Then run exactly one fresh different-topic 30s Gemini smoke. Failed job IDs remain immutable.
+
 ## 2026-09-28 — shared Gemini helper deployed; run one acceptance smoke
 - Deployment gate complete: helper v1 and M5 v188 are published, source-equal to Git, n8n healthy, zero active executions.
 - Next: create exactly one fresh different-topic 30s Gemini job, persist its ID, launch once, and trace M3->M9 to terminal.
