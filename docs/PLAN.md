@@ -1,3 +1,11 @@
+## 2026-09-28 — validate live M5 interaction-subject fix
+
+1. Create exactly one fresh independent pl30/gemini acceptance smoke after deployed commit `2feca53`; persist its ID before launch.
+2. Launch that exact ID once and never rerun it if it fails.
+3. Trace M4→M9. In M5, verify interaction scenes preserve every independently visible second subject in `must_show[1]` and in both detailed queries.
+4. If M8 fails, preserve exact candidate/Vision evidence and fix generically; do not lower score, must_show, intent, uniqueness, or provider hard-reject gates.
+5. If machine QA passes, run `scripts/audit_final_media.py` against the exact final MP4 and review the selected visuals; status alone is not acceptance.
+
 ## 2026-09-28 — deploy verified M5 interaction-subject fix
 
 1. Commit and push the verified M5 interaction-subject contract/validator regression plus anti-hang operator rule and authoritative docs; keep `.tmp/` out of Git.

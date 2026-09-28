@@ -1,3 +1,11 @@
+## 2026-09-28 — M5 interaction-subject fix live
+
+- Commit `2feca53` is deployed as production `VideoM5Storyboard001`, active version `15cba962-ce9d-45d4-932d-f5a353e0982b`.
+- Predeploy active executions were zero. One-off n8n 2.37.10 CLI publish succeeded; publisher n8n restarted once.
+- Post-restart publisher health is 200; M5 is active with `activeVersionId=versionId`, and live nodes/connections/settings exactly match Git.
+- Verification before deployment: targeted interaction regression PASS, full JS 507/507 PASS, n8n SplitInBatches runtime PASS, isolated M5 import PASS, workflow JSON PASS, `git diff --check` PASS.
+- Next gate: create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID before launch, launch it once, trace M4→M9, and audit the exact final MP4 if machine QA passes.
+
 ## 2026-09-28 — M5 interaction-subject contract fix verified; deploy pending
 
 - Immutable smoke `9ed1a19c-7ad2-495d-9ca1-98ab71d83aa9` reached M8 after M5/M6/M7 PASS and failed on S6-A because Vision received only generic multimeter imagery; all three reviewed candidates had `must_show_visible=true` but `intent_match=false` because no car battery was visible.
