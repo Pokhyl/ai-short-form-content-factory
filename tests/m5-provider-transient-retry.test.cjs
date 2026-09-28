@@ -63,6 +63,56 @@ test('initial storyboard provider exhaustion falls back to free structured-outpu
   assert.match(url,/gemini-3\.5-flash-lite/);
 });
 
+
+test('provider fallback graph applies 30s then 60s waits only on provider-fallback branches',()=>{
+  assert.equal(byName['Wait Initial Provider Backoff'].parameters.amount,30);
+  assert.equal(byName['Wait Initial Provider Backoff'].parameters.unit,'seconds');
+  assert.equal(byName['Wait Second Provider Backoff'].parameters.amount,60);
+  assert.equal(byName['Wait Second Provider Backoff'].parameters.unit,'seconds');
+
+  assert.equal(workflow.connections['Build Storyboard Repair'].main[0][0].node,'Route Initial Provider Backoff');
+  assert.equal(workflow.connections['Route Initial Provider Backoff'].main[0][0].node,'Wait Initial Provider Backoff');
+  assert.equal(workflow.connections['Route Initial Provider Backoff'].main[1][0].node,'Repair Storyboard');
+  assert.equal(workflow.connections['Wait Initial Provider Backoff'].main[0][0].node,'Repair Storyboard');
+
+  assert.equal(workflow.connections['Build Storyboard Repair 2'].main[0][0].node,'Route Second Provider Backoff');
+  assert.equal(workflow.connections['Route Second Provider Backoff'].main[0][0].node,'Wait Second Provider Backoff');
+  assert.equal(workflow.connections['Route Second Provider Backoff'].main[1][0].node,'Repair Storyboard 2');
+  assert.equal(workflow.connections['Wait Second Provider Backoff'].main[0][0].node,'Repair Storyboard 2');
+
+  assert.match(byName['Repair Storyboard 2'].parameters.url,/\$json\.model/);
+});
+
+test('two exhausted transient provider batches schedule one final 3.5 batch with the original prompt',()=>{
+  const code=byName['Build Storyboard Repair 2'].parameters.jsCode;
+  const ctx={
+    script_run_id:'run-second-provider-fallback',
+    model:'gemini-3.5-flash-lite',
+    response_json_schema:{type:'object'},
+    system_message:'SYSTEM',
+    user_message:'USER',
+  };
+  const refs={
+    'Build Script Prompt':ctx,
+    'Repair Storyboard':{error:{description:'This model is currently experiencing high demand.'}},
+    'Generate Storyboard':{error:{description:'This model is currently experiencing high demand.'}},
+    'Validate Storyboard':{error:{description:'This model is currently experiencing high demand.'}},
+  };
+  const $=name=>({first:()=>({json:refs[name]})});
+
+  const out=new Function('$','$json',code)(
+    $,
+    {error:{description:'This model is currently experiencing high demand.'}}
+  ).json;
+
+  assert.equal(out.provider_second_fallback,true);
+  assert.equal(out.provider_fallback_from,'gemini-3.1-flash-lite');
+  assert.equal(out.model,'gemini-3.5-flash-lite');
+  assert.equal(out.system_message,'SYSTEM');
+  assert.equal(out.user_message,'USER');
+  assert.deepEqual(out.response_json_schema,{type:'object'});
+});
+
 test('all Gemini validators preserve provider failure after transient retries and stay inside existing bounded error routing',()=>{
   const expectedErrorTargets={
     'Validate Storyboard':'Build Storyboard Repair',
