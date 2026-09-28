@@ -100,10 +100,10 @@ with tempfile.TemporaryDirectory() as tmp:
     assert media_worker.file_sha256(render_dir / "final.mp4") == result["sha256"]
 
     # Real MP3 over nominal duration: preserve speech and render the extra frames.
-    synth(audio_path, 30.84)
+    synth(audio_path, 33.4)
     long_audio = media_worker.ffprobe_audio(audio_path)
     long_ms = long_audio["duration_ms"]
-    assert 30000 < long_ms <= 32000, long_audio
+    assert 33000 < long_ms <= 34000, long_audio
     long_sha = media_worker.file_sha256(audio_path)
     long_bytes = audio_path.read_bytes()
     scenes[-1]["segment_end_ms"] = long_ms
@@ -124,7 +124,7 @@ with tempfile.TemporaryDirectory() as tmp:
     scenes[-1]["segment_end_ms"] = 30000
     scenes[-1]["speech_end_ms"] = 28380
 
-    for too_short_or_long in (27.0, 32.5):
+    for too_short_or_long in (27.0, 34.5):
         synth(audio_path, too_short_or_long)
         before = media_worker.ffprobe_audio(audio_path)["duration_ms"]
         try:

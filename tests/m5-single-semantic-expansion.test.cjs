@@ -89,5 +89,5 @@ test('short measured Ukrainian speech asks for supported causal detail without l
   assert.match(request.user_message,/never add unsupported facts, generic praise, filler/);
   const gates=code('Normalize Timing Probe 2');
   assert.match(gates,/28464/);
-  assert.match(gates,/32000/);
+  assert.match(gates,/34000/);
 });

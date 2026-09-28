@@ -55,7 +55,7 @@ test('short narration gets one bounded semantic expansion aimed inside the obser
 
   assert.match(out.system_message,/Lengthen only through natural same-proposition grammar/);
   assert.match(out.system_message,/Never pad with descriptive modifiers/);
-  assert.match(out.user_message,/ACCEPTABLE AUDIO DURATION: 28464\.\.32000 ms/);
+  assert.match(out.user_message,/ACCEPTABLE AUDIO DURATION: 28464\.\.34000 ms/);
   assert.match(out.user_message,/MEASURED TARGET WORD COUNT: about 57 words/);
   assert.match(out.user_message,/one semantic-safe rewrite/);
   assert.match(out.user_message,/calibrated from this exact measured voice/);
@@ -205,7 +205,7 @@ test('11230 semantic coverage failure gets one bounded retry from original, prov
 });
 
 test('slightly overlong narration repairs toward upper accepted window without erasing meaning',()=>{
-  const overlong={...p1,measured_duration_ms:32256,narration_word_count:58};
+  const overlong={...p1,measured_duration_ms:34256,narration_word_count:58};
   const $=name=>{
     if(name==='Build Script Prompt') return {first:()=>({json:ctx})};
     if(name==='Normalize Timing Probe') return {first:()=>({json:overlong})};
@@ -216,7 +216,7 @@ test('slightly overlong narration repairs toward upper accepted window without e
   };
   const first=new Function('$','$json',code('Build Timing Repair'))($,overlong).json;
   assert.match(first.user_message,/REQUIRED DIRECTION: make narration SHORTER/);
-  assert.match(first.user_message,/MEASURED TARGET WORD COUNT: about 44 words/);
+  assert.match(first.user_message,/MEASURED TARGET WORD COUNT: about 43 words/);
   const second=new Function('$','$json',code('Build Timing Repair 2'))($,{error:'coverage 0.500, required >= 0.600 [line 588]'}).json;
   assert.equal(second.semantic_fallback_from_first_repair,true);
   assert.ok(second.target_precision_words>=43,second.target_precision_words);

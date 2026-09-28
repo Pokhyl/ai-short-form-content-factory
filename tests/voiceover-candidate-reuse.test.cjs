@@ -345,6 +345,23 @@ test('M5/M6 use the same observed bounded audio window without padding',()=>{
   );
 });
 
+test('30s overrun window is identical in M5, M6, DB and worker while retaining a bounded ceiling',()=>{
+  const sources=[
+    JSON.stringify(m5),JSON.stringify(m6),
+    fs.readFileSync('db/07-voiceover.sql','utf8'),
+    fs.readFileSync('db/10-render-qa.sql','utf8'),
+    fs.readFileSync('db/11-voiceover-candidate-reuse.sql','utf8'),
+    fs.readFileSync('services/media-worker/server.py','utf8'),
+  ];
+  for(const source of sources){
+    assert.match(source,/30000(?:\s*:\s*|\s+THEN\s+)34000/);
+    assert.doesNotMatch(source,/30000(?:\s*:\s*|\s+THEN\s+)32000/);
+    assert.match(source,/28464/);
+  }
+  assert.match(fs.readFileSync('db/10-render-qa.sql','utf8'),/greatest\(v_target_duration_ms,v_voice.duration_ms\)/);
+  assert.match(fs.readFileSync('services/media-worker/server.py','utf8'),/target_duration_ms != max\(requested_duration_ms, audio_duration_ms\)/);
+});
+
 test('factory.begin_render returns both durations and extends only the visual coverage',()=>{
   const sql=fs.readFileSync('db/10-render-qa.sql','utf8');
   const m9=JSON.parse(fs.readFileSync('workflows/VIDEO-M9-Render-Machine-QA.json','utf8'));
@@ -407,7 +424,7 @@ test('M9 machine QA compares the video to target and the audio stream to actual 
   assert.equal(run({...base,duration_ms:28800,duration_delta_ms:1200}),false);
   assert.equal(run({...base,muxed_audio_duration_ms:27000}),false);
   assert.equal(run({...base,segments:[{...segment,end_ms:28800}]}),false);
-  const longMs=30864;
+  const longMs=33456;
   const longCtx={
     ...ctx, audio_duration_ms:longMs,target_duration_ms:longMs,
     scenes_json:[{...segment,segment_start_ms:0,segment_end_ms:longMs}],
@@ -457,7 +474,7 @@ test('30s candidate inside production range is reused byte-for-byte with no narr
   assert.equal(result.storyboard.narration,'Natural script stays unchanged');
 });
 
-test('M5 accepts a natural 30.864s voice and rejects beyond the 32s ceiling',()=>{
+test('M5 accepts natural 33.456s voice without semantic compression and rejects beyond 34s',()=>{
   const code=m5By['Normalize Timing Probe'].parameters.jsCode;
   const ctx={
     script_run_id:'run',model:'model',storyboard:{narration:'spoken'},
@@ -470,5 +487,6 @@ test('M5 accepts a natural 30.864s voice and rejects beyond the 32s ceiling',()=
   assert.equal(run(29000),true);
   assert.equal(run(27000),false);
   assert.equal(run(30864),true);
-  assert.equal(run(32001),false);
+  assert.equal(run(33456),true);
+  assert.equal(run(34001),false);
 });

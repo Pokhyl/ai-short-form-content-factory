@@ -316,7 +316,7 @@ BEGIN
 
     v_max_duration_ms := CASE v_target_duration_ms
         WHEN 15000 THEN 15768
-        WHEN 30000 THEN 32000
+        WHEN 30000 THEN 34000
         WHEN 45000 THEN 46128
         WHEN 60000 THEN 61656
         ELSE NULL

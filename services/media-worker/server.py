@@ -1447,7 +1447,7 @@ def render_final_video(
     }.get(requested_duration_ms)
     maximum_audio_ms = {
         15000: 15768,
-        30000: 32000,
+        30000: 34000,
         45000: 46128,
         60000: 61656,
     }.get(requested_duration_ms)
