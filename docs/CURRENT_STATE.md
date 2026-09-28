@@ -1,3 +1,11 @@
+## 2026-09-28 — current production state after 51c199a rollout
+
+- Latest smoke `33697003-8785-4a03-9894-0215ae7b6b3f` (pl30, `jak działa pompa ciepła`, Gemini) is immutable `script_failed`. M5 execution `11362` failed after timing repair with `coverage 0.500, required >= 0.600 [line 597]`. Never rerun this job. The exact first timing-probe duration was not recovered.
+- Git `51c199a` is now deployed. For nominal 30s output, accepted natural voice duration is 28,464–34,000ms; speech remains uncut and unsped, and render duration is `max(30000,audio_duration_ms)`. The generic change passed focused 29/29, full JS 500/500, and the real FFmpeg render-target regression before rollout.
+- Live M5: v185 / active `0df5f0a2-c8e8-4ede-ae84-1c75726dd726`. Live M6: v12 / active `7cba672b-09a9-4eb0-9f21-f7b5d43ce590`. For both, current `versionId` equals `activeVersionId`, and live nodes/connections/settings compare equal to Git.
+- Live DB functions `complete_voiceover`, `begin_render`, `register_voiceover_candidate`, and `begin_voiceover_v2` contain the 34,000ms ceiling and no old 32,000ms ceiling. Media worker runs image `sha256:57f1e561d0808329389ccd552ed380d986a5c832c53fb615ddd1f1cddffa7f05`, healthz=200. Publisher restarted at `2026-09-28T13:09:01.503821133Z`, internal healthz=200. Active n8n executions after rollout: 0.
+- Remaining acceptance gap: no fresh full M5→M9 production PASS has been produced on this exact deployment. NEXT: one new different-topic 30s Gemini smoke, launched once; trace it to terminal and audit the actual MP4 if machine QA passes. Existing failed jobs remain immutable. Existing `.tmp/` artifacts remain untouched.
+
 ## 2026-09-27 — current production status and next acceptance gate
 
 - Git `2541096` is deployed for nominal-versus-actual voice duration: requested 30 seconds accepts measured 28,464–32,000ms; rendered video duration follows the longer of nominal duration and measured audio. This is verified offline and deployed, but there is no passing new production video.

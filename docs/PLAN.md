@@ -1,3 +1,9 @@
+## 2026-09-28 — next acceptance gate after 51c199a rollout
+
+- Production now runs Git `51c199a` timing contract for 30s narration: accepted natural audio 28,464–34,000ms, no speech cutting/speed-up, render duration follows `max(nominal,audio)`. M5 v185 active `0df5f0a2-c8e8-4ede-ae84-1c75726dd726`; M6 v12 active `7cba672b-09a9-4eb0-9f21-f7b5d43ce590`; four affected DB functions and media-worker image `sha256:57f1e561d0808329389ccd552ed380d986a5c832c53fb615ddd1f1cddffa7f05` are deployed and live-verified. Publisher/worker healthz=200; active n8n executions=0.
+- Failed pl30 heat-pump smoke `33697003-8785-4a03-9894-0215ae7b6b3f` is immutable and must never be rerun. M5 execution `11362` failed with semantic coverage 0.500 after timing repair.
+- NEXT: create one fresh 30s Gemini smoke on a different topic, launch exactly once, persist its ID immediately, trace M3→M9 to terminal, and run `scripts/audit_final_media.py` against the actual MP4 if machine QA passes. If it fails, freeze that job ID, reproduce the exact blocker, implement a generic regression-backed fix, deploy/verify it, then only afterward create another smoke.
+
 ## 2026-09-27 — current production status and next acceptance gate
 
 - Git `2541096` is deployed for nominal-versus-actual voice duration: requested 30 seconds accepts measured 28,464–32,000ms; rendered video duration follows the longer of nominal duration and measured audio. This is verified offline and deployed, but there is no passing new production video.
