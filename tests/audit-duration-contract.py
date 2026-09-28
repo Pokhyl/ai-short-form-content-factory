@@ -39,11 +39,12 @@ class FakePath:
 def fake_run(*args):
     if args[0] == "ffprobe":
         return json.dumps({
-            "format": {"duration": "30.000"},
+            "format": {"duration": f"{manifest['target_duration_ms'] / 1000:.3f}"},
             "streams": [
                 {"codec_type": "video", "width": 1080, "height": 1920,
                  "codec_name": "h264", "pix_fmt": "yuv420p", "r_frame_rate": "30/1"},
-                {"codec_type": "audio", "codec_name": "aac", "duration": "28.800"},
+                {"codec_type": "audio", "codec_name": "aac",
+                 "duration": f"{manifest['audio_duration_ms'] / 1000:.3f}"},
             ],
         }).encode()
     return b""
@@ -56,8 +57,14 @@ with patch.object(module, "Path", FakePath), patch.object(module, "run", fake_ru
     assert result["target_duration_ms"] == 30000
     manifest["audio_duration_ms"] = 27000
     assert not module.audit(job_id, 30)["gates"]["accepted_audio_window"]
-    manifest["audio_duration_ms"] = 31584
-    manifest["target_duration_ms"] = 31584
-    segments[-1]["end_ms"] = 31584
-    assert not module.audit(job_id, 30)["gates"]["mux_duration"]
-print("audit: short accepted audio, short rejected audio, long target mismatch verified")
+    manifest["audio_duration_ms"] = 33456
+    manifest["target_duration_ms"] = 33456
+    segments[-1]["end_ms"] = 33456
+    assert module.audit(job_id, 30)["gates"]["accepted_audio_window"]
+    assert module.audit(job_id, 30)["gates"]["target_duration_contract"]
+
+    manifest["audio_duration_ms"] = 34001
+    manifest["target_duration_ms"] = 34001
+    segments[-1]["end_ms"] = 34001
+    assert not module.audit(job_id, 30)["gates"]["accepted_audio_window"]
+print("audit: short accepted/rejected and 34s natural-overrun contract verified")

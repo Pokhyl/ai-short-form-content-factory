@@ -58,7 +58,7 @@ def audit(job_id, target):
     segments = manifest["segments"]
     expected_scenes = {15: 5, 30: 9, 45: 13, 60: 17}[target]
     min_audio_ms, max_audio_ms = {
-        15: (14208, 15768), 30: (28464, 32000),
+        15: (14208, 15768), 30: (28464, 34000),
         45: (42864, 46128), 60: (58176, 61656),
     }[target]
     gates = {

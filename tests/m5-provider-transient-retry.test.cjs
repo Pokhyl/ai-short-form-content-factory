@@ -36,8 +36,8 @@ test('all Gemini call sites delegate to the shared resilient helper without chan
   }
 });
 
-test('shared Gemini helper uses bounded 2x5s batches with 30s and 60s transient backoff',()=>{
-  for(const name of ['Gemini Primary','Gemini Fallback','Gemini Final']){
+test('shared Gemini helper uses bounded model rotation with transient-only backoff',()=>{
+  for(const name of ['Gemini Primary','Gemini Fallback','Gemini Final','Gemini Reserve 3.6','Gemini Reserve 3.7']){
     const node=helperByName[name];
     assert.equal(node.type,'n8n-nodes-base.httpRequest',name);
     assert.equal(node.retryOnFail,true,name);
@@ -51,9 +51,13 @@ test('shared Gemini helper uses bounded 2x5s batches with 30s and 60s transient 
   assert.equal(helperByName['Wait 30s'].parameters.unit,'seconds');
   assert.equal(helperByName['Wait 60s'].parameters.amount,60);
   assert.equal(helperByName['Wait 60s'].parameters.unit,'seconds');
+  assert.equal(helperByName['Wait 60s Reserve 1'].parameters.amount,60);
+  assert.equal(helperByName['Wait 60s Reserve 2'].parameters.amount,60);
   assert.match(helperByName['Gemini Fallback'].parameters.url,/gemini-3\.1-flash-lite/);
   assert.match(helperByName['Gemini Primary'].parameters.url,/primary_model/);
   assert.match(helperByName['Gemini Final'].parameters.url,/gemini-3\.8-flash/);
+  assert.match(helperByName['Gemini Reserve 3.6'].parameters.url,/gemini-3\.6-flash/);
+  assert.match(helperByName['Gemini Reserve 3.7'].parameters.url,/gemini-3\.7-flash/);
 });
 
 test('shared helper retries only transient provider failures and preserves successful or non-transient responses',()=>{
@@ -76,6 +80,11 @@ test('shared helper retries only transient provider failures and preserves succe
   assert.equal(helper.connections['Retry Primary?'].main[1][0].node,'Return Provider Result');
   assert.equal(helper.connections['Retry Fallback?'].main[0][0].node,'Wait 60s');
   assert.equal(helper.connections['Retry Fallback?'].main[1][0].node,'Return Provider Result');
+  assert.equal(helper.connections['Retry Final?'].main[0][0].node,'Wait 60s Reserve 1');
+  assert.equal(helper.connections['Retry Final?'].main[1][0].node,'Return Provider Result');
+  assert.equal(helper.connections['Retry Reserve 3.6?'].main[0][0].node,'Wait 60s Reserve 2');
+  assert.equal(helper.connections['Retry Reserve 3.6?'].main[1][0].node,'Return Provider Result');
+  assert.equal(helper.connections['Gemini Reserve 3.7'].main[0][0].node,'Return Provider Result');
 });
 
 test('shared helper returns the original provider response shape without internal retry metadata',()=>{

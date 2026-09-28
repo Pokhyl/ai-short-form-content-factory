@@ -1,3 +1,10 @@
+## 2026-09-28 — M4 v8 proven; helper v3 prepared
+- M4 retry-pairing fix `2a5bc20` is deployed as v8 / active `9b77286f-004e-4368-8a47-4fbc585f155e`; live source equals Git and /healthz=200.
+- Fresh sonar smoke `61c5c63d-073b-4f19-b3bc-1b779345ff93` proved M4 v8 in production: M4 execution 11400 passed. The job then failed in M5 execution 11401 because helper v2 execution 11402 exhausted the full 3.5 -> 30s -> 3.1 -> 60s -> 3.8 path with HTTP 503 UNAVAILABLE / high demand. Never rerun this job.
+- Prepared helper v3, transient-only and bounded: after the existing 3.8 batch, wait 60s and try stable free-tier `gemini-3.6-flash`; if still transient, wait 60s and try stable free-tier `gemini-3.7-flash`. Non-transient errors and all M5 validators remain fail-closed.
+- Fixed `scripts/audit_final_media.py` to match the deployed 30s natural-audio ceiling 28,464–34,000ms instead of the stale 32,000ms ceiling.
+- Validation before deploy: targeted M4/provider suite 15/15 PASS, full JS 505/505 PASS, audit duration regression PASS. Helper v3 and audit fix are not yet deployed/committed at this checkpoint.
+
 ## 2026-09-28 — helper v2 deployed
 - `VideoGeminiResilient001` v2 active version `4903c705-c77c-45d4-b4b2-b98b6d1e230c`, source-equal to Git commit `b6a32b9`.
 - Provider sequence: 3.5 -> 30s -> 3.1 -> 60s -> 3.8 Flash. n8n health=200; active executions=0.
