@@ -1,3 +1,10 @@
+## 2026-09-28 — M8 Gemini-review false-negative fix prepared
+
+- Immutable smoke `9237413a-8e6b-43e7-9cdd-7d306586250c` passed M4/M5/M6/M7 and failed M8 on S3-A because every candidate was excluded before Vision. The exact top Pixabay candidate had score 88 but was hard-excluded by `pixabay_photo_content_unverified_tag_only` even though Gemini mode exists specifically to inspect pixels.
+- Prepared DB-only fix: `factory.gemini_visual_review_bucket` treats `pixabay_photo_content_unverified_tag_only` as reviewable in Gemini mode; metadata selection remains fail-closed and AI-generated/non-photographic hard rejects remain bucket 99.
+- Validation: Gemini visual tests 20/20 PASS; full JS 505/505 PASS; transactional PostgreSQL check soft=1, hard_ai=99, accepted=0; exact failed-job candidate-planner replay under ROLLBACK gives 9/9 shots x 3 candidates.
+- Next gate: commit/push, deploy only the review-bucket function with zero active executions, verify live function, then one fresh independent pl30/gemini smoke.
+
 ## 2026-09-28 — helper v4 prepared after verified cross-model 503 overload
 
 - Latest immutable smoke `eb879513-fe64-4865-9efa-759fc2863579` passed M4 (execution 11406) and failed M5 (11407) only after helper v3 execution 11408 received the same Gemini 503 high-demand response from 3.5, 3.1, 3.8, 3.6 and 3.7.

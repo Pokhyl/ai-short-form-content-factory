@@ -314,6 +314,10 @@ test('Gemini-only candidate review can rescue metadata semantic false negatives 
   assert.match(sql, /missing_primary_subject_anchor:%/);
   assert.match(sql, /insufficient_must_show_concept_coverage/);
   assert.match(sql, /missing_storyboard_domain_context:%/);
+  assert.match(sql, /v_reason='pixabay_photo_content_unverified_tag_only'/);
+  const reviewFn = sql.match(/CREATE OR REPLACE FUNCTION factory\.gemini_visual_review_bucket[\s\S]*?CREATE OR REPLACE FUNCTION factory\.get_gemini_visual_candidate_sets/)?.[0] || '';
+  assert.doesNotMatch(reviewFn, /v_reason='pixabay_ai_generated'/);
+  assert.doesNotMatch(reviewFn, /v_reason='pixabay_non_photographic_asset'/);
   assert.match(sql, /RETURN 99;/);
   assert.match(
     sql,

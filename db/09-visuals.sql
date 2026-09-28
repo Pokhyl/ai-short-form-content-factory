@@ -967,6 +967,7 @@ BEGIN
            OR v_reason='insufficient_query_intent_metadata_match'
            OR v_reason='missing_distinctive_domain_anchor'
            OR v_reason='missing_secondary_subject_context'
+           OR v_reason='pixabay_photo_content_unverified_tag_only'
            OR v_reason LIKE 'missing_storyboard_domain_context:%'
            OR v_reason LIKE 'missing_visual_detail_anchor:%'
            OR v_reason='missing_operational_setting_context' THEN

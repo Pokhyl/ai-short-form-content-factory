@@ -1,3 +1,10 @@
+## 2026-09-28 — deploy M8 Gemini-only Pixabay review rescue
+
+1. Commit/push the regression-backed DB-only change; do not alter metadata-mode gates.
+2. With zero active executions, deploy only `factory.gemini_visual_review_bucket`; verify soft Pixabay tag-only uncertainty maps to bucket 1 while AI/non-photo hard rejects stay 99.
+3. Run exactly one fresh independent pl30/gemini smoke. Never rerun `9237413a-8e6b-43e7-9cdd-7d306586250c`.
+4. Trace M4->M9 and audit the actual MP4 if machine QA passes.
+
 ## 2026-09-28 — deploy quota-safe Gemini recovery helper v4
 
 1. Commit/push the tested helper v4 change and authoritative docs; keep `.tmp/` and editor backups out of Git.
