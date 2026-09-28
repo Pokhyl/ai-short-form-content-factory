@@ -89,6 +89,8 @@ test('one Gemini request evaluates all candidate images for a scene at low media
   });
 
   const parts = result.json.gemini_body.contents[0].parts;
+  assert.match(parts[0].text, /conflict-oriented, not absolute pixel absence/);
+  assert.match(parts[0].text, /Incidental or background context.*does not violate must_not_show/);
   const images = parts.filter((part) => part.inlineData);
   assert.equal(images.length, 2);
   assert.deepEqual(images.map((part) => part.mediaResolution.level), [
