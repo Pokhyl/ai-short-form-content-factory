@@ -26,6 +26,46 @@ class ShortTerminalSceneRegression(unittest.TestCase):
         self.assertGreaterEqual(result["scene_timings"][-1]["coverage"], 0.85)
         self.assertEqual(result["scene_timings"][-1]["end_ms"], 29856)
 
+class SceneCutInsideWhisperTokenRegression(unittest.TestCase):
+    def test_whisper_token_spanning_visual_cut_is_split_by_matched_characters(self):
+        scenes = [
+            {"scene_uuid": "00000000-0000-4000-8000-000000000001", "scene_key": "S1", "narration": "Барометр працює без"},
+            {"scene_uuid": "00000000-0000-4000-8000-000000000002", "scene_key": "S2", "narration": "рідини і показує атмосферний тиск."},
+        ]
+        narration = " ".join(scene["narration"] for scene in scenes)
+        words = [
+            (" Барометр", 0, 500), (" працює", 500, 900),
+            (" безрідини", 900, 1500), (" і", 1500, 1600),
+            (" показує", 1600, 2200), (" атмосферний", 2200, 2800),
+            (" тиск.", 2800, 3200),
+        ]
+        whisper = {"transcription": [{
+            "text": "".join(word for word, _, _ in words),
+            "tokens": [{"text": word, "offsets": {"from": start, "to": end}}
+                       for word, start, end in words],
+        }]}
+        result = worker._build_scene_timings(narration, scenes, whisper, 3300)
+        first, second = result["scene_timings"]
+        self.assertEqual(first["end_ms"], 1100)
+        self.assertEqual(second["start_ms"], 1100)
+        self.assertEqual(second["end_ms"], 3200)
+        self.assertEqual(result["global_coverage"], 1.0)
+
+        ordinary = json.loads(json.dumps(whisper))
+        ordinary_words = [
+            (" Барометр", 0, 500), (" працює", 500, 900),
+            (" без", 900, 1100), (" рідини", 1100, 1500),
+            *words[3:],
+        ]
+        ordinary["transcription"][0]["text"] = "".join(word for word, _, _ in ordinary_words)
+        ordinary["transcription"][0]["tokens"] = [
+            {"text": word, "offsets": {"from": start, "to": end}}
+            for word, start, end in ordinary_words
+        ]
+        unchanged = worker._build_scene_timings(narration, scenes, ordinary, 3300)
+        self.assertEqual(unchanged["scene_timings"], result["scene_timings"])
+
+
 class DtwRegression(unittest.TestCase):
     def test_saved_default_alignment_fails(self):
         with self.assertRaisesRegex(ValueError, "1614ms"):

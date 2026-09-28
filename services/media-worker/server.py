@@ -679,8 +679,32 @@ def _build_scene_timings(
         if not overlapping:
             raise ValueError(f"scene {scene_key} has no matched lexical timing coverage")
 
-        start_ms = overlapping[0]["start_ms"]
-        raw_end_ms = overlapping[-1]["end_ms"]
+        # Whisper may merge two spoken words across a visual scene cut into
+        # one lexical token. Attribute each scene its matched character span
+        # within that token, preserving the token's original time interval.
+        def matched_token_time(token, *, first):
+            intersections = [
+                (max(token["start_char"], span_start),
+                 min(token["end_char"], span_end))
+                for span_start, span_end in matched_actual_spans
+                if token["end_char"] > span_start
+                and token["start_char"] < span_end
+            ]
+            char_index = (
+                min(start for start, _ in intersections)
+                if first else max(end for _, end in intersections)
+            )
+            width = token["end_char"] - token["start_char"]
+            if width <= 0:
+                raise ValueError("whisper lexical token has empty character span")
+            offset = round(
+                (char_index - token["start_char"])
+                * (token["end_ms"] - token["start_ms"]) / width
+            )
+            return token["start_ms"] + offset
+
+        start_ms = matched_token_time(overlapping[0], first=True)
+        raw_end_ms = matched_token_time(overlapping[-1], first=False)
         end_ms = min(raw_end_ms, audio_duration_ms)
 
         if start_ms < previous_end_ms:
