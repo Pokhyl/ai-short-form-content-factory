@@ -213,3 +213,31 @@ test('exact v54 S2 final canonicalization makes penstock the searchable subject'
     'penstock'
   ]);
 });
+
+test('11342 cosmic background signal remains photographable but digital map and decorative background fail',()=>{
+  const validators=[
+    'Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2',
+    'Validate Timing Repair','Validate Timing Repair 2',
+    'Validate Narration Language Repair','Validate Narration Language Repair Retry',
+  ];
+  for(const name of validators){
+    const src=nodeCode(name);
+    const begin=src.indexOf('const queryFillerPattern =');
+    const end=src.indexOf('const antiSelectionText =',begin);
+    assert.ok(begin>=0 && end>begin,name+' visual guard missing');
+    const validate=new Function('visualIntent','queries','mustShow','shotId',src.slice(begin,end));
+    const instrument='Astrophysical antenna instrument pointing to the sky capturing cosmic background signals';
+    assert.doesNotThrow(()=>validate(instrument,[
+      'astrophysical antenna instrument sky',
+      'radio telescope background signals',
+      'astrophysical antenna',
+    ],['astrophysical antenna'],'S6-A'),name+' physical signal');
+    assert.throws(()=>validate('Cosmic microwave background radiation map showing temperature fluctuations across the sky',[
+      'cosmic microwave background radiation map',
+      'microwave background sky fluctuations',
+      'microwave background',
+    ],['microwave background'],'S6-A'),/generic\/non-photographic/,name+' digital map');
+    assert.throws(()=>validate(instrument,['beautiful background landscape'],['astrophysical antenna'],'S6-A'),
+      /generic\/non-photographic/,name+' decorative background');
+  }
+});
