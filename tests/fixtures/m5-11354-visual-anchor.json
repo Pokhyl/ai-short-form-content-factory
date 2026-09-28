@@ -1,0 +1,912 @@
+{
+  "context": {
+    "script_run_id": "2ca1c372-bf90-4133-bd41-da97d1cb2592",
+    "model": "gemini-3.5-flash-lite",
+    "topic": "як працює сонячна батарея",
+    "language_code": "uk",
+    "target_duration_seconds": 30,
+    "word_min": 18,
+    "word_max": 72,
+    "target_words": 52,
+    "response_json_schema": {
+      "anyOf": "262"
+    },
+    "scene_word_targets": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      6
+    ],
+    "target_scenes": 9,
+    "target_shots": 9,
+    "evidence_map": {
+      "E1": "263",
+      "E2": "264",
+      "E3": "265",
+      "E4": "266",
+      "E5": "267",
+      "E6": "268",
+      "E7": "269",
+      "E8": "270",
+      "E9": "271",
+      "E10": "272"
+    }
+  },
+  "original": {
+    "scenes": [
+      {
+        "scene_id": "S1",
+        "narration_words": [
+          "Уявіть",
+          "як",
+          "яскрава",
+          "енергія",
+          "сонця",
+          "потрапляє"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S1-A",
+            "visual_intent": "sunlight shining brightly on a solar panel on a rooftop",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "indoor room"
+            ],
+            "queries_en": [
+              "sunlight shining on a solar panel on a roof",
+              "solar panel rooftop energy generation installation",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S2",
+        "narration_words": [
+          "на",
+          "дах",
+          "будинку",
+          "трансформуючись",
+          "в",
+          "електрику"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S2-A",
+            "visual_intent": "photovoltaic solar panels installed on a residential house roof",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "wind turbine"
+            ],
+            "queries_en": [
+              "photovoltaic solar panels on a residential house roof",
+              "solar panel system generating electricity on a rooftop",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S3",
+        "narration_words": [
+          "Серцем",
+          "системи",
+          "виступають",
+          "фотоелементи",
+          "створені",
+          "з"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S3-A",
+            "visual_intent": "close-up of silicon solar cells inside a solar panel module",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "battery charger"
+            ],
+            "queries_en": [
+              "silicon solar cells inside a solar panel module",
+              "photovoltaic solar panel cells grid surface",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S4",
+        "narration_words": [
+          "кремнію",
+          "для",
+          "перетворення",
+          "світла",
+          "на",
+          "струм"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S4-A",
+            "visual_intent": "silicon semiconductor material of a photovoltaic solar cell",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "wooden furniture"
+            ],
+            "queries_en": [
+              "silicon semiconductor solar cell module surface",
+              "silicon photovoltaic material converting sunlight",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S5",
+        "narration_words": [
+          "Фотони",
+          "світла",
+          "вдаряють",
+          "в",
+          "атоми",
+          "вибиваючи"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S5-A",
+            "visual_intent": "photons hitting silicon solar cells on a panel surface",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "car engine"
+            ],
+            "queries_en": [
+              "photons hitting silicon solar cells on a panel",
+              "solar panel surface absorbing light particles",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S6",
+        "narration_words": [
+          "електрони",
+          "що",
+          "формують",
+          "впорядкований",
+          "електричний",
+          "потік"
+        ],
+        "evidence_ids": [
+          "E7"
+        ],
+        "shots": [
+          {
+            "shot_id": "S6-A",
+            "visual_intent": "conductive grid lines on a photovoltaic solar panel cell",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "water pipe"
+            ],
+            "queries_en": [
+              "conductive metal grid lines on a solar panel cell",
+              "photovoltaic solar panel electric current collection",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S7",
+        "narration_words": [
+          "Отриманий",
+          "постійний",
+          "струм",
+          "переходить",
+          "до",
+          "інвертора"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S7-A",
+            "visual_intent": "modern solar inverter device mounted on a wall",
+            "must_show": [
+              "solar inverter"
+            ],
+            "must_not_show": [
+              "kitchen stove"
+            ],
+            "queries_en": [
+              "modern solar inverter device mounted on a wall",
+              "solar power system inverter equipment unit",
+              "solar inverter"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S8",
+        "narration_words": [
+          "де",
+          "перетворюється",
+          "на",
+          "змінний"
+        ],
+        "evidence_ids": [
+          "E3"
+        ],
+        "shots": [
+          {
+            "shot_id": "S8-A",
+            "visual_intent": "digital display screen of a solar power system inverter",
+            "must_show": [
+              "solar inverter"
+            ],
+            "must_not_show": [
+              "laptop computer"
+            ],
+            "queries_en": [
+              "digital display screen of a solar power inverter",
+              "solar inverter equipment converting electric current",
+              "solar inverter"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S9",
+        "narration_words": [
+          "для",
+          "живлення",
+          "побутових",
+          "приладів",
+          "та",
+          "техніки"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S9-A",
+            "visual_intent": "household electrical appliances powered by solar energy in a home",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "factory machine"
+            ],
+            "queries_en": [
+              "household electrical appliances powered by solar energy system",
+              "solar panel system powering domestic home appliances",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      }
+    ]
+  },
+  "first_repair": {
+    "scenes": [
+      {
+        "scene_id": "S1",
+        "narration_words": [
+          "Уявіть,",
+          "як",
+          "яскрава",
+          "енергія",
+          "сонця",
+          "потрапляє"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S1-A",
+            "visual_intent": "sunlight shining brightly on a solar panel on a rooftop",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "indoor room"
+            ],
+            "queries_en": [
+              "sunlight shining on a solar panel on a roof",
+              "solar panel rooftop energy generation installation",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S2",
+        "narration_words": [
+          "на",
+          "дах",
+          "будинку,",
+          "трансформуючись",
+          "в",
+          "електрику."
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S2-A",
+            "visual_intent": "photovoltaic solar panels installed on a residential house roof",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "wind turbine"
+            ],
+            "queries_en": [
+              "photovoltaic solar panels on a residential house roof",
+              "solar panel system generating electricity on a rooftop",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S3",
+        "narration_words": [
+          "Серцем",
+          "системи",
+          "виступають",
+          "фотоелементи,",
+          "створені",
+          "з"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S3-A",
+            "visual_intent": "close-up of silicon solar cells inside a solar panel module",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "battery charger"
+            ],
+            "queries_en": [
+              "silicon solar cells inside a solar panel module",
+              "photovoltaic solar panel cells grid surface",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S4",
+        "narration_words": [
+          "кремнію",
+          "для",
+          "перетворення",
+          "світла",
+          "на",
+          "струм."
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S4-A",
+            "visual_intent": "silicon semiconductor material of a photovoltaic solar cell",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "wooden furniture"
+            ],
+            "queries_en": [
+              "silicon semiconductor solar cell module surface",
+              "silicon photovoltaic material converting sunlight",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S5",
+        "narration_words": [
+          "Фотони",
+          "світла",
+          "вдаряють",
+          "в",
+          "атоми,",
+          "вибиваючи"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S5-A",
+            "visual_intent": "photons hitting silicon solar cells on a panel surface",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "car engine"
+            ],
+            "queries_en": [
+              "photons hitting silicon solar cells on a panel",
+              "solar panel surface absorbing light particles",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S6",
+        "narration_words": [
+          "електрони,",
+          "що",
+          "формують",
+          "впорядкований",
+          "електричний",
+          "потік."
+        ],
+        "evidence_ids": [
+          "E7"
+        ],
+        "shots": [
+          {
+            "shot_id": "S6-A",
+            "visual_intent": "conductive grid lines on a photovoltaic solar panel cell",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "water pipe"
+            ],
+            "queries_en": [
+              "conductive metal grid lines on a solar panel cell",
+              "photovoltaic solar panel electric current collection",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S7",
+        "narration_words": [
+          "Отриманий",
+          "постійний",
+          "струм",
+          "переходить",
+          "до",
+          "інвертора,"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S7-A",
+            "visual_intent": "modern solar inverter device mounted on a wall",
+            "must_show": [
+              "solar inverter"
+            ],
+            "must_not_show": [
+              "kitchen stove"
+            ],
+            "queries_en": [
+              "modern solar inverter device mounted on a wall",
+              "solar power system inverter equipment unit",
+              "solar inverter"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S8",
+        "narration_words": [
+          "де",
+          "він",
+          "стає",
+          "змінним."
+        ],
+        "evidence_ids": [
+          "E3"
+        ],
+        "shots": [
+          {
+            "shot_id": "S8-A",
+            "visual_intent": "digital display screen of a solar power system inverter",
+            "must_show": [
+              "solar inverter"
+            ],
+            "must_not_show": [
+              "laptop computer"
+            ],
+            "queries_en": [
+              "digital display screen of a solar power inverter",
+              "solar inverter equipment converting electric current",
+              "solar inverter"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S9",
+        "narration_words": [
+          "Ця",
+          "енергія",
+          "живить",
+          "ваші",
+          "побутові",
+          "прилади."
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S9-A",
+            "visual_intent": "household electrical appliances powered by solar energy in a home",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "factory machine"
+            ],
+            "queries_en": [
+              "household electrical appliances powered by solar energy system",
+              "solar panel system powering domestic home appliances",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      }
+    ]
+  },
+  "second_repair": {
+    "scenes": [
+      {
+        "scene_id": "S1",
+        "narration_words": [
+          "Уявіть,",
+          "як",
+          "яскрава",
+          "енергія",
+          "сонця",
+          "потрапляє"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S1-A",
+            "visual_intent": "sunlight shining brightly on a solar panel on a rooftop",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "indoor room"
+            ],
+            "queries_en": [
+              "sunlight shining on a solar panel on a roof",
+              "solar panel rooftop energy generation installation",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S2",
+        "narration_words": [
+          "на",
+          "дах",
+          "будинку,",
+          "трансформуючись",
+          "в",
+          "електрику."
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S2-A",
+            "visual_intent": "photovoltaic solar panels installed on a residential house roof",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "wind turbine"
+            ],
+            "queries_en": [
+              "photovoltaic solar panels on a residential house roof",
+              "solar panel system generating electricity on a rooftop",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S3",
+        "narration_words": [
+          "Серцем",
+          "системи",
+          "виступають",
+          "фотоелементи,",
+          "створені",
+          "з"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S3-A",
+            "visual_intent": "external surface of a solar panel module showing solar cells",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "battery charger"
+            ],
+            "queries_en": [
+              "silicon solar cells on a solar panel module",
+              "photovoltaic solar panel cells grid surface",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S4",
+        "narration_words": [
+          "кремнію",
+          "для",
+          "перетворення",
+          "світла",
+          "на",
+          "струм."
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S4-A",
+            "visual_intent": "silicon semiconductor material of a photovoltaic solar cell",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "wooden furniture"
+            ],
+            "queries_en": [
+              "silicon semiconductor solar cell module surface",
+              "silicon photovoltaic material converting sunlight",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S5",
+        "narration_words": [
+          "Фотони",
+          "світла",
+          "вдаряють",
+          "в",
+          "атоми,",
+          "вибиваючи"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S5-A",
+            "visual_intent": "photons hitting silicon solar cells on a panel surface",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "car engine"
+            ],
+            "queries_en": [
+              "photons hitting silicon solar cells on a panel",
+              "solar panel surface absorbing light particles",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S6",
+        "narration_words": [
+          "електрони,",
+          "що",
+          "формують",
+          "впорядкований",
+          "електричний",
+          "потік."
+        ],
+        "evidence_ids": [
+          "E7"
+        ],
+        "shots": [
+          {
+            "shot_id": "S6-A",
+            "visual_intent": "conductive grid lines on a photovoltaic solar panel cell",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "water pipe"
+            ],
+            "queries_en": [
+              "conductive metal grid lines on a solar panel cell",
+              "photovoltaic solar panel electric current collection",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S7",
+        "narration_words": [
+          "Отриманий",
+          "постійний",
+          "струм",
+          "переходить",
+          "до",
+          "інвертора,"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S7-A",
+            "visual_intent": "modern solar inverter device mounted on a wall",
+            "must_show": [
+              "solar inverter"
+            ],
+            "must_not_show": [
+              "kitchen stove"
+            ],
+            "queries_en": [
+              "modern solar inverter device mounted on a wall",
+              "solar power system inverter equipment unit",
+              "solar inverter"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S8",
+        "narration_words": [
+          "де",
+          "він",
+          "стає",
+          "змінним."
+        ],
+        "evidence_ids": [
+          "E3"
+        ],
+        "shots": [
+          {
+            "shot_id": "S8-A",
+            "visual_intent": "digital display screen of a solar power system inverter",
+            "must_show": [
+              "solar inverter"
+            ],
+            "must_not_show": [
+              "laptop computer"
+            ],
+            "queries_en": [
+              "digital display screen of a solar power inverter",
+              "solar inverter equipment converting electric current",
+              "solar inverter"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S9",
+        "narration_words": [
+          "Ця",
+          "енергія",
+          "живить",
+          "ваші",
+          "побутові",
+          "прилади."
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S9-A",
+            "visual_intent": "household electrical appliances powered by solar energy in a home",
+            "must_show": [
+              "solar panel"
+            ],
+            "must_not_show": [
+              "factory machine"
+            ],
+            "queries_en": [
+              "household electrical appliances powered by solar energy system",
+              "solar panel system powering domestic home appliances",
+              "solar panel"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      }
+    ]
+  },
+  "initial_error": "continuous narration has fewer than three natural complete sentences [line 198]",
+  "repair_error": "S3-A photo visual_intent requests hidden/internal detail without an explicit open, cutaway, exposed, transparent, or disassembled view [line 445]"
+}

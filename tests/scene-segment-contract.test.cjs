@@ -87,6 +87,30 @@ test('narration repair cannot bypass the complete-utterance validation',()=>{
   );
 });
 
+test('11354 regression: both repair prompts diagnose visual-primary mismatch beyond the first error',()=>{
+  const fixture=JSON.parse(fs.readFileSync('tests/fixtures/m5-11354-visual-anchor.json'));
+  const response=story=>({statusCode:200,body:{candidates:[{content:{parts:[{text:JSON.stringify(story)}]}}]}});
+  const context={
+    'Build Script Prompt':{...fixture.context,system_message:'Generate a valid storyboard.',user_message:'Topic context.'},
+    'Generate Storyboard':response(fixture.original),
+    'Repair Storyboard':response(fixture.first_repair),
+    'Validate Storyboard':{error:{message:fixture.initial_error}},
+  };
+  const $=name=>({first:()=>({json:context[name]})});
+  for(const [name,error] of [
+    ['Build Storyboard Repair',fixture.initial_error],
+    ['Build Storyboard Repair 2',fixture.repair_error],
+  ]) {
+    const built=new Function('$','$json',byName[name].parameters.jsCode)($,{error:{message:error}}).json;
+    const check=built.user_message.split('VISUAL ANCHOR AND PHOTO CHECK (all invalid shots in previous output):')[1].split('Fix EVERY listed shot.')[0];
+    const diagnostics=JSON.parse(check.trim());
+    const mismatch=diagnostics.find(x=>x.shot_id==='S4-A')?.primary_intent_mismatch;
+    assert.equal(mismatch?.primary_must_show,'solar panel',name);
+    assert.match(mismatch.visual_intent,/photovoltaic solar cell/u,name);
+    assert.match(built.user_message,/make must_show\[0\] match the actual visible subject/u,name);
+  }
+});
+
 test('M5 prompt defines scenes as visual cut segments of continuous narration',()=>{
   const code=byName['Build Script Prompt'].parameters.jsCode;
   assert.match(code,/scene boundaries MAY occur inside a sentence/);
