@@ -5,17 +5,19 @@ const fs=require('node:fs');
 const workflow=JSON.parse(fs.readFileSync('workflows/VIDEO-M4-Research.json','utf8'));
 const byName=Object.fromEntries(workflow.nodes.map((node)=>[node.name,node]));
 
-function runCode(name,{input=[],nodes={}}={}){
+function runCode(name,{input=[],nodes={},json=input[0]??{},itemIndex=0}={}){
   const code=byName[name].parameters.jsCode;
   const $input={
     first:()=>({json:input[0]??{}}),
-    all:()=>input.map((json)=>({json})),
+    all:()=>input.map((row)=>({json:row})),
   };
   const $=(nodeName)=>({
-    all:()=> (nodes[nodeName]??[]).map((json)=>({json})),
+    all:()=> (nodes[nodeName]??[]).map((row)=>({json:row})),
     first:()=>({json:(nodes[nodeName]??[])[0]??{}}),
   });
-  return new Function('$input','$',code)($input,$);
+  return new Function('$input','$','$json','$itemIndex',code)(
+    $input,$,json,itemIndex
+  );
 }
 
 test('M4 builds subject-focused local and encyclopedia queries for all supported languages',()=>{
@@ -127,4 +129,61 @@ test('M4 fails closed when theory search has only a namesake show, and respects 
     input:[{results:[show]},{results:[]},{results:[]}],nodes:{'Build Search Queries':explicit},
   });
   assert.equal(showSources[0].json.candidate_valid,true);
+});
+
+test('M4 evidence normalization resolves the active retry candidate by item index instead of fragile paired-item ancestry',()=>{
+  const candidate={
+    research_run_id:'12345678-1234-4234-8234-123456789012',
+    search_query:'jak działa lidar',
+    search_rank:1,
+    search_engines:['duckduckgo'],
+    source_url:'https://science.example/lidar',
+    canonical_url:'https://science.example/lidar',
+    source_domain:'science.example',
+    title:'LiDAR',
+    snippet:'Pomiar odległości światłem.',
+    candidate_valid:true,
+  };
+  const fetch={
+    statusCode:200,
+    headers:{'content-type':'text/html; charset=utf-8'},
+  };
+  const extracted={
+    page_title:'Jak działa LiDAR',
+    body_text:'LiDAR mierzy czas powrotu impulsu światła.',
+  };
+
+  for(const activeNode of [
+    'Build Fetch Candidates',
+    'Build Fetch Candidates Retry 1',
+    'Build Fetch Candidates Retry 2',
+  ]){
+    const nodes={
+      'Build Fetch Candidates':[],
+      'Build Fetch Candidates Retry 1':[],
+      'Build Fetch Candidates Retry 2':[],
+      'Fetch Source Page':[fetch],
+    };
+    nodes[activeNode]=[candidate];
+
+    const out=runCode('Normalize Evidence',{
+      nodes,
+      json:extracted,
+      itemIndex:0,
+    }).json;
+
+    assert.equal(out.research_run_id,candidate.research_run_id,activeNode);
+    assert.equal(out.canonical_url,candidate.canonical_url,activeNode);
+    assert.equal(out.source_http_status,200,activeNode);
+    assert.match(out.content_text,/LiDAR mierzy czas/,activeNode);
+  }
+});
+
+test('M4 evidence normalization no longer depends on .item pairing from a specific candidate builder',()=>{
+  const code=byName['Normalize Evidence'].parameters.jsCode;
+  assert.doesNotMatch(code,/Build Fetch Candidates'\)\.item/u);
+  assert.doesNotMatch(code,/Fetch Source Page'\)\.item/u);
+  assert.match(code,/Build Fetch Candidates Retry 2/u);
+  assert.match(code,/Build Fetch Candidates Retry 1/u);
+  assert.match(code,/\$itemIndex/u);
 });
