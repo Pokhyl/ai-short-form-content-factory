@@ -55,6 +55,17 @@ test('required interaction subject cannot disappear from secondary must_show',()
   assert.doesNotThrow(
    ()=>guard(['power substation','transmission lines'],'Power substation equipment and transmission lines connected to power grid',['power substation equipment','electrical transmission grid','power substation'],'S4-A')
   );
+  assert.throws(
+   ()=>guard(['copper coil'],'A copper coil connected to an alternating current power source.',['copper coil alternating current power source','power source copper coil','copper coil'],'S3-A'),
+   /second independently visible interaction subject.*alternating current power source/
+  );
+  assert.throws(
+   ()=>guard(['copper coil','power source'],'A copper coil connected to an alternating current power source.',['copper coil alternating current power source','electrical coil power circuit','copper coil'],'S3-A'),
+   /detailed query 2 must preserve required interaction subject.*alternating current power source/
+  );
+  assert.doesNotThrow(
+   ()=>guard(['copper coil','power source'],'A copper coil connected to an alternating current power source.',['copper coil alternating current power source','power source copper coil','copper coil'],'S3-A')
+  );
  }
 });
 
