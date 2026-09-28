@@ -1,0 +1,907 @@
+{
+  "context": {
+    "script_run_id": "c5ef3a7b-b9db-4819-b417-6121b6810269",
+    "model": "gemini-3.5-flash-lite",
+    "topic": "теория большого взрыва",
+    "language_code": "uk",
+    "target_duration_seconds": 30,
+    "word_min": 18,
+    "word_max": 72,
+    "target_words": 52,
+    "response_json_schema": {
+      "anyOf": "259"
+    },
+    "scene_word_targets": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      4,
+      6
+    ],
+    "target_scenes": 9,
+    "target_shots": 9,
+    "evidence_map": {
+      "E1": "260",
+      "E2": "261",
+      "E3": "262",
+      "E4": "263",
+      "E5": "264",
+      "E6": "265",
+      "E7": "266",
+      "E8": "267"
+    }
+  },
+  "original": {
+    "scenes": [
+      {
+        "scene_id": "S1",
+        "narration_words": [
+          "Теорія",
+          "Великого",
+          "вибуху",
+          "описує",
+          "початок",
+          "Всесвіту."
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S1-A",
+            "visual_intent": "A photograph showing the vast night sky filled with distant galaxies.",
+            "must_show": [
+              "night sky"
+            ],
+            "must_not_show": [
+              "studio interior"
+            ],
+            "queries_en": [
+              "night sky distant galaxies astronomy",
+              "night sky expanding universe observation",
+              "night sky"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S2",
+        "narration_words": [
+          "Вона",
+          "показує",
+          "як",
+          "все",
+          "виникло",
+          "з"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S2-A",
+            "visual_intent": "A close-up photograph of a dense hot plasma state simulation in a laboratory.",
+            "must_show": [
+              "plasma state"
+            ],
+            "must_not_show": [
+              "computer cartoon"
+            ],
+            "queries_en": [
+              "hot plasma state experiment physics",
+              "dense plasma state laboratory photo",
+              "plasma state"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S3",
+        "narration_words": [
+          "надзвичайно",
+          "гарячого",
+          "та",
+          "щільного",
+          "початкового",
+          "стану."
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S3-A",
+            "visual_intent": "A photograph of a glowing hot core of a star representing high temperature.",
+            "must_show": [
+              "hot core"
+            ],
+            "must_not_show": [
+              "ice"
+            ],
+            "queries_en": [
+              "hot core star glowing plasma",
+              "hot dense stellar core astronomy",
+              "hot core"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S4",
+        "narration_words": [
+          "Близько",
+          "тринадцяти",
+          "мільярдів",
+          "років",
+          "тому",
+          "простір"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S4-A",
+            "visual_intent": "A high-resolution photograph of deep space galaxy clusters.",
+            "must_show": [
+              "galaxy clusters"
+            ],
+            "must_not_show": [
+              "diagram"
+            ],
+            "queries_en": [
+              "galaxy clusters deep space telescope",
+              "galaxy clusters cosmic web structure",
+              "galaxy clusters"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S5",
+        "narration_words": [
+          "почав",
+          "стрімко",
+          "розширюватися",
+          "у",
+          "різні",
+          "боки."
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S5-A",
+            "visual_intent": "A photograph of a powerful telescope observing distant cosmic expanses.",
+            "must_show": [
+              "telescope"
+            ],
+            "must_not_show": [
+              "indoors"
+            ],
+            "queries_en": [
+              "telescope observatory night sky",
+              "telescope observing expanding universe",
+              "telescope"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S6",
+        "narration_words": [
+          "Згодом",
+          "утворилися",
+          "перші",
+          "атоми",
+          "водню",
+          "та"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S6-A",
+            "visual_intent": "A photograph of a glowing hydrogen gas cloud nebula in space.",
+            "must_show": [
+              "hydrogen gas"
+            ],
+            "must_not_show": [
+              "solid rock"
+            ],
+            "queries_en": [
+              "hydrogen gas nebula space photo",
+              "hydrogen gas cloud astronomy",
+              "hydrogen gas"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S7",
+        "narration_words": [
+          "гелію,",
+          "а",
+          "згодом",
+          "з'явилися",
+          "зорі",
+          "та"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S7-A",
+            "visual_intent": "A photograph showing newborn stars shining inside a stellar nursery.",
+            "must_show": [
+              "newborn stars"
+            ],
+            "must_not_show": [
+              "empty space"
+            ],
+            "queries_en": [
+              "newborn stars stellar nursery nebula",
+              "newborn stars forming in galaxy",
+              "newborn stars"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S8",
+        "narration_words": [
+          "галактики,",
+          "формуючи"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S8-A",
+            "visual_intent": "A detailed photograph of a large spiral galaxy rotating in space.",
+            "must_show": [
+              "spiral galaxy"
+            ],
+            "must_not_show": [
+              "solar system"
+            ],
+            "queries_en": [
+              "spiral galaxy rotating space photo",
+              "spiral galaxy structure astronomy",
+              "spiral galaxy"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S9",
+        "narration_words": [
+          "складну",
+          "структуру",
+          "сучасного",
+          "великого",
+          "нам",
+          "космосу."
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S9-A",
+            "visual_intent": "A photograph of the cosmic microwave background map showing universe structure.",
+            "must_show": [
+              "cosmic microwave background"
+            ],
+            "must_not_show": [
+              "hand drawing"
+            ],
+            "queries_en": [
+              "cosmic microwave background map space",
+              "cosmic microwave background radiation Planck",
+              "cosmic microwave background"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      }
+    ]
+  },
+  "first_repair": {
+    "scenes": [
+      {
+        "scene_id": "S1",
+        "narration_words": [
+          "Теорія",
+          "Великого",
+          "вибуху",
+          "описує",
+          "початок",
+          "Всесвіту."
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S1-A",
+            "visual_intent": "A photograph of distant galaxies in the night sky.",
+            "must_show": [
+              "night sky"
+            ],
+            "must_not_show": [
+              "studio interior"
+            ],
+            "queries_en": [
+              "night sky distant galaxies astronomy",
+              "night sky expanding universe observation",
+              "night sky"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S2",
+        "narration_words": [
+          "Вона",
+          "показує",
+          "як",
+          "все",
+          "виникло",
+          "з"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S2-A",
+            "visual_intent": "A close-up photograph of plasma state glowing in a laboratory setup.",
+            "must_show": [
+              "plasma state"
+            ],
+            "must_not_show": [
+              "computer cartoon"
+            ],
+            "queries_en": [
+              "plasma state experiment physics",
+              "plasma state laboratory photo",
+              "plasma state"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S3",
+        "narration_words": [
+          "надзвичайно",
+          "гарячого",
+          "та",
+          "щільного",
+          "початкового",
+          "стану."
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S3-A",
+            "visual_intent": "A photograph of a glowing hot star core representing high temperature.",
+            "must_show": [
+              "hot star core"
+            ],
+            "must_not_show": [
+              "ice"
+            ],
+            "queries_en": [
+              "hot star core glowing plasma",
+              "hot star core stellar astronomy",
+              "hot star core"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S4",
+        "narration_words": [
+          "Близько",
+          "тринадцяти",
+          "мільярдів",
+          "років",
+          "тому",
+          "простір"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S4-A",
+            "visual_intent": "A high-resolution photograph of deep space galaxy clusters.",
+            "must_show": [
+              "galaxy clusters"
+            ],
+            "must_not_show": [
+              "diagram"
+            ],
+            "queries_en": [
+              "galaxy clusters deep space telescope",
+              "galaxy clusters cosmic web structure",
+              "galaxy clusters"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S5",
+        "narration_words": [
+          "почав",
+          "стрімко",
+          "розширюватися",
+          "у",
+          "різні",
+          "боки."
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S5-A",
+            "visual_intent": "A photograph of an astronomical telescope observing distant cosmic expanses.",
+            "must_show": [
+              "astronomical telescope"
+            ],
+            "must_not_show": [
+              "indoors"
+            ],
+            "queries_en": [
+              "astronomical telescope observatory night sky",
+              "astronomical telescope expanding universe",
+              "astronomical telescope"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S6",
+        "narration_words": [
+          "Згодом",
+          "утворилися",
+          "перші",
+          "атоми",
+          "водню",
+          "та"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S6-A",
+            "visual_intent": "A photograph of a glowing hydrogen gas cloud in space.",
+            "must_show": [
+              "hydrogen gas cloud"
+            ],
+            "must_not_show": [
+              "solid rock"
+            ],
+            "queries_en": [
+              "hydrogen gas cloud space photo",
+              "hydrogen gas cloud astronomy",
+              "hydrogen gas cloud"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S7",
+        "narration_words": [
+          "гелію,",
+          "а",
+          "згодом",
+          "з'явилися",
+          "зорі",
+          "та"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S7-A",
+            "visual_intent": "A photograph showing newborn stars shining inside a stellar nursery.",
+            "must_show": [
+              "newborn stars"
+            ],
+            "must_not_show": [
+              "empty space"
+            ],
+            "queries_en": [
+              "newborn stars stellar nursery nebula",
+              "newborn stars forming in galaxy",
+              "newborn stars"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S8",
+        "narration_words": [
+          "галактики,",
+          "формуючи",
+          "складну",
+          "структуру"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S8-A",
+            "visual_intent": "A detailed photograph of a large spiral galaxy rotating in space.",
+            "must_show": [
+              "spiral galaxy"
+            ],
+            "must_not_show": [
+              "solar system"
+            ],
+            "queries_en": [
+              "spiral galaxy rotating space photo",
+              "spiral galaxy structure astronomy",
+              "spiral galaxy"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S9",
+        "narration_words": [
+          "нашого",
+          "великого",
+          "і",
+          "прекрасного",
+          "космосу.",
+          "тепер"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S9-A",
+            "visual_intent": "A photograph of deep space telescope observation showing large cosmic structures.",
+            "must_show": [
+              "deep space"
+            ],
+            "must_not_show": [
+              "hand drawing"
+            ],
+            "queries_en": [
+              "deep space telescope observation image",
+              "deep space large cosmic structures",
+              "deep space"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      }
+    ]
+  },
+  "second_repair": {
+    "scenes": [
+      {
+        "scene_id": "S1",
+        "narration_words": [
+          "Теорія",
+          "Великого",
+          "вибуху",
+          "описує",
+          "початок",
+          "Всесвіту."
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S1-A",
+            "visual_intent": "A photograph of distant galaxies in the night sky showing the observable universe.",
+            "must_show": [
+              "night sky"
+            ],
+            "must_not_show": [
+              "studio interior"
+            ],
+            "queries_en": [
+              "night sky distant galaxies astronomy",
+              "night sky expanding universe observation",
+              "night sky"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S2",
+        "narration_words": [
+          "Вона",
+          "показує",
+          "як",
+          "все",
+          "виникло",
+          "з"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S2-A",
+            "visual_intent": "A close-up photograph of plasma state glowing in a laboratory setup.",
+            "must_show": [
+              "plasma state"
+            ],
+            "must_not_show": [
+              "computer cartoon"
+            ],
+            "queries_en": [
+              "plasma state experiment physics",
+              "plasma state laboratory photo",
+              "plasma state"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S3",
+        "narration_words": [
+          "надзвичайно",
+          "гарячого",
+          "та",
+          "щільного",
+          "початкового",
+          "стану."
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S3-A",
+            "visual_intent": "A photograph of a glowing hot star core representing high temperature.",
+            "must_show": [
+              "hot star core"
+            ],
+            "must_not_show": [
+              "ice"
+            ],
+            "queries_en": [
+              "hot star core glowing plasma",
+              "hot star core stellar astronomy",
+              "hot star core"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S4",
+        "narration_words": [
+          "Близько",
+          "тринадцяти",
+          "мільярдів",
+          "років",
+          "тому",
+          "простір"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S4-A",
+            "visual_intent": "A high-resolution photograph of deep space galaxy clusters.",
+            "must_show": [
+              "galaxy clusters"
+            ],
+            "must_not_show": [
+              "diagram"
+            ],
+            "queries_en": [
+              "galaxy clusters deep space telescope",
+              "galaxy clusters cosmic web structure",
+              "galaxy clusters"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S5",
+        "narration_words": [
+          "почав",
+          "стрімко",
+          "розширюватися",
+          "у",
+          "різні",
+          "боки."
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S5-A",
+            "visual_intent": "A photograph of an astronomical telescope observing distant cosmic expanses.",
+            "must_show": [
+              "astronomical telescope"
+            ],
+            "must_not_show": [
+              "indoors"
+            ],
+            "queries_en": [
+              "astronomical telescope observatory night sky",
+              "astronomical telescope expanding universe",
+              "astronomical telescope"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S6",
+        "narration_words": [
+          "Згодом",
+          "утворилися",
+          "перші",
+          "атоми",
+          "водню",
+          "та"
+        ],
+        "evidence_ids": [
+          "E2"
+        ],
+        "shots": [
+          {
+            "shot_id": "S6-A",
+            "visual_intent": "A photograph of a glowing hydrogen gas cloud in space.",
+            "must_show": [
+              "hydrogen gas cloud"
+            ],
+            "must_not_show": [
+              "solid rock"
+            ],
+            "queries_en": [
+              "hydrogen gas cloud space photo",
+              "hydrogen gas cloud astronomy",
+              "hydrogen gas cloud"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S7",
+        "narration_words": [
+          "гелію,",
+          "а",
+          "згодом",
+          "з'явилися",
+          "зорі",
+          "та"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S7-A",
+            "visual_intent": "A photograph showing newborn stars shining inside a stellar nursery.",
+            "must_show": [
+              "newborn stars"
+            ],
+            "must_not_show": [
+              "empty space"
+            ],
+            "queries_en": [
+              "newborn stars stellar nursery nebula",
+              "newborn stars forming in galaxy",
+              "newborn stars"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S8",
+        "narration_words": [
+          "галактики,",
+          "формуючи",
+          "складну",
+          "структуру"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S8-A",
+            "visual_intent": "A detailed photograph of a large spiral galaxy rotating in space.",
+            "must_show": [
+              "spiral galaxy"
+            ],
+            "must_not_show": [
+              "solar system"
+            ],
+            "queries_en": [
+              "spiral galaxy rotating space photo",
+              "spiral galaxy structure astronomy",
+              "spiral galaxy"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S9",
+        "narration_words": [
+          "нашого",
+          "великого",
+          "і",
+          "прекрасного",
+          "космосу,",
+          "тепер"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S9-A",
+            "visual_intent": "A photograph of deep space telescope observation showing large cosmic structures.",
+            "must_show": [
+              "deep space"
+            ],
+            "must_not_show": [
+              "hand drawing"
+            ],
+            "queries_en": [
+              "deep space telescope observation image",
+              "deep space large cosmic structures",
+              "deep space"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      }
+    ]
+  },
+  "initial_error": "S9-A contains generic/non-photographic visual request"
+}

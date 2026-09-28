@@ -49,6 +49,44 @@ test('joined narration, not every visual segment, must be a complete utterance',
   );
 });
 
+test('11350 regression: visual repair preserves original narration despite model adding unfinished filler',()=>{
+  const fixture=JSON.parse(fs.readFileSync('tests/fixtures/m5-11350-visual-repair.json'));
+  const response=story=>({statusCode:200,body:{candidates:[{content:{parts:[{text:JSON.stringify(story)}]}}]}});
+  const context={
+    'Build Script Prompt':fixture.context,
+    'Generate Storyboard':response(fixture.original),
+    'Validate Storyboard':{error:{message:fixture.initial_error}},
+    'Repair Storyboard':response(fixture.first_repair),
+  };
+  const $=name=>({first:()=>({json:context[name]})});
+  const expected=fixture.original.scenes.flatMap(scene=>scene.narration_words).join(' ');
+  assert.match(expected,/[.!?…]$/u);
+  for(const [name,story] of [
+    ['Validate Repaired Storyboard',fixture.first_repair],
+    ['Validate Repaired Storyboard 2',fixture.second_repair],
+  ]) {
+    assert.doesNotMatch(story.scenes.flatMap(scene=>scene.narration_words).join(' '),/[.!?…]$/u,name);
+    const out=new Function('$','$json',byName[name].parameters.jsCode)($,response(story)).json;
+    assert.equal(out.storyboard.narration,expected,name);
+    assert.equal(out.storyboard.scenes.at(-1).narration,fixture.original.scenes.at(-1).narration_words.join(' '),name);
+  }
+});
+
+test('narration repair cannot bypass the complete-utterance validation',()=>{
+  const fixture=JSON.parse(fs.readFileSync('tests/fixtures/m5-11350-visual-repair.json'));
+  const response=story=>({statusCode:200,body:{candidates:[{content:{parts:[{text:JSON.stringify(story)}]}}]}});
+  const context={
+    'Build Script Prompt':fixture.context,
+    'Generate Storyboard':response(fixture.original),
+    'Validate Storyboard':{error:{message:'canonical continuous narration must start normally and end as a complete utterance'}},
+  };
+  const $=name=>({first:()=>({json:context[name]})});
+  assert.throws(
+    ()=>new Function('$','$json',byName['Validate Repaired Storyboard'].parameters.jsCode)($,response(fixture.first_repair)),
+    /canonical continuous narration must start normally and end as a complete utterance/
+  );
+});
+
 test('M5 prompt defines scenes as visual cut segments of continuous narration',()=>{
   const code=byName['Build Script Prompt'].parameters.jsCode;
   assert.match(code,/scene boundaries MAY occur inside a sentence/);
