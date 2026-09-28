@@ -18,7 +18,7 @@ for(const name of ['Build Storyboard Repair','Build Storyboard Repair 2']){
 }
 test('all three storyboard requests send constrained schema and retain evidence refusal',()=>{
  for(const name of ['Generate Storyboard','Repair Storyboard','Repair Storyboard 2']){
-  const expr=byName[name].parameters.body.slice(3,-2).trim();
+  const expr=byName[name].parameters.workflowInputs.value.request_body.slice(3,-2).trim();
   const body=JSON.parse(new Function('$json','return ('+expr+')')(ctx));
   const schema=body.generationConfig.responseJsonSchema;
   assert.deepEqual(schema,ctx.response_json_schema,name);

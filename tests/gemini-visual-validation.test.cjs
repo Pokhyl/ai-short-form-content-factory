@@ -282,8 +282,10 @@ test('collector fails when a scene has no Gemini-approved candidate', () => {
 });
 
 test('M8 Gemini Vision reuses the existing Gemini credential', () => {
+  const helper = JSON.parse(fs.readFileSync(path.join(root, 'workflows', 'VIDEO-Gemini-Resilient-Call.json')));
+  const helperNode = helper.nodes.find(n => n.name === 'Gemini Primary');
   const m8Credential = node(m8, 'Gemini Validate Visuals').credentials.googlePalmApi;
-  const m5Credential = node(m5, 'Generate Storyboard').credentials.googlePalmApi;
+  const m5Credential = helperNode.credentials.googlePalmApi;
   assert.deepEqual(m8Credential, m5Credential);
 });
 

@@ -1,3 +1,9 @@
+## 2026-09-28 — next gate: deploy shared Gemini helper
+1. Commit/push the tested shared-helper change without `.tmp/` or backup artifacts.
+2. With zero active executions, stop production n8n once, import/publish `VideoGeminiResilient001` first, then import/publish M5, restart n8n, and verify health plus live source equality to Git.
+3. Run exactly one fresh different-topic 30s Gemini smoke. Never rerun any failed job ID. Trace M3->M9 to terminal and audit the rendered MP4 only if machine QA passes.
+4. If the next smoke fails, fix the generic failing contract/provider path before creating another smoke; do not weaken semantic, language, timing, or visual gates.
+
 ## 2026-09-28 — next acceptance gate after 51c199a rollout
 
 - Production now runs Git `51c199a` timing contract for 30s narration: accepted natural audio 28,464–34,000ms, no speech cutting/speed-up, render duration follows `max(nominal,audio)`. M5 v185 active `0df5f0a2-c8e8-4ede-ae84-1c75726dd726`; M6 v12 active `7cba672b-09a9-4eb0-9f21-f7b5d43ce590`; four affected DB functions and media-worker image `sha256:57f1e561d0808329389ccd552ed380d986a5c832c53fb615ddd1f1cddffa7f05` are deployed and live-verified. Publisher/worker healthz=200; active n8n executions=0.

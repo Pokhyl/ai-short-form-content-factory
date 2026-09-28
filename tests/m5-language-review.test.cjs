@@ -44,11 +44,18 @@ test('second repair only requests newly flagged scene and retains previously cor
  assert.equal(built.base_storyboard.scenes[1].narration,scenes[1].narration);
 });
 test('new requests retain model, credentials and bounded provider retries',()=>{
+ const helper=JSON.parse(fs.readFileSync('workflows/VIDEO-Gemini-Resilient-Call.json'));
+ const h=Object.fromEntries(helper.nodes.map(node=>[node.name,node]));
  for(const name of ['Review Narration Language','Review Narration Language Retry','Review Narration Language Final','Repair Narration Language']){
-  assert.equal(n[name].parameters.url,n['Generate Storyboard'].parameters.url);
-  assert.deepEqual(n[name].credentials,n['Generate Storyboard'].credentials);
-  assert.equal(n[name].maxTries,5);assert.equal(n[name].onError,'continueRegularOutput');
+  assert.equal(n[name].type,'n8n-nodes-base.executeWorkflow');
+  assert.equal(n[name].parameters.workflowId.value,'VideoGeminiResilient001');
+  assert.equal(n[name].parameters.workflowInputs.value.primary_model,'gemini-3.5-flash-lite');
  }
+ assert.deepEqual(h['Gemini Primary'].credentials.googlePalmApi,h['Gemini Fallback'].credentials.googlePalmApi);
+ assert.equal(h['Gemini Primary'].maxTries,2);
+ assert.equal(h['Gemini Primary'].waitBetweenTries,5000);
+ assert.equal(h['Wait 30s'].parameters.amount,30);
+ assert.equal(h['Wait 60s'].parameters.amount,60);
 });
 test('live exact 10042 language replay rejects defective draft and accepts four language controls',()=>{
  const fixtures=JSON.parse(fs.readFileSync('tests/fixtures/m5-10042-language-review.json'));
@@ -118,8 +125,18 @@ test('11270 regression: a single failed language repair gets one bounded retry a
  assert.throws(()=>validate($,provider),/Ukrainian narration contains Russian lexical\/spelling forms/);
  const accepted=validate($,response({narrations:original})).json;
  assert.equal(accepted.storyboard.narration,c.base_storyboard.narration);
- assert.deepEqual(n['Repair Narration Language Retry'].credentials,n['Repair Narration Language'].credentials);
- assert.deepEqual(n['Repair Narration Language Retry'].parameters,n['Repair Narration Language'].parameters);
+ assert.equal(n['Repair Narration Language Retry'].type,'n8n-nodes-base.executeWorkflow');
+ assert.equal(n['Repair Narration Language'].type,'n8n-nodes-base.executeWorkflow');
+ assert.equal(n['Repair Narration Language Retry'].parameters.workflowId.value,'VideoGeminiResilient001');
+ assert.equal(n['Repair Narration Language'].parameters.workflowId.value,'VideoGeminiResilient001');
+ assert.equal(
+  n['Repair Narration Language Retry'].parameters.workflowInputs.value.request_body,
+  n['Repair Narration Language'].parameters.workflowInputs.value.request_body
+ );
+ assert.equal(
+  n['Repair Narration Language Retry'].parameters.workflowInputs.value.primary_model,
+  n['Repair Narration Language'].parameters.workflowInputs.value.primary_model
+ );
  assert.equal(w.connections['Validate Narration Language Repair'].main[1][0].node,'Build Narration Language Repair Retry');
  assert.equal(w.connections['Validate Narration Language Repair Retry'].main[1][0].node,'Prepare Script Failure');
  assert.equal(w.connections['Validate Narration Language Repair Retry'].main[0][0].node,'Build Narration Language Review Retry');

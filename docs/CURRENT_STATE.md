@@ -1,3 +1,10 @@
+## 2026-09-28 — shared Gemini resilience prepared, not yet deployed
+- Production M5 is still v187 / active version `10707d7c-837d-43d0-8eac-f1f77fe57f53`.
+- Smoke `b4a80ba5-7406-4a5a-96a1-1e3d3ab98f69` failed terminally in M5 execution 11381 after all three current storyboard provider batches returned Gemini `high demand`; do not rerun this job.
+- Execution 11375 separately showed the current storyboard-only backoff can recover the storyboard call, then fail later at `Review Narration Language` on the same provider overload. This proves the failure class is shared across M5 Gemini calls.
+- Working-tree fix introduces `VIDEO — Gemini Resilient Call` (`VideoGeminiResilient001`) and routes all 18 M5 Gemini calls through it. Policy is bounded and transient-only: 2x5s primary attempts, Wait 30s + Gemini 3.1 fallback, Wait 60s + final primary batch, 45s per HTTP request. Non-transient provider errors remain fail-closed. Validators/gates are unchanged.
+- Validation: provider regression 8/8 PASS; full JS 503/503 PASS; installed n8n runtime test PASS; isolated n8n 2.37.10 dry import PASS. Not deployed yet.
+
 ## 2026-09-28 — current production state after 51c199a rollout
 
 - Latest smoke `33697003-8785-4a03-9894-0215ae7b6b3f` (pl30, `jak działa pompa ciepła`, Gemini) is immutable `script_failed`. M5 execution `11362` failed after timing repair with `coverage 0.500, required >= 0.600 [line 597]`. Never rerun this job. The exact first timing-probe duration was not recovered.

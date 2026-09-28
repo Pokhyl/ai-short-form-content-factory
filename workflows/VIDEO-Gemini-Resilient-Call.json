@@ -1,0 +1,416 @@
+{
+  "id": "VideoGeminiResilient001",
+  "name": "VIDEO — Gemini Resilient Call",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "request_body"
+            },
+            {
+              "name": "primary_model"
+            },
+            {
+              "name": "request_label"
+            }
+          ]
+        }
+      },
+      "id": "gemini-resilient-trigger",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://generativelanguage.googleapis.com/v1beta/models/' + ($('When Executed by Another Workflow').first().json.primary_model || 'gemini-3.5-flash-lite') + ':generateContent' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $('When Executed by Another Workflow').first().json.request_body }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": false
+            }
+          },
+          "timeout": 45000
+        }
+      },
+      "id": "gemini-resilient-primary",
+      "name": "Gemini Primary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        240,
+        0
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zsRz2tvE57EKe8zy",
+          "name": "Gemini Text"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $json ?? {};\nconst error = source.error && typeof source.error === 'object' ? source.error : null;\nif (!error) return { json: { ...source, _provider_transient: false } };\n\nconst message = String(\n  error.description ||\n  error.message ||\n  source.description ||\n  source.message ||\n  'Gemini provider request failed'\n);\nconst status = Number(\n  error.httpCode ||\n  error.statusCode ||\n  error.status ||\n  source.statusCode ||\n  source.status ||\n  0\n);\nconst transient =\n  status === 408 ||\n  status === 429 ||\n  status >= 500 ||\n  /(?:high demand|service unavailable|temporar(?:y|ily)|timeout|timed out|rate limit|resource exhausted|overload)/iu.test(message);\n\nreturn { json: { ...source, _provider_transient: transient } };"
+      },
+      "id": "gemini-resilient-classify-1",
+      "name": "Classify Primary Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "gemini-resilient-if-1-condition",
+              "leftValue": "={{ $json._provider_transient === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "gemini-resilient-if-1",
+      "name": "Retry Primary?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        720,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "gemini-resilient-wait-1",
+      "name": "Wait 30s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://generativelanguage.googleapis.com/v1beta/models/' + 'gemini-3.1-flash-lite' + ':generateContent' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $('When Executed by Another Workflow').first().json.request_body }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": false
+            }
+          },
+          "timeout": 45000
+        }
+      },
+      "id": "gemini-resilient-fallback",
+      "name": "Gemini Fallback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1200,
+        -120
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zsRz2tvE57EKe8zy",
+          "name": "Gemini Text"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $json ?? {};\nconst error = source.error && typeof source.error === 'object' ? source.error : null;\nif (!error) return { json: { ...source, _provider_transient: false } };\n\nconst message = String(\n  error.description ||\n  error.message ||\n  source.description ||\n  source.message ||\n  'Gemini provider request failed'\n);\nconst status = Number(\n  error.httpCode ||\n  error.statusCode ||\n  error.status ||\n  source.statusCode ||\n  source.status ||\n  0\n);\nconst transient =\n  status === 408 ||\n  status === 429 ||\n  status >= 500 ||\n  /(?:high demand|service unavailable|temporar(?:y|ily)|timeout|timed out|rate limit|resource exhausted|overload)/iu.test(message);\n\nreturn { json: { ...source, _provider_transient: transient } };"
+      },
+      "id": "gemini-resilient-classify-2",
+      "name": "Classify Fallback Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "gemini-resilient-if-2-condition",
+              "leftValue": "={{ $json._provider_transient === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "gemini-resilient-if-2",
+      "name": "Retry Fallback?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1680,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 60,
+        "unit": "seconds"
+      },
+      "id": "gemini-resilient-wait-2",
+      "name": "Wait 60s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://generativelanguage.googleapis.com/v1beta/models/' + ($('When Executed by Another Workflow').first().json.primary_model || 'gemini-3.5-flash-lite') + ':generateContent' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $('When Executed by Another Workflow').first().json.request_body }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": false
+            }
+          },
+          "timeout": 45000
+        }
+      },
+      "id": "gemini-resilient-final",
+      "name": "Gemini Final",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2160,
+        -240
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zsRz2tvE57EKe8zy",
+          "name": "Gemini Text"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const out = { ...$json };\ndelete out._provider_transient;\nreturn { json: out };"
+      },
+      "id": "gemini-resilient-return",
+      "name": "Return Provider Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Gemini Primary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Primary": {
+      "main": [
+        [
+          {
+            "node": "Classify Primary Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Primary Result": {
+      "main": [
+        [
+          {
+            "node": "Retry Primary?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry Primary?": {
+      "main": [
+        [
+          {
+            "node": "Wait 30s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Provider Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 30s": {
+      "main": [
+        [
+          {
+            "node": "Gemini Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Fallback": {
+      "main": [
+        [
+          {
+            "node": "Classify Fallback Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Fallback Result": {
+      "main": [
+        [
+          {
+            "node": "Retry Fallback?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry Fallback?": {
+      "main": [
+        [
+          {
+            "node": "Wait 60s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Provider Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 60s": {
+      "main": [
+        [
+          {
+            "node": "Gemini Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Final": {
+      "main": [
+        [
+          {
+            "node": "Return Provider Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
