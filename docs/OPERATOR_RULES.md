@@ -30,6 +30,12 @@
 - Never batch multiple independent inspections into one long opaque call just to reduce message count.
 - Keep tool output narrowly scoped; prefer exact files, exact line ranges, exact IDs, and small result sets.
 - If a long operation is unavoidable, start it separately, report that it was started, and inspect its actual state with a later short call instead of blocking the chat.
+- Hard anti-hang threshold: any operation that may plausibly exceed 10 seconds MUST run with background execution. Never run it synchronously.
+- Never use synchronous `sleep`, polling, long Docker/n8n CLI actions, full test suites, large log reads, exports, imports, publishes, restarts, or large SQL/trace extraction.
+- If background execution is unavailable or blocked, change the method. Do not fall back to the same long operation synchronously.
+- At most one short synchronous tool call may run before a user-visible status update. No silent chains of tool calls.
+- A short synchronous call must have a bounded timeout of 10 seconds or less and narrowly scoped output.
+- If a background job becomes stale/orphaned or does not report back, do not wait on it and do not repeat the side effect. Verify actual state with a separate short read-only check.
 - If the user sends a new message while work is in progress, answer that message before making any further tool call.
 
 
