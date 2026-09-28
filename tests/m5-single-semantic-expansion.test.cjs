@@ -51,7 +51,7 @@ test('one measured expansion stays within scene capacity and supplies only cited
   assert.match(out.user_message,/never add unsupported facts, generic praise, filler/);
   const target=Number(out.user_message.match(/MEASURED TARGET WORD COUNT: about (\d+) words/)[1]);
   assert.equal(target,58, '45 words at 22.584s recalibrates to the measured voice; added lexical words may include grammar while new facts remain bounded per scene');
-  assert.match(out.user_message,/up to two evidence-supported content words per scene/);
+  assert.match(out.user_message,/at most one NEW meaning-bearing word per short scene/);
 });
 
 test('the failed mixed-script draft is rejected even before another voiceover is synthesized', () => {
@@ -85,7 +85,7 @@ test('short measured Ukrainian speech asks for supported causal detail without l
   const $=name=>({first:()=>({json:ctx})});
   const request=new Function('$','$json',code('Build Timing Repair'))($,measured).json;
   assert.match(request.user_message,/MEASURED TARGET WORD COUNT: about 55 words/);
-  assert.match(request.user_message,/up to two evidence-supported content words per scene/);
+  assert.match(request.user_message,/at most one NEW meaning-bearing word per short scene/);
   assert.match(request.user_message,/never add unsupported facts, generic praise, filler/);
   const gates=code('Normalize Timing Probe 2');
   assert.match(gates,/28464/);

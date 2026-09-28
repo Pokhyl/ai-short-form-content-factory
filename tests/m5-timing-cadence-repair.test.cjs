@@ -131,6 +131,27 @@ test('rejected first timing rewrite gets one bounded retry from original narrati
 });
 
 
+test('11358 regression: excessive novel words get one bounded semantic fallback without filler',()=>{
+  const original={...p1,measured_duration_ms:24792,narration_word_count:47};
+  const $=name=>{
+    if(name==='Build Script Prompt')return {first:()=>({json:ctx})};
+    if(name==='Normalize Timing Probe')return {first:()=>({json:original})};
+    if(name==='Normalize Timing Stability B')return {all:()=>{throw new Error('not executed')}};
+    if(name==='Build Timing Repair')return {first:()=>({json:{prior_usage:{}}})};
+    if(name==='Repair Storyboard Timing')return {first:()=>({json:{body:{usageMetadata:{promptTokenCount:100}}}})};
+    throw new Error('unexpected node '+name);
+  };
+  const first=new Function('$','$json',code('Build Timing Repair'))($,original).json;
+  assert.match(first.user_message,/at most one NEW meaning-bearing word per short scene/);
+  const build=new Function('$','$json',code('Build Timing Repair 2'));
+  const second=build($,{error:'3, allowed 1 [line 603]'}).json;
+  assert.equal(second.semantic_fallback_from_first_repair,true);
+  assert.match(second.user_message,/at most one NEW meaning-bearing word per scene/);
+  assert.match(second.user_message,/No intensifier, decorative adjective, redundant adverb or unsupported detail/);
+  assert.equal(workflow.connections['Validate Timing Repair 2'].main[1][0].node,'Prepare Script Failure');
+  assert.throws(()=>build($,{error:'unexpected semantic rewrite'}),/outside bounded structural\/semantic retry/);
+});
+
 test('11274 regression moves two adjacent visual cuts without rewriting the narration',()=>{
  const parts=[
   'Вода випаровується з поверхні планети, піднімаючись',
