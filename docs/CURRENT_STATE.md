@@ -1,3 +1,10 @@
+## 2026-09-28 — helper v4 prepared after verified cross-model 503 overload
+
+- Latest immutable smoke `eb879513-fe64-4865-9efa-759fc2863579` passed M4 (execution 11406) and failed M5 (11407) only after helper v3 execution 11408 received the same Gemini 503 high-demand response from 3.5, 3.1, 3.8, 3.6 and 3.7.
+- Helper v4 removes each node's immediate second 5-second retry, keeps transient-only routing, and spaces the six maximum provider calls with 30s, 60s, 120s, 240s and 600s waits; the sixth call is a final 3.8 recovery attempt. This reduces maximum provider calls from 10 to 6 while extending the provider recovery window to about 17.5 minutes.
+- Validation before deploy: targeted provider 8/8 PASS; full JS 505/505 PASS; installed n8n SplitInBatches runtime PASS; isolated n8n 2.37.10 workflow import PASS; duration audit PASS.
+- Next gate: commit/push helper v4 and docs, deploy helper only with zero active executions, verify live source equality and health, then create one fresh different-topic pl30/gemini smoke and launch it exactly once.
+
 ## 2026-09-28 — helper v3 deployed
 - Git `e3e6102` is pushed; shared Gemini helper is production v3 / active `eaa358f9-f757-4164-a419-6a0d77c1fba9`, source-equal to Git, n8n health=200, zero active executions after deployment.
 - Bounded transient-only sequence: 3.5 -> 30s -> 3.1 -> 60s -> 3.8 -> 60s -> 3.6 -> 60s -> 3.7. Each provider batch uses 2 attempts, 5s retry spacing, 45s timeout. Non-transient errors and all M5 semantic/language/timing gates remain fail-closed.

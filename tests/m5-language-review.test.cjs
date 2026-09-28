@@ -52,8 +52,8 @@ test('new requests retain model, credentials and bounded provider retries',()=>{
   assert.equal(n[name].parameters.workflowInputs.value.primary_model,'gemini-3.5-flash-lite');
  }
  assert.deepEqual(h['Gemini Primary'].credentials.googlePalmApi,h['Gemini Fallback'].credentials.googlePalmApi);
- assert.equal(h['Gemini Primary'].maxTries,2);
- assert.equal(h['Gemini Primary'].waitBetweenTries,5000);
+ assert.equal(h['Gemini Primary'].retryOnFail,false);
+ assert.equal(h['Gemini Primary'].maxTries,1);
  assert.equal(h['Wait 30s'].parameters.amount,30);
  assert.equal(h['Wait 60s'].parameters.amount,60);
 });

@@ -63,8 +63,8 @@
         }
       },
       "onError": "continueRegularOutput",
-      "retryOnFail": true,
-      "maxTries": 2,
+      "retryOnFail": false,
+      "maxTries": 1,
       "waitBetweenTries": 5000
     },
     {
@@ -164,8 +164,8 @@
         }
       },
       "onError": "continueRegularOutput",
-      "retryOnFail": true,
-      "maxTries": 2,
+      "retryOnFail": false,
+      "maxTries": 1,
       "waitBetweenTries": 5000
     },
     {
@@ -265,8 +265,109 @@
         }
       },
       "onError": "continueRegularOutput",
-      "retryOnFail": true,
-      "maxTries": 2,
+      "retryOnFail": false,
+      "maxTries": 1,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $json ?? {};\nconst error = source.error && typeof source.error === 'object' ? source.error : null;\nif (!error) return { json: { ...source, _provider_transient: false } };\n\nconst message = String(\n  error.description ||\n  error.message ||\n  source.description ||\n  source.message ||\n  'Gemini provider request failed'\n);\nconst status = Number(\n  error.httpCode ||\n  error.statusCode ||\n  error.status ||\n  source.statusCode ||\n  source.status ||\n  0\n);\nconst transient =\n  status === 408 ||\n  status === 429 ||\n  status >= 500 ||\n  /(?:high demand|service unavailable|temporar(?:y|ily)|timeout|timed out|rate limit|resource exhausted|overload)/iu.test(message);\n\nreturn { json: { ...source, _provider_transient: transient } };"
+      },
+      "id": "video-gemini-classify-reserve-37",
+      "name": "Classify Reserve 3.7 Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3300,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "gemini-resilient-if-4-condition",
+              "leftValue": "={{ $json._provider_transient === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "video-gemini-retry-reserve-37",
+      "name": "Retry Reserve 3.7?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 600,
+        "unit": "seconds"
+      },
+      "id": "video-gemini-wait-recovery-600",
+      "name": "Wait 600s Recovery",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3740,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://generativelanguage.googleapis.com/v1beta/models/' + 'gemini-3.8-flash' + ':generateContent' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $('When Executed by Another Workflow').first().json.request_body }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": false
+            }
+          },
+          "timeout": 45000
+        }
+      },
+      "id": "video-gemini-recovery-38",
+      "name": "Gemini Recovery 3.8",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3960,
+        -120
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zsRz2tvE57EKe8zy",
+          "name": "Gemini Text"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": false,
+      "maxTries": 1,
       "waitBetweenTries": 5000
     },
     {
@@ -333,11 +434,11 @@
     },
     {
       "parameters": {
-        "amount": 60,
+        "amount": 120,
         "unit": "seconds"
       },
       "id": "gemini-resilient-wait-3",
-      "name": "Wait 60s Reserve 1",
+      "name": "Wait 120s Reserve 1",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
@@ -380,8 +481,8 @@
         }
       },
       "onError": "continueRegularOutput",
-      "retryOnFail": true,
-      "maxTries": 2,
+      "retryOnFail": false,
+      "maxTries": 1,
       "waitBetweenTries": 5000
     },
     {
@@ -434,11 +535,11 @@
     },
     {
       "parameters": {
-        "amount": 60,
+        "amount": 240,
         "unit": "seconds"
       },
       "id": "gemini-resilient-wait-4",
-      "name": "Wait 60s Reserve 2",
+      "name": "Wait 240s Reserve 2",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
@@ -481,8 +582,8 @@
         }
       },
       "onError": "continueRegularOutput",
-      "retryOnFail": true,
-      "maxTries": 2,
+      "retryOnFail": false,
+      "maxTries": 1,
       "waitBetweenTries": 5000
     }
   ],
@@ -626,7 +727,7 @@
       "main": [
         [
           {
-            "node": "Wait 60s Reserve 1",
+            "node": "Wait 120s Reserve 1",
             "type": "main",
             "index": 0
           }
@@ -634,17 +735,6 @@
         [
           {
             "node": "Return Provider Result",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Wait 60s Reserve 1": {
-      "main": [
-        [
-          {
-            "node": "Gemini Reserve 3.6",
             "type": "main",
             "index": 0
           }
@@ -677,7 +767,7 @@
       "main": [
         [
           {
-            "node": "Wait 60s Reserve 2",
+            "node": "Wait 240s Reserve 2",
             "type": "main",
             "index": 0
           }
@@ -691,7 +781,29 @@
         ]
       ]
     },
-    "Wait 60s Reserve 2": {
+    "Gemini Reserve 3.7": {
+      "main": [
+        [
+          {
+            "node": "Classify Reserve 3.7 Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 120s Reserve 1": {
+      "main": [
+        [
+          {
+            "node": "Gemini Reserve 3.6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 240s Reserve 2": {
       "main": [
         [
           {
@@ -702,7 +814,47 @@
         ]
       ]
     },
-    "Gemini Reserve 3.7": {
+    "Classify Reserve 3.7 Result": {
+      "main": [
+        [
+          {
+            "node": "Retry Reserve 3.7?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry Reserve 3.7?": {
+      "main": [
+        [
+          {
+            "node": "Wait 600s Recovery",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Provider Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 600s Recovery": {
+      "main": [
+        [
+          {
+            "node": "Gemini Recovery 3.8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Recovery 3.8": {
       "main": [
         [
           {

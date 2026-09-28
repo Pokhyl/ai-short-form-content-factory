@@ -1,3 +1,10 @@
+## 2026-09-28 — deploy quota-safe Gemini recovery helper v4
+
+1. Commit/push the tested helper v4 change and authoritative docs; keep `.tmp/` and editor backups out of Git.
+2. With zero active n8n executions, import/publish only `VideoGeminiResilient001`, restart publisher n8n once, then verify health and live nodes/connections/settings against Git.
+3. Create exactly one fresh different-topic pl30/gemini acceptance smoke, launch once, trace it to terminal, and never rerun a failed ID.
+4. If Gemini remains unavailable after the full 30/60/120/240/600-second recovery sequence, preserve the exact job as immutable evidence and do not add another rapid model/request loop.
+
 ## 2026-09-28 — helper v3 live acceptance
 1. Helper v3 deployment is complete and source-equal; do not redeploy unless Git changes.
 2. Create one fresh different-topic pl30/gemini smoke, persist ID before launch, launch once, trace to terminal.
