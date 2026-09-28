@@ -1,3 +1,11 @@
+## 2026-09-28 — M8 must_not_show context semantics deployed
+
+- Immutable smoke `f584d280-e17f-401e-96fe-a060f89dfdb0` reached M8 and failed on S5-A even though Wikimedia asset 6883586 was a perfect reservoir shot: Gemini scored 100 with must_show=true and intent_match=true, but rejected it only because `engine block` was visible/incidental under the hood.
+- Root cause: M5 contract already states normal/incidental setting must not invalidate a shot, while M8 Vision interpreted must_not_show as absolute pixel absence.
+- Commit `5cf95c5` aligns M8 with that contract: must_not_show fails only for prominent conflicting subjects or mutually exclusive states. No score, must_show, intent, DB, or uniqueness gates were weakened.
+- Validation/deploy: executable prompt-node regression PASS; JSON PASS; diff PASS; production M8 active version `0747741e-1b5e-49cc-80da-c13957aabff5`; health 200; live nodes/connections/settings match Git.
+- Next gate: create one fresh independent pl30/gemini smoke, launch once, trace M4->M9, audit final MP4 if machine QA passes.
+
 ## 2026-09-28 — M8 Gemini-review false-negative fix prepared
 
 - Immutable smoke `9237413a-8e6b-43e7-9cdd-7d306586250c` passed M4/M5/M6/M7 and failed M8 on S3-A because every candidate was excluded before Vision. The exact top Pixabay candidate had score 88 but was hard-excluded by `pixabay_photo_content_unverified_tag_only` even though Gemini mode exists specifically to inspect pixels.

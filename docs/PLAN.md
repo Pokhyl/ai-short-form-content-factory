@@ -1,3 +1,10 @@
+## 2026-09-28 — validate deployed M8 exclusion-semantics fix
+
+1. Create exactly one fresh independent pl30/gemini smoke after commit `5cf95c5`; persist its ID before launch.
+2. Launch that exact ID once. Never rerun it if it fails.
+3. Trace M4 -> M9. If M8 fails, preserve exact Vision evidence and fix generically; do not lower the 70 score floor or bypass must_show/intent/uniqueness gates.
+4. If machine QA passes, audit the actual final MP4 for duration, portrait framing, scene relevance and selected visuals.
+
 ## 2026-09-28 — deploy M8 Gemini-only Pixabay review rescue
 
 1. Commit/push the regression-backed DB-only change; do not alter metadata-mode gates.
