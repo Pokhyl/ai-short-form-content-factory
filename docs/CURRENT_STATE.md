@@ -1,3 +1,8 @@
+## 2026-09-28 — helper v2 deployed
+- `VideoGeminiResilient001` v2 active version `4903c705-c77c-45d4-b4b2-b98b6d1e230c`, source-equal to Git commit `b6a32b9`.
+- Provider sequence: 3.5 -> 30s -> 3.1 -> 60s -> 3.8 Flash. n8n health=200; active executions=0.
+- Next acceptance gate: one fresh different-topic 30s Gemini smoke, launch once and trace to terminal.
+
 ## 2026-09-28 — helper v1 verified, 3.8 final fallback prepared
 - Smoke `9e62f5f4-4866-4c7d-bc7a-434233128477` failed terminally in M5 after helper execution 11386 exhausted 3.5 -> 30s -> 3.1 -> 60s -> 3.5 with Gemini `high demand`. Do not rerun this job.
 - Shared helper architecture itself executed correctly in production. The remaining issue is model availability, not routing.

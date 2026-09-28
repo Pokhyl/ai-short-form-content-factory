@@ -1,3 +1,7 @@
+## 2026-09-28 — helper v2 live; run acceptance smoke
+- Helper v2 deployment verified healthy and source-equal to Git.
+- Run exactly one fresh different-topic 30s Gemini smoke; persist ID, launch once, trace M3->M9 to terminal; never rerun failed IDs.
+
 ## 2026-09-28 — deploy Gemini 3.8 final fallback
 - Commit/push helper-only 3.8 final-fallback change plus docs/tests; do not touch `.tmp/`.
 - With zero active executions, import/publish helper only, restart n8n, verify helper source equals Git and /healthz=200.
