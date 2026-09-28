@@ -1,3 +1,12 @@
+## 2026-09-28 — M5 interaction-subject contract fix verified; deploy pending
+
+- Immutable smoke `9ed1a19c-7ad2-495d-9ca1-98ab71d83aa9` reached M8 after M5/M6/M7 PASS and failed on S6-A because Vision received only generic multimeter imagery; all three reviewed candidates had `must_show_visible=true` but `intent_match=false` because no car battery was visible.
+- Root cause is upstream storyboard under-specification, not M8 thresholding: `visual_intent` required a multimeter measuring a car battery, while `must_show` contained only `multimeter` and detailed query 2 dropped the battery context.
+- Fix: M5 generation contract now requires the second independently visible subject for measurement/connection/transfer relationships as `must_show[1]`, and both detailed queries must preserve that subject. All three M5 validator branches enforce the same rule fail-closed and route violations into repair. Abstract relation targets such as power grid/network/system/infrastructure/mains are excluded to avoid false positives.
+- Validation PASS: targeted 4/4; full JS 507/507; n8n SplitInBatches runtime; isolated n8n 2.37.10 M5 import; workflow JSON; `git diff --check`.
+- `fc42b18e-b186-4042-85f4-f229d2d61701` is separately immutable `script_failed` after exhausting helper-v4 provider recovery on Gemini `high demand`; do not rerun either failed ID.
+- Next gate: commit/push, verify zero active executions, deploy only M5, verify live source + health, then create exactly one fresh acceptance smoke.
+
 ## 2026-09-28 — M8 must_not_show context semantics deployed
 
 - Immutable smoke `f584d280-e17f-401e-96fe-a060f89dfdb0` reached M8 and failed on S5-A even though Wikimedia asset 6883586 was a perfect reservoir shot: Gemini scored 100 with must_show=true and intent_match=true, but rejected it only because `engine block` was visible/incidental under the hood.

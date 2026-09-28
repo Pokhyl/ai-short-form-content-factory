@@ -1,3 +1,12 @@
+## 2026-09-28 — deploy verified M5 interaction-subject fix
+
+1. Commit and push the verified M5 interaction-subject contract/validator regression plus anti-hang operator rule and authoritative docs; keep `.tmp/` out of Git.
+2. Confirm zero active n8n executions immediately before deployment.
+3. Import/publish only `VideoM5Storyboard001`; restart publisher n8n once only if required by the established deployment path.
+4. Verify n8n health=200, M5 activeVersionId=versionId, and live nodes/connections/settings exactly match Git.
+5. Create exactly one fresh independent pl30/gemini smoke, persist its ID before launch, launch once, and never rerun it if it fails.
+6. Trace M4→M9. If machine QA passes, run `scripts/audit_final_media.py` against the exact final MP4; do not accept status alone.
+
 ## 2026-09-28 — validate deployed M8 exclusion-semantics fix
 
 1. Create exactly one fresh independent pl30/gemini smoke after commit `5cf95c5`; persist its ID before launch.
