@@ -27,9 +27,40 @@ test('all Gemini HTTP nodes expose errors on main output so n8n retry detector c
     assert.equal(node.type,'n8n-nodes-base.httpRequest',httpName);
     assert.equal(node.retryOnFail,true,httpName);
     assert.equal(node.maxTries,5,httpName);
-    assert.equal(node.waitBetweenTries,10000,httpName);
+    assert.equal(node.waitBetweenTries,5000,httpName);
     assert.equal(node.onError,'continueRegularOutput',httpName);
   }
+});
+
+
+test('initial storyboard provider exhaustion falls back to free structured-output Gemini 3.1 Flash-Lite without changing the prompt',()=>{
+  const code=byName['Build Storyboard Repair'].parameters.jsCode;
+  const ctx={
+    script_run_id:'run-provider-fallback',
+    model:'gemini-3.5-flash-lite',
+    response_json_schema:{type:'object'},
+    system_message:'SYSTEM',
+    user_message:'USER',
+  };
+  const $=name=>({
+    first:()=>({
+      json:name==='Generate Storyboard'
+        ? {error:{description:'This model is currently experiencing high demand.'}}
+        : ctx,
+    }),
+  });
+
+  const out=new Function('$','$json',code)($,{error:{message:'provider unavailable'}}).json;
+  assert.equal(out.provider_fallback,true);
+  assert.equal(out.provider_fallback_from,'gemini-3.5-flash-lite');
+  assert.equal(out.model,'gemini-3.1-flash-lite');
+  assert.equal(out.system_message,'SYSTEM');
+  assert.equal(out.user_message,'USER');
+  assert.deepEqual(out.response_json_schema,{type:'object'});
+
+  const url=byName['Repair Storyboard'].parameters.url;
+  assert.match(url,/\$json\.model/);
+  assert.match(url,/gemini-3\.5-flash-lite/);
 });
 
 test('all Gemini validators preserve provider failure after transient retries and stay inside existing bounded error routing',()=>{
