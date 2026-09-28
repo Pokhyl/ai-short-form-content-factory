@@ -131,6 +131,33 @@ test('rejected first timing rewrite gets one bounded retry from original narrati
 });
 
 
+test('11274 regression moves two adjacent visual cuts without rewriting the narration',()=>{
+ const parts=[
+  'Вода випаровується з поверхні планети, піднімаючись',
+  'вгору невидимою парою.',
+  'Рухаючись вище, повітря охолоджується.',
+  'Тиск падає, викликаючи адіабатичне розширення.',
+  'Волога досягає точки роси.',
+  'Частинки пилу стають ядрами конденсації.',
+  'Пара осідає на центрах.',
+  'Краплі утворюють хмару.',
+  'Важкі краплі випадають дощем.',
+ ];
+ for(const name of ['Validate Timing Repair','Validate Timing Repair 2']){
+  const script=code(name);
+  const start=script.indexOf('// A visual cut may move while the spoken narration stays byte-for-byte intact.');
+  const end=script.indexOf('if (scenes.length !== Number(ctx.target_scenes))',start);
+  assert.ok(start>=0 && end>start,name);
+  const scenes=parts.map(narration=>({narration}));
+  const narration=parts.join(' ');
+  new Function('ctx','scenes','narration','clean',script.slice(start,end))(
+   {target_duration_seconds:30},scenes,narration,value=>String(value).replace(/\s+/g,' ').trim());
+  assert.equal(scenes.map(scene=>scene.narration).join(' '),narration,name);
+  assert.deepEqual(scenes.slice(6).map(scene=>scene.narration.split(/\s+/u).length),[3,2,6],name);
+  assert.equal(scenes[8].narration,'утворюють хмару. Важкі краплі випадають дощем.',name);
+ }
+});
+
 test('11226 timing replies preserve every spoken word when repairing a short final visual cut',()=>{
  const fixture=JSON.parse(fs.readFileSync('tests/fixtures/m5-11226-timing-boundary.json'));
  for(const [name,provider] of [['Validate Timing Repair','Repair Storyboard Timing'],['Validate Timing Repair 2','Repair Storyboard Timing 2']]){
