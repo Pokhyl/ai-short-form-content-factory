@@ -182,3 +182,22 @@ test('11230 semantic coverage failure gets one bounded retry from original, prov
  assert.equal(out.target_scene_word_counts.at(-1)>=6,true);
  assert.throws(()=>build($,{error:{description:'Gemini provider unavailable'}}),/outside bounded structural\/semantic retry/);
 });
+
+test('slightly overlong narration repairs toward upper accepted window without erasing meaning',()=>{
+  const overlong={...p1,measured_duration_ms:32256,narration_word_count:58};
+  const $=name=>{
+    if(name==='Build Script Prompt') return {first:()=>({json:ctx})};
+    if(name==='Normalize Timing Probe') return {first:()=>({json:overlong})};
+    if(name==='Normalize Timing Stability B') return {all:()=>{throw new Error('not executed')}};
+    if(name==='Build Timing Repair') return {first:()=>({json:{prior_usage:{}}})};
+    if(name==='Repair Storyboard Timing') return {first:()=>({json:{body:{usageMetadata:{}}}})};
+    throw new Error('unexpected node '+name);
+  };
+  const first=new Function('$','$json',code('Build Timing Repair'))($,overlong).json;
+  assert.match(first.user_message,/REQUIRED DIRECTION: make narration SHORTER/);
+  assert.match(first.user_message,/MEASURED TARGET WORD COUNT: about 44 words/);
+  const second=new Function('$','$json',code('Build Timing Repair 2'))($,{error:'coverage 0.500, required >= 0.600 [line 588]'}).json;
+  assert.equal(second.semantic_fallback_from_first_repair,true);
+  assert.ok(second.target_precision_words>=43,second.target_precision_words);
+  assert.match(second.user_message,/direction from current version: make narration SHORTER/);
+});
