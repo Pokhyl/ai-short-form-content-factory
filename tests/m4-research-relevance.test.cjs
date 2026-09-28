@@ -82,3 +82,49 @@ test('M4 relevance gate tolerates normal inflection but not unrelated same-langu
   assert.equal(result.length,1);
   assert.equal(result[0].json.source_domain,'edu.example');
 });
+
+test('M4 disambiguates an unqualified theory using explanatory evidence across output languages',()=>{
+  const cases=[
+    ['uk','теория большого взрыва','научная теория'],
+    ['pl','teoria ewolucji','teoria naukowa'],
+    ['en','theory of evolution','scientific theory'],
+  ];
+  for(const [language,topic,scientificTerm] of cases){
+    const queries=runCode('Build Search Queries',{input:[{
+      topic,language_code:language,research_run_id:'12345678-1234-4234-8234-123456789012',
+    }]}).map((item)=>item.json);
+    assert.equal(queries[1].explain_theory,true);
+    assert.ok(queries[1].search_query.includes(scientificTerm));
+    assert.equal(queries[1].search_engine,'duckduckgo');
+    const results=runCode('Build Fetch Candidates',{
+      input:[
+        {results:[{url:'https://media.example/show',title:topic+' сериал',content:'телесериал про друзей'}]},
+        {results:[
+          {url:'https://science.example/article',title:topic+' объяснение',content:'теория подтверждается исследованиями'},
+          {url:'https://university.example/lecture',title:topic+' научная теория',content:'научное объяснение'},
+          {url:'https://museum.example/exhibit',title:topic+' факты',content:'объяснение явления'},
+        ]},
+        {results:[]},
+      ],nodes:{'Build Search Queries':queries},
+    }).map((item)=>item.json);
+    assert.ok(results.length>=3);
+    assert.ok(results.every((item)=>item.query_kind==='subject_principle'));
+    assert.ok(results.every((item)=>item.source_domain!=='media.example'));
+  }
+});
+
+test('M4 fails closed when theory search has only a namesake show, and respects explicit show intent',()=>{
+  const context={research_run_id:'12345678-1234-4234-8234-123456789012',language_code:'ru'};
+  const scientific=runCode('Build Search Queries',{input:[{...context,topic:'теория большого взрыва'}]}).map((i)=>i.json);
+  const show={url:'https://media.example/show',title:'Теория большого взрыва сериал',content:'ситком и актеры'};
+  const onlyShow=runCode('Build Fetch Candidates',{
+    input:[{results:[show]},{results:[]},{results:[]}],nodes:{'Build Search Queries':scientific},
+  });
+  assert.equal(onlyShow[0].json.candidate_valid,false);
+  const explicit=runCode('Build Search Queries',{input:[{...context,topic:'сериал теория большого взрыва'}]}).map((i)=>i.json);
+  assert.equal(explicit[1].explain_theory,false);
+  const showSources=runCode('Build Fetch Candidates',{
+    input:[{results:[show]},{results:[]},{results:[]}],nodes:{'Build Search Queries':explicit},
+  });
+  assert.equal(showSources[0].json.candidate_valid,true);
+});
