@@ -1,3 +1,12 @@
+## 2026-09-29 — M5 bounded second timing repair live
+
+- Immutable smoke `0419d145-7901-4904-b5e8-ca334091369e` (`jak działa pompa rowerowa`, pl30/gemini) is terminal `script_failed`; never rerun it. M4 `11496` passed. M5 `11497` failed only on voice timing after successful storyboard/query validation.
+- Exact timing evidence: first real TTS probe 55 words = 27864 ms; first semantic timing repair 56 words = 25488 ms. Both were below the 30s accepted audio floor 28464 ms, and the second stochastic sample got shorter despite one extra word.
+- Root cause: `Route Timing Within Target 2` sent a valid-but-still-short second probe directly to terminal timing failure even though `Build Timing Repair 2` already exists for bounded recovery. Its interpolation also accepted non-monotonic word/character-vs-duration slopes.
+- Commit `2774034` routes the second out-of-window probe into the existing bounded second repair and only uses linear interpolation when duration and word/character deltas move in the same direction; otherwise it falls back to proportional measured targeting. The accepted audio window remains unchanged.
+- Verification: targeted timing suite 30/30 PASS; full JS 509/509 PASS; JSON/diff PASS. Production `VideoM5Storyboard001` active version `46ba0dea-3b2c-4af1-af02-987e23dd98ba`; restart exit=0; `/healthz`=200; live nodes/connections/settings exactly match Git (`SOURCE_MATCH=true`).
+- Next gate: exactly one fresh independent pl30/gemini smoke, persist ID before launch, launch once, trace M4→M9, never rerun if it fails.
+
 ## 2026-09-29 — M5 interaction-query canonicalization live
 
 - Commit `4f9731d` is deployed to production `VideoM5Storyboard001` as active version `0fbb213d-4c75-4637-afaa-60f048135c2e`.

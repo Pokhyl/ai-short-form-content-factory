@@ -1,3 +1,11 @@
+## 2026-09-29 — validate deployed M5 bounded second timing repair
+
+1. Treat `0419d145-7901-4904-b5e8-ca334091369e` as immutable `script_failed`; never rerun it.
+2. Commit `2774034` is live in `VideoM5Storyboard001` as active version `46ba0dea-3b2c-4af1-af02-987e23dd98ba`; do not redeploy unless Git changes.
+3. Create exactly one fresh independent pl30/gemini smoke, persist its ID before launch, launch once, and never rerun it if it fails.
+4. Trace M4→M9. Preserve exact timing evidence for M5 failures and candidate/Vision evidence for M8 failures; do not lower timing or visual gates.
+5. If machine QA passes, run `scripts/audit_final_media.py` on the exact final MP4 and inspect selected visuals before acceptance.
+
 ## 2026-09-29 — validate deployed M5 deterministic interaction-query fix
 
 1. Treat failed smoke `d09ca624-1e06-4046-975c-cd9ae42aa820` as immutable `script_failed`; never rerun it.
