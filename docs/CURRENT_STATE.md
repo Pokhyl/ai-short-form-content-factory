@@ -1,3 +1,14 @@
+## 2026-09-29 — dependent visual component canonicalization live
+
+- Immutable smoke `ece4accd-1d42-4cf1-8032-54e11dd94e28` (`jak działa termometr cyfrowy`, pl30/gemini) is terminal `visuals_failed`; never rerun it. M5 `11504` PASS, M6 `11509` PASS, M7 `11510` PASS, M8 `11511` failed on S3-A.
+- Exact S3-A contract before the fix: visual_intent=`A close-up of a thermistor sensor tip on a digital thermometer.`, must_show=`["digital thermometer","sensor tip"]`, must_not_show=`["analog scale"]`.
+- Raw Vision evidence from execution `11511`: Pexels `5712673` and `3873159` visibly showed a digital thermometer, but Gemini correctly rejected both because the sensor tip was not shown in close-up. The third candidate was unrelated. M8 gates were correct and were not weakened.
+- Root cause was upstream M5 contract generation: `sensor tip` is a dependent visible component of the primary `digital thermometer`, but it became an independent hard must_show subject despite the existing prompt rule forbidding component/detail secondaries.
+- Commit `9385196` adds deterministic dependent-component canonicalization across all 7 M5 storyboard validators/canonicalizers. For relations such as `secondary on/of/inside/within primary`, the dependent detail is removed from must_show; when no independent secondary remains, visual_intent becomes a primary-only clear/close-up photo contract. Detailed queries 1-2 may keep the component as retrieval context; query 3 remains the primary fallback. Independent relations such as `gear shifter connected to control cable` remain hard.
+- Verification: targeted dependent-detail regressions 32/32 PASS; hidden-process/broad-subject regressions 41/41 PASS; exact replay of M5 execution `11504` PASS with S3 normalized to visual_intent=`A close-up photo of digital thermometer.`, must_show=`["digital thermometer"]`, queries=`["digital thermometer sensor tip","thermistor sensor probe digital thermometer","digital thermometer"]`; full JS 511/511 PASS; JSON/diff PASS.
+- Production `VideoM5Storyboard001` active version `0cdb8df3-84c8-448b-8a87-bf97e7f7e291`; restart exit=0; `/healthz`=200; live nodes/connections/settings exactly match Git (`SOURCE_MATCH=true`).
+- Next gate: exactly one fresh independent pl30/gemini smoke, persist ID before launch, launch once, trace M4→M9, never rerun if it fails.
+
 ## 2026-09-29 — M5 bounded second timing repair live
 
 - Immutable smoke `0419d145-7901-4904-b5e8-ca334091369e` (`jak działa pompa rowerowa`, pl30/gemini) is terminal `script_failed`; never rerun it. M4 `11496` passed. M5 `11497` failed only on voice timing after successful storyboard/query validation.

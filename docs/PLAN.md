@@ -1,3 +1,11 @@
+## 2026-09-29 — validate deployed dependent-component canonicalization
+
+1. Treat `ece4accd-1d42-4cf1-8032-54e11dd94e28` as immutable `visuals_failed`; never rerun it.
+2. Commit `9385196` is live in `VideoM5Storyboard001` as active version `0cdb8df3-84c8-448b-8a87-bf97e7f7e291`; do not redeploy unless Git changes.
+3. Create exactly one fresh independent pl30/gemini smoke, persist its ID before launch, launch once, and never rerun it if it fails.
+4. Trace M4→M9. Preserve exact M5 timing/contract evidence and M8 candidate/Vision evidence; do not lower timing or visual gates.
+5. If machine QA passes, run `scripts/audit_final_media.py` on the exact final MP4 and inspect selected visuals before acceptance.
+
 ## 2026-09-29 — validate deployed M5 bounded second timing repair
 
 1. Treat `0419d145-7901-4904-b5e8-ca334091369e` as immutable `script_failed`; never rerun it.
