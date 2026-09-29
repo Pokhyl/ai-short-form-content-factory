@@ -1,3 +1,17 @@
+## 2026-09-29 — fresh post-5ba78bc Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 03bfb0a3-88a9-4abd-a516-32ded2bceb78 (jak działają nożyczki, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 03bfb0a3-88a9-4abd-a516-32ded2bceb78 exactly once and trace M4→M9.
+- Immutable previous smoke feb9823f-a0db-4f54-beec-fc80550c0458 must never be rerun.
+
+## 2026-09-29 — fresh post-5ba78bc Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 48a0f9fb-85f8-42cf-990d-1c77d167be8b (jak działa pompka rowerowa, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 48a0f9fb-85f8-42cf-990d-1c77d167be8b exactly once and trace M4→M9.
+- Immutable previous smoke feb9823f-a0db-4f54-beec-fc80550c0458 must never be rerun.
+
 ## 2026-09-29 — M5 11605 relation-target semantic-head fix deployed
 
 - Commit 5ba78bcb1830 is pushed to main and deployed only to VideoM5Storyboard001.

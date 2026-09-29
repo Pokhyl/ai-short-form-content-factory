@@ -1,3 +1,18 @@
+## 2026-09-29 — launch persisted post-5ba78bc scissors smoke
+
+1. Smoke 03bfb0a3-88a9-4abd-a516-32ded2bceb78 (jak działają nożyczki, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit and push this checkpoint before launch; verify the exact ID exists in both HEAD and origin/main.
+3. Launch only 03bfb0a3-88a9-4abd-a516-32ded2bceb78 exactly once; never rerun it.
+4. Trace M4→M9 to terminal and audit exact final media only after machine-QA PASS.
+
+## 2026-09-29 — launch persisted post-5ba78bc Gemini acceptance smoke
+
+1. Smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b (jak działa pompka rowerowa, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit and push this checkpoint before launch; verify exact ID exists in HEAD and origin/main.
+3. Launch only 48a0f9fb-85f8-42cf-990d-1c77d167be8b exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal. If it fails, preserve exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+5. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — validate deployed M5 11605 relation-target fix
 
 1. Commit 5ba78bc is deployed only to VideoM5Storyboard001 as v198 / 7446b4e1-cc08-4aa7-bb28-fa017d4f595e.
