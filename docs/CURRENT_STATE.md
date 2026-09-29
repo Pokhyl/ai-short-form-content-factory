@@ -1,3 +1,10 @@
+## 2026-09-29 — post-e55e116 acceptance smoke launched once
+
+- Smoke 3a16d463-36fc-42cd-b027-a46841e76860 (jak działa zamek błyskawiczny, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response was accepted=true,status=processing. Never launch this ID again.
+- Trace this exact job M4→M9 to terminal. If it fails, preserve exact execution/DB/provider evidence and fix only the generic blocker before creating another smoke.
+- If machine QA passes, audit the exact final MP4 with scripts/audit_final_media.py and inspect selected visuals before acceptance.
+
 ## 2026-09-29 — weak-primary owner promotion deployed and source-verified
 
 - Commit e55e1167ee3f7b27000a2b519fb59bf31c1c5f09 is pushed to main and deployed only to VideoM5Storyboard001.

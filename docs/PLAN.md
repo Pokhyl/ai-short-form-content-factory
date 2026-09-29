@@ -1,3 +1,10 @@
+## 2026-09-29 — trace launched post-e55e116 acceptance smoke
+
+1. Smoke 3a16d463-36fc-42cd-b027-a46841e76860 (jak działa zamek błyskawiczny, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+2. Launch response: accepted=true, status=processing. Never launch this ID again, regardless of terminal result.
+3. Trace M4→M9 to terminal. If it fails, preserve the exact blocker and fix generically before creating another smoke.
+4. If M9 reaches machine QA PASS, run scripts/audit_final_media.py for this exact job and inspect selected visuals before acceptance.
+
 ## 2026-09-29 — validate deployed weak-primary owner promotion
 
 1. Commit e55e116 is deployed only to VideoM5Storyboard001 as version 95febf3c-3a04-456f-a027-887b784be9e3 (counter 195).
