@@ -1,3 +1,14 @@
+## 2026-09-29 — M5 11642 deterministic timing-novel fallback ready
+
+- Immutable smoke 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini) is terminal script_failed; never rerun it.
+- M4 11640 PASS; M5 11642 failed only in timing repair after the initial validated narration measured 26808 ms / 54 words for the 30 s product window (accepted minimum 28464 ms).
+- Both timing-repair Gemini calls returned HTTP 200. Both local timing validators failed with the exact semantic error "2, allowed 1 [line 603]": the model inserted multiple new descriptive content words per scene despite the lexical-budget prompt.
+- Root cause had two parts: the first timing prompt still contained a conflicting instruction not to return a near-unchanged narration, and provider compliance with the per-scene novel-word budget was not deterministic.
+- Generic M5-only fix removes that prompt conflict and requires the smallest lexical edit. The second bounded retry now explicitly copies ORIGINAL scene narration as its base instead of broad paraphrase.
+- Deterministic fail-safe added to Validate Timing Repair and Validate Timing Repair 2: if and only if a scene fails specifically for "introduced too many new content words", that scene narration is restored to the immutable original timing-probe scene and semantic validation is rerun. Coverage loss, changed numbers, changed negation and other semantic failures remain terminal. Timing thresholds and M8/M9 gates are unchanged.
+- Exact 11642 regression added. Targeted timing/semantic suite 44/44 PASS; full JS suite 582/582 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 6d429236-c4f9-47fd-8260-1058a659bff3.
+
 ## 2026-09-29 — post-39384b6 ballpoint-pen smoke launched once
 
 - Acceptance smoke 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.

@@ -1,3 +1,12 @@
+## 2026-09-29 — deploy M5 11642 deterministic timing-novel fallback
+
+1. Treat 6d429236-c4f9-47fd-8260-1058a659bff3 as immutable script_failed; never rerun it.
+2. Exact blocker is M5 11642: both timing repairs returned HTTP 200 but violated the existing per-scene novel-content budget with "2, allowed 1".
+3. Deploy only the regression-backed M5 fix: minimal-edit timing prompts plus deterministic scene fallback to immutable original only for excessive-new-content-word failures. Do not relax semantic coverage, number, negation, audio timing, M8 or M9 gates.
+4. Verification before deploy: targeted 44/44 PASS; full JS 582/582 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, publisher health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit final media only after machine-QA PASS.
+
 ## 2026-09-29 — trace launched post-39384b6 ballpoint-pen smoke
 
 1. Smoke 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini) was launched exactly once; never launch it again.
