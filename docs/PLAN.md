@@ -1,3 +1,12 @@
+## 2026-09-29 — deploy M5 11635 rotational-action photo fix
+
+1. Treat 82ff4918-afd4-4f08-a541-50cf69abfc6b as immutable visuals_failed; never rerun it.
+2. Exact blocker: M8 11635 S3-A required a static photo to prove rotational movement although all 3 Gemini-reviewed candidates visibly contained a valid door hinge.
+3. Deploy only the M5 transient-photo canonicalizer extension for rotate/rotation/rotational forms. Do not change M8/M9 gates.
+4. Verification before deploy: targeted 28/28 PASS; full JS 575/575 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero active executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist ID in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
 ## 2026-09-29 — trace launched post-68055c8 door-hinge smoke
 
 1. Smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b (jak działa zawias drzwiowy, pl30/gemini) was launched exactly once; never launch it again.

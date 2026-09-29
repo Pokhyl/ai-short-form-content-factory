@@ -1,3 +1,14 @@
+## 2026-09-29 — M5 11635 rotational-action photo fix ready
+
+- Immutable smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b (jak działa zawias drzwiowy, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11622 PASS, M5 11623 PASS, M6 11633 PASS, M7 11634 PASS; M8 11635 failed only at S3-A.
+- Exact S3-A contract: visual_intent="A photo of a door hinge during rotational movement.", must_show=["door hinge"]. Candidate pool had 70 total / 29 metadata-pass.
+- Gemini evaluated 3 candidates: all three had must_show_visible=true and must_not_show_clear=true, but intent_match=false with scores 50/40/50. Exact reasons: hinge visible, but rotational movement not depicted / not shown / static scene.
+- Root cause: existing M5 transient-photo canonicalizer handled moving/sliding/opening/etc. but not rotate/rotation/rotational forms, so an unprovable motion requirement leaked into the static-photo contract.
+- Generic M5-only fix extends the existing transient action regex with rotate/rotated/rotating/rotation/rotational/rotationally forms. Stable hinge relations remain unchanged. M8 gates are untouched.
+- Exact 11635 regression added. Targeted transient-action suite 28/28 PASS; full JS suite 575/575 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 82ff4918-afd4-4f08-a541-50cf69abfc6b.
+
 ## 2026-09-29 — post-68055c8 door-hinge smoke launched once
 
 - Acceptance smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b (jak działa zawias drzwiowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
