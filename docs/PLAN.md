@@ -1,3 +1,11 @@
+## 2026-09-29 — validate deployed M5 11605 relation-target fix
+
+1. Commit 5ba78bc is deployed only to VideoM5Storyboard001 as v198 / 7446b4e1-cc08-4aa7-bb28-fa017d4f595e.
+2. Treat feb9823f-a0db-4f54-beec-fc80550c0458 as immutable script_failed; never rerun it.
+3. Production verification passed: zero active executions before deploy, publisher health 200 after one restart, activeVersionId=versionId, current source and active history equal Git.
+4. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch this exact ID once only.
+5. Trace M4→M9. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — deploy M5 11605 relation-target semantic-head fix
 
 1. Treat feb9823f-a0db-4f54-beec-fc80550c0458 as immutable script_failed; never rerun it.

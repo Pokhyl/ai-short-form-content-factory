@@ -1,3 +1,13 @@
+## 2026-09-29 — M5 11605 relation-target semantic-head fix deployed
+
+- Commit 5ba78bcb1830 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v198 / 7446b4e1-cc08-4aa7-bb28-fa017d4f595e, active=true and activeVersionId=versionId.
+- Isolated import completed successfully with production env/network. No duplicate import or publish was performed.
+- Zero active executions before deploy. ai-short-form-n8n restarted exactly once after publish; publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Immutable smoke feb9823f-a0db-4f54-beec-fc80550c0458 must never be rerun.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit final media only after machine QA PASS.
+
 ## 2026-09-29 — M5 11605 relation-target semantic-head fix ready
 
 - Immutable smoke feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini) is terminal script_failed; never rerun it. M4 11604 passed; M5 11605 failed after both bounded storyboard repairs.
