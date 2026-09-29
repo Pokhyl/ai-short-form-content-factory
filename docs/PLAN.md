@@ -1,3 +1,10 @@
+## 2026-09-29 — trace launched post-39384b6 ballpoint-pen smoke
+
+1. Smoke 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini) was launched exactly once; never launch it again.
+2. Trace M4→M9 to terminal.
+3. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+4. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — launch persisted post-39384b6 Gemini acceptance smoke
 
 1. Smoke 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini) exists with DB status=created and has not been launched.

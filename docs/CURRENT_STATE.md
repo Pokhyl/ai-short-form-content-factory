@@ -1,3 +1,9 @@
+## 2026-09-29 — post-39384b6 ballpoint-pen smoke launched once
+
+- Acceptance smoke 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
 ## 2026-09-29 — fresh post-39384b6 Gemini smoke persisted before launch
 
 - Created acceptance smoke 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini).
