@@ -1,3 +1,13 @@
+## 2026-09-29 — M8 11579 fastener-action subject evidence fixed offline
+
+- Immutable smoke 3a16d463-36fc-42cd-b027-a46841e76860 (jak działa zamek błyskawiczny, pl30/gemini) is terminal visuals_failed; never rerun it. M4 11570, M5 11571, M6 11577, M7 11578 passed; M8 11579 failed S8-A.
+- Exact S8-A contract: visual_intent=A zipper being opened by moving the slider downwards.; must_show=["zipper"]; must_not_show=[]; queries=["zipper opening with slider moving down","zipper unzipping action photo","zipper"].
+- DB contained 66 S8-A candidates: 45 metadata-rejected and 21 metadata-pass. The three candidates sent to Gemini were Pexels 9134799 (leather jacket with zippers), Wikimedia 54511872 (static zipper), and Pixabay 270931 (photo bag). Raw parsed Vision outcome: must_show_visible=true for all, must_not_show_clear=true for all, intent_match=false for all, scores 20/35/10. Vision correctly rejected them as static/non-opening imagery.
+- Crucial counter-evidence to the initial M5 hypothesis: action-specific Pexels q1/q2 candidates already existed, including 2962086 (hand unzipping black leather bag), 6862117 (woman unzipping dress), and 6862115 (woman gently unzipping dress), but metadata rejected them with missing_primary_subject_anchor:zipper because literal token semantics did not infer the depicted fastener noun from zip/unzip action language.
+- Generic M8-only fix prepared in Normalize Pexels/Pixabay/Wikimedia: subjectEvidenceSet promotes zip/unzip action language to subject zipper only when independent garment/bag/fastener context is present. General semanticSet remains literal, so query/intent scoring is unchanged; generic ZIP archive/code text cannot imply a zipper; opposite zipping action still fails an unzipping query. Gemini Vision gates, score floor, must_show checks, intent_match, must_not_show and uniqueness are unchanged.
+- Verification: exact/related M8 suite 36/36 PASS; full JS suite 535/535 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created or launched after 3a16d463-36fc-42cd-b027-a46841e76860.
+
 ## 2026-09-29 — post-e55e116 acceptance smoke launched once
 
 - Smoke 3a16d463-36fc-42cd-b027-a46841e76860 (jak działa zamek błyskawiczny, pl30/gemini) was launched exactly once through production /webhook/factory/run.

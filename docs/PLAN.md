@@ -1,3 +1,12 @@
+## 2026-09-29 — deploy M8 fastener-action subject evidence fix
+
+1. Treat 3a16d463-36fc-42cd-b027-a46841e76860 as immutable visuals_failed; never rerun it.
+2. Exact M8 11579 blocker is S8-A. Real unzipping photos were present in Pexels q1/q2 but were metadata-rejected because unzipping/zip action text did not count as subject evidence for must_show=zipper.
+3. Deploy only the regression-backed M8 subjectEvidenceSet change in Normalize Pexels/Pixabay/Wikimedia. Do not change M5 and do not weaken Gemini/uniqueness gates.
+4. Verification before deploy: targeted 36/36 PASS; full JS 535/535 PASS; JSON valid; git diff --check clean.
+5. Commit/push, verify zero active executions, deploy only VIDEO — M8 Multi-Source Visuals, verify activeVersionId=versionId, health 200, and live nodes/connections/settings equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final MP4 if machine QA passes.
+
 ## 2026-09-29 — trace launched post-e55e116 acceptance smoke
 
 1. Smoke 3a16d463-36fc-42cd-b027-a46841e76860 (jak działa zamek błyskawiczny, pl30/gemini) was launched exactly once through production /webhook/factory/run.
