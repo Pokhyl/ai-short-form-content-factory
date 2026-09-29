@@ -1,3 +1,11 @@
+## 2026-09-29 — launch persisted post-b7afd97 acceptance smoke
+
+1. Exactly one fresh smoke exists: 3375c549-d3d8-49bf-b51d-f9ebffe0938e (jak działa hamulec rowerowy, pl30/gemini).
+2. DB confirms status=created. It has not been launched yet.
+3. Commit and push this exact ID to GitHub before launch, then launch this exact job once through /webhook/factory/run and never launch it again.
+4. Trace M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker before another smoke.
+5. If M9 reaches machine-QA PASS, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — validate deployed M8 fastener-action subject fix
 
 1. Commit b7afd97 is deployed only to VideoM8Visuals001 as v82 / 2a237e6b-7f81-4e7a-bd0c-1a0b71ba8dec.

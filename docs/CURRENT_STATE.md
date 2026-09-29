@@ -1,3 +1,9 @@
+## 2026-09-29 — fresh post-b7afd97 smoke persisted before launch
+
+- Created exactly one fresh acceptance job: 3375c549-d3d8-49bf-b51d-f9ebffe0938e (jak działa hamulec rowerowy, pl30/gemini).
+- Factory DB confirms status=created, language=pl, duration=30, visual_validation_mode=gemini.
+- This job has not been launched yet. Launch exactly once only after this ID is committed and pushed to GitHub; never rerun it if it fails.
+
 ## 2026-09-29 — M8 fastener-action subject fix deployed and source-verified
 
 - Commit b7afd978492b3863cd5b4c198d768181571a2d7d is pushed to main and deployed only to VideoM8Visuals001.
