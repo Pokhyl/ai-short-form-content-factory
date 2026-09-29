@@ -1,3 +1,24 @@
+## 2026-09-29 — M5 11635 rotational-action photo fix deployed
+
+- Commit 39384b64ff53 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v200 / 1d658bbf-c1e5-4550-b2ed-8fbabe18ef2c, active=true and activeVersionId=versionId.
+- Zero active executions before deploy. Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- ai-short-form-n8n restart completed; publisher /healthz=200 after startup. No second restart was performed.
+- M8/M9 gates and semantic/timing thresholds remain unchanged.
+- Immutable smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b must never be rerun.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit final media only after machine-QA PASS.
+
+## 2026-09-29 — M5 11635 rotational-action photo fix deployed
+
+- Commit 39384b64ff53 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v200 / 1d658bbf-c1e5-4550-b2ed-8fbabe18ef2c, active=true and activeVersionId=versionId.
+- Import had already completed before this checkpoint; it was not repeated. Zero unfinished n8n executions before publish.
+- Publish was executed once; DB side effect was confirmed before terminating only the stale host-side publish wrapper.
+- ai-short-form-n8n restarted exactly once after publish. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8 gates are unchanged. Immutable smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b must never be rerun.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only after machine QA PASS.
+
 ## 2026-09-29 — M5 11635 rotational-action photo fix ready
 
 - Immutable smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b (jak działa zawias drzwiowy, pl30/gemini) is terminal visuals_failed; never rerun it.

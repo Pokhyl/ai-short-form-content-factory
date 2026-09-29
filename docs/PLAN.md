@@ -1,3 +1,19 @@
+## 2026-09-29 — validate deployed M5 11635 rotational-action fix
+
+1. Commit 39384b6 is deployed only to VideoM5Storyboard001 as v200 / 1d658bbf-c1e5-4550-b2ed-8fbabe18ef2c.
+2. Treat 82ff4918-afd4-4f08-a541-50cf69abfc6b as immutable visuals_failed; never rerun it.
+3. Production verification passed: zero active executions before deploy, current source and active history equal Git, activeVersionId=versionId, publisher health 200 after the deploy restart.
+4. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch that exact ID once only.
+5. Trace M4→M9. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
+## 2026-09-29 — validate deployed M5 11635 rotational-action fix
+
+1. Commit 39384b6 is deployed only to VideoM5Storyboard001 as v200 / 1d658bbf-c1e5-4550-b2ed-8fbabe18ef2c.
+2. Treat 82ff4918-afd4-4f08-a541-50cf69abfc6b as immutable visuals_failed; never rerun it.
+3. Production verification passed: zero unfinished executions before publish, publisher health 200 after one restart, activeVersionId=versionId, current source and active history equal Git.
+4. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch this exact ID once only.
+5. Trace M4→M9. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — deploy M5 11635 rotational-action photo fix
 
 1. Treat 82ff4918-afd4-4f08-a541-50cf69abfc6b as immutable visuals_failed; never rerun it.
