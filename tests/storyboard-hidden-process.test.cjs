@@ -13,6 +13,14 @@ function helper(name){
   return new Function(src.slice(start,end)+'; return normalizeMustShowAnchors;')();
 }
 
+function hiddenIntentHelper(name){
+  const src=nodeCode(name);
+  const start=src.indexOf('function dependentSecondaryAnchors');
+  const end=src.indexOf('// MUST_SHOW_SECONDARY_GUARD_END',start);
+  assert.ok(start>=0 && end>start,name+' hidden intent helper missing');
+  return new Function(src.slice(start,end)+'; return canonicalizeHiddenPrimaryPhotoIntent;')();
+}
+
 for(const name of [
   'Validate Storyboard',
   'Validate Repaired Storyboard',
@@ -95,6 +103,43 @@ for(const name of [
       ),
       ['power cable']
     );
+  });
+}
+
+
+for(const name of [
+  'Validate Storyboard',
+  'Validate Repaired Storyboard',
+  'Validate Repaired Storyboard 2',
+  'Canonicalize Final Storyboard'
+]){
+  test(name+': fan motor hidden functional intent canonicalizes to the visible primary',()=>{
+    const canonicalize=hiddenIntentHelper(name);
+    assert.equal(
+      canonicalize(
+        ['electric motor'],
+        'An electric motor inside a fan providing rotational energy to the rotor'
+      ),
+      'A clear photo of electric motor.'
+    );
+  });
+
+  test(name+': power station hall remains ordinary spatial context',()=>{
+    const canonicalize=hiddenIntentHelper(name);
+    const intent='A generator inside a power station hall beside control equipment';
+    assert.equal(canonicalize(['generator'],intent),intent);
+  });
+
+  test(name+': explicitly exposed fan motor remains a contextual photo intent',()=>{
+    const canonicalize=hiddenIntentHelper(name);
+    const intent='An exposed electric motor inside an open fan housing beside the rotor';
+    assert.equal(canonicalize(['electric motor'],intent),intent);
+  });
+
+  test(name+': independent second subject prevents primary-only hidden-process collapse',()=>{
+    const canonicalize=hiddenIntentHelper(name);
+    const intent='An electric motor driving a visible rotor with a belt';
+    assert.equal(canonicalize(['electric motor','drive belt'],intent),intent);
   });
 }
 
