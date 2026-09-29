@@ -130,7 +130,7 @@ test('10935 regression: 26.976s cannot be silently padded into a 30s product',()
   );
   assert.equal(
     m5.connections['Route Timing Within Target 2'].main[1][0].node,
-    'Prepare Final Timing Failure'
+    'Build Timing Repair 2'
   );
   assert.equal(
     m5.connections['Route Stability Origin 2'].main[0][0].node,

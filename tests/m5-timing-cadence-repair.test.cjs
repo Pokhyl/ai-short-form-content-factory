@@ -82,6 +82,23 @@ test('second timing repair respects LONGER direction and stays cadence-first whe
   assert.match(out.user_message,/CADENCE-FIRST PASS:/);
 });
 
+test('11497 regression: a stochastic negative timing slope gets bounded second repair instead of terminal failure',()=>{
+  const p1Real={...p1,measured_duration_ms:27864,narration_word_count:55};
+  const p2Real={...p1,measured_duration_ms:25488,narration_word_count:56};
+  const $=name=>{
+    if(name==='Build Script Prompt') return {first:()=>({json:{...ctx,word_min:42,word_max:66}})};
+    if(name==='Normalize Timing Probe') return {first:()=>({json:p1Real})};
+    if(name==='Normalize Timing Stability B') return {all:()=>{throw new Error('not executed')}};
+    throw new Error('unexpected node '+name);
+  };
+  const out=new Function('$','$json',code('Build Timing Repair 2'))($,p2Real).json;
+
+  assert.equal(workflow.connections['Route Timing Within Target 2'].main[1][0].node,'Build Timing Repair 2');
+  assert.equal(out.target_precision_words,66);
+  assert.match(out.user_message,/direction from current version: make narration LONGER/);
+  assert.match(code('Build Timing Repair 2'),/Math\.sign\(durationDelta\) === Math\.sign\(wordDelta\)/);
+});
+
 test('second timing repair keeps explicit shortening instruction when measured narration is too long',()=>{
   const p2={...p1,measured_duration_ms:33000};
   const $=name=>{

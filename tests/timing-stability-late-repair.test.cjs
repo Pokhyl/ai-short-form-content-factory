@@ -46,7 +46,7 @@ test('only an in-window initial voice gets stability probes; short voices get on
   assert.equal(first[0][0].node,'Prepare Timing Stability Probe');
   assert.equal(first[1][0].node,'Build Timing Repair');
   assert.equal(second[0][0].node,'Prepare Timing Stability Probe');
-  assert.equal(second[1][0].node,'Prepare Final Timing Failure');
+  assert.equal(second[1][0].node,'Build Timing Repair 2');
   assert.equal(
     workflow.connections['Route Stability Origin 2'].main[0][0].node,
     'Prepare Final Timing Failure'
