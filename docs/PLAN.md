@@ -1,3 +1,11 @@
+## 2026-09-29 — launch persisted post-2fa80b6 Gemini acceptance smoke
+
+1. Smoke feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit and push this checkpoint before launch; verify the exact ID exists in both HEAD and origin/main.
+3. Launch only feb9823f-a0db-4f54-beec-fc80550c0458 exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal. If it fails, preserve exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+5. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — validate deployed transient photo-action fix
 
 1. Commit 2fa80b6 is deployed only to VideoM5Storyboard001 as v197 / 27ea754b-7799-4f4f-9bce-ef7201e55a20.

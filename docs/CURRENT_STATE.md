@@ -1,3 +1,10 @@
+## 2026-09-29 — fresh post-2fa80b6 Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only feb9823f-a0db-4f54-beec-fc80550c0458 exactly once and trace M4→M9.
+- Immutable previous smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 and accidental metadata job 54fb03e5-f925-4526-ac8d-0e08bbc6e4f5 must never be launched again.
+
 ## 2026-09-29 — M5 transient photo-action fix deployed
 
 - Commit 2fa80b6c15bf85d4d203f5f3059d3c4ce1f198bd is on GitHub main and deployed only to VideoM5Storyboard001.
