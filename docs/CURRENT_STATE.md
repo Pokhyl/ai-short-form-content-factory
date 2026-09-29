@@ -1,3 +1,10 @@
+## 2026-09-29 — fresh post-68055c8 Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 82ff4918-afd4-4f08-a541-50cf69abfc6b (jak działa zawias drzwiowy, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 82ff4918-afd4-4f08-a541-50cf69abfc6b exactly once and trace M4→M9.
+- Immutable previous smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b must never be rerun. Retired scissors job 03bfb0a3-88a9-4abd-a516-32ded2bceb78 must never be launched.
+
 ## 2026-09-29 — M5 11613 timing lexical-budget fix deployed
 
 - Commit 68055c80044f is pushed to main and deployed only to VideoM5Storyboard001.

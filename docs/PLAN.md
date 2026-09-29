@@ -1,3 +1,11 @@
+## 2026-09-29 — launch persisted post-68055c8 Gemini acceptance smoke
+
+1. Smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b (jak działa zawias drzwiowy, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit and push this checkpoint before launch; verify exact ID exists in HEAD and origin/main.
+3. Launch only 82ff4918-afd4-4f08-a541-50cf69abfc6b exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal. If it fails, preserve exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+5. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — validate deployed M5 11613 lexical-budget fix
 
 1. Commit 68055c8 is deployed only to VideoM5Storyboard001 as v199 / 5736f5e7-a1e7-4095-b35b-9b9b13d913e5.
