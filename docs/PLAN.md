@@ -1,3 +1,11 @@
+## 2026-09-29 — validate deployed transient photo-action fix
+
+1. Commit 2fa80b6 is deployed only to VideoM5Storyboard001 as v197 / 27ea754b-7799-4f4f-9bce-ef7201e55a20.
+2. Never rerun immutable smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304.
+3. Deployment verification: activeVersionId=versionId, source matched Git before publish, zero active executions before one restart, publisher health 200.
+4. Create exactly one fresh independent pl30/gemini smoke and persist its ID in docs/Git before launch.
+5. Launch that ID once only, trace M4→M9, and audit the exact final MP4 only if machine QA passes.
+
 ## 2026-09-29 — deploy M5 transient photo-action fix
 
 1. Never rerun immutable smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304.

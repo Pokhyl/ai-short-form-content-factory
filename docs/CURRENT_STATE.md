@@ -1,3 +1,12 @@
+## 2026-09-29 — M5 transient photo-action fix deployed
+
+- Commit 2fa80b6c15bf85d4d203f5f3059d3c4ce1f198bd is on GitHub main and deployed only to VideoM5Storyboard001.
+- Production M5 is v197 / 27ea754b-7799-4f4f-9bce-ef7201e55a20, active=true and activeVersionId=versionId.
+- Import source equality was verified for nodes/connections/settings before publish. No duplicate import or publish was performed; stale CLI wrappers were killed only after their DB side effects were verified.
+- Zero active executions before restart. ai-short-form-n8n was restarted exactly once; publisher health is 200.
+- M8/M9 gates were not changed. Immutable smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 must never be rerun.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine QA PASS.
+
 ## 2026-09-29 — M8 11601 transient photo-action fix ready
 
 - Smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 is immutable visuals_failed; never rerun it. M4 11590, M5 11591, M6 11599 and M7 11600 passed; M8 11601 failed S2-A.
