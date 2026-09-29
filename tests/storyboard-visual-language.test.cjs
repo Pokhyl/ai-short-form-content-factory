@@ -219,6 +219,39 @@ test('dependent visible component on the primary is not a separate must_show sub
   );
 });
 
+test('weak dependent primary is promoted to its explicit concrete owner',()=>{
+  assert.deepEqual(
+    normalizeMustShow(
+      ['base unit'],
+      'The motorized base unit of a kitchen blender on a surface.'
+    ),
+    ['kitchen blender']
+  );
+  assert.deepEqual(
+    normalizeMustShow(
+      ['control unit'],
+      'A control unit of an industrial generator.'
+    ),
+    ['control unit']
+  );
+});
+
+test('all storyboard validator branches carry weak-primary owner promotion',()=>{
+  for(const name of [
+    'Validate Storyboard',
+    'Validate Repaired Storyboard',
+    'Validate Repaired Storyboard 2',
+    'Canonicalize Final Storyboard',
+    'Validate Narration Language Repair',
+    'Validate Narration Language Repair Retry',
+    'Validate Narration Language Repair Second Pass',
+  ]) {
+    const code=byName[name].parameters.jsCode;
+    assert.match(code,/weakDependentPrimaryTerms/,name);
+    assert.match(code,/genericOwnerTerms/,name);
+  }
+});
+
 test('independent secondary context remains mandatory',()=>{
   assert.deepEqual(
     normalizeMustShow(['water reservoir','dam'],'Large water reservoir behind a concrete dam'),

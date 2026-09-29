@@ -1,3 +1,13 @@
+## 2026-09-29 — deploy generic weak-primary owner promotion after M8 11564
+
+1. Treat smoke 3ebeb8c3-a7d7-4ef6-b00c-45d1e1b9f4eb (jak działa blender kuchenny, pl30/gemini) as immutable visuals_failed; never rerun it.
+2. Exact M8 11564 blocker is S3-A: visual_intent=The motorized base unit of a kitchen blender on a surface.; must_show=[base unit]; queries=[motorized base unit of blender, electric blender base on table, base unit].
+3. Root cause is M5 retrieval-contract ambiguity, not M8: relevant blender candidates from q1/q2 were rejected because the hard primary was literal generic base unit, while q3=base unit admitted unrelated SI-base-unit/dental-base/lightbulb-base candidates. Gemini correctly rejected all three pixel candidates.
+4. Deploy only the regression-backed M5 weak-primary owner promotion: generic component-only primary anchors (base/unit/part/module/assembly/section/piece/detail) explicitly written as X of concrete owner are promoted to the owner subject; exact S3-A becomes must_show=[kitchen blender], query3=kitchen blender. M8 gates remain unchanged.
+5. Verification before deploy: exact regression PASS; hidden/dependent targeted suite 88/88 PASS; full JS 531/531 PASS; workflow JSON and git diff --check clean.
+6. Commit and push, verify zero active executions, deploy only VideoM5Storyboard001, verify health 200, activeVersionId=versionId, and live nodes/connections/settings equal Git.
+7. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID before launch, launch once, and trace M4→M9. Never rerun failed smoke IDs.
+
 ## 2026-09-29 — validate deployed hidden machine photo-intent fix
 
 1. Treat `10fb94de-5a4f-432d-a89b-c01e01566968` as immutable `visuals_failed`; never rerun it.

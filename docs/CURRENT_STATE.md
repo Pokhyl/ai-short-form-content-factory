@@ -1,3 +1,15 @@
+## 2026-09-29 — M8 11564 weak-primary retrieval bug fixed and verified offline
+
+- Immutable post-addcba1 smoke 3ebeb8c3-a7d7-4ef6-b00c-45d1e1b9f4eb (jak działa blender kuchenny, pl30/gemini) is terminal visuals_failed; never rerun. M4 11556, M5 11557, M6 11562, M7 11563 passed; M8 11564 failed S3-A with no Gemini-approved unique visual candidate.
+- Exact S3-A contract: visual_intent=The motorized base unit of a kitchen blender on a surface.; must_show=[base unit]; must_not_show=[blender blade]; queries=[motorized base unit of blender, electric blender base on table, base unit].
+- Source-of-truth DB contained 68 S3-A candidates: 65 metadata-rejected, 3 sent to Gemini. q1/q2 returned genuinely blender-related Pexels/Pixabay candidates, but they were rejected because the literal hard anchor base unit was absent from their metadata. q3=base unit produced unrelated base/unit meanings.
+- Actual Gemini candidates were Wikimedia 130573284 (SI base units chart), Pexels 4687362 (dental-device charging base), and Pixabay 3104355 (lightbulb/base). Raw Gemini evaluations were score 0/15/0, must_show_visible=false for all, intent_match=false for all, must_not_show_clear=true for all. M8 correctly failed; its gates are unchanged.
+- Generic root cause: M5 allowed a component-only generic phrase (base unit) to become the hard primary and robust fallback even when visual_intent explicitly identified its concrete owner (kitchen blender).
+- Prepared M5-only fix: in all 7 storyboard validator/canonicalizer branches, a weak primary made only of base/unit/part/component/module/assembly/section/piece/detail is promoted only when visual_intent explicitly has weak-primary of concrete owner. Generic weak terms were also added to the primary reject set so unqualified weak primaries fail closed. Prompt now requires the same owner-subject contract.
+- Exact 11564 regression canonicalizes S3-A to must_show=[kitchen blender], preserves the intent and must_not_show, preserves detailed queries 1-2, and changes query3 to kitchen blender.
+- Verification: targeted exact/visual suite 36/36 PASS; hidden/dependent regression suite 88/88 PASS; full JS 531/531 PASS; workflow JSON valid; git diff --check clean.
+- Deployment is still pending at this checkpoint. No new smoke has been created or launched.
+
 ## 2026-09-29 — hidden machine photo-intent canonicalization live
 
 - Immutable smoke `10fb94de-5a4f-432d-a89b-c01e01566968` (`jak działa wentylator domowy`, pl30/gemini) is terminal `visuals_failed`; never rerun it. M5 `11535`, M6 `11541`, M7 `11542` passed; M8 `11546` failed S3-A.

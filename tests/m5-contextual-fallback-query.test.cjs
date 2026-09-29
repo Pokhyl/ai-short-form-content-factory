@@ -117,6 +117,34 @@ test('dependent component detail canonicalizes to primary-only photo contract',(
  assert.equal(shot.queries_en[2],'digital thermometer');
 });
 
+test('11564 regression: generic blender base primary promotes owner and repairs fallback query',()=>{
+ const ctx={...c};
+ const storyboard=structuredClone(c.base_storyboard);
+ storyboard.scenes[0].shots[0]={
+  shot_id:'S1-A',
+  visual_intent:'The motorized base unit of a kitchen blender on a surface.',
+  must_show:['base unit'],
+  must_not_show:['blender blade'],
+  queries_en:['motorized base unit of blender','electric blender base on table','base unit'],
+  preferred_media_type:'photo',
+ };
+ const $=()=>({first:()=>({json:ctx})});
+ const out=new Function('$','$json',n['Validate Storyboard'].parameters.jsCode)($,response(storyboard)).json;
+ const shot=out.storyboard.scenes[0].shots[0];
+ assert.deepEqual(shot.must_show,['kitchen blender']);
+ assert.equal(shot.visual_intent,'The motorized base unit of a kitchen blender on a surface.');
+ assert.deepEqual(shot.must_not_show,['blender blade']);
+ assert.equal(shot.queries_en[0],'motorized base unit of blender');
+ assert.equal(shot.queries_en[1],'electric blender base on table');
+ assert.equal(shot.queries_en[2],'kitchen blender');
+});
+
+test('storyboard prompt requires concrete owner instead of generic component primary',()=>{
+ const code=n['Build Script Prompt'].parameters.jsCode;
+ assert.match(code,/generic component label such as base, unit, part, module, assembly, section, piece, or detail OF an identifiable concrete owner object/);
+ assert.match(code,/use the owner object as the robust query-3 fallback/);
+});
+
 test('storyboard prompt requires both visible interaction subjects in detailed queries',()=>{
  const code=n['Build Script Prompt'].parameters.jsCode;
  assert.match(code,/include the second required subject as must_show\[1\]/);
