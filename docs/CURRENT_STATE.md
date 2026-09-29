@@ -1,3 +1,12 @@
+## 2026-09-29 — M5 interaction-query canonicalization live
+
+- Commit `4f9731d` is deployed to production `VideoM5Storyboard001` as active version `0fbb213d-4c75-4637-afaa-60f048135c2e`.
+- Exact failed smoke evidence from execution `11489` showed the interaction subject itself was preserved correctly (`gear shifter` + `control cable`), but detailed query 2 omitted the full secondary anchor (`handlebar shifter cable mechanism`). The validator escalated this deterministic query-normalization issue into Gemini repair, which mutated `control cable` to `metal cable` and then `steel cable` while still failing validation.
+- Fix: keep secondary interaction-subject presence fail-closed, but deterministically complete queries 1-2 from the matched secondary `must_show` anchor instead of invoking AI repair for a missing query token. Exact replay of execution `11489` now passes with S5 query 2 normalized to `handlebar shifter cable mechanism control cable`.
+- Verification: targeted M5 regression 5/5 PASS; exact execution 11489 replay PASS; full JS suite 508/508 PASS; JSON/diff PASS.
+- Production verification: publisher restart exit=0; `/healthz`=200; `activeVersionId=versionId`; live M5 nodes/connections/settings exactly match Git (`SOURCE_MATCH=true`).
+- Next gate: exactly one fresh independent pl30/gemini acceptance smoke, persist ID before launch, launch once, never rerun if it fails.
+
 ## 2026-09-29 — M8 core-intent semantics fix live
 
 - Immutable acceptance smoke `4fb165b9-9e1c-4ba1-a1c4-5f857029c20d` (`jak działa ładowarka indukcyjna`, pl30/gemini) is terminal `visuals_failed`; never rerun it. Visual run `139069fe-6222-4967-8e2f-071b49470af4` failed on S1-A in M8 execution `11484`.

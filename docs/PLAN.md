@@ -1,3 +1,11 @@
+## 2026-09-29 — validate deployed M5 deterministic interaction-query fix
+
+1. Treat failed smoke `d09ca624-1e06-4046-975c-cd9ae42aa820` as immutable `script_failed`; never rerun it.
+2. Commit `4f9731d` is live in `VideoM5Storyboard001` as active version `0fbb213d-4c75-4637-afaa-60f048135c2e`; do not redeploy unless Git changes.
+3. Create exactly one fresh independent pl30/gemini smoke, persist its ID before launch, launch that exact ID once, and never rerun it if it fails.
+4. Trace M4→M9. If M5 fails, preserve exact validator/repair evidence; if M8 fails, preserve exact candidate/Vision evidence. Do not lower any gate.
+5. If machine QA passes, run `scripts/audit_final_media.py` on the exact final MP4 and inspect selected visuals before acceptance.
+
 ## 2026-09-29 — validate deployed M8 core-intent semantics fix
 
 1. Treat smoke `4fb165b9-9e1c-4ba1-a1c4-5f857029c20d` (`jak działa ładowarka indukcyjna`, pl30/gemini) as immutable `visuals_failed`; never rerun it.
