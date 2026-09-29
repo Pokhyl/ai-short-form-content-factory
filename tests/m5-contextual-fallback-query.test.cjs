@@ -95,6 +95,28 @@ test('detailed interaction queries are deterministically completed from secondar
  assert.equal(shifter[1],'handlebar shifter cable mechanism control cable');
 });
 
+test('dependent component detail canonicalizes to primary-only photo contract',()=>{
+ const ctx={...c};
+ const storyboard=structuredClone(c.base_storyboard);
+ storyboard.scenes[0].shots[0]={
+  shot_id:'S1-A',
+  visual_intent:'A close-up of a thermistor sensor tip on a digital thermometer.',
+  must_show:['digital thermometer','sensor tip'],
+  must_not_show:['analog scale'],
+  queries_en:['digital thermometer sensor tip','thermistor sensor probe digital thermometer','sensor tip'],
+  preferred_media_type:'photo',
+ };
+ const $=()=>({first:()=>({json:ctx})});
+ const out=new Function('$','$json',n['Validate Storyboard'].parameters.jsCode)($,response(storyboard)).json;
+ const shot=out.storyboard.scenes[0].shots[0];
+
+ assert.deepEqual(shot.must_show,['digital thermometer']);
+ assert.equal(shot.visual_intent,'A close-up photo of digital thermometer.');
+ assert.equal(shot.queries_en[0],'digital thermometer sensor tip');
+ assert.equal(shot.queries_en[1],'thermistor sensor probe digital thermometer');
+ assert.equal(shot.queries_en[2],'digital thermometer');
+});
+
 test('storyboard prompt requires both visible interaction subjects in detailed queries',()=>{
  const code=n['Build Script Prompt'].parameters.jsCode;
  assert.match(code,/include the second required subject as must_show\[1\]/);

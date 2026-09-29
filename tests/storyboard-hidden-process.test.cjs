@@ -7,7 +7,7 @@ const nodeCode=name=>workflow.nodes.find(n=>n.name===name).parameters.jsCode;
 
 function helper(name){
   const src=nodeCode(name);
-  const start=src.indexOf('function normalizeMustShowAnchors');
+  const start=src.indexOf('function dependentSecondaryAnchors');
   const end=src.indexOf('// MUST_SHOW_SECONDARY_GUARD_END',start);
   assert.ok(start>=0 && end>start,name+' helper missing');
   return new Function(src.slice(start,end)+'; return normalizeMustShowAnchors;')();

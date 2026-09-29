@@ -44,7 +44,7 @@ test('M5 validators remove unsupported studio framing while preserving the subje
   ];
   for (const name of names) {
     const source = m5.nodes.find(n => n.name === name).parameters.jsCode;
-    const expression = source.match(/const visualIntent = clean\(shot\.visual_intent\)[\s\S]*?\.trim\(\);/);
+    const expression = source.match(/(?:const|let) visualIntent = clean\(shot\.visual_intent\)[\s\S]*?\.trim\(\);/);
     assert.ok(expression, `${name} missing visual intent normalization`);
     const normalize = new Function('shot', 'clean', `${expression[0]} return visualIntent;`);
     const result = normalize(

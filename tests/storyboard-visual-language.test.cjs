@@ -202,6 +202,23 @@ test('secondary must_show does not restate or detail the primary object',()=>{
   );
 });
 
+test('dependent visible component on the primary is not a separate must_show subject',()=>{
+  assert.deepEqual(
+    normalizeMustShow(
+      ['digital thermometer','sensor tip'],
+      'A close-up of a thermistor sensor tip on a digital thermometer.'
+    ),
+    ['digital thermometer']
+  );
+  assert.deepEqual(
+    normalizeMustShow(
+      ['gear shifter','control cable'],
+      'A close-up of a bicycle gear shifter connected to a control cable'
+    ),
+    ['gear shifter','control cable']
+  );
+});
+
 test('independent secondary context remains mandatory',()=>{
   assert.deepEqual(
     normalizeMustShow(['water reservoir','dam'],'Large water reservoir behind a concrete dam'),
