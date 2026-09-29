@@ -1,3 +1,9 @@
+## 2026-09-29 — post-55b987b liquid-thermometer smoke launched once
+
+- Acceptance smoke 38bb0e6f-752c-4418-ab79-027d9f0e5987 (jak działa termometr cieczowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
 ## 2026-09-29 — fresh post-55b987b Gemini smoke persisted before launch
 
 - Created exactly one fresh acceptance smoke: 38bb0e6f-752c-4418-ab79-027d9f0e5987 (jak działa termometr cieczowy, pl30/gemini).
