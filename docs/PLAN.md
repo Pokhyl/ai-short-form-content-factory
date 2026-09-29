@@ -1,3 +1,12 @@
+## 2026-09-29 — validate deployed M5 11642 deterministic timing-novel fallback
+
+1. Commit 55b987b is deployed only to VideoM5Storyboard001 as v202 / 5268e533-fc68-40f6-9c04-02ebf5293ebc.
+2. Treat 6d429236-c4f9-47fd-8260-1058a659bff3 as immutable script_failed; never rerun it.
+3. Ignore inactive intermediate v201; it was never published. Stable v202 is active and source/history verified against clean Git HEAD.
+4. Production verification passed: zero unfinished executions before deploy, publisher health 200 after one restart, activeVersionId=versionId, current source and active history equal Git.
+5. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch only that ID once.
+6. Trace M4→M9. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — deploy M5 11642 deterministic timing-novel fallback
 
 1. Treat 6d429236-c4f9-47fd-8260-1058a659bff3 as immutable script_failed; never rerun it.

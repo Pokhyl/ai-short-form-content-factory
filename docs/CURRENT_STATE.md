@@ -1,3 +1,15 @@
+## 2026-09-29 — M5 11642 deterministic timing-novel fallback deployed
+
+- Commit 55b987b70f20 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v202 / 5268e533-fc68-40f6-9c04-02ebf5293ebc, active=true and activeVersionId=versionId.
+- A concurrent intermediate import created inactive v201 from an in-flight working-tree state; it was never published. Stable clean HEAD was imported separately as v202 and is the only published version.
+- Zero unfinished executions before the stable import/publish. Stable import and publish were each executed once; stale CLI wrappers were terminated only after DB side effects were confirmed.
+- ai-short-form-n8n restarted exactly once after v202 publish. Publisher /healthz=200.
+- Current M5 nodes/connections/settings equal clean Git HEAD; active workflow_history nodes/connections equal Git.
+- Semantic coverage, number/negation checks, audio timing thresholds, M8 and M9 gates remain unchanged.
+- Immutable smoke 6d429236-c4f9-47fd-8260-1058a659bff3 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit exact final media only after machine-QA PASS.
+
 ## 2026-09-29 — M5 11642 deterministic timing-novel fallback ready
 
 - Immutable smoke 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini) is terminal script_failed; never rerun it.
