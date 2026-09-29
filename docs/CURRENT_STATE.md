@@ -1,3 +1,13 @@
+## 2026-09-29 — M5 interaction-target orientation fix deployed and source-verified
+
+- Commit 97f5b164be0481f03e5aa999ecd59b3964651de5 is pushed to main and deployed only to VideoM5Storyboard001.
+- Import had already completed before this checkpoint; no duplicate import was performed. Production M5 version is c748cddd-ece3-42ef-b894-f96f03c5d332 / counter 196.
+- Publish side effect was verified directly in n8n DB: active=true and activeVersionId=versionId=c748cddd-ece3-42ef-b894-f96f03c5d332. Two stale host-side publish wrappers were terminated only after exact cmdline verification; publish itself was not repeated.
+- Zero active executions before restart. ai-short-form-n8n was restarted exactly once; no other service was restarted.
+- Post-restart publisher /healthz=200 through local Caddy. Current M5 nodes/connections/settings all equal Git.
+- Immutable failed smoke 3375c549-d3d8-49bf-b51d-f9ebffe0938e must never be rerun.
+- Next gate: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only if machine QA passes.
+
 ## 2026-09-29 — M5 11583 interaction-target orientation bug fixed offline
 
 - Immutable smoke 3375c549-d3d8-49bf-b51d-f9ebffe0938e (jak działa hamulec rowerowy, pl30/gemini) is terminal script_failed; never rerun it. M4 11582 passed; M5 11583 failed after bounded storyboard repairs.

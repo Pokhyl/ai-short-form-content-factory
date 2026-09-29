@@ -1,3 +1,11 @@
+## 2026-09-29 — validate deployed M5 interaction-target orientation fix
+
+1. Commit 97f5b16 is deployed only to VideoM5Storyboard001 as v196 / c748cddd-ece3-42ef-b894-f96f03c5d332.
+2. Treat 3375c549-d3d8-49bf-b51d-f9ebffe0938e as immutable script_failed; never rerun it.
+3. Production verification passed: zero active executions before restart, publisher health 200 after one restart, activeVersionId=versionId, and current nodes/connections/settings equal Git.
+4. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch this exact ID once only.
+5. Trace M4→M9. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — deploy M5 interaction-target orientation fix
 
 1. Treat 3375c549-d3d8-49bf-b51d-f9ebffe0938e as immutable script_failed; never rerun it.
