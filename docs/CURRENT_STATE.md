@@ -1,3 +1,21 @@
+## 2026-09-29 — hidden machine photo-intent canonicalization live
+
+- Immutable smoke `10fb94de-5a4f-432d-a89b-c01e01566968` (`jak działa wentylator domowy`, pl30/gemini) is terminal `visuals_failed`; never rerun it. M5 `11535`, M6 `11541`, M7 `11542` passed; M8 `11546` failed S3-A.
+- Exact S3-A contract was visual_intent=`An electric motor inside a fan providing rotational energy to the rotor`, must_show=`["electric motor"]`, must_not_show=`["heater"]`. Raw Vision correctly rejected the top three candidates because a still photo could not prove the hidden functional action; the best Wikimedia image showed a disassembled fan/motor but not an operating transfer of rotational energy.
+- Root cause: M5 had already reduced the hard must_show to the visible primary, but retained a hidden internal/functional process in visual_intent, causing Gemini intent_match to fail on otherwise useful photos.
+- Commit `addcba1` canonicalizes photo intents to the visible primary when exactly one concealed machine/component anchor remains and the intent requires hidden placement (`inside`/`within` a non-spatial container) or hidden functional transfer, unless the view is explicitly open/exposed/cutaway/transparent/disassembled. Ordinary spatial contexts such as `generator inside a power station hall` and independent second subjects remain unchanged.
+- Verification: targeted hidden-process + scene regressions 75/75 PASS; full JS 527/527 PASS; JSON/diff PASS. Production `VideoM5Storyboard001` active version `d69751bc-0e68-4e78-af3c-2db143836495`; restart exit=0; `/healthz`=200; live nodes/connections/settings exactly match Git (`SOURCE_MATCH=true`).
+- Next gate: exactly one fresh independent pl30/gemini smoke, persist ID before launch, launch once, trace M4→M9, never rerun if it fails.
+
+## 2026-09-29 — hidden machine photo-intent canonicalization live
+
+- Immutable smoke `10fb94de-5a4f-432d-a89b-c01e01566968` (`jak działa wentylator domowy`, pl30/gemini) is terminal `visuals_failed`; never rerun it. M5 `11535`, M6 `11541`, M7 `11542` passed; M8 `11546` failed S3-A.
+- Exact S3-A contract was visual_intent=`An electric motor inside a fan providing rotational energy to the rotor`, must_show=`["electric motor"]`, must_not_show=`["heater"]`. Raw Vision correctly rejected the top three candidates because a still photo could not prove the hidden functional action; the best Wikimedia image showed a disassembled fan/motor but not an operating transfer of rotational energy.
+- Root cause: M5 had already reduced the hard must_show to the visible primary, but retained a hidden internal/functional process in visual_intent, causing Gemini intent_match to fail on otherwise useful photos.
+- Commit `addcba1` canonicalizes photo intents to the visible primary when exactly one concealed machine/component anchor remains and the intent requires hidden placement (`inside`/`within` a non-spatial container) or hidden functional transfer, unless the view is explicitly open/exposed/cutaway/transparent/disassembled. Ordinary spatial contexts such as `generator inside a power station hall` and independent second subjects remain unchanged.
+- Verification: targeted hidden-process + scene regressions 75/75 PASS; full JS 527/527 PASS; JSON/diff PASS. Production `VideoM5Storyboard001` active version `d69751bc-0e68-4e78-af3c-2db143836495`; restart exit=0; `/healthz`=200; live nodes/connections/settings exactly match Git (`SOURCE_MATCH=true`).
+- Next gate: exactly one fresh independent pl30/gemini smoke, persist ID before launch, launch once, trace M4→M9, never rerun if it fails.
+
 ## 2026-09-29 — dependent visual component canonicalization live
 
 - Immutable smoke `ece4accd-1d42-4cf1-8032-54e11dd94e28` (`jak działa termometr cyfrowy`, pl30/gemini) is terminal `visuals_failed`; never rerun it. M5 `11504` PASS, M6 `11509` PASS, M7 `11510` PASS, M8 `11511` failed on S3-A.

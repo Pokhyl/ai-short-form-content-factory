@@ -1,3 +1,11 @@
+## 2026-09-29 — validate deployed hidden machine photo-intent fix
+
+1. Treat `10fb94de-5a4f-432d-a89b-c01e01566968` as immutable `visuals_failed`; never rerun it.
+2. Commit `addcba1` is live in `VideoM5Storyboard001` as active version `d69751bc-0e68-4e78-af3c-2db143836495`; do not redeploy unless Git changes.
+3. Create exactly one fresh independent pl30/gemini smoke, persist its ID before launch, launch once, and never rerun it if it fails.
+4. Trace M4→M9. Preserve exact timing evidence for M5 failures and candidate/Vision evidence for M8 failures; do not lower timing or visual gates.
+5. If machine QA passes, run `scripts/audit_final_media.py` on the exact final MP4 and inspect selected visuals before acceptance.
+
 ## 2026-09-29 — validate deployed dependent-component canonicalization
 
 1. Treat `ece4accd-1d42-4cf1-8032-54e11dd94e28` as immutable `visuals_failed`; never rerun it.
