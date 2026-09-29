@@ -1,3 +1,15 @@
+## 2026-09-29 — M5 11613 timing lexical-budget fix ready
+
+- Authoritative smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b is terminal script_failed; never rerun it. M4 11612 passed; M5 11613 failed in the timing-repair path.
+- Initial validated narration measured 24576 ms against the 30000 ms target, 5424 ms short. Initial storyboard validation itself passed.
+- Both bounded timing rewrites were rejected by the existing semantic-preservation guard with "2, allowed 1 [line 603]". Exact first offending scene was S4: original "W pompce ręcznej tłok porusza się"; repair 1 added both "prostej" and "dynamicznie", repair 2 added both "klasycznej" and "wewnętrzny".
+- Root cause: repair prompts stated the one-new-content-word limit but did not expose the validator's per-scene content-word vocabulary, so Gemini repeatedly spent the lexical budget on multiple new modifiers.
+- Generic M5-only fix adds validator-aligned ORIGINAL CONTENT WORDS BY SCENE to Build Timing Repair and Build Timing Repair 2, using the same language stopwords/normalization as the semantic guard. Prompts now state a hard content-word budget: reuse listed content words freely, normal inflection allowed, at most one other meaning-bearing word per scene, and prefer function words/grammar over new modifiers.
+- Semantic validator thresholds, audio window, timing gates, M8 and M9 are unchanged.
+- Exact 11613 regression plus existing semantic/timing tests: 39/39 PASS. Full JS suite: 567/567 PASS. Workflow JSON valid; git diff --check clean.
+- Retired unlaunched scissors job 03bfb0a3-88a9-4abd-a516-32ded2bceb78 must never be launched.
+- Deployment pending.
+
 ## 2026-09-29 — bicycle-pump smoke is authoritative; scissors job retired unlaunched
 
 - Parallel activity created two fresh jobs after the v198 deployment. This violated the one-fresh-smoke rule, so only one may continue.

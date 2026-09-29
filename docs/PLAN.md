@@ -1,3 +1,12 @@
+## 2026-09-29 — deploy M5 11613 timing lexical-budget fix
+
+1. Never rerun immutable smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b. Never launch retired scissors job 03bfb0a3-88a9-4abd-a516-32ded2bceb78.
+2. Exact blocker: M5 11613 timing-repair semantic guard. Initial validated narration was 24576 ms; both timing retries added two novel content words to S4 where only one is allowed.
+3. Deploy only the M5 prompt-builder lexical-budget fix. Keep semantic validator thresholds, audio timing gates, M8 and M9 unchanged.
+4. Verification before deploy: targeted semantic/timing 39/39 PASS; full JS 567/567 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero active executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after verified deployment create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
 ## 2026-09-29 — trace authoritative bicycle-pump smoke; never launch scissors job
 
 1. Authoritative smoke is 48a0f9fb-85f8-42cf-990d-1c77d167be8b (jak działa pompka rowerowa, pl30/gemini). It has already been launched; never launch it again.
