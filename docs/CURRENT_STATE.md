@@ -1,3 +1,9 @@
+## 2026-09-29 — post-2fa80b6 door-handle smoke launched once
+
+- Acceptance smoke feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
 ## 2026-09-29 — fresh post-2fa80b6 Gemini smoke persisted before launch
 
 - Created exactly one fresh acceptance smoke: feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini).

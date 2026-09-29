@@ -1,3 +1,10 @@
+## 2026-09-29 — trace launched post-2fa80b6 door-handle smoke
+
+1. Smoke feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini) was launched exactly once; never launch it again.
+2. Trace M4→M9 to terminal.
+3. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+4. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — launch persisted post-2fa80b6 Gemini acceptance smoke
 
 1. Smoke feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini) exists with DB status=created and has not been launched.
