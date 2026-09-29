@@ -1,3 +1,9 @@
+## 2026-09-29 — post-5ba78bc bicycle-pump smoke launched once
+
+- Acceptance smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b (jak działa pompka rowerowa, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
 ## 2026-09-29 — fresh post-5ba78bc Gemini smoke persisted before launch
 
 - Created exactly one fresh acceptance smoke: 03bfb0a3-88a9-4abd-a516-32ded2bceb78 (jak działają nożyczki, pl30/gemini).

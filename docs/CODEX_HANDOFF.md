@@ -1,3 +1,5 @@
+- 2026-09-29: post-`5ba78bc` acceptance smoke `48a0f9fb-85f8-42cf-990d-1c77d167be8b` (`jak działa pompka rowerowa`, pl30/gemini) was launched exactly once through production `/webhook/factory/run`; response `accepted=true,status=processing`. Never launch this ID again. NEXT: trace this exact job M4→M9 to terminal; audit exact final media only after machine-QA PASS.
+
 - 2026-09-29: created exactly one fresh post-`5ba78bc` acceptance smoke `03bfb0a3-88a9-4abd-a516-32ded2bceb78` (`jak działają nożyczki`, pl30/gemini). DB confirms `status=created`, `visual_validation_mode=gemini`; not launched at this checkpoint. NEXT: commit/push, verify exact ID in `HEAD` and `origin/main`, launch only this ID once, trace M4→M9.
 
 - 2026-09-29: created exactly one fresh post-`5ba78bc` acceptance smoke `48a0f9fb-85f8-42cf-990d-1c77d167be8b` (`jak działa pompka rowerowa`, pl30/gemini). DB confirms `status=created`, `visual_validation_mode=gemini`; not launched at this checkpoint. NEXT: commit/push this checkpoint, verify exact ID in `HEAD` and `origin/main`, launch only this ID once, trace M4→M9.

@@ -1,3 +1,10 @@
+## 2026-09-29 — trace launched post-5ba78bc bicycle-pump smoke
+
+1. Smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b (jak działa pompka rowerowa, pl30/gemini) was launched exactly once; never launch it again.
+2. Trace M4→M9 to terminal.
+3. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+4. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — launch persisted post-5ba78bc scissors smoke
 
 1. Smoke 03bfb0a3-88a9-4abd-a516-32ded2bceb78 (jak działają nożyczki, pl30/gemini) exists with DB status=created and has not been launched.
