@@ -1,3 +1,11 @@
+## 2026-09-29 — validate deployed M5 11613 lexical-budget fix
+
+1. Commit 68055c8 is deployed only to VideoM5Storyboard001 as v199 / 5736f5e7-a1e7-4095-b35b-9b9b13d913e5.
+2. Treat 48a0f9fb-85f8-42cf-990d-1c77d167be8b as immutable script_failed; never rerun it. Never launch retired scissors job 03bfb0a3-88a9-4abd-a516-32ded2bceb78.
+3. Production verification passed: zero active executions before publish, one restart, publisher health 200, activeVersionId=versionId, current source and active history equal Git.
+4. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch this exact ID once only.
+5. Trace M4→M9. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — deploy M5 11613 timing lexical-budget fix
 
 1. Never rerun immutable smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b. Never launch retired scissors job 03bfb0a3-88a9-4abd-a516-32ded2bceb78.

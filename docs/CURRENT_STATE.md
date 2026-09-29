@@ -1,3 +1,14 @@
+## 2026-09-29 — M5 11613 timing lexical-budget fix deployed
+
+- Commit 68055c80044f is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v199 / 5736f5e7-a1e7-4095-b35b-9b9b13d913e5, active=true and activeVersionId=versionId.
+- Import source equality verified for nodes/connections/settings before publish. Import and publish were each executed exactly once; stale CLI wrappers were terminated only after DB side effects were confirmed.
+- Zero active executions before publish. ai-short-form-n8n restarted exactly once after publish.
+- Post-restart publisher /healthz=200. Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Semantic validator thresholds, audio timing gates, M8 and M9 remain unchanged.
+- Immutable smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b must never be rerun. Retired scissors job 03bfb0a3-88a9-4abd-a516-32ded2bceb78 must never be launched.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit final media only after machine QA PASS.
+
 ## 2026-09-29 — M5 11613 timing lexical-budget fix ready
 
 - Authoritative smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b is terminal script_failed; never rerun it. M4 11612 passed; M5 11613 failed in the timing-repair path.
