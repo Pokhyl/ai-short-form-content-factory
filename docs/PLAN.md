@@ -1,3 +1,11 @@
+## 2026-09-29 — launch persisted post-97f5b16 Gemini acceptance smoke
+
+1. Acceptance smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 (jak działa zszywacz biurowy, pl30/gemini) exists with DB status=created and has not been launched yet.
+2. Accidental metadata job 54fb03e5-f925-4526-ac8d-0e08bbc6e4f5 must never be launched.
+3. Commit and push this checkpoint before launch.
+4. Launch only 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 exactly once through /webhook/factory/run; never rerun it.
+5. Trace M4→M9 to terminal. If it fails, collect exact evidence and fix only the generic blocker. If M9 passes, audit exact final media before acceptance.
+
 ## 2026-09-29 — validate deployed M5 interaction-target orientation fix
 
 1. Commit 97f5b16 is deployed only to VideoM5Storyboard001 as v196 / c748cddd-ece3-42ef-b894-f96f03c5d332.

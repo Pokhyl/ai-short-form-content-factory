@@ -1,3 +1,10 @@
+## 2026-09-29 — fresh post-97f5b16 Gemini smoke persisted before launch
+
+- Created exactly one acceptance smoke: 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 (jak działa zszywacz biurowy, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- An earlier accidental job 54fb03e5-f925-4526-ac8d-0e08bbc6e4f5 was created with visual_validation_mode=metadata because the field was omitted. It is not an acceptance smoke and must never be launched.
+- After this checkpoint is committed and pushed, launch only 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 exactly once and trace M4→M9.
+
 ## 2026-09-29 — M5 interaction-target orientation fix deployed and source-verified
 
 - Commit 97f5b164be0481f03e5aa999ecd59b3964651de5 is pushed to main and deployed only to VideoM5Storyboard001.
