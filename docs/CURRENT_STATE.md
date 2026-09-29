@@ -1,8 +1,9 @@
-## 2026-09-29 — fresh post-b7afd97 smoke persisted before launch
+## 2026-09-29 — post-b7afd97 bicycle-brake smoke launched once
 
-- Created exactly one fresh acceptance job: 3375c549-d3d8-49bf-b51d-f9ebffe0938e (jak działa hamulec rowerowy, pl30/gemini).
-- Factory DB confirms status=created, language=pl, duration=30, visual_validation_mode=gemini.
-- This job has not been launched yet. Launch exactly once only after this ID is committed and pushed to GitHub; never rerun it if it fails.
+- Smoke 3375c549-d3d8-49bf-b51d-f9ebffe0938e (jak działa hamulec rowerowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response was accepted=true,status=processing. Never launch this ID again, regardless of terminal result.
+- Trace this exact job M4→M9 to terminal. If it fails, preserve exact execution/DB/provider evidence and fix only the generic blocker before creating another smoke.
+- If machine QA passes, audit the exact final MP4 with scripts/audit_final_media.py and inspect selected visuals before acceptance.
 
 ## 2026-09-29 — M8 fastener-action subject fix deployed and source-verified
 

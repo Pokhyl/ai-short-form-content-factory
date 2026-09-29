@@ -1,10 +1,9 @@
-## 2026-09-29 — launch persisted post-b7afd97 acceptance smoke
+## 2026-09-29 — trace launched post-b7afd97 bicycle-brake smoke
 
-1. Exactly one fresh smoke exists: 3375c549-d3d8-49bf-b51d-f9ebffe0938e (jak działa hamulec rowerowy, pl30/gemini).
-2. DB confirms status=created. It has not been launched yet.
-3. Commit and push this exact ID to GitHub before launch, then launch this exact job once through /webhook/factory/run and never launch it again.
-4. Trace M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker before another smoke.
-5. If M9 reaches machine-QA PASS, audit the exact final MP4 and selected visuals before acceptance.
+1. Smoke 3375c549-d3d8-49bf-b51d-f9ebffe0938e (jak działa hamulec rowerowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+2. Launch response: accepted=true, status=processing. Never launch this ID again.
+3. Trace M4→M9 to terminal. If it fails, preserve exact provider/candidate/Vision evidence and fix only the generic blocker before another smoke.
+4. If M9 reaches machine-QA PASS, audit the exact final MP4 and selected visuals before acceptance.
 
 ## 2026-09-29 — validate deployed M8 fastener-action subject fix
 
