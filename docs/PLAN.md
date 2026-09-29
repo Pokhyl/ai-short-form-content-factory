@@ -1,3 +1,9 @@
+## 2026-09-29 — one-smoke collision resolved
+
+1. Continue only authoritative smoke `38bb0e6f-752c-4418-ab79-027d9f0e5987`; it has already been launched once and must never be relaunched.
+2. Retire unlaunched parallel job `30dfb366-7fe0-4720-9456-541131bd810a`; never launch it.
+3. Trace only `38bb...` M4→M9 to terminal.
+
 ## 2026-09-29 — trace launched post-55b987b liquid-thermometer smoke
 
 1. Smoke 38bb0e6f-752c-4418-ab79-027d9f0e5987 (jak działa termometr cieczowy, pl30/gemini) was launched exactly once; never launch it again.

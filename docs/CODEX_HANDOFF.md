@@ -1,3 +1,5 @@
+- 2026-09-29: one-smoke collision resolved. Authoritative launched smoke is `38bb0e6f-752c-4418-ab79-027d9f0e5987`; never relaunch it. Parallel mechanical-pencil job `30dfb366-7fe0-4720-9456-541131bd810a` remains `created`, was never launched, is retired, and must never be launched. Continue tracing only `38bb...`.
+
 - 2026-09-29: post-`55b987b` acceptance smoke `38bb0e6f-752c-4418-ab79-027d9f0e5987` (`jak działa termometr cieczowy`, pl30/gemini) was launched exactly once through production `/webhook/factory/run`; response `accepted=true,status=processing`. Never launch this ID again. NEXT: trace this exact job M4→M9 to terminal; audit exact final media only after machine-QA PASS.
 
 - 2026-09-29: created exactly one fresh post-`55b987b` acceptance smoke `38bb0e6f-752c-4418-ab79-027d9f0e5987` (`jak działa termometr cieczowy`, pl30/gemini). DB confirms `status=created`, `visual_validation_mode=gemini`; not launched at this checkpoint. NEXT: commit/push this checkpoint, verify exact ID in `HEAD` and `origin/main`, launch only this ID once, trace M4→M9.

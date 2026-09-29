@@ -1,3 +1,8 @@
+## 2026-09-29 — retire parallel mechanical-pencil job
+
+- Parallel job `30dfb366-7fe0-4720-9456-541131bd810a` (`jak działa ołówek automatyczny`, pl30/gemini) remains `created` and was never launched.
+- It is retired because `38bb0e6f-752c-4418-ab79-027d9f0e5987` was already persisted and launched as the authoritative post-v202 smoke. Never launch `30dfb366-7fe0-4720-9456-541131bd810a`.
+
 ## 2026-09-29 — post-55b987b liquid-thermometer smoke launched once
 
 - Acceptance smoke 38bb0e6f-752c-4418-ab79-027d9f0e5987 (jak działa termometr cieczowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
