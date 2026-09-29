@@ -1,3 +1,14 @@
+## 2026-09-29 — M8 fastener-action subject fix deployed and source-verified
+
+- Commit b7afd978492b3863cd5b4c198d768181571a2d7d is pushed to main and deployed only to VideoM8Visuals001.
+- Predeploy execution DB had zero new/running/waiting executions.
+- Import created M8 version 2a237e6b-7f81-4e7a-bd0c-1a0b71ba8dec / counter 82. Imported current nodes/connections/settings matched Git before publish.
+- Publish set active=true and activeVersionId equal to versionId. One restart of ai-short-form-n8n completed successfully; no other service was restarted.
+- Post-restart publisher /healthz returned 200.
+- Post-deploy verification: current nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8 Gemini Vision gates, 70 score floor, must_show checks, intent_match, must_not_show and uniqueness remain unchanged.
+- Next gate: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only if machine QA passes.
+
 ## 2026-09-29 — M8 11579 fastener-action subject evidence fixed offline
 
 - Immutable smoke 3a16d463-36fc-42cd-b027-a46841e76860 (jak działa zamek błyskawiczny, pl30/gemini) is terminal visuals_failed; never rerun it. M4 11570, M5 11571, M6 11577, M7 11578 passed; M8 11579 failed S8-A.

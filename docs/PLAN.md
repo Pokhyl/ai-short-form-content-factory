@@ -1,3 +1,11 @@
+## 2026-09-29 — validate deployed M8 fastener-action subject fix
+
+1. Commit b7afd97 is deployed only to VideoM8Visuals001 as v82 / 2a237e6b-7f81-4e7a-bd0c-1a0b71ba8dec.
+2. Treat 3a16d463-36fc-42cd-b027-a46841e76860 as immutable visuals_failed; never rerun it.
+3. Production verification passed: health 200; activeVersionId=versionId; current nodes/connections/settings and active history nodes/connections equal Git.
+4. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch this exact ID once only.
+5. Trace M4→M9. If it fails, collect exact provider/candidate/Vision evidence and fix only the generic blocker. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — deploy M8 fastener-action subject evidence fix
 
 1. Treat 3a16d463-36fc-42cd-b027-a46841e76860 as immutable visuals_failed; never rerun it.
