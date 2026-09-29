@@ -61,6 +61,36 @@ test('required interaction subject cannot disappear from secondary must_show',()
  }
 });
 
+test('11583 regression: connected-to target may be primary when the other subject is secondary',()=>{
+ for(const validatorName of ['Validate Storyboard','Validate Repaired Storyboard','Validate Repaired Storyboard 2']){
+  const code=n[validatorName].parameters.jsCode;
+  const start=code.indexOf('function assertRequiredInteractionSecondary');
+  const end=code.indexOf('// MUST_SHOW_SECONDARY_GUARD_END');
+  assert.ok(start>=0 && end>start,validatorName);
+  const guard=new Function(code.slice(start,end)+'\nreturn assertRequiredInteractionSecondary;')();
+
+  assert.equal(
+   guard(
+    ['bicycle brake lever','steel cable'],
+    'A steel cable connected to a bicycle brake lever',
+    'S3-A'
+   ),
+   'steel cable',
+   validatorName
+  );
+
+  assert.throws(
+   ()=>guard(
+    ['bicycle brake lever'],
+    'A steel cable connected to a bicycle brake lever',
+    'S3-A'
+   ),
+   /second independently visible interaction subject.*bicycle brake lever/,
+   validatorName
+  );
+ }
+});
+
 test('detailed interaction queries are deterministically completed from secondary must_show',()=>{
  const runCase=(visualIntent,mustShow,queries)=>{
   const ctx={...c};

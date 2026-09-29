@@ -1,3 +1,12 @@
+## 2026-09-29 — deploy M5 interaction-target orientation fix
+
+1. Treat 3375c549-d3d8-49bf-b51d-f9ebffe0938e as immutable script_failed; never rerun it.
+2. Exact terminal blocker is M5 11583: after narration repair, S3-A "A steel cable connected to a bicycle brake lever" with must_show=["bicycle brake lever","steel cable"] was rejected because the connected-to target was primary rather than secondary.
+3. Deploy only the regression-backed M5 interaction-target orientation fix. Keep the hard requirement for two independently visible subjects and do not weaken M8/M9 gates.
+4. Verification before deploy: targeted 37/37 PASS; full JS 536/536 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero active executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, and live nodes/connections/settings equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final MP4 if machine QA passes.
+
 ## 2026-09-29 — trace launched post-b7afd97 bicycle-brake smoke
 
 1. Smoke 3375c549-d3d8-49bf-b51d-f9ebffe0938e (jak działa hamulec rowerowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.

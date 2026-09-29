@@ -1,3 +1,14 @@
+## 2026-09-29 — M5 11583 interaction-target orientation bug fixed offline
+
+- Immutable smoke 3375c549-d3d8-49bf-b51d-f9ebffe0938e (jak działa hamulec rowerowy, pl30/gemini) is terminal script_failed; never rerun it. M4 11582 passed; M5 11583 failed after bounded storyboard repairs.
+- Exact validator progression: initial storyboard failed continuous narration with fewer than three natural complete sentences; repair 1 then failed at interaction guard with target "handlebar lever mechanism"; repair 2 failed at the same guard with target "bicycle brake lever".
+- Exact repaired S3-A contract: visual_intent="A steel cable connected to a bicycle brake lever"; must_show=["bicycle brake lever","steel cable"]. Both independently visible subjects are already present.
+- Generic root cause: assertRequiredInteractionSecondary assumed the relation target after "connected to" must always be in secondary must_show. When that target is the primary anchor, it incorrectly rejects a valid reversed-orientation relation even though the other independent subject is already secondary.
+- Generic M5-only fix in Validate Storyboard and both repaired validators: relation target may be covered by any must_show anchor. If the target is primary, a distinct secondary anchor still must exist and must be present in visual_intent; that secondary is returned for detailed-query preservation. Missing second subjects still fail closed.
+- Exact 11583 regression accepts ["bicycle brake lever","steel cable"] for "A steel cable connected to a bicycle brake lever" and rejects the same intent with only ["bicycle brake lever"].
+- Verification: targeted M5 suite 37/37 PASS; full JS suite 536/536 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 3375c549-d3d8-49bf-b51d-f9ebffe0938e.
+
 ## 2026-09-29 — post-b7afd97 bicycle-brake smoke launched once
 
 - Smoke 3375c549-d3d8-49bf-b51d-f9ebffe0938e (jak działa hamulec rowerowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
