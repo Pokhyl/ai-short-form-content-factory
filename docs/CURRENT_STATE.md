@@ -1,3 +1,17 @@
+## 2026-09-29 — fresh post-39384b6 Gemini smoke persisted before launch
+
+- Created acceptance smoke 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- This is the only acceptance smoke to continue after v200. Retired scissors job 03bfb0a3-88a9-4abd-a516-32ded2bceb78 remains unlaunched and must never be launched.
+- After this checkpoint is committed and pushed, launch only 6d429236-c4f9-47fd-8260-1058a659bff3 exactly once and trace M4→M9.
+
+## 2026-09-29 — fresh post-39384b6 Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 6d429236-c4f9-47fd-8260-1058a659bff3 (jak działa długopis kulkowy, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 6d429236-c4f9-47fd-8260-1058a659bff3 exactly once and trace M4→M9.
+- Immutable previous smoke 82ff4918-afd4-4f08-a541-50cf69abfc6b must never be rerun.
+
 ## 2026-09-29 — M5 11635 rotational-action photo fix deployed
 
 - Commit 39384b64ff53 is pushed to main and deployed only to VideoM5Storyboard001.
