@@ -1,3 +1,11 @@
+## 2026-09-29 — trace authoritative bicycle-pump smoke; never launch scissors job
+
+1. Authoritative smoke is 48a0f9fb-85f8-42cf-990d-1c77d167be8b (jak działa pompka rowerowa, pl30/gemini). It has already been launched; never launch it again.
+2. Job 03bfb0a3-88a9-4abd-a516-32ded2bceb78 (jak działają nożyczki) remains created but is retired because a parallel smoke was already launched. Never launch it.
+3. Trace only 48a0f9fb-85f8-42cf-990d-1c77d167be8b M4→M9 to terminal.
+4. If it fails, preserve exact execution/DB/provider/Vision evidence and fix only the generic blocker before creating any new smoke.
+5. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — trace launched post-5ba78bc bicycle-pump smoke
 
 1. Smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b (jak działa pompka rowerowa, pl30/gemini) was launched exactly once; never launch it again.

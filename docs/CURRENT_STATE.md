@@ -1,3 +1,11 @@
+## 2026-09-29 — bicycle-pump smoke is authoritative; scissors job retired unlaunched
+
+- Parallel activity created two fresh jobs after the v198 deployment. This violated the one-fresh-smoke rule, so only one may continue.
+- Authoritative smoke: 48a0f9fb-85f8-42cf-990d-1c77d167be8b (jak działa pompka rowerowa, pl30/gemini). Factory DB shows it has already been launched and is in progress; never launch this ID again.
+- Retired job: 03bfb0a3-88a9-4abd-a516-32ded2bceb78 (jak działają nożyczki, pl30/gemini) remains status=created and must never be launched.
+- Current n8n chain for the authoritative smoke: Self Test API 11611 running, M4 Research 11612 running at this checkpoint.
+- Continue tracing only 48a0f9fb-85f8-42cf-990d-1c77d167be8b to terminal. Do not create another smoke until it is terminal and any generic blocker is fixed.
+
 ## 2026-09-29 — post-5ba78bc bicycle-pump smoke launched once
 
 - Acceptance smoke 48a0f9fb-85f8-42cf-990d-1c77d167be8b (jak działa pompka rowerowa, pl30/gemini) was launched exactly once through production /webhook/factory/run.
