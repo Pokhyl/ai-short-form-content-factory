@@ -1,3 +1,19 @@
+## 2026-09-29 — M8 11601 transient photo-action fix ready
+
+- Smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 is immutable visuals_failed; never rerun it. M4 11590, M5 11591, M6 11599 and M7 11600 passed; M8 11601 failed S2-A.
+- S2-A required an office stapler and paper sheets while hard visual_intent required the stapler actively joining the sheets. Gemini saw both required subjects in candidate 1, but rejected intent_match because the photo was static.
+- Root cause is M5 retaining a short-lived mechanical action as a hard photo intent despite the existing policy that such actions should stay in narration.
+- M5-only fix adds deterministic transient-action canonicalization in the initial validator, both repair validators and final canonicalizer. Existing must_show subjects stay hard; visible human/hand actions and stable connected relations stay unchanged. M8 is unchanged.
+- Targeted tests 81/81 PASS; full JS suite 556/556 PASS; workflow JSON and git diff checks are clean.
+- Accidental metadata job 54fb03e5-f925-4526-ac8d-0e08bbc6e4f5 remains unlaunched and must never be launched. Deployment pending.
+
+## 2026-09-29 — post-97f5b16 stapler smoke launched once
+
+- Acceptance smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 (jak działa zszywacz biurowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Accidental metadata job 54fb03e5-f925-4526-ac8d-0e08bbc6e4f5 remains unlaunched and must never be launched.
+- Trace only 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 M4→M9 to terminal; if it fails, preserve exact evidence and fix only the generic blocker.
+
 ## 2026-09-29 — fresh post-97f5b16 Gemini smoke persisted before launch
 
 - Created exactly one acceptance smoke: 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 (jak działa zszywacz biurowy, pl30/gemini).

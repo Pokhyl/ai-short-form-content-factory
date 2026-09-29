@@ -1,3 +1,18 @@
+## 2026-09-29 — deploy M5 transient photo-action fix
+
+1. Never rerun immutable smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304.
+2. Exact blocker: M8 11601 S2-A. Gemini saw office stapler + paper sheets but rejected the static photo because M5 required the short-lived joining action.
+3. Deploy only the regression-backed M5 transient-action canonicalization. Keep must_show subjects hard and keep all M8/M9 gates unchanged.
+4. Verification before deploy: targeted 81/81 PASS; full JS 556/556 PASS; JSON and diff checks clean.
+5. Commit/push, verify zero active executions, deploy only VideoM5Storyboard001, verify health/source/activeVersionId, then create one fresh persisted pl30/gemini smoke and launch it once.
+
+## 2026-09-29 — trace launched post-97f5b16 stapler smoke
+
+1. Smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 (jak działa zszywacz biurowy, pl30/gemini) was launched exactly once; never launch it again.
+2. Accidental metadata job 54fb03e5-f925-4526-ac8d-0e08bbc6e4f5 must never be launched.
+3. Trace 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 M4→M9 to terminal.
+4. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — launch persisted post-97f5b16 Gemini acceptance smoke
 
 1. Acceptance smoke 8ab689fc-02bc-4f45-8bbd-7c3ab13f8304 (jak działa zszywacz biurowy, pl30/gemini) exists with DB status=created and has not been launched yet.
