@@ -1,3 +1,11 @@
+## 2026-09-29 — validate deployed weak-primary owner promotion
+
+1. Commit e55e116 is deployed only to VideoM5Storyboard001 as version 95febf3c-3a04-456f-a027-887b784be9e3 (counter 195).
+2. Treat 3ebeb8c3-a7d7-4ef6-b00c-45d1e1b9f4eb as immutable visuals_failed; never rerun it.
+3. Production verification passed: publisher health 200; activeVersionId=versionId; current nodes/connections/settings and published nodes/connections equal Git.
+4. Create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, then launch exactly once.
+5. Trace M4→M9. If M8 fails, collect exact candidate/Vision evidence and fix only the generic blocker. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — deploy generic weak-primary owner promotion after M8 11564
 
 1. Treat smoke 3ebeb8c3-a7d7-4ef6-b00c-45d1e1b9f4eb (jak działa blender kuchenny, pl30/gemini) as immutable visuals_failed; never rerun it.

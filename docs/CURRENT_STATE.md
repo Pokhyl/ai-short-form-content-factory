@@ -1,3 +1,13 @@
+## 2026-09-29 — weak-primary owner promotion deployed and source-verified
+
+- Commit e55e1167ee3f7b27000a2b519fb59bf31c1c5f09 is pushed to main and deployed only to VideoM5Storyboard001.
+- Predeploy n8n execution DB had zero new/running/waiting executions.
+- M5 import produced version 95febf3c-3a04-456f-a027-887b784be9e3 / counter 195; publish set active=true and activeVersionId equal to versionId.
+- During the n8n restart, Docker briefly held stale running metadata after the old n8n PID had already exited and publisher health returned 502. No blind second restart was used. After confirming the process was absent, the stale container state was reconciled and the container was started normally; publisher /healthz returned 200. No other container or architecture was changed.
+- Post-recovery verification: M5 activeVersionId=versionId=95febf3c-3a04-456f-a027-887b784be9e3, counter 195; current nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- The 11564 blocker fix remains unchanged: weak component-only primary labels explicitly written as X of a concrete owner promote to the owner; exact blender regression becomes must_show=[kitchen blender] and query3=kitchen blender. M8 gates remain unchanged.
+- Next gate: exactly one fresh independent pl30/gemini acceptance smoke, ID persisted before launch and launched once only.
+
 ## 2026-09-29 — M8 11564 weak-primary retrieval bug fixed and verified offline
 
 - Immutable post-addcba1 smoke 3ebeb8c3-a7d7-4ef6-b00c-45d1e1b9f4eb (jak działa blender kuchenny, pl30/gemini) is terminal visuals_failed; never rerun. M4 11556, M5 11557, M6 11562, M7 11563 passed; M8 11564 failed S3-A with no Gemini-approved unique visual candidate.
