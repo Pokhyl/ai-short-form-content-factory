@@ -1,3 +1,12 @@
+## 2026-09-29 — deploy M5 11605 relation-target semantic-head fix
+
+1. Treat feb9823f-a0db-4f54-beec-fc80550c0458 as immutable script_failed; never rerun it.
+2. Exact blocker is M5 11605 S3-A: target phrases mortise lock mechanism / metal door lock / metal lock mechanism were rejected despite must_show=["door handle","lock"].
+3. Deploy only the regression-backed M5 semantic-head relation-target fix. Keep the hard requirement for the second independently visible subject and do not weaken M8/M9 gates.
+4. Verification before deploy: targeted 38/38 PASS; full JS 565/565 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero active executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit final media only after machine-QA PASS.
+
 ## 2026-09-29 — trace launched post-2fa80b6 door-handle smoke
 
 1. Smoke feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini) was launched exactly once; never launch it again.

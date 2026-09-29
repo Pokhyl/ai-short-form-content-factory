@@ -1,3 +1,13 @@
+## 2026-09-29 — M5 11605 relation-target semantic-head fix ready
+
+- Immutable smoke feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini) is terminal script_failed; never rerun it. M4 11604 passed; M5 11605 failed after both bounded storyboard repairs.
+- Exact validator progression for S3-A: "mortise lock mechanism" -> "metal door lock" -> "metal lock mechanism" while must_show remained ["door handle","lock"].
+- Root cause: assertRequiredInteractionSecondary required every modifier token from the relation target phrase to be present in one must_show anchor, so a valid concise subject anchor "lock" was rejected even though the second independently visible subject was present.
+- Generic M5-only fix keeps the strict matcher first, then allows a relation target to be covered by a must_show anchor only when the anchor's semantic head noun matches the target semantic head and every anchor token is actually present in the target phrase. The independent-second-subject requirement remains unchanged.
+- Exact 11605 regression accepts "lock" for mortise lock mechanism / metal door lock / metal lock mechanism, rejects a generic "mechanism" anchor, and covers car battery -> battery subtype matching.
+- Targeted interaction/transient suite 38/38 PASS; full JS suite 565/565 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after feb9823f-a0db-4f54-beec-fc80550c0458.
+
 ## 2026-09-29 — post-2fa80b6 door-handle smoke launched once
 
 - Acceptance smoke feb9823f-a0db-4f54-beec-fc80550c0458 (jak działa klamka drzwiowa, pl30/gemini) was launched exactly once through production /webhook/factory/run.
