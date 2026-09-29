@@ -1,3 +1,11 @@
+## 2026-09-29 — launch persisted post-55b987b Gemini acceptance smoke
+
+1. Smoke 38bb0e6f-752c-4418-ab79-027d9f0e5987 (jak działa termometr cieczowy, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit and push this checkpoint before launch; verify the exact ID exists in both HEAD and origin/main.
+3. Launch only 38bb0e6f-752c-4418-ab79-027d9f0e5987 exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal. If it fails, preserve exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+5. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-29 — validate deployed M5 11642 deterministic timing-novel fallback
 
 1. Commit 55b987b is deployed only to VideoM5Storyboard001 as v202 / 5268e533-fc68-40f6-9c04-02ebf5293ebc.

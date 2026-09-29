@@ -1,3 +1,10 @@
+## 2026-09-29 — fresh post-55b987b Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 38bb0e6f-752c-4418-ab79-027d9f0e5987 (jak działa termometr cieczowy, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 38bb0e6f-752c-4418-ab79-027d9f0e5987 exactly once and trace M4→M9.
+- Immutable previous smoke 6d429236-c4f9-47fd-8260-1058a659bff3 must never be rerun.
+
 ## 2026-09-29 — M5 11642 deterministic timing-novel fallback deployed
 
 - Commit 55b987b70f20 is pushed to main and deployed only to VideoM5Storyboard001.
