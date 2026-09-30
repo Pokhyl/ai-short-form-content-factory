@@ -1,3 +1,9 @@
+## 2026-09-30 — trace launched post-7d54d3e hole-punch smoke
+
+1. Smoke c7a3d558-54fd-483e-ac2d-217e12b83f4a was launched exactly once; never launch it again.
+2. Trace this exact job M4→M9 to terminal.
+3. On failure, collect exact evidence and fix only the generic blocker; if M9 passes, audit final MP4 and selected visuals.
+
 ## 2026-09-30 — launch persisted post-7d54d3e Gemini smoke
 
 1. Smoke c7a3d558-54fd-483e-ac2d-217e12b83f4a (jak działa dziurkacz biurowy, pl30/gemini) exists with DB status=created and has not been launched.

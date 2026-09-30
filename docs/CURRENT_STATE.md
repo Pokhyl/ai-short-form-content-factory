@@ -1,3 +1,9 @@
+## 2026-09-30 — post-7d54d3e hole-punch smoke launched once
+
+- Smoke c7a3d558-54fd-483e-ac2d-217e12b83f4a (jak działa dziurkacz biurowy, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9.
+
 ## 2026-09-30 — fresh post-7d54d3e Gemini smoke persisted before launch
 
 - Acceptance smoke: c7a3d558-54fd-483e-ac2d-217e12b83f4a (jak działa dziurkacz biurowy, pl30/gemini).

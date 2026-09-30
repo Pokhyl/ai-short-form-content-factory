@@ -1,3 +1,5 @@
+- 2026-09-30: smoke `c7a3d558-54fd-483e-ac2d-217e12b83f4a` (`jak działa dziurkacz biurowy`, pl30/gemini) was launched exactly once; response `accepted=true,status=processing`. Never launch this ID again. NEXT: trace this exact job M4→M9 to terminal; audit final media only after machine-QA PASS.
+
 - 2026-09-30: fresh post-`7d54d3e` smoke `c7a3d558-54fd-483e-ac2d-217e12b83f4a` (`jak działa dziurkacz biurowy`, pl30/gemini) exists with DB `status=created`, `visual_validation_mode=gemini`; not launched yet. NEXT: commit/push checkpoint, verify ID in `HEAD` and `origin/main`, launch only this ID once, trace M4→M9.
 
 - 2026-09-30: commit `7d54d3e` is deployed as M5 v206 / `5375ef85-a91e-45a1-b3fd-ed1c0096f49d`; health 200; source/history equal Git. Never rerun `7037f7ff-b658-48ba-9bc5-bc4ee6f98737`; never launch retired `30dfb366-7fe0-4720-9456-541131bd810a`. NEXT: one fresh persisted pl30/gemini smoke, launch once, trace M4→M9.
