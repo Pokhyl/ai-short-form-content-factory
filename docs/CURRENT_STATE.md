@@ -1,3 +1,9 @@
+## 2026-09-30 — post-c8b59c3 bottle-opener smoke launched once
+
+- Smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 (jak działa otwieracz do butelek, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9.
+
 ## 2026-09-30 — fresh post-c8b59c3 Gemini smoke persisted before launch
 
 - Acceptance smoke: 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 (jak działa otwieracz do butelek, pl30/gemini).

@@ -1,3 +1,9 @@
+## 2026-09-30 — trace launched post-c8b59c3 bottle-opener smoke
+
+1. Smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 was launched exactly once; never launch it again.
+2. Trace this exact job M4→M9 to terminal.
+3. On failure, collect exact evidence and fix only the generic blocker; if M9 passes, audit final MP4 and selected visuals.
+
 ## 2026-09-30 — launch persisted post-c8b59c3 Gemini acceptance smoke
 
 1. Smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 (jak działa otwieracz do butelek, pl30/gemini) exists with DB status=created and has not been launched.
