@@ -1,3 +1,11 @@
+## 2026-09-30 — M5 11704 fix deployed
+
+- Commit 7d54d3e is deployed as M5 v206 / 5375ef85-a91e-45a1-b3fd-ed1c0096f49d; active=true and activeVersionId=versionId.
+- Publisher /healthz=200; current M5 source and active history equal Git.
+- Smoke 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 is immutable visuals_failed; never rerun it.
+- Retired created-only job 30dfb366-7fe0-4720-9456-541131bd810a must never be launched.
+- Next: one fresh pl30/gemini smoke, persisted before launch, then trace M4→M9.
+
 ## 2026-09-30 — M5 11704 incidental repeated-owner visual contract fix ready
 
 - Immutable smoke 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 (jak działa zszywacz biurowy, pl30/gemini) is terminal visuals_failed; never rerun it.

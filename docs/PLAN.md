@@ -1,3 +1,19 @@
+## 2026-09-30 — validate deployed M5 11704 fix
+
+1. Commit 7d54d3e is deployed as M5 v206 / 5375ef85-a91e-45a1-b3fd-ed1c0096f49d.
+2. Never rerun 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 and never launch retired 30dfb366-7fe0-4720-9456-541131bd810a.
+3. Production verification passed: activeVersionId=versionId, health 200, source/history equal Git.
+4. Create one fresh pl30/gemini smoke, persist its ID before launch, launch once, trace M4→M9.
+
+## 2026-09-30 — validate deployed M5 11704 repeated-nearby-owner fix
+
+1. Commit 7d54d3e is deployed only to VideoM5Storyboard001 as v206 / 5375ef85-a91e-45a1-b3fd-ed1c0096f49d.
+2. Treat 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 as immutable visuals_failed; never rerun it.
+3. Never launch retired created-only job 30dfb366-7fe0-4720-9456-541131bd810a.
+4. Production verification passed: activeVersionId=versionId, publisher health 200, current source and active history equal Git.
+5. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch only that ID once.
+6. Trace M4→M9. If it fails, collect exact evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-30 — deploy M5 11704 incidental repeated-owner fix
 
 1. Treat 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 as immutable visuals_failed; never rerun it.
