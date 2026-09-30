@@ -1,3 +1,12 @@
+## 2026-09-30 — deploy M5 11722 hidden-photo oscillation fix
+
+1. Treat 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 as immutable script_failed; never rerun it.
+2. Root cause is bounded Gemini repair oscillation between two hidden-photo contracts: S6 hidden placement and S3 internal secondary component.
+3. Deploy only the deterministic pre-validation hidden-photo canonicalizer. Preserve explicit visible-access intents and keep truly concealed components fail-closed. Keep M8/Gemini gates unchanged.
+4. Verification before deploy: targeted 86/86 PASS; full JS 685/685 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit final media only after machine-QA PASS.
+
 ## 2026-09-30 — trace launched post-8324b82 pencil-sharpener smoke
 
 1. Smoke 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 was launched exactly once; never launch it again.

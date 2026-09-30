@@ -1,3 +1,13 @@
+## 2026-09-30 — M5 11722 hidden-photo oscillation fix ready
+
+- Immutable smoke 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 (jak działa temperówka do ołówków, pl30/gemini) is terminal script_failed; never rerun it.
+- M4 11721 PASS; M5 11722 failed after both bounded storyboard repairs.
+- Exact validator progression: initial S6-A requested a wooden pencil being rotated inside a pencil sharpener without visible-access context; repair 1 fixed S6 with an open cutaway but then S3-A failed because `metal blade` remained an internal secondary without visible access; repair 2 changed S3 but reintroduced the original hidden-placement problem on S6. This is repair oscillation, not provider failure.
+- Generic M5 fix adds deterministic `canonicalizeHiddenRequiredPhotoIntent` before must_show normalization in all seven M5 validators/canonicalizers. Hidden placement of an independent required subject is rewritten to a visible owner-with-subject photo contract; hidden secondary components are auto-rewritten only for a conservative visible-surface component set (`blade`, `lever`, `handle`, `dial`, `hinge`, etc.). Truly concealed components such as spring-loaded pins remain fail-closed under the existing hidden-internal guard.
+- Existing explicit open/cutaway/exposed/transparent/disassembled intents are preserved. Ordinary spatial interiors are unchanged. M8/Gemini gates are unchanged.
+- Exact 11722 regression added. Targeted suite 86/86 PASS; full JS suite 685/685 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 56525462-50ea-4cf0-9b53-fcf2fcbb2f47.
+
 ## 2026-09-30 — post-8324b82 pencil-sharpener smoke launched once
 
 - Smoke 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 (jak działa temperówka do ołówków, pl30/gemini) was launched exactly once.
