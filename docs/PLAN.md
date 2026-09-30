@@ -1,3 +1,12 @@
+## 2026-09-30 — deploy M5 11718 dependent-detail variant fix
+
+1. Treat c7a3d558-54fd-483e-ac2d-217e12b83f4a as immutable visuals_failed; never rerun it.
+2. Root cause is M5 dependentSecondaryAnchors exact-token matching: `paper guide` failed to match `paper alignment guides`, so S4-A kept an unsourceable hard micro-detail.
+3. Deploy only the regression-backed semantic variant match: simple plural normalization plus at most one whitelisted neutral detail modifier. Keep unrelated inserted nouns non-matching and keep M8/Gemini gates unchanged.
+4. Verification before deploy: targeted 50/50 PASS; full JS 643/643 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only after machine-QA PASS.
+
 ## 2026-09-30 — trace launched post-7d54d3e hole-punch smoke
 
 1. Smoke c7a3d558-54fd-483e-ac2d-217e12b83f4a was launched exactly once; never launch it again.

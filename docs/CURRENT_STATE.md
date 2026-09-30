@@ -1,3 +1,15 @@
+## 2026-09-30 — M5 11718 dependent-detail variant fix ready
+
+- Immutable smoke c7a3d558-54fd-483e-ac2d-217e12b83f4a (jak działa dziurkacz biurowy, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11708 PASS, M5 11709 PASS, M6 11716 PASS, M7 11717 PASS; M8 11718 failed at S4-A.
+- Exact S4-A contract: visual_intent `A close-up of paper alignment guides on a desktop hole punch.`, must_show `[desktop hole punch, paper guide]`.
+- Full S4 pool had no candidate whose metadata contained both hole-punch and guide/alignment evidence. Gemini correctly rejected its three candidates because the paper guide was not visible.
+- Existing M5 dependency logic was supposed to collapse dependent detail phrases of the form `<detail> on/of/inside/within <owner>`, but matched secondary anchors only as an exact contiguous token sequence. Therefore `paper guide` did not match `paper alignment guides`, so the dependent detail stayed a hard must_show.
+- Generic fix keeps the same dependency rule but allows a secondary phrase to match with simple plural normalization and at most one whitelisted neutral detail modifier (`alignment`, `adjustable`, `positioning`, etc.). Unrelated inserted nouns remain non-matches.
+- The same helper change is applied to all seven M5 validators/canonicalizers that implement dependentSecondaryAnchors. M8/Gemini gates are unchanged.
+- Exact 11718 regression added. Targeted suite 50/50 PASS; full JS suite 643/643 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after c7a3d558-54fd-483e-ac2d-217e12b83f4a.
+
 ## 2026-09-30 — post-7d54d3e hole-punch smoke launched once
 
 - Smoke c7a3d558-54fd-483e-ac2d-217e12b83f4a (jak działa dziurkacz biurowy, pl30/gemini) was launched exactly once.
