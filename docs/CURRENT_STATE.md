@@ -1,3 +1,9 @@
+## 2026-09-30 — post-21c8662 stapler smoke launched once
+
+- Acceptance smoke 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 (jak działa zszywacz biurowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
 ## 2026-09-30 — fresh post-21c8662 Gemini smoke persisted before launch
 
 - Created exactly one fresh acceptance smoke: 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 (jak działa zszywacz biurowy, pl30/gemini).
