@@ -1,3 +1,9 @@
+## 2026-09-30 — post-4c8cb19 adjustable-wrench smoke launched once
+
+- Acceptance smoke b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
 ## 2026-09-30 — fresh post-4c8cb19 Gemini smoke persisted before launch
 
 - Created exactly one fresh acceptance smoke: b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini).

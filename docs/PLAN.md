@@ -1,3 +1,10 @@
+## 2026-09-30 — trace launched post-4c8cb19 adjustable-wrench smoke
+
+1. Smoke b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini) was launched exactly once; never launch it again.
+2. Trace M4→M9 to terminal.
+3. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+4. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-30 — launch persisted post-4c8cb19 Gemini acceptance smoke
 
 1. Smoke b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini) exists with DB status=created and has not been launched.
