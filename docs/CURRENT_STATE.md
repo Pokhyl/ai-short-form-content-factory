@@ -1,3 +1,10 @@
+## 2026-09-30 — fresh post-21c8662 Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 (jak działa zszywacz biurowy, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 exactly once and trace M4→M9.
+- Immutable previous smoke 40a3ed0d-7c70-41ad-a4bb-187fac9953cf must never be rerun.
+
 ## 2026-09-30 — M5 11682 directional compliance fix deployed
 
 - Commit 21c8662 is pushed to main and deployed only to VideoM5Storyboard001.

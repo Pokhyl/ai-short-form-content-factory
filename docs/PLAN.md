@@ -1,3 +1,11 @@
+## 2026-09-30 — launch persisted post-21c8662 Gemini acceptance smoke
+
+1. Smoke 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 (jak działa zszywacz biurowy, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit and push this checkpoint before launch; verify the exact ID exists in both HEAD and origin/main.
+3. Launch only 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal. If it fails, preserve exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+5. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-30 — validate deployed M5 11682 directional compliance fix
 
 1. Commit 21c8662 is deployed only to VideoM5Storyboard001 as v205 / 1cc8c6b8-bcc1-4ba3-8c7b-ef1e455ed36e.
