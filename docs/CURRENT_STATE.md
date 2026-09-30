@@ -1,3 +1,9 @@
+## 2026-09-30 — post-8574aff clothespin smoke launched once
+
+- Acceptance smoke 40a3ed0d-7c70-41ad-a4bb-187fac9953cf (jak działa klamerka do bielizny, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+
 ## 2026-09-30 — fresh post-8574aff Gemini smoke persisted before launch
 
 - Created exactly one fresh acceptance smoke: 40a3ed0d-7c70-41ad-a4bb-187fac9953cf (jak działa klamerka do bielizny, pl30/gemini).

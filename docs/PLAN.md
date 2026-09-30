@@ -1,3 +1,10 @@
+## 2026-09-30 — trace launched post-8574aff clothespin smoke
+
+1. Smoke 40a3ed0d-7c70-41ad-a4bb-187fac9953cf (jak działa klamerka do bielizny, pl30/gemini) was launched exactly once; never launch it again.
+2. Trace M4→M9 to terminal.
+3. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+4. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-30 — launch persisted post-8574aff Gemini acceptance smoke
 
 1. Smoke 40a3ed0d-7c70-41ad-a4bb-187fac9953cf (jak działa klamerka do bielizny, pl30/gemini) exists with DB status=created and has not been launched.
