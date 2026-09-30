@@ -1,3 +1,14 @@
+## 2026-09-30 — M5 11718 dependent-detail variant fix deployed
+
+- Commit 8324b82 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v207 / cec0903d-5109-4059-8fd9-4aa0c32b27b4, active=true and activeVersionId=versionId.
+- Import executed once; DB confirmed v207 source equality before publish. The stale import wrapper was terminated only after DB side effect confirmation.
+- Publish executed once; DB side effect confirmed before terminating only the stale publish wrapper.
+- ai-short-form-n8n restarted exactly once. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8/Gemini gates are unchanged. Immutable smoke c7a3d558-54fd-483e-ac2d-217e12b83f4a must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
 ## 2026-09-30 — M5 11718 dependent-detail variant fix ready
 
 - Immutable smoke c7a3d558-54fd-483e-ac2d-217e12b83f4a (jak działa dziurkacz biurowy, pl30/gemini) is terminal visuals_failed; never rerun it.

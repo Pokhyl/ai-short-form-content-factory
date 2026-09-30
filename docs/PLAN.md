@@ -1,3 +1,12 @@
+## 2026-09-30 — validate deployed M5 11718 dependent-detail variant fix
+
+1. Commit 8324b82 is deployed only to VideoM5Storyboard001 as v207 / cec0903d-5109-4059-8fd9-4aa0c32b27b4.
+2. Treat c7a3d558-54fd-483e-ac2d-217e12b83f4a as immutable visuals_failed; never rerun it.
+3. Production verification passed: activeVersionId=versionId, publisher health 200, current source and active history equal Git.
+4. Keep M8/Gemini gates unchanged.
+5. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch only that ID once.
+6. Trace M4→M9. If it fails, collect exact evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-30 — deploy M5 11718 dependent-detail variant fix
 
 1. Treat c7a3d558-54fd-483e-ac2d-217e12b83f4a as immutable visuals_failed; never rerun it.
