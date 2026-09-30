@@ -1,3 +1,12 @@
+## 2026-09-30 — deploy M5 11704 incidental repeated-owner fix
+
+1. Treat 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 as immutable visuals_failed; never rerun it.
+2. Exact terminal blocker: M8 11704 / S3-A required both "metal wire staple" and "desktop stapler" in one still. Vision proved candidates split those two objects, so M8 correctly failed.
+3. Fix M5 only: for near/beside/next to, collapse the secondary from hard must_show only when it is a repeated primary elsewhere in the same storyboard. Do not weaken M8 metadata/Vision gates and do not collapse ordinary unrelated two-subject scenes.
+4. Verification before deploy: related visual suite 68/68 PASS; full JS 622/622 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only after machine-QA PASS.
+
 ## 2026-09-30 — trace launched post-21c8662 stapler smoke
 
 1. Smoke 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 (jak działa zszywacz biurowy, pl30/gemini) was launched exactly once; never launch it again.

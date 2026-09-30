@@ -1,3 +1,14 @@
+## 2026-09-30 — M5 11704 incidental repeated-owner visual contract fix ready
+
+- Immutable smoke 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 (jak działa zszywacz biurowy, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11693 PASS, M5 11694 PASS, M6 11702 PASS, M7 11703 PASS. M8 11704 failed at S3-A: no Gemini-approved unique visual candidate.
+- Exact S3-A contract was visual_intent="A metal wire staple placed near a desktop stapler", must_show=["metal wire staple","desktop stapler"], must_not_show=["paper clips"].
+- Gemini candidate 1 showed the desktop stapler but no metal wire staple; candidate 2 showed metal wire staples but no desktop stapler; candidate 3 showed the desktop stapler but no metal wire staple. Gemini correctly rejected all three. M8 gates and Gemini evaluation are correct and remain unchanged.
+- Generic root cause is M5 over-constraining incidental composition: a repeated storyboard owner used only as nearby retrieval context became a second hard must_show subject in the same still.
+- Generic fix extends the existing dependent-secondary sanitizer only for explicit proximity relations near/beside/next to and only when the secondary anchor is independently established as a repeated primary elsewhere in the same storyboard. The repeated owner remains useful in provider queries but is removed from hard must_show; visual_intent is canonicalized to the primary visible subject. Ordinary two-object proximity scenes without repeated-owner evidence remain unchanged; generic "with" remains independent.
+- Exact 11704 regression added across Validate Storyboard, Validate Repaired Storyboard, Validate Repaired Storyboard 2 and Canonicalize Final Storyboard. Related visual suite 68/68 PASS; full JS suite 622/622 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 7037f7ff-b658-48ba-9bc5-bc4ee6f98737.
+
 ## 2026-09-30 — post-21c8662 stapler smoke launched once
 
 - Acceptance smoke 7037f7ff-b658-48ba-9bc5-bc4ee6f98737 (jak działa zszywacz biurowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.

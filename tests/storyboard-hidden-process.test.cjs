@@ -207,7 +207,7 @@ test('30-second word plan reserves six words for the terminal scene without addi
 
 test('final canonicalizer reanchors queries to the normalized primary subject',()=>{
   const src=nodeCode('Canonicalize Final Storyboard');
-  assert.match(src,/const mustShow = normalizeMustShowAnchors\(rawMustShow, visualIntent, shotId\)/);
+  assert.match(src,/const mustShow = normalizeMustShowAnchors\(rawMustShow, visualIntent, shotId, repeatedPrimaryAnchors\)/);
   assert.match(src,/return primary;/);
   assert.match(src,/shot\.queries_en = queries;/);
 });
