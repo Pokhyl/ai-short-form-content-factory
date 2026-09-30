@@ -1,3 +1,12 @@
+## 2026-09-30 — deploy M5 11676 adjacent phrase dedupe fix
+
+1. Treat b9c20e2a-3723-42d5-ba7e-967efde94364 as immutable alignment_failed; never rerun it.
+2. Exact root cause is M5 language-repair output, not M7: S9 became "złącznego podczas obrotu podczas obrotu narzędzia.", while raw Whisper for the exact final voiceover contains only one "podczas obrotu".
+3. Deploy only the regression-backed language-repair adjacent multiword dedupe. Keep M7 lexical coverage threshold 0.85 unchanged; keep timing, M8 and M9 gates unchanged.
+4. Verification before deploy: targeted 27/27 PASS; full JS 603/603 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only after machine-QA PASS.
+
 ## 2026-09-30 — trace launched post-4c8cb19 adjustable-wrench smoke
 
 1. Smoke b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini) was launched exactly once; never launch it again.

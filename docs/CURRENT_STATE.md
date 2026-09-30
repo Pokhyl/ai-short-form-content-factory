@@ -1,3 +1,14 @@
+## 2026-09-30 — M5 11676 adjacent phrase dedupe fix ready
+
+- Immutable smoke b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini) is terminal alignment_failed; never rerun it.
+- M4 11662 PASS, M5 11663 PASS, M6 11675 PASS; M7 11676 failed with scene S9 lexical coverage 0.7045 (<0.85).
+- Exact final S9 narration in factory DB: "złącznego podczas obrotu podczas obrotu narzędzia." Raw Whisper for the exact final voiceover contains only one "podczas obrotu": "... elementu złącznego podczas obrotu narzędzia."
+- Execution 11663 trace proves the duplicate first appeared at Validate Narration Language Repair Retry (executionIndex 17), before all timing probes. Normalize Timing Probe, both timing repairs, final word-count retry and downstream stages only preserved it.
+- M7 threshold and matcher are correct for this failure and remain unchanged.
+- Generic M5 fix adds deterministic adjacent multiword phrase dedupe only in Validate Narration Language Repair, Validate Narration Language Repair Retry, and Validate Narration Language Repair Second Pass, before timing probes. It removes only exact immediately repeated phrases of 2-5 words with normalized phrase length >=10; single-word repetition and non-adjacent repetition are preserved.
+- Exact 11676 regression added. Targeted related suite 27/27 PASS; full JS suite 603/603 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after b9c20e2a-3723-42d5-ba7e-967efde94364.
+
 ## 2026-09-30 — post-4c8cb19 adjustable-wrench smoke launched once
 
 - Acceptance smoke b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini) was launched exactly once through production /webhook/factory/run.
