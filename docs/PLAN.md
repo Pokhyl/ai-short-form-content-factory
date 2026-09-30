@@ -1,3 +1,12 @@
+## 2026-09-30 — validate deployed M5 11722 hidden-photo oscillation fix
+
+1. Commit c8b59c3 is deployed only to VideoM5Storyboard001 as v208 / bfe68b1c-130d-4429-8733-102d027b010e.
+2. Treat 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 as immutable script_failed; never rerun it.
+3. Production verification passed: activeVersionId=versionId, publisher health 200, current source and active history equal Git.
+4. Preserve the hidden-internal fail-closed guard for truly concealed components and keep M8/Gemini gates unchanged.
+5. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch only that ID once.
+6. Trace M4→M9. If it fails, collect exact evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-30 — deploy M5 11722 hidden-photo oscillation fix
 
 1. Treat 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 as immutable script_failed; never rerun it.

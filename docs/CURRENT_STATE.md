@@ -1,3 +1,15 @@
+## 2026-09-30 — M5 11722 hidden-photo oscillation fix deployed
+
+- Commit c8b59c3 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v208 / bfe68b1c-130d-4429-8733-102d027b010e, active=true and activeVersionId=versionId.
+- Import executed once; DB confirmed v208 source equality before publish. The stale import wrapper was terminated only after DB side effect confirmation.
+- Publish executed once; DB side effect was confirmed before terminating only the stale publish wrapper.
+- ai-short-form-n8n restarted exactly once. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Existing hidden-internal fail-closed guard remains active for truly concealed components; M8/Gemini gates are unchanged.
+- Immutable smoke 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
 ## 2026-09-30 — M5 11722 hidden-photo oscillation fix ready
 
 - Immutable smoke 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 (jak działa temperówka do ołówków, pl30/gemini) is terminal script_failed; never rerun it.
