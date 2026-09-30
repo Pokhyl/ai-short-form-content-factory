@@ -1,3 +1,12 @@
+## 2026-09-30 — validate deployed M5 11676 adjacent phrase dedupe
+
+1. Commit 8574aff is deployed only to VideoM5Storyboard001 as v204 / 3dcc3c95-fba7-4ad4-8951-0b517bc4d8d1.
+2. Treat b9c20e2a-3723-42d5-ba7e-967efde94364 as immutable alignment_failed; never rerun it.
+3. Production verification passed: zero unfinished executions before import, activeVersionId=versionId, publisher health 200 after one restart, current source and active history equal Git.
+4. Keep M7 lexical threshold 0.85 and all timing/M8/M9 gates unchanged.
+5. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch only that ID once.
+6. Trace M4→M9. If it fails, collect exact evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-30 — deploy M5 11676 adjacent phrase dedupe fix
 
 1. Treat b9c20e2a-3723-42d5-ba7e-967efde94364 as immutable alignment_failed; never rerun it.

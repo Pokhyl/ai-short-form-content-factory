@@ -1,3 +1,15 @@
+## 2026-09-30 — M5 11676 adjacent phrase dedupe deployed
+
+- Commit 8574aff72867 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v204 / 3dcc3c95-fba7-4ad4-8951-0b517bc4d8d1, active=true and activeVersionId=versionId.
+- Zero unfinished executions before import. Import executed once; DB confirmed v204 source equality before publish. Two stale import wrappers were terminated only after DB side effect confirmation.
+- Publish executed once; DB side effect was confirmed before terminating only the stale publish wrapper.
+- ai-short-form-n8n restarted exactly once. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M7 lexical coverage threshold remains 0.85; timing, M8 and M9 gates remain unchanged.
+- Immutable smoke b9c20e2a-3723-42d5-ba7e-967efde94364 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit exact final media only after machine-QA PASS.
+
 ## 2026-09-30 — M5 11676 adjacent phrase dedupe fix ready
 
 - Immutable smoke b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini) is terminal alignment_failed; never rerun it.
