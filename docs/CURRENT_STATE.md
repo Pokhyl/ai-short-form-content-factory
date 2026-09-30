@@ -1,3 +1,9 @@
+## 2026-09-30 — fresh post-7d54d3e Gemini smoke persisted before launch
+
+- Acceptance smoke: c7a3d558-54fd-483e-ac2d-217e12b83f4a (jak działa dziurkacz biurowy, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+
 ## 2026-09-30 — M5 11704 fix deployed
 
 - Commit 7d54d3e is deployed as M5 v206 / 5375ef85-a91e-45a1-b3fd-ed1c0096f49d; active=true and activeVersionId=versionId.

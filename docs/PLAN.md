@@ -1,3 +1,10 @@
+## 2026-09-30 — launch persisted post-7d54d3e Gemini smoke
+
+1. Smoke c7a3d558-54fd-483e-ac2d-217e12b83f4a (jak działa dziurkacz biurowy, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit/push this checkpoint and verify the exact ID in HEAD and origin/main.
+3. Launch only this ID exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9; on failure collect exact evidence and fix only the generic blocker.
+
 ## 2026-09-30 — validate deployed M5 11704 fix
 
 1. Commit 7d54d3e is deployed as M5 v206 / 5375ef85-a91e-45a1-b3fd-ed1c0096f49d.
