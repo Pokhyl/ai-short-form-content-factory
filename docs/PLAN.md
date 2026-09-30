@@ -1,3 +1,12 @@
+## 2026-09-30 — deploy M5 11682 directional compliance fix
+
+1. Treat 40a3ed0d-7c70-41ad-a4bb-187fac9953cf as immutable script_failed; never rerun it.
+2. Root cause: after a confirmed too-short measured correction, Validate Final Measured Word Count Retry accepted a bounded nearest hybrid that was still below targetWords (57 < 58), then the final real TTS remained short at 27024 ms.
+3. Preserve the existing nearest-hybrid tolerance and all timing gates. Route only a directional wrong-side nearest hybrid into the already-existing single compliance retry using M5_DIRECTIONAL_WORD_MISS.
+4. Verification before deploy: targeted 27/27 PASS; full JS 606/606 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only after machine-QA PASS.
+
 ## 2026-09-30 — trace launched post-8574aff clothespin smoke
 
 1. Smoke 40a3ed0d-7c70-41ad-a4bb-187fac9953cf (jak działa klamerka do bielizny, pl30/gemini) was launched exactly once; never launch it again.

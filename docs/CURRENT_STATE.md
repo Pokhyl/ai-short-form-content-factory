@@ -1,3 +1,14 @@
+## 2026-09-30 — M5 11682 directional compliance fix ready
+
+- Immutable smoke 40a3ed0d-7c70-41ad-a4bb-187fac9953cf (jak działa klamerka do bielizny, pl30/gemini) is terminal script_failed; never rerun it.
+- M4 11681 PASS. M5 11682 failed with measured timing 27024 ms for target 30000 ms, tolerance 1550 ms.
+- Timing trace: initial 24576 ms / 54 words; repair 27288 ms / 55; fallback 24048 ms / 54; later measured correction targeted 58 words; final measured word-count retry produced 57 words; Probe 5/stability finished at 27504/27264/27024 ms, still too short.
+- Existing validator intentionally permits a bounded nearest semantic hybrid within max(2, 8%) because word count is only a duration heuristic. For this exact run, correction direction was LONGER but the accepted nearest hybrid remained below the target word count (57 < 58), so it spent the final TTS probe moving in the wrong direction.
+- Generic fix does not change the ±8% nearest-hybrid allowance. Build Final Measured Correction now carries its measured duration forward; Validate Final Measured Word Count Retry emits M5_DIRECTIONAL_WORD_MISS only when a nearest hybrid remains on the wrong side of targetWords relative to a confirmed out-of-tolerance measured correction; the existing one-shot compliance retry handles that marker.
+- No new retry loop was added. Timing gates and M8/M9 gates remain unchanged.
+- Exact 11682 regression added. Targeted compliance/timing suite 27/27 PASS; full JS suite 606/606 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 40a3ed0d-7c70-41ad-a4bb-187fac9953cf.
+
 ## 2026-09-30 — post-8574aff clothespin smoke launched once
 
 - Acceptance smoke 40a3ed0d-7c70-41ad-a4bb-187fac9953cf (jak działa klamerka do bielizny, pl30/gemini) was launched exactly once through production /webhook/factory/run.
