@@ -1,3 +1,11 @@
+## 2026-09-30 — launch persisted post-8574aff Gemini acceptance smoke
+
+1. Smoke 40a3ed0d-7c70-41ad-a4bb-187fac9953cf (jak działa klamerka do bielizny, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit and push this checkpoint before launch; verify the exact ID exists in both HEAD and origin/main.
+3. Launch only 40a3ed0d-7c70-41ad-a4bb-187fac9953cf exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal. If it fails, preserve exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+5. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-30 — validate deployed M5 11676 adjacent phrase dedupe
 
 1. Commit 8574aff is deployed only to VideoM5Storyboard001 as v204 / 3dcc3c95-fba7-4ad4-8951-0b517bc4d8d1.
