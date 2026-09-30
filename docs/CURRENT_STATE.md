@@ -1,3 +1,10 @@
+## 2026-09-30 — fresh post-4c8cb19 Gemini smoke persisted before launch
+
+- Created exactly one fresh acceptance smoke: b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini).
+- Factory DB confirms status=created and visual_validation_mode=gemini. It has not been launched yet at this checkpoint.
+- After this checkpoint is committed and pushed, launch only b9c20e2a-3723-42d5-ba7e-967efde94364 exactly once and trace M4→M9.
+- Immutable previous smoke 38bb0e6f-752c-4418-ab79-027d9f0e5987 must never be rerun. Retired jobs remain unlaunched.
+
 ## 2026-09-30 — M5 11659 internal-detail owner fix deployed
 
 - Commit 4c8cb199ecd0 is pushed to main and deployed only to VideoM5Storyboard001.

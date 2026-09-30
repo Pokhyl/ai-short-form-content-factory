@@ -1,3 +1,11 @@
+## 2026-09-30 — launch persisted post-4c8cb19 Gemini acceptance smoke
+
+1. Smoke b9c20e2a-3723-42d5-ba7e-967efde94364 (jak działa klucz nastawny, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit and push this checkpoint before launch; verify the exact ID exists in both HEAD and origin/main.
+3. Launch only b9c20e2a-3723-42d5-ba7e-967efde94364 exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal. If it fails, preserve exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+5. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-30 — validate deployed M5 11659 internal-detail owner fix
 
 1. Commit 4c8cb19 is deployed only to VideoM5Storyboard001 as v203 / d1957e31-e419-4c02-ac26-2dfeae4f0449.
