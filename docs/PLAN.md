@@ -1,3 +1,9 @@
+## 2026-09-30 — trace launched post-8324b82 pencil-sharpener smoke
+
+1. Smoke 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 was launched exactly once; never launch it again.
+2. Trace this exact job M4→M9 to terminal.
+3. On failure, collect exact evidence and fix only the generic blocker; if M9 passes, audit final MP4 and selected visuals.
+
 ## 2026-09-30 — launch persisted post-8324b82 Gemini acceptance smoke
 
 1. Smoke 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 (jak działa temperówka do ołówków, pl30/gemini) exists with DB status=created and has not been launched.

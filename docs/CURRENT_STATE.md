@@ -1,3 +1,9 @@
+## 2026-09-30 — post-8324b82 pencil-sharpener smoke launched once
+
+- Smoke 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 (jak działa temperówka do ołówków, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9.
+
 ## 2026-09-30 — fresh post-8324b82 Gemini smoke persisted before launch
 
 - Acceptance smoke: 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 (jak działa temperówka do ołówków, pl30/gemini).
