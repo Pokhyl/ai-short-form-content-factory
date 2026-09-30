@@ -1,3 +1,12 @@
+## 2026-09-30 — deploy M5 11659 internal-detail owner fix
+
+1. Treat 38bb0e6f-752c-4418-ab79-027d9f0e5987 as immutable visuals_failed; never rerun it.
+2. Exact blocker is M8 11659 S4-A: internal detail "liquid column" plus "glass capillary tube" produced 70 candidates / 0 metadata-pass and omitted the concrete owner "thermometer" from the fallback subject; the photo intent also required transient "expanding".
+3. Deploy only the regression-backed M5 fix: query-grounded internal-detail owner promotion plus expand/expansion transient-photo canonicalization. Do not change M8/M9 gates.
+4. Verification before deploy: targeted regressions PASS; full JS 594/594 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only after machine-QA PASS.
+
 ## 2026-09-29 — one-smoke collision resolved
 
 1. Continue only authoritative smoke `38bb0e6f-752c-4418-ab79-027d9f0e5987`; it has already been launched once and must never be relaunched.

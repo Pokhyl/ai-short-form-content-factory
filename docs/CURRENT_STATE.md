@@ -1,3 +1,14 @@
+## 2026-09-30 — M5 11659 internal-detail owner fix ready
+
+- Immutable smoke 38bb0e6f-752c-4418-ab79-027d9f0e5987 (jak działa termometr cieczowy, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11652 PASS, M5 11653 PASS, M6 11657 PASS, M7 11658 PASS; M8 11659 failed only at S4-A.
+- Exact S4-A contract: visual_intent="A liquid column expanding inside a thermometer capillary tube.", must_show=["liquid column","glass capillary tube"], queries=["liquid column expanding inside capillary","expanding liquid in thermometer","glass capillary tube"].
+- Candidate pool: 70 total / 0 metadata-pass. Search drifted into chromatography/test tubes because an internal detail became the hard primary and the concrete owner "thermometer" was not the fallback subject.
+- Root cause has two M5 parts: (1) dependent internal detail was not promoted to its concrete owner, and (2) transient photo action "expanding/expansion" was not canonicalized to a static photo contract.
+- Generic M5-only fix: when a two-anchor photo intent places a detail inside/within a concrete owner+container and that owner is also grounded by the search queries, promote the owner to the sole hard must_show; ordinary laboratory/test-tube cases remain unchanged. Extend the existing transient-action class with expand/expanding/expansion.
+- Exact 11659 regression added across Validate Storyboard / both repair validators / Canonicalize Final Storyboard. Targeted suites PASS; full JS suite 594/594 PASS; workflow JSON valid; git diff --check clean.
+- M8 gates are unchanged. Deployment pending. No new smoke has been created after 38bb0e6f-752c-4418-ab79-027d9f0e5987.
+
 ## 2026-09-29 — retire parallel mechanical-pencil job
 
 - Parallel job `30dfb366-7fe0-4720-9456-541131bd810a` (`jak działa ołówek automatyczny`, pl30/gemini) remains `created` and was never launched.
