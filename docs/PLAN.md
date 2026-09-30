@@ -1,3 +1,10 @@
+## 2026-09-30 — launch persisted post-8324b82 Gemini acceptance smoke
+
+1. Smoke 56525462-50ea-4cf0-9b53-fcf2fcbb2f47 (jak działa temperówka do ołówków, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit/push this checkpoint and verify the exact ID in HEAD and origin/main.
+3. Launch only this ID exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9. On failure, collect exact evidence and fix only the generic blocker; if M9 passes, audit final MP4 and selected visuals.
+
 ## 2026-09-30 — validate deployed M5 11718 dependent-detail variant fix
 
 1. Commit 8324b82 is deployed only to VideoM5Storyboard001 as v207 / cec0903d-5109-4059-8fd9-4aa0c32b27b4.
