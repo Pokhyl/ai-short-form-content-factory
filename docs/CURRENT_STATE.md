@@ -1,3 +1,14 @@
+## 2026-09-30 — M5 11659 internal-detail owner fix deployed
+
+- Commit 4c8cb199ecd0 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v203 / d1957e31-e419-4c02-ac26-2dfeae4f0449, active=true and activeVersionId=versionId.
+- Zero unfinished executions before import. Workflow JSON was copied into the running production n8n container and imported exactly once using its production DB/env; DB confirmed v203 source equality before publish.
+- Publish executed exactly once. DB side effect was confirmed before terminating only the stale host-side publish wrapper.
+- ai-short-form-n8n restarted exactly once after publish. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8 gates remain unchanged. Immutable smoke 38bb0e6f-752c-4418-ab79-027d9f0e5987 must never be rerun.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only after machine QA PASS.
+
 ## 2026-09-30 — M5 11659 internal-detail owner fix ready
 
 - Immutable smoke 38bb0e6f-752c-4418-ab79-027d9f0e5987 (jak działa termometr cieczowy, pl30/gemini) is terminal visuals_failed; never rerun it.

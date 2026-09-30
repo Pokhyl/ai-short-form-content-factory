@@ -1,3 +1,11 @@
+## 2026-09-30 — validate deployed M5 11659 internal-detail owner fix
+
+1. Commit 4c8cb19 is deployed only to VideoM5Storyboard001 as v203 / d1957e31-e419-4c02-ac26-2dfeae4f0449.
+2. Treat 38bb0e6f-752c-4418-ab79-027d9f0e5987 as immutable visuals_failed; never rerun it.
+3. Production verification passed: zero unfinished executions before import, publisher health 200 after one restart, activeVersionId=versionId, current source and active history equal Git.
+4. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch only that ID once.
+5. Trace M4→M9. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-09-30 — deploy M5 11659 internal-detail owner fix
 
 1. Treat 38bb0e6f-752c-4418-ab79-027d9f0e5987 as immutable visuals_failed; never rerun it.
