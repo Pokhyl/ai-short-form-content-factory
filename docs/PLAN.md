@@ -1,3 +1,10 @@
+## 2026-09-30 — launch persisted post-c8b59c3 Gemini acceptance smoke
+
+1. Smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 (jak działa otwieracz do butelek, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit/push this checkpoint and verify the exact ID in HEAD and origin/main.
+3. Launch only this ID exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9. On failure, collect exact evidence and fix only the generic blocker; if M9 passes, audit final MP4 and selected visuals.
+
 ## 2026-09-30 — validate deployed M5 11722 hidden-photo oscillation fix
 
 1. Commit c8b59c3 is deployed only to VideoM5Storyboard001 as v208 / bfe68b1c-130d-4429-8733-102d027b010e.

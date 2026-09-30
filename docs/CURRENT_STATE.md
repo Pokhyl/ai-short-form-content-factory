@@ -1,3 +1,9 @@
+## 2026-09-30 — fresh post-c8b59c3 Gemini smoke persisted before launch
+
+- Acceptance smoke: 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 (jak działa otwieracz do butelek, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+
 ## 2026-09-30 — M5 11722 hidden-photo oscillation fix deployed
 
 - Commit c8b59c3 is pushed to main and deployed only to VideoM5Storyboard001.
