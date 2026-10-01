@@ -1,3 +1,11 @@
+## 2026-10-01 — fresh post-v212 Gemini smoke persisted before launch
+
+- Acceptance smoke: aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- n8n is stable: running=true, restart count 0, restart policy unless-stopped, publisher /healthz=200.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke 2714c5e6-603d-4fe6-8c41-79e065669105 must never be rerun.
+
 ## 2026-10-01 — M5 11778 transient engagement fix deployed
 
 - Commit e50b2ed is pushed to main and deployed only to VideoM5Storyboard001.

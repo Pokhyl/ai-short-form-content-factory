@@ -1,3 +1,11 @@
+## 2026-10-01 — launch persisted post-v212 Gemini acceptance smoke
+
+1. Smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit/push this checkpoint and verify the exact ID in HEAD and origin/main.
+3. Launch only this ID exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+5. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-10-01 — validate deployed M5 v212 transient engagement fix
 
 1. Treat 2714c5e6-603d-4fe6-8c41-79e065669105 as immutable visuals_failed; never rerun it.
