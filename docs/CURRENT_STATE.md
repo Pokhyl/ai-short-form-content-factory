@@ -1,3 +1,9 @@
+## 2026-10-01 — post-df2f32c screwdriver smoke launched once
+
+- Smoke a85f4825-88a2-4992-855f-a32c05704d81 (jak działa śrubokręt krzyżakowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
 ## 2026-10-01 — fresh post-df2f32c Gemini smoke persisted before launch
 
 - Acceptance smoke: a85f4825-88a2-4992-855f-a32c05704d81 (jak działa śrubokręt krzyżakowy, pl30/gemini).
