@@ -217,6 +217,20 @@ test('dependent visible component on the primary is not a separate must_show sub
     ),
     ['gear shifter','control cable']
   );
+  assert.deepEqual(
+    normalizeMustShow(
+      ['screwdriver','cross-shaped tip'],
+      'A screwdriver with a cross-shaped tip resting on a workbench.'
+    ),
+    ['screwdriver']
+  );
+  assert.deepEqual(
+    normalizeMustShow(
+      ['screwdriver','metal screw'],
+      'A screwdriver with a metal screw on a workbench.'
+    ),
+    ['screwdriver','metal screw']
+  );
 });
 
 test('weak dependent primary is promoted to its explicit concrete owner',()=>{

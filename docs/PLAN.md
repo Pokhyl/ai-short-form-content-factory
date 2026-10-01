@@ -1,3 +1,12 @@
+## 2026-10-01 — deploy M5 11760 dependent-component `with` fix
+
+1. Treat a85f4825-88a2-4992-855f-a32c05704d81 as immutable visuals_failed; never rerun it.
+2. Exact blocker is M8 11760 S1-A: `cross-shaped tip` is a dependent component of `screwdriver`, but M5 made both hard must_show subjects because the intent used `screwdriver with a cross-shaped tip`.
+3. Deploy only the regression-backed extension of the existing dependent-secondary normalizer: `with` collapses only explicit component-head secondaries; independent objects remain hard.
+4. Verification before deploy: targeted related suite 73/73 PASS; full JS 699/699 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only after machine-QA PASS.
+
 ## 2026-10-01 — trace launched post-df2f32c screwdriver smoke
 
 1. Smoke a85f4825-88a2-4992-855f-a32c05704d81 was launched exactly once; never launch it again.

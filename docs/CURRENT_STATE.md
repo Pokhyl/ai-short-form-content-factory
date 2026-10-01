@@ -1,3 +1,13 @@
+## 2026-10-01 — M5 11760 dependent-component `with` fix ready
+
+- Immutable smoke a85f4825-88a2-4992-855f-a32c05704d81 (jak działa śrubokręt krzyżakowy, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11750 PASS, M5 11751 PASS, M6 11758 PASS, M7 11759 PASS; M8 11760 failed at S1-A with no Gemini-approved unique candidate.
+- Exact S1 contract was visual_intent="A screwdriver with a cross-shaped tip resting on a workbench.", must_show=["screwdriver","cross-shaped tip"]. Gemini correctly rejected candidates that showed either the screwdriver without a visible tip or the cross-shaped tip/recess without the whole screwdriver.
+- Root cause: cross-shaped tip is a dependent visible component of the screwdriver, but the existing dependent-secondary normalizer recognized component relations such as `sensor tip on thermometer` and did not recognize the equivalent `primary with component-tip` form.
+- Generic M5 fix extends the same existing normalizer in Validate Storyboard, both repaired validators, and Canonicalize Final Storyboard. `with` collapses the secondary only when its head is an explicit component head (tip/blade/handle/lever/knob/dial/wheel/roller/hinge/latch/clamp/guide/stop/scale/marker). Independent objects such as screw or cable remain hard subjects.
+- Exact 11760 regression was added to the existing dependent-visible-component test. Targeted related suite 73/73 PASS; full JS suite 699/699 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. Production M5 remains v210 until this change is committed and deployed.
+
 ## 2026-10-01 — post-df2f32c screwdriver smoke launched once
 
 - Smoke a85f4825-88a2-4992-855f-a32c05704d81 (jak działa śrubokręt krzyżakowy, pl30/gemini) was launched exactly once through production /webhook/factory/run.
