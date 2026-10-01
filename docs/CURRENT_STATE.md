@@ -1,3 +1,10 @@
+## 2026-10-01 — fresh post-fe5f1a3 Gemini smoke persisted before launch
+
+- Acceptance smoke: f5a17700-43ef-43f5-afcd-7d0e7c40daac (jak działa klucz imbusowy, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 must never be rerun.
+
 ## 2026-10-01 — M5 11729 natural-sentence contract fix deployed
 
 - Commit fe5f1a3 is pushed to main and deployed only to VideoM5Storyboard001.

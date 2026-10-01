@@ -1,3 +1,10 @@
+## 2026-10-01 — launch persisted post-fe5f1a3 Gemini smoke
+
+1. Smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac (jak działa klucz imbusowy, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit/push this checkpoint and verify the exact ID in HEAD and origin/main.
+3. Launch only this ID exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9; on failure collect exact evidence and fix only the generic blocker.
+
 ## 2026-10-01 — validate deployed M5 11729 natural-sentence fix
 
 1. Commit fe5f1a3 is deployed only to VideoM5Storyboard001 as v209 / b404ccd8-b63a-4814-add9-f892759c63f1.
