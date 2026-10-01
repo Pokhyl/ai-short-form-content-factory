@@ -1,3 +1,14 @@
+## 2026-10-01 — M5 11729 natural-sentence contract fix ready
+
+- Immutable smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 (jak działa otwieracz do butelek, pl30/gemini) is terminal script_failed; never rerun it.
+- M4 11728 PASS; M5 11729 failed. Initial storyboard had S9 with 5 words, below the 30s final-scene minimum of 6. The joined narration appeared to have 3 terminal sentences only because the third was standalone filler `Koniec.`.
+- Both bounded storyboard repairs fixed S9 length but returned the same two-sentence narration, so both failed `continuous narration has fewer than three natural complete sentences`.
+- Root cause: generation/repair prompt contract was weaker than the deterministic validator. The validator requires at least 3 complete sentences for all 30+ second outputs, while the main prompt stated that minimum explicitly only for Ukrainian 30s; repair scene diagnostics also reported every scene minimum as 2 instead of the real 30s final-scene minimum of 6.
+- Generic M5-only fix aligns all contracts: every 30+ second language must have at least 3 natural complete content sentences; standalone closure fillers (`Koniec.`, `The end.`, `Конец.`, `Кінець.`) do not count and are forbidden; both repair prompts preserve this invariant even when repairing another error; repair diagnostics now use minimum=6 for the final scene of 30s videos.
+- Deterministic validators now count actual terminal content sentences and exclude standalone closure fillers. No timing, M8, or M9 gates were weakened.
+- Exact 11729 regression added. Targeted suite 18/18 PASS; full JS suite 691/691 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. No new smoke has been created after 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3.
+
 ## 2026-09-30 — post-c8b59c3 bottle-opener smoke launched once
 
 - Smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 (jak działa otwieracz do butelek, pl30/gemini) was launched exactly once.

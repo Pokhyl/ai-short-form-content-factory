@@ -1,3 +1,12 @@
+## 2026-10-01 — deploy M5 11729 natural-sentence contract fix
+
+1. Treat 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 as immutable script_failed; never rerun it.
+2. Exact blocker: initial S9 had 5 words and standalone filler `Koniec.`; both repairs fixed scene length but regressed the full narration to only 2 natural complete sentences.
+3. Deploy only the regression-backed M5 contract alignment: at least 3 natural complete content sentences for every 30+ second language; closure fillers do not count; repair diagnostics use final-scene minimum 6 for 30s.
+4. Verification before deploy: targeted 18/18 PASS; full JS 691/691 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit final media only after machine-QA PASS.
+
 ## 2026-09-30 — trace launched post-c8b59c3 bottle-opener smoke
 
 1. Smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 was launched exactly once; never launch it again.
