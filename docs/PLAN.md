@@ -1,3 +1,12 @@
+## 2026-10-01 — validate deployed M5 v212 transient engagement fix
+
+1. Treat 2714c5e6-603d-4fe6-8c41-79e065669105 as immutable visuals_failed; never rerun it.
+2. M5 v212 / c06a6d04-0528-4019-9015-b7998f1a9e14 is active and source/history-equal to Git.
+3. Publisher health is 200; n8n is running with restart count 0 after clean stop/start reload.
+4. Create exactly one fresh independent pl30/gemini smoke and persist its ID in docs/Git before launch.
+5. Launch only that ID once and trace M4→M9.
+6. If it fails, preserve exact evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals.
+
 ## 2026-10-01 — deploy M5 11778 transient engagement fix
 
 1. Treat 2714c5e6-603d-4fe6-8c41-79e065669105 as immutable visuals_failed; never rerun it.

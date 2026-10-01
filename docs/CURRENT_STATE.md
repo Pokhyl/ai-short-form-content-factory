@@ -1,3 +1,13 @@
+## 2026-10-01 — M5 11778 transient engagement fix deployed
+
+- Commit e50b2ed is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v212 / c06a6d04-0528-4019-9015-b7998f1a9e14, active=true and activeVersionId=versionId.
+- Import executed once and completed successfully; publish executed once and completed successfully.
+- Reload used a clean docker stop/start instead of docker restart. Stop exited 0 with no stale containerd task; start completed with restart count 0.
+- Publisher /healthz=200. Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8/Gemini gates are unchanged. Immutable smoke 2714c5e6-603d-4fe6-8c41-79e065669105 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
 ## 2026-10-01 — M5 11778 transient engagement fix ready
 
 - Immutable smoke 2714c5e6-603d-4fe6-8c41-79e065669105 (jak działa klucz płaski, pl30/gemini) is terminal visuals_failed; never rerun it.
