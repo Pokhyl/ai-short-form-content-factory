@@ -1,3 +1,13 @@
+## 2026-10-01 — M5 11747 mid-sentence proximity-context fix ready
+
+- Immutable smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac (jak działa klucz imbusowy, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11735 PASS, M5 11737 PASS, M6 11745 PASS, M7 11746 PASS; M8 11747 failed at S3-A with no Gemini-approved unique candidate.
+- Exact S3 contract was visual_intent="An L-shaped hex key positioned next to a threaded fastener in a workshop", must_show=["hex key","threaded fastener"]. Gemini received only fastener-only candidates and correctly rejected them because hex key was missing.
+- S3 narration is "L. Jego głównym zadaniem jest obsługa" and S4 begins lowercase continuation "śrub posiadających...". The threaded fastener belongs to the continuation after the visual scene cut; M5 incorrectly promoted that future continuation object into a hard S3 must_show through a pure proximity relation.
+- Generic M5 fix extends the existing dependent-secondary/proximity normalizer in Validate Storyboard, both repaired validators, and Canonicalize Final Storyboard: when the current scene ends mid-sentence and the next scene starts as a lowercase continuation, a near/beside/next-to secondary is retrieval context rather than a second hard visual subject. Complete-sentence proximity and next-scene new-sentence cases remain hard; repeated-owner behavior remains unchanged.
+- Exact 11747 regression is integrated into m5-11704-incidental-owner-context.test.cjs. Targeted proximity suite 24/24 PASS; related legacy suites 80/80 PASS; full JS suite 699/699 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. Production M5 remains v209 until this change is committed and deployed.
+
 ## 2026-10-01 — post-fe5f1a3 hex-key smoke launched once
 
 - Smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac (jak działa klucz imbusowy, pl30/gemini) was launched exactly once.

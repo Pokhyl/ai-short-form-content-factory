@@ -1,3 +1,12 @@
+## 2026-10-01 — deploy M5 11747 mid-sentence proximity-context fix
+
+1. Treat f5a17700-43ef-43f5-afcd-7d0e7c40daac as immutable visuals_failed; never rerun it.
+2. Exact blocker is M8 11747 S3-A. The current scene ends mid-sentence and the next scene starts lowercase; M5 incorrectly made the continuation object threaded fastener a hard proximity must_show beside hex key.
+3. Deploy only the regression-backed extension of the existing proximity/dependent-secondary normalizer: mid-sentence + lowercase continuation makes near/beside/next-to secondary retrieval context, while complete-sentence and new-sentence cases remain hard.
+4. Verification before deploy: targeted 24/24 PASS; related legacy suites 80/80 PASS; full JS 699/699 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit exact final media only after machine-QA PASS.
+
 ## 2026-10-01 — trace launched post-fe5f1a3 hex-key smoke
 
 1. Smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac was launched exactly once; never launch it again.
