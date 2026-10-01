@@ -1,3 +1,14 @@
+## 2026-10-01 — M5 11747 continuation-proximity fix deployed
+
+- Commit df2f32c is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v210 / 2c82fd16-e04c-4c3f-95a7-59738c6cc2d3, active=true and activeVersionId=versionId.
+- Import executed once; DB confirmed v210 source equality before publish. Stale import wrappers were removed only after DB side-effect confirmation.
+- Publish executed once; DB side effect was confirmed before removing stale publish wrappers.
+- ai-short-form-n8n restarted exactly once. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8/Gemini gates are unchanged. Immutable smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac must never be rerun.
+- Next: create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, and audit final media only after machine-QA PASS.
+
 ## 2026-10-01 — M5 11747 mid-sentence proximity-context fix ready
 
 - Immutable smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac (jak działa klucz imbusowy, pl30/gemini) is terminal visuals_failed; never rerun it.

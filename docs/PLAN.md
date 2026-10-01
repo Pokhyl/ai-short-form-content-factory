@@ -1,3 +1,12 @@
+## 2026-10-01 — validate deployed M5 11747 continuation-proximity fix
+
+1. Commit df2f32c is deployed only to VideoM5Storyboard001 as v210 / 2c82fd16-e04c-4c3f-95a7-59738c6cc2d3.
+2. Treat f5a17700-43ef-43f5-afcd-7d0e7c40daac as immutable visuals_failed; never rerun it.
+3. Production verification passed: activeVersionId=versionId, publisher health 200, current source and active history equal Git.
+4. M8/Gemini gates remain unchanged.
+5. Create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, then launch only that ID once.
+6. Trace M4→M9. If it fails, collect exact evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-10-01 — deploy M5 11747 mid-sentence proximity-context fix
 
 1. Treat f5a17700-43ef-43f5-afcd-7d0e7c40daac as immutable visuals_failed; never rerun it.
