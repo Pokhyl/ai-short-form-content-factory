@@ -1,3 +1,11 @@
+## 2026-10-01 — fresh post-v211 Gemini smoke persisted before launch
+
+- Acceptance smoke: 2714c5e6-603d-4fe6-8c41-79e065669105 (jak działa klucz płaski, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- n8n is stable: running=true, restart count 0, restart policy unless-stopped, publisher /healthz=200.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke a85f4825-88a2-4992-855f-a32c05704d81 must never be rerun.
+
 ## 2026-10-01 — M5 11760 dependent-component fix deployed and n8n runtime recovered
 
 - Code commit 2b6123b plus docs commit 46b1f73 are pushed to main.

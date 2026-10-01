@@ -1,3 +1,11 @@
+## 2026-10-01 — launch persisted post-v211 Gemini acceptance smoke
+
+1. Smoke 2714c5e6-603d-4fe6-8c41-79e065669105 (jak działa klucz płaski, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit/push this checkpoint and verify the exact ID in HEAD and origin/main.
+3. Launch only this ID exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+5. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-10-01 — validate deployed M5 v211 after runtime recovery
 
 1. Treat a85f4825-88a2-4992-855f-a32c05704d81 as immutable visuals_failed; never rerun it.
