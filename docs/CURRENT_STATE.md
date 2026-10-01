@@ -1,3 +1,10 @@
+## 2026-10-01 — fresh post-df2f32c Gemini smoke persisted before launch
+
+- Acceptance smoke: a85f4825-88a2-4992-855f-a32c05704d81 (jak działa śrubokręt krzyżakowy, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac must never be rerun.
+
 ## 2026-10-01 — M5 11747 continuation-proximity fix deployed
 
 - Commit df2f32c is pushed to main and deployed only to VideoM5Storyboard001.

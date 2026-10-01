@@ -1,3 +1,11 @@
+## 2026-10-01 — launch persisted post-df2f32c Gemini acceptance smoke
+
+1. Smoke a85f4825-88a2-4992-855f-a32c05704d81 (jak działa śrubokręt krzyżakowy, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit/push this checkpoint and verify the exact ID in HEAD and origin/main.
+3. Launch only this ID exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+5. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-10-01 — validate deployed M5 11747 continuation-proximity fix
 
 1. Commit df2f32c is deployed only to VideoM5Storyboard001 as v210 / 2c82fd16-e04c-4c3f-95a7-59738c6cc2d3.
