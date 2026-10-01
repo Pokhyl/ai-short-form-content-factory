@@ -1,3 +1,9 @@
+## 2026-10-01 — trace launched post-fe5f1a3 hex-key smoke
+
+1. Smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac was launched exactly once; never launch it again.
+2. Trace this exact job M4→M9 to terminal.
+3. On failure, collect exact evidence and fix only the generic blocker; if M9 passes, audit final MP4 and selected visuals.
+
 ## 2026-10-01 — launch persisted post-fe5f1a3 Gemini smoke
 
 1. Smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac (jak działa klucz imbusowy, pl30/gemini) exists with DB status=created and has not been launched.

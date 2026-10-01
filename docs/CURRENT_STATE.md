@@ -1,3 +1,9 @@
+## 2026-10-01 — post-fe5f1a3 hex-key smoke launched once
+
+- Smoke f5a17700-43ef-43f5-afcd-7d0e7c40daac (jak działa klucz imbusowy, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9.
+
 ## 2026-10-01 — fresh post-fe5f1a3 Gemini smoke persisted before launch
 
 - Acceptance smoke: f5a17700-43ef-43f5-afcd-7d0e7c40daac (jak działa klucz imbusowy, pl30/gemini).
