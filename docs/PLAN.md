@@ -1,3 +1,12 @@
+## 2026-10-01 — validate deployed M5 11729 natural-sentence fix
+
+1. Commit fe5f1a3 is deployed only to VideoM5Storyboard001 as v209 / b404ccd8-b63a-4814-add9-f892759c63f1.
+2. Treat 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 as immutable script_failed; never rerun it.
+3. Production verification passed: zero unfinished executions before import, activeVersionId=versionId, publisher health 200 after one restart, current source and active history equal Git.
+4. Keep the stricter content-sentence validator and all timing/M8/M9 gates unchanged.
+5. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch only that ID once.
+6. Trace M4→M9. If it fails, collect exact evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-10-01 — deploy M5 11729 natural-sentence contract fix
 
 1. Treat 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 as immutable script_failed; never rerun it.

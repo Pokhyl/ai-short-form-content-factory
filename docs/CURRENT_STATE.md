@@ -1,3 +1,15 @@
+## 2026-10-01 — M5 11729 natural-sentence contract fix deployed
+
+- Commit fe5f1a3 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v209 / b404ccd8-b63a-4814-add9-f892759c63f1, active=true and activeVersionId=versionId.
+- Zero unfinished executions before import. Import executed once; DB confirmed v209 source equality before publish. The stale import wrapper was terminated only after DB side effect confirmation.
+- Publish executed once; DB side effect was confirmed before terminating only the stale publish wrapper.
+- ai-short-form-n8n restarted exactly once. Post-restart publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Sentence-count validator is stricter, not weaker: closure fillers no longer count as content sentences. Timing, M8 and M9 gates are unchanged.
+- Immutable smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
 ## 2026-10-01 — M5 11729 natural-sentence contract fix ready
 
 - Immutable smoke 2aae0b12-11b9-437b-aef6-f6f27dfa9ff3 (jak działa otwieracz do butelek, pl30/gemini) is terminal script_failed; never rerun it.
