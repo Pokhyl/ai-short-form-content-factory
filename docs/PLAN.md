@@ -1,3 +1,12 @@
+## 2026-10-01 — validate deployed M5 v211 after runtime recovery
+
+1. Treat a85f4825-88a2-4992-855f-a32c05704d81 as immutable visuals_failed; never rerun it.
+2. M5 v211 / cbac76d2-1190-40af-b833-37e9f81177c0 is active and source/history-equal to Git.
+3. Publisher health is 200 after stale containerd-task recovery; restart policy is restored to unless-stopped.
+4. Create exactly one fresh independent pl30/gemini smoke and persist its ID in docs/Git before launch.
+5. Launch only that ID once and trace M4→M9.
+6. If it fails, preserve exact evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals.
+
 ## 2026-10-01 — deploy M5 11760 dependent-component `with` fix
 
 1. Treat a85f4825-88a2-4992-855f-a32c05704d81 as immutable visuals_failed; never rerun it.

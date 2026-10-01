@@ -1,3 +1,14 @@
+## 2026-10-01 — M5 11760 dependent-component fix deployed and n8n runtime recovered
+
+- Code commit 2b6123b plus docs commit 46b1f73 are pushed to main.
+- Production M5 is v211 / cbac76d2-1190-40af-b833-37e9f81177c0, active=true and activeVersionId=versionId.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- During deployment, ai-short-form-n8n was already in a Docker/containerd restart-loop unrelated to M5: Docker showed Pid=0,status=restarting,exit=137 while containerd still held the same task RUNNING. cgroup showed oom=0 and oom_kill=0.
+- Runtime recovery: temporary restart policy no, graceful stop of the exact stale task, one manual start, health 200, then restart policy restored to unless-stopped.
+- ai-short-form-n8n is now running with restart count 0 and publisher /healthz=200.
+- Immutable smoke a85f4825-88a2-4992-855f-a32c05704d81 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
 ## 2026-10-01 — M5 11760 dependent-component `with` fix ready
 
 - Immutable smoke a85f4825-88a2-4992-855f-a32c05704d81 (jak działa śrubokręt krzyżakowy, pl30/gemini) is terminal visuals_failed; never rerun it.
