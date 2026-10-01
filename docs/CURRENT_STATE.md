@@ -1,3 +1,9 @@
+## 2026-10-01 — post-v211 wrench smoke launched once
+
+- Smoke 2714c5e6-603d-4fe6-8c41-79e065669105 (jak działa klucz płaski, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
 ## 2026-10-01 — fresh post-v211 Gemini smoke persisted before launch
 
 - Acceptance smoke: 2714c5e6-603d-4fe6-8c41-79e065669105 (jak działa klucz płaski, pl30/gemini).
