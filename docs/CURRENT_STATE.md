@@ -1,3 +1,15 @@
+## 2026-10-01 — post-v212 spirit-level smoke launched once
+
+- Smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
+## 2026-10-01 — post-v212 spirit-level smoke launched once
+
+- Smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
 ## 2026-10-01 — fresh post-v212 Gemini smoke persisted before launch
 
 - Acceptance smoke: aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini).

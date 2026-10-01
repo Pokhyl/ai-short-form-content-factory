@@ -1,3 +1,17 @@
+## 2026-10-01 — trace launched post-v212 spirit-level smoke
+
+1. Smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 was launched exactly once; never launch it again.
+2. Trace this exact job M4→M9 to terminal.
+3. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+4. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
+## 2026-10-01 — trace launched post-v212 spirit-level smoke
+
+1. Smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 was launched exactly once; never launch it again.
+2. Trace this exact job M4→M9 to terminal.
+3. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+4. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-10-01 — launch persisted post-v212 Gemini acceptance smoke
 
 1. Smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini) exists with DB status=created and has not been launched.
