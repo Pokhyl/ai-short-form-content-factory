@@ -1,3 +1,13 @@
+## 2026-10-01 — M5 11778 transient engagement fix ready
+
+- Immutable smoke 2714c5e6-603d-4fe6-8c41-79e065669105 (jak działa klucz płaski, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M4 11763 PASS, M5 11764 PASS, M6 11776 PASS, M7 11777 PASS; M8 11778 failed at S3-A with no Gemini-approved unique visual candidate.
+- Exact S3 contract was visual_intent="An open end wrench engaging a nut in a restricted space.", must_show=["open end wrench","nut"]. Gemini candidate 3 visibly contained both an open-end wrench and hex nuts, but correctly failed intent_match because it showed them lying flat instead of the transient engagement action in restricted space.
+- Root cause: the existing M5 transient-photo canonicalizer already converts joining/opening/inserting/pressing/etc. to a static searchable photo contract, but did not recognize engage/engaging.
+- Generic M5-only fix adds engage/engaging to that existing canonicalizer in Validate Storyboard, both repaired validators, and Canonicalize Final Storyboard. Human-visible actions remain explicit; stable connected relations remain explicit; M8/Gemini gates are unchanged.
+- Exact 11778 regression was added to m5-11601-transient-photo-action.test.cjs. Targeted related suite 76/76 PASS; full JS suite 703/703 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. Production M5 remains v211 until this change is committed and deployed.
+
 ## 2026-10-01 — post-v211 wrench smoke launched once
 
 - Smoke 2714c5e6-603d-4fe6-8c41-79e065669105 (jak działa klucz płaski, pl30/gemini) was launched exactly once through production /webhook/factory/run.

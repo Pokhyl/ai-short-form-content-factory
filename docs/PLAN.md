@@ -1,3 +1,12 @@
+## 2026-10-01 — deploy M5 11778 transient engagement fix
+
+1. Treat 2714c5e6-603d-4fe6-8c41-79e065669105 as immutable visuals_failed; never rerun it.
+2. Exact blocker is M8 11778 S3-A: both required objects were available, but visual_intent required the transient action `engaging a nut in a restricted space`.
+3. Deploy only the regression-backed extension of the existing transient-photo canonicalizer: engage/engaging becomes a static object relation when no visible human actor is required. Keep human actions, stable relations, M8 and M9 gates unchanged.
+4. Verification before deploy: targeted related suite 76/76 PASS; full JS 703/703 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, publisher health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist ID in docs/Git before launch, launch once, trace M4→M9.
+
 ## 2026-10-01 — trace launched post-v211 wrench smoke
 
 1. Smoke 2714c5e6-603d-4fe6-8c41-79e065669105 was launched exactly once; never launch it again.

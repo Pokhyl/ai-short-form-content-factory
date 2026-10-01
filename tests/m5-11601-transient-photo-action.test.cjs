@@ -41,6 +41,17 @@ for(const name of [
     );
   });
 
+  test(name+': 11778 wrench engagement becomes a static searchable photo contract',()=>{
+    const canonicalize=helper(name);
+    assert.equal(
+      canonicalize(
+        ['open end wrench','nut'],
+        'An open end wrench engaging a nut in a restricted space.'
+      ),
+      'A clear photo of open end wrench with nut.'
+    );
+  });
+
   test(name+': visible human action remains explicit',()=>{
     const canonicalize=helper(name);
     const intent='Hands pressing an office stapler onto paper sheets.';
