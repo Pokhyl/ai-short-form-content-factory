@@ -1,3 +1,12 @@
+## 2026-10-02 — M5 11794 n8n-sandbox clone fix ready
+
+- Immutable smoke 2bfa10b4-f13c-4efa-811d-bcb88530d840 (jak działa klucz dynamometryczny, pl30/gemini) is terminal script_failed; never rerun it.
+- M4 11793 PASS. M5 11794 failed at final visual-language validation with `structuredClone is not defined`.
+- Root cause: unit tests run on Node 22 where structuredClone exists, but the production n8n Code sandbox does not expose structuredClone.
+- Generic fix changes only the final visual-language validator clone from structuredClone(ctx.source) to JSON.parse(JSON.stringify(ctx.source)); source is JSON workflow data, so the clone semantics are equivalent here and supported by the n8n sandbox.
+- Exact regression asserts the final validator has no structuredClone dependency. Targeted language suite 25/25 PASS; full JS suite 707/707 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. Production M5 remains v213 until this change is committed and deployed.
+
 ## 2026-10-02 — post-v213 torque-wrench smoke launched once
 
 - Smoke 2bfa10b4-f13c-4efa-811d-bcb88530d840 (jak działa klucz dynamometryczny, pl30/gemini) was launched exactly once through production /webhook/factory/run.

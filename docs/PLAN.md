@@ -1,3 +1,12 @@
+## 2026-10-02 — deploy M5 11794 n8n-sandbox clone fix
+
+1. Treat 2bfa10b4-f13c-4efa-811d-bcb88530d840 as immutable script_failed; never rerun it.
+2. Exact blocker: M5 11794 final visual-language validator used structuredClone, which is unavailable in the production n8n Code sandbox.
+3. Replace only that clone with JSON.parse(JSON.stringify(ctx.source)); do not alter visual-language normalization semantics or M8/M9 gates.
+4. Verification before deploy: targeted 25/25 PASS; full JS 707/707 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, live source/history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID before launch, launch once, trace M4→M9.
+
 ## 2026-10-02 — trace launched post-v213 torque-wrench smoke
 
 1. Smoke 2bfa10b4-f13c-4efa-811d-bcb88530d840 was launched exactly once; never launch it again.

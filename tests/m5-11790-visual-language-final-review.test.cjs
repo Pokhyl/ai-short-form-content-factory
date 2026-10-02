@@ -113,3 +113,10 @@ test('11790 final visual repair rejects structural drift and missing repair cont
     /structural drift/
   );
 });
+
+
+test('11794 final visual validator uses n8n-sandbox-safe JSON cloning',()=>{
+  const src=byName['Validate Narration Language Review Final'].parameters.jsCode;
+  assert.doesNotMatch(src,/structuredClone/);
+  assert.match(src,/JSON\.parse\(JSON\.stringify\(ctx\.source\)\)/);
+});
