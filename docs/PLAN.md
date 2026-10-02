@@ -1,3 +1,11 @@
+## 2026-10-02 — deploy M5 11829 holding fix
+
+1. Smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 is immutable; never rerun it.
+2. Deploy only the regression-backed hold/holding/held extension of the existing transient-photo canonicalizer.
+3. Targeted 40/40 PASS; full JS 723/723 PASS; JSON/diff clean.
+4. Commit/push, deploy only VideoM5Storyboard001, verify source/history and health.
+5. Then create one fresh persisted pl30/gemini smoke and launch it once.
+
 ## 2026-10-02 — validate M5 v216
 
 1. Smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 is immutable; never rerun it.

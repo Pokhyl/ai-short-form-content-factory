@@ -1,3 +1,13 @@
+## 2026-10-02 — M5 11829 holding transient-action fix ready
+
+- Immutable smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 (jak działa młotek ciesielski, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M8 11829 failed at S8-A with no Gemini-approved unique candidate.
+- Exact S8 contract: visual_intent="Close-up of a carpenter's hammer head holding a steel nail with its integrated magnet.", must_show=["carpenter's hammer","steel nail"]. Gemini saw hammer+nail but rejected candidates because none showed the specific holding-by-magnet relation.
+- S8 narration only states that the hammer head has a built-in magnet; S9 carries the start-driving action.
+- Generic M5 fix extends the existing canonicalizeTransientPhotoActionIntent rule with hold/holding/held. With no visible person/hand, the transient holding relation becomes a static searchable co-presence contract. Visible human holding remains explicit.
+- Exact 11829 regression added to the existing transient-action suite. Targeted suite 40/40 PASS; full JS suite 723/723 PASS; workflow JSON valid; git diff --check clean.
+- Production M5 remains v216 until this change is committed and deployed.
+
 ## 2026-10-02 — post-v216 hammer smoke launched once
 
 - Smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 (jak działa młotek ciesielski, pl30/gemini) was launched exactly once.

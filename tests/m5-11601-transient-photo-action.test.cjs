@@ -63,11 +63,31 @@ for(const name of [
     );
   });
 
+  test(name+': 11829 hammer holding nail becomes a static searchable photo contract',()=>{
+    const canonicalize=helper(name);
+    assert.equal(
+      canonicalize(
+        ["carpenter's hammer",'steel nail'],
+        "Close-up of a carpenter's hammer head holding a steel nail with its integrated magnet."
+      ),
+      "A close-up photo of carpenter's hammer with steel nail."
+    );
+  });
+
   test(name+': visible human action remains explicit',()=>{
     const canonicalize=helper(name);
     const intent='Hands pressing an office stapler onto paper sheets.';
     assert.equal(
       canonicalize(['hands','office stapler','paper sheets'],intent),
+      intent
+    );
+  });
+
+  test(name+': visible human holding remains explicit',()=>{
+    const canonicalize=helper(name);
+    const intent='Hands holding a hammer and a steel nail.';
+    assert.equal(
+      canonicalize(['hands','hammer','steel nail'],intent),
       intent
     );
   });
