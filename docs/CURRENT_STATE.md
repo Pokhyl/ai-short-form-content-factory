@@ -1,3 +1,14 @@
+## 2026-10-02 — M5 11790 visual-language normalization fix deployed
+
+- Commit 60aa7d0 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v213 / 9814e4f5-9ff0-4a59-a78f-d4f43e47ff06, active=true and activeVersionId=versionId.
+- Import executed once; DB confirmed v213 source equality before publish. Publish executed once; DB confirmed activeVersionId=versionId.
+- Reload used a clean docker stop/start. Stop exited 0 with no stale containerd task; start completed with restart count 0 and restart policy unless-stopped.
+- Publisher /healthz=200. Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Existing final Gemini language-review call now also normalizes non-English visual metadata to English without adding a new provider request. Narration/audio and shot structure remain unchanged.
+- Immutable smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
 ## 2026-10-02 — M5 11790 final visual-language normalization fix ready
 
 - Immutable smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini) is terminal visuals_failed; never rerun it.

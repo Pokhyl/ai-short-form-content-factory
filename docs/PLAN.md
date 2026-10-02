@@ -1,3 +1,12 @@
+## 2026-10-02 — validate deployed M5 v213 visual-language normalization
+
+1. Commit 60aa7d0 is deployed only to VideoM5Storyboard001 as v213 / 9814e4f5-9ff0-4a59-a78f-d4f43e47ff06.
+2. Treat aecc399e-bbf5-4917-aa05-1fdfde26b453 as immutable visuals_failed; never rerun it.
+3. Production verification passed: activeVersionId=versionId, health 200, live source and active history equal Git, restart count 0.
+4. Create exactly one fresh independent pl30/gemini smoke and persist its ID in docs/Git before launch.
+5. Launch only that ID once and trace M4→M9.
+6. If it fails, preserve exact evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-10-02 — deploy M5 11790 visual-language normalization fix
 
 1. Treat aecc399e-bbf5-4917-aa05-1fdfde26b453 as immutable visuals_failed; never rerun it.
