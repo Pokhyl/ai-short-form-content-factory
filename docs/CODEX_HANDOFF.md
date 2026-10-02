@@ -1,3 +1,5 @@
+- 2026-10-02: smoke `9efdd058-cf17-4d8d-bdf4-078fcf39a1b3` is created, pl30/gemini, and not launched. Persist it in Git, then launch this ID once and trace M4→M9.
+
 - 2026-10-02: commit `cca33d2` is deployed as M5 v217 / `d3013946-4de4-47d0-ae81-022913cbc5f8`; source/history match Git, n8n restart count 0, `/healthz=200`. Smoke `5fa09024-d98f-4f0a-8fc1-1d970067b775` is immutable. NEXT: one fresh persisted pl30/gemini smoke, launch once, trace M4→M9.
 
 - 2026-10-02: smoke `5fa09024-d98f-4f0a-8fc1-1d970067b775` is immutable `visuals_failed`; never rerun. M8 `11829` failed at S8-A because hammer and nail were visible but `visual_intent` still required the transient magnet-holding relation. Prepared M5-only extension of existing `canonicalizeTransientPhotoActionIntent`: `hold/holding/held` becomes static co-presence when no visible person/hand exists; human holding remains explicit. Targeted 40/40 PASS; full JS 723/723 PASS; JSON/diff clean. Production remains M5 v216 until deployment. NEXT: commit/push, deploy M5 only, verify source/health/history, then one fresh persisted pl30/gemini smoke.

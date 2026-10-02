@@ -1,3 +1,10 @@
+## 2026-10-02 — launch persisted post-v217 Gemini smoke
+
+1. Smoke 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 (jak działa piła ręczna, pl30/gemini) is created and not launched.
+2. Commit/push this checkpoint and verify the exact ID in HEAD and origin/main.
+3. Launch only this ID exactly once and trace M4→M9.
+4. On failure preserve exact evidence and fix only the generic blocker.
+
 ## 2026-10-02 — validate M5 v217
 
 1. Smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 is immutable; never rerun it.

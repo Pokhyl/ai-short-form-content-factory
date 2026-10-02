@@ -1,3 +1,10 @@
+## 2026-10-02 — fresh post-v217 Gemini smoke persisted before launch
+
+- Acceptance smoke: 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 (jak działa piła ręczna, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 must never be rerun.
+
 ## 2026-10-02 — M5 11829 holding transient-action fix deployed
 
 - Commit cca33d2 is pushed to main and deployed only to VideoM5Storyboard001.
