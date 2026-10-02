@@ -1,3 +1,17 @@
+## 2026-10-02 — fresh post-v216 Gemini smoke persisted before launch
+
+- Acceptance smoke: 5fa09024-d98f-4f0a-8fc1-1d970067b775 (jak działa młotek ciesielski, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 must never be rerun.
+
+## 2026-10-02 — fresh post-v216 Gemini smoke persisted before launch
+
+- Acceptance smoke: 5fa09024-d98f-4f0a-8fc1-1d970067b775 (jak działa młotek ciesielski, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 must never be rerun.
+
 ## 2026-10-02 — M5 11819 stabilization transient-action fix deployed
 
 - Commit 28a98c4 is pushed to main and deployed only to VideoM5Storyboard001.

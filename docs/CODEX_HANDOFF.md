@@ -1,3 +1,5 @@
+- 2026-10-02: fresh post-v216 acceptance smoke `5fa09024-d98f-4f0a-8fc1-1d970067b775` (`jak działa młotek ciesielski`, pl30/gemini) exists with DB `status=created`, `visual_validation_mode=gemini`; not launched yet. NEXT: commit/push checkpoint, verify exact ID in HEAD/origin/main, launch only this ID once, trace M4→M9.
+
 - 2026-10-02: commit `28a98c4` is deployed as M5 v216 / `f7108779-ad85-46b6-b042-f6a1fda69d69`; source/history match Git and publisher health is 200. Smoke `f0df455e-d7a4-4e38-bdff-79c885c4e291` is immutable. NEXT: one fresh persisted pl30/gemini smoke, launch once, trace M4→M9.
 
 - 2026-10-02: commit `28a98c4` is deployed only to `VideoM5Storyboard001` as v216 / `f7108779-ad85-46b6-b042-f6a1fda69d69`. Import once, publish once, clean stop/start for reload; n8n `running`, restart count 0, `/healthz=200`; current source and active history equal Git. M8/Gemini gates unchanged. Immutable smoke `f0df455e-d7a4-4e38-bdff-79c885c4e291` must never be rerun. NEXT: one fresh persisted pl30/gemini smoke, launch once, trace M4→M9.
