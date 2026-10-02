@@ -1,3 +1,10 @@
+## 2026-10-02 — launch persisted post-v215 clamp smoke
+
+1. Smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini) is the only fresh acceptance smoke.
+2. Commit/push this checkpoint and verify the exact ID in HEAD and origin/main before launch.
+3. Launch only this ID once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal and fix only the generic blocker if it fails.
+
 ## 2026-10-02 — validate deployed M5 11804 fix
 
 1. Commit 0fe9298 is deployed only to VideoM5Storyboard001 as v215 / 277c27fc-a14c-4219-966d-02af8ca63a01.

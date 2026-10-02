@@ -1,3 +1,9 @@
+## 2026-10-02 — fresh post-v215 Gemini smoke persisted before launch
+
+- Acceptance smoke: f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini).
+- DB must remain status=created until this checkpoint is committed and pushed.
+- After persistence verification, launch only this ID exactly once and trace M4→M9.
+
 ## 2026-10-02 — M5 11804 static-support interaction fix deployed
 
 - Commit 0fe9298 is pushed to main and deployed only to VideoM5Storyboard001.
