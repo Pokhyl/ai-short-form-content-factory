@@ -1,3 +1,9 @@
+## 2026-10-02 — post-v216 hammer smoke launched once
+
+- Smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 (jak działa młotek ciesielski, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
 ## 2026-10-02 — fresh post-v216 Gemini smoke persisted before launch
 
 - Acceptance smoke: 5fa09024-d98f-4f0a-8fc1-1d970067b775 (jak działa młotek ciesielski, pl30/gemini).

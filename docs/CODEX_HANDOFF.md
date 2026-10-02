@@ -1,3 +1,5 @@
+- 2026-10-02: smoke `5fa09024-d98f-4f0a-8fc1-1d970067b775` (`jak działa młotek ciesielski`, pl30/gemini) was launched exactly once; response `accepted=true,status=processing`. Never launch this ID again. NEXT: trace this exact job M4→M9 to terminal.
+
 - 2026-10-02: fresh post-v216 acceptance smoke `5fa09024-d98f-4f0a-8fc1-1d970067b775` (`jak działa młotek ciesielski`, pl30/gemini) exists with DB `status=created`, `visual_validation_mode=gemini`; not launched yet. NEXT: commit/push checkpoint, verify exact ID in HEAD/origin/main, launch only this ID once, trace M4→M9.
 
 - 2026-10-02: commit `28a98c4` is deployed as M5 v216 / `f7108779-ad85-46b6-b042-f6a1fda69d69`; source/history match Git and publisher health is 200. Smoke `f0df455e-d7a4-4e38-bdff-79c885c4e291` is immutable. NEXT: one fresh persisted pl30/gemini smoke, launch once, trace M4→M9.
