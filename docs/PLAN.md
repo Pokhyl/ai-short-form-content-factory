@@ -1,3 +1,12 @@
+## 2026-10-02 — validate deployed M5 v214 sandbox-safe visual review
+
+1. Commit a8457ad is deployed only to VideoM5Storyboard001 as v214 / b42e54a4-9a4d-41c7-a62b-a1f04fe9ad50.
+2. Treat 2bfa10b4-f13c-4efa-811d-bcb88530d840 as immutable script_failed; never rerun it.
+3. Production verification passed: activeVersionId=versionId, health 200, live source/history equal Git, restart count 0.
+4. Create exactly one fresh independent pl30/gemini smoke and persist its ID in docs/Git before launch.
+5. Launch only that ID once and trace M4→M9.
+6. If it fails, preserve exact evidence and fix only the generic blocker. If M9 passes, audit exact final MP4 and selected visuals before acceptance.
+
 ## 2026-10-02 — deploy M5 11794 n8n-sandbox clone fix
 
 1. Treat 2bfa10b4-f13c-4efa-811d-bcb88530d840 as immutable script_failed; never rerun it.

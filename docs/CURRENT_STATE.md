@@ -1,3 +1,13 @@
+## 2026-10-02 — M5 11794 n8n-sandbox clone fix deployed
+
+- Commit a8457ad is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v214 / b42e54a4-9a4d-41c7-a62b-a1f04fe9ad50, active=true and activeVersionId=versionId.
+- Import executed once; publish executed once; reload used clean docker stop/start with no stale containerd task and restart count 0.
+- Publisher /healthz=200. Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- Final visual-language validator now uses JSON-safe cloning supported by the production n8n sandbox; visual-language normalization semantics are unchanged.
+- Immutable smoke 2bfa10b4-f13c-4efa-811d-bcb88530d840 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9, audit final media only after machine-QA PASS.
+
 ## 2026-10-02 — M5 11794 n8n-sandbox clone fix ready
 
 - Immutable smoke 2bfa10b4-f13c-4efa-811d-bcb88530d840 (jak działa klucz dynamometryczny, pl30/gemini) is terminal script_failed; never rerun it.
