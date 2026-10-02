@@ -1,3 +1,9 @@
+## 2026-10-02 — post-v215 clamp smoke launched once
+
+- Smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
 ## 2026-10-02 — fresh post-v215 Gemini smoke persisted before launch
 
 - Acceptance smoke: f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini).

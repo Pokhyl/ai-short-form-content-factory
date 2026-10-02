@@ -1,3 +1,10 @@
+## 2026-10-02 — trace launched post-v215 clamp smoke
+
+1. Smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 was launched exactly once; never launch it again.
+2. Trace this exact job M4→M9 to terminal.
+3. If it fails, collect exact evidence and fix only the generic blocker.
+4. If M9 passes, audit exact final MP4 and selected visuals.
+
 ## 2026-10-02 — launch persisted post-v215 clamp smoke
 
 1. Smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini) is the only fresh acceptance smoke.

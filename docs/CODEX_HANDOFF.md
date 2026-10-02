@@ -1,3 +1,5 @@
+- 2026-10-02: smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini) launched exactly once; response accepted=true,status=processing. Never launch this ID again. NEXT: trace exact job M4→M9 to terminal.
+
 - 2026-10-02: fresh post-v215 smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini) created and not launched yet. NEXT: persist checkpoint in Git, verify exact ID in HEAD/origin/main and DB status=created, then launch only this ID once and trace M4→M9.
 
 - 2026-10-02: commit 0fe9298 is deployed only to VideoM5Storyboard001 as v215 / 277c27fc-a14c-4219-966d-02af8ca63a01. Import once, publish once, clean stop/start; publisher /healthz=200; current M5 source and active history equal Git; restart count 0. Immutable smoke b3230cef-4757-47c9-8481-c5050e115004 must never be rerun. NEXT: one fresh persisted pl30/gemini smoke, launch once, trace M4→M9.
