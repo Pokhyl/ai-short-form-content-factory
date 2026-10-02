@@ -1,3 +1,10 @@
+## 2026-10-02 — launch persisted post-v214 tape-measure smoke
+
+1. Smoke b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini) is the only fresh acceptance smoke.
+2. Commit/push this checkpoint and verify the exact ID in HEAD and origin/main before launch.
+3. Launch only this ID once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal and fix only the generic blocker if it fails.
+
 ## 2026-10-02 — validate deployed M5 v214 sandbox-safe visual review
 
 1. Commit a8457ad is deployed only to VideoM5Storyboard001 as v214 / b42e54a4-9a4d-41c7-a62b-a1f04fe9ad50.

@@ -1,3 +1,9 @@
+## 2026-10-02 — fresh post-v214 Gemini smoke persisted before launch
+
+- Acceptance smoke: b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini).
+- DB status must remain created until this checkpoint is committed and pushed.
+- After persistence verification, launch only this ID exactly once and trace M4→M9.
+
 ## 2026-10-02 — M5 11794 n8n-sandbox clone fix deployed
 
 - Commit a8457ad is pushed to main and deployed only to VideoM5Storyboard001.
