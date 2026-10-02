@@ -1,3 +1,11 @@
+## 2026-10-02 — validate M5 v216
+
+1. Smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 is immutable; never rerun it.
+2. M5 v216 / f7108779-ad85-46b6-b042-f6a1fda69d69 is deployed and verified against Git.
+3. Create one fresh pl30/gemini smoke and persist its ID in docs/Git before launch.
+4. Launch that ID once and trace M4→M9.
+5. On failure preserve exact evidence and fix only the generic blocker.
+
 ## 2026-10-02 — deploy M5 11819 stabilization transient-action fix
 
 1. Treat f0df455e-d7a4-4e38-bdff-79c885c4e291 as immutable visuals_failed; never rerun it.

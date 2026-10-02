@@ -1,3 +1,23 @@
+## 2026-10-02 — M5 11819 stabilization transient-action fix deployed
+
+- Commit 28a98c4 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v216 / f7108779-ad85-46b6-b042-f6a1fda69d69, active=true and activeVersionId=versionId.
+- Import executed once; publish executed once; clean stop/start used for runtime reload.
+- n8n is running with restart count 0, restart policy unless-stopped, publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8/Gemini gates are unchanged. Immutable smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9.
+
+## 2026-10-02 — M5 11819 stabilization transient-action fix deployed
+
+- Commit 28a98c4 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v216 / f7108779-ad85-46b6-b042-f6a1fda69d69, active=true and activeVersionId=versionId.
+- Import executed once; publish executed once; clean stop/start used for runtime reload.
+- n8n is running with restart count 0, restart policy unless-stopped, publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8/Gemini gates are unchanged. Immutable smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9.
+
 ## 2026-10-02 — M5 11819 stabilization transient-action fix ready
 
 - Immutable smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini) is terminal visuals_failed; never rerun it.
