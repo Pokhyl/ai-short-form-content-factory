@@ -1,3 +1,11 @@
+## 2026-10-02 — validate deployed M5 11804 fix
+
+1. Commit 0fe9298 is deployed only to VideoM5Storyboard001 as v215 / 277c27fc-a14c-4219-966d-02af8ca63a01.
+2. Treat b3230cef-4757-47c9-8481-c5050e115004 as immutable script_failed; never rerun it.
+3. Production verification passed: activeVersionId=versionId, health 200, current source and active history equal Git, restart count 0.
+4. Create exactly one fresh independent pl30/gemini acceptance smoke, persist its ID in docs/Git before launch, then launch only that ID once.
+5. Trace M4→M9. If it fails, collect exact evidence and fix only the generic blocker.
+
 ## 2026-10-02 — deploy M5 11804 static-support interaction fix
 
 1. Treat b3230cef-4757-47c9-8481-c5050e115004 as immutable script_failed; never rerun it.

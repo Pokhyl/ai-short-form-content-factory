@@ -1,3 +1,13 @@
+## 2026-10-02 — M5 11804 static-support interaction fix deployed
+
+- Commit 0fe9298 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v215 / 277c27fc-a14c-4219-966d-02af8ca63a01, active=true and activeVersionId=versionId.
+- Import executed once; publish executed once; clean stop/start used for reload.
+- Publisher /healthz=200. Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- ai-short-form-n8n is running with restart count 0.
+- Immutable smoke b3230cef-4757-47c9-8481-c5050e115004 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9.
+
 ## 2026-10-02 — M5 11804 static-support interaction false positive fix ready
 
 - Immutable smoke b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini) is terminal script_failed; never rerun it.
