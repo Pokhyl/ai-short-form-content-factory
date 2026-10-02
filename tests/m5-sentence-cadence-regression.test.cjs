@@ -2,7 +2,7 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const workflow=require('../workflows/VIDEO-M5-Script-Storyboard.json');
 const code=Object.fromEntries(workflow.nodes.map(node=>[node.name,node.parameters.jsCode]));
-const provider=result=>({statusCode:200,body:{candidates:[{content:{parts:[{text:JSON.stringify(result)}]}}]}});
+const provider=result=>({statusCode:200,body:{candidates:[{content:{parts:[{text:JSON.stringify({visual_repairs:[],...result})}]}}]}});
 const sentences=[
   'A pressure sensor responds to air',
   'the flexible diaphragm moves with pressure',

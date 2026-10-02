@@ -1,3 +1,13 @@
+## 2026-10-02 — M5 11790 final visual-language normalization fix ready
+
+- Immutable smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M8 11790 failed at S3-A. The committed contract contained visual_intent with the Polish ASCII word `poziomica`, must_show=[`poziomica`], and all three queries_en also contained `poziomica`.
+- Existing deterministic English guard only caught Polish diacritics, so ASCII-only source-language visual words could pass as if they were English. M8 therefore searched the providers with non-English queries and returned unrelated construction imagery.
+- Generic fix adds no new provider call. The existing final Gemini narration-language review now also receives every shot visual record and MUST return `visual_repairs` for any non-English visual metadata, including ASCII-only source-language words.
+- The final validator applies only bounded lexical English normalization: same scene/shot IDs, same must_show count, same must_not_show count, exactly three queries, same narration, same preferred_media_type, and primary must_show still verbatim in visual_intent. Structural drift fails closed.
+- Exact 11790 regression proves `poziomica` -> `spirit level` while narration/audio and shot structure remain unchanged. Targeted language/reuse suite 39/39 PASS; cadence regression 3/3 PASS; full JS suite 706/706 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. Production M5 remains v212 until this change is committed and deployed.
+
 ## 2026-10-01 — post-v212 spirit-level smoke launched once
 
 - Smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 (jak działa poziomica, pl30/gemini) was launched exactly once through production /webhook/factory/run.

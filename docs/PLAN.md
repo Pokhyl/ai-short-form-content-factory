@@ -1,3 +1,13 @@
+## 2026-10-02 — deploy M5 11790 visual-language normalization fix
+
+1. Treat aecc399e-bbf5-4917-aa05-1fdfde26b453 as immutable visuals_failed; never rerun it.
+2. Root cause: ASCII-only Polish `poziomica` leaked into visual_intent, must_show, and all queries_en, bypassing the diacritic-only English guard and poisoning M8 search.
+3. Reuse the existing final Gemini language-review call; do not add a new provider request. It now reviews visual metadata and returns bounded `visual_repairs` only for non-English visual lexical items.
+4. Keep narration, preferred_media_type, scene/shot IDs, must_show count, must_not_show count, and query count unchanged; reject structural drift.
+5. Verification before deploy: targeted 39/39 PASS, cadence 3/3 PASS, full JS 706/706 PASS, workflow JSON valid, git diff --check clean.
+6. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, publisher health 200, live source and active history equal Git.
+7. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist ID in docs/Git before launch, launch once, trace M4→M9, audit exact final media only after machine-QA PASS.
+
 ## 2026-10-01 — trace launched post-v212 spirit-level smoke
 
 1. Smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 was launched exactly once; never launch it again.
