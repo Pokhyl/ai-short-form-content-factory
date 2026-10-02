@@ -1,3 +1,11 @@
+## 2026-10-02 — launch persisted post-v213 Gemini acceptance smoke
+
+1. Smoke 2bfa10b4-f13c-4efa-811d-bcb88530d840 (jak działa klucz dynamometryczny, pl30/gemini) exists with DB status=created and has not been launched.
+2. Commit/push this checkpoint and verify the exact ID in HEAD and origin/main.
+3. Launch only this ID exactly once through /webhook/factory/run; never rerun it.
+4. Trace M4→M9 to terminal. If it fails, preserve exact evidence and fix only the generic blocker.
+5. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-10-02 — validate deployed M5 v213 visual-language normalization
 
 1. Commit 60aa7d0 is deployed only to VideoM5Storyboard001 as v213 / 9814e4f5-9ff0-4a59-a78f-d4f43e47ff06.

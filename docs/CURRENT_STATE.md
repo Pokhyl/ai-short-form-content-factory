@@ -1,3 +1,11 @@
+## 2026-10-02 — fresh post-v213 Gemini smoke persisted before launch
+
+- Acceptance smoke: 2bfa10b4-f13c-4efa-811d-bcb88530d840 (jak działa klucz dynamometryczny, pl30/gemini).
+- DB confirms status=created and visual_validation_mode=gemini. Not launched yet.
+- n8n is stable: running=true, restart count 0, restart policy unless-stopped, publisher /healthz=200.
+- After this checkpoint is committed and pushed, launch only this ID exactly once and trace M4→M9.
+- Immutable previous smoke aecc399e-bbf5-4917-aa05-1fdfde26b453 must never be rerun.
+
 ## 2026-10-02 — M5 11790 visual-language normalization fix deployed
 
 - Commit 60aa7d0 is pushed to main and deployed only to VideoM5Storyboard001.
