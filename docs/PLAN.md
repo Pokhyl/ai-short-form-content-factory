@@ -1,3 +1,10 @@
+## 2026-10-02 — trace launched post-v214 tape-measure smoke
+
+1. Smoke b3230cef-4757-47c9-8481-c5050e115004 was launched exactly once; never launch it again.
+2. Trace this exact job M4→M9 to terminal.
+3. If it fails, collect exact evidence and fix only the generic blocker.
+4. If M9 passes, audit exact final MP4 and selected visuals.
+
 ## 2026-10-02 — launch persisted post-v214 tape-measure smoke
 
 1. Smoke b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini) is the only fresh acceptance smoke.

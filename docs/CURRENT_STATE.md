@@ -1,3 +1,9 @@
+## 2026-10-02 — post-v214 tape-measure smoke launched once
+
+- Smoke b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini) was launched exactly once.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
 ## 2026-10-02 — fresh post-v214 Gemini smoke persisted before launch
 
 - Acceptance smoke: b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini).
