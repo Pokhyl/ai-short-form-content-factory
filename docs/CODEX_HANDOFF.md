@@ -1,3 +1,5 @@
+- 2026-10-02: smoke b3230cef-4757-47c9-8481-c5050e115004 is immutable script_failed; never rerun. M4 11803 PASS; M5 11804 failed because measuring in A steel measuring tape rests on a flat wooden workbench was misread as an active measurement verb, making the workbench a required second must_show. Prepared M5-only static-support exclusion for rests/lies/sits/placed/positioned on or across while preserving real measurement/connect/transfer guards. Targeted 18/18 PASS; full JS 707/707 PASS; JSON/diff clean. Production remains v214 until deployment.
+
 - 2026-10-02: smoke b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini) launched exactly once; response accepted=true,status=processing. Never launch this ID again. NEXT: trace exact job M4→M9.
 
 - 2026-10-02: fresh post-v214 smoke b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini) created and not launched yet. NEXT: persist checkpoint in Git, verify exact ID in HEAD/origin/main and DB status=created, then launch only this ID once and trace M4→M9.

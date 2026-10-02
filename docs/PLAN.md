@@ -1,3 +1,12 @@
+## 2026-10-02 — deploy M5 11804 static-support interaction fix
+
+1. Treat b3230cef-4757-47c9-8481-c5050e115004 as immutable script_failed; never rerun it.
+2. Root cause is a false interaction match: measuring tape rests on workbench was parsed as active measurement on a second subject.
+3. Deploy only the regression-backed static-support exclusion in the existing interaction guard. Keep real measurement/connect/transfer subject requirements unchanged.
+4. Verification before deploy: targeted 18/18 PASS; full JS 707/707 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh pl30/gemini smoke, persist its ID before launch, launch once, trace M4→M9.
+
 ## 2026-10-02 — trace launched post-v214 tape-measure smoke
 
 1. Smoke b3230cef-4757-47c9-8481-c5050e115004 was launched exactly once; never launch it again.

@@ -1,3 +1,13 @@
+## 2026-10-02 — M5 11804 static-support interaction false positive fix ready
+
+- Immutable smoke b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini) is terminal script_failed; never rerun it.
+- M4 11803 PASS. M5 11804 failed in Validate Repaired Storyboard 2 with flat wooden workbench at line 915.
+- Root cause: interaction regex treated adjective measuring in A steel measuring tape rests on a flat wooden workbench as an active measurement verb and promoted the workbench to a required second must_show subject.
+- Generic fix keeps real measurement interactions strict, but ignores static support relations rests/lies/sits/placed/positioned on or across before enforcing a second interaction subject.
+- Exact regression added: tape resting or placed on a workbench must not require the workbench as must_show; real multimeter-on-battery measurement still requires the battery.
+- Targeted interaction suite 18/18 PASS; full JS suite 707/707 PASS; workflow JSON valid; git diff --check clean.
+- Deployment pending. Production M5 remains v214 until commit/deploy.
+
 ## 2026-10-02 — post-v214 tape-measure smoke launched once
 
 - Smoke b3230cef-4757-47c9-8481-c5050e115004 (jak działa miarka zwijana, pl30/gemini) was launched exactly once.

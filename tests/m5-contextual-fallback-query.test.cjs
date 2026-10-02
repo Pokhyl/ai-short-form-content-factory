@@ -49,6 +49,12 @@ test('required interaction subject cannot disappear from secondary must_show',()
    ()=>guard(['barometer'],'A barometer instrument measuring the air pressure of the atmosphere.','S1-A')
   );
   assert.doesNotThrow(
+   ()=>guard(['steel measuring tape'],'A steel measuring tape rests on a flat wooden workbench surface.','S1-A')
+  );
+  assert.doesNotThrow(
+   ()=>guard(['steel measuring tape'],'A steel measuring tape is placed on a flat wooden workbench.','S1-A')
+  );
+  assert.doesNotThrow(
    ()=>guard(['power substation','transmission lines'],'Power substation equipment and transmission lines connected to power grid','S4-A')
   );
   assert.throws(
