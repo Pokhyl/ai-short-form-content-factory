@@ -1,3 +1,9 @@
+## 2026-10-02 — post-v213 torque-wrench smoke launched once
+
+- Smoke 2bfa10b4-f13c-4efa-811d-bcb88530d840 (jak działa klucz dynamometryczny, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
 ## 2026-10-02 — fresh post-v213 Gemini smoke persisted before launch
 
 - Acceptance smoke: 2bfa10b4-f13c-4efa-811d-bcb88530d840 (jak działa klucz dynamometryczny, pl30/gemini).

@@ -1,3 +1,10 @@
+## 2026-10-02 — trace launched post-v213 torque-wrench smoke
+
+1. Smoke 2bfa10b4-f13c-4efa-811d-bcb88530d840 was launched exactly once; never launch it again.
+2. Trace this exact job M4→M9 to terminal.
+3. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+4. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-10-02 — launch persisted post-v213 Gemini acceptance smoke
 
 1. Smoke 2bfa10b4-f13c-4efa-811d-bcb88530d840 (jak działa klucz dynamometryczny, pl30/gemini) exists with DB status=created and has not been launched.
