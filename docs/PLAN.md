@@ -1,3 +1,12 @@
+## 2026-10-02 — deploy M5 11819 stabilization transient-action fix
+
+1. Treat f0df455e-d7a4-4e38-bdff-79c885c4e291 as immutable visuals_failed; never rerun it.
+2. Exact blocker is M8 11819 S6-A: must_show correctly contains only woodworking clamp, but visual_intent still requires the transient stabilizing action.
+3. Deploy only the regression-backed extension of canonicalizeTransientPhotoActionIntent: stabilize/stabilizing becomes a static searchable photo contract when no visible person/hand is present; visible human action remains explicit.
+4. Verification before deploy: targeted 32/32 PASS; full JS 715/715 PASS; workflow JSON valid; git diff --check clean.
+5. Commit/push, verify zero unfinished executions, deploy only VideoM5Storyboard001, verify activeVersionId=versionId, health 200, current source and active history equal Git.
+6. Only after deployment verification create exactly one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch once, trace M4→M9.
+
 ## 2026-10-02 — trace launched post-v215 clamp smoke
 
 1. Smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 was launched exactly once; never launch it again.

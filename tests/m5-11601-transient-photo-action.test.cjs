@@ -52,11 +52,31 @@ for(const name of [
     );
   });
 
+  test(name+': 11819 clamp stabilization becomes a static searchable photo contract',()=>{
+    const canonicalize=helper(name);
+    assert.equal(
+      canonicalize(
+        ['woodworking clamp'],
+        'A photograph of a stable woodworking clamp stabilizing wood pieces during precise workshop tasks.'
+      ),
+      'A clear photo of woodworking clamp.'
+    );
+  });
+
   test(name+': visible human action remains explicit',()=>{
     const canonicalize=helper(name);
     const intent='Hands pressing an office stapler onto paper sheets.';
     assert.equal(
       canonicalize(['hands','office stapler','paper sheets'],intent),
+      intent
+    );
+  });
+
+  test(name+': visible human stabilization remains explicit',()=>{
+    const canonicalize=helper(name);
+    const intent='Hands stabilizing wood pieces with a woodworking clamp.';
+    assert.equal(
+      canonicalize(['hands','woodworking clamp'],intent),
       intent
     );
   });

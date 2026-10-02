@@ -1,3 +1,13 @@
+## 2026-10-02 — M5 11819 stabilization transient-action fix ready
+
+- Immutable smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini) is terminal visuals_failed; never rerun it.
+- M7 11818 PASS; M8 11819 failed at S6-A with no Gemini-approved unique candidate.
+- Exact S6 contract: visual_intent="A photograph of a stable woodworking clamp stabilizing wood pieces during precise workshop tasks.", must_show=["woodworking clamp"]. Gemini correctly saw clamps in candidates but rejected them because none showed the transient stabilizing action.
+- S6 narration only says that the process gains required precision; it does not require a visible clamp actively stabilizing wood in that shot.
+- Generic M5 fix extends the existing canonicalizeTransientPhotoActionIntent rule with stabilize/stabilizing. With no visible person/hand, this converts transient stabilization into a static searchable photo contract. Visible human stabilization remains explicit.
+- Exact 11819 regression added to the existing transient-action suite. Targeted suite 32/32 PASS; full JS suite 715/715 PASS; workflow JSON valid; git diff --check clean.
+- Production M5 remains v215 and does not yet match the local nodes. Deployment pending.
+
 ## 2026-10-02 — post-v215 clamp smoke launched once
 
 - Smoke f0df455e-d7a4-4e38-bdff-79c885c4e291 (jak działa zacisk stolarski, pl30/gemini) was launched exactly once.
