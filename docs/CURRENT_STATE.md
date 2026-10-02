@@ -1,3 +1,13 @@
+## 2026-10-02 — M5 11829 holding transient-action fix deployed
+
+- Commit cca33d2 is pushed to main and deployed only to VideoM5Storyboard001.
+- Production M5 is v217 / d3013946-4de4-47d0-ae81-022913cbc5f8, active=true and activeVersionId=versionId.
+- Import executed once; publish executed once; clean stop/start used for runtime reload.
+- n8n is running with restart count 0, restart policy unless-stopped, publisher /healthz=200.
+- Current M5 nodes/connections/settings equal Git; active workflow_history nodes/connections equal Git.
+- M8/Gemini gates are unchanged. Immutable smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 must never be rerun.
+- Next: exactly one fresh independent pl30/gemini smoke, persisted in docs/Git before launch, launch once, trace M4→M9.
+
 ## 2026-10-02 — M5 11829 holding transient-action fix ready
 
 - Immutable smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 (jak działa młotek ciesielski, pl30/gemini) is terminal visuals_failed; never rerun it.

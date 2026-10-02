@@ -1,3 +1,10 @@
+## 2026-10-02 — validate M5 v217
+
+1. Smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 is immutable; never rerun it.
+2. M5 v217 / d3013946-4de4-47d0-ae81-022913cbc5f8 is deployed and verified against Git.
+3. Create one fresh pl30/gemini smoke and persist its ID in docs/Git before launch.
+4. Launch that ID once and trace M4→M9.
+
 ## 2026-10-02 — deploy M5 11829 holding fix
 
 1. Smoke 5fa09024-d98f-4f0a-8fc1-1d970067b775 is immutable; never rerun it.
