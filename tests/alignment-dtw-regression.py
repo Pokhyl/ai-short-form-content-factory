@@ -66,6 +66,81 @@ class SceneCutInsideWhisperTokenRegression(unittest.TestCase):
         self.assertEqual(unchanged["scene_timings"], result["scene_timings"])
 
 
+class TrailingHallucinationRegression(unittest.TestCase):
+    def test_saved_production_trailing_hallucination_preserves_all_scene_gates(self):
+        saved = json.loads(Path("tests/fixtures/m7-trailing-asr-hallucination.json").read_text())
+        narration = " ".join(scene["narration"] for scene in saved["scenes"])
+        result = worker._build_scene_timings(
+            narration, saved["scenes"], saved["whisper"], saved["audio_duration_ms"]
+        )
+        self.assertEqual(result["global_coverage"], 1.0)
+        self.assertEqual(len(result["scene_timings"]), 9)
+        self.assertTrue(all(scene["coverage"] == 1.0 for scene in result["scene_timings"]))
+        self.assertEqual(result["lexical_end_ms_raw"], 29480)
+        self.assertEqual(result["terminal_overrun_ms"], 0)
+
+    def test_unmatched_trailing_music_does_not_create_terminal_overrun(self):
+        scenes = [
+            {
+                "scene_uuid": "00000000-0000-4000-8000-000000000001",
+                "scene_key": "S1",
+                "narration": "Syfon działa.",
+            },
+        ]
+        narration = scenes[0]["narration"]
+        whisper = {
+            "transcription": [
+                {
+                    "text": " Syfon działa.",
+                    "tokens": [
+                        {"text": " Syfon", "offsets": {"from": 0, "to": 500}},
+                        {"text": " działa", "offsets": {"from": 500, "to": 900}},
+                        {"text": ".", "offsets": {"from": 900, "to": 950}},
+                    ],
+                },
+                {
+                    "text": " [muzyka]",
+                    "tokens": [
+                        {"text": " [", "offsets": {"from": 1100, "to": 1150}},
+                        {"text": "muzyka", "offsets": {"from": 1150, "to": 1900}},
+                        {"text": "]", "offsets": {"from": 1900, "to": 2100}},
+                    ],
+                },
+            ],
+        }
+        result = worker._build_scene_timings(narration, scenes, whisper, 1000)
+        self.assertEqual(result["terminal_overrun_ms"], 0)
+        self.assertEqual(result["lexical_end_ms_raw"], 900)
+        self.assertEqual(result["scene_timings"][0]["end_ms"], 900)
+        self.assertFalse(result["normalized_match"])
+
+    def test_matched_narration_overrun_still_fails(self):
+        scenes = [
+            {
+                "scene_uuid": "00000000-0000-4000-8000-000000000001",
+                "scene_key": "S1",
+                "narration": "Syfon działa.",
+            },
+        ]
+        whisper = {
+            "transcription": [{
+                "text": " Syfon działa.",
+                "tokens": [
+                    {"text": " Syfon", "offsets": {"from": 0, "to": 500}},
+                    {"text": " działa", "offsets": {"from": 500, "to": 2600}},
+                    {"text": ".", "offsets": {"from": 2600, "to": 2650}},
+                ],
+            }],
+        }
+        with self.assertRaisesRegex(
+            ValueError,
+            "whisper lexical timing exceeds audio duration beyond tolerance",
+        ):
+            worker._build_scene_timings(
+                scenes[0]["narration"], scenes, whisper, 1000
+            )
+
+
 class DtwRegression(unittest.TestCase):
     def test_saved_default_alignment_fails(self):
         with self.assertRaisesRegex(ValueError, "1614ms"):

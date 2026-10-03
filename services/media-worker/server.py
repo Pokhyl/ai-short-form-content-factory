@@ -567,14 +567,6 @@ def _build_scene_timings(
             "whisper lexical tokens do not reconstruct the normalized transcript"
         )
 
-    raw_lexical_end_ms = tokens[-1]["end_ms"]
-    terminal_overrun_ms = max(0, raw_lexical_end_ms - audio_duration_ms)
-    if terminal_overrun_ms > MAX_WHISPER_TERMINAL_OVERRUN_MS:
-        raise ValueError(
-            "whisper lexical timing exceeds audio duration beyond tolerance: "
-            f"{terminal_overrun_ms}ms"
-        )
-
     scene_joined = " ".join(
         str(scene.get("narration") or "").strip()
         for scene in scenes
@@ -615,6 +607,33 @@ def _build_scene_timings(
             }
         )
         char_cursor = end_char
+
+    matched_actual_spans = [
+        (block.b, block.b + block.size)
+        for block in matching_blocks
+    ]
+    matched_tokens = [
+        token
+        for token in token_ranges
+        if any(
+            token["end_char"] > span_start
+            and token["start_char"] < span_end
+            for span_start, span_end in matched_actual_spans
+        )
+    ]
+    if not matched_tokens:
+        raise ValueError("whisper returned no matched lexical timing coverage")
+
+    # Terminal timing belongs to the expected narration, not to unmatched ASR
+    # hallucinations after it (for example a trailing "[music]" annotation).
+    # Real narration tokens that run beyond the audio remain fail-closed.
+    raw_lexical_end_ms = matched_tokens[-1]["end_ms"]
+    terminal_overrun_ms = max(0, raw_lexical_end_ms - audio_duration_ms)
+    if terminal_overrun_ms > MAX_WHISPER_TERMINAL_OVERRUN_MS:
+        raise ValueError(
+            "whisper lexical timing exceeds audio duration beyond tolerance: "
+            f"{terminal_overrun_ms}ms"
+        )
 
     scene_timings = []
     expected_cursor = 0

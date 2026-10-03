@@ -1,3 +1,11 @@
+## 2026-10-03 — M7 trailing ASR hallucination blocker
+
+- Smoke `b3df2402-dc38-4b2e-953f-2c815bfb5eb7` was launched and is immutable `alignment_failed`; never launch it again. Earlier created-only instructions below are superseded by DB terminal state.
+- Alignment run `7b553cc5-1837-4493-bb52-6606dae98e14` failed when the DTW fallback process aborted with SIGABRT. The actual primary defect is reproduced from saved standard Whisper: unmatched trailing `[muzyka]` ends at 31,540 ms while exact accepted narration audio is 29,976 ms; baseline incorrectly reports terminal overrun 1,564 ms and enters unnecessary DTW.
+- Generic worker correction measures terminal overrun using lexical tokens matched to expected narration. It keeps the transcript, global/scene coverage gates, and actual matched-token overrun limit unchanged; no audio or content modification.
+- Exact fixture `tests/fixtures/m7-trailing-asr-hallucination.json`: candidate replay has nine scenes, all coverage 1.0, narration end 29,480 ms, overrun 0. Baseline HEAD reproduces 1,564-ms failure. Alignment suite 18/18 PASS, including actual narration-overrun rejection. Full JS 729/729 PASS; alignment 18/18 PASS; real FFmpeg render-fit and target-duration PASS; audit-duration contract PASS; all workflow JSON valid and git diff --check clean.
+- Current M5 is v220 / `8d822498-32be-47f7-82a4-8fc4c7e67c31`; M7 active version `91fbac4f-f40d-4d75-9111-3e4ed01bd9ff`. No workflows changed by this worker-only fix. Next: finish regressions, commit/push, back up and deploy only media-worker, verify live file/image/health, then one new persisted smoke.
+
 - 2026-10-03 next: commit/push/deploy the M5 hidden-flow photo canonicalization fix proven by execution 11917. Verify live M5 source/version/health, then create exactly one fresh persisted pl30/gemini smoke and launch it once. Do not rerun `dd7a124b-4d08-4abd-98ca-49b4a5039773`.
 - 2026-10-03 acceptance: smoke `dd7a124b-4d08-4abd-98ca-49b4a5039773` (`jak działa zawór zwrotny`, pl30/gemini) created after Google reconnect. Persist before launch, then launch exactly once and trace to terminal; never rerun on failure.
 - 2026-10-03: OAuth base URL/callback are verified healthy. Remaining prerequisite is interactive reconnect of n8n credential `Google account`; after reconnect, run one bounded Google TTS auth probe before creating any new smoke.

@@ -52,3 +52,9 @@
 
 - Before starting any technical work on this project, read `docs/OPERATOR_RULES.md` first and follow it as the active operating contract.
 - Before making changes, verify the current branch, HEAD, and `git status` so concurrent or uncommitted work is not overwritten.
+
+## ASR terminal timing evidence
+
+- Preserve failed alignment jobs as immutable; replay saved ASR data offline.
+- An unmatched ASR suffix must not become expected-narration terminal timing. Keep transcript/coverage checks and matched-narration overrun rejection unchanged.
+- A DTW subprocess abort does not prove that the audio or standard alignment is invalid; inspect the saved standard tokens before changing timing gates.
