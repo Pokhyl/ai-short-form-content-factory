@@ -1,3 +1,13 @@
+## 2026-10-03 — M5 11877 repair-diagnostics fix ready
+
+- Immutable smoke 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 (jak działa piła ręczna, pl30/gemini) is terminal script_failed; never rerun it.
+- Production trace: Self Test 11875 -> M4 11876 PASS -> M5 11877 FAIL; Gemini resilient calls 11878-11880 all succeeded, so this was not a provider failure.
+- Initial storyboard failed S1-A English visual-metadata matching; repair 1 fixed that but left S1-A overlong must_show. Repair 2 shortened S1-A, while S2-A still had visual_intent="A close-up of a saw handle connected to the metal blade." with must_show=["saw handle"]; the strict interaction validator correctly rejected the missing independent "metal blade" target at line 919.
+- Root cause: both storyboard repair builders precomputed overlong/non-photo/language diagnostics but did not precompute the same connected/measurement/transfer interaction-target violations already enforced by the validators. A later hidden violation could therefore survive the final bounded repair.
+- Generic M5-only fix adds validator-aligned missing_interaction_subject diagnostics to both repair builders. The strict validator, M8, Gemini gates, and architecture are unchanged.
+- Exact 11877 regression plus existing interaction/transient suites: 60/60 PASS. Full JS suite: 725/725 PASS. git diff --check clean.
+- Production M5 remains v217 until this change is committed and deployed.
+
 ## 2026-10-03 — post-v217 hand-saw smoke launched once
 
 - Smoke 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 (jak działa piła ręczna, pl30/gemini) was launched exactly once through production /webhook/factory/run.

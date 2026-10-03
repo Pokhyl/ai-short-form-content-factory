@@ -1,3 +1,10 @@
+## 2026-10-03 — deploy M5 11877 repair-diagnostics fix
+
+1. Smoke 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 is immutable script_failed; never rerun it.
+2. Commit/push the regression-backed M5-only missing_interaction_subject diagnostics fix.
+3. Deploy only VideoM5Storyboard001; verify live source, active history, restart count and publisher health.
+4. Then create one fresh independent pl30/gemini smoke, persist its ID in docs/Git before launch, launch exactly once, and trace M4→M9.
+
 ## 2026-10-03 — trace launched post-v217 hand-saw smoke
 
 1. Smoke 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 was launched exactly once; never launch it again.
