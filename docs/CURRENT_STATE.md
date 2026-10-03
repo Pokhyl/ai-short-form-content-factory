@@ -1,3 +1,9 @@
+## 2026-10-03 — post-v217 hand-saw smoke launched once
+
+- Smoke 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 (jak działa piła ręczna, pl30/gemini) was launched exactly once through production /webhook/factory/run.
+- Launch response: accepted=true,status=processing. Never launch this ID again.
+- Trace only this exact job M4→M9 to terminal.
+
 ## 2026-10-02 — fresh post-v217 Gemini smoke persisted before launch
 
 - Acceptance smoke: 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 (jak działa piła ręczna, pl30/gemini).

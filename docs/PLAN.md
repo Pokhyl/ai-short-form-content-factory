@@ -1,3 +1,10 @@
+## 2026-10-03 — trace launched post-v217 hand-saw smoke
+
+1. Smoke 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 was launched exactly once; never launch it again.
+2. Trace this exact job M4→M9 to terminal.
+3. If it fails, collect exact execution/DB/provider/Vision evidence and fix only the generic blocker.
+4. If M9 passes, audit the exact final MP4 and selected visuals before acceptance.
+
 ## 2026-10-02 — launch persisted post-v217 Gemini smoke
 
 1. Smoke 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 (jak działa piła ręczna, pl30/gemini) is created and not launched.

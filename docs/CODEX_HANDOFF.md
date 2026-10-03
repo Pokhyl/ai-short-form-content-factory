@@ -1,3 +1,5 @@
+- 2026-10-03: smoke `9efdd058-cf17-4d8d-bdf4-078fcf39a1b3` (`jak działa piła ręczna`, pl30/gemini) was launched exactly once through production `/webhook/factory/run`; response `accepted=true,status=processing`. Never launch this ID again. NEXT: trace this exact job M4→M9 to terminal; audit final media only after machine-QA PASS.
+
 - 2026-10-02: smoke `9efdd058-cf17-4d8d-bdf4-078fcf39a1b3` is created, pl30/gemini, and not launched. Persist it in Git, then launch this ID once and trace M4→M9.
 
 - 2026-10-02: commit `cca33d2` is deployed as M5 v217 / `d3013946-4de4-47d0-ae81-022913cbc5f8`; source/history match Git, n8n restart count 0, `/healthz=200`. Smoke `5fa09024-d98f-4f0a-8fc1-1d970067b775` is immutable. NEXT: one fresh persisted pl30/gemini smoke, launch once, trace M4→M9.
