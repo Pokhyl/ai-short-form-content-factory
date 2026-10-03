@@ -1,3 +1,5 @@
+- 2026-10-03 worker acceptance `eac48f84-4812-4821-a807-5c654e118223`: M4 11971, M5 11972, M6 11976 and M7 11977 PASS. Exact M5/M6 audio SHA256 `cc449e48c86e6508cb386fa44aaf1cb6a8dc26570354bc600be2837cbf7d2507`, duration 29856 ms. New worker alignment has global/minimum scene coverage 1.000, scene range 50..29800 ms. M8 11978 running with all 54 Pexels/Pixabay searches HTTP200 and 432 candidates; Wikimedia paced batch pending. Continue exact job to terminal; do not relaunch.
+
 - 2026-10-03: smoke `eac48f84-4812-4821-a807-5c654e118223` launched exactly once after persisted checkpoint `c9da0bc` was pushed and ID verified in HEAD/origin/main; HTTP202, accepted=true/status=processing. Never launch this ID again. Trace this exact job to terminal; prior created-only text below is historical.
 
 ## 2026-10-03 — worker 298d15d deployed; fresh acceptance persisted
