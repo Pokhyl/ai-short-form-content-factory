@@ -1,3 +1,9 @@
+## 2026-10-03 — M8 SQL 4236731 deployed; fresh acceptance created
+
+- Code `4236731` pushed main and deployed once: only `factory.get_gemini_visual_candidate_sets`; no n8n import/publish/restart, no workflow or worker change. Live function body SHA256 `3fccc7c26e1cfd7c44ca1f8d58311f016c647b7b3b35f444b36399f7e8e171a7` equals Git. Backup `.backups/m8-candidate-selection-before-4236731.sql`, SHA256 `5ecc893e3cde9ede721a7956139ecdc7a92b421ef3cb83fe2a804c703722464a`. M8 active version unchanged `2a237e6b-7f81-4e7a-bd0c-1a0b71ba8dec`; live nodes/connections/settings and active history equal Git. Publisher health 200, worker healthy/restart0.
+- Exactly one fresh independent smoke `975b493c-e0be-42e6-8a2b-d5c7c1417d22`, `jak działa zszywacz biurowy`, pl30/gemini, created once HTTP201; DB status `created`. Not launched. Persist this checkpoint, push, verify ID in HEAD/origin/main, then launch this ID once and trace M4-M9 to terminal.
+- Failed `eac48f84-4812-4821-a807-5c654e118223` and `b3df2402-dc38-4b2e-953f-2c815bfb5eb7` remain immutable. Never rerun them.
+
 ## 2026-10-03 — M8 11978 detailed-query preview coverage fix
 
 - Smoke `eac48f84-4812-4821-a807-5c654e118223` is immutable `visuals_failed`; M4/M5/M6/M7 PASS, M8 11978 FAIL at S1-A, M9 not started. Never rerun this ID.
