@@ -1,3 +1,5 @@
+- 2026-10-03 acceptance 9c0ad243-8e77-4400-aef8-655b96b74ef5 launched EXACTLY ONCE after checkpoint3677553 pushed and verified in HEAD/origin/main, DBcreated and active0. HTTP202 accepted=true/status=processing. Never launch again; trace exact M4–M9. Earlier created-only wording is historical.
+
 ## 2026-10-03 — M5 v221 deployed; acceptance created, not launched
 - Code aaa6abc pushed/deployed only M5. Version/activeVersionId f82903c9-7bc1-43c8-8d31-1dfdd6c7c9d5, counter221, active=true. Live nodes/connections/settings and active history nodes/connections equal Git. One import, one publish, one required publisher restart; health200, runtime running/restart0. No worker/SQL/M7/M8/M9 changes in this deploy.
 - Fresh smoke 9c0ad243-8e77-4400-aef8-655b96b74ef5, jak działa zszywacz biurowy, pl30/gemini, created once HTTP201. NOT LAUNCHED. Push this checkpoint, verify ID in HEAD/origin/main and DBcreated, then launch once. Failed 975b493c-e0be-42e6-8a2b-d5c7c1417d22 remains immutable.
