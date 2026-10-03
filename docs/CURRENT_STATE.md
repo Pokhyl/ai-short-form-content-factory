@@ -1,3 +1,5 @@
+- 2026-10-03 v221 smoke 9c0ad243-8e77-4400-aef8-655b96b74ef5: M4 11997, M5 11998, M6 12002, M7 12003 PASS; M8 12004 collecting. M5/M6 identical MP3 SHA256 f1e2172a4bf70d31643b911b57c26895e1cab87abfa333ff209daaca785074e1, duration28968ms; nine M7 timings. New storyboard has no invented hand. Exact old-storyboard full final-node replay changes only S5-A and preserves other eight intents. Continue exact job, never relaunch.
+
 - 2026-10-03 acceptance 9c0ad243-8e77-4400-aef8-655b96b74ef5 launched EXACTLY ONCE after checkpoint3677553 pushed and verified in HEAD/origin/main, DBcreated and active0. HTTP202 accepted=true/status=processing. Never launch again; trace exact M4–M9. Earlier created-only wording is historical.
 
 ## 2026-10-03 — M5 v221 deployed; acceptance created, not launched
