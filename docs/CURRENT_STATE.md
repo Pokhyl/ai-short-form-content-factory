@@ -1,3 +1,5 @@
+- 2026-10-03 smoke `975b493c-e0be-42e6-8a2b-d5c7c1417d22` launched exactly once after persisted checkpoint `670973b` was pushed and ID verified in HEAD/origin/main. HTTP202, accepted=true/status=processing. Never launch again; trace this exact job M4-M9 to terminal. Earlier created-only entries below are historical.
+
 ## 2026-10-03 — M8 SQL 4236731 deployed; fresh acceptance created
 
 - Code `4236731` pushed main and deployed once: only `factory.get_gemini_visual_candidate_sets`; no n8n import/publish/restart, no workflow or worker change. Live function body SHA256 `3fccc7c26e1cfd7c44ca1f8d58311f016c647b7b3b35f444b36399f7e8e171a7` equals Git. Backup `.backups/m8-candidate-selection-before-4236731.sql`, SHA256 `5ecc893e3cde9ede721a7956139ecdc7a92b421ef3cb83fe2a804c703722464a`. M8 active version unchanged `2a237e6b-7f81-4e7a-bd0c-1a0b71ba8dec`; live nodes/connections/settings and active history equal Git. Publisher health 200, worker healthy/restart0.
