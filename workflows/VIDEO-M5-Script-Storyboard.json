@@ -929,9 +929,9 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT factory.release_provider_usage($1::text);",
-        "options": {
-          "queryReplacement": "={{ [ $('Prepare Timing Probe').first().json.probe_usage_key ] }}"
+        "query": "SELECT factory.release_provider_usage($1::text) AS release_provider_usage, $2::text AS error_message;",
+      "options": {
+        "queryReplacement": "={{ [ $json.probe_usage_key, $json.error_message ] }}"
         }
       },
       "id": "video-m5-release-probe-1",
@@ -953,7 +953,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const n=$('Normalize TTS Timing Probe').first().json; return {json:{message:'M5 timing TTS probe failed: '+String(n.error_message||'unknown error')}};"
+        "jsCode": "const n=$json||{}; return {json:{message:'M5 timing TTS probe failed: '+String(n.error_message||'unknown error')}};"
       },
       "id": "video-m5-probe-failure-1",
       "name": "Prepare Timing Probe Failure",

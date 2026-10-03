@@ -1,3 +1,4 @@
+- 2026-10-03 blocker: do not launch another acceptance smoke until the n8n Google OAuth credential `Google account` used by M5 TTS is reconnected. Smoke `4aa2c959-ed12-4817-8e72-dd90cfd79990` is immutable after M5 execution `11885` failed. Deploy the tested M5 timing-probe failure-context fix, verify live source/version/health, then restore credential before any fresh smoke.
 - 2026-10-03 acceptance checkpoint: smoke `4aa2c959-ed12-4817-8e72-dd90cfd79990` (`jak działa zawór kulowy`, pl30/gemini) is created and unlaunched. Launch exactly once through `/webhook/factory/run`; trace the same ID to terminal; never rerun a failed smoke.
 ## 2026-10-03 — deploy M5 11877 repair-diagnostics fix
 
