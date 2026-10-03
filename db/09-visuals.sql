@@ -1189,7 +1189,8 @@ BEGIN
                     -- Every component remains unproven until Gemini pixels.
                     CASE
                         WHEN mode.semantic_review_only
-                         AND d.metadata->>'component_owner_review'='true' THEN 0
+                         AND (d.metadata->>'component_owner_review'='true'
+                              OR d.metadata->>'paired_subject_review'='true') THEN 0
                         WHEN mode.semantic_review_only THEN 1 ELSE 0
                     END,
                     CASE
