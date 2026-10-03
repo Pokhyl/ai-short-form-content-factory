@@ -1159,7 +1159,9 @@ BEGIN
             SELECT
                 NOT EXISTS (SELECT 1 FROM dedup WHERE review_bucket=0)
                 AND count(DISTINCT query_index) FILTER (WHERE query_index<=2)>1
-                AS needs_query_coverage
+                AS needs_query_coverage,
+                NOT EXISTS (SELECT 1 FROM dedup WHERE review_bucket=0)
+                AS semantic_review_only
             FROM dedup
         ),
         -- Sparse captions can omit the primary while the photo shows it.
@@ -1182,6 +1184,14 @@ BEGIN
                 ORDER BY
                     CASE WHEN mode.needs_query_coverage THEN d.review_bucket ELSE 0 END,
                     CASE WHEN mode.needs_query_coverage THEN d.cross_shot_asset_bucket ELSE 0 END,
+                    -- Prefer directly depicted exposed owners to generic
+                    -- exterior/keyword results only in semantic-review pools.
+                    -- Every component remains unproven until Gemini pixels.
+                    CASE
+                        WHEN mode.semantic_review_only
+                         AND d.metadata->>'component_owner_review'='true' THEN 0
+                        WHEN mode.semantic_review_only THEN 1 ELSE 0
+                    END,
                     CASE
                         WHEN mode.needs_query_coverage
                          AND d.query_index<=2

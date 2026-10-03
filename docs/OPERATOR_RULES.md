@@ -66,3 +66,6 @@
 
 ## Impersonal mechanism versus human action
 - Never remove an explicitly narrated actor or human anchor to fit stock photos. For a nominal mechanical pressure explanation, an invented hand is not a required actor; normalize only with narration grounding and regression coverage. Gemini remains strict against the resulting contract.
+
+## Component-owner semantic review
+- Inspect actual owner-photo pixels before claiming missing component assets. Retrieval broadening does not remove shot concepts. Exposed-owner semantic candidates remain metadata-rejected; prioritize them only without trusted metadata, preserve the three-preview budget and require every Gemini concept/intent/exclusion check.
