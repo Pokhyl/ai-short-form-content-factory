@@ -1,3 +1,5 @@
+- 2026-10-03 smoke5909e2b1-2b7b-40fc-94bf-9744bf146205 launched EXACTLY ONCE after checkpoint45c7414 pushed and ID verified in HEAD/origin/main plus DBcreated/active0. HTTP202 accepted=true/status=processing. Never launch again. Trace this exact job M4-M9 to terminal; earlier created-only instructions are historical.
+
 ## 2026-10-03 — 7748e18 production verified; fresh acceptance created
 - M5 v222 version/activeVersionId53dff452-72a4-45e8-a347-d7e6df84b835 and M8 v84 version/activeVersionIdaf1fb8ae-e8bc-4b88-a9fd-f6a890e89be2 active=true. Live nodes/connections/settings and active history nodes/connections equal Git. Selection function body SHA256c2e75f937f1ae64edbe94cdafb467ae3bcb26a8d3fd985b15d507fa53a497539 equals Git.
 - One import/publish for each changed workflow, one required n8n restart; runtime running/restart0, worker healthy/restart0, direct and public curl health200. Other31 workflows unchanged fingerprint31|107663ca12372101be42873330227fae. Full811/811 JS and both exact SQL regressions passed before deployment.
