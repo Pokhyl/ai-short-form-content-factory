@@ -1,3 +1,8 @@
+## 2026-10-03 — 7748e18 production verified; fresh acceptance created
+- M5 v222 version/activeVersionId53dff452-72a4-45e8-a347-d7e6df84b835 and M8 v84 version/activeVersionIdaf1fb8ae-e8bc-4b88-a9fd-f6a890e89be2 active=true. Live nodes/connections/settings and active history nodes/connections equal Git. Selection function body SHA256c2e75f937f1ae64edbe94cdafb467ae3bcb26a8d3fd985b15d507fa53a497539 equals Git.
+- One import/publish for each changed workflow, one required n8n restart; runtime running/restart0, worker healthy/restart0, direct and public curl health200. Other31 workflows unchanged fingerprint31|107663ca12372101be42873330227fae. Full811/811 JS and both exact SQL regressions passed before deployment.
+- Exactly one new smoke5909e2b1-2b7b-40fc-94bf-9744bf146205, jak działa zszywacz biurowy, pl30/gemini, created once HTTP201, DBcreated, NOT LAUNCHED. Push checkpoint, verify ID in HEAD/origin/main and DBcreated/active0, then launch this ID exactly once; trace to terminal. Failed e4ae4ded and all earlier failed IDs remain immutable.
+
 ## 2026-10-03 — M8 12015 S7 paired-object blocker, offline candidate
 - Acceptance e4ae4ded-9205-4cf3-a630-6e3e50ced992 is immutable visuals_failed at S7-A; never relaunch. M4-M7 passed, M8 12015 rejected three photos missing one required object. M9 did not start.
 - Exact intent: Metal staple piercing through a stack of paper sheets; anchors metal staples/paper sheets. M5 transient-photo normalization omitted piercing; generic impersonal piercing now uses static co-presence, retaining all anchors/exclusions. Explicit human actions remain authored.
