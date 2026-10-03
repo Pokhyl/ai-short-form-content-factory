@@ -1,3 +1,9 @@
+## 2026-10-03 — worker 298d15d deployed; fresh acceptance persisted
+
+- Code commit `298d15d` pushed main. Only media-worker rebuilt/recreated once. Live image `sha256:6b309a457c2471994bf792acbd85b7fda854e96b1336935607071b99d32df102`; runtime server SHA256 `37faf271dac3845b5a7a247dd765e6b4c3fc41d45cdb966f976879791f2c7c61` equals Git. Worker direct health 200, Docker healthy, restart 0; publisher health 200. M5/M7 live nodes/connections/settings and active history equal Git; no workflow deploy/restart. Backup `.backups/media-worker-before-298d15d.py`, rollback image `shorts-v2-media-worker:rollback-before-298d15d`.
+- Exact failed-ASR replay on live worker passes 9 scenes, global/minimum scene coverage 1.0, narration end 29480 ms, terminal overrun 0. Failed job `b3df2402-dc38-4b2e-953f-2c815bfb5eb7` remains immutable.
+- Fresh smoke `eac48f84-4812-4821-a807-5c654e118223`, topic `jak działa syfon umywalkowy`, pl30/gemini, created once via intake HTTP201; DB status `created`. NOT launched. After commit/push and checking ID in HEAD and origin/main, launch only this ID once; trace M4-M9 to terminal and audit exact final media on PASS.
+
 ## 2026-10-03 — M7 trailing ASR hallucination blocker
 
 - Smoke `b3df2402-dc38-4b2e-953f-2c815bfb5eb7` was launched and is immutable `alignment_failed`; never launch it again. Earlier created-only instructions below are superseded by DB terminal state.
