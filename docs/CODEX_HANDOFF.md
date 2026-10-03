@@ -1,3 +1,5 @@
+- 2026-10-03: smoke `eac48f84-4812-4821-a807-5c654e118223` launched exactly once after persisted checkpoint `c9da0bc` was pushed and ID verified in HEAD/origin/main; HTTP202, accepted=true/status=processing. Never launch this ID again. Trace this exact job to terminal; prior created-only text below is historical.
+
 ## 2026-10-03 — worker 298d15d deployed; fresh acceptance persisted
 
 - Code commit `298d15d` pushed main. Only media-worker rebuilt/recreated once. Live image `sha256:6b309a457c2471994bf792acbd85b7fda854e96b1336935607071b99d32df102`; runtime server SHA256 `37faf271dac3845b5a7a247dd765e6b4c3fc41d45cdb966f976879791f2c7c61` equals Git. Worker direct health 200, Docker healthy, restart 0; publisher health 200. M5/M7 live nodes/connections/settings and active history equal Git; no workflow deploy/restart. Backup `.backups/media-worker-before-298d15d.py`, rollback image `shorts-v2-media-worker:rollback-before-298d15d`.
