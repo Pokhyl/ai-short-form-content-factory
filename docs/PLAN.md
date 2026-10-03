@@ -1,3 +1,4 @@
+- 2026-10-03 acceptance checkpoint: smoke `4aa2c959-ed12-4817-8e72-dd90cfd79990` (`jak działa zawór kulowy`, pl30/gemini) is created and unlaunched. Launch exactly once through `/webhook/factory/run`; trace the same ID to terminal; never rerun a failed smoke.
 ## 2026-10-03 — deploy M5 11877 repair-diagnostics fix
 
 1. Smoke 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 is immutable script_failed; never rerun it.

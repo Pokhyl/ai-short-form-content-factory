@@ -1,3 +1,4 @@
+- 2026-10-03: created exactly one fresh post-`f1b4416` acceptance smoke `4aa2c959-ed12-4817-8e72-dd90cfd79990` (`jak działa zawór kulowy`, pl30/gemini) via production `/webhook/jobs`; HTTP201; DB status=`created`. Not launched yet. Launch this exact ID once through `/webhook/factory/run`, trace M4→M9 to terminal, and never rerun it if it fails.
 ## 2026-10-03 — M5 11877 repair-diagnostics fix ready
 
 - Immutable smoke 9efdd058-cf17-4d8d-bdf4-078fcf39a1b3 (jak działa piła ręczna, pl30/gemini) is terminal script_failed; never rerun it.
