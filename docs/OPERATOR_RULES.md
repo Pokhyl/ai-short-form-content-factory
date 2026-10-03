@@ -63,3 +63,6 @@
 
 - A correct asset can exist in a secondary detailed-query pool while its caption omits the primary subject. Inspect the full pool and pixels before declaring asset absence.
 - In all-semantic-rejected pools, preserve coverage of both detailed queries and provider sources within the existing three-preview budget. Keep trusted metadata ranking, eligibility, unique assets and final Gemini checks strict.
+
+## Impersonal mechanism versus human action
+- Never remove an explicitly narrated actor or human anchor to fit stock photos. For a nominal mechanical pressure explanation, an invented hand is not a required actor; normalize only with narration grounding and regression coverage. Gemini remains strict against the resulting contract.

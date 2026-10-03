@@ -114,7 +114,7 @@ for(const name of [
     const src=byName[name].parameters.jsCode;
     assert.match(
       src,
-      /visualIntent = canonicalizeTransientPhotoActionIntent\(mustShow, visualIntent\);/
+      /visualIntent = canonicalizeTransientPhotoActionIntent\(mustShow, visualIntent,/
     );
   });
 }
