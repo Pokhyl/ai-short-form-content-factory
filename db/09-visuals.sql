@@ -1063,7 +1063,7 @@ BEGIN
         WHERE sh.job_id=v_run.job_id
         ORDER BY sc.scene_order,sh.shot_order,sh.id
     LOOP
-        WITH eligible AS (
+        WITH RECURSIVE eligible AS (
             SELECT
                 vc.*,
                 vq.query_index,
@@ -1135,7 +1135,7 @@ BEGIN
                 ) AS provider_candidate_rank
             FROM dedup d
         ),
-        ranked AS (
+        priority_ranked AS (
             SELECT
                 d.*,
                 row_number() OVER (
@@ -1152,8 +1152,62 @@ BEGIN
                         provider ASC,
                         provider_asset_id ASC,
                         id ASC
-                ) AS candidate_index
+                ) AS baseline_rank
             FROM provider_ranked d
+        ),
+        review_mode AS (
+            SELECT
+                NOT EXISTS (SELECT 1 FROM dedup WHERE review_bucket=0)
+                AND count(DISTINCT query_index) FILTER (WHERE query_index<=2)>1
+                AS needs_query_coverage
+            FROM dedup
+        ),
+        -- Sparse captions can omit the primary while the photo shows it.
+        -- Only in all-rejected semantic-review pools, spend the unchanged
+        -- three slots across detailed queries as well as provider sources.
+        coverage_choice(step,chosen_ids,chosen_providers,chosen_queries) AS (
+            SELECT 0,ARRAY[]::uuid[],ARRAY[]::text[],ARRAY[]::integer[]
+            UNION ALL
+            SELECT
+                previous.step+1,
+                array_append(previous.chosen_ids,next_candidate.id),
+                array_append(previous.chosen_providers,next_candidate.provider),
+                array_append(previous.chosen_queries,next_candidate.query_index)
+            FROM coverage_choice previous
+            CROSS JOIN review_mode mode
+            CROSS JOIN LATERAL (
+                SELECT d.*
+                FROM priority_ranked d
+                WHERE NOT (d.id=ANY(previous.chosen_ids))
+                ORDER BY
+                    CASE WHEN mode.needs_query_coverage THEN d.review_bucket ELSE 0 END,
+                    CASE WHEN mode.needs_query_coverage THEN d.cross_shot_asset_bucket ELSE 0 END,
+                    CASE
+                        WHEN mode.needs_query_coverage
+                         AND d.query_index<=2
+                         AND NOT (d.query_index=ANY(previous.chosen_queries)) THEN 0
+                        WHEN mode.needs_query_coverage THEN 1 ELSE 0
+                    END,
+                    CASE
+                        WHEN mode.needs_query_coverage
+                         AND NOT (d.provider=ANY(previous.chosen_providers)) THEN 0
+                        WHEN mode.needs_query_coverage THEN 1 ELSE 0
+                    END,
+                    CASE WHEN mode.needs_query_coverage THEN d.query_bucket ELSE 0 END,
+                    CASE WHEN mode.needs_query_coverage THEN -d.relevance_score ELSE 0 END,
+                    CASE WHEN mode.needs_query_coverage THEN d.aspect_distance ELSE 0 END,
+                    CASE WHEN mode.needs_query_coverage THEN d.provider_rank ELSE 0 END,
+                    d.baseline_rank
+                LIMIT 1
+            ) next_candidate
+            WHERE previous.step<p_limit_per_shot
+        ),
+        ranked AS (
+            SELECT d.*,chosen.step AS candidate_index
+            FROM coverage_choice chosen
+            JOIN priority_ranked d
+              ON d.id=chosen.chosen_ids[chosen.step]
+            WHERE chosen.step>0
         )
         SELECT COALESCE(
             jsonb_agg(

@@ -58,3 +58,8 @@
 - Preserve failed alignment jobs as immutable; replay saved ASR data offline.
 - An unmatched ASR suffix must not become expected-narration terminal timing. Keep transcript/coverage checks and matched-narration overrun rejection unchanged.
 - A DTW subprocess abort does not prove that the audio or standard alignment is invalid; inspect the saved standard tokens before changing timing gates.
+
+## Sparse-metadata visual review coverage
+
+- A correct asset can exist in a secondary detailed-query pool while its caption omits the primary subject. Inspect the full pool and pixels before declaring asset absence.
+- In all-semantic-rejected pools, preserve coverage of both detailed queries and provider sources within the existing three-preview budget. Keep trusted metadata ranking, eligibility, unique assets and final Gemini checks strict.
