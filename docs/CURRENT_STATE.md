@@ -1,3 +1,5 @@
+- 2026-10-03 e4ae4ded-9205-4cf3-a630-6e3e50ced992 launched EXACTLY ONCE after da41d4a pushed, ID verified in HEAD/origin/main, DBcreated/active0. HTTP202 accepted=true/status=processing. Never launch again; trace exact M4–M9. Earlier created-only entry is historical.
+
 ## 2026-10-03 — 2e61f6e production verified; fresh acceptance created
 - Deployed only M8 and factory.get_gemini_visual_candidate_sets once each. M8 v83 version/activeVersionId9d6b0eca-e6cf-4995-8f58-5917072638a6, active=true; live nodes/connections/settings and active history nodes/connections equal Git. SQL body SHA2567be0288aef9c0ced438594ce4eee7749dc7f79a50792de6753d8ae3ff2e6e10e equals Git. One import/publish and required publisher restart; health200, workerhealthy/restart0, n8nrunning/restart0; other32 workflows unchanged.
 - Exactly one fresh smoke e4ae4ded-9205-4cf3-a630-6e3e50ced992, jak działa zszywacz biurowy, pl30/gemini, created once HTTP201, NOT LAUNCHED. Push checkpoint, verify ID in HEAD/origin/main and DBcreated, then launch once. Failed9c0ad243 and975b493c remain immutable.
