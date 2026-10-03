@@ -1,3 +1,5 @@
+- 2026-10-03 SQL coverage acceptance `975b493c-e0be-42e6-8a2b-d5c7c1417d22`: M4 11983, M5 11984, M6 11992 and M7 11993 PASS; M8 11994 running. Accepted audio 28968 ms, SHA256 `ae4456bb7deb424b467e5705e97de591b49ab9af2a0dd88cf04cc938391cf536`. Pexels/Pixabay 54 searches HTTP200; unique pool sizes 64/76, 16 Pexels metadata-approved assets. S6 has only semantic-review candidates, so detailed-query coverage path is relevant in this smoke. Continue the exact job to terminal; do not launch again.
+
 - 2026-10-03 smoke `975b493c-e0be-42e6-8a2b-d5c7c1417d22` launched exactly once after persisted checkpoint `670973b` was pushed and ID verified in HEAD/origin/main. HTTP202, accepted=true/status=processing. Never launch again; trace this exact job M4-M9 to terminal. Earlier created-only entries below are historical.
 
 ## 2026-10-03 — M8 SQL 4236731 deployed; fresh acceptance created
