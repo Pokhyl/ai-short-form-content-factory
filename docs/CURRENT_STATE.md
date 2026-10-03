@@ -1,3 +1,5 @@
+- 2026-10-03 exact acceptance5909e2b1-2b7b-40fc-94bf-9744bf146205: M4/M5/M6/M7 PASS, M8 collecting (visual_runb6b1c398-17b7-45b3-ae00-3c7d9758127c). Exact M5/M6 MP3 SHA2561c49916124f054256eaf9b5ad4ca02cc5a430396a2dbb9112573ef5f8d953f20; bytes/duration identical29184ms. M7 globalcoverage0.995, lexical50..28690ms, passed. Pexels/Pixabay54 searches HTTP200; Commons batch pending. Continue this exact job; never relaunch.
+
 - 2026-10-03 smoke5909e2b1-2b7b-40fc-94bf-9744bf146205 launched EXACTLY ONCE after checkpoint45c7414 pushed and ID verified in HEAD/origin/main plus DBcreated/active0. HTTP202 accepted=true/status=processing. Never launch again. Trace this exact job M4-M9 to terminal; earlier created-only instructions are historical.
 
 ## 2026-10-03 — 7748e18 production verified; fresh acceptance created
