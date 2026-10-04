@@ -1,3 +1,8 @@
+## 2026-10-04 — 46912c2a acceptance LAUNCHED EXACTLY ONCE
+- Acceptance `46912c2a-5d75-4482-a1bd-6d4016645f28` launched EXACTLY ONCE at 2026-10-04T09:08:16Z, HTTP202 accepted=true. Prelaunch HEAD/origin matched `70b560829538fd4942dbd1bd0f099766c64156cb`, ID persisted in both, DB created, n8n active0. Receipt `.review/m5-12075/new-acceptance-launch.json`.
+- Deployed correction004c051, M5 v225 / `ab663ac4-c283-4d2f-b0e6-e2c7d0770a64`, M8 v85 unchanged. Exact offline provider replay closes all12075 defects; full853/853 PASS. Follow exact new ID through M4-M9 to terminal and inspect actual final frames/audio. Production acceptance still unproven.
+- NEVER relaunch failed IDs. No further create/run/import/publish/restart is authorized by smoke discipline while this job is active.
+
 ## 2026-10-04 — 004c051 M5 v225 deployed; 46912c2a CREATED ONLY
 - Fix `004c051` pushed; full853/853 PASS. Exact saved Gemini review/repair replay closes all four observed defects, unchanged native validators and retry/final review PASS with empty issues. This remains offline evidence.
 - M5 v225 active/version `ab663ac4-c283-4d2f-b0e6-e2c7d0770a64`; live nodes/connections/settings and active history exactly match Git. Import, publish and n8n restart completed ONCE each. Other32 workflows including M8 unchanged. M8 remains v85 / `4ddd4f4c-fc25-420a-aa43-8aa33b885640`. Direct/public health200, worker healthy, n8n running/restart0, active0. Deployment evidence `.review/m5-12075/deployment-verified.json`; backup SHA256 `b4892d39111676957c5b4c66348e01cded0e25606cd4ab569bffa8a33540b50d`.
