@@ -1,3 +1,41 @@
+## 2026-10-04 18:35 Warsaw — USER REQUESTED METHOD CHANGE; PROJECT NOT READY
+
+Authoritative working method: [DELIVERY_STRATEGY.md](DELIVERY_STRATEGY.md); root AGENTS.md tells subsequent chats to load it. This supersedes old immediate-smoke directions below. User wants the complete usable factory, not one demonstration video. No new production run or provider call was made for this checkpoint.
+
+| Area | Verified state | Remaining work |
+|---|---|---|
+| Current corrections | Generic M5 authored-pair preservation; M8 retrieval/identity/co-presence/loaded-container fixes; SQL nomination priority | Code checkpoint only; NOT DEPLOYED |
+| Offline regressions | Node883/883, SQL8/8; tracked original/current provider pools and negative controls | Inventory diverse corpus and stage-boundary coverage; prove integrated release gates |
+| Latest production | b76675c8 immutable: M4-M7 PASS, M8 FAIL, M9 not started | Do not rerun; complete systematic closure before new acceptance |
+| Current unresolved boundary | Closed S4 stapler cannot prove loaded staples; final original query dropped container owner. Generic open-owner fallback yields three actual photo previews | Inspect all three S4 pixels; native strict acceptance for new candidate set is UNKNOWN |
+| Visual integration | S6/S7/S9 corrections tested; paperclips and closed-container false positives captured as negatives | Final strict nine-scene globally unique assignment has NOT passed after latest S4 change |
+| Production | Last verified M5v225/ab663ac4-c283-4d2f-b0e6-e2c7d0770a64, M8v86/54776132-c5a5-40e9-acb1-3e9498e273e5; worker unchanged | Re-read actual state before deployment; deploy only M5/M8 + get_gemini_visual_candidate_sets after closure |
+| Product acceptance | Whole-project readiness NOT PROVEN; no final media for latest failed job | Representative multilingual/duration acceptance, actual MP4 checks and honest human/audio status; release/tag only after evidence |
+
+Portable evidence: acceptance/2026-10-04-project-checkpoint/evidence.json and test logs; tests/fixtures/m8-12108-fastening-contract.json; tests/m5-m8-12108-fastening-contract.test.cjs; tests/m8-12108-semantic-nomination-ranking.py. Fixture contains original pools, baseline/current ranking, provider query probes, actual paperclip and closed-container negative responses. Passed tests do not prove current provider or production acceptance.
+
+Server diagnostic data remains at .review/m8-12108/: current-replay/previews.json + S*-request.json, probe/loaded-owner-result.json, normalize-all.cjs, rank-all.py, current-replay/gemini-all.cjs and original decoded execution.json. These ignored paths are supplementary; do not assume GitHub contains them. If unavailable, reproduce from tracked fixture and actual workflow code, not from memory. Latest successful preparation job job_6d0085f7db4f produced three S4 Commons candidates164586506/25823633/8141365; IDs are diagnostic evidence, never production mappings. Full Node result job_17b4c6f56aa2; eight SQL result job_ade6cb0f2ec8.
+
+Resume:
+1. Read new strategy; verify Git/live/active jobs before mutation. Do NOT restart architecture analysis or duplicate completed test runs without a new change/failure.
+2. Implement an executable inventory/report of existing multilingual/topic fixture coverage and uncovered stage-boundary interactions. Use saved traces/media; no new production smoke to discover gaps. This is the next engineering deliverable.
+3. Close the explicit S4 pixel/provider uncertainty with a recorded bounded call budget only where live evidence is essential; then one integrated strict9/uniqueness release check. Keep strict anchors, min55, three queries/previews, identity, timing and exact audio gates.
+4. Commit/push subsequent meaningful changes; deploy exact changed components once ONLY after offline/integrated closure, verify active/history code, other31 workflows and health.
+5. Follow the release matrix in DELIVERY_STRATEGY.md; persist/push each fresh job ID before its single launch. No failed-job reruns. Do not equate one passed movie with a ready project.
+
+No import/publish/restart/create/run is pending from this checkpoint. Preserve existing untracked .tmp/. No promised completion date or claimed measured ChatGPT-credit saving.
+
+## 2026-10-04 — b76675c8 / M8 12108 generic offline correction checkpoint; NOT DEPLOYED
+- Failed `b76675c8-be07-44c0-9b27-22b350d86ef8` is IMMUTABLE: M4-M7 passed, M8 failed, M9 never started. Never relaunch it or any prior failure.
+- Full trace inspection found S6 sparse two-object retrieval, S7 paperclips incorrectly approved as staples, and S9 M5 dropping an independently authored paper-document anchor and its office fastening relationship. M5 now preserves only independently authored/query-grounded fastening pairs in all four validators, without narration/timing changes.
+- Generic M8 correction: final physical-pair query compaction; separate final surface-pair/result-state retrieval; direct completed-state Commons category nomination and physical-object document-photo classification, retaining diagram/SVG/packaging rejection; explicit fastener identity and direct contact evidence in Gemini. No topic/asset-ID mapping, inferred hidden objects or lowered thresholds.
+- SQL semantic-review priority now ranks directly depicted physical/component nominees before cross-shot novelty; trusted ranking stays unchanged and the existing global collector still requires nine distinct approved selections. Three queries, three previews and relevance55 remain unchanged.
+- Actual negative replay rejects production paperclip6077915; measurement illustration is rejected. Heftklammern is valid for the two-object S6 view but failed the stronger S7 bound-document intent: do not force that pass. A real API orientation comparison showed portrait-only Pexels excludes physical fastening photos. The last connector-first physical-result fallback now uses its authored concrete surface and landscape photos; first two queries and video orientation are unchanged. Actual retrieved photo6991328 was manually inspected: three staples visibly pierce paper. Current nine-scene strict Gemini/global-uniqueness replay is IN PROGRESS, not accepted production.
+- Prior full878/878 and eight SQL regressions passed. Final orientation controls, current nine-scene replay and final full suite still required before commit/push/deployment.
+- Live remains M5v225 `ab663ac4-c283-4d2f-b0e6-e2c7d0770a64`, M8v86 `54776132-c5a5-40e9-acb1-3e9498e273e5`; worker unchanged. Only M5/M8 and `get_gemini_visual_candidate_sets` SQL function need deployment after every offline blocker closes. No import/publish/restart/create/run pending.
+- Evidence: `.review/m8-12108/`, tests `m5-m8-12108-fastening-contract.test.cjs` / `m8-12108-semantic-nomination-ranking.py`, saved full provider pools and baseline/current native SQL/Gemini fixtures. Final media does not exist.
+- Next: close ALL observed blockers offline and final regressions; commit/push; deploy only exact changed components ONCE, verify active/history code, other31 workflows, worker/public health and active0; create ONE fresh pl30/Gemini ID, persist/push it in all three docs, verify HEAD/origin ID and DB-created/active0, launch ONCE, follow M4-M9 to terminal and inspect actual final frames/audio evidence.
+
 ## 2026-10-04 — b76675c8 IMMUTABLE M8 12108 failure; new production acceptance failed
 - Acceptance `b76675c8-be07-44c0-9b27-22b350d86ef8` launched EXACTLY ONCE HTTP202 accepted=true at 2026-10-04T10:09:00Z after prelaunch HEAD/origin85bf4f4 matched, ID persisted, DB created, active0. Receipt `.review/m8-12093/new-acceptance-launch.json`.
 - Terminal visuals_failed: M4-M7 PASS; M8 run `a9d02b45-3024-4fd2-995d-fc00d325e904` failed execution12108 (10:10:50–10:15:29Z), no Gemini-approved unique visual candidate for S6-A; M9 never started. NEVER relaunch this failed ID. Inspect ALL9 reviews and full pools before changes; no new smoke before every observed blocker closes offline and full checks/deploy verification.

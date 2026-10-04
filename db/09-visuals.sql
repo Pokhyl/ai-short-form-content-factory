@@ -1183,7 +1183,6 @@ BEGIN
                 WHERE NOT (d.id=ANY(previous.chosen_ids))
                 ORDER BY
                     CASE WHEN mode.needs_query_coverage THEN d.review_bucket ELSE 0 END,
-                    CASE WHEN mode.needs_query_coverage THEN d.cross_shot_asset_bucket ELSE 0 END,
                     -- Prefer directly depicted exposed owners to generic
                     -- exterior/keyword results only in semantic-review pools.
                     -- Every component remains unproven until Gemini pixels.
@@ -1193,6 +1192,9 @@ BEGIN
                               OR d.metadata->>'paired_subject_review'='true') THEN 0
                         WHEN mode.semantic_review_only THEN 1 ELSE 0
                     END,
+                    -- Unseen keyword matches are not higher review quality than
+                    -- direct physical nominees; final selected assets stay unique.
+                    CASE WHEN mode.needs_query_coverage THEN d.cross_shot_asset_bucket ELSE 0 END,
                     CASE
                         WHEN mode.needs_query_coverage
                          AND d.query_index<=2

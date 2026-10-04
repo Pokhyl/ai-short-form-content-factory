@@ -69,3 +69,7 @@
 
 ## Component-owner semantic review
 - Inspect actual owner-photo pixels before claiming missing component assets. Retrieval broadening does not remove shot concepts. Exposed-owner semantic candidates remain metadata-rejected; prioritize them only without trusted metadata, preserve the three-preview budget and require every Gemini concept/intent/exclusion check.
+
+## Product delivery method — 2026-10-04
+
+The user requested a radical change of working method and GitHub continuity. Follow docs/DELIVERY_STRATEGY.md and root AGENTS.md. Old chronological next-smoke notes do not authorize repeating the one-job/one-patch cycle. Preserve strict product/production contracts; do not infer permission to replace architecture. Commit and push meaningful evidence-backed checkpoints.

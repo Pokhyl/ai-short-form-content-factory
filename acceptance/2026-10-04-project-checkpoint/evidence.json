@@ -1,0 +1,37 @@
+{
+  "checkpoint": "2026-10-04T16:35:36Z user strategy change",
+  "product_ready": false,
+  "deployed": false,
+  "production_accepted": false,
+  "node_tests": {
+    "total": 883,
+    "pass": 883,
+    "fail": 0
+  },
+  "sql_regressions": {
+    "total": 8,
+    "pass": 8
+  },
+  "failed_job_immutable": "b76675c8-be07-44c0-9b27-22b350d86ef8",
+  "stage_result": {
+    "M4": "passed for failed job",
+    "M5": "passed for failed job",
+    "M6": "passed for failed job",
+    "M7": "passed for failed job",
+    "M8": "failed for failed job",
+    "M9": "not started for failed job"
+  },
+  "live_versions_last_verified": {
+    "M5": "v225 ab663ac4-c283-4d2f-b0e6-e2c7d0770a64",
+    "M8": "v86 54776132-c5a5-40e9-acb1-3e9498e273e5"
+  },
+  "provider_uncertainty": "New S4 open-owner candidate pixels/native provider acceptance and final strict nine-scene unique assignment remain unverified. No fresh production job created or launched.",
+  "sha256": {
+    "workflows/VIDEO-M5-Script-Storyboard.json": "907f7eb5baef72434623cdf424303badcb547acc4ec1e1103b3786a417002c20",
+    "workflows/VIDEO-M8-Multi-Source-Visuals.json": "a078b5f450189f2344dd3520835a12f22aac04236f82a66349250a3fdd0047dc",
+    "db/09-visuals.sql": "18959c0304fe9b7122cfc93827c1376f3de7d941cae1ffbbcc2ab9d7f427704c",
+    "tests/fixtures/m8-12108-fastening-contract.json": "610edd99c751382aa2c518f6edaf3958c377a94102ed77d1bdfd333f182e8cd0",
+    "tests/m5-m8-12108-fastening-contract.test.cjs": "81f8af1e925f92f739b5a56858b872b85abdef8592144e07bac66bf7294c774d",
+    "tests/m8-12108-semantic-nomination-ranking.py": "53eb2e60d2f81755d7d7dca9e67c261adc1b691a9991928855fdc7a94e651590"
+  }
+}
