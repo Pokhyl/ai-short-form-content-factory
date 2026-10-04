@@ -1,3 +1,10 @@
+## 2026-10-04 — 314ab0b deployed and verified; new acceptance CREATED ONLY
+- Code `314ab0b` is pushed. M5 v223 active/version `a1e79fcf-588e-4848-9752-bf6b50d8c90d`; M8 v85 active/version `4ddd4f4c-fc25-420a-aa43-8aa33b885640`. Live nodes/connections/settings and active history nodes/connections equal Git. Each changed workflow was imported/published once; one n8n restart. Runtime running/restart0; media worker healthy/restart0; direct/public health 200. Other 31 workflows fingerprint unchanged: `31|107663ca12372101be42873330227fae`. Selection function equals Git, SHA256 `c2e75f937f1ae64edbe94cdafb467ae3bcb26a8d3fd985b15d507fa53a497539`; no SQL deployment.
+- Backup `.backups/before-12040-VideoM5Storyboard001.json` SHA256 `4046b85c179c181dca1f07a250a8334f3f38ad18c25138acfcf64465a4247297`; M8 counterpart SHA256 `704ad02e0a2f0c468737878d722e0dd7a1933dcc40aba294b940e7e8b1fc4846`.
+- All three previous M8 12040 failure classes closed offline: full 835/835 JS, three exact SQL replays, strict Gemini pixel diagnostics score100 for final S3/S8/S9 contracts. This is NOT a production acceptance PASS.
+- NEW acceptance ID `c323a404-c83b-4a87-a1fd-8dc08771bbc7`, topic `jak działa zszywacz biurowy`, pl30/Gemini, created EXACTLY ONCE HTTP201; DB `created`. NOT LAUNCHED. Push this checkpoint, verify ID in HEAD/origin/main plus DB created and n8n active0, then launch this new ID EXACTLY ONCE and trace M4-M9 to terminal.
+- Failed `5909e2b1-2b7b-40fc-94bf-9744bf146205` and all earlier failed IDs remain immutable; NEVER relaunch. No other import/publish/restart/create is pending.
+
 ## 2026-10-04 — all M8 12040 blockers closed offline; deployment pending
 - Immutable failed job `5909e2b1-2b7b-40fc-94bf-9744bf146205` remains `visuals_failed`; NEVER relaunch it. No new factory job has been created or launched in this correction.
 - S3: final single-subject internal-view Commons fallback may omit only desktop/tabletop/handheld/portable placement qualifiers. Original shot concepts and intent stay mandatory. Existing exposed-owner nomination keeps metadata rejection. Exact SQL replay now includes pixel-confirmed open Delfin `7824198` within three previews.
