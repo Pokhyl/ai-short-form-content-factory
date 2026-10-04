@@ -1,0 +1,12 @@
+{
+  "requests": 81,
+  "exact_saved_matches": 74,
+  "missing": 7,
+  "unique_missing_requests": [
+    "[\"Pixabay\",\"stapled paper\",null]",
+    "[\"Pexels\",\"open stapler\",\"portrait\"]",
+    "[\"Wikimedia\",\"stapled paper\",null]"
+  ]
+}
+UNMATCHED [{"provider":"Pixabay","shot":"S6-A","query_index":3,"provider_query":"stapled paper","orientation":null},{"provider":"Pixabay","shot":"S9-A","query_index":3,"provider_query":"stapled paper","orientation":null},{"provider":"Pexels","shot":"S2-A","query_index":3,"provider_query":"open stapler","orientation":"portrait"},{"provider":"Pexels","shot":"S3-A","query_index":3,"provider_query":"open stapler","orientation":"portrait"},{"provider":"Pexels","shot":"S4-A","query_index":3,"provider_query":"open stapler","orientation":"portrait"},{"provider":"Wikimedia","shot":"S6-A","query_index":3,"provider_query":"stapled paper","orientation":null},{"provider":"Wikimedia","shot":"S9-A","query_index":3,"provider_query":"stapled paper","orientation":null}]
+SAVED acceptance/release-coverage/12126-cached-source-replay.json

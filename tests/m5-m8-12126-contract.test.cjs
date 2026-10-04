@@ -44,3 +44,23 @@ test('mere proximity cannot claim completed fastening state in either anchor ord
   assert.equal(requests(provider,begin).find(r=>r.shot_key==='S9-A'&&r.query_index===3).fastened_result_context,undefined);
  }
 });
+
+test('explicit open-owner final fallback retrieves an exposed owner without dropping its detail',()=>{
+ const begin=structuredClone(f.visual_begin),shot=begin.shots_json.find(s=>s.shot_key==='S3-A');Object.assign(shot,{must_show:['office stapler','spring mechanism'],visual_intent:'spring mechanism inside an open office stapler guide',queries_en:['stapler internal spring mechanism','office stapler interior spring','office stapler']});
+ for(const provider of ['Pixabay','Pexels','Wikimedia']){const rows=requests(provider,begin).filter(r=>r.shot_key==='S3-A');assert.equal(rows[2].provider_query,'open stapler');assert.deepEqual(rows[2].must_show,shot.must_show);assert.equal(rows[2].visual_intent,shot.visual_intent);for(let i=0;i<2;i++)assert.equal(rows[i].provider_query,shot.queries_en[i]);}
+});
+test('bare surface final fallback retains its independently authored connector in every adapter',()=>{
+ const begin=structuredClone(f.visual_begin),shot=begin.shots_json.find(s=>s.shot_key==='S8-A');shot.queries_en[2]='paper sheets';
+ for(const provider of ['Pixabay','Pexels','Wikimedia']){const rows=requests(provider,begin).filter(r=>r.shot_key==='S8-A');assert.match(rows[2].provider_query,/staple/);assert.match(rows[2].provider_query,/paper/);assert.deepEqual(rows[2].must_show,shot.must_show);assert.equal(rows[2].fastened_result_context,undefined);assert.equal(rows[2].visual_intent,shot.visual_intent);for(let i=0;i<2;i++)assert.equal(rows[i].provider_query,shot.queries_en[i]);}
+});
+
+test('closed owners and ungrounded second subjects retain their authored bare fallback',()=>{
+ for(const provider of ['Pixabay','Pexels','Wikimedia']){
+  const begin=structuredClone(f.visual_begin),s=begin.shots_json.find(s=>s.shot_key==='S3-A');Object.assign(s,{must_show:['office stapler','spring mechanism'],visual_intent:'spring mechanism inside a closed office stapler guide',queries_en:['stapler internal spring mechanism','office stapler interior spring','office stapler']});assert.notEqual(requests(provider,begin).find(r=>r.shot_key==='S3-A'&&r.query_index===3).provider_query,'open stapler');
+  const pair=begin.shots_json.find(s=>s.shot_key==='S8-A');Object.assign(pair,{must_show:['paper sheets','metal staple'],visual_intent:'Paper sheets on a desk.',queries_en:['paper sheets on a desk','paper sheets closeup','paper sheets']});assert.equal(requests(provider,begin).find(r=>r.shot_key==='S8-A'&&r.query_index===3).provider_query,'paper sheets');
+ }
+});
+
+test('an unrelated independent co-subject cannot activate exposed-owner retrieval',()=>{
+ for(const provider of ['Pixabay','Pexels','Wikimedia']){const begin=structuredClone(f.visual_begin),s=begin.shots_json.find(s=>s.shot_key==='S3-A');Object.assign(s,{must_show:['office stapler','paper sheets'],visual_intent:'spring mechanism inside an open office stapler guide',queries_en:['stapler internal spring mechanism','office stapler interior spring','office stapler']});assert.notEqual(requests(provider,begin).find(r=>r.shot_key==='S3-A'&&r.query_index===3).provider_query,'open stapler');}
+});

@@ -1,0 +1,749 @@
+{
+  "provenance": "Exact production M8 12126 inline image bytes; row-major S1-S9, three candidates per scene; model decisions are not human acceptance",
+  "images": [
+    {
+      "shot": "S1-A",
+      "candidate": 1,
+      "provider": "pexels",
+      "asset": "5882697",
+      "evaluation": {
+        "candidate_index": 1,
+        "must_show_visible": false,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": false,
+            "evidence": "The object shown is a hole puncher with a pivoting upper lever and dual punch heads, not a stapler."
+          },
+          {
+            "concept_index": 2,
+            "concept": "desk surface",
+            "visible": true,
+            "evidence": "A flat white desk surface is clearly visible supporting the objects."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 40,
+        "vision_pass": false,
+        "reason": "The candidate shows a hole puncher instead of an office stapler."
+      },
+      "sha256": "b980b4f0063f4b61664fa75056c6ce9101b468e22bd65e24b9bc0f1f2c9728df"
+    },
+    {
+      "shot": "S1-A",
+      "candidate": 2,
+      "provider": "pexels",
+      "asset": "9908658",
+      "evaluation": {
+        "candidate_index": 2,
+        "must_show_visible": false,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": false,
+            "evidence": "No office stapler is visible in the frame."
+          },
+          {
+            "concept_index": 2,
+            "concept": "desk surface",
+            "visible": false,
+            "evidence": "A white flat background surface is present, but no desk surface context with the required stapler is shown."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 10,
+        "vision_pass": false,
+        "reason": "An office stapler is missing from the image."
+      },
+      "sha256": "c919b6598b1be8c07586c42f88ca385e1da27dcaeac74790357a3d5135c17f94"
+    },
+    {
+      "shot": "S1-A",
+      "candidate": 3,
+      "provider": "wikimedia",
+      "asset": "163765292",
+      "evaluation": {
+        "candidate_index": 3,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": true,
+            "evidence": "A black office stapler with an elongated pivoting arm, hinged rear pin, and internal staple channel is clearly visible."
+          },
+          {
+            "concept_index": 2,
+            "concept": "desk surface",
+            "visible": true,
+            "evidence": "The stapler is resting on a flat wooden desk surface."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 100,
+        "vision_pass": true,
+        "reason": "An office stapler resting on a flat desk surface is clearly visible with no conflicting items."
+      },
+      "sha256": "e1de4630037093a921d8825650b2b22cdabfb3b27ba3a05df85a432b4f9bfd16"
+    },
+    {
+      "shot": "S2-A",
+      "candidate": 1,
+      "provider": "pexels",
+      "asset": "6340717",
+      "evaluation": {
+        "candidate_index": 1,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": true,
+            "evidence": "An office stapler is visible on the lower left showing its hinged upper arm, base, and metal anvil structure."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 90,
+        "vision_pass": true,
+        "reason": "An office stapler is clearly visible along with other stationery items, and no loose paper sheets are present."
+      },
+      "sha256": "cc7b553d4b17b0c104c737f331edd6f649d4ff1450ba8c940a93214c43d17ae1"
+    },
+    {
+      "shot": "S2-A",
+      "candidate": 2,
+      "provider": "wikimedia",
+      "asset": "75975582",
+      "evaluation": {
+        "candidate_index": 2,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": true,
+            "evidence": "A pink office stapler is prominently visible showing its upper arched housing, internal metal spring channel, and base."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 95,
+        "vision_pass": true,
+        "reason": "A clear photo of a pink office stapler with a staple strip beside it; no loose paper sheets are shown."
+      },
+      "sha256": "3d03435e598b19222745be5699d6ea80c06013642fd401245f3625f2ff7a7f4d"
+    },
+    {
+      "shot": "S2-A",
+      "candidate": 3,
+      "provider": "pixabay",
+      "asset": "411680",
+      "evaluation": {
+        "candidate_index": 3,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": true,
+            "evidence": "A black Swingline office stapler is clearly visible showing its arched upper housing, metal inner channel, pivot, and base."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 100,
+        "vision_pass": true,
+        "reason": "A clear, focused photo of an office stapler without any loose paper sheets."
+      },
+      "sha256": "6d1cddec25d260d6aa67ffe27ea2f103413960da40ac7dfcc06f982154dca99e"
+    },
+    {
+      "shot": "S3-A",
+      "candidate": 1,
+      "provider": "pexels",
+      "asset": "38511235",
+      "evaluation": {
+        "candidate_index": 1,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": true,
+            "evidence": "A small pink office stapler is visible on the wooden desk surface in front of the mug."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 90,
+        "vision_pass": true,
+        "reason": "An office stapler is clearly visible in the scene on a desk."
+      },
+      "sha256": "9443dc059d7062f69d5567314e422088678b4f49f44f8860ecfde5039295a211"
+    },
+    {
+      "shot": "S3-A",
+      "candidate": 2,
+      "provider": "wikimedia",
+      "asset": "75975582",
+      "evaluation": {
+        "candidate_index": 2,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": true,
+            "evidence": "A pink office stapler is prominently featured in the center foreground."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 95,
+        "vision_pass": true,
+        "reason": "A clear, well-framed photograph of a pink office stapler."
+      },
+      "sha256": "3d03435e598b19222745be5699d6ea80c06013642fd401245f3625f2ff7a7f4d"
+    },
+    {
+      "shot": "S3-A",
+      "candidate": 3,
+      "provider": "pixabay",
+      "asset": "813653",
+      "evaluation": {
+        "candidate_index": 3,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": true,
+            "evidence": "A bright red office stapler is centered in the frame on a wooden surface."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 95,
+        "vision_pass": true,
+        "reason": "A clear, high-quality photograph of an office stapler."
+      },
+      "sha256": "09bdaa4315412739ae43bbec12a13f8e18390c13d049a917301e1c5f0e05a2ed"
+    },
+    {
+      "shot": "S4-A",
+      "candidate": 1,
+      "provider": "pexels",
+      "asset": "6340709",
+      "evaluation": {
+        "candidate_index": 1,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": true,
+            "evidence": "Part of a metallic stapler body is visible in the upper right corner."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 40,
+        "vision_pass": false,
+        "reason": "Only a portion of a stapler is visible among various other desk items."
+      },
+      "sha256": "2f9a5eb14138b8da074bd7d5bfb689d1f51a4a002f6f9ab996f7dd0ea6312b4a"
+    },
+    {
+      "shot": "S4-A",
+      "candidate": 2,
+      "provider": "wikimedia",
+      "asset": "75975582",
+      "evaluation": {
+        "candidate_index": 2,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": true,
+            "evidence": "A clear pink office stapler with visible metallic interior mechanism and hinge structure is present."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 95,
+        "vision_pass": true,
+        "reason": "A clear photographic shot of an office stapler on a desk."
+      },
+      "sha256": "3d03435e598b19222745be5699d6ea80c06013642fd401245f3625f2ff7a7f4d"
+    },
+    {
+      "shot": "S4-A",
+      "candidate": 3,
+      "provider": "pixabay",
+      "asset": "2350695",
+      "evaluation": {
+        "candidate_index": 3,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": true,
+            "evidence": "A complete grey and white office stapler showing its base, hinge, and metallic stapling head."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 100,
+        "vision_pass": true,
+        "reason": "Clear photo of an office stapler against a neutral background."
+      },
+      "sha256": "894856f41b0fdf4cea94a04d5f0c0cb044f78b637b12d6fd2cc764348d33097c"
+    },
+    {
+      "shot": "S5-A",
+      "candidate": 1,
+      "provider": "pixabay",
+      "asset": "3033461",
+      "evaluation": {
+        "candidate_index": 1,
+        "must_show_visible": false,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": false,
+            "evidence": "The object shown is a hole puncher with a curved handle and punch dies, not an office stapler."
+          },
+          {
+            "concept_index": 2,
+            "concept": "paper sheets",
+            "visible": true,
+            "evidence": "White paper sheets are visible beneath the hole puncher."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 30,
+        "vision_pass": false,
+        "reason": "Candidate shows a paper hole puncher rather than an office stapler."
+      },
+      "sha256": "8786b1a33617886dafb6920855452d8fd60fe845925a31f51e0dfd524702d184"
+    },
+    {
+      "shot": "S5-A",
+      "candidate": 2,
+      "provider": "pexels",
+      "asset": "7578193",
+      "evaluation": {
+        "candidate_index": 2,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": true,
+            "evidence": "An office stapler is visible with an upper arm structure resting near paper."
+          },
+          {
+            "concept_index": 2,
+            "concept": "paper sheets",
+            "visible": true,
+            "evidence": "Paper sheets and a notebook are visible beneath and beside the stapler."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 90,
+        "vision_pass": true,
+        "reason": "An office stapler with its upper arm positioned above paper sheets is clearly visible."
+      },
+      "sha256": "a24765c8df4ee6aa2bfaee2e2897cf0b81aae6d866a873195f46a8f2b568c5e8"
+    },
+    {
+      "shot": "S5-A",
+      "candidate": 3,
+      "provider": "wikimedia",
+      "asset": "64007778",
+      "evaluation": {
+        "candidate_index": 3,
+        "must_show_visible": false,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "office stapler",
+            "visible": true,
+            "evidence": "An office stapler with an upper arm is clearly visible."
+          },
+          {
+            "concept_index": 2,
+            "concept": "paper sheets",
+            "visible": false,
+            "evidence": "No paper sheets are visible in the image; only a strip of staples is present."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 40,
+        "vision_pass": false,
+        "reason": "The stapler is present, but paper sheets are missing."
+      },
+      "sha256": "e2dfd68a0b01206e436ef50da1e7289b39d235089d1011f84de6c9d03ec06c31"
+    },
+    {
+      "shot": "S6-A",
+      "candidate": 1,
+      "provider": "wikimedia",
+      "asset": "75797646",
+      "evaluation": {
+        "candidate_index": 1,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "paper sheets",
+            "visible": true,
+            "evidence": "Lined paper sheet background is visible."
+          },
+          {
+            "concept_index": 2,
+            "concept": "metal staple",
+            "visible": true,
+            "evidence": "A staple-like wire element is depicted in the corner, but the image is a digital diagram/rendering containing measurement lines and text."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 30,
+        "vision_pass": false,
+        "reason": "The image is a digital graphic/illustration with measurement overlays rather than a real photograph."
+      },
+      "sha256": "8f5074bb82d26dba211fb8037c140d9f15e440473d8c5807a327eb10e8e600a1"
+    },
+    {
+      "shot": "S6-A",
+      "candidate": 2,
+      "provider": "wikimedia",
+      "asset": "77734699",
+      "evaluation": {
+        "candidate_index": 2,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "paper sheets",
+            "visible": true,
+            "evidence": "Multiple paper sheets with printed text are visible on the right side."
+          },
+          {
+            "concept_index": 2,
+            "concept": "metal staple",
+            "visible": true,
+            "evidence": "Loose metal staples are scattered on the table, but they are not fastening the paper sheets together."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 45,
+        "vision_pass": false,
+        "reason": "Paper sheets and loose metal staples are present, but the staples are not fastened to the paper sheets."
+      },
+      "sha256": "1bb4b288dc2b4716e5be8445f23c61ddf6e19c44565b60a90cf779b67be8f0e5"
+    },
+    {
+      "shot": "S6-A",
+      "candidate": 3,
+      "provider": "wikimedia",
+      "asset": "12612756",
+      "evaluation": {
+        "candidate_index": 3,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "paper sheets",
+            "visible": true,
+            "evidence": "Paper surface showing punctures at the bottom where staples pass through."
+          },
+          {
+            "concept_index": 2,
+            "concept": "metal staple",
+            "visible": true,
+            "evidence": "Metal staples with crown and terminal legs are visible in various states."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 95,
+        "vision_pass": true,
+        "reason": "Real photographic view showing paper sheets and metal staples clearly."
+      },
+      "sha256": "595220036f8e959781d66dcae1d5e5cc7a61c0e1e8e2cbc779d6c517e23de743"
+    },
+    {
+      "shot": "S7-A",
+      "candidate": 1,
+      "provider": "wikimedia",
+      "asset": "7116226",
+      "evaluation": {
+        "candidate_index": 1,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "stapler metal",
+            "visible": true,
+            "evidence": "A metal anvil with small grooved indentations is visible on the base of the blue and green stapler."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 95,
+        "vision_pass": true,
+        "reason": "The stapler metal anvil with grooved indentations is clearly visible on the stapler base."
+      },
+      "sha256": "89fbfafe9cbb0528ed2c5179fbc8b69712cd564e136a05cb3b13dbeed34b8512"
+    },
+    {
+      "shot": "S7-A",
+      "candidate": 2,
+      "provider": "pixabay",
+      "asset": "5521592",
+      "evaluation": {
+        "candidate_index": 2,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "stapler metal",
+            "visible": true,
+            "evidence": "A metal anvil plate is visible on the base of the red stapler."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 90,
+        "vision_pass": true,
+        "reason": "Stapler with metal base/anvil is clearly visible."
+      },
+      "sha256": "7f2ab424ba8fe26424e2d214fafff342fd6cfaa34376ebf4f80bc9983dd7f464"
+    },
+    {
+      "shot": "S7-A",
+      "candidate": 3,
+      "provider": "pexels",
+      "asset": "8818043",
+      "evaluation": {
+        "candidate_index": 3,
+        "must_show_visible": false,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "stapler metal",
+            "visible": false,
+            "evidence": "There is tread plate metal texture, but no stapler metal anvil structure is present."
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 10,
+        "vision_pass": false,
+        "reason": "Shows metal tread plate instead of a stapler base."
+      },
+      "sha256": "728f5e067a38cfef07f13e0ef2484ed68a9b0e92b5e832aea7fcd4229c5598f9"
+    },
+    {
+      "shot": "S8-A",
+      "candidate": 1,
+      "provider": "wikimedia",
+      "asset": "75797646",
+      "evaluation": {
+        "candidate_index": 1,
+        "must_show_visible": false,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "paper sheets",
+            "visible": true,
+            "evidence": "lined paper sheet is visible"
+          },
+          {
+            "concept_index": 2,
+            "concept": "metal staple",
+            "visible": false,
+            "evidence": "the image is a digital diagram/rendering showing a staple illustration with measurement lines, not real photographic media"
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 0,
+        "vision_pass": false,
+        "reason": "candidate is a digital measurement diagram rather than a real photograph"
+      },
+      "sha256": "8f5074bb82d26dba211fb8037c140d9f15e440473d8c5807a327eb10e8e600a1"
+    },
+    {
+      "shot": "S8-A",
+      "candidate": 2,
+      "provider": "wikimedia",
+      "asset": "77734699",
+      "evaluation": {
+        "candidate_index": 2,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "paper sheets",
+            "visible": true,
+            "evidence": "stacked paper documents are visible on the right"
+          },
+          {
+            "concept_index": 2,
+            "concept": "metal staple",
+            "visible": true,
+            "evidence": "multiple loose metal staples are visible on the wooden surface"
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 20,
+        "vision_pass": false,
+        "reason": "metal staples are loose on the desk and not curved inward underneath paper sheets"
+      },
+      "sha256": "1bb4b288dc2b4716e5be8445f23c61ddf6e19c44565b60a90cf779b67be8f0e5"
+    },
+    {
+      "shot": "S8-A",
+      "candidate": 3,
+      "provider": "wikimedia",
+      "asset": "12612756",
+      "evaluation": {
+        "candidate_index": 3,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "paper sheets",
+            "visible": true,
+            "evidence": "white paper background with pierced holes at the bottom"
+          },
+          {
+            "concept_index": 2,
+            "concept": "metal staple",
+            "visible": true,
+            "evidence": "copper-colored metal staples and wire pieces are visible"
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": true,
+        "match_score": 95,
+        "vision_pass": true,
+        "reason": "shows copper metal staple ends curving inward underneath paper sheets at the bottom row"
+      },
+      "sha256": "595220036f8e959781d66dcae1d5e5cc7a61c0e1e8e2cbc779d6c517e23de743"
+    },
+    {
+      "shot": "S9-A",
+      "candidate": 1,
+      "provider": "wikimedia",
+      "asset": "75797646",
+      "evaluation": {
+        "candidate_index": 1,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "paper sheets",
+            "visible": true,
+            "evidence": "lined paper sheets are visible"
+          },
+          {
+            "concept_index": 2,
+            "concept": "metal staple",
+            "visible": true,
+            "evidence": "a metal staple with crown and legs is visible piercing the paper"
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 0,
+        "vision_pass": false,
+        "reason": "candidate 1 is a digital diagram or illustration rather than a real photograph"
+      },
+      "sha256": "8f5074bb82d26dba211fb8037c140d9f15e440473d8c5807a327eb10e8e600a1"
+    },
+    {
+      "shot": "S9-A",
+      "candidate": 2,
+      "provider": "wikimedia",
+      "asset": "12612756",
+      "evaluation": {
+        "candidate_index": 2,
+        "must_show_visible": true,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "paper sheets",
+            "visible": true,
+            "evidence": "paper sheet is visible at the bottom showing punctures"
+          },
+          {
+            "concept_index": 2,
+            "concept": "metal staple",
+            "visible": true,
+            "evidence": "copper-colored staples are visible"
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 20,
+        "vision_pass": false,
+        "reason": "candidate 2 shows loose staples and samples, not a bound stack of paper sheets on a desk"
+      },
+      "sha256": "595220036f8e959781d66dcae1d5e5cc7a61c0e1e8e2cbc779d6c517e23de743"
+    },
+    {
+      "shot": "S9-A",
+      "candidate": 3,
+      "provider": "pexels",
+      "asset": "14935583",
+      "evaluation": {
+        "candidate_index": 3,
+        "must_show_visible": false,
+        "must_show_checks": [
+          {
+            "concept_index": 1,
+            "concept": "paper sheets",
+            "visible": true,
+            "evidence": "a stack of paper sheets is clearly visible"
+          },
+          {
+            "concept_index": 2,
+            "concept": "metal staple",
+            "visible": false,
+            "evidence": "no metal staple is visible, instead showing thread bindings"
+          }
+        ],
+        "must_not_show_clear": true,
+        "intent_match": false,
+        "match_score": 30,
+        "vision_pass": false,
+        "reason": "candidate 3 shows thread binding instead of a metal staple"
+      },
+      "sha256": "f966645a2783758b9450e8b7ec03797cebf5830c1e73d87768a44c7f925a3127"
+    }
+  ],
+  "sheets": {
+    "sheet-3.jpg": "2a8600e7fe52decc80215cd546aef59cb460118d63fc63bb37f53cd82e46fa63",
+    "sheet-2.jpg": "9565e0be0b8d7df2f6b2104c95d1a280695fda401377ec0c60b205907ee45695",
+    "sheet-1.jpg": "a1b71ca4617e3b7aaaa963b99429983f030a2439259af35111101c49ca7e2371"
+  },
+  "sheet_builder": "FFmpeg xstack with exactly nine explicit normalized inputs per sheet; initial image-sequence tile grouping was rejected"
+}

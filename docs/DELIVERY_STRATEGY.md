@@ -1,3 +1,6 @@
+## Architecture replacement authorized — 2026-10-04 23:09 Warsaw
+The user explicitly requested radical project replacement. The former instruction against architecture change is superseded. New order: verified media availability and global feasibility BEFORE final narration and TTS. Keep current production intact until replacement has actual acceptance evidence. Work on factory-v3, not another M5/M8 patch cycle. Product contract and free-only limits remain.
+
 # Product completion strategy — authoritative from 2026-10-04
 
 ## Objective and changed method

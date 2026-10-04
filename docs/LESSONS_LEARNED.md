@@ -1,3 +1,11 @@
+## 2026-10-04 23:09 Warsaw — USER AUTHORIZED ARCHITECTURE REPLACEMENT; PRODUCT NOT READY
+
+User explicitly ordered radical project replacement. Stop the M5/M8 patch-and-production-retry approach. Preserve current production; create factory-v3 branch for an availability-first pipeline: evidence and actual reviewed assets -> globally feasible visual plan -> evidence-grounded narration -> frozen preflight -> one TTS -> alignment -> existing renderer -> actual media QA/review. Reuse working media processing and credential boundaries; do not touch unrelated automation. Architecture restrictions requiring the old video orchestration shape are superseded by this explicit user instruction, not product quality/free-only rules.
+
+Historical correction checkpoint: full Node897/897 PASS; cached current-source replay74/81 matches, THREE unique missing source requests. All27 actual previous previews inspected; old approvals cannot prove stronger contracts. Code NOT DEPLOYED; no new API/model/TTS/job/import/restart. Latest failed9bf5e97c stays immutable. PL15/EN30/RU45/UK60 unaccepted; product_ready=false. Saved corrections are forensic/reference material, not a direction to continue that loop.
+
+NEXT: implement and test the new pre-voice feasibility boundary using the real failed graph (maximum7/9), then availability-led planning and frozen provenance. Commit/push runnable changes and concrete limitations on factory-v3. Do not call a planner prototype a finished project.
+
 ## 2026-10-04 22:41 Warsaw — GENERIC CONTRACT CORRECTION OFFLINE PASS; NOT DEPLOYED
 
 - Failed9bf5e97c remains IMMUTABLE visuals_failed (M8execution12126), no final MP4; NEVER relaunch. Live M5v226/M8v87/code60589e9 unchanged. No new provider call/job/import/publish/restart in this correction phase.

@@ -1,0 +1,63 @@
+✔ exact production accepted filler must fail validation before TTS (28.305129ms)
+✔ native repaired storyboard retains all explicitly open authored detail requirements (59.165869ms)
+✔ surface-first bound-result fallback carries both required subjects on every adapter (53.69843ms)
+✔ generic result query is invariant to anchor order for bolts and plates (30.061099ms)
+✔ all seven normalization boundaries preserve only explicitly exposed intent/query grounded details (2.44483ms)
+✔ all seven boundaries reject closure filler in PL EN RU UK but allow real closing sentences (2.984795ms)
+✔ mere proximity cannot claim completed fastening state in either anchor order (23.799142ms)
+✖ explicit open-owner final fallback retrieves an exposed owner without dropping its detail (9.306107ms)
+✖ bare surface final fallback retains its independently authored connector in every adapter (6.463306ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 7
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 441.751201
+
+✖ failing tests:
+
+test at tests/m5-m8-12126-contract.test.cjs:48:1
+✖ explicit open-owner final fallback retrieves an exposed owner without dropping its detail (9.306107ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'office stapler'
+  - 'open stapler'
+  
+      at TestContext.<anonymous> (/work/tests/m5-m8-12126-contract.test.cjs:50:132)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'office stapler',
+    expected: 'open stapler',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/m5-m8-12126-contract.test.cjs:52:1
+✖ bare surface final fallback retains its independently authored connector in every adapter (6.463306ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /staple/. Input:
+  
+  'paper sheets'
+  
+      at TestContext.<anonymous> (/work/tests/m5-m8-12126-contract.test.cjs:54:132)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'paper sheets',
+    expected: /staple/,
+    operator: 'match',
+    diff: 'simple'
+  }

@@ -1,0 +1,107 @@
+{
+  "job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+  "execution_id": 12126,
+  "provider_acceptance": "saved native strict decisions only",
+  "shot_count": 9,
+  "maximum_unique_assignments": 7,
+  "possible": false,
+  "approved_choices": {
+    "S1-A": [
+      "wikimedia:163765292"
+    ],
+    "S2-A": [
+      "pexels:6340717",
+      "pixabay:411680",
+      "wikimedia:75975582"
+    ],
+    "S3-A": [
+      "pexels:38511235",
+      "pixabay:813653",
+      "wikimedia:75975582"
+    ],
+    "S4-A": [
+      "pixabay:2350695",
+      "wikimedia:75975582"
+    ],
+    "S5-A": [
+      "pexels:7578193"
+    ],
+    "S6-A": [
+      "wikimedia:12612756"
+    ],
+    "S7-A": [
+      "pixabay:5521592",
+      "wikimedia:7116226"
+    ],
+    "S8-A": [
+      "wikimedia:12612756"
+    ],
+    "S9-A": []
+  },
+  "deficient_components": [
+    {
+      "shots": [
+        "S6-A",
+        "S8-A"
+      ],
+      "approved_assets": [
+        "wikimedia:12612756"
+      ],
+      "deficit": 1
+    },
+    {
+      "shots": [
+        "S9-A"
+      ],
+      "approved_assets": [],
+      "deficit": 1
+    }
+  ],
+  "unreviewed_pool_counts": {
+    "S1-A": {
+      "Pixabay": 24,
+      "Pexels": 24,
+      "Wikimedia": 15
+    },
+    "S2-A": {
+      "Pixabay": 24,
+      "Pexels": 24,
+      "Wikimedia": 21
+    },
+    "S3-A": {
+      "Pixabay": 24,
+      "Pexels": 24,
+      "Wikimedia": 20
+    },
+    "S4-A": {
+      "Pixabay": 24,
+      "Pexels": 24,
+      "Wikimedia": 20
+    },
+    "S5-A": {
+      "Pixabay": 24,
+      "Pexels": 24,
+      "Wikimedia": 20
+    },
+    "S6-A": {
+      "Pixabay": 24,
+      "Pexels": 24,
+      "Wikimedia": 21
+    },
+    "S7-A": {
+      "Pixabay": 24,
+      "Pexels": 24,
+      "Wikimedia": 20
+    },
+    "S8-A": {
+      "Pixabay": 24,
+      "Pexels": 24,
+      "Wikimedia": 20
+    },
+    "S9-A": {
+      "Pixabay": 24,
+      "Pexels": 24,
+      "Wikimedia": 20
+    }
+  }
+}

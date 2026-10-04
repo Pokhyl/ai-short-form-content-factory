@@ -1,3 +1,6 @@
+## Active override — 2026-10-04 23:09 Warsaw
+User explicitly authorized radical architecture replacement. Continue on factory-v3 with availability-first planning before narration/TTS. Old M5/M8 correction loop is stopped. Preserve production and unrelated workflows; retain free-only, factual grounding, real-media quality, immutable failures and GitHub continuity. See top CODEX_HANDOFF; old architecture locks below are historical where they conflict.
+
 # Continuation instructions for this production project
 
 Start with docs/OPERATOR_RULES.md, docs/DELIVERY_STRATEGY.md and the TOP checkpoint in docs/CODEX_HANDOFF.md. Then read PLAN.md and docs/LESSONS_LEARNED.md before meaningful implementation; docs/PROVIDER_POLICY.md before provider changes.
