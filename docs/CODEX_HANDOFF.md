@@ -1,3 +1,8 @@
+## 2026-10-04 — ba7f748b acceptance LAUNCHED ONCE
+- NEW acceptance `ba7f748b-a5ae-4d98-ab94-4ce20db12d48` launched EXACTLY ONCE at 2026-10-04T08:53:18Z, HTTP202 accepted=true. Before launch HEAD/origin matched `3dc562c10ab43fd4a8d866eff08cd9d3fcca9073`, ID was persisted in both, DB created and n8n active0. Receipt `.review/m5-12064/new-acceptance-launch.json`.
+- First trace: M4 passed, M5 running. Continue this exact ID through M4-M9 to terminal; no additional create/run/import/publish/restart. M5 v224 and M8 v85 remain the deployed versions. Full845/845 passed before deployment. Production acceptance is not yet proven; final frames and actual audio must be inspected after M9.
+- All earlier failed IDs remain immutable; NEVER relaunch them.
+
 ## 2026-10-04 — 24c85a3 M5 deployed; acceptance ba7f748b CREATED ONLY
 - Correction `24c85a3` pushed. M5 v224 active/version `63f869b7-ea66-4cb8-b038-9a0f3911af9d`; live nodes/connections/settings and active history nodes/connections equal Git. M5 imported/published once; one n8n restart. n8n running/restart0; worker healthy/restart0; direct/public health200. Other32 workflows including M8 unchanged fingerprint `32|f1add12524b216a8936c9b487e27c449`. M8 remains v85 / `4ddd4f4c-fc25-420a-aa43-8aa33b885640`; SQL/worker unchanged. Backup `.backups/before-12064-VideoM5Storyboard001.json` SHA256 `fb6453df90b6319e20d5f85dbffcfe7d846c5a0bb61b5cf1afd771e058ae520b`.
 - Offline closure: focused language65/65; full845/845; exact old failure scope S5/S2 becomes S9 in both repair branches; one isolated exact provider/validator replay repairs ONLY S9 and passes native language review with no issues. Strict language, semantic, timing and visual acceptance gates unchanged.
