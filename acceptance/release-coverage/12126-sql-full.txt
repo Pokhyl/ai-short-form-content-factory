@@ -1,0 +1,34 @@
+m8-query-coverage-ranking.py
+{"baseline": [["pixabay", "8372443"], ["pexels", "11701113"], ["pixabay", "8372442"]], "candidate": [["pixabay", "8372443"], ["pexels", "10475444"], ["pixabay", "8372442"]], "slots": 3, "metadata_rejected_preserved": true, "trusted_order_unchanged": true}
+
+m8-qualified-owner-ranking.py
+{"production_baseline": [["pexels", "7578202"], ["pixabay", "9360465"], ["pexels", "7578193"]], "owner_query_only": [["wikimedia", "25823633"], ["wikimedia", "7824198"], ["wikimedia", "8141365"]], "after": [["wikimedia", "25823633"], ["wikimedia", "7824198"], ["wikimedia", "8141365"]], "slots": 3, "metadata_rejection_preserved": true, "trusted_order_unchanged": true}
+
+m8-12108-semantic-nomination-ranking.py
+{"shot": "S1-A", "before": [["pexels", "5882697"], ["pixabay", "3139127"], ["wikimedia", "163765292"]], "after": [["pexels", "5882697", 100], ["pixabay", "3139127", 88], ["wikimedia", "163765292", 100]]}
+{"shot": "S2-A", "before": [["pexels", "12048264"], ["pixabay", "224224"], ["wikimedia", "4760098"]], "after": [["pexels", "12048264", 98], ["pixabay", "224224", 100], ["wikimedia", "4760098", 57]]}
+{"shot": "S3-A", "before": [["pixabay", "5521592"], ["pexels", "38511235"], ["wikimedia", "75975582"]], "after": [["pixabay", "5521592", 100], ["pexels", "38511235", 86], ["wikimedia", "75975582", 76]]}
+{"shot": "S4-A", "before": [["wikimedia", "20574637"], ["pixabay", "2350695"], ["pexels", "29157286"]], "after": [["wikimedia", "164586506", 80], ["wikimedia", "25823633", 79], ["wikimedia", "8141365", 76]]}
+{"shot": "S5-A", "before": [["pexels", "6340717"], ["wikimedia", "75975582"], ["pixabay", "813653"]], "after": [["pexels", "6340717", 100], ["wikimedia", "75975582", 100], ["pixabay", "813653", 100]]}
+{"shot": "S6-A", "before": [["pexels", "4744821"], ["pixabay", "428288"], ["pexels", "5705992"]], "after": [["wikimedia", "75797646", 79], ["wikimedia", "77734699", 78], ["wikimedia", "12612756", 72]]}
+{"shot": "S7-A", "before": [["pexels", "4744830"], ["pixabay", "5710164"], ["pexels", "6077915"]], "after": [["pexels", "6991328", 80], ["wikimedia", "77734699", 98], ["wikimedia", "75797646", 77]]}
+{"shot": "S8-A", "before": [["pexels", "20657353"], ["wikimedia", "75975582"], ["pixabay", "1657620"]], "after": [["pexels", "20657353", 100], ["wikimedia", "75975582", 100], ["pixabay", "2350695", 100]]}
+{"shot": "S9-A", "before": [["wikimedia", "175612572"], ["pixabay", "263217"], ["pexels", "2332881"]], "after": [["wikimedia", "854970", 69], ["pexels", "6991328", 73], ["pixabay", "263217", 86]]}
+PASS baseline/current SQL: original9 reproduced, new9 sets minimum55 three slots; final selected uniqueness checked by native collector; all transactions rolled back
+
+m8-component-owner-ranking.py
+{"production_baseline": [["pexels", "7578202"], ["pixabay", "1015988"], ["pexels", "7578193"]], "owner_query_only": [["pexels", "7578202"], ["pixabay", "1015988"], ["wikimedia", "8141365"]], "after": [["wikimedia", "8141365"], ["wikimedia", "7824198"], ["wikimedia", "8141312"]], "slots": 3, "metadata_rejection_preserved": true, "trusted_order_unchanged": true}
+
+m8-surface-owner-ranking.py
+{"production_baseline": [["pexels", "18368498"], ["wikimedia", "24739724"], ["pixabay", "2850091"]], "owner_query_only": [["wikimedia", "12612756"], ["pexels", "4744821"], ["pixabay", "2850091"]], "after": [["wikimedia", "12612756"], ["pexels", "4744821"], ["pixabay", "2850091"]], "slots": 3, "metadata_rejection_preserved": true, "trusted_order_unchanged": true}
+
+m8-paired-preview-ranking.py
+{"shot": "S6-A", "before": [["wikimedia", "11334157"], ["wikimedia", "26029614"], ["pixabay", "487701"]], "after": [["wikimedia", "8141312", 75], ["pixabay", "487701", 100], ["pexels", "29157286", 66]]}
+{"shot": "S7-A", "before": [["wikimedia", "130306651"], ["wikimedia", "75797646"], ["pexels", "8478388"]], "after": [["wikimedia", "75797646", 79], ["wikimedia", "12612756", 72], ["pexels", "8478388", 92]]}
+PASS: exact baseline, strict eligibility, unique slots, unchanged trusted ranking; all transactions rolled back
+
+m8-paired-objects-ranking.py
+{"before": [["pexels", "29157286"], ["pixabay", "2850091"], ["pexels", "8478388"]], "after": [["wikimedia", "130306651"], ["wikimedia", "77734699"], ["wikimedia", "75797646"]], "slots": 3, "metadata_rejection_preserved": true, "trusted_order_unchanged": true}
+
+m8-fastened-result-ranking.py
+{"production_baseline": [["pexels", "12048264"], ["pixabay", "3196481"], ["pexels", "12903178"]], "owner_query_only": [["pexels", "6991328"], ["pexels", "7054761"], ["pixabay", "1841158"]], "after": [["pexels", "6991328"], ["pexels", "7054761"], ["pixabay", "1841158"]], "slots": 3, "metadata_rejection_preserved": true, "trusted_order_unchanged": true}

@@ -1,0 +1,1325 @@
+✔ metadata mode bypasses Gemini and preserves deterministic select_visuals path (4.001116ms)
+✔ M8 reads persisted mode from the job after selection claim (0.381222ms)
+✔ Gemini candidate planner is capped at three candidates per shot (0.962255ms)
+✔ Gemini candidate planner diversifies providers before taking second choices (1.436132ms)
+✔ one Gemini request evaluates all candidate images for a scene at low media resolution (4.147451ms)
+✔ Gemini parser recomputes pass fail-closed with a 70 score floor (1.585957ms)
+✔ Gemini parser rejects malformed model JSON instead of guessing (13.483003ms)
+✔ collector avoids reusing one provider asset across two scenes (1.336225ms)
+✔ collector reserves a shared sole candidate for the shot that has no alternative (2.290747ms)
+✔ collector fails when a scene has no Gemini-approved candidate (0.797407ms)
+✔ M8 Gemini Vision reuses the existing Gemini credential (1.976311ms)
+✔ media worker preview endpoint is bounded and image-only (2.433102ms)
+✔ DB persists Gemini validation evidence on final visual selection (0.971942ms)
+✔ Gemini-only candidate review can rescue metadata semantic false negatives but stays fail-closed for hard rejects (1.755114ms)
+✔ Gemini selection evidence records when Vision rescued a metadata-rejected candidate (0.480159ms)
+✔ partial preview fetch keeps usable candidates and renumbers them for Gemini (1.157567ms)
+✔ media worker keeps per-candidate preview failures but fails when every preview fails (1.570336ms)
+✔ 9932 provider retries run for one scene and only completed scenes reach collection (0.383193ms)
+✔ 9932 exhausted provider failures remain errors rather than semantic rejections (0.477751ms)
+✔ Gemini candidate planner spends bounded review slots on unseen cross-shot assets before duplicates (0.696575ms)
+✔ M4 builds subject-focused local and encyclopedia queries for all supported languages (21.100994ms)
+✔ M4 search-result relevance gate rejects unrelated SEO pages before evidence fetch (4.746993ms)
+✔ M4 relevance gate tolerates normal inflection but not unrelated same-language text (0.723971ms)
+✔ M4 disambiguates an unqualified theory using explanatory evidence across output languages (2.606391ms)
+✔ M4 fails closed when theory search has only a namesake show, and respects explicit show intent (1.101874ms)
+✔ M4 evidence normalization resolves the active retry candidate by item index instead of fragile paired-item ancestry (1.252573ms)
+✔ M4 evidence normalization no longer depends on .item pairing from a specific candidate builder (2.352286ms)
+✔ 10033 compact provider grammar retains en15 local contract (54.208242ms)
+✔ 10033 compact provider grammar retains en30 local contract (2.39427ms)
+✔ 10033 compact provider grammar retains en45 local contract (2.652201ms)
+✔ 10033 compact provider grammar retains en60 local contract (2.869243ms)
+✔ 10033 compact provider grammar retains pl15 local contract (2.151952ms)
+✔ 10033 compact provider grammar retains pl30 local contract (2.107272ms)
+✔ 10033 compact provider grammar retains pl45 local contract (2.762846ms)
+✔ 10033 compact provider grammar retains pl60 local contract (2.488701ms)
+✔ 10033 compact provider grammar retains ru15 local contract (2.699185ms)
+✔ 10033 compact provider grammar retains ru30 local contract (6.22286ms)
+✔ 10033 compact provider grammar retains ru45 local contract (2.177011ms)
+✔ 10033 compact provider grammar retains ru60 local contract (1.608437ms)
+✔ 10033 compact provider grammar retains uk15 local contract (0.913223ms)
+✔ 10033 compact provider grammar retains uk30 local contract (1.158133ms)
+✔ 10033 compact provider grammar retains uk45 local contract (1.311156ms)
+✔ 10033 compact provider grammar retains uk60 local contract (1.530635ms)
+✔ 10033 provider failure survives Build Storyboard Repair (2.450132ms)
+✔ 10033 provider failure survives Build Storyboard Repair 2 (2.140198ms)
+✔ Validate Storyboard: 11601 stapler action becomes a static searchable photo contract (19.001968ms)
+✔ Validate Storyboard: zipper opening action becomes a static object photo contract (0.867835ms)
+✔ Validate Storyboard: 11778 wrench engagement becomes a static searchable photo contract (0.36056ms)
+✔ Validate Storyboard: 11819 clamp stabilization becomes a static searchable photo contract (0.336463ms)
+✔ Validate Storyboard: 11829 hammer holding nail becomes a static searchable photo contract (0.646692ms)
+✔ Validate Storyboard: visible human action remains explicit (0.491281ms)
+✔ Validate Storyboard: visible human holding remains explicit (0.408028ms)
+✔ Validate Storyboard: visible human stabilization remains explicit (0.554519ms)
+✔ Validate Storyboard: stable connected relation remains explicit (0.770994ms)
+✔ Validate Storyboard: validator calls transient action canonicalizer (1.082711ms)
+✔ Validate Repaired Storyboard: 11601 stapler action becomes a static searchable photo contract (0.440637ms)
+✔ Validate Repaired Storyboard: zipper opening action becomes a static object photo contract (0.290391ms)
+✔ Validate Repaired Storyboard: 11778 wrench engagement becomes a static searchable photo contract (0.304911ms)
+✔ Validate Repaired Storyboard: 11819 clamp stabilization becomes a static searchable photo contract (0.260706ms)
+✔ Validate Repaired Storyboard: 11829 hammer holding nail becomes a static searchable photo contract (0.249217ms)
+✔ Validate Repaired Storyboard: visible human action remains explicit (0.251454ms)
+✔ Validate Repaired Storyboard: visible human holding remains explicit (0.240329ms)
+✔ Validate Repaired Storyboard: visible human stabilization remains explicit (0.208824ms)
+✔ Validate Repaired Storyboard: stable connected relation remains explicit (0.212384ms)
+✔ Validate Repaired Storyboard: validator calls transient action canonicalizer (0.187999ms)
+✔ Validate Repaired Storyboard 2: 11601 stapler action becomes a static searchable photo contract (0.324559ms)
+✔ Validate Repaired Storyboard 2: zipper opening action becomes a static object photo contract (0.309213ms)
+✔ Validate Repaired Storyboard 2: 11778 wrench engagement becomes a static searchable photo contract (1.7439ms)
+✔ Validate Repaired Storyboard 2: 11819 clamp stabilization becomes a static searchable photo contract (0.626169ms)
+✔ Validate Repaired Storyboard 2: 11829 hammer holding nail becomes a static searchable photo contract (0.27241ms)
+✔ Validate Repaired Storyboard 2: visible human action remains explicit (0.204561ms)
+✔ Validate Repaired Storyboard 2: visible human holding remains explicit (0.268543ms)
+✔ Validate Repaired Storyboard 2: visible human stabilization remains explicit (0.198076ms)
+✔ Validate Repaired Storyboard 2: stable connected relation remains explicit (0.2485ms)
+✔ Validate Repaired Storyboard 2: validator calls transient action canonicalizer (0.253173ms)
+✔ Canonicalize Final Storyboard: 11601 stapler action becomes a static searchable photo contract (0.384816ms)
+✔ Canonicalize Final Storyboard: zipper opening action becomes a static object photo contract (0.310213ms)
+✔ Canonicalize Final Storyboard: 11778 wrench engagement becomes a static searchable photo contract (0.306207ms)
+✔ Canonicalize Final Storyboard: 11819 clamp stabilization becomes a static searchable photo contract (0.28112ms)
+✔ Canonicalize Final Storyboard: 11829 hammer holding nail becomes a static searchable photo contract (0.230493ms)
+✔ Canonicalize Final Storyboard: visible human action remains explicit (0.682101ms)
+✔ Canonicalize Final Storyboard: visible human holding remains explicit (0.17835ms)
+✔ Canonicalize Final Storyboard: visible human stabilization remains explicit (0.222345ms)
+✔ Canonicalize Final Storyboard: stable connected relation remains explicit (0.224651ms)
+✔ Canonicalize Final Storyboard: validator calls transient action canonicalizer (0.125197ms)
+✔ Validate Storyboard: 11605 lock target modifiers are covered by the lock anchor (19.052539ms)
+✔ Validate Storyboard: semantic-head fallback still requires the real relation subject (1.714708ms)
+✔ Validate Storyboard: semantic-head fallback accepts a concise subtype anchor without dropping the second subject (0.621806ms)
+✔ Validate Repaired Storyboard: 11605 lock target modifiers are covered by the lock anchor (0.492619ms)
+✔ Validate Repaired Storyboard: semantic-head fallback still requires the real relation subject (0.624521ms)
+✔ Validate Repaired Storyboard: semantic-head fallback accepts a concise subtype anchor without dropping the second subject (0.359286ms)
+✔ Validate Repaired Storyboard 2: 11605 lock target modifiers are covered by the lock anchor (0.494358ms)
+✔ Validate Repaired Storyboard 2: semantic-head fallback still requires the real relation subject (0.375341ms)
+✔ Validate Repaired Storyboard 2: semantic-head fallback accepts a concise subtype anchor without dropping the second subject (0.551089ms)
+✔ 11613 first timing repair exposes validator-aligned per-scene lexical budget (22.16172ms)
+✔ 11613 excessive-novel retry receives the same immutable lexical budget (8.84051ms)
+✔ Validate Storyboard: 11635 rotational movement becomes a static hinge photo contract (18.071644ms)
+✔ Validate Storyboard: stable hinge relation without motion remains explicit (1.129499ms)
+✔ Validate Repaired Storyboard: 11635 rotational movement becomes a static hinge photo contract (0.501831ms)
+✔ Validate Repaired Storyboard: stable hinge relation without motion remains explicit (0.267207ms)
+✔ Validate Repaired Storyboard 2: 11635 rotational movement becomes a static hinge photo contract (0.289882ms)
+✔ Validate Repaired Storyboard 2: stable hinge relation without motion remains explicit (0.254982ms)
+✔ Canonicalize Final Storyboard: 11635 rotational movement becomes a static hinge photo contract (0.284496ms)
+✔ Canonicalize Final Storyboard: stable hinge relation without motion remains explicit (0.212928ms)
+✔ Validate Timing Repair: 11642 excessive novel modifiers revert only the offending scene (21.035132ms)
+✔ Validate Timing Repair: deterministic fallback remains fail-closed for changed numbers (1.556247ms)
+✔ Validate Timing Repair: deterministic fallback remains fail-closed for negation changes (0.943536ms)
+✔ Validate Timing Repair 2: 11642 excessive novel modifiers revert only the offending scene (1.162565ms)
+✔ Validate Timing Repair 2: deterministic fallback remains fail-closed for changed numbers (0.481476ms)
+✔ Validate Timing Repair 2: deterministic fallback remains fail-closed for negation changes (0.412928ms)
+✔ 11642 timing prompts require minimal lexical edits instead of broad paraphrase (0.65552ms)
+✔ Validate Storyboard: 11659 thermometer internal detail promotes concrete owner and removes transient expansion (34.12395ms)
+✔ Validate Storyboard: ordinary laboratory test tube is not misclassified as an owner device (0.841373ms)
+✔ Validate Storyboard: static internal relation without transient action remains unchanged when no owner is present (1.799202ms)
+✔ Validate Repaired Storyboard: 11659 thermometer internal detail promotes concrete owner and removes transient expansion (0.652767ms)
+✔ Validate Repaired Storyboard: ordinary laboratory test tube is not misclassified as an owner device (0.504767ms)
+✔ Validate Repaired Storyboard: static internal relation without transient action remains unchanged when no owner is present (0.696382ms)
+✔ Validate Repaired Storyboard 2: 11659 thermometer internal detail promotes concrete owner and removes transient expansion (0.372595ms)
+✔ Validate Repaired Storyboard 2: ordinary laboratory test tube is not misclassified as an owner device (0.33226ms)
+✔ Validate Repaired Storyboard 2: static internal relation without transient action remains unchanged when no owner is present (1.14349ms)
+✔ Canonicalize Final Storyboard: 11659 thermometer internal detail promotes concrete owner and removes transient expansion (0.576235ms)
+✔ Canonicalize Final Storyboard: ordinary laboratory test tube is not misclassified as an owner device (0.442336ms)
+✔ Canonicalize Final Storyboard: static internal relation without transient action remains unchanged when no owner is present (0.277046ms)
+✔ Validate Narration Language Repair: 11676 removes exact adjacent multiword duplication (19.131384ms)
+✔ Validate Narration Language Repair: preserves ordinary single-word repetition and non-adjacent wording (0.667916ms)
+✔ Validate Narration Language Repair: preserves terminal punctuation when repeated phrase ends the sentence (1.395624ms)
+✔ Validate Narration Language Repair Retry: 11676 removes exact adjacent multiword duplication (0.367308ms)
+✔ Validate Narration Language Repair Retry: preserves ordinary single-word repetition and non-adjacent wording (0.455826ms)
+✔ Validate Narration Language Repair Retry: preserves terminal punctuation when repeated phrase ends the sentence (0.376423ms)
+✔ Validate Narration Language Repair Second Pass: 11676 removes exact adjacent multiword duplication (0.556223ms)
+✔ Validate Narration Language Repair Second Pass: preserves ordinary single-word repetition and non-adjacent wording (0.572032ms)
+✔ Validate Narration Language Repair Second Pass: preserves terminal punctuation when repeated phrase ends the sentence (0.489404ms)
+✔ 11682 too-short measured correction rejects a nearest hybrid still below target and routes compliance (28.157424ms)
+✔ 11682 directional marker is not added when measured correction is already within tolerance (11.905381ms)
+✔ Build Final Measured Correction persists measured duration for directional validation (1.419657ms)
+✔ Validate Storyboard: 11704 repeated nearby owner is retrieval context, not a second hard subject (26.755737ms)
+✔ Validate Storyboard: 11747 mid-sentence proximity continuation is context, not a second hard subject (4.109298ms)
+✔ Validate Storyboard: complete-sentence proximity still keeps an unrelated second subject hard (2.021988ms)
+✔ Validate Storyboard: mid-sentence proximity does not collapse when the next scene starts a new sentence (1.665052ms)
+✔ Validate Storyboard: repeated owner proximity supports beside and next to but not generic with (2.207047ms)
+✔ Validate Storyboard: continuation context is threaded into both sanitizer calls (0.6167ms)
+✔ Validate Repaired Storyboard: 11704 repeated nearby owner is retrieval context, not a second hard subject (0.935778ms)
+✔ Validate Repaired Storyboard: 11747 mid-sentence proximity continuation is context, not a second hard subject (0.565078ms)
+✔ Validate Repaired Storyboard: complete-sentence proximity still keeps an unrelated second subject hard (1.014435ms)
+✔ Validate Repaired Storyboard: mid-sentence proximity does not collapse when the next scene starts a new sentence (1.698534ms)
+✔ Validate Repaired Storyboard: repeated owner proximity supports beside and next to but not generic with (0.759363ms)
+✔ Validate Repaired Storyboard: continuation context is threaded into both sanitizer calls (0.278127ms)
+✔ Validate Repaired Storyboard 2: 11704 repeated nearby owner is retrieval context, not a second hard subject (0.950124ms)
+✔ Validate Repaired Storyboard 2: 11747 mid-sentence proximity continuation is context, not a second hard subject (1.576303ms)
+✔ Validate Repaired Storyboard 2: complete-sentence proximity still keeps an unrelated second subject hard (1.671471ms)
+✔ Validate Repaired Storyboard 2: mid-sentence proximity does not collapse when the next scene starts a new sentence (1.213274ms)
+✔ Validate Repaired Storyboard 2: repeated owner proximity supports beside and next to but not generic with (0.974517ms)
+✔ Validate Repaired Storyboard 2: continuation context is threaded into both sanitizer calls (0.706424ms)
+✔ Canonicalize Final Storyboard: 11704 repeated nearby owner is retrieval context, not a second hard subject (18.010026ms)
+✔ Canonicalize Final Storyboard: 11747 mid-sentence proximity continuation is context, not a second hard subject (1.109509ms)
+✔ Canonicalize Final Storyboard: complete-sentence proximity still keeps an unrelated second subject hard (0.831908ms)
+✔ Canonicalize Final Storyboard: mid-sentence proximity does not collapse when the next scene starts a new sentence (0.668483ms)
+✔ Canonicalize Final Storyboard: repeated owner proximity supports beside and next to but not generic with (5.98767ms)
+✔ Canonicalize Final Storyboard: continuation context is threaded into both sanitizer calls (0.250405ms)
+✔ Validate Storyboard: 11718 recognizes paper guide inside paper alignment guides (11.737249ms)
+✔ Validate Storyboard: does not collapse a different inserted noun (0.544029ms)
+✔ Validate Storyboard: preserves exact dependent phrases (0.450754ms)
+✔ Validate Repaired Storyboard: 11718 recognizes paper guide inside paper alignment guides (0.627986ms)
+✔ Validate Repaired Storyboard: does not collapse a different inserted noun (0.440095ms)
+✔ Validate Repaired Storyboard: preserves exact dependent phrases (0.847804ms)
+✔ Validate Repaired Storyboard 2: 11718 recognizes paper guide inside paper alignment guides (0.98952ms)
+✔ Validate Repaired Storyboard 2: does not collapse a different inserted noun (0.653846ms)
+✔ Validate Repaired Storyboard 2: preserves exact dependent phrases (0.589592ms)
+✔ Canonicalize Final Storyboard: 11718 recognizes paper guide inside paper alignment guides (0.879601ms)
+✔ Canonicalize Final Storyboard: does not collapse a different inserted noun (0.561045ms)
+✔ Canonicalize Final Storyboard: preserves exact dependent phrases (0.289992ms)
+✔ Validate Narration Language Repair: 11718 recognizes paper guide inside paper alignment guides (5.622218ms)
+✔ Validate Narration Language Repair: does not collapse a different inserted noun (0.434295ms)
+✔ Validate Narration Language Repair: preserves exact dependent phrases (0.331253ms)
+✔ Validate Narration Language Repair Retry: 11718 recognizes paper guide inside paper alignment guides (0.733301ms)
+✔ Validate Narration Language Repair Retry: does not collapse a different inserted noun (0.447274ms)
+✔ Validate Narration Language Repair Retry: preserves exact dependent phrases (0.402305ms)
+✔ Validate Narration Language Repair Second Pass: 11718 recognizes paper guide inside paper alignment guides (0.682603ms)
+✔ Validate Narration Language Repair Second Pass: does not collapse a different inserted noun (0.35106ms)
+✔ Validate Narration Language Repair Second Pass: preserves exact dependent phrases (0.239271ms)
+✔ Validate Storyboard: 11722 S6 hidden placement becomes visible owner-with-subject photo (6.511492ms)
+✔ Validate Storyboard: 11722 S3 internal secondary becomes visible close-up (0.833602ms)
+✔ Validate Storyboard: explicit open/cutaway disclosure is preserved (0.36784ms)
+✔ Validate Storyboard: truly hidden spring-loaded pins remain fail-closed (0.632113ms)
+✔ Validate Storyboard: ordinary spatial interiors are not rewritten (0.630011ms)
+✖ Validate Storyboard: validator invokes hidden-required canonicalizer before must-show normalization (18.173287ms)
+✔ Validate Repaired Storyboard: 11722 S6 hidden placement becomes visible owner-with-subject photo (0.406482ms)
+✔ Validate Repaired Storyboard: 11722 S3 internal secondary becomes visible close-up (0.383647ms)
+✔ Validate Repaired Storyboard: explicit open/cutaway disclosure is preserved (0.428446ms)
+✔ Validate Repaired Storyboard: truly hidden spring-loaded pins remain fail-closed (0.55044ms)
+✔ Validate Repaired Storyboard: ordinary spatial interiors are not rewritten (0.639354ms)
+✖ Validate Repaired Storyboard: validator invokes hidden-required canonicalizer before must-show normalization (1.02545ms)
+✔ Validate Repaired Storyboard 2: 11722 S6 hidden placement becomes visible owner-with-subject photo (0.30644ms)
+✔ Validate Repaired Storyboard 2: 11722 S3 internal secondary becomes visible close-up (0.305572ms)
+✔ Validate Repaired Storyboard 2: explicit open/cutaway disclosure is preserved (0.228085ms)
+✔ Validate Repaired Storyboard 2: truly hidden spring-loaded pins remain fail-closed (0.260764ms)
+✔ Validate Repaired Storyboard 2: ordinary spatial interiors are not rewritten (0.316304ms)
+✖ Validate Repaired Storyboard 2: validator invokes hidden-required canonicalizer before must-show normalization (0.546409ms)
+✔ Canonicalize Final Storyboard: 11722 S6 hidden placement becomes visible owner-with-subject photo (0.315805ms)
+✔ Canonicalize Final Storyboard: 11722 S3 internal secondary becomes visible close-up (0.341741ms)
+✔ Canonicalize Final Storyboard: explicit open/cutaway disclosure is preserved (0.35284ms)
+✔ Canonicalize Final Storyboard: truly hidden spring-loaded pins remain fail-closed (0.43104ms)
+✔ Canonicalize Final Storyboard: ordinary spatial interiors are not rewritten (0.295927ms)
+✖ Canonicalize Final Storyboard: validator invokes hidden-required canonicalizer before must-show normalization (0.729436ms)
+✔ Validate Narration Language Repair: 11722 S6 hidden placement becomes visible owner-with-subject photo (0.432367ms)
+✔ Validate Narration Language Repair: 11722 S3 internal secondary becomes visible close-up (0.474679ms)
+✔ Validate Narration Language Repair: explicit open/cutaway disclosure is preserved (0.399784ms)
+✔ Validate Narration Language Repair: truly hidden spring-loaded pins remain fail-closed (1.744579ms)
+✔ Validate Narration Language Repair: ordinary spatial interiors are not rewritten (0.327578ms)
+✖ Validate Narration Language Repair: validator invokes hidden-required canonicalizer before must-show normalization (0.745459ms)
+✔ Validate Narration Language Repair Retry: 11722 S6 hidden placement becomes visible owner-with-subject photo (0.529397ms)
+✔ Validate Narration Language Repair Retry: 11722 S3 internal secondary becomes visible close-up (0.326834ms)
+✔ Validate Narration Language Repair Retry: explicit open/cutaway disclosure is preserved (2.647705ms)
+✔ Validate Narration Language Repair Retry: truly hidden spring-loaded pins remain fail-closed (0.479811ms)
+✔ Validate Narration Language Repair Retry: ordinary spatial interiors are not rewritten (1.094075ms)
+✖ Validate Narration Language Repair Retry: validator invokes hidden-required canonicalizer before must-show normalization (0.808594ms)
+✔ Validate Narration Language Repair Second Pass: 11722 S6 hidden placement becomes visible owner-with-subject photo (0.317459ms)
+✔ Validate Narration Language Repair Second Pass: 11722 S3 internal secondary becomes visible close-up (0.650814ms)
+✔ Validate Narration Language Repair Second Pass: explicit open/cutaway disclosure is preserved (0.383834ms)
+✔ Validate Narration Language Repair Second Pass: truly hidden spring-loaded pins remain fail-closed (0.228993ms)
+✔ Validate Narration Language Repair Second Pass: ordinary spatial interiors are not rewritten (0.314683ms)
+✖ Validate Narration Language Repair Second Pass: validator invokes hidden-required canonicalizer before must-show normalization (0.687977ms)
+✔ Validate Storyboard: standalone closure filler does not count as a third content sentence (9.362191ms)
+✔ Validate Repaired Storyboard: standalone closure filler does not count as a third content sentence (9.18765ms)
+✔ Validate Repaired Storyboard 2: standalone closure filler does not count as a third content sentence (0.676367ms)
+✔ Build Script Prompt applies the three-content-sentence contract to every 30+ second language (0.779638ms)
+✔ Build Storyboard Repair: repair always preserves the sentence contract and exact 30s final-scene minimum (0.41231ms)
+✔ Build Storyboard Repair 2: repair always preserves the sentence contract and exact 30s final-scene minimum (0.209169ms)
+✔ 11790 final review includes all visual metadata and requires visual repairs array (9.573166ms)
+✔ 11790 final review translates ASCII Polish visual metadata without changing narration or structure (8.703697ms)
+✔ 11790 final visual repair rejects structural drift and missing repair contract (3.721463ms)
+✔ 11794 final visual validator uses n8n-sandbox-safe JSON cloning (1.217216ms)
+✔ 11877 repair diagnostics surface hidden connected target: Build Storyboard Repair (17.289798ms)
+✔ 11877 repair diagnostics surface hidden connected target: Build Storyboard Repair 2 (13.467589ms)
+✔ 11917 hidden flow through closed valve/pipe becomes static photo contract (18.893086ms)
+✔ visible external flow is not canonicalized away (0.953163ms)
+✔ transparent conduit keeps explicitly visible internal flow (3.253604ms)
+✔ Validate Storyboard: exact 11994 impersonal mechanism preserves device without invented actor (56.984541ms)
+✔ Validate Storyboard: generic nominal pressure Pressing the button activates the latch. (12.231446ms)
+✔ Validate Storyboard: generic nominal pressure Naciśnięcie przycisku uruchamia mechanizm. (7.676815ms)
+✔ Validate Storyboard: generic nominal pressure Нажатие кнопки запускает механизм. (0.260632ms)
+✔ Validate Storyboard: generic nominal pressure Натискання кнопки запускає механізм. (0.357342ms)
+✔ Validate Storyboard: preserves narrated actor Your hand presses the cover. (0.590619ms)
+✔ Validate Storyboard: preserves narrated actor She presses the cover. (0.190275ms)
+✔ Validate Storyboard: preserves narrated actor Kobieta naciska pokrywę. (0.27473ms)
+✔ Validate Storyboard: preserves narrated actor Вона натискає кнопку. (0.415714ms)
+✔ Validate Storyboard: preserves narrated actor Użytkownik naciska pokrywę. (0.595661ms)
+✔ Validate Storyboard: preserves narrated actor Ręka naciska pokrywę. (0.216294ms)
+✔ Validate Storyboard: preserves narrated actor Рука нажимает крышку. (0.147064ms)
+✔ Validate Storyboard: preserves narrated actor Людина натискає кришку. (0.200472ms)
+✔ Validate Storyboard: preserves explicit human anchors, imperative and ungrounded context (0.409388ms)
+✔ Validate Storyboard: call supplies narration grounding (0.60228ms)
+✔ Validate Repaired Storyboard: exact 11994 impersonal mechanism preserves device without invented actor (0.219341ms)
+✔ Validate Repaired Storyboard: generic nominal pressure Pressing the button activates the latch. (0.123946ms)
+✔ Validate Repaired Storyboard: generic nominal pressure Naciśnięcie przycisku uruchamia mechanizm. (0.120971ms)
+✔ Validate Repaired Storyboard: generic nominal pressure Нажатие кнопки запускает механизм. (0.142998ms)
+✔ Validate Repaired Storyboard: generic nominal pressure Натискання кнопки запускає механізм. (0.111247ms)
+✔ Validate Repaired Storyboard: preserves narrated actor Your hand presses the cover. (0.127111ms)
+✔ Validate Repaired Storyboard: preserves narrated actor She presses the cover. (0.122093ms)
+✔ Validate Repaired Storyboard: preserves narrated actor Kobieta naciska pokrywę. (0.08314ms)
+✔ Validate Repaired Storyboard: preserves narrated actor Вона натискає кнопку. (0.077959ms)
+✔ Validate Repaired Storyboard: preserves narrated actor Użytkownik naciska pokrywę. (0.07376ms)
+✔ Validate Repaired Storyboard: preserves narrated actor Ręka naciska pokrywę. (0.09637ms)
+✔ Validate Repaired Storyboard: preserves narrated actor Рука нажимает крышку. (0.080221ms)
+✔ Validate Repaired Storyboard: preserves narrated actor Людина натискає кришку. (0.136019ms)
+✔ Validate Repaired Storyboard: preserves explicit human anchors, imperative and ungrounded context (0.147266ms)
+✔ Validate Repaired Storyboard: call supplies narration grounding (0.144117ms)
+✔ Validate Repaired Storyboard 2: exact 11994 impersonal mechanism preserves device without invented actor (0.164758ms)
+✔ Validate Repaired Storyboard 2: generic nominal pressure Pressing the button activates the latch. (0.177617ms)
+✔ Validate Repaired Storyboard 2: generic nominal pressure Naciśnięcie przycisku uruchamia mechanizm. (0.357249ms)
+✔ Validate Repaired Storyboard 2: generic nominal pressure Нажатие кнопки запускает механизм. (0.188072ms)
+✔ Validate Repaired Storyboard 2: generic nominal pressure Натискання кнопки запускає механізм. (0.223432ms)
+✔ Validate Repaired Storyboard 2: preserves narrated actor Your hand presses the cover. (0.157227ms)
+✔ Validate Repaired Storyboard 2: preserves narrated actor She presses the cover. (0.163204ms)
+✔ Validate Repaired Storyboard 2: preserves narrated actor Kobieta naciska pokrywę. (0.299422ms)
+✔ Validate Repaired Storyboard 2: preserves narrated actor Вона натискає кнопку. (0.20838ms)
+✔ Validate Repaired Storyboard 2: preserves narrated actor Użytkownik naciska pokrywę. (0.284414ms)
+✔ Validate Repaired Storyboard 2: preserves narrated actor Ręka naciska pokrywę. (0.311562ms)
+✔ Validate Repaired Storyboard 2: preserves narrated actor Рука нажимает крышку. (0.274093ms)
+✔ Validate Repaired Storyboard 2: preserves narrated actor Людина натискає кришку. (0.27449ms)
+✔ Validate Repaired Storyboard 2: preserves explicit human anchors, imperative and ungrounded context (0.231574ms)
+✔ Validate Repaired Storyboard 2: call supplies narration grounding (0.337156ms)
+✔ Canonicalize Final Storyboard: exact 11994 impersonal mechanism preserves device without invented actor (0.192895ms)
+✔ Canonicalize Final Storyboard: generic nominal pressure Pressing the button activates the latch. (0.188054ms)
+✔ Canonicalize Final Storyboard: generic nominal pressure Naciśnięcie przycisku uruchamia mechanizm. (0.176361ms)
+✔ Canonicalize Final Storyboard: generic nominal pressure Нажатие кнопки запускает механизм. (0.15918ms)
+✔ Canonicalize Final Storyboard: generic nominal pressure Натискання кнопки запускає механізм. (0.152298ms)
+✔ Canonicalize Final Storyboard: preserves narrated actor Your hand presses the cover. (0.125622ms)
+✔ Canonicalize Final Storyboard: preserves narrated actor She presses the cover. (0.137588ms)
+✔ Canonicalize Final Storyboard: preserves narrated actor Kobieta naciska pokrywę. (0.125296ms)
+✔ Canonicalize Final Storyboard: preserves narrated actor Вона натискає кнопку. (0.218765ms)
+✔ Canonicalize Final Storyboard: preserves narrated actor Użytkownik naciska pokrywę. (0.128155ms)
+✔ Canonicalize Final Storyboard: preserves narrated actor Ręka naciska pokrywę. (0.174458ms)
+✔ Canonicalize Final Storyboard: preserves narrated actor Рука нажимает крышку. (0.138107ms)
+✔ Canonicalize Final Storyboard: preserves narrated actor Людина натискає кришку. (0.109906ms)
+✔ Canonicalize Final Storyboard: preserves explicit human anchors, imperative and ungrounded context (0.157548ms)
+✔ Canonicalize Final Storyboard: call supplies narration grounding (0.150047ms)
+✔ generation prompt avoids invented actors while preserving narrated human action (0.361991ms)
+✔ baseline reproduces invented hand contract (0.925872ms)
+✔ exact final-node replay persists canonical contract and unchanged narration (56.029568ms)
+✔ 12015 impersonal piercing becomes static co-presence without dropping any object (18.876605ms)
+✔ piercing generalizes to other mechanical objects (0.976969ms)
+✔ explicit human piercing action stays authored (2.275256ms)
+✔ static penetrated state and unrelated actions remain unchanged (0.640912ms)
+✔ all four M5 validators restore the independently visible owner from the exact S8 contract (20.399115ms)
+✔ generic cloth/wire relation is grounded without introducing a new visual subject (1.636133ms)
+✔ ordinary surfaces, dependent material edges and unsupported owners remain unchanged (2.071919ms)
+✔ explicit fastened result grounds its independently required connector across all validators (1.255921ms)
+✔ final M5 canonicalization keeps required fasteners and preserves narration word for word (56.196747ms)
+✔ exact failed first/retry routes select S5/S2 before correction and S9 afterward (23.66735ms)
+✔ source storyboard and original review verdict are never mutated (2.00036ms)
+✔ two quoted adjacent source words localize an unrelated quote in any language (1.98415ms)
+✔ longer literal source phrase outranks incidental spelling references (0.750997ms)
+✔ literal problem crossing a visual cut selects both source fragments (0.628687ms)
+✔ ambiguous repeated references keep original quoted scope (3.674097ms)
+✔ proposed replacement absent from source cannot relocate a finding (0.715028ms)
+✔ already grounded findings retain the exact original issue object (0.831026ms)
+✔ non-source quote remains invalid rather than becoming an invented repair target (2.292932ms)
+✔ unchanged strict final language gate rejects the actual saved failed review (4.569987ms)
+✔ saved missing-clause punctuation appears in a complete sentence spanning multiple visual cuts (11.075603ms)
+✔ a visual scene crossing a sentence boundary is included in both sentence contexts (1.332714ms)
+✔ unpunctuated run-on remains one complete review context without invented boundaries (1.1402ms)
+✔ ellipsis, questions and Cyrillic text retain exact source spelling and punctuation (0.97579ms)
+✔ source, quote enums, semantic references and visual records remain unchanged (6.018826ms)
+✔ mismatched source scene fails instead of providing fabricated sentence evidence (1.687621ms)
+✔ unchanged final gate still rejects the actual saved missed-comma findings (4.222374ms)
+✔ saved exact provider review and repair close every observed defect through unchanged strict validators (55.830415ms)
+✔ 9629 regression: semantic-invalid base/pre-final options cannot poison exact-word hybrid (38.644352ms)
+✔ exact-word DP is explicitly semantic-filtered before state expansion (0.654725ms)
+✔ 10534 regression: over-limit final-duration source cannot abort a valid bounded word-count repair (2.820244ms)
+✔ final word-count retry filters invalid source drafts inside semantic option selection (0.514283ms)
+✔ 9660 failure is classified for exactly one compliance retry (3.328353ms)
+✔ 9660 compliance builder reports the exact failed provider counts and hard targets (4.972808ms)
+✔ 9660 compliance validator accepts a semantic-valid exact 29-word repair (27.213455ms)
+✔ 9822-style over-limit scene is excluded and recovered from semantic-valid drafts (6.305671ms)
+✔ 9660 compliance retry remains bounded: another 22-word response still fails closed (4.460448ms)
+✔ M5 graph has one bounded compliance branch and no retry loop (1.21546ms)
+✔ 10902-style exact-count semantic miss is routed into the semantic-safe hybrid (5.89039ms)
+✔ 9672 regression: precision validator preserves mid-sentence visual-cut surfaces (27.275359ms)
+✔ precision validator does not force every visual segment into sentence form (0.716937ms)
+✔ 9788 hybrid preserves continuous narration boundary: Validate Final Word Count Retry (30.255538ms)
+✔ 9788 hybrid preserves continuous narration boundary: Validate Final Measured Word Count Retry (14.386324ms)
+✔ 9788 hybrid preserves continuous narration boundary: Validate Final Measured Word Count Compliance Retry (13.954395ms)
+✔ 9788 does not re-synthesize a known failing unchanged draft: Validate Final Measured Word Count Retry (5.493066ms)
+✔ 9788 does not re-synthesize a known failing unchanged draft: Validate Final Measured Word Count Compliance Retry (3.559423ms)
+✔ 9788 unchanged measured draft routes to the existing bounded compliance retry (0.875661ms)
+✔ 9796 repair receives scene identity and all count violations: Build Storyboard Repair (13.533296ms)
+✔ 9796 repair receives scene identity and all count violations: Build Storyboard Repair 2 (8.956237ms)
+✔ 9910 Build Storyboard Repair exposes total underfill even behind a media-type error (13.714327ms)
+✔ 9910 Build Storyboard Repair 2 exposes total underfill even behind a media-type error (4.306112ms)
+✔ all three storyboard requests send constrained schema and retain evidence refusal (4.190309ms)
+✔ 9923 comma-only failing narration cannot consume another probe: Retry (20.731045ms)
+✔ word-slot adapter preserves valid narration and rejects missing/nonlexical words: Retry (6.720218ms)
+✔ 9923 comma-only failing narration cannot consume another probe: Compliance Retry (11.27317ms)
+✔ word-slot adapter preserves valid narration and rejects missing/nonlexical words: Compliance Retry (31.822104ms)
+✔ final measured retry uses natural narration strings instead of exact provider slots (1.876906ms)
+✔ malformed slots use the existing single compliance branch (0.545203ms)
+✔ explicit concise visual-intent context survives deterministic third-query canonicalization (61.941547ms)
+✔ generic third query still canonicalizes to concrete primary fallback (13.499135ms)
+✔ required interaction subject cannot disappear from secondary must_show (11.994462ms)
+✔ 11583 regression: connected-to target may be primary when the other subject is secondary (2.039591ms)
+✔ detailed interaction queries are deterministically completed from secondary must_show (17.874099ms)
+✔ dependent component detail canonicalizes to primary-only photo contract (16.787226ms)
+✔ 11564 regression: generic blender base primary promotes owner and repairs fallback query (9.152116ms)
+✔ storyboard prompt requires concrete owner instead of generic component primary (0.628444ms)
+✔ storyboard prompt requires both visible interaction subjects in detailed queries (0.514062ms)
+✔ English initial word budget matches measured production TTS pace (13.434208ms)
+✔ initial storyboard validators enforce the requested word range before TTS (1.612481ms)
+✔ non-English speech budgets are unchanged by English calibration (1.257521ms)
+✔ grammar edit preserves a sentence spanning visual cuts (10.170979ms)
+✔ a genuine run-on without enough original sentences can acquire a new sentence break (1.311435ms)
+✔ language review fails closed on provider/malformed/unanchored findings (6.872116ms)
+✔ language review preserves exact narration/audio on PASS (1.892517ms)
+✔ language review Retry fails closed on provider/malformed/unanchored findings (1.478223ms)
+✔ language review Retry preserves exact narration/audio on PASS (0.470124ms)
+✔ language review Final fails closed on provider/malformed/unanchored findings (2.376634ms)
+✔ language review Final preserves exact narration/audio on PASS (2.524742ms)
+✔ new review findings receive one bounded second repair, then terminal review (1.873533ms)
+✔ second repair only requests newly flagged scene and retains previously corrected narration (8.123736ms)
+✔ new requests retain model, credentials and bounded provider retries (1.675144ms)
+✔ live exact 10042 language replay rejects defective draft and accepts four language controls (2.181035ms)
+✔ run-on 30+ second storyboard is rejected before language repair and TTS (20.798211ms)
+✔ unfinished dependent phrase is routed to bounded storyboard repair in all supported languages (169.192829ms)
+✔ 11270 regression: a single failed language repair gets one bounded retry and retains strict validation (37.580538ms)
+✔ targeted language repair preserves untouched scenes without forcing exact word slots (22.59709ms)
+✔ language cleanup preserves narration while extending short 30-second final visual cut (5.886835ms)
+✔ retry language review can reject semantic drift after repair (5.864409ms)
+✔ live 10042 natural repair replay preserves meaning and passes second review (11.10987ms)
+✔ retry spoken-language QA treats punctuation-only grammar and filler as advisory (5.718077ms)
+✔ retry spoken-language QA still blocks audible grammar, wrong language and meaning change (4.571671ms)
+✔ final spoken-language QA treats punctuation-only grammar and filler as advisory (2.041431ms)
+✔ final spoken-language QA still blocks audible grammar, wrong language and meaning change (1.915881ms)
+✔ exact saved native repaired storyboard preserves the independently authored surface and relation (112.863939ms)
+✔ all four native validators retain the same generic fastening helper (3.89909ms)
+✔ generic bolts and metal plates retain both independently authored objects (3.829589ms)
+✔ missing query grounding, unconnected proximity and unrelated surfaces never invent an anchor (3.397987ms)
+✔ only final connector-first fallback broadens; every shot contract and detailed query remains authored (119.542254ms)
+✔ wire material compression affects only final paired retrieval and preserves original pixel requirements (26.548057ms)
+✔ bare fasteners and absence of a required surface retain baseline retrieval (62.531997ms)
+✔ a physical object photograph beside documents is not rejected as a document scan (25.100525ms)
+✔ one completed-state category plus direct connector caption nominates but never approves a result (8.203174ms)
+✔ diagram, SVG and unrequested packaging never become physical result nominees (11.368831ms)
+✔ completed bolted plates nomination uses the same generic rule without full material proof (4.301797ms)
+✔ actual production paperclip false positive is rejected by current native parser (3.274651ms)
+✔ direct semantic nominees precede cross-shot novelty while final asset uniqueness remains solved globally (0.767182ms)
+✔ Pexels widens orientation only for the final physical fastening photo fallback (20.574168ms)
+✔ concrete surface fallback preserves steel bolts and metal plates as independent pixel requirements (1.666893ms)
+✔ secondary loaded-container fallback retrieves its authored owner without dropping either independent anchor (10.573321ms)
+✔ loaded coils and motor housing use the same owner fallback; proximity or missing grounding cannot enable it (5.503393ms)
+✔ actual closed-stapler negative does not prove loaded wire staples inside its magazine (1.020848ms)
+✔ exact production accepted filler must fail validation before TTS (26.543859ms)
+✔ native repaired storyboard retains all explicitly open authored detail requirements (43.838754ms)
+✔ surface-first bound-result fallback carries both required subjects on every adapter (57.449698ms)
+✔ generic result query is invariant to anchor order for bolts and plates (26.033139ms)
+✔ all seven normalization boundaries preserve only explicitly exposed intent/query grounded details (1.974478ms)
+✔ all seven boundaries reject closure filler in PL EN RU UK but allow real closing sentences (2.591668ms)
+✔ mere proximity cannot claim completed fastening state in either anchor order (39.717375ms)
+✔ 9892 regression: diffuse background context is not a hard must_not_show exclusion (6.353106ms)
+✔ storyboard generation and both bounded repairs forbid diffuse-context exclusions (0.891859ms)
+✔ final canonicalizer applies must_not_show normalization before commit (0.385483ms)
+✔ 9948 bare ambient darkness is not an unlit subject or explicit scene-state conflict (0.903727ms)
+✔ visual prompts require mutually consistent, grounded photo criteria (0.686704ms)
+✔ all Gemini call sites delegate to the shared resilient helper without changing node names (6.908922ms)
+✔ shared Gemini helper uses bounded model rotation with transient-only backoff (0.578513ms)
+✔ shared helper retries only transient provider failures and preserves successful or non-transient responses (1.377943ms)
+✔ shared helper returns the original provider response shape without internal retry metadata (1.271623ms)
+✔ all Gemini validators preserve provider failure after transient retries and stay inside existing bounded error routing (1.086858ms)
+✔ provider guard surfaces exact final provider message instead of hiding it as a parse error (1.397994ms)
+✔ execution 9499 regression: second storyboard repair falls back to original successful draft after repair provider 503 (4.595165ms)
+✔ second storyboard repair prefers a usable first repair draft over the original draft (1.149781ms)
+✔ one continuous 30s sentence triggers one bounded full-narration language repair before TTS (14.941865ms)
+✔ review retry and final gate fail closed on continued run-on, even when provider reports no issues (3.46287ms)
+✔ three complete 30s sentences and the original 15s one-sentence gate preserve narration and candidate (1.177757ms)
+✔ initial Ukrainian 30-second request uses observed sentence cadence and word budget without changing the audio gate (10.940257ms)
+✔ one measured expansion stays within scene capacity and supplies only cited research (14.080939ms)
+✔ the failed mixed-script draft is rejected even before another voiceover is synthesized (5.898716ms)
+✔ short measured Ukrainian speech asks for supported causal detail without lowering audio sanity (2.027183ms)
+✔ short narration gets one bounded semantic expansion aimed inside the observed window (26.902909ms)
+✔ second timing repair respects LONGER direction and stays cadence-first when pauses are sparse (10.101947ms)
+✔ 11497 regression: a stochastic negative timing slope gets bounded second repair instead of terminal failure (1.48768ms)
+✔ second timing repair keeps explicit shortening instruction when measured narration is too long (1.438234ms)
+✔ real 11116 short voice recalibrates to measured speech rate rather than one-word-per-scene cap (1.218295ms)
+✔ rejected first timing rewrite gets one bounded retry from original narration (5.030147ms)
+✔ 11358 regression: excessive novel words get one bounded semantic fallback without filler (1.865828ms)
+✔ 11274 regression moves two adjacent visual cuts without rewriting the narration (3.344314ms)
+✔ 11226 timing replies preserve every spoken word when repairing a short final visual cut (33.017058ms)
+✔ 11230 semantic coverage failure gets one bounded retry from original, provider failures remain terminal (3.533152ms)
+✔ slightly overlong narration repairs toward upper accepted window without erasing meaning (1.981481ms)
+✔ timing probe release preserves provider error for failure node (2.689651ms)
+✔ Validate Storyboard converts exact lexical arrays to unchanged internal narration (71.952786ms)
+✔ Validate Storyboard accepts bounded scene-count drift and recovers punctuation-only separators (18.307754ms)
+✔ Validate Repaired Storyboard converts exact lexical arrays to unchanged internal narration (28.804493ms)
+✔ Validate Repaired Storyboard accepts bounded scene-count drift and recovers punctuation-only separators (11.498839ms)
+✔ Validate Repaired Storyboard 2 converts exact lexical arrays to unchanged internal narration (25.860772ms)
+✔ Validate Repaired Storyboard 2 accepts bounded scene-count drift and recovers punctuation-only separators (9.617465ms)
+✔ English 15s contract allocates 38 word items across five scenes (4.821266ms)
+✔ Pexels preserves corrected installation-context query for failed 10045 S5 (16.028137ms)
+✔ Pixabay preserves corrected installation-context query for failed 10045 S5 (7.449558ms)
+✔ Wikimedia preserves corrected installation-context query for failed 10045 S5 (14.651432ms)
+✔ Normalize Pexels: fastener action metadata can prove the zipper subject without changing query semantics (7.515564ms)
+✔ Normalize Pixabay: fastener action metadata can prove the zipper subject without changing query semantics (6.757513ms)
+✔ Normalize Wikimedia: fastener action metadata can prove the zipper subject without changing query semantics (5.442724ms)
+✔ 11579 S8-A opposite zipping action stays rejected for an unzipping query (0.995152ms)
+✔ exact baseline misses the owner query and excludes actual exposed-spring photo (40.148345ms)
+✔ compound internal fallback retrieves the owner with all shot requirements unchanged (7.810726ms)
+✔ pixel-confirmed Delfin open magazine reaches semantic review, never metadata approval (33.359244ms)
+✔ ordinary closed stapler metadata is unchanged and receives no exposed-owner promotion (41.417622ms)
+✔ generic internal camera housing owner works without topic mappings (1.050715ms)
+✔ material labels and exterior component scenes retain baseline provider query (5.613527ms)
+✔ unrelated open-owner captions cannot prove requested owner (18.251991ms)
+✔ budget remains three previews and search count stays unchanged (1.293565ms)
+✔ exact normalized pool snapshot matches executable normalizer (15.136814ms)
+✔ 12015 compact fallback retains both objects, original contract and three-search budget (19.187304ms)
+✔ actual photograph of staples and documents reaches vision without metadata approval (49.973431ms)
+✔ single-subject staple boxes receive no paired-object priority (19.157554ms)
+✔ an actual diagram retains non-photographic rejection (17.652787ms)
+✔ independent qualified objects generalize beyond observed topic (1.938783ms)
+✔ unmodified anchors and operating-domain fallbacks retain baseline queries (8.385845ms)
+✔ all providers compact only final explicit fastened-result query and preserve all requirements (58.616373ms)
+✔ actual photographed fastening reaches semantic review with bounded caption-pair evidence while retaining rejection (35.893787ms)
+✔ generic bolted metal plates retain mandatory material, connector and exclusion (1.866318ms)
+✔ ordinary paper and binder-clip alternatives are not promoted as a stapled result (10.619534ms)
+✔ filename alone and vector descriptions cannot nominate (21.190861ms)
+✔ non-fastened scenes, missing connector anchors and detailed final queries retain baseline (7.679895ms)
+✔ exact failed S3 broadens only final qualified internal owner retrieval (20.413409ms)
+✔ real pixel-confirmed open owner reaches rejected semantic review (75.984913ms)
+✔ closed owner never receives open-view promotion (14.261438ms)
+✔ qualified unrelated owner generalizes to portable camera without replacing the contract (1.029448ms)
+✔ exterior, independent co-subject, technical subtype and detailed final queries are unchanged (7.14584ms)
+✔ preview and request budgets stay fixed (1.262367ms)
+✔ exact S8 retrieves the surface and subfeature owner without changing the contract (18.963176ms)
+✔ actual photographed staple ends reach semantic review without metadata approval (92.45486ms)
+✔ subfeature extraction generalizes to a cloth with curved wire tips (1.644772ms)
+✔ one category must name both objects; unrelated category mosaic cannot nominate (24.09567ms)
+✔ diagram rejection is never cleared by category nomination (19.530937ms)
+✔ ordinary exterior surface, unsupported owner and explicit co-subjects retain baseline (7.354525ms)
+✔ paper-staple boxes and loose objects without a state caption receive no subfeature priority (19.653061ms)
+✖ exact authored noun variation broadens only S6 final fallback and retains all contracts (69.007892ms)
+✔ pixel-confirmed open owner and consumable are nominated but never metadata-approved (81.756815ms)
+✔ purpose-only loose consumables cannot nominate the absent owner (21.790306ms)
+✔ a compound object type cannot nominate its adjective as an independent surface (20.750104ms)
+✔ one paired category and direct state caption nominate the photographed surface pair (34.111886ms)
+✔ exact failed preview URLs become query-free and unscaled dimensions reflect original bytes (51.199111ms)
+✔ category mosaics and diagram labels never gain state-pair nomination (41.940335ms)
+✔ unrequested open packaging cannot gain pair nomination from a category (25.131752ms)
+✔ preview transport evidence is real HTTP200 for all three original failures (2.339634ms)
+✔ authored plural retrieval generalizes to another physical owner and consumable pair (15.162871ms)
+✔ actual Gemini responses replay through the unchanged strict per-concept parser (4.238402ms)
+✔ all nine actual scene reviews produce a complete unique strict assignment after paired replay (4.965771ms)
+✔ execution 9229 replay: exact v53 fails S1, current M8 selects five visually accepted assets (828.956404ms)
+✔ Pixabay 9809 carries explicit lighthouse setting for non-machinery subjects (15.508536ms)
+✔ Pixabay derives setting from input without lighthouse-specific mapping (2.354456ms)
+✔ Pexels 9809 carries explicit lighthouse setting for non-machinery subjects (7.799789ms)
+✔ Pexels derives setting from input without lighthouse-specific mapping (1.90863ms)
+✔ Wikimedia 9809 carries explicit lighthouse setting for non-machinery subjects (10.919297ms)
+✔ Wikimedia derives setting from input without lighthouse-specific mapping (2.019475ms)
+✔ 9809 replay marks exact wrong-context Pexels lamps rejected for metadata ranking (38.49705ms)
+✔ Pexels 9948 preserves missing ship and lighthouse from explicit intent (21.848237ms)
+✔ Pexels explicit-subject preservation is generic and does not infer topic context (3.417018ms)
+✔ Pixabay 9948 preserves missing ship and lighthouse from explicit intent (10.768607ms)
+✔ Pixabay explicit-subject preservation is generic and does not infer topic context (1.966681ms)
+✔ Wikimedia 9948 preserves missing ship and lighthouse from explicit intent (12.472532ms)
+✔ Wikimedia explicit-subject preservation is generic and does not infer topic context (2.31731ms)
+✔ 9948 saved Pexels rock-only photos no longer pass the lighthouse-intent metadata gate (25.173789ms)
+✔ 9955 old aggregate PASS without per-concept evidence fails closed (4.2322ms)
+✔ 9955 absent beam overrides model aggregate true and score90 without weakening required concepts (2.551786ms)
+✔ all required concepts visible retains score and intent gates (3.275102ms)
+✔ missing duplicate out-of-range or nonboolean concept checks fail closed (1.154906ms)
+✔ exact-image live Gemini replay rejects both missing-beam candidates (1.604934ms)
+✔ Pixabay keeps the final contained-object fallback broad (12.029128ms)
+✔ Pexels keeps the final contained-object fallback broad (5.260123ms)
+✔ Wikimedia keeps the final contained-object fallback broad (7.034748ms)
+✔ current S3 Commons barometer photo may reach Gemini when long description names the component and strong metadata proves the domain (35.467929ms)
+✔ long description cannot bypass contextual hard reject when strong metadata does not prove storyboard domain (6.00738ms)
+✔ Commons final secondary fallback searches the primary subject broadly without weakening must_show (26.194948ms)
+✔ Commons internal-mechanism photo may reach Gemini when primary is proven but lay secondary wording is absent from metadata (17.879614ms)
+✔ Commons ordinary exterior primary-subject photo still fails the secondary internal-component prefilter (5.2781ms)
+✔ Commons non-internal secondary fallback also retrieves the primary broadly while retaining all must_show (2.612242ms)
+✔ Commons repeated multi-word primary keeps broad final fallback without changing must_show (2.372157ms)
+✔ 9221 exact replay: measured shorter scenes complete the strict 21-word target (27.296903ms)
+✔ skipped earlier probes may use the bounded nearest semantic hybrid before Probe 5 (3.648061ms)
+✔ semantically invalid earlier drafts cannot rescue the exact target or enter the bounded nearest hybrid (3.154427ms)
+✔ earlier drafts from a different scene identity cannot enter the bounded nearest hybrid (4.504147ms)
+✔ 9516 regression: semantic-invalid base option cannot re-enter final measured hybrid (6.437652ms)
+✔ 10457 regression: 41-word semantic candidate is inside the 45-word Probe 5 window (0.974861ms)
+✔ current native parser and global collector preserve all original contracts across nine saved scene responses (138.208797ms)
+✔ actual SQL S8 third-candidate replacement cannot reuse original three-preview bytes (91.634956ms)
+✔ unchanged ordered sources may reuse previews; changed URL, source or order invalidates the cache (1.083085ms)
+✔ 9537 regression: visual scenes may be contiguous fragments of one natural narration (69.246741ms)
+✔ joined narration, not every visual segment, must be a complete utterance (11.479877ms)
+✔ 11350 regression: visual repair preserves original narration despite model adding unfinished filler (50.474188ms)
+✔ narration repair cannot bypass the complete-utterance validation (5.81915ms)
+✔ 11354 regression: both repair prompts diagnose visual-primary mismatch beyond the first error (12.810982ms)
+✔ M5 prompt defines scenes as visual cut segments of continuous narration (0.574341ms)
+✔ all storyboard/timing validators removed per-scene standalone sentence gates (1.506087ms)
+✔ final canonicalizer still requires one complete continuous narration (0.464097ms)
+✔ anaphoric scene cannot switch visual primary away from previous scene subject (8.831651ms)
+✔ 9613 regression: leading pronoun may refer to a later previous-clause noun instead of previous visual primary (7.743152ms)
+✔ 9609 regression: anaphoric segment may switch to a new primary explicitly named in current narration (4.414909ms)
+✔ anaphoric scene may keep the same concrete visual primary with a normal synonym (2.902801ms)
+✔ final visual-cut punctuation normalizer removes comma-period artifacts without deleting clause punctuation (1.35759ms)
+✔ repair prompts preserve continuous visual-cut contract and resolve inherited referents (0.48771ms)
+✔ 9633 regression: cross-language no-match cannot invent previous visual primary as antecedent (5.791682ms)
+✔ all storyboard validators require positive lexical evidence before inherited-primary restriction (0.760017ms)
+✔ 9699 repair builders expand stripped anaphoric validator errors generically (2.205812ms)
+✔ photo storyboard guard allows diagrams only when shown on a physical display surface (0.868792ms)
+✔ photo-only visual contract rejects hidden compact-object interiors without an explicit visible view (2.360041ms)
+✔ photo-only visual contract allows explicit cutaway and ordinary spatial inside context (3.84113ms)
+✔ all M5 visual acceptance paths enforce the hidden-internal photo retrievability guard (0.697007ms)
+✔ photo-only visual contract rejects an explicitly internal secondary component without a visible-access view (3.799884ms)
+✔ photo-only internal-secondary guard does not reject a visible installed object merely labeled internal (3.042842ms)
+✔ semantic guard accepts compact wording that preserves water-to-electricity mechanism (14.499159ms)
+✔ semantic guard rejects current v84 precision corruption using force of current (6.286059ms)
+✔ semantic guard rejects vague motion replacement from execution 9047 (0.673125ms)
+✔ semantic guard rejects adjective padding that drops dam context (0.538437ms)
+✔ semantic guard accepts concise dam sentence that retains the actual relation (0.791123ms)
+✔ semantic guard rejects changed numbers and negation polarity (2.058994ms)
+✔ v85 precision response filler and lost reservoir are rejected (1.160248ms)
+✔ 9065 compact dam causality at 60 percent content coverage is accepted (0.493533ms)
+✔ first timing validator is semantic fail-closed and rejects duplicate scene rewrites (1.078713ms)
+✔ first invalid timing rewrite gets one bounded recovery and then fails closed (1.047397ms)
+✔ initial storyboard prompt keeps every scene on the user topic and mechanism (0.973511ms)
+✔ semantic rejection cannot trigger second timing rewrite (5.453324ms)
+✔ all late timing builders carry immutable original narration (0.500037ms)
+✔ all acceptance-path late validators have semantic guard (0.347918ms)
+✔ word-count targets remain guidance until measured TTS proves final correction is required (0.830377ms)
+✔ 9137 regression: a far nearest hybrid still cannot reach Probe 5 (0.387004ms)
+✔ final duration target allocation uses original scene weights and semantic floors (0.43529ms)
+✔ 9192 regression: first final duration semantic miss is routed into the existing bounded retry (8.211433ms)
+✔ 9833 regression: over-limit final timing drafts route to the existing bounded word-count repair (5.203366ms)
+✔ final timing expansion prompts forbid factual padding and allow natural same-proposition expansion (1.078009ms)
+✔ late measured correction semantic miss also uses its single bounded retry (0.717044ms)
+✔ bounded retry validators remain semantic fail-closed (0.438772ms)
+✔ Validate Storyboard: closed penstock promotes equipment over hidden flowing-water process (19.841119ms)
+✔ Validate Storyboard: transparent conduit keeps actually visible material as primary (1.773972ms)
+✔ Validate Storyboard: clear water does not make a closed penstock transparent (0.957193ms)
+✔ Validate Storyboard: open visible process is not rewritten just because a second object exists (1.167593ms)
+✔ Validate Storyboard: closed penstock primary drops hidden flowing-water secondary gate (1.318494ms)
+✔ Validate Storyboard: exposed penstock may keep a genuinely visible flowing-water secondary (1.235327ms)
+✔ Validate Storyboard: electric current inside cable promotes the visible cable (1.14826ms)
+✔ Validate Repaired Storyboard: closed penstock promotes equipment over hidden flowing-water process (1.190568ms)
+✔ Validate Repaired Storyboard: transparent conduit keeps actually visible material as primary (1.027562ms)
+✔ Validate Repaired Storyboard: clear water does not make a closed penstock transparent (1.770946ms)
+✔ Validate Repaired Storyboard: open visible process is not rewritten just because a second object exists (0.841698ms)
+✔ Validate Repaired Storyboard: closed penstock primary drops hidden flowing-water secondary gate (0.881912ms)
+✔ Validate Repaired Storyboard: exposed penstock may keep a genuinely visible flowing-water secondary (0.717286ms)
+✔ Validate Repaired Storyboard: electric current inside cable promotes the visible cable (0.993564ms)
+✔ Validate Repaired Storyboard 2: closed penstock promotes equipment over hidden flowing-water process (0.635749ms)
+✔ Validate Repaired Storyboard 2: transparent conduit keeps actually visible material as primary (0.575099ms)
+✔ Validate Repaired Storyboard 2: clear water does not make a closed penstock transparent (0.576379ms)
+✔ Validate Repaired Storyboard 2: open visible process is not rewritten just because a second object exists (0.530701ms)
+✔ Validate Repaired Storyboard 2: closed penstock primary drops hidden flowing-water secondary gate (4.516872ms)
+✔ Validate Repaired Storyboard 2: exposed penstock may keep a genuinely visible flowing-water secondary (0.399509ms)
+✔ Validate Repaired Storyboard 2: electric current inside cable promotes the visible cable (0.459202ms)
+✔ Canonicalize Final Storyboard: closed penstock promotes equipment over hidden flowing-water process (12.334722ms)
+✔ Canonicalize Final Storyboard: transparent conduit keeps actually visible material as primary (0.845731ms)
+✔ Canonicalize Final Storyboard: clear water does not make a closed penstock transparent (0.53595ms)
+✔ Canonicalize Final Storyboard: open visible process is not rewritten just because a second object exists (0.639679ms)
+✔ Canonicalize Final Storyboard: closed penstock primary drops hidden flowing-water secondary gate (0.829958ms)
+✔ Canonicalize Final Storyboard: exposed penstock may keep a genuinely visible flowing-water secondary (0.558714ms)
+✔ Canonicalize Final Storyboard: electric current inside cable promotes the visible cable (0.450974ms)
+✔ Validate Storyboard: fan motor hidden functional intent canonicalizes to the visible primary (8.790283ms)
+✔ Validate Storyboard: power station hall remains ordinary spatial context (0.416513ms)
+✔ Validate Storyboard: explicitly exposed fan motor remains a contextual photo intent (0.376404ms)
+✔ Validate Storyboard: independent second subject prevents primary-only hidden-process collapse (0.414702ms)
+✔ Validate Repaired Storyboard: fan motor hidden functional intent canonicalizes to the visible primary (0.382903ms)
+✔ Validate Repaired Storyboard: power station hall remains ordinary spatial context (0.353198ms)
+✔ Validate Repaired Storyboard: explicitly exposed fan motor remains a contextual photo intent (0.304878ms)
+✔ Validate Repaired Storyboard: independent second subject prevents primary-only hidden-process collapse (0.377268ms)
+✔ Validate Repaired Storyboard 2: fan motor hidden functional intent canonicalizes to the visible primary (0.479605ms)
+✔ Validate Repaired Storyboard 2: power station hall remains ordinary spatial context (0.331138ms)
+✔ Validate Repaired Storyboard 2: explicitly exposed fan motor remains a contextual photo intent (0.260047ms)
+✔ Validate Repaired Storyboard 2: independent second subject prevents primary-only hidden-process collapse (0.387325ms)
+✔ Canonicalize Final Storyboard: fan motor hidden functional intent canonicalizes to the visible primary (5.678988ms)
+✔ Canonicalize Final Storyboard: power station hall remains ordinary spatial context (0.35852ms)
+✔ Canonicalize Final Storyboard: explicitly exposed fan motor remains a contextual photo intent (0.234129ms)
+✔ Canonicalize Final Storyboard: independent second subject prevents primary-only hidden-process collapse (0.303374ms)
+✔ generation and storyboard repair prompts explicitly forbid hidden-process hard visual gates (0.755028ms)
+✔ generation and repair keep rarely photographed actions in narration instead of making them photo gates (0.450231ms)
+✔ photo-only storyboard rejects diagrammatic depictions as well as diagrams (1.395549ms)
+✔ final visual scene has enough spoken words for independent ASR coverage (45.017702ms)
+✔ 30-second word plan reserves six words for the terminal scene without adding speech (0.480179ms)
+✖ final canonicalizer reanchors queries to the normalized primary subject (3.454152ms)
+✔ exact v54 S2 final canonicalization makes penstock the searchable subject (33.752778ms)
+✔ 11342 cosmic background signal remains photographable but digital map and decorative background fail (4.501875ms)
+✔ PL ASCII visual anchors cannot masquerade as English metadata (6.69093ms)
+✔ Polish diacritics in visual metadata are rejected (0.610835ms)
+✔ Cyrillic visual metadata is rejected for RU and UK narration (0.535666ms)
+✔ English visual metadata remains valid for non-English narration (1.458749ms)
+✔ 10053 regression: singular primary matches plural English visual-intent noun (0.855873ms)
+✔ non-English storyboard may anchor primary through detailed and fallback English queries (0.580435ms)
+✔ cross-domain visual primary rescue: software-display (0.587348ms)
+✔ cross-domain visual primary rescue: industrial-equipment (0.425862ms)
+✔ cross-domain visual primary rescue: wildlife (0.903813ms)
+✔ primary mismatch still fails when only fallback query carries the requested subject (1.273832ms)
+✔ all bounded storyboard validators enforce the same English visual contract (1.010145ms)
+✔ secondary must_show does not restate or detail the primary object (12.977442ms)
+✔ dependent visible component on the primary is not a separate must_show subject (1.388255ms)
+✔ weak dependent primary is promoted to its explicit concrete owner (0.877336ms)
+✔ all storyboard validator branches carry weak-primary owner promotion (0.743276ms)
+✔ independent secondary context remains mandatory (0.914033ms)
+✔ secondary context absent from visual_intent is removed instead of becoming a hard retrieval gate (0.739773ms)
+✔ action word alone cannot keep an unrequested secondary object as a hard visual gate (0.580142ms)
+✔ process or state secondary anchors do not become hard visual requirements (0.861508ms)
+✔ all bounded storyboard validators normalize redundant secondary anchors (0.722436ms)
+✔ initial and bounded repair prompts explicitly split narration and visual languages (0.246047ms)
+✔ 9361 regression: common leading electrical modifier pair is canonicalized before the 1-3 word anchor guard (0.633334ms)
+✔ short-anchor canonicalization does not turn descriptive prose into a valid anchor (0.241048ms)
+✔ short-anchor canonicalization preserves already valid specific anchors (0.220108ms)
+✔ 11259 regression: non-visible leading states leave a concrete short visual anchor (0.604868ms)
+✔ bounded repairs report every overlong visual anchor and non-photo intent together (10.017761ms)
+✔ all bounded storyboard validators canonicalize permitted leading modifiers before the hard short-anchor guard (0.673468ms)
+✔ 11234 compass visual anchor aligns only with a subject present in intent and detailed query (14.261533ms)
+✔ Build Timing Repair 2: uses confirmed median only for identical narration (11.039522ms)
+✔ Build Final Duration Repair: uses confirmed median only for identical narration (0.60852ms)
+✔ Build Final Measured Correction: uses confirmed median only for identical narration (0.369785ms)
+✔ PL15 exact-audio handoff accepts one real in-window synthesis because that exact MP3 is reused in M6 (2.663639ms)
+✔ exact-audio handoff selects the closest in-window synthesis when more than one is valid (1.334383ms)
+✔ PL15 regression: correction interpolates from 17.136s median, not 15.144s first sample (12.368129ms)
+✔ unequal original scenes retain their relative space at 22 words (9.028272ms)
+✔ final duration builder tolerates skipped Probe 2 after semantic fallback (3.125008ms)
+✔ 9692 regression: late timing prompts enforce the PL15 hard scene bound while keeping targets as guidance (3.577858ms)
+✔ final measured correction tolerates skipped Probe 2 and Probe 3 (1.41623ms)
+✔ v96 regression: final measured correction stays inside the window instead of aiming at center (2.973691ms)
+✔ 9287 regression: measured-short final correction cannot request fewer words or characters (1.988365ms)
+✔ late timing targets never contradict the requested direction (0.719749ms)
+✔ late timing builders use optional reads for branch-dependent probes (1.10566ms)
+✔ precision retry sees original meaning even when failed draft lost an object (4.892122ms)
+✔ 9617 regression: precision retry falls back to the measured valid storyboard without requiring an unexecuted repair-validation branch (2.581113ms)
+✔ M5 still observes the third real synthesis before selecting the persisted final candidate (0.403443ms)
+✔ 9438 regression: novel filler in one precision scene falls back to a valid prior scene instead of being accepted (26.360767ms)
+✔ precision fallback never accepts a semantically invalid base scene; immutable original is the final safe fallback (1.602483ms)
+✔ valid precision lines remain untouched and do not report semantic fallback (1.260981ms)
+✔ 9783 regression: merged precision response falls back to five validated visual-cut scenes (4.008705ms)
+✔ probe 4 exposes the same bounded stability-candidate window as probe 5 (2.695261ms)
+✔ failed three-sample stability from origin 4 goes to measured correction, not terminal failure (0.455602ms)
+✔ final measured retry uses bounded nearest semantic hybrid before real probe 5 (0.759934ms)
+✔ only an in-window initial voice gets stability probes; short voices get one semantic repair (0.360271ms)
+✔ Pixabay: 9229 S2 closed pipeline inherits the adjacent hydroelectric operating domain (44.963185ms)
+✔ Pixabay: 9229 S5 effective retrieval query is de-duplicated and still contains both visible objects (9.109814ms)
+✔ Pexels: 9229 S2 closed pipeline inherits the adjacent hydroelectric operating domain (9.943973ms)
+✔ Pexels: 9229 S5 effective retrieval query is de-duplicated and still contains both visible objects (4.951135ms)
+✔ Wikimedia: 9229 S2 closed pipeline inherits the adjacent hydroelectric operating domain (15.765524ms)
+✔ Wikimedia: 9229 S5 effective retrieval query is de-duplicated and still contains both visible objects (5.908586ms)
+✔ 9229 old broad penstock candidate is rejected when saved metadata cannot prove inherited hydroelectric domain (34.981762ms)
+✔ 9229 refreshed hydro penstock query yields an eligible domain-grounded candidate (20.844043ms)
+✔ 9229 Wikimedia old coal-plant intake pipeline is rejected for the inherited hydroelectric domain (17.224864ms)
+✔ penstock semantic expansion is directional: a generic pipeline does not imply a penstock (3.715653ms)
+✔ 9229 S5 fresh paired Commons query admits a transformer plus overhead-lines photograph (10.887872ms)
+✔ 9601 planner preserves shot-specific visual detail anchors in every provider query (41.3604ms)
+✔ 9601 selected S2 brook is rejected while real penstock-flow evidence passes (20.371977ms)
+✔ 9601 selected S3 turbine hall is rejected without runner blades (8.329025ms)
+✔ 9601 selected S4 museum turbine is rejected as non-operational and shaft-less (5.617892ms)
+✔ visual detail anchor rule stays inactive when no shared specific detail exists (2.145347ms)
+✔ Pixabay: 9640 process/output words do not become repeated generator hard domains (48.011605ms)
+✔ Pixabay: 9640 paired generator+turbine shot gets structural unit retrieval only (7.798766ms)
+✔ Pixabay: 9640 inside-plant generator gets plant interior retrieval without a hard interior domain (4.57101ms)
+✔ Pexels: 9640 process/output words do not become repeated generator hard domains (10.675609ms)
+✔ Pexels: 9640 paired generator+turbine shot gets structural unit retrieval only (6.847048ms)
+✔ Pexels: 9640 inside-plant generator gets plant interior retrieval without a hard interior domain (6.069529ms)
+✔ Wikimedia: 9640 process/output words do not become repeated generator hard domains (19.950646ms)
+✔ Wikimedia: 9640 paired generator+turbine shot gets structural unit retrieval only (6.911395ms)
+✔ Wikimedia: 9640 inside-plant generator gets plant interior retrieval without a hard interior domain (8.040557ms)
+✔ 9640 retrieval enrichment does not rewrite storyboard query provenance (6.831622ms)
+✔ 9683 regression: concise direct caption can prove operational hydro-plant setting without proving primary subject (27.330167ms)
+✔ 9683 negative: disused generator remains rejected as non-operational lifecycle context (5.863653ms)
+✔ operational context evidence does not change primary depiction proof source (3.198801ms)
+✔ Wikimedia: bare subject fallback stays broad while precise queries retain details (16.527557ms)
+✔ Pexels: bare subject fallback stays broad while precise queries retain details (5.942228ms)
+✔ Pixabay: bare subject fallback stays broad while precise queries retain details (4.604001ms)
+✔ M5 validators remove unsupported studio framing while preserving the subject (16.886268ms)
+✔ instrument fallback also works for a thermometer without weakening machinery detail retrieval (5.893525ms)
+✔ Pixabay: closed infrastructure keeps explicit operating domain on broad fallback (15.469177ms)
+✔ Pixabay: hidden-process action words do not become infrastructure domains (2.793533ms)
+✔ Pexels: closed infrastructure keeps explicit operating domain on broad fallback (9.15838ms)
+✔ Pexels: hidden-process action words do not become infrastructure domains (1.827906ms)
+✔ Wikimedia: closed infrastructure keeps explicit operating domain on broad fallback (11.6855ms)
+✔ Wikimedia: hidden-process action words do not become infrastructure domains (1.544518ms)
+✔ Wikimedia hydroelectric-penstock live response yields compliant candidates with current scorer (40.082038ms)
+✔ Pixabay: broad fallback retains shared context for repeated subject (25.974146ms)
+✔ Pexels: broad fallback retains shared context for repeated subject (16.157717ms)
+✔ Wikimedia: broad fallback retains shared context for repeated subject (18.187854ms)
+✔ Pixabay: form-modified repeated primary subjects share the same context key (2.365643ms)
+✔ Pexels: form-modified repeated primary subjects share the same context key (1.724361ms)
+✔ Wikimedia: form-modified repeated primary subjects share the same context key (1.915284ms)
+✔ Pixabay: singleton machinery retains explicit local operating domain (20.736603ms)
+✔ Pexels: singleton machinery retains explicit local operating domain (2.0296ms)
+✔ Wikimedia: singleton machinery retains explicit local operating domain (1.552291ms)
+✔ non-machinery subject is not overconstrained by local operating-domain inference (1.512812ms)
+✔ fresh PL15 theme-park water turbine is rejected while actual hydro turbine remains eligible (17.981191ms)
+✔ context derives from arbitrary storyboard vocabulary, not hydro topic rules (1.848748ms)
+✔ exact rejected final-frame assets fail, including museum machinery for an operational shot (21.989217ms)
+✔ hydroelectric generator metadata satisfies electric-generator subject without weakening domain gate (1.649083ms)
+✔ museum context conflicts with an explicitly operational power-plant shot (1.394391ms)
+✔ museum context remains allowed when the storyboard actually requests a museum display (1.42166ms)
+✔ sign photographs remain allowed when signage is the requested visible subject (2.769599ms)
+✔ Pixabay: spatial presentation words do not become machinery operating-domain gates (3.827889ms)
+✔ Pexels: spatial presentation words do not become machinery operating-domain gates (1.013495ms)
+✔ Wikimedia: spatial presentation words do not become machinery operating-domain gates (0.78722ms)
+✔ PL15 S4 regression: described transformer at a power station is not rejected for missing literal outdoors metadata (9.349328ms)
+✔ Pixabay: closed infrastructure contents do not become hard operating domains (0.888348ms)
+✔ Pexels: closed infrastructure contents do not become hard operating domains (2.390016ms)
+✔ Wikimedia: closed infrastructure contents do not become hard operating domains (2.092701ms)
+✔ Pixabay: repeated generic primary does not borrow context from unrelated shots (4.725973ms)
+✔ Pexels: repeated generic primary does not borrow context from unrelated shots (5.041971ms)
+✔ Wikimedia: repeated generic primary does not borrow context from unrelated shots (5.66222ms)
+✔ Wikimedia reservoir mentioned only as tunnel source context cannot prove depicted reservoir (27.029121ms)
+✔ Wikimedia air pipe for penstocks cannot prove depicted penstock pipe (8.440427ms)
+✔ Wikimedia direct reservoir title proves depicted reservoir without requiring the water adjective (1.958969ms)
+✔ Wikimedia direct penstock title proves depicted penstock pipe (1.84053ms)
+✔ unrequested turbine case view does not substitute for whole turbine subject (2.540602ms)
+✔ component view remains allowed when storyboard explicitly asks for that component (1.636047ms)
+✔ Wikimedia primary explicitly relegated to background is rejected when another object owns foreground (1.90739ms)
+✔ Wikimedia generator in foreground remains eligible for generator storyboard (2.997853ms)
+✔ Wikimedia background primary is allowed when storyboard explicitly requests background composition (1.71316ms)
+✔ 9532 regression: concrete transformer category plus requested substation setting proves operational S5 image (2.100225ms)
+✔ machinery-only category depiction relaxation does not let contextual reservoir categories prove a reservoir (1.422177ms)
+✔ 9552 regression: turbine-generator hall at a power station is valid operational generator evidence (2.295854ms)
+✔ generic hall does not substitute for a power-generation operational setting (1.172441ms)
+✔ visual request planners treat hall as scene setting rather than hard domain (0.608943ms)
+✔ 9229 regression: generator unit title cannot become a water turbine from contextual Turbine halls category (2.219751ms)
+✔ current PL15 S5 catalog title cannot prove transformer when direct caption depicts survey equipment (2.524063ms)
+✔ current PL15 S1 archival album context cannot turn reservoir construction collection text into depicted reservoir (1.349356ms)
+✔ archival catalog metadata still allows an explicitly depictive title or caption (1.785646ms)
+✔ tag-rich jar with provider photo/AI flags cannot establish a depicted bee (14.614411ms)
+✔ poster mislabeled photo is rejected regardless of matching topical tags (0.938042ms)
+✔ quarantine is generic, not tied to honey topics or rejected asset IDs (0.673377ms)
+✔ described photographic bee remains eligible with original score gates (8.247294ms)
+✔ residential modifier does not block a house-and-power-lines photo (1.329911ms)
+✔ residential house without required power-line context still rejects (1.000901ms)
+✔ fresh PL15 portable generator is rejected when shared hydroelectric context is present (1.961006ms)
+✔ Pexels page title may corroborate one missing subtype term when alt already proves the object and scene context (1.533717ms)
+✔ Pexels page title cannot rescue an unrelated described subject (1.297888ms)
+✔ Pexels URL keywords cannot replace an absent visual description (1.87309ms)
+✔ captioned poster cannot become a photo through high topical overlap (0.996693ms)
+✔ unrelated caption remains rejected (0.985021ms)
+✔ provider errors preserve HTTP failure and zero candidates (8.737526ms)
+✔ shared form word cannot satisfy a different compound subject (0.910189ms)
+✔ background taxonomic mention of bees cannot turn wasp title into bee evidence (15.000156ms)
+✔ background proboscis mention cannot attest the depicted insect identity (3.792384ms)
+✔ generic form relaxation still accepts the actual distinctive subjects (4.344907ms)
+✔ ambiguous anatomical fallback cannot select another organism (0.675547ms)
+✔ normal plural subjects do not lose their identity (0.550536ms)
+✔ Pixabay: exact S3 bare fallback adds equipment without rewriting provenance (53.840355ms)
+✔ Pixabay: powerhouse semantic expansion is directional (2.172079ms)
+✔ Pixabay: compound secondary context cannot pass via station alone (7.905034ms)
+✔ Pexels: exact S3 bare fallback adds equipment without rewriting provenance (9.557649ms)
+✔ Pexels: powerhouse semantic expansion is directional (1.546804ms)
+✔ Pexels: compound secondary context cannot pass via station alone (6.405944ms)
+✔ Wikimedia: exact S3 bare fallback adds equipment without rewriting provenance (12.485921ms)
+✔ Wikimedia: powerhouse semantic expansion is directional (2.472031ms)
+✔ Wikimedia: compound secondary context cannot pass via station alone (7.886937ms)
+✔ exact Commons Cedar Falls powerhouse candidate supports S3 compound context (30.08342ms)
+✔ Pixabay: generic unit/room are not machinery domains (5.092743ms)
+✔ Pexels: generic unit/room are not machinery domains (7.989957ms)
+✔ Wikimedia: generic unit/room are not machinery domains (13.165002ms)
+✔ exact generator nameplate is rejected as a surface, but requested nameplate remains allowed (9.363453ms)
+✔ Pixabay covers every query including shorter fallback with stable provenance (26.98247ms)
+✔ Pexels covers every query including shorter fallback with stable provenance (9.76331ms)
+✔ Wikimedia covers every query including shorter fallback with stable provenance (9.410153ms)
+✔ expanded Commons coverage retains sequential pacing and timeout (0.755237ms)
+✔ provider HTTP requests use effective provider_query, not provenance query (2.999612ms)
+✔ normalizers preserve storyboard query and expose actual provider query separately (0.652296ms)
+✔ persist nodes use v3 and pass both query provenance fields (0.609773ms)
+✔ database stores original and effective query separately and caches by effective query (1.346638ms)
+✔ Pixabay: secondary object head remains required and hydroelectric supplies the water modifier (11.823465ms)
+✔ Pexels: secondary object head remains required and hydroelectric supplies the water modifier (4.789103ms)
+✔ Wikimedia: secondary object head remains required and hydroelectric supplies the water modifier (6.574712ms)
+✔ Wikimedia map matching dam and reservoir words remains non-photographic (14.901195ms)
+✔ Pixabay: bare machinery fallback retrieves every mandatory visible object (8.630015ms)
+✔ Pexels: bare machinery fallback retrieves every mandatory visible object (7.501774ms)
+✔ Wikimedia: bare machinery fallback retrieves every mandatory visible object (11.114388ms)
+✔ Pixabay: adjacent machinery keeps the previous operating domain when the next shot is generic (24.738607ms)
+✔ Pexels: adjacent machinery keeps the previous operating domain when the next shot is generic (2.902706ms)
+✔ Wikimedia: adjacent machinery keeps the previous operating domain when the next shot is generic (3.92268ms)
+✔ explicit new machinery domain overrides inherited previous domain (3.233645ms)
+✔ Wikimedia contextual primary category cannot by itself prove a visible reservoir (3.379145ms)
+✔ Wikimedia direct reservoir evidence remains eligible (2.304342ms)
+✔ Wikimedia independent power-line category can support transformer plus lines scene (3.195245ms)
+✔ Pixabay: manufacturing context conflicts with an operational power-station shot (1.173513ms)
+✔ Pexels: manufacturing context conflicts with an operational power-station shot (0.83401ms)
+✔ Wikimedia: manufacturing context conflicts with an operational power-station shot (0.851309ms)
+✔ Pixabay: explicit power-plant setting rejects an aviation generator even when generator and turbine both match (0.72517ms)
+✔ Pixabay: power station metadata satisfies an explicit power-plant setting synonym (0.81952ms)
+✔ Pixabay: a generic plant word without power context cannot satisfy power-plant setting (0.718937ms)
+✔ Pexels: explicit power-plant setting rejects an aviation generator even when generator and turbine both match (1.85634ms)
+✔ Pexels: power station metadata satisfies an explicit power-plant setting synonym (0.790936ms)
+✔ Pexels: a generic plant word without power context cannot satisfy power-plant setting (0.464071ms)
+✔ Wikimedia: explicit power-plant setting rejects an aviation generator even when generator and turbine both match (0.486328ms)
+✔ Wikimedia: power station metadata satisfies an explicit power-plant setting synonym (0.732647ms)
+✔ Wikimedia: a generic plant word without power context cannot satisfy power-plant setting (0.440367ms)
+✔ Pixabay: machine shaft is a component, never an operating domain (1.223853ms)
+✔ Pixabay: multi-object query missing the primary is enriched only in provider_query (0.928946ms)
+✔ Pixabay: missing-primary machinery fallback reuses one specific first-query qualifier without a hard domain gate (0.999367ms)
+✔ Pixabay: coal power plant exclusion requires coal evidence, not generic power-plant overlap (0.818734ms)
+✔ Pexels: machine shaft is a component, never an operating domain (1.571507ms)
+✔ Pexels: multi-object query missing the primary is enriched only in provider_query (0.645423ms)
+✔ Pexels: missing-primary machinery fallback reuses one specific first-query qualifier without a hard domain gate (0.765406ms)
+✔ Pexels: coal power plant exclusion requires coal evidence, not generic power-plant overlap (0.995413ms)
+✔ Wikimedia: machine shaft is a component, never an operating domain (1.512502ms)
+✔ Wikimedia: multi-object query missing the primary is enriched only in provider_query (0.934841ms)
+✔ Wikimedia: missing-primary machinery fallback reuses one specific first-query qualifier without a hard domain gate (0.933313ms)
+✔ Wikimedia: coal power plant exclusion requires coal evidence, not generic power-plant overlap (1.320853ms)
+✔ Wikimedia accepts TIFF-origin photo only through a web-raster thumbnail (3.561796ms)
+✔ Wikimedia TIFF original without a JPEG PNG or WebP thumbnail remains unsupported (0.927465ms)
+✔ Pixabay: secondary-only fallback restores the primary and uses residential house retrieval synonym only in provider_query (1.00903ms)
+✔ Pixabay: house metadata satisfies residential-home secondary subject while power lines remain independently required (1.027161ms)
+✔ Pexels: secondary-only fallback restores the primary and uses residential house retrieval synonym only in provider_query (0.755461ms)
+✔ Pexels: house metadata satisfies residential-home secondary subject while power lines remain independently required (0.787649ms)
+✔ Wikimedia: secondary-only fallback restores the primary and uses residential house retrieval synonym only in provider_query (1.237555ms)
+✔ Wikimedia: house metadata satisfies residential-home secondary subject while power lines remain independently required (4.782538ms)
+✔ M3 defaults omitted visual validation mode to metadata (5.247551ms)
+✔ M3 accepts explicit Gemini visual validation mode (1.441476ms)
+✔ M3 rejects unknown visual validation mode (5.784569ms)
+✔ M3 persists visual validation mode through four-argument create_job (0.644104ms)
+✔ job schema persists metadata or gemini mode (1.168066ms)
+✔ Studio exposes visual quality mode and submits it (0.953242ms)
+✔ latest job API exposes visual validation mode (1.849023ms)
+✔ M5 accepts and identifies the exact in-window synthesized MP3 instead of predicting a later synthesis (6.863685ms)
+✔ M5 still fails timing when none of the real synthesized files is in the final M6 window (1.140913ms)
+✔ 10935 regression: 26.976s cannot be silently padded into a 30s product (2.131431ms)
+✔ M5 persists the accepted audio candidate before committing the storyboard (0.551363ms)
+✔ M6 adopts a persisted M5 candidate and bypasses new Google synthesis (0.849593ms)
+✔ M6 promoted-candidate normalizer requires exact persisted metadata (1.552704ms)
+✔ DB migration binds candidate reuse to committed M5 usage and exact script narration (1.659377ms)
+✔ media worker provides isolated candidate store, metadata and promote routes (2.241589ms)
+✔ 9621 regression: every M5 timing probe canonicalizes visual-cut punctuation before TTS usage accounting (6.685517ms)
+✔ M5/M6 use the same observed bounded audio window without padding (3.074552ms)
+✔ 30s overrun window is identical in M5, M6, DB and worker while retaining a bounded ceiling (25.319805ms)
+✔ factory.begin_render returns both durations and extends only the visual coverage (1.623225ms)
+✔ M9 machine QA compares the video to target and the audio stream to actual audio (2.057344ms)
+✔ 30s candidate inside production range is reused byte-for-byte with no narration rewrite (1.440725ms)
+✔ M5 accepts natural 33.456s voice without semantic compression and rejects beyond 34s (1.373528ms)
+ℹ tests 893
+ℹ suites 0
+ℹ pass 884
+ℹ fail 9
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 20691.076038
+
+✖ failing tests:
+
+test at tests/m5-11722-hidden-photo-canonicalization.test.cjs:77:3
+✖ Validate Storyboard: validator invokes hidden-required canonicalizer before must-show normalization (18.173287ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(call>=0 && normalize>call)
+  
+      at TestContext.<anonymous> (/work/tests/m5-11722-hidden-photo-canonicalization.test.cjs:81:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/m5-11722-hidden-photo-canonicalization.test.cjs:77:3
+✖ Validate Repaired Storyboard: validator invokes hidden-required canonicalizer before must-show normalization (1.02545ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(call>=0 && normalize>call)
+  
+      at TestContext.<anonymous> (/work/tests/m5-11722-hidden-photo-canonicalization.test.cjs:81:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/m5-11722-hidden-photo-canonicalization.test.cjs:77:3
+✖ Validate Repaired Storyboard 2: validator invokes hidden-required canonicalizer before must-show normalization (0.546409ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(call>=0 && normalize>call)
+  
+      at TestContext.<anonymous> (/work/tests/m5-11722-hidden-photo-canonicalization.test.cjs:81:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/m5-11722-hidden-photo-canonicalization.test.cjs:77:3
+✖ Canonicalize Final Storyboard: validator invokes hidden-required canonicalizer before must-show normalization (0.729436ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(call>=0 && normalize>call)
+  
+      at TestContext.<anonymous> (/work/tests/m5-11722-hidden-photo-canonicalization.test.cjs:81:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/m5-11722-hidden-photo-canonicalization.test.cjs:77:3
+✖ Validate Narration Language Repair: validator invokes hidden-required canonicalizer before must-show normalization (0.745459ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(call>=0 && normalize>call)
+  
+      at TestContext.<anonymous> (/work/tests/m5-11722-hidden-photo-canonicalization.test.cjs:81:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/m5-11722-hidden-photo-canonicalization.test.cjs:77:3
+✖ Validate Narration Language Repair Retry: validator invokes hidden-required canonicalizer before must-show normalization (0.808594ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(call>=0 && normalize>call)
+  
+      at TestContext.<anonymous> (/work/tests/m5-11722-hidden-photo-canonicalization.test.cjs:81:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/m5-11722-hidden-photo-canonicalization.test.cjs:77:3
+✖ Validate Narration Language Repair Second Pass: validator invokes hidden-required canonicalizer before must-show normalization (0.687977ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(call>=0 && normalize>call)
+  
+      at TestContext.<anonymous> (/work/tests/m5-11722-hidden-photo-canonicalization.test.cjs:81:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/m8-12093-paired-preview.test.cjs:11:1
+✖ exact authored noun variation broadens only S6 final fallback and retains all contracts (69.007892ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      [
+        'S6-A',
+        3
+      ],
+  +   [
+  +     'S9-A',
+  +     3
+  +   ]
+    ]
+  
+      at TestContext.<anonymous> (/work/tests/m8-12093-paired-preview.test.cjs:15:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'S6-A', 3 ], [ 'S9-A', 3 ] ],
+    expected: [ [ 'S6-A', 3 ] ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/storyboard-hidden-process.test.cjs:208:1
+✖ final canonicalizer reanchors queries to the normalized primary subject (3.454152ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /const mustShow = normalizeMustShowAnchors\(rawMustShow, visualIntent, shotId, repeatedPrimaryAnchors, [^)]+\)/. Input:
+  
+  'const source = $json ?? {};\n' +
+    'const storyboard = JSON.parse(JSON.stringify(source.storyboard ?? {}));\n' +
+    'if (!storyboard || !Array.isArray(storyboard.scenes) || !storyboard.scenes.length) {\n' +
+    "  throw new Error('final storyboard missing before commit');\n" +
+    '}\n' +
+    '\n' +
+    "assertNoClosureFiller(storyboard.scenes.map(scene=>scene.narration || '').join(' '));\n" +
+    "const languageCode = String($('Build Script Prompt').first().json.language_code ?? '');\n" +
+    '// SEMANTIC_PRESERVATION_GUARD_START\n' +
+    'const _semanticStopwords = {\n' +
+    "  en: new Set(['the','a','an','and','or','but','to','of','in','on','at','for','from','with','as','by','is','are','was','were','be','been','being','that','which','who','when','then','into','through']),\n" +
+    "  pl: new Set(['i','a','ale','lub','oraz','do','w','we','z','ze','za','na','od','po','dla','przez','się','sie','gdy','jest','są','sa','to','ten','ta','te','tych','który','ktory','która','ktora','które','ktore','jako']),\n" +
+    "  ru: new Set(['и','а','но','или','в','во','на','с','со','из','за','по','для','от','до','при','как','когда','это','этот','эта','эти','что','который','которая','которые']),\n" +
+    "  uk: new Set(['і','й','а','але','або','в','у','на','з','із','за','по','для','від','до','при','як','коли','це','цей','ця','ці','що','який','яка','які']),\n" +
+    '};\n' +
+    'const _semanticNormalizeWord = (value) =>\n' +
+    "  String(value ?? '')\n" +
+    '    .toLowerCase()\n' +
+    "    .normalize('NFKD')\n" +
+    "    .replace(/\\p{M}+/gu,'')\n" +
+    "    .replace(/[^\\p{L}\\p{N}]+/gu,'')\n" +
+    '    .trim();\n' +
+    'const _semanticRawTokens = (value) =>\n' +
+    "  String(value ?? '')\n" +
+    "    .normalize('NFKD')\n" +
+    "    .replace(/\\p{M}+/gu,'')\n" +
+    '    .toLowerCase()\n' +
+    '    .split(/[^\\p{L}\\p{N}]+/u)\n' +
+    '    .map(_semanticNormalizeWord)\n' +
+    '    .filter(Boolean);\n' +
+    'const _semanticTokens = (value, languageCode) => {\n' +
+    "  const stop = _semanticStopwords[String(languageCode ?? '')] ?? new Set();\n" +
+    '  return _semanticRawTokens(value).filter((token) => !stop.has(token));\n' +
+    '};\n' +
+    'const _semanticSimilar = (left,right) => {\n' +
+    '  const a=_semanticNormalizeWord(left);\n' +
+    '  const b=_semanticNormalizeWord(right);\n' +
+    '  if (!a || !b) return false;\n' +
+    '  if (a === b) return true;\n' +
+    '  const minLen=Math.min(a.length,b.length);\n' +
+    '  if (minLen < 4) return false;\n' +
+    '  let prefix=0;\n' +
+    '  while (prefix < minLen && a[prefix] === b[prefix]) prefix++;\n' +
+    '  return prefix >= Math.max(3,minLen - 2);\n' +
+    '};\n' +
+    'const _semanticNegated = (value, languageCode) => {\n' +
+    '  const neg = {\n' +
+    "    en:new Set(['not','no','never','without']),\n" +
+    "    pl:new Set(['nie','bez','nigdy']),\n" +
+    "    ru:new Set(['не','нет','без','никогда']),\n" +
+    "    uk:new Set(['не','ні','без','ніколи']),\n" +
+    "  }[String(languageCode ?? '')] ?? new Set();\n" +
+    '  return _semanticRawTokens(value).some((token) => neg.has(token));\n' +
+    '};\n' +
+    'const _semanticNumbers = (value) =>\n' +
+    '  _semanticRawTokens(value).filter((token) => /^\\d+(?:[.,]\\d+)?$/u.test(token));\n' +
+    'const assertSemanticPreservation = (originalValue,candidateValue,label,languageCode) => {\n' +
+    "  const original=String(originalValue ?? '').replace(/\\s+/g,' ').trim();\n" +
+    "  const candidate=String(candidateValue ?? '').replace(/\\s+/g,' ').trim();\n" +
+    "  if (!original || !candidate) throw new Error(label + ' semantic reference/candidate missing');\n" +
+    '\n' +
+    '  const originalTokens=_semanticTokens(original,languageCode);\n' +
+    '  const candidateTokens=_semanticTokens(candidate,languageCode);\n' +
+    '  if (!originalTokens.length || !candidateTokens.length) {\n' +
+    "    throw new Error(label + ' semantic content tokens missing');\n" +
+    '  }\n' +
+    '\n' +
+    '  const used=new Set();\n' +
+    '  let preserved=0;\n' +
+    '  for (const token of originalTokens) {\n' +
+    '    let match=-1;\n' +
+    '    for (let i=0;i<candidateTokens.length;i++) {\n' +
+    '      if (used.has(i)) continue;\n' +
+    '      if (_semanticSimilar(token,candidateTokens[i])) { match=i; break; }\n' +
+    '    }\n' +
+    '    if (match >= 0) {\n' +
+    '      used.add(match);\n' +
+    '      preserved++;\n' +
+    '    }\n' +
+    '  }\n' +
+    '\n' +
+    '  const coverage=preserved/originalTokens.length;\n' +
+    '  const novel=candidateTokens.length-used.size;\n' +
+    '  const allowedNovel=Math.max(1,Math.floor(candidateTokens.length*0.20));\n' +
+    '  if (coverage < 0.60) {\n' +
+    '    throw new Error(\n' +
+    "      label + ' lost too much original semantic content: coverage ' +\n" +
+    "      coverage.toFixed(3) + ', required >= 0.600'\n" +
+    '    );\n' +
+    '  }\n' +
+    '  if (novel > allowedNovel) {\n' +
+    '    throw new Error(\n' +
+    "      label + ' introduced too many new content words: ' +\n" +
+    "      novel + ', allowed ' + allowedNovel\n" +
+    '    );\n' +
+    '  }\n' +
+    '\n' +
+    '  const fillerRoots = {\n' +
+    "    en:['huge','enormous','massive','powerful','efficient','clean','giant','impressive'],\n" +
+    "    pl:['ogromn','wielk','potezn','wydajn','czyst','siln'],\n" +
+    "    ru:['огромн','мощн','эффективн','чист','гигантск'],\n" +
+    "    uk:['величезн','потужн','ефективн','чист','гігантськ'],\n" +
+    "  }[String(languageCode ?? '')] ?? [];\n" +
+    '  const novelFiller = candidateTokens.filter((token) =>\n' +
+    '    fillerRoots.some((root) => token.startsWith(root)) &&\n' +
+    '    !originalTokens.some((originalToken) => _semanticSimilar(originalToken,token))\n' +
+    '  );\n' +
+    '  if (novelFiller.length) {\n' +
+    "    throw new Error(label + ' introduced generic filler modifiers: ' + novelFiller.join(','));\n" +
+    '  }\n' +
+    '\n' +
+    '  const originalNumbers=_semanticNumbers(original);\n' +
+    '  const candidateNumbers=_semanticNumbers(candidate);\n' +
+    '  if (JSON.stringify(originalNumbers) !== JSON.stringify(candidateNumbers)) {\n' +
+    "    throw new Error(label + ' changed numeric facts');\n" +
+    '  }\n' +
+    '  if (_semanticNegated(original,languageCode) !== _semanticNegated(candidate,languageCode)) {\n' +
+    "    throw new Error(label + ' changed negation polarity');\n" +
+    '  }\n' +
+    '};\n' +
+    '// SEMANTIC_PRESERVATION_GUARD_END\n' +
+    "const clean = (value) => String(value ?? '').replace(/\\s+/g,' ').trim();\n" +
+    "const anchorWords = (value) => String(value || '')\n" +
+    '  .toLowerCase()\n' +
+    "  .replace(/[^a-z0-9]+/g,' ')\n" +
+    '  .split(/\\s+/u)\n' +
+    '  .filter(Boolean);\n' +
+    'const secondaryGeneric = new Set([\n' +
+    "  'thing','item','object','device','equipment','machine','tool','system',\n" +
+    "  'process','action','method','technology','material','surface','area',\n" +
+    "  'place','location','result','product','structure','environment',\n" +
+    "  'background','scene','facility','component','part'\n" +
+    ']);\n' +
+    '\n' +
+    'function assertNoClosureFiller(value) {\n' +
+    "  const fillers = new Set(['end','the end','koniec','конец','кінець']);\n" +
+    "  for (const fragment of String(value ?? '').match(/[^.!?…]+(?:[.!?…]+|$)/gu) || []) {\n" +
+    "    const normalized = fragment.toLowerCase().replace(/[^\\p{L}\\p{N}]+/gu,' ').trim().replace(/\\s+/gu,' ');\n" +
+    "    if (fillers.has(normalized)) throw new Error('continuous narration contains standalone closure filler: ' + normalized);\n" +
+    '  }\n' +
+    '}\n' +
+    '\n' +
+    "function authoredExposedDetailAnchors(mustShow, visualIntent='', queries=[]) {\n" +
+    "  const words=value=>String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().split(/\\s+/u).filter(Boolean);\n" +
+    "  const key=term=>term.length>3 && term.endsWith('s') && !term.endsWith('ss')?term.slice(0,-1):term;\n" +
+    '  const anchors=(Array.isArray(mustShow)?mustShow:[]).map(String);\n' +
+    '  if (anchors.length!==2) return null;\n' +
+    '  const intent=words(visualIntent).map(key);\n' +
+    "  if (!intent.some(term=>['open','opened','exposed','cutaway','disassembled','transparent'].includes(term))) return null;\n" +
+    "  const noise=new Set(['office','desktop','metal','steel','copper','plastic','wooden','glass','mechanism','internal','inner','outer']);\n" +
+    "  const abstract=new Set(['flow','motion','movement','rotation','electricity','energy','pressure','force','power']);\n" +
+    '  const subjects=anchors.map(anchor=>words(anchor).map(key).filter(term=>!noise.has(term)));\n' +
+    '  if (subjects.some(subject=>!subject.length || subject.some(term=>abstract.has(term)))) return null;\n' +
+    '  const detailed=queries.slice(0,2).map(query=>words(query).map(key));\n' +
+    '  if (!subjects.every(subject=>subject.every(term=>intent.includes(term)) && detailed.some(query=>subject.every(term=>query.includes(term))))) return null;\n' +
+    '  if (subjects[0].every(term=>subjects[1].includes(term)) || subjects[1].every(term=>subjects[0].includes(term))) return null;\n' +
+    '  // Preserve exactly the exposed subjects already authored in intent and queries.\n' +
+    '  return anchors;\n' +
+    '}\n' +
+    '\n' +
+    "function dependentSecondaryAnchors(rawMustShow, visualIntent='', repeatedPrimaryAnchors=[], sceneNarration='', nextSceneNarration='') {\n" +
+    "  const words = (value) => String(value ?? '')\n" +
+    '    .toLowerCase()\n' +
+    "    .replace(/[^a-z0-9]+/g,' ')\n" +
+    '    .split(/\\s+/u)\n' +
+    '    .filter(Boolean);\n' +
+    '  const anchors = (Array.isArray(rawMustShow) ? rawMustShow : [])\n' +
+    "    .map((anchor) => String(anchor ?? '').trim())\n" +
+    '    .filter(Boolean);\n' +
+    '  if (anchors.length < 2) return [];\n' +
+    '\n' +
+    '  const intentWords = words(visualIntent);\n' +
+    '  const primaryWords = words(anchors[0]);\n' +
+    '  if (!intentWords.length || !primaryWords.length) return [];\n' +
+    '\n' +
+    '  const findSequence = (haystack, needle, startAt=0) => {\n' +
+    '    if (!needle.length) return -1;\n' +
+    '    for (let i=startAt; i<=haystack.length-needle.length; i++) {\n' +
+    '      let ok=true;\n' +
+    '      for (let j=0; j<needle.length; j++) {\n' +
+    '        if (haystack[i+j] !== needle[j]) { ok=false; break; }\n' +
+    '      }\n' +
+    '      if (ok) return i;\n' +
+    '    }\n' +
+    '    return -1;\n' +
+    '  };\n' +
+    '  const normalizeDependentWord = (word) => {\n' +
+    "    const value = String(word ?? '').toLowerCase();\n" +
+    "    if (value.length > 3 && value.endsWith('s') && !value.endsWith('ss')) {\n" +
+    '      return value.slice(0,-1);\n' +
+    '    }\n' +
+    '    return value;\n' +
+    '  };\n' +
+    '  const dependentWordEqual = (left,right) =>\n' +
+    '    normalizeDependentWord(left) === normalizeDependentWord(right);\n' +
+    '  const dependentBridgeWords = new Set([\n' +
+    "    'alignment','adjustable','adjustment','positioning','position',\n" +
+    "    'sliding','movable','moveable','inner','internal','outer'\n" +
+    '  ]);\n' +
+    '  const findDependentSequence = (haystack,needle,startAt=0) => {\n' +
+    '    const exactAt = findSequence(haystack,needle,startAt);\n' +
+    '    if (exactAt >= 0) {\n' +
+    '      return {start:exactAt,end:exactAt + needle.length};\n' +
+    '    }\n' +
+    '    if (!needle.length) return null;\n' +
+    '    for (let i=startAt; i<haystack.length; i++) {\n' +
+    '      if (!dependentWordEqual(haystack[i],needle[0])) continue;\n' +
+    '      let hi=i+1;\n' +
+    '      let ni=1;\n' +
+    '      let skipped=0;\n' +
+    '      while (ni < needle.length && hi < haystack.length) {\n' +
+    '        if (dependentWordEqual(haystack[hi],needle[ni])) {\n' +
+    '          hi++;\n' +
+    '          ni++;\n' +
+    '          continue;\n' +
+    '        }\n' +
+    '        if (skipped >= 1 || !dependentBridgeWords.has(haystack[hi])) break;\n' +
+    '        skipped++;\n' +
+    '        hi++;\n' +
+    '      }\n' +
+    '      if (ni === needle.length) return {start:i,end:hi};\n' +
+    '    }\n' +
+    '    return null;\n' +
+    '  };\n' +
+    '\n' +
+    "  const dependentRelations = new Set(['on','of','inside','withi"... 40672 more characters
+  
+      at TestContext.<anonymous> (/work/tests/storyboard-hidden-process.test.cjs:210:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: "const source = $json ?? {};\nconst storyboard = JSON.parse(JSON.stringify(source.storyboard ?? {}));\nif (!storyboard || !Array.isArray(storyboard.scenes) || !storyboard.scenes.length) {\n  throw new Error('final storyboard missing before commit');\n}\n\nassertNoClosureFiller(storyboard.scenes.map(scene=>scene.narration || '').join(' '));\nconst languageCode = String($('Build Script Prompt').first().json.language_code ?? '');\n// SEMANTIC_PRESERVATION_GUARD_START\nconst _semanticStopwords = {\n  en: new Set(['the','a','an','and','or','but','to','of','in','on','at','for','from','with','as','by','is','are','was','were','be','been','being','that','which','who','when','then','into','through']),\n  pl: new Set(['i','a','ale','lub','oraz','do','w','we','z','ze','za','na','od','po','dla','przez','się','sie','gdy','jest','są','sa','to','ten','ta','te','tych','który','ktory','która','ktora','które','ktore','jako']),\n  ru: new Set(['и','а','но','или','в','во','на','с','со','из','за','по','для','от','до','при','как','когда','это','этот','эта','эти','что','который','которая','которые']),\n  uk: new Set(['і','й','а','але','або','в','у','на','з','із','за','по','для','від','до','при','як','коли','це','цей','ця','ці','що','який','яка','які']),\n};\nconst _semanticNormalizeWord = (value) =>\n  String(value ?? '')\n    .toLowerCase()\n    .normalize('NFKD')\n    .replace(/\\p{M}+/gu,'')\n    .replace(/[^\\p{L}\\p{N}]+/gu,'')\n    .trim();\nconst _semanticRawTokens = (value) =>\n  String(value ?? '')\n    .normalize('NFKD')\n    .replace(/\\p{M}+/gu,'')\n    .toLowerCase()\n    .split(/[^\\p{L}\\p{N}]+/u)\n    .map(_semanticNormalizeWord)\n    .filter(Boolean);\nconst _semanticTokens = (value, languageCode) => {\n  const stop = _semanticStopwords[String(languageCode ?? '')] ?? new Set();\n  return _semanticRawTokens(value).filter((token) => !stop.has(token));\n};\nconst _semanticSimilar = (left,right) => {\n  const a=_semanticNormalizeWord(left);\n  const b=_semanticNormalizeWord(right);\n  if (!a || !b) return false;\n  if (a === b) return true;\n  const minLen=Math.min(a.length,b.length);\n  if (minLen < 4) return false;\n  let prefix=0;\n  while (prefix < minLen && a[prefix] === b[prefix]) prefix++;\n  return prefix >= Math.max(3,minLen - 2);\n};\nconst _semanticNegated = (value, languageCode) => {\n  const neg = {\n    en:new Set(['not','no','never','without']),\n    pl:new Set(['nie','bez','nigdy']),\n    ru:new Set(['не','нет','без','никогда']),\n    uk:new Set(['не','ні','без','ніколи']),\n  }[String(languageCode ?? '')] ?? new Set();\n  return _semanticRawTokens(value).some((token) => neg.has(token));\n};\nconst _semanticNumbers = (value) =>\n  _semanticRawTokens(value).filter((token) => /^\\d+(?:[.,]\\d+)?$/u.test(token));\nconst assertSemanticPreservation = (originalValue,candidateValue,label,languageCode) => {\n  const original=String(originalValue ?? '').replace(/\\s+/g,' ').trim();\n  const candidate=String(candidateValue ?? '').replace(/\\s+/g,' ').trim();\n  if (!original || !candidate) throw new Error(label + ' semantic reference/candidate missing');\n\n  const originalTokens=_semanticTokens(original,languageCode);\n  const candidateTokens=_semanticTokens(candidate,languageCode);\n  if (!originalTokens.length || !candidateTokens.length) {\n    throw new Error(label + ' semantic content tokens missing');\n  }\n\n  const used=new Set();\n  let preserved=0;\n  for (const token of originalTokens) {\n    let match=-1;\n    for (let i=0;i<candidateTokens.length;i++) {\n      if (used.has(i)) continue;\n      if (_semanticSimilar(token,candidateTokens[i])) { match=i; break; }\n    }\n    if (match >= 0) {\n      used.add(match);\n      preserved++;\n    }\n  }\n\n  const coverage=preserved/originalTokens.length;\n  const novel=candidateTokens.length-used.size;\n  const allowedNovel=Math.max(1,Math.floor(candidateTokens.length*0.20));\n  if (coverage < 0.60) {\n    throw new Error(\n      label + ' lost too much original semantic content: coverage ' +\n      coverage.toFixed(3) + ', required >= 0.600'\n    );\n  }\n  if (novel > allowedNovel) {\n    throw new Error(\n      label + ' introduced too many new content words: ' +\n      novel + ', allowed ' + allowedNovel\n    );\n  }\n\n  const fillerRoots = {\n    en:['huge','enormous','massive','powerful','efficient','clean','giant','impressive'],\n    pl:['ogromn','wielk','potezn','wydajn','czyst','siln'],\n    ru:['огромн','мощн','эффективн','чист','гигантск'],\n    uk:['величезн','потужн','ефективн','чист','гігантськ'],\n  }[String(languageCode ?? '')] ?? [];\n  const novelFiller = candidateTokens.filter((token) =>\n    fillerRoots.some((root) => token.startsWith(root)) &&\n    !originalTokens.some((originalToken) => _semanticSimilar(originalToken,token))\n  );\n  if (novelFiller.length) {\n    throw new Error(label + ' introduced generic filler modifiers: ' + novelFiller.join(','));\n  }\n\n  const originalNumbers=_semanticNumbers(original);\n  const candidateNumbers=_semanticNumbers(candidate);\n  if (JSON.stringify(originalNumbers) !== JSON.stringify(candidateNumbers)) {\n    throw new Error(label + ' changed numeric facts');\n  }\n  if (_semanticNegated(original,languageCode) !== _semanticNegated(candidate,languageCode)) {\n    throw new Error(label + ' changed negation polarity');\n  }\n};\n// SEMANTIC_PRESERVATION_GUARD_END\nconst clean = (value) => String(value ?? '').replace(/\\s+/g,' ').trim();\nconst anchorWords = (value) => String(value || '')\n  .toLowerCase()\n  .replace(/[^a-z0-9]+/g,' ')\n  .split(/\\s+/u)\n  .filter(Boolean);\nconst secondaryGeneric = new Set([\n  'thing','item','object','device','equipment','machine','tool','system',\n  'process','action','method','technology','material','surface','area',\n  'place','location','result','product','structure','environment',\n  'background','scene','facility','component','part'\n]);\n\nfunction assertNoClosureFiller(value) {\n  const fillers = new Set(['end','the end','koniec','конец','кінець']);\n  for (const fragment of String(value ?? '').match(/[^.!?…]+(?:[.!?…]+|$)/gu) || []) {\n    const normalized = fragment.toLowerCase().replace(/[^\\p{L}\\p{N}]+/gu,' ').trim().replace(/\\s+/gu,' ');\n    if (fillers.has(normalized)) throw new Error('continuous narration contains standalone closure filler: ' + normalized);\n  }\n}\n\nfunction authoredExposedDetailAnchors(mustShow, visualIntent='', queries=[]) {\n  const words=value=>String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().split(/\\s+/u).filter(Boolean);\n  const key=term=>term.length>3 && term.endsWith('s') && !term.endsWith('ss')?term.slice(0,-1):term;\n  const anchors=(Array.isArray(mustShow)?mustShow:[]).map(String);\n  if (anchors.length!==2) return null;\n  const intent=words(visualIntent).map(key);\n  if (!intent.some(term=>['open','opened','exposed','cutaway','disassembled','transparent'].includes(term))) return null;\n  const noise=new Set(['office','desktop','metal','steel','copper','plastic','wooden','glass','mechanism','internal','inner','outer']);\n  const abstract=new Set(['flow','motion','movement','rotation','electricity','energy','pressure','force','power']);\n  const subjects=anchors.map(anchor=>words(anchor).map(key).filter(term=>!noise.has(term)));\n  if (subjects.some(subject=>!subject.length || subject.some(term=>abstract.has(term)))) return null;\n  const detailed=queries.slice(0,2).map(query=>words(query).map(key));\n  if (!subjects.every(subject=>subject.every(term=>intent.includes(term)) && detailed.some(query=>subject.every(term=>query.includes(term))))) return null;\n  if (subjects[0].every(term=>subjects[1].includes(term)) || subjects[1].every(term=>subjects[0].includes(term))) return null;\n  // Preserve exactly the exposed subjects already authored in intent and queries.\n  return anchors;\n}\n\nfunction dependentSecondaryAnchors(rawMustShow, visualIntent='', repeatedPrimaryAnchors=[], sceneNarration='', nextSceneNarration='') {\n  const words = (value) => String(value ?? '')\n    .toLowerCase()\n    .replace(/[^a-z0-9]+/g,' ')\n    .split(/\\s+/u)\n    .filter(Boolean);\n  const anchors = (Array.isArray(rawMustShow) ? rawMustShow : [])\n    .map((anchor) => String(anchor ?? '').trim())\n    .filter(Boolean);\n  if (anchors.length < 2) return [];\n\n  const intentWords = words(visualIntent);\n  const primaryWords = words(anchors[0]);\n  if (!intentWords.length || !primaryWords.length) return [];\n\n  const findSequence = (haystack, needle, startAt=0) => {\n    if (!needle.length) return -1;\n    for (let i=startAt; i<=haystack.length-needle.length; i++) {\n      let ok=true;\n      for (let j=0; j<needle.length; j++) {\n        if (haystack[i+j] !== needle[j]) { ok=false; break; }\n      }\n      if (ok) return i;\n    }\n    return -1;\n  };\n  const normalizeDependentWord = (word) => {\n    const value = String(word ?? '').toLowerCase();\n    if (value.length > 3 && value.endsWith('s') && !value.endsWith('ss')) {\n      return value.slice(0,-1);\n    }\n    return value;\n  };\n  const dependentWordEqual = (left,right) =>\n    normalizeDependentWord(left) === normalizeDependentWord(right);\n  const dependentBridgeWords = new Set([\n    'alignment','adjustable','adjustment','positioning','position',\n    'sliding','movable','moveable','inner','internal','outer'\n  ]);\n  const findDependentSequence = (haystack,needle,startAt=0) => {\n    const exactAt = findSequence(haystack,needle,startAt);\n    if (exactAt >= 0) {\n      return {start:exactAt,end:exactAt + needle.length};\n    }\n    if (!needle.length) return null;\n    for (let i=startAt; i<haystack.length; i++) {\n      if (!dependentWordEqual(haystack[i],needle[0])) continue;\n      let hi=i+1;\n      let ni=1;\n      let skipped=0;\n      while (ni < needle.length && hi < haystack.length) {\n        if (dependentWordEqual(haystack[hi],needle[ni])) {\n          hi++;\n          ni++;\n          continue;\n        }\n        if (skipped >= 1 || !dependentBridgeWords.has(haystack[hi])) break;\n        skipped++;\n        hi++;\n      }\n      if (ni === needle.length) return {start:i,end:hi};\n    }\n    return null;\n  };\n\n  const dependentRelations = new Set(['on','of','inside','withi"... 40672 more characters,
+    expected: /const mustShow = normalizeMustShowAnchors\(rawMustShow, visualIntent, shotId, repeatedPrimaryAnchors, [^)]+\)/,
+    operator: 'match',
+    diff: 'simple'
+  }

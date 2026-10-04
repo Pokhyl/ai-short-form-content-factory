@@ -1,0 +1,91 @@
+✖ exact production accepted filler must fail validation before TTS (79.241469ms)
+✖ native repaired storyboard retains all explicitly open authored detail requirements (20.724466ms)
+✖ surface-first bound-result fallback carries both required subjects on every adapter (16.884565ms)
+✖ generic result query is invariant to anchor order for bolts and plates (10.998777ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 0
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 355.048606
+
+✖ failing tests:
+
+test at tests/m5-m8-12126-contract.test.cjs:7:1
+✖ exact production accepted filler must fail validation before TTS (79.241469ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (/work/tests/m5-m8-12126-contract.test.cjs:7:84)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /standalone closure filler/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/m5-m8-12126-contract.test.cjs:8:1
+✖ native repaired storyboard retains all explicitly open authored detail requirements (20.724466ms)
+  AssertionError [ERR_ASSERTION]: S2
+  + actual - expected
+  
+    [
+      'office stapler',
+  -   'metal staple'
+    ]
+  
+      at TestContext.<anonymous> (/work/tests/m5-m8-12126-contract.test.cjs:10:166)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'office stapler' ],
+    expected: [ 'office stapler', 'metal staple' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/m5-m8-12126-contract.test.cjs:14:1
+✖ surface-first bound-result fallback carries both required subjects on every adapter (16.884565ms)
+  AssertionError [ERR_ASSERTION]: Pixabay
+      at TestContext.<anonymous> (/work/tests/m5-m8-12126-contract.test.cjs:15:154)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/m5-m8-12126-contract.test.cjs:17:1
+✖ generic result query is invariant to anchor order for bolts and plates (10.998777ms)
+  AssertionError [ERR_ASSERTION]: Pixabay reverse=true
+      at TestContext.<anonymous> (/work/tests/m5-m8-12126-contract.test.cjs:20:93)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

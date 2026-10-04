@@ -77,7 +77,7 @@ for(const name of targets){
   test(name+': validator invokes hidden-required canonicalizer before must-show normalization',()=>{
     const src=byName[name].parameters.jsCode;
     const call=src.indexOf('visualIntent = canonicalizeHiddenRequiredPhotoIntent(rawMustShow, visualIntent);');
-    const normalize=src.indexOf('const mustShow = normalizeMustShowAnchors',call);
+    const normalize=src.indexOf('const mustShow = exposedDetailAnchors || normalizeMustShowAnchors',call);
     assert.ok(call>=0 && normalize>call);
   });
 }

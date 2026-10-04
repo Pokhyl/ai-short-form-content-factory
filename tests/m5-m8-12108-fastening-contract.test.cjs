@@ -7,7 +7,11 @@ const validators=m5.nodes.filter(n=>n.parameters.jsCode?.includes('function auth
 test('exact saved native repaired storyboard preserves the independently authored surface and relation',()=>{
  const run=src=>new Function('$','$json',src)(n=>({first:()=>({json:f.m5_contexts[n]})}),f.m5_repair_response).json;
  const before=run(f.baseline_m5_nodes['Validate Repaired Storyboard']),after=run(code(m5,'Validate Repaired Storyboard'));
- assert.deepEqual(before,f.m5_before);assert.deepEqual(after,f.m5_after);
+ assert.deepEqual(before,f.m5_before);
+ const expected=structuredClone(f.m5_after),authored=JSON.parse(f.m5_repair_response.body.candidates[0].content.parts.find(p=>p.text).text);
+ // New corpus evidence requires exposed details and piercing relations to survive.
+ for(const id of ['S5','S6']){const raw=authored.scenes.find(s=>s.scene_id===id).shots[0],target=expected.storyboard.scenes.find(s=>s.scene_id===id).shots[0];target.must_show=raw.must_show;target.visual_intent=raw.visual_intent;}
+ assert.deepEqual(after,expected);
  const shot=r=>r.storyboard.scenes.find(s=>s.scene_id==='S9').shots[0];
  assert.deepEqual(shot(before).must_show,['wire staples']);assert.deepEqual(shot(after).must_show,['wire staples','paper documents']);
  assert.equal(shot(after).visual_intent,'A photo of wire staples binding a neat stack of office reports on a desk.');

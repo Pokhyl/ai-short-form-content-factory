@@ -1,0 +1,34 @@
+[
+  {
+    "runner": "m8-query-coverage-ranking.py",
+    "returncode": 0
+  },
+  {
+    "runner": "m8-qualified-owner-ranking.py",
+    "returncode": 0
+  },
+  {
+    "runner": "m8-12108-semantic-nomination-ranking.py",
+    "returncode": 0
+  },
+  {
+    "runner": "m8-component-owner-ranking.py",
+    "returncode": 0
+  },
+  {
+    "runner": "m8-surface-owner-ranking.py",
+    "returncode": 0
+  },
+  {
+    "runner": "m8-paired-preview-ranking.py",
+    "returncode": 0
+  },
+  {
+    "runner": "m8-paired-objects-ranking.py",
+    "returncode": 0
+  },
+  {
+    "runner": "m8-fastened-result-ranking.py",
+    "returncode": 0
+  }
+]

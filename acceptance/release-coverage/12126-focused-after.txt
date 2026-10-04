@@ -1,0 +1,129 @@
+✔ Validate Storyboard: 11718 recognizes paper guide inside paper alignment guides (16.259416ms)
+✔ Validate Storyboard: does not collapse a different inserted noun (0.962162ms)
+✔ Validate Storyboard: preserves exact dependent phrases (1.039979ms)
+✔ Validate Repaired Storyboard: 11718 recognizes paper guide inside paper alignment guides (0.831039ms)
+✔ Validate Repaired Storyboard: does not collapse a different inserted noun (0.714147ms)
+✔ Validate Repaired Storyboard: preserves exact dependent phrases (1.540151ms)
+✔ Validate Repaired Storyboard 2: 11718 recognizes paper guide inside paper alignment guides (1.187202ms)
+✔ Validate Repaired Storyboard 2: does not collapse a different inserted noun (0.466346ms)
+✔ Validate Repaired Storyboard 2: preserves exact dependent phrases (0.81008ms)
+✔ Canonicalize Final Storyboard: 11718 recognizes paper guide inside paper alignment guides (1.077219ms)
+✔ Canonicalize Final Storyboard: does not collapse a different inserted noun (0.711893ms)
+✔ Canonicalize Final Storyboard: preserves exact dependent phrases (0.558509ms)
+✔ Validate Narration Language Repair: 11718 recognizes paper guide inside paper alignment guides (5.435135ms)
+✔ Validate Narration Language Repair: does not collapse a different inserted noun (0.485126ms)
+✔ Validate Narration Language Repair: preserves exact dependent phrases (0.500559ms)
+✔ Validate Narration Language Repair Retry: 11718 recognizes paper guide inside paper alignment guides (1.017316ms)
+✔ Validate Narration Language Repair Retry: does not collapse a different inserted noun (0.351839ms)
+✔ Validate Narration Language Repair Retry: preserves exact dependent phrases (0.444707ms)
+✔ Validate Narration Language Repair Second Pass: 11718 recognizes paper guide inside paper alignment guides (0.962442ms)
+✔ Validate Narration Language Repair Second Pass: does not collapse a different inserted noun (0.510336ms)
+✔ Validate Narration Language Repair Second Pass: preserves exact dependent phrases (0.399457ms)
+✔ Validate Storyboard: standalone closure filler does not count as a third content sentence (10.447784ms)
+✔ Validate Repaired Storyboard: standalone closure filler does not count as a third content sentence (6.179244ms)
+✔ Validate Repaired Storyboard 2: standalone closure filler does not count as a third content sentence (0.395769ms)
+✔ Build Script Prompt applies the three-content-sentence contract to every 30+ second language (0.815754ms)
+✔ Build Storyboard Repair: repair always preserves the sentence contract and exact 30s final-scene minimum (0.518919ms)
+✔ Build Storyboard Repair 2: repair always preserves the sentence contract and exact 30s final-scene minimum (0.336609ms)
+✖ exact saved native repaired storyboard preserves the independently authored surface and relation (131.097453ms)
+✔ all four native validators retain the same generic fastening helper (3.05464ms)
+✔ generic bolts and metal plates retain both independently authored objects (3.784721ms)
+✔ missing query grounding, unconnected proximity and unrelated surfaces never invent an anchor (1.165734ms)
+✔ only final connector-first fallback broadens; every shot contract and detailed query remains authored (107.499996ms)
+✔ wire material compression affects only final paired retrieval and preserves original pixel requirements (26.485655ms)
+✔ bare fasteners and absence of a required surface retain baseline retrieval (40.95494ms)
+✔ a physical object photograph beside documents is not rejected as a document scan (25.775338ms)
+✔ one completed-state category plus direct connector caption nominates but never approves a result (6.377381ms)
+✔ diagram, SVG and unrequested packaging never become physical result nominees (7.688834ms)
+✔ completed bolted plates nomination uses the same generic rule without full material proof (2.91816ms)
+✔ actual production paperclip false positive is rejected by current native parser (1.728104ms)
+✔ direct semantic nominees precede cross-shot novelty while final asset uniqueness remains solved globally (1.950307ms)
+✔ Pexels widens orientation only for the final physical fastening photo fallback (18.039895ms)
+✔ concrete surface fallback preserves steel bolts and metal plates as independent pixel requirements (1.025365ms)
+✔ secondary loaded-container fallback retrieves its authored owner without dropping either independent anchor (9.28464ms)
+✔ loaded coils and motor housing use the same owner fallback; proximity or missing grounding cannot enable it (3.727623ms)
+✔ actual closed-stapler negative does not prove loaded wire staples inside its magazine (1.421451ms)
+✔ exact production accepted filler must fail validation before TTS (28.717112ms)
+✖ native repaired storyboard retains all explicitly open authored detail requirements (10.81019ms)
+✔ surface-first bound-result fallback carries both required subjects on every adapter (61.581085ms)
+✔ generic result query is invariant to anchor order for bolts and plates (42.291063ms)
+✔ Commons final secondary fallback searches the primary subject broadly without weakening must_show (30.853614ms)
+✔ Commons internal-mechanism photo may reach Gemini when primary is proven but lay secondary wording is absent from metadata (18.829717ms)
+✔ Commons ordinary exterior primary-subject photo still fails the secondary internal-component prefilter (6.188006ms)
+✔ Commons non-internal secondary fallback also retrieves the primary broadly while retaining all must_show (2.662232ms)
+✔ Commons repeated multi-word primary keeps broad final fallback without changing must_show (3.265185ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 52
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1767.263883
+
+✖ failing tests:
+
+test at tests/m5-m8-12108-fastening-contract.test.cjs:7:1
+✖ exact saved native repaired storyboard preserves the independently authored surface and relation (131.097453ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+  
+    {
+      model: 'gemini-3.5-flash-lite',
+      narration_word_count: 55,
+      scene_count: 9,
+      script_run_id: '8ffea30d-278a-4397-90cf-e96a7f005613',
+  ...
+                  'office stapler',
+  +               'pressing blade'
+                ],
+                preferred_media_type: 'photo',
+                queries_en: [
+                  'stapler pressing blade mechanism',
+                  'stapler metal guide',
+  ...
+                shot_id: 'S5-A',
+  +             visual_intent: 'A clear photo of office stapler with pressing blade.'
+  -             visual_intent: 'A clear photo of office stapler.'
+              }
+            ]
+          },
+          {
+            evidence_ids: [
+  ...
+                shot_id: 'S6-A',
+  +             visual_intent: 'A close-up photo of wire staples piercing through a stack of white paper sheets.'
+  -             visual_intent: 'A close-up photo of wire staples with paper sheets.'
+              }
+            ]
+          },
+          {
+            evidence_ids: [
+  
+      at TestContext.<anonymous> (/work/tests/m5-m8-12108-fastening-contract.test.cjs:10:46)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { script_run_id: '8ffea30d-278a-4397-90cf-e96a7f005613', model: 'gemini-3.5-flash-lite', storyboard: { narration: 'Zszywacz biurowy to niezastąpione narzędzie które umożliwia skuteczne i porządne łączenie dokumentów. Działa dzięki prostemu mechanizmowi opartemu na sprężynie. Metalowa klamra podawana jest w główną rynienkę, gdzie pionowa blaszka dociska ją. Ostre ramiona przebijają arkusze papieru, tworząc stabilne połączenie, gdyż końcówki zszywki zaginają się na specjalnej blaszkowej podkładce do wnętrza, zapewniając trwałość całego biurowego stosu.', scenes: [Array] }, narration_word_count: 55, scene_count: 9, shot_count: 9, usage: { promptTokenCount: 51084, candidatesTokenCount: 4176, totalTokenCount: 55260 } },
+    expected: { script_run_id: '8ffea30d-278a-4397-90cf-e96a7f005613', model: 'gemini-3.5-flash-lite', storyboard: { narration: 'Zszywacz biurowy to niezastąpione narzędzie które umożliwia skuteczne i porządne łączenie dokumentów. Działa dzięki prostemu mechanizmowi opartemu na sprężynie. Metalowa klamra podawana jest w główną rynienkę, gdzie pionowa blaszka dociska ją. Ostre ramiona przebijają arkusze papieru, tworząc stabilne połączenie, gdyż końcówki zszywki zaginają się na specjalnej blaszkowej podkładce do wnętrza, zapewniając trwałość całego biurowego stosu.', scenes: [Array] }, narration_word_count: 55, scene_count: 9, shot_count: 9, usage: { promptTokenCount: 51084, candidatesTokenCount: 4176, totalTokenCount: 55260 } },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/m5-m8-12126-contract.test.cjs:8:1
+✖ native repaired storyboard retains all explicitly open authored detail requirements (10.81019ms)
+  Error: continuous narration contains standalone closure filler: koniec
+      at assertNoClosureFiller (eval at runM5 (/work/tests/m5-m8-12126-contract.test.cjs:5:23), <anonymous>:387:40)
+      at eval (eval at runM5 (/work/tests/m5-m8-12126-contract.test.cjs:5:23), <anonymous>:211:1)
+      at runM5 (/work/tests/m5-m8-12126-contract.test.cjs:5:88)
+      at TestContext.<anonymous> (/work/tests/m5-m8-12126-contract.test.cjs:9:118)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)

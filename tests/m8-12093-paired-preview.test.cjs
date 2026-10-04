@@ -8,12 +8,14 @@ const requests=(begin=f.begin,src=code('Build Wikimedia Requests'))=>new Functio
 const normalize=(ctx,response,src=code('Normalize Wikimedia'))=>new Function('$','$json',src)(()=>({item:{json:ctx}}),response).json.candidates;
 const context=key=>requests().find(c=>c.shot_key===key && c.query_index===3);
 const original=key=>f.providers.wikimedia.find(b=>b.ctx.shot_key===key && b.ctx.query_index===3);
-test('exact authored noun variation broadens only S6 final fallback and retains all contracts',()=>{
+test('saved corpus broadens S6 noun variation and S9 physical result only in final fallbacks',()=>{
  const before=requests(f.begin,f.baseline_nodes['Build Wikimedia Requests'].jsCode),after=requests();
  assert.equal(after.length,27);
  const changed=after.filter((c,i)=>JSON.stringify(c)!==JSON.stringify(before[i]));
- assert.deepEqual(changed.map(c=>[c.shot_key,c.query_index]),[['S6-A',3]]);
+ assert.deepEqual(changed.map(c=>[c.shot_key,c.query_index]),[['S6-A',3],['S9-A',3]]);
  assert.equal(changed[0].provider_query,'stapler staples');
+ assert.ok(changed[1].fastened_result_context);assert.match(changed[1].provider_query,/^(?:stapled|staple) /);
+ for(const c of changed){const old=before.find(r=>r.shot_key===c.shot_key&&r.query_index===c.query_index);for(const key of ['query','visual_intent','must_show','must_not_show','domain_context_terms'])assert.deepEqual(c[key],old[key]);}
  const old=before.find(c=>c.shot_key==='S6-A'&&c.query_index===3);
  for(const k of ['query','visual_intent','must_show','must_not_show','domain_context_terms'])assert.deepEqual(changed[0][k],old[k]);
 });

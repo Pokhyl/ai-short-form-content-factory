@@ -1,0 +1,38 @@
+{
+  "recorded_at": "2026-10-04T20:41:42.630001+00:00",
+  "failed_job": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+  "deployed": false,
+  "product_ready": false,
+  "checks": {
+    "node": {
+      "passed": 893,
+      "failed": 0,
+      "files": 82
+    },
+    "sql": {
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "corrections": [
+    "Reject standalone closure filler at all seven M5 normalization boundaries",
+    "Retain two explicitly exposed intent/query-grounded authored subjects through all seven M5 boundaries and later transient intent canonicalization",
+    "Retain explicitly authored piercing connector/surface relation",
+    "Surface-first physical fastening fallback on all three source adapters; no detailed query or anchor/exclusion mutation"
+  ],
+  "remaining": [
+    "New strict exposed-detail/piercing contracts invalidate some old provider acceptance evidence; inspect actual pixels first",
+    "S6/S8 shared sole approved image and S9 zero-approved pool remain production failure evidence until integrated strict nine-unique assignment succeeds on matching source/contract identities",
+    "No new provider call, production job, import, publish or restart made in this correction phase",
+    "Representative PL15 EN30 RU45 UK60 actual final-media acceptance remains incomplete"
+  ],
+  "hashes": {
+    "workflows/VIDEO-M5-Script-Storyboard.json": "62451c11d16141139ec0d938a939f2c18cb2fa721fe6a727bb05ee765aa330c0",
+    "workflows/VIDEO-M8-Multi-Source-Visuals.json": "a6f8d337f394b5eb449f09279ee699013fb0185d3ae746cb4302e6141f9adf90",
+    "tests/fixtures/m5-m8-12126-contract.json": "53d782192b2797a9f1ec84b582d85e4e9ac5151eb623f6e5b5a17f4a089ab771",
+    "tests/fixtures/m8-12126-full-pools.json": "ce1288e5420d30d6c8a688b5b4680e032d5367ce11df22e7859c486479ab9af2",
+    "tests/m5-m8-12126-contract.test.cjs": "a0dea669061e025fd3a43651b9f3e73183d0bac455ad2450b8f217a083b2ad71",
+    "acceptance/release-coverage/12126-node-full-final.txt": "32b53f2d63eedcc3d5f7daec29249a7f38c7721e9f5d3d2db7d0c0d2d37fd9e9",
+    "acceptance/release-coverage/12126-sql-full.txt": "413c9069201546ff8cf66e7e8f8ae545b13d4e2157785b79865d19e009e5b05e"
+  }
+}
