@@ -1,0 +1,3 @@
+{"shot": "S6-A", "before": [["wikimedia", "11334157"], ["wikimedia", "26029614"], ["pixabay", "487701"]], "after": [["wikimedia", "8141312", 75], ["pixabay", "487701", 100], ["pexels", "29157286", 66]]}
+{"shot": "S7-A", "before": [["wikimedia", "130306651"], ["wikimedia", "75797646"], ["pexels", "8478388"]], "after": [["wikimedia", "75797646", 79], ["wikimedia", "12612756", 72], ["pexels", "8478388", 92]]}
+PASS: exact baseline, strict eligibility, unique slots, unchanged trusted ranking; all transactions rolled back

@@ -33,5 +33,16 @@
     "tests/fixtures/m8-12108-fastening-contract.json": "610edd99c751382aa2c518f6edaf3958c377a94102ed77d1bdfd333f182e8cd0",
     "tests/m5-m8-12108-fastening-contract.test.cjs": "81f8af1e925f92f739b5a56858b872b85abdef8592144e07bac66bf7294c774d",
     "tests/m8-12108-semantic-nomination-ranking.py": "53eb2e60d2f81755d7d7dca9e67c261adc1b691a9991928855fdc7a94e651590"
+  },
+  "test_log_sha256": {
+    "acceptance/2026-10-04-project-checkpoint/m8-12108-semantic-nomination-ranking-project-final.log": "19e91f8f13f2f40ec1c2514f1cfe086fe23157940f58618700398bdea0447dfd",
+    "acceptance/2026-10-04-project-checkpoint/m8-component-owner-ranking-project-final.log": "88458ead72332b0a07bdd6f4c6bd4cab076ad3dcae858551ee4691da46ffc13f",
+    "acceptance/2026-10-04-project-checkpoint/m8-fastened-result-ranking-project-final.log": "eae9ea740dd43d9df4133e3441b025b873a1b1a8a984c35665467682893aea20",
+    "acceptance/2026-10-04-project-checkpoint/m8-paired-objects-ranking-project-final.log": "bb5028d6afead9fc04712392e68951ca269dd319099bff1989952e59193484c3",
+    "acceptance/2026-10-04-project-checkpoint/m8-paired-preview-ranking-project-final.log": "b90c687db9273d19c30446f3181006a8b4843a89620c44fb7e318335c9820821",
+    "acceptance/2026-10-04-project-checkpoint/m8-qualified-owner-ranking-project-final.log": "918c316bb57fb56082d5da1defeff9d03dd669c02e78d305141e972865c5e13b",
+    "acceptance/2026-10-04-project-checkpoint/m8-query-coverage-ranking-project-final.log": "8b048ae898024fa571c93ed3f502a78255a3ce2d6290c7a1da38e8e81bd67521",
+    "acceptance/2026-10-04-project-checkpoint/m8-surface-owner-ranking-project-final.log": "116b691c4c670098c3438671b2559157029c1e85e9d9efb88852d30ec9252633",
+    "acceptance/2026-10-04-project-checkpoint/node-tests.log": "190a0490b182554e991e3bf6fedb81f3931f524c79954f0a76928d50e3142d23"
   }
 }
