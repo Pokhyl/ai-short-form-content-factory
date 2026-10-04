@@ -1,0 +1,17 @@
+{
+  "phase": "First production regression on verified release; not whole-project acceptance",
+  "payload": {
+    "topic": "jak działa zszywacz biurowy",
+    "language": "pl",
+    "duration": 30,
+    "visual_validation_mode": "gemini"
+  },
+  "maximum_intake_requests": 1,
+  "maximum_factory_launch_requests": 1,
+  "maximum_direct_diagnostic_model_requests": 0,
+  "maximum_visual_model_attempts": 45,
+  "visual_bound_reason": "Nine30s scenes; existing vision node maxTries5",
+  "other_provider_limits": "Unchanged bounded stage retries and persisted TTS free-usage gates. Exact total text/TTS calls and remaining provider quota unknown; no paid fallback or bypass.",
+  "stop_condition": "Follow one job to terminal; on failure preserve ID and close all demonstrated blockers offline before any next job. On pass inspect actual final media before subsequent representative cases.",
+  "next_release_matrix": "PL15 + EN30 + RU45 + UK60 after this known30s regression; sequential, no blind battery."
+}

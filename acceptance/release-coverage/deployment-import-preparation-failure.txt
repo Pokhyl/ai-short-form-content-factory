@@ -1,0 +1,1 @@
+File-handle write_text error occurred before n8n CLI. Separate SQL read verified both target workflows exactly unchanged. Import command had not started.

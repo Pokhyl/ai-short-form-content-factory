@@ -1,0 +1,188 @@
+{
+  "dDiqHH9C5clOrYOX": {
+    "name": "MCP \u2014 Find Free Time",
+    "version_id": "8112784b-9cd8-45dd-a46b-9be1d167fb69",
+    "active_version_id": null,
+    "sha256": "7e1db9a95d1f6444c76ce664905498e6c9389f17d2d15cf1dede24ca4a1142ad"
+  },
+  "dSohghXnQp078EZm": {
+    "name": "MCP \u2014 Server",
+    "version_id": "e6db804b-f6e2-4441-a025-45b68ad2ac56",
+    "active_version_id": null,
+    "sha256": "9debee4f48a0c8e38f0e1ef0531b6540ef5ca442d82044110f4feb2e5d3ab065"
+  },
+  "FLsgn6x0wzoDCsNf": {
+    "name": "MCP \u2014 GitHub Read File",
+    "version_id": "afd74c4b-b08e-4419-8372-6f6ab0bab884",
+    "active_version_id": null,
+    "sha256": "9756bb049f5c05b52fe0719f79007f03d23fe5fc758b3cb42a63c15c286eaaaa"
+  },
+  "HumanFailRetestRunner001": {
+    "name": "TMP \u2014 Human Fail Retest M9",
+    "version_id": "59c0d8c0-5bac-4d9b-9941-16e1ae324f5e",
+    "active_version_id": null,
+    "sha256": "a159147058b083a28ee5699f5e48c669aace42f2ae4ee2f1c8fa8a50ef54af32"
+  },
+  "IUpcFPRH3xOVbgEq": {
+    "name": "MCP \u2014 Calendar Events",
+    "version_id": "f943e12b-ef12-41a5-91ae-7eda199481f7",
+    "active_version_id": null,
+    "sha256": "4cfdbcbc2a54e58ffb932b2219ec143c34babe1bb47d56d5f382fea6b33084e6"
+  },
+  "KCIuipW0TTnCMxkY": {
+    "name": "ADMIN \u2014 KeyCRM Customer Index Incremental Sync",
+    "version_id": "eac24145-5fa9-4af4-b514-836b94bda86b",
+    "active_version_id": null,
+    "sha256": "55cd361d07c7c6f373d9abeea41d8631aaad704205f2cf5efed68a616d286a5a"
+  },
+  "KcrmAnalyticsRefsA1": {
+    "name": "ADMIN \u2014 KeyCRM Analytics Reference Sync",
+    "version_id": "de8260fa-08ce-4f7b-9211-8bbd25034fdb",
+    "active_version_id": null,
+    "sha256": "96dadda4574f1ec1eb5e4ae4509df6bf3d9e9642b40817b2d0028d8f2bffa19e"
+  },
+  "KcrmDetA9V7cQ2Lx": {
+    "name": "MCP \u2014 KeyCRM Customer Details",
+    "version_id": "0da46748-89c9-4294-8ee7-adcf526a5458",
+    "active_version_id": null,
+    "sha256": "2bfc273d2288ef091204c96e78d0e9f8165add15e7fcb4c48418090a18782622"
+  },
+  "KcrmMgrAssignHistA1": {
+    "name": "MCP \u2014 KeyCRM Manager Assignment History",
+    "version_id": "60f17087-6a95-41b9-a1e6-c34750d42a32",
+    "active_version_id": null,
+    "sha256": "aad0340c0427619240ad6f435fd68311effaea586b31cf081352505cc2446114"
+  },
+  "KcrmMgrCallStatsA9zQ7P": {
+    "name": "MCP \u2014 KeyCRM Manager Call Stats",
+    "version_id": "667f8628-4c9e-4266-80de-1d6679124f78",
+    "active_version_id": null,
+    "sha256": "0e629f1d5d611f8d6a708d14314c0c99f9e527d423b7339c5162b6116f6bc4c3"
+  },
+  "KcrmMgrCallTimelineA1": {
+    "name": "MCP \u2014 KeyCRM Manager Call Timeline",
+    "version_id": "c0bf56e3-fac6-4893-931b-e4b4995326b4",
+    "active_version_id": null,
+    "sha256": "96fef4dd825cfcb70385d248ebce6e1805e02728b29cce2bf9435181122252ed"
+  },
+  "KcrmMgrLeadStatsA1": {
+    "name": "MCP \u2014 KeyCRM Manager Lead Stats",
+    "version_id": "4d3f3336-16f3-4599-a436-dc32348727c9",
+    "active_version_id": null,
+    "sha256": "eee7090de667580950c16a92f51cc9d9bc30ae538cf072c3b2d3417b81c2ba35"
+  },
+  "KcrmMgrSalesStatsA1": {
+    "name": "MCP \u2014 KeyCRM Manager Sales Stats",
+    "version_id": "255114b7-8377-4abb-b68c-fffeeb2906ee",
+    "active_version_id": null,
+    "sha256": "a2dcc709d4713664e88c5a0721e3b02abad4c6ca6a3dad93512a16940ba8be01"
+  },
+  "KcrmMgrStatsA7pQ4Z": {
+    "name": "MCP \u2014 KeyCRM Manager Customer Stats",
+    "version_id": "a4f58076-eabc-410b-a9fc-3523d51c41cf",
+    "active_version_id": null,
+    "sha256": "78b4d31d2e6b784263fd47870ac78fd07482bfb626dd3097bc81737fc1a7b74e"
+  },
+  "KcrmPipelineBootstrapA1": {
+    "name": "ADMIN \u2014 KeyCRM Pipeline Card Index Bootstrap",
+    "version_id": "4a48db02-5c76-4035-be8a-bf2192537778",
+    "active_version_id": null,
+    "sha256": "528c4925ffa79f657d00a6a844c35c0d364068a636592aa6fe240a644f73aae0"
+  },
+  "KcrmPipelineIncrementalA1": {
+    "name": "ADMIN \u2014 KeyCRM Pipeline Card Index Incremental Sync",
+    "version_id": "2e49f46b-901c-4df2-93ef-686fc7eb459e",
+    "active_version_id": null,
+    "sha256": "aaf03edadb81324d4345fdd10c2992de0f28f699f5d62396b0c0ac3469be4c74"
+  },
+  "KP1EPFbemTrxbkcY": {
+    "name": "ADMIN \u2014 KeyCRM Customer Index Sync",
+    "version_id": "e5a33603-c98a-4e16-9eda-7ba8f64b7c95",
+    "active_version_id": null,
+    "sha256": "22af5caca5d8744b8c82e867275e3027d1c559d7044ed88e8445c266ae412f0c"
+  },
+  "M10TempReview001": {
+    "name": "M10 TMP \u2014 Exact MP4 Review",
+    "version_id": "1d19d388-d990-43e8-9d27-ef6ba704fa55",
+    "active_version_id": "1d19d388-d990-43e8-9d27-ef6ba704fa55",
+    "sha256": "ef7c367b60c4e7c5096ee563934b4989babc7b4975bc665d28674e768a3d4606"
+  },
+  "MCPDriveSearchM2A": {
+    "name": "MCP \u2014 Drive Search",
+    "version_id": "b45b4215-e9bb-476a-b1f8-1eeb86af08f7",
+    "active_version_id": null,
+    "sha256": "43a87fcdd336bd112be903b798c6b2bf3ae8ea4932bcc6fc266a88fea145f32e"
+  },
+  "OALvijdov0sXpsTO": {
+    "name": "MCP \u2014 Audit Tool Call",
+    "version_id": "01412afc-652c-483d-abde-9e76e709e5de",
+    "active_version_id": null,
+    "sha256": "0c77f3f8e6274ab3c8a5e032baece47e5ce45e0a4068546ca4bc476093aab47a"
+  },
+  "tUxRIiXHh2UaWflF": {
+    "name": "MCP \u2014 Gmail Search",
+    "version_id": "017a5806-3ad4-4522-940b-186cae4a1272",
+    "active_version_id": null,
+    "sha256": "dd4a8534c603385ef8420a225c9e93d079104ce62809830a6a775f9c26a12b12"
+  },
+  "uHvyD6VUiuelqdvx": {
+    "name": "MCP \u2014 Drive Read File",
+    "version_id": "bca2bb9d-e594-488a-9699-2279c44d0bde",
+    "active_version_id": null,
+    "sha256": "e45321c4104c5d1a201d5d51c86f841bcbda6c0740d1ee52cb4d38dbbfba8f60"
+  },
+  "VideoGeminiResilient001": {
+    "name": "VIDEO \u2014 Gemini Resilient Call",
+    "version_id": "8a79f552-8125-4f7b-9825-053cfbb11994",
+    "active_version_id": "8a79f552-8125-4f7b-9825-053cfbb11994",
+    "sha256": "12d5ed81acc81bf924c813a999740e3a57065e3b18fd1c2ee1d43aa2da7567c8"
+  },
+  "VideoM3Intake001": {
+    "name": "VIDEO \u2014 M3 Intake",
+    "version_id": "1a14591f-1339-4b47-91ae-46603cfeeb0b",
+    "active_version_id": "1a14591f-1339-4b47-91ae-46603cfeeb0b",
+    "sha256": "62e9a8dab768f2bcddde733aaa83e8b185b148e4b4b7a12d5e0084dda8d934b3"
+  },
+  "VideoM4Research001": {
+    "name": "VIDEO \u2014 M4 Research",
+    "version_id": "9b77286f-004e-4368-8a47-4fbc585f155e",
+    "active_version_id": "9b77286f-004e-4368-8a47-4fbc585f155e",
+    "sha256": "73919a10de4510a529202b8abdddeced9c7a820bbf7ab21637ae63c9d5825738"
+  },
+  "VideoM6Voiceover001": {
+    "name": "VIDEO \u2014 M6 One Final Voiceover",
+    "version_id": "7cba672b-09a9-4eb0-9f21-f7b5d43ce590",
+    "active_version_id": "7cba672b-09a9-4eb0-9f21-f7b5d43ce590",
+    "sha256": "3eeb8bf878318edd4e0438a0d453361e6c28caddc63fc27cbf0523783fdbf429"
+  },
+  "VideoM7Alignment001": {
+    "name": "VIDEO \u2014 M7 Local Alignment",
+    "version_id": "91fbac4f-f40d-4d75-9111-3e4ed01bd9ff",
+    "active_version_id": "91fbac4f-f40d-4d75-9111-3e4ed01bd9ff",
+    "sha256": "0cfdcd5fff268ea4b10fa8e80c2485cf57e772d0272202698919636e05f9b982"
+  },
+  "VideoM9RenderQa001": {
+    "name": "VIDEO \u2014 M9 Render + Machine QA",
+    "version_id": "fa61a0b4-3bbb-4105-bee8-85cb462a28d9",
+    "active_version_id": "fa61a0b4-3bbb-4105-bee8-85cb462a28d9",
+    "sha256": "a9709a7cca9ef680a2fad16538dce9c23f795792c89b9d0648b1d00b2dee8c7d"
+  },
+  "VideoSelfTestApi001": {
+    "name": "VIDEO \u2014 Self Test API",
+    "version_id": "7c3fa2e4-ac29-44fe-a594-2d3837f1f879",
+    "active_version_id": "7c3fa2e4-ac29-44fe-a594-2d3837f1f879",
+    "sha256": "6df66f19b973efcf5f1234d584da20f96734e2f612e216a7b3619703d9b3e9c2"
+  },
+  "yej0SNKc4Ovb4rzq": {
+    "name": "MCP \u2014 KeyCRM Customer Search",
+    "version_id": "1a15d193-4ccb-4969-9cf4-98d52a8332be",
+    "active_version_id": null,
+    "sha256": "4cbb0d321ddd9c6c5a1360ce15c6aa3801674b7d17bdf21531dd96859f116e8e"
+  },
+  "zAfGZsJszUKu2NIp": {
+    "name": "MCP \u2014 Gmail Attachment",
+    "version_id": "b3b85f6f-88a0-4769-a4a4-3e282ab460b9",
+    "active_version_id": null,
+    "sha256": "d6c2a9c59094f1003ab903e24cf8c160883b2ba254acf9ab447f632165023189"
+  }
+}

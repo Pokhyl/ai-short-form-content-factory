@@ -1,0 +1,5 @@
+Postgres 16 is outside the supported range and receives compatibility support only. Upgrade to Postgres 17 or newer.
+Acquiring database migration lock...
+Publishing workflow with ID: VideoM8Visuals001 (current version)
+Note: Changes will not take effect if n8n is running.
+Please restart n8n for changes to take effect if n8n is currently running.

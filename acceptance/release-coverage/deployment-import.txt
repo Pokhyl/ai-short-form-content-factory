@@ -1,0 +1,6 @@
+Postgres 16 is outside the supported range and receives compatibility support only. Upgrade to Postgres 17 or newer.
+Acquiring database migration lock...
+Importing 2 workflows...
+Deactivating workflow "VIDEO — M5 Script + Storyboard".
+Deactivating workflow "VIDEO — M8 Multi-Source Visuals".
+Successfully imported 2 workflows.

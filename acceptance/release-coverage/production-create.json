@@ -1,0 +1,13 @@
+{
+  "attempted_at": "2026-10-04T17:43:55.960941+00:00",
+  "payload": {
+    "topic": "jak działa zszywacz biurowy",
+    "language": "pl",
+    "duration": 30,
+    "visual_validation_mode": "gemini"
+  },
+  "http_status": 201,
+  "response": {
+    "job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923"
+  }
+}

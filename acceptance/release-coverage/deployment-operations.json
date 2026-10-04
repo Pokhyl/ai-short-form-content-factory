@@ -1,0 +1,19 @@
+{
+  "code_commit": "60589e9b78b686c48b1608082204ff2703de2005",
+  "backup_directory": "/opt/ai-short-form-content-factory/.backups/release-60589e9",
+  "backup_sha256": {
+    "ranking-function.sql": "3fea103bf68cd9076d89b6c7aca707ff363ef8bdb39ce1ba397dc24dfe79a48b",
+    "VideoM8Visuals001.json": "06184cf124cd76c1d431f78ee4809d2e4e699b6bee734eefb4c07a53279652f1",
+    "VideoM5Storyboard001.json": "dfdfbcc20718f12c21c6cd483ccf76cd787bf87ed39b6c5bb95b3233b1044c7c"
+  },
+  "actual_import_commands": 1,
+  "preparation_failures_before_import_command": 1,
+  "sql_function_replacements": 1,
+  "publications": {
+    "VideoM5Storyboard001": 1,
+    "VideoM8Visuals001": 1
+  },
+  "n8n_restarts": 1,
+  "worker_deployments": 0,
+  "verified_deployment": "acceptance/release-coverage/deployment-verified.json"
+}

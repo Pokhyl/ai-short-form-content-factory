@@ -1,6 +1,6 @@
 # Release coverage inventory
 
-Source commit: `6e08b289bc0fd1a00540ae0a89e8d44df5995e86`. Generated with `python3 scripts/inventory_release_coverage.py --output-dir acceptance/release-coverage`.
+Source commit: `60589e9b78b686c48b1608082204ff2703de2005`. Generated with `python3 scripts/inventory_release_coverage.py --output-dir acceptance/release-coverage`.
 
 Static literal-reference inventory and explicit JSON fields, with manually inspected boundary evidence limits. No source evaluation, provider calls, DB calls or production mutations. Missing literal references may be dynamic; language/topic absence means unknown, not unsupported.
 

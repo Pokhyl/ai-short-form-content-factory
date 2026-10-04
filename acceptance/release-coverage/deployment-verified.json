@@ -1,0 +1,33 @@
+{
+  "verified": "PASS",
+  "head": "60589e9b78b686c48b1608082204ff2703de2005",
+  "versions": [
+    {
+      "id": "VideoM5Storyboard001",
+      "counter": 226,
+      "active_version": "eb1c9f83-1e46-4ad4-8769-58430df6b491",
+      "live_and_history_match_git": true
+    },
+    {
+      "id": "VideoM8Visuals001",
+      "counter": 87,
+      "active_version": "264666d5-5c3d-4864-926e-22f28f7d9abf",
+      "live_and_history_match_git": true
+    }
+  ],
+  "other_workflows_unchanged": 31,
+  "sql_body_sha256": "315ca8da0556f51f4e211ab9e3e958026b90d6d3ed0124d646f5f11de992e4b0",
+  "worker_unchanged_healthy": true,
+  "health": {
+    "public": "200",
+    "direct": "200"
+  },
+  "active_executions": 0,
+  "operation_markers": [
+    "restart-started",
+    "publish-VideoM8Visuals001-started",
+    "publish-VideoM5Storyboard001-started",
+    "sql-started",
+    "import-started"
+  ]
+}

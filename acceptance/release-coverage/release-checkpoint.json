@@ -22,8 +22,8 @@
     "production_acceptance": false
   },
   "new_provider_calls_this_session": 2,
-  "deployed": false,
-  "production_jobs_created": 0,
+  "deployed": true,
+  "production_jobs_created": 1,
   "production_jobs_launched": 0,
   "product_ready": false,
   "sha256": {
@@ -33,5 +33,7 @@
     "tests/fixtures/release-m8-12108-integrated.json": "c3f355242022d87a02c1b7c6b01225c1bf3216cde5cf4a91c56aa4bf06eead5a",
     "acceptance/release-coverage/node-tests-final.txt": "e3ce5b5a6bc9622369c84cd35cf34b601b312ab1f9a94bf7d2242aabe6526bb8",
     "acceptance/release-coverage/integrated-visual-replay.json": "704376cc935beeb59afdded6336a6128e2f5e08bba6209f0efe76f96aadc9b45"
-  }
+  },
+  "deployment_evidence": "acceptance/release-coverage/deployment-verified.json",
+  "created_job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923"
 }
