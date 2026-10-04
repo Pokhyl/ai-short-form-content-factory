@@ -1,3 +1,10 @@
+## 2026-10-04 — 9bf5e97c LAUNCHED ONCE; M4-M7 PASS; M8 RUNNING
+
+- Job `9bf5e97c-0059-48a8-8e5d-7da1b1feb923` launched EXACTLY ONCE at 2026-10-04T17:48:43.532740+00:00: HTTP202 accepted=true. Prelaunch HEAD/origin/remote f7bbbde7e68d1426520d23f91fd3b6d1f90131c1, ID in all three docs, DBcreated and active0 verified. Receipt acceptance/release-coverage/production-launch.json. NEVER repeat launch/create/import/publish/restart.
+- Read-only DB snapshot after launch: research b06f89c0-defa-4b12-9f69-6496562310b6 PASS; script cb297883-0f5e-403a-b4a4-ff81ed861446 PASS; voice98ce297d-eca1-4baa-82bc-4bd330b5999e PASS; alignment d69ac10a-38f3-4293-b99b-59bdf0da5c6f PASS; visual7acf65fd-9eef-42c3-8dd1-5accb3ec91c3 RUNNING, job visuals_collecting; no render run yet. This is a snapshot, NOT a terminal result.
+- Deployed code60589e9, M5v226/eb1c9f83-1e46-4ad4-8769-58430df6b491 and M8v87/264666d5-5c3d-4864-926e-22f28f7d9abf remain the verified release. Offline Node886/886, SQL8/8, separate5/5 and integrated nine unique selections passed. Product readiness NOT PROVEN.
+- NEXT: follow this exact job read-only through M8/M9 to terminal, then actual final media inspection. If failed preserve it immutable, inspect full execution/all scenes and close blockers offline. Do not stop at a status report. PL30 regression does not replace PL15/EN30/RU45/UK60 representative acceptance. Earlier CREATED ONLY notes are historical.
+
 # Lessons Learned
 
 ## 2026-09-25: a 15-second smoke misses long-schema failures

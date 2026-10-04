@@ -1,0 +1,12 @@
+{
+  "attempted_at": "2026-10-04T17:48:43.532740+00:00",
+  "prelaunch_head": "f7bbbde7e68d1426520d23f91fd3b6d1f90131c1",
+  "job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+  "http_status": 202,
+  "response": {
+    "job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+    "accepted": true,
+    "status": "processing"
+  },
+  "launch_count": 1
+}
