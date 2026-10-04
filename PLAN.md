@@ -1,3 +1,9 @@
+## 2026-10-04 23:15 Warsaw — V3 EXACT-MEDIA PREFLIGHT IMPLEMENTED; NOT CONNECTED TO PRODUCTION
+
+Branch factory-v3 now has factory_v3/preflight.py: verifies actual local render bytes and provenance/license families, binds visual approval to exact scene contract/file hashes, checks all must-show concepts/min55/intent/exclusions, matches unique BYTES across providers, freezes final narration/scenes/assets/reviews, and revalidates before voice. All13 new tests PASS, including real historical7/9 blocker, stale contract/file, forged success, alias-image collision and multiple valid candidates. Controlled test receipts are explicitly synthetic tests, not new provider acceptance. No model/search/TTS calls and no production changes. Runtime TTS is NOT yet connected to this gate; product_ready=false.
+
+NEXT: implement trusted availability-led provider/download/review inventory and evidence-grounded composition, then durable executor invoking verify_before_voice directly before existing one-TTS adapter. Exact downloaded render bytes must be reviewed, not another preview. Reuse working alignment/render; integrate intake/review and run actual release acceptance. Do not resume legacy M5/M8 patching. README and checked-in test logs describe runnable components and limits. Failed production IDs remain immutable.
+
 ## 2026-10-04 23:12 Warsaw — FACTORY-V3 IMPLEMENTATION STARTED; NOT DEPLOYED
 
 Active branch factory-v3. Old correction/archive pushed on main at d358e4d1fe55c99b03759d60d0b74c21a7fc3fe8. New factory_v3/visual_plan.py implements global maximum unique matching, deficit witnesses and receipt revalidation before downstream work. Five meaningful tests PASS. Native saved failed12126 graph correctly blocks7/9 with both S6/S8 collision and S9 absence; acceptance/factory-v3/failed-12126-preflight.json. Zero provider/model/TTS calls, zero production mutations. This is a runnable first component, NOT a working end-to-end replacement or product acceptance.

@@ -19,4 +19,6 @@ python3 factory_v3/visual_plan.py acceptance/release-coverage/12126-assignment-d
 python3 -m unittest discover -s tests/factory_v3 -v
 ```
 
-Not implemented yet: availability-led provider/review inventory, grounded composer, provenance freeze with actual asset hashes, durable runtime integration, intake/review wiring and release acceptance. Imported legacy approvals are only graph evidence, never acceptance of new contracts. Current production remains unchanged. Free-only policy, supported languages/durations, exact audio reuse and strict real-media checks remain requirements.
+Implemented additionally: preflight.freeze verifies exact local render-file hashes, attribution/license families, contract-bound review receipts and all concept checks, narration-to-scene identity and byte-level global uniqueness; preflight.verify_before_voice revalidates the frozen plan. All13 tests pass. Review receipts must come from a trusted internal provider adapter; their content hash is integrity tracking, not authentication. This code is not yet wired into the live TTS path.
+
+Not implemented yet: availability-led provider/review inventory, grounded composer, durable runtime integration, intake/review wiring and release acceptance. Imported legacy approvals are only graph evidence, never acceptance of new contracts. Current production remains unchanged. Free-only policy, supported languages/durations, exact audio reuse and strict real-media checks remain requirements.

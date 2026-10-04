@@ -1,1 +1,18 @@
-Five new feasibility tests PASS; real execution12126 preflight blocks7/9 before voice. No external calls or production changes.
+test_exact_media_and_contract_pass (test_preflight.FreezeTests.test_exact_media_and_contract_pass) ... ok
+test_frozen_script_tampering_rejected (test_preflight.FreezeTests.test_frozen_script_tampering_rejected) ... ok
+test_missing_concept_checks_or_low_score_block_voice (test_preflight.FreezeTests.test_missing_concept_checks_or_low_score_block_voice) ... ok
+test_multiple_candidates_remain_verifiable_after_freeze (test_preflight.FreezeTests.test_multiple_candidates_remain_verifiable_after_freeze) ... ok
+test_old_contract_review_cannot_approve_new_detail (test_preflight.FreezeTests.test_old_contract_review_cannot_approve_new_detail) ... ok
+test_replacing_render_bytes_invalidates_freeze (test_preflight.FreezeTests.test_replacing_render_bytes_invalidates_freeze) ... ok
+test_same_bytes_under_two_provider_ids_are_not_unique (test_preflight.FreezeTests.test_same_bytes_under_two_provider_ids_are_not_unique) ... ok
+test_traversal_and_unknown_license_rejected (test_preflight.FreezeTests.test_traversal_and_unknown_license_rejected) ... ok
+test_changed_asset_receipt_cannot_unlock_voice (test_visual_plan.PlanTests.test_changed_asset_receipt_cannot_unlock_voice) ... ok
+test_forged_feasible_flag_does_not_unlock_voice (test_visual_plan.PlanTests.test_forged_feasible_flag_does_not_unlock_voice) ... ok
+test_invalid_or_empty_plan_rejected (test_visual_plan.PlanTests.test_invalid_or_empty_plan_rejected) ... ok
+test_real_failed_execution_blocks_before_voice (test_visual_plan.PlanTests.test_real_failed_execution_blocks_before_voice) ... ok
+test_reassigns_earlier_choices_instead_of_greedy_failure (test_visual_plan.PlanTests.test_reassigns_earlier_choices_instead_of_greedy_failure) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.010s
+
+OK
