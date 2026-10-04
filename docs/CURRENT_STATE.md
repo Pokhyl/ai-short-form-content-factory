@@ -1,3 +1,9 @@
+## 2026-10-04 — b76675c8 IMMUTABLE M8 12108 failure; new production acceptance failed
+- Acceptance `b76675c8-be07-44c0-9b27-22b350d86ef8` launched EXACTLY ONCE HTTP202 accepted=true at 2026-10-04T10:09:00Z after prelaunch HEAD/origin85bf4f4 matched, ID persisted, DB created, active0. Receipt `.review/m8-12093/new-acceptance-launch.json`.
+- Terminal visuals_failed: M4-M7 PASS; M8 run `a9d02b45-3024-4fd2-995d-fc00d325e904` failed execution12108 (10:10:50–10:15:29Z), no Gemini-approved unique visual candidate for S6-A; M9 never started. NEVER relaunch this failed ID. Inspect ALL9 reviews and full pools before changes; no new smoke before every observed blocker closes offline and full checks/deploy verification.
+- Prior correction7edb2d8 and actual46912c2a offline S6/S7 replay passed865/865+7SQL regressions, but this new production result disproves production acceptance. ActiveM8v86/54776132-c5a5-40e9-acb1-3e9498e273e5, M5v225 unchanged. No further import/publish/restart/create/run pending.
+- Full new execution extraction in progress at `.review/m8-12108/execution.json`. Final media does not exist. Preserve strict anchors/photographs/Gemini gates, relevance55,3queries/3previews, uniqueness and timing.
+
 ## 2026-10-04 — M8 v86 deployed; b76675c8 CREATED ONLY
 - New acceptance `b76675c8-be07-44c0-9b27-22b350d86ef8` created EXACTLY ONCE HTTP201 at 2026-10-04T10:07:42Z: topic jak działa zszywacz biurowy, pl30/Gemini. NOT LAUNCHED. Receipt `.review/m8-12093/new-acceptance-create.json`.
 - Correction `7edb2d88b982a30a739ce4865e1f58989c9c44af` pushed; full865/865 and seven M8 SQL regressions PASS; actual strict native Gemini replay closes BOTH S6/S7 blockers, illustration negative rejected; all9 unique scene assignment OFFLINE PASS.
