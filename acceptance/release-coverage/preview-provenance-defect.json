@@ -1,0 +1,9 @@
+{
+  "failure_class": "Offline replay supplied historical preview bytes after ranking changed a candidate; fixed per-shot refresh list missed S8 third-candidate replacement.",
+  "production_bug_claimed": false,
+  "evidence": "Original S8 third candidate pixabay1657620, current ranking pixabay2350695; old response cannot prove new set.",
+  "correction": "Compare all ordered provider/asset/type/preview/download identities before reusing any preview set; changed S8 refreshed through worker.",
+  "source": "scripts/visual_preview_identity.cjs",
+  "regression": "tests/release-m8-integrated.test.cjs",
+  "release_gate": "Native parser/collector replay must reject mismatched input contexts before reporting current integrated PASS."
+}

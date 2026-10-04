@@ -1,0 +1,10 @@
+{
+  "container_name": "factory-release-render-dc810cf1a9de",
+  "test": "tests/render-target-duration-regression.py",
+  "reason": "Initial45s harness timeout; inspected and no old test container remains. Two full-resolution renders require a longer isolated test budget.",
+  "max_seconds": 110,
+  "network": "none",
+  "worker_image_id": "sha256:6b309a457c2471994bf792acbd85b7fda854e96b1336935607071b99d32df102",
+  "production_mutations": 0,
+  "provider_calls": 0
+}

@@ -1,0 +1,3 @@
+{"input_size": [1600, 1611], "output_size": [1080, 1920], "edge_landmarks_preserved": true, "full_frame_no_black_bars": true}
+{"input_size": [1920, 1080], "output_size": [1080, 1920], "edge_landmarks_preserved": true, "full_frame_no_black_bars": true}
+{"input_size": [1080, 1920], "output_size": [1080, 1920], "edge_landmarks_preserved": true, "full_frame_no_black_bars": true}

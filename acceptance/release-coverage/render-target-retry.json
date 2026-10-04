@@ -1,0 +1,9 @@
+{
+  "runner": "tests/render-target-duration-regression.py",
+  "passed": true,
+  "exit_code": 0,
+  "duration_seconds": 76.05,
+  "log": "acceptance/release-coverage/render-target-duration-regression-retry.txt",
+  "log_sha256": "01ff3cb9e4dd6f67d210254d46c0acb377fa19be200b23700c2f2e421e423877",
+  "budget": "acceptance/release-coverage/render-retry-budget.json"
+}

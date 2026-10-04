@@ -1,0 +1,1 @@
+Installed n8n splitInBatches v3: five single-scene iterations, exact completed collection PASS

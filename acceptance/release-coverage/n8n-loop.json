@@ -1,0 +1,10 @@
+{
+  "image_id": "sha256:307d6065be25619aa24cfc63a7c2f04ca56d084a08c05c8e9f189a89f353b1ec",
+  "runner": "tests/n8n-gemini-loop-runtime.cjs",
+  "module_path": "/usr/local/lib/node_modules/n8n/node_modules/n8n-nodes-base/dist/nodes/SplitInBatches/v3/SplitInBatchesV3.node.js",
+  "passed": true,
+  "provider_calls": 0,
+  "production_mutations": 0,
+  "log": "acceptance/release-coverage/n8n-loop.txt",
+  "log_sha256": "03e233fe4dfef8429aaef4736f40ea87c572300563b134002de52e12133d95ed"
+}

@@ -1,0 +1,23 @@
+{
+  "purpose": "Resolve loaded staple/container identity using the exact current three previews; one shot only",
+  "model": "gemini-3.5-flash-lite",
+  "max_calls": 1,
+  "max_request_seconds": 25,
+  "retry_calls": 0,
+  "expected_request_quota": 1,
+  "remaining_quota": "unknown; no bypass on rate-limit response",
+  "billing_status": "Not inferred from server logs; existing free-only provider configuration, no paid fallback",
+  "request_builder_sha256": "59bf61df83a671b683a266b44fef9f9fcd601a61230b66554f486d7743266073",
+  "workflow_sha256": "a078b5f450189f2344dd3520835a12f22aac04236f82a66349250a3fdd0047dc",
+  "pixel_inspection": {
+    "1": "Open mechanism; loaded staples not distinguishable",
+    "2": "Disassembled electrical tool; no visible loaded staples",
+    "3": "Ridged staple strip in exposed feed track; spring pusher removed"
+  },
+  "preview_sha256": [
+    "87717a875a495b2252bb314bcb0f0600a4f84363c96a381a13a6468418d2f3e9",
+    "feca8db06c24d20e871134bc80b56eb0cc58414fa866e3b1208c378a74787f7d",
+    "bd63908fb030f58f6871adbbf05ec2cfe80abd0399a557c5cb21c15ba79687a3"
+  ],
+  "stop_condition": "Persist one response and strict parser result; no retry/new job if error or no approved candidate"
+}

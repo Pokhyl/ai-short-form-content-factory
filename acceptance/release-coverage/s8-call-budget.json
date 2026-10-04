@@ -1,0 +1,12 @@
+{
+  "purpose": "S8 third candidate changed after SQL cross-shot novelty; old review cannot validate current candidate set. Refresh exact previews then one native review only.",
+  "model": "gemini-3.5-flash-lite",
+  "max_calls": 1,
+  "max_request_seconds": 25,
+  "retry_calls": 0,
+  "expected_request_quota": 1,
+  "remaining_quota": "unknown; no rate-limit bypass",
+  "no_paid_fallback": true,
+  "stop_condition": "Persist single response; do not retry failures",
+  "total_model_calls_this_session_cap": 2
+}

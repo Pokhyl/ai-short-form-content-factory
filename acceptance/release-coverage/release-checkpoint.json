@@ -1,0 +1,37 @@
+{
+  "node_tests": {
+    "total": 886,
+    "pass": 886,
+    "fail": 0
+  },
+  "sql_regressions": {
+    "total": 8,
+    "pass": 8,
+    "reference": "acceptance/2026-10-04-project-checkpoint/evidence.json; SQL/core workflow files unchanged since those checks"
+  },
+  "separate_runners": {
+    "total": 5,
+    "pass": 5,
+    "reference": "acceptance/release-coverage/separate-checks.json"
+  },
+  "integrated_visual_replay": {
+    "scene_count": 9,
+    "unique_selected": 9,
+    "new_provider_responses": 2,
+    "reused_provider_responses": 7,
+    "production_acceptance": false
+  },
+  "new_provider_calls_this_session": 2,
+  "deployed": false,
+  "production_jobs_created": 0,
+  "production_jobs_launched": 0,
+  "product_ready": false,
+  "sha256": {
+    "scripts/replay_m8_release.cjs": "ea43d49ec62efc4e685d869cdf7b00d8e24c03a67aea68aa90fe12f02f9b6e1a",
+    "scripts/visual_preview_identity.cjs": "1cd0eb427c255116ea329d83c153410de19a9c03f1a8118159c78331103a7525",
+    "tests/release-m8-integrated.test.cjs": "5ab9bc73c6c7d1b95ec49ad2912bacbc53fd31f30a5597d1f14a8e6b90bfe6cb",
+    "tests/fixtures/release-m8-12108-integrated.json": "c3f355242022d87a02c1b7c6b01225c1bf3216cde5cf4a91c56aa4bf06eead5a",
+    "acceptance/release-coverage/node-tests-final.txt": "e3ce5b5a6bc9622369c84cd35cf34b601b312ab1f9a94bf7d2242aabe6526bb8",
+    "acceptance/release-coverage/integrated-visual-replay.json": "704376cc935beeb59afdded6336a6128e2f5e08bba6209f0efe76f96aadc9b45"
+  }
+}

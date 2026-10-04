@@ -1,0 +1,44 @@
+{
+  "worker_image_id": "sha256:6b309a457c2471994bf792acbd85b7fda854e96b1336935607071b99d32df102",
+  "worker_source_sha256": "37faf271dac3845b5a7a247dd765e6b4c3fc41d45cdb966f976879791f2c7c61",
+  "provider_calls": 0,
+  "network": "none",
+  "production_mutations": 0,
+  "checks": [
+    {
+      "runner": "tests/alignment-dtw-regression.py",
+      "arguments": [],
+      "passed": true,
+      "exit_code": 0,
+      "log": "acceptance/release-coverage/alignment-dtw-regression.txt",
+      "log_sha256": "ad7b63f367c49f46db127fc5121851c9f3fdf04a42f38747d310319cd2459d5c"
+    },
+    {
+      "runner": "tests/audit-duration-contract.py",
+      "arguments": [],
+      "passed": true,
+      "exit_code": 0,
+      "log": "acceptance/release-coverage/audit-duration-contract.txt",
+      "log_sha256": "58ba02c02201aec0f88d59fd2e639a717b62fe82fa25168fb682d4ca7ebde79f"
+    },
+    {
+      "runner": "tests/render-fit-regression.py",
+      "arguments": [
+        "services/media-worker/server.py"
+      ],
+      "passed": true,
+      "exit_code": 0,
+      "log": "acceptance/release-coverage/render-fit-regression.txt",
+      "log_sha256": "648b6cea42e043c52ee27ad600aee96b0fc61eee782cd53f3d02d678639c30b6"
+    },
+    {
+      "runner": "tests/render-target-duration-regression.py",
+      "arguments": [],
+      "passed": false,
+      "exit_code": null,
+      "log": "acceptance/release-coverage/render-target-duration-regression.txt",
+      "log_sha256": "8be49b122921844e7caaa0c1937bed470993ccc75bd2c04ee654f9fa6153d6c2"
+    }
+  ],
+  "all_passed": false
+}

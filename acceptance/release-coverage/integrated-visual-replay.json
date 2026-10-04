@@ -1,0 +1,62 @@
+{
+  "provider_calls": 0,
+  "production_mutations": 0,
+  "provenance": "Two new S4/S8 provider responses plus seven saved native responses with matching current ordered sources and contracts; integrated deterministic replay, not a fresh nine-call or production acceptance.",
+  "selected": [
+    {
+      "shot": "S1-A",
+      "provider": "wikimedia",
+      "asset": "163765292",
+      "score": 100
+    },
+    {
+      "shot": "S2-A",
+      "provider": "pexels",
+      "asset": "12048264",
+      "score": 92
+    },
+    {
+      "shot": "S3-A",
+      "provider": "pixabay",
+      "asset": "5521592",
+      "score": 100
+    },
+    {
+      "shot": "S4-A",
+      "provider": "wikimedia",
+      "asset": "8141365",
+      "score": 95
+    },
+    {
+      "shot": "S5-A",
+      "provider": "pixabay",
+      "asset": "813653",
+      "score": 100
+    },
+    {
+      "shot": "S6-A",
+      "provider": "wikimedia",
+      "asset": "77734699",
+      "score": 95
+    },
+    {
+      "shot": "S7-A",
+      "provider": "pexels",
+      "asset": "6991328",
+      "score": 92
+    },
+    {
+      "shot": "S8-A",
+      "provider": "pixabay",
+      "asset": "2350695",
+      "score": 100
+    },
+    {
+      "shot": "S9-A",
+      "provider": "wikimedia",
+      "asset": "854970",
+      "score": 95
+    }
+  ],
+  "s4_request_sha256": "87a67d9a43e5ba6a6eb5c229f9b474e293f43d160689dcec564a43b37534c6d1"
+}
