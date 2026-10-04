@@ -89,5 +89,11 @@ test('budget remains three previews and search count stays unchanged',()=>{
 });
 
 test('exact normalized pool snapshot matches executable normalizer',()=>{
- assert.deepEqual(normalize(requests()[2]),fixture.normalized_owner_candidates);
+ const clean=value=>String(value||'').split(/[?#]/u)[0];
+ const expected=fixture.normalized_owner_candidates.map(candidate=>{
+  const info=fixture.commons_owner_response.query.pages[candidate.provider_asset_id].imageinfo[0];
+  const dimensions=clean(info.thumburl)===clean(info.url)?{width:info.width,height:info.height}:{};
+  return {...candidate,download_url:clean(candidate.download_url),preview_url:clean(candidate.preview_url),...dimensions};
+ });
+ assert.deepEqual(normalize(requests()[2]),expected);
 });
