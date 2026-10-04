@@ -1,0 +1,2293 @@
+{
+  "job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+  "execution_id": 12126,
+  "terminal_status": "visuals_failed",
+  "render_started": false,
+  "candidate_sets": [
+    {
+      "shot_key": "S1-A",
+      "must_show": [
+        "office stapler",
+        "desk surface"
+      ],
+      "shot_uuid": "5f613955-940a-4bb5-ba33-904493298b1a",
+      "candidates": [
+        {
+          "width": 4480,
+          "author": "https://kaboompics.com/",
+          "height": 6720,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@karola-g",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/close-up-of-office-supplies-5882697/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/5882697/pexels-photo-5882697.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "13d403cc-593a-4021-8d9d-99ca2600b759",
+          "download_url": "https://images.pexels.com/photos/5882697/pexels-photo-5882697.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "5882697",
+          "metadata_rejection_reason": "missing_secondary_subject_context"
+        },
+        {
+          "width": 4423,
+          "author": "Ron Lach",
+          "height": 6635,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@ron-lach",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/camera-and-random-objects-on-a-white-surface-9908658/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/9908658/pexels-photo-9908658.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "feddfb77-a877-4250-bbc3-0114faa94d69",
+          "download_url": "https://images.pexels.com/photos/9908658/pexels-photo-9908658.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 78,
+          "metadata_rejected": true,
+          "provider_asset_id": "9908658",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:office stapler; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Cubicle Sherpa",
+          "height": 1200,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Stapler_on_office_desk_(9446980723).jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Stapler_on_office_desk_(9446980723).jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Stapler_on_office_desk_%289446980723%29.jpg/1920px-Stapler_on_office_desk_%289446980723%29.jpg",
+          "candidate_id": "e99d9219-3e5c-436d-bc13-3544c3a04a91",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Stapler_on_office_desk_%289446980723%29.jpg/1920px-Stapler_on_office_desk_%289446980723%29.jpg",
+          "license_name": "CC BY 2.0",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "163765292",
+          "metadata_rejection_reason": "missing_secondary_subject_context"
+        }
+      ],
+      "shot_order": 1,
+      "scene_order": 1,
+      "must_not_show": [
+        "staple remover"
+      ],
+      "visual_intent": "office stapler resting on a flat desk surface",
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "preferred_media_type": "photo"
+    },
+    {
+      "shot_key": "S2-A",
+      "must_show": [
+        "office stapler"
+      ],
+      "shot_uuid": "1a78db74-4ead-4246-870a-dd1d6760953d",
+      "candidates": [
+        {
+          "width": 4016,
+          "author": "Pavel Danilyuk",
+          "height": 6016,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@pavel-danilyuk",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/office-supplies-on-a-wooden-table-6340717/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/6340717/pexels-photo-6340717.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "f19c055b-f1b6-490a-9738-6c4cff7ff8cc",
+          "download_url": "https://images.pexels.com/photos/6340717/pexels-photo-6340717.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "6340717",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Helito",
+          "height": 1200,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Stapler_office.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Stapler_office.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Stapler_office.jpg/1920px-Stapler_office.jpg",
+          "candidate_id": "09c96dc9-d4ea-4a44-bebf-1b7f06eadd21",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Stapler_office.jpg/1920px-Stapler_office.jpg",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "75975582",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 3264,
+          "author": "pcglenn",
+          "height": 2448,
+          "provider": "pixabay",
+          "author_url": "https://pixabay.com/users/370511/",
+          "media_type": "photo",
+          "source_url": "https://pixabay.com/photos/stapler-office-supplies-black-411680/",
+          "duration_ms": null,
+          "license_url": "https://pixabay.com/service/license-summary/",
+          "preview_url": "https://pixabay.com/get/ga671e6f86476d68337df0737cb327e31d9adb452860b750eadd424c6f6a8d12fed7558a89e16fb5045012347988c16d6_640.jpg",
+          "candidate_id": "5f4c025e-25b6-4bcc-bf05-0ed59a2ff405",
+          "download_url": "https://pixabay.com/get/g3df3d390851aacd16ee80969a573dfe936a4bf02c2fc8cee58fecf1a76c855c4519763f792eb2017df2dec49c7a462f0394c4c505f6b0a007240b7457d7caf6a_1280.jpg",
+          "license_name": "Pixabay Content License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "411680",
+          "metadata_rejection_reason": "pixabay_photo_content_unverified_tag_only"
+        }
+      ],
+      "shot_order": 1,
+      "scene_order": 2,
+      "must_not_show": [
+        "loose paper sheets"
+      ],
+      "visual_intent": "A clear photo of office stapler.",
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "preferred_media_type": "photo"
+    },
+    {
+      "shot_key": "S3-A",
+      "must_show": [
+        "office stapler"
+      ],
+      "shot_uuid": "82d15156-1eca-4076-abea-f2516065dea1",
+      "candidates": [
+        {
+          "width": 4000,
+          "author": "Loveleen Cherub",
+          "height": 6000,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@cherubs",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/organized-workspace-with-office-supplies-38511235/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/38511235/pexels-photo-38511235.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "cd8f07a1-443d-444a-b128-b6f8ce4a2837",
+          "download_url": "https://images.pexels.com/photos/38511235/pexels-photo-38511235.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "38511235",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Helito",
+          "height": 1200,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Stapler_office.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Stapler_office.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Stapler_office.jpg/1920px-Stapler_office.jpg",
+          "candidate_id": "7c1b575e-d50c-4925-aa2d-e7198f6c24e8",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Stapler_office.jpg/1920px-Stapler_office.jpg",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "75975582",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 3264,
+          "author": "Naeem-Akram",
+          "height": 2448,
+          "provider": "pixabay",
+          "author_url": "https://pixabay.com/users/626763/",
+          "media_type": "photo",
+          "source_url": "https://pixabay.com/photos/stapler-office-paperwork-printer-813653/",
+          "duration_ms": null,
+          "license_url": "https://pixabay.com/service/license-summary/",
+          "preview_url": "https://pixabay.com/get/g88eb5f33b9909286a3541bb46cafa86afabfbbde2fbb4e7bcc0d2cf934cb594546af1f363f492fe9aa9bdd612a093c5f_640.jpg",
+          "candidate_id": "260cbdcd-96c6-4efe-9c89-929ee8e3f4fb",
+          "download_url": "https://pixabay.com/get/g724efb0d79c0ec9d8e3bf1304f210b1ab9018ab1d2eaca54cf4ef4265de7dc5cc492e566e10cac6a1acab3bded8758631c83d1d3b7678ff4c66659872e772d19_1280.jpg",
+          "license_name": "Pixabay Content License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "813653",
+          "metadata_rejection_reason": "pixabay_photo_content_unverified_tag_only"
+        }
+      ],
+      "shot_order": 1,
+      "scene_order": 3,
+      "must_not_show": [
+        "closed stapler"
+      ],
+      "visual_intent": "A clear photo of office stapler.",
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "preferred_media_type": "photo"
+    },
+    {
+      "shot_key": "S4-A",
+      "must_show": [
+        "office stapler"
+      ],
+      "shot_uuid": "276f1989-06bf-460d-99ce-4dfb929f12e5",
+      "candidates": [
+        {
+          "width": 3993,
+          "author": "Pavel Danilyuk",
+          "height": 5981,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@pavel-danilyuk",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/colored-markers-lying-on-a-notebook-next-to-sticky-notes-pen-and-a-stapler-6340709/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/6340709/pexels-photo-6340709.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "51852edb-8e8b-4bb1-8fc5-f6a38d35f63c",
+          "download_url": "https://images.pexels.com/photos/6340709/pexels-photo-6340709.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "6340709",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Helito",
+          "height": 1200,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Stapler_office.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Stapler_office.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Stapler_office.jpg/1920px-Stapler_office.jpg",
+          "candidate_id": "8a0a977b-9b18-4046-9d35-2d3bcebe0038",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Stapler_office.jpg/1920px-Stapler_office.jpg",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "75975582",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 4985,
+          "author": "BRRT",
+          "height": 3350,
+          "provider": "pixabay",
+          "author_url": "https://pixabay.com/users/122519/",
+          "media_type": "photo",
+          "source_url": "https://pixabay.com/photos/vintage-stapler-staple-machine-2350695/",
+          "duration_ms": null,
+          "license_url": "https://pixabay.com/service/license-summary/",
+          "preview_url": "https://pixabay.com/get/g41c060cee74d26f929e0c7a890d7c18f6e053cf88de1f06d84a9299358c12da5da240d553c9050dbeeda27ab0e305f87514f19c0d61a7877cbcefe1046ead6b2_640.jpg",
+          "candidate_id": "b4e15b8b-f4df-4293-86ca-5411d95baf7e",
+          "download_url": "https://pixabay.com/get/g7b7d7b6afbb59739f82c0e764c0d9f154dfe3ecba3746696154bcc24122c9690ac2fd0d6a48ec9bf5fc1c686f548743ebaf4cb563a38398912e9ebf0e37a79c7_1280.jpg",
+          "license_name": "Pixabay Content License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "2350695",
+          "metadata_rejection_reason": "pixabay_photo_content_unverified_tag_only"
+        }
+      ],
+      "shot_order": 1,
+      "scene_order": 4,
+      "must_not_show": [
+        "paper documents"
+      ],
+      "visual_intent": "A clear photo of office stapler.",
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "preferred_media_type": "photo"
+    },
+    {
+      "shot_key": "S5-A",
+      "must_show": [
+        "office stapler",
+        "paper sheets"
+      ],
+      "shot_uuid": "4fcab8b3-daba-4b5c-81ec-72c7b1ce3d96",
+      "candidates": [
+        {
+          "width": 6000,
+          "author": "Ralphs_Fotos",
+          "height": 4000,
+          "provider": "pixabay",
+          "author_url": "https://pixabay.com/users/1767157/",
+          "media_type": "photo",
+          "source_url": "https://pixabay.com/photos/perforator-paper-puncher-punch-3033461/",
+          "duration_ms": null,
+          "license_url": "https://pixabay.com/service/license-summary/",
+          "preview_url": "https://pixabay.com/get/g1ab4ed66418168a6e93b3f954b881ea7ab9fd37036082002b42d9ca4d333b17430fbf88f6568ea722b5ef6d6be9e334381e01b1b3080b377224dfe10c23073a9_640.jpg",
+          "candidate_id": "458ca8e5-442e-4f85-9801-bacaaa3c3a91",
+          "download_url": "https://pixabay.com/get/g063e21b597f0bfb67ad76e54269299f7824f9ea6b6bdc90575874cc25cbee7714b4e8b06d5797c0bc96cf6ef3f4d65618d466845c81c6ef69d9ab661126be3e1_1280.jpg",
+          "license_name": "Pixabay Content License",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "3033461",
+          "metadata_rejection_reason": "missing_secondary_subject_context; pixabay_photo_content_unverified_tag_only"
+        },
+        {
+          "width": 4000,
+          "author": "John Diez",
+          "height": 6000,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@john-diez",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/table-with-notebooks-and-stapler-7578193/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/7578193/pexels-photo-7578193.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "bdb5d1a6-dc81-454c-bfaf-568a90c2983f",
+          "download_url": "https://images.pexels.com/photos/7578193/pexels-photo-7578193.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 70,
+          "metadata_rejected": true,
+          "provider_asset_id": "7578193",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:office stapler; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Jacek Halicki",
+          "height": 1038,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:2017_Zszywacz_biurowy.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2017_Zszywacz_biurowy.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/2017_Zszywacz_biurowy.jpg/1920px-2017_Zszywacz_biurowy.jpg",
+          "candidate_id": "f7817667-9990-4223-97cc-429c7d556306",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/2017_Zszywacz_biurowy.jpg/1920px-2017_Zszywacz_biurowy.jpg",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 58,
+          "metadata_rejected": true,
+          "provider_asset_id": "64007778",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:office stapler; insufficient_must_show_concept_coverage"
+        }
+      ],
+      "shot_order": 1,
+      "scene_order": 5,
+      "must_not_show": [
+        "staple remover"
+      ],
+      "visual_intent": "top arm of an office stapler positioned above paper sheets",
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "preferred_media_type": "photo"
+    },
+    {
+      "shot_key": "S6-A",
+      "must_show": [
+        "paper sheets",
+        "metal staple"
+      ],
+      "shot_uuid": "52b43182-96c0-47dd-917a-50ecd497f072",
+      "candidates": [
+        {
+          "width": 584,
+          "author": "Olsido",
+          "height": 555,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Staple_on_paper.png",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Staple_on_paper.png",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Staple_on_paper.png",
+          "candidate_id": "0a93c33e-1cee-4bdb-8291-be6813f9507c",
+          "download_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Staple_on_paper.png",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 79,
+          "metadata_rejected": true,
+          "provider_asset_id": "75797646",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Tony Webster  from Minneapolis, Minnesota, United States",
+          "height": 1067,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Staples,_Staple_Remover,_and_Paper_Documents_(45985597455).jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Staples,_Staple_Remover,_and_Paper_Documents_(45985597455).jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg/1920px-Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg",
+          "candidate_id": "a9eee15f-450e-4f6e-97c1-836a96af13e1",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg/1920px-Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg",
+          "license_name": "CC BY-SA 2.0",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 78,
+          "metadata_rejected": true,
+          "provider_asset_id": "77734699",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Lewenstein",
+          "height": 878,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Heftklammern.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Heftklammern.jpg",
+          "duration_ms": null,
+          "license_url": "https://commons.wikimedia.org/wiki/Commons:Public_domain",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Heftklammern.jpg/1920px-Heftklammern.jpg",
+          "candidate_id": "f9b2a92c-9cc5-4a6f-b569-b2f2e2b8fcf5",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Heftklammern.jpg/1920px-Heftklammern.jpg",
+          "license_name": "Public domain",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 72,
+          "metadata_rejected": true,
+          "provider_asset_id": "12612756",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        }
+      ],
+      "shot_order": 1,
+      "scene_order": 6,
+      "must_not_show": [
+        "plastic folder"
+      ],
+      "visual_intent": "A clear photo of paper sheets with metal staple.",
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "preferred_media_type": "photo"
+    },
+    {
+      "shot_key": "S7-A",
+      "must_show": [
+        "stapler metal"
+      ],
+      "shot_uuid": "2d8ec426-dbcf-427e-b6a3-d78b6a72e9ce",
+      "candidates": [
+        {
+          "width": 1600,
+          "author": "Frettie",
+          "height": 1941,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Maped_metal_stapler.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Maped_metal_stapler.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Maped_metal_stapler.jpg/1920px-Maped_metal_stapler.jpg",
+          "candidate_id": "7b6a70af-3397-4f51-8464-44e0043268aa",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Maped_metal_stapler.jpg/1920px-Maped_metal_stapler.jpg",
+          "license_name": "CC BY-SA 3.0",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "7116226",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 6000,
+          "author": "Berho",
+          "height": 4000,
+          "provider": "pixabay",
+          "author_url": "https://pixabay.com/users/8651687/",
+          "media_type": "photo",
+          "source_url": "https://pixabay.com/photos/stapler-metal-desktop-staples-5521592/",
+          "duration_ms": null,
+          "license_url": "https://pixabay.com/service/license-summary/",
+          "preview_url": "https://pixabay.com/get/gc49d0fd4694859ca1bea3396ad4c304a5a483f546055c1177b26f7e92e9f91aaf208b2e6a56a02af9a89f29e94ca682200749ff5a191a9315514b45ed2840a31_640.jpg",
+          "candidate_id": "1318a40e-108b-4d23-8bc9-13b6322e386d",
+          "download_url": "https://pixabay.com/get/gd416b18aef0da1a0da94f243840c77854e1ee400349663ea39d956ac9da4468d74bd816d7bf1370ee9e3f6c0ac616e27edd629ab06650f5b1bdc0d7f31a0ee64_1280.jpg",
+          "license_name": "Pixabay Content License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "5521592",
+          "metadata_rejection_reason": "pixabay_photo_content_unverified_tag_only"
+        },
+        {
+          "width": 3355,
+          "author": "Nasih Sk",
+          "height": 5184,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@nasih-sk-17883039",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/anti-sliding-pattern-on-metal-surface-8818043/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/8818043/pexels-photo-8818043.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "6d0f9904-ccad-4745-84af-7cc6cc92e153",
+          "download_url": "https://images.pexels.com/photos/8818043/pexels-photo-8818043.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 81,
+          "metadata_rejected": true,
+          "provider_asset_id": "8818043",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:stapler metal; insufficient_must_show_concept_coverage"
+        }
+      ],
+      "shot_order": 1,
+      "scene_order": 7,
+      "must_not_show": [
+        "paper sheets"
+      ],
+      "visual_intent": "metal anvil with small grooved indentations on a stapler base",
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "preferred_media_type": "photo"
+    },
+    {
+      "shot_key": "S8-A",
+      "must_show": [
+        "paper sheets",
+        "metal staple"
+      ],
+      "shot_uuid": "ec021244-0eae-472e-ab12-5ba2d2a91a30",
+      "candidates": [
+        {
+          "width": 584,
+          "author": "Olsido",
+          "height": 555,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Staple_on_paper.png",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Staple_on_paper.png",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Staple_on_paper.png",
+          "candidate_id": "2ebab264-0141-4856-8149-2fde5e293e1e",
+          "download_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Staple_on_paper.png",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 76,
+          "metadata_rejected": true,
+          "provider_asset_id": "75797646",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Tony Webster  from Minneapolis, Minnesota, United States",
+          "height": 1067,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Staples,_Staple_Remover,_and_Paper_Documents_(45985597455).jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Staples,_Staple_Remover,_and_Paper_Documents_(45985597455).jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg/1920px-Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg",
+          "candidate_id": "8254bb7f-eaa0-4271-9dd3-e9a96923c29a",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg/1920px-Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg",
+          "license_name": "CC BY-SA 2.0",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 75,
+          "metadata_rejected": true,
+          "provider_asset_id": "77734699",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Lewenstein",
+          "height": 878,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Heftklammern.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Heftklammern.jpg",
+          "duration_ms": null,
+          "license_url": "https://commons.wikimedia.org/wiki/Commons:Public_domain",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Heftklammern.jpg/1920px-Heftklammern.jpg",
+          "candidate_id": "09500ce6-5cd8-4148-bba4-a556cf0cd2ba",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Heftklammern.jpg/1920px-Heftklammern.jpg",
+          "license_name": "Public domain",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 69,
+          "metadata_rejected": true,
+          "provider_asset_id": "12612756",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        }
+      ],
+      "shot_order": 1,
+      "scene_order": 8,
+      "must_not_show": [
+        "open stapler"
+      ],
+      "visual_intent": "bent metal staple ends curving inward underneath paper sheets",
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "preferred_media_type": "photo"
+    },
+    {
+      "shot_key": "S9-A",
+      "must_show": [
+        "paper sheets",
+        "metal staple"
+      ],
+      "shot_uuid": "a987de22-3831-4ee3-9698-6a2bbc3c9e18",
+      "candidates": [
+        {
+          "width": 584,
+          "author": "Olsido",
+          "height": 555,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Staple_on_paper.png",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Staple_on_paper.png",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Staple_on_paper.png",
+          "candidate_id": "8233b115-02b9-4b79-aead-304a1ffe2e19",
+          "download_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Staple_on_paper.png",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 77,
+          "metadata_rejected": true,
+          "provider_asset_id": "75797646",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Lewenstein",
+          "height": 878,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Heftklammern.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Heftklammern.jpg",
+          "duration_ms": null,
+          "license_url": "https://commons.wikimedia.org/wiki/Commons:Public_domain",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Heftklammern.jpg/1920px-Heftklammern.jpg",
+          "candidate_id": "a7b73a8b-9866-4696-b69d-76a4aef754cf",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Heftklammern.jpg/1920px-Heftklammern.jpg",
+          "license_name": "Public domain",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 70,
+          "metadata_rejected": true,
+          "provider_asset_id": "12612756",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 3024,
+          "author": "Eugenia Remark",
+          "height": 4032,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@eugenia-remark-5767088",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/stack-of-paper-files-14935583/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/14935583/pexels-photo-14935583.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "6db116eb-4fa9-4669-b717-801caa2edd7d",
+          "download_url": "https://images.pexels.com/photos/14935583/pexels-photo-14935583.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 99,
+          "metadata_rejected": true,
+          "provider_asset_id": "14935583",
+          "metadata_rejection_reason": "missing_secondary_subject_context"
+        }
+      ],
+      "shot_order": 1,
+      "scene_order": 9,
+      "must_not_show": [
+        "staple remover"
+      ],
+      "visual_intent": "bound stack of paper sheets with a metal staple resting on a desk",
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "preferred_media_type": "photo"
+    }
+  ],
+  "reviews": [
+    {
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "shot_uuid": "5f613955-940a-4bb5-ba33-904493298b1a",
+      "shot_key": "S1-A",
+      "scene_order": 1,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 4480,
+          "author": "https://kaboompics.com/",
+          "height": 6720,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@karola-g",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/close-up-of-office-supplies-5882697/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/5882697/pexels-photo-5882697.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "13d403cc-593a-4021-8d9d-99ca2600b759",
+          "download_url": "https://images.pexels.com/photos/5882697/pexels-photo-5882697.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "5882697",
+          "metadata_rejection_reason": "missing_secondary_subject_context"
+        },
+        {
+          "width": 4423,
+          "author": "Ron Lach",
+          "height": 6635,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@ron-lach",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/camera-and-random-objects-on-a-white-surface-9908658/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/9908658/pexels-photo-9908658.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "feddfb77-a877-4250-bbc3-0114faa94d69",
+          "download_url": "https://images.pexels.com/photos/9908658/pexels-photo-9908658.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 78,
+          "metadata_rejected": true,
+          "provider_asset_id": "9908658",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:office stapler; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Cubicle Sherpa",
+          "height": 1200,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Stapler_on_office_desk_(9446980723).jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Stapler_on_office_desk_(9446980723).jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Stapler_on_office_desk_%289446980723%29.jpg/1920px-Stapler_on_office_desk_%289446980723%29.jpg",
+          "candidate_id": "e99d9219-3e5c-436d-bc13-3544c3a04a91",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Stapler_on_office_desk_%289446980723%29.jpg/1920px-Stapler_on_office_desk_%289446980723%29.jpg",
+          "license_name": "CC BY 2.0",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "163765292",
+          "metadata_rejection_reason": "missing_secondary_subject_context"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "b980b4f0063f4b61664fa75056c6ce9101b468e22bd65e24b9bc0f1f2c9728df",
+          "bytes": 7272,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "c919b6598b1be8c07586c42f88ca385e1da27dcaeac74790357a3d5135c17f94",
+          "bytes": 6460,
+          "mime_type": "image/webp"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "e1de4630037093a921d8825650b2b22cdabfb3b27ba3a05df85a432b4f9bfd16",
+          "bytes": 533250,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": false,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": false,
+              "evidence": "The object shown is a hole puncher with a pivoting upper lever and dual punch heads, not a stapler."
+            },
+            {
+              "concept_index": 2,
+              "concept": "desk surface",
+              "visible": true,
+              "evidence": "A flat white desk surface is clearly visible supporting the objects."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 40,
+          "vision_pass": false,
+          "reason": "The candidate shows a hole puncher instead of an office stapler."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": false,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": false,
+              "evidence": "No office stapler is visible in the frame."
+            },
+            {
+              "concept_index": 2,
+              "concept": "desk surface",
+              "visible": false,
+              "evidence": "A white flat background surface is present, but no desk surface context with the required stapler is shown."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 10,
+          "vision_pass": false,
+          "reason": "An office stapler is missing from the image."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": true,
+              "evidence": "A black office stapler with an elongated pivoting arm, hinged rear pin, and internal staple channel is clearly visible."
+            },
+            {
+              "concept_index": 2,
+              "concept": "desk surface",
+              "visible": true,
+              "evidence": "The stapler is resting on a flat wooden desk surface."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 100,
+          "vision_pass": true,
+          "reason": "An office stapler resting on a flat desk surface is clearly visible with no conflicting items."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1847,
+        "candidatesTokenCount": 536,
+        "totalTokenCount": 2383,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1061
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 786
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "shot_uuid": "1a78db74-4ead-4246-870a-dd1d6760953d",
+      "shot_key": "S2-A",
+      "scene_order": 2,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 4016,
+          "author": "Pavel Danilyuk",
+          "height": 6016,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@pavel-danilyuk",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/office-supplies-on-a-wooden-table-6340717/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/6340717/pexels-photo-6340717.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "f19c055b-f1b6-490a-9738-6c4cff7ff8cc",
+          "download_url": "https://images.pexels.com/photos/6340717/pexels-photo-6340717.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "6340717",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Helito",
+          "height": 1200,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Stapler_office.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Stapler_office.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Stapler_office.jpg/1920px-Stapler_office.jpg",
+          "candidate_id": "09c96dc9-d4ea-4a44-bebf-1b7f06eadd21",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Stapler_office.jpg/1920px-Stapler_office.jpg",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "75975582",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 3264,
+          "author": "pcglenn",
+          "height": 2448,
+          "provider": "pixabay",
+          "author_url": "https://pixabay.com/users/370511/",
+          "media_type": "photo",
+          "source_url": "https://pixabay.com/photos/stapler-office-supplies-black-411680/",
+          "duration_ms": null,
+          "license_url": "https://pixabay.com/service/license-summary/",
+          "preview_url": "https://pixabay.com/get/ga671e6f86476d68337df0737cb327e31d9adb452860b750eadd424c6f6a8d12fed7558a89e16fb5045012347988c16d6_640.jpg",
+          "candidate_id": "5f4c025e-25b6-4bcc-bf05-0ed59a2ff405",
+          "download_url": "https://pixabay.com/get/g3df3d390851aacd16ee80969a573dfe936a4bf02c2fc8cee58fecf1a76c855c4519763f792eb2017df2dec49c7a462f0394c4c505f6b0a007240b7457d7caf6a_1280.jpg",
+          "license_name": "Pixabay Content License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "411680",
+          "metadata_rejection_reason": "pixabay_photo_content_unverified_tag_only"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "cc7b553d4b17b0c104c737f331edd6f649d4ff1450ba8c940a93214c43d17ae1",
+          "bytes": 12360,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "3d03435e598b19222745be5699d6ea80c06013642fd401245f3625f2ff7a7f4d",
+          "bytes": 327272,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "6d1cddec25d260d6aa67ffe27ea2f103413960da40ac7dfcc06f982154dca99e",
+          "bytes": 82707,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": true,
+              "evidence": "An office stapler is visible on the lower left showing its hinged upper arm, base, and metal anvil structure."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 90,
+          "vision_pass": true,
+          "reason": "An office stapler is clearly visible along with other stationery items, and no loose paper sheets are present."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": true,
+              "evidence": "A pink office stapler is prominently visible showing its upper arched housing, internal metal spring channel, and base."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "A clear photo of a pink office stapler with a staple strip beside it; no loose paper sheets are shown."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": true,
+              "evidence": "A black Swingline office stapler is clearly visible showing its arched upper housing, metal inner channel, pivot, and base."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 100,
+          "vision_pass": true,
+          "reason": "A clear, focused photo of an office stapler without any loose paper sheets."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1841,
+        "candidatesTokenCount": 436,
+        "totalTokenCount": 2277,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 792
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 1049
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "shot_uuid": "82d15156-1eca-4076-abea-f2516065dea1",
+      "shot_key": "S3-A",
+      "scene_order": 3,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 4000,
+          "author": "Loveleen Cherub",
+          "height": 6000,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@cherubs",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/organized-workspace-with-office-supplies-38511235/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/38511235/pexels-photo-38511235.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "cd8f07a1-443d-444a-b128-b6f8ce4a2837",
+          "download_url": "https://images.pexels.com/photos/38511235/pexels-photo-38511235.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "38511235",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Helito",
+          "height": 1200,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Stapler_office.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Stapler_office.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Stapler_office.jpg/1920px-Stapler_office.jpg",
+          "candidate_id": "7c1b575e-d50c-4925-aa2d-e7198f6c24e8",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Stapler_office.jpg/1920px-Stapler_office.jpg",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "75975582",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 3264,
+          "author": "Naeem-Akram",
+          "height": 2448,
+          "provider": "pixabay",
+          "author_url": "https://pixabay.com/users/626763/",
+          "media_type": "photo",
+          "source_url": "https://pixabay.com/photos/stapler-office-paperwork-printer-813653/",
+          "duration_ms": null,
+          "license_url": "https://pixabay.com/service/license-summary/",
+          "preview_url": "https://pixabay.com/get/g88eb5f33b9909286a3541bb46cafa86afabfbbde2fbb4e7bcc0d2cf934cb594546af1f363f492fe9aa9bdd612a093c5f_640.jpg",
+          "candidate_id": "260cbdcd-96c6-4efe-9c89-929ee8e3f4fb",
+          "download_url": "https://pixabay.com/get/g724efb0d79c0ec9d8e3bf1304f210b1ab9018ab1d2eaca54cf4ef4265de7dc5cc492e566e10cac6a1acab3bded8758631c83d1d3b7678ff4c66659872e772d19_1280.jpg",
+          "license_name": "Pixabay Content License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "813653",
+          "metadata_rejection_reason": "pixabay_photo_content_unverified_tag_only"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "9443dc059d7062f69d5567314e422088678b4f49f44f8860ecfde5039295a211",
+          "bytes": 9566,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "3d03435e598b19222745be5699d6ea80c06013642fd401245f3625f2ff7a7f4d",
+          "bytes": 327272,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "09bdaa4315412739ae43bbec12a13f8e18390c13d049a917301e1c5f0e05a2ed",
+          "bytes": 59078,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": true,
+              "evidence": "A small pink office stapler is visible on the wooden desk surface in front of the mug."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 90,
+          "vision_pass": true,
+          "reason": "An office stapler is clearly visible in the scene on a desk."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": true,
+              "evidence": "A pink office stapler is prominently featured in the center foreground."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "A clear, well-framed photograph of a pink office stapler."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": true,
+              "evidence": "A bright red office stapler is centered in the frame on a wooden surface."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "A clear, high-quality photograph of an office stapler."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1841,
+        "candidatesTokenCount": 394,
+        "totalTokenCount": 2235,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1049
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 792
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "shot_uuid": "276f1989-06bf-460d-99ce-4dfb929f12e5",
+      "shot_key": "S4-A",
+      "scene_order": 4,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 3993,
+          "author": "Pavel Danilyuk",
+          "height": 5981,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@pavel-danilyuk",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/colored-markers-lying-on-a-notebook-next-to-sticky-notes-pen-and-a-stapler-6340709/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/6340709/pexels-photo-6340709.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "51852edb-8e8b-4bb1-8fc5-f6a38d35f63c",
+          "download_url": "https://images.pexels.com/photos/6340709/pexels-photo-6340709.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "6340709",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 1600,
+          "author": "Helito",
+          "height": 1200,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Stapler_office.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Stapler_office.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Stapler_office.jpg/1920px-Stapler_office.jpg",
+          "candidate_id": "8a0a977b-9b18-4046-9d35-2d3bcebe0038",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Stapler_office.jpg/1920px-Stapler_office.jpg",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 0,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "75975582",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 4985,
+          "author": "BRRT",
+          "height": 3350,
+          "provider": "pixabay",
+          "author_url": "https://pixabay.com/users/122519/",
+          "media_type": "photo",
+          "source_url": "https://pixabay.com/photos/vintage-stapler-staple-machine-2350695/",
+          "duration_ms": null,
+          "license_url": "https://pixabay.com/service/license-summary/",
+          "preview_url": "https://pixabay.com/get/g41c060cee74d26f929e0c7a890d7c18f6e053cf88de1f06d84a9299358c12da5da240d553c9050dbeeda27ab0e305f87514f19c0d61a7877cbcefe1046ead6b2_640.jpg",
+          "candidate_id": "b4e15b8b-f4df-4293-86ca-5411d95baf7e",
+          "download_url": "https://pixabay.com/get/g7b7d7b6afbb59739f82c0e764c0d9f154dfe3ecba3746696154bcc24122c9690ac2fd0d6a48ec9bf5fc1c686f548743ebaf4cb563a38398912e9ebf0e37a79c7_1280.jpg",
+          "license_name": "Pixabay Content License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "2350695",
+          "metadata_rejection_reason": "pixabay_photo_content_unverified_tag_only"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "2f9a5eb14138b8da074bd7d5bfb689d1f51a4a002f6f9ab996f7dd0ea6312b4a",
+          "bytes": 15256,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "3d03435e598b19222745be5699d6ea80c06013642fd401245f3625f2ff7a7f4d",
+          "bytes": 327272,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "894856f41b0fdf4cea94a04d5f0c0cb044f78b637b12d6fd2cc764348d33097c",
+          "bytes": 30584,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": true,
+              "evidence": "Part of a metallic stapler body is visible in the upper right corner."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 40,
+          "vision_pass": false,
+          "reason": "Only a portion of a stapler is visible among various other desk items."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": true,
+              "evidence": "A clear pink office stapler with visible metallic interior mechanism and hinge structure is present."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "A clear photographic shot of an office stapler on a desk."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": true,
+              "evidence": "A complete grey and white office stapler showing its base, hinge, and metallic stapling head."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 100,
+          "vision_pass": true,
+          "reason": "Clear photo of an office stapler against a neutral background."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1834,
+        "candidatesTokenCount": 398,
+        "totalTokenCount": 2232,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1048
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 786
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "shot_uuid": "4fcab8b3-daba-4b5c-81ec-72c7b1ce3d96",
+      "shot_key": "S5-A",
+      "scene_order": 5,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 6000,
+          "author": "Ralphs_Fotos",
+          "height": 4000,
+          "provider": "pixabay",
+          "author_url": "https://pixabay.com/users/1767157/",
+          "media_type": "photo",
+          "source_url": "https://pixabay.com/photos/perforator-paper-puncher-punch-3033461/",
+          "duration_ms": null,
+          "license_url": "https://pixabay.com/service/license-summary/",
+          "preview_url": "https://pixabay.com/get/g1ab4ed66418168a6e93b3f954b881ea7ab9fd37036082002b42d9ca4d333b17430fbf88f6568ea722b5ef6d6be9e334381e01b1b3080b377224dfe10c23073a9_640.jpg",
+          "candidate_id": "458ca8e5-442e-4f85-9801-bacaaa3c3a91",
+          "download_url": "https://pixabay.com/get/g063e21b597f0bfb67ad76e54269299f7824f9ea6b6bdc90575874cc25cbee7714b4e8b06d5797c0bc96cf6ef3f4d65618d466845c81c6ef69d9ab661126be3e1_1280.jpg",
+          "license_name": "Pixabay Content License",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "3033461",
+          "metadata_rejection_reason": "missing_secondary_subject_context; pixabay_photo_content_unverified_tag_only"
+        },
+        {
+          "width": 4000,
+          "author": "John Diez",
+          "height": 6000,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@john-diez",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/table-with-notebooks-and-stapler-7578193/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/7578193/pexels-photo-7578193.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "bdb5d1a6-dc81-454c-bfaf-568a90c2983f",
+          "download_url": "https://images.pexels.com/photos/7578193/pexels-photo-7578193.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 70,
+          "metadata_rejected": true,
+          "provider_asset_id": "7578193",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:office stapler; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Jacek Halicki",
+          "height": 1038,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:2017_Zszywacz_biurowy.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2017_Zszywacz_biurowy.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/2017_Zszywacz_biurowy.jpg/1920px-2017_Zszywacz_biurowy.jpg",
+          "candidate_id": "f7817667-9990-4223-97cc-429c7d556306",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/2017_Zszywacz_biurowy.jpg/1920px-2017_Zszywacz_biurowy.jpg",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 58,
+          "metadata_rejected": true,
+          "provider_asset_id": "64007778",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:office stapler; insufficient_must_show_concept_coverage"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "8786b1a33617886dafb6920855452d8fd60fe845925a31f51e0dfd524702d184",
+          "bytes": 55606,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "a24765c8df4ee6aa2bfaee2e2897cf0b81aae6d866a873195f46a8f2b568c5e8",
+          "bytes": 4110,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "e2dfd68a0b01206e436ef50da1e7289b39d235089d1011f84de6c9d03ec06c31",
+          "bytes": 287205,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": false,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": false,
+              "evidence": "The object shown is a hole puncher with a curved handle and punch dies, not an office stapler."
+            },
+            {
+              "concept_index": 2,
+              "concept": "paper sheets",
+              "visible": true,
+              "evidence": "White paper sheets are visible beneath the hole puncher."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 30,
+          "vision_pass": false,
+          "reason": "Candidate shows a paper hole puncher rather than an office stapler."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": true,
+              "evidence": "An office stapler is visible with an upper arm structure resting near paper."
+            },
+            {
+              "concept_index": 2,
+              "concept": "paper sheets",
+              "visible": true,
+              "evidence": "Paper sheets and a notebook are visible beneath and beside the stapler."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 90,
+          "vision_pass": true,
+          "reason": "An office stapler with its upper arm positioned above paper sheets is clearly visible."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": false,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "office stapler",
+              "visible": true,
+              "evidence": "An office stapler with an upper arm is clearly visible."
+            },
+            {
+              "concept_index": 2,
+              "concept": "paper sheets",
+              "visible": false,
+              "evidence": "No paper sheets are visible in the image; only a strip of staples is present."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 40,
+          "vision_pass": false,
+          "reason": "The stapler is present, but paper sheets are missing."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1843,
+        "candidatesTokenCount": 525,
+        "totalTokenCount": 2368,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1063
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 780
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "shot_uuid": "52b43182-96c0-47dd-917a-50ecd497f072",
+      "shot_key": "S6-A",
+      "scene_order": 6,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 584,
+          "author": "Olsido",
+          "height": 555,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Staple_on_paper.png",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Staple_on_paper.png",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Staple_on_paper.png",
+          "candidate_id": "0a93c33e-1cee-4bdb-8291-be6813f9507c",
+          "download_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Staple_on_paper.png",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 79,
+          "metadata_rejected": true,
+          "provider_asset_id": "75797646",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Tony Webster  from Minneapolis, Minnesota, United States",
+          "height": 1067,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Staples,_Staple_Remover,_and_Paper_Documents_(45985597455).jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Staples,_Staple_Remover,_and_Paper_Documents_(45985597455).jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg/1920px-Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg",
+          "candidate_id": "a9eee15f-450e-4f6e-97c1-836a96af13e1",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg/1920px-Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg",
+          "license_name": "CC BY-SA 2.0",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 78,
+          "metadata_rejected": true,
+          "provider_asset_id": "77734699",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Lewenstein",
+          "height": 878,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Heftklammern.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Heftklammern.jpg",
+          "duration_ms": null,
+          "license_url": "https://commons.wikimedia.org/wiki/Commons:Public_domain",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Heftklammern.jpg/1920px-Heftklammern.jpg",
+          "candidate_id": "f9b2a92c-9cc5-4a6f-b569-b2f2e2b8fcf5",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Heftklammern.jpg/1920px-Heftklammern.jpg",
+          "license_name": "Public domain",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 72,
+          "metadata_rejected": true,
+          "provider_asset_id": "12612756",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "8f5074bb82d26dba211fb8037c140d9f15e440473d8c5807a327eb10e8e600a1",
+          "bytes": 37236,
+          "mime_type": "image/png"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "1bb4b288dc2b4716e5be8445f23c61ddf6e19c44565b60a90cf779b67be8f0e5",
+          "bytes": 573936,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "595220036f8e959781d66dcae1d5e5cc7a61c0e1e8e2cbc779d6c517e23de743",
+          "bytes": 234253,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "paper sheets",
+              "visible": true,
+              "evidence": "Lined paper sheet background is visible."
+            },
+            {
+              "concept_index": 2,
+              "concept": "metal staple",
+              "visible": true,
+              "evidence": "A staple-like wire element is depicted in the corner, but the image is a digital diagram/rendering containing measurement lines and text."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 30,
+          "vision_pass": false,
+          "reason": "The image is a digital graphic/illustration with measurement overlays rather than a real photograph."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "paper sheets",
+              "visible": true,
+              "evidence": "Multiple paper sheets with printed text are visible on the right side."
+            },
+            {
+              "concept_index": 2,
+              "concept": "metal staple",
+              "visible": true,
+              "evidence": "Loose metal staples are scattered on the table, but they are not fastening the paper sheets together."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 45,
+          "vision_pass": false,
+          "reason": "Paper sheets and loose metal staples are present, but the staples are not fastened to the paper sheets."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "paper sheets",
+              "visible": true,
+              "evidence": "Paper surface showing punctures at the bottom where staples pass through."
+            },
+            {
+              "concept_index": 2,
+              "concept": "metal staple",
+              "visible": true,
+              "evidence": "Metal staples with crown and terminal legs are visible in various states."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "Real photographic view showing paper sheets and metal staples clearly."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1856,
+        "candidatesTokenCount": 532,
+        "totalTokenCount": 2388,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 796
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 1060
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "shot_uuid": "2d8ec426-dbcf-427e-b6a3-d78b6a72e9ce",
+      "shot_key": "S7-A",
+      "scene_order": 7,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 1600,
+          "author": "Frettie",
+          "height": 1941,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Maped_metal_stapler.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Maped_metal_stapler.jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Maped_metal_stapler.jpg/1920px-Maped_metal_stapler.jpg",
+          "candidate_id": "7b6a70af-3397-4f51-8464-44e0043268aa",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Maped_metal_stapler.jpg/1920px-Maped_metal_stapler.jpg",
+          "license_name": "CC BY-SA 3.0",
+          "review_bucket": 0,
+          "candidate_index": 1,
+          "relevance_score": 100,
+          "metadata_rejected": false,
+          "provider_asset_id": "7116226",
+          "metadata_rejection_reason": null
+        },
+        {
+          "width": 6000,
+          "author": "Berho",
+          "height": 4000,
+          "provider": "pixabay",
+          "author_url": "https://pixabay.com/users/8651687/",
+          "media_type": "photo",
+          "source_url": "https://pixabay.com/photos/stapler-metal-desktop-staples-5521592/",
+          "duration_ms": null,
+          "license_url": "https://pixabay.com/service/license-summary/",
+          "preview_url": "https://pixabay.com/get/gc49d0fd4694859ca1bea3396ad4c304a5a483f546055c1177b26f7e92e9f91aaf208b2e6a56a02af9a89f29e94ca682200749ff5a191a9315514b45ed2840a31_640.jpg",
+          "candidate_id": "1318a40e-108b-4d23-8bc9-13b6322e386d",
+          "download_url": "https://pixabay.com/get/gd416b18aef0da1a0da94f243840c77854e1ee400349663ea39d956ac9da4468d74bd816d7bf1370ee9e3f6c0ac616e27edd629ab06650f5b1bdc0d7f31a0ee64_1280.jpg",
+          "license_name": "Pixabay Content License",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 100,
+          "metadata_rejected": true,
+          "provider_asset_id": "5521592",
+          "metadata_rejection_reason": "pixabay_photo_content_unverified_tag_only"
+        },
+        {
+          "width": 3355,
+          "author": "Nasih Sk",
+          "height": 5184,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@nasih-sk-17883039",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/anti-sliding-pattern-on-metal-surface-8818043/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/8818043/pexels-photo-8818043.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "6d0f9904-ccad-4745-84af-7cc6cc92e153",
+          "download_url": "https://images.pexels.com/photos/8818043/pexels-photo-8818043.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 81,
+          "metadata_rejected": true,
+          "provider_asset_id": "8818043",
+          "metadata_rejection_reason": "missing_primary_subject_anchor:stapler metal; insufficient_must_show_concept_coverage"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "89fbfafe9cbb0528ed2c5179fbc8b69712cd564e136a05cb3b13dbeed34b8512",
+          "bytes": 545549,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "7f2ab424ba8fe26424e2d214fafff342fd6cfaa34376ebf4f80bc9983dd7f464",
+          "bytes": 24888,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "728f5e067a38cfef07f13e0ef2484ed68a9b0e92b5e832aea7fcd4229c5598f9",
+          "bytes": 34108,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "stapler metal",
+              "visible": true,
+              "evidence": "A metal anvil with small grooved indentations is visible on the base of the blue and green stapler."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "The stapler metal anvil with grooved indentations is clearly visible on the stapler base."
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "stapler metal",
+              "visible": true,
+              "evidence": "A metal anvil plate is visible on the base of the red stapler."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 90,
+          "vision_pass": true,
+          "reason": "Stapler with metal base/anvil is clearly visible."
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": false,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "stapler metal",
+              "visible": false,
+              "evidence": "There is tread plate metal texture, but no stapler metal anvil structure is present."
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 10,
+          "vision_pass": false,
+          "reason": "Shows metal tread plate instead of a stapler base."
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1843,
+        "candidatesTokenCount": 401,
+        "totalTokenCount": 2244,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1053
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 790
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "shot_uuid": "ec021244-0eae-472e-ab12-5ba2d2a91a30",
+      "shot_key": "S8-A",
+      "scene_order": 8,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 584,
+          "author": "Olsido",
+          "height": 555,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Staple_on_paper.png",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Staple_on_paper.png",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Staple_on_paper.png",
+          "candidate_id": "2ebab264-0141-4856-8149-2fde5e293e1e",
+          "download_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Staple_on_paper.png",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 76,
+          "metadata_rejected": true,
+          "provider_asset_id": "75797646",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Tony Webster  from Minneapolis, Minnesota, United States",
+          "height": 1067,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Staples,_Staple_Remover,_and_Paper_Documents_(45985597455).jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Staples,_Staple_Remover,_and_Paper_Documents_(45985597455).jpg",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg/1920px-Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg",
+          "candidate_id": "8254bb7f-eaa0-4271-9dd3-e9a96923c29a",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg/1920px-Staples%2C_Staple_Remover%2C_and_Paper_Documents_%2845985597455%29.jpg",
+          "license_name": "CC BY-SA 2.0",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 75,
+          "metadata_rejected": true,
+          "provider_asset_id": "77734699",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Lewenstein",
+          "height": 878,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Heftklammern.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Heftklammern.jpg",
+          "duration_ms": null,
+          "license_url": "https://commons.wikimedia.org/wiki/Commons:Public_domain",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Heftklammern.jpg/1920px-Heftklammern.jpg",
+          "candidate_id": "09500ce6-5cd8-4148-bba4-a556cf0cd2ba",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Heftklammern.jpg/1920px-Heftklammern.jpg",
+          "license_name": "Public domain",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 69,
+          "metadata_rejected": true,
+          "provider_asset_id": "12612756",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "8f5074bb82d26dba211fb8037c140d9f15e440473d8c5807a327eb10e8e600a1",
+          "bytes": 37236,
+          "mime_type": "image/png"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "1bb4b288dc2b4716e5be8445f23c61ddf6e19c44565b60a90cf779b67be8f0e5",
+          "bytes": 573936,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "595220036f8e959781d66dcae1d5e5cc7a61c0e1e8e2cbc779d6c517e23de743",
+          "bytes": 234253,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": false,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "paper sheets",
+              "visible": true,
+              "evidence": "lined paper sheet is visible"
+            },
+            {
+              "concept_index": 2,
+              "concept": "metal staple",
+              "visible": false,
+              "evidence": "the image is a digital diagram/rendering showing a staple illustration with measurement lines, not real photographic media"
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 0,
+          "vision_pass": false,
+          "reason": "candidate is a digital measurement diagram rather than a real photograph"
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "paper sheets",
+              "visible": true,
+              "evidence": "stacked paper documents are visible on the right"
+            },
+            {
+              "concept_index": 2,
+              "concept": "metal staple",
+              "visible": true,
+              "evidence": "multiple loose metal staples are visible on the wooden surface"
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 20,
+          "vision_pass": false,
+          "reason": "metal staples are loose on the desk and not curved inward underneath paper sheets"
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "paper sheets",
+              "visible": true,
+              "evidence": "white paper background with pierced holes at the bottom"
+            },
+            {
+              "concept_index": 2,
+              "concept": "metal staple",
+              "visible": true,
+              "evidence": "copper-colored metal staples and wire pieces are visible"
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": true,
+          "match_score": 95,
+          "vision_pass": true,
+          "reason": "shows copper metal staple ends curving inward underneath paper sheets at the bottom row"
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1856,
+        "candidatesTokenCount": 502,
+        "totalTokenCount": 2358,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 796
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 1060
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    },
+    {
+      "visual_run_id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "shot_uuid": "a987de22-3831-4ee3-9698-6a2bbc3c9e18",
+      "shot_key": "S9-A",
+      "scene_order": 9,
+      "shot_order": 1,
+      "candidates": [
+        {
+          "width": 584,
+          "author": "Olsido",
+          "height": 555,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Staple_on_paper.png",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Staple_on_paper.png",
+          "duration_ms": null,
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+          "preview_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Staple_on_paper.png",
+          "candidate_id": "8233b115-02b9-4b79-aead-304a1ffe2e19",
+          "download_url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Staple_on_paper.png",
+          "license_name": "CC BY-SA 4.0",
+          "review_bucket": 1,
+          "candidate_index": 1,
+          "relevance_score": 77,
+          "metadata_rejected": true,
+          "provider_asset_id": "75797646",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 1600,
+          "author": "Lewenstein",
+          "height": 878,
+          "provider": "wikimedia",
+          "author_url": "https://commons.wikimedia.org/wiki/File:Heftklammern.jpg",
+          "media_type": "photo",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Heftklammern.jpg",
+          "duration_ms": null,
+          "license_url": "https://commons.wikimedia.org/wiki/Commons:Public_domain",
+          "preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Heftklammern.jpg/1920px-Heftklammern.jpg",
+          "candidate_id": "a7b73a8b-9866-4696-b69d-76a4aef754cf",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Heftklammern.jpg/1920px-Heftklammern.jpg",
+          "license_name": "Public domain",
+          "review_bucket": 1,
+          "candidate_index": 2,
+          "relevance_score": 70,
+          "metadata_rejected": true,
+          "provider_asset_id": "12612756",
+          "metadata_rejection_reason": "missing_secondary_subject_context; missing_primary_subject_anchor:paper sheets; insufficient_must_show_concept_coverage"
+        },
+        {
+          "width": 3024,
+          "author": "Eugenia Remark",
+          "height": 4032,
+          "provider": "pexels",
+          "author_url": "https://www.pexels.com/@eugenia-remark-5767088",
+          "media_type": "photo",
+          "source_url": "https://www.pexels.com/photo/stack-of-paper-files-14935583/",
+          "duration_ms": null,
+          "license_url": "https://www.pexels.com/license/",
+          "preview_url": "https://images.pexels.com/photos/14935583/pexels-photo-14935583.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "candidate_id": "6db116eb-4fa9-4669-b717-801caa2edd7d",
+          "download_url": "https://images.pexels.com/photos/14935583/pexels-photo-14935583.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "license_name": "Pexels License",
+          "review_bucket": 1,
+          "candidate_index": 3,
+          "relevance_score": 99,
+          "metadata_rejected": true,
+          "provider_asset_id": "14935583",
+          "metadata_rejection_reason": "missing_secondary_subject_context"
+        }
+      ],
+      "preview_fingerprints": [
+        {
+          "candidate_index": 1,
+          "sha256": "8f5074bb82d26dba211fb8037c140d9f15e440473d8c5807a327eb10e8e600a1",
+          "bytes": 37236,
+          "mime_type": "image/png"
+        },
+        {
+          "candidate_index": 2,
+          "sha256": "595220036f8e959781d66dcae1d5e5cc7a61c0e1e8e2cbc779d6c517e23de743",
+          "bytes": 234253,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "candidate_index": 3,
+          "sha256": "f966645a2783758b9450e8b7ec03797cebf5830c1e73d87768a44c7f925a3127",
+          "bytes": 11287,
+          "mime_type": "image/jpeg"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "evaluations": [
+        {
+          "candidate_index": 1,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "paper sheets",
+              "visible": true,
+              "evidence": "lined paper sheets are visible"
+            },
+            {
+              "concept_index": 2,
+              "concept": "metal staple",
+              "visible": true,
+              "evidence": "a metal staple with crown and legs is visible piercing the paper"
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 0,
+          "vision_pass": false,
+          "reason": "candidate 1 is a digital diagram or illustration rather than a real photograph"
+        },
+        {
+          "candidate_index": 2,
+          "must_show_visible": true,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "paper sheets",
+              "visible": true,
+              "evidence": "paper sheet is visible at the bottom showing punctures"
+            },
+            {
+              "concept_index": 2,
+              "concept": "metal staple",
+              "visible": true,
+              "evidence": "copper-colored staples are visible"
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 20,
+          "vision_pass": false,
+          "reason": "candidate 2 shows loose staples and samples, not a bound stack of paper sheets on a desk"
+        },
+        {
+          "candidate_index": 3,
+          "must_show_visible": false,
+          "must_show_checks": [
+            {
+              "concept_index": 1,
+              "concept": "paper sheets",
+              "visible": true,
+              "evidence": "a stack of paper sheets is clearly visible"
+            },
+            {
+              "concept_index": 2,
+              "concept": "metal staple",
+              "visible": false,
+              "evidence": "no metal staple is visible, instead showing thread bindings"
+            }
+          ],
+          "must_not_show_clear": true,
+          "intent_match": false,
+          "match_score": 30,
+          "vision_pass": false,
+          "reason": "candidate 3 shows thread binding instead of a metal staple"
+        }
+      ],
+      "usage_metadata": {
+        "promptTokenCount": 1866,
+        "candidatesTokenCount": 294,
+        "totalTokenCount": 2160,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1064
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 802
+          }
+        ],
+        "serviceTier": "standard"
+      }
+    }
+  ],
+  "observed_blockers": [
+    "S9: no candidate passes photographic binding intent",
+    "S6 and S8 each approve only the same candidate: unique assignment impossible independently of S9",
+    "M5 removes authored internal-component requirements; final accepted narration includes forbidden filler Koniec."
+  ],
+  "provider_calls": {
+    "vision_requests": 9,
+    "direct_diagnostic_requests": 0
+  },
+  "next": "Offline full-pool/source-contract investigation; no fresh production job until all blockers close"
+}

@@ -1,0 +1,29 @@
+{
+  "job": {
+    "id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+    "topic": "jak działa zszywacz biurowy",
+    "status": "visuals_failed",
+    "created_at": "2026-10-04T19:43:56.969697+02:00",
+    "updated_at": "2026-10-04T19:56:06.406745+02:00",
+    "language_code": "pl",
+    "visual_validation_mode": "gemini",
+    "target_duration_seconds": 30
+  },
+  "render": null,
+  "visual": [
+    {
+      "id": "7acf65fd-9eef-42c3-8dd1-5accb3ec91c3",
+      "job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+      "status": "failed",
+      "started_at": "2026-10-04T19:50:26.248871+02:00",
+      "alignment_id": "da266a65-b67a-4d98-bf15-b8b55befdfd4",
+      "completed_at": "2026-10-04T19:56:06.406745+02:00",
+      "failure_reason": "M8 visuals failed: no Gemini-approved unique visual candidate for shot S9-A [line 5]",
+      "expected_shot_count": 9,
+      "selection_claimed_at": "2026-10-04T19:54:25.388757+02:00",
+      "completion_claimed_at": null,
+      "expected_search_count": 81
+    }
+  ],
+  "captured_at": "2026-10-04T17:57:01.089590+00:00"
+}

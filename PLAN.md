@@ -1,3 +1,11 @@
+## 2026-10-04 — 9bf5e97c TERMINAL VISUALS_FAILED; ALL-SCENE BLOCKERS
+
+- Job `9bf5e97c-0059-48a8-8e5d-7da1b1feb923` is IMMUTABLE. Single launch HTTP202 at17:48:43Z; M4-M7 passed; M8 run7acf65fd-9eef-42c3-8dd1-5accb3ec91c3/execution12126 failed17:56:06Z: no approved unique candidate for S9-A. M9 never started; no final MP4. NEVER relaunch this or any failed job.
+- ALL nine Gemini responses inspected, not just reported S9: S9 has zero approved candidates; S6 and S8 each approve only the SAME image, so nine-unique assignment is impossible even with an isolated S9 fix. This contradicts treating previous saved nine-scene replay as adequate production reliability. No new provider call/job is authorized by this failure alone; root-cause offline closure is next.
+- M5 execution12119 comparison: local normalization removed independently authored internal-component requirements in S2/S3/S4; accepted narration ends with prompt-forbidden filler Koniec. Investigate full repair/normalization boundaries and generic controls, not topic-specific patches or weaker gates.
+- Tracked evidence: acceptance/release-coverage/production-status.json, production-launch.json, production-m5-contract-comparison.json, production-m8-all-scenes.json. Full decoded traces server .review/release-60589e9/acceptance-9bf5e97c/. Deployed M5v226/M8v87/code60589e9 remains unchanged; no pending deployment/restart/run. Existing offline checks passed but production acceptance FAILED; product_ready=false.
+- NEXT: inspect original/repaired/final M5 contracts and ALL full provider pools/current ranking; identify mechanisms behind no-result and overlapping approved pools. Add connected-corpus regressions and controls; full checks, pushed correction and exact deployed verification precede any fresh acceptance. Continue authorized engineering after status questions. PL15/EN30/RU45/UK60 release matrix remains unaccepted.
+
 ## 2026-10-04 — 9bf5e97c LAUNCHED ONCE; M4-M7 PASS; M8 RUNNING
 
 - Job `9bf5e97c-0059-48a8-8e5d-7da1b1feb923` launched EXACTLY ONCE at 2026-10-04T17:48:43.532740+00:00: HTTP202 accepted=true. Prelaunch HEAD/origin/remote f7bbbde7e68d1426520d23f91fd3b6d1f90131c1, ID in all three docs, DBcreated and active0 verified. Receipt acceptance/release-coverage/production-launch.json. NEVER repeat launch/create/import/publish/restart.

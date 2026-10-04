@@ -1,0 +1,767 @@
+{
+  "job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+  "execution_id": 12119,
+  "initial_draft": {
+    "scenes": [
+      {
+        "scene_id": "S1",
+        "narration_words": [
+          "Zszywacz",
+          "biurowy",
+          "to",
+          "niezastąpione",
+          "narzędzie",
+          "umożliwiające"
+        ],
+        "evidence_ids": [
+          "E1"
+        ],
+        "shots": [
+          {
+            "shot_id": "S1-A",
+            "visual_intent": "office stapler resting on a flat desk surface",
+            "must_show": [
+              "office stapler",
+              "desk surface"
+            ],
+            "must_not_show": [
+              "staple remover"
+            ],
+            "queries_en": [
+              "office stapler on desk",
+              "stapler device equipment",
+              "office stapler"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S2",
+        "narration_words": [
+          "skuteczne",
+          "łączenie",
+          "dokumentów",
+          "za",
+          "pomocą",
+          "metalowej"
+        ],
+        "evidence_ids": [
+          "E1",
+          "E5"
+        ],
+        "shots": [
+          {
+            "shot_id": "S2-A",
+            "visual_intent": "metal staple placed inside an open office stapler",
+            "must_show": [
+              "office stapler",
+              "metal staple"
+            ],
+            "must_not_show": [
+              "loose paper sheets"
+            ],
+            "queries_en": [
+              "metal staple inside stapler",
+              "stapler magazine with staples",
+              "office stapler"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S3",
+        "narration_words": [
+          "klamry.",
+          "Podstawowym",
+          "elementem",
+          "mechanizmu",
+          "jest",
+          "sprężyna"
+        ],
+        "evidence_ids": [
+          "E5",
+          "E7"
+        ],
+        "shots": [
+          {
+            "shot_id": "S3-A",
+            "visual_intent": "spring mechanism inside an open office stapler guide",
+            "must_show": [
+              "office stapler",
+              "spring mechanism"
+            ],
+            "must_not_show": [
+              "closed stapler"
+            ],
+            "queries_en": [
+              "stapler internal spring mechanism",
+              "office stapler interior spring",
+              "office stapler"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S4",
+        "narration_words": [
+          "przesuwająca",
+          "zszywki",
+          "w",
+          "kierunku",
+          "pionowej",
+          "blaszki."
+        ],
+        "evidence_ids": [
+          "E5"
+        ],
+        "shots": [
+          {
+            "shot_id": "S4-A",
+            "visual_intent": "metal guide rail and vertical blade inside an open office stapler",
+            "must_show": [
+              "office stapler",
+              "metal guide rail"
+            ],
+            "must_not_show": [
+              "paper documents"
+            ],
+            "queries_en": [
+              "office stapler guide rail",
+              "stapler vertical metal blade",
+              "office stapler"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S5",
+        "narration_words": [
+          "Naciśnięcie",
+          "ramienia",
+          "sprawia,",
+          "że",
+          "zszywka",
+          "przechodzi"
+        ],
+        "evidence_ids": [
+          "E1",
+          "E3"
+        ],
+        "shots": [
+          {
+            "shot_id": "S5-A",
+            "visual_intent": "top arm of an office stapler positioned above paper sheets",
+            "must_show": [
+              "office stapler",
+              "paper sheets"
+            ],
+            "must_not_show": [
+              "staple remover"
+            ],
+            "queries_en": [
+              "office stapler arm over paper",
+              "stapler pressing paper sheets",
+              "office stapler"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S6",
+        "narration_words": [
+          "przez",
+          "kartki",
+          "papieru.",
+          "Ramiona",
+          "klamry",
+          "trafiają"
+        ],
+        "evidence_ids": [
+          "E1",
+          "E5"
+        ],
+        "shots": [
+          {
+            "shot_id": "S6-A",
+            "visual_intent": "metal staple piercing through stacked paper sheets",
+            "must_show": [
+              "paper sheets",
+              "metal staple"
+            ],
+            "must_not_show": [
+              "plastic folder"
+            ],
+            "queries_en": [
+              "metal staple piercing paper",
+              "staple through paper sheets",
+              "paper sheets"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S7",
+        "narration_words": [
+          "na",
+          "zaokrąglone",
+          "wgłębienia",
+          "w",
+          "podkładce.",
+          "Specjalne"
+        ],
+        "evidence_ids": [
+          "E2",
+          "E5"
+        ],
+        "shots": [
+          {
+            "shot_id": "S7-A",
+            "visual_intent": "metal anvil with small grooved indentations on a stapler base",
+            "must_show": [
+              "office stapler",
+              "metal anvil"
+            ],
+            "must_not_show": [
+              "paper sheets"
+            ],
+            "queries_en": [
+              "stapler metal anvil grooves",
+              "office stapler base plate",
+              "office stapler"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S8",
+        "narration_words": [
+          "rowki",
+          "zaginają",
+          "końcówki",
+          "do",
+          "wewnątrz,",
+          "tworząc"
+        ],
+        "evidence_ids": [
+          "E2",
+          "E5"
+        ],
+        "shots": [
+          {
+            "shot_id": "S8-A",
+            "visual_intent": "bent metal staple ends curving inward underneath paper sheets",
+            "must_show": [
+              "paper sheets",
+              "metal staple"
+            ],
+            "must_not_show": [
+              "open stapler"
+            ],
+            "queries_en": [
+              "bent staple inward on paper",
+              "staple underside paper binding",
+              "paper sheets"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S9",
+        "narration_words": [
+          "trwałe",
+          "i",
+          "stabilne",
+          "połączenie",
+          "dokumentów.",
+          "Koniec."
+        ],
+        "evidence_ids": [
+          "E1",
+          "E5"
+        ],
+        "shots": [
+          {
+            "shot_id": "S9-A",
+            "visual_intent": "stapled stack of paper documents resting on a desk",
+            "must_show": [
+              "paper sheets",
+              "metal staple"
+            ],
+            "must_not_show": [
+              "staple remover"
+            ],
+            "queries_en": [
+              "stapled document papers stack",
+              "bound paper sheets with staple",
+              "paper sheets"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      }
+    ]
+  },
+  "final_storyboard": {
+    "narration": "Zszywacz biurowy to niezastąpione narzędzie umożliwiające skuteczne łączenie dokumentów za pomocą metalowej klamry. Podstawowym elementem mechanizmu jest sprężyna przesuwająca zszywki w kierunku pionowej blaszki. Naciśnięcie ramienia sprawia, że zszywka przechodzi przez kartki papieru. Ramiona klamry trafiają na zaokrąglone wgłębienia w podkładce. Specjalne rowki zaginają końcówki do wewnątrz, tworząc trwałe i stabilne połączenie dokumentów. Koniec.",
+    "scenes": [
+      {
+        "scene_id": "S1",
+        "narration": "Zszywacz biurowy to niezastąpione narzędzie umożliwiające",
+        "evidence_ids": [
+          "E1"
+        ],
+        "evidence_uuids": [
+          "6471f9be-5a0c-45f5-b712-0f7ff8ab51c8"
+        ],
+        "shots": [
+          {
+            "shot_id": "S1-A",
+            "visual_intent": "office stapler resting on a flat desk surface",
+            "must_show": [
+              "office stapler",
+              "desk surface"
+            ],
+            "must_not_show": [
+              "staple remover"
+            ],
+            "queries_en": [
+              "office stapler on desk",
+              "stapler device equipment",
+              "stapler desk"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S2",
+        "narration": "skuteczne łączenie dokumentów za pomocą metalowej",
+        "evidence_ids": [
+          "E1",
+          "E5"
+        ],
+        "evidence_uuids": [
+          "6471f9be-5a0c-45f5-b712-0f7ff8ab51c8",
+          "0b22614d-3fb5-4d8b-b42e-bee5f63b67de"
+        ],
+        "shots": [
+          {
+            "shot_id": "S2-A",
+            "visual_intent": "A clear photo of office stapler.",
+            "must_show": [
+              "office stapler"
+            ],
+            "must_not_show": [
+              "loose paper sheets"
+            ],
+            "queries_en": [
+              "metal staple inside stapler",
+              "stapler magazine with staples",
+              "office stapler"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S3",
+        "narration": "klamry. Podstawowym elementem mechanizmu jest sprężyna",
+        "evidence_ids": [
+          "E5",
+          "E7"
+        ],
+        "evidence_uuids": [
+          "0b22614d-3fb5-4d8b-b42e-bee5f63b67de",
+          "5e5100f2-692a-4d8b-9075-4f2b6d0ae413"
+        ],
+        "shots": [
+          {
+            "shot_id": "S3-A",
+            "visual_intent": "A clear photo of office stapler.",
+            "must_show": [
+              "office stapler"
+            ],
+            "must_not_show": [
+              "closed stapler"
+            ],
+            "queries_en": [
+              "stapler internal spring mechanism",
+              "office stapler interior spring",
+              "office stapler"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S4",
+        "narration": "przesuwająca zszywki w kierunku pionowej blaszki.",
+        "evidence_ids": [
+          "E5"
+        ],
+        "evidence_uuids": [
+          "0b22614d-3fb5-4d8b-b42e-bee5f63b67de"
+        ],
+        "shots": [
+          {
+            "shot_id": "S4-A",
+            "visual_intent": "A clear photo of office stapler.",
+            "must_show": [
+              "office stapler"
+            ],
+            "must_not_show": [
+              "paper documents"
+            ],
+            "queries_en": [
+              "office stapler guide rail",
+              "stapler vertical metal blade",
+              "office stapler"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S5",
+        "narration": "Naciśnięcie ramienia sprawia, że zszywka przechodzi",
+        "evidence_ids": [
+          "E1",
+          "E3"
+        ],
+        "evidence_uuids": [
+          "6471f9be-5a0c-45f5-b712-0f7ff8ab51c8",
+          "fafc2117-05fd-44b4-aebe-1f1696898be3"
+        ],
+        "shots": [
+          {
+            "shot_id": "S5-A",
+            "visual_intent": "top arm of an office stapler positioned above paper sheets",
+            "must_show": [
+              "office stapler",
+              "paper sheets"
+            ],
+            "must_not_show": [
+              "staple remover"
+            ],
+            "queries_en": [
+              "office stapler arm over paper",
+              "stapler pressing paper sheets",
+              "paper sheets"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S6",
+        "narration": "przez kartki papieru. Ramiona klamry trafiają",
+        "evidence_ids": [
+          "E1",
+          "E5"
+        ],
+        "evidence_uuids": [
+          "6471f9be-5a0c-45f5-b712-0f7ff8ab51c8",
+          "0b22614d-3fb5-4d8b-b42e-bee5f63b67de"
+        ],
+        "shots": [
+          {
+            "shot_id": "S6-A",
+            "visual_intent": "A clear photo of paper sheets with metal staple.",
+            "must_show": [
+              "paper sheets",
+              "metal staple"
+            ],
+            "must_not_show": [
+              "plastic folder"
+            ],
+            "queries_en": [
+              "metal staple piercing paper",
+              "staple through paper sheets",
+              "metal staple"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S7",
+        "narration": "na zaokrąglone wgłębienia w podkładce. Specjalne",
+        "evidence_ids": [
+          "E2",
+          "E5"
+        ],
+        "evidence_uuids": [
+          "8f54f9f0-d5c9-42ff-b0a6-44f84ae03839",
+          "0b22614d-3fb5-4d8b-b42e-bee5f63b67de"
+        ],
+        "shots": [
+          {
+            "shot_id": "S7-A",
+            "visual_intent": "metal anvil with small grooved indentations on a stapler base",
+            "must_show": [
+              "stapler metal"
+            ],
+            "must_not_show": [
+              "paper sheets"
+            ],
+            "queries_en": [
+              "stapler metal anvil grooves",
+              "office stapler base plate",
+              "stapler metal"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S8",
+        "narration": "rowki zaginają końcówki do wewnątrz, tworząc",
+        "evidence_ids": [
+          "E2",
+          "E5"
+        ],
+        "evidence_uuids": [
+          "8f54f9f0-d5c9-42ff-b0a6-44f84ae03839",
+          "0b22614d-3fb5-4d8b-b42e-bee5f63b67de"
+        ],
+        "shots": [
+          {
+            "shot_id": "S8-A",
+            "visual_intent": "bent metal staple ends curving inward underneath paper sheets",
+            "must_show": [
+              "paper sheets",
+              "metal staple"
+            ],
+            "must_not_show": [
+              "open stapler"
+            ],
+            "queries_en": [
+              "bent staple inward on paper",
+              "staple underside paper binding",
+              "metal staple"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      },
+      {
+        "scene_id": "S9",
+        "narration": "trwałe i stabilne połączenie dokumentów. Koniec.",
+        "evidence_ids": [
+          "E1",
+          "E5"
+        ],
+        "evidence_uuids": [
+          "6471f9be-5a0c-45f5-b712-0f7ff8ab51c8",
+          "0b22614d-3fb5-4d8b-b42e-bee5f63b67de"
+        ],
+        "shots": [
+          {
+            "shot_id": "S9-A",
+            "visual_intent": "bound stack of paper sheets with a metal staple resting on a desk",
+            "must_show": [
+              "paper sheets",
+              "metal staple"
+            ],
+            "must_not_show": [
+              "staple remover"
+            ],
+            "queries_en": [
+              "bound paper sheets with staple",
+              "stapled document papers stack paper sheets",
+              "metal staple"
+            ],
+            "preferred_media_type": "photo"
+          }
+        ]
+      }
+    ]
+  },
+  "changes": [
+    {
+      "scene_id": "S1",
+      "changes": {
+        "queries_en": {
+          "before": [
+            "office stapler on desk",
+            "stapler device equipment",
+            "office stapler"
+          ],
+          "after": [
+            "office stapler on desk",
+            "stapler device equipment",
+            "stapler desk"
+          ]
+        }
+      }
+    },
+    {
+      "scene_id": "S2",
+      "changes": {
+        "must_show": {
+          "before": [
+            "office stapler",
+            "metal staple"
+          ],
+          "after": [
+            "office stapler"
+          ]
+        },
+        "visual_intent": {
+          "before": "metal staple placed inside an open office stapler",
+          "after": "A clear photo of office stapler."
+        }
+      }
+    },
+    {
+      "scene_id": "S3",
+      "changes": {
+        "must_show": {
+          "before": [
+            "office stapler",
+            "spring mechanism"
+          ],
+          "after": [
+            "office stapler"
+          ]
+        },
+        "visual_intent": {
+          "before": "spring mechanism inside an open office stapler guide",
+          "after": "A clear photo of office stapler."
+        }
+      }
+    },
+    {
+      "scene_id": "S4",
+      "changes": {
+        "must_show": {
+          "before": [
+            "office stapler",
+            "metal guide rail"
+          ],
+          "after": [
+            "office stapler"
+          ]
+        },
+        "visual_intent": {
+          "before": "metal guide rail and vertical blade inside an open office stapler",
+          "after": "A clear photo of office stapler."
+        }
+      }
+    },
+    {
+      "scene_id": "S5",
+      "changes": {
+        "queries_en": {
+          "before": [
+            "office stapler arm over paper",
+            "stapler pressing paper sheets",
+            "office stapler"
+          ],
+          "after": [
+            "office stapler arm over paper",
+            "stapler pressing paper sheets",
+            "paper sheets"
+          ]
+        }
+      }
+    },
+    {
+      "scene_id": "S6",
+      "changes": {
+        "visual_intent": {
+          "before": "metal staple piercing through stacked paper sheets",
+          "after": "A clear photo of paper sheets with metal staple."
+        },
+        "queries_en": {
+          "before": [
+            "metal staple piercing paper",
+            "staple through paper sheets",
+            "paper sheets"
+          ],
+          "after": [
+            "metal staple piercing paper",
+            "staple through paper sheets",
+            "metal staple"
+          ]
+        }
+      }
+    },
+    {
+      "scene_id": "S7",
+      "changes": {
+        "must_show": {
+          "before": [
+            "office stapler",
+            "metal anvil"
+          ],
+          "after": [
+            "stapler metal"
+          ]
+        },
+        "queries_en": {
+          "before": [
+            "stapler metal anvil grooves",
+            "office stapler base plate",
+            "office stapler"
+          ],
+          "after": [
+            "stapler metal anvil grooves",
+            "office stapler base plate",
+            "stapler metal"
+          ]
+        }
+      }
+    },
+    {
+      "scene_id": "S8",
+      "changes": {
+        "queries_en": {
+          "before": [
+            "bent staple inward on paper",
+            "staple underside paper binding",
+            "paper sheets"
+          ],
+          "after": [
+            "bent staple inward on paper",
+            "staple underside paper binding",
+            "metal staple"
+          ]
+        }
+      }
+    },
+    {
+      "scene_id": "S9",
+      "changes": {
+        "visual_intent": {
+          "before": "stapled stack of paper documents resting on a desk",
+          "after": "bound stack of paper sheets with a metal staple resting on a desk"
+        },
+        "queries_en": {
+          "before": [
+            "stapled document papers stack",
+            "bound paper sheets with staple",
+            "paper sheets"
+          ],
+          "after": [
+            "bound paper sheets with staple",
+            "stapled document papers stack paper sheets",
+            "metal staple"
+          ]
+        }
+      }
+    }
+  ],
+  "findings": [
+    "Final accepted narration ends with prompt-forbidden filler Koniec.",
+    "Authored internal-component requirements removed; product acceptance requires investigation even if machine render passes."
+  ]
+}

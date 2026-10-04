@@ -48,5 +48,15 @@
     },
     "launch_count": 1
   },
-  "jobs_launched": 1
+  "jobs_launched": 1,
+  "production_terminal": {
+    "job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+    "status": "visuals_failed",
+    "execution_id": 12126,
+    "blockers": [
+      "S9: no candidate passes photographic binding intent",
+      "S6 and S8 each approve only the same candidate: unique assignment impossible independently of S9",
+      "M5 removes authored internal-component requirements; final accepted narration includes forbidden filler Koniec."
+    ]
+  }
 }
