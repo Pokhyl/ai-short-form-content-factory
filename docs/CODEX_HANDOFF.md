@@ -1,3 +1,15 @@
+## 2026-10-04 — M5 12075 clause-review correction VERIFIED OFFLINE; deployment pending
+- Four narration review builders now receive exact complete sentence contexts spanning visual scene cuts. Three independent review passes cover mandatory clause punctuation, lexical/grammatical errors and filler. Source narration, exact quote enums, semantic reference pairs, visual metadata contracts, validators, timing and connections/settings are unchanged.
+- Exact saved production replay: initial Gemini review identifies S5/S6/S7/S9, native repair and unchanged strict validators correct both missing commas, the sentence boundary and filler. Retry and final review have NO issues or visual repairs. Full native provider request/response evidence is retained in regression fixture `tests/fixtures/m5-12075-clause-review.json`.
+- Focused44/44 before final provider fixture; final full853/853 PASS, including 8 new clause-review regressions. Offline evidence is not production acceptance. Commit/push this correction, deploy ONLY M5 once, verify active source/history and health before creating ONE new smoke.
+- Before-deployment M5 v224 backup `.backups/before-12075-VideoM5Storyboard001.json` SHA256 `b4892d39111676957c5b4c66348e01cded0e25606cd4ab569bffa8a33540b50d`.
+- Failed ba7f748b, c323a404,5909e2b1 and all older failures are immutable; NEVER relaunch. M8 remains v85 unchanged. No new job has been created or launched.
+
+## 2026-10-04 — ba7f748b immutable M5 12075 failure; offline closure in progress
+- Acceptance `ba7f748b-a5ae-4d98-ab94-4ce20db12d48` is terminal script_failed. M4 passed; M5 execution12075 failed; M6-M9 never started. NEVER relaunch this ID. Full trace `.review/m5-12075/execution.json`.
+- First repair fixed a missing sentence boundary and removed filler codziennie. Retry review incorrectly returned no issues. Final unchanged strict gate caught missing mandatory Polish commas before gdy and że in the exact same narration. No timing/canonicalization wording mutation caused these findings.
+- Generic correction being verified offline: supply complete sentence context spanning visual cuts to all four narration review builders and explicitly inspect mandatory subordinate-clause punctuation separately. Acceptance validators, repair contracts, timing, visual gates and workflow topology remain unchanged. Do not launch a new smoke until exact provider replay, regression/full checks, commit/push and deployment verification complete.
+
 ## 2026-10-04 — ba7f748b acceptance LAUNCHED ONCE
 - NEW acceptance `ba7f748b-a5ae-4d98-ab94-4ce20db12d48` launched EXACTLY ONCE at 2026-10-04T08:53:18Z, HTTP202 accepted=true. Before launch HEAD/origin matched `3dc562c10ab43fd4a8d866eff08cd9d3fcca9073`, ID was persisted in both, DB created and n8n active0. Receipt `.review/m5-12064/new-acceptance-launch.json`.
 - First trace: M4 passed, M5 running. Continue this exact ID through M4-M9 to terminal; no additional create/run/import/publish/restart. M5 v224 and M8 v85 remain the deployed versions. Full845/845 passed before deployment. Production acceptance is not yet proven; final frames and actual audio must be inspected after M9.
