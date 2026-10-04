@@ -1,0 +1,1 @@
+Five new feasibility tests PASS; real execution12126 preflight blocks7/9 before voice. No external calls or production changes.

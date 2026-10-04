@@ -1,0 +1,45 @@
+{
+  "status": "blocked",
+  "required": 9,
+  "matched": 7,
+  "selection": {
+    "S1-A": "wikimedia:163765292",
+    "S2-A": "pexels:6340717",
+    "S3-A": "pexels:38511235",
+    "S4-A": "pixabay:2350695",
+    "S5-A": "pexels:7578193",
+    "S6-A": "wikimedia:12612756",
+    "S7-A": "pixabay:5521592"
+  },
+  "unmatched": [
+    "S8-A",
+    "S9-A"
+  ],
+  "deficits": [
+    {
+      "shots": [
+        "S6-A",
+        "S8-A"
+      ],
+      "assets": [
+        "wikimedia:12612756"
+      ],
+      "deficit": 1
+    },
+    {
+      "shots": [
+        "S9-A"
+      ],
+      "assets": [],
+      "deficit": 1
+    }
+  ],
+  "graph_sha256": "8ed7a84aef6fb4c192ded177ad47a2d4c4dc46df8250ffb13202117f256385a7",
+  "provenance": {
+    "input_sha256": "21502a677b71a9aeecb74717939be73b4e9202501814e9f9c8791db97ad08a9c",
+    "scope": "feasibility only; imported approvals are not new visual acceptance",
+    "provider_calls": 0,
+    "tts_calls": 0,
+    "production_mutations": 0
+  }
+}

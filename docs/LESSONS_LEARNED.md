@@ -1,3 +1,9 @@
+## 2026-10-04 23:12 Warsaw — FACTORY-V3 IMPLEMENTATION STARTED; NOT DEPLOYED
+
+Active branch factory-v3. Old correction/archive pushed on main at d358e4d1fe55c99b03759d60d0b74c21a7fc3fe8. New factory_v3/visual_plan.py implements global maximum unique matching, deficit witnesses and receipt revalidation before downstream work. Five meaningful tests PASS. Native saved failed12126 graph correctly blocks7/9 with both S6/S8 collision and S9 absence; acceptance/factory-v3/failed-12126-preflight.json. Zero provider/model/TTS calls, zero production mutations. This is a runnable first component, NOT a working end-to-end replacement or product acceptance.
+
+NEXT IMPLEMENTATION: build the reviewed media inventory with exact file/source/license/review-contract hashes; availability-led evidence-grounded composition before TTS; freeze and connect preflight to durable execution. Reuse proven alignment/rendering components. See factory_v3/README.md for runnable commands and explicit missing components. Do not resume the old M5/M8 patch loop. Product_ready=false; PL15/EN30/RU45/UK60 acceptance pending. Current production unchanged; failed jobs immutable.
+
 ## 2026-10-04 23:09 Warsaw — USER AUTHORIZED ARCHITECTURE REPLACEMENT; PRODUCT NOT READY
 
 User explicitly ordered radical project replacement. Stop the M5/M8 patch-and-production-retry approach. Preserve current production; create factory-v3 branch for an availability-first pipeline: evidence and actual reviewed assets -> globally feasible visual plan -> evidence-grounded narration -> frozen preflight -> one TTS -> alignment -> existing renderer -> actual media QA/review. Reuse working media processing and credential boundaries; do not touch unrelated automation. Architecture restrictions requiring the old video orchestration shape are superseded by this explicit user instruction, not product quality/free-only rules.
