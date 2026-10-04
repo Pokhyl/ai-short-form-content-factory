@@ -1,3 +1,8 @@
+## 2026-10-04 — acceptance c323a404 launched EXACTLY ONCE
+- New ID `c323a404-c83b-4a87-a1fd-8dc08771bbc7` was launched once at 08:05:22 UTC / 10:05:22 Warsaw after `b977601` was pushed and ID verified in HEAD/origin/main, DB created and n8n active0. HTTP202, accepted=true, status=processing. NEVER launch it again.
+- Trace this exact pl30/Gemini job M4-M9 to terminal. Production M5 v223 / M8 v85 matches code `314ab0b`; full835/835, exact SQL replays and strict old-blocker Gemini diagnostics passed before deployment. Do not infer production PASS from those diagnostics.
+- All failed jobs remain immutable. No create/import/publish/restart/run request is pending. Prior CREATED ONLY entries are historical.
+
 ## 2026-10-04 — 314ab0b deployed and verified; new acceptance CREATED ONLY
 - Code `314ab0b` is pushed. M5 v223 active/version `a1e79fcf-588e-4848-9752-bf6b50d8c90d`; M8 v85 active/version `4ddd4f4c-fc25-420a-aa43-8aa33b885640`. Live nodes/connections/settings and active history nodes/connections equal Git. Each changed workflow was imported/published once; one n8n restart. Runtime running/restart0; media worker healthy/restart0; direct/public health 200. Other 31 workflows fingerprint unchanged: `31|107663ca12372101be42873330227fae`. Selection function equals Git, SHA256 `c2e75f937f1ae64edbe94cdafb467ae3bcb26a8d3fd985b15d507fa53a497539`; no SQL deployment.
 - Backup `.backups/before-12040-VideoM5Storyboard001.json` SHA256 `4046b85c179c181dca1f07a250a8334f3f38ad18c25138acfcf64465a4247297`; M8 counterpart SHA256 `704ad02e0a2f0c468737878d722e0dd7a1933dcc40aba294b940e7e8b1fc4846`.
