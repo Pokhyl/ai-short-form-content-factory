@@ -1,3 +1,5 @@
+Current live evidence:7fb5e00 deployed (imageae7d223629f5b5920e7bf950746da24becfca5a4304e126c22d2e19c93bbdd62). Fresh request31641843-a2c5-43fc-ad77-d27f47ec14d3 produced5 selected photos/16.584s natural voice and three explanatory facts, but all photos still depict bees on flowers. This FAILS the latest visual requirement despite machine gates. The generic-fact matching model must be replaced by explicit different visible targets preserved from discovery through inspection and scene assignment. More live prompt-patch loops are not an accepted approach. See topCODEX_HANDOFF for current state.
+
 # Current requirement — explanatory visuals
 
 User rejected both the two-photo presentation and the generic bee-on-flower imagery. More shots and portrait framing alone are insufficient. Each image must visibly explain the corresponding phrase through a concrete detail, structure or trace. The inspection schema now requires visible_fact_details; topic-related images with no such details are rejected. Search queries target different explanatory aspects, and final review rejects generic or semantically repetitive sequences. Motion is not required from a still photo.

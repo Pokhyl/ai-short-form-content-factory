@@ -1,3 +1,13 @@
+## Current visual failure — 2026-10-05
+
+Production app runs7fb5e00a76a9415044f7e2b4c9b397b7bcbad131, imagefactory-v3:7fb5e00, imageIDae7d223629f5b5920e7bf950746da24becfca5a4304e126c22d2e19c93bbdd62.21 replacement and79 legacy tests pass, including rejection of topic-related photographs with no visible_fact_details. Scoped app replacements preserve workflow digestdd7c8bd5284b595f14e9b08f7027cb08 and all preexisting job/preparation rows.
+
+Latest user complaint is semantic: generic bee-on-flower pictures do not explain the narration. This supersedes prior permissive hidden-mechanism/scene-count statements. Current code: minimum5 different full-frame9:16 photos for15s, no blurred filler, actual crop reviewed/frozen, concrete visible_fact_details, three atomic explanatory facts and three searches. These changes DO NOT establish visual acceptance. The user rejected the earlier two-photo MP4 and the repeated generic-photo approach.
+
+Fresh normal automatic request31641843-a2c5-43fc-ad77-d27f47ec14d3 (same bees/pl/15) reached rendering with5 photos and16.584s natural voice. Narration now covers food, flower attraction, cross-pollination; however, all5 chosen pictures are still bee-on-flower variations. Independent automated script review incorrectly passed the sequence despite instructions. Local inspection of persisted exact observations confirms continued visual sameness. Do not present this result as fixed or accepted. HUMAN remainsfalse. Previous requests768b2466... ande95a77a5... likewise passed machineQA without resolving visual acceptance. No old request was retried/rescued.
+
+Next work must change the media-planning contract: bind distinct visible explanatory targets to searches, inspection and final scene matching, preserving the target through selection; broad fact support and more prompt text are insufficient. Do not launch more full live requests just to test another prompt. Build/replay the saved failure corpus offline first. Current runtime is photo-only; source-video discovery/interval rendering remains unwired. Whole editor is NOT production accepted. Older checkpoints below are historical and must not be used as the next queue.
+
 ## Current replacement runtime — 2026-10-05
 
 Production app runs cf62147f1ffcd26ce3946cd543eefeb3018139f8, image factory-v3:cf62147 (a889d5503881ec5cab24546634fafff984c31bba5f448459820b90302d322e87). Material-first preparation, bounded word-array narration, photo worker and local photo renderer are connected. Input stays topic/language/duration. Relevant real photographs are an accepted video fallback; user explicitly relaxed perfection. No fixed shot count or six-second photo hold gate. Natural voice duration may vary20%; no speed adjustment or clipping.
