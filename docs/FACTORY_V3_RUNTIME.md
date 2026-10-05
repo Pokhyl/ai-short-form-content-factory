@@ -11,3 +11,6 @@ Commands:
     python -m factory_v3.cli status UUID
 
 Repeated request creation is read-only for an identical identity. Running/failed/unknown external attempts are never automatically retried. Machine QA does not establish human acceptance. No live V3 job has passed yet.
+
+Owner service: python -m factory_v3.server --settings /run/factory-v3/settings.json --media-root /data --port 3002
+Mount the media volume read/write for the producer. Join only project networks shorts-v2_default and n8n_default. Route /factory-v3/* without stripping its prefix. Additional private settings: owner_token (separate >=32 characters), public_origin=https://publisher.hodor.com.pl. Apply review.sql only alongside V3 ledger/preparation/cache migrations. No automatic job recovery or retry after a restart. Max one running/four waiting jobs. Accepted decisions are immutable; generation remains independently machine-gated.

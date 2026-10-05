@@ -9,12 +9,17 @@ import psycopg
 from factory_v3.ledger import PostgresLedger
 from factory_v3.executor import Executor, ReconciliationRequired
 from factory_v3.preflight import freeze, digest
+from factory_v3.runtime import Runtime
+from factory_v3.preparation import BudgetedCalls
 import hashlib
 
 dsn=os.environ["V3_TEST_DATABASE_URL"]
 with psycopg.connect(dsn) as connection:
     connection.execute(Path("/fixtures/budget.sql").read_text(),prepare=False)
     connection.execute(Path("/app/factory_v3/ledger.sql").read_text(),prepare=False)
+    connection.execute(Path("/app/factory_v3/preparation.sql").read_text(),prepare=False)
+    connection.execute(Path("/app/factory_v3/provider_cache.sql").read_text(),prepare=False)
+    connection.execute(Path("/app/factory_v3/review.sql").read_text(),prepare=False)
     connection.execute("""INSERT INTO factory.provider_budget_limits
       (provider,sku_family,usage_unit,free_limit,internal_limit,enabled,source_verified_on,source_url)
       VALUES('google_cloud_tts','chirp3_hd','characters',1000000,900000,true,CURRENT_DATE,'https://example.invalid/test'),
@@ -76,7 +81,41 @@ with tempfile.TemporaryDirectory() as directory:
         amount=connection.execute(
             "SELECT count(*) FROM factory.provider_usage_ledger WHERE job_id=%s",(race_job,)).fetchone()[0]
         assert amount==1
+    runtime=Runtime({"database_url":dsn,"broker_token":"controlled-"+"x"*40},root,
+                    os.environ["FACTORY_V3_REVISION"])
+    request_id=str(uuid.uuid4())
+    assert runtime.create(request_id,"Controlled topic","pl",15)["created"] is True
+    assert runtime.create(request_id,"Controlled topic","pl",15)["created"] is False
+    assert runtime.status(request_id)["status"]=="preparing"
+    try: runtime.create(request_id,"Changed topic","pl",15)
+    except ValueError: pass
+    else: raise AssertionError("request parameters changed")
+    def claim_producer():
+        try:
+            runtime.preparations.claim_run(request_id);return "claimed"
+        except psycopg.Error:return "blocked"
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+        producer_race=list(pool.map(lambda _:claim_producer(),range(2)))
+    assert sorted(producer_race)==["blocked","claimed"],producer_race
+    calls=BudgetedCalls(runtime.preparations,request_id)
+    attempts=[]
+    def ambiguous():
+        attempts.append(1)
+        raise TimeoutError("controlled metadata timeout")
+    try: calls.run("billing","metadata",{"controlled":True},ambiguous)
+    except TimeoutError:pass
+    else:raise AssertionError("timeout not propagated")
+    try:calls.run("billing","metadata",{"controlled":True},ambiguous)
+    except psycopg.Error:pass
+    else:raise AssertionError("unknown preparation repeated")
+    assert len(attempts)==1 and runtime.status(request_id)["status"]=="unknown"
+    with psycopg.connect(dsn) as connection:
+        connection.execute("INSERT INTO factory_v3.human_reviews(job_id,video_sha256,decision,comment) VALUES(%s,%s,'accepted','controlled owner review')",(first,"a"*64))
+        connection.execute("INSERT INTO factory_v3.human_reviews(job_id,video_sha256,decision,comment) VALUES(%s,%s,'rejected','changed') ON CONFLICT(job_id) DO NOTHING",(first,"b"*64))
+        saved=connection.execute("SELECT decision,video_sha256 FROM factory_v3.human_reviews WHERE job_id=%s",(first,)).fetchone()
+        assert saved==("accepted","a"*64)
     print(json.dumps({"status":"passed","psycopg":psycopg.__version__,
-      "real_postgres":True,"full_stage_chain":True,"single_voice_attempt":True,
+      "real_postgres":True,"packaged_runtime":True,"request_identity_immutable":True,"owner_review_insert_once":True,
+      "concurrent_producer_claims":producer_race,"preparation_unknown_blocks":True,"full_stage_chain":True,"single_voice_attempt":True,
       "ambiguous_result_blocks":True,"concurrent_claims":results,
       "controlled_provider_calls":2,"actual_provider_calls":0}))
