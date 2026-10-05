@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "controlled_gateway_guards": true,
+  "safe_error_receipt": true,
+  "no_upstream_retries": true,
+  "actual_provider_calls": 0,
+  "production_mutations": 0,
+  "failure_reproduced_before_fix": "billing.headers was undefined",
+  "quota_project_bound_to_validated_billing_project": true,
+  "caller_header_override_rejected": true,
+  "other_provider_headers_unchanged": true
+}

@@ -67,6 +67,10 @@ function validateProviderRequest(input) {
     } else if (request.operation === 'billing') {
       if (!/^[a-z][a-z0-9-]{4,62}$/.test(body?.project_id || '')) throw new Error('invalid project identifier');
       url = 'https://cloudbilling.googleapis.com/v1/projects/' + body.project_id + '/billingInfo';
+      // Use the verified Gemini project, rather than the OAuth client's project.
+      // Caller headers are never forwarded to the authenticated upstream node.
+      return {provider, method, url, query, body,
+        headers: {'x-goog-user-project': body.project_id}};
     } else throw new Error('unsupported metadata operation');
   } else throw new Error('provider not allowed');
   return {provider, method, url, query, body};

@@ -1,3 +1,7 @@
+## 2026-10-05T16:29:31.926788+00:00 — Explicit quota project for native OAuth metadata
+
+Cloud Billing read defaulted to OAuth caller quota context; V3 now derives x-goog-user-project only from the validated target billing project and forwards no caller headers. Regression reproduced undefined header, then passed, including CRLF/override rejection and unchanged Gemini/TTS paths. Service Usage itself being disabled requires console bootstrap, not repeated failing API calls. Exact-key Free tier evidence is independent of these metadata failures. Do not ask owner for a Project ID already read and SHA-bound from Google UI.
+
 ## 2026-10-05T16:19:56.995173+00:00 — Diagnose account metadata separately from product provider access
 
 The old key-owner403 was not evidence that the owner must supply Project ID. Existing signed-in AI Studio exposed the exact project and Free tier; full credential SHA256 matched its exact key details. A separate direct billing check classified SERVICE_DISABLED. Preserve safe ErrorInfo reason/domain and distinguish metadata-service configuration from key failure, payment tier and IAM. Never erase failed diagnostics or infer free access from model HTTP200. Existing evidence: key-ui-binding.json, key-fingerprint.json, known-project-billing.json.

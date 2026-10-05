@@ -1,0 +1,14 @@
+{
+  "n8n_version": "2.37.10",
+  "production_imports": 0,
+  "provider_calls": 0,
+  "status": "passed",
+  "container": "factory-v3-import-eef413cf19",
+  "workflow_sha256": "02e41efcf1ab4e1899f1e93b1677bdf440dcdbe2f37aea16589b01bb248d8e1e",
+  "exit_code": 0,
+  "checks": {
+    "import_export_core_parity": true,
+    "code_syntax": true,
+    "active": false
+  }
+}

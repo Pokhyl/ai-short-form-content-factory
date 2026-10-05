@@ -1,7 +1,8 @@
 'use strict';
-const assert = require('assert'), fs = require('fs');
-const {validateProviderRequest: validate} = require('/work/factory_v3/gateway_validate.js');
-const workflow = JSON.parse(fs.readFileSync('/work/workflows/VIDEO-V3-Credential-Gateway.json','utf8'));
+const assert = require('assert'), fs = require('fs'), path = require('path');
+const root = path.resolve(__dirname, '../..');
+const {validateProviderRequest: validate} = require(path.join(root,'factory_v3/gateway_validate.js'));
+const workflow = JSON.parse(fs.readFileSync(path.join(root,'workflows/VIDEO-V3-Credential-Gateway.json'),'utf8'));
 const good = {
   pixabay:{query:{q:'controlled',per_page:8,safesearch:'true',image_type:'photo',lang:'en',orientation:'vertical'}},
   pexels:{query:{query:'controlled',per_page:8}},
@@ -23,6 +24,20 @@ assert.throws(()=>validate({provider:'google_tts',request:{body:{...good.google_
 assert.throws(()=>validate({provider:'google_tts',request:{body:{...good.google_tts.body,input:{ssml:'<speak>not allowed</speak>'}}}}));
 assert.throws(()=>validate({provider:'gemini',request:{body:{...good.gemini.body,tools:[{googleSearch:{}}]}}}));
 assert.throws(()=>validate({provider:'google_metadata',request:{operation:'delete',body:{project_number:'123456789'}}}));
+const billing = validate({provider:'google_metadata',request:{operation:'billing',
+  body:{project_id:'controlled-project'},headers:{Authorization:'caller-forged',
+    'x-goog-user-project':'wrong-project'}}});
+assert.deepStrictEqual(billing.headers,{'x-goog-user-project':'controlled-project'});
+assert.throws(()=>validate({provider:'google_metadata',request:{operation:'billing',
+  body:{project_id:'controlled-project\r\nAuthorization: forged'}}}));
+const metadataNode = workflow.nodes.find(n=>n.name==='Upstream google_metadata');
+assert.strictEqual(metadataNode.parameters.sendHeaders,true);
+assert.strictEqual(metadataNode.parameters.specifyHeaders,'json');
+assert.strictEqual(metadataNode.parameters.jsonHeaders,'={{ $json.headers || {} }}');
+for (const provider of ['gemini','google_tts','gemini_info']) {
+  assert.strictEqual(validate({provider,request:good[provider]}).headers,undefined);
+  assert.notStrictEqual(workflow.nodes.find(n=>n.name==='Upstream '+provider).parameters.sendHeaders,true);
+}
 for (const n of workflow.nodes.filter(n=>n.type.endsWith('.httpRequest'))) {
   if (n.parameters.sendQuery) assert.strictEqual(n.parameters.specifyQuery,'json');
   assert.strictEqual(n.retryOnFail,false);

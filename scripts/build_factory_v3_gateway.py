@@ -60,6 +60,9 @@ for index, provider in enumerate(providers):
         params["sendQuery"] = True
         params["specifyQuery"] = "json"
         params["jsonQuery"] = "={{ $json.query }}"
+    if provider == "google_metadata":
+        params.update({"sendHeaders":True,"specifyHeaders":"json",
+                       "jsonHeaders":"={{ $json.headers || {} }}"})
     if provider in {"gemini","google_tts"}:
         params.update({"sendBody":True,"specifyBody":"json","jsonBody":"={{ $json.body }}"})
     node("Upstream " + provider, "httpRequest", 4.5, params, [760,index*180], auth)
