@@ -34,7 +34,7 @@ def pcm(path):
     return samples
 
 
-def audit(job_id, target, data_root=Path("/data")):
+def audit(job_id, target, data_root=Path("/data"), *, expected_scenes=None):
     job_id = str(uuid.UUID(job_id))
     if target not in (15, 30, 45, 60):
         raise ValueError("unsupported target duration")
@@ -56,7 +56,10 @@ def audit(job_id, target, data_root=Path("/data")):
         energy_source * energy_final)
     video_sha, audio_sha = sha(video), sha(voice)
     segments = manifest["segments"]
-    expected_scenes = {15: 5, 30: 9, 45: 13, 60: 17}[target]
+    if expected_scenes is None:
+        expected_scenes = {15: 5, 30: 9, 45: 13, 60: 17}[target]
+    if type(expected_scenes) is not int or not 1 <= expected_scenes <= 64:
+        raise ValueError("invalid expected scene count")
     min_audio_ms, max_audio_ms = {
         15: (14208, 15768), 30: (28464, 34000),
         45: (42864, 46128), 60: (58176, 61656),

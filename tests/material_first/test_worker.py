@@ -27,3 +27,12 @@ class PhotoWorkerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             worker._validate_scene_count({'schema': 'material-first', 'scenes': [{}],
                                          'assets': [{'media_type': 'video'}]})
+
+    def test_final_audit_uses_frozen_scene_count(self):
+        from unittest.mock import Mock
+        audit = Mock(return_value={"passed": True, "sha256": "exact"})
+        worker = PhotoWorker('.', None, 'http://localhost:3001', audit)
+        result = worker.qa('job', {"seconds": 60, "scenes": [{}]},
+                           {"render": {"sha256": "exact"}})
+        self.assertTrue(result["machine_pass"])
+        self.assertEqual(audit.call_args.kwargs, {"expected_scenes": 1})

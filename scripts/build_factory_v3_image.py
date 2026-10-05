@@ -4,11 +4,12 @@ from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser();parser.add_argument("--tag",required=True);args=parser.parse_args()
 head=subprocess.check_output(["git","rev-parse","HEAD"],cwd=root,text=True).strip()
-if subprocess.check_output(["git","status","--porcelain","--","factory_v3","scripts/audit_final_media.py"],cwd=root,text=True).strip():
+if subprocess.check_output(["git","status","--porcelain","--","factory_v3","material_first","scripts/audit_final_media.py"],cwd=root,text=True).strip():
     raise ValueError("commit runtime source before building")
 with tempfile.TemporaryDirectory(prefix="factory-v3-build-") as tmp:
     context=Path(tmp)
     shutil.copytree(root/"factory_v3",context/"factory_v3",ignore=shutil.ignore_patterns("__pycache__","*.pyc"))
+    shutil.copytree(root/"material_first",context/"material_first",ignore=shutil.ignore_patterns("__pycache__","*.pyc"))
     (context/"scripts").mkdir();shutil.copy2(root/"scripts/audit_final_media.py",context/"scripts/audit_final_media.py")
     result=subprocess.run(["docker","build","--build-arg","SOURCE_REVISION="+head,"--label","org.opencontainers.image.revision="+head,
       "-f",str(context/"factory_v3/Dockerfile"),"-t",args.tag,str(context)],capture_output=True,text=True,timeout=110)

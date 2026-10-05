@@ -21,6 +21,13 @@ class PhotoWorker(WorkerAdapters):
         projected["selection"] = {s["id"]: s["material_id"] for s in payload["scenes"]}
         return super()._stage_photos(job_id, projected)
 
+    def qa(self, job_id, payload, outputs):
+        result = self.audit(job_id, payload["seconds"], self.root,
+                            expected_scenes=len(payload["scenes"]))
+        if result.get("passed") is not True or result.get("sha256") != outputs["render"]["sha256"]:
+            raise ValueError("actual final media audit failed")
+        return {"status": "ready", "machine_pass": True, "human_pass": False, **result}
+
 
 def executor(ledger, media_root, adapters):
     return Executor(ledger, media_root, adapters, verifier=verify)
