@@ -1,0 +1,39 @@
+{
+  "job_id": "9f751c54-47f5-443b-a2fd-9d72b59aee53",
+  "status": "launched_once",
+  "request": {
+    "request_id": "9f751c54-47f5-443b-a2fd-9d72b59aee53",
+    "topic": "Dlaczego pszczoły odwiedzają kwiaty?",
+    "language": "pl",
+    "seconds": 15
+  },
+  "http_calls": [
+    {
+      "path": "/api/session",
+      "status": 200
+    },
+    {
+      "path": "/api/requests",
+      "status": 202
+    }
+  ],
+  "product_post_attempts": 1,
+  "initial_preflight_correction": "preparation_runs has no state; inspect preparations.status and stage_runs.state",
+  "started_at": "2026-10-05T18:24:06.158488+00:00",
+  "product_response": {
+    "id": "9f751c54-47f5-443b-a2fd-9d72b59aee53",
+    "created": true,
+    "status": "preparing"
+  },
+  "database_identity": {
+    "id": "9f751c54-47f5-443b-a2fd-9d72b59aee53",
+    "status": "preparing",
+    "request": {
+      "topic": "Dlaczego pszczoły odwiedzają kwiaty?",
+      "seconds": 15,
+      "language": "pl"
+    },
+    "source_revision": "2a6d9971be21bd38bfc913ab1804d7bb698a96d9"
+  },
+  "finished_at": "2026-10-05T18:24:07.142712+00:00"
+}

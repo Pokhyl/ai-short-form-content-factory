@@ -1,3 +1,9 @@
+## 2026-10-05T18:24:58.443440+00:00 — FIRST V3 PRODUCT JOB LAUNCHED EXACTLY ONCE
+
+Fresh9f751c54-47f5-443b-a2fd-9d72b59aee53 input Dlaczego pszczoły odwiedzają kwiaty?, pl15 submitted through normal owner product endpoint at2026-10-05T18:24:06Z. Session200, requests202 created=true/preparing. DB identity/input and runtime2a6d997 match. Receipt product-pl15-launch-continuation.json. First operational preflight had guessed a nonexistent preparation_runs.state; no session/POST/job occurred in that attempt (product-pl15-launch.json). Corrected read-only preflight showed ID absent, preparing0/running stages0 and n8n active0 before the ONE launch. No job rerun or manual media/script changes.
+
+NEXT inspect this exact job preparation_calls/stage_runs to terminal, preserve actual full relevant responses for offline systemic reproduction if failed. Do not submit another job while active, change its script/assets, restart/redeploy while running or retry immutable failed/unknown attempts. If final MP4 exists, inspect actual bytes/frames/audio evidence and require explicit human acceptance. Current machine/media/human outcome remains unproven; project_ready=false. Live deployment/gateway preserved; all33 prior workflows were unchanged at deployment verification.
+
 ## 2026-10-05T18:21:14.042517+00:00 — V3 LIVE DEPLOYMENT VERIFIED; FIRST AUTONOMOUS INPUT PLANNED
 
 Gateway active c26e5d8f-0616-4c85-9995-978fdbcb1ba2, exact source5552d477 active/history parity. V3 service factory-v3-app healthy, image c509487e exact runtime2a6d997. Publisher-only /factory-v3 route live. Public health/UI/assets and original publisher root/JS HTTP200; all33 previous workflow rows unchanged; worker/Postgres/SearXNG healthy. Publish/restart/service start/Caddy reload each executed once. Initial default-urllib health probe HTTPError preserved in activation.json; exact product User-Agent verification passes without any repeated deployment mutation. Receipt deployment-verified.json.
