@@ -1,0 +1,26 @@
+{
+  "diagnostic_id": "v3-enabled-project-billing-20261005",
+  "project_id": "gen-lang-client-0532024148",
+  "status": "passed",
+  "calls": [
+    {
+      "kind": "oauth_refresh",
+      "http_status": 200
+    },
+    {
+      "kind": "billing_info",
+      "http_status": 200
+    }
+  ],
+  "generation_calls": 0,
+  "tts_calls": 0,
+  "billing_mutations": 0,
+  "started_at": "2026-10-05T17:27:02.640720+00:00",
+  "credential_export_attempted": true,
+  "billing_enabled": false,
+  "returned_project_id": "gen-lang-client-0532024148",
+  "proof_written": true,
+  "container_secret_removed": true,
+  "host_secret_removed": true,
+  "finished_at": "2026-10-05T17:27:11.098942+00:00"
+}

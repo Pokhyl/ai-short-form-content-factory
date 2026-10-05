@@ -1,3 +1,9 @@
+## 2026-10-05T17:28:02.481204+00:00 — LIVE BILLING METADATA PASS; FREE-TIER BLOCKER CLOSED
+
+Both authorized metadata APIs enabled. New bounded diagnostic v3-enabled-project-billing-20261005 succeeded: OAuth refresh200, billingInfo200, exact gen-lang-client-0532024148, billingEnabled=false. Receipt enabled-project-billing.json; private0600 /var/lib/factory-v3/gemini-free-tier-proof.json written using previously fully verified production key SHA. Secret temporaries removed; no generation/TTS or billing mutation. Prior403 failures remain preserved.
+
+NEXT deployment-preparation stage: read actual ai-short-form-n8n version/config and workflow/credential identity metadata, exact supporting Postgres/media networks, existing quota schema and publisher Caddy routing. Capture protected workflow fingerprints and scoped rollback backup before any deployment mutations. Prepare isolated Gemini reference V3GeminiFreeTier20261005 and regression/source parity, run existing gateway gates; commit/push before credential provisioning/import. Scope only V3 gateway/tables/settings/service and /factory-v3 publisher route; no other workflow edits/restarts yet. No V3 job/MP4; project_ready=false.
+
 ## 2026-10-05T17:26:04.881649+00:00 — BOTH AUTHORIZED METADATA APIS VERIFIED ENABLED
 
 Executed approved browser plan once per service on gen-lang-client-0532024148. Service Usage exact project page explicitly shows Interfejs API został włączony; Cloud Billing exact project metrics page offers Wyłącz interfejs API. Receipt browser-metadata-enable.json. No billing account/IAM/key changes.
