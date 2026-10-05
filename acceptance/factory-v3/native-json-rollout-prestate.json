@@ -1,0 +1,9 @@
+{
+  "gateway_active_version": "c26e5d8f-0616-4c85-9995-978fdbcb1ba2",
+  "protected_workflows_unchanged": 33,
+  "gateway_backup": "/opt/ai-short-form-content-factory/.tmp/v3-predeployment-20261005T173043Z/gateway-before-native-json.json",
+  "active_executions": [],
+  "v3_preparing": 0,
+  "running_stages": 0,
+  "verified_at": "2026-10-05T18:33:34.166752+00:00"
+}
