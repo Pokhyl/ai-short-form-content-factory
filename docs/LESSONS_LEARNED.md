@@ -1,3 +1,7 @@
+## 2026-10-05 — Exclude soft-deleted n8n executions from active checks
+
+With success data disabled, native n8n persistence can retain status=running on logically deleted rows. Execution12135 had deletedAt set after its correct billing response. Use deletedAt IS NULL alongside running status; do not restart or edit DB rows to clear these tombstones. Preflight failed safely before any product POST.
+
 ## 2026-10-05 — Native text response output field is configurable
 
 Import parity and JSON parser checks do not prove native HTTP response contracts. n8n HTTPRequest4.5 text/fullResponse defaults body output to data. Explicitly bind outputPropertyName=body across providers; reject missing successful bodies; test the installed native output branch plus receipt. Preserve execution12131 failure.

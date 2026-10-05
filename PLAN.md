@@ -1,3 +1,9 @@
+## 2026-10-05T19:17:27.618529+00:00 — PRODUCT PREFLIGHT FALSE ACTIVE DETECTED; NO POST YET
+
+Initial launch preflight stopped before session/product POST (both0). New ID7ef29657-1b98-4236-bcf6-01a7482c8f29 absent; preparing0/stages0. Execution12135 has status running but deletedAt2026-10-05T18:13:05.596Z. Installed native ExecutionPersistence soft deletion marks deletedAt without updating status (buffer timestamp may be backdated). It is logically deleted, not active. Operator query was incorrect. Correct active-execution condition: status='running' AND "deletedAt" IS NULL. No execution row/status is changed manually.
+
+NEXT continuation receipt response-body-product-launch-continuation.json: same still-absent planned ID (never submitted), corrected read-only preflight, owner session1/product POST1, capture response/DB canonical request (topic/language/seconds). Retain initial preflight receipt immutable. No billing rerun needed; live boundary already PASS. Runtime/Gateway unchanged; project_ready=false.
+
 ## 2026-10-05T19:13:31.503068+00:00 — RESPONSE CONTRACT DEPLOYED; BILLING ROUNDTRIP PASS
 
 Scoped single gateway import/publish/restart PASS, active9891e8d9-bc62-4d97-8150-9242a22ab4e1 source SHAe323c356dbddaf7002bf7e15e23760deed8d8d295233506bbdb81e2839cf339f active/history exact, all33 protected rows unchanged. Public app health/root200. Fresh single billing execution12135 transport200/receipt200 exact gen-lang-client-0532024148 billingEnabled=false. No generation/TTS/new job yet. Receipts response-body-rollout.json/response-body-billing.json.

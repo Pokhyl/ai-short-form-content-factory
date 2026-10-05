@@ -1,0 +1,14 @@
+{
+  "status": "requires_effect_inspection",
+  "request": {
+    "request_id": "7ef29657-1b98-4236-bcf6-01a7482c8f29",
+    "topic": "Dlaczego pszczo\u0142y odwiedzaj\u0105 kwiaty?",
+    "language": "pl",
+    "seconds": 15
+  },
+  "product_posts": 0,
+  "owner_sessions": 0,
+  "started_at": "2026-10-05T19:14:06.008334+00:00",
+  "failure_type": "AssertionError",
+  "finished_at": "2026-10-05T19:14:06.557836+00:00"
+}
