@@ -6,8 +6,8 @@ Public intake may submit only topic, language (pl/en/ru/uk) and seconds (15/30/4
 
 Commands:
     python -m factory_v3.cli version
-    python -m factory_v3.cli request --job-id UUID --topic "TOPIC" --language pl --seconds 15
-    python -m factory_v3.cli run --job-id UUID
-    python -m factory_v3.cli status --job-id UUID
+    python -m factory_v3.cli request UUID --topic "TOPIC" --language pl --seconds 15
+    python -m factory_v3.cli run UUID
+    python -m factory_v3.cli status UUID
 
 Repeated request creation is read-only for an identical identity. Running/failed/unknown external attempts are never automatically retried. Machine QA does not establish human acceptance. No live V3 job has passed yet.
