@@ -156,3 +156,17 @@ class EngineTests(unittest.TestCase):
         result["sha256"] = digest(result["payload"])
         with self.assertRaisesRegex(ValueError, "bytes changed"):
             verify(self.root, result, ops.probe)
+
+    def test_real_jpeg_nominal_duration_is_not_mistaken_for_animation(self):
+        import json
+        from unittest.mock import patch
+        from types import SimpleNamespace
+        from material_first.engine import probe_media
+        raw = {"streams": [{"codec_type": "video", "width": 867, "height": 1300,
+                           "duration": "0.040000", "nb_read_frames": "1"}],
+               "format": {"format_name": "image2", "duration": "0.040000"}}
+        with patch("material_first.engine.subprocess.run", return_value=SimpleNamespace(stdout=json.dumps(raw))):
+            self.assertIsNone(probe_media("actual.jpg")["duration_ms"])
+        raw["streams"][0]["nb_read_frames"] = "2"
+        with patch("material_first.engine.subprocess.run", return_value=SimpleNamespace(stdout=json.dumps(raw))):
+            self.assertEqual(probe_media("animated.png")["duration_ms"], 40)

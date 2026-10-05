@@ -20,7 +20,7 @@ class MaterialUnavailable(ValueError):
 
 def probe_media(file):
     result = subprocess.run(
-        ["ffprobe", "-v", "error", "-show_streams", "-show_format", "-of", "json", str(file)],
+        ["ffprobe", "-v", "error", "-count_frames", "-show_streams", "-show_format", "-of", "json", str(file)],
         capture_output=True, text=True, timeout=20, check=True)
     data = json.loads(result.stdout)
     videos = [s for s in data["streams"] if s.get("codec_type") == "video"]
@@ -28,6 +28,12 @@ def probe_media(file):
         raise ValueError("material must contain one visual stream")
     stream = videos[0]
     duration = stream.get("duration", data.get("format", {}).get("duration"))
+    # ffprobe gives a JPEG a nominal 40 ms stream duration. Actual frame
+    # count distinguishes a still image from an animated image.
+    image_format = data.get("format", {}).get("format_name", "")
+    if image_format in {"image2", "jpeg_pipe", "png_pipe", "webp_pipe"}:
+        if stream.get("nb_read_frames") == "1":
+            duration = None
     return {"width": int(stream["width"]), "height": int(stream["height"]),
             "duration_ms": round(float(duration) * 1000) if duration is not None else None}
 
@@ -167,6 +173,9 @@ class Producer:
             if material is not None:
                 assets[asset["id"]] = asset
                 available.append(material)
+                covered_now = set().union(*(set(m["supported_fact_ids"]) for m in available))
+                if len(available) >= min(3, len(candidates)) and set(required) <= covered_now:
+                    break  # Enough relevant options; avoid spending every inspection slot.
         covered = set().union(*(set(m["supported_fact_ids"]) for m in available)) if available else set()
         if not set(required) <= covered:
             raise MaterialUnavailable("essential topic facts have no inspected real material")
