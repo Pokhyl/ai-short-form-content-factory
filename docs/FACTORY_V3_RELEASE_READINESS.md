@@ -11,7 +11,7 @@ Project_ready=false. The new core and owner interface are packaged, not deployed
 | Exact Gemini key owner | Full key SHA256 from signed-in AI Studio equals scoped production fingerprint; project529636078126 / gen-lang-client-0532024148 | PASS UI binding |
 | Gemini free tier | Exact-key row in signed-in AI Studio shows Free tier / Set up billing | PASS UI observation |
 | Runtime billing API | Both metadata APIs enabled; exact project billingInfo200, billingEnabled=false | PASS live metadata |
-| V3 gateway/workflow/schema/service/route | Source/templates only | NOT DEPLOYED |
+| V3 gateway/workflow/schema/service/route | Dedicated credentials/settings + V3 tables; gateway imported inactive, originals33 unchanged; service/route pending | PROVISIONED |
 | New real photo/model/TTS/video execution | Zero generation/TTS calls; no new V3 MP4 | NOT ATTEMPTED |
 | PL15/EN30/RU45/UK60 acceptance | No accepted release cases | NOT READY |
 
@@ -20,7 +20,7 @@ Diagnostic v3-account-boundary-20261005 is immutable. Do not rerun scripts/check
 The precise cause of HTTP403 is not captured; do not assert whether it was IAM permission, OAuth scope or service enablement. Official lookupKey requires apikeys.keys.lookup on the parent project and cloud-platform.read-only or cloud-platform OAuth scope:
 https://docs.cloud.google.com/api-keys/docs/reference/rest/v2/keys/lookupKey
 
-Project identity and Free tier are now independently established in Google UI with exact full-key SHA256 binding (key-ui-binding.json). Do not ask owner for Project ID again. Next boundary: explicit browser confirmation to activate only Service Usage and Cloud Billing metadata APIs in this known Gemini project; no paid billing, IAM, OAuth or key change. Preserve the completed known-project-billing.json and billing-api-config.json failures. Gateway quota-project header regression and n8n2.37.10 isolated import/export checks PASS; source not deployed. Build the checked gateway source image, then use a new bounded billing verification after actual API enable.
+Project identity and Free tier are now independently established in Google UI with exact full-key SHA256 binding (key-ui-binding.json). Do not ask owner for Project ID again. Both metadata APIs are now enabled and billingInfo200 confirms the exact project is unbilled. Preserve the completed known-project-billing.json and billing-api-config.json failures. Gateway quota-project header regression and n8n2.37.10 isolated import/export checks PASS; source not deployed. Build the checked gateway source image, then use a new bounded billing verification after actual API enable.
 
 Deployment preparation is complete as templates under deploy/factory-v3. Do not start the compose service until a real0600 settings file has independently verified free-tier proof, dedicated gateway/owner secrets and exact database credential. Verify the current image ID equals acceptance/factory-v3/image-current.json. Never copy the placeholder file as live settings.
 

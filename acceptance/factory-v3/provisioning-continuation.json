@@ -1,0 +1,52 @@
+{
+  "operation_id": "v3-provision-continuation-20261005",
+  "status": "passed",
+  "steps": [
+    "original_export_started",
+    "credential_import_started",
+    "credentials_verified",
+    "schema_transaction_started",
+    "schema_verified",
+    "gateway_import_started"
+  ],
+  "started_at": "2026-10-05T17:40:52.761287+00:00",
+  "job_calls": 0,
+  "generation_calls": 0,
+  "tts_calls": 0,
+  "credential_import_reported_success": true,
+  "credential_metadata": [
+    {
+      "id": "V3GeminiFreeTier20261005",
+      "type": "googlePalmApi",
+      "projectId": "FF7o9vSL9orH8B5T"
+    },
+    {
+      "id": "V3ProviderGatewayToken",
+      "type": "httpHeaderAuth",
+      "projectId": "FF7o9vSL9orH8B5T"
+    }
+  ],
+  "isolated_key_sha256_matches": true,
+  "original_credential_unchanged": true,
+  "schema": {
+    "jobs": 0,
+    "tables": [
+      "human_reviews",
+      "jobs",
+      "preparation_calls",
+      "preparation_runs",
+      "preparations",
+      "provider_cache",
+      "stage_runs"
+    ],
+    "requests": 0
+  },
+  "protected_workflows_unchanged": 33,
+  "gateway_parity": true,
+  "gateway_active": false,
+  "service_started": false,
+  "settings_mode": "0o600",
+  "container_secret_removed": true,
+  "host_secret_removed": true,
+  "finished_at": "2026-10-05T17:41:23.404140+00:00"
+}
