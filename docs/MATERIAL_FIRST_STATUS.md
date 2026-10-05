@@ -30,3 +30,5 @@ Current evidence:acceptance/factory-v3/material-first-cf62147-*.json; compact im
 
 Do not resume old schema/provider diagnostic queue below; historical checkpoints are evidence. Do not re-run or rescue any old failed job. Further work should follow this connected replacement and user's practical photo preference, rather than restore DENSITY/per-photo perfection gates. Show the concrete result for review; do not call the entire editor production accepted.
 
+
+User rejected the two-photo widescreen presentation. New visual requirement: several distinct shots for a15s short, full-screen9:16 framing, no blurred filler bands. Search prefers portrait; acquisition targets6 relevant materials for15s (bounded12 overall), composer uses at least5 when available. Actual9:16 crop is created before vision review and frozen as the render input. Renderer fills the frame. This supersedes the prior permissive two-photo cadence. Verify representative final frames locally before deployment; preserve old jobs/MP4s.

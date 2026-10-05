@@ -170,3 +170,11 @@ class EngineTests(unittest.TestCase):
         raw["streams"][0]["nb_read_frames"] = "2"
         with patch("material_first.engine.subprocess.run", return_value=SimpleNamespace(stdout=json.dumps(raw))):
             self.assertEqual(probe_media("animated.png")["duration_ms"], 40)
+
+    def test_collects_six_photos_instead_of_stopping_at_three(self):
+        ops = Operations(self.root, ["photo"] * 8)
+        for asset in ops.assets:
+            ops.support[asset["id"]] = ["f0", "f1", "f2"]
+        result = self.run_prepare(ops)
+        self.assertEqual(len(result["payload"]["assets"]), 6)
+        self.assertNotIn("inspect:a6", ops.events)

@@ -76,7 +76,7 @@ class Operations:
         pools = []
         for query in queries:
             for provider in sorted(PROVIDERS):
-                result = self.search.search(provider, query, 'all')
+                result = self.search.search(provider, query, 'portrait')
                 pools.append(result['candidates'])
         # Round-robin provider/query results rather than exhausting one provider.
         selected, seen = [], set()
@@ -120,18 +120,20 @@ class Operations:
         materials = context['materials']
         seconds = context['request']['seconds']
         minimum_words, maximum_words = round(seconds * 1.8), round(seconds * 2.2)
+        minimum_beats = min(len(materials), max(1, (seconds + 2) // 3))
         schema = obj({'words': array(string(), minimum_words, maximum_words),
             'beats': array(obj({'material_id': string(m['id'] for m in materials),
                 'word_start': {'type': 'number', 'minimum': 0, 'maximum': maximum_words},
                 'word_end': {'type': 'number', 'minimum': 1, 'maximum': maximum_words},
                 'fact_ids': array(string(f['id'] for f in context['evidence']['facts']), 1, 8)}),
-                1, len(materials))})
+                minimum_beats, len(materials))})
         result, _ = self.gemini.generate('material-compose',
             f'Write one natural factual script in the requested language. Return the script as a words array '
             f'of {minimum_words} to {maximum_words} individual words TOTAL, aiming for {round(seconds * 2.1)} '
             f'words for {seconds} seconds. Each words item is exactly one word, with punctuation attached. '
             'Do not return a shorter summary. Add useful source-supported explanation to fill the word budget, '
             'without repeating yourself or adding opening/closing filler. '
+            f'Use at least {minimum_beats} different supplied photographs, with roughly balanced beat lengths. '
             'Assign all words to consecutive beats using zero-based word_start and exclusive word_end. '
             'Use only supplied inspected materials, each at most once, and facts that it can illustrate. '
             'Cover required topic facts. A photograph can illustrate an action without showing its motion. '

@@ -174,7 +174,7 @@ class Producer:
                 assets[asset["id"]] = asset
                 available.append(material)
                 covered_now = set().union(*(set(m["supported_fact_ids"]) for m in available))
-                if len(available) >= min(3, len(candidates)) and set(required) <= covered_now:
+                if len(available) >= min(12, (seconds * 6 + 14) // 15, len(candidates)) and set(required) <= covered_now:
                     break  # Enough relevant options; avoid spending every inspection slot.
         covered = set().union(*(set(m["supported_fact_ids"]) for m in available)) if available else set()
         if not set(required) <= covered:

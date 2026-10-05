@@ -12,6 +12,7 @@ from .ledger import PostgresLedger
 from .preparation import PreparationLedger, BudgetedCalls
 from material_first.operations import Operations, preparation_budgets
 from material_first.producer import DurableProducer
+from material_first.portrait import PortraitDownload
 from material_first.worker import PhotoWorker, executor as material_executor
 from .providers import PhotoSearch, ProviderCache
 from .research import Research
@@ -77,7 +78,7 @@ class Runtime:
                              lambda provider:"gateway-managed",self.settings["credential_scope"])
         return DurableProducer(self.root, self.preparations,
             Operations(self.root, Research(calls,self.direct), gemini, search,
-                       PhotoDownload(self.root,request_id,calls,self.direct)), authorize=authorize)
+                       PortraitDownload(self.root, PhotoDownload(self.root,request_id,calls,self.direct))), authorize=authorize)
 
     def executor(self):
         adapters = PhotoWorker(self.root,GoogleVoice(lambda:"gateway-managed",self.gateway),

@@ -63,11 +63,8 @@ def render(root, job_id, request):
     work = directory / '.work'
     work.mkdir()
     segments, manifest_segments = [], []
-    graph = ('[0:v]split=2[bg][fg];'
-             '[bg]scale=1080:1920:force_original_aspect_ratio=increase:force_divisible_by=2,'
-             'crop=1080:1920,gblur=sigma=30:steps=2[fill];'
-             '[fg]scale=1080:1920:force_original_aspect_ratio=decrease:force_divisible_by=2[front];'
-             '[fill][front]overlay=(W-w)/2:(H-h)/2,fps=30,format=yuv420p,setsar=1[v]')
+    graph = ('[0:v]scale=1080:1920:force_original_aspect_ratio=increase:force_divisible_by=2,'
+             'crop=1080:1920,fps=30,format=yuv420p,setsar=1[v]')
     for index, (scene, asset) in enumerate(verified):
         duration = scene['segment_end_ms'] - scene['segment_start_ms']
         segment = work / f'segment-{index:02d}.mp4'
