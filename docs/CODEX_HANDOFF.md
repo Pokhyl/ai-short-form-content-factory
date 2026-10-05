@@ -1,3 +1,9 @@
+## 2026-10-05T19:18:18.587358+00:00 — FRESH PL15 LAUNCHED EXACTLY ONCE
+
+7ef29657-1b98-4236-bcf6-01a7482c8f29 normal topic/language/seconds endpoint session200/POST202 created=true/preparing; canonical DB input matches. Product_posts1. Correct active preflight excludes deletedAt tombstones. Launch receipt response-body-product-launch-continuation.json. No custom narration/assets/rescue. Current gateway9891e8d9 body contract deployed and live billing PASS; runtime2a6d997 unchanged.
+
+NEXT follow this exact preparation_calls/stage_runs to terminal using bounded reads, preserve failed/unknown job immutable, inspect saved provider evidence offline before any new job. Do not redeploy/restart while work active. If final MP4 produced, actual frame/audio/decode/identity evidence plus explicit HUMAN review remain required. Project_ready=false; product acceptance unproven.
+
 ## 2026-10-05T19:17:27.618529+00:00 — PRODUCT PREFLIGHT FALSE ACTIVE DETECTED; NO POST YET
 
 Initial launch preflight stopped before session/product POST (both0). New ID7ef29657-1b98-4236-bcf6-01a7482c8f29 absent; preparing0/stages0. Execution12135 has status running but deletedAt2026-10-05T18:13:05.596Z. Installed native ExecutionPersistence soft deletion marks deletedAt without updating status (buffer timestamp may be backdated). It is logically deleted, not active. Operator query was incorrect. Correct active-execution condition: status='running' AND "deletedAt" IS NULL. No execution row/status is changed manually.
