@@ -1,0 +1,307 @@
+{
+  "backup_directory": "/opt/ai-short-form-content-factory/.tmp/v3-predeployment-20261005T173043Z",
+  "workflow_fingerprints": [
+    {
+      "id": "dDiqHH9C5clOrYOX",
+      "name": "MCP \u2014 Find Free Time",
+      "active": false,
+      "sha256": "504731694335c22fc52dcab25a1ed1ecfc50a3f6eaf39d61f031cf479317b47c"
+    },
+    {
+      "id": "dSohghXnQp078EZm",
+      "name": "MCP \u2014 Server",
+      "active": true,
+      "sha256": "ad6d674a8b61a739f9c365e46687d66ee7c3fd8d83698c27f2bf9a9b62f75f76"
+    },
+    {
+      "id": "FLsgn6x0wzoDCsNf",
+      "name": "MCP \u2014 GitHub Read File",
+      "active": true,
+      "sha256": "381a5f679b516ef5d86e022b001400faa644f82106df76357ebc6d48cbebf828"
+    },
+    {
+      "id": "HumanFailRetestRunner001",
+      "name": "TMP \u2014 Human Fail Retest M9",
+      "active": false,
+      "sha256": "dbf9e0a68be4ae13605d550d3c9810693854a131ee8cba1b7dd318c1851acfe4"
+    },
+    {
+      "id": "IUpcFPRH3xOVbgEq",
+      "name": "MCP \u2014 Calendar Events",
+      "active": false,
+      "sha256": "c978705d158fbecd441fba06edddd84e6db39704c3cb3548d4e8e978060ca982"
+    },
+    {
+      "id": "KCIuipW0TTnCMxkY",
+      "name": "ADMIN \u2014 KeyCRM Customer Index Incremental Sync",
+      "active": false,
+      "sha256": "8685fb038ce64f6584884d56aa8da78c1bb0ea5b58a5ed58b92fdf22d690df4f"
+    },
+    {
+      "id": "KcrmAnalyticsRefsA1",
+      "name": "ADMIN \u2014 KeyCRM Analytics Reference Sync",
+      "active": false,
+      "sha256": "7df62f0316a793560b6df52a57b06cee8503c39f501035a28ea157e10d28dd18"
+    },
+    {
+      "id": "KcrmDetA9V7cQ2Lx",
+      "name": "MCP \u2014 KeyCRM Customer Details",
+      "active": false,
+      "sha256": "26fea51ff1a8edc50c48c113890642e5fb14c9eb20a7be8f1ad22ea5d0365369"
+    },
+    {
+      "id": "KcrmMgrAssignHistA1",
+      "name": "MCP \u2014 KeyCRM Manager Assignment History",
+      "active": false,
+      "sha256": "2d2eb84b2b4d313e3a207e7ce038b2196af51625bceb4acb231cf9ef71df97b2"
+    },
+    {
+      "id": "KcrmMgrCallStatsA9zQ7P",
+      "name": "MCP \u2014 KeyCRM Manager Call Stats",
+      "active": false,
+      "sha256": "e7695fabaf2f1a2d6e6255c1fe12b13458a6a546ba5cd43b903bfe4e7898e2a9"
+    },
+    {
+      "id": "KcrmMgrCallTimelineA1",
+      "name": "MCP \u2014 KeyCRM Manager Call Timeline",
+      "active": false,
+      "sha256": "2e177042b027a94811cecc4cbe67c72228b4628fc0e1e902c441acd0af467b14"
+    },
+    {
+      "id": "KcrmMgrLeadStatsA1",
+      "name": "MCP \u2014 KeyCRM Manager Lead Stats",
+      "active": false,
+      "sha256": "7332deec7311dae3f7316191b67e4c652d6447d3fec45b1515b651868ead11c2"
+    },
+    {
+      "id": "KcrmMgrSalesStatsA1",
+      "name": "MCP \u2014 KeyCRM Manager Sales Stats",
+      "active": false,
+      "sha256": "7bf144473b9ee7f19cd574533b70dc9a1d1f111fc83811b489b403480a257e18"
+    },
+    {
+      "id": "KcrmMgrStatsA7pQ4Z",
+      "name": "MCP \u2014 KeyCRM Manager Customer Stats",
+      "active": false,
+      "sha256": "0e5e82944cab87cda60ccf8d9977c2753067b387c0d7427306e40a8ea188328a"
+    },
+    {
+      "id": "KcrmPipelineBootstrapA1",
+      "name": "ADMIN \u2014 KeyCRM Pipeline Card Index Bootstrap",
+      "active": false,
+      "sha256": "7fdc8d343bddb5b31dfee100577cebd3cc84f4c8858512e86b0109afb943f5a2"
+    },
+    {
+      "id": "KcrmPipelineIncrementalA1",
+      "name": "ADMIN \u2014 KeyCRM Pipeline Card Index Incremental Sync",
+      "active": false,
+      "sha256": "1aa540fc88df3582b76569a6360038be617f24ead94224a1ca7a040f6a193029"
+    },
+    {
+      "id": "KP1EPFbemTrxbkcY",
+      "name": "ADMIN \u2014 KeyCRM Customer Index Sync",
+      "active": false,
+      "sha256": "378b0b8823d4e95ca7fe0ba46cdb96c00c9f1e5977d6c94e9495c054057b6cbd"
+    },
+    {
+      "id": "M10TempReview001",
+      "name": "M10 TMP \u2014 Exact MP4 Review",
+      "active": true,
+      "sha256": "554f6d4a997af696754ced97e39ac3752d936a734f16b2228b2615d56385de42"
+    },
+    {
+      "id": "MCPDriveSearchM2A",
+      "name": "MCP \u2014 Drive Search",
+      "active": true,
+      "sha256": "c0981529a7b31d2da02e1f286fe8a6ff1eb329f0bdf7c6af81e8024e155aaa5a"
+    },
+    {
+      "id": "OALvijdov0sXpsTO",
+      "name": "MCP \u2014 Audit Tool Call",
+      "active": false,
+      "sha256": "9adcef3fe98bc6e7da3145fba529aba78c75e8b342e3da35e645614363d4dd97"
+    },
+    {
+      "id": "tUxRIiXHh2UaWflF",
+      "name": "MCP \u2014 Gmail Search",
+      "active": true,
+      "sha256": "8b2f41fe0b6c41122333eda5cf08f87724ee5fd6a8d6340013938a728772ac48"
+    },
+    {
+      "id": "uHvyD6VUiuelqdvx",
+      "name": "MCP \u2014 Drive Read File",
+      "active": true,
+      "sha256": "8dc3e77f6e776f01de00ded660257d9e76d686b136fd266ee0fb8f0692ff4035"
+    },
+    {
+      "id": "VideoGeminiResilient001",
+      "name": "VIDEO \u2014 Gemini Resilient Call",
+      "active": true,
+      "sha256": "e3997f498d983c5666ef85db010f617568f1cecc21d70f4ca176dfe71a2e9298"
+    },
+    {
+      "id": "VideoM3Intake001",
+      "name": "VIDEO \u2014 M3 Intake",
+      "active": true,
+      "sha256": "b232c67c06d8bcb1738c24fa0623134b21551092aba56ca734bd6ada9390d257"
+    },
+    {
+      "id": "VideoM4Research001",
+      "name": "VIDEO \u2014 M4 Research",
+      "active": true,
+      "sha256": "a1287504681077c5dd88f4dd97b6e13ab1a18534b07be644819cae030dcd1ca4"
+    },
+    {
+      "id": "VideoM5Storyboard001",
+      "name": "VIDEO \u2014 M5 Script + Storyboard",
+      "active": true,
+      "sha256": "89326d72bf26428bac4a1b4c4c59e19447ae780de87c5aabda274d8f32898e9b"
+    },
+    {
+      "id": "VideoM6Voiceover001",
+      "name": "VIDEO \u2014 M6 One Final Voiceover",
+      "active": true,
+      "sha256": "c23ea2bb503839b0b3b0be5c1645fbd52c824a57dfc0daa82c0e9045f9205510"
+    },
+    {
+      "id": "VideoM7Alignment001",
+      "name": "VIDEO \u2014 M7 Local Alignment",
+      "active": true,
+      "sha256": "ca2074f9ad9065889e262c6d756dd91098651dfc520762244c171e20f4bf7ae8"
+    },
+    {
+      "id": "VideoM8Visuals001",
+      "name": "VIDEO \u2014 M8 Multi-Source Visuals",
+      "active": true,
+      "sha256": "4905594b48bcb6699b2631a1068291e0443d6444234e085a30478047a19d387e"
+    },
+    {
+      "id": "VideoM9RenderQa001",
+      "name": "VIDEO \u2014 M9 Render + Machine QA",
+      "active": true,
+      "sha256": "cad5674f89d2eb19e49d75534b65ea06b112fddb767e2e1e9d4c725d3fc7e52e"
+    },
+    {
+      "id": "VideoSelfTestApi001",
+      "name": "VIDEO \u2014 Self Test API",
+      "active": true,
+      "sha256": "a384edf41c2afcc30b900ccd464cda95bfc3077aeb04d473ef04421baff508ec"
+    },
+    {
+      "id": "yej0SNKc4Ovb4rzq",
+      "name": "MCP \u2014 KeyCRM Customer Search",
+      "active": false,
+      "sha256": "7b1252e6940c5fb8b27c7328dc9b16db4b3e1913045d2819d08198f9cc42a914"
+    },
+    {
+      "id": "zAfGZsJszUKu2NIp",
+      "name": "MCP \u2014 Gmail Attachment",
+      "active": true,
+      "sha256": "8c876cdec20e2adcfd734c8197c7d7a32d4550a0306e637bac6582c17a67f7b1"
+    }
+  ],
+  "metadata": {
+    "credentials": [
+      {
+        "id": "ugfn4RdeQOgLkCu8",
+        "name": "TikTok Intake",
+        "type": "httpHeaderAuth"
+      },
+      {
+        "id": "gnqzMbEGMKWYM5vJ",
+        "name": "Google Sheets account",
+        "type": "googleSheetsOAuth2Api"
+      },
+      {
+        "id": "W4bkr79svLuSIs8F",
+        "name": "OpenAI Bearer Auth - TikTok Script",
+        "type": "httpBearerAuth"
+      },
+      {
+        "id": "B9VtzOBYmbRSsuAS",
+        "name": "Media Worker Header Auth",
+        "type": "httpHeaderAuth"
+      },
+      {
+        "id": "l6QGoHtq4KUiMaWe",
+        "name": "Pexels API",
+        "type": "httpHeaderAuth"
+      },
+      {
+        "id": "euu8RYfvHwotiEop",
+        "name": "Buffer API",
+        "type": "httpHeaderAuth"
+      },
+      {
+        "id": "ZNnZlNpHKktypuI3",
+        "name": "Postgres - TikTok Pipeline v2",
+        "type": "postgres"
+      },
+      {
+        "id": "Z61TBglXcV08CRbT",
+        "name": "Pixabay API",
+        "type": "httpQueryAuth"
+      },
+      {
+        "id": "zsRz2tvE57EKe8zy",
+        "name": "Gemini Text",
+        "type": "googlePalmApi"
+      },
+      {
+        "id": "gQ3TDSsTe7Tn2X8B",
+        "name": "Video Factory Postgres",
+        "type": "postgres"
+      },
+      {
+        "id": "8KbFC6GBZOd18bzG",
+        "name": "Google account",
+        "type": "googleOAuth2Api"
+      }
+    ],
+    "gemini_projects": [
+      {
+        "role": "credential:owner",
+        "createdAt": "2026-09-19T08:43:24.621+00:00",
+        "projectId": "FF7o9vSL9orH8B5T",
+        "updatedAt": "2026-09-19T08:43:24.621+00:00",
+        "credentialsId": "zsRz2tvE57EKe8zy"
+      }
+    ],
+    "active_executions": 0
+  },
+  "quota": {
+    "quota": [
+      {
+        "enabled": true,
+        "provider": "google_cloud_tts",
+        "free_limit": 1000000,
+        "sku_family": "chirp3_hd",
+        "usage_unit": "characters",
+        "period_start": "2026-10-01",
+        "internal_limit": 900000,
+        "reserved_amount": 0,
+        "allocated_amount": 30067,
+        "committed_amount": 30067,
+        "remaining_internal_amount": 869933
+      },
+      {
+        "enabled": true,
+        "provider": "google_cloud_tts",
+        "free_limit": 4000000,
+        "sku_family": "wavenet",
+        "usage_unit": "characters",
+        "period_start": "2026-10-01",
+        "internal_limit": 3600000,
+        "reserved_amount": 0,
+        "allocated_amount": 0,
+        "committed_amount": 0,
+        "remaining_internal_amount": 3600000
+      }
+    ],
+    "v3_schema": 0
+  },
+  "caddy_sha256": "cff37cd578b89ec58b0833675fbb87afcbb951dc818088dab44dd51dc175bda3",
+  "production_mutations": 0,
+  "verified_at": "2026-10-05T17:32:11.851318+00:00",
+  "initial_backup_query_failure": "Incorrect view provider_usage_monthly; no mutation. Actual view provider_budget_status used."
+}

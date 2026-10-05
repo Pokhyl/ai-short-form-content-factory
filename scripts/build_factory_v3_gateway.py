@@ -35,7 +35,7 @@ node("Select credential", "switch", 3.2, {"rules": {"values": rules}, "options":
 credentials = {
     "pixabay": {"httpQueryAuth": {"id": "Z61TBglXcV08CRbT", "name": "Pixabay API"}},
     "pexels": {"httpHeaderAuth": {"id": "l6QGoHtq4KUiMaWe", "name": "Pexels API"}},
-    "gemini": {"googlePalmApi": {"id": "zsRz2tvE57EKe8zy", "name": "Gemini Text"}},
+    "gemini": {"googlePalmApi": {"id": "V3GeminiFreeTier20261005", "name": "Factory V3 verified Gemini Free tier"}},
     "google_tts": {"googleOAuth2Api": {"id": "8KbFC6GBZOd18bzG", "name": "Google account"}},
 }
 for index, provider in enumerate(providers):

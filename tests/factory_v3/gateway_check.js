@@ -43,6 +43,10 @@ for (const n of workflow.nodes.filter(n=>n.type.endsWith('.httpRequest'))) {
   assert.strictEqual(n.retryOnFail,false);
   assert.strictEqual(n.parameters.options.response.response.neverError,true);
 }
+for (const name of ['Upstream gemini','Upstream gemini_info']) {
+  assert.strictEqual(workflow.nodes.find(n=>n.name===name).credentials.googlePalmApi.id,
+    'V3GeminiFreeTier20261005', 'V3 must use its isolated verified free-tier credential');
+}
 const normalize = workflow.nodes.find(n=>n.name==='Sanitize receipt').parameters.jsCode;
 const normalizeResponse = data => new Function('$input','$execution',normalize)(
   {first:()=>({json:data})},{id:'controlled'});
