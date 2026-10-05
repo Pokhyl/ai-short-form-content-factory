@@ -1,0 +1,17 @@
+{
+  "operation_id": "response-body-rollout-20261005",
+  "status": "passed",
+  "steps": [
+    "import_started",
+    "publish_started",
+    "restart_started"
+  ],
+  "provider_calls": 0,
+  "job_calls": 0,
+  "active_history_parity": true,
+  "gateway_active_version": "9891e8d9-bc62-4d97-8150-9242a22ab4e1",
+  "protected_workflows_unchanged": 33,
+  "workflow_sha256": "e323c356dbddaf7002bf7e15e23760deed8d8d295233506bbdb81e2839cf339f",
+  "temporary_file_removed": true,
+  "finished_at": "2026-10-05T19:12:34.529841+00:00"
+}

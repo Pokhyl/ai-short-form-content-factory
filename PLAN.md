@@ -1,3 +1,9 @@
+## 2026-10-05T19:13:31.503068+00:00 — RESPONSE CONTRACT DEPLOYED; BILLING ROUNDTRIP PASS
+
+Scoped single gateway import/publish/restart PASS, active9891e8d9-bc62-4d97-8150-9242a22ab4e1 source SHAe323c356dbddaf7002bf7e15e23760deed8d8d295233506bbdb81e2839cf339f active/history exact, all33 protected rows unchanged. Public app health/root200. Fresh single billing execution12135 transport200/receipt200 exact gen-lang-client-0532024148 billingEnabled=false. No generation/TTS/new job yet. Receipts response-body-rollout.json/response-body-billing.json.
+
+NEXT ONE normal input launch: fresh7ef29657-1b98-4236-bcf6-01a7482c8f29 PL15 topic Dlaczego pszczoły odwiedzają kwiaty?. Budget plan response-body-product-plan.json retains server-owned limits; generation max18, searches max15/provider, downloads15, source_fetch6, research_search1, metadata1; exact quota consumption unknown until calls, one final TTS only under enforced existing free ceilings. Assert ID absent and no preparing/running job or execution; owner session1 then product POST1. Persist started receipt before POST. No custom script/assets/manual rescue/retries. Stop failed/unknown terminal, inspect saved evidence offline. Prior failed job immutable; project_ready=false until actual acceptance matrix/media/human review.
+
 ## 2026-10-05T19:11:33.197777+00:00 — NATIVE RESPONSE IMPORT GATE PASS; SCOPED ROLLOUT
 
 Exact d3c4f66 gateway SHAe323c356dbddaf7002bf7e15e23760deed8d8d295233506bbdb81e2839cf339f. Native output/parser +78/78 Python +guards PASS; isolated actual n8n import/export nodes/connections/settings parity PASS. Prior rollout receipt verified passed with activeVersion f3fb1604-7cb4-48b4-8596-93b1741e7816; do not repeat it.

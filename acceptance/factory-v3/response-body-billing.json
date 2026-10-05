@@ -1,0 +1,18 @@
+{
+  "diagnostic_id": "response-body-billing-20261005",
+  "status": "passed",
+  "gateway_posts": 1,
+  "generation_calls": 0,
+  "tts_calls": 0,
+  "transport_status": 200,
+  "receipt_status": 200,
+  "gateway_execution_id": "12135",
+  "project_id": "gen-lang-client-0532024148",
+  "billing_enabled": false,
+  "passed": true,
+  "public_health": {
+    "/factory-v3/health": 200,
+    "/": 200
+  },
+  "finished_at": "2026-10-05T19:13:05.899688+00:00"
+}
