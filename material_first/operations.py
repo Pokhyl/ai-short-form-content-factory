@@ -7,6 +7,7 @@ from factory_v3.grounding import validate_evidence
 from factory_v3.preflight import asset_path, digest, validate_asset
 from factory_v3.providers import PROVIDERS
 from .engine import MaterialUnavailable
+from .targets import validate_targets
 
 
 def preparation_budgets(seconds):
@@ -58,29 +59,40 @@ class Operations:
             'support': array(obj({'source_id': string(s['id'] for s in sources),
                                   'quote': string()}), 1, 3)}), 3, 8),
             'required_fact_ids': array(string(), 3, 8),
-            'queries': array({**string(), 'maxLength': 100}, 3, 3)})
+            'visual_targets': array(obj({'id': string(), 'fact_ids': array(string(), 1, 8),
+                'must_show': string(), 'must_not_show': string(),
+                'query': {**string(), 'maxLength': 100}}), 3, 3)})
         result, _ = self.gemini.generate('material-brief',
             'Extract at least three distinct atomic explanatory facts answering the topic, supported by exact source quotations. '
             'Separate the starting condition, concrete mechanism/details, and consequence or purpose where supported. '
             'Do not merge multiple mechanisms into one broad topic statement, or paraphrase the same fact to fill slots. '
             'Each quote must be contiguous: retain intervening headings or use separate support entries. '
-            'Mark at least three essential distinct facts. Give exactly three English stock photograph searches for relevant '
-            'different visible steps, objects or details explaining the answer, not synonyms for the topic. '
-            'For example, feeding mouthparts, pollen-loaded legs and flower reproductive structures are distinct searches. '
-            'Search for observable evidence of the mechanism; do not demand motion from a photograph.',
+            'Mark at least three essential distinct facts. Define exactly three distinct visual_targets, each '
+            'binding source fact_ids to concrete must_show and must_not_show conditions and an English photograph query. '
+            'Targets are practical visual variety roles: overall setting, subject close-up, related object/detail '
+            'or consequence. They are not exact scientific proof or three synonyms for the same composition. '
+            'For example, a flowering meadow, a bee close-up, and a flower/pollen detail are different roles. '
+            'Allow contextually relevant stock photographs; do not demand a rare precise action or anatomy angle. '
+            'must_show names the broad dominant focus; must_not_show excludes substituting the same main-subject '
+            'composition for every role. Facts are proved by source text, not photograph geometry.',
             {**request, 'sources': sources}, schema)
         evidence = contiguous_support({'sources': sources, 'facts': result['facts']})
         validate_evidence(evidence)
         if len(set(result['required_fact_ids'])) < 3:
             raise MaterialUnavailable('explanation needs three distinct source-backed aspects before material search')
+        validate_targets(result['visual_targets'], {f['id'] for f in evidence['facts']})
+        if not set(result['required_fact_ids']) <= {f for t in result['visual_targets'] for f in t['fact_ids']}:
+            raise MaterialUnavailable('essential source facts omitted from explanatory targets')
         return {'evidence': evidence, 'required_fact_ids': result['required_fact_ids'],
-                'queries': result['queries']}
+                'queries': result['visual_targets'], 'visual_targets': result['visual_targets']}
 
     def discover(self, request, queries):
         if not isinstance(queries, list) or not 1 <= len(queries) <= 3:
             raise ValueError('bounded material queries required')
         pools = []
-        for query in queries:
+        targets = queries if queries and isinstance(queries[0], dict) else None
+        for target in queries:
+            query = target['query'] if targets else target
             for provider in sorted(PROVIDERS):
                 result = self.search.search(provider, query, 'portrait')
                 pools.append(result['candidates'])
@@ -89,7 +101,10 @@ class Operations:
         for rank in range(12):
             for pool in pools:
                 if rank < len(pool) and pool[rank]['id'] not in seen:
-                    selected.append(pool[rank]); seen.add(pool[rank]['id'])
+                    candidate = deepcopy(pool[rank])
+                    if targets:
+                        candidate['visual_targets'] = deepcopy(targets)
+                    selected.append(candidate); seen.add(candidate['id'])
                     if len(selected) == 12:
                         return selected
         return selected
@@ -111,22 +126,35 @@ class Operations:
         schema = obj({'accepted': BOOL, 'is_real_material': BOOL, 'subject_fully_visible': BOOL, 'visible_description': string(),
                       'visible_fact_details': array(obj({'fact_id': string(f['id'] for f in evidence['facts']),
                                                         'detail': string()}), 0, 8)})
+        targets = asset.get('visual_targets')
+        if targets is not None:
+            schema['properties']['target_matches'] = array(obj({
+                'target_id': string(t['id'] for t in targets), 'matches': BOOL,
+                'detail_prominent': BOOL, 'visible_detail': string()}), len(targets), len(targets))
+            schema['required'].append('target_matches')
         result, provenance = self.gemini.generate('material-inspect:' + asset['id'],
             'Inspect the attached final portrait crop. Describe visible subjects and setting. '
             'Reject crops cutting off the important subject at the frame edge; subject_fully_visible must be true. '
-            'Accept only photographs with a concrete visible detail explaining a supplied fact. '
-            'visible_fact_details must identify the actual detail and its fact. Source quotations prove the claim; '
-            'the photograph must visibly explain it. Motion is unnecessary, but a relevant structure or trace must be visible. '
-            'A bee merely sitting on a flower does not show nectar collection or pollen transport: look for feeding '
-            'mouthparts, pollen grains/load, or contact with reproductive structures. Reject generic topic imagery. Reject '
-            'unrelated subjects, contradictory imagery, drawings and synthetic imagery. Metadata is not proof.',
-            {'evidence': evidence, 'metadata': {k: asset[k] for k in ('source_url', 'author', 'license')}},
+            'Accept photographs providing a relevant subject, detail or context for a supplied fact. '
+            'visible_fact_details describe the visible relation; do not pretend an invisible action is pictured. '
+            'Source quotations prove the claim. A contextual still can accompany a narrated mechanism without '
+            'showing its exact action or microscopic anatomy. Reject '
+            'unrelated subjects, contradictory imagery, drawings and synthetic imagery. Metadata is not proof. '
+            'When visual_targets are supplied, evaluate EVERY target separately against its exact must_show '
+            'AND must_not_show as broad composition roles. detail_prominent means the role\'s main visible '
+            'focus is recognizable in the actual crop; do not require microscopic detail or exact action. '
+            'A bee close-up is fine for the subject role, but cannot also count as a landscape or flower-only '
+            'composition. Avoid excessive precision: prioritize different subjects, scales and contexts.',
+            {'evidence': evidence, 'visual_targets': targets,
+             'metadata': {k: asset[k] for k in ('source_url', 'author', 'license')}},
             schema, photo={'bytes': data, 'mime': mime}, max_tokens=2048)
         details = result['visible_fact_details']
         if any(not item['detail'].strip() for item in details) or len({item['fact_id'] for item in details}) != len(details):
             raise ValueError('inspection must give unique concrete visible evidence per fact')
         result['supported_fact_ids'] = [item['fact_id'] for item in details]
         result['accepted'] = result['accepted'] and result['subject_fully_visible'] and bool(details)
+        if targets is not None:
+            result['visual_targets_sha256'] = digest(targets)
         return {**result, 'asset_id': asset['id'], 'asset_sha256': asset['sha256'],
                 'evidence_sha256': digest(evidence), 'receipt_id': provenance['receipt_id'],
                 'model': self.gemini.model, 'provider_provenance': provenance}
@@ -144,6 +172,11 @@ class Operations:
                 'word_end': {'type': 'number', 'minimum': 1, 'maximum': maximum_words},
                 'fact_ids': array(string(f['id'] for f in context['evidence']['facts']), 1, 8)}),
                 minimum_beats, len(materials))})
+        targets = context['request'].get('visual_targets')
+        if targets is not None:
+            beat_schema = schema['properties']['beats']['items']
+            beat_schema['properties']['visual_target_id'] = string(t['id'] for t in targets)
+            beat_schema['required'].append('visual_target_id')
         result, _ = self.gemini.generate('material-compose',
             f'Write one natural factual script in the requested language. Return the script as a words array '
             f'of {minimum_words} to {maximum_words} individual words TOTAL, aiming for {round(seconds * 2.1)} '
@@ -153,9 +186,11 @@ class Operations:
             f'Use at least {minimum_beats} different supplied photographs, with roughly balanced beat lengths. '
             'Assign all words to consecutive beats using zero-based word_start and exclusive word_end. '
             'Use only supplied inspected materials, each at most once, and facts that it can illustrate. '
-            'Cover required topic facts through different visible explanatory aspects. Do not assemble several '
+            'Cover required topic facts with practical, relevant visual variety. Do not assemble several '
             'variations of the same generic subject-and-setting photograph. Each beat must explain its concrete '
             'visible_fact_details without pretending invisible mechanisms are shown. '
+            'When visual_targets are present, use at least two different available roles with materials whose matched_visual_targets '
+            'includes it. Keep that target identity on its beat, explaining its visible detail. '
             'Narration will be spoken at its natural speed.', context, schema)
         words = result['words']
         if not minimum_words <= len(words) <= maximum_words:
@@ -169,6 +204,8 @@ class Operations:
                 raise ValueError('narration word ranges must cover the script consecutively')
             beats.append({'material_id': beat['material_id'], 'fact_ids': beat['fact_ids'],
                           'narration': ' '.join(words[start:end])})
+            if targets is not None:
+                beats[-1]['visual_target_id'] = beat['visual_target_id']
             cursor = end
         if cursor != len(words):
             raise ValueError('narration words omitted from story')

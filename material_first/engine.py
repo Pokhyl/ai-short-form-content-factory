@@ -12,6 +12,7 @@ import subprocess
 from factory_v3.preparation import ResourceUnavailable
 from factory_v3.grounding import validate_evidence, validate_script_review
 from factory_v3.preflight import asset_path, digest, validate_asset
+from .targets import validate_targets, matched_targets
 
 
 class MaterialUnavailable(ValueError):
@@ -88,10 +89,16 @@ def inspected_material(asset, receipt, evidence, facts):
         capacity = end - start
         if capacity < 1000:
             return None
-    return {"id": asset["id"], "media_type": asset["media_type"],
+    target_matches = matched_targets(asset, receipt)
+    if target_matches is not None and not target_matches:
+        return None
+    result = {"id": asset["id"], "media_type": asset["media_type"],
             "sha256": asset["sha256"], "visible_description": visible.strip(),
             "supported_fact_ids": support, "source_interval": interval,
             "capacity_ms": capacity, "inspection": deepcopy(receipt)}
+    if target_matches is not None:
+        result['matched_visual_targets'] = target_matches
+    return result
 
 
 def match_materials(available, draft):
@@ -104,7 +111,9 @@ def match_materials(available, draft):
         if beat['material_id'] not in known:
             raise ValueError('composer invented material')
         facts = set(beat['fact_ids'])
-        candidates = [m['id'] for m in available if facts <= set(m['supported_fact_ids'])]
+        target = beat.get('visual_target_id')
+        candidates = [m['id'] for m in available if facts <= set(m['supported_fact_ids'])
+                      and (target is None or target in m.get('matched_visual_targets', {}))]
         candidates.sort(key=lambda identity: identity != beat['material_id'])
         options.append(candidates)
     owners = {}
@@ -133,8 +142,14 @@ def validate_story(request, evidence, available, draft):
         raise ValueError("story must use existing inspected materials")
     seen, seen_bytes, narrated = set(), set(), set()
     scenes = []
+    targets = request.get('visual_targets')
+    known_targets = validate_targets(targets, {f['id'] for f in evidence['facts']}) if targets is not None else None
+    seen_targets = set()
     for order, beat in enumerate(beats):
-        if set(beat) != {"material_id", "narration", "fact_ids"}:
+        expected = {"material_id", "narration", "fact_ids"}
+        if known_targets is not None:
+            expected.add('visual_target_id')
+        if set(beat) != expected:
             raise ValueError("composer cannot invent media, intervals or approvals")
         material = known.get(beat["material_id"])
         if material is None or material["id"] in seen or material["sha256"] in seen_bytes:
@@ -153,6 +168,18 @@ def validate_story(request, evidence, available, draft):
             "source_interval": material["source_interval"], "capacity_ms": material["capacity_ms"],
             "contract": {"visual_intent": material["visible_description"],
                          "must_show": [material["visible_description"]], "must_not_show": []}})
+        if known_targets is not None:
+            target_id = beat['visual_target_id']
+            if target_id not in known_targets or target_id not in material.get('matched_visual_targets', {}):
+                raise MaterialUnavailable('picture does not show the exact explanatory target')
+            target = known_targets[target_id]
+            seen_targets.add(target_id)
+            scenes[-1]['visual_target_id'] = target_id
+            scenes[-1]['contract'] = {'visual_intent': target['must_show'],
+                'must_show': [target['must_show'], material['matched_visual_targets'][target_id]],
+                'must_not_show': [target['must_not_show']]}
+    if known_targets is not None and len(seen_targets) < 2:
+        raise MaterialUnavailable('story has no visual variety beyond one composition role')
     if not set(request["required_fact_ids"]) <= narrated:
         raise MaterialUnavailable("story omitted the original required topic coverage")
     # Still photographs may cover narration of any supported length. Video
@@ -176,7 +203,8 @@ class Producer:
         request = {"topic": topic.strip(), "language": language, "seconds": seconds}
         brief = self.operations.research(deepcopy(request))
         # Research defines essential factual scope, never imaginary visual slots.
-        if set(brief) != {"evidence", "required_fact_ids", "queries"}:
+        if set(brief) not in ({"evidence", "required_fact_ids", "queries"},
+                              {"evidence", "required_fact_ids", "queries", "visual_targets"}):
             raise ValueError("research brief must not contain a storyboard")
         evidence = brief["evidence"]
         facts = validate_evidence(evidence)
@@ -184,6 +212,10 @@ class Producer:
         if not required or len(set(required)) != len(required) or not set(required) <= facts.keys():
             raise ValueError("invalid original topic coverage")
         request["required_fact_ids"] = required
+        targets = brief.get('visual_targets')
+        if targets is not None:
+            validate_targets(targets, facts)
+            request['visual_targets'] = deepcopy(targets)
         # Discovery is global and topic-bound, not a search for one imagined shot.
         candidates = self.operations.discover(deepcopy(request), deepcopy(brief["queries"]))
         if not isinstance(candidates, list) or len(candidates) > self.max_materials:
@@ -195,6 +227,8 @@ class Producer:
             except ResourceUnavailable:
                 continue
             validate_material(self.root, asset, self.probe)
+            if targets is not None and asset.get('visual_targets') != targets:
+                raise ValueError('download lost the original visual target contract')
             if asset["id"] in assets:
                 raise ValueError("duplicate provider identity")
             if asset["sha256"] in hashes:
@@ -206,11 +240,18 @@ class Producer:
                 assets[asset["id"]] = asset
                 available.append(material)
                 covered_now = set().union(*(set(m["supported_fact_ids"]) for m in available))
-                if len(available) >= min(12, (seconds * 6 + 14) // 15, len(candidates)) and set(required) <= covered_now:
+                target_coverage = set().union(*(set(m.get('matched_visual_targets', {})) for m in available))
+                if (len(available) >= min(12, (seconds * 6 + 14) // 15, len(candidates))
+                        and set(required) <= covered_now
+                        and (targets is None or len(target_coverage) >= 2)):
                     break  # Enough relevant options; avoid spending every inspection slot.
         covered = set().union(*(set(m["supported_fact_ids"]) for m in available)) if available else set()
         if not set(required) <= covered:
             raise MaterialUnavailable("essential topic facts have no inspected real material")
+        if targets is not None:
+            covered_targets = set().union(*(set(m.get('matched_visual_targets', {})) for m in available))
+            if len(covered_targets) < 2:
+                raise MaterialUnavailable('different explanatory visuals unavailable; only one composition role')
         if sum(m["capacity_ms"] for m in available) < seconds * 1000:
             raise MaterialUnavailable("inspected real material has insufficient duration")
         composition = {"request": request, "evidence": evidence, "materials": available}
@@ -244,6 +285,8 @@ def verify(root, frozen, probe=probe_media):
         asset = assets.get(original["id"])
         if asset is None:
             raise ValueError("observation has no real material")
+        if 'visual_targets' in payload and asset.get('visual_targets') != payload['visual_targets']:
+            raise ValueError('frozen asset targets differ from the original story targets')
         validate_material(root, asset, probe)
         current = inspected_material(asset, original["inspection"], payload["evidence"], facts)
         if current != original:
@@ -251,6 +294,9 @@ def verify(root, frozen, probe=probe_media):
         observations.append(current)
     beats = [{"material_id": s["material_id"], "narration": s["narration"],
               "fact_ids": s["evidence_ids"]} for s in payload["scenes"]]
+    if 'visual_targets' in payload:
+        for beat, scene in zip(beats, payload['scenes']):
+            beat['visual_target_id'] = scene['visual_target_id']
     if validate_story(payload, payload["evidence"], observations, {"beats": beats}) != payload["scenes"]:
         raise ValueError("frozen story differs from inspected material")
     if " ".join(s["narration"] for s in payload["scenes"]) != payload["script"]:

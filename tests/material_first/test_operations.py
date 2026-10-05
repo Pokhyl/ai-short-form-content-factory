@@ -19,19 +19,28 @@ class Model:
         provider_schema(schema)
         if key == 'material-brief':
             result = {'facts': self.fixtures.evidence['facts'],
-                      'required_fact_ids': ['f0', 'f1', 'f2'], 'queries': ['visible starting condition', 'visible mechanism detail', 'visible consequence']}
+                      'required_fact_ids': ['f0', 'f1', 'f2'], 'visual_targets': [
+                          {'id': 'v'+str(i), 'fact_ids': ['f'+str(i)],
+                           'must_show': 'Prominent explanatory detail '+str(i),
+                           'must_not_show': 'Generic subject without detail', 'query': 'detail '+str(i)}
+                          for i in range(3)]}
         elif key.startswith('material-inspect:'):
             result = {'accepted': True, 'is_real_material': True, 'subject_fully_visible': True,
                       'visible_description': 'Real subject visible',
                       'visible_fact_details': [{'fact_id': f, 'detail': 'Concrete visible structure '+f}
                                                for f in ['f0', 'f1', 'f2']]}
+            if context.get('visual_targets') is not None:
+                role = int(key.rsplit('a', 1)[1]) % 3
+                result['target_matches'] = [{'target_id': t['id'], 'matches': t['id'] == 'v'+str(role),
+                    'detail_prominent': t['id'] == 'v'+str(role), 'visible_detail': 'Observed concrete detail '+str(role)}
+                    for t in context['visual_targets']]
         elif key == 'material-compose':
             words = ['Source-supported'] + ['narration'] * (schema['properties']['words']['minItems'] - 1)
             count = schema['properties']['beats']['minItems']
             result = {'words': words, 'beats': [
                 {'material_id': context['materials'][i]['id'],
                  'word_start': len(words)*i//count, 'word_end': len(words)*(i+1)//count,
-                 'fact_ids': ['f0','f1','f2']} for i in range(count)]}
+                 'fact_ids': ['f'+str(i%3)], 'visual_target_id': 'v'+str(i%3)} for i in range(count)]}
         else:
             raise AssertionError(key)
         validate_json(result, schema)
@@ -77,9 +86,72 @@ class OperationTests(unittest.TestCase):
                 SimpleNamespace(search=search), fixtures)
             frozen = Producer(root, operations, probe=fixtures.probe).prepare('topic', 'pl', 15)
             self.assertEqual(len(frozen['payload']['scenes']), 5)
+            self.assertEqual({s['visual_target_id'] for s in frozen['payload']['scenes']}, {'v0', 'v1', 'v2'})
             self.assertEqual(len(searches), 9)
             self.assertEqual(model.calls, ['material-brief'] + ['material-inspect:a'+str(i) for i in range(6)] + ['material-compose'])
             self.assertEqual(preparation_budgets(60)['gemini'], 15)
+            from material_first.engine import verify
+            from factory_v3.preflight import digest
+            altered = copy.deepcopy(frozen)
+            altered['payload']['visual_targets'][0]['must_show'] = 'Different explanatory detail'
+            altered['sha256'] = digest(altered['payload'])
+            with self.assertRaisesRegex(ValueError, 'asset targets differ'):
+                verify(root, altered, fixtures.probe)
+
+    def test_six_topic_related_photos_with_one_visual_role_stop_before_composition(self):
+        from material_first.engine import MaterialUnavailable
+        class SameRoleModel(Model):
+            def generate(self, key, *args, **kwargs):
+                result, provenance = super().generate(key, *args, **kwargs)
+                if key.startswith('material-inspect:'):
+                    for match in result['target_matches']:
+                        match['matches'] = match['target_id'] == 'v0'
+                        match['detail_prominent'] = match['target_id'] == 'v0'
+                return result, provenance
+        with tempfile.TemporaryDirectory() as directory:
+            import hashlib
+            root = Path(directory)
+            fixtures = Fixtures(root, ['photo'] * 6)
+            for i, asset in enumerate(fixtures.assets):
+                file = root / asset['path']
+                file.write_bytes(b'\xff\xd8\xffphoto' + str(i).encode())
+                asset['sha256'] = hashlib.sha256(file.read_bytes()).hexdigest()
+            model = SameRoleModel(fixtures)
+            operations = Operations(root,
+                SimpleNamespace(fetch=lambda *args: fixtures.evidence['sources']), model,
+                SimpleNamespace(search=lambda *args: {'candidates': fixtures.assets}), fixtures)
+            with self.assertRaisesRegex(MaterialUnavailable, 'different explanatory visuals unavailable'):
+                Producer(root, operations, probe=fixtures.probe).prepare('topic', 'pl', 15)
+            self.assertNotIn('material-compose', model.calls)
+
+    def test_missing_exact_third_role_does_not_block_a_varied_contextual_short(self):
+        class TwoRoleModel(Model):
+            def generate(self, key, *args, **kwargs):
+                result, provenance = super().generate(key, *args, **kwargs)
+                if key.startswith('material-inspect:'):
+                    role = int(key.rsplit('a', 1)[1]) % 2
+                    for match in result['target_matches']:
+                        match['matches'] = match['target_id'] == 'v'+str(role)
+                        match['detail_prominent'] = match['matches']
+                elif key == 'material-compose':
+                    for i, beat in enumerate(result['beats']):
+                        beat['visual_target_id'] = 'v'+str(i%2)
+                return result, provenance
+        with tempfile.TemporaryDirectory() as directory:
+            import hashlib
+            root = Path(directory)
+            fixtures = Fixtures(root, ['photo'] * 6)
+            for i, asset in enumerate(fixtures.assets):
+                file = root / asset['path']
+                file.write_bytes(b'\xff\xd8\xffphoto' + str(i).encode())
+                asset['sha256'] = hashlib.sha256(file.read_bytes()).hexdigest()
+            model = TwoRoleModel(fixtures)
+            operations = Operations(root,
+                SimpleNamespace(fetch=lambda *args: fixtures.evidence['sources']), model,
+                SimpleNamespace(search=lambda *args: {'candidates': fixtures.assets}), fixtures)
+            frozen = Producer(root, operations, probe=fixtures.probe).prepare('topic', 'pl', 15)
+            self.assertEqual({s['visual_target_id'] for s in frozen['payload']['scenes']}, {'v0', 'v1'})
+            self.assertEqual(len(frozen['payload']['scenes']), 5)
 
     def test_total_narration_budget_blocks_before_voice(self):
         from material_first.operations import NarrationBudgetExceeded

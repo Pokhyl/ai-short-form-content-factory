@@ -1,0 +1,226 @@
+{
+  "request_id": "31641843-a2c5-43fc-ad77-d27f47ec14d3",
+  "source_revision": "7fb5e00a76a9415044f7e2b4c9b397b7bcbad131",
+  "accepted": false,
+  "failure": "Five different files depict variants of the same bee-on-flower composition; broad fact support did not preserve distinct explanatory roles.",
+  "scope": "Saved provider observations and exact asset hashes. This is not a fresh provider response or HUMAN acceptance.",
+  "visual_targets": [
+    {
+      "id": "pollen-load",
+      "fact_ids": [
+        "fact-1"
+      ],
+      "must_show": "A prominent pollen load on the hind leg, readable without an imagined zoom",
+      "must_not_show": "Whole bee on a flower with no prominent pollen load",
+      "query": "bee pollen basket macro"
+    },
+    {
+      "id": "flower-anatomy",
+      "fact_ids": [
+        "fact-2"
+      ],
+      "must_show": "Flower reproductive structures and guiding petal markings prominent",
+      "must_not_show": "Bee dominating the composition or obscuring the flower structure",
+      "query": "flower stamens pistil nectar guides macro"
+    },
+    {
+      "id": "feeding-detail",
+      "fact_ids": [
+        "fact-1"
+      ],
+      "must_show": "Feeding mouthparts visibly contacting the flower interior, prominent and readable",
+      "must_not_show": "Bee merely perched on petals, feeding part absent or obscured",
+      "query": "bee proboscis feeding nectar macro"
+    }
+  ],
+  "materials": [
+    {
+      "id": "pexels:18115382",
+      "sha256": "3d36f65d26fc4370c15126467b09d3fd906cb980bfa8785307c4a296a89c464d",
+      "visible_description": "A detailed close-up photograph of a honeybee actively foraging on a brightly colored red and yellow flower, showing pollen grains dusting its head and body as it contacts the flower's reproductive structures.",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-2",
+        "fact-3"
+      ],
+      "inspection": {
+        "model": "gemini-3.5-flash-lite",
+        "accepted": true,
+        "asset_id": "pexels:18115382",
+        "receipt_id": "621639ada618a35cddced2ad44a4c80f79c575b203145b92dd0d4eb2b94754fc",
+        "asset_sha256": "3d36f65d26fc4370c15126467b09d3fd906cb980bfa8785307c4a296a89c464d",
+        "evidence_sha256": "1be058bc5a72a2b17d02ee665036af71b8ac1e9356e4c59a9184fb5f7c9e25c7",
+        "is_real_material": true,
+        "supported_fact_ids": [
+          "fact-1",
+          "fact-2",
+          "fact-3"
+        ],
+        "visible_description": "A detailed close-up photograph of a honeybee actively foraging on a brightly colored red and yellow flower, showing pollen grains dusting its head and body as it contacts the flower's reproductive structures.",
+        "visible_fact_details": [
+          {
+            "detail": "The bee is physically positioned directly among the flower's central parts, actively seeking food sources such as nectar and pollen.",
+            "fact_id": "fact-1"
+          },
+          {
+            "detail": "The flower features vivid red petals and bright yellow inner florets, clearly acting as signaling colors to attract pollinators.",
+            "fact_id": "fact-2"
+          },
+          {
+            "detail": "Visible pollen grains are clinging to the bee's head and body while it makes direct contact with the flower's reproductive structures, demonstrating the process of cross-pollination.",
+            "fact_id": "fact-3"
+          }
+        ],
+        "subject_fully_visible": true
+      }
+    },
+    {
+      "id": "pixabay:8244643",
+      "sha256": "c38e69d63732b7f3d6a1eeb350f983f06a0876eef6b84d6bc3b263980fb01227",
+      "visible_description": "A close-up photograph of a honeybee positioned on a bright orange flower, with visible pollen grains dusted across its head, thorax, and body as it feeds on the floral nectar.",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-2",
+        "fact-3"
+      ],
+      "inspection": {
+        "model": "gemini-3.5-flash-lite",
+        "accepted": true,
+        "asset_id": "pixabay:8244643",
+        "receipt_id": "74a944ccc13a64f85fa576b5f4501b9df8bc5245c9a8007328711f71f24fc1e0",
+        "asset_sha256": "c38e69d63732b7f3d6a1eeb350f983f06a0876eef6b84d6bc3b263980fb01227",
+        "evidence_sha256": "1be058bc5a72a2b17d02ee665036af71b8ac1e9356e4c59a9184fb5f7c9e25c7",
+        "is_real_material": true,
+        "supported_fact_ids": [
+          "fact-1",
+          "fact-2",
+          "fact-3"
+        ],
+        "visible_description": "A close-up photograph of a honeybee positioned on a bright orange flower, with visible pollen grains dusted across its head, thorax, and body as it feeds on the floral nectar.",
+        "visible_fact_details": [
+          {
+            "detail": "The bee is actively foraging on the flower, collecting pollen and nectar visible on its body hairs.",
+            "fact_id": "fact-1"
+          },
+          {
+            "detail": "The flower features vibrant orange petals acting as a visual signal to attract the pollinator.",
+            "fact_id": "fact-2"
+          },
+          {
+            "detail": "The bee makes direct physical contact with the flower's reproductive structures, facilitating cross-pollination.",
+            "fact_id": "fact-3"
+          }
+        ],
+        "subject_fully_visible": true
+      }
+    },
+    {
+      "id": "pexels:11593227",
+      "sha256": "c6c0b692420df8d77f2619cb22ea70850c4b9b892a08c49ebcd026219b49051a",
+      "visible_description": "A close-up photograph of a honeybee visiting a light-colored flower, showing prominent orange pollen loads (corbiculae) packed on its hind legs and grains of pollen dusted on its body.",
+      "supported_fact_ids": [
+        "fact-1"
+      ],
+      "inspection": {
+        "model": "gemini-3.5-flash-lite",
+        "accepted": true,
+        "asset_id": "pexels:11593227",
+        "receipt_id": "5b252bb042c1c648bcc3a4569b4bce0aeb202bcb6ce939a691dd3679c869e7bb",
+        "asset_sha256": "c6c0b692420df8d77f2619cb22ea70850c4b9b892a08c49ebcd026219b49051a",
+        "evidence_sha256": "1be058bc5a72a2b17d02ee665036af71b8ac1e9356e4c59a9184fb5f7c9e25c7",
+        "is_real_material": true,
+        "supported_fact_ids": [
+          "fact-1"
+        ],
+        "visible_description": "A close-up photograph of a honeybee visiting a light-colored flower, showing prominent orange pollen loads (corbiculae) packed on its hind legs and grains of pollen dusted on its body.",
+        "visible_fact_details": [
+          {
+            "detail": "The bee has large orange pollen loads (obnóża pyłkowe) visible on its hind legs, proving it is collecting pollen as food.",
+            "fact_id": "fact-1"
+          }
+        ],
+        "subject_fully_visible": true
+      }
+    },
+    {
+      "id": "pexels:29478693",
+      "sha256": "cf680fa6b405e909b70dcc6ad679f05eea7054a8a063c2c22a7f29065495d90f",
+      "visible_description": "A close-up photograph of a honeybee foraging on a pink flower blossom, clearly showing pollen loaded on its hind legs and visible contact with the flower's reproductive structures.",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-2",
+        "fact-3"
+      ],
+      "inspection": {
+        "model": "gemini-3.5-flash-lite",
+        "accepted": true,
+        "asset_id": "pexels:29478693",
+        "receipt_id": "b1f41b4a844f79cdde762ba25af6dd28b1c20a03b189be17cbed08f24f243223",
+        "asset_sha256": "cf680fa6b405e909b70dcc6ad679f05eea7054a8a063c2c22a7f29065495d90f",
+        "evidence_sha256": "1be058bc5a72a2b17d02ee665036af71b8ac1e9356e4c59a9184fb5f7c9e25c7",
+        "is_real_material": true,
+        "supported_fact_ids": [
+          "fact-1",
+          "fact-2",
+          "fact-3"
+        ],
+        "visible_description": "A close-up photograph of a honeybee foraging on a pink flower blossom, clearly showing pollen loaded on its hind legs and visible contact with the flower's reproductive structures.",
+        "visible_fact_details": [
+          {
+            "detail": "The bee has visible pollen loads on its hind legs collected while visiting the pink flower.",
+            "fact_id": "fact-1"
+          },
+          {
+            "detail": "The pink flower displays bright, showy petals that serve as signaling structures to attract pollinators.",
+            "fact_id": "fact-2"
+          },
+          {
+            "detail": "The bee is positioned directly among the central reproductive parts of the flower, contacting them during foraging.",
+            "fact_id": "fact-3"
+          }
+        ],
+        "subject_fully_visible": true
+      }
+    },
+    {
+      "id": "pexels:35678204",
+      "sha256": "ff5cb4b693d372d9bb49ef4111e8b53b58036d16395eb140a1998b923fa236ee",
+      "visible_description": "A close-up photograph showing a honeybee fully visible on a vibrant yellow flower, actively collecting pollen and nectar with visible pollen loads on its hind leg and feeding apparatus interacting with the flower's reproductive structures.",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-2",
+        "fact-3"
+      ],
+      "inspection": {
+        "model": "gemini-3.5-flash-lite",
+        "accepted": true,
+        "asset_id": "pexels:35678204",
+        "receipt_id": "28762003510f1d4b585be103fe583e7442eef10499b87c623c71a9c037f662bf",
+        "asset_sha256": "ff5cb4b693d372d9bb49ef4111e8b53b58036d16395eb140a1998b923fa236ee",
+        "evidence_sha256": "1be058bc5a72a2b17d02ee665036af71b8ac1e9356e4c59a9184fb5f7c9e25c7",
+        "is_real_material": true,
+        "supported_fact_ids": [
+          "fact-1",
+          "fact-2",
+          "fact-3"
+        ],
+        "visible_description": "A close-up photograph showing a honeybee fully visible on a vibrant yellow flower, actively collecting pollen and nectar with visible pollen loads on its hind leg and feeding apparatus interacting with the flower's reproductive structures.",
+        "visible_fact_details": [
+          {
+            "detail": "The bee is actively foraging on the flower to gather pollen and nectar.",
+            "fact_id": "fact-1"
+          },
+          {
+            "detail": "The flower features bright yellow petals that serve as a visual signal to attract the pollinator.",
+            "fact_id": "fact-2"
+          },
+          {
+            "detail": "The bee's body is in direct contact with the flower's stamens, demonstrating the interaction necessary for cross-pollination.",
+            "fact_id": "fact-3"
+          }
+        ],
+        "subject_fully_visible": true
+      }
+    }
+  ]
+}
