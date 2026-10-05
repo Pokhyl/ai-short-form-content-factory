@@ -14,6 +14,9 @@ class JSONHTTP:
         self.opener = urllib.request.build_opener(NoRedirect())
 
     def request(self, method, url, body=None, headers=None, timeout=30):
+        return self.request_receipt(method, url, body, headers, timeout)["body"]
+
+    def request_receipt(self, method, url, body=None, headers=None, timeout=30):
         encoded = None if body is None else json.dumps(body, ensure_ascii=False).encode()
         request = urllib.request.Request(url, data=encoded, method=method,
             headers={"Content-Type": "application/json", "User-Agent": "ContentFactoryV3/1.0",
@@ -23,6 +26,9 @@ class JSONHTTP:
                 raw = response.read(20 * 1024 * 1024 + 1)
                 if len(raw) > 20 * 1024 * 1024:
                     raise ValueError("HTTP response exceeds budget")
-                return json.loads(raw)
+                allowed = {"date", "cache-control", "retry-after", "content-type",
+                           "x-ratelimit-limit", "x-ratelimit-remaining", "x-ratelimit-reset"}
+                metadata = {k.lower(): v for k,v in response.headers.items() if k.lower() in allowed}
+                return {"body": json.loads(raw), "status": response.status, "headers": metadata}
         except urllib.error.HTTPError as error:
             raise RuntimeError("HTTP request rejected: " + str(error.code)) from None

@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-10-05T06:46:17.994754+00:00",
+  "exit_code": 0,
+  "actual_provider_calls": 0,
+  "production_mutations": 0,
+  "documentation": [
+    "https://ai.google.dev/api/generate-content",
+    "https://ai.google.dev/gemini-api/docs/structured-output"
+  ],
+  "live_credential_model_acceptance": false,
+  "product_ready": false
+}

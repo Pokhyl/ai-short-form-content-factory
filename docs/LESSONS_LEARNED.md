@@ -1,3 +1,11 @@
+## 2026-10-05T06:48:24.753831+00:00 — BUDGETED GEMINI ADAPTER VERIFIED OFFLINE; NOT DEPLOYED
+
+46 unique Python tests PASS. Gemini adapter sends exact image bytes, preserves HTTP/rate/usage provenance, uses source-revision-bound durable preparation calls and exact successful-response replay; no retries, Search grounding, model fallback or Gemini TTS. Trusted server free-tier confirmation required. Composer keeps scene contracts; independent final semantic review checks actual narrated claims. Grounded preflight now also enforces real-photo and per-scene factual approval. Tests include changed photo bytes, malformed/duplicate JSON, token-truncated response, unsupported narrated fact and receipt tampering. Official REST/schema references recorded in acceptance/factory-v3/gemini-checks.json.
+
+This is controlled HTTP/model verification, NOT live credential/model acceptance. No new provider/model/TTS calls or production changes. Product_ready=false; no new V3 MP4. Native legacy downloader has internal429 retries; new V3 single-attempt downloader must avoid invoking that retry loop.
+
+NEXT: durable24h provider cache, bounded Pix/Pex/Wiki adapters and single-attempt exact-byte downloads; fetched research and grounded unit outline; automatic trusted credential refresh; producer/public intake/review and runtime integration. Deploy only after live free-tier/model boundary verification, then actual representative media acceptance. Continue factory-v3.
+
 ## 2026-10-05T06:41:26.376285+00:00 — DURABLE PREPARATION BUDGETS VERIFIED; NOT DEPLOYED
 
 38 unique Python tests PASS; isolated actual PostgreSQL assertions PASS. New preparation ledger persists every call before invocation, replays exact successful response only, bounds provider/model calls, forbids changed request/source revision, blocks ambiguous attempts without retry, records local rejection and atomically creates execution job only after frozen preflight. No actual provider/model/TTS calls or production mutations. Logs: acceptance/factory-v3/preparation-checks.json and preparation-*.txt.

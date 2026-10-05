@@ -36,3 +36,7 @@ Still missing: live discovery/download/vision and composition/semantic adapters,
 ## Durable preparation operations
 
 Apply preparation.sql after ledger.sql in the isolated/new V3 schema. PreparationLedger requires the exact producer source revision. BudgetedCalls records each external operation before sending, caches successful exact requests, and stops after ambiguous errors. Server-owned budgets and request identities must never contain credentials. This is an internal trust boundary, not a public endpoint for caller-supplied approvals. Current verification is controlled callbacks and actual isolated PostgreSQL; no new live provider acceptance.
+
+## Budgeted Gemini adapter
+
+Gemini uses trusted server credentials and free-tier deployment confirmation, exact model selection, durable BudgetedCalls, bounded structured output and full render-photo bytes. compose/review_script/review_photo are ready for producer integration. Successful raw responses, usage and selected rate headers remain in the preparation ledger. Current model/HTTP tests are controlled; live credentials, free-tier access and model-specific schema admission remain unverified.

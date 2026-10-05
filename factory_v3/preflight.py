@@ -68,6 +68,8 @@ def freeze(root, language, seconds, script, scenes, assets, reviews, evidence=No
                 continue
             if evidence is not None and review.get("evidence_sha256") != digest(evidence):
                 continue
+            if evidence is not None and (review.get("is_real_photo") is not True or not set(scene["evidence_ids"]) <= set(review.get("supported_fact_ids", []))):
+                continue
             if not review.get("receipt_id") or not review.get("model"):
                 continue
             score = review.get("match_score")
