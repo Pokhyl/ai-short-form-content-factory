@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "root_owned_0600_read": "EACCES",
+  "node_owned_0600_read": "READ_OK",
+  "credential_imports": 0,
+  "provider_calls": 0,
+  "actual_n8n_version": "2.37.10"
+}

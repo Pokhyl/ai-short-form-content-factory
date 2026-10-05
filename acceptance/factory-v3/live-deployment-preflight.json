@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "candidate_caddy_file": "/opt/ai-short-form-content-factory/.tmp/v3-predeployment-20261005T173043Z/Caddyfile.v3-candidate",
+  "candidate_caddy_sha256": "f5c5f0b1074d244ceaa9cf05e0fb4fe4df3d825ab665f47ca2869ac2ab6a9436",
+  "original_caddy_sha256": "cff37cd578b89ec58b0833675fbb87afcbb951dc818088dab44dd51dc175bda3",
+  "other_routes_exactly_preserved": true,
+  "caddy_validation_pass": true,
+  "compose_config_pass": true,
+  "image_id": "sha256:c509487e0a156a457ee0bb3ef1ee1372edd47609b3d5bd01fca22ff5066a9c51",
+  "runtime_revision": "2a6d9971be21bd38bfc913ab1804d7bb698a96d9",
+  "services_started": 0,
+  "proxy_reloads": 0
+}

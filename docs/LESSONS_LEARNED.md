@@ -1,3 +1,7 @@
+## 2026-10-05 — Native n8n import staging ownership
+
+Docker cp from root-created0600 host files preserves root ownership; production n8n CLI runs as node. Actual controlled file-read contract gives EACCES before chown node:node and READ_OK afterwards while retaining0600. Stage private imports with exact owner and permissions, persist command failure receipts, then verify DB effects; never blindly repeat a failed import. First provisioning imported no credentials and never reached schema/workflow.
+
 ## 2026-10-05T16:29:31.926788+00:00 — Explicit quota project for native OAuth metadata
 
 Cloud Billing read defaulted to OAuth caller quota context; V3 now derives x-goog-user-project only from the validated target billing project and forwards no caller headers. Regression reproduced undefined header, then passed, including CRLF/override rejection and unchanged Gemini/TTS paths. Service Usage itself being disabled requires console bootstrap, not repeated failing API calls. Exact-key Free tier evidence is independent of these metadata failures. Do not ask owner for a Project ID already read and SHA-bound from Google UI.

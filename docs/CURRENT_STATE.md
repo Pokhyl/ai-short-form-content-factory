@@ -1,3 +1,9 @@
+## 2026-10-05T17:39:26.928710+00:00 — PARTIAL PROVISIONING INSPECTED; FILE PERMISSION DEFECT REPRODUCED
+
+Original provisioning receipt immutable: settings0600 written; credential import failed; both target credentials absent, V3 workflow absent; schema application never started. Private secret temps removed. CLI raw error was not retained, so EACCES is an evidence-backed diagnosis, not a quoted original error: controlled actual-container test proves root-owned0600 staged files are unreadable by node, node-owned0600 files readable. Docker cp preserved root ownership. Fix staging with explicit container owner node:node, retain0600, capture command receipt privately and sanitize errors. Caddy candidate/compose/image preflight PASS (live-deployment-preflight.json); no active route/service.
+
+NEW BOUND v3-provision-continuation-20261005: assert target credentials/workflow/schema still absent, reuse existing private settings and tokens. Original Gemini export1, exact full SHA check, corrected node-owned0600 import file, credential import1 for two IDs in exact owner project. Isolated export1 for verification, confirm original encrypted row unchanged. Apply four V3 SQL files in one transaction, inactive gateway import1 with node-readable source file; verify parity and all33 original workflows. Started immutable receipt before actions; preserve original failure, no job/provider calls. NEXT publish/service/route only after checkpoint.
+
 ## 2026-10-05T17:34:57.404611+00:00 — GATEWAY IMPORT GATE PASS; EXACT V3 PROVISIONING PLAN
 
 Isolated n8n2.37.10 import/export source5552d477 parity PASS; workflow SHA30056814b648a2286185dd930fd76a242913e03a1d758f6cfff06aa5210f6141. Python78/78/native guards PASS. Detached deployment checkout /opt/ai-short-form-content-factory/.tmp/v3-deploy-5552d477c4b5; packaged runtime remains exact2a6d997.
