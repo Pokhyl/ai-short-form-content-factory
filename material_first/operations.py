@@ -56,19 +56,23 @@ class Operations:
         sources = self.source.fetch(request['topic'], request['language'])
         schema = obj({'facts': array(obj({'id': string(), 'text': string(),
             'support': array(obj({'source_id': string(s['id'] for s in sources),
-                                  'quote': string()}), 1, 3)}), 1, 8),
-            'required_fact_ids': array(string(), 1, 8),
-            'queries': array({**string(), 'maxLength': 100}, 1, 3)})
+                                  'quote': string()}), 1, 3)}), 3, 8),
+            'required_fact_ids': array(string(), 3, 8),
+            'queries': array({**string(), 'maxLength': 100}, 3, 3)})
         result, _ = self.gemini.generate('material-brief',
-            'Extract a small set of factual statements answering the topic, supported by exact source quotations. '
+            'Extract at least three distinct atomic explanatory facts answering the topic, supported by exact source quotations. '
+            'Separate the starting condition, concrete mechanism/details, and consequence or purpose where supported. '
+            'Do not merge multiple mechanisms into one broad topic statement, or paraphrase the same fact to fill slots. '
             'Each quote must be contiguous: retain intervening headings or use separate support entries. '
-            'Mark the essential facts. Give up to three English stock photograph searches for relevant '
+            'Mark at least three essential distinct facts. Give exactly three English stock photograph searches for relevant '
             'different visible steps, objects or details explaining the answer, not synonyms for the topic. '
             'For example, feeding mouthparts, pollen-loaded legs and flower reproductive structures are distinct searches. '
             'Search for observable evidence of the mechanism; do not demand motion from a photograph.',
             {**request, 'sources': sources}, schema)
         evidence = contiguous_support({'sources': sources, 'facts': result['facts']})
         validate_evidence(evidence)
+        if len(set(result['required_fact_ids'])) < 3:
+            raise MaterialUnavailable('explanation needs three distinct source-backed aspects before material search')
         return {'evidence': evidence, 'required_fact_ids': result['required_fact_ids'],
                 'queries': result['queries']}
 

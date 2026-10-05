@@ -19,7 +19,7 @@ class Model:
         provider_schema(schema)
         if key == 'material-brief':
             result = {'facts': self.fixtures.evidence['facts'],
-                      'required_fact_ids': ['f0', 'f1', 'f2'], 'queries': ['real subject']}
+                      'required_fact_ids': ['f0', 'f1', 'f2'], 'queries': ['visible starting condition', 'visible mechanism detail', 'visible consequence']}
         elif key.startswith('material-inspect:'):
             result = {'accepted': True, 'is_real_material': True, 'subject_fully_visible': True,
                       'visible_description': 'Real subject visible',
@@ -77,7 +77,7 @@ class OperationTests(unittest.TestCase):
                 SimpleNamespace(search=search), fixtures)
             frozen = Producer(root, operations, probe=fixtures.probe).prepare('topic', 'pl', 15)
             self.assertEqual(len(frozen['payload']['scenes']), 5)
-            self.assertEqual(len(searches), 3)
+            self.assertEqual(len(searches), 9)
             self.assertEqual(model.calls, ['material-brief'] + ['material-inspect:a'+str(i) for i in range(6)] + ['material-compose'])
             self.assertEqual(preparation_budgets(60)['gemini'], 15)
 
