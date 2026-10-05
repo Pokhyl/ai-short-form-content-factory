@@ -1,0 +1,28 @@
+test_changed_bytes_block_before_claim_or_provider_call (test_executor.ExecutorTests.test_changed_bytes_block_before_claim_or_provider_call) ... ok
+test_failure_after_provider_return_does_not_repeat_call (test_executor.ExecutorTests.test_failure_after_provider_return_does_not_repeat_call) ... ok
+test_lost_voice_response_is_not_retried_by_new_executor (test_executor.ExecutorTests.test_lost_voice_response_is_not_retried_by_new_executor) ... ok
+test_process_crash_after_claim_is_not_blindly_repeated (test_executor.ExecutorTests.test_process_crash_after_claim_is_not_blindly_repeated) ... ok
+test_verified_plan_executes_in_order_and_does_not_repeat_voice (test_executor.ExecutorTests.test_verified_plan_executes_in_order_and_does_not_repeat_voice) ... ok
+test_exact_media_and_contract_pass (test_preflight.FreezeTests.test_exact_media_and_contract_pass) ... ok
+test_frozen_script_tampering_rejected (test_preflight.FreezeTests.test_frozen_script_tampering_rejected) ... ok
+test_missing_concept_checks_or_low_score_block_voice (test_preflight.FreezeTests.test_missing_concept_checks_or_low_score_block_voice) ... ok
+test_multiple_candidates_remain_verifiable_after_freeze (test_preflight.FreezeTests.test_multiple_candidates_remain_verifiable_after_freeze) ... ok
+test_old_contract_review_cannot_approve_new_detail (test_preflight.FreezeTests.test_old_contract_review_cannot_approve_new_detail) ... ok
+test_replacing_render_bytes_invalidates_freeze (test_preflight.FreezeTests.test_replacing_render_bytes_invalidates_freeze) ... ok
+test_same_bytes_under_two_provider_ids_are_not_unique (test_preflight.FreezeTests.test_same_bytes_under_two_provider_ids_are_not_unique) ... ok
+test_traversal_and_unknown_license_rejected (test_preflight.FreezeTests.test_traversal_and_unknown_license_rejected) ... ok
+test_changed_asset_receipt_cannot_unlock_voice (test_visual_plan.PlanTests.test_changed_asset_receipt_cannot_unlock_voice) ... ok
+test_forged_feasible_flag_does_not_unlock_voice (test_visual_plan.PlanTests.test_forged_feasible_flag_does_not_unlock_voice) ... ok
+test_invalid_or_empty_plan_rejected (test_visual_plan.PlanTests.test_invalid_or_empty_plan_rejected) ... ok
+test_real_failed_execution_blocks_before_voice (test_visual_plan.PlanTests.test_real_failed_execution_blocks_before_voice) ... ok
+test_reassigns_earlier_choices_instead_of_greedy_failure (test_visual_plan.PlanTests.test_reassigns_earlier_choices_instead_of_greedy_failure) ... ok
+test_closing_filler_blocks_before_send (test_worker_adapters.WorkerAdapterTests.test_closing_filler_blocks_before_send) ... ok
+test_local_density_failure_makes_no_http_or_accounting_call (test_worker_adapters.WorkerAdapterTests.test_local_density_failure_makes_no_http_or_accounting_call) ... ok
+test_one_tts_correct_voice_exact_staged_bytes_and_native_render_contract (test_worker_adapters.WorkerAdapterTests.test_one_tts_correct_voice_exact_staged_bytes_and_native_render_contract) ... ok
+test_storage_substitution_rejected (test_worker_adapters.WorkerAdapterTests.test_storage_substitution_rejected) ... ok
+test_wrong_duration_makes_one_call_and_never_resynthesizes (test_worker_adapters.WorkerAdapterTests.test_wrong_duration_makes_one_call_and_never_resynthesizes) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.055s
+
+OK

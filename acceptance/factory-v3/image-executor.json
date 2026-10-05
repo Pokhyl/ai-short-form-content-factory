@@ -1,0 +1,12 @@
+{
+  "tag": "factory-v3:3e0f51c",
+  "source_commit": "3e0f51c051ebf63059cffee30b866e1662fb9840",
+  "image_id": "sha256:cca7a42d8b6ebaf363766ee5d330f465f67585725afb1229a9cfc86e10ff9a9b",
+  "base": "python:3.12-slim-bookworm",
+  "python_unit_tests": 23,
+  "postgres_driver_verified": true,
+  "psycopg": "3.3.6",
+  "typing_extensions": "4.16.0",
+  "deployed": false,
+  "scope": "executor BEFORE catalog; no actual provider calls"
+}

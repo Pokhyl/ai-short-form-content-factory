@@ -1,0 +1,1 @@
+{"status": "passed", "psycopg": "3.3.6", "real_postgres": true, "full_stage_chain": true, "single_voice_attempt": true, "ambiguous_result_blocks": true, "concurrent_claims": ["claimed", "blocked"], "controlled_provider_calls": 2, "actual_provider_calls": 0}

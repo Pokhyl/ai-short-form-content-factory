@@ -25,8 +25,10 @@ Runtime setup (not deployed):
 Each step advances at most one stage. A running/unknown/failed stage requires evidence-based reconciliation; do not launch it again. QA pass is machine acceptance, never HUMAN PASS.
 
 Verification:
-- python3 -m unittest discover -s tests/factory_v3 -v (23 unique tests)
+- python3 -m unittest discover -s tests/factory_v3 -v (32 unique tests)
 - python3 tests/factory_v3/run_postgres_ledger.py (isolated offline PostgreSQL; no production writes)
 - python3 factory_v3/visual_plan.py acceptance/release-coverage/12126-assignment-deficits.json --output acceptance/factory-v3/failed-12126-preflight.json (expected blocked7/9, exit2)
 
-Still missing: trusted availability-led provider/download/review catalog, evidence-grounded composer, automatic credential provisioning, public intake/review wiring, deployment and representative actual-media release acceptance. The new executor has NOT processed a production job. Controlled tests are not provider acceptance.
+Catalog preparation implemented: exact source hashes/support quotations, strict real-photo receipts bound to file/contract/evidence, bounded global coverage before composition, fixed visual contracts/citations, mandatory semantic script review bound to final narration/language/evidence. All32 tests pass. New model callbacks are controlled tests, not provider acceptance.
+
+Still missing: live discovery/download/vision and composition/semantic adapters, durable preparation budgets, automatic credentials, public intake/review, deployment and actual-media release acceptance. The new executor has NOT processed a production job. Controlled tests are not provider acceptance.

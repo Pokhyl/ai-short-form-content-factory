@@ -32,13 +32,19 @@ def validate_asset(root, asset):
     return observed
 
 
-def freeze(root, language, seconds, script, scenes, assets, reviews):
+def freeze(root, language, seconds, script, scenes, assets, reviews, evidence=None, script_review=None):
     if language not in {"pl", "en", "ru", "uk"} or seconds not in {15, 30, 45, 60}:
         raise ValueError("unsupported language or duration")
     if not isinstance(script, str) or not script.strip() or not scenes:
         raise ValueError("nonempty narration and scenes required")
     if len({s["id"] for s in scenes}) != len(scenes):
         raise ValueError("duplicate scene identity")
+    if evidence is not None:
+        from .grounding import validate_evidence, validate_script_review
+        facts = validate_evidence(evidence)
+        validate_script_review(evidence, language, script, scenes, script_review)
+        if any(not set(scene["evidence_ids"]) <= facts.keys() for scene in scenes):
+            raise ValueError("scene references unknown research facts")
     asset_map = {}
     for asset in assets:
         if asset["id"] in asset_map:
@@ -59,6 +65,8 @@ def freeze(root, language, seconds, script, scenes, assets, reviews):
             if asset is None or review.get("scene_id") != scene["id"]:
                 continue
             if review.get("asset_sha256") != asset["sha256"] or review.get("contract_sha256") != digest(contract):
+                continue
+            if evidence is not None and review.get("evidence_sha256") != digest(evidence):
                 continue
             if not review.get("receipt_id") or not review.get("model"):
                 continue
@@ -82,6 +90,9 @@ def freeze(root, language, seconds, script, scenes, assets, reviews):
                "script": script, "scenes": scenes, "selection": selection,
                "assets": [asset_map[k] for k in sorted(asset_map)],
                "reviews": reviews, "visual_plan": plan}
+    if evidence is not None:
+        payload["evidence"] = evidence
+        payload["script_review"] = script_review
     # A content digest detects stale/changed local state; it is not a provider signature.
     return {"payload": payload, "sha256": digest(payload)}
 
@@ -91,7 +102,7 @@ def verify_before_voice(root, frozen):
     if digest(payload) != frozen["sha256"]:
         raise ValueError("frozen plan modified")
     current = freeze(root, payload["language"], payload["seconds"], payload["script"],
-                     payload["scenes"], payload["assets"], payload["reviews"])
+                     payload["scenes"], payload["assets"], payload["reviews"], evidence=payload.get("evidence"), script_review=payload.get("script_review"))
     if current != frozen:
         raise ValueError("frozen plan no longer matches media or review state")
     return payload
