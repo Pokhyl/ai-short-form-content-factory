@@ -1,0 +1,22 @@
+{
+  "operation_id": "v3-browser-metadata-enable-20261005",
+  "verified_at": "2026-10-05T17:26:04.881649+00:00",
+  "project_id": "gen-lang-client-0532024148",
+  "status": "passed",
+  "services": {
+    "serviceusage.googleapis.com": {
+      "enable_clicks": 1,
+      "post_state": "Interfejs API zosta\u0142 w\u0142\u0105czony",
+      "url": "https://console.cloud.google.com/apis/library/serviceusage.googleapis.com?project=gen-lang-client-0532024148"
+    },
+    "cloudbilling.googleapis.com": {
+      "enable_clicks": 1,
+      "post_state": "Wy\u0142\u0105cz interfejs API",
+      "url": "https://console.cloud.google.com/apis/api/cloudbilling.googleapis.com/metrics?project=gen-lang-client-0532024148"
+    }
+  },
+  "billing_account_changes": 0,
+  "iam_changes": 0,
+  "key_changes": 0,
+  "notes": "Service Usage first click returned stale unchanged UI; subsequent exact-project reloaded tab verified enabled without another enable click. Cloud Billing first click progressed to metrics with Disable API."
+}

@@ -1,3 +1,9 @@
+## 2026-10-05T17:26:04.881649+00:00 — BOTH AUTHORIZED METADATA APIS VERIFIED ENABLED
+
+Executed approved browser plan once per service on gen-lang-client-0532024148. Service Usage exact project page explicitly shows Interfejs API został włączony; Cloud Billing exact project metrics page offers Wyłącz interfejs API. Receipt browser-metadata-enable.json. No billing account/IAM/key changes.
+
+NEXT BOUNDED v3-enabled-project-billing-20261005: export ONLY Google OAuth8KbFC6GBZOd18bzG once, refresh1, exact billingInfo GET1 with x-goog-user-project=gen-lang-client-0532024148; no other API, no retry, no generation/TTS. Start immutable receipt before export, persist sanitized failure reason/service/consumer, cleanup exact secret temporaries. Only if exact projectId and billingEnabled=false, write private0600 proof using previously full-key-verified SHA4184d804b53524b29138a4f4adb7145fd32f59d6e985fb37f21909ee2960bba2. Push plan before calls. Earlier failures remain immutable. Candidate runtime not deployed; no new job/MP4; project_ready=false.
+
 ## 2026-10-05T17:22:51.323346+00:00 — USER APPROVED EXACT TWO METADATA API ENABLES
 
 Owner explicitly approved Service Usage API and Cloud Billing API on gen-lang-client-0532024148 under the displayed Google Cloud terms. Previous pending approval is superseded. Bounded plan acceptance/factory-v3/browser-metadata-enable-plan.json: inspect initial state, at most one Enable click per service, verify actual post-state; no billing linking/payment/IAM/key/OAuth changes. Candidate image/tests unchanged and verified; not deployed. Next execute this exact browser plan, checkpoint actual results, then new bounded OAuth/billing verification with the trusted quota-project header. No new job/MP4; project_ready=false.
