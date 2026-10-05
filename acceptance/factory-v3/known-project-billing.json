@@ -1,0 +1,27 @@
+{
+  "diagnostic_id": "v3-known-project-billing-20261005",
+  "credential_id": "8KbFC6GBZOd18bzG",
+  "project_id": "gen-lang-client-0532024148",
+  "status": "blocked",
+  "generation_calls": 0,
+  "tts_calls": 0,
+  "billing_mutations": 0,
+  "calls": [
+    {
+      "kind": "oauth_refresh",
+      "http_status": 200
+    },
+    {
+      "kind": "billing_info",
+      "http_status": 403,
+      "error_status": "PERMISSION_DENIED",
+      "error_reason": "SERVICE_DISABLED",
+      "error_domain": "googleapis.com"
+    }
+  ],
+  "started_at": "2026-10-05T16:16:25.701232+00:00",
+  "stop_reason": "billing_info_rejected",
+  "host_secret_removed": true,
+  "container_secret_removed": true,
+  "finished_at": "2026-10-05T16:16:34.155106+00:00"
+}

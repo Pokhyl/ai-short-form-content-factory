@@ -1,3 +1,7 @@
+## 2026-10-05T16:19:56.995173+00:00 — Diagnose account metadata separately from product provider access
+
+The old key-owner403 was not evidence that the owner must supply Project ID. Existing signed-in AI Studio exposed the exact project and Free tier; full credential SHA256 matched its exact key details. A separate direct billing check classified SERVICE_DISABLED. Preserve safe ErrorInfo reason/domain and distinguish metadata-service configuration from key failure, payment tier and IAM. Never erase failed diagnostics or infer free access from model HTTP200. Existing evidence: key-ui-binding.json, key-fingerprint.json, known-project-billing.json.
+
 ## 2026-10-05T15:51:47.429679+00:00 — Canonical test paths across operating systems
 
 Production asset_path intentionally resolves filesystem aliases before serving SHA-verified media. Tests must compare canonical expected paths too; macOS /var and /private/var refer to the same temporary file. Fix the test expectation, preserve production path containment and hash checks. Reproduced77/78, corrected78/78; this says nothing about actual media acceptance.
