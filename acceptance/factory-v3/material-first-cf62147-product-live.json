@@ -1,0 +1,17 @@
+{
+  "state": "launched",
+  "request": {
+    "request_id": "88d14e84-581e-438c-8b62-ea2d749272ae",
+    "topic": "Dlaczego pszczo\u0142y odwiedzaj\u0105 kwiaty?",
+    "language": "pl",
+    "seconds": 15
+  },
+  "product_posts": 1,
+  "started_at": "2026-10-05T20:48:31.743745+00:00",
+  "http_status": 202,
+  "response": {
+    "id": "88d14e84-581e-438c-8b62-ea2d749272ae",
+    "created": true,
+    "status": "preparing"
+  }
+}

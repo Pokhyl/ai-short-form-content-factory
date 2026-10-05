@@ -1,0 +1,135 @@
+{
+  "request_id": "88d14e84-581e-438c-8b62-ea2d749272ae",
+  "status": "qa_pass",
+  "source_revision": "cf62147f1ffcd26ce3946cd543eefeb3018139f8",
+  "language": "pl",
+  "requested_seconds": 15,
+  "topic": "Dlaczego pszczoły odwiedzają kwiaty?",
+  "script": "Pszczoły odwiedzają kwiaty, ponieważ zbierają z nich pyłek i nektar, które stanowią źródło pokarmu. Rośliny przywabiają je za pomocą barw, zapachów, kształtów oraz pokarmu, a przy okazji dokonują skutecznego zapylania upraw.",
+  "scenes": [
+    {
+      "id": "beat-1",
+      "contract": {
+        "must_show": [
+          "A real photograph showing a bee covered in yellow pollen as it visits a white daisy flower with a yellow center, set against a blurred natural background."
+        ],
+        "must_not_show": [],
+        "visual_intent": "A real photograph showing a bee covered in yellow pollen as it visits a white daisy flower with a yellow center, set against a blurred natural background."
+      },
+      "narration": "Pszczoły odwiedzają kwiaty, ponieważ zbierają z nich pyłek i nektar, które stanowią źródło pokarmu.",
+      "capacity_ms": 60000,
+      "material_id": "pexels:39623998",
+      "evidence_ids": [
+        "fact-1"
+      ],
+      "source_interval": null
+    },
+    {
+      "id": "beat-2",
+      "contract": {
+        "must_show": [
+          "A close-up photograph of a bee covered in yellow pollen, positioned on a bright yellow dandelion flower against a blurred green background."
+        ],
+        "must_not_show": [],
+        "visual_intent": "A close-up photograph of a bee covered in yellow pollen, positioned on a bright yellow dandelion flower against a blurred green background."
+      },
+      "narration": "Rośliny przywabiają je za pomocą barw, zapachów, kształtów oraz pokarmu, a przy okazji dokonują skutecznego zapylania upraw.",
+      "capacity_ms": 60000,
+      "material_id": "pixabay:7707052",
+      "evidence_ids": [
+        "fact-1",
+        "fact-2"
+      ],
+      "source_interval": null
+    }
+  ],
+  "assets": [
+    {
+      "id": "pexels:39623998",
+      "media_type": "photo",
+      "source_url": "https://www.pexels.com/photo/bee-pollinating-on-daisy-flower-in-summer-39623998/",
+      "author": "János Csatlós",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "sha256": "435f0556f89cbad12ccf1aa66e4bb2d984f311689b7da98e63d44d0f9d321f69"
+    },
+    {
+      "id": "pixabay:7707052",
+      "media_type": "photo",
+      "source_url": "https://pixabay.com/photos/bee-flower-nature-insect-macro-7707052/",
+      "author": "kaeferknipser",
+      "license": "Pixabay Content License",
+      "license_url": "https://pixabay.com/service/license-summary/",
+      "sha256": "e19b9c8c26477d013e2618e903e26fa41de27530c2fac312e5c0f37eb53a2ebc"
+    }
+  ],
+  "qa": {
+    "bytes": 763488,
+    "gates": {
+      "full_decode": true,
+      "audio_format": true,
+      "mux_duration": true,
+      "video_format": true,
+      "scene_density": true,
+      "stream_counts": true,
+      "unique_assets": true,
+      "contiguous_coverage": true,
+      "manifest_video_hash": true,
+      "manifest_voice_hash": true,
+      "narration_preserved": true,
+      "accepted_audio_window": true,
+      "audio_stream_duration": true,
+      "target_duration_contract": true
+    },
+    "job_id": "88d14e84-581e-438c-8b62-ea2d749272ae",
+    "passed": true,
+    "sha256": "3290fff67b2faddfee63b6efa2dd5ed0d4ae30952aeab11e17e0e81fab4f6797",
+    "status": "ready",
+    "human_pass": false,
+    "duration_ms": 17701,
+    "scene_count": 2,
+    "machine_pass": true,
+    "audio_correlation": 0.999981660978524,
+    "audio_duration_ms": 17688,
+    "target_duration_ms": 17688
+  },
+  "render": {
+    "bytes": 763488,
+    "job_id": "88d14e84-581e-438c-8b62-ea2d749272ae",
+    "sha256": "3290fff67b2faddfee63b6efa2dd5ed0d4ae30952aeab11e17e0e81fab4f6797",
+    "status": "ready",
+    "segments": [
+      {
+        "end_ms": 8155,
+        "start_ms": 0,
+        "shot_uuid": "e8d46e49-1ede-5ebc-9282-b53ad9b54925",
+        "media_type": "photo",
+        "scene_uuid": "041308d2-6dc2-56c8-803b-8dbd8b781f16",
+        "duration_ms": 8155,
+        "asset_sha256": "435f0556f89cbad12ccf1aa66e4bb2d984f311689b7da98e63d44d0f9d321f69",
+        "segment_order": 1,
+        "visual_asset_id": "e1aa923f-03e3-52ac-9bbc-1783087458d0"
+      },
+      {
+        "end_ms": 17688,
+        "start_ms": 8155,
+        "shot_uuid": "8fa2535e-761b-5020-aa86-58cc5c3142cb",
+        "media_type": "photo",
+        "scene_uuid": "707a1ef8-045d-54cc-af70-919fcd805f6c",
+        "duration_ms": 9533,
+        "asset_sha256": "e19b9c8c26477d013e2618e903e26fa41de27530c2fac312e5c0f37eb53a2ebc",
+        "segment_order": 2,
+        "visual_asset_id": "65bf4841-731e-548a-b33e-35d3e9dd76c1"
+      }
+    ],
+    "qa_passed": true,
+    "storage_path": "/data/renders/88d14e84-581e-438c-8b62-ea2d749272ae/final.mp4",
+    "duration_policy": "material-first-natural",
+    "audio_duration_ms": 17688,
+    "input_audio_sha256": "a8a047760d299a958f0e05cc038cc9da932ae31cb47d5b54b19d2e3422c0ff4d",
+    "target_duration_ms": 17688,
+    "requested_duration_ms": 15000
+  },
+  "machine_pass": true,
+  "human_pass": false
+}
