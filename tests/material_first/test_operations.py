@@ -26,9 +26,11 @@ class Model:
                       'supported_fact_ids': ['f0', 'f1', 'f2']}
         elif key == 'material-compose':
             words = ['Source-supported'] + ['narration'] * (schema['properties']['words']['minItems'] - 1)
-            result = {'words': words, 'beats': [{'material_id': context['materials'][0]['id'],
-                                'word_start': 0, 'word_end': len(words),
-                                'fact_ids': ['f0', 'f1', 'f2']}]}
+            count = schema['properties']['beats']['minItems']
+            result = {'words': words, 'beats': [
+                {'material_id': context['materials'][i]['id'],
+                 'word_start': len(words)*i//count, 'word_end': len(words)*(i+1)//count,
+                 'fact_ids': ['f0','f1','f2']} for i in range(count)]}
         else:
             raise AssertionError(key)
         validate_json(result, schema)
@@ -41,11 +43,12 @@ class OperationTests(unittest.TestCase):
     def test_real_adapter_contracts_connect_research_search_inspection_and_composition(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            fixtures = Fixtures(root, ['photo'])
-            file = root / '0.jpg'
-            file.write_bytes(b'\xff\xd8\xffcontrolled-photo')
+            fixtures = Fixtures(root, ['photo'] * 6)
             import hashlib
-            fixtures.assets[0]['sha256'] = hashlib.sha256(file.read_bytes()).hexdigest()
+            for i, asset in enumerate(fixtures.assets):
+                file = root / asset['path']
+                file.write_bytes(b'\xff\xd8\xffcontrolled-photo' + str(i).encode())
+                asset['sha256'] = hashlib.sha256(file.read_bytes()).hexdigest()
             model = Model(fixtures)
             searches = []
             def search(provider, query, orientation):
@@ -54,10 +57,10 @@ class OperationTests(unittest.TestCase):
             operations = Operations(root,
                 SimpleNamespace(fetch=lambda *args: fixtures.evidence['sources']), model,
                 SimpleNamespace(search=search), fixtures)
-            frozen = Producer(root, operations, probe=fixtures.probe).prepare('topic', 'pl', 60)
-            self.assertEqual(len(frozen['payload']['scenes']), 1)
+            frozen = Producer(root, operations, probe=fixtures.probe).prepare('topic', 'pl', 15)
+            self.assertEqual(len(frozen['payload']['scenes']), 5)
             self.assertEqual(len(searches), 3)
-            self.assertEqual(model.calls, ['material-brief', 'material-inspect:a0', 'material-compose'])
+            self.assertEqual(model.calls, ['material-brief'] + ['material-inspect:a'+str(i) for i in range(6)] + ['material-compose'])
             self.assertEqual(preparation_budgets(60)['gemini'], 15)
 
     def test_total_narration_budget_blocks_before_voice(self):
@@ -65,7 +68,7 @@ class OperationTests(unittest.TestCase):
         model = SimpleNamespace(generate=lambda *args, **kwargs:
             ({"words": ["word"] * 40, "beats": []}, {}))
         operations = Operations('.', None, model, None, None)
-        context = {"request": {"seconds": 15}, "materials": [{"id": "a"}],
+        context = {"request": {"seconds": 15}, "materials": [{"id": "a"+str(i)} for i in range(5)],
                    "evidence": {"facts": [{"id": "f"}]}}
         with self.assertRaises(NarrationBudgetExceeded):
             operations.compose(context)
@@ -85,3 +88,10 @@ class OperationTests(unittest.TestCase):
         evidence['facts'][0]['support'][0]['quote'] = 'First statement. Invented statement.'
         with self.assertRaises(ValueError):
             validate_evidence(contiguous_support(evidence))
+
+    def test_two_photos_cannot_become_an_entire_short(self):
+        from material_first.engine import MaterialUnavailable
+        model = SimpleNamespace(generate=lambda *args, **kwargs: self.fail("model called with insufficient photos"))
+        operations = Operations('.', None, model, None, None)
+        with self.assertRaises(MaterialUnavailable):
+            operations.compose({"request": {"seconds": 15}, "materials": [{"id": "a"}, {"id": "b"}]})

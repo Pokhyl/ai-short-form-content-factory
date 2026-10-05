@@ -6,6 +6,7 @@ from factory_v3.gemini import obj, array, string, BOOL
 from factory_v3.grounding import validate_evidence
 from factory_v3.preflight import asset_path, digest, validate_asset
 from factory_v3.providers import PROVIDERS
+from .engine import MaterialUnavailable
 
 
 def preparation_budgets(seconds):
@@ -122,7 +123,9 @@ class Operations:
         materials = context['materials']
         seconds = context['request']['seconds']
         minimum_words, maximum_words = round(seconds * 1.8), round(seconds * 2.2)
-        minimum_beats = min(len(materials), max(1, (seconds + 2) // 3))
+        minimum_beats = min(12, max(1, (seconds + 2) // 3))
+        if len(materials) < minimum_beats:
+            raise MaterialUnavailable("not enough distinct relevant photos for requested cadence")
         schema = obj({'words': array(string(), minimum_words, maximum_words),
             'beats': array(obj({'material_id': string(m['id'] for m in materials),
                 'word_start': {'type': 'number', 'minimum': 0, 'maximum': maximum_words},
