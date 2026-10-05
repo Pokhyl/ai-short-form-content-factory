@@ -1,0 +1,15 @@
+{
+  "job_id": "7ef29657-1b98-4236-bcf6-01a7482c8f29",
+  "preparation_status": "unknown",
+  "generation_calls": 1,
+  "tts_calls": 0,
+  "gateway_execution_id": "12137",
+  "status": 400,
+  "error_status": "INVALID_ARGUMENT",
+  "error_message": "Request contains an invalid argument.",
+  "completed_boundaries": [
+    "billing",
+    "research-search",
+    "source-fetch:3"
+  ]
+}

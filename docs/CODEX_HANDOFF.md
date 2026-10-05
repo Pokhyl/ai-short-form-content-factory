@@ -1,3 +1,11 @@
+## 2026-10-05T19:20:29.185172+00:00 — NEW JOB TERMINAL UNKNOWN AT FIRST GEMINI CALL
+
+Immutable7ef29657-1b98-4236-bcf6-01a7482c8f29 passed billing/research/three source fetches; evidence-outline gateway12137 HTTP400 INVALID_ARGUMENT generic Request contains an invalid argument. Preparation unknown, no execution job/TTS/MP4. No repeat/rescue. Live body contract remains verified. Receipt response-body-product-terminal.json.
+
+Installed @n8n/n8n-nodes-langchain GooglePalmApi authenticate uses qs.key. Official API key docs show header x-goog-api-key but do NOT establish query rejection; this is a hypothesis only. Model official output limit65536 means outline max16384 is valid. Schema complexity remains possible. Official links https://ai.google.dev/gemini-api/docs/api-key , https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite , https://ai.google.dev/gemini-api/docs/structured-output (verified2026-10-05).
+
+NEXT bounded diagnostic response-body-model-metadata-20261005: native gateway gemini_info GET1 using exact existing credential/model, no generation/TTS/export/retry. Record status/sanitized error or model identity/limits. Success narrows defect to generation payload; failure requires credential/endpoint diagnosis before any payload changes. No new product launch. Source replay/offline schema/native request contract check next. project_ready=false.
+
 ## 2026-10-05T19:18:18.587358+00:00 — FRESH PL15 LAUNCHED EXACTLY ONCE
 
 7ef29657-1b98-4236-bcf6-01a7482c8f29 normal topic/language/seconds endpoint session200/POST202 created=true/preparing; canonical DB input matches. Product_posts1. Correct active preflight excludes deletedAt tombstones. Launch receipt response-body-product-launch-continuation.json. No custom narration/assets/rescue. Current gateway9891e8d9 body contract deployed and live billing PASS; runtime2a6d997 unchanged.
