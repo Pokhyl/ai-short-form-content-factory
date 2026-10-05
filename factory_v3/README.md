@@ -32,3 +32,7 @@ Verification:
 Catalog preparation implemented: exact source hashes/support quotations, strict real-photo receipts bound to file/contract/evidence, bounded global coverage before composition, fixed visual contracts/citations, mandatory semantic script review bound to final narration/language/evidence. All32 tests pass. New model callbacks are controlled tests, not provider acceptance.
 
 Still missing: live discovery/download/vision and composition/semantic adapters, durable preparation budgets, automatic credentials, public intake/review, deployment and actual-media release acceptance. The new executor has NOT processed a production job. Controlled tests are not provider acceptance.
+
+## Durable preparation operations
+
+Apply preparation.sql after ledger.sql in the isolated/new V3 schema. PreparationLedger requires the exact producer source revision. BudgetedCalls records each external operation before sending, caches successful exact requests, and stops after ambiguous errors. Server-owned budgets and request identities must never contain credentials. This is an internal trust boundary, not a public endpoint for caller-supplied approvals. Current verification is controlled callbacks and actual isolated PostgreSQL; no new live provider acceptance.

@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-10-05T06:40:31.130916+00:00",
+  "checks": [
+    {
+      "check": "preparation-python",
+      "exit_code": 0
+    },
+    {
+      "check": "preparation-postgres",
+      "exit_code": 0
+    }
+  ],
+  "actual_provider_calls": 0,
+  "production_mutations": 0,
+  "product_ready": false
+}

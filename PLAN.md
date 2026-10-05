@@ -1,3 +1,11 @@
+## 2026-10-05T06:41:26.376285+00:00 — DURABLE PREPARATION BUDGETS VERIFIED; NOT DEPLOYED
+
+38 unique Python tests PASS; isolated actual PostgreSQL assertions PASS. New preparation ledger persists every call before invocation, replays exact successful response only, bounds provider/model calls, forbids changed request/source revision, blocks ambiguous attempts without retry, records local rejection and atomically creates execution job only after frozen preflight. No actual provider/model/TTS calls or production mutations. Logs: acceptance/factory-v3/preparation-checks.json and preparation-*.txt.
+
+Image factory-v3:ade8a1d successfully built with catalog/semantic preflight (sha256:b733bf6e1ddc905d6f492f32b9f2416ae7ea935416afa7f04fa9baa2e01d7f63). It excludes the later preparation ledger; not deployed. Python base tag remains unpinned; do not claim a pinned base digest. Product_ready=false; no new V3 MP4.
+
+NEXT: implement live bounded research/photo/Gemini adapters using this ledger, persist rate headers and exact 24h cache identity, review actual render bytes; add automatic trusted Google credential refresh; wire public intake/review; build current runtime and verify real PostgreSQL concurrency. Then exact scoped deployment and PL15/EN30/RU45/UK60 actual media acceptance. Continue factory-v3; do not resume the legacy patch loop or retry failed jobs.
+
 ## 2026-10-05 08:25 Warsaw — CATALOG + SEMANTIC PREFLIGHT PASS; PACKAGED EXECUTOR PASS; NOT DEPLOYED
 
 All32 unique Python tests PASS. Catalog/grounding validates source text hashes/exact support quotes, real-photo approval bound to bytes/contracts/evidence, globally feasible coverage BEFORE composition, fixed visual scene contracts/required factual scope. Trusted semantic script review must approve exact final text/language/evidence and every narrated fact; citation IDs alone are insufficient. New model callbacks are controlled tests; no live model/provider/TTS calls.
