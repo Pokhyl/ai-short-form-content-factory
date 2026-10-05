@@ -63,8 +63,9 @@ class Operations:
             'Extract a small set of factual statements answering the topic, supported by exact source quotations. '
             'Each quote must be contiguous: retain intervening headings or use separate support entries. '
             'Mark the essential facts. Give up to three English stock photograph searches for relevant '
-            'subjects and settings. Do not create a storyboard or require a particular number of shots. '
-            'Photographs may illustrate mechanisms explained by the sources without showing the motion itself.',
+            'different visible steps, objects or details explaining the answer, not synonyms for the topic. '
+            'For example, feeding mouthparts, pollen-loaded legs and flower reproductive structures are distinct searches. '
+            'Search for observable evidence of the mechanism; do not demand motion from a photograph.',
             {**request, 'sources': sources}, schema)
         evidence = contiguous_support({'sources': sources, 'facts': result['facts']})
         validate_evidence(evidence)
@@ -104,17 +105,24 @@ class Operations:
         else:
             raise ValueError('unsupported actual photo bytes')
         schema = obj({'accepted': BOOL, 'is_real_material': BOOL, 'subject_fully_visible': BOOL, 'visible_description': string(),
-                      'supported_fact_ids': array(string(f['id'] for f in evidence['facts']), 0, 8)})
+                      'visible_fact_details': array(obj({'fact_id': string(f['id'] for f in evidence['facts']),
+                                                        'detail': string()}), 0, 8)})
         result, provenance = self.gemini.generate('material-inspect:' + asset['id'],
             'Inspect the attached final portrait crop. Describe visible subjects and setting. '
             'Reject crops cutting off the important subject at the frame edge; subject_fully_visible must be true. '
-            'Accept a real photograph relevant to the supplied facts. supported_fact_ids are facts this '
-            'photo can illustrate; factual proof comes from source quotations. A still may illustrate '
-            'an action or hidden mechanism without depicting its motion or internal details. Reject '
+            'Accept only photographs with a concrete visible detail explaining a supplied fact. '
+            'visible_fact_details must identify the actual detail and its fact. Source quotations prove the claim; '
+            'the photograph must visibly explain it. Motion is unnecessary, but a relevant structure or trace must be visible. '
+            'A bee merely sitting on a flower does not show nectar collection or pollen transport: look for feeding '
+            'mouthparts, pollen grains/load, or contact with reproductive structures. Reject generic topic imagery. Reject '
             'unrelated subjects, contradictory imagery, drawings and synthetic imagery. Metadata is not proof.',
             {'evidence': evidence, 'metadata': {k: asset[k] for k in ('source_url', 'author', 'license')}},
             schema, photo={'bytes': data, 'mime': mime}, max_tokens=2048)
-        result['accepted'] = result['accepted'] and result['subject_fully_visible']
+        details = result['visible_fact_details']
+        if any(not item['detail'].strip() for item in details) or len({item['fact_id'] for item in details}) != len(details):
+            raise ValueError('inspection must give unique concrete visible evidence per fact')
+        result['supported_fact_ids'] = [item['fact_id'] for item in details]
+        result['accepted'] = result['accepted'] and result['subject_fully_visible'] and bool(details)
         return {**result, 'asset_id': asset['id'], 'asset_sha256': asset['sha256'],
                 'evidence_sha256': digest(evidence), 'receipt_id': provenance['receipt_id'],
                 'model': self.gemini.model, 'provider_provenance': provenance}
@@ -141,7 +149,9 @@ class Operations:
             f'Use at least {minimum_beats} different supplied photographs, with roughly balanced beat lengths. '
             'Assign all words to consecutive beats using zero-based word_start and exclusive word_end. '
             'Use only supplied inspected materials, each at most once, and facts that it can illustrate. '
-            'Cover required topic facts. A photograph can illustrate an action without showing its motion. '
+            'Cover required topic facts through different visible explanatory aspects. Do not assemble several '
+            'variations of the same generic subject-and-setting photograph. Each beat must explain its concrete '
+            'visible_fact_details without pretending invisible mechanisms are shown. '
             'Narration will be spoken at its natural speed.', context, schema)
         words = result['words']
         if not minimum_words <= len(words) <= maximum_words:

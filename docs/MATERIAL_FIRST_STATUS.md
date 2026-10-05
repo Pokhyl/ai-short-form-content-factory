@@ -1,3 +1,9 @@
+# Current requirement — explanatory visuals
+
+User rejected both the two-photo presentation and the generic bee-on-flower imagery. More shots and portrait framing alone are insufficient. Each image must visibly explain the corresponding phrase through a concrete detail, structure or trace. The inspection schema now requires visible_fact_details; topic-related images with no such details are rejected. Search queries target different explanatory aspects, and final review rejects generic or semantically repetitive sequences. Motion is not required from a still photo.
+
+Live runtime36f847bc49f2cdd7218c6505446127440d49712a generated fresh request768b2466-8fab-4f3c-b979-411cab91e678 to qa_pass, but that predates the explanatory-visual correction and is not user acceptance. Never present it as resolving the latest complaint. New semantic correction passes21 replacement and79 legacy tests; live deployment and fresh semantic result remain to verify. Existing failed requests remain immutable. The following checkpoints are historical.
+
 # Replacement checkpoint — 2026-10-05
 
 User input stays topic + language + duration. Relevant real photographs are accepted when video is unavailable; photographs may illustrate source-supported actions and remain visible throughout narration. No arbitrary six-second hold cap or fixed scene count.

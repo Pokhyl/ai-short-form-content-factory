@@ -23,7 +23,8 @@ class Model:
         elif key.startswith('material-inspect:'):
             result = {'accepted': True, 'is_real_material': True, 'subject_fully_visible': True,
                       'visible_description': 'Real subject visible',
-                      'supported_fact_ids': ['f0', 'f1', 'f2']}
+                      'visible_fact_details': [{'fact_id': f, 'detail': 'Concrete visible structure '+f}
+                                               for f in ['f0', 'f1', 'f2']]}
         elif key == 'material-compose':
             words = ['Source-supported'] + ['narration'] * (schema['properties']['words']['minItems'] - 1)
             count = schema['properties']['beats']['minItems']
@@ -40,6 +41,23 @@ class Model:
 
 
 class OperationTests(unittest.TestCase):
+    def test_topic_related_photo_without_visible_fact_detail_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fixtures = Fixtures(root, ['photo'])
+            asset = fixtures.assets[0]
+            import hashlib
+            file = root / asset['path']
+            file.write_bytes(b'\xff\xd8\xffcontrolled-photo')
+            asset['sha256'] = hashlib.sha256(file.read_bytes()).hexdigest()
+            model = SimpleNamespace(model='controlled-model', generate=lambda *args, **kwargs:
+                ({'accepted': True, 'is_real_material': True, 'subject_fully_visible': True,
+                  'visible_description': 'Bee sitting on a flower', 'visible_fact_details': []},
+                 {'receipt_id': 'inspection'}))
+            result = Operations(root, None, model, None, None).inspect(asset, fixtures.evidence)
+            self.assertFalse(result['accepted'])
+            self.assertEqual(result['supported_fact_ids'], [])
+
     def test_real_adapter_contracts_connect_research_search_inspection_and_composition(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
