@@ -1,3 +1,11 @@
+## 2026-10-05T16:10:45.227548+00:00 — AI STUDIO FREE TIER OBSERVED; LOCAL KEY BINDING PLANNED
+
+New evidence from existing signed-in Google AI Studio API Keys page: project gen-lang-client-0532024148, three displayed keys (masked suffixes yiPg/cLWU/m2Ag), all marked Free tier with Set up billing. This is live Google UI evidence, not an inferred plan from HTTP200. Exact production credential-to-row binding remains UNVERIFIED. Old403 diagnostic is preserved; no retry of lookupKey planned.
+
+AUTHORIZED BOUNDED LOCAL DIAGNOSTIC: v3-key-fingerprint-20261005. Export exactly credential zsRz2tvE57EKe8zy once from ai-short-form-n8n into generated0700 container/host temporary directories. Retain only credential ID, SHA256 and last4 for comparison with the already observed Google table. Maximum exports1; provider/API/OAuth/generation/TTS calls0; credential imports/updates/deletes0. Delete only generated secret temporaries and verify cleanup. Persist a started receipt BEFORE export, so a timeout/crash never authorizes a repeat. Stop on identity mismatch/missing key/operation failure. No free-tier proof file or deployment until exact binding is independently established. Push this plan before execution.
+
+Next: perform that one local fingerprint read, compare to Google's existing Free tier table, and establish full-key identity without emitting secrets. Then replace mandatory per-job Cloud Billing metadata dependence with an independently verified, isolated credential binding only if that preserves free-only enforcement. Do not merely set confirmed=true or remove safeguards. Project_ready=false; no new job/MP4.
+
 ## 2026-10-05T15:51:47.429679+00:00 — CURRENT BRANCH/RUNTIME RECHECK; MACOS TEST PORTABILITY FIX
 
 Project_ready=false. Continue factory-v3, not the obsolete September V5 branch. GitHub and VPS source both verified at 9400cb0ebedcd5774e6ea684f70f48317beb47c9 before this test/docs-only checkpoint. VPS has only untracked .tmp/; preserved. Production publisher n8n remains2.37.10; no downgrade/restart/import/deployment/provider call performed.
