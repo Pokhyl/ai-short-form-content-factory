@@ -110,6 +110,9 @@ class WorkerAdapters:
         if len(payload["scenes"]) != DENSITY[payload["seconds"]]:
             raise ValueError("visual density does not match requested duration")
 
+    def _duration_window(self, payload):
+        return WINDOWS[payload["seconds"]]
+
     def voice(self, job_id, payload, outputs, before_send):
         self._validate_scene_count(payload)
         if re.search(r"(?:^|[.!?]\s+)(?:end|the end|koniec|конец|кінець)[.!?]*\s*$",
@@ -121,7 +124,7 @@ class WorkerAdapters:
         result = self._post("/voiceovers/"+job_id,{"audio_base64":encoded})
         if result.get("status")!="ready" or result.get("sha256")!=expected_hash:
             raise ValueError("stored voice differs from synthesized voice")
-        low,high = WINDOWS[payload["seconds"]]
+        low,high = self._duration_window(payload)
         if not low <= result["duration_ms"] <= high:
             raise VoiceDurationMismatch("voice duration outside accepted window; no re-synthesis")
         result["staged_photos"] = staged

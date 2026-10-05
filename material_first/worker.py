@@ -1,15 +1,24 @@
 """Photo fallback bridge to the existing continuous-voice renderer.
 
-Video interval rendering is a separate adapter boundary: this bridge accepts
-photo-only plans, rather than letting the legacy worker silently loop clips.
+Photo plans use local rendering and a practical natural-voice duration window.
+Source-video interval rendering remains a separate adapter boundary.
 """
 from copy import deepcopy
 from factory_v3.worker_adapters import WorkerAdapters
 from factory_v3.executor import Executor
 from .engine import verify
+from .rendering import render
 
 
 class PhotoWorker(WorkerAdapters):
+    def _duration_window(self, payload):
+        return round(payload["seconds"] * 800), round(payload["seconds"] * 1200)
+
+    def _post(self, path, payload, timeout=60):
+        if path.startswith("/renders/"):
+            return render(self.root, path.removeprefix("/renders/"), payload)
+        return super()._post(path, payload, timeout)
+
     def _validate_scene_count(self, payload):
         if payload.get("schema") != "material-first" or not payload.get("scenes"):
             raise ValueError("material-first story required")
@@ -23,7 +32,7 @@ class PhotoWorker(WorkerAdapters):
 
     def qa(self, job_id, payload, outputs):
         result = self.audit(job_id, payload["seconds"], self.root,
-                            expected_scenes=len(payload["scenes"]))
+                            expected_scenes=len(payload["scenes"]), audio_window=self._duration_window(payload))
         if result.get("passed") is not True or result.get("sha256") != outputs["render"]["sha256"]:
             raise ValueError("actual final media audit failed")
         return {"status": "ready", "machine_pass": True, "human_pass": False, **result}

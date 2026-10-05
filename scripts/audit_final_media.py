@@ -34,7 +34,7 @@ def pcm(path):
     return samples
 
 
-def audit(job_id, target, data_root=Path("/data"), *, expected_scenes=None):
+def audit(job_id, target, data_root=Path("/data"), *, expected_scenes=None, audio_window=None):
     job_id = str(uuid.UUID(job_id))
     if target not in (15, 30, 45, 60):
         raise ValueError("unsupported target duration")
@@ -64,6 +64,8 @@ def audit(job_id, target, data_root=Path("/data"), *, expected_scenes=None):
         15: (14208, 15768), 30: (28464, 34000),
         45: (42864, 46128), 60: (58176, 61656),
     }[target]
+    if audio_window is not None:
+        min_audio_ms, max_audio_ms = audio_window
     gates = {
         "manifest_video_hash": video_sha == manifest["sha256"],
         "manifest_voice_hash": audio_sha == manifest["input_audio_sha256"],

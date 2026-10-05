@@ -118,26 +118,40 @@ class Operations:
 
     def compose(self, context):
         materials = context['materials']
-        schema = obj({'beats': array(obj({'material_id': string(m['id'] for m in materials),
-            'narration': string(), 'fact_ids': array(string(f['id'] for f in context['evidence']['facts']), 1, 8)}),
-            1, len(materials))})
-        seconds = context["request"]["seconds"]
-        target_words = round(seconds * 2.1)
-        maximum_words = round(seconds * 2.2)
+        seconds = context['request']['seconds']
+        minimum_words, maximum_words = round(seconds * 1.8), round(seconds * 2.2)
+        schema = obj({'words': array(string(), minimum_words, maximum_words),
+            'beats': array(obj({'material_id': string(m['id'] for m in materials),
+                'word_start': {'type': 'number', 'minimum': 0, 'maximum': maximum_words},
+                'word_end': {'type': 'number', 'minimum': 1, 'maximum': maximum_words},
+                'fact_ids': array(string(f['id'] for f in context['evidence']['facts']), 1, 8)}),
+                1, len(materials))})
         result, _ = self.gemini.generate('material-compose',
-            f'Write continuous natural narration answering the topic in its requested language. '
-            f'The ENTIRE script across ALL beats must contain about {target_words} words, '
-            f'and NEVER more than {maximum_words} words total for {seconds} seconds. '
-            'Do not allocate that word budget separately to each beat. '
-            'Target about 2.1 words per second for requested duration; synthesis will retain natural speed. '
-            'Select only supplied inspected materials, use each at most once, and use only facts it can '
-            'illustrate. Cover required facts without inventing claims or describing motion as visible in '
-            'a still. Choose a useful number of beats, no fixed shot count. No opening or closing filler.',
-            context, schema)
-        words = sum(len(beat['narration'].split()) for beat in result['beats'])
-        if words > maximum_words:
-            raise NarrationBudgetExceeded('narration exceeds total word budget before TTS')
-        return result
+            f'Write one natural factual script in the requested language. Return the script as a words array '
+            f'of {minimum_words} to {maximum_words} individual words TOTAL, aiming for {round(seconds * 2.1)} '
+            f'words for {seconds} seconds. Each words item is exactly one word, with punctuation attached. '
+            'Do not return a shorter summary. Add useful source-supported explanation to fill the word budget, '
+            'without repeating yourself or adding opening/closing filler. '
+            'Assign all words to consecutive beats using zero-based word_start and exclusive word_end. '
+            'Use only supplied inspected materials, each at most once, and facts that it can illustrate. '
+            'Cover required topic facts. A photograph can illustrate an action without showing its motion. '
+            'Narration will be spoken at its natural speed.', context, schema)
+        words = result['words']
+        if not minimum_words <= len(words) <= maximum_words:
+            raise NarrationBudgetExceeded('narration outside total word budget before TTS')
+        if any(len(word.split()) != 1 or word != word.strip() for word in words):
+            raise NarrationBudgetExceeded('words array must contain individual words')
+        beats, cursor = [], 0
+        for beat in result['beats']:
+            start, end = beat['word_start'], beat['word_end']
+            if type(start) is not int or type(end) is not int or start != cursor or not start < end <= len(words):
+                raise ValueError('narration word ranges must cover the script consecutively')
+            beats.append({'material_id': beat['material_id'], 'fact_ids': beat['fact_ids'],
+                          'narration': ' '.join(words[start:end])})
+            cursor = end
+        if cursor != len(words):
+            raise ValueError('narration words omitted from story')
+        return {'beats': beats}
 
     def review_script(self, context):
         return self.gemini.review_script(context)

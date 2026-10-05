@@ -25,8 +25,9 @@ class Model:
                       'visible_description': 'Real subject visible',
                       'supported_fact_ids': ['f0', 'f1', 'f2']}
         elif key == 'material-compose':
-            result = {'beats': [{'material_id': context['materials'][0]['id'],
-                                'narration': 'Source-supported narration',
+            words = ['Source-supported'] + ['narration'] * (schema['properties']['words']['minItems'] - 1)
+            result = {'words': words, 'beats': [{'material_id': context['materials'][0]['id'],
+                                'word_start': 0, 'word_end': len(words),
                                 'fact_ids': ['f0', 'f1', 'f2']}]}
         else:
             raise AssertionError(key)
@@ -62,7 +63,7 @@ class OperationTests(unittest.TestCase):
     def test_total_narration_budget_blocks_before_voice(self):
         from material_first.operations import NarrationBudgetExceeded
         model = SimpleNamespace(generate=lambda *args, **kwargs:
-            ({"beats": [{"narration": "word " * 40}]}, {}))
+            ({"words": ["word"] * 40, "beats": []}, {}))
         operations = Operations('.', None, model, None, None)
         context = {"request": {"seconds": 15}, "materials": [{"id": "a"}],
                    "evidence": {"facts": [{"id": "f"}]}}

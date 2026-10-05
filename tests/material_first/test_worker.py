@@ -35,7 +35,7 @@ class PhotoWorkerTests(unittest.TestCase):
         result = worker.qa('job', {"seconds": 60, "scenes": [{}]},
                            {"render": {"sha256": "exact"}})
         self.assertTrue(result["machine_pass"])
-        self.assertEqual(audit.call_args.kwargs, {"expected_scenes": 1})
+        self.assertEqual(audit.call_args.kwargs, {"expected_scenes": 1, "audio_window": (48000, 72000)})
 
     def test_owner_interface_reads_new_plan_and_exact_photo(self):
         from unittest.mock import Mock
