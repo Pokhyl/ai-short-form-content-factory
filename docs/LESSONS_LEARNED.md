@@ -1,3 +1,7 @@
+## 2026-10-05 — Native text response output field is configurable
+
+Import parity and JSON parser checks do not prove native HTTP response contracts. n8n HTTPRequest4.5 text/fullResponse defaults body output to data. Explicitly bind outputPropertyName=body across providers; reject missing successful bodies; test the installed native output branch plus receipt. Preserve execution12131 failure.
+
 ## 2026-10-05 — Import parity cannot prove native JSON invocation
 
 Production n8n2.37.10 HTTP Request4.5 parser unconditionally JSON.parse on JSON query/header fields. Object-valued expressions passed static/import checks but failed at runtime before billing API; caller then got a non-JSON reply and immutable unknown. Serialize all JSON query/header/body/response expressions and explicitly select JSON body content type. Native parser regression reproduces old failure and preserves Unicode/nested values for all generated fields. Require a bounded actual gateway metadata roundtrip before the next product launch. Failed first V3 request remains immutable.

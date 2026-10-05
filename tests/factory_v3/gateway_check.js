@@ -47,6 +47,7 @@ for (const n of workflow.nodes.filter(n=>n.type.endsWith('.httpRequest'))) {
     assert.strictEqual(n.parameters.contentType,'json');
     assert.strictEqual(n.parameters.jsonBody,'={{ JSON.stringify($json.body) }}');
   }
+  assert.strictEqual(n.parameters.options.response.response.outputPropertyName,'body');
   assert.strictEqual(n.retryOnFail,false);
   assert.strictEqual(n.parameters.options.response.response.neverError,true);
 }
@@ -57,6 +58,14 @@ for (const name of ['Upstream gemini','Upstream gemini_info']) {
 const normalize = workflow.nodes.find(n=>n.name==='Sanitize receipt').parameters.jsCode;
 const normalizeResponse = data => new Function('$input','$execution',normalize)(
   {first:()=>({json:data})},{id:'controlled'});
+for (const data of [{statusCode:200}, {statusCode:200,body:'not json'},
+    {statusCode:201,body:'null'}, {statusCode:200,body:'42'}]) {
+  const receipt=normalizeResponse(data)[0].json;
+  assert.strictEqual(receipt.status,502);
+  assert.strictEqual(receipt.body,null);
+}
+const billingBody={projectId:'controlled-project',billingEnabled:false};
+assert.deepStrictEqual(normalizeResponse({statusCode:200,body:JSON.stringify(billingBody)})[0].json.body,billingBody);
 const secret='controlled_secret_token_abcdefghijklmnopqrstuvwxyz';
 const result=normalizeResponse({statusCode:400,headers:{'X-RateLimit-Remaining':'0','Set-Cookie':'secret'},
   body:JSON.stringify({error:{status:'INVALID_ARGUMENT',message:'Unknown response field; ?key='+secret+' and Bearer '+secret}})})[0].json;

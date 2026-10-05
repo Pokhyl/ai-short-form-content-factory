@@ -1,3 +1,11 @@
+## 2026-10-05T19:10:09.874007+00:00 — CHAT RECOVERED; NATIVE RESPONSE BODY CONTRACT FIXED OFFLINE
+
+Resumed clean factory-v3 HEAD8b5c806. Read actual immutable native-json-billing receipt on VPS: execution12131 transport200/receipt200 but projectId/billingEnabled absent. Installed native HTTPRequest4.5 text/fullResponse branch writes response body to outputPropertyName (default data); gateway incorrectly expected body. All six upstream nodes now explicitly outputPropertyName=body. Receipt rejects missing/null/scalar/malformed successful bodies with502 instead of reporting false200. No provider calls or production mutation in this continuation.
+
+78/78 Python PASS, gateway guards PASS. Exact running n8n image sha256:307d6065be25619aa24cfc63a7c2f04ca56d084a08c05c8e9f189a89f353b1ec network-disabled native parser/output-branch harness PASS: old default reproduces missing body, six configured nodes preserve response through receipt. This executes installed output branch with controlled response, not entire authenticated HTTP execution. Evidence native-response-contract.json/native-response-python.txt. Code NOT DEPLOYED; no new MP4; project_ready=false.
+
+NEXT isolated actual n8n import/export parity for corrected workflow; then preserve/check gateway and all33 protected workflows, active executions/preparations/stages before scoped single gateway import/publish/restart. Do not rerun earlier mutation or failed job. Fresh bounded billing diagnostic only after exact deployed active/history parity; fresh normal-input job only after billingEnabled=false. Prior authorization remains; no new approval needed for this scoped correction.
+
 ## 2026-10-05T18:34:19.732538+00:00 — CORRECTED GATEWAY IMPORT/PARSER GATES PASS; EMPTY RUNTIME BEFORE ROLLOUT
 
 Exact committeda6c17d0 gateway SHA381c1bff19cd53366004b5f29e4c31955fa051c29809ca66ae6348e7d737d18c: isolated actual n8n2.37.10 import/export parity PASS; actual native parser checks PASS. Checkout .tmp/v3-gateway-a6c17d054243. Source Python/image/SQL unchanged, prior78/78 packaged and realPG gates retained. Pre-rollout active executions EMPTY, V3 preparing0/running stages0; execution12130 no longer running. All33 original workflow rows unchanged; private old gateway backup at .tmp/v3-predeployment-20261005T173043Z/gateway-before-native-json.json.

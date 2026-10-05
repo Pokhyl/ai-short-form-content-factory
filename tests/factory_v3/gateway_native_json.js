@@ -42,8 +42,33 @@ for (const node of workflow.nodes.filter(n => n.type.endsWith('.httpRequest'))) 
   }
   if (node.parameters.sendBody) assert.strictEqual(node.parameters.contentType, 'json');
 }
+// Execute the installed native text/full-response output branch, not a mirrored mapper.
+const assignment = source.indexOf('returnItem[outputPropertyName] = toText(response[property]);');
+assert(assignment > 0);
+const start = source.lastIndexOf('if (fullResponse) {', assignment);
+const end = source.indexOf('// responseFormat:', assignment);
+assert(start > 0 && end > start);
+const branch = source.slice(start, end).replace(/\}\s*else\s*\{\s*$/, '');
+const mapNative = new Function('response', 'outputPropertyName', 'toText',
+  'const fullResponse=true, fullResponseProperties=["body","headers","statusCode","statusMessage"], returnItems=[], itemIndex=0;'
+  + branch + ';return returnItems[0].json;');
+const normalizeCode = workflow.nodes.find(n => n.name === 'Sanitize receipt').parameters.jsCode;
+const normalizeReceipt = data => new Function('$input','$execution',normalizeCode)(
+  {first:()=>({json:data})},{id:'controlled-native'})[0].json;
+const nativeResponse = {statusCode:200, headers:{'content-type':'application/json'},
+  body:JSON.stringify({projectId:'controlled-project',billingEnabled:false})};
+const oldOutput = mapNative(nativeResponse, 'data', String);
+assert.strictEqual(oldOutput.body, undefined);
+assert.strictEqual(normalizeReceipt(oldOutput).status, 502);
+for (const node of workflow.nodes.filter(n => n.type.endsWith('.httpRequest'))) {
+  const options=node.parameters.options.response.response;
+  assert.strictEqual(options.responseFormat, 'text');
+  assert.strictEqual(options.outputPropertyName, 'body');
+  const output=mapNative(nativeResponse, options.outputPropertyName, String);
+  assert.deepStrictEqual(normalizeReceipt(output).body, JSON.parse(nativeResponse.body));
+}
 const response = workflow.nodes.find(n => n.type.endsWith('.respondToWebhook'));
 assert.deepStrictEqual(JSON.parse(expression(response.parameters.responseBody)), payload);
-console.log(JSON.stringify({status: 'passed', actual_n8n_parser: true,
+console.log(JSON.stringify({status: 'passed', actual_n8n_parser: true, actual_n8n_text_response_branch: true, provider_response_contracts: 6,
   object_expressions_rejected: 3, serialized_fields_checked: checks,
   provider_calls: 0, production_mutations: 0}));

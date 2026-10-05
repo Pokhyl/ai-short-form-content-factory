@@ -43,7 +43,8 @@ for index, provider in enumerate(providers):
     credential_type = next(iter(auth))
     params = {"method": "={{ $json.method }}", "url": "={{ $json.url }}",
         "options": {"timeout": 120000, "response": {"response": {
-            "fullResponse": True, "neverError": True, "responseFormat": "text"}}}}
+            "fullResponse": True, "neverError": True, "responseFormat": "text",
+            "outputPropertyName": "body"}}}}
     if credential_type in {"httpQueryAuth","httpHeaderAuth"}:
         params.update({"authentication":"genericCredentialType","genericAuthType":credential_type})
     else:
@@ -77,7 +78,8 @@ for (const [key,value] of Object.entries(upstream.headers || {})) {
 }
 let body = null, error_status, error_reason, error_message;
 try { body = typeof upstream.body === 'string' ? JSON.parse(upstream.body) : upstream.body; }
-catch { if (status === 200) status = 502; }
+catch { if (status >= 200 && status < 300) status = 502; }
+if (status >= 200 && status < 300 && (body === null || typeof body !== 'object')) status = 502;
 if (status >= 400) {
   const error = body?.error;
   if (/^[A-Z_]{1,100}$/.test(error?.status || '')) error_status = error.status;
