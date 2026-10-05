@@ -1,0 +1,7 @@
+{
+  "file": "acceptance/factory-v3/image-build-current.txt",
+  "normalization": "trailing whitespace only",
+  "original_sha256": "dd90b39483d614e1216aac8c4299e666f6710989f08f38ea478fd3bd63a57f59",
+  "normalized_sha256": "87672a2bf00f2a46fa225d2f68b6c8649feed1ba188f2da6f5071443c94336c6",
+  "original_retained_on_vps": "/opt/ai-short-form-content-factory/.tmp/v3-build-aa46f5d2fbb84d2080c7f0acd261c0f2/acceptance/factory-v3/image-build-current.txt"
+}
