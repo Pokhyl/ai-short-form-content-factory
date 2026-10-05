@@ -68,12 +68,12 @@ BEGIN
  WHERE preparation_id=p_id AND call_key=p_key AND state='started';
  IF NOT FOUND THEN RAISE EXCEPTION 'call not started'; END IF;
 END $$;
-CREATE OR REPLACE FUNCTION factory_v3.fail_preparation_call(p_id uuid,p_key text,p_code text)
+CREATE OR REPLACE FUNCTION factory_v3.fail_preparation_call(p_id uuid,p_key text,p_code text,p_receipt jsonb DEFAULT NULL)
 RETURNS void LANGUAGE plpgsql AS $$
 BEGIN
  PERFORM 1 FROM factory_v3.preparations WHERE id=p_id AND status='preparing' FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'preparation terminal'; END IF;
- UPDATE factory_v3.preparation_calls SET state='unknown',error_code=p_code,finished_at=now()
+ UPDATE factory_v3.preparation_calls SET state='unknown',error_code=p_code,response=p_receipt,finished_at=now()
  WHERE preparation_id=p_id AND call_key=p_key AND state='started';
  IF NOT FOUND THEN RAISE EXCEPTION 'call not started'; END IF;
  UPDATE factory_v3.preparations SET status='unknown' WHERE id=p_id;
@@ -85,6 +85,9 @@ BEGIN
  IF NOT FOUND OR EXISTS(SELECT 1 FROM factory_v3.preparation_calls WHERE preparation_id=p_id AND state<>'succeeded') THEN
   RAISE EXCEPTION 'preparation not ready';
  END IF;
+ IF (SELECT request->>'language' FROM factory_v3.preparations WHERE id=p_id) IS DISTINCT FROM p_frozen->'payload'->>'language'
+ OR (SELECT (request->>'seconds')::int FROM factory_v3.preparations WHERE id=p_id) IS DISTINCT FROM (p_frozen->'payload'->>'seconds')::int THEN
+  RAISE EXCEPTION 'prepared request language/duration changed'; END IF;
  -- Called only by the trusted producer after local semantic/media preflight.
  PERFORM factory_v3.create_job(p_id,p_frozen);
  UPDATE factory_v3.preparations SET status='prepared',frozen=p_frozen WHERE id=p_id;

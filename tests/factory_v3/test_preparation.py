@@ -28,7 +28,7 @@ class FakeLedger:
         old = self.claims[key]
         self.claims[key] = (*old[:2], "done", result)
 
-    def fail(self, request_id, key, code):
+    def fail(self, request_id, key, code, receipt=None):
         self.terminal = True
 
     def reject(self, request_id, code):

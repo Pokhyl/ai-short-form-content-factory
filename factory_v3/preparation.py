@@ -25,9 +25,9 @@ class PreparationLedger:
             "SELECT factory_v3.finish_preparation_call(%s::uuid,%s,%s::jsonb)",
             (request_id, key, json.dumps(result, allow_nan=False)))
 
-    def fail(self, request_id, key, code):
-        self.postgres._call("SELECT factory_v3.fail_preparation_call(%s::uuid,%s,%s)",
-                            (request_id, key, code))
+    def fail(self, request_id, key, code, receipt=None):
+        self.postgres._call("SELECT factory_v3.fail_preparation_call(%s::uuid,%s,%s,%s::jsonb)",
+                            (request_id, key, code, json.dumps(receipt)))
 
     def reject(self, request_id, code):
         self.postgres._call("SELECT factory_v3.reject_preparation(%s::uuid,%s,%s)",
@@ -56,7 +56,7 @@ class BudgetedCalls:
             return response
         except BaseException as error:
             try:
-                self.ledger.fail(self.request_id, key, type(error).__name__)
+                self.ledger.fail(self.request_id, key, type(error).__name__, getattr(error, "receipt", None))
             except Exception:
                 pass  # The durable started claim still blocks another attempt.
             raise

@@ -40,3 +40,7 @@ Apply preparation.sql after ledger.sql in the isolated/new V3 schema. Preparatio
 ## Budgeted Gemini adapter
 
 Gemini uses trusted server credentials and free-tier deployment confirmation, exact model selection, durable BudgetedCalls, bounded structured output and full render-photo bytes. compose/review_script/review_photo are ready for producer integration. Successful raw responses, usage and selected rate headers remain in the preparation ledger. Current model/HTTP tests are controlled; live credentials, free-tier access and model-specific schema admission remain unverified.
+
+## Photo sources and exact-byte download
+
+Apply provider_cache.sql after ledger.sql/preparation.sql. PhotoSearch uses server credentials, BudgetedCalls and a PostgreSQL24h ProviderCache. Pending/unknown claims require explicit reconciliation. PhotoDownload stores bounded selected candidates once, retaining SHA/provenance and ffprobe dimensions for exact Gemini/render reuse. Current source tests are controlled, not live acceptance.

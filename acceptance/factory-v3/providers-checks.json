@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-10-05T06:56:06.692669+00:00",
+  "checks": [
+    {
+      "name": "providers-python",
+      "exit_code": 0
+    },
+    {
+      "name": "providers-postgres",
+      "exit_code": 0
+    }
+  ],
+  "actual_provider_calls": 0,
+  "production_mutations": 0,
+  "product_ready": false,
+  "documentation": [
+    "https://pixabay.com/api/docs/",
+    "https://www.pexels.com/api/documentation/",
+    "https://www.mediawiki.org/wiki/API:Imageinfo"
+  ]
+}

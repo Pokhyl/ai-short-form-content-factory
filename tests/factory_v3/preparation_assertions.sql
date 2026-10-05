@@ -30,6 +30,7 @@ BEGIN
  IF (SELECT count(*) FROM factory_v3.preparation_calls WHERE preparation_id=a)<>1 THEN
   RAISE EXCEPTION 'budget was exceeded'; END IF;
  PERFORM pg_temp.expect_failure(format('SELECT factory_v3.complete_preparation(%L,%L::jsonb,%L)',a,frozen,'rev-b'));
+ PERFORM pg_temp.expect_failure(format('SELECT factory_v3.complete_preparation(%L,%L::jsonb,%L)',a,jsonb_set(frozen,'{payload,language}','"ru"'),'rev-a'));
  PERFORM factory_v3.complete_preparation(a,frozen,'rev-a');
  IF (SELECT status FROM factory_v3.jobs WHERE id=a)<>'prepared'
  OR (SELECT status FROM factory_v3.preparations WHERE id=a)<>'prepared' THEN
@@ -40,7 +41,8 @@ BEGIN
  PERFORM factory_v3.create_preparation(b,'{"topic":"controlled","language":"ru","seconds":45}','{"vision":1}','rev-a');
  PERFORM factory_v3.claim_preparation_call(b,'v','vision',repeat('a',64),'rev-a');
  PERFORM pg_temp.expect_failure(format('SELECT factory_v3.complete_preparation(%L,%L::jsonb,%L)',b,frozen,'rev-a'));
- PERFORM factory_v3.fail_preparation_call(b,'v','ControlledTimeout');
+ PERFORM factory_v3.fail_preparation_call(b,'v','ControlledTimeout','{"status":429,"headers":{"retry-after":"60"}}');
+ IF (SELECT response->>'status' FROM factory_v3.preparation_calls WHERE preparation_id=b)<>'429' THEN RAISE EXCEPTION 'failed HTTP receipt missing'; END IF;
  PERFORM pg_temp.expect_failure(format('SELECT factory_v3.claim_preparation_call(%L,%L,%L,%L,%L)',b,'v','vision',repeat('a',64),'rev-a'));
  IF (SELECT status FROM factory_v3.preparations WHERE id=b)<>'unknown' THEN RAISE EXCEPTION 'ambiguity not terminal'; END IF;
 
