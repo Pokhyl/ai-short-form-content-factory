@@ -1,0 +1,190 @@
+{
+  "diagnostic_id": "gemini-schema-boundary-20261005",
+  "generation_calls_max": 2,
+  "max_output_tokens_per_call": 256,
+  "tts_calls": 0,
+  "billing_enabled": false,
+  "stop_on_transport_unknown": true,
+  "simple_schema": {
+    "type": "object",
+    "properties": {
+      "ok": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "ok"
+    ],
+    "additionalProperties": false
+  },
+  "outline_schema": {
+    "type": "object",
+    "properties": {
+      "facts": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1
+            },
+            "support": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "enum": [
+                      "source-1",
+                      "source-2",
+                      "source-3"
+                    ]
+                  },
+                  "quote": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "source_id",
+                  "quote"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 6
+            }
+          },
+          "required": [
+            "id",
+            "text",
+            "support"
+          ],
+          "additionalProperties": false
+        },
+        "minItems": 1,
+        "maxItems": 64
+      },
+      "required_fact_ids": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "minItems": 1,
+        "maxItems": 64
+      },
+      "units": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fact_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1,
+              "maxItems": 8
+            },
+            "contract": {
+              "type": "object",
+              "properties": {
+                "visual_intent": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "must_show": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 1,
+                  "maxItems": 6
+                },
+                "must_not_show": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 0,
+                  "maxItems": 12
+                }
+              },
+              "required": [
+                "visual_intent",
+                "must_show",
+                "must_not_show"
+              ],
+              "additionalProperties": false
+            },
+            "queries": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "orientation": {
+                    "type": "string",
+                    "minLength": 1,
+                    "enum": [
+                      "portrait",
+                      "landscape",
+                      "all"
+                    ]
+                  }
+                },
+                "required": [
+                  "query",
+                  "orientation"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 3,
+              "maxItems": 3
+            }
+          },
+          "required": [
+            "id",
+            "fact_ids",
+            "contract",
+            "queries"
+          ],
+          "additionalProperties": false
+        },
+        "minItems": 5,
+        "maxItems": 5
+      }
+    },
+    "required": [
+      "facts",
+      "required_fact_ids",
+      "units"
+    ],
+    "additionalProperties": false
+  },
+  "model": "gemini-3.5-flash-lite",
+  "instruction": "Return an illustrative JSON object matching the required schema. Use placeholder strings.",
+  "context": {
+    "purpose": "controlled schema boundary diagnostic"
+  },
+  "product_jobs": 0
+}

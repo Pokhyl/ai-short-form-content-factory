@@ -1,0 +1,26 @@
+{
+  "diagnostic_id": "response-body-model-metadata-20261005",
+  "status": "recorded",
+  "metadata_gets": 1,
+  "generation_calls": 0,
+  "tts_calls": 0,
+  "response": {
+    "status": 200,
+    "error_status": null,
+    "error_reason": null,
+    "error_message": null,
+    "gateway_execution_id": "12138",
+    "model": {
+      "name": "models/gemini-3.5-flash-lite",
+      "inputTokenLimit": 1048576,
+      "outputTokenLimit": 65536,
+      "supportedGenerationMethods": [
+        "generateContent",
+        "countTokens",
+        "createCachedContent",
+        "batchGenerateContent"
+      ]
+    }
+  },
+  "finished_at": "2026-10-05T19:20:51.667998+00:00"
+}

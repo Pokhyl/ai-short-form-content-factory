@@ -1,3 +1,9 @@
+## GEMINI MODEL/AUTH/NATIVE REQUEST BOUNDARIES PASS; SCHEMA DIAGNOSTIC PLANNED
+
+Metadata execution12138 HTTP200 exact model supports generateContent, input1048576/output65536. Query-key hypothesis disproved for metadata path. Full installed native HttpRequestV3.execute with only transport mocked, network-disabled exact image PASS: structured body/Unicode/systemInstruction sent unchanged and response body retained. Harness gateway_native_http.js; native-http-test.json. No product rescue/new job/TTS.
+
+BOUND gemini-schema-boundary-20261005: max2 generation diagnostics,256 output tokens each, same fixed controlled instruction/context/model and only schema varies. Simple schema first; only if HTTP200, outline PL15 three-source-ID schema second. HTTP status/finish/usage captured, no requirement to finish full complex JSON within256. Separate from failed job; no source text or narration reuse. Free-tier proof remains verified billingEnabled=false; exact total quota includes unknown thinking/input until response usage. No retries; stop transport ambiguity or baseline failure. Success simple+400 outline proves schema class; both200 leaves actual context/payload difference unresolved. Keep gates/local validation strict; do not reduce/alter schema before evidence. Plan gemini-schema-boundary-plan.json. Project_ready=false.
+
 ## 2026-10-05T19:20:29.185172+00:00 — NEW JOB TERMINAL UNKNOWN AT FIRST GEMINI CALL
 
 Immutable7ef29657-1b98-4236-bcf6-01a7482c8f29 passed billing/research/three source fetches; evidence-outline gateway12137 HTTP400 INVALID_ARGUMENT generic Request contains an invalid argument. Preparation unknown, no execution job/TTS/MP4. No repeat/rescue. Live body contract remains verified. Receipt response-body-product-terminal.json.
