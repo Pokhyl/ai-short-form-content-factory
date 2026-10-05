@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "source_revision": "5552d477c4b5293412387b4153f7e22ba97bc696",
+  "deployment_checkout": "/opt/ai-short-form-content-factory/.tmp/v3-deploy-5552d477c4b5",
+  "n8n_version": "2.37.10",
+  "import_export_core_parity": true,
+  "active": false,
+  "workflow_sha256": "30056814b648a2286185dd930fd76a242913e03a1d758f6cfff06aa5210f6141",
+  "production_imports": 0,
+  "provider_calls": 0
+}
