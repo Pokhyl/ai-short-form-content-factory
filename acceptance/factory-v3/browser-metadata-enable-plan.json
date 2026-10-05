@@ -1,0 +1,21 @@
+{
+  "operation_id": "v3-browser-metadata-enable-20261005",
+  "recorded_at": "2026-10-05T17:22:51.323346+00:00",
+  "approval": "User explicitly replied разрешаю after the exact two-API confirmation",
+  "project_id": "gen-lang-client-0532024148",
+  "project_number": "529636078126",
+  "services": [
+    "serviceusage.googleapis.com",
+    "cloudbilling.googleapis.com"
+  ],
+  "enable_click_budget_per_service": 1,
+  "verify": "Read initial and final exact-project Google Console states. Stop on denial or payment/IAM request. No repeated enable.",
+  "prohibited": [
+    "billing account linking",
+    "payments",
+    "IAM grants",
+    "OAuth scope changes",
+    "key changes"
+  ],
+  "status": "planned"
+}

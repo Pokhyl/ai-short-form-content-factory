@@ -1,3 +1,7 @@
+## 2026-10-05T17:22:51.323346+00:00 — USER APPROVED EXACT TWO METADATA API ENABLES
+
+Owner explicitly approved Service Usage API and Cloud Billing API on gen-lang-client-0532024148 under the displayed Google Cloud terms. Previous pending approval is superseded. Bounded plan acceptance/factory-v3/browser-metadata-enable-plan.json: inspect initial state, at most one Enable click per service, verify actual post-state; no billing linking/payment/IAM/key/OAuth changes. Candidate image/tests unchanged and verified; not deployed. Next execute this exact browser plan, checkpoint actual results, then new bounded OAuth/billing verification with the trusted quota-project header. No new job/MP4; project_ready=false.
+
 ## 2026-10-05T16:36:03.864418+00:00 — CURRENT VERIFIED IMAGE READY; API ENABLE CONFIRMATION STILL PENDING
 
 Project_ready=false. Exact Gemini key/project/Free tier verified in Google AI Studio; Project ID gen-lang-client-0532024148 / number529636078126 is known and FULL SHA256 matched production credential (key-ui-binding.json). Official selected-model pricing reconfirmed2026-10-05: gemini-3.5-flash-lite Standard input/output free in Free Tier, https://ai.google.dev/gemini-api/docs/pricing#gemini-3.5-flash-lite . No need to replace the model or ask owner for Project ID.
