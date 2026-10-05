@@ -59,12 +59,12 @@ for index, provider in enumerate(providers):
     if keys:
         params["sendQuery"] = True
         params["specifyQuery"] = "json"
-        params["jsonQuery"] = "={{ $json.query }}"
+        params["jsonQuery"] = "={{ JSON.stringify($json.query || {}) }}"
     if provider == "google_metadata":
         params.update({"sendHeaders":True,"specifyHeaders":"json",
-                       "jsonHeaders":"={{ $json.headers || {} }}"})
+                       "jsonHeaders":"={{ JSON.stringify($json.headers || {}) }}"})
     if provider in {"gemini","google_tts"}:
-        params.update({"sendBody":True,"specifyBody":"json","jsonBody":"={{ $json.body }}"})
+        params.update({"sendBody":True,"contentType":"json","specifyBody":"json","jsonBody":"={{ JSON.stringify($json.body) }}"})
     node("Upstream " + provider, "httpRequest", 4.5, params, [760,index*180], auth)
 normalize = """
 const upstream = $input.first().json;
@@ -95,7 +95,7 @@ return [{json:{status, headers, body, error_status, error_reason, error_message,
                gateway_execution_id: String($execution.id)}}];
 """
 node("Sanitize receipt", "code", 2, {"jsCode": normalize}, [1080,0])
-node("Return receipt", "respondToWebhook", 1.4, {"respondWith":"json","responseBody":"={{ $json }}",
+node("Return receipt", "respondToWebhook", 1.4, {"respondWith":"json","responseBody":"={{ JSON.stringify($json) }}",
     "options":{"responseCode":200}}, [1320,0])
 connections = {
     "Authenticated provider request":{"main":[[{"node":"Validate scoped request","type":"main","index":0}]]},

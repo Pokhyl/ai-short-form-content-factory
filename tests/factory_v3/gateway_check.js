@@ -33,13 +33,20 @@ assert.throws(()=>validate({provider:'google_metadata',request:{operation:'billi
 const metadataNode = workflow.nodes.find(n=>n.name==='Upstream google_metadata');
 assert.strictEqual(metadataNode.parameters.sendHeaders,true);
 assert.strictEqual(metadataNode.parameters.specifyHeaders,'json');
-assert.strictEqual(metadataNode.parameters.jsonHeaders,'={{ $json.headers || {} }}');
+assert.strictEqual(metadataNode.parameters.jsonHeaders,'={{ JSON.stringify($json.headers || {}) }}');
 for (const provider of ['gemini','google_tts','gemini_info']) {
   assert.strictEqual(validate({provider,request:good[provider]}).headers,undefined);
   assert.notStrictEqual(workflow.nodes.find(n=>n.name==='Upstream '+provider).parameters.sendHeaders,true);
 }
 for (const n of workflow.nodes.filter(n=>n.type.endsWith('.httpRequest'))) {
-  if (n.parameters.sendQuery) assert.strictEqual(n.parameters.specifyQuery,'json');
+  if (n.parameters.sendQuery) {
+    assert.strictEqual(n.parameters.specifyQuery,'json');
+    assert.strictEqual(n.parameters.jsonQuery,'={{ JSON.stringify($json.query || {}) }}');
+  }
+  if (n.parameters.sendBody) {
+    assert.strictEqual(n.parameters.contentType,'json');
+    assert.strictEqual(n.parameters.jsonBody,'={{ JSON.stringify($json.body) }}');
+  }
   assert.strictEqual(n.retryOnFail,false);
   assert.strictEqual(n.parameters.options.response.response.neverError,true);
 }

@@ -1,3 +1,7 @@
+## 2026-10-05 — Import parity cannot prove native JSON invocation
+
+Production n8n2.37.10 HTTP Request4.5 parser unconditionally JSON.parse on JSON query/header fields. Object-valued expressions passed static/import checks but failed at runtime before billing API; caller then got a non-JSON reply and immutable unknown. Serialize all JSON query/header/body/response expressions and explicitly select JSON body content type. Native parser regression reproduces old failure and preserves Unicode/nested values for all generated fields. Require a bounded actual gateway metadata roundtrip before the next product launch. Failed first V3 request remains immutable.
+
 ## 2026-10-05 — Native n8n import staging ownership
 
 Docker cp from root-created0600 host files preserves root ownership; production n8n CLI runs as node. Actual controlled file-read contract gives EACCES before chown node:node and READ_OK afterwards while retaining0600. Stage private imports with exact owner and permissions, persist command failure receipts, then verify DB effects; never blindly repeat a failed import. First provisioning imported no credentials and never reached schema/workflow.

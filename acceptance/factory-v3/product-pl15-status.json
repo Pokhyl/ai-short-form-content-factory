@@ -1,0 +1,19 @@
+{
+  "job": null,
+  "calls": [
+    {
+      "key": "gemini-billing-check",
+      "kind": "metadata",
+      "state": "unknown",
+      "response": null,
+      "error_code": "JSONDecodeError"
+    }
+  ],
+  "stages": null,
+  "preparation": {
+    "id": "9f751c54-47f5-443b-a2fd-9d72b59aee53",
+    "status": "unknown",
+    "error_code": null
+  },
+  "observed_at": "2026-10-05T18:25:12.944417+00:00"
+}

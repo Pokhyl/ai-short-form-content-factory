@@ -1,0 +1,49 @@
+'use strict';
+// Run inside the exact deployed n8n image, without credentials or provider calls.
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const Module = require('module');
+const root = process.argv[2];
+const nativePath = '/usr/local/lib/node_modules/n8n/node_modules/n8n-nodes-base/dist/nodes/HttpRequest/V3/HttpRequestV3.node.js';
+const source = fs.readFileSync(nativePath, 'utf8');
+const native = new Module(nativePath, module);
+native.filename = nativePath;
+native.paths = Module._nodeModulePaths(path.dirname(nativePath));
+native._compile(source + '\nmodule.exports.parseForContractTest = parseJsonParameter;', nativePath);
+const parse = native.exports.parseForContractTest;
+const workflow = JSON.parse(fs.readFileSync(path.join(root, 'workflows/VIDEO-V3-Credential-Gateway.json')));
+const payload = {
+  query: {q: 'bee flower', per_page: 8},
+  headers: {'x-goog-user-project': 'controlled-project'},
+  body: {contents: [{parts: [{text: 'Żółty цветок\n"quoted" 🌼'}]}]},
+};
+let checks = 0;
+const expression = value => {
+  assert(value.startsWith('={{') && value.endsWith('}}'));
+  return new Function('$json', 'return (' + value.slice(3, -2) + ');')(payload);
+};
+// Reproduce the previous object-valued expression at the actual parser boundary.
+for (const [field, value] of Object.entries(payload)) {
+  assert.throws(() => parse({name: 'Controlled HTTP', parameters: {}}, value, field, 0),
+    /not valid JSON/);
+}
+for (const node of workflow.nodes.filter(n => n.type.endsWith('.httpRequest'))) {
+  for (const [enabled, parameter, field] of [
+    ['sendQuery', 'jsonQuery', 'query'],
+    ['sendHeaders', 'jsonHeaders', 'headers'],
+    ['sendBody', 'jsonBody', 'body'],
+  ]) {
+    if (!node.parameters[enabled]) continue;
+    const value = expression(node.parameters[parameter]);
+    assert.strictEqual(typeof value, 'string');
+    assert.deepStrictEqual(parse(node, value, parameter, 0), payload[field]);
+    checks++;
+  }
+  if (node.parameters.sendBody) assert.strictEqual(node.parameters.contentType, 'json');
+}
+const response = workflow.nodes.find(n => n.type.endsWith('.respondToWebhook'));
+assert.deepStrictEqual(JSON.parse(expression(response.parameters.responseBody)), payload);
+console.log(JSON.stringify({status: 'passed', actual_n8n_parser: true,
+  object_expressions_rejected: 3, serialized_fields_checked: checks,
+  provider_calls: 0, production_mutations: 0}));

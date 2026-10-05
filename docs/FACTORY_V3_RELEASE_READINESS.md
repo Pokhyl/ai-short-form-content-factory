@@ -12,7 +12,7 @@ Project_ready=false. The new core and owner interface are deployed and health/pa
 | Gemini free tier | Exact-key row in signed-in AI Studio shows Free tier / Set up billing | PASS UI observation |
 | Runtime billing API | Both metadata APIs enabled; exact project billingInfo200, billingEnabled=false | PASS live metadata |
 | V3 gateway/workflow/schema/service/route | Live gateway/version/history parity; service healthy; public route/UI/health200; originals33 unchanged | PASS deployed |
-| New real photo/model/TTS/video execution | Zero generation/TTS calls; no new V3 MP4 | NOT ATTEMPTED |
+| New real photo/model/TTS/video execution | First PL15 input launched once; unknown at native gateway JSON contract before generation/TTS. Offline fix tested; new live acceptance pending | FAILED first live input |
 | PL15/EN30/RU45/UK60 acceptance | No accepted release cases | NOT READY |
 
 Diagnostic v3-account-boundary-20261005 is immutable. Do not rerun scripts/check_factory_v3_account.py or erase account-check.json. Successful model metadata does not prove the key's project is unbilled. No paid fallback.
