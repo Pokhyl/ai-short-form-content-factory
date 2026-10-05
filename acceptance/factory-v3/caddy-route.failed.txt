@@ -1,0 +1,3 @@
+{"level":"info","ts":1791190569.4735324,"msg":"using config from file","file":"/tmp/Caddyfile"}
+Error: adapting config using caddyfile: Unexpected next token after '{' on same line, at /tmp/Caddyfile:8
+returncode=1

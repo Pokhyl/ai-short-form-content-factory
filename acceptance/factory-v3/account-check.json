@@ -1,0 +1,37 @@
+{
+  "diagnostic_id": "v3-account-boundary-20261005",
+  "generation_calls": 0,
+  "tts_calls": 0,
+  "billing_mutations": 0,
+  "calls": [
+    {
+      "kind": "model_info",
+      "http_status": 200
+    },
+    {
+      "kind": "oauth_refresh",
+      "http_status": 200
+    },
+    {
+      "kind": "key_owner",
+      "http_status": 403,
+      "error_status": "PERMISSION_DENIED"
+    }
+  ],
+  "free_tier_confirmed": false,
+  "started_at": "2026-10-05T08:49:15.484932+00:00",
+  "model": {
+    "name": "models/gemini-3.5-flash-lite",
+    "supportedGenerationMethods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ],
+    "inputTokenLimit": 1048576,
+    "outputTokenLimit": 65536
+  },
+  "status": "blocked",
+  "stop_reason": "key_owner_rejected",
+  "finished_at": "2026-10-05T08:49:32.982891+00:00"
+}

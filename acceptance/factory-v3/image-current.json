@@ -1,6 +1,6 @@
 {
-  "tag": "factory-v3:8ba8e8e",
-  "image_id": "sha256:fd9e1749d95b9388c19004bd4a236ae9a14efd8574d0eb7640d027be9c63e75d",
-  "source_commit": "8ba8e8e12e89e9d63fbb1ed8edb66930e6053679",
+  "tag": "factory-v3:d6f0a04",
+  "image_id": "sha256:5092570e09471a3da42f445c4b369ebd625d7df264b8a5648ea668bc372779ca",
+  "source_commit": "d6f0a04673be450f45c57314d71bdf8c09326b83",
   "deployed": false
 }

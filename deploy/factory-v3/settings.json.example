@@ -1,0 +1,14 @@
+{
+  "database_url": "postgresql://PROVISION_PRIVATE_USER:PROVISION_PRIVATE_PASSWORD@shorts-v2-postgres-1:5432/shorts_factory",
+  "broker_token": "PROVISION_SEPARATE_RANDOM_PRIVATE_BROKER_TOKEN",
+  "owner_token": "PROVISION_SEPARATE_RANDOM_PRIVATE_OWNER_TOKEN",
+  "public_origin": "https://publisher.hodor.com.pl",
+  "credential_scope": "PROVISION_VERIFIED_V3_CREDENTIAL_SCOPE",
+  "gemini_free_tier_confirmed": false,
+  "free_tier_proof": {
+    "billing_enabled": null,
+    "model": "gemini-3.5-flash-lite",
+    "project_id": "UNVERIFIED",
+    "credential_sha256": "UNVERIFIED"
+  }
+}

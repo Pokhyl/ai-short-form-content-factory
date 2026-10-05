@@ -1,0 +1,7 @@
+{
+  "compose-config": true,
+  "caddy-route": true,
+  "packaged_owner_service_and_exact_static_bytes": true,
+  "diagnostic_secret_temporaries_removed": true,
+  "production_changes": false
+}

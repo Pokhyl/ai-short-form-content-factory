@@ -1,0 +1,42 @@
+name: factory-v3
+services:
+  app:
+    image: factory-v3:d6f0a04
+    pull_policy: never
+    container_name: factory-v3-app
+    entrypoint: [python3, -m, factory_v3.server]
+    command: [--settings, /run/factory-v3/settings.json, --media-root, /data, --port, '3002']
+    restart: unless-stopped
+    read_only: true
+    init: true
+    mem_limit: 1g
+    cpus: 1.0
+    pids_limit: 128
+    tmpfs:
+      - /tmp:size=268435456,mode=1777
+    volumes:
+      - type: bind
+        source: /var/lib/factory-v3/settings.json
+        target: /run/factory-v3/settings.json
+        read_only: true
+        bind:
+          create_host_path: false
+      - media:/data
+    networks: [media, proxy]
+    healthcheck:
+      test: [CMD, python3, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3002/factory-v3/health', timeout=3).read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+networks:
+  media:
+    external: true
+    name: shorts-v2_default
+  proxy:
+    external: true
+    name: n8n_default
+volumes:
+  media:
+    external: true
+    name: shorts-v2_media_data

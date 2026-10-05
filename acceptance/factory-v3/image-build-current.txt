@@ -12,40 +12,40 @@
 #3 DONE 0.0s
 
 #4 [1/7] FROM docker.io/library/python:3.12-slim-bookworm@sha256:54c85f3c47607a77f32adec749d3c81d1348bf25833671f512b26a9b6d778cb3
-#4 resolve docker.io/library/python:3.12-slim-bookworm@sha256:54c85f3c47607a77f32adec749d3c81d1348bf25833671f512b26a9b6d778cb3 0.0s done
-#4 DONE 0.0s
+#4 resolve docker.io/library/python:3.12-slim-bookworm@sha256:54c85f3c47607a77f32adec749d3c81d1348bf25833671f512b26a9b6d778cb3 0.1s done
+#4 DONE 0.1s
 
 #5 [internal] load build context
-#5 transferring context: 120.47kB 0.0s done
-#5 DONE 0.0s
+#5 transferring context: 148.63kB 0.0s done
+#5 DONE 0.1s
 
-#6 [2/7] RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
+#6 [3/7] WORKDIR /app
 #6 CACHED
 
-#7 [3/7] WORKDIR /app
+#7 [2/7] RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
 #7 CACHED
 
 #8 [4/7] COPY factory_v3/requirements.txt /app/requirements.txt
 #8 CACHED
 
 #9 [5/7] RUN pip install --no-cache-dir -r /app/requirements.txt
-#9 4.039 Collecting psycopg==3.3.6 (from psycopg[binary]==3.3.6->-r /app/requirements.txt (line 1))
-#9 4.134   Downloading psycopg-3.3.6-py3-none-any.whl.metadata (4.4 kB)
-#9 4.181 Collecting typing_extensions==4.16.0 (from -r /app/requirements.txt (line 2))
-#9 4.192   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
-#9 4.459 Collecting psycopg-binary==3.3.6 (from psycopg[binary]==3.3.6->-r /app/requirements.txt (line 1))
-#9 4.469   Downloading psycopg_binary-3.3.6-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.7 kB)
-#9 4.485 Downloading psycopg-3.3.6-py3-none-any.whl (215 kB)
-#9 4.526 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
-#9 4.539 Downloading psycopg_binary-3.3.6-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.2 MB)
-#9 4.759    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.2/5.2 MB 26.4 MB/s eta 0:00:00
-#9 4.808 Installing collected packages: typing_extensions, psycopg-binary, psycopg
-#9 5.321 Successfully installed psycopg-3.3.6 psycopg-binary-3.3.6 typing_extensions-4.16.0
-#9 5.321 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
-#9 5.575
-#9 5.575 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
-#9 5.575 [notice] To update, run: pip install --upgrade pip
-#9 DONE 5.8s
+#9 4.368 Collecting psycopg==3.3.6 (from psycopg[binary]==3.3.6->-r /app/requirements.txt (line 1))
+#9 4.456   Downloading psycopg-3.3.6-py3-none-any.whl.metadata (4.4 kB)
+#9 4.513 Collecting typing_extensions==4.16.0 (from -r /app/requirements.txt (line 2))
+#9 4.524   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#9 4.788 Collecting psycopg-binary==3.3.6 (from psycopg[binary]==3.3.6->-r /app/requirements.txt (line 1))
+#9 4.799   Downloading psycopg_binary-3.3.6-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.7 kB)
+#9 4.814 Downloading psycopg-3.3.6-py3-none-any.whl (215 kB)
+#9 4.854 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#9 4.868 Downloading psycopg_binary-3.3.6-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.2 MB)
+#9 5.091    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.2/5.2 MB 25.0 MB/s eta 0:00:00
+#9 5.148 Installing collected packages: typing_extensions, psycopg-binary, psycopg
+#9 5.657 Successfully installed psycopg-3.3.6 psycopg-binary-3.3.6 typing_extensions-4.16.0
+#9 5.659 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#9 5.913
+#9 5.913 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+#9 5.913 [notice] To update, run: pip install --upgrade pip
+#9 DONE 6.1s
 
 #10 [6/7] COPY factory_v3 /app/factory_v3
 #10 DONE 0.1s
@@ -55,12 +55,12 @@
 
 #12 exporting to image
 #12 exporting layers
-#12 exporting layers 2.3s done
-#12 exporting manifest sha256:d83e0f849aa096e47f077e5e34bf971de38365236bbe9c2daf6bd5210ee3c2f5 0.0s done
-#12 exporting config sha256:9c299ca582551779864a1aa3a26a4cb344ddb6a21db518ba9f68ea7428c2b537 0.0s done
-#12 exporting attestation manifest sha256:0282e674c59485ed44e4dcb2b615a8bcb5c0db91e35e73b8df02a6112d11019c 0.0s done
-#12 exporting manifest list sha256:fd9e1749d95b9388c19004bd4a236ae9a14efd8574d0eb7640d027be9c63e75d 0.0s done
-#12 naming to docker.io/library/factory-v3:8ba8e8e done
-#12 unpacking to docker.io/library/factory-v3:8ba8e8e
-#12 unpacking to docker.io/library/factory-v3:8ba8e8e 0.7s done
-#12 DONE 3.1s
+#12 exporting layers 2.5s done
+#12 exporting manifest sha256:984d59a3f85091e0182cb240706ae0b9df36229a0ce9948b6a23773c04aa2410 0.0s done
+#12 exporting config sha256:832d23b4d4d4116b67e5ac6abc9738a09e8cb153162bb49f81b986a7ab5cdc05 0.0s done
+#12 exporting attestation manifest sha256:736a8c8ddebd172eea24c8becc13669e45aa50e6b5d3db84f0903925c5142e5d 0.0s done
+#12 exporting manifest list sha256:5092570e09471a3da42f445c4b369ebd625d7df264b8a5648ea668bc372779ca 0.0s done
+#12 naming to docker.io/library/factory-v3:d6f0a04 done
+#12 unpacking to docker.io/library/factory-v3:d6f0a04
+#12 unpacking to docker.io/library/factory-v3:d6f0a04 0.6s done
+#12 DONE 3.3s
