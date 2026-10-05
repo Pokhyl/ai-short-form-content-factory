@@ -102,16 +102,18 @@ class Operations:
             mime = 'image/webp'
         else:
             raise ValueError('unsupported actual photo bytes')
-        schema = obj({'accepted': BOOL, 'is_real_material': BOOL, 'visible_description': string(),
+        schema = obj({'accepted': BOOL, 'is_real_material': BOOL, 'subject_fully_visible': BOOL, 'visible_description': string(),
                       'supported_fact_ids': array(string(f['id'] for f in evidence['facts']), 0, 8)})
         result, provenance = self.gemini.generate('material-inspect:' + asset['id'],
-            'Inspect the attached actual photograph. Describe visible subjects and setting. '
+            'Inspect the attached final portrait crop. Describe visible subjects and setting. '
+            'Reject crops cutting off the important subject at the frame edge; subject_fully_visible must be true. '
             'Accept a real photograph relevant to the supplied facts. supported_fact_ids are facts this '
             'photo can illustrate; factual proof comes from source quotations. A still may illustrate '
             'an action or hidden mechanism without depicting its motion or internal details. Reject '
             'unrelated subjects, contradictory imagery, drawings and synthetic imagery. Metadata is not proof.',
             {'evidence': evidence, 'metadata': {k: asset[k] for k in ('source_url', 'author', 'license')}},
             schema, photo={'bytes': data, 'mime': mime}, max_tokens=2048)
+        result['accepted'] = result['accepted'] and result['subject_fully_visible']
         return {**result, 'asset_id': asset['id'], 'asset_sha256': asset['sha256'],
                 'evidence_sha256': digest(evidence), 'receipt_id': provenance['receipt_id'],
                 'model': self.gemini.model, 'provider_provenance': provenance}

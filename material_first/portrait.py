@@ -20,7 +20,7 @@ class PortraitDownload:
         if crop.exists():
             raise ValueError('portrait crop already exists')
         subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source),
-            '-vf', 'scale=1080:1920:force_original_aspect_ratio=increase:force_divisible_by=2,crop=1080:1920',
+            '-vf', 'scale=1080:1920:force_original_aspect_ratio=increase:force_divisible_by=2,crop=1080:1920,setsar=1',
             '-frames:v', '1', '-threads', '1', '-q:v', '2', '-n', str(crop)],
             check=True, capture_output=True, timeout=20)
         asset = deepcopy(original)

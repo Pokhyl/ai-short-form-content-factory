@@ -21,7 +21,7 @@ class Model:
             result = {'facts': self.fixtures.evidence['facts'],
                       'required_fact_ids': ['f0', 'f1', 'f2'], 'queries': ['real subject']}
         elif key.startswith('material-inspect:'):
-            result = {'accepted': True, 'is_real_material': True,
+            result = {'accepted': True, 'is_real_material': True, 'subject_fully_visible': True,
                       'visible_description': 'Real subject visible',
                       'supported_fact_ids': ['f0', 'f1', 'f2']}
         elif key == 'material-compose':
