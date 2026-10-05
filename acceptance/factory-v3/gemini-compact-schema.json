@@ -1,0 +1,30 @@
+{
+  "diagnostic_id": "gemini-compact-schema-20261005",
+  "status": "recorded",
+  "generation_calls": 1,
+  "tts_calls": 0,
+  "product_jobs": 0,
+  "response": {
+    "status": 200,
+    "error_status": null,
+    "error_reason": null,
+    "error_message": null,
+    "gateway_execution_id": "12143",
+    "usage": {
+      "promptTokenCount": 24,
+      "candidatesTokenCount": 240,
+      "totalTokenCount": 264,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 24
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "finish_reasons": [
+      "MAX_TOKENS"
+    ]
+  },
+  "finished_at": "2026-10-05T19:29:03.033793+00:00"
+}

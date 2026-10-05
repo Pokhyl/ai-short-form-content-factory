@@ -1,3 +1,9 @@
+## COMPACT OUTLINE SCHEMA ACCEPTED LIVE; EXACT IMAGE BUILD NEXT
+
+Execution12143 compact outline schema HTTP200, finishMAX_TOKENS expected diagnostic256 cap, usage264 tokens. Same instruction/context/model with array grammar bounds12141 was400; only provider schema grammar changed. This establishes accepted compact schema, NOT completed outline/video. Local exact array/string/count/semantic acceptance stays strict. Source704f01a,79/79 Python PASS. No source/job rescue/TTS/new product.
+
+BOUND compact-schema-build-20261005: fresh remote detached .tmp/v3-schema-build-704f01a from exact704f01a after fetch, Docker image factory-v3:704f01a with SOURCE_REVISION full hash. Build bounded background, private no secrets involved, record image/revision; run packaged79 tests network-disabled against exact source tests. SQL/executor/adapters/services unchanged since earlier realPG package gates, reuse those gate results with explicit scope. No service starts/deployment/provider calls. Only after package verification, change compose image tag and config-check; active preparations/stages/nondeleted executions must be0 before a separately recorded ONLY-app replacement. Gateway/Caddy/credentials/DB/other services untouched. Failed jobs immutable; project_ready=false.
+
 ## STRING-KEYWORD HYPOTHESIS REJECTED; COMPACT PROVIDER GRAMMAR TEST NEXT
 
 Execution12141 compiled supported schema still400 INVALID_ARGUMENT; string-keyword omission did not resolve blocker. No runtime deployment/new job/TTS. Array bounds nested64 facts x6 support plus5 units are remaining grammar-complexity hypothesis. provider_schema now emits array count requirements as documented description text and retains type/properties/items/required/enums/closed objects; original local array/string/exact-count validation remains mandatory and unchanged. This is a provider-grammar simplification, not acceptance weakening. Regression explicitly rejects wrong array counts.
