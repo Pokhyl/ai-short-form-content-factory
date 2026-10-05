@@ -9,6 +9,7 @@ import hashlib
 import json
 import subprocess
 
+from factory_v3.preparation import ResourceUnavailable
 from factory_v3.grounding import validate_evidence, validate_script_review
 from factory_v3.preflight import asset_path, digest, validate_asset
 
@@ -151,7 +152,10 @@ class Producer:
             raise ValueError("material discovery exceeded server budget")
         assets, available, hashes = {}, [], set()
         for candidate in candidates:
-            asset = self.operations.download(deepcopy(candidate))
+            try:
+                asset = self.operations.download(deepcopy(candidate))
+            except ResourceUnavailable:
+                continue
             validate_material(self.root, asset, self.probe)
             if asset["id"] in assets:
                 raise ValueError("duplicate provider identity")

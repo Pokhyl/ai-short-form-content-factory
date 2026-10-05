@@ -10,7 +10,9 @@ from .gemini import Gemini
 from .http import JSONHTTP
 from .ledger import PostgresLedger
 from .preparation import PreparationLedger, BudgetedCalls
-from .producer import Producer, preparation_budgets
+from material_first.operations import Operations, preparation_budgets
+from material_first.producer import DurableProducer
+from material_first.worker import PhotoWorker, executor as material_executor
 from .providers import PhotoSearch, ProviderCache
 from .research import Research
 from .worker_adapters import WorkerAdapters, GoogleVoice
@@ -73,14 +75,14 @@ class Runtime:
                         free_tier_confirmed=True)
         search = PhotoSearch(calls,ProviderCache(self.ledger),self.gateway,
                              lambda provider:"gateway-managed",self.settings["credential_scope"])
-        return Producer(self.root,self.preparations,Research(calls,self.direct),
-                        gemini,search,PhotoDownload(self.root,request_id,calls,self.direct),
-                        authorize=authorize)
+        return DurableProducer(self.root, self.preparations,
+            Operations(self.root, Research(calls,self.direct), gemini, search,
+                       PhotoDownload(self.root,request_id,calls,self.direct)), authorize=authorize)
 
     def executor(self):
-        adapters = WorkerAdapters(self.root,GoogleVoice(lambda:"gateway-managed",self.gateway),
+        adapters = PhotoWorker(self.root,GoogleVoice(lambda:"gateway-managed",self.gateway),
                                    "http://shorts-v2-media-worker-1:3001",audit,http=self.direct)
-        return Executor(self.ledger,self.root,adapters)
+        return material_executor(self.ledger,self.root,adapters)
 
     def run(self, request_id):
         self.producer(request_id).prepare(request_id)

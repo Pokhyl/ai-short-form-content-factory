@@ -171,7 +171,7 @@ class Gemini:
                 "narration_quote": string(), "supported": BOOL}), 1)})
         result, provenance = self.generate("script-review",
             "Independently audit every claim in the exact final narration against supplied source-supported facts. "
-            "Check language, every scene's exact visual contract and exclusions. "
+            "Check language, every scene's exact visual contract and exclusions. For material-first plans, still photographs illustrate source-supported facts; do not require depicted motion or hidden details. "
             "Do not approve a fact merely because its ID is cited. Quote the actual words asserting each cited fact. "
             "Check that the narration actually answers the requested topic and essential mechanism, rather than merely describing pictured objects. "
             "Report false for omitted topic coverage, any unsupported statement, omitted cited fact or contradictory image requirement.",
