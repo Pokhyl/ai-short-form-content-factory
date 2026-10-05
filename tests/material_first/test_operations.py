@@ -68,3 +68,19 @@ class OperationTests(unittest.TestCase):
                    "evidence": {"facts": [{"id": "f"}]}}
         with self.assertRaises(NarrationBudgetExceeded):
             operations.compose(context)
+
+    def test_exact_source_span_preserves_intervening_heading(self):
+        import hashlib
+        from material_first.operations import contiguous_support
+        from factory_v3.grounding import validate_evidence
+        text = 'First statement. Section heading Second statement.'
+        evidence = {'sources': [{'id': 's', 'url': 'https://example.invalid/source',
+            'text': text, 'sha256': hashlib.sha256(text.encode()).hexdigest()}],
+            'facts': [{'id': 'f', 'text': 'Source-backed claim', 'support': [
+                {'source_id': 's', 'quote': 'First statement. Second statement.'}]}]}
+        resolved = contiguous_support(evidence)
+        validate_evidence(resolved)
+        self.assertEqual(resolved['facts'][0]['support'][0]['quote'], text)
+        evidence['facts'][0]['support'][0]['quote'] = 'First statement. Invented statement.'
+        with self.assertRaises(ValueError):
+            validate_evidence(contiguous_support(evidence))

@@ -1,5 +1,7 @@
 """Bounded real photo search and source-backed narration adapters."""
 from pathlib import Path
+from copy import deepcopy
+import re
 from factory_v3.gemini import obj, array, string, BOOL
 from factory_v3.grounding import validate_evidence
 from factory_v3.preflight import asset_path, digest, validate_asset
@@ -9,6 +11,35 @@ from factory_v3.providers import PROVIDERS
 def preparation_budgets(seconds):
     return {'research_search': 1, 'source_fetch': 6, 'gemini': 15,
             'download': 12, 'metadata': 1, **{'search:' + p: 3 for p in PROVIDERS}}
+
+
+def contiguous_support(evidence):
+    """Restore intervening source headings only when all sentences match literally."""
+    result = deepcopy(evidence)
+    sources = {s['id']: s['text'] for s in result['sources']}
+    for fact in result['facts']:
+        for support in fact['support']:
+            text = sources.get(support['source_id'], '')
+            quote = support['quote']
+            if quote in text:
+                continue
+            parts = re.split(r'(?<=[.!?])\s+', quote)
+            if len(parts) < 2 or any(not part for part in parts):
+                continue
+            start = text.find(parts[0])
+            if start < 0:
+                continue
+            end = start + len(parts[0])
+            valid = True
+            for part in parts[1:]:
+                found = text.find(part, end)
+                if found < 0 or found - end > 500:
+                    valid = False
+                    break
+                end = found + len(part)
+            if valid:
+                support['quote'] = text[start:end]
+    return result
 
 
 class NarrationBudgetExceeded(ValueError):
@@ -29,11 +60,12 @@ class Operations:
             'queries': array({**string(), 'maxLength': 100}, 1, 3)})
         result, _ = self.gemini.generate('material-brief',
             'Extract a small set of factual statements answering the topic, supported by exact source quotations. '
+            'Each quote must be contiguous: retain intervening headings or use separate support entries. '
             'Mark the essential facts. Give up to three English stock photograph searches for relevant '
             'subjects and settings. Do not create a storyboard or require a particular number of shots. '
             'Photographs may illustrate mechanisms explained by the sources without showing the motion itself.',
             {**request, 'sources': sources}, schema)
-        evidence = {'sources': sources, 'facts': result['facts']}
+        evidence = contiguous_support({'sources': sources, 'facts': result['facts']})
         validate_evidence(evidence)
         return {'evidence': evidence, 'required_fact_ids': result['required_fact_ids'],
                 'queries': result['queries']}
