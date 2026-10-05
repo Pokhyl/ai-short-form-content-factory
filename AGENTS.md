@@ -1,3 +1,6 @@
+## User-directed process change — 2026-10-05
+The user again rejected the expensive one-patch/one-diagnostic loop. This supersedes the old per-tool commentary and per-command checkpoint pacing. Batch useful independent local checks; report completed outcomes, not every command. Keep long operations bounded/background and inspect effects after ambiguity. No new product runs or isolated provider diagnostics until a connected release-gate corpus and an explicit inventory of ALL unverified stage boundaries have been completed offline. Checkpoint completed stages, not individual reads. docs/RELEASE_GATE.md is the current execution plan; prior chronology is evidence, not a command queue. Preserve free-only policy, production scope, failed-job immutability and strict acceptance. Do not start another architecture replacement merely to rename the same process.
+
 ## Active override — 2026-10-04 23:09 Warsaw
 User explicitly authorized radical architecture replacement. Continue on factory-v3 with availability-first planning before narration/TTS. Old M5/M8 correction loop is stopped. Preserve production and unrelated workflows; retain free-only, factual grounding, real-media quality, immutable failures and GitHub continuity. See top CODEX_HANDOFF; old architecture locks below are historical where they conflict.
 
