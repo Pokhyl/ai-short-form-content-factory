@@ -120,7 +120,8 @@ class ServerTests(unittest.TestCase):
 
     def test_only_machine_passed_identical_mp4_is_served(self):
         file, sha = self.video()
-        self.assertEqual(self.app.video(JOB),(file,"video/mp4"))
+        # asset_path returns a canonical path; macOS /var aliases /private/var.
+        self.assertEqual(self.app.video(JOB),(file.resolve(),"video/mp4"))
         self.runtime.ledger.state["status"] = "render_ready"
         with self.assertRaises(ValueError):
             self.app.video(JOB)

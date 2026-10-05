@@ -1,3 +1,13 @@
+## 2026-10-05T15:51:47.429679+00:00 — CURRENT BRANCH/RUNTIME RECHECK; MACOS TEST PORTABILITY FIX
+
+Project_ready=false. Continue factory-v3, not the obsolete September V5 branch. GitHub and VPS source both verified at 9400cb0ebedcd5774e6ea684f70f48317beb47c9 before this test/docs-only checkpoint. VPS has only untracked .tmp/; preserved. Production publisher n8n remains2.37.10; no downgrade/restart/import/deployment/provider call performed.
+
+Fresh local suite initially77/78 PASS: owner MP4 test compared unresolved macOS /var path against canonical /private/var returned by asset_path. Corrected the test to compare file.resolve(); production identity/security code unchanged, replacement-byte and non-QA rejection assertions retained. Full78/78 PASS; log acceptance/factory-v3/macos-python.txt. No packaged service code changed, so existing d6f0a04 image evidence remains the earlier isolated package check, not a new build/deployment.
+
+Live read-only VPS recheck confirms immutable diagnostic v3-account-boundary-20261005 remains blocked/key_owner_rejected, free_tier_confirmed=false, generation/TTS calls0; /var/lib/factory-v3/gemini-free-tier-proof.json absent. No V3 service container or new MP4. Do not rerun that diagnostic or invent proof.
+
+NEXT EXACT STEP: resolve project-scoped Google access or obtain owner-confirmed exact Gemini key/project identity with independent billing verification. After access changes, push a new bounded diagnostic plan/ID before calls. Then follow docs/FACTORY_V3_RELEASE_READINESS.md for scoped deployment and fresh actual-media acceptance. No new job was created in this checkpoint; latest diagnostic and historical failed jobs remain immutable.
+
 ## 2026-10-04 — M5v226 / M8v87 + SQL DEPLOYED; 9bf5e97c-0059-48a8-8e5d-7da1b1feb923 CREATED ONLY
 
 - New production regression `9bf5e97c-0059-48a8-8e5d-7da1b1feb923` created EXACTLY ONCE HTTP201 at 2026-10-04T17:43:55.960941+00:00: jak działa zszywacz biurowy, pl30/Gemini. DBcreated confirmed. NOT LAUNCHED. Persist/push this ID before its single launch. Latest failed b76675c8 and every prior failure remain immutable.
