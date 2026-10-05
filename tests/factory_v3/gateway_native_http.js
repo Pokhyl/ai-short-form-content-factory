@@ -34,6 +34,8 @@ const context = {
   const sent=typeof captured.body==='string'?JSON.parse(captured.body):captured.body;
   assert.deepStrictEqual(sent,body);
   assert.strictEqual(captured.method,'POST');
+  assert(captured.json === true || Object.entries(captured.headers||{}).some(
+    ([key,value])=>key.toLowerCase()==='content-type' && value==='application/json'));
   assert.strictEqual(captured.uri,payload.url);
   assert.strictEqual(result[0][0].json.body,'{"ok":true}');
   console.log(JSON.stringify({status:'passed',native_http_execute:true,provider_calls:0,production_mutations:0}));

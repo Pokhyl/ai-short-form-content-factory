@@ -1,0 +1,6 @@
+{
+  "image": "sha256:307d6065be25619aa24cfc63a7c2f04ca56d084a08c05c8e9f189a89f353b1ec",
+  "exit_code": 1,
+  "output": "",
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'application/json'\n\n    at /contract/tests/factory_v3/gateway_native_http.js:37:10 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: undefined,\n  expected: 'application/json',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+}

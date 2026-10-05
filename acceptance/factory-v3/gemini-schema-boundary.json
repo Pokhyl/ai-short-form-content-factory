@@ -1,0 +1,43 @@
+{
+  "diagnostic_id": "gemini-schema-boundary-20261005",
+  "status": "recorded",
+  "generation_calls_max": 2,
+  "tts_calls": 0,
+  "results": [
+    {
+      "status": 200,
+      "error_status": null,
+      "error_reason": null,
+      "error_message": null,
+      "gateway_execution_id": "12139",
+      "case": "simple_schema",
+      "usage": {
+        "promptTokenCount": 24,
+        "candidatesTokenCount": 9,
+        "totalTokenCount": 33,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 24
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish_reasons": [
+        "STOP"
+      ]
+    },
+    {
+      "status": 400,
+      "error_status": "INVALID_ARGUMENT",
+      "error_reason": null,
+      "error_message": "Request contains an invalid argument.",
+      "gateway_execution_id": "12140",
+      "case": "outline_schema",
+      "usage": null,
+      "finish_reasons": []
+    }
+  ],
+  "generation_receipts": 2,
+  "finished_at": "2026-10-05T19:24:18.671116+00:00"
+}

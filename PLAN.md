@@ -1,3 +1,9 @@
+## SCHEMA CLASS PROVEN; DOCUMENTED SUBSET COMPILER OFFLINE PASS
+
+Controlled simple schema execution12139 HTTP200/STOP usage33 tokens; same model/instruction/context with outline schema execution12140 HTTP400 INVALID_ARGUMENT. Auth/context/native request transport excluded. Unsupported string keywords minLength/maxLength absent from official documented subset are a specific hypothesis, not yet live proven. New provider_schema compiles documented keywords and omits only local string lengths; full original schema still validates responses, field names preserved and unknown keywords fail before HTTP. 79/79 Python +gateway guards PASS. Corrected full native HTTP harness PASS; failed explicit Content-Type assumption preserved because request helper json=true supplies it, confirmed by native capture and real200.
+
+NEXT gemini-supported-schema-20261005: ONE controlled generation using same fixed instruction/context and compiled outline schema, max256 output tokens, no TTS/product job. Compare HTTP status; output truncation allowed only as diagnostic, never product acceptance. Plan gemini-supported-schema-plan.json. No retry. If accepted, build/test exact committed runtime and scoped app update before any fresh job; gateway unchanged. If rejected, do not deploy speculative compiler as proven fix; isolate schema complexity using offline/direct boundary evidence. Current live runtime2a6d997; gateway9891e8d9; failed jobs immutable; project_ready=false.
+
 ## GEMINI MODEL/AUTH/NATIVE REQUEST BOUNDARIES PASS; SCHEMA DIAGNOSTIC PLANNED
 
 Metadata execution12138 HTTP200 exact model supports generateContent, input1048576/output65536. Query-key hypothesis disproved for metadata path. Full installed native HttpRequestV3.execute with only transport mocked, network-disabled exact image PASS: structured body/Unicode/systemInstruction sent unchanged and response body retained. Harness gateway_native_http.js; native-http-test.json. No product rescue/new job/TTS.

@@ -1,0 +1,6 @@
+{
+  "image": "sha256:307d6065be25619aa24cfc63a7c2f04ca56d084a08c05c8e9f189a89f353b1ec",
+  "exit_code": 0,
+  "output": "{\"status\":\"passed\",\"native_http_execute\":true,\"provider_calls\":0,\"production_mutations\":0}\n",
+  "error": ""
+}

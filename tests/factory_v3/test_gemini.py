@@ -5,7 +5,7 @@ import json
 import unittest
 import test_catalog
 from test_preparation import FakeLedger
-from factory_v3.gemini import Gemini, obj, string
+from factory_v3.gemini import Gemini, obj, string, provider_schema
 from factory_v3.preparation import BudgetedCalls
 from factory_v3.preflight import digest, verify_before_voice
 
@@ -27,6 +27,18 @@ class HTTP:
 
 
 class GeminiTests(unittest.TestCase):
+    def test_provider_subset_keeps_field_names_and_local_string_validation(self):
+        schema = obj({"minLength": {**string(), "maxLength": 3}})
+        compiled = provider_schema(schema)
+        self.assertEqual(compiled["properties"]["minLength"], {"type": "string"})
+        self.assertEqual(schema["properties"]["minLength"]["maxLength"], 3)
+        with self.assertRaisesRegex(ValueError, "unsupported provider schema"):
+            provider_schema({"type": "string", "pattern": "secret"})
+        from factory_v3.gemini import validate_json
+        for text in ["", "too long"]:
+            with self.assertRaisesRegex(ValueError, "empty text"):
+                validate_json({"minLength": text}, schema)
+
     def setUp(self):
         self.fixture = test_catalog.CatalogTests()
         self.fixture.setUp()

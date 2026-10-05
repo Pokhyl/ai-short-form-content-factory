@@ -26,6 +26,24 @@ def string(values=None):
 BOOL = {"type": "boolean"}
 
 
+def provider_schema(schema):
+    """Compile Google's documented subset; retain full local validation separately."""
+    allowed = {"type", "properties", "required", "additionalProperties", "items",
+               "minItems", "maxItems", "enum", "format", "minimum", "maximum"}
+    local_only = {"minLength", "maxLength"}
+    if set(schema) - allowed - local_only:
+        raise ValueError("unsupported provider schema keyword")
+    result = {key: value for key, value in schema.items() if key in allowed}
+    if "properties" in result:
+        result["properties"] = {key: provider_schema(value)
+                                for key, value in result["properties"].items()}
+    if "items" in result:
+        result["items"] = provider_schema(result["items"])
+    if isinstance(result.get("additionalProperties"), dict):
+        result["additionalProperties"] = provider_schema(result["additionalProperties"])
+    return result
+
+
 def validate_json(value, schema):
     kind = schema["type"]
     valid = {"object": isinstance(value, dict), "array": isinstance(value, list),
@@ -92,7 +110,7 @@ class Gemini:
             "Return only the required JSON. Reject unsupported claims; do not invent facts or approvals."}]},
             "contents": [{"role": "user", "parts": parts}],
             "generationConfig": {"responseMimeType": "application/json",
-                                 "responseJsonSchema": schema, "candidateCount": 1,
+                                 "responseJsonSchema": provider_schema(schema), "candidateCount": 1,
                                  "maxOutputTokens": max_tokens}}
         url = "https://generativelanguage.googleapis.com/v1beta/models/" + self.model + ":generateContent"
         identity = {"method": "POST", "url": url, "body": body}
