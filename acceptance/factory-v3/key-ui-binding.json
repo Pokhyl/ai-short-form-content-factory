@@ -1,0 +1,12 @@
+{
+  "diagnostic_id": "v3-key-ui-binding-20261005",
+  "project_id": "gen-lang-client-0532024148",
+  "project_number": "529636078126",
+  "credential_id": "zsRz2tvE57EKe8zy",
+  "credential_sha256": "4184d804b53524b29138a4f4adb7145fd32f59d6e985fb37f21909ee2960bba2",
+  "full_key_binding_verified": true,
+  "billing_tier": "Free tier",
+  "source": "signed-in Google AI Studio API keys and exact key details",
+  "observed_at": "2026-10-05T16:13:47.442Z",
+  "model": "gemini-3.5-flash-lite"
+}

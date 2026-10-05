@@ -1,0 +1,14 @@
+{
+  "diagnostic_id": "v3-key-fingerprint-20261005",
+  "credential_id": "zsRz2tvE57EKe8zy",
+  "status": "fingerprint_read",
+  "maximum_exports": 1,
+  "api_calls": 0,
+  "started_at": "2026-10-05T16:11:30.922205+00:00",
+  "credential_sha256": "4184d804b53524b29138a4f4adb7145fd32f59d6e985fb37f21909ee2960bba2",
+  "masked_suffix": "yiPg",
+  "full_key_binding_verified": false,
+  "host_secret_removed": true,
+  "container_secret_removed": true,
+  "finished_at": "2026-10-05T16:11:38.230867+00:00"
+}
