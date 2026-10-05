@@ -1,0 +1,1 @@
+{"status":"passed","controlled_gateway_guards":true,"safe_error_receipt":true,"no_upstream_retries":true,"actual_provider_calls":0,"production_mutations":0}

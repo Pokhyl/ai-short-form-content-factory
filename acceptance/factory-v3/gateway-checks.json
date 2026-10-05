@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-10-05T07:52:14.297486+00:00",
+  "checks": [
+    {
+      "name": "gateway-python",
+      "exit_code": 0
+    },
+    {
+      "name": "gateway-native-node",
+      "exit_code": 0
+    }
+  ],
+  "actual_provider_calls": 0,
+  "production_mutations": 0,
+  "workflow_imported": false,
+  "product_ready": false
+}

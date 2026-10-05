@@ -12,7 +12,7 @@ from .worker_adapters import DENSITY
 def preparation_budgets(seconds):
     count = DENSITY[seconds]
     return {"research_search": 1, "source_fetch": 6, "gemini": count * 3 + 3,
-            "download": count * 3, **{"search:" + p: count * 3 for p in PROVIDERS}}
+            "download": count * 3, "metadata": 1, **{"search:" + p: count * 3 for p in PROVIDERS}}
 
 
 def tokens(text):
@@ -54,7 +54,8 @@ def select_previews(unit, pools):
 
 
 class Producer:
-    def __init__(self, root, ledger, research, gemini, search, downloader):
+    def __init__(self, root, ledger, research, gemini, search, downloader, authorize=None):
+        self.authorize = authorize
         self.root, self.ledger = root, ledger
         self.research, self.gemini = research, gemini
         self.search, self.downloader = search, downloader
@@ -79,6 +80,8 @@ class Producer:
             return claim["frozen"]
         request = claim["request"]
         try:
+            if self.authorize is not None:
+                self.authorize()
             sources = self.research.fetch(request["topic"], request["language"])
             outline = self.gemini.outline({**request, "sources": sources})
             catalog = {"units": outline["units"], "assets": [], "reviews": []}

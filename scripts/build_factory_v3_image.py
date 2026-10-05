@@ -10,7 +10,7 @@ with tempfile.TemporaryDirectory(prefix="factory-v3-build-") as tmp:
     context=Path(tmp)
     shutil.copytree(root/"factory_v3",context/"factory_v3",ignore=shutil.ignore_patterns("__pycache__","*.pyc"))
     (context/"scripts").mkdir();shutil.copy2(root/"scripts/audit_final_media.py",context/"scripts/audit_final_media.py")
-    result=subprocess.run(["docker","build","--label","org.opencontainers.image.revision="+head,
+    result=subprocess.run(["docker","build","--build-arg","SOURCE_REVISION="+head,"--label","org.opencontainers.image.revision="+head,
       "-f",str(context/"factory_v3/Dockerfile"),"-t",args.tag,str(context)],capture_output=True,text=True,timeout=110)
     (root/"acceptance/factory-v3/image-build-current.txt").write_text(result.stdout+result.stderr)
     print((result.stdout+result.stderr)[-1200:])

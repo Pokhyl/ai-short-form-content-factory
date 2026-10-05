@@ -21,6 +21,12 @@ class PreparationLedger:
             "SELECT factory_v3.create_preparation(%s::uuid,%s::jsonb,%s::jsonb,%s)",
             (request_id, json.dumps(request), json.dumps(budgets), self.revision))
 
+    def snapshot(self, request_id):
+        result = self.postgres._call("SELECT jsonb_build_object('id',id,'request',request,'status',status,'source_revision',source_revision,'error_code',error_code) FROM factory_v3.preparations WHERE id=%s::uuid", (request_id,))
+        if result is None:
+            raise KeyError("preparation not found")
+        return result
+
     def claim_run(self, request_id):
         return self.postgres._call("SELECT factory_v3.claim_preparation_run(%s::uuid,%s)",
                                    (request_id, self.revision))
