@@ -34,13 +34,13 @@ def pcm(path):
     return samples
 
 
-def audit(job_id, target):
+def audit(job_id, target, data_root=Path("/data")):
     job_id = str(uuid.UUID(job_id))
     if target not in (15, 30, 45, 60):
         raise ValueError("unsupported target duration")
-    directory = Path("/data/renders") / job_id
+    directory = Path(data_root) / "renders" / job_id
     video = directory / "final.mp4"
-    voice = Path("/data/voiceovers") / job_id / "final.mp3"
+    voice = Path(data_root) / "voiceovers" / job_id / "final.mp3"
     manifest = json.loads((directory / "manifest.json").read_text())
     probe = json.loads(run("ffprobe", "-v", "error", "-show_streams",
                            "-show_format", "-of", "json", str(video)))

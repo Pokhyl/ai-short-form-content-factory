@@ -1,24 +1,32 @@
-# Factory v3 — availability first
+# Factory v3 — availability before voice
 
-This is the replacement branch authorized on 2026-10-04. It is not a finished factory.
+Replacement authorized2026-10-04. Product readiness remains false.
 
-The previous architecture froze narration and synthesized audio before proving that every shot had a distinct valid image. Actual execution12126 could cover only7/9 shots. Replacement order:
+Order: research -> review real downloaded media -> compose grounded narration from available material -> freeze globally feasible plan -> one TTS -> exact-audio alignment -> existing renderer -> actual MP4 audit -> explicit human review.
 
-1. Research facts and discover real media within recorded provider budgets.
-2. Review pixels and license/provenance; create an inventory of facts the media can actually show.
-3. Compose a storyboard and narration from that inventory and cited facts. Do not silently drop requested factual scope: return an explicit coverage failure if material cannot support it.
-4. Prove global unique assignment before voice. Freeze script, asset bytes, review contracts and attribution. Revalidate reviews whenever a contract or asset changes.
-5. Synthesize once, align exact audio, reuse working FFmpeg renderer and perform actual media QA.
-6. Use existing public service as an intake/review facade; move product decisions into ordinary versioned code instead of many embedded workflow scripts. Protect unrelated n8n automation.
+Implemented:
+- Global maximum matching, exact deficit witnesses, byte-level uniqueness and frozen asset/contract provenance.
+- PostgreSQL-only runtime ledger: atomic stage claims, exact character budget through existing factory quota functions, one voice attempt, immutable terminal/ambiguous states through the runtime functions.
+- Executor rechecks the frozen plan immediately before sending voice and executes one stage per invocation. It never repeats a claimed operation after a lost response.
+- Google TTS adapter uses the selected four voices, no speech manipulation and no duration retries.
+- Existing media-worker adapters stage the exact reviewed files, align the stored voice, render from real timestamps and invoke the actual full-decode/audio-identity audit.
+- Internal CLI and Dockerfile. Public callers must not submit their own visual approval receipts.
 
-Implemented: deterministic maximum matching, exact deficit witnesses and receipt revalidation before downstream work. CLI can replay the actual failed graph without external calls:
+Runtime setup (not deployed):
+1. Apply factory_v3/ledger.sql to the project PostgreSQL after existing factory provider-budget functions.
+2. Build with docker build -f factory_v3/Dockerfile -t factory-v3:VERSION .
+3. Provide V3_DATABASE_URL as a secret and a mounted V3_GOOGLE_ACCESS_TOKEN_FILE. Token refresh/provisioning is not yet integrated; an expired token fails without retry.
+4. Share the same media volume at /data and internal network with shorts-v2-media-worker-1.
+5. Call the internal CLI:
+   python3 -m factory_v3.cli create JOB_UUID --plan frozen.json
+   python3 -m factory_v3.cli step JOB_UUID
+   python3 -m factory_v3.cli status JOB_UUID
 
-```sh
-python3 factory_v3/visual_plan.py acceptance/release-coverage/12126-assignment-deficits.json --output acceptance/factory-v3/failed-12126-preflight.json
-# Expected exit2: blocked,7/9. No TTS is invoked.
-python3 -m unittest discover -s tests/factory_v3 -v
-```
+Each step advances at most one stage. A running/unknown/failed stage requires evidence-based reconciliation; do not launch it again. QA pass is machine acceptance, never HUMAN PASS.
 
-Implemented additionally: preflight.freeze verifies exact local render-file hashes, attribution/license families, contract-bound review receipts and all concept checks, narration-to-scene identity and byte-level global uniqueness; preflight.verify_before_voice revalidates the frozen plan. All13 tests pass. Review receipts must come from a trusted internal provider adapter; their content hash is integrity tracking, not authentication. This code is not yet wired into the live TTS path.
+Verification:
+- python3 -m unittest discover -s tests/factory_v3 -v (23 unique tests)
+- python3 tests/factory_v3/run_postgres_ledger.py (isolated offline PostgreSQL; no production writes)
+- python3 factory_v3/visual_plan.py acceptance/release-coverage/12126-assignment-deficits.json --output acceptance/factory-v3/failed-12126-preflight.json (expected blocked7/9, exit2)
 
-Not implemented yet: availability-led provider/review inventory, grounded composer, durable runtime integration, intake/review wiring and release acceptance. Imported legacy approvals are only graph evidence, never acceptance of new contracts. Current production remains unchanged. Free-only policy, supported languages/durations, exact audio reuse and strict real-media checks remain requirements.
+Still missing: trusted availability-led provider/download/review catalog, evidence-grounded composer, automatic credential provisioning, public intake/review wiring, deployment and representative actual-media release acceptance. The new executor has NOT processed a production job. Controlled tests are not provider acceptance.

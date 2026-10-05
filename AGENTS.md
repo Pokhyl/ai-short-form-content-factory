@@ -9,6 +9,6 @@ The user requested a radical change of working method on 2026-10-04: deliver the
 
 Repository: Pokhyl/ai-short-form-content-factory, main, VPS /opt/ai-short-form-content-factory. Production n8n: publisher.hodor.com.pl. Supporting Compose: shorts-v2. Do not touch unrelated projects/workflows/credentials/domains. Do not alter architecture without evidence. No topic/asset-specific production fixes, weaker acceptance gates, or paid fallbacks.
 
-Every meaningful checkpoint must be committed AND pushed to GitHub with tests/evidence and exact continuation steps. Verify HEAD equals origin/main after push. State explicitly whether code is committed, deployed, offline verified or production accepted. Do not call the project complete because tests pass.
+Every meaningful checkpoint must be committed AND pushed to GitHub with tests/evidence and exact continuation steps. Verify HEAD equals the remote tracking branch after push (currently origin/factory-v3). State explicitly whether code is committed, deployed, offline verified or production accepted. Do not call the project complete because tests pass.
 
 Use one short tool call at a time with an immediate factual update. Long operations run bounded in background. No sleep/poll loops or blind repeated side effects. No subagents unless explicitly authorized. Do not claim HUMAN/audio-listening PASS on an unsupported model surface.

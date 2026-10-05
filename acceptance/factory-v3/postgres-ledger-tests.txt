@@ -1,0 +1,7 @@
+INSERT 0 2
+DO
+
+sh: locale: not found
+2026-10-05 05:54:27.906 UTC [12] WARNING:  no usable system locales were found
+psql:/work/tests/factory_v3/ledger_assertions.sql:57: NOTICE:  V3 PostgreSQL claims, order, quota, terminal and ambiguous-result checks PASS
+
