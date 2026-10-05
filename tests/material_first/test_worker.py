@@ -36,3 +36,23 @@ class PhotoWorkerTests(unittest.TestCase):
                            {"render": {"sha256": "exact"}})
         self.assertTrue(result["machine_pass"])
         self.assertEqual(audit.call_args.kwargs, {"expected_scenes": 1})
+
+    def test_owner_interface_reads_new_plan_and_exact_photo(self):
+        from unittest.mock import Mock
+        from factory_v3.server import Application
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            ops = Operations(root, ["photo"])
+            ops.support["a0"] = ["f0", "f1", "f2"]
+            frozen = Producer(root, ops, probe=ops.probe).prepare("topic", "pl", 60)
+            runtime = Mock()
+            runtime.root = root
+            runtime.settings = {"owner_token": "x" * 40}
+            runtime.status.return_value = {"status": "prepared"}
+            runtime.ledger.snapshot.return_value = {"status": "prepared", "frozen": frozen}
+            app = Application(runtime, "https://example.invalid")
+            app.review = Mock(return_value=None)
+            job = str(uuid.uuid4())
+            self.assertEqual(app.detail(job)["scenes"][0]["id"], "beat-1")
+            self.assertEqual(app.photo(job, "beat-1")[0].read_bytes(), (root / "0.jpg").read_bytes())
+            app.pool.shutdown()

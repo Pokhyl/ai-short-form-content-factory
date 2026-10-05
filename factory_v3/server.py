@@ -132,7 +132,8 @@ class Application:
             for source in payload.get("evidence", {}).get("sources", [])]
         status["scenes"] = []
         for scene in payload["scenes"]:
-            asset = assets[payload["selection"][scene["id"]]]
+            asset = assets[scene["material_id"] if payload.get("schema") == "material-first"
+                           else payload["selection"][scene["id"]]]
             status["scenes"].append({
                 "id": scene["id"], "narration": scene["narration"],
                 "evidence_ids": scene["evidence_ids"],
@@ -159,7 +160,10 @@ class Application:
     def photo(self, request_id, scene_id):
         state = self.runtime.ledger.snapshot(identifier(request_id))
         payload = state["frozen"]["payload"]
-        selected = payload["selection"][scene_id]
+        if payload.get("schema") == "material-first":
+            selected = next(s["material_id"] for s in payload["scenes"] if s["id"] == scene_id)
+        else:
+            selected = payload["selection"][scene_id]
         asset = next(a for a in payload["assets"] if a["id"] == selected)
         validate_asset(self.runtime.root, asset)
         file = asset_path(self.runtime.root, asset["path"])
