@@ -1,0 +1,8 @@
+{
+  "compose_sha256": "8dc05761caa8490ba37a330ec8d25750b4833833e65b9b2ff7e97bc829c42a29",
+  "compose_exit_code": 0,
+  "services_started": 0,
+  "image_id": "sha256:c509487e0a156a457ee0bb3ef1ee1372edd47609b3d5bd01fca22ff5066a9c51",
+  "source_revision": "2a6d9971be21bd38bfc913ab1804d7bb698a96d9",
+  "passed": true
+}

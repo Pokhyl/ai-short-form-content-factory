@@ -1,0 +1,26 @@
+v. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#9 5.894 
+#9 5.894 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+#9 5.894 [notice] To update, run: pip install --upgrade pip
+#9 DONE 6.1s
+
+#10 [6/7] COPY factory_v3 /app/factory_v3
+#10 DONE 0.2s
+
+#11 [7/7] COPY scripts/audit_final_media.py /app/scripts/audit_final_media.py
+#11 DONE 0.1s
+
+#12 exporting to image
+#12 exporting layers
+#12 exporting layers 2.4s done
+#12 exporting manifest sha256:deaee41b00191ca0b1df9fb90236a776d4888bb9a170c1877cb411d0caaa151d
+#12 exporting manifest sha256:deaee41b00191ca0b1df9fb90236a776d4888bb9a170c1877cb411d0caaa151d 0.1s done
+#12 exporting config sha256:059d5fb80c53aa27188d0ce2382e5fed0c09f8f0c492232c5bb928d6550778d5 0.0s done
+#12 exporting attestation manifest sha256:15edad89c8ab9b9947864fb2861538900434ff7198b00558b09f4019a01892ea 0.0s done
+#12 exporting manifest list sha256:c509487e0a156a457ee0bb3ef1ee1372edd47609b3d5bd01fca22ff5066a9c51 0.0s done
+#12 naming to docker.io/library/factory-v3:2a6d997 done
+#12 unpacking to docker.io/library/factory-v3:2a6d997
+#12 unpacking to docker.io/library/factory-v3:2a6d997 0.7s done
+#12 DONE 3.3s
+
+{"tag": "factory-v3:2a6d997", "image_id": "sha256:c509487e0a156a457ee0bb3ef1ee1372edd47609b3d5bd01fca22ff5066a9c51", "source_commit": "2a6d9971be21bd38bfc913ab1804d7bb698a96d9", "deployed": false}

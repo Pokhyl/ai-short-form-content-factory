@@ -1,0 +1,20 @@
+{
+  "source_commit": "2a6d9971be21bd38bfc913ab1804d7bb698a96d9",
+  "tag": "factory-v3:2a6d997",
+  "status": "passed",
+  "deployed": false,
+  "started_at": "2026-10-05T16:31:31.342546+00:00",
+  "build_worktree": "/opt/ai-short-form-content-factory/.tmp/v3-build-aa46f5d2fbb84d2080c7f0acd261c0f2",
+  "build_exit_code": 0,
+  "image": {
+    "tag": "factory-v3:2a6d997",
+    "image_id": "sha256:c509487e0a156a457ee0bb3ef1ee1372edd47609b3d5bd01fca22ff5066a9c51",
+    "source_commit": "2a6d9971be21bd38bfc913ab1804d7bb698a96d9",
+    "deployed": false
+  },
+  "version": {
+    "source_revision": "2a6d9971be21bd38bfc913ab1804d7bb698a96d9"
+  },
+  "packaged_tests_exit_code": 0,
+  "finished_at": "2026-10-05T16:31:46.387694+00:00"
+}

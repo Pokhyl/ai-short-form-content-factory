@@ -1,11 +1,11 @@
 # Factory V3 release state — 2026-10-05
 
-Project_ready=false. The new core and owner interface are packaged, not deployed or production accepted.
+Project_ready=false. The new core and owner interface are packaged, not deployed or production accepted. Current image factory-v3:2a6d997 / sha256:c509487e0a156a457ee0bb3ef1ee1372edd47609b3d5bd01fca22ff5066a9c51, packaged78/78 PASS; native gateway quota-project correction and isolated n8n2.37.10 import/export PASS. API-enable confirmation remains pending. See top CURRENT_STATE for exact next steps.
 
 | Boundary | Actual evidence | State |
 |---|---|---|
 | Core/owner API | 78 unique controlled Python tests; native JavaScript syntax | PASS offline |
-| Packaged runtime | Image d6f0a04, real psycopg/PostgreSQL; producer/stage races, no retry, immutable owner review insert | PASS isolated |
+| Packaged runtime | Current image2a6d997, packaged78/78 and exact CLI revision PASS; earlier unchanged Python/SQL real psycopg/PostgreSQL checks retained | PASS isolated |
 | Gemini selected model | Live GET models/gemini-3.5-flash-lite HTTP200; generateContent listed | PASS model metadata only |
 | Google OAuth refresh | HTTP200, tokens never saved to Git/output | PASS refresh only |
 | Exact Gemini key owner | Full key SHA256 from signed-in AI Studio equals scoped production fingerprint; project529636078126 / gen-lang-client-0532024148 | PASS UI binding |

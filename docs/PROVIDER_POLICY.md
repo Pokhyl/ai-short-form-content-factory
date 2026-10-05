@@ -1,6 +1,6 @@
 # Provider Policy
 
-Updated: 2026-09-19
+Updated: 2026-10-05 (Gemini key policy/pricing recheck; earlier provider proofs retained)
 
 ## Gemini Developer API
 Selected text model: gemini-3.5-flash-lite.
@@ -18,7 +18,7 @@ Rules:
 - no Google Search grounding inside Gemini; research comes from SearXNG plus fetched evidence;
 - use a current Gemini authorization key, not a historical standard API key;
 - Google AI Studio has created new keys as authorization keys since 2026-05-28;
-- current Google documentation states standard Gemini API keys are rejected from September 2026;
+- current Google documentation rejects unrestricted standard keys; explicitly restricted standard keys continue to work (https://ai.google.dev/gemini-api/docs/api-key, updated2026-09-25);
 - fail closed if free-tier access is unavailable.
 
 ## Google Cloud Text-to-Speech
