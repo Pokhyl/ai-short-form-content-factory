@@ -11,13 +11,14 @@ class ReconciliationRequired(RuntimeError):
 
 
 class Executor:
-    def __init__(self, ledger, media_root, adapters):
+    def __init__(self, ledger, media_root, adapters, *, verifier=verify_before_voice):
         self.ledger = ledger
         self.media_root = media_root
         self.adapters = adapters
+        self.verify = verifier
 
     def create(self, job_id, frozen):
-        verify_before_voice(self.media_root, frozen)
+        self.verify(self.media_root, frozen)
         return self.ledger.create(job_id, deepcopy(frozen))
 
     def run_next(self, job_id):
@@ -32,7 +33,7 @@ class Executor:
             raise ValueError("unsupported job status")
         frozen = snapshot["frozen"]
         # Revalidate files/contracts before every step, including immediately before TTS.
-        payload = verify_before_voice(self.media_root, frozen)
+        payload = self.verify(self.media_root, frozen)
         self.ledger.claim(job_id, stage, frozen["sha256"])
         try:
             if stage == "voice":
@@ -41,7 +42,7 @@ class Executor:
                     nonlocal accounted
                     if accounted:
                         raise ValueError("voice send already armed")
-                    verify_before_voice(self.media_root, frozen)
+                    self.verify(self.media_root, frozen)
                     self.ledger.account_voice_attempt(job_id)
                     accounted = True
                 output = self.adapters.voice(job_id, deepcopy(payload), deepcopy(snapshot["outputs"]), before_send)

@@ -1,0 +1,214 @@
+"""Prepare a source-bound story from inspected photographs and video intervals.
+
+Operations are server-owned adapters, not public approval fields. This module
+does not certify the correctness of a model's observations or HUMAN acceptance.
+"""
+from copy import deepcopy
+from pathlib import Path
+import hashlib
+import json
+import subprocess
+
+from factory_v3.grounding import validate_evidence, validate_script_review
+from factory_v3.preflight import asset_path, digest, validate_asset
+
+
+class MaterialUnavailable(ValueError):
+    pass
+
+
+def probe_media(file):
+    result = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_streams", "-show_format", "-of", "json", str(file)],
+        capture_output=True, text=True, timeout=20, check=True)
+    data = json.loads(result.stdout)
+    videos = [s for s in data["streams"] if s.get("codec_type") == "video"]
+    if len(videos) != 1:
+        raise ValueError("material must contain one visual stream")
+    stream = videos[0]
+    duration = stream.get("duration", data.get("format", {}).get("duration"))
+    return {"width": int(stream["width"]), "height": int(stream["height"]),
+            "duration_ms": round(float(duration) * 1000) if duration is not None else None}
+
+
+def validate_material(root, asset, probe=probe_media):
+    validate_asset(root, asset)
+    kind = asset.get("media_type")
+    if kind not in {"photo", "video"}:
+        raise ValueError("unsupported real material type")
+    path = asset_path(root, asset["path"])
+    allowed = {"photo": {".jpg", ".jpeg", ".png", ".webp"},
+               "video": {".mp4", ".webm", ".mov"}}
+    if path.suffix.lower() not in allowed[kind]:
+        raise ValueError("material extension differs from declared type")
+    actual = probe(path)
+    if actual["width"] < 320 or actual["height"] < 320:
+        raise ValueError("material resolution too low")
+    if kind == "video":
+        if not isinstance(actual.get("duration_ms"), int) or actual["duration_ms"] <= 0:
+            raise ValueError("video duration missing")
+        if asset.get("duration_ms") != actual["duration_ms"]:
+            raise ValueError("video duration differs from actual file")
+    elif actual.get("duration_ms") is not None:
+        raise ValueError("animated images must not be declared photographs")
+    return actual
+
+
+def inspected_material(asset, receipt, evidence, facts):
+    """Metadata tags alone can never admit a material to the composer."""
+    if (receipt.get("asset_id") != asset["id"] or receipt.get("asset_sha256") != asset["sha256"]
+            or receipt.get("evidence_sha256") != digest(evidence)
+            or not receipt.get("receipt_id") or not receipt.get("model")
+            or receipt.get("accepted") is not True or receipt.get("is_real_material") is not True):
+        return None
+    visible = receipt.get("visible_description")
+    support = receipt.get("supported_fact_ids")
+    if not isinstance(visible, str) or not visible.strip() or not isinstance(support, list) or not support:
+        return None
+    if len(set(support)) != len(support) or not set(support) <= facts.keys():
+        raise ValueError("inspection introduced an unknown fact")
+    if asset["media_type"] == "photo":
+        interval = None
+        # A still illustrates source-backed narration, including actions.
+        # It can remain on screen for the narrated beat without inventing motion.
+        capacity = 60000  # Longest supported request; no artificial hold limit.
+    else:
+        start, end = receipt.get("source_start_ms"), receipt.get("source_end_ms")
+        if (type(start) is not int or type(end) is not int
+                or not 0 <= start < end <= asset["duration_ms"]):
+            raise ValueError("inspection interval outside real video")
+        interval = {"start_ms": start, "end_ms": end}
+        capacity = end - start
+        if capacity < 1000:
+            return None
+    return {"id": asset["id"], "media_type": asset["media_type"],
+            "sha256": asset["sha256"], "visible_description": visible.strip(),
+            "supported_fact_ids": support, "source_interval": interval,
+            "capacity_ms": capacity, "inspection": deepcopy(receipt)}
+
+
+def validate_story(request, evidence, available, draft):
+    known = {m["id"]: m for m in available}
+    beats = draft.get("beats")
+    if not isinstance(beats, list) or not 1 <= len(beats) <= len(available):
+        raise ValueError("story must use existing inspected materials")
+    seen, seen_bytes, narrated = set(), set(), set()
+    scenes = []
+    for order, beat in enumerate(beats):
+        if set(beat) != {"material_id", "narration", "fact_ids"}:
+            raise ValueError("composer cannot invent media, intervals or approvals")
+        material = known.get(beat["material_id"])
+        if material is None or material["id"] in seen or material["sha256"] in seen_bytes:
+            raise ValueError("invented or repeated real material")
+        fact_ids = beat["fact_ids"]
+        if (not isinstance(fact_ids, list) or not fact_ids
+                or len(set(fact_ids)) != len(fact_ids)
+                or not set(fact_ids) <= set(material["supported_fact_ids"])):
+            raise ValueError("narration exceeds inspected material support")
+        text = beat["narration"]
+        if not isinstance(text, str) or not text.strip():
+            raise ValueError("empty narration")
+        seen.add(material["id"]); seen_bytes.add(material["sha256"]); narrated.update(fact_ids)
+        scenes.append({"id": "beat-" + str(order + 1), "material_id": material["id"],
+            "narration": text.strip(), "evidence_ids": fact_ids,
+            "source_interval": material["source_interval"], "capacity_ms": material["capacity_ms"],
+            "contract": {"visual_intent": material["visible_description"],
+                         "must_show": [material["visible_description"]], "must_not_show": []}})
+    if not set(request["required_fact_ids"]) <= narrated:
+        raise MaterialUnavailable("story omitted the original required topic coverage")
+    # Still photographs may cover narration of any supported length. Video
+    # intervals remain bounded by their actual source duration.
+    if sum(s["capacity_ms"] for s in scenes) < request["seconds"] * 1000:
+        raise MaterialUnavailable("real material cannot cover requested duration without repetition")
+    return scenes
+
+
+class Producer:
+    """One preparation: research -> collect -> inspect -> compose -> review."""
+    def __init__(self, root, operations, *, probe=probe_media, max_materials=12):
+        self.root = Path(root).resolve()
+        self.operations, self.probe, self.max_materials = operations, probe, max_materials
+
+    def prepare(self, topic, language, seconds):
+        if language not in {"pl", "en", "ru", "uk"} or seconds not in {15, 30, 45, 60}:
+            raise ValueError("unsupported product input")
+        if not isinstance(topic, str) or not 1 <= len(topic.strip()) <= 300:
+            raise ValueError("bounded topic required")
+        request = {"topic": topic.strip(), "language": language, "seconds": seconds}
+        brief = self.operations.research(deepcopy(request))
+        # Research defines essential factual scope, never imaginary visual slots.
+        if set(brief) != {"evidence", "required_fact_ids", "queries"}:
+            raise ValueError("research brief must not contain a storyboard")
+        evidence = brief["evidence"]
+        facts = validate_evidence(evidence)
+        required = brief["required_fact_ids"]
+        if not required or len(set(required)) != len(required) or not set(required) <= facts.keys():
+            raise ValueError("invalid original topic coverage")
+        request["required_fact_ids"] = required
+        # Discovery is global and topic-bound, not a search for one imagined shot.
+        candidates = self.operations.discover(deepcopy(request), deepcopy(brief["queries"]))
+        if not isinstance(candidates, list) or len(candidates) > self.max_materials:
+            raise ValueError("material discovery exceeded server budget")
+        assets, available, hashes = {}, [], set()
+        for candidate in candidates:
+            asset = self.operations.download(deepcopy(candidate))
+            validate_material(self.root, asset, self.probe)
+            if asset["id"] in assets:
+                raise ValueError("duplicate provider identity")
+            if asset["sha256"] in hashes:
+                continue  # Alias/download from another provider is still the same material.
+            hashes.add(asset["sha256"])
+            receipt = self.operations.inspect(deepcopy(asset), deepcopy(evidence))
+            material = inspected_material(asset, receipt, evidence, facts)
+            if material is not None:
+                assets[asset["id"]] = asset
+                available.append(material)
+        covered = set().union(*(set(m["supported_fact_ids"]) for m in available)) if available else set()
+        if not set(required) <= covered:
+            raise MaterialUnavailable("essential topic facts have no inspected real material")
+        if sum(m["capacity_ms"] for m in available) < seconds * 1000:
+            raise MaterialUnavailable("inspected real material has insufficient duration")
+        composition = {"request": request, "evidence": evidence, "materials": available}
+        draft = self.operations.compose(deepcopy(composition))
+        scenes = validate_story(request, evidence, available, draft)
+        script = " ".join(s["narration"] for s in scenes)
+        review_input = {**request, "script": script, "scenes": scenes,
+                        "evidence": evidence, "materials": available}
+        review = self.operations.review_script(deepcopy(review_input))
+        validate_script_review(evidence, language, script, scenes, review, topic=topic.strip())
+        selected = {s["material_id"] for s in scenes}
+        payload = {"schema": "material-first", **request, "script": script, "scenes": scenes,
+            "assets": [assets[k] for k in sorted(selected)], "evidence": evidence,
+            "observations": [m for m in available if m["id"] in selected], "script_review": review}
+        frozen = {"payload": payload, "sha256": digest(payload)}
+        verify(self.root, frozen, self.probe)
+        return frozen
+
+
+def verify(root, frozen, probe=probe_media):
+    payload = frozen["payload"]
+    if payload.get("schema") != "material-first" or digest(payload) != frozen.get("sha256"):
+        raise ValueError("material-first plan changed")
+    facts = validate_evidence(payload["evidence"])
+    assets = {a["id"]: a for a in payload["assets"]}
+    if len(assets) != len(payload["assets"]):
+        raise ValueError("duplicate frozen material identity")
+    observations = []
+    for original in payload["observations"]:
+        asset = assets.get(original["id"])
+        if asset is None:
+            raise ValueError("observation has no real material")
+        validate_material(root, asset, probe)
+        current = inspected_material(asset, original["inspection"], payload["evidence"], facts)
+        if current != original:
+            raise ValueError("frozen observation changed")
+        observations.append(current)
+    beats = [{"material_id": s["material_id"], "narration": s["narration"],
+              "fact_ids": s["evidence_ids"]} for s in payload["scenes"]]
+    if validate_story(payload, payload["evidence"], observations, {"beats": beats}) != payload["scenes"]:
+        raise ValueError("frozen story differs from inspected material")
+    if " ".join(s["narration"] for s in payload["scenes"]) != payload["script"]:
+        raise ValueError("continuous narration changed")
+    validate_script_review(payload["evidence"], payload["language"], payload["script"],
+                           payload["scenes"], payload["script_review"], topic=payload["topic"])
+    return payload

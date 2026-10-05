@@ -102,9 +102,12 @@ class WorkerAdapters:
                 "visual_asset_id":identity(job_id,"asset",asset["sha256"])}
         return result
 
-    def voice(self, job_id, payload, outputs, before_send):
+    def _validate_scene_count(self, payload):
         if len(payload["scenes"]) != DENSITY[payload["seconds"]]:
             raise ValueError("visual density does not match requested duration")
+
+    def voice(self, job_id, payload, outputs, before_send):
+        self._validate_scene_count(payload)
         if re.search(r"(?:^|[.!?]\s+)(?:end|the end|koniec|конец|кінець)[.!?]*\s*$",
                      payload["script"],re.I):
             raise ValueError("standalone closing filler")
