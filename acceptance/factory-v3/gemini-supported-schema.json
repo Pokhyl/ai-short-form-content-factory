@@ -1,0 +1,17 @@
+{
+  "diagnostic_id": "gemini-supported-schema-20261005",
+  "status": "recorded",
+  "generation_calls": 1,
+  "tts_calls": 0,
+  "product_jobs": 0,
+  "response": {
+    "status": 400,
+    "error_status": "INVALID_ARGUMENT",
+    "error_reason": null,
+    "error_message": "Request contains an invalid argument.",
+    "gateway_execution_id": "12141",
+    "usage": null,
+    "finish_reasons": []
+  },
+  "finished_at": "2026-10-05T19:27:16.815910+00:00"
+}

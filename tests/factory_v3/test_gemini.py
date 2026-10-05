@@ -5,7 +5,7 @@ import json
 import unittest
 import test_catalog
 from test_preparation import FakeLedger
-from factory_v3.gemini import Gemini, obj, string, provider_schema
+from factory_v3.gemini import Gemini, obj, string, array, provider_schema
 from factory_v3.preparation import BudgetedCalls
 from factory_v3.preflight import digest, verify_before_voice
 
@@ -38,6 +38,13 @@ class GeminiTests(unittest.TestCase):
         for text in ["", "too long"]:
             with self.assertRaisesRegex(ValueError, "empty text"):
                 validate_json({"minLength": text}, schema)
+        bounded = array(string(), 2, 2)
+        compiled_array = provider_schema(bounded)
+        self.assertEqual(compiled_array["description"], "Return exactly 2 items.")
+        self.assertNotIn("maxItems", compiled_array)
+        for items in [["one"], ["one", "two", "three"]]:
+            with self.assertRaisesRegex(ValueError, "array exceeds"):
+                validate_json(items, bounded)
 
     def setUp(self):
         self.fixture = test_catalog.CatalogTests()

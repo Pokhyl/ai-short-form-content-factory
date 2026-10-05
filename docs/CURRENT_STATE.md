@@ -1,3 +1,9 @@
+## STRING-KEYWORD HYPOTHESIS REJECTED; COMPACT PROVIDER GRAMMAR TEST NEXT
+
+Execution12141 compiled supported schema still400 INVALID_ARGUMENT; string-keyword omission did not resolve blocker. No runtime deployment/new job/TTS. Array bounds nested64 facts x6 support plus5 units are remaining grammar-complexity hypothesis. provider_schema now emits array count requirements as documented description text and retains type/properties/items/required/enums/closed objects; original local array/string/exact-count validation remains mandatory and unchanged. This is a provider-grammar simplification, not acceptance weakening. Regression explicitly rejects wrong array counts.
+
+NEXT gemini-compact-schema-20261005 ONE controlled call, same fixed context/instruction/model,256 max output, only compiled schema difference from failed12141. No retry/TTS/product. Plan gemini-compact-schema-plan.json. Require HTTP200 to establish changed schema is accepted; diagnostic truncation is never product PASS. Do not deploy until proof/current-image verification. Prior400 receipts preserved. project_ready=false.
+
 ## SCHEMA CLASS PROVEN; DOCUMENTED SUBSET COMPILER OFFLINE PASS
 
 Controlled simple schema execution12139 HTTP200/STOP usage33 tokens; same model/instruction/context with outline schema execution12140 HTTP400 INVALID_ARGUMENT. Auth/context/native request transport excluded. Unsupported string keywords minLength/maxLength absent from official documented subset are a specific hypothesis, not yet live proven. New provider_schema compiles documented keywords and omits only local string lengths; full original schema still validates responses, field names preserved and unknown keywords fail before HTTP. 79/79 Python +gateway guards PASS. Corrected full native HTTP harness PASS; failed explicit Content-Type assumption preserved because request helper json=true supplies it, confirmed by native capture and real200.

@@ -30,10 +30,15 @@ def provider_schema(schema):
     """Compile Google's documented subset; retain full local validation separately."""
     allowed = {"type", "properties", "required", "additionalProperties", "items",
                "minItems", "maxItems", "enum", "format", "minimum", "maximum"}
-    local_only = {"minLength", "maxLength"}
+    local_only = {"minLength", "maxLength", "minItems", "maxItems"}
     if set(schema) - allowed - local_only:
         raise ValueError("unsupported provider schema keyword")
-    result = {key: value for key, value in schema.items() if key in allowed}
+    result = {key: value for key, value in schema.items() if key in allowed and key not in local_only}
+    if schema.get("type") == "array":
+        minimum, maximum = schema.get("minItems"), schema.get("maxItems")
+        if minimum is not None and maximum is not None:
+            result["description"] = (f"Return exactly {minimum} items." if minimum == maximum else
+                                     f"Return between {minimum} and {maximum} items.")
     if "properties" in result:
         result["properties"] = {key: provider_schema(value)
                                 for key, value in result["properties"].items()}
