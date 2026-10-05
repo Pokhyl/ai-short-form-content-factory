@@ -11,6 +11,10 @@ def preparation_budgets(seconds):
             'download': 12, 'metadata': 1, **{'search:' + p: 3 for p in PROVIDERS}}
 
 
+class NarrationBudgetExceeded(ValueError):
+    pass
+
+
 class Operations:
     def __init__(self, root, research, gemini, search, downloader):
         self.root = Path(root)
@@ -85,13 +89,22 @@ class Operations:
         schema = obj({'beats': array(obj({'material_id': string(m['id'] for m in materials),
             'narration': string(), 'fact_ids': array(string(f['id'] for f in context['evidence']['facts']), 1, 8)}),
             1, len(materials))})
+        seconds = context["request"]["seconds"]
+        target_words = round(seconds * 2.1)
+        maximum_words = round(seconds * 2.2)
         result, _ = self.gemini.generate('material-compose',
-            'Write continuous natural narration answering the original topic in its requested language. '
+            f'Write continuous natural narration answering the topic in its requested language. '
+            f'The ENTIRE script across ALL beats must contain about {target_words} words, '
+            f'and NEVER more than {maximum_words} words total for {seconds} seconds. '
+            'Do not allocate that word budget separately to each beat. '
             'Target about 2.1 words per second for requested duration; synthesis will retain natural speed. '
             'Select only supplied inspected materials, use each at most once, and use only facts it can '
             'illustrate. Cover required facts without inventing claims or describing motion as visible in '
             'a still. Choose a useful number of beats, no fixed shot count. No opening or closing filler.',
             context, schema)
+        words = sum(len(beat['narration'].split()) for beat in result['beats'])
+        if words > maximum_words:
+            raise NarrationBudgetExceeded('narration exceeds total word budget before TTS')
         return result
 
     def review_script(self, context):

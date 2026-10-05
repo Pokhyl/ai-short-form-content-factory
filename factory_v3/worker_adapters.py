@@ -33,6 +33,10 @@ def probe_photo(path):
     return {"width": int(streams[0]["width"]), "height": int(streams[0]["height"])}
 
 
+class VoiceDurationMismatch(ValueError):
+    pass
+
+
 class GoogleVoice:
     def __init__(self, access_token, http=None):
         self.access_token = access_token
@@ -119,7 +123,7 @@ class WorkerAdapters:
             raise ValueError("stored voice differs from synthesized voice")
         low,high = WINDOWS[payload["seconds"]]
         if not low <= result["duration_ms"] <= high:
-            raise ValueError("voice duration outside accepted window; no re-synthesis")
+            raise VoiceDurationMismatch("voice duration outside accepted window; no re-synthesis")
         result["staged_photos"] = staged
         return result
 

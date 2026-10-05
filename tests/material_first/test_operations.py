@@ -58,3 +58,13 @@ class OperationTests(unittest.TestCase):
             self.assertEqual(len(searches), 3)
             self.assertEqual(model.calls, ['material-brief', 'material-inspect:a0', 'material-compose'])
             self.assertEqual(preparation_budgets(60)['gemini'], 15)
+
+    def test_total_narration_budget_blocks_before_voice(self):
+        from material_first.operations import NarrationBudgetExceeded
+        model = SimpleNamespace(generate=lambda *args, **kwargs:
+            ({"beats": [{"narration": "word " * 40}]}, {}))
+        operations = Operations('.', None, model, None, None)
+        context = {"request": {"seconds": 15}, "materials": [{"id": "a"}],
+                   "evidence": {"facts": [{"id": "f"}]}}
+        with self.assertRaises(NarrationBudgetExceeded):
+            operations.compose(context)

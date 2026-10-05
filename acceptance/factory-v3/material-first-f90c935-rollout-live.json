@@ -1,0 +1,16 @@
+{
+  "state": "deployed",
+  "revision": "f90c93536902d5c0c529f0c66342db45a1a252e8",
+  "image_id": "sha256:6b07e927cbb537435f026a3093b55a521c2d5361fde3b82c24ecb659c066116a",
+  "before": {
+    "workflows": "dd7c8bd5284b595f14e9b08f7027cb08",
+    "jobs": "",
+    "preparations": "dcfc1a709e374bed9476721923e74be0"
+  },
+  "after": {
+    "workflows": "dd7c8bd5284b595f14e9b08f7027cb08",
+    "jobs": "",
+    "preparations": "dcfc1a709e374bed9476721923e74be0"
+  },
+  "protected_rows_unchanged": true
+}

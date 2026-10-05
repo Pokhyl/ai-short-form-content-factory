@@ -1,7 +1,7 @@
 name: factory-v3
 services:
   app:
-    image: factory-v3:e7041f0
+    image: factory-v3:f90c935
     pull_policy: never
     container_name: factory-v3-app
     entrypoint: [python3, -m, factory_v3.server]
