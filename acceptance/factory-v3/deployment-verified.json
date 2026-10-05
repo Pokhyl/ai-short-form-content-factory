@@ -1,0 +1,61 @@
+{
+  "status": "passed",
+  "verified_at": "2026-10-05T17:45:59.542634+00:00",
+  "protected_workflows_unchanged": 33,
+  "published_gateway_parity": true,
+  "gateway_active_version": "c26e5d8f-0616-4c85-9995-978fdbcb1ba2",
+  "runtime_source_revision": "2a6d9971be21bd38bfc913ab1804d7bb698a96d9",
+  "public_health_status": 200,
+  "public_ui_status": 200,
+  "public_ui_assets_status": 200,
+  "publisher_root_and_js_status": 200,
+  "container_states": [
+    {
+      "name": "/factory-v3-app",
+      "running": true,
+      "health": "healthy",
+      "restarts": 0,
+      "image_id": "sha256:c509487e0a156a457ee0bb3ef1ee1372edd47609b3d5bd01fca22ff5066a9c51"
+    },
+    {
+      "name": "/ai-short-form-n8n",
+      "running": true,
+      "health": null,
+      "restarts": 0,
+      "image_id": "sha256:307d6065be25619aa24cfc63a7c2f04ca56d084a08c05c8e9f189a89f353b1ec"
+    },
+    {
+      "name": "/shorts-v2-media-worker-1",
+      "running": true,
+      "health": "healthy",
+      "restarts": 0,
+      "image_id": "sha256:6b309a457c2471994bf792acbd85b7fda854e96b1336935607071b99d32df102"
+    },
+    {
+      "name": "/shorts-v2-postgres-1",
+      "running": true,
+      "health": "healthy",
+      "restarts": 0,
+      "image_id": "sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd"
+    },
+    {
+      "name": "/shorts-v2-searxng-1",
+      "running": true,
+      "health": "healthy",
+      "restarts": 0,
+      "image_id": "sha256:e0027a772aeeea55bf642256aae6fb3344ffa5f25ca665898c2ea821101334c4"
+    },
+    {
+      "name": "/n8n-caddy-1",
+      "running": true,
+      "health": null,
+      "restarts": 0,
+      "image_id": "sha256:dedfbbeb703b2ce9ff4a98fc06aa9c7c7d9a42f0b7d778738c1dd3ef11dcc767"
+    }
+  ],
+  "caddy_sha256": "f5c5f0b1074d244ceaa9cf05e0fb4fe4df3d825ab665f47ca2869ac2ab6a9436",
+  "job_calls": 0,
+  "generation_calls": 0,
+  "tts_calls": 0,
+  "initial_verification_failure_preserved": "activation.json; HTTPError on default urllib health probe; current product User-Agent probe200. Original response status was not retained."
+}

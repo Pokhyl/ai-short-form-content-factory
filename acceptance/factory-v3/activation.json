@@ -1,0 +1,24 @@
+{
+  "operation_id": "v3-activate-service-20261005",
+  "status": "blocked",
+  "steps": [
+    "gateway_publish_started",
+    "gateway_publish_verified",
+    "publisher_restart_started",
+    "service_start_started",
+    "service_start_verified",
+    "publisher_route_write_started",
+    "caddy_reload_started"
+  ],
+  "started_at": "2026-10-05T17:43:30.143935+00:00",
+  "job_calls": 0,
+  "generation_calls": 0,
+  "tts_calls": 0,
+  "protected_workflows_unchanged": 33,
+  "gateway_active_version": "c26e5d8f-0616-4c85-9995-978fdbcb1ba2",
+  "gateway_published_parity": true,
+  "service_image_id": "sha256:c509487e0a156a457ee0bb3ef1ee1372edd47609b3d5bd01fca22ff5066a9c51",
+  "service_healthy": true,
+  "failure_type": "HTTPError",
+  "finished_at": "2026-10-05T17:43:46.689909+00:00"
+}

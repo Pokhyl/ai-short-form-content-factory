@@ -1,6 +1,6 @@
 # Factory V3 release state — 2026-10-05
 
-Project_ready=false. The new core and owner interface are packaged, not deployed or production accepted. Current image factory-v3:2a6d997 / sha256:c509487e0a156a457ee0bb3ef1ee1372edd47609b3d5bd01fca22ff5066a9c51, packaged78/78 PASS; native gateway quota-project correction and isolated n8n2.37.10 import/export PASS. Both metadata APIs enabled; live billingInfo200 explicitly confirms billingEnabled=false. See top CURRENT_STATE for exact next steps.
+Project_ready=false. The new core and owner interface are deployed and health/parity verified, not production accepted. Current image factory-v3:2a6d997 / sha256:c509487e0a156a457ee0bb3ef1ee1372edd47609b3d5bd01fca22ff5066a9c51, packaged78/78 PASS; native gateway quota-project correction and isolated n8n2.37.10 import/export PASS. Both metadata APIs enabled; live billingInfo200 explicitly confirms billingEnabled=false. See top CURRENT_STATE for exact next steps.
 
 | Boundary | Actual evidence | State |
 |---|---|---|
@@ -11,7 +11,7 @@ Project_ready=false. The new core and owner interface are packaged, not deployed
 | Exact Gemini key owner | Full key SHA256 from signed-in AI Studio equals scoped production fingerprint; project529636078126 / gen-lang-client-0532024148 | PASS UI binding |
 | Gemini free tier | Exact-key row in signed-in AI Studio shows Free tier / Set up billing | PASS UI observation |
 | Runtime billing API | Both metadata APIs enabled; exact project billingInfo200, billingEnabled=false | PASS live metadata |
-| V3 gateway/workflow/schema/service/route | Dedicated credentials/settings + V3 tables; gateway imported inactive, originals33 unchanged; service/route pending | PROVISIONED |
+| V3 gateway/workflow/schema/service/route | Live gateway/version/history parity; service healthy; public route/UI/health200; originals33 unchanged | PASS deployed |
 | New real photo/model/TTS/video execution | Zero generation/TTS calls; no new V3 MP4 | NOT ATTEMPTED |
 | PL15/EN30/RU45/UK60 acceptance | No accepted release cases | NOT READY |
 

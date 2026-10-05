@@ -1,0 +1,26 @@
+{
+  "case": "PL15",
+  "status": "planned_not_launched",
+  "request": {
+    "request_id": "9f751c54-47f5-443b-a2fd-9d72b59aee53",
+    "topic": "Dlaczego pszczoły odwiedzają kwiaty?",
+    "language": "pl",
+    "seconds": 15
+  },
+  "runtime_revision": "2a6d9971be21bd38bfc913ab1804d7bb698a96d9",
+  "gateway_active_version": "c26e5d8f-0616-4c85-9995-978fdbcb1ba2",
+  "server_owned_budgets": {
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini": 18,
+    "download": 15,
+    "metadata": 1,
+    "search:wikimedia": 15,
+    "search:pixabay": 15,
+    "search:pexels": 15
+  },
+  "launch_budget": 1,
+  "owner_session_requests": 1,
+  "manual_job_rescue": false,
+  "recorded_at": "2026-10-05T18:21:14.042517+00:00"
+}
