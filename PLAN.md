@@ -1,3 +1,9 @@
+## 2026-10-05T19:11:33.197777+00:00 — NATIVE RESPONSE IMPORT GATE PASS; SCOPED ROLLOUT
+
+Exact d3c4f66 gateway SHAe323c356dbddaf7002bf7e15e23760deed8d8d295233506bbdb81e2839cf339f. Native output/parser +78/78 Python +guards PASS; isolated actual n8n import/export nodes/connections/settings parity PASS. Prior rollout receipt verified passed with activeVersion f3fb1604-7cb4-48b4-8596-93b1741e7816; do not repeat it.
+
+BOUND response-body-rollout-20261005: assert all33 original protected workflow rows unchanged and executions/preparing/stages zero; save current gateway privately; import ONLY corrected gateway once, publish once, restart ONLY ai-short-form-n8n once. Verify source/active history parity and health. No image/schema/credential/Caddy/service mutations; no provider/product requests. Stop any unknown effect and inspect before continuation. Then separate fresh single billing roundtrip; only after exact project/billingEnabled=false plan fresh normal product input. project_ready=false.
+
 ## 2026-10-05T19:10:09.874007+00:00 — CHAT RECOVERED; NATIVE RESPONSE BODY CONTRACT FIXED OFFLINE
 
 Resumed clean factory-v3 HEAD8b5c806. Read actual immutable native-json-billing receipt on VPS: execution12131 transport200/receipt200 but projectId/billingEnabled absent. Installed native HTTPRequest4.5 text/fullResponse branch writes response body to outputPropertyName (default data); gateway incorrectly expected body. All six upstream nodes now explicitly outputPropertyName=body. Receipt rejects missing/null/scalar/malformed successful bodies with502 instead of reporting false200. No provider calls or production mutation in this continuation.

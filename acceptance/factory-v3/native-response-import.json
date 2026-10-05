@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "image": "sha256:307d6065be25619aa24cfc63a7c2f04ca56d084a08c05c8e9f189a89f353b1ec",
+  "import_export_core_parity": true,
+  "provider_calls": 0,
+  "production_mutations": 0
+}
