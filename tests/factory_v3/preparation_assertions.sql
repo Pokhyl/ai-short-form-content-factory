@@ -14,9 +14,12 @@ DECLARE
  c uuid:='55555555-5555-4555-8555-555555555555';
  result jsonb;
  frozen jsonb:=jsonb_build_object('sha256',repeat('a',64),'payload',
-   jsonb_build_object('language','pl','seconds',15,'script','Controlled test.'));
+   jsonb_build_object('topic','controlled','language','pl','seconds',15,'script','Controlled test.'));
 BEGIN
  PERFORM factory_v3.create_preparation(a,'{"topic":"controlled","language":"pl","seconds":15}','{"search":1}','rev-a');
+ result:=factory_v3.claim_preparation_run(a,'rev-a');
+ IF result->>'cached'<>'false' THEN RAISE EXCEPTION 'new producer run cached'; END IF;
+ PERFORM pg_temp.expect_failure(format('SELECT factory_v3.claim_preparation_run(%L,%L)',a,'rev-a'));
  result:=factory_v3.claim_preparation_call(a,'q','search',repeat('a',64),'rev-a');
  IF result->>'cached'<>'false' THEN RAISE EXCEPTION 'first call cached'; END IF;
  PERFORM pg_temp.expect_failure(format('SELECT factory_v3.claim_preparation_call(%L,%L,%L,%L,%L)',a,'q','search',repeat('a',64),'rev-a'));
@@ -50,5 +53,18 @@ BEGIN
  PERFORM factory_v3.reject_preparation(c,'NoFeasibleMedia','rev-a');
  PERFORM pg_temp.expect_failure(format('SELECT factory_v3.claim_preparation_call(%L,%L,%L,%L,%L)',c,'q','search',repeat('a',64),'rev-a'));
  IF EXISTS(SELECT 1 FROM factory_v3.jobs WHERE id=c) THEN RAISE EXCEPTION 'rejected preparation created voice job'; END IF;
+
+ PERFORM factory_v3.create_preparation('66666666-6666-4666-8666-666666666666','{"topic":"controlled","language":"pl","seconds":15}','{"source_fetch":2}','rev-a');
+ result:=factory_v3.claim_preparation_call('66666666-6666-4666-8666-666666666666','bad','source_fetch',repeat('a',64),'rev-a');
+ PERFORM pg_temp.expect_failure('SELECT factory_v3.unavailable_preparation_call(''66666666-6666-4666-8666-666666666666'',''bad'',''{"status":429}''::jsonb)');
+ PERFORM factory_v3.unavailable_preparation_call('66666666-6666-4666-8666-666666666666','bad','{"status":404}');
+ result:=factory_v3.claim_preparation_call('66666666-6666-4666-8666-666666666666','bad','source_fetch',repeat('a',64),'rev-a');
+ IF result->>'unavailable'<>'true' THEN RAISE EXCEPTION 'definitive unavailable receipt not replayed'; END IF;
+ PERFORM factory_v3.claim_preparation_call('66666666-6666-4666-8666-666666666666','good','source_fetch',repeat('b',64),'rev-a');
+ PERFORM factory_v3.finish_preparation_call('66666666-6666-4666-8666-666666666666','good','{"status":200}');
+ PERFORM factory_v3.complete_preparation('66666666-6666-4666-8666-666666666666',frozen,'rev-a');
+ IF (SELECT count(*) FROM factory_v3.preparation_calls WHERE preparation_id='66666666-6666-4666-8666-666666666666')<>2 THEN
+  RAISE EXCEPTION 'failed resource resent'; END IF;
+
  RAISE NOTICE 'Preparation exact replay, revision, budgets, ambiguity, terminal rejection and atomic handoff PASS';
 END $$;

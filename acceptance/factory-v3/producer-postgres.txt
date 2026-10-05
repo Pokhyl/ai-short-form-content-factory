@@ -1,0 +1,13 @@
+INSERT 0 2
+DO
+CREATE FUNCTION
+DO
+CREATE FUNCTION
+DO
+
+sh: locale: not found
+2026-10-05 07:14:35.978 UTC [12] WARNING:  no usable system locales were found
+psql:/work/tests/factory_v3/ledger_assertions.sql:57: NOTICE:  V3 PostgreSQL claims, order, quota, terminal and ambiguous-result checks PASS
+psql:/work/tests/factory_v3/preparation_assertions.sql:70: NOTICE:  Preparation exact replay, revision, budgets, ambiguity, terminal rejection and atomic handoff PASS
+psql:/work/tests/factory_v3/provider_cache_assertions.sql:30: NOTICE:  Exact provider cache,24h retention, expiry, pending/ambiguous blocks and failed headers PASS
+

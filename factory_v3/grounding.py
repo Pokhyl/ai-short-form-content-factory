@@ -33,7 +33,7 @@ def validate_evidence(evidence):
     return by_fact
 
 
-def validate_script_review(evidence, language, script, scenes, review):
+def validate_script_review(evidence, language, script, scenes, review, topic=None):
     """A trusted semantic reviewer must approve the exact final text, not just citation IDs."""
     if not isinstance(review,dict) or not review.get("receipt_id") or not review.get("model"):
         raise ValueError("trusted script review missing")
@@ -43,6 +43,8 @@ def validate_script_review(evidence, language, script, scenes, review):
     if review.get("language")!=language or any(review.get(k) is not True for k in
         ("language_match","visual_contracts_match","no_unsupported_claims")):
         raise ValueError("script semantic/language review failed")
+    if topic is not None and (review.get("topic_covered") is not True or review.get("topic_sha256") != hashlib.sha256(topic.encode()).hexdigest()):
+        raise ValueError("script does not answer the requested topic")
     expected={(s["id"],f) for s in scenes for f in s["evidence_ids"]}
     by_scene={s["id"]:s for s in scenes}
     checks=review.get("factual_checks",[])

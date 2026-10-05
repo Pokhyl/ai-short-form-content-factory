@@ -121,6 +121,6 @@ def prepare(root, topic, language, seconds, evidence, catalog, required_facts, c
     reviews=[deepcopy(r) for u in selected for r in eligible[u["id"]]]
     chosen_assets={r["asset_id"] for r in reviews}
     script=" ".join(s["narration"] for s in scenes)
-    semantic_review=review_script({"language":language,"script":script,"scenes":deepcopy(scenes),"evidence":deepcopy(evidence)})
+    semantic_review=review_script({"topic":topic,"seconds":seconds,"language":language,"script":script,"scenes":deepcopy(scenes),"evidence":deepcopy(evidence)})
     return freeze(root,language,seconds,script,scenes,
-                  [deepcopy(assets[a]) for a in sorted(chosen_assets)],reviews,evidence=evidence,script_review=semantic_review)
+                  [deepcopy(assets[a]) for a in sorted(chosen_assets)],reviews,evidence=evidence,script_review=semantic_review,topic=topic)

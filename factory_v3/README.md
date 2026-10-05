@@ -44,3 +44,7 @@ Gemini uses trusted server credentials and free-tier deployment confirmation, ex
 ## Photo sources and exact-byte download
 
 Apply provider_cache.sql after ledger.sql/preparation.sql. PhotoSearch uses server credentials, BudgetedCalls and a PostgreSQL24h ProviderCache. Pending/unknown claims require explicit reconciliation. PhotoDownload stores bounded selected candidates once, retaining SHA/provenance and ffprobe dimensions for exact Gemini/render reuse. Current source tests are controlled, not live acceptance.
+
+## Connected trusted producer
+
+Producer creates a durable request with server-owned duration-scaled budgets, claims preparation once, fetches evidence, derives source-supported units and three distinct query contexts, reviews at most three exact photos per unit, checks globally unique factual coverage before composition, and freezes independently reviewed narration. A definitive selected-resource403/404/410 can be skipped without retry inside the original budget;429/ambiguous results stop. Tests connect the full preparation path using controlled responses. Runtime credential wiring/public intake/live acceptance remain pending.

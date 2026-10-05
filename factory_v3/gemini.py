@@ -45,7 +45,7 @@ def validate_json(value, schema):
             raise ValueError("model response array exceeds bounds")
         for item in value:
             validate_json(item, schema["items"])
-    elif kind == "string" and len(value.strip()) < schema.get("minLength", 0):
+    elif kind == "string" and not schema.get("minLength", 0) <= len(value.strip()) <= schema.get("maxLength", 80000):
         raise ValueError("model response contains empty text")
     elif kind == "number" and not schema.get("minimum", float("-inf")) <= value <= schema.get("maximum", float("inf")):
         raise ValueError("model response number exceeds bounds")
@@ -142,7 +142,7 @@ class Gemini:
         validate_evidence(request["evidence"])
         scenes = request["scenes"]
         schema = obj({"language": string(["pl", "en", "ru", "uk"]),
-            "language_match": BOOL, "visual_contracts_match": BOOL, "no_unsupported_claims": BOOL,
+            "language_match": BOOL, "visual_contracts_match": BOOL, "no_unsupported_claims": BOOL, "topic_covered": BOOL,
             "factual_checks": array(obj({"scene_id": string(s["id"] for s in scenes),
                 "fact_id": string(f["id"] for f in request["evidence"]["facts"]),
                 "narration_quote": string(), "supported": BOOL}), 1)})
@@ -150,13 +150,15 @@ class Gemini:
             "Independently audit every claim in the exact final narration against supplied source-supported facts. "
             "Check language, every scene's exact visual contract and exclusions. "
             "Do not approve a fact merely because its ID is cited. Quote the actual words asserting each cited fact. "
-            "Report false for any unsupported statement, omitted cited fact or contradictory image requirement.",
+            "Check that the narration actually answers the requested topic and essential mechanism, rather than merely describing pictured objects. "
+            "Report false for omitted topic coverage, any unsupported statement, omitted cited fact or contradictory image requirement.",
             request, schema)
         result.update({"receipt_id": provenance["receipt_id"], "model": self.model,
             "provider_provenance": provenance,
             "script_sha256": hashlib.sha256(request["script"].encode()).hexdigest(),
-            "evidence_sha256": digest(request["evidence"])})
-        validate_script_review(request["evidence"], request["language"], request["script"], scenes, result)
+            "evidence_sha256": digest(request["evidence"]),
+            "topic_sha256": hashlib.sha256(request["topic"].encode()).hexdigest()})
+        validate_script_review(request["evidence"], request["language"], request["script"], scenes, result, topic=request["topic"])
         return result
 
     def review_photo(self, root, unit, asset, evidence):
@@ -195,3 +197,52 @@ class Gemini:
             "evidence_sha256": digest(evidence), "receipt_id": provenance["receipt_id"],
             "model": self.model, "provider_provenance": provenance})
         return result
+
+    def outline(self, request):
+        from .worker_adapters import DENSITY
+        if request["language"] not in {"pl", "en", "ru", "uk"} or request["seconds"] not in DENSITY:
+            raise ValueError("invalid outline input")
+        sources = request["sources"]
+        if not 1 <= len(sources) <= 3:
+            raise ValueError("outline source budget invalid")
+        if any(hashlib.sha256(s["text"].encode()).hexdigest() != s["sha256"] for s in sources):
+            raise ValueError("outline source text changed")
+        query = obj({"query": {**string(), "maxLength": 100},
+                     "orientation": string(["portrait", "landscape", "all"])})
+        unit = obj({"id": string(), "fact_ids": array(string(), 1, 8),
+            "contract": obj({"visual_intent": string(), "must_show": array(string(), 1, 6),
+                             "must_not_show": array(string(), 0, 12)}),
+            "queries": array(query, 3, 3)})
+        count = DENSITY[request["seconds"]]
+        schema = obj({"facts": array(obj({"id": string(), "text": string(),
+            "support": array(obj({"source_id": string(s["id"] for s in sources),
+                                 "quote": string()}), 1, 6)}), 1, 64),
+            "required_fact_ids": array(string(), 1, 64), "units": array(unit, count, count)})
+        result, provenance = self.generate("evidence-outline",
+            "Extract only facts faithfully supported by exact quotations from the fetched sources. "
+            "Identify the essential facts needed to answer the requested topic, including its mechanism when asked. "
+            "Plan exactly the required number of distinct, stock-photo-friendly visual units, with fact IDs. "
+            "This is a factual media discovery plan, NOT final narration. Do not invent actors/actions, "
+            "force hidden details into a visible requirement, or omit essential explanations to fit stock. "
+            "Every contract must keep the actual pictured subject, visible required concepts and exclusions explicit. "
+            "Give three DISTINCT English photo search contexts (primary and two detailed) per unit, each <=100 characters. "
+            "Prefer concrete observable states and real photographs. Final narration will be written only after media approval.",
+            request, schema, max_tokens=16384)
+        evidence = {"sources": sources, "facts": result["facts"]}
+        facts = validate_evidence(evidence)
+        required = result["required_fact_ids"]
+        units = result["units"]
+        if len(set(required)) != len(required) or not set(required) <= facts.keys():
+            raise ValueError("outline required facts invalid")
+        if len({u["id"] for u in units}) != count:
+            raise ValueError("outline unit identity duplicated")
+        for unit in units:
+            if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", unit["id"]) or not set(unit["fact_ids"]) <= facts.keys():
+                raise ValueError("outline unit contract invalid")
+            if len({q["query"].strip().casefold() for q in unit["queries"]}) != 3:
+                raise ValueError("outline search contexts not distinct")
+        covered = set().union(*(set(u["fact_ids"]) for u in units))
+        if not set(required) <= covered:
+            raise ValueError("outline omits required factual scope")
+        return {"evidence": evidence, "required_fact_ids": required, "units": units,
+                "provider_provenance": provenance}

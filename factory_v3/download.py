@@ -39,6 +39,6 @@ class PhotoDownload:
                           "download_receipt": {k: v for k, v in receipt.items() if k != "body"}})
             validate_asset(self.root, asset)
             return asset
-        asset = self.calls.run("download:" + candidate["id"], "download", identity, send)
+        asset = self.calls.run("download:" + candidate["id"], "download", identity, send, allow_unavailable=True)
         validate_asset(self.root, asset)
         return asset

@@ -98,10 +98,10 @@ class GeminiTests(unittest.TestCase):
         f = self.fixture
         scenes = [{"id": "u0", "narration": "Unrelated sentence.", "evidence_ids": ["f0"],
                    "contract": f.catalog["units"][0]["contract"]}]
-        request = {"language": "pl", "script": scenes[0]["narration"],
+        request = {"topic": "controlled", "language": "pl", "script": scenes[0]["narration"],
                    "scenes": scenes, "evidence": f.evidence}
         self.http.result = {"language": "pl", "language_match": True,
-            "visual_contracts_match": True, "no_unsupported_claims": False,
+            "visual_contracts_match": True, "no_unsupported_claims": False, "topic_covered": True,
             "factual_checks": [{"scene_id": "u0", "fact_id": "f0",
                                "narration_quote": "Unrelated sentence.", "supported": False}]}
         with self.assertRaisesRegex(ValueError, "semantic"):
@@ -133,3 +133,20 @@ class GeminiTests(unittest.TestCase):
             mutated["sha256"] = digest(mutated["payload"])
             with self.assertRaises(ValueError):
                 verify_before_voice(self.fixture.root, mutated)
+
+    def test_grounded_outline_requires_exact_quotes_and_distinct_search_contexts(self):
+        f = self.fixture
+        units = copy.deepcopy(f.catalog["units"])
+        for index, unit in enumerate(units):
+            unit["queries"] = [{"query": "object " + str(index) + " view " + str(i), "orientation": "portrait"}
+                               for i in range(3)]
+        self.http.result = {"facts": f.evidence["facts"], "required_fact_ids": ["f0"], "units": units}
+        request = {"topic": "controlled", "language": "pl", "seconds": 15, "sources": f.evidence["sources"]}
+        result = self.adapter.outline(request)
+        self.assertEqual(result["evidence"], f.evidence)
+        self.assertEqual(len(result["units"]), 5)
+        self.adapter.calls = BudgetedCalls(FakeLedger(), "other")
+        self.http.result = copy.deepcopy(self.http.result)
+        self.http.result["facts"][0]["support"][0]["quote"] = "Invented quote"
+        with self.assertRaisesRegex(ValueError, "quotation"):
+            self.adapter.outline(request)

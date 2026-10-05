@@ -50,6 +50,9 @@ BEGIN
   IF existing.kind=p_kind AND existing.request_hash=p_hash AND existing.state='succeeded' THEN
    RETURN jsonb_build_object('cached',true,'response',existing.response);
   END IF;
+  IF existing.kind=p_kind AND existing.request_hash=p_hash AND existing.state='failed' THEN
+   RETURN jsonb_build_object('cached',false,'unavailable',true,'response',existing.response);
+  END IF;
   RAISE EXCEPTION 'request changed or operation already claimed/ambiguous';
  END IF;
  max_calls:=COALESCE((prep.budgets->>p_kind)::int,0);
@@ -82,9 +85,11 @@ CREATE OR REPLACE FUNCTION factory_v3.complete_preparation(p_id uuid,p_frozen js
 RETURNS void LANGUAGE plpgsql AS $$
 BEGIN
  PERFORM 1 FROM factory_v3.preparations WHERE id=p_id AND status='preparing' AND source_revision=p_revision FOR UPDATE;
- IF NOT FOUND OR EXISTS(SELECT 1 FROM factory_v3.preparation_calls WHERE preparation_id=p_id AND state<>'succeeded') THEN
+ IF NOT FOUND OR EXISTS(SELECT 1 FROM factory_v3.preparation_calls WHERE preparation_id=p_id AND state IN ('started','unknown')) THEN
   RAISE EXCEPTION 'preparation not ready';
  END IF;
+ IF (SELECT request->>'topic' FROM factory_v3.preparations WHERE id=p_id) IS DISTINCT FROM p_frozen->'payload'->>'topic' THEN
+  RAISE EXCEPTION 'prepared request topic changed'; END IF;
  IF (SELECT request->>'language' FROM factory_v3.preparations WHERE id=p_id) IS DISTINCT FROM p_frozen->'payload'->>'language'
  OR (SELECT (request->>'seconds')::int FROM factory_v3.preparations WHERE id=p_id) IS DISTINCT FROM (p_frozen->'payload'->>'seconds')::int THEN
   RAISE EXCEPTION 'prepared request language/duration changed'; END IF;
@@ -100,4 +105,32 @@ BEGIN
  IF NOT FOUND OR EXISTS(SELECT 1 FROM factory_v3.preparation_calls WHERE preparation_id=p_id AND state='started') THEN
   RAISE EXCEPTION 'preparation terminal or operation outstanding'; END IF;
  UPDATE factory_v3.preparations SET status='failed',error_code=p_code WHERE id=p_id;
+END $$;
+
+CREATE OR REPLACE FUNCTION factory_v3.unavailable_preparation_call(p_id uuid,p_key text,p_receipt jsonb)
+RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+ IF NOT COALESCE((p_receipt->>'status')::int IN (403,404,410),false) THEN RAISE EXCEPTION 'not a definitive resource rejection'; END IF;
+ PERFORM 1 FROM factory_v3.preparations WHERE id=p_id AND status='preparing' FOR UPDATE;
+ IF NOT FOUND THEN RAISE EXCEPTION 'preparation terminal'; END IF;
+ UPDATE factory_v3.preparation_calls SET state='failed',response=p_receipt,error_code='ResourceUnavailable',finished_at=now()
+ WHERE preparation_id=p_id AND call_key=p_key AND state='started';
+ IF NOT FOUND THEN RAISE EXCEPTION 'call not started'; END IF;
+END $$;
+
+CREATE TABLE IF NOT EXISTS factory_v3.preparation_runs (
+ preparation_id uuid PRIMARY KEY REFERENCES factory_v3.preparations(id),
+ source_revision text NOT NULL,
+ started_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE OR REPLACE FUNCTION factory_v3.claim_preparation_run(p_id uuid,p_revision text)
+RETURNS jsonb LANGUAGE plpgsql AS $$
+DECLARE prep factory_v3.preparations%ROWTYPE;
+BEGIN
+ SELECT * INTO STRICT prep FROM factory_v3.preparations WHERE id=p_id FOR UPDATE;
+ IF prep.source_revision IS DISTINCT FROM p_revision THEN RAISE EXCEPTION 'source revision changed'; END IF;
+ IF prep.status='prepared' THEN RETURN jsonb_build_object('cached',true,'frozen',prep.frozen); END IF;
+ IF prep.status<>'preparing' THEN RAISE EXCEPTION 'preparation terminal'; END IF;
+ INSERT INTO factory_v3.preparation_runs(preparation_id,source_revision) VALUES(p_id,p_revision);
+ RETURN jsonb_build_object('cached',false,'request',prep.request);
 END $$;

@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-10-05T07:14:39.500492+00:00",
+  "checks": [
+    {
+      "name": "producer-python",
+      "exit_code": 0
+    },
+    {
+      "name": "producer-postgres",
+      "exit_code": 0
+    }
+  ],
+  "actual_provider_calls": 0,
+  "production_mutations": 0,
+  "product_ready": false,
+  "documentation": [
+    "https://docs.searxng.org/dev/search_api.html"
+  ],
+  "controlled_connected_preparation": true
+}

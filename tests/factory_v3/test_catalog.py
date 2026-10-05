@@ -46,6 +46,7 @@ class CatalogTests(unittest.TestCase):
     def review_script(self, request):
         facts={f["id"]:f for f in request["evidence"]["facts"]}
         return {"receipt_id":"controlled-semantic-review","model":"controlled-test",
+          "topic_covered":True,"topic_sha256":hashlib.sha256(request["topic"].encode()).hexdigest(),
           "script_sha256":hashlib.sha256(request["script"].encode()).hexdigest(),
           "evidence_sha256":digest(request["evidence"]),"language":request["language"],
           "language_match":True,"visual_contracts_match":True,"no_unsupported_claims":True,

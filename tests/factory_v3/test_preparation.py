@@ -16,6 +16,8 @@ class FakeLedger:
             raise ValueError("terminal")
         if key in self.claims:
             old = self.claims[key]
+            if old[:2] == (kind, request_hash) and old[2] == "failed":
+                return {"cached": False, "unavailable": True, "response": old[3]}
             if old[:2] != (kind, request_hash) or old[2] != "done":
                 raise ValueError("changed or ambiguous")
             return {"cached": True, "response": old[3]}
@@ -30,6 +32,10 @@ class FakeLedger:
 
     def fail(self, request_id, key, code, receipt=None):
         self.terminal = True
+
+    def unavailable(self, request_id, key, receipt):
+        old = self.claims[key]
+        self.claims[key] = (*old[:2], "failed", receipt)
 
     def reject(self, request_id, code):
         self.rejected = code
