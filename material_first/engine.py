@@ -94,6 +94,38 @@ def inspected_material(asset, receipt, evidence, facts):
             "capacity_ms": capacity, "inspection": deepcopy(receipt)}
 
 
+def match_materials(available, draft):
+    """Assign unique inspected pictures to claims, preferring model choices."""
+    result = deepcopy(draft)
+    known = {m['id']: m for m in available}
+    beats = result['beats']
+    options = []
+    for beat in beats:
+        if beat['material_id'] not in known:
+            raise ValueError('composer invented material')
+        facts = set(beat['fact_ids'])
+        candidates = [m['id'] for m in available if facts <= set(m['supported_fact_ids'])]
+        candidates.sort(key=lambda identity: identity != beat['material_id'])
+        options.append(candidates)
+    owners = {}
+    def assign(index, visited):
+        for identity in options[index]:
+            if identity in visited:
+                continue
+            visited.add(identity)
+            previous = owners.get(identity)
+            if previous is None or assign(previous, visited):
+                owners[identity] = index
+                return True
+        return False
+    for index in range(len(beats)):
+        if not assign(index, set()):
+            raise MaterialUnavailable('not enough distinct inspected pictures for narrated claims')
+    for identity, index in owners.items():
+        beats[index]['material_id'] = identity
+    return result
+
+
 def validate_story(request, evidence, available, draft):
     known = {m["id"]: m for m in available}
     beats = draft.get("beats")
@@ -183,6 +215,7 @@ class Producer:
             raise MaterialUnavailable("inspected real material has insufficient duration")
         composition = {"request": request, "evidence": evidence, "materials": available}
         draft = self.operations.compose(deepcopy(composition))
+        draft = match_materials(available, draft)
         scenes = validate_story(request, evidence, available, draft)
         script = " ".join(s["narration"] for s in scenes)
         review_input = {**request, "script": script, "scenes": scenes,

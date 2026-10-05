@@ -178,3 +178,13 @@ class EngineTests(unittest.TestCase):
         result = self.run_prepare(ops)
         self.assertEqual(len(result["payload"]["assets"]), 6)
         self.assertNotIn("inspect:a6", ops.events)
+
+    def test_matching_reassigns_pictures_without_changing_claims_or_repeating_images(self):
+        from material_first.engine import match_materials
+        available = [{"id": "a", "supported_fact_ids": ["food", "pollination"]},
+                     {"id": "b", "supported_fact_ids": ["food"]}]
+        draft = {"beats": [{"material_id": "a", "fact_ids": ["food"], "narration": "Food"},
+                           {"material_id": "b", "fact_ids": ["pollination"], "narration": "Pollination"}]}
+        result = match_materials(available, draft)
+        self.assertEqual([b["material_id"] for b in result["beats"]], ["b", "a"])
+        self.assertEqual([b["narration"] for b in result["beats"]], ["Food", "Pollination"])
