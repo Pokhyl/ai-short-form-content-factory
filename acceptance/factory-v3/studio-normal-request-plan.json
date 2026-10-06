@@ -1,0 +1,18 @@
+{
+  "request_id": "43b01bd6-c50e-409b-8a98-e4d3402e0fc1",
+  "topic": "Как делают хлеб: от муки до готовой буханки",
+  "language": "ru",
+  "seconds": 30,
+  "source_revision": "1184caeb9c02dcf8e49fe31dd1124b08e1f0004a",
+  "reason": "Actual studio entrypoint connected; saved 4-paragraph failure class closed without provider calls; packaged52+86 tests pass",
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 27,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "search_each_provider": 3,
+    "tts": 1
+  },
+  "stop": "First failure or unknown; no repeat, no rescue old IDs; no paid fallback"
+}
