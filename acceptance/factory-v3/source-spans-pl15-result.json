@@ -1,0 +1,444 @@
+{
+  "id": "9dabd989-e5cd-44ba-8309-92af983d139e",
+  "source_revision": "52cfb87033e3737114b7d92b0b1552712f2ab875",
+  "status": "qa_pass",
+  "request": {
+    "topic": "Jak powstaje chleb: mieszanie ciasta, wyrastanie i pieczenie",
+    "seconds": 15,
+    "language": "pl",
+    "visual_validation_mode": "metadata"
+  },
+  "photo_count": 8,
+  "script": "Mąka, woda, drożdże oraz sól tworzą ciasto. Dokładne wymieszanie składników pozwala uzyskać elastyczną masę. W ciepłym miejscu drożdże przeprowadzają fermentację, produkując gaz, który unoszy ciasto. Pieczenie w wysokiej temperaturze tworzy chrupiącą skórkę.",
+  "exact_source_evidence_valid": true,
+  "call_summary": [
+    {
+      "kind": "download",
+      "state": "succeeded",
+      "count": 8
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 3
+    }
+  ],
+  "model_calls": [
+    {
+      "key": "material-brief",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 14110,
+        "promptTokenCount": 13350,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 13350
+          }
+        ],
+        "candidatesTokenCount": 760
+      }
+    },
+    {
+      "key": "material-compose",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 7987,
+        "promptTokenCount": 7374,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 7374
+          }
+        ],
+        "candidatesTokenCount": 613
+      }
+    },
+    {
+      "key": "script-review",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 8621,
+        "promptTokenCount": 8262,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8262
+          }
+        ],
+        "candidatesTokenCount": 359
+      }
+    }
+  ],
+  "outputs": {
+    "qa": {
+      "gates": {
+        "frame_count": true,
+        "full_decode": true,
+        "tempo_bound": true,
+        "audio_format": true,
+        "video_format": true,
+        "video_sha256": true,
+        "exact_duration": true,
+        "reviewed_photo_set": true,
+        "staged_photo_bytes": true,
+        "whole_photo_policy": true,
+        "distinct_photo_count": true,
+        "exact_visual_timeline": true,
+        "fitted_audio_unchanged": true,
+        "original_audio_unchanged": true,
+        "fitted_narration_preserved": true
+      },
+      "passed": true,
+      "sha256": "a19beaa79b4d572c8ec32c900a7d2214fa255543f01ac1ebd42f93e839ada520",
+      "status": "ready",
+      "human_pass": false,
+      "duration_ms": 15000,
+      "scene_count": 8,
+      "machine_pass": true,
+      "audio_correlation": 0.9999910037514042
+    },
+    "align": {
+      "job_id": "9dabd989-e5cd-44ba-8309-92af983d139e",
+      "status": "ready",
+      "transcript": "Mąka, woda, drożdże oraz sól tworzą ciasto. Dokładne wymieszanie składników pozwala uzyskać elastyczną masę. W ciepłym miejscu drożdże przeprowadzają fermentację, produkując gaz, który unoszy ciasto. Pieczenie w wysokiej temperaturze tworzy chrupiącą skórkę.",
+      "audio_sha256": "6a67ec135e9db08adf94726ffad87c6e156a82035b266279d2bd40eee66610c4",
+      "model_sha256": "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b",
+      "language_code": "pl",
+      "scene_timings": [
+        {
+          "end_ms": 3840,
+          "coverage": 1.0,
+          "start_ms": 100,
+          "scene_key": "beat-1",
+          "scene_uuid": "93b33981-af68-53e9-8c69-1b3843546762"
+        },
+        {
+          "end_ms": 8370,
+          "coverage": 1.0,
+          "start_ms": 4200,
+          "scene_key": "beat-2",
+          "scene_uuid": "7994d5b4-5ccf-5b77-a3e3-ba4616aebd2d"
+        },
+        {
+          "end_ms": 13410,
+          "coverage": 1.0,
+          "start_ms": 8780,
+          "scene_key": "beat-3",
+          "scene_uuid": "4cd37c2e-72fa-51b2-90e7-52c45d70447a"
+        },
+        {
+          "end_ms": 15000,
+          "coverage": 1.0,
+          "start_ms": 13430,
+          "scene_key": "beat-4",
+          "scene_uuid": "5d2b1fc4-01bc-56d2-b681-1996871d89e7"
+        },
+        {
+          "end_ms": 18860,
+          "coverage": 1.0,
+          "start_ms": 15400,
+          "scene_key": "beat-5",
+          "scene_uuid": "0764ccbf-2e14-5596-a63c-dcf49012419c"
+        }
+      ],
+      "alignment_path": "/data/alignments/9dabd989-e5cd-44ba-8309-92af983d139e/final.json",
+      "lexical_end_ms": 18860,
+      "global_coverage": 1.0,
+      "alignment_method": "whisper_token_sequence_match",
+      "lexical_start_ms": 100,
+      "normalized_match": true,
+      "raw_whisper_path": "/data/alignments/9dabd989-e5cd-44ba-8309-92af983d139e/whisper.json",
+      "audio_duration_ms": 19128,
+      "lexical_end_ms_raw": 18860,
+      "lexical_token_count": 32,
+      "terminal_overrun_ms": 0,
+      "whisper_image_digest": "sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11"
+    },
+    "voice": {
+      "bytes": 76512,
+      "codec": "mp3",
+      "job_id": "9dabd989-e5cd-44ba-8309-92af983d139e",
+      "sha256": "6a67ec135e9db08adf94726ffad87c6e156a82035b266279d2bd40eee66610c4",
+      "status": "ready",
+      "channels": 1,
+      "duration_ms": 19128,
+      "sample_rate": 24000,
+      "storage_path": "/data/voiceovers/9dabd989-e5cd-44ba-8309-92af983d139e/final.mp3",
+      "staged_photos": {
+        "photo-1": {
+          "path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/e77b467c-bc0f-5c41-8bf6-4191d3a36ae9/selected.webp",
+          "shot_uuid": "e77b467c-bc0f-5c41-8bf6-4191d3a36ae9",
+          "media_type": "photo",
+          "asset_width": 867,
+          "asset_height": 1300,
+          "asset_sha256": "62b9afa4fd60e879894901807f926081d6a5e841a39ef510814c6b0667596d18",
+          "visual_asset_id": "2013fa2f-44ed-55f1-91e7-d16857d5cbff"
+        },
+        "photo-2": {
+          "path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/bcb91840-f02d-5020-887a-8c745842a403/selected.jpg",
+          "shot_uuid": "bcb91840-f02d-5020-887a-8c745842a403",
+          "media_type": "photo",
+          "asset_width": 855,
+          "asset_height": 1280,
+          "asset_sha256": "5da3103db3e84e9788be05aa40f4d68e9feed96a6883efa53e3619b55756c8fb",
+          "visual_asset_id": "e6f4d27a-4abe-5b30-acca-110439cdc5ab"
+        },
+        "photo-3": {
+          "path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/32d62058-bdef-5bdf-8f56-be8cc9933bec/selected.webp",
+          "shot_uuid": "32d62058-bdef-5bdf-8f56-be8cc9933bec",
+          "media_type": "photo",
+          "asset_width": 867,
+          "asset_height": 1300,
+          "asset_sha256": "21242c5e3feed6a07e9ac169047c63482ebae20c3240b17945346ab6749af39c",
+          "visual_asset_id": "427f630b-1630-54f7-9022-bef587394afb"
+        },
+        "photo-4": {
+          "path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/f372bb66-65a4-5325-af08-65a5f5869659/selected.webp",
+          "shot_uuid": "f372bb66-65a4-5325-af08-65a5f5869659",
+          "media_type": "photo",
+          "asset_width": 975,
+          "asset_height": 1300,
+          "asset_sha256": "fbe8da525e733801eeba3cf8740cffc40991dd6bc5052931ac5f99378ab9f37b",
+          "visual_asset_id": "e2729b61-4f14-5936-8d3c-130f9a41638e"
+        },
+        "photo-5": {
+          "path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/ff09c288-e7b5-5f2d-a1a0-07f862c5fdca/selected.webp",
+          "shot_uuid": "ff09c288-e7b5-5f2d-a1a0-07f862c5fdca",
+          "media_type": "photo",
+          "asset_width": 867,
+          "asset_height": 1300,
+          "asset_sha256": "d32b4c4522f77c363d02afbeeb88a6b6bb16ee764ba459a38b08bb468f5eb9cb",
+          "visual_asset_id": "b071a9b2-d763-55f0-b94f-026c3081ae55"
+        },
+        "photo-6": {
+          "path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/cb9b4670-6982-5613-9ed4-040f53a7be18/selected.jpg",
+          "shot_uuid": "cb9b4670-6982-5613-9ed4-040f53a7be18",
+          "media_type": "photo",
+          "asset_width": 851,
+          "asset_height": 1280,
+          "asset_sha256": "647da31de41d5b8bb5d143b3cd7909475cddf59ac2c5948d17dfe0887cde6998",
+          "visual_asset_id": "9805bf13-4bed-526d-9bec-6635d4383303"
+        },
+        "photo-7": {
+          "path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/93880903-b8a7-5133-8fd9-d9a2d5404d11/selected.jpg",
+          "shot_uuid": "93880903-b8a7-5133-8fd9-d9a2d5404d11",
+          "media_type": "photo",
+          "asset_width": 853,
+          "asset_height": 1280,
+          "asset_sha256": "0ed5df5a7ed2d0089e5b646f81641ab866a24e8ab6f8503a96facbb4b3378ed3",
+          "visual_asset_id": "6c6d5431-facd-5301-80e4-e1aa81eca593"
+        },
+        "photo-8": {
+          "path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/12d7593a-b9db-5ea3-95b3-d32ad4189e84/selected.webp",
+          "shot_uuid": "12d7593a-b9db-5ea3-95b3-d32ad4189e84",
+          "media_type": "photo",
+          "asset_width": 867,
+          "asset_height": 1300,
+          "asset_sha256": "ef1382ddb7499d3df4781253cef7c5e2ccabd4c1f349bf80a544906a36f37e10",
+          "visual_asset_id": "887bc0f6-e54f-5072-a45a-951e9ed8215e"
+        }
+      }
+    },
+    "render": {
+      "bytes": 7105670,
+      "job_id": "9dabd989-e5cd-44ba-8309-92af983d139e",
+      "sha256": "a19beaa79b4d572c8ec32c900a7d2214fa255543f01ac1ebd42f93e839ada520",
+      "status": "ready",
+      "framing": "whole photograph, aspect preserved, solid matte, no crop or blur",
+      "segments": [
+        {
+          "id": "photo-1",
+          "end_ms": 1866.6666666666667,
+          "start_ms": 0.0,
+          "end_frame": 56,
+          "shot_uuid": "e77b467c-bc0f-5c41-8bf6-4191d3a36ae9",
+          "asset_path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/e77b467c-bc0f-5c41-8bf6-4191d3a36ae9/selected.webp",
+          "media_type": "photo",
+          "scene_uuid": "93b33981-af68-53e9-8c69-1b3843546762",
+          "material_id": "pexels:8093275",
+          "start_frame": 0,
+          "asset_sha256": "62b9afa4fd60e879894901807f926081d6a5e841a39ef510814c6b0667596d18",
+          "segment_order": 1,
+          "visual_asset_id": "2013fa2f-44ed-55f1-91e7-d16857d5cbff",
+          "narration_scene_id": "beat-1"
+        },
+        {
+          "id": "photo-2",
+          "end_ms": 3733.3333333333335,
+          "start_ms": 1866.6666666666667,
+          "end_frame": 112,
+          "shot_uuid": "bcb91840-f02d-5020-887a-8c745842a403",
+          "asset_path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/bcb91840-f02d-5020-887a-8c745842a403/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "93b33981-af68-53e9-8c69-1b3843546762",
+          "material_id": "pixabay:1836969",
+          "start_frame": 56,
+          "asset_sha256": "5da3103db3e84e9788be05aa40f4d68e9feed96a6883efa53e3619b55756c8fb",
+          "segment_order": 2,
+          "visual_asset_id": "e6f4d27a-4abe-5b30-acca-110439cdc5ab",
+          "narration_scene_id": "beat-1"
+        },
+        {
+          "id": "photo-6",
+          "end_ms": 5600.0,
+          "start_ms": 3733.3333333333335,
+          "end_frame": 168,
+          "shot_uuid": "cb9b4670-6982-5613-9ed4-040f53a7be18",
+          "asset_path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/cb9b4670-6982-5613-9ed4-040f53a7be18/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "7994d5b4-5ccf-5b77-a3e3-ba4616aebd2d",
+          "material_id": "pixabay:5290444",
+          "start_frame": 112,
+          "asset_sha256": "647da31de41d5b8bb5d143b3cd7909475cddf59ac2c5948d17dfe0887cde6998",
+          "segment_order": 3,
+          "visual_asset_id": "9805bf13-4bed-526d-9bec-6635d4383303",
+          "narration_scene_id": "beat-2"
+        },
+        {
+          "id": "photo-8",
+          "end_ms": 7500.0,
+          "start_ms": 5600.0,
+          "end_frame": 225,
+          "shot_uuid": "12d7593a-b9db-5ea3-95b3-d32ad4189e84",
+          "asset_path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/12d7593a-b9db-5ea3-95b3-d32ad4189e84/selected.webp",
+          "media_type": "photo",
+          "scene_uuid": "7994d5b4-5ccf-5b77-a3e3-ba4616aebd2d",
+          "material_id": "pexels:5947522",
+          "start_frame": 168,
+          "asset_sha256": "ef1382ddb7499d3df4781253cef7c5e2ccabd4c1f349bf80a544906a36f37e10",
+          "segment_order": 4,
+          "visual_asset_id": "887bc0f6-e54f-5072-a45a-951e9ed8215e",
+          "narration_scene_id": "beat-2"
+        },
+        {
+          "id": "photo-3",
+          "end_ms": 9366.666666666666,
+          "start_ms": 7500.0,
+          "end_frame": 281,
+          "shot_uuid": "32d62058-bdef-5bdf-8f56-be8cc9933bec",
+          "asset_path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/32d62058-bdef-5bdf-8f56-be8cc9933bec/selected.webp",
+          "media_type": "photo",
+          "scene_uuid": "4cd37c2e-72fa-51b2-90e7-52c45d70447a",
+          "material_id": "pexels:31774870",
+          "start_frame": 225,
+          "asset_sha256": "21242c5e3feed6a07e9ac169047c63482ebae20c3240b17945346ab6749af39c",
+          "segment_order": 5,
+          "visual_asset_id": "427f630b-1630-54f7-9022-bef587394afb",
+          "narration_scene_id": "beat-3"
+        },
+        {
+          "id": "photo-4",
+          "end_ms": 11233.333333333334,
+          "start_ms": 9366.666666666666,
+          "end_frame": 337,
+          "shot_uuid": "f372bb66-65a4-5325-af08-65a5f5869659",
+          "asset_path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/f372bb66-65a4-5325-af08-65a5f5869659/selected.webp",
+          "media_type": "photo",
+          "scene_uuid": "4cd37c2e-72fa-51b2-90e7-52c45d70447a",
+          "material_id": "pexels:37125391",
+          "start_frame": 281,
+          "asset_sha256": "fbe8da525e733801eeba3cf8740cffc40991dd6bc5052931ac5f99378ab9f37b",
+          "segment_order": 6,
+          "visual_asset_id": "e2729b61-4f14-5936-8d3c-130f9a41638e",
+          "narration_scene_id": "beat-3"
+        },
+        {
+          "id": "photo-5",
+          "end_ms": 13100.0,
+          "start_ms": 11233.333333333334,
+          "end_frame": 393,
+          "shot_uuid": "ff09c288-e7b5-5f2d-a1a0-07f862c5fdca",
+          "asset_path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/ff09c288-e7b5-5f2d-a1a0-07f862c5fdca/selected.webp",
+          "media_type": "photo",
+          "scene_uuid": "0764ccbf-2e14-5596-a63c-dcf49012419c",
+          "material_id": "pexels:19559165",
+          "start_frame": 337,
+          "asset_sha256": "d32b4c4522f77c363d02afbeeb88a6b6bb16ee764ba459a38b08bb468f5eb9cb",
+          "segment_order": 7,
+          "visual_asset_id": "b071a9b2-d763-55f0-b94f-026c3081ae55",
+          "narration_scene_id": "beat-5"
+        },
+        {
+          "id": "photo-7",
+          "end_ms": 15000.0,
+          "start_ms": 13100.0,
+          "end_frame": 450,
+          "shot_uuid": "93880903-b8a7-5133-8fd9-d9a2d5404d11",
+          "asset_path": "/data/visuals/9dabd989-e5cd-44ba-8309-92af983d139e/93880903-b8a7-5133-8fd9-d9a2d5404d11/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "0764ccbf-2e14-5596-a63c-dcf49012419c",
+          "material_id": "pixabay:7675202",
+          "start_frame": 393,
+          "asset_sha256": "0ed5df5a7ed2d0089e5b646f81641ab866a24e8ab6f8503a96facbb4b3378ed3",
+          "segment_order": 8,
+          "visual_asset_id": "6c6d5431-facd-5301-80e4-e1aa81eca593",
+          "narration_scene_id": "beat-5"
+        }
+      ],
+      "qa_passed": true,
+      "shot_count": 8,
+      "frame_count": 450,
+      "storage_path": "/data/renders/9dabd989-e5cd-44ba-8309-92af983d139e/final.mp4",
+      "duration_policy": "whole-photo-exact-v1",
+      "audio_duration_ms": 19128,
+      "actual_duration_ms": 15000,
+      "audio_tempo_factor": 1.2752000000000001,
+      "input_audio_sha256": "6a67ec135e9db08adf94726ffad87c6e156a82035b266279d2bd40eee66610c4",
+      "target_duration_ms": 15000,
+      "fitted_audio_sha256": "401d6965890941a44bb9a949b781cf15320fae9d56f45a09204102d5522d8281",
+      "requested_duration_ms": 15000
+    }
+  },
+  "human_pass": false,
+  "visual_inspection": {
+    "method": "Exact center frame indices from render segments; no fps resampling/seek offset",
+    "frames": [
+      28,
+      84,
+      140,
+      196,
+      253,
+      309,
+      365,
+      421
+    ],
+    "eight_different_photos": true,
+    "whole_original_framing": true,
+    "human_listening_pass": false,
+    "first_contact_sheet_sampling_error": "Initial fps/seek contact sheet falsely repeated photos; exact frame extraction showed8 different pictures. No duplicate production fix was justified."
+  }
+}
