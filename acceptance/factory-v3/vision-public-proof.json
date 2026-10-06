@@ -1,0 +1,17 @@
+{
+  "index.html": {
+    "http_status": 200,
+    "sha256": "1bd6ac72416118a34a16d718ed1a390919af8a3be3feacf645767f98e63b00da",
+    "cache_control": "no-store"
+  },
+  "app.js": {
+    "http_status": 200,
+    "sha256": "aa0b59b5977642f2528763b9eff32eb7213298c40945576c0fa2e94600f1aa8e",
+    "cache_control": "no-store"
+  },
+  "health": {
+    "status": "serving",
+    "project_ready": false,
+    "source_revision": "fd8a4b38f82658591b72150476b60042ad1550cd"
+  }
+}
