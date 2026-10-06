@@ -1,0 +1,29 @@
+{
+  "/health": {
+    "status": 200,
+    "cache_control": "no-store",
+    "health": {
+      "status": "serving",
+      "project_ready": false,
+      "source_revision": "73ba4708f0326f84e08260e302d4a55033545d42"
+    }
+  },
+  "/": {
+    "status": 200,
+    "cache_control": "no-store",
+    "sha256": "3632b4f2a8b1446e617c7fe5f3396f6b6f8114a866516d1ce4e9b1ee92fbd279",
+    "matches_committed_source": true
+  },
+  "/app.js": {
+    "status": 200,
+    "cache_control": "no-store",
+    "sha256": "3d1648acb0f8295c8dd52d7a0ea45139d769ed641fdc192d144de89abf8fb0ec",
+    "matches_committed_source": true
+  },
+  "/style.css": {
+    "status": 200,
+    "cache_control": "no-store",
+    "sha256": "510955dab93e0ffbc32d213ee868f83108dd1707ec3bf8626e9883799730e1e2",
+    "matches_committed_source": true
+  }
+}
