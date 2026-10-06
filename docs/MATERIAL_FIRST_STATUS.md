@@ -1,3 +1,6 @@
+## Varied-language matrix cadence correction — 2026-10-06
+User explicitly authorized EN30/RU45/UK60 on different topics. Initial EN30 coffee requestaf8ee414-5998-4d17-841f-a16470126fb5 stopped before composition/TTS:8 actual accepted photos covered all3 visual roles, but the schema demanded10. Longer45/60 cases similarly demanded12 of12 candidates. Replayed saved accepted provider observations offline; practical minimum now5/6/7/8 for15/30/45/60, preferred cadence uses as many available pictures as possible up to12. Unique files, at least2 roles, source facts, exact final crop and natural voice unchanged.30 replacement and79 legacy tests pass, including actual saved8-photo failure and9/10-photo long-duration controls. Failed ID remains immutable. Build/deploy exact change before a fresh English case and the two other authorized cases.
+
 ## Current practical visual variety runtime — 2026-10-05
 
 Production app now runs2c774258f6feecf50065043bf612ca455b2e9c94, imagefactory-v3:2c77425, imageIDfc9fbf5dd3b41dbd389c19ccaf53f9f7f854d669815b38fbf276f4d79b2e4b20. Public origin/user-agent health HTTP200 confirms exact source. Packaged28 replacement tests and local79 legacy tests pass. Only app replaced; workflow/job/preparation row digests unchanged (workflowdd7c8bd5284b595f14e9b08f7027cb08).

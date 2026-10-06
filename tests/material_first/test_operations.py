@@ -185,3 +185,39 @@ class OperationTests(unittest.TestCase):
         operations = Operations('.', None, model, None, None)
         with self.assertRaises(MaterialUnavailable):
             operations.compose({"request": {"seconds": 15}, "materials": [{"id": "a"}, {"id": "b"}]})
+
+    def test_saved_english_case_uses_eight_accepted_photos_instead_of_demanding_ten(self):
+        import json
+        saved = json.loads((Path(__file__).parent / 'fixtures/coffee-en30-cadence-failure.json').read_text())
+        self.assertEqual(len(saved['materials']), 8)
+        class Composer:
+            def generate(self, key, instruction, context, schema):
+                count = schema['properties']['beats']['minItems']
+                self_count = count
+                assert self_count == len(context['materials']) == 8
+                words = ['word'] * schema['properties']['words']['minItems']
+                return {'words': words, 'beats': [
+                    {'material_id': m['id'], 'word_start': len(words)*i//count,
+                     'word_end': len(words)*(i+1)//count,
+                     'fact_ids': m['supported_fact_ids'],
+                     'visual_target_id': next(iter(m['matched_visual_targets']))}
+                    for i,m in enumerate(context['materials'])]}, {}
+        context = {'request': {'seconds': 30, 'visual_targets': saved['visual_targets']},
+                   'materials': saved['materials'], 'evidence': {'facts': saved['facts']}}
+        draft = Operations('.', None, Composer(), None, None).compose(context)
+        self.assertEqual(len(draft['beats']), 8)
+
+    def test_longer_duration_keeps_variety_without_requiring_twelve_perfect_candidates(self):
+        class Composer:
+            def generate(self, key, instruction, context, schema):
+                count = schema['properties']['beats']['minItems']
+                words = ['word'] * schema['properties']['words']['minItems']
+                return {'words': words, 'beats': [
+                    {'material_id': m['id'], 'word_start': len(words)*i//count,
+                     'word_end': len(words)*(i+1)//count, 'fact_ids': ['f']}
+                    for i,m in enumerate(context['materials'])]}, {}
+        for seconds,count in [(45, 9), (60, 10)]:
+            context = {'request': {'seconds': seconds},
+                       'materials': [{'id': 'a'+str(i)} for i in range(count)],
+                       'evidence': {'facts': [{'id': 'f'}]}}
+            self.assertEqual(len(Operations('.', None, Composer(), None, None).compose(context)['beats']), count)

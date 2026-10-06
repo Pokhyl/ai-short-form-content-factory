@@ -163,9 +163,12 @@ class Operations:
         materials = context['materials']
         seconds = context['request']['seconds']
         minimum_words, maximum_words = round(seconds * 1.8), round(seconds * 2.2)
-        minimum_beats = min(12, max(1, (seconds + 2) // 3))
-        if len(materials) < minimum_beats:
+        minimum_available = 5 + (seconds - 15) // 15
+        if len(materials) < minimum_available:
             raise MaterialUnavailable("not enough distinct relevant photos for requested cadence")
+        # Aim for frequent changes, but rejected candidates do not make a
+        # longer short require a perfect 12/12 discovery/inspection batch.
+        minimum_beats = min(len(materials), 12, (seconds + 2) // 3)
         schema = obj({'words': array(string(), minimum_words, maximum_words),
             'beats': array(obj({'material_id': string(m['id'] for m in materials),
                 'word_start': {'type': 'number', 'minimum': 0, 'maximum': maximum_words},
