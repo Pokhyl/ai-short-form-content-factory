@@ -195,3 +195,28 @@ class GeminiTests(unittest.TestCase):
             self.assertEqual(caught.exception.result, {'words': ['short']})
         self.assertEqual(len(self.http.requests), 1)
         self.assertFalse(self.ledger.terminal)
+
+class ImageBatchTests(unittest.TestCase):
+    setUp = GeminiTests.setUp
+    tearDown = GeminiTests.tearDown
+
+    def test_four_original_images_bound_to_ids_in_one_receipted_request(self):
+        import base64
+        photos = [{'bytes': b'\xff\xd8\xffphoto'+bytes([i]), 'mime':'image/jpeg', 'asset_id': 'a'+str(i)} for i in range(4)]
+        result, receipt = self.adapter.generate('batch', 'inspect', {}, obj({'answer':string()}), photos=photos)
+        self.assertEqual(len(self.http.requests), 1)
+        parts = self.http.requests[0][2]['contents'][0]['parts']
+        for i,p in enumerate(photos):
+            self.assertIn(p['asset_id'], parts[1+i*2]['text'])
+            self.assertEqual(base64.b64decode(parts[2+i*2]['inlineData']['data']), p['bytes'])
+        self.assertTrue(receipt['receipt_id'])
+        self.assertEqual((result,receipt), self.adapter.generate('batch', 'inspect', {}, obj({'answer':string()}), photos=photos))
+        self.assertEqual(len(self.http.requests), 1)
+
+    def test_image_batch_budget_rejects_before_any_http_call(self):
+        photo = {'bytes': b'x', 'mime':'image/jpeg'}
+        for kwargs in [{'photos':[photo]*5},{'photo':photo,'photos':[photo]}, {'photos':{}},
+                       {'photos':[{'bytes':b'x'*(5*1024*1024),'mime':'image/jpeg'}]*2}]:
+            with self.assertRaises(ValueError):
+                self.adapter.generate('bad-batch','inspect',{},obj({'answer':string()}),**kwargs)
+        self.assertEqual(self.http.requests, [])

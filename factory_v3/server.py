@@ -131,14 +131,25 @@ class Application:
             {key: source.get(key, "") for key in ("id", "url", "title")}
             for source in payload.get("evidence", {}).get("sources", [])]
         status["scenes"] = []
-        for scene in payload["scenes"]:
-            asset = assets[scene["material_id"] if payload.get("schema") == "material-first"
+        story = {s['id']: s for s in payload['scenes']}
+        display = payload.get('visuals', payload['scenes'])
+        render = state.get('outputs', {}).get('render', {})
+        if payload.get('visuals') and render.get('segments'):
+            display = [{'id': s['id'], 'material_id': s['material_id'],
+                        'narration_scene_id': s['narration_scene_id']} for s in render['segments']]
+        for visual in display:
+            scene = story.get(visual.get('narration_scene_id'), visual)
+            asset = assets[visual["material_id"] if payload.get("schema") == "material-first"
                            else payload["selection"][scene["id"]]]
             status["scenes"].append({
-                "id": scene["id"], "narration": scene["narration"],
-                "evidence_ids": scene["evidence_ids"],
+                "id": visual["id"], "narration": scene.get("narration", ""),
+                "evidence_ids": scene.get("evidence_ids", []),
                 "asset": {key: asset.get(key, "") for key in
                           ("source_url", "author", "license", "license_url", "license_version", "attribution", "sha256")}})
+        if payload.get('visuals'):
+            status['photo_count'] = len(payload['visuals'])
+        if render.get('actual_duration_ms'):
+            status['actual_duration_ms'] = render['actual_duration_ms']
         if state["status"] == "qa_pass":
             status["video_sha256"] = state["outputs"]["render"]["sha256"]
             status["human_pass"] = bool(review and review["decision"] == "accepted" and review["video_sha256"] == status["video_sha256"])
@@ -161,7 +172,7 @@ class Application:
         state = self.runtime.ledger.snapshot(identifier(request_id))
         payload = state["frozen"]["payload"]
         if payload.get("schema") == "material-first":
-            selected = next(s["material_id"] for s in payload["scenes"] if s["id"] == scene_id)
+            selected = next(s["material_id"] for s in payload.get("visuals", payload["scenes"]) if s["id"] == scene_id)
         else:
             selected = payload["selection"][scene_id]
         asset = next(a for a in payload["assets"] if a["id"] == selected)

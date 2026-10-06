@@ -34,7 +34,7 @@ async function show(id) {
   selected = id; localStorage.setItem("factoryV3Last", id);
   detail = await api("/api/requests/" + id);
   $("result").hidden = false; $("result-title").textContent = detail.request.topic;
-  $("status").textContent = (labels[detail.status] || detail.status) + (detail.error_code ? " · " + detail.error_code : "");
+  $("status").textContent = (labels[detail.status] || detail.status) + (detail.error_code ? " · " + detail.error_code : "") + (detail.photo_count ? " · " + detail.photo_count + " фото" : "") + (detail.actual_duration_ms ? " · " + (detail.actual_duration_ms / 1000) + " с" : "");
   $("script").textContent = detail.script || "Текст появится после проверки фактов и фотографий.";
   const ready = detail.machine_pass === true;
   $("video").hidden = !ready; $("download").hidden = !ready; $("review").hidden = !ready || !!detail.review;
@@ -48,7 +48,7 @@ async function show(id) {
   $("scenes").replaceChildren();
   for (const scene of detail.scenes || []) {
     const item = document.createElement("div"); item.className = "scene";
-    const photo = document.createElement("img"); photo.src = base + "/photo/" + id + "/" + encodeURIComponent(scene.id); photo.alt = scene.narration; photo.loading = "lazy";
+    const photo = document.createElement("img"); photo.src = base + "/photo/" + id + "/" + encodeURIComponent(scene.id); photo.alt = scene.narration || "Фотография " + scene.id; photo.loading = "lazy";
     const text = document.createElement("div"), caption = document.createElement("p");
     caption.textContent = scene.narration; text.append(caption);
     const author = document.createElement("p"); author.className = "note"; author.textContent = "Автор: " + scene.asset.author + (scene.asset.attribution ? " · " + scene.asset.attribution : ""); text.append(author);
@@ -60,7 +60,8 @@ async function show(id) {
 }
 async function open() {
   await api("/api/session"); $("login").hidden = true; $("workspace").hidden = false;
-  await history(); const last = localStorage.getItem("factoryV3Last"); if (last) await show(last);
+  await history(); const requested = new URLSearchParams(location.search).get("request");
+  const last = requested && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requested) ? requested : localStorage.getItem("factoryV3Last"); if (last) await show(last);
 }
 $("login-form").onsubmit = async event => {
   event.preventDefault(); $("message").textContent = "";

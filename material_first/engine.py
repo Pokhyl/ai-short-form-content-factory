@@ -4,6 +4,7 @@ Operations are server-owned adapters, not public approval fields. This module
 does not certify the correctness of a model's observations or HUMAN acceptance.
 """
 from copy import deepcopy
+import math
 from pathlib import Path
 import hashlib
 import json
@@ -13,6 +14,8 @@ from factory_v3.preparation import ResourceUnavailable
 from factory_v3.grounding import validate_evidence, validate_script_review
 from factory_v3.preflight import asset_path, digest, validate_asset
 from .targets import validate_targets, matched_targets
+from .visuals import POLICY, candidate_limit, make_visuals, validate_visuals
+from .presentation import preferred_shots
 
 
 class MaterialUnavailable(ValueError):
@@ -101,7 +104,7 @@ def inspected_material(asset, receipt, evidence, facts):
     return result
 
 
-def match_materials(available, draft):
+def match_materials(available, draft, *, contextual=False):
     """Assign unique inspected pictures to claims, preferring model choices."""
     result = deepcopy(draft)
     known = {m['id']: m for m in available}
@@ -112,7 +115,7 @@ def match_materials(available, draft):
             raise ValueError('composer invented material')
         facts = set(beat['fact_ids'])
         target = beat.get('visual_target_id')
-        candidates = [m['id'] for m in available if facts <= set(m['supported_fact_ids'])
+        candidates = [m['id'] for m in available if (contextual or facts <= set(m['supported_fact_ids']))
                       and (target is None or target in m.get('matched_visual_targets', {}))]
         candidates.sort(key=lambda identity: identity != beat['material_id'])
         options.append(candidates)
@@ -137,6 +140,8 @@ def match_materials(available, draft):
 
 def validate_story(request, evidence, available, draft):
     known = {m["id"]: m for m in available}
+    contextual = request.get("presentation_policy") == POLICY
+    allowed_facts = {f["id"] for f in evidence["facts"]}
     beats = draft.get("beats")
     if not isinstance(beats, list) or not 1 <= len(beats) <= len(available):
         raise ValueError("story must use existing inspected materials")
@@ -157,7 +162,7 @@ def validate_story(request, evidence, available, draft):
         fact_ids = beat["fact_ids"]
         if (not isinstance(fact_ids, list) or not fact_ids
                 or len(set(fact_ids)) != len(fact_ids)
-                or not set(fact_ids) <= set(material["supported_fact_ids"])):
+                or not set(fact_ids) <= (allowed_facts if contextual else set(material["supported_fact_ids"]))):
             raise ValueError("narration exceeds inspected material support")
         text = beat["narration"]
         if not isinstance(text, str) or not text.strip():
@@ -217,7 +222,7 @@ def fit_materials(available, draft, minimum=5):
 
 class Producer:
     """One preparation: research -> collect -> inspect -> compose -> review."""
-    def __init__(self, root, operations, *, probe=probe_media, max_materials=12):
+    def __init__(self, root, operations, *, probe=probe_media, max_materials=None):
         self.root = Path(root).resolve()
         self.operations, self.probe, self.max_materials = operations, probe, max_materials
 
@@ -227,6 +232,9 @@ class Producer:
         if not isinstance(topic, str) or not 1 <= len(topic.strip()) <= 300:
             raise ValueError("bounded topic required")
         request = {"topic": topic.strip(), "language": language, "seconds": seconds}
+        modern = getattr(self.operations, "presentation_policy", None) == POLICY
+        if modern:
+            request["presentation_policy"] = POLICY
         brief = self.operations.research(deepcopy(request))
         # Research defines essential factual scope, never imaginary visual slots.
         if set(brief) not in ({"evidence", "required_fact_ids", "queries"},
@@ -244,36 +252,49 @@ class Producer:
             request['visual_targets'] = deepcopy(targets)
         # Discovery is global and topic-bound, not a search for one imagined shot.
         candidates = self.operations.discover(deepcopy(request), deepcopy(brief["queries"]))
-        if not isinstance(candidates, list) or len(candidates) > self.max_materials:
+        if not isinstance(candidates, list) or len(candidates) > (self.max_materials or (candidate_limit(seconds) if modern else 12)):
             raise ValueError("material discovery exceeded server budget")
         assets, available, hashes = {}, [], set()
-        for candidate in candidates:
-            try:
-                asset = self.operations.download(deepcopy(candidate))
-            except ResourceUnavailable:
+        batch_size = 4 if modern else 1
+        for offset in range(0, len(candidates), batch_size):
+            batch = []
+            for candidate in candidates[offset:offset + batch_size]:
+                try:
+                    asset = self.operations.download(deepcopy(candidate))
+                except ResourceUnavailable:
+                    continue
+                validate_material(self.root, asset, self.probe)
+                if targets is not None and asset.get('visual_targets') != targets:
+                    raise ValueError('download lost the original visual target contract')
+                if asset['id'] in assets or any(a['id'] == asset['id'] for a in batch):
+                    raise ValueError('duplicate provider identity')
+                if asset['sha256'] in hashes:
+                    continue
+                hashes.add(asset['sha256'])
+                batch.append(asset)
+            if not batch:
                 continue
-            validate_material(self.root, asset, self.probe)
-            if targets is not None and asset.get('visual_targets') != targets:
-                raise ValueError('download lost the original visual target contract')
-            if asset["id"] in assets:
-                raise ValueError("duplicate provider identity")
-            if asset["sha256"] in hashes:
-                continue  # Alias/download from another provider is still the same material.
-            hashes.add(asset["sha256"])
-            receipt = self.operations.inspect(deepcopy(asset), deepcopy(evidence))
-            material = inspected_material(asset, receipt, evidence, facts)
-            if material is not None:
-                assets[asset["id"]] = asset
-                available.append(material)
-                covered_now = set().union(*(set(m["supported_fact_ids"]) for m in available))
-                target_coverage = set().union(*(set(m.get('matched_visual_targets', {})) for m in available))
-                if (len(available) >= min(12, (seconds * 6 + 14) // 15, len(candidates))
-                        and set(required) <= covered_now
-                        and (targets is None or len(target_coverage) >= 2)):
-                    break  # Enough relevant options; avoid spending every inspection slot.
-        covered = set().union(*(set(m["supported_fact_ids"]) for m in available)) if available else set()
-        if not set(required) <= covered:
-            raise MaterialUnavailable("essential topic facts have no inspected real material")
+            receipts = (self.operations.inspect_many(deepcopy(batch), deepcopy(evidence)) if modern
+                        else [self.operations.inspect(deepcopy(batch[0]), deepcopy(evidence))])
+            if len(receipts) != len(batch):
+                raise ValueError('inspection batch omitted an input')
+            for asset, receipt in zip(batch, receipts):
+                material = inspected_material(asset, receipt, evidence, facts)
+                if material is not None:
+                    assets[asset['id']] = asset
+                    available.append(material)
+            covered_now = set().union(*(set(m['supported_fact_ids']) for m in available)) if available else set()
+            target_coverage = set().union(*(set(m.get('matched_visual_targets', {})) for m in available)) if available else set()
+            desired = preferred_shots(seconds) if modern else min(12, (seconds * 6 + 14) // 15, len(candidates))
+            if (len(available) >= desired
+                    and (modern or set(required) <= covered_now)
+                    and (targets is None or len(target_coverage) >= 2)):
+                break
+        covered = set().union(*(set(m['supported_fact_ids']) for m in available)) if available else set()
+        if not modern and not set(required) <= covered:
+            raise MaterialUnavailable('essential topic facts have no inspected real material')
+        if modern and len(available) < math.ceil(seconds / 2.5):
+            raise MaterialUnavailable('not enough inspected distinct photographs for requested cadence')
         if targets is not None:
             covered_targets = set().union(*(set(m.get('matched_visual_targets', {})) for m in available))
             if len(covered_targets) < 2:
@@ -282,17 +303,23 @@ class Producer:
             raise MaterialUnavailable("inspected real material has insufficient duration")
         composition = {"request": request, "evidence": evidence, "materials": available}
         draft = self.operations.compose(deepcopy(composition))
-        draft = fit_materials(available, draft) if targets is not None else match_materials(available, draft)
+        if modern:
+            draft = match_materials(available, draft, contextual=True)
+        else:
+            draft = fit_materials(available, draft) if targets is not None else match_materials(available, draft)
         scenes = validate_story(request, evidence, available, draft)
         script = " ".join(s["narration"] for s in scenes)
         review_input = {**request, "script": script, "scenes": scenes,
                         "evidence": evidence, "materials": available}
         review = self.operations.review_script(deepcopy(review_input))
         validate_script_review(evidence, language, script, scenes, review, topic=topic.strip())
-        selected = {s["material_id"] for s in scenes}
+        visuals = make_visuals(seconds, available, scenes) if modern else None
+        selected = {v['material_id'] for v in visuals} if modern else {s['material_id'] for s in scenes}
         payload = {"schema": "material-first", **request, "script": script, "scenes": scenes,
             "assets": [assets[k] for k in sorted(selected)], "evidence": evidence,
             "observations": [m for m in available if m["id"] in selected], "script_review": review}
+        if modern:
+            payload['visuals'] = visuals
         if draft.get('merged_adjacent_beats'):
             payload['merged_adjacent_beats'] = draft['merged_adjacent_beats']
         frozen = {"payload": payload, "sha256": digest(payload)}
@@ -304,10 +331,14 @@ def verify(root, frozen, probe=probe_media):
     payload = frozen["payload"]
     if payload.get("schema") != "material-first" or digest(payload) != frozen.get("sha256"):
         raise ValueError("material-first plan changed")
+    if payload.get('presentation_policy') not in {None, POLICY}:
+        raise ValueError('unsupported frozen presentation policy')
     facts = validate_evidence(payload["evidence"])
     assets = {a["id"]: a for a in payload["assets"]}
     if len(assets) != len(payload["assets"]):
         raise ValueError("duplicate frozen material identity")
+    if len({m['id'] for m in payload['observations']}) != len(payload['observations']):
+        raise ValueError('duplicate frozen observation identity')
     observations = []
     for original in payload["observations"]:
         asset = assets.get(original["id"])
@@ -320,6 +351,8 @@ def verify(root, frozen, probe=probe_media):
         if current != original:
             raise ValueError("frozen observation changed")
         observations.append(current)
+    if payload.get('presentation_policy') == POLICY:
+        validate_visuals(payload, observations)
     beats = [{"material_id": s["material_id"], "narration": s["narration"],
               "fact_ids": s["evidence_ids"]} for s in payload["scenes"]]
     if 'visual_targets' in payload:

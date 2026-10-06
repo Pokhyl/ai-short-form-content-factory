@@ -1,0 +1,22 @@
+{
+  "request_id": "383bcc36-4d1a-4690-8810-275e338e7d46",
+  "topic": "Как делают хлеб: от муки до готовой буханки",
+  "language": "ru",
+  "seconds": 30,
+  "mode": "normal_owner_api",
+  "attempts": 1,
+  "budgets": {
+    "gemini": 16,
+    "downloads": 27,
+    "research_search": 1,
+    "source_fetch": 6,
+    "search_each_provider": 3,
+    "metadata": 1,
+    "tts": 1
+  },
+  "stop": "first terminal failure/unknown; never retry same request or TTS",
+  "purpose": "Verify deployed owner intake -> whole-original batch inspection -> independent visual pool -> single voice -> alignment -> exact render -> independent QA; user authorized connection and deployment",
+  "fixture_id": "6e24b0cb-4455-43d3-a660-001703fa0960",
+  "fixture_case": "bread",
+  "fixture_provider_calls": 0
+}

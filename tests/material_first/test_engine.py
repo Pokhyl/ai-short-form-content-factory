@@ -29,7 +29,7 @@ class Operations:
             asset = {"id": "a" + str(i), "path": file.name, "media_type": kind,
                 "sha256": hashlib.sha256(file.read_bytes()).hexdigest(),
                 "source_url": "https://example.invalid/source", "author": "fixture",
-                "license": "CC0", "license_url": "https://example.invalid/license"}
+                "framing": "original-whole", "license": "CC0", "license_url": "https://example.invalid/license"}
             if kind == "video":
                 asset["duration_ms"] = 60000
             self.assets.append(asset)

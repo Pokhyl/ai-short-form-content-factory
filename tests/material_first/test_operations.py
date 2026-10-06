@@ -24,6 +24,16 @@ class Model:
                            'must_show': 'Prominent explanatory detail '+str(i),
                            'must_not_show': 'Generic subject without detail', 'query': 'detail '+str(i)}
                           for i in range(3)]}
+        elif key.startswith('material-inspect-batch:'):
+            saved_calls = self.calls[:]
+            row_schema = copy.deepcopy(schema['properties']['photos']['items'])
+            del row_schema['properties']['asset_id']; row_schema['required'].remove('asset_id')
+            rows = []
+            for asset in context['assets']:
+                row, _ = self.generate('material-inspect:' + asset['id'], instruction, context, row_schema)
+                rows.append({**row, 'asset_id': asset['id']})
+            self.calls = saved_calls
+            result = {'photos': rows}
         elif key.startswith('material-inspect:'):
             result = {'accepted': True, 'is_real_material': True, 'subject_fully_visible': True,
                       'visible_description': 'Real subject visible',
@@ -88,7 +98,10 @@ class OperationTests(unittest.TestCase):
             self.assertEqual(len(frozen['payload']['scenes']), 5)
             self.assertEqual({s['visual_target_id'] for s in frozen['payload']['scenes']}, {'v0', 'v1', 'v2'})
             self.assertEqual(len(searches), 9)
-            self.assertEqual(model.calls, ['material-brief'] + ['material-inspect:a'+str(i) for i in range(6)] + ['material-compose'])
+            self.assertEqual(model.calls[0], 'material-brief')
+            self.assertEqual(model.calls[-1], 'material-compose')
+            self.assertEqual(sum(k.startswith('material-inspect-batch:') for k in model.calls), 2)
+            self.assertEqual(len(frozen['payload']['visuals']), 6)
             self.assertEqual(preparation_budgets(60)['gemini'], 16)
             from material_first.engine import verify
             from factory_v3.preflight import digest

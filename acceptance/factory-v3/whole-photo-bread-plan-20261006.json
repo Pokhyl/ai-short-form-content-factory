@@ -7,95 +7,279 @@
   "photos": [
     {
       "path": "catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/f8f67628ddcaa60991b1633672fceb9a0deda3d8d4714c5f78580b59450793de/selected.jpg",
-      "sha256": "998e5d2128edee0dc8050958b7fab9403bc24e6e18d9cff0db2905272bfd83a4"
+      "sha256": "998e5d2128edee0dc8050958b7fab9403bc24e6e18d9cff0db2905272bfd83a4",
+      "asset": {
+        "id": "pixabay:5996781",
+        "provider": "pixabay",
+        "source_url": "https://pixabay.com/photos/wheat-crop-field-barley-5996781/",
+        "author": "bubbiomarco",
+        "license": "Pixabay Content License",
+        "license_url": "https://pixabay.com/service/license-summary/"
+      }
     },
     {
       "path": "catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/6012663e9521704e3bf0195e5eca0f63dbc73363da20fa3672857487f481f7d7/selected.jpg",
-      "sha256": "30d9de0f02c2b65c457b574ebb107834c57e61bdc830354b20d856651a2db691"
+      "sha256": "30d9de0f02c2b65c457b574ebb107834c57e61bdc830354b20d856651a2db691",
+      "asset": {
+        "id": "pixabay:4368596",
+        "provider": "pixabay",
+        "source_url": "https://pixabay.com/photos/grain-wheat-food-landscape-harvest-4368596/",
+        "author": "bmk1765",
+        "license": "Pixabay Content License",
+        "license_url": "https://pixabay.com/service/license-summary/"
+      }
     },
     {
       "path": "catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/83f077ef02fbbccfd7de6bb779d7fb290cb59b79eebedd37be8d3e14e22d6132/selected.webp",
-      "sha256": "0b0a2913393a1b50b324246886723c8fdcef83e55fc0311f9383e9a5eb330027"
+      "sha256": "0b0a2913393a1b50b324246886723c8fdcef83e55fc0311f9383e9a5eb330027",
+      "asset": {
+        "id": "pexels:39428228",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/rustic-breadmaking-ingredients-with-wheat-39428228/",
+        "author": "Jasole",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/8b98cd54b01d026b333007ee493ce89e99f5de788ca1444e32b5bd9964ebb4e4/selected.jpg",
-      "sha256": "b648ef70438de1156879e1e2aecffe175acd75ce6297306e31688471914098a8"
+      "sha256": "b648ef70438de1156879e1e2aecffe175acd75ce6297306e31688471914098a8",
+      "asset": {
+        "id": "pexels:40008273",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/rustic-bread-and-grains-display-at-natural-bakery-40008273/",
+        "author": "Jasole",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/eb7fe6d2bc385c2369ca8631386c921499bd60da747fc4e7ca7e4bd11720e259/selected.jpg",
-      "sha256": "8bf135a8fd7a3fd3b75d670a88ea556647d184333a66d42791c54be97936593e"
+      "sha256": "8bf135a8fd7a3fd3b75d670a88ea556647d184333a66d42791c54be97936593e",
+      "asset": {
+        "id": "pexels:8107991",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/white-flour-in-close-up-photography-8107991/",
+        "author": "MART  PRODUCTION",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/8a1cbe97-42db-4c73-b4f3-41beaba8f8ca/2e602cf267a2c05ba7cf86805187b55cc9866557373f4266565c646171a735d6/selected.webp",
-      "sha256": "87d99c5bf2bc1169086786a168ae545726112e09c6ae0c2401696e220d94d068"
+      "sha256": "87d99c5bf2bc1169086786a168ae545726112e09c6ae0c2401696e220d94d068",
+      "asset": {
+        "id": "pexels:36976900",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/professional-baker-preparing-dough-in-jonkoping-kitchen-36976900/",
+        "author": "Efrem  Efre",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/0c66089e-4bb4-4ef8-b45d-78315c554bc8/165a9c1ddd8ce821f337848f4aae11c98b1f31ad8dd0f06ec1028ceae7e1745b/selected.webp",
-      "sha256": "db60b48f1a892a5f44572009ea1d3fb4b931eb71d57baf65b256530ed7805b09"
+      "sha256": "db60b48f1a892a5f44572009ea1d3fb4b931eb71d57baf65b256530ed7805b09",
+      "asset": {
+        "id": "pexels:13112162",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/close-up-of-a-dough-in-a-food-mixer-13112162/",
+        "author": "Angela Khebou",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/0c66089e-4bb4-4ef8-b45d-78315c554bc8/7a1ff04a195b62db3d7d82a4e4c4063b92fef479d461f0c706cbbfe397893fdc/selected.jpg",
-      "sha256": "2deeb64c07fb30d924b0cbb0cde0ca6f6ddb080c1647cf676c41d3d6669189e8"
+      "sha256": "2deeb64c07fb30d924b0cbb0cde0ca6f6ddb080c1647cf676c41d3d6669189e8",
+      "asset": {
+        "id": "pixabay:5231908",
+        "provider": "pixabay",
+        "source_url": "https://pixabay.com/photos/kitchen-aid-mixer-kitchen-equipment-5231908/",
+        "author": "mylittlekitchen",
+        "license": "Pixabay Content License",
+        "license_url": "https://pixabay.com/service/license-summary/"
+      }
     },
     {
       "path": "catalog/0c66089e-4bb4-4ef8-b45d-78315c554bc8/a0fa8c490937e151dadbcc50bfdb4478647fe6ade3a6efded4f9a04b0a363d1a/selected.jpg",
-      "sha256": "b713f76c492d95f353dce6a4e18a5fb044e32a09dd5a8bb04924c774ee40fb02"
+      "sha256": "b713f76c492d95f353dce6a4e18a5fb044e32a09dd5a8bb04924c774ee40fb02",
+      "asset": {
+        "id": "pexels:5964489",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/food-industry-workers-5964489/",
+        "author": "Anna Shvets",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/4f073015-9e94-4f73-a6df-daa29db93955/57efac21b090c40913ba0ef8aa0d9a276803d18af09d34fe122e9e55f0a801cf/selected.jpg",
-      "sha256": "96e104d78ba7780f50dbfbd45781345d1b6c57c16a29bdbbec4e7534d1d53ca4"
+      "sha256": "96e104d78ba7780f50dbfbd45781345d1b6c57c16a29bdbbec4e7534d1d53ca4",
+      "asset": {
+        "id": "pexels:33210358",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/professional-chef-preparing-dough-in-commercial-kitchen-33210358/",
+        "author": "damla selen demir",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/5f67a4afb6c3f87bbd772d715f3fb6a561446c37e248b73078e538d5f6fd9208/selected.webp",
-      "sha256": "6d468adffb19c8e90b0e21366a086f830dc4dee2f9a4b4064f495b23b57a565f"
+      "sha256": "6d468adffb19c8e90b0e21366a086f830dc4dee2f9a4b4064f495b23b57a565f",
+      "asset": {
+        "id": "pexels:6287300",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/chef-making-dough-for-cookies-in-bakery-6287300/",
+        "author": "Klaus Nielsen",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/720d2fa89aa0bbfc275f3da43f7850d2caf6fa2f45ef0717636c64a1957605f4/selected.webp",
-      "sha256": "29cc7b1e8e8e2ec2588e9d73120fdfefeef94c9993217320e78c74056d6e9106"
+      "sha256": "29cc7b1e8e8e2ec2588e9d73120fdfefeef94c9993217320e78c74056d6e9106",
+      "asset": {
+        "id": "pexels:8093358",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/making-the-dough-8093358/",
+        "author": "Mikhail Nilov",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/380c05bafa15affd6245426bad4bb065b4cbefbfb0195410671e6217b44a4939/selected.webp",
-      "sha256": "b75d59b1daf2ae392bb7f2cd3eb66bb9c5bd3e0324ca08843f200e9f837c0ae0"
+      "sha256": "b75d59b1daf2ae392bb7f2cd3eb66bb9c5bd3e0324ca08843f200e9f837c0ae0",
+      "asset": {
+        "id": "pexels:18640827",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/flour-on-a-cake-pie-18640827/",
+        "author": "Pexels User",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/0e5567374b813c2322e9f82eaa7b03d7730e02742a2bbcea86b1cb1f859a4f00/selected.webp",
-      "sha256": "01354df8ea472c79350ec84ed0d592abec4da2768470f8f7d4b194ebc53132de"
+      "sha256": "01354df8ea472c79350ec84ed0d592abec4da2768470f8f7d4b194ebc53132de",
+      "asset": {
+        "id": "pexels:39495542",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/rising-dough-in-bowl-for-baking-bread-39495542/",
+        "author": "Derya Nur \ud83d\udd4a\ufe0f",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/8a1cbe97-42db-4c73-b4f3-41beaba8f8ca/6eb80a408b6f7a5855d92b1da7c38efc42f2cf8c944d8bee9479618c83c25f6c/selected.jpg",
-      "sha256": "6e8bd71ff46e201aab750251ffc258cf79d17f56a4d5cdcbc011d91e347e9a3b"
+      "sha256": "6e8bd71ff46e201aab750251ffc258cf79d17f56a4d5cdcbc011d91e347e9a3b",
+      "asset": {
+        "id": "pexels:37171266",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/freshly-prepared-dough-balls-on-floured-surface-37171266/",
+        "author": "zeynep",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/8a1cbe97-42db-4c73-b4f3-41beaba8f8ca/cf58119f0f27997b05b1b6135d100da5bea797bcbfd0e46a2f5a0ad72605e235/selected.webp",
-      "sha256": "597e76a45b5676ea2ce36db0ebdab4b39ede4d4f66dd43a2b185e47190e320b0"
+      "sha256": "597e76a45b5676ea2ce36db0ebdab4b39ede4d4f66dd43a2b185e47190e320b0",
+      "asset": {
+        "id": "pexels:7965986",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/white-round-pastry-on-gray-tray-7965986/",
+        "author": "Felicity Tai",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/0c66089e-4bb4-4ef8-b45d-78315c554bc8/2dc0ed1a39cc601a9897c0e31a7d95cb54cc052b4a9ffbc65c24c0e70523fcc6/selected.webp",
-      "sha256": "a1e40a75feac400b4c329c62b3ae484297ae176b766d734d63eafeb3e0ca6325"
+      "sha256": "a1e40a75feac400b4c329c62b3ae484297ae176b766d734d63eafeb3e0ca6325",
+      "asset": {
+        "id": "pexels:19987147",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/dough-in-tray-19987147/",
+        "author": "juliane Monari",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/0c66089e-4bb4-4ef8-b45d-78315c554bc8/e926e4fe8615f031d5412bbde224a6c7253d5bbefe7a7bf89e24195765eccd9b/selected.webp",
-      "sha256": "429a7ccd224420c1ed27c3652fba2570702c1370042c13227f37e679ee429c21"
+      "sha256": "429a7ccd224420c1ed27c3652fba2570702c1370042c13227f37e679ee429c21",
+      "asset": {
+        "id": "pexels:37058262",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/freshly-prepared-rustic-artisan-bread-loaves-37058262/",
+        "author": "Carlyn Carmendya",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/8a1cbe97-42db-4c73-b4f3-41beaba8f8ca/854dbcd2f1f955216b8a9aed49683136867ecae81380a58d3bb8008aca85bae5/selected.jpg",
-      "sha256": "cb7eb0bbadf93da6841529ad08a02628a4e3df1e1fc801d0b8122bf8780e0773"
+      "sha256": "cb7eb0bbadf93da6841529ad08a02628a4e3df1e1fc801d0b8122bf8780e0773",
+      "asset": {
+        "id": "pexels:6291407",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/dough-on-metal-tray-6291407/",
+        "author": "Anna Shvets",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/0c66089e-4bb4-4ef8-b45d-78315c554bc8/a1cc4b705b3aead0ab9b0c8574679370edc50a7fa56bdc507d1ee681a1d6ed69/selected.webp",
-      "sha256": "87a381fd38b4cf461dec720c75b7f36e33dc47fb3f6d51e8d8edffec889d64bb"
+      "sha256": "87a381fd38b4cf461dec720c75b7f36e33dc47fb3f6d51e8d8edffec889d64bb",
+      "asset": {
+        "id": "pexels:30926706",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/freshly-baked-bread-on-cooling-racks-30926706/",
+        "author": "\u015e\u00fcheda Yass\u0131kaya",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/8a1cbe97-42db-4c73-b4f3-41beaba8f8ca/94db9f9c6c4c37fea5231886b12bd103a397a18a987dbd830c80bbc825e56519/selected.jpg",
-      "sha256": "236c48ea6c16b8b7d872cfabb6175a65a95b256c8949a93bd58ae9fde5d1ac25"
+      "sha256": "236c48ea6c16b8b7d872cfabb6175a65a95b256c8949a93bd58ae9fde5d1ac25",
+      "asset": {
+        "id": "pexels:36169353",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/freshly-baked-artisan-bread-loaves-36169353/",
+        "author": "Ervasa",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/4f073015-9e94-4f73-a6df-daa29db93955/165ce6ab27e3036a50abaf4a5b466b213aef1a4c32f20720cc9e0555fdb85df5/selected.jpg",
-      "sha256": "c14806e94f00bcf20ad94469a7cd4f9d5a2bd142d1742807217cafac39d3784f"
+      "sha256": "c14806e94f00bcf20ad94469a7cd4f9d5a2bd142d1742807217cafac39d3784f",
+      "asset": {
+        "id": "pexels:8599585",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/close-up-of-freshly-baked-bread-8599585/",
+        "author": "Polina Tankilevitch",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/8a1cbe97-42db-4c73-b4f3-41beaba8f8ca/4ac708cab2641a026beb76820d0d6b23322d737046f6a452d0aa1ff3dfb43342/selected.webp",
-      "sha256": "f1ac0cc1248ab4340f1d3f6e9c2e6e20c42ee6722ac6cf974c9882d5ded40ceb"
+      "sha256": "f1ac0cc1248ab4340f1d3f6e9c2e6e20c42ee6722ac6cf974c9882d5ded40ceb",
+      "asset": {
+        "id": "pexels:9673514",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/close-up-photo-of-breads-in-clear-plastic-pack-9673514/",
+        "author": "AMANDA LIM",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     }
   ]
 }

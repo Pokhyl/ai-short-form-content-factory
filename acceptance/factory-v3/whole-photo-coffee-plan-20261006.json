@@ -7,63 +7,183 @@
   "photos": [
     {
       "path": "catalog/af8ee414-5998-4d17-841f-a16470126fb5/0bc0c5d19f0ab4b585aa65f1f3ba058bda2bcdee6ad5e84f28843b7d2605adeb/selected.jpg",
-      "sha256": "06fad477f5bf78df62018cd04bfdfc00dcd3d23186a8e2f314868b91ae5e5838"
+      "sha256": "06fad477f5bf78df62018cd04bfdfc00dcd3d23186a8e2f314868b91ae5e5838",
+      "asset": {
+        "id": "pexels:17019160",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/green-leaves-of-potted-plants-17019160/",
+        "author": "_ptv 22",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/af8ee414-5998-4d17-841f-a16470126fb5/7e5a6ee367a68f658ade9d1d33a406e525027b53dc31f27e32d02bfb3256caff/selected.webp",
-      "sha256": "a1b42c0b4d9ffbd1f3f9409fed300681be4fd1560a1867302fda6b9f4151902c"
+      "sha256": "a1b42c0b4d9ffbd1f3f9409fed300681be4fd1560a1867302fda6b9f4151902c",
+      "asset": {
+        "id": "pexels:5029765",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/green-plants-on-a-seedling-tray-5029765/",
+        "author": "Anna Shvets",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/af8ee414-5998-4d17-841f-a16470126fb5/be8de0a068e8bd0f3512099f6a3a0ef9473ef7c768973f405fdde6127167c6fe/selected.jpg",
-      "sha256": "574b6c13b4379e205f2f76bea51c06900a19a2038f0b8f48f72a00234dd94d46"
+      "sha256": "574b6c13b4379e205f2f76bea51c06900a19a2038f0b8f48f72a00234dd94d46",
+      "asset": {
+        "id": "pexels:7125441",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/crop-faceless-gardener-picking-ripe-coffee-berries-growing-on-tree-7125441/",
+        "author": "Michael Burrows",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/af8ee414-5998-4d17-841f-a16470126fb5/50f93e6e18172f897eed768e6f8d797cfbe34a4b5abb99aff9dde9c887742560/selected.webp",
-      "sha256": "0f618ca0a9b377be229e24431ed78cb5ec72ef83d02d50dea1090d7241eb728f"
+      "sha256": "0f618ca0a9b377be229e24431ed78cb5ec72ef83d02d50dea1090d7241eb728f",
+      "asset": {
+        "id": "pexels:7125458",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/crop-harvester-showing-coffee-fruit-in-countryside-7125458/",
+        "author": "Michael Burrows",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/427f8f4e-ecf9-4011-bf15-e3ddce3dc747/47c7b97fc41ecfea433d7d0a1d39e9bc50762f4395bec5defa598a9e92e38dcd/selected.webp",
-      "sha256": "5e6c03248e6f29318045821696079248507f750cb20565284fdba1323ec6fcdd"
+      "sha256": "5e6c03248e6f29318045821696079248507f750cb20565284fdba1323ec6fcdd",
+      "asset": {
+        "id": "pexels:7125708",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/fruit-in-hand-7125708/",
+        "author": "Michael Burrows",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/af8ee414-5998-4d17-841f-a16470126fb5/0843cd6158b1a85b88c094c87d5a0f2445372731539ffda8b504b55f8920996e/selected.jpg",
-      "sha256": "4c0ce5ecf525de5cf3c6de2cf81af9b9b74cff53a14cb569f55710a4355c00f1"
+      "sha256": "4c0ce5ecf525de5cf3c6de2cf81af9b9b74cff53a14cb569f55710a4355c00f1",
+      "asset": {
+        "id": "pixabay:4591173",
+        "provider": "pixabay",
+        "source_url": "https://pixabay.com/photos/coffee-coffee-beans-aroma-roasted-4591173/",
+        "author": "gedsarts",
+        "license": "Pixabay Content License",
+        "license_url": "https://pixabay.com/service/license-summary/"
+      }
     },
     {
       "path": "catalog/af8ee414-5998-4d17-841f-a16470126fb5/c06d631fb8ffbe3848e62bc75999bf840cb2f4509170884abd1c00e5c0cf87bd/selected.jpg",
-      "sha256": "2cda0c42add4fbe3734bd2133691259da6d785717c34871f266d9513984d6f56"
+      "sha256": "2cda0c42add4fbe3734bd2133691259da6d785717c34871f266d9513984d6f56",
+      "asset": {
+        "id": "pixabay:5298528",
+        "provider": "pixabay",
+        "source_url": "https://pixabay.com/photos/roasting-beans-coffee-coffee-bean-5298528/",
+        "author": "Y-soo",
+        "license": "Pixabay Content License",
+        "license_url": "https://pixabay.com/service/license-summary/"
+      }
     },
     {
       "path": "catalog/af8ee414-5998-4d17-841f-a16470126fb5/a247bf3f806657da463f9f487f03de57f1cfee6c3240288f3b136ca76b7cc37e/selected.jpg",
-      "sha256": "400adae777f9c6c3f10cada32a34da731807831a8ea2ab1995f2bb1a72367d9e"
+      "sha256": "400adae777f9c6c3f10cada32a34da731807831a8ea2ab1995f2bb1a72367d9e",
+      "asset": {
+        "id": "pixabay:6487099",
+        "provider": "pixabay",
+        "source_url": "https://pixabay.com/photos/coffee-coffee-roasting-6487099/",
+        "author": "ClaroCafe",
+        "license": "Pixabay Content License",
+        "license_url": "https://pixabay.com/service/license-summary/"
+      }
     },
     {
       "path": "catalog/427f8f4e-ecf9-4011-bf15-e3ddce3dc747/28f774dda067a1da210d5eec3b0f84b29eec77f522706414753cf5b70fc6d131/selected.webp",
-      "sha256": "de26ea325e5f6e0a816ad5091db2c30d64f132313e7ada583d8d22f506d425aa"
+      "sha256": "de26ea325e5f6e0a816ad5091db2c30d64f132313e7ada583d8d22f506d425aa",
+      "asset": {
+        "id": "pexels:8469488",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/coffee-roaster-8469488/",
+        "author": "// onetoforseeforall",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/427f8f4e-ecf9-4011-bf15-e3ddce3dc747/c6142fd98d3c83fde80f00c9bbae49f197ce8af4949ab9e3e69ae7662406de02/selected.jpg",
-      "sha256": "eb2c719457fc61aac7ce3238fc54cc55f60d0ababd61947f8f5a2103dc7a5d63"
+      "sha256": "eb2c719457fc61aac7ce3238fc54cc55f60d0ababd61947f8f5a2103dc7a5d63",
+      "asset": {
+        "id": "wikimedia:3462745",
+        "provider": "wikimedia",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Kaffeeroester.jpg",
+        "author": "BMK",
+        "license": "CC BY-SA",
+        "license_url": "https://creativecommons.org/licenses/by-sa/3.0"
+      }
     },
     {
       "path": "catalog/af8ee414-5998-4d17-841f-a16470126fb5/df98d2ad273cd645dfdb1a87ae902338a63a3edb30f1cdd82035b6e5993c6295/selected.webp",
-      "sha256": "a545975f30b4f1903ac1e50ae27d0ca3f513ba6c1b53e038acfbfe1470239f55"
+      "sha256": "a545975f30b4f1903ac1e50ae27d0ca3f513ba6c1b53e038acfbfe1470239f55",
+      "asset": {
+        "id": "pexels:17277312",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/burlap-sacks-around-industrial-coffee-roaster-machine-17277312/",
+        "author": "Merve Nur T\u00fcrker",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/af8ee414-5998-4d17-841f-a16470126fb5/cc62b4e5bdd81525584dd801246fac0955255a3a9cb937a093c66c6fe958573d/selected.webp",
-      "sha256": "e2b56593e457d17b45ab0b4a019811d56279ece24e7a9c5ba9b9ab015c26bd6d"
+      "sha256": "e2b56593e457d17b45ab0b4a019811d56279ece24e7a9c5ba9b9ab015c26bd6d",
+      "asset": {
+        "id": "pexels:4820776",
+        "provider": "pexels",
+        "source_url": "https://www.pexels.com/photo/man-in-black-shirt-sitting-on-chair-4820776/",
+        "author": "cottonbro studio",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/"
+      }
     },
     {
       "path": "catalog/af8ee414-5998-4d17-841f-a16470126fb5/8e97adf949d38c35fdde44b1865bcbcb00079732803e3f17940e0263527a5bf2/selected.jpg",
-      "sha256": "8a149afa7f7c73829ad427b34c0ecc356818e1cfd43b18540fc395c097480490"
+      "sha256": "8a149afa7f7c73829ad427b34c0ecc356818e1cfd43b18540fc395c097480490",
+      "asset": {
+        "id": "pixabay:7830087",
+        "provider": "pixabay",
+        "source_url": "https://pixabay.com/photos/coffee-morning-coffee-grinder-7830087/",
+        "author": "RuslanSikunov",
+        "license": "Pixabay Content License",
+        "license_url": "https://pixabay.com/service/license-summary/"
+      }
     },
     {
       "path": "catalog/427f8f4e-ecf9-4011-bf15-e3ddce3dc747/45a209b4d409d71e28d869be0267a5041a9cf522d1231bdc07375a4d01166369/selected.jpg",
-      "sha256": "4e565941eee42b352cc2a46752f207fd9f5058fcc5b96ee297bb7bc5d01ac4a3"
+      "sha256": "4e565941eee42b352cc2a46752f207fd9f5058fcc5b96ee297bb7bc5d01ac4a3",
+      "asset": {
+        "id": "pixabay:9550534",
+        "provider": "pixabay",
+        "source_url": "https://pixabay.com/photos/coffee-machine-coffee-espresso-9550534/",
+        "author": "Tho-Ge",
+        "license": "Pixabay Content License",
+        "license_url": "https://pixabay.com/service/license-summary/"
+      }
     },
     {
       "path": "catalog/af8ee414-5998-4d17-841f-a16470126fb5/8a265685d534c6b2d729e3ecfd0520df1a5da65df193f38b1847e2407c26e65c/selected.jpg",
-      "sha256": "6dc0b111054f9fc7f42e4d49dacfcb7ce22377be0a74d3bfbc9c844d45d5fdc2"
+      "sha256": "6dc0b111054f9fc7f42e4d49dacfcb7ce22377be0a74d3bfbc9c844d45d5fdc2",
+      "asset": {
+        "id": "pixabay:4651087",
+        "provider": "pixabay",
+        "source_url": "https://pixabay.com/photos/the-coffee-capuchino-hot-dark-4651087/",
+        "author": "tathanhtuan",
+        "license": "Pixabay Content License",
+        "license_url": "https://pixabay.com/service/license-summary/"
+      }
     }
   ]
 }

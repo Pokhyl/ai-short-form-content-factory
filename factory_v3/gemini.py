@@ -106,11 +106,20 @@ class Gemini:
         self.http = http
         self.model = model
 
-    def generate(self, key, instruction, context, schema, *, photo=None, max_tokens=8192):
+    def generate(self, key, instruction, context, schema, *, photo=None, photos=None, max_tokens=8192):
         if not 1 <= max_tokens <= 16384:
             raise ValueError("model output budget invalid")
         parts = [{"text": json.dumps(context, ensure_ascii=False, allow_nan=False)}]
-        if photo is not None:
+        if photo is not None and photos is not None:
+            raise ValueError("choose one image input mechanism")
+        images = [photo] if photo is not None else ([] if photos is None else photos)
+        if not isinstance(images, list) or len(images) > 4:
+            raise ValueError("bounded image batch required")
+        if sum(len(image["bytes"]) for image in images) > 8 * 1024 * 1024:
+            raise ValueError("image batch exceeds byte budget")
+        for photo in images:
+            if photo.get("asset_id"):
+                parts.append({"text": "Following original photograph asset_id: " + photo["asset_id"]})
             if not 0 < len(photo["bytes"]) <= 8 * 1024 * 1024:
                 raise ValueError("photo input exceeds byte budget")
             if photo["mime"] not in {"image/jpeg", "image/png", "image/webp"}:
@@ -145,14 +154,16 @@ class Gemini:
             raise ValueError("model response has no final JSON")
         result = json.loads("".join(texts), object_pairs_hook=strict_object,
                             parse_constant=invalid_constant)
-        try:
-            validate_json(result, schema)
-        except ValueError as error:
-            raise ModelSchemaError(result, str(error)) from error
         provenance = {"receipt_id": digest(receipt), "model": self.model,
                       "model_version": raw.get("modelVersion"),
                       "usage": raw.get("usageMetadata", {}),
                       "http": {k: v for k, v in receipt.items() if k != "body"}}
+        try:
+            validate_json(result, schema)
+        except ValueError as error:
+            completed = ModelSchemaError(result, str(error))
+            completed.provenance = provenance
+            raise completed from error
         return result, provenance
 
     def compose(self, request):
