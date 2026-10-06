@@ -59,6 +59,10 @@ class PublicPage:
         # Paid/mutating calls retain their strict unknown-result semantics.
         try:
             return self._fetch(url)
+        except HTTPFailure as error:
+            if error.receipt['status'] != 429:
+                raise
+            return {'usable': False, **error.receipt, 'reason': 'source rate limited'}
         except (TimeoutError, OSError, http.client.HTTPException) as error:
             return {"usable": False, "reason": "source transport failure",
                     "error_type": type(error).__name__}
@@ -118,7 +122,7 @@ class Research:
         identity = {"endpoint": self.endpoint, "params": params}
         search = self.calls.run("research-search", "research_search", identity,
             lambda: self.http.request_receipt("GET", self.endpoint + "?" + urlencode(params), timeout=30))
-        sources, attempted, hosts = [], set(), {}
+        sources, attempted, hosts, limited_hosts = [], set(), {}, set()
         attempts = 0
         for entry in search["body"].get("results", [])[:20]:
             raw_url = entry.get("url")
@@ -128,7 +132,7 @@ class Research:
             if parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username or parsed.password:
                 continue
             url = urlunsplit((parsed.scheme, parsed.netloc, parsed.path, parsed.query, ""))
-            if url in attempted or hosts.get(parsed.hostname, 0) >= 2:
+            if url in attempted or parsed.hostname in limited_hosts or hosts.get(parsed.hostname, 0) >= 2:
                 continue
             if attempts >= 6 or len(sources) >= 3:
                 break
@@ -142,6 +146,8 @@ class Research:
             except ResourceUnavailable:
                 continue
             if not receipt.get("usable"):
+                if receipt.get("status") == 429:
+                    limited_hosts.add(parsed.hostname)
                 continue
             sources.append({"id": "source-" + str(len(sources) + 1), "url": url,
                 "title": entry.get("title", ""), "text": receipt["text"], "sha256": receipt["sha256"],

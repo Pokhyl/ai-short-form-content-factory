@@ -169,3 +169,29 @@ class GeminiTests(unittest.TestCase):
         self.http.result["facts"][0]["support"][0]["quote"] = "Invented quote"
         with self.assertRaisesRegex(ValueError, "quotation"):
             self.adapter.outline(request)
+
+    def test_compact_evidence_keeps_every_quote_and_full_hash_validation(self):
+        from factory_v3.grounding import compact_evidence, validate_evidence
+        full = copy.deepcopy(self.fixture.evidence)
+        original = copy.deepcopy(full)
+        view = compact_evidence(full)
+        self.assertEqual(view['facts'], full['facts'])
+        self.assertEqual(view['sources'][0]['sha256'], full['sources'][0]['sha256'])
+        self.assertNotIn('text', view['sources'][0])
+        self.assertEqual(full, original)
+        view['facts'][0]['text'] = 'Mutation'
+        self.assertEqual(full, original)
+        full['sources'][0]['text'] += 'Tampered'
+        with self.assertRaisesRegex(ValueError, 'hash mismatch'):
+            validate_evidence(full)
+
+    def test_completed_schema_failure_exposes_draft_without_repeating_upstream(self):
+        from factory_v3.gemini import ModelSchemaError
+        self.http.result = {'words': ['short']}
+        schema = obj({'words': array(string(), 10, 20)})
+        for _ in range(2):
+            with self.assertRaises(ModelSchemaError) as caught:
+                self.adapter.generate('short-draft', 'controlled', {}, schema)
+            self.assertEqual(caught.exception.result, {'words': ['short']})
+        self.assertEqual(len(self.http.requests), 1)
+        self.assertFalse(self.ledger.terminal)

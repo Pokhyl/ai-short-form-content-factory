@@ -1,0 +1,241 @@
+{
+  "id": "8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d",
+  "materials": [
+    {
+      "id": "pixabay:5996781",
+      "supported_fact_ids": [
+        "fact-1"
+      ],
+      "matched_visual_targets": {
+        "target-1": "Wheat grain stalks are clearly shown, matching the requirement for wheat grains."
+      },
+      "visible_description": "A close-up photograph of wheat or barley stalks in a sunny field against a blurred background."
+    },
+    {
+      "id": "pexels:6287300",
+      "supported_fact_ids": [
+        "fact-2"
+      ],
+      "matched_visual_targets": {
+        "target-2": "The image clearly shows hands manipulating and kneading dough."
+      },
+      "visible_description": "A close-up photograph showing a person's hands kneading dough on a floured surface, with flour dusting visible around the hands and the dough piece."
+    },
+    {
+      "id": "pexels:18640827",
+      "supported_fact_ids": [
+        "fact-2"
+      ],
+      "matched_visual_targets": {
+        "target-2": "The image clearly shows prepared dough dusted with flour."
+      },
+      "visible_description": "A close-up photograph of a round ball of smooth dough dusted with flour, resting on a wooden surface."
+    },
+    {
+      "id": "pexels:8107991",
+      "supported_fact_ids": [
+        "fact-1"
+      ],
+      "matched_visual_targets": {
+        "target-1": "The image clearly shows a close-up of fine white flour without any baked products or ovens."
+      },
+      "visible_description": "Close-up photograph of fine white flour, showing texture and powdery clumps."
+    },
+    {
+      "id": "pixabay:4368596",
+      "supported_fact_ids": [
+        "fact-1"
+      ],
+      "matched_visual_targets": {
+        "target-1": "The photograph displays a close-up of wheat grains inside a wooden container with a scoop, fulfilling the requirement for showing wheat grains while avoiding baked products."
+      },
+      "visible_description": "A close-up photograph showing a wooden bowl filled with harvested wheat grains, alongside a wooden scoop."
+    },
+    {
+      "id": "pexels:8093358",
+      "supported_fact_ids": [
+        "fact-2"
+      ],
+      "matched_visual_targets": {
+        "target-2": "A person is actively handling and forming dough on a flour-covered surface."
+      },
+      "visible_description": "A close-up overhead shot of a person wearing gloves shaping a ball of dough on a floured surface."
+    },
+    {
+      "id": "pexels:39495542",
+      "supported_fact_ids": [
+        "fact-3"
+      ],
+      "matched_visual_targets": {
+        "target-3": "The image clearly shows rising yeast dough with small air bubbles."
+      },
+      "visible_description": "A close-up photograph of rising yeast dough with visible air bubbles, contained inside a white bowl on a checkered surface."
+    }
+  ],
+  "brief": {
+    "facts": [
+      {
+        "id": "fact-1",
+        "text": "Пшеничную муку высшего сорта производят путем тонкого помола внутренней части зерна — эндосперма.",
+        "support": [
+          {
+            "source_id": "source-2",
+            "quote": "Ее производят путем тонкого помола внутренней части зерна — эндосперма."
+          }
+        ]
+      },
+      {
+        "id": "fact-2",
+        "text": "Вода активирует клейковину и глютен в муке, что придает тесту эластичность.",
+        "support": [
+          {
+            "source_id": "source-2",
+            "quote": "Вода активирует клейковину — глютен в муке: он придает тесту эластичность."
+          }
+        ]
+      },
+      {
+        "id": "fact-3",
+        "text": "Дрожжи питаются сахарами из муки и в процессе брожения выделяют углекислый газ, который поднимает тесто.",
+        "support": [
+          {
+            "source_id": "source-2",
+            "quote": "Дрожжи, питаясь сахарами из муки, в процессе брожения выделяют углекислый газ, который и поднимает тесто."
+          }
+        ]
+      }
+    ],
+    "required_fact_ids": [
+      "fact-1",
+      "fact-2",
+      "fact-3"
+    ],
+    "visual_targets": [
+      {
+        "id": "target-1",
+        "fact_ids": [
+          "fact-1"
+        ],
+        "must_show": "Пшеничные зерна и мука высшего сорта",
+        "must_not_show": "Готовые хлебобулочные изделия или печь",
+        "query": "wheat grains and white flour closeup"
+      },
+      {
+        "id": "target-2",
+        "fact_ids": [
+          "fact-2"
+        ],
+        "must_show": "Процесс замешивания теста с добавлением воды",
+        "must_not_show": "Сухие зерна или готовый хлеб на полке",
+        "query": "kneading dough with water in a bakery"
+      },
+      {
+        "id": "target-3",
+        "fact_ids": [
+          "fact-3"
+        ],
+        "must_show": "Поднимающееся дрожжевое тесто с пузырьками воздуха",
+        "must_not_show": "Мельница или сырые зерна пшеницы",
+        "query": "rising yeast bread dough with bubbles"
+      }
+    ]
+  },
+  "draft": {
+    "words": [
+      "Пшеничную",
+      "муку",
+      "высшего",
+      "сорта",
+      "производят",
+      "путем",
+      "тонкого",
+      "помола",
+      "внутренней",
+      "части",
+      "зерна",
+      "эндосперма.",
+      "Вода",
+      "активирует",
+      "клейковину",
+      "и",
+      "глютен",
+      "в",
+      "муке,",
+      "что",
+      "придает",
+      "тесту",
+      "эластичность.",
+      "Дрожжи",
+      "питаются",
+      "сахарами",
+      "из",
+      "муки",
+      "и",
+      "в",
+      "процессе",
+      "брожения",
+      "выделяют",
+      "углекислый",
+      "газ,",
+      "который",
+      "поднимает",
+      "тесто."
+    ],
+    "beats": [
+      {
+        "material_id": "pixabay:5996781",
+        "word_start": 0,
+        "word_end": 6,
+        "fact_ids": [
+          "fact-1"
+        ],
+        "visual_target_id": "target-1"
+      },
+      {
+        "material_id": "pexels:8107991",
+        "word_start": 6,
+        "word_end": 12,
+        "fact_ids": [
+          "fact-1"
+        ],
+        "visual_target_id": "target-1"
+      },
+      {
+        "material_id": "pexels:6287300",
+        "word_start": 12,
+        "word_end": 18,
+        "fact_ids": [
+          "fact-2"
+        ],
+        "visual_target_id": "target-2"
+      },
+      {
+        "material_id": "pexels:18640827",
+        "word_start": 18,
+        "word_end": 23,
+        "fact_ids": [
+          "fact-2"
+        ],
+        "visual_target_id": "target-2"
+      },
+      {
+        "material_id": "pexels:8093358",
+        "word_start": 23,
+        "word_end": 32,
+        "fact_ids": [
+          "fact-3"
+        ],
+        "visual_target_id": "target-2"
+      },
+      {
+        "material_id": "pexels:39495542",
+        "word_start": 32,
+        "word_end": 38,
+        "fact_ids": [
+          "fact-3"
+        ],
+        "visual_target_id": "target-3"
+      }
+    ]
+  }
+}

@@ -89,7 +89,7 @@ class OperationTests(unittest.TestCase):
             self.assertEqual({s['visual_target_id'] for s in frozen['payload']['scenes']}, {'v0', 'v1', 'v2'})
             self.assertEqual(len(searches), 9)
             self.assertEqual(model.calls, ['material-brief'] + ['material-inspect:a'+str(i) for i in range(6)] + ['material-compose'])
-            self.assertEqual(preparation_budgets(60)['gemini'], 15)
+            self.assertEqual(preparation_budgets(60)['gemini'], 16)
             from material_first.engine import verify
             from factory_v3.preflight import digest
             altered = copy.deepcopy(frozen)
@@ -247,3 +247,60 @@ class OperationTests(unittest.TestCase):
                    'materials':saved['materials'],'evidence':{'facts':saved['brief']['facts']}}
         result = Operations('.',None,Composer(),None,None).compose(context)
         self.assertEqual(' '.join(b['narration'] for b in result['beats']), ' '.join(saved['draft']['words']))
+
+    def test_saved_short_draft_gets_one_length_repair_without_redoing_research_or_images(self):
+        import json
+        from factory_v3.gemini import ModelSchemaError
+        saved = json.loads((Path(__file__).parent / 'fixtures/bread-ru45-short-draft.json').read_text())
+        calls = []
+        class Composer:
+            def generate(self, key, instruction, context, schema):
+                calls.append(key)
+                if key == 'material-compose':
+                    raise ModelSchemaError(copy.deepcopy(saved['draft']), 'array exceeds bounds')
+                self_expected = 'material-compose-length-repair'
+                assert key == self_expected
+                assert context['completed_draft'] == saved['draft']
+                words = ['controlled'] * 95
+                beats = copy.deepcopy(saved['draft']['beats'])
+                for i, beat in enumerate(beats):
+                    beat['word_start'] = len(words)*i//len(beats)
+                    beat['word_end'] = len(words)*(i+1)//len(beats)
+                result = {'words': words, 'beats': beats}
+                validate_json(result, schema)
+                return result, {}
+        context = {'request': {'seconds': 45, 'visual_targets': saved['brief']['visual_targets']},
+                   'materials': saved['materials'], 'evidence': {'facts': saved['brief']['facts']}}
+        draft = Operations('.', None, Composer(), None, None).compose(context)
+        self.assertEqual(len(' '.join(b['narration'] for b in draft['beats']).split()), 95)
+        self.assertEqual(calls, ['material-compose', 'material-compose-length-repair'])
+
+    def test_length_repair_never_retries_provider_errors_or_invalid_identities(self):
+        from factory_v3.gemini import ModelSchemaError
+        from factory_v3.http import HTTPFailure
+        context = {'request': {'seconds': 45}, 'materials': [{'id': 'a'+str(i)} for i in range(5)],
+                   'evidence': {'facts': [{'id': 'f'}]}}
+        errors = [HTTPFailure(429, {}), RuntimeError('ambiguous transport'),
+                  ModelSchemaError({'words': ['short'], 'beats': [{'material_id': 'invented'}]}, 'invalid')]
+        for error in errors:
+            calls = []
+            def generate(key, *args, **kwargs):
+                calls.append(key)
+                raise error
+            with self.assertRaises((ValueError, RuntimeError)):
+                Operations('.', None, SimpleNamespace(generate=generate), None, None).compose(context)
+            self.assertEqual(calls, ['material-compose'])
+
+    def test_invalid_length_repair_is_terminal_after_two_completed_drafts(self):
+        from factory_v3.gemini import ModelSchemaError
+        import json
+        saved = json.loads((Path(__file__).parent / 'fixtures/bread-ru45-short-draft.json').read_text())
+        calls = []
+        def generate(key, *args, **kwargs):
+            calls.append(key)
+            raise ModelSchemaError(copy.deepcopy(saved['draft']), 'array exceeds bounds')
+        context = {'request': {'seconds': 45, 'visual_targets': saved['brief']['visual_targets']},
+                   'materials': saved['materials'], 'evidence': {'facts': saved['brief']['facts']}}
+        with self.assertRaises(ModelSchemaError):
+            Operations('.', None, SimpleNamespace(generate=generate), None, None).compose(context)
+        self.assertEqual(calls, ['material-compose', 'material-compose-length-repair'])

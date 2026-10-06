@@ -59,3 +59,15 @@ def validate_script_review(evidence, language, script, scenes, review, topic=Non
         observed.add(key)
     if observed!=expected:
         raise ValueError("semantic review omitted narrated facts")
+
+
+def compact_evidence(evidence):
+    """Model view of already validated evidence; full source bytes stay in the plan.
+
+    Preserve every fact and exact supporting quotation. Do not re-send entire
+    articles for each image. The original hashes continue to bind local QA.
+    """
+    from copy import deepcopy
+    return {"facts": deepcopy(evidence["facts"]), "sources": [
+        {key: source[key] for key in ("id", "url", "sha256")}
+        for source in evidence.get("sources", [])]}

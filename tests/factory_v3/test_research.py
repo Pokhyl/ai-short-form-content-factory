@@ -79,10 +79,36 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(len(set(pages.calls)), 4)
         self.assertFalse(ledger.terminal)
 
-    def test_transport_fallback_does_not_bypass_security_or_rate_limits(self):
+    def test_transport_fallback_does_not_bypass_security(self):
         from unittest.mock import patch
         page = PublicPage()
-        for error in [ValueError('non-public address'), HTTPFailure(429, {'Retry-After':'60'})]:
+        for error in [ValueError('non-public address')]:
             with patch.object(page, '_fetch', side_effect=error):
                 with self.assertRaises(type(error)):
                     page.fetch('https://example.invalid/page')
+
+    def test_rate_limited_public_host_is_skipped_with_receipt_and_never_revisited(self):
+        class HTTP:
+            def request_receipt(self, *args, **kwargs):
+                return {'body': {'results': [{'url': u} for u in [
+                    'https://limited.invalid/a', 'https://limited.invalid/b',
+                    'https://other.invalid/a', 'https://third.invalid/a',
+                    'https://fourth.invalid/a']]}}
+        class Pages(PublicPage):
+            def __init__(self): self.urls = []
+            def _fetch(self, url):
+                self.urls.append(url)
+                if 'limited.invalid' in url:
+                    raise HTTPFailure(429, {'Retry-After': '60'})
+                text = 'Available independent source. ' * 5
+                return {'usable': True, 'text': text, 'sha256': hashlib.sha256(text.encode()).hexdigest()}
+        ledger = FakeLedger(); ledger.limit = 10
+        pages = Pages()
+        research = Research(BudgetedCalls(ledger, 'test'), HTTP(), pages=pages)
+        self.assertEqual(len(research.fetch('topic', 'en')), 3)
+        self.assertEqual(pages.urls.count('https://limited.invalid/a'), 1)
+        self.assertNotIn('https://limited.invalid/b', pages.urls)
+        self.assertFalse(ledger.terminal)
+        first = pages.fetch('https://limited.invalid/c')
+        self.assertEqual(first['headers']['retry-after'], '60')
+        self.assertFalse(first['usable'])

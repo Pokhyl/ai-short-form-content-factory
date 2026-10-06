@@ -4,7 +4,7 @@ import hashlib
 import json
 import re
 from .preflight import asset_path, digest, validate_asset
-from .grounding import validate_evidence, validate_script_review
+from .grounding import validate_evidence, validate_script_review, compact_evidence
 
 
 def obj(properties):
@@ -87,6 +87,13 @@ def invalid_constant(value):
     raise ValueError("non-finite model response number")
 
 
+class ModelSchemaError(ValueError):
+    """A completed JSON response failed local validation, not an unknown call."""
+    def __init__(self, result, message):
+        super().__init__(message)
+        self.result = result
+
+
 class Gemini:
     def __init__(self, calls, authorization_key, http, *, model, free_tier_confirmed):
         # Confirmation is server-owned deployment policy; never a public input field.
@@ -138,7 +145,10 @@ class Gemini:
             raise ValueError("model response has no final JSON")
         result = json.loads("".join(texts), object_pairs_hook=strict_object,
                             parse_constant=invalid_constant)
-        validate_json(result, schema)
+        try:
+            validate_json(result, schema)
+        except ValueError as error:
+            raise ModelSchemaError(result, str(error)) from error
         provenance = {"receipt_id": digest(receipt), "model": self.model,
                       "model_version": raw.get("modelVersion"),
                       "usage": raw.get("usageMetadata", {}),
@@ -175,7 +185,7 @@ class Gemini:
             "Do not approve a fact merely because its ID is cited. Quote the actual words asserting each cited fact. "
             "Check that the narration actually answers the requested topic and essential mechanism, rather than merely describing pictured objects. "
             "Report false for omitted topic coverage, any unsupported statement, omitted cited fact or contradictory image requirement.",
-            request, schema)
+            {**request, "evidence": compact_evidence(request["evidence"])}, schema)
         result.update({"receipt_id": provenance["receipt_id"], "model": self.model,
             "provider_provenance": provenance,
             "script_sha256": hashlib.sha256(request["script"].encode()).hexdigest(),

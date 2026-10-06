@@ -1,0 +1,33 @@
+{
+  "basis": "User explicitly said continue after the failed EN30/RU45/UK60 matrix.",
+  "changes": [
+    "Compact validated facts and exact quotations for all post-research model calls; retain original evidence and hash gates.",
+    "Skip a rate-limited public source and all further URLs on that host in this request; keep six-page budget and never retry it.",
+    "One separate length correction for a successful structurally valid completed draft; HTTP/unknown/invented identities stay terminal.",
+    "Brief requests enough explanatory facts for requested duration and full process."
+  ],
+  "offline_proof": {
+    "replacement_tests": 36,
+    "legacy_tests": 84,
+    "saved_short_draft_words": 38,
+    "old_uk_inspection_prompt_tokens_approx": 18498,
+    "old_uk_source_characters": 44755
+  },
+  "external_verification": {
+    "provider": "fixed Gemini 3.5 Flash Lite, existing unbilled authorization; existing photo providers and one TTS per successful plan",
+    "cases": [
+      "water-cycle-uk60",
+      "bread-ru45",
+      "coffee-en30"
+    ],
+    "product_posts_per_case": 1,
+    "max_gemini_per_case": 16,
+    "max_research_search_per_case": 1,
+    "max_source_fetch_per_case": 6,
+    "max_download_per_case": 12,
+    "max_tts_per_case": 1,
+    "quota_consumption": "unknown until saved usage receipts; post-research source duplication eliminated",
+    "stop": "Finish each fresh case at terminal state, export actual MP4s if passed. No full case rerun for a prompt patch. No paid fallback."
+  },
+  "production_scope": "Only factory-v3 app image, protected database row checks at rollout; no gateway or database schema change."
+}

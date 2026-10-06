@@ -2,8 +2,8 @@
 from pathlib import Path
 from copy import deepcopy
 import re
-from factory_v3.gemini import obj, array, string, BOOL
-from factory_v3.grounding import validate_evidence
+from factory_v3.gemini import obj, array, string, BOOL, ModelSchemaError, validate_json
+from factory_v3.grounding import validate_evidence, compact_evidence
 from factory_v3.preflight import asset_path, digest, validate_asset
 from factory_v3.providers import PROVIDERS
 from .engine import MaterialUnavailable
@@ -11,7 +11,7 @@ from .targets import validate_targets
 
 
 def preparation_budgets(seconds):
-    return {'research_search': 1, 'source_fetch': 6, 'gemini': 15,
+    return {'research_search': 1, 'source_fetch': 6, 'gemini': 16,
             'download': 12, 'metadata': 1, **{'search:' + p: 3 for p in PROVIDERS}}
 
 
@@ -77,7 +77,11 @@ class Operations:
             'visual_targets': array(obj({'id': string(), 'fact_ids': array(string(), 1, 8),
                 'must_show': string(), 'must_not_show': string(),
                 'query': {**string(), 'maxLength': 100}}), 3, 3)})
+        desired_facts = max(3, min(8, (request['seconds'] + 7) // 8))
         result, _ = self.gemini.generate('material-brief',
+            f'For {request["seconds"]} seconds, aim for {desired_facts} distinct source-backed facts, '
+            'with enough useful explanation for natural speech. Cover the full requested process, '
+            'including its final outcome; do not spend all facts on its starting ingredients. '
             'Extract at least three distinct atomic explanatory facts answering the topic, supported by exact source quotations. '
             'Separate the starting condition, concrete mechanism/details, and consequence or purpose where supported. '
             'Do not merge multiple mechanisms into one broad topic statement, or paraphrase the same fact to fill slots. '
@@ -160,7 +164,7 @@ class Operations:
             'focus is recognizable in the actual crop; do not require microscopic detail or exact action. '
             'A bee close-up is fine for the subject role, but cannot also count as a landscape or flower-only '
             'composition. Avoid excessive precision: prioritize different subjects, scales and contexts.',
-            {'evidence': evidence, 'visual_targets': targets,
+            {'evidence': compact_evidence(evidence), 'visual_targets': targets,
              'metadata': {k: asset[k] for k in ('source_url', 'author', 'license')}},
             schema, photo={'bytes': data, 'mime': mime}, max_tokens=2048)
         details = result['visible_fact_details']
@@ -196,7 +200,8 @@ class Operations:
             beat_schema = schema['properties']['beats']['items']
             beat_schema['properties']['visual_target_id'] = string(t['id'] for t in targets)
             beat_schema['required'].append('visual_target_id')
-        result, _ = self.gemini.generate('material-compose',
+        model_context = {**context, 'evidence': compact_evidence(context['evidence'])}
+        instruction = (
             f'Write one natural factual script in the requested language. Return the script as a words array '
             f'of {minimum_words} to {maximum_words} individual words TOTAL, aiming for {round(seconds * 2.1)} '
             f'words for {seconds} seconds. Each words item is exactly one word, with punctuation attached. '
@@ -212,7 +217,24 @@ class Operations:
             'visible_fact_details without pretending invisible mechanisms are shown. '
             'When visual_targets are present, use at least two different available roles with materials whose matched_visual_targets '
             'includes it. Keep that target identity on its beat, explaining its visible detail. '
-            'Narration will be spoken at its natural speed.', context, schema)
+            'Narration will be spoken at its natural speed.')
+        try:
+            result, _ = self.gemini.generate('material-compose', instruction, model_context, schema)
+        except ModelSchemaError as error:
+            # Only a completed, structurally valid draft with a length mismatch
+            # may get one distinct correction call. Never retry HTTP/unknowns.
+            structural = deepcopy(schema)
+            structural['properties']['words']['minItems'] = 1
+            structural['properties']['words']['maxItems'] = 256
+            validate_json(error.result, structural)
+            if minimum_words <= len(error.result['words']) <= maximum_words:
+                raise
+            result, _ = self.gemini.generate('material-compose-length-repair',
+                instruction + f' The completed draft contains {len(error.result["words"])} words; '
+                f'rewrite it to {minimum_words}–{maximum_words} words, aiming for {round(seconds * 2.1)}. '
+                'Expand or shorten source-supported explanations without repetition or invented claims. '
+                'Reassign the complete revised words array to consecutive beats.',
+                {**model_context, 'completed_draft': error.result}, schema)
         words = result['words']
         if not minimum_words <= len(words) <= maximum_words:
             raise NarrationBudgetExceeded('narration outside total word budget before TTS')
