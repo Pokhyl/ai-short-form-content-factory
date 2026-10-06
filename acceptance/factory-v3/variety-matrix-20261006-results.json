@@ -1,0 +1,51 @@
+{
+  "runtime_revision": "50136aba504aa80b541834240d40955c129c74cd",
+  "image": "factory-v3:50136ab",
+  "image_id": "sha256:7d6ca0dd3e2a7de93ae08b5c281061d2dacbd4607b24aa22d4400a0adf980905",
+  "cases": [
+    {
+      "key": "coffee-en30",
+      "id": "90db2d6e-af1f-48f0-b7f8-0f4b33d4cef6",
+      "language": "en",
+      "requested_seconds": 30,
+      "status": "unknown",
+      "stage": "source_fetch",
+      "cause": "HTTP 429, Retry-After 60",
+      "accepted_photos": 0
+    },
+    {
+      "key": "bread-ru45",
+      "id": "8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d",
+      "language": "ru",
+      "requested_seconds": 45,
+      "status": "failed",
+      "stage": "material-compose validation",
+      "cause": "38 words, minimum 72; local schema ValueError",
+      "accepted_photos": 7,
+      "visual_role_count": 3
+    },
+    {
+      "key": "water-cycle-uk60",
+      "id": "c78c3a52-3ebc-4900-b429-024c8bd21e7a",
+      "language": "uk",
+      "requested_seconds": 60,
+      "status": "unknown",
+      "stage": "material-compose",
+      "cause": "Gemini HTTP 429",
+      "accepted_photos": 9,
+      "visual_role_count": 3
+    }
+  ],
+  "new_mp4_count": 0,
+  "tts_calls": 0,
+  "machine_pass": false,
+  "human_pass": false,
+  "packaged_tests": {
+    "replacement": 33,
+    "legacy": 81,
+    "passed": true
+  },
+  "workflow_digest": "dd7c8bd5284b595f14e9b08f7027cb08",
+  "only_app_replaced": true,
+  "failed_ids_immutable": true
+}

@@ -1,3 +1,11 @@
+## Current varied-language matrix result — 2026-10-06
+
+Live app:50136aba504aa80b541834240d40955c129c74cd, imagefactory-v3:50136ab, imageID7d6ca0dd3e2a7de93ae08b5c281061d2dacbd4607b24aa22d4400a0adf980905. Packaged33 replacement and81 legacy tests PASS. Only app replaced; protected workflow/job/preparation rows unchanged during rollout. Workflow digestdd7c8bd5284b595f14e9b08f7027cb08. Read-only source timeouts now skip to distinct candidates within the existing budget;429 still stops.
+
+Final authorized fresh matrix attempts completed: EN30 coffee90db2d6e-af1f-48f0-b7f8-0f4b33d4cef6 UNKNOWN source HTTP429 (Retry-After60); RU45 bread8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d FAILED after7 accepted photos/3roles, composer returned38words versus minimum72; UK60 water cyclec78c3a52-3ebc-4900-b429-024c8bd21e7a UNKNOWN Gemini material-compose HTTP429 after9accepted photos/3roles. Zero new MP4s, zero TTS calls, no machine/HUMAN acceptance. Evidence:acceptance/factory-v3/variety-matrix-20261006-results.json. Preserve all old/final failed IDs; do not rescue or automatically repeat requests.
+
+User accepted only the earlier manually selected bees-varied-preview.mp4, not the automatic pipeline. Different language/duration production reliability is unproven. Native source-video discovery remains unwired. Further work must address the complete failure inventory with cached/offline evidence and bounded provider availability strategy; do not resume the historical prompt-patch/full-run queue below. This matrix is finished with failures, whole editor is not production accepted. Historical checkpoints below are evidence only.
+
 ## Read-only source fallback — 2026-10-06
 Russian job28221062-f9ab-4a32-bdc5-1d276fb93ae7 stopped withsource_fetch TimeoutError after other fetched pages. PublicPage now reports bounded read-only transport unavailability (no partial text) and Research moves to other distinct candidates within the existing6-page limit. Never repeats the timed-out URL. SSRF ValueError and429 still propagate; paid/mutating unknown semantics unchanged.33 replacement/81 legacy tests pass. d3d9cfe package33 tests confirmed and rollout healthy/protected-row digest unchanged. Next combined source-fallback release receives one fresh EN30/RU45/UK60 attempt each; report actual successes/failures rather than continue unbounded prompt loops.
 

@@ -38,5 +38,8 @@
   "preserved_initial_failure": {
     "id": "af8ee414-5998-4d17-841f-a16470126fb5",
     "cause": "Eight accepted varied photos blocked by ten-photo cadence requirement; no TTS."
-  }
+  },
+  "final_runtime_revision": "50136aba504aa80b541834240d40955c129c74cd",
+  "final_results": "acceptance/factory-v3/variety-matrix-20261006-results.json",
+  "matrix_complete": true
 }
