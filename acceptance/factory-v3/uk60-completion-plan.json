@@ -1,0 +1,27 @@
+{
+  "id": "3bf60490-c179-484d-991d-4fb5c16ca1a1",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "maximum_fresh_requests": 1,
+  "question": "User explicitly resumed completion after screenshot; verify corrected planner and word compiler through independent review, one voice and exact UK60 MP4 via one normal fresh owner request.",
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 42,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "model": "gemini-3.5-flash-lite",
+  "expected_quota": "Model/image tokens depend on actual accepted pool, one validated TTS input; free-tier and monthly gates retained, no paid fallback.",
+  "stop": "One new normal request only; no retry of failed IDs, no paid fallback. Terminal failure/unknown ends this case; inspect actual saved evidence before any further action.",
+  "offline": "156 packaged tests passed at compiler release; current UI-only release leaves generation unchanged. Exact saved current-source connected replay passes32 inspected photos and95 full words through required fact coverage, stopping before missing independent script-review. No prior UK60 voice/MP4 exists.",
+  "runtime_revision": "73ba4708f0326f84e08260e302d4a55033545d42",
+  "immutable_failed_ids": [
+    "e4e64b34-fd5a-461b-83a8-a04b4d87f9ee",
+    "43e2b4cd-fddf-4b68-acf4-57cbcc720af2"
+  ]
+}
