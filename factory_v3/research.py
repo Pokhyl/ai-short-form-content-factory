@@ -54,6 +54,16 @@ def public_address(url, resolver=socket.getaddrinfo):
 
 class PublicPage:
     def fetch(self, url):
+        # This is a bounded, read-only public GET. An unavailable page can
+        # be skipped without retrying it or accepting partial source text.
+        # Paid/mutating calls retain their strict unknown-result semantics.
+        try:
+            return self._fetch(url)
+        except (TimeoutError, OSError, http.client.HTTPException) as error:
+            return {"usable": False, "reason": "source transport failure",
+                    "error_type": type(error).__name__}
+
+    def _fetch(self, url):
         parsed, ip, port = public_address(url)
         klass = http.client.HTTPSConnection if parsed.scheme == "https" else http.client.HTTPConnection
         connection = klass(parsed.hostname, port=port, timeout=20)

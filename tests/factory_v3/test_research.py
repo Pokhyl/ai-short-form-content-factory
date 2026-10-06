@@ -3,7 +3,7 @@ import hashlib
 import unittest
 from factory_v3.http import HTTPFailure
 from factory_v3.preparation import BudgetedCalls, ResourceUnavailable
-from factory_v3.research import ArticleText, Research, public_address
+from factory_v3.research import ArticleText, Research, PublicPage, public_address
 from test_preparation import FakeLedger
 
 
@@ -57,3 +57,32 @@ class ResearchTests(unittest.TestCase):
         with self.assertRaises(HTTPFailure):
             calls.run("page", "source_fetch", {}, rejected, allow_unavailable=True)
         self.assertTrue(ledger.terminal)
+
+    def test_timed_out_public_page_is_skipped_without_repeating_it(self):
+        class HTTP:
+            def request_receipt(self, *args, **kwargs):
+                return {"body": {"results": [{"url": "https://source" + str(i) + ".invalid/page"}
+                                             for i in range(10)]}}
+        class Pages(PublicPage):
+            def __init__(self): self.calls = []
+            def _fetch(self, url):
+                self.calls.append(url)
+                if 'source0.' in url: raise TimeoutError('Saved Russian source timeout')
+                text = 'Actual available source text. ' * 5
+                return {'usable': True, 'status': 200, 'text': text,
+                        'sha256': hashlib.sha256(text.encode()).hexdigest()}
+        ledger = FakeLedger(); ledger.limit = 10
+        pages = Pages()
+        sources = Research(BudgetedCalls(ledger, 'test'), HTTP(), pages=pages).fetch('topic','ru')
+        self.assertEqual(len(sources), 3)
+        self.assertEqual(len(pages.calls), 4)
+        self.assertEqual(len(set(pages.calls)), 4)
+        self.assertFalse(ledger.terminal)
+
+    def test_transport_fallback_does_not_bypass_security_or_rate_limits(self):
+        from unittest.mock import patch
+        page = PublicPage()
+        for error in [ValueError('non-public address'), HTTPFailure(429, {'Retry-After':'60'})]:
+            with patch.object(page, '_fetch', side_effect=error):
+                with self.assertRaises(type(error)):
+                    page.fetch('https://example.invalid/page')
