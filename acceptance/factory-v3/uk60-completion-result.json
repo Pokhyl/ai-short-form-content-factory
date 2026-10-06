@@ -1,0 +1,1212 @@
+{
+  "id": "3bf60490-c179-484d-991d-4fb5c16ca1a1",
+  "source_revision": "73ba4708f0326f84e08260e302d4a55033545d42",
+  "status": "qa_pass",
+  "request": {
+    "topic": "Нейтронная звезда",
+    "seconds": 60,
+    "language": "uk",
+    "visual_validation_mode": "gemini"
+  },
+  "photo_count": 30,
+  "script": "Нейтронна звезда це космічне тіло, яке є одним з можливих результатів еволюції звізд, складаючись переважно з нейтронної сердцевини та тонкої кори речовини. Люба звізда з початковою масою, що перевищує масу Сонця у вісім разів, здатна наприкінці еволюції перетворитися на нейтронну зорю. Коли густина внутрішньої області досягає ядерного рівня, давлення виродженого нейтронного газу надійно зупиняє подальше гравітаційне стискання. Падіння потужної зовнішньої оболонки на щільне ядро миттєво зупиняється, після чого вона відкидається потоком нейтріно, перетворюючи стару зорю на яскраве явище наднової. Маси цих унікальних об'єктів завжди порівнянні з масою Сонця, проте їхній типовий радіус становить лише десять чи двадцять кілометрів. Багато таких нейтронних зір володіють надзвичайно високою швидкістю осевого обертання та надпотужним магнітним полем, випромінюючи сигнали у різних діапазонах простору.",
+  "exact_source_evidence_valid": true,
+  "call_summary": [
+    {
+      "kind": "download",
+      "state": "succeeded",
+      "count": 40
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 14
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 5
+    }
+  ],
+  "model_calls": [
+    {
+      "key": "material-inspect-batch:5d96e4cf754c43ae816a0f833075502c06f7ae7ab2a844888ac432f37adb7c45",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 9747,
+        "promptTokenCount": 8508,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4322
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 4186
+          }
+        ],
+        "candidatesTokenCount": 1239
+      }
+    },
+    {
+      "key": "material-inspect-batch:e73fbbb56251e7cfe9626e50670e1f4a0129de8c7d2f882d2bf19f9a158e24cf",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 9704,
+        "promptTokenCount": 8529,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 4173
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4356
+          }
+        ],
+        "candidatesTokenCount": 1175
+      }
+    },
+    {
+      "key": "material-inspect-batch:abe88fa59d32ac575c2854678028dbcc23c4a49818e9cbb04cf59b69a11c1d22",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 9668,
+        "promptTokenCount": 8473,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 4192
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4281
+          }
+        ],
+        "candidatesTokenCount": 1195
+      }
+    },
+    {
+      "key": "material-brief",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 26386,
+        "promptTokenCount": 25418,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 25418
+          }
+        ],
+        "candidatesTokenCount": 968
+      }
+    },
+    {
+      "key": "material-inspect-batch:dd8ba3b838f1e7919d74e175454e78a139af1f91ee44b0d23fc09fd9f8d75cf4",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 9708,
+        "promptTokenCount": 8562,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 4178
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4384
+          }
+        ],
+        "candidatesTokenCount": 1146
+      }
+    },
+    {
+      "key": "material-inspect-batch:7682381d1ab00b1a486bb34e741196737680e43cebc804eca9266ecba31ad163",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 9819,
+        "promptTokenCount": 8500,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 4185
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4315
+          }
+        ],
+        "candidatesTokenCount": 1319
+      }
+    },
+    {
+      "key": "material-inspect-batch:16c2ca380816ac7adf29d8eebe8fd6412094803ccd348598cac11a114f0da434",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 9710,
+        "promptTokenCount": 8521,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4340
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 4181
+          }
+        ],
+        "candidatesTokenCount": 1189
+      }
+    },
+    {
+      "key": "material-inspect-batch:b807311b95b4fa571b7e2290184b5da295b9f6b8dbdd76e39970c9212ecf4f52",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 9722,
+        "promptTokenCount": 8509,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4324
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 4185
+          }
+        ],
+        "candidatesTokenCount": 1213
+      }
+    },
+    {
+      "key": "material-inspect-batch:9b4d50b69257e72f606808951522c758e12513c89567cea3d3902502491ea2d4",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 9659,
+        "promptTokenCount": 8505,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4326
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 4179
+          }
+        ],
+        "candidatesTokenCount": 1154
+      }
+    },
+    {
+      "key": "material-inspect-batch:b9b697fffa9dc404159e4f619265a8cc77b6776e2a44a919867a5f3a3c63f812",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 9771,
+        "promptTokenCount": 8502,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4326
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 4176
+          }
+        ],
+        "candidatesTokenCount": 1269
+      }
+    },
+    {
+      "key": "material-inspect-batch:afda8bbacea74069b8bc37b89ce73f3c906132e8b9b300dc60c397af3fea309b",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 9815,
+        "promptTokenCount": 8530,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 4188
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4342
+          }
+        ],
+        "candidatesTokenCount": 1285
+      }
+    },
+    {
+      "key": "material-compose",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 37407,
+        "promptTokenCount": 33935,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 33935
+          }
+        ],
+        "candidatesTokenCount": 3472
+      }
+    },
+    {
+      "key": "material-compose-length-repair",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 36178,
+        "promptTokenCount": 34812,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 34812
+          }
+        ],
+        "candidatesTokenCount": 1366
+      }
+    },
+    {
+      "key": "script-review",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 36213,
+        "promptTokenCount": 35502,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 35502
+          }
+        ],
+        "candidatesTokenCount": 711
+      }
+    }
+  ],
+  "outputs": {
+    "qa": {
+      "gates": {
+        "frame_count": true,
+        "full_decode": true,
+        "tempo_bound": true,
+        "audio_format": true,
+        "video_format": true,
+        "video_sha256": true,
+        "exact_duration": true,
+        "reviewed_photo_set": true,
+        "staged_photo_bytes": true,
+        "whole_photo_policy": true,
+        "distinct_photo_count": true,
+        "exact_visual_timeline": true,
+        "fitted_audio_unchanged": true,
+        "original_audio_unchanged": true,
+        "fitted_narration_preserved": true
+      },
+      "passed": true,
+      "sha256": "e878068b4a517239cc6385f6a5c44a5973d25623810cc1ed496ff70f4b15c4de",
+      "status": "ready",
+      "human_pass": false,
+      "duration_ms": 60000,
+      "scene_count": 30,
+      "machine_pass": true,
+      "audio_correlation": 0.9999870579067788
+    },
+    "align": {
+      "job_id": "3bf60490-c179-484d-991d-4fb5c16ca1a1",
+      "status": "ready",
+      "transcript": "Нейтронна звезда – це космічне тіло, яке є одним з можливих результатів еволюції, звіст складаючись переважно з нейтронної серцевини та тонкої кориричовини. Люба звезда з початковою масою, що перевищує масу сонця, у вісім разів здатна на прикінці еволюції перетворитися на нейтронну зорю. Коли густина внутрішньої області досягає ядерного рівня давлення виродженого нейтронного газу, надійно зупиняє подальше гравітаційне стискання. Падіння потужної зовнішньої оболонки на щільне ядро, миттєво зупиняється після чого вона відкидається потоком, нейтріно перетворюючи стару зорю, на яскравий явища над новою. Маси цих унікальних об'єктів завжди по рівнянні з масою сонцяпрота їхній типовий радіус становить лише 10 чи 20 кілометрів. Багато таких нейтронних зір володіють надзвичайно високою швидкістю осевого обертання та надпутужним магнітним полем випромінюючи сигнали у різних діапазонах простору.",
+      "audio_sha256": "6d27a122d4a88efccc3c834ebb6fd5d717b64bce83f00c23629656e82672db23",
+      "model_sha256": "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b",
+      "language_code": "uk",
+      "scene_timings": [
+        {
+          "end_ms": 6024,
+          "coverage": 0.970149,
+          "start_ms": 40,
+          "scene_key": "beat-1",
+          "scene_uuid": "e2df8b42-901f-524b-b9a6-246fccbed9fb"
+        },
+        {
+          "end_ms": 10980,
+          "coverage": 0.967213,
+          "start_ms": 6260,
+          "scene_key": "beat-2",
+          "scene_uuid": "b987699f-ebab-5fee-a4c2-f0ae2a5c26b5"
+        },
+        {
+          "end_ms": 19700,
+          "coverage": 0.990476,
+          "start_ms": 11060,
+          "scene_key": "beat-3",
+          "scene_uuid": "cac6a02e-f3d0-541a-8b0e-2a5a33cf3dd5"
+        },
+        {
+          "end_ms": 28610,
+          "coverage": 1.0,
+          "start_ms": 19980,
+          "scene_key": "beat-4",
+          "scene_uuid": "f8471989-f370-5b30-ad5b-a74e7dcfe8eb"
+        },
+        {
+          "end_ms": 40620,
+          "coverage": 0.979452,
+          "start_ms": 28700,
+          "scene_key": "beat-5",
+          "scene_uuid": "c4462314-4897-5445-9724-7f1a8d33d9e6"
+        },
+        {
+          "end_ms": 50280,
+          "coverage": 0.990826,
+          "start_ms": 41070,
+          "scene_key": "beat-6",
+          "scene_uuid": "f7fcb436-f12c-50ca-9f17-ad44fc532242"
+        },
+        {
+          "end_ms": 60260,
+          "coverage": 0.992908,
+          "start_ms": 50340,
+          "scene_key": "beat-7",
+          "scene_uuid": "f37aabea-7558-59a1-9b7e-152ed251b778"
+        }
+      ],
+      "alignment_path": "/data/alignments/3bf60490-c179-484d-991d-4fb5c16ca1a1/final.json",
+      "lexical_end_ms": 60260,
+      "global_coverage": 0.986755,
+      "alignment_method": "whisper_token_sequence_match",
+      "lexical_start_ms": 40,
+      "normalized_match": false,
+      "raw_whisper_path": "/data/alignments/3bf60490-c179-484d-991d-4fb5c16ca1a1/whisper.json",
+      "audio_duration_ms": 60888,
+      "lexical_end_ms_raw": 60260,
+      "lexical_token_count": 120,
+      "terminal_overrun_ms": 0,
+      "whisper_image_digest": "sha256:9cfbaf11ef5bec57ec9cade6af7ed991ab5e32b01a6e40db3380a12363336e11"
+    },
+    "voice": {
+      "bytes": 243552,
+      "codec": "mp3",
+      "job_id": "3bf60490-c179-484d-991d-4fb5c16ca1a1",
+      "sha256": "6d27a122d4a88efccc3c834ebb6fd5d717b64bce83f00c23629656e82672db23",
+      "status": "ready",
+      "channels": 1,
+      "duration_ms": 60888,
+      "sample_rate": 24000,
+      "storage_path": "/data/voiceovers/3bf60490-c179-484d-991d-4fb5c16ca1a1/final.mp3",
+      "staged_photos": {
+        "photo-1": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/58a4501e-43bf-5be4-9fe0-122123f07690/selected.webp",
+          "shot_uuid": "58a4501e-43bf-5be4-9fe0-122123f07690",
+          "media_type": "photo",
+          "asset_width": 1291,
+          "asset_height": 1300,
+          "asset_sha256": "1a317d83ab3337fdb3f39f12b4c776e71a73d34b32d61d3ba2d8f334b7ee4043",
+          "visual_asset_id": "371e4c6d-aa7f-5d10-9b73-2f50bc64a678"
+        },
+        "photo-2": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/01788b67-5a7e-54d1-8b82-71b876233437/selected.jpg",
+          "shot_uuid": "01788b67-5a7e-54d1-8b82-71b876233437",
+          "media_type": "photo",
+          "asset_width": 855,
+          "asset_height": 1280,
+          "asset_sha256": "e223863571ff6bf99ad3df783d9f5dbb00922033ec372c7a5a31ddc60c19ba9b",
+          "visual_asset_id": "84e4bb64-f69d-55b6-b3f4-259920c836b6"
+        },
+        "photo-3": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/b3051432-1bfe-55b1-8288-d25cff058cda/selected.jpg",
+          "shot_uuid": "b3051432-1bfe-55b1-8288-d25cff058cda",
+          "media_type": "photo",
+          "asset_width": 1016,
+          "asset_height": 1280,
+          "asset_sha256": "0b017bc3057fb49b718126d69b42016ccfd0524153e5a05d5da531c6d7757dbd",
+          "visual_asset_id": "43998341-2ab5-5297-b389-8ae039ea654f"
+        },
+        "photo-4": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/a40e6bb3-0634-535b-8404-0a798556d297/selected.jpg",
+          "shot_uuid": "a40e6bb3-0634-535b-8404-0a798556d297",
+          "media_type": "photo",
+          "asset_width": 867,
+          "asset_height": 1300,
+          "asset_sha256": "a8ff5b490f44b0acfb5dc24c73890d7c409cdbd2c03219b65e2f333414e0247f",
+          "visual_asset_id": "9431ba79-cb48-5afc-813e-78a2fcfbbd7c"
+        },
+        "photo-5": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/8b8484ee-6ae1-5278-bdb2-e0f9a74bd25a/selected.jpg",
+          "shot_uuid": "8b8484ee-6ae1-5278-bdb2-e0f9a74bd25a",
+          "media_type": "photo",
+          "asset_width": 1292,
+          "asset_height": 1300,
+          "asset_sha256": "196f1a9c2ea9c51019f868dc102a280402bca2b1ef57fe153b1a743e8dbd29a2",
+          "visual_asset_id": "91825c44-9be5-5930-8dcb-b6a8c79142a4"
+        },
+        "photo-6": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/2d5dfd58-2d43-5cf7-a777-41209b3ba1b8/selected.webp",
+          "shot_uuid": "2d5dfd58-2d43-5cf7-a777-41209b3ba1b8",
+          "media_type": "photo",
+          "asset_width": 867,
+          "asset_height": 1300,
+          "asset_sha256": "4d3d6de49a6a6a370dd31246dd4ab34bd41fcefc0333ab963776b138d1c466ed",
+          "visual_asset_id": "e20eb159-5d7a-5e11-93d3-bae2b86c87cb"
+        },
+        "photo-7": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/b4f09cac-43e7-5591-8c94-eacd4920876d/selected.jpg",
+          "shot_uuid": "b4f09cac-43e7-5591-8c94-eacd4920876d",
+          "media_type": "photo",
+          "asset_width": 867,
+          "asset_height": 1300,
+          "asset_sha256": "1b27e888d855fd91d49078b7f3257e9a5dbca3b2344a968d924b645019aa200e",
+          "visual_asset_id": "40792e28-d7ec-5d98-a318-84bb069b58f6"
+        },
+        "photo-8": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/2e777c08-3a03-521f-8a20-09249e0a19cf/selected.jpg",
+          "shot_uuid": "2e777c08-3a03-521f-8a20-09249e0a19cf",
+          "media_type": "photo",
+          "asset_width": 1466,
+          "asset_height": 1159,
+          "asset_sha256": "b3591bf59b775758521388fcc2f66a5f4a04381ab1296285d35db49523cd5863",
+          "visual_asset_id": "b766bd84-3a7e-52ad-ad34-d428a4a60074"
+        },
+        "photo-9": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/37cac524-dac3-54d7-af67-f1fdeb5400de/selected.jpg",
+          "shot_uuid": "37cac524-dac3-54d7-af67-f1fdeb5400de",
+          "media_type": "photo",
+          "asset_width": 853,
+          "asset_height": 1280,
+          "asset_sha256": "032f31ae06b8ec80b86fa7adec8b4599f0b953c375c1eef156c1866b1ab2d659",
+          "visual_asset_id": "9ccb51f1-fcac-5b92-bbbb-1416796241f4"
+        },
+        "photo-10": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/7de2db4a-2626-52ef-8347-18d804397fac/selected.jpg",
+          "shot_uuid": "7de2db4a-2626-52ef-8347-18d804397fac",
+          "media_type": "photo",
+          "asset_width": 867,
+          "asset_height": 1300,
+          "asset_sha256": "e93914224b203344f57bc29a58d1de46b0a92fafd763e69f5f592d3c9c78cf51",
+          "visual_asset_id": "1bd8b05e-330a-5c92-ae1a-8de466496c45"
+        },
+        "photo-11": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/1f15d2ed-8f35-570a-8083-236da3a6b783/selected.jpg",
+          "shot_uuid": "1f15d2ed-8f35-570a-8083-236da3a6b783",
+          "media_type": "photo",
+          "asset_width": 819,
+          "asset_height": 1280,
+          "asset_sha256": "643d2ec70cf05b8c0fbaabc0780c952e2b6a886e20c712b171d917cb6992e344",
+          "visual_asset_id": "648e49ba-4c10-5a82-9f4d-2f5de3a04c93"
+        },
+        "photo-12": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/5309fccd-4d91-54d3-945e-8e4ea717556e/selected.jpg",
+          "shot_uuid": "5309fccd-4d91-54d3-945e-8e4ea717556e",
+          "media_type": "photo",
+          "asset_width": 975,
+          "asset_height": 1300,
+          "asset_sha256": "0614b35294f56c9625f38a655683393fe97209521e5875cd910eece69dd514bc",
+          "visual_asset_id": "66961887-7077-51f6-8c9e-fbe87a36df00"
+        },
+        "photo-13": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/07ddb246-b731-5f33-90a8-87f0dda203e0/selected.jpg",
+          "shot_uuid": "07ddb246-b731-5f33-90a8-87f0dda203e0",
+          "media_type": "photo",
+          "asset_width": 867,
+          "asset_height": 1300,
+          "asset_sha256": "ab4fc0351100795659ab81ed21566a81fd1c25bec862d1f2b9883efb75893d0c",
+          "visual_asset_id": "f2b586c6-60df-5b71-8926-789d30b31f2a"
+        },
+        "photo-14": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/13d16c69-4e64-5f93-baf6-b2f49c967212/selected.webp",
+          "shot_uuid": "13d16c69-4e64-5f93-baf6-b2f49c967212",
+          "media_type": "photo",
+          "asset_width": 1040,
+          "asset_height": 1300,
+          "asset_sha256": "31905490546a50db51dc85f0a384a43b6564ba0073424df965e0cb89d4b6b30a",
+          "visual_asset_id": "999060ac-cb60-5ed2-8e65-19f2f3d5e8d9"
+        },
+        "photo-15": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/e655bef1-1b53-5d36-90d3-249530c0186a/selected.jpg",
+          "shot_uuid": "e655bef1-1b53-5d36-90d3-249530c0186a",
+          "media_type": "photo",
+          "asset_width": 867,
+          "asset_height": 1300,
+          "asset_sha256": "a610d94f9f8481a9c0279b35a0b08cb94841b6386650ecc3b6534cf62776a84e",
+          "visual_asset_id": "5eba9d3b-3db9-5597-8fda-66ed904f58cb"
+        },
+        "photo-16": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/52b9e97e-6e99-58e7-aaa0-5157af4e6a39/selected.png",
+          "shot_uuid": "52b9e97e-6e99-58e7-aaa0-5157af4e6a39",
+          "media_type": "photo",
+          "asset_width": 737,
+          "asset_height": 1300,
+          "asset_sha256": "5d525654880cde49aabb5cf377255caeee1262c6a67956b6af8646c1144f243a",
+          "visual_asset_id": "bdb5335c-fcfc-5b4e-8634-cdad49b94e91"
+        },
+        "photo-17": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/1080619a-4502-59f1-8f20-be74a7de7970/selected.jpg",
+          "shot_uuid": "1080619a-4502-59f1-8f20-be74a7de7970",
+          "media_type": "photo",
+          "asset_width": 978,
+          "asset_height": 1300,
+          "asset_sha256": "18f1a9f2c49f10159b3d03f335b3f8422bf2db9385b653610f9d41c7b3990436",
+          "visual_asset_id": "2ff07820-17d6-5a0a-8f83-ca323950d2fd"
+        },
+        "photo-18": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/3e45cf05-d3f0-5443-a6c9-5591f7ea91cf/selected.webp",
+          "shot_uuid": "3e45cf05-d3f0-5443-a6c9-5591f7ea91cf",
+          "media_type": "photo",
+          "asset_width": 1282,
+          "asset_height": 1300,
+          "asset_sha256": "5559a52327439dd2696cf79d6b82d4d1f392ea3d35346d41b7e2ae638a980f3a",
+          "visual_asset_id": "ece6e45d-e190-5640-90a3-2b4b956c292b"
+        },
+        "photo-19": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/8681d6fa-6c29-5baf-b9a1-456baacf4ee6/selected.jpg",
+          "shot_uuid": "8681d6fa-6c29-5baf-b9a1-456baacf4ee6",
+          "media_type": "photo",
+          "asset_width": 854,
+          "asset_height": 1280,
+          "asset_sha256": "c2c99792f43e75bc7c4fc13f5796f64a03fb4987f25e7dbd42b19c04a25a45f0",
+          "visual_asset_id": "2f32ebac-e924-50ef-b289-0a7cafb3bd90"
+        },
+        "photo-20": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/c62bd25e-1ce2-5423-b527-fbdb8ee9eb9e/selected.png",
+          "shot_uuid": "c62bd25e-1ce2-5423-b527-fbdb8ee9eb9e",
+          "media_type": "photo",
+          "asset_width": 731,
+          "asset_height": 1300,
+          "asset_sha256": "6da7974d6c7f06fa94921a877ea95ead2666f1103dacd379a1a17271c6080e48",
+          "visual_asset_id": "5bd0f7c5-9cf3-5289-96ac-bd7da79ff6a1"
+        },
+        "photo-21": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/292ccf4a-3982-50d9-b794-ebc8a54ba106/selected.jpg",
+          "shot_uuid": "292ccf4a-3982-50d9-b794-ebc8a54ba106",
+          "media_type": "photo",
+          "asset_width": 853,
+          "asset_height": 1280,
+          "asset_sha256": "26ed773f29afeb282535b4b07a4d75d7dfbad52133ee75c3cd746fb7139c7686",
+          "visual_asset_id": "eebaf05b-c262-512d-872a-265535c3981c"
+        },
+        "photo-22": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/b0652b01-0102-5b64-846e-041d62365673/selected.jpg",
+          "shot_uuid": "b0652b01-0102-5b64-846e-041d62365673",
+          "media_type": "photo",
+          "asset_width": 732,
+          "asset_height": 1300,
+          "asset_sha256": "52ff5b7ff8e822064816581fd8d7534cfdb4b4ba9f49cc8a458b97dae6d00c3c",
+          "visual_asset_id": "159b369c-8203-51e9-bcaf-6ec42784ff75"
+        },
+        "photo-23": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/e53d113d-35b4-56a8-b851-c8c901f3b3aa/selected.jpg",
+          "shot_uuid": "e53d113d-35b4-56a8-b851-c8c901f3b3aa",
+          "media_type": "photo",
+          "asset_width": 853,
+          "asset_height": 1280,
+          "asset_sha256": "eeafd8f390686809a6036b6b866ad12acd1c74bd995ceffdb346a9be2f2175b1",
+          "visual_asset_id": "f5ebb4ed-cfbb-54b2-9ee6-4899a542232f"
+        },
+        "photo-24": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/f280119e-7ec4-5e2d-a7b3-96d20411f583/selected.jpg",
+          "shot_uuid": "f280119e-7ec4-5e2d-a7b3-96d20411f583",
+          "media_type": "photo",
+          "asset_width": 975,
+          "asset_height": 1300,
+          "asset_sha256": "e84a73519a06005c9925e2c156d130a3d3cd98e8e97687a4467a5fa499aabe0f",
+          "visual_asset_id": "da0006fc-32e5-55f8-a1a8-fd86d7c0ac59"
+        },
+        "photo-25": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/171decd8-9f81-5e08-9bd0-a44a1c06fb33/selected.jpg",
+          "shot_uuid": "171decd8-9f81-5e08-9bd0-a44a1c06fb33",
+          "media_type": "photo",
+          "asset_width": 853,
+          "asset_height": 1280,
+          "asset_sha256": "6c0a1531363bd8dbb8670406e3c28794227c6238efb6a1e591b8d8cd2a811548",
+          "visual_asset_id": "a4943fec-aaa7-5758-8d1a-0e475ee6b354"
+        },
+        "photo-26": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/4a422e0b-994c-5fb9-8917-fa6b27b83146/selected.jpg",
+          "shot_uuid": "4a422e0b-994c-5fb9-8917-fa6b27b83146",
+          "media_type": "photo",
+          "asset_width": 977,
+          "asset_height": 1300,
+          "asset_sha256": "96bb7d3fc722f5eca3833fd6fe10504fa1a05ac36fc66a6e5f86f3bc9c55ea4e",
+          "visual_asset_id": "e6c7d37e-2ab4-524d-8963-fc497f5c7931"
+        },
+        "photo-27": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/01acac20-4353-5fce-b383-d452835c4f92/selected.jpg",
+          "shot_uuid": "01acac20-4353-5fce-b383-d452835c4f92",
+          "media_type": "photo",
+          "asset_width": 861,
+          "asset_height": 1280,
+          "asset_sha256": "c16f1170dee1f5c8b7291b12a5225806560d2bca6d7fde7a64e570f58c1769b8",
+          "visual_asset_id": "9f354dae-9036-5c7e-9659-e593a6a494f6"
+        },
+        "photo-28": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/493efff0-5f84-5308-a83f-ef9e15781262/selected.jpg",
+          "shot_uuid": "493efff0-5f84-5308-a83f-ef9e15781262",
+          "media_type": "photo",
+          "asset_width": 975,
+          "asset_height": 1300,
+          "asset_sha256": "70f984293c6e4b954fd4b24e8f33c8a3fd1036aba040f4912259ed44539f9523",
+          "visual_asset_id": "c43d97f0-e4a4-5ec8-8278-013539eb7ce1"
+        },
+        "photo-29": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/83747d01-3812-5c67-b938-1dc0b468b7df/selected.jpg",
+          "shot_uuid": "83747d01-3812-5c67-b938-1dc0b468b7df",
+          "media_type": "photo",
+          "asset_width": 994,
+          "asset_height": 1300,
+          "asset_sha256": "e77ab5deb6a890dccca4134d3e4436b55272afbb58f4ff8263145c423d319b6d",
+          "visual_asset_id": "dc036917-d7be-561c-8c17-4f4b35fbaea2"
+        },
+        "photo-30": {
+          "path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/c25e2a90-c2c4-51e5-b5da-346e10522f2e/selected.jpg",
+          "shot_uuid": "c25e2a90-c2c4-51e5-b5da-346e10522f2e",
+          "media_type": "photo",
+          "asset_width": 855,
+          "asset_height": 1280,
+          "asset_sha256": "2e12a1e3c029826f329deb61ce803491460522f63f46258397509b9359e705a1",
+          "visual_asset_id": "3add4da1-97f8-5183-b73b-8edbd7f1f8c9"
+        }
+      }
+    },
+    "render": {
+      "bytes": 29431086,
+      "job_id": "3bf60490-c179-484d-991d-4fb5c16ca1a1",
+      "sha256": "e878068b4a517239cc6385f6a5c44a5973d25623810cc1ed496ff70f4b15c4de",
+      "status": "ready",
+      "framing": "whole photograph, aspect preserved, solid matte, no crop or blur",
+      "segments": [
+        {
+          "id": "photo-1",
+          "end_ms": 2000.0,
+          "start_ms": 0.0,
+          "end_frame": 60,
+          "shot_uuid": "58a4501e-43bf-5be4-9fe0-122123f07690",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/58a4501e-43bf-5be4-9fe0-122123f07690/selected.webp",
+          "media_type": "photo",
+          "scene_uuid": "e2df8b42-901f-524b-b9a6-246fccbed9fb",
+          "material_id": "pexels:19798813",
+          "start_frame": 0,
+          "asset_sha256": "1a317d83ab3337fdb3f39f12b4c776e71a73d34b32d61d3ba2d8f334b7ee4043",
+          "segment_order": 1,
+          "visual_asset_id": "371e4c6d-aa7f-5d10-9b73-2f50bc64a678",
+          "narration_scene_id": "beat-1"
+        },
+        {
+          "id": "photo-2",
+          "end_ms": 4000.0,
+          "start_ms": 2000.0,
+          "end_frame": 120,
+          "shot_uuid": "01788b67-5a7e-54d1-8b82-71b876233437",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/01788b67-5a7e-54d1-8b82-71b876233437/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "e2df8b42-901f-524b-b9a6-246fccbed9fb",
+          "material_id": "pixabay:10427641",
+          "start_frame": 60,
+          "asset_sha256": "e223863571ff6bf99ad3df783d9f5dbb00922033ec372c7a5a31ddc60c19ba9b",
+          "segment_order": 2,
+          "visual_asset_id": "84e4bb64-f69d-55b6-b3f4-259920c836b6",
+          "narration_scene_id": "beat-1"
+        },
+        {
+          "id": "photo-3",
+          "end_ms": 6000.0,
+          "start_ms": 4000.0,
+          "end_frame": 180,
+          "shot_uuid": "b3051432-1bfe-55b1-8288-d25cff058cda",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/b3051432-1bfe-55b1-8288-d25cff058cda/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "e2df8b42-901f-524b-b9a6-246fccbed9fb",
+          "material_id": "pixabay:3023131",
+          "start_frame": 120,
+          "asset_sha256": "0b017bc3057fb49b718126d69b42016ccfd0524153e5a05d5da531c6d7757dbd",
+          "segment_order": 3,
+          "visual_asset_id": "43998341-2ab5-5297-b389-8ae039ea654f",
+          "narration_scene_id": "beat-1"
+        },
+        {
+          "id": "photo-8",
+          "end_ms": 8000.0,
+          "start_ms": 6000.0,
+          "end_frame": 240,
+          "shot_uuid": "2e777c08-3a03-521f-8a20-09249e0a19cf",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/2e777c08-3a03-521f-8a20-09249e0a19cf/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "b987699f-ebab-5fee-a4c2-f0ae2a5c26b5",
+          "material_id": "wikimedia:182489427",
+          "start_frame": 180,
+          "asset_sha256": "b3591bf59b775758521388fcc2f66a5f4a04381ab1296285d35db49523cd5863",
+          "segment_order": 4,
+          "visual_asset_id": "b766bd84-3a7e-52ad-ad34-d428a4a60074",
+          "narration_scene_id": "beat-2"
+        },
+        {
+          "id": "photo-16",
+          "end_ms": 10000.0,
+          "start_ms": 8000.0,
+          "end_frame": 300,
+          "shot_uuid": "52b9e97e-6e99-58e7-aaa0-5157af4e6a39",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/52b9e97e-6e99-58e7-aaa0-5157af4e6a39/selected.png",
+          "media_type": "photo",
+          "scene_uuid": "b987699f-ebab-5fee-a4c2-f0ae2a5c26b5",
+          "material_id": "pexels:26607691",
+          "start_frame": 240,
+          "asset_sha256": "5d525654880cde49aabb5cf377255caeee1262c6a67956b6af8646c1144f243a",
+          "segment_order": 5,
+          "visual_asset_id": "bdb5335c-fcfc-5b4e-8634-cdad49b94e91",
+          "narration_scene_id": "beat-2"
+        },
+        {
+          "id": "photo-5",
+          "end_ms": 12000.0,
+          "start_ms": 10000.0,
+          "end_frame": 360,
+          "shot_uuid": "8b8484ee-6ae1-5278-bdb2-e0f9a74bd25a",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/8b8484ee-6ae1-5278-bdb2-e0f9a74bd25a/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "cac6a02e-f3d0-541a-8b0e-2a5a33cf3dd5",
+          "material_id": "pexels:16880954",
+          "start_frame": 300,
+          "asset_sha256": "196f1a9c2ea9c51019f868dc102a280402bca2b1ef57fe153b1a743e8dbd29a2",
+          "segment_order": 6,
+          "visual_asset_id": "91825c44-9be5-5930-8dcb-b6a8c79142a4",
+          "narration_scene_id": "beat-3"
+        },
+        {
+          "id": "photo-10",
+          "end_ms": 14000.0,
+          "start_ms": 12000.0,
+          "end_frame": 420,
+          "shot_uuid": "7de2db4a-2626-52ef-8347-18d804397fac",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/7de2db4a-2626-52ef-8347-18d804397fac/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "cac6a02e-f3d0-541a-8b0e-2a5a33cf3dd5",
+          "material_id": "pexels:11875203",
+          "start_frame": 360,
+          "asset_sha256": "e93914224b203344f57bc29a58d1de46b0a92fafd763e69f5f592d3c9c78cf51",
+          "segment_order": 7,
+          "visual_asset_id": "1bd8b05e-330a-5c92-ae1a-8de466496c45",
+          "narration_scene_id": "beat-3"
+        },
+        {
+          "id": "photo-12",
+          "end_ms": 16000.0,
+          "start_ms": 14000.0,
+          "end_frame": 480,
+          "shot_uuid": "5309fccd-4d91-54d3-945e-8e4ea717556e",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/5309fccd-4d91-54d3-945e-8e4ea717556e/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "cac6a02e-f3d0-541a-8b0e-2a5a33cf3dd5",
+          "material_id": "pexels:30616137",
+          "start_frame": 420,
+          "asset_sha256": "0614b35294f56c9625f38a655683393fe97209521e5875cd910eece69dd514bc",
+          "segment_order": 8,
+          "visual_asset_id": "66961887-7077-51f6-8c9e-fbe87a36df00",
+          "narration_scene_id": "beat-3"
+        },
+        {
+          "id": "photo-14",
+          "end_ms": 18000.0,
+          "start_ms": 16000.0,
+          "end_frame": 540,
+          "shot_uuid": "13d16c69-4e64-5f93-baf6-b2f49c967212",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/13d16c69-4e64-5f93-baf6-b2f49c967212/selected.webp",
+          "media_type": "photo",
+          "scene_uuid": "cac6a02e-f3d0-541a-8b0e-2a5a33cf3dd5",
+          "material_id": "pexels:34194986",
+          "start_frame": 480,
+          "asset_sha256": "31905490546a50db51dc85f0a384a43b6564ba0073424df965e0cb89d4b6b30a",
+          "segment_order": 9,
+          "visual_asset_id": "999060ac-cb60-5ed2-8e65-19f2f3d5e8d9",
+          "narration_scene_id": "beat-3"
+        },
+        {
+          "id": "photo-18",
+          "end_ms": 20000.0,
+          "start_ms": 18000.0,
+          "end_frame": 600,
+          "shot_uuid": "3e45cf05-d3f0-5443-a6c9-5591f7ea91cf",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/3e45cf05-d3f0-5443-a6c9-5591f7ea91cf/selected.webp",
+          "media_type": "photo",
+          "scene_uuid": "cac6a02e-f3d0-541a-8b0e-2a5a33cf3dd5",
+          "material_id": "pexels:27986437",
+          "start_frame": 540,
+          "asset_sha256": "5559a52327439dd2696cf79d6b82d4d1f392ea3d35346d41b7e2ae638a980f3a",
+          "segment_order": 10,
+          "visual_asset_id": "ece6e45d-e190-5640-90a3-2b4b956c292b",
+          "narration_scene_id": "beat-3"
+        },
+        {
+          "id": "photo-4",
+          "end_ms": 22000.0,
+          "start_ms": 20000.0,
+          "end_frame": 660,
+          "shot_uuid": "a40e6bb3-0634-535b-8404-0a798556d297",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/a40e6bb3-0634-535b-8404-0a798556d297/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f8471989-f370-5b30-ad5b-a74e7dcfe8eb",
+          "material_id": "pexels:7723368",
+          "start_frame": 600,
+          "asset_sha256": "a8ff5b490f44b0acfb5dc24c73890d7c409cdbd2c03219b65e2f333414e0247f",
+          "segment_order": 11,
+          "visual_asset_id": "9431ba79-cb48-5afc-813e-78a2fcfbbd7c",
+          "narration_scene_id": "beat-4"
+        },
+        {
+          "id": "photo-9",
+          "end_ms": 24000.0,
+          "start_ms": 22000.0,
+          "end_frame": 720,
+          "shot_uuid": "37cac524-dac3-54d7-af67-f1fdeb5400de",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/37cac524-dac3-54d7-af67-f1fdeb5400de/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f8471989-f370-5b30-ad5b-a74e7dcfe8eb",
+          "material_id": "pixabay:5074889",
+          "start_frame": 660,
+          "asset_sha256": "032f31ae06b8ec80b86fa7adec8b4599f0b953c375c1eef156c1866b1ab2d659",
+          "segment_order": 12,
+          "visual_asset_id": "9ccb51f1-fcac-5b92-bbbb-1416796241f4",
+          "narration_scene_id": "beat-4"
+        },
+        {
+          "id": "photo-11",
+          "end_ms": 26000.0,
+          "start_ms": 24000.0,
+          "end_frame": 780,
+          "shot_uuid": "1f15d2ed-8f35-570a-8083-236da3a6b783",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/1f15d2ed-8f35-570a-8083-236da3a6b783/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f8471989-f370-5b30-ad5b-a74e7dcfe8eb",
+          "material_id": "pixabay:6527964",
+          "start_frame": 720,
+          "asset_sha256": "643d2ec70cf05b8c0fbaabc0780c952e2b6a886e20c712b171d917cb6992e344",
+          "segment_order": 13,
+          "visual_asset_id": "648e49ba-4c10-5a82-9f4d-2f5de3a04c93",
+          "narration_scene_id": "beat-4"
+        },
+        {
+          "id": "photo-13",
+          "end_ms": 28000.0,
+          "start_ms": 26000.0,
+          "end_frame": 840,
+          "shot_uuid": "07ddb246-b731-5f33-90a8-87f0dda203e0",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/07ddb246-b731-5f33-90a8-87f0dda203e0/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f8471989-f370-5b30-ad5b-a74e7dcfe8eb",
+          "material_id": "pexels:7722849",
+          "start_frame": 780,
+          "asset_sha256": "ab4fc0351100795659ab81ed21566a81fd1c25bec862d1f2b9883efb75893d0c",
+          "segment_order": 14,
+          "visual_asset_id": "f2b586c6-60df-5b71-8926-789d30b31f2a",
+          "narration_scene_id": "beat-4"
+        },
+        {
+          "id": "photo-22",
+          "end_ms": 30000.0,
+          "start_ms": 28000.0,
+          "end_frame": 900,
+          "shot_uuid": "b0652b01-0102-5b64-846e-041d62365673",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/b0652b01-0102-5b64-846e-041d62365673/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "c4462314-4897-5445-9724-7f1a8d33d9e6",
+          "material_id": "pexels:33991625",
+          "start_frame": 840,
+          "asset_sha256": "52ff5b7ff8e822064816581fd8d7534cfdb4b4ba9f49cc8a458b97dae6d00c3c",
+          "segment_order": 15,
+          "visual_asset_id": "159b369c-8203-51e9-bcaf-6ec42784ff75",
+          "narration_scene_id": "beat-5"
+        },
+        {
+          "id": "photo-26",
+          "end_ms": 32000.0,
+          "start_ms": 30000.0,
+          "end_frame": 960,
+          "shot_uuid": "4a422e0b-994c-5fb9-8917-fa6b27b83146",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/4a422e0b-994c-5fb9-8917-fa6b27b83146/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "c4462314-4897-5445-9724-7f1a8d33d9e6",
+          "material_id": "pexels:4995043",
+          "start_frame": 900,
+          "asset_sha256": "96bb7d3fc722f5eca3833fd6fe10504fa1a05ac36fc66a6e5f86f3bc9c55ea4e",
+          "segment_order": 16,
+          "visual_asset_id": "e6c7d37e-2ab4-524d-8963-fc497f5c7931",
+          "narration_scene_id": "beat-5"
+        },
+        {
+          "id": "photo-28",
+          "end_ms": 34000.0,
+          "start_ms": 32000.0,
+          "end_frame": 1020,
+          "shot_uuid": "493efff0-5f84-5308-a83f-ef9e15781262",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/493efff0-5f84-5308-a83f-ef9e15781262/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "c4462314-4897-5445-9724-7f1a8d33d9e6",
+          "material_id": "pexels:28500137",
+          "start_frame": 960,
+          "asset_sha256": "70f984293c6e4b954fd4b24e8f33c8a3fd1036aba040f4912259ed44539f9523",
+          "segment_order": 17,
+          "visual_asset_id": "c43d97f0-e4a4-5ec8-8278-013539eb7ce1",
+          "narration_scene_id": "beat-5"
+        },
+        {
+          "id": "photo-29",
+          "end_ms": 36000.0,
+          "start_ms": 34000.0,
+          "end_frame": 1080,
+          "shot_uuid": "83747d01-3812-5c67-b938-1dc0b468b7df",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/83747d01-3812-5c67-b938-1dc0b468b7df/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "c4462314-4897-5445-9724-7f1a8d33d9e6",
+          "material_id": "pexels:17662495",
+          "start_frame": 1020,
+          "asset_sha256": "e77ab5deb6a890dccca4134d3e4436b55272afbb58f4ff8263145c423d319b6d",
+          "segment_order": 18,
+          "visual_asset_id": "dc036917-d7be-561c-8c17-4f4b35fbaea2",
+          "narration_scene_id": "beat-5"
+        },
+        {
+          "id": "photo-19",
+          "end_ms": 38000.0,
+          "start_ms": 36000.0,
+          "end_frame": 1140,
+          "shot_uuid": "8681d6fa-6c29-5baf-b9a1-456baacf4ee6",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/8681d6fa-6c29-5baf-b9a1-456baacf4ee6/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "c4462314-4897-5445-9724-7f1a8d33d9e6",
+          "material_id": "pixabay:4500469",
+          "start_frame": 1080,
+          "asset_sha256": "c2c99792f43e75bc7c4fc13f5796f64a03fb4987f25e7dbd42b19c04a25a45f0",
+          "segment_order": 19,
+          "visual_asset_id": "2f32ebac-e924-50ef-b289-0a7cafb3bd90",
+          "narration_scene_id": "beat-5"
+        },
+        {
+          "id": "photo-20",
+          "end_ms": 40000.0,
+          "start_ms": 38000.0,
+          "end_frame": 1200,
+          "shot_uuid": "c62bd25e-1ce2-5423-b527-fbdb8ee9eb9e",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/c62bd25e-1ce2-5423-b527-fbdb8ee9eb9e/selected.png",
+          "media_type": "photo",
+          "scene_uuid": "c4462314-4897-5445-9724-7f1a8d33d9e6",
+          "material_id": "pexels:23522825",
+          "start_frame": 1140,
+          "asset_sha256": "6da7974d6c7f06fa94921a877ea95ead2666f1103dacd379a1a17271c6080e48",
+          "segment_order": 20,
+          "visual_asset_id": "5bd0f7c5-9cf3-5289-96ac-bd7da79ff6a1",
+          "narration_scene_id": "beat-5"
+        },
+        {
+          "id": "photo-6",
+          "end_ms": 42000.0,
+          "start_ms": 40000.0,
+          "end_frame": 1260,
+          "shot_uuid": "2d5dfd58-2d43-5cf7-a777-41209b3ba1b8",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/2d5dfd58-2d43-5cf7-a777-41209b3ba1b8/selected.webp",
+          "media_type": "photo",
+          "scene_uuid": "f7fcb436-f12c-50ca-9f17-ad44fc532242",
+          "material_id": "pexels:7723354",
+          "start_frame": 1200,
+          "asset_sha256": "4d3d6de49a6a6a370dd31246dd4ab34bd41fcefc0333ab963776b138d1c466ed",
+          "segment_order": 21,
+          "visual_asset_id": "e20eb159-5d7a-5e11-93d3-bae2b86c87cb",
+          "narration_scene_id": "beat-6"
+        },
+        {
+          "id": "photo-7",
+          "end_ms": 44000.0,
+          "start_ms": 42000.0,
+          "end_frame": 1320,
+          "shot_uuid": "b4f09cac-43e7-5591-8c94-eacd4920876d",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/b4f09cac-43e7-5591-8c94-eacd4920876d/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f7fcb436-f12c-50ca-9f17-ad44fc532242",
+          "material_id": "pexels:10587081",
+          "start_frame": 1260,
+          "asset_sha256": "1b27e888d855fd91d49078b7f3257e9a5dbca3b2344a968d924b645019aa200e",
+          "segment_order": 22,
+          "visual_asset_id": "40792e28-d7ec-5d98-a318-84bb069b58f6",
+          "narration_scene_id": "beat-6"
+        },
+        {
+          "id": "photo-15",
+          "end_ms": 46000.0,
+          "start_ms": 44000.0,
+          "end_frame": 1380,
+          "shot_uuid": "e655bef1-1b53-5d36-90d3-249530c0186a",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/e655bef1-1b53-5d36-90d3-249530c0186a/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f7fcb436-f12c-50ca-9f17-ad44fc532242",
+          "material_id": "pexels:18093254",
+          "start_frame": 1320,
+          "asset_sha256": "a610d94f9f8481a9c0279b35a0b08cb94841b6386650ecc3b6534cf62776a84e",
+          "segment_order": 23,
+          "visual_asset_id": "5eba9d3b-3db9-5597-8fda-66ed904f58cb",
+          "narration_scene_id": "beat-6"
+        },
+        {
+          "id": "photo-17",
+          "end_ms": 48000.0,
+          "start_ms": 46000.0,
+          "end_frame": 1440,
+          "shot_uuid": "1080619a-4502-59f1-8f20-be74a7de7970",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/1080619a-4502-59f1-8f20-be74a7de7970/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f7fcb436-f12c-50ca-9f17-ad44fc532242",
+          "material_id": "pexels:33574490",
+          "start_frame": 1380,
+          "asset_sha256": "18f1a9f2c49f10159b3d03f335b3f8422bf2db9385b653610f9d41c7b3990436",
+          "segment_order": 24,
+          "visual_asset_id": "2ff07820-17d6-5a0a-8f83-ca323950d2fd",
+          "narration_scene_id": "beat-6"
+        },
+        {
+          "id": "photo-25",
+          "end_ms": 50000.0,
+          "start_ms": 48000.0,
+          "end_frame": 1500,
+          "shot_uuid": "171decd8-9f81-5e08-9bd0-a44a1c06fb33",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/171decd8-9f81-5e08-9bd0-a44a1c06fb33/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f7fcb436-f12c-50ca-9f17-ad44fc532242",
+          "material_id": "pixabay:1845852",
+          "start_frame": 1440,
+          "asset_sha256": "6c0a1531363bd8dbb8670406e3c28794227c6238efb6a1e591b8d8cd2a811548",
+          "segment_order": 25,
+          "visual_asset_id": "a4943fec-aaa7-5758-8d1a-0e475ee6b354",
+          "narration_scene_id": "beat-6"
+        },
+        {
+          "id": "photo-21",
+          "end_ms": 52000.0,
+          "start_ms": 50000.0,
+          "end_frame": 1560,
+          "shot_uuid": "292ccf4a-3982-50d9-b794-ebc8a54ba106",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/292ccf4a-3982-50d9-b794-ebc8a54ba106/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f37aabea-7558-59a1-9b7e-152ed251b778",
+          "material_id": "pixabay:9937087",
+          "start_frame": 1500,
+          "asset_sha256": "26ed773f29afeb282535b4b07a4d75d7dfbad52133ee75c3cd746fb7139c7686",
+          "segment_order": 26,
+          "visual_asset_id": "eebaf05b-c262-512d-872a-265535c3981c",
+          "narration_scene_id": "beat-7"
+        },
+        {
+          "id": "photo-23",
+          "end_ms": 54000.0,
+          "start_ms": 52000.0,
+          "end_frame": 1620,
+          "shot_uuid": "e53d113d-35b4-56a8-b851-c8c901f3b3aa",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/e53d113d-35b4-56a8-b851-c8c901f3b3aa/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f37aabea-7558-59a1-9b7e-152ed251b778",
+          "material_id": "pixabay:271388",
+          "start_frame": 1560,
+          "asset_sha256": "eeafd8f390686809a6036b6b866ad12acd1c74bd995ceffdb346a9be2f2175b1",
+          "segment_order": 27,
+          "visual_asset_id": "f5ebb4ed-cfbb-54b2-9ee6-4899a542232f",
+          "narration_scene_id": "beat-7"
+        },
+        {
+          "id": "photo-27",
+          "end_ms": 56000.0,
+          "start_ms": 54000.0,
+          "end_frame": 1680,
+          "shot_uuid": "01acac20-4353-5fce-b383-d452835c4f92",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/01acac20-4353-5fce-b383-d452835c4f92/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f37aabea-7558-59a1-9b7e-152ed251b778",
+          "material_id": "pixabay:2601927",
+          "start_frame": 1620,
+          "asset_sha256": "c16f1170dee1f5c8b7291b12a5225806560d2bca6d7fde7a64e570f58c1769b8",
+          "segment_order": 28,
+          "visual_asset_id": "9f354dae-9036-5c7e-9659-e593a6a494f6",
+          "narration_scene_id": "beat-7"
+        },
+        {
+          "id": "photo-30",
+          "end_ms": 58000.0,
+          "start_ms": 56000.0,
+          "end_frame": 1740,
+          "shot_uuid": "c25e2a90-c2c4-51e5-b5da-346e10522f2e",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/c25e2a90-c2c4-51e5-b5da-346e10522f2e/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f37aabea-7558-59a1-9b7e-152ed251b778",
+          "material_id": "pixabay:4416194",
+          "start_frame": 1680,
+          "asset_sha256": "2e12a1e3c029826f329deb61ce803491460522f63f46258397509b9359e705a1",
+          "segment_order": 29,
+          "visual_asset_id": "3add4da1-97f8-5183-b73b-8edbd7f1f8c9",
+          "narration_scene_id": "beat-7"
+        },
+        {
+          "id": "photo-24",
+          "end_ms": 60000.0,
+          "start_ms": 58000.0,
+          "end_frame": 1800,
+          "shot_uuid": "f280119e-7ec4-5e2d-a7b3-96d20411f583",
+          "asset_path": "/data/visuals/3bf60490-c179-484d-991d-4fb5c16ca1a1/f280119e-7ec4-5e2d-a7b3-96d20411f583/selected.jpg",
+          "media_type": "photo",
+          "scene_uuid": "f37aabea-7558-59a1-9b7e-152ed251b778",
+          "material_id": "pexels:17954395",
+          "start_frame": 1740,
+          "asset_sha256": "e84a73519a06005c9925e2c156d130a3d3cd98e8e97687a4467a5fa499aabe0f",
+          "segment_order": 30,
+          "visual_asset_id": "da0006fc-32e5-55f8-a1a8-fd86d7c0ac59",
+          "narration_scene_id": "beat-7"
+        }
+      ],
+      "qa_passed": true,
+      "shot_count": 30,
+      "frame_count": 1800,
+      "storage_path": "/data/renders/3bf60490-c179-484d-991d-4fb5c16ca1a1/final.mp4",
+      "duration_policy": "whole-photo-exact-v1",
+      "audio_duration_ms": 60888,
+      "actual_duration_ms": 60000,
+      "audio_tempo_factor": 1.0148,
+      "input_audio_sha256": "6d27a122d4a88efccc3c834ebb6fd5d717b64bce83f00c23629656e82672db23",
+      "target_duration_ms": 60000,
+      "fitted_audio_sha256": "db7f8c1d49735ab06fa710542cd1c54b73350d748727c5518de08ba7695d8188",
+      "requested_duration_ms": 60000
+    }
+  },
+  "human_pass": false
+}

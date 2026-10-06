@@ -1,3 +1,6 @@
+## UK60 actual output and remaining quality limits — 2026-10-06
+Fresh3bf60490 qa_pass at currentLIVE73ba470, exact60s/1800frames/30 whole images, oneTTS, public playback/download verified. No new product case planned. Machine/service language approval did not establish clean Ukrainian; actual draft contains Russian forms. Exact decodedframe20 looks like black-hole CGI despite image approval. Current output may be viewed but not whole-project/HUMAN accepted. Preserve frozen plan/voice/files and old failed/deleted IDs; next improve language and synthetic-image inspection from saved real corpus rather than launch another full experiment. See top handoff/evidence uk60-completion-result/contact, uk60-language-observation.
+
 ## User explicitly resumed completion — 2026-10-06
 User asked «чего ждешь?» after honest disclosure of unverified UK60 review/voice/MP4. Continue actual completion. One new normal current-runtime UK60 Vision case is authorized and planned in uk60-completion-plan.json after156 packaged checks and saved connected replay; old failed IDs remain immutable. This supersedes prior no-further-live-case stopping instruction for this planned case only. Preserve budgets/free-only and stop/inspect on terminal error, no blind rerun.
 

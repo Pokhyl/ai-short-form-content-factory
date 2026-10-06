@@ -1,0 +1,14 @@
+{
+  "id": "3bf60490-c179-484d-991d-4fb5c16ca1a1",
+  "state": "submitted",
+  "revision": "73ba4708f0326f84e08260e302d4a55033545d42",
+  "started_at": "2026-10-06T21:22:28.564127+00:00",
+  "mode": "normal_owner_api",
+  "post_attempts": 1,
+  "http_status": 202,
+  "response": {
+    "id": "3bf60490-c179-484d-991d-4fb5c16ca1a1",
+    "created": true,
+    "status": "preparing"
+  }
+}

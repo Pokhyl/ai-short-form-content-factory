@@ -1,0 +1,24 @@
+{
+  "id": "3bf60490-c179-484d-991d-4fb5c16ca1a1",
+  "runtime_revision": "73ba4708f0326f84e08260e302d4a55033545d42",
+  "requested_language": "uk",
+  "service_review_passed": true,
+  "human_language_acceptance": false,
+  "manual_text_observation": "Final script includes Russian words/forms despite service language_match=true. Technical QA and model review do not prove native Ukrainian quality.",
+  "examples": [
+    "звезда",
+    "давлення",
+    "осевого"
+  ],
+  "next_boundary": "Generic composition/review language quality; preserve immutable frozen plan and one existing voice. Do not label current video native-quality production accepted.",
+  "visual_observation": {
+    "segment_order": 20,
+    "time_ms": [
+      38000,
+      40000
+    ],
+    "asset_id": "pexels:23522825",
+    "finding": "Exact decoded frame appears to be a computer illustration of a black hole, despite positive real-material inspection. Manual suspicion retained; this is not real-photo visual acceptance.",
+    "needs_boundary": "Inspection reliability for synthetic/illustrated astronomy images."
+  }
+}
