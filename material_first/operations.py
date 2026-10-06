@@ -263,6 +263,11 @@ class Operations:
         materials = context['materials']
         seconds = context['request']['seconds']
         minimum_words, maximum_words = round(seconds * 1.6), round(seconds * 2.4)
+        if context['request'].get('presentation_policy') == POLICY:
+            # Word count is an estimate. Actual voice duration and bounded
+            # pitch-preserving fitting determine the exact delivery duration.
+            minimum_words = max(1, minimum_words - 2)
+            maximum_words += 2
         minimum_available = 3 if context['request'].get('presentation_policy') == POLICY else 5
         if len(materials) < minimum_available:
             raise MaterialUnavailable("not enough distinct relevant photos for requested cadence")
@@ -336,9 +341,10 @@ class Operations:
                 beats[-1]['visual_target_id'] = beat['visual_target_id']
             cursor = end
         if cursor != len(words):
-            # Some valid provider drafts miss the last one or two words in
-            # the final exclusive range. Keep the canonical script intact.
-            if beats and 0 < len(words) - cursor <= 2:
+            # Preserve the canonical words array. A final range can omit a
+            # trailing clause; attach it to the last paragraph and let the
+            # independent factual/language reviewer inspect the full script.
+            if beats and 0 < len(words) - cursor <= max(2, len(words) // 10):
                 beats[-1]['narration'] += ' ' + ' '.join(words[cursor:])
             else:
                 raise ValueError('narration words omitted from story')

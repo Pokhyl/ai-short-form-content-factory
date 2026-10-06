@@ -63,6 +63,30 @@ class Model:
 
 
 class OperationTests(unittest.TestCase):
+    def test_saved_uk60_95_words_preserved_without_rewrite_or_trailing_clause_loss(self):
+        import json
+        from material_first.visuals import POLICY
+        saved = json.loads((Path(__file__).parent / 'fixtures/neutron-uk60-word-count-failure.json').read_text())
+        response = saved['responses']['material-compose']
+        self.assertEqual(len(response['words']), 95)
+        self.assertEqual(response['beats'][-1]['word_end'], 91)
+        contexts = saved['responses']['material-brief']['photo_contexts']
+        targets = [{'id': 'v'+str(i), 'must_show': contexts[role]['subject'], 'must_not_show': 'Diagrams',
+                    'fact_ids': ['fact-'+str(i) for i in range(1,9)], 'query': contexts[role]['query']}
+                   for i, role in enumerate(('setting','subject','detail'))]
+        materials = [{'id': b['material_id']} for b in response['beats']]
+        calls = []
+        def generate(key, instruction, context, schema):
+            calls.append(key); validate_json(response, schema)
+            return copy.deepcopy(response), {'receipt_id': 'saved-real-draft'}
+        context = {'request': {'seconds': 60, 'presentation_policy': POLICY, 'visual_targets': targets},
+                   'materials': materials, 'evidence': {'sources': [],
+                     'facts': saved['responses']['material-brief']['facts']}}
+        draft = Operations('.', None, SimpleNamespace(generate=generate), None, None).compose(context)
+        self.assertEqual(calls, ['material-compose'])
+        self.assertEqual(' '.join(b['narration'] for b in draft['beats']), ' '.join(response['words']))
+        self.assertEqual(draft['beats'][-1]['fact_ids'], response['beats'][-1]['fact_ids'])
+
     def test_topic_related_photo_without_visible_fact_detail_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
