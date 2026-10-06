@@ -118,7 +118,12 @@ class Operations:
             query = target['query'] if targets else target
             for provider in sorted(PROVIDERS):
                 result = self.search.search(provider, query, 'portrait')
-                pools.append(result['candidates'])
+                pool = deepcopy(result['candidates'])
+                if targets:
+                    for candidate in pool:
+                        candidate['discovery_target_id'] = target['id']
+                        candidate['discovery_query'] = query
+                pools.append(pool)
         # Round-robin provider/query results rather than exhausting one provider.
         selected, seen = [], set()
         for rank in range(40):
@@ -197,6 +202,13 @@ class Operations:
         return self._inspection_receipt(asset, evidence, result, provenance)
 
     def inspect_many(self, assets, evidence):
+        if not 1 <= len(assets) <= 4 or len({a["id"] for a in assets}) != len(assets):
+            raise ValueError("bounded unique inspection batch required")
+        if getattr(self, "visual_validation_mode", "gemini") == "metadata":
+            from .metadata import receipt
+            for asset in assets:
+                self._photo(asset)
+            return [receipt(asset, evidence) for asset in assets]
         if not 1 <= len(assets) <= 4 or len({a['id'] for a in assets}) != len(assets):
             raise ValueError('bounded unique inspection batch required')
         targets = assets[0].get('visual_targets')
@@ -276,6 +288,10 @@ class Operations:
             'When visual_targets are present, use at least two different available roles with materials whose matched_visual_targets '
             'includes it. Keep that target identity on its beat, explaining its visible detail. '
             'The continuous narration will be fitted once to the exact requested duration without changing pitch or re-synthesizing.')
+        if context['request'].get('visual_validation_mode') == 'metadata':
+            instruction += (' Provider descriptions and discovery roles are metadata only, not pixel observations. '
+                            'Explain source-supported facts over relevant contextual material; do not assert a specific '
+                            'detail, person or action is visible based only on a caption.')
         try:
             result, _ = self.gemini.generate('material-compose', instruction, model_context, schema)
         except ModelSchemaError as error:

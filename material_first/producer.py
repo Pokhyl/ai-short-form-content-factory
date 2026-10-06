@@ -20,6 +20,10 @@ class DurableProducer:
             if self.authorize is not None:
                 self.authorize()
             request = claim['request']
+            mode = request.get('visual_validation_mode', 'gemini')
+            if mode not in {'metadata', 'gemini'}:
+                raise ValueError('unsupported visual validation mode')
+            self.operations.visual_validation_mode = mode
             frozen = Producer(self.root, self.operations).prepare(
                 request['topic'], request['language'], request['seconds'])
             self.ledger.complete(request_id, frozen)

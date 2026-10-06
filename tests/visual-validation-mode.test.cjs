@@ -63,12 +63,15 @@ test('job schema persists metadata or gemini mode', () => {
   assert.match(sql, /p_visual_validation_mode text/);
 });
 
-test('Studio exposes visual quality mode and submits it', () => {
+test('Studio routes to replacement exposing visual quality mode and submitting it', () => {
   const html = fs.readFileSync(path.join(root, 'studio', 'index.html'), 'utf8');
-  assert.match(html, /id="visualValidationMode"/);
-  assert.match(html, /value="metadata"/);
-  assert.match(html, /value="gemini"/);
-  assert.match(html, /visual_validation_mode:\s*document\.getElementById\('visualValidationMode'\)\.value/);
+  assert.match(html, /https:\/\/publisher\.hodor\.com\.pl\/factory-v3\//);
+  const current = fs.readFileSync(path.join(root, 'factory_v3', 'web', 'index.html'), 'utf8');
+  const app = fs.readFileSync(path.join(root, 'factory_v3', 'web', 'app.js'), 'utf8');
+  assert.match(current, /id="visualValidationMode"/);
+  assert.match(current, /value="metadata"/);
+  assert.match(current, /value="gemini"/);
+  assert.match(app, /visual_validation_mode:\$\("visualValidationMode"\)\.value/);
 });
 
 test('latest job API exposes visual validation mode', () => {

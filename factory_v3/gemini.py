@@ -193,7 +193,7 @@ class Gemini:
         result, provenance = self.generate("script-review",
             "Independently audit every claim in the exact final narration against supplied source-supported facts. "
             "Check language, every scene's visual contract and exclusions. For material-first plans, relevant contextual photographs may illustrate a mechanism without depicting its exact action or microscopic anatomy. Facts are verified against sources. Check that the supplied visual roles provide different dominant subjects, scales or contexts; reject a sequence composed entirely of near-identical subject-and-setting views. Do not require perfect literal image-to-phrase correspondence. Still photographs need not depict motion. "
-            "Do not approve a fact merely because its ID is cited. Quote the actual words asserting each cited fact. "
+            "In metadata visual_validation_mode, supplied photograph descriptions and roles are metadata-only, not pixel inspection; audit contextual relevance without claiming pixels were checked. Do not approve a fact merely because its ID is cited. Quote the actual words asserting each cited fact. "
             "Check that the narration actually answers the requested topic and essential mechanism, rather than merely describing pictured objects. "
             "Report false for omitted topic coverage, any unsupported statement, omitted cited fact or contradictory image requirement.",
             {**request, "evidence": compact_evidence(request["evidence"])}, schema)

@@ -37,7 +37,7 @@ class Runtime:
         self.gateway = CredentialHTTP(settings["broker_token"], self.direct)
         self.preparations = PreparationLedger(self.ledger, revision)
 
-    def create(self, request_id, topic, language, seconds):
+    def create(self, request_id, topic, language, seconds, *, visual_validation_mode=None):
         request_id = str(UUID(str(request_id)))
         if language not in {"pl","en","ru","uk"} or seconds not in {15,30,45,60}:
             raise ValueError("unsupported language/duration")
@@ -48,6 +48,10 @@ class Runtime:
         except KeyError:
             old = None
         request = {"topic":topic.strip(),"language":language,"seconds":seconds}
+        if visual_validation_mode is not None:
+            if visual_validation_mode not in {"metadata", "gemini"}:
+                raise ValueError("unsupported visual validation mode")
+            request["visual_validation_mode"] = visual_validation_mode
         if old is not None:
             if old["request"] != request or old["source_revision"] != self.revision:
                 raise ValueError("existing request identity changed")

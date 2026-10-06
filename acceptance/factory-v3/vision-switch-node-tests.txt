@@ -1,0 +1,15 @@
+✔ M3 defaults omitted visual validation mode to metadata (1.137666ms)
+✔ M3 accepts explicit Gemini visual validation mode (0.165667ms)
+✔ M3 rejects unknown visual validation mode (0.128375ms)
+✔ M3 persists visual validation mode through four-argument create_job (0.080208ms)
+✔ job schema persists metadata or gemini mode (0.241708ms)
+✔ Studio routes to replacement exposing visual quality mode and submitting it (0.439667ms)
+✔ latest job API exposes visual validation mode (0.740583ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 65.376209

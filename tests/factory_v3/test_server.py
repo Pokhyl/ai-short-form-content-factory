@@ -68,6 +68,16 @@ class ServerTests(unittest.TestCase):
         self.app.pool.shutdown()
         self.app.pool = Mock()
 
+    def test_visual_mode_is_forwarded_and_unknown_modes_rejected(self):
+        with patch.object(self.runtime, 'create', return_value={'id':JOB, 'created':True, 'status':'preparing'}) as create:
+            for mode in ('metadata', 'gemini'):
+                self.app.submit(self.request(visual_validation_mode=mode))
+                self.assertEqual(create.call_args.kwargs, {'visual_validation_mode':mode})
+            for mode in ('other', None):
+                with self.assertRaisesRegex(ValueError, 'visual validation mode'):
+                    self.app.submit(self.request(visual_validation_mode=mode))
+            self.assertEqual(create.call_count, 2)
+
     def tearDown(self):
         self.temp.cleanup()
 

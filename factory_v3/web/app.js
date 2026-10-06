@@ -38,7 +38,7 @@ async function show(id) {
   if (selected !== id) return;
   detail = response;
   $("result").hidden = false; $("result-title").textContent = detail.request.topic;
-  $("status").textContent = (labels[detail.status] || detail.status) + (detail.error_code ? " · " + detail.error_code : "") + (detail.photo_count ? " · " + detail.photo_count + " фото" : "") + (detail.actual_duration_ms ? " · " + (detail.actual_duration_ms / 1000) + " с" : "");
+  $("status").textContent = (labels[detail.status] || detail.status) + " · " + (detail.request.visual_validation_mode === "metadata" ? "Стандартный режим" : "Gemini Vision") + (detail.error_code ? " · " + detail.error_code : "") + (detail.photo_count ? " · " + detail.photo_count + " фото" : "") + (detail.actual_duration_ms ? " · " + (detail.actual_duration_ms / 1000) + " с" : "");
   $("script").textContent = detail.script || "Текст появится после проверки фактов и фотографий.";
   const ready = detail.machine_pass === true;
   $("video").hidden = !ready; $("download").hidden = !ready; $("review").hidden = !ready || !!detail.review;
@@ -76,7 +76,7 @@ $("login-form").onsubmit = async event => {
 };
 $("request-form").onsubmit = async event => {
   event.preventDefault(); $("message").textContent = ""; $("create").disabled = true;
-  const fields = {topic:$("topic").value.trim(),language:$("language").value,seconds:Number($("seconds").value)};
+  const fields = {topic:$("topic").value.trim(),language:$("language").value,seconds:Number($("seconds").value),visual_validation_mode:$("visualValidationMode").value};
   if (!pending || JSON.stringify(pending.fields) !== JSON.stringify(fields)) pending = {id:crypto.randomUUID(),fields};
   try {
     const result = await post("/api/requests",{request_id:pending.id,...fields});

@@ -65,7 +65,12 @@ def validate_material(root, asset, probe=probe_media):
     return actual
 
 
-def inspected_material(asset, receipt, evidence, facts):
+def inspected_material(asset, receipt, evidence, facts, validation_mode="gemini"):
+    if validation_mode == "metadata":
+        from .metadata import material
+        return material(asset, receipt, evidence, facts)
+    if validation_mode != "gemini" or receipt.get("validation_method") == "metadata":
+        raise ValueError("visual validation mode changed")
     """Metadata tags alone can never admit a material to the composer."""
     if (receipt.get("asset_id") != asset["id"] or receipt.get("asset_sha256") != asset["sha256"]
             or receipt.get("evidence_sha256") != digest(evidence)
@@ -235,6 +240,10 @@ class Producer:
         modern = getattr(self.operations, "presentation_policy", None) == POLICY
         if modern:
             request["presentation_policy"] = POLICY
+            if hasattr(self.operations, "visual_validation_mode"):
+                request["visual_validation_mode"] = self.operations.visual_validation_mode
+                if request["visual_validation_mode"] not in {"metadata", "gemini"}:
+                    raise ValueError("unsupported visual validation mode")
         brief = self.operations.research(deepcopy(request))
         # Research defines essential factual scope, never imaginary visual slots.
         if set(brief) not in ({"evidence", "required_fact_ids", "queries"},
@@ -279,7 +288,7 @@ class Producer:
             if len(receipts) != len(batch):
                 raise ValueError('inspection batch omitted an input')
             for asset, receipt in zip(batch, receipts):
-                material = inspected_material(asset, receipt, evidence, facts)
+                material = inspected_material(asset, receipt, evidence, facts, request.get("visual_validation_mode", "gemini"))
                 if material is not None:
                     assets[asset['id']] = asset
                     available.append(material)
@@ -347,7 +356,7 @@ def verify(root, frozen, probe=probe_media):
         if 'visual_targets' in payload and asset.get('visual_targets') != payload['visual_targets']:
             raise ValueError('frozen asset targets differ from the original story targets')
         validate_material(root, asset, probe)
-        current = inspected_material(asset, original["inspection"], payload["evidence"], facts)
+        current = inspected_material(asset, original["inspection"], payload["evidence"], facts, payload.get("visual_validation_mode", "gemini"))
         if current != original:
             raise ValueError("frozen observation changed")
         observations.append(current)

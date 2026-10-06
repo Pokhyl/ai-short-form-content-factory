@@ -79,13 +79,17 @@ class Application:
         self.slots = threading.BoundedSemaphore(5)
 
     def submit(self, data):
-        if set(data) != {"request_id", "topic", "language", "seconds"} or type(data["seconds"]) is not int:
+        if set(data) not in ({"request_id", "topic", "language", "seconds"}, {"request_id", "topic", "language", "seconds", "visual_validation_mode"}) or type(data["seconds"]) is not int:
             raise ValueError("only request identity, topic, language and duration allowed")
         request_id = identifier(data["request_id"])
         if not self.slots.acquire(blocking=False):
             raise OverflowError("queue full")
         try:
-            result = self.runtime.create(request_id, data["topic"], data["language"], data["seconds"])
+            mode = data.get("visual_validation_mode")
+            if "visual_validation_mode" in data and mode not in {"metadata", "gemini"}:
+                raise ValueError("unsupported visual validation mode")
+            args = (request_id, data["topic"], data["language"], data["seconds"])
+            result = self.runtime.create(*args, visual_validation_mode=mode) if mode is not None else self.runtime.create(*args)
             if result["created"]:
                 self.pool.submit(self._run, request_id)
                 return result

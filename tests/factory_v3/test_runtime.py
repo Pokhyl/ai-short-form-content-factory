@@ -69,6 +69,20 @@ class RuntimeTests(unittest.TestCase):
             self.runtime.create(REQUEST_ID,"different","pl",15)
         self.assertEqual(self.http.calls,[])
 
+    def test_visual_mode_is_persisted_and_cannot_change_existing_request(self):
+        self.runtime.preparations=Mock()
+        self.runtime.preparations.snapshot.side_effect=KeyError()
+        self.runtime.create(REQUEST_ID, 'controlled', 'pl', 30, visual_validation_mode='metadata')
+        saved=self.runtime.preparations.create.call_args.args[1]
+        self.assertEqual(saved['visual_validation_mode'], 'metadata')
+        self.runtime.preparations.snapshot.side_effect=None
+        self.runtime.preparations.snapshot.return_value={'request':saved, 'source_revision':REVISION, 'status':'failed'}
+        self.assertFalse(self.runtime.create(REQUEST_ID, 'controlled', 'pl', 30, visual_validation_mode='metadata')['created'])
+        for mode in ('gemini', 'other'):
+            with self.assertRaises(ValueError):
+                self.runtime.create(REQUEST_ID, 'controlled', 'pl', 30, visual_validation_mode=mode)
+        self.assertEqual(self.http.calls, [])
+
     def test_existing_media_job_id_is_not_reused(self):
         self.runtime.preparations=Mock()
         self.runtime.preparations.snapshot.side_effect=KeyError()
