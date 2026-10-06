@@ -1,0 +1,314 @@
+{
+  "date": "2026-10-06",
+  "preview_only": true,
+  "automatic_product": false,
+  "production_acceptance": false,
+  "runtime_revision": "cab79d34ad3475e43acd8baf301281deb7a39dc5",
+  "preview_count": 3,
+  "new_tts_calls_for_preview_render": 0,
+  "previews": [
+    {
+      "mode": "manual_cached_assembly",
+      "automatic_product": false,
+      "production_job_pass": false,
+      "human_pass": false,
+      "audio_listening_claim": false,
+      "source_job": "02feb2e3-31ae-4cf7-b139-56c47f8a8719",
+      "preview_id": "cb362b1b-ca5e-46a9-9f00-7e801475bba4",
+      "runtime_revision": "cab79d34ad3475e43acd8baf301281deb7a39dc5",
+      "topic": "How coffee is grown, harvested and roasted",
+      "language": "en",
+      "requested_seconds": 30,
+      "actual_duration_ms": 22270,
+      "scene_count": 6,
+      "script": "Coffee starts with young seedlings grown in shaded nurseries before they move to permanent growing areas. The cherries are harvested by selective hand picking, or by stripping the fruit from the branches. Green seeds then enter roasting machines, where they keep moving to prevent burning during the roasting process. Roasting transforms the green seeds into familiar brown coffee beans.",
+      "scene_timing": "approximate proportional word allocation, not ASR alignment",
+      "timing_request_pass": false,
+      "new_provider_calls": 0,
+      "new_tts_calls": 0,
+      "audio_sha256": "acfc6243e17bf9087d5c311f9b09039f64c277b172820c945238b5c465c8514d",
+      "video_sha256": "c17b41ef23f7f112a1e99613abf14a1128b3223e12022c1cd9110fe25bd15d22",
+      "audio_correlation": 0.9999748523437434,
+      "full_decode_pass": true,
+      "format": "1080x1920 H264 yuv420p 30fps AAC",
+      "segments": [
+        {
+          "asset_id": "pexels:17019160",
+          "sha256": "85c57d810129b1872a69e4145920c26b3beec2772aec9be5a0c975cabab9c5b7",
+          "start_ms": 0,
+          "end_ms": 6033,
+          "narration": "Coffee starts with young seedlings grown in shaded nurseries before they move to permanent growing areas."
+        },
+        {
+          "asset_id": "pexels:7125441",
+          "sha256": "5a03409949eddc985a4b63579599b1fef6aa8f4994931f7676e12ed0baa5b2d0",
+          "start_ms": 6033,
+          "end_ms": 9050,
+          "narration": "The cherries are harvested by selective hand picking,"
+        },
+        {
+          "asset_id": "pexels:7125708",
+          "sha256": "a60ffc311547b5690c0be59c3f46cb44d5664845b97a96aa2c98c4c30f54ed61",
+          "start_ms": 9050,
+          "end_ms": 12067,
+          "narration": "or by stripping the fruit from the branches."
+        },
+        {
+          "asset_id": "pixabay:6487099",
+          "sha256": "fc1c85fc69206e56bec8f4975be4feb7728e2b800b869909eeef89a9c9c87b84",
+          "start_ms": 12067,
+          "end_ms": 15838,
+          "narration": "Green seeds then enter roasting machines, where they keep moving"
+        },
+        {
+          "asset_id": "pexels:8469488",
+          "sha256": "89112fece1cf4a8d8827385bc37492be1b2fab78cf700e3e2255402ca267c01f",
+          "start_ms": 15838,
+          "end_ms": 18477,
+          "narration": "to prevent burning during the roasting process."
+        },
+        {
+          "asset_id": "pexels:17277312",
+          "sha256": "71d671e495fb8552263dbfa4f8cd2e211592c7e0aa1c228ed0327a586376e506",
+          "start_ms": 18477,
+          "end_ms": 22248,
+          "narration": "Roasting transforms the green seeds into familiar brown coffee beans."
+        }
+      ],
+      "output": "/data/manual-previews/cb362b1b-ca5e-46a9-9f00-7e801475bba4/final.mp4",
+      "delivered_file": "/Users/hodor/Documents/Codex/2026-10-05/new-chat/outputs/coffee-en-preview.mp4",
+      "representative_final_frames_inspected": true,
+      "delivered_bytes": 1607033,
+      "script_word_count": 59,
+      "observed_voice_words_per_second": 2.649
+    },
+    {
+      "mode": "manual_cached_assembly",
+      "automatic_product": false,
+      "production_job_pass": false,
+      "human_pass": false,
+      "audio_listening_claim": false,
+      "source_job": "a334c899-1cad-41d5-9ac5-c5a17352003c",
+      "preview_id": "8a205e0f-fd8f-4f86-bdfa-d99d52842578",
+      "runtime_revision": "cab79d34ad3475e43acd8baf301281deb7a39dc5",
+      "topic": "Как делают хлеб: замес, подъём, выпечка и охлаждение",
+      "language": "ru",
+      "requested_seconds": 45,
+      "actual_duration_ms": 57552,
+      "scene_count": 8,
+      "script": "Производство хлеба начинается с подготовки ингредиентов: муки, воды, дрожжей, соли и других компонентов выбранного рецепта. Их соединяют в большой ёмкости. Миксер перемешивает всё вместе, и вместо отдельных ингредиентов получается тесто. На производстве для этого используют большие миксеры и чаны. Следующий этап начинается после замеса. Тесто делят на отдельные заготовки. Каждая из них станет будущей буханкой или булочкой. Заготовкам дают немного подняться, прежде чем перейти к выпечке. Так подготовленное тесто проходит следующий этап. После подъёма изделие выпекают до нужного цвета. Теперь это уже готовая выпечка. Затем хлеб охлаждают в течение двух часов. В описанном процессе только после охлаждения его разрезают и упаковывают. Готовый хлеб завершает путь от замешанного теста через сформованные заготовки и выпечку к охлаждению.",
+      "scene_timing": "approximate proportional word allocation, not ASR alignment",
+      "timing_request_pass": false,
+      "new_provider_calls": 0,
+      "new_tts_calls": 0,
+      "audio_sha256": "0f1fffc89df021910a6bad16c8b13aae659d1a2f80d741482d80986f5554373c",
+      "video_sha256": "49231ba0e0be3ff89b73936f442ae5bdd7c538a8fe0c330e0799f84051b8c8bf",
+      "audio_correlation": 0.9999578533666378,
+      "full_decode_pass": true,
+      "format": "1080x1920 H264 yuv420p 30fps AAC",
+      "segments": [
+        {
+          "asset_id": "pexels:36976900",
+          "sha256": "829cbe9ae262ae6e101d32e46b0e73109ecd9f29ca45cab66260990e09c894f5",
+          "start_ms": 0,
+          "end_ms": 7507,
+          "narration": "Производство хлеба начинается с подготовки ингредиентов: муки, воды, дрожжей, соли и других компонентов выбранного рецепта."
+        },
+        {
+          "asset_id": "pexels:13112162",
+          "sha256": "99380c7488f83f46f8d889a7d5bc526cc75b337371959bd766bd0d4ddf8c7681",
+          "start_ms": 7507,
+          "end_ms": 15014,
+          "narration": "Их соединяют в большой ёмкости. Миксер перемешивает всё вместе, и вместо отдельных ингредиентов получается тесто."
+        },
+        {
+          "asset_id": "pexels:5964489",
+          "sha256": "6244bc1fb841ff58ab8bc1ee4f8904a1badde5facf46a830d7764432a5a11aa9",
+          "start_ms": 15014,
+          "end_ms": 22020,
+          "narration": "На производстве для этого используют большие миксеры и чаны. Следующий этап начинается после замеса."
+        },
+        {
+          "asset_id": "pexels:19987147",
+          "sha256": "f3b3fcdbf446cfe739001ae31a2335545a4599e38ac827ff232eaeb465683c35",
+          "start_ms": 22020,
+          "end_ms": 28526,
+          "narration": "Тесто делят на отдельные заготовки. Каждая из них станет будущей буханкой или булочкой."
+        },
+        {
+          "asset_id": "pexels:37058262",
+          "sha256": "64c81b1ab75f02a7b92c47b248ccc13f40291a82a4ccef9cd922aae3d02a0670",
+          "start_ms": 28526,
+          "end_ms": 36033,
+          "narration": "Заготовкам дают немного подняться, прежде чем перейти к выпечке. Так подготовленное тесто проходит следующий этап."
+        },
+        {
+          "asset_id": "pixabay:101636",
+          "sha256": "99fc2b34c268aa5fb5e545a5ecf782d2c96904900b4d7fe53ecf016914b95f2e",
+          "start_ms": 36033,
+          "end_ms": 42038,
+          "narration": "После подъёма изделие выпекают до нужного цвета. Теперь это уже готовая выпечка."
+        },
+        {
+          "asset_id": "pexels:30926706",
+          "sha256": "69852f841f1013d35a4f0af57e64d9de5f4cc1ac2edf5ca22078e2a86dea090e",
+          "start_ms": 42038,
+          "end_ms": 50546,
+          "narration": "Затем хлеб охлаждают в течение двух часов. В описанном процессе только после охлаждения его разрезают и упаковывают."
+        },
+        {
+          "asset_id": "pixabay:5290444",
+          "sha256": "482b2887fbf1457400afcea8f7547f2bb02d2f024fc969d7e295fd3c258f9f17",
+          "start_ms": 50546,
+          "end_ms": 57552,
+          "narration": "Готовый хлеб завершает путь от замешанного теста через сформованные заготовки и выпечку к охлаждению."
+        }
+      ],
+      "output": "/data/manual-previews/8a205e0f-fd8f-4f86-bdfa-d99d52842578/final.mp4",
+      "delivered_file": "/Users/hodor/Documents/Codex/2026-10-05/new-chat/outputs/bread-ru-preview.mp4",
+      "representative_final_frames_inspected": true,
+      "delivered_bytes": 3306228,
+      "script_word_count": 115,
+      "observed_voice_words_per_second": 1.998
+    },
+    {
+      "mode": "manual_cached_assembly",
+      "automatic_product": false,
+      "production_job_pass": false,
+      "human_pass": false,
+      "audio_listening_claim": false,
+      "source_job": "ed07f910-f736-40d5-b50c-ae03af198a19",
+      "preview_id": "e190fce0-ddaf-49e7-a314-4d83cf55ce47",
+      "runtime_revision": "cab79d34ad3475e43acd8baf301281deb7a39dc5",
+      "topic": "Випаровування, хмари, дощ і рух води в природі",
+      "language": "uk",
+      "requested_seconds": 60,
+      "actual_duration_ms": 73416,
+      "scene_count": 8,
+      "script": "Кругообіг води в природі підтримують сонячна енергія та сила тяжіння Землі. Вода постійно змінює своє місце. Коли сонце нагріває поверхню водойм, вода випаровується. Вона переходить у стан водяної пари та потрапляє в атмосферу. У повітрі водяна пара охолоджується. Внаслідок конденсації вона перетворюється на дуже дрібні краплі, з яких утворюються хмари. Краплі в хмарах стають важчими. Коли вони вже не можуть залишатися в повітрі, вода починає повертатися на землю. Так випадають опади. Вода з атмосфери знову потрапляє на поверхню Землі, і її подорож у природі триває. Сила тяжіння спрямовує рух води вниз. Разом із сонячною енергією вона допомагає підтримувати цей природний рух. Після випадання опадів частина води тече по поверхні. Такий рух називається поверхневим стоком і утворює річки та струмки. Вони переносять воду через ландшафт. Отже, водойми, атмосфера та поверхневий стік є різними частинами одного кругообігу.",
+      "scene_timing": "approximate proportional word allocation, not ASR alignment",
+      "timing_request_pass": false,
+      "new_provider_calls": 0,
+      "new_tts_calls": 0,
+      "audio_sha256": "12e3ebded71533f96457f56cddd7209972966159592ac8ef7bca373172a969b1",
+      "video_sha256": "a025c1542b68d148e0434097a6bc1a6e1660cae01329153e00f7ebcfee668818",
+      "audio_correlation": 0.9999721168807332,
+      "full_decode_pass": true,
+      "format": "1080x1920 H264 yuv420p 30fps AAC",
+      "segments": [
+        {
+          "asset_id": "pexels:36156753",
+          "sha256": "300c0387fa3c90ced2330c1e96bf86d74922f19ae0c54bcfa1e628fee7886b77",
+          "start_ms": 0,
+          "end_ms": 8701,
+          "narration": "Кругообіг води в природі підтримують сонячна енергія та сила тяжіння Землі. Вода постійно змінює своє місце."
+        },
+        {
+          "asset_id": "pexels:27041408",
+          "sha256": "e8947ff364924e94dd1685f440cec30dadce912839ef95af90650a87e739b8a4",
+          "start_ms": 8701,
+          "end_ms": 17946,
+          "narration": "Коли сонце нагріває поверхню водойм, вода випаровується. Вона переходить у стан водяної пари та потрапляє в атмосферу."
+        },
+        {
+          "asset_id": "pexels:10731824",
+          "sha256": "2e0102dc7379d0dda8935e2ce0fb390e106e32685d0fc58277be880328524dbf",
+          "start_ms": 17946,
+          "end_ms": 27191,
+          "narration": "У повітрі водяна пара охолоджується. Внаслідок конденсації вона перетворюється на дуже дрібні краплі, з яких утворюються хмари."
+        },
+        {
+          "asset_id": "pixabay:8082435",
+          "sha256": "ee0e4aeb2cffa53fafca996526296ada8896b6fa4b5321a7c7a2abebbfba148e",
+          "start_ms": 27191,
+          "end_ms": 36980,
+          "narration": "Краплі в хмарах стають важчими. Коли вони вже не можуть залишатися в повітрі, вода починає повертатися на землю."
+        },
+        {
+          "asset_id": "pexels:38291640",
+          "sha256": "549c30fd63280463d3bb8c4ec0d254d514e0329050a9ae79920bbfc021321d8e",
+          "start_ms": 36980,
+          "end_ms": 46225,
+          "narration": "Так випадають опади. Вода з атмосфери знову потрапляє на поверхню Землі, і її подорож у природі триває."
+        },
+        {
+          "asset_id": "pexels:39837956",
+          "sha256": "63d14dc08b1e1e434a6018a3c9ff2202f0bba998ac17f544e064712b56c9bd5c",
+          "start_ms": 46225,
+          "end_ms": 54926,
+          "narration": "Сила тяжіння спрямовує рух води вниз. Разом із сонячною енергією вона допомагає підтримувати цей природний рух."
+        },
+        {
+          "asset_id": "pixabay:5816353",
+          "sha256": "3b0e1ba00cee3a1282908e93d843c6f2c5fd0edbd2ad2446d517630b6729f6ac",
+          "start_ms": 54926,
+          "end_ms": 64715,
+          "narration": "Після випадання опадів частина води тече по поверхні. Такий рух називається поверхневим стоком і утворює річки та струмки."
+        },
+        {
+          "asset_id": "pexels:37237941",
+          "sha256": "f9105e36ad96f1d4a88276c98f54eeef3e836fbf9d96670b2afba2d392f7005b",
+          "start_ms": 64715,
+          "end_ms": 73416,
+          "narration": "Вони переносять воду через ландшафт. Отже, водойми, атмосфера та поверхневий стік є різними частинами одного кругообігу."
+        }
+      ],
+      "output": "/data/manual-previews/e190fce0-ddaf-49e7-a314-4d83cf55ce47/final.mp4",
+      "delivered_file": "/Users/hodor/Documents/Codex/2026-10-05/new-chat/outputs/water-cycle-uk-preview.mp4",
+      "representative_final_frames_inspected": true,
+      "delivered_bytes": 6052988,
+      "script_word_count": 135,
+      "observed_voice_words_per_second": 1.839
+    }
+  ],
+  "remaining_blockers": [
+    "Natural voice pace varies by language and voice; all three source jobs failed the existing requested-duration window.",
+    "A completed schema-invalid photo inspection aborts the automatic candidate loop.",
+    "Required-fact planning may include optional historical trivia and demand corresponding imagery.",
+    "Short completed scripts can remain below the word budget after the one permitted correction."
+  ],
+  "automatic_attempts": [
+    {
+      "id": "d86aa4ab-834c-48cb-a147-df2ff8b0481c",
+      "language": "uk",
+      "seconds": 60,
+      "status": "failed",
+      "cause": "ModelSchemaError:72-word first draft,91-word corrected draft below96 minimum",
+      "accepted_photos": 10,
+      "quota_429": false
+    },
+    {
+      "id": "0c66089e-4bb4-4ef8-b45d-78315c554bc8",
+      "language": "ru",
+      "seconds": 45,
+      "status": "failed",
+      "cause": "MaterialUnavailable: uncovered historical fact-1, modern-process photos otherwise available",
+      "accepted_photos": 10,
+      "quota_429": false
+    },
+    {
+      "id": "1fddbbea-76d3-4929-9353-d9b2c480805e",
+      "language": "en",
+      "seconds": 30,
+      "status": "failed",
+      "cause": "ModelSchemaError at individual photo inspection",
+      "accepted_photos": 1,
+      "quota_429": false
+    }
+  ],
+  "packaged_tests": {
+    "replacement": 36,
+    "legacy": 84,
+    "passed": true
+  },
+  "quota_evidence": {
+    "old_uk_inspection_prompt_tokens_approx": 18498,
+    "new_uk_inspection_prompt_tokens_range": [
+      3258,
+      3302
+    ],
+    "reduction_approx_percent": 82
+  },
+  "workflow_digest": "dd7c8bd5284b595f14e9b08f7027cb08",
+  "source_jobs_and_failed_ids_preserved": true
+}
