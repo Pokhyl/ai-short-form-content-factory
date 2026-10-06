@@ -1,3 +1,7 @@
+## 2026-10-06 — Frame counts alone do not make concat timestamps exact
+
+A30fps total of1350 or1800 frames still produced45.009635/60.008984s video streams because concat demuxer accumulated rounded per-segment container durations. Audio was already45/60s. Normalize encoded packet PTS/DTS/duration from frame index (ultrafast encoder has no B-frames), then verify all video/audio/container durations, frame count, full decode and audio correlation on the final exported bytes. Three real-media controls now show30.000/45.000/60.000s. User also explicitly rejected center-cropping and sparse sentence-length photo holds: inspect whole original photographs, preserve their aspect ratios, and make visual cuts independent of narration sentences. A manual renderer preview is not a deployed automatic pipeline.
+
 ## 2026-10-05 — Exclude soft-deleted n8n executions from active checks
 
 With success data disabled, native n8n persistence can retain status=running on logically deleted rows. Execution12135 had deletedAt set after its correct billing response. Use deletedAt IS NULL alongside running status; do not restart or edit DB rows to clear these tombstones. Preflight failed safely before any product POST.

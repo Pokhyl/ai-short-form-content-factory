@@ -1,0 +1,1365 @@
+{
+  "user_correction": "Exact requested duration, many more distinct photographs, whole original image without cropping",
+  "project_ready": false,
+  "automatic_product": false,
+  "deployed": false,
+  "live_app_revision": "cab79d34ad3475e43acd8baf301281deb7a39dc5",
+  "tests": {
+    "material_first": 41,
+    "factory_v3": 84,
+    "passed": true
+  },
+  "new_calls": {
+    "tts": 0,
+    "gemini": 0,
+    "search": 0,
+    "photo_downloads": 10
+  },
+  "download_catalog": "e34f5fd9-c9da-4352-9da3-f9e9c7d60ef0",
+  "preview_cases": [
+    {
+      "format": "1080x1920 H264 yuv420p 30fps AAC",
+      "requested_seconds": 30,
+      "actual_duration_ms": 30000,
+      "frame_count": 900,
+      "shot_count": 15,
+      "unique_photo_count": 15,
+      "framing": "whole photograph, aspect preserved, solid matte, no crop or blur",
+      "source_audio_sha256": "acfc6243e17bf9087d5c311f9b09039f64c277b172820c945238b5c465c8514d",
+      "source_audio_duration_ms": 22248,
+      "audio_tempo_factor": 0.7416,
+      "fitted_audio_sha256": "9a1340ef909d35bf64dab188d09a3e167c6fa94078fa2b29435d02dec60a5324",
+      "audio_policy": "pitch-preserving tempo fit, original unchanged",
+      "new_tts_calls": 0,
+      "full_decode_pass": true,
+      "video_sha256": "14a2515505ff6aeffacb1a473978d04a271a426ba8fbf64aae25bd1217d76b22",
+      "timeline": [
+        {
+          "start_frame": 0,
+          "end_frame": 60
+        },
+        {
+          "start_frame": 60,
+          "end_frame": 120
+        },
+        {
+          "start_frame": 120,
+          "end_frame": 180
+        },
+        {
+          "start_frame": 180,
+          "end_frame": 240
+        },
+        {
+          "start_frame": 240,
+          "end_frame": 300
+        },
+        {
+          "start_frame": 300,
+          "end_frame": 360
+        },
+        {
+          "start_frame": 360,
+          "end_frame": 420
+        },
+        {
+          "start_frame": 420,
+          "end_frame": 480
+        },
+        {
+          "start_frame": 480,
+          "end_frame": 540
+        },
+        {
+          "start_frame": 540,
+          "end_frame": 600
+        },
+        {
+          "start_frame": 600,
+          "end_frame": 660
+        },
+        {
+          "start_frame": 660,
+          "end_frame": 720
+        },
+        {
+          "start_frame": 720,
+          "end_frame": 780
+        },
+        {
+          "start_frame": 780,
+          "end_frame": 840
+        },
+        {
+          "start_frame": 840,
+          "end_frame": 900
+        }
+      ],
+      "photos": [
+        {
+          "path": "/data/catalog/af8ee414-5998-4d17-841f-a16470126fb5/0bc0c5d19f0ab4b585aa65f1f3ba058bda2bcdee6ad5e84f28843b7d2605adeb/selected.jpg",
+          "sha256": "06fad477f5bf78df62018cd04bfdfc00dcd3d23186a8e2f314868b91ae5e5838",
+          "provenance": {
+            "id": "pexels:17019160",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/green-leaves-of-potted-plants-17019160/",
+            "author": "_ptv 22",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Close-up view of lush green plants growing in a nursery, showcasing vibrant growth."
+          }
+        },
+        {
+          "path": "/data/catalog/af8ee414-5998-4d17-841f-a16470126fb5/7e5a6ee367a68f658ade9d1d33a406e525027b53dc31f27e32d02bfb3256caff/selected.webp",
+          "sha256": "a1b42c0b4d9ffbd1f3f9409fed300681be4fd1560a1867302fda6b9f4151902c",
+          "provenance": {
+            "id": "pexels:5029765",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/green-plants-on-a-seedling-tray-5029765/",
+            "author": "Anna Shvets",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Seedlings growing in a tray outdoors, thriving under sunlight."
+          }
+        },
+        {
+          "path": "/data/catalog/af8ee414-5998-4d17-841f-a16470126fb5/be8de0a068e8bd0f3512099f6a3a0ef9473ef7c768973f405fdde6127167c6fe/selected.jpg",
+          "sha256": "574b6c13b4379e205f2f76bea51c06900a19a2038f0b8f48f72a00234dd94d46",
+          "provenance": {
+            "id": "pexels:7125441",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/crop-faceless-gardener-picking-ripe-coffee-berries-growing-on-tree-7125441/",
+            "author": "Michael Burrows",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Crop anonymous gardener collecting red ripe coffee cherries growing on shrub branches in verdant plantation"
+          }
+        },
+        {
+          "path": "/data/catalog/af8ee414-5998-4d17-841f-a16470126fb5/50f93e6e18172f897eed768e6f8d797cfbe34a4b5abb99aff9dde9c887742560/selected.webp",
+          "sha256": "0f618ca0a9b377be229e24431ed78cb5ec72ef83d02d50dea1090d7241eb728f",
+          "provenance": {
+            "id": "pexels:7125458",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/crop-harvester-showing-coffee-fruit-in-countryside-7125458/",
+            "author": "Michael Burrows",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Crop anonymous farmer with coffee berry and bucket on farmland in sunlight on blurred background"
+          }
+        },
+        {
+          "path": "/data/catalog/427f8f4e-ecf9-4011-bf15-e3ddce3dc747/47c7b97fc41ecfea433d7d0a1d39e9bc50762f4395bec5defa598a9e92e38dcd/selected.webp",
+          "sha256": "5e6c03248e6f29318045821696079248507f750cb20565284fdba1323ec6fcdd",
+          "provenance": {
+            "id": "pexels:7125708",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/fruit-in-hand-7125708/",
+            "author": "Michael Burrows",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "A close-up of human hands holding fresh, vibrant coffee cherries."
+          }
+        },
+        {
+          "path": "/data/catalog/af8ee414-5998-4d17-841f-a16470126fb5/0843cd6158b1a85b88c094c87d5a0f2445372731539ffda8b504b55f8920996e/selected.jpg",
+          "sha256": "4c0ce5ecf525de5cf3c6de2cf81af9b9b74cff53a14cb569f55710a4355c00f1",
+          "provenance": {
+            "id": "pixabay:4591173",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/coffee-coffee-beans-aroma-roasted-4591173/",
+            "author": "gedsarts",
+            "license": "Pixabay Content License",
+            "width": 853,
+            "height": 1280,
+            "description": "coffee, coffee beans, aroma, coffee cup, roasted, beans, espresso, cappuccino, mug, caffeine, beautiful wallpaper, coffee on hand, holding coffee beans, hand-holding, kopi, javanese, coffee background, coffee texture, background, coffee farm, indonesia, love shape, love coffee, girl holding, girl holding coffee bean, coffee seed, indonesian coffee, iphone wallpaper"
+          }
+        },
+        {
+          "path": "/data/catalog/af8ee414-5998-4d17-841f-a16470126fb5/c06d631fb8ffbe3848e62bc75999bf840cb2f4509170884abd1c00e5c0cf87bd/selected.jpg",
+          "sha256": "2cda0c42add4fbe3734bd2133691259da6d785717c34871f266d9513984d6f56",
+          "provenance": {
+            "id": "pixabay:5298528",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/roasting-beans-coffee-coffee-bean-5298528/",
+            "author": "Y-soo",
+            "license": "Pixabay Content License",
+            "width": 960,
+            "height": 1280,
+            "description": "roasting, beans, coffee, coffee bean, brown, aroma, roaster machine"
+          }
+        },
+        {
+          "path": "/data/catalog/af8ee414-5998-4d17-841f-a16470126fb5/a247bf3f806657da463f9f487f03de57f1cfee6c3240288f3b136ca76b7cc37e/selected.jpg",
+          "sha256": "400adae777f9c6c3f10cada32a34da731807831a8ea2ab1995f2bb1a72367d9e",
+          "provenance": {
+            "id": "pixabay:6487099",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/coffee-coffee-roasting-6487099/",
+            "author": "ClaroCafe",
+            "license": "Pixabay Content License",
+            "width": 853,
+            "height": 1280,
+            "description": "coffee, coffee roasting, coffee roaster, roasted coffee, coffee beans, coffee roasting machine, process, closeup, coffee, coffee, coffee, coffee, coffee, coffee roasting, coffee roasting, coffee roaster, coffee beans, coffee beans, coffee beans"
+          }
+        },
+        {
+          "path": "/data/catalog/427f8f4e-ecf9-4011-bf15-e3ddce3dc747/28f774dda067a1da210d5eec3b0f84b29eec77f522706414753cf5b70fc6d131/selected.webp",
+          "sha256": "de26ea325e5f6e0a816ad5091db2c30d64f132313e7ada583d8d22f506d425aa",
+          "provenance": {
+            "id": "pexels:8469488",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/coffee-roaster-8469488/",
+            "author": "// onetoforseeforall",
+            "license": "Pexels License",
+            "width": 975,
+            "height": 1300,
+            "description": "Close-up view of a Giesen coffee roaster machine in a factory setting."
+          }
+        },
+        {
+          "path": "/data/catalog/427f8f4e-ecf9-4011-bf15-e3ddce3dc747/c6142fd98d3c83fde80f00c9bbae49f197ce8af4949ab9e3e69ae7662406de02/selected.jpg",
+          "sha256": "eb2c719457fc61aac7ce3238fc54cc55f60d0ababd61947f8f5a2103dc7a5d63",
+          "provenance": {
+            "id": "wikimedia:3462745",
+            "provider": "wikimedia",
+            "source_url": "https://commons.wikimedia.org/wiki/File:Kaffeeroester.jpg",
+            "author": "BMK",
+            "license": "CC BY-SA",
+            "width": 480,
+            "height": 640,
+            "description": "Coffee  roasting machine"
+          }
+        },
+        {
+          "path": "/data/catalog/af8ee414-5998-4d17-841f-a16470126fb5/df98d2ad273cd645dfdb1a87ae902338a63a3edb30f1cdd82035b6e5993c6295/selected.webp",
+          "sha256": "a545975f30b4f1903ac1e50ae27d0ca3f513ba6c1b53e038acfbfe1470239f55",
+          "provenance": {
+            "id": "pexels:17277312",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/burlap-sacks-around-industrial-coffee-roaster-machine-17277312/",
+            "author": "Merve Nur Türker",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "An industrial coffee roasting setup with burlap sacks and machinery inside a factory."
+          }
+        },
+        {
+          "path": "/data/catalog/af8ee414-5998-4d17-841f-a16470126fb5/cc62b4e5bdd81525584dd801246fac0955255a3a9cb937a093c66c6fe958573d/selected.webp",
+          "sha256": "e2b56593e457d17b45ab0b4a019811d56279ece24e7a9c5ba9b9ab015c26bd6d",
+          "provenance": {
+            "id": "pexels:4820776",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/man-in-black-shirt-sitting-on-chair-4820776/",
+            "author": "cottonbro studio",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Overhead view of a man using laptop and equipment in a coffee roastery."
+          }
+        },
+        {
+          "path": "/data/catalog/af8ee414-5998-4d17-841f-a16470126fb5/8e97adf949d38c35fdde44b1865bcbcb00079732803e3f17940e0263527a5bf2/selected.jpg",
+          "sha256": "8a149afa7f7c73829ad427b34c0ecc356818e1cfd43b18540fc395c097480490",
+          "provenance": {
+            "id": "pixabay:7830087",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/coffee-morning-coffee-grinder-7830087/",
+            "author": "RuslanSikunov",
+            "license": "Pixabay Content License",
+            "width": 851,
+            "height": 1280,
+            "description": "coffee, morning, coffee grinder, grains"
+          }
+        },
+        {
+          "path": "/data/catalog/427f8f4e-ecf9-4011-bf15-e3ddce3dc747/45a209b4d409d71e28d869be0267a5041a9cf522d1231bdc07375a4d01166369/selected.jpg",
+          "sha256": "4e565941eee42b352cc2a46752f207fd9f5058fcc5b96ee297bb7bc5d01ac4a3",
+          "provenance": {
+            "id": "pixabay:9550534",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/coffee-machine-coffee-espresso-9550534/",
+            "author": "Tho-Ge",
+            "license": "Pixabay Content License",
+            "width": 964,
+            "height": 1280,
+            "description": "coffee machine, coffee, espresso, enjoyment, coffee cup, cup, monochrome, black-and-white"
+          }
+        },
+        {
+          "path": "/data/catalog/af8ee414-5998-4d17-841f-a16470126fb5/8a265685d534c6b2d729e3ecfd0520df1a5da65df193f38b1847e2407c26e65c/selected.jpg",
+          "sha256": "6dc0b111054f9fc7f42e4d49dacfcb7ce22377be0a74d3bfbc9c844d45d5fdc2",
+          "provenance": {
+            "id": "pixabay:4651087",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/the-coffee-capuchino-hot-dark-4651087/",
+            "author": "tathanhtuan",
+            "license": "Pixabay Content License",
+            "width": 853,
+            "height": 1280,
+            "description": "the coffee, capuchino, hot, dark, drink, hand, the coffee, the coffee, the coffee, the coffee, the coffee, capuchino"
+          }
+        }
+      ],
+      "case": "coffee",
+      "artifact_id": "ddf7aa8f-a172-408a-9d96-8e81bdb26b74",
+      "mode": "manual_cached_assembly",
+      "automatic_product": false,
+      "source_voice_job": "02feb2e3-31ae-4cf7-b139-56c47f8a8719",
+      "source_audio_unchanged": true,
+      "original_photos_unchanged": true,
+      "new_search_calls": 0,
+      "new_model_calls": 0,
+      "selection": "operator inspected original photographs; unrelated candidates excluded",
+      "extra_water_download_catalog": null,
+      "pre_normalization_video_sha256": "af2160ed4d70b66c071d8c146e00b3c8385ea4e17c5b55c1827300486b315a02",
+      "pre_normalization_duration_ms": 30000,
+      "packet_timestamps": "frame index at constant30fps",
+      "fitted_audio_correlation": 0.9999893295263307,
+      "sample_difference": 256,
+      "output": "/data/whole-photo-previews/ddf7aa8f-a172-408a-9d96-8e81bdb26b74/final-exact.mp4",
+      "production_job_pass": false,
+      "human_pass": false,
+      "audio_listening_claim": false,
+      "delivered_file": "/Users/hodor/Documents/Codex/2026-10-05/new-chat/outputs/coffee-en-30s-whole.mp4",
+      "representative_frames_inspected": true,
+      "automatic_phrase_alignment": false
+    },
+    {
+      "format": "1080x1920 H264 yuv420p 30fps AAC",
+      "requested_seconds": 45,
+      "actual_duration_ms": 45000,
+      "frame_count": 1350,
+      "shot_count": 23,
+      "unique_photo_count": 23,
+      "framing": "whole photograph, aspect preserved, solid matte, no crop or blur",
+      "source_audio_sha256": "0f1fffc89df021910a6bad16c8b13aae659d1a2f80d741482d80986f5554373c",
+      "source_audio_duration_ms": 57552,
+      "audio_tempo_factor": 1.2789333333333333,
+      "fitted_audio_sha256": "4676649836c3b80beb3020c88e98879bffec9d4c6bea93b712bf1cf60dd05039",
+      "audio_policy": "pitch-preserving tempo fit, original unchanged",
+      "new_tts_calls": 0,
+      "full_decode_pass": true,
+      "video_sha256": "c980893e57a44b859d8a682babc3f1f1677f64816f3c09f809efd048ae5fed4f",
+      "timeline": [
+        {
+          "start_frame": 0,
+          "end_frame": 58
+        },
+        {
+          "start_frame": 58,
+          "end_frame": 117
+        },
+        {
+          "start_frame": 117,
+          "end_frame": 176
+        },
+        {
+          "start_frame": 176,
+          "end_frame": 234
+        },
+        {
+          "start_frame": 234,
+          "end_frame": 293
+        },
+        {
+          "start_frame": 293,
+          "end_frame": 352
+        },
+        {
+          "start_frame": 352,
+          "end_frame": 410
+        },
+        {
+          "start_frame": 410,
+          "end_frame": 469
+        },
+        {
+          "start_frame": 469,
+          "end_frame": 528
+        },
+        {
+          "start_frame": 528,
+          "end_frame": 586
+        },
+        {
+          "start_frame": 586,
+          "end_frame": 645
+        },
+        {
+          "start_frame": 645,
+          "end_frame": 704
+        },
+        {
+          "start_frame": 704,
+          "end_frame": 763
+        },
+        {
+          "start_frame": 763,
+          "end_frame": 821
+        },
+        {
+          "start_frame": 821,
+          "end_frame": 880
+        },
+        {
+          "start_frame": 880,
+          "end_frame": 939
+        },
+        {
+          "start_frame": 939,
+          "end_frame": 997
+        },
+        {
+          "start_frame": 997,
+          "end_frame": 1056
+        },
+        {
+          "start_frame": 1056,
+          "end_frame": 1115
+        },
+        {
+          "start_frame": 1115,
+          "end_frame": 1173
+        },
+        {
+          "start_frame": 1173,
+          "end_frame": 1232
+        },
+        {
+          "start_frame": 1232,
+          "end_frame": 1291
+        },
+        {
+          "start_frame": 1291,
+          "end_frame": 1350
+        }
+      ],
+      "photos": [
+        {
+          "path": "/data/catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/f8f67628ddcaa60991b1633672fceb9a0deda3d8d4714c5f78580b59450793de/selected.jpg",
+          "sha256": "998e5d2128edee0dc8050958b7fab9403bc24e6e18d9cff0db2905272bfd83a4",
+          "provenance": {
+            "id": "pixabay:5996781",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/wheat-crop-field-barley-5996781/",
+            "author": "bubbiomarco",
+            "license": "Pixabay Content License",
+            "width": 853,
+            "height": 1280,
+            "description": "wheat, crop, field, barley, cereal grains, farm, plants, agriculture, countryside, rural, summer, nature, closeup"
+          }
+        },
+        {
+          "path": "/data/catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/6012663e9521704e3bf0195e5eca0f63dbc73363da20fa3672857487f481f7d7/selected.jpg",
+          "sha256": "30d9de0f02c2b65c457b574ebb107834c57e61bdc830354b20d856651a2db691",
+          "provenance": {
+            "id": "pixabay:4368596",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/grain-wheat-food-landscape-harvest-4368596/",
+            "author": "bmk1765",
+            "license": "Pixabay Content License",
+            "width": 960,
+            "height": 1280,
+            "description": "grain, wheat, food, landscape, harvest, fields, cornfield, flour mill, flour mill, flour mill, flour mill, flour mill, flour mill"
+          }
+        },
+        {
+          "path": "/data/catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/83f077ef02fbbccfd7de6bb779d7fb290cb59b79eebedd37be8d3e14e22d6132/selected.webp",
+          "sha256": "0b0a2913393a1b50b324246886723c8fdcef83e55fc0311f9383e9a5eb330027",
+          "provenance": {
+            "id": "pexels:39428228",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/rustic-breadmaking-ingredients-with-wheat-39428228/",
+            "author": "Jasole",
+            "license": "Pexels License",
+            "width": 975,
+            "height": 1300,
+            "description": "A rustic display of bread ingredients including wheat grains, flour, and fresh loaves on a wooden table."
+          }
+        },
+        {
+          "path": "/data/catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/8b98cd54b01d026b333007ee493ce89e99f5de788ca1444e32b5bd9964ebb4e4/selected.jpg",
+          "sha256": "b648ef70438de1156879e1e2aecffe175acd75ce6297306e31688471914098a8",
+          "provenance": {
+            "id": "pexels:40008273",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/rustic-bread-and-grains-display-at-natural-bakery-40008273/",
+            "author": "Jasole",
+            "license": "Pexels License",
+            "width": 975,
+            "height": 1300,
+            "description": "A rustic arrangement of wheat grains, flour, and freshly sliced bread on a wooden table."
+          }
+        },
+        {
+          "path": "/data/catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/eb7fe6d2bc385c2369ca8631386c921499bd60da747fc4e7ca7e4bd11720e259/selected.jpg",
+          "sha256": "8bf135a8fd7a3fd3b75d670a88ea556647d184333a66d42791c54be97936593e",
+          "provenance": {
+            "id": "pexels:8107991",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/white-flour-in-close-up-photography-8107991/",
+            "author": "MART  PRODUCTION",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Close-up image of white flour texture, showcasing its fine, powdery consistency."
+          }
+        },
+        {
+          "path": "/data/catalog/8a1cbe97-42db-4c73-b4f3-41beaba8f8ca/2e602cf267a2c05ba7cf86805187b55cc9866557373f4266565c646171a735d6/selected.webp",
+          "sha256": "87d99c5bf2bc1169086786a168ae545726112e09c6ae0c2401696e220d94d068",
+          "provenance": {
+            "id": "pexels:36976900",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/professional-baker-preparing-dough-in-jonkoping-kitchen-36976900/",
+            "author": "Efrem  Efre",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Baker pouring flour into dough mixer in Jönköping, Sweden bakery kitchen."
+          }
+        },
+        {
+          "path": "/data/catalog/0c66089e-4bb4-4ef8-b45d-78315c554bc8/165a9c1ddd8ce821f337848f4aae11c98b1f31ad8dd0f06ec1028ceae7e1745b/selected.webp",
+          "sha256": "db60b48f1a892a5f44572009ea1d3fb4b931eb71d57baf65b256530ed7805b09",
+          "provenance": {
+            "id": "pexels:13112162",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/close-up-of-a-dough-in-a-food-mixer-13112162/",
+            "author": "Angela Khebou",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "A high angle view of dough being mixed in a stand mixer bowl, ideal for baking projects."
+          }
+        },
+        {
+          "path": "/data/catalog/0c66089e-4bb4-4ef8-b45d-78315c554bc8/7a1ff04a195b62db3d7d82a4e4c4063b92fef479d461f0c706cbbfe397893fdc/selected.jpg",
+          "sha256": "2deeb64c07fb30d924b0cbb0cde0ca6f6ddb080c1647cf676c41d3d6669189e8",
+          "provenance": {
+            "id": "pixabay:5231908",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/kitchen-aid-mixer-kitchen-equipment-5231908/",
+            "author": "mylittlekitchen",
+            "license": "Pixabay Content License",
+            "width": 853,
+            "height": 1280,
+            "description": "kitchen aid, mixer, kitchen equipment, machine, baking, baking equipment, stand mixer, stand mixer, stand mixer, stand mixer, stand mixer, stand mixer"
+          }
+        },
+        {
+          "path": "/data/catalog/0c66089e-4bb4-4ef8-b45d-78315c554bc8/a0fa8c490937e151dadbcc50bfdb4478647fe6ade3a6efded4f9a04b0a363d1a/selected.jpg",
+          "sha256": "b713f76c492d95f353dce6a4e18a5fb044e32a09dd5a8bb04924c774ee40fb02",
+          "provenance": {
+            "id": "pexels:5964489",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/food-industry-workers-5964489/",
+            "author": "Anna Shvets",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "A food industry worker in a modern kitchen using an industrial mixer with protective gear."
+          }
+        },
+        {
+          "path": "/data/catalog/4f073015-9e94-4f73-a6df-daa29db93955/57efac21b090c40913ba0ef8aa0d9a276803d18af09d34fe122e9e55f0a801cf/selected.jpg",
+          "sha256": "96e104d78ba7780f50dbfbd45781345d1b6c57c16a29bdbbec4e7534d1d53ca4",
+          "provenance": {
+            "id": "pexels:33210358",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/professional-chef-preparing-dough-in-commercial-kitchen-33210358/",
+            "author": "damla selen demir",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "A chef prepares dough in a modern kitchen with baking tools and equipment."
+          }
+        },
+        {
+          "path": "/data/catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/5f67a4afb6c3f87bbd772d715f3fb6a561446c37e248b73078e538d5f6fd9208/selected.webp",
+          "sha256": "6d468adffb19c8e90b0e21366a086f830dc4dee2f9a4b4064f495b23b57a565f",
+          "provenance": {
+            "id": "pexels:6287300",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/chef-making-dough-for-cookies-in-bakery-6287300/",
+            "author": "Klaus Nielsen",
+            "license": "Pexels License",
+            "width": 886,
+            "height": 1300,
+            "description": "Unrecognizable woman kneading fresh and soft egg dough on table with flour in bakery"
+          }
+        },
+        {
+          "path": "/data/catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/720d2fa89aa0bbfc275f3da43f7850d2caf6fa2f45ef0717636c64a1957605f4/selected.webp",
+          "sha256": "29cc7b1e8e8e2ec2588e9d73120fdfefeef94c9993217320e78c74056d6e9106",
+          "provenance": {
+            "id": "pexels:8093358",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/making-the-dough-8093358/",
+            "author": "Mikhail Nilov",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Hands wearing gloves forming dough on a flour-dusted table."
+          }
+        },
+        {
+          "path": "/data/catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/380c05bafa15affd6245426bad4bb065b4cbefbfb0195410671e6217b44a4939/selected.webp",
+          "sha256": "b75d59b1daf2ae392bb7f2cd3eb66bb9c5bd3e0324ca08843f200e9f837c0ae0",
+          "provenance": {
+            "id": "pexels:18640827",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/flour-on-a-cake-pie-18640827/",
+            "author": "Pexels User",
+            "license": "Pexels License",
+            "width": 731,
+            "height": 1300,
+            "description": "Close-up image of raw dough on floured surface, ideal for baking and cooking themes."
+          }
+        },
+        {
+          "path": "/data/catalog/8262d9c1-e2d2-4b8a-b244-4bbd1e6d835d/0e5567374b813c2322e9f82eaa7b03d7730e02742a2bbcea86b1cb1f859a4f00/selected.webp",
+          "sha256": "01354df8ea472c79350ec84ed0d592abec4da2768470f8f7d4b194ebc53132de",
+          "provenance": {
+            "id": "pexels:39495542",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/rising-dough-in-bowl-for-baking-bread-39495542/",
+            "author": "Derya Nur 🕊️",
+            "license": "Pexels License",
+            "width": 975,
+            "height": 1300,
+            "description": "White dough rising in a bowl, perfect for homemade bread or pizza preparation."
+          }
+        },
+        {
+          "path": "/data/catalog/8a1cbe97-42db-4c73-b4f3-41beaba8f8ca/6eb80a408b6f7a5855d92b1da7c38efc42f2cf8c944d8bee9479618c83c25f6c/selected.jpg",
+          "sha256": "6e8bd71ff46e201aab750251ffc258cf79d17f56a4d5cdcbc011d91e347e9a3b",
+          "provenance": {
+            "id": "pexels:37171266",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/freshly-prepared-dough-balls-on-floured-surface-37171266/",
+            "author": "zeynep",
+            "license": "Pexels License",
+            "width": 975,
+            "height": 1300,
+            "description": "Overhead view of dough balls covered in flour, ready for baking, in a metal tray on a wooden surface."
+          }
+        },
+        {
+          "path": "/data/catalog/8a1cbe97-42db-4c73-b4f3-41beaba8f8ca/cf58119f0f27997b05b1b6135d100da5bea797bcbfd0e46a2f5a0ad72605e235/selected.webp",
+          "sha256": "597e76a45b5676ea2ce36db0ebdab4b39ede4d4f66dd43a2b185e47190e320b0",
+          "provenance": {
+            "id": "pexels:7965986",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/white-round-pastry-on-gray-tray-7965986/",
+            "author": "Felicity Tai",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Fresh dough balls on a baking tray, ready for baking. Soft focus image."
+          }
+        },
+        {
+          "path": "/data/catalog/0c66089e-4bb4-4ef8-b45d-78315c554bc8/2dc0ed1a39cc601a9897c0e31a7d95cb54cc052b4a9ffbc65c24c0e70523fcc6/selected.webp",
+          "sha256": "a1e40a75feac400b4c329c62b3ae484297ae176b766d734d63eafeb3e0ca6325",
+          "provenance": {
+            "id": "pexels:19987147",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/dough-in-tray-19987147/",
+            "author": "juliane Monari",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Freshly prepared dough rising on a tray, ready to be baked to perfection indoors."
+          }
+        },
+        {
+          "path": "/data/catalog/0c66089e-4bb4-4ef8-b45d-78315c554bc8/e926e4fe8615f031d5412bbde224a6c7253d5bbefe7a7bf89e24195765eccd9b/selected.webp",
+          "sha256": "429a7ccd224420c1ed27c3652fba2570702c1370042c13227f37e679ee429c21",
+          "provenance": {
+            "id": "pexels:37058262",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/freshly-prepared-rustic-artisan-bread-loaves-37058262/",
+            "author": "Carlyn Carmendya",
+            "license": "Pexels License",
+            "width": 732,
+            "height": 1300,
+            "description": "Delicious homemade artisan bread loaves dusted with flour, ready for baking."
+          }
+        },
+        {
+          "path": "/data/catalog/8a1cbe97-42db-4c73-b4f3-41beaba8f8ca/854dbcd2f1f955216b8a9aed49683136867ecae81380a58d3bb8008aca85bae5/selected.jpg",
+          "sha256": "cb7eb0bbadf93da6841529ad08a02628a4e3df1e1fc801d0b8122bf8780e0773",
+          "provenance": {
+            "id": "pexels:6291407",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/dough-on-metal-tray-6291407/",
+            "author": "Anna Shvets",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Industrial bakery scene with dough preparation and multi-shelf oven heating."
+          }
+        },
+        {
+          "path": "/data/catalog/0c66089e-4bb4-4ef8-b45d-78315c554bc8/a1cc4b705b3aead0ab9b0c8574679370edc50a7fa56bdc507d1ee681a1d6ed69/selected.webp",
+          "sha256": "87a381fd38b4cf461dec720c75b7f36e33dc47fb3f6d51e8d8edffec889d64bb",
+          "provenance": {
+            "id": "pexels:30926706",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/freshly-baked-bread-on-cooling-racks-30926706/",
+            "author": "Şüheda Yassıkaya",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Golden brown loaves of bread cooling on metal racks in a bakery setting."
+          }
+        },
+        {
+          "path": "/data/catalog/8a1cbe97-42db-4c73-b4f3-41beaba8f8ca/94db9f9c6c4c37fea5231886b12bd103a397a18a987dbd830c80bbc825e56519/selected.jpg",
+          "sha256": "236c48ea6c16b8b7d872cfabb6175a65a95b256c8949a93bd58ae9fde5d1ac25",
+          "provenance": {
+            "id": "pexels:36169353",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/freshly-baked-artisan-bread-loaves-36169353/",
+            "author": "Ervasa",
+            "license": "Pexels License",
+            "width": 975,
+            "height": 1300,
+            "description": "Delicious artisan bread loaves stacked on shelves in a bakery, showcasing crusty textures."
+          }
+        },
+        {
+          "path": "/data/catalog/4f073015-9e94-4f73-a6df-daa29db93955/165ce6ab27e3036a50abaf4a5b466b213aef1a4c32f20720cc9e0555fdb85df5/selected.jpg",
+          "sha256": "c14806e94f00bcf20ad94469a7cd4f9d5a2bd142d1742807217cafac39d3784f",
+          "provenance": {
+            "id": "pexels:8599585",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/close-up-of-freshly-baked-bread-8599585/",
+            "author": "Polina Tankilevitch",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "A close-up view of freshly sliced homemade bread loaf on a white background."
+          }
+        },
+        {
+          "path": "/data/catalog/8a1cbe97-42db-4c73-b4f3-41beaba8f8ca/4ac708cab2641a026beb76820d0d6b23322d737046f6a452d0aa1ff3dfb43342/selected.webp",
+          "sha256": "f1ac0cc1248ab4340f1d3f6e9c2e6e20c42ee6722ac6cf974c9882d5ded40ceb",
+          "provenance": {
+            "id": "pexels:9673514",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/close-up-photo-of-breads-in-clear-plastic-pack-9673514/",
+            "author": "AMANDA LIM",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Close-up of freshly baked bread rolls with sesame seeds in a plastic package, highlighting texture and freshness."
+          }
+        }
+      ],
+      "case": "bread",
+      "artifact_id": "52a842fc-c65e-464c-b2db-639c39cfdb70",
+      "mode": "manual_cached_assembly",
+      "automatic_product": false,
+      "source_voice_job": "a334c899-1cad-41d5-9ac5-c5a17352003c",
+      "source_audio_unchanged": true,
+      "original_photos_unchanged": true,
+      "new_search_calls": 0,
+      "new_model_calls": 0,
+      "selection": "operator inspected original photographs; unrelated candidates excluded",
+      "extra_water_download_catalog": null,
+      "pre_normalization_video_sha256": "8537c453bef7df5f95fd166329f59e7ad5b7028670192fc532a257ba1010261a",
+      "pre_normalization_duration_ms": 45010,
+      "packet_timestamps": "frame index at constant30fps",
+      "fitted_audio_correlation": 0.999975991633632,
+      "sample_difference": 213,
+      "output": "/data/whole-photo-previews/52a842fc-c65e-464c-b2db-639c39cfdb70/final-exact.mp4",
+      "production_job_pass": false,
+      "human_pass": false,
+      "audio_listening_claim": false,
+      "delivered_file": "/Users/hodor/Documents/Codex/2026-10-05/new-chat/outputs/bread-ru-45s-whole.mp4",
+      "representative_frames_inspected": true,
+      "automatic_phrase_alignment": false
+    },
+    {
+      "format": "1080x1920 H264 yuv420p 30fps AAC",
+      "requested_seconds": 60,
+      "actual_duration_ms": 60000,
+      "frame_count": 1800,
+      "shot_count": 29,
+      "unique_photo_count": 29,
+      "framing": "whole photograph, aspect preserved, solid matte, no crop or blur",
+      "source_audio_sha256": "12e3ebded71533f96457f56cddd7209972966159592ac8ef7bca373172a969b1",
+      "source_audio_duration_ms": 73416,
+      "audio_tempo_factor": 1.2236,
+      "fitted_audio_sha256": "befe57a9369fbf070875a10f5f08485820247a9986164a35f247e7cced3aa814",
+      "audio_policy": "pitch-preserving tempo fit, original unchanged",
+      "new_tts_calls": 0,
+      "full_decode_pass": true,
+      "video_sha256": "8124de3285d551f674fbd6c124adc72b5c0a83d2de8bb4d4cc8cca97e11c04a0",
+      "timeline": [
+        {
+          "start_frame": 0,
+          "end_frame": 62
+        },
+        {
+          "start_frame": 62,
+          "end_frame": 124
+        },
+        {
+          "start_frame": 124,
+          "end_frame": 186
+        },
+        {
+          "start_frame": 186,
+          "end_frame": 248
+        },
+        {
+          "start_frame": 248,
+          "end_frame": 310
+        },
+        {
+          "start_frame": 310,
+          "end_frame": 372
+        },
+        {
+          "start_frame": 372,
+          "end_frame": 434
+        },
+        {
+          "start_frame": 434,
+          "end_frame": 496
+        },
+        {
+          "start_frame": 496,
+          "end_frame": 558
+        },
+        {
+          "start_frame": 558,
+          "end_frame": 620
+        },
+        {
+          "start_frame": 620,
+          "end_frame": 682
+        },
+        {
+          "start_frame": 682,
+          "end_frame": 744
+        },
+        {
+          "start_frame": 744,
+          "end_frame": 806
+        },
+        {
+          "start_frame": 806,
+          "end_frame": 868
+        },
+        {
+          "start_frame": 868,
+          "end_frame": 931
+        },
+        {
+          "start_frame": 931,
+          "end_frame": 993
+        },
+        {
+          "start_frame": 993,
+          "end_frame": 1055
+        },
+        {
+          "start_frame": 1055,
+          "end_frame": 1117
+        },
+        {
+          "start_frame": 1117,
+          "end_frame": 1179
+        },
+        {
+          "start_frame": 1179,
+          "end_frame": 1241
+        },
+        {
+          "start_frame": 1241,
+          "end_frame": 1303
+        },
+        {
+          "start_frame": 1303,
+          "end_frame": 1365
+        },
+        {
+          "start_frame": 1365,
+          "end_frame": 1427
+        },
+        {
+          "start_frame": 1427,
+          "end_frame": 1489
+        },
+        {
+          "start_frame": 1489,
+          "end_frame": 1551
+        },
+        {
+          "start_frame": 1551,
+          "end_frame": 1613
+        },
+        {
+          "start_frame": 1613,
+          "end_frame": 1675
+        },
+        {
+          "start_frame": 1675,
+          "end_frame": 1737
+        },
+        {
+          "start_frame": 1737,
+          "end_frame": 1800
+        }
+      ],
+      "photos": [
+        {
+          "path": "/data/catalog/d86aa4ab-834c-48cb-a147-df2ff8b0481c/d17f0fae68b9f6d14e9f3e6e6c34db5fcddc17013293ff606c076c5939e4370e/selected.jpg",
+          "sha256": "a051d882d4d4d2a0464446454b9dba7026b325e1891d7367eaf23c52d84021f8",
+          "provenance": {
+            "id": "pexels:36156753",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/sunlit-waves-on-bosphorus-strait-in-istanbul-36156753/",
+            "author": "Efe Kuyu",
+            "license": "Pexels License",
+            "width": 731,
+            "height": 1300,
+            "description": "Serene scene of sunlight reflecting on the Bosphorus Strait with rocky shoreline in Istanbul."
+          }
+        },
+        {
+          "path": "/data/catalog/c78c3a52-3ebc-4900-b429-024c8bd21e7a/1ed9b5e5e7d393da4c4895d729181c664464cf72d6e2cac339bbb97ed03e881d/selected.webp",
+          "sha256": "f6db299ab8be83cf3f5917d8f09b8fc3c554c90d6510edb39b0a85af12ea809a",
+          "provenance": {
+            "id": "pexels:18092502",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/lake-at-sunrise-18092502/",
+            "author": "Ahmed ؜",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Captivating sunrise over a tranquil lake reflecting surrounding mountains, perfect for nature lovers."
+          }
+        },
+        {
+          "path": "/data/catalog/d86aa4ab-834c-48cb-a147-df2ff8b0481c/beb1335bb8f6d06885ecde9af73bc09344f7f00ac5a766fa6ebabbffbee18c9b/selected.webp",
+          "sha256": "54fbaf478247da48efc7b29dcc332451030e43a84de311f7b97bf8ccccb8ffa2",
+          "provenance": {
+            "id": "pexels:27041408",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/noon-sunlit-shining-on-sea-27041408/",
+            "author": "Laura Paredis",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Capture the tranquility of a vast ocean under clear sunny skies with glistening water."
+          }
+        },
+        {
+          "path": "/data/catalog/c78c3a52-3ebc-4900-b429-024c8bd21e7a/c77e1dff306acdee0df933ff0f53e79ee701acb21962f8133ca53f17120efae4/selected.jpg",
+          "sha256": "1c7450e95163d30aad5a86ebbf80b142b781b4432c39bc31c6fe9a77e48475e5",
+          "provenance": {
+            "id": "pexels:14201123",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/sunlight-over-the-mountain-near-body-of-water-14201123/",
+            "author": "Valter Zhara",
+            "license": "Pexels License",
+            "width": 1012,
+            "height": 1300,
+            "description": "Serene sunrise over mist-covered lake and mountains in Albania, capturing nature's tranquil beauty."
+          }
+        },
+        {
+          "path": "/data/catalog/e34f5fd9-c9da-4352-9da3-f9e9c7d60ef0/f55931635218a1e3c4030eabd0def6156f6a638a5e9ddb66d8e79a5d5db1e835/selected.webp",
+          "sha256": "14e25205239cdafa319bfbe92f8ab411f95057abaf7bfbab3436ca07d63ffddf",
+          "provenance": {
+            "id": "pexels:27726374",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/an-early-sunrise-in-a-bog-lake-27726374/",
+            "author": "Raul Ling",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Peaceful sunrise casting light over a misty lake with tree reflections, creating a tranquil landscape."
+          }
+        },
+        {
+          "path": "/data/catalog/e34f5fd9-c9da-4352-9da3-f9e9c7d60ef0/b67a34dcd57ad7cf86800dde30c6aed2d1bac548b06da57b060a7b3fa3a97619/selected.webp",
+          "sha256": "43646f6cae032dba20e414f2765b64552ae9052eb91b9a656842adbb6ac19e29",
+          "provenance": {
+            "id": "pexels:40050203",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/golden-sunlight-reflecting-on-rippling-water-40050203/",
+            "author": "Tuấn Vũ",
+            "license": "Pexels License",
+            "width": 975,
+            "height": 1300,
+            "description": "Captivating golden sunlight reflection on rippling water surface."
+          }
+        },
+        {
+          "path": "/data/catalog/c78c3a52-3ebc-4900-b429-024c8bd21e7a/eaa353b9a26eaf5f7170cbd3633de5ab4ca9c9a8b0c310021c0174f966c8b98c/selected.jpg",
+          "sha256": "cb0852ff05c18e3e81a5286de5b0286d6d46cf1c050e49a2bed98aa7e92d7fd1",
+          "provenance": {
+            "id": "pexels:33175915",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/dramatic-dark-clouds-at-sunset-33175915/",
+            "author": "Vladimir  Gladkov",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "A dramatic display of dark clouds during sunset, creating a moody sky scene."
+          }
+        },
+        {
+          "path": "/data/catalog/c78c3a52-3ebc-4900-b429-024c8bd21e7a/8afed4efa253f2690db543563affd2f4e75f67e28091b00316c2895c9e252d9e/selected.jpg",
+          "sha256": "71c112a0d525b0440179e7f9d6203a59041068cf4dc7071d839dea8c61f19c0c",
+          "provenance": {
+            "id": "pexels:12390553",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/clouds-on-the-sky-12390553/",
+            "author": "Onur Kara",
+            "license": "Pexels License",
+            "width": 975,
+            "height": 1300,
+            "description": "A captivating view of dark storm clouds in the sky, creating a dramatic and moody atmosphere."
+          }
+        },
+        {
+          "path": "/data/catalog/d86aa4ab-834c-48cb-a147-df2ff8b0481c/9c7c0ef9de3e16aee7c5746e976e0562cefcebe3724c76f6e552f5bafee1b996/selected.webp",
+          "sha256": "b33f9da397c1db4cb4b2e7a756144a56e754641ab3698e672ee04ab5731e8aa3",
+          "provenance": {
+            "id": "pexels:10731824",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/heavy-storm-clouds-10731824/",
+            "author": "Mrt Ziolko",
+            "license": "Pexels License",
+            "width": 975,
+            "height": 1300,
+            "description": "A powerful display of storm clouds forming a dramatic overcast sky, showcasing nature's intensity."
+          }
+        },
+        {
+          "path": "/data/catalog/e34f5fd9-c9da-4352-9da3-f9e9c7d60ef0/d57057421a943d3a4390a90fdd6c82304ed6b9bfb7e9944b86791036d9b6e45b/selected.jpg",
+          "sha256": "361ba0ddfff9228c513f6e5c82300f0d562bae861cab12491d511dc994245376",
+          "provenance": {
+            "id": "pexels:3941855",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/cloudy-sky-3941855/",
+            "author": "Ale Conchillos",
+            "license": "Pexels License",
+            "width": 974,
+            "height": 1300,
+            "description": "Stunning photograph of dramatic dark clouds forming an overcast sky, creating a moody atmosphere."
+          }
+        },
+        {
+          "path": "/data/catalog/d86aa4ab-834c-48cb-a147-df2ff8b0481c/d44b983874fc6460854da9ec216d37c3c5d2ca12c51a37a93eb70a5879e4fa26/selected.jpg",
+          "sha256": "8948551e1901a08d566368c027f4830c7bf29780bd5f5b95da068e820500e67e",
+          "provenance": {
+            "id": "pixabay:8082435",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/storm-clouds-thunder-hail-storm-8082435/",
+            "author": "Mollyroselee",
+            "license": "Pixabay Content License",
+            "width": 1109,
+            "height": 1280,
+            "description": "storm clouds, thunder, hail storm, dark clouds, dangerous, nature, weather, atmosphere, rain, cumulus clouds"
+          }
+        },
+        {
+          "path": "/data/catalog/c78c3a52-3ebc-4900-b429-024c8bd21e7a/35c9d4b00b904a4bf6fe1d74056a621c487f2bd120aa185a95f37b767a3bd3cb/selected.jpg",
+          "sha256": "85b9b1c7d5f5a9ca27c861415a7ce36fd0b3dfc020d7fb5407783dcdcbe27f68",
+          "provenance": {
+            "id": "pixabay:4702140",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/lightning-rain-storm-thunderstorm-4702140/",
+            "author": "anurajsl",
+            "license": "Pixabay Content License",
+            "width": 1024,
+            "height": 1280,
+            "description": "lightning, rain, storm, thunderstorm, weather, night sky, thunder, sky, nature, electricity, dark, power, tornado, energy, landscape, night, danger, strike, flash, cloud, destruction, dramatic, light, blue, bolt, blue nature, blue sky, blue rain, blue landscape, blue light, blue clouds, blue night, blue energy, blue dark, blue storm, blue natural, blue power, blue lights, blue lightning"
+          }
+        },
+        {
+          "path": "/data/catalog/d86aa4ab-834c-48cb-a147-df2ff8b0481c/b5d08dd193460d20b19248008f8a2e85095ae4e3ef784abd2073373976d6cb25/selected.webp",
+          "sha256": "fe9bad355daef4ac9c87ba4d35cfa0013355a7e165e61b7d7830ca1511b6e620",
+          "provenance": {
+            "id": "pexels:38291640",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/dramatic-rainfall-over-the-sea-in-vietnam-38291640/",
+            "author": "Tuấn Vũ",
+            "license": "Pexels License",
+            "width": 975,
+            "height": 1300,
+            "description": "A striking view of rainfall over the ocean, showcasing dramatic clouds and serene waters in Quảng Trị, Vietnam."
+          }
+        },
+        {
+          "path": "/data/catalog/e34f5fd9-c9da-4352-9da3-f9e9c7d60ef0/6225108360b2e72c312419b32204a8124ce7c7738696dc69bb1f062005586bf5/selected.jpg",
+          "sha256": "38047dfce602bc488d9c92916e621519d0859fd1442f58f762c1220d1ad8b861",
+          "provenance": {
+            "id": "pexels:38157274",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/dramatic-rainfall-over-vibrant-farmland-38157274/",
+            "author": "Murat Aslan",
+            "license": "Pexels License",
+            "width": 976,
+            "height": 1300,
+            "description": "Dramatic rainfall captured over lush farmland with dark, looming clouds, highlighting weather contrasts."
+          }
+        },
+        {
+          "path": "/data/catalog/c78c3a52-3ebc-4900-b429-024c8bd21e7a/e3024f948b51ecd074614b3268961dd69ab69e401f54fa58d2be690430303467/selected.webp",
+          "sha256": "ffd2ef058615f0bbfc803221d80f59a371a0f7d08d98a328af6a6cb3c2fab7d1",
+          "provenance": {
+            "id": "pexels:39734072",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/close-up-of-water-droplets-on-leaf-surface-39734072/",
+            "author": "SHOBIN SEBASTIAN",
+            "license": "Pexels License",
+            "width": 1040,
+            "height": 1300,
+            "description": "Detailed macro shot of water droplets on a green leaf in Alappuzha, India."
+          }
+        },
+        {
+          "path": "/data/catalog/c78c3a52-3ebc-4900-b429-024c8bd21e7a/5a6951e098914d76c563d9f29c16745db80fcddecab900dca3a59748a26a5ea3/selected.jpg",
+          "sha256": "34af65802cd6ff29a01b1ddca3eb7c909a4de93a46a201823591c8db08dd027b",
+          "provenance": {
+            "id": "pixabay:6318497",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/plant-leaves-foliage-drop-of-water-6318497/",
+            "author": "gamagapix",
+            "license": "Pixabay Content License",
+            "width": 853,
+            "height": 1280,
+            "description": "plant, beautiful flowers, leaves, foliage, flower wallpaper, drop of water, dew, flower, green, environment, flower background, nature"
+          }
+        },
+        {
+          "path": "/data/catalog/c78c3a52-3ebc-4900-b429-024c8bd21e7a/caf413ea074efe9ab560aa7e6e1e7c034019f80c8079cd8fb6c1e98ffe58ab3c/selected.webp",
+          "sha256": "943565c3056f8f4e27841dba139d2b833f37fb66f92e7f53c0d99e23350c828a",
+          "provenance": {
+            "id": "pexels:7774053",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/green-leaf-with-drops-of-dew-7774053/",
+            "author": "Alexey Demidov",
+            "license": "Pexels License",
+            "width": 480,
+            "height": 1300,
+            "description": "Closeup of narrow fragment of green leaf blade with dew drops in soft focus"
+          }
+        },
+        {
+          "path": "/data/catalog/c78c3a52-3ebc-4900-b429-024c8bd21e7a/d41c137dc3c7fbf57191a8815f366132b619f1ad51d3b85ac73640eb69166999/selected.jpg",
+          "sha256": "40751322442bb0dda1c7c537ec0a3810a5618393d4593ddc8bbfc855321907bb",
+          "provenance": {
+            "id": "pixabay:10415416",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/leaf-water-droplets-green-nature-10415416/",
+            "author": "Alexas_Fotos",
+            "license": "Pixabay Content License",
+            "width": 853,
+            "height": 1280,
+            "description": "leaf, water, droplets, green, nature, macro, details, outdoor, fresh, rainy, freshness, ecology, health, organic, forest, rain, green color, drop, wet"
+          }
+        },
+        {
+          "path": "/data/catalog/e34f5fd9-c9da-4352-9da3-f9e9c7d60ef0/30067560c99706e7d8b970d55332f96ebbe23bf352f6c29a45735225de9a88ee/selected.webp",
+          "sha256": "58ac290557dec33b8c104c20e5583349a1ed751ec59f3a163070eecb9835dc67",
+          "provenance": {
+            "id": "pexels:12851509",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/a-close-up-shot-of-water-droplets-on-a-leaf-12851509/",
+            "author": "Narottama",
+            "license": "Pexels License",
+            "width": 731,
+            "height": 1300,
+            "description": "Detailed close-up photo of a green leaf covered in fresh water droplets, showcasing nature's purity."
+          }
+        },
+        {
+          "path": "/data/catalog/e34f5fd9-c9da-4352-9da3-f9e9c7d60ef0/ac7e6929fa95555e91730c54c3192b23a09a87262068f7e2f0f536befb37409b/selected.webp",
+          "sha256": "85a0871736dd6fd6e9fe5f35df0e135bc70f642330c3f437faff1ac28cd8ef74",
+          "provenance": {
+            "id": "pexels:12226899",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/water-droplets-on-green-leaf-12226899/",
+            "author": "White Noiise",
+            "license": "Pexels License",
+            "width": 731,
+            "height": 1300,
+            "description": "Macro view of dewdrops on grass leaves, creating a fresh and natural composition."
+          }
+        },
+        {
+          "path": "/data/catalog/c78c3a52-3ebc-4900-b429-024c8bd21e7a/fc8070ea710dd790e224d8a21b526667386b06889591e6f951a5abcd64b17c1a/selected.jpg",
+          "sha256": "97b563ad3e36ec39bb02a77fb898a19cd46c21aeeae431337b59c5d0e3502306",
+          "provenance": {
+            "id": "pixabay:2450197",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/forest-trees-green-bright-sunset-2450197/",
+            "author": "Longlake",
+            "license": "Pixabay Content License",
+            "width": 839,
+            "height": 1280,
+            "description": "forest, trees, green, bright, sunset, ray, landscape, nature, mountain, sun bright paradise"
+          }
+        },
+        {
+          "path": "/data/catalog/c78c3a52-3ebc-4900-b429-024c8bd21e7a/14c66a884af5f94b017cb9fa9ca1e9e607a0528d62f7f777fa41f659c9ca37ea/selected.jpg",
+          "sha256": "20140ad8231315bd960ee0a4a7046392a14bfe205f5590ce9b9bf09df019cccc",
+          "provenance": {
+            "id": "pixabay:10359152",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/lake-swan-mountains-winter-nature-10359152/",
+            "author": "ahmetyuksek",
+            "license": "Pixabay Content License",
+            "width": 854,
+            "height": 1280,
+            "description": "lake, swan, mountains, winter, nature, reflections, calm, snowy, morning, peaceful, water, mirroring, adjacent, scenery, tranquility, cozy, clear, comfort, atmosphere, mirror"
+          }
+        },
+        {
+          "path": "/data/catalog/d86aa4ab-834c-48cb-a147-df2ff8b0481c/5a95650e1c953ef8d7a97367e6cddb1ae258cd02ee04526ddee8584c39102dc6/selected.jpg",
+          "sha256": "67589ae3337c504e79fdafaa1884332f15152812bc9d3413c1ad78f665ead47f",
+          "provenance": {
+            "id": "pexels:39837956",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/majestic-gorge-with-waterfall-landscape-39837956/",
+            "author": "虎 曼",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Serene waterfall flowing through a lush, narrow gorge. Perfect nature landscape for travel enthusiasts."
+          }
+        },
+        {
+          "path": "/data/catalog/d86aa4ab-834c-48cb-a147-df2ff8b0481c/0d99df18d7ddf05579ad07b132e509aca387cfb6c73ad92acb3a72208adff492/selected.jpg",
+          "sha256": "390a4c88eafcd536bf8eaf1596dbf350c91f70761ad01a1e46ce7425e46609dc",
+          "provenance": {
+            "id": "pixabay:5816353",
+            "provider": "pixabay",
+            "source_url": "https://pixabay.com/photos/iceland-river-cliffs-water-5816353/",
+            "author": "AKB_BE",
+            "license": "Pixabay Content License",
+            "width": 960,
+            "height": 1280,
+            "description": "iceland, river, cliffs, water, flowing water, mountains, landscape, travel, nature, outdoors, scenic, mountain landscape, iceland, iceland, iceland, iceland, iceland, landscape, landscape, travel, nature, nature"
+          }
+        },
+        {
+          "path": "/data/catalog/d86aa4ab-834c-48cb-a147-df2ff8b0481c/feb0c6555436f4ff9b9351aff38ca4ad10777f216231229695f989f0e1fc56d4/selected.webp",
+          "sha256": "dcd32966e97a7521db869938baccfb3358a7c1e718dc97237f56b2ac1f85932d",
+          "provenance": {
+            "id": "pexels:37237941",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/aerial-view-of-scenic-landscape-with-rivers-37237941/",
+            "author": "Veronika Benz",
+            "license": "Pexels License",
+            "width": 731,
+            "height": 1300,
+            "description": "Stunning aerial shot of a lush green landscape with winding rivers and dramatic skies."
+          }
+        },
+        {
+          "path": "/data/catalog/e34f5fd9-c9da-4352-9da3-f9e9c7d60ef0/5b42c25fe975009e53ede05ddecabba3b920841f759a1fb10c08542a4f236d35/selected.webp",
+          "sha256": "8ab0b924be7e7ecef2e8a4d2e8266dad27d54baff429465f3e622805743dc901",
+          "provenance": {
+            "id": "pexels:4992942",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/leafless-trees-on-grassy-embankment-of-river-4992942/",
+            "author": "Rachel Claire",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Trees growing near calm river near mountains under cloudless sunny sky in bright light"
+          }
+        },
+        {
+          "path": "/data/catalog/e34f5fd9-c9da-4352-9da3-f9e9c7d60ef0/7e3504d596c3c20d51fffbabb42d475f9a4ad4db9370fa70f1fa00a7cbf309c8/selected.jpg",
+          "sha256": "463de502ec0d050a28544283fa6ffda05e973804e9163f4d0c575c0a610ba1c6",
+          "provenance": {
+            "id": "pexels:39837957",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/dramatic-canyon-landscape-with-river-and-bridge-39837957/",
+            "author": "虎 曼",
+            "license": "Pexels License",
+            "width": 867,
+            "height": 1300,
+            "description": "Stunning view of a canyon with a flowing river and a high bridge under a clear sky."
+          }
+        },
+        {
+          "path": "/data/catalog/e34f5fd9-c9da-4352-9da3-f9e9c7d60ef0/0ba8e29c4c3392c39523e112dbf2b0c76ebaed68a8f96684153e724cbf919230/selected.webp",
+          "sha256": "19209b16787f165b056005852bf2e19d5d986bd1ea360d61ecf33d20a6909c37",
+          "provenance": {
+            "id": "pexels:37623104",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/serene-stream-in-mountain-landscape-of-turkey-37623104/",
+            "author": "Meral Oral",
+            "license": "Pexels License",
+            "width": 975,
+            "height": 1300,
+            "description": "Peaceful stream winds through lush green hills under overcast skies in Turkish highland."
+          }
+        },
+        {
+          "path": "/data/catalog/e34f5fd9-c9da-4352-9da3-f9e9c7d60ef0/08673d6998d93b3b19c5c78b7821a0a2c5e438963986eb8fd92ff2aa31f97a07/selected.webp",
+          "sha256": "5539723fbdf5264dd79832d40b091e68b4c187bdaabcbf58d34d9f4b2b9df256",
+          "provenance": {
+            "id": "pexels:38374154",
+            "provider": "pexels",
+            "source_url": "https://www.pexels.com/photo/aerial-view-of-forested-river-gorge-38374154/",
+            "author": "Rabia",
+            "license": "Pexels License",
+            "width": 870,
+            "height": 1300,
+            "description": "Aerial shot of a river cutting through a lush green forest, creating a captivating natural landscape."
+          }
+        }
+      ],
+      "case": "water",
+      "artifact_id": "bf3b9211-6ad8-4785-aa0f-887c4e0491ec",
+      "mode": "manual_cached_assembly",
+      "automatic_product": false,
+      "source_voice_job": "ed07f910-f736-40d5-b50c-ae03af198a19",
+      "source_audio_unchanged": true,
+      "original_photos_unchanged": true,
+      "new_search_calls": 0,
+      "new_model_calls": 0,
+      "selection": "operator inspected original photographs; unrelated candidates excluded",
+      "extra_water_download_catalog": "e34f5fd9-c9da-4352-9da3-f9e9c7d60ef0",
+      "pre_normalization_video_sha256": "a7c2b60f762386bb459b8bf7f1ec21e207d0ac0f36fb798c7cd6d9c89b3906f4",
+      "pre_normalization_duration_ms": 60009,
+      "packet_timestamps": "frame index at constant30fps",
+      "fitted_audio_correlation": 0.9999831695690821,
+      "sample_difference": 171,
+      "output": "/data/whole-photo-previews/bf3b9211-6ad8-4785-aa0f-887c4e0491ec/final-exact.mp4",
+      "production_job_pass": false,
+      "human_pass": false,
+      "audio_listening_claim": false,
+      "delivered_file": "/Users/hodor/Documents/Codex/2026-10-05/new-chat/outputs/water-uk-60s-whole.mp4",
+      "representative_frames_inspected": true,
+      "automatic_phrase_alignment": false
+    }
+  ],
+  "limitations": [
+    "Visual cuts are independent of narration; no ASR phrase alignment claim.",
+    "Pitch-preserving speed fitting is intentional; no listening/HUMAN acceptance claim.",
+    "Automatic production discovery/freeze/worker/QA integration remains pending."
+  ],
+  "timestamp_correction": "Initial concat had9–10ms of cumulative rounding; copy-only setts normalized every packet to integer30fps frame index. Original artifacts preserved."
+}

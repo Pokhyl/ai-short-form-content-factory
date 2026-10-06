@@ -1,3 +1,7 @@
+## Latest state — 2026-10-06
+
+Project_ready=false. Live app revisioncab79d3. New exact-duration/whole-photo renderer is implemented and verified against30/45/60s cached previews with15/23/29 distinct photos;41 replacement+84 legacy tests pass. Automatic-product integration and deployment remain pending. Current authoritative evidence: acceptance/factory-v3/whole-photo-previews-20261006.json and top CODEX_HANDOFF. Older release states below are historical.
+
 # Factory V3 release state — 2026-10-05
 
 Project_ready=false. The new core and owner interface are deployed and health/parity verified, not production accepted. Current image factory-v3:2a6d997 / sha256:c509487e0a156a457ee0bb3ef1ee1372edd47609b3d5bd01fca22ff5066a9c51, packaged78/78 PASS; native gateway quota-project correction and isolated n8n2.37.10 import/export PASS. Both metadata APIs enabled; live billingInfo200 explicitly confirms billingEnabled=false. See top CURRENT_STATE for exact next steps.
