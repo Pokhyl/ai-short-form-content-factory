@@ -1,0 +1,22 @@
+{
+  "id": "43e2b4cd-fddf-4b68-acf4-57cbcc720af2",
+  "case": "Neutron star UK60 Gemini Vision",
+  "live_result": "failed",
+  "error_code": "ModelSchemaError",
+  "cause": "95 words returned twice versus strict96 minimum; original last paragraph end91 omitted4 trailing words",
+  "download_calls": 40,
+  "gemini_calls": 13,
+  "tts_calls": 0,
+  "mp4_created": false,
+  "original_user_failure_unchanged": "e4e64b34-fd5a-461b-83a8-a04b4d87f9ee",
+  "current_correction": "efe7580604acabc4e692ee91d83614ee7bb4a11b",
+  "offline_saved_replay": {
+    "inspected_photos": 32,
+    "canonical_words": 95,
+    "last_completed_boundary": "composition and full required fact coverage",
+    "next_missing_saved_call": "script-review",
+    "new_model_calls": 0,
+    "database_writes": 0
+  },
+  "project_ready": false
+}
