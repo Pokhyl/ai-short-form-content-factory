@@ -46,8 +46,14 @@ async function show(id) {
   if (selected !== id) return;
   detail = response;
   $("result").hidden = false; $("result-title").textContent = detail.request.topic;
-  $("status").textContent = (labels[detail.status] || detail.status) + " · " + (detail.request.visual_validation_mode === "metadata" ? "Стандартный режим" : "Gemini Vision") + (detail.error_code ? " · " + detail.error_code : "") + (detail.photo_count ? " · " + detail.photo_count + " фото" : "") + (detail.actual_duration_ms ? " · " + (detail.actual_duration_ms / 1000) + " с" : "");
-  $("script").textContent = detail.script || "Текст появится после проверки фактов и фотографий.";
+  $("status").textContent = (labels[detail.status] || detail.status) + " · " + (detail.request.visual_validation_mode === "metadata" ? "Стандартный режим" : "Gemini Vision") + (detail.photo_count ? " · " + detail.photo_count + " фото" : "") + (detail.actual_duration_ms ? " · " + (detail.actual_duration_ms / 1000) + " с" : "");
+  const stopped = ["failed", "unknown"].includes(detail.status);
+  const emptyFailure = stopped && !detail.script && !(detail.scenes || []).length;
+  $("result-content").hidden = emptyFailure;
+  $("failure-notice").hidden = !stopped;
+  const reasons = {ModelSchemaError:"Не удалось подготовить текст в нужном формате.", MaterialUnavailable:"Не удалось завершить подготовку материалов."};
+  $("failure-notice").textContent = stopped ? (detail.status === "unknown" ? "Ответ внешнего сервиса не подтверждён. Автоматический повтор заблокирован." : (reasons[detail.error_code] || "Создание видео завершилось с ошибкой.")) + " Готового MP4 нет. Это сохранённый результат задания; обновление страницы и исправления сервиса его не изменяют." : "";
+  $("script").textContent = detail.script || (stopped ? "Текст не подготовлен." : "Текст появится после проверки фактов и фотографий.");
   const ready = detail.machine_pass === true;
   $("delete-video").disabled = !["qa_pass", "failed", "unknown"].includes(detail.status);
   $("delete-video").title = $("delete-video").disabled ? "Дождитесь завершения создания видео" : "Удалить видео и связанные файлы с сервера";
@@ -59,7 +65,7 @@ async function show(id) {
     $("download").href = url + "?download=1"; $("download").download = "video-" + id + ".mp4";
   } else { $("video").removeAttribute("src"); $("video").load(); }
   $("decision").textContent = detail.review ? (detail.review.decision === "accepted" ? "Вы приняли это видео." : "Вы отклонили это видео.") + (detail.review.comment ? " " + detail.review.comment : "") : (ready ? "Ожидает вашего просмотра и решения." : "");
-  $("identity").textContent = "ID: " + id + " · версия: " + detail.source_revision + (detail.video_sha256 ? " · SHA-256: " + detail.video_sha256 : "");
+  $("identity").textContent = "ID: " + id + " · версия: " + detail.source_revision + (detail.error_code ? " · ошибка: " + detail.error_code : "") + (detail.video_sha256 ? " · SHA-256: " + detail.video_sha256 : "");
   $("scenes").replaceChildren();
   for (const scene of detail.scenes || []) {
     const item = document.createElement("div"); item.className = "scene";

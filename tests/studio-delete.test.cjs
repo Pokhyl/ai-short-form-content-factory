@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const source = fs.readFileSync(path.join(__dirname, '../factory_v3/web/app.js'), 'utf8');
 const id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
-async function fixture({confirm = true, reject = false} = {}) {
+async function fixture({confirm = true, reject = false, detail = {}} = {}) {
   const elements = new Map(), storage = new Map();
   function element() { return {children: [], dataset: {}, hidden: false, disabled: false,
     append(...items) {this.children.push(...items);}, replaceChildren(...items) {this.children = items;},
@@ -25,7 +25,7 @@ async function fixture({confirm = true, reject = false} = {}) {
       if (url.endsWith('/delete')) {if (reject) {status = 409; body = {error: 'deletion_refused'};} else {deleted = true; body = {state: 'deleted'};}}
       else if (url.endsWith('/session')) body = {};
       else if (url.endsWith('/requests')) body = deleted ? [] : [{id, status: 'qa_pass', request: {topic: 'Test', language: 'en', seconds: 30}}];
-      else body = {request: {topic: 'Test'}, status: 'qa_pass', machine_pass: true};
+      else body = {request: {topic: 'Test'}, status: 'qa_pass', machine_pass: true, ...detail};
       return {ok: status === 200, status, json: async () => body};
     }};
   context.window = context;
@@ -60,4 +60,22 @@ test('server refusal retains card and reports failure without claiming deletion'
   assert.equal(f.get('message').textContent, 'deletion_refused');
   assert.equal(f.get('delete-video').disabled, false);
   assert.equal(f.replacements.length, 0);
+});
+
+test('terminal failure shows a saved failure notice instead of promising an upcoming video', async () => {
+  const f = await fixture({detail: {status: 'failed', machine_pass: false, error_code: 'ModelSchemaError', source_revision: 'old-version'}});
+  assert.equal(f.get('result-content').hidden, true);
+  assert.equal(f.get('failure-notice').hidden, false);
+  assert.match(f.get('failure-notice').textContent, /Готового MP4 нет/);
+  assert.match(f.get('failure-notice').textContent, /не изменяют/);
+  assert.equal(f.get('script').textContent, 'Текст не подготовлен.');
+  assert.match(f.get('identity').textContent, /old-version.*ModelSchemaError/);
+  assert.equal(f.get('download').hidden, true);
+});
+test('active preparation keeps upcoming result visible and clears terminal notice', async () => {
+  const f = await fixture({detail: {status: 'preparing', machine_pass: false}});
+  assert.equal(f.get('result-content').hidden, false);
+  assert.equal(f.get('failure-notice').hidden, true);
+  assert.equal(f.get('failure-notice').textContent, '');
+  assert.match(f.get('script').textContent, /появится/);
 });

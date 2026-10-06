@@ -47,7 +47,8 @@
       <section id="result" class="panel result-panel" hidden>
         <div class="result-heading"><div><span class="eyebrow">РЕЗУЛЬТАТ</span><h2 id="result-title"></h2></div><div class="result-actions"><button id="refresh" type="button" class="secondary">Обновить</button><button id="delete-video" type="button" class="danger">Удалить</button></div></div>
         <p id="status" class="status-line" role="status"></p>
-        <div class="result-grid">
+        <p id="failure-notice" class="failure-notice" role="status" hidden></p>
+        <div id="result-content" class="result-grid">
           <div class="preview-column">
             <div class="video-stage"><video id="video" controls playsinline hidden></video><div id="preview-placeholder"><span class="play-placeholder" aria-hidden="true">▷</span><p>Ваше видео появится здесь</p><span>Вертикальный формат · 9:16</span></div></div>
             <a id="download" class="download-button" hidden download>Сохранить MP4 <span aria-hidden="true">↓</span></a>
