@@ -58,3 +58,19 @@ class TargetTests(unittest.TestCase):
             self.assertTrue(material['supported_fact_ids'])
             with self.assertRaisesRegex(ValueError, 'exact visual targets'):
                 matched_targets({'visual_targets': saved['visual_targets']}, material['inspection'])
+
+    def test_saved_role_capacity_failure_consolidates_without_changing_the_script(self):
+        from material_first.engine import fit_materials
+        saved = json.loads((Path(__file__).parent / 'fixtures/coffee-role-capacity-failure.json').read_text())
+        words = saved['draft']['words']
+        draft = {'beats': [{k:b[k] for k in ('material_id', 'fact_ids', 'visual_target_id')} |
+                 {'narration': ' '.join(words[b['word_start']:b['word_end']])}
+                 for b in saved['draft']['beats']]}
+        with self.assertRaises(MaterialUnavailable):
+            match_materials(saved['materials'], draft)
+        result = fit_materials(saved['materials'], draft)
+        self.assertEqual(len(result['beats']), 6)
+        self.assertEqual(len({b['material_id'] for b in result['beats']}), 6)
+        self.assertEqual(' '.join(b['narration'] for b in result['beats']), ' '.join(words))
+        self.assertEqual(result['merged_adjacent_beats'], 1)
+        self.assertEqual({b['visual_target_id'] for b in result['beats']}, {'target-1','target-2','target-3'})

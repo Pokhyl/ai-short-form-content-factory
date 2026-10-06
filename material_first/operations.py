@@ -25,6 +25,21 @@ def contiguous_support(evidence):
             quote = support['quote']
             if quote in text:
                 continue
+            # An explicit ellipsis denotes omitted original text, not invented
+            # words. Restore only an exact ordered, bounded source span.
+            fragments = [part.strip() for part in re.split(r'(?:\.{3}|…)', quote) if part.strip()]
+            if len(fragments) > 1:
+                start = text.find(fragments[0])
+                end = start + len(fragments[0])
+                if start >= 0:
+                    for fragment in fragments[1:]:
+                        found = text.find(fragment, end)
+                        if found < 0 or found - end > 500:
+                            break
+                        end = found + len(fragment)
+                    else:
+                        support['quote'] = text[start:end]
+                        continue
             parts = re.split(r'(?<=[.!?])\s+', quote)
             if len(parts) < 2 or any(not part for part in parts):
                 continue
@@ -163,12 +178,13 @@ class Operations:
         materials = context['materials']
         seconds = context['request']['seconds']
         minimum_words, maximum_words = round(seconds * 1.8), round(seconds * 2.2)
-        minimum_available = 5 + (seconds - 15) // 15
+        minimum_available = 5
         if len(materials) < minimum_available:
             raise MaterialUnavailable("not enough distinct relevant photos for requested cadence")
         # Aim for frequent changes, but rejected candidates do not make a
         # longer short require a perfect 12/12 discovery/inspection batch.
-        minimum_beats = min(len(materials), 12, (seconds + 2) // 3)
+        preferred_beats = min(len(materials), 12, (seconds + 2) // 3)
+        minimum_beats = minimum_available
         schema = obj({'words': array(string(), minimum_words, maximum_words),
             'beats': array(obj({'material_id': string(m['id'] for m in materials),
                 'word_start': {'type': 'number', 'minimum': 0, 'maximum': maximum_words},
@@ -186,7 +202,9 @@ class Operations:
             f'words for {seconds} seconds. Each words item is exactly one word, with punctuation attached. '
             'Do not return a shorter summary. Add useful source-supported explanation to fill the word budget, '
             'without repeating yourself or adding opening/closing filler. '
-            f'Use at least {minimum_beats} different supplied photographs, with roughly balanced beat lengths. '
+            f'Use {minimum_beats} to {preferred_beats} different supplied photographs, preferring {preferred_beats} '
+            'when the available picture counts for each role permit it. Split on natural clause boundaries; '
+            'do not demand two separate pictures for a role with only one available picture. '
             'Assign all words to consecutive beats using zero-based word_start and exclusive word_end. '
             'Use only supplied inspected materials, each at most once, and facts that it can illustrate. '
             'Cover required topic facts with practical, relevant visual variety. Do not assemble several '

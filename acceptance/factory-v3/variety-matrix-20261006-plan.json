@@ -6,7 +6,8 @@
       "key": "coffee-en30",
       "topic": "How does coffee get from the coffee plant to your cup?",
       "language": "en",
-      "seconds": 30
+      "seconds": 30,
+      "fresh_job_id": "427f8f4e-ecf9-4011-bf15-e3ddce3dc747"
     },
     {
       "key": "bread-ru45",
@@ -30,5 +31,10 @@
     "source_fetch": 6,
     "tts": 1
   },
-  "stop": "Terminal job state for each case; report actual MP4 results and failures. No paid fallback. No full job repetition to test another prompt."
+  "stop": "Terminal job state for each case; report actual MP4 results and failures. No paid fallback. No full job repetition to test another prompt.",
+  "runtime_revision_after_cadence_fix": "2339c3c6afe89ce3379b8c9f4c53c9a2ccbcdbc5",
+  "preserved_initial_failure": {
+    "id": "af8ee414-5998-4d17-841f-a16470126fb5",
+    "cause": "Eight accepted varied photos blocked by ten-photo cadence requirement; no TTS."
+  }
 }

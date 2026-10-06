@@ -192,9 +192,8 @@ class OperationTests(unittest.TestCase):
         self.assertEqual(len(saved['materials']), 8)
         class Composer:
             def generate(self, key, instruction, context, schema):
-                count = schema['properties']['beats']['minItems']
-                self_count = count
-                assert self_count == len(context['materials']) == 8
+                count = len(context['materials'])
+                assert schema['properties']['beats']['minItems'] <= count == 8
                 words = ['word'] * schema['properties']['words']['minItems']
                 return {'words': words, 'beats': [
                     {'material_id': m['id'], 'word_start': len(words)*i//count,
@@ -210,14 +209,28 @@ class OperationTests(unittest.TestCase):
     def test_longer_duration_keeps_variety_without_requiring_twelve_perfect_candidates(self):
         class Composer:
             def generate(self, key, instruction, context, schema):
-                count = schema['properties']['beats']['minItems']
+                count = len(context['materials'])
                 words = ['word'] * schema['properties']['words']['minItems']
                 return {'words': words, 'beats': [
                     {'material_id': m['id'], 'word_start': len(words)*i//count,
                      'word_end': len(words)*(i+1)//count, 'fact_ids': ['f']}
                     for i,m in enumerate(context['materials'])]}, {}
-        for seconds,count in [(45, 9), (60, 10)]:
+        for seconds,count in [(45, 6), (60, 6), (45, 9), (60, 10)]:
             context = {'request': {'seconds': seconds},
                        'materials': [{'id': 'a'+str(i)} for i in range(count)],
                        'evidence': {'facts': [{'id': 'f'}]}}
             self.assertEqual(len(Operations('.', None, Composer(), None, None).compose(context)['beats']), count)
+
+    def test_saved_ukrainian_source_ellipsis_restores_only_actual_original_text(self):
+        import json
+        from material_first.operations import contiguous_support
+        from factory_v3.grounding import validate_evidence
+        saved = json.loads((Path(__file__).parent / 'fixtures/uk60-ellipsis-source-failure.json').read_text())
+        with self.assertRaises(ValueError):
+            validate_evidence(saved)
+        restored = contiguous_support(saved)
+        validate_evidence(restored)
+        self.assertEqual(restored['facts'][0]['support'][0]['quote'], saved['sources'][0]['text'])
+        saved['facts'][0]['support'][0]['quote'] += ' Invented words.'
+        with self.assertRaises(ValueError):
+            validate_evidence(contiguous_support(saved))

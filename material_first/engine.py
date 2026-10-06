@@ -189,6 +189,32 @@ def validate_story(request, evidence, available, draft):
     return scenes
 
 
+def fit_materials(available, draft, minimum=5):
+    """Consolidate adjacent identical roles only if a unique assignment fails.
+
+    The exact narration, facts and role remain unchanged. This is bounded
+    planning with inspected files, never another model/provider attempt.
+    """
+    current = deepcopy(draft)
+    while True:
+        try:
+            return match_materials(available, current)
+        except MaterialUnavailable:
+            if len(current['beats']) <= minimum:
+                raise
+            for index, (left, right) in enumerate(zip(current['beats'], current['beats'][1:])):
+                if (left.get('visual_target_id') is not None
+                        and left.get('visual_target_id') == right.get('visual_target_id')
+                        and set(left['fact_ids']) == set(right['fact_ids'])):
+                    combined = deepcopy(left)
+                    combined['narration'] = left['narration'] + ' ' + right['narration']
+                    current['beats'][index:index+2] = [combined]
+                    current['merged_adjacent_beats'] = current.get('merged_adjacent_beats', 0) + 1
+                    break
+            else:
+                raise
+
+
 class Producer:
     """One preparation: research -> collect -> inspect -> compose -> review."""
     def __init__(self, root, operations, *, probe=probe_media, max_materials=12):
@@ -256,7 +282,7 @@ class Producer:
             raise MaterialUnavailable("inspected real material has insufficient duration")
         composition = {"request": request, "evidence": evidence, "materials": available}
         draft = self.operations.compose(deepcopy(composition))
-        draft = match_materials(available, draft)
+        draft = fit_materials(available, draft) if targets is not None else match_materials(available, draft)
         scenes = validate_story(request, evidence, available, draft)
         script = " ".join(s["narration"] for s in scenes)
         review_input = {**request, "script": script, "scenes": scenes,
@@ -267,6 +293,8 @@ class Producer:
         payload = {"schema": "material-first", **request, "script": script, "scenes": scenes,
             "assets": [assets[k] for k in sorted(selected)], "evidence": evidence,
             "observations": [m for m in available if m["id"] in selected], "script_review": review}
+        if draft.get('merged_adjacent_beats'):
+            payload['merged_adjacent_beats'] = draft['merged_adjacent_beats']
         frozen = {"payload": payload, "sha256": digest(payload)}
         verify(self.root, frozen, self.probe)
         return frozen
