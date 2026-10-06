@@ -20,7 +20,7 @@ function link(url, text) {
   catch { a.textContent = text; return a; }
   a.textContent = text; a.target = "_blank"; a.rel = "noopener noreferrer"; return a;
 }
-async function history() {
+async function loadHistory() {
   const rows = await api("/api/requests");
   $("history").replaceChildren();
   if (!rows.length) { const empty = document.createElement("p"); empty.className = "empty-history"; empty.textContent = "Пока нет видео. Создайте первое — оно появится здесь."; $("history").append(empty); }
@@ -71,14 +71,14 @@ async function show(id) {
     item.append(photo,text); $("scenes").append(item);
   }
   if (!["qa_pass", "failed", "unknown"].includes(detail.status)) {
-    pollTimer = setTimeout(() => { if (selected === id) Promise.all([history(), show(id)]).catch(report); }, 5000);
+    pollTimer = setTimeout(() => { if (selected === id) Promise.all([loadHistory(), show(id)]).catch(report); }, 5000);
   }
   $("sources").replaceChildren();
   for (const source of detail.sources || []) { const item = document.createElement("div"); item.className = "source"; item.append(link(source.url,source.title || source.url)); $("sources").append(item); }
 }
 async function open() {
   await api("/api/session"); $("login").hidden = true; $("workspace").hidden = false;
-  const rows = await history(); const requested = new URLSearchParams(location.search).get("request");
+  const rows = await loadHistory(); const requested = new URLSearchParams(location.search).get("request");
   const last = requested && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requested) ? requested : localStorage.getItem("factoryV3Last") || (rows[0] && rows[0].id); if (last) await show(last);
 }
 $("login-form").onsubmit = async event => {
@@ -91,11 +91,11 @@ $("request-form").onsubmit = async event => {
   if (!pending || JSON.stringify(pending.fields) !== JSON.stringify(fields)) pending = {id:crypto.randomUUID(),fields};
   try {
     const result = await post("/api/requests",{request_id:pending.id,...fields});
-    pending = null; await history(); await show(result.id);
+    pending = null; await loadHistory(); await show(result.id);
   } catch(error) { report(error); }
   finally { $("create").disabled = false; }
 };
-$("refresh").onclick = () => Promise.all([history(),show(selected)]).catch(report);
+$("refresh").onclick = () => Promise.all([loadHistory(),show(selected)]).catch(report);
 async function decide(decision) {
   if (!detail || !detail.video_sha256) return;
   $("accept").disabled = $("reject").disabled = true;
@@ -117,6 +117,6 @@ $("delete-video").onclick = async () => {
     await post("/api/requests/" + id + "/delete", {delete:true});
     if (selected === id) { selected = null; detail = null; localStorage.removeItem("factoryV3Last"); $("result").hidden = true; }
     const url = new URL(location.href); url.searchParams.delete("request"); window.history.replaceState(null, "", url);
-    await history(); $("message").textContent = "Видео и связанные файлы удалены с сервера.";
+    await loadHistory(); $("message").textContent = "Видео и связанные файлы удалены с сервера.";
   } catch(error) { report(error); $("delete-video").disabled = false; }
 };
