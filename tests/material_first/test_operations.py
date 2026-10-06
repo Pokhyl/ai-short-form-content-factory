@@ -95,7 +95,7 @@ class OperationTests(unittest.TestCase):
                 SimpleNamespace(fetch=lambda *args: fixtures.evidence['sources']), model,
                 SimpleNamespace(search=search), fixtures)
             frozen = Producer(root, operations, probe=fixtures.probe).prepare('topic', 'pl', 15)
-            self.assertEqual(len(frozen['payload']['scenes']), 5)
+            self.assertEqual(len(frozen['payload']['scenes']), 3)
             self.assertEqual({s['visual_target_id'] for s in frozen['payload']['scenes']}, {'v0', 'v1', 'v2'})
             self.assertEqual(len(searches), 9)
             self.assertEqual(model.calls[0], 'material-brief')
@@ -164,7 +164,7 @@ class OperationTests(unittest.TestCase):
                 SimpleNamespace(search=lambda *args: {'candidates': fixtures.assets}), fixtures)
             frozen = Producer(root, operations, probe=fixtures.probe).prepare('topic', 'pl', 15)
             self.assertEqual({s['visual_target_id'] for s in frozen['payload']['scenes']}, {'v0', 'v1'})
-            self.assertEqual(len(frozen['payload']['scenes']), 5)
+            self.assertEqual(len(frozen['payload']['scenes']), 3)
 
     def test_total_narration_budget_blocks_before_voice(self):
         from material_first.operations import NarrationBudgetExceeded
@@ -233,6 +233,29 @@ class OperationTests(unittest.TestCase):
                        'materials': [{'id': 'a'+str(i)} for i in range(count)],
                        'evidence': {'facts': [{'id': 'f'}]}}
             self.assertEqual(len(Operations('.', None, Composer(), None, None).compose(context)['beats']), count)
+
+    def test_independent_photos_allow_three_or_four_narration_paragraphs(self):
+        from material_first.visuals import POLICY
+        for count in (3, 4):
+            with self.subTest(count=count):
+                class Composer:
+                    def generate(self, key, instruction, context, schema):
+                        words = ['source'] * 60
+                        draft = {'words': words, 'beats': [
+                            {'material_id': 'a'+str(i), 'word_start': 60*i//count,
+                             'word_end': 60*(i+1)//count, 'fact_ids': ['f']}
+                            for i in range(count)]}
+                        validate_json(draft, schema)
+                        return draft, {}
+                context = {'request': {'seconds':30, 'presentation_policy':POLICY},
+                           'materials': [{'id':'a'+str(i)} for i in range(15)],
+                           'evidence': {'facts':[{'id':'f'}]}}
+                draft = Operations('.', None, Composer(), None, None).compose(context)
+                self.assertEqual(len(draft['beats']), count)
+                self.assertEqual(' '.join(b['narration'] for b in draft['beats']), ' '.join(['source']*60))
+                context['request'].pop('presentation_policy')
+                with self.assertRaises(ValueError):
+                    Operations('.', None, Composer(), None, None).compose(context)
 
     def test_saved_ukrainian_source_ellipsis_restores_only_actual_original_text(self):
         import json

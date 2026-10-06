@@ -240,7 +240,7 @@ class Operations:
         materials = context['materials']
         seconds = context['request']['seconds']
         minimum_words, maximum_words = round(seconds * 1.6), round(seconds * 2.4)
-        minimum_available = 5
+        minimum_available = 3 if context['request'].get('presentation_policy') == POLICY else 5
         if len(materials) < minimum_available:
             raise MaterialUnavailable("not enough distinct relevant photos for requested cadence")
         # Aim for frequent changes, but rejected candidates do not make a

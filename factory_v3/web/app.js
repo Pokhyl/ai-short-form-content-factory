@@ -1,7 +1,7 @@
 "use strict";
 const base = "/factory-v3";
 const $ = id => document.getElementById(id);
-let selected = null, detail = null, pending = null;
+let selected = null, detail = null, pending = null, pollTimer = null;
 const labels = {preparing:"Подготовка: факты и фотографии",prepared:"Подготовка завершена",voice_running:"Создание озвучки",voice_ready:"Озвучка готова",align_running:"Синхронизация сцен",align_ready:"Сцены синхронизированы",render_running:"Сборка видео",render_ready:"Видео собрано, проверка качества",qa_running:"Проверка качества",qa_pass:"Видео прошло проверку качества",failed:"Задание остановлено",unknown:"Результат внешнего запроса не подтверждён; повтор заблокирован"};
 async function api(path, options = {}) {
   const response = await fetch(base + path, {credentials:"same-origin",...options});
@@ -29,10 +29,14 @@ async function history() {
     button.onclick = () => show(row.id).catch(report);
     $("history").append(button);
   }
+  return rows;
 }
 async function show(id) {
+  clearTimeout(pollTimer); pollTimer = null;
   selected = id; localStorage.setItem("factoryV3Last", id);
-  detail = await api("/api/requests/" + id);
+  const response = await api("/api/requests/" + id);
+  if (selected !== id) return;
+  detail = response;
   $("result").hidden = false; $("result-title").textContent = detail.request.topic;
   $("status").textContent = (labels[detail.status] || detail.status) + (detail.error_code ? " · " + detail.error_code : "") + (detail.photo_count ? " · " + detail.photo_count + " фото" : "") + (detail.actual_duration_ms ? " · " + (detail.actual_duration_ms / 1000) + " с" : "");
   $("script").textContent = detail.script || "Текст появится после проверки фактов и фотографий.";
@@ -55,13 +59,16 @@ async function show(id) {
     text.append(link(scene.asset.source_url,"Фото"),document.createTextNode(" · "),link(scene.asset.license_url,scene.asset.license + (scene.asset.license_version ? " " + scene.asset.license_version : "")));
     item.append(photo,text); $("scenes").append(item);
   }
+  if (!["qa_pass", "failed", "unknown"].includes(detail.status)) {
+    pollTimer = setTimeout(() => { if (selected === id) Promise.all([history(), show(id)]).catch(report); }, 5000);
+  }
   $("sources").replaceChildren();
   for (const source of detail.sources || []) { const item = document.createElement("div"); item.className = "source"; item.append(link(source.url,source.title || source.url)); $("sources").append(item); }
 }
 async function open() {
   await api("/api/session"); $("login").hidden = true; $("workspace").hidden = false;
-  await history(); const requested = new URLSearchParams(location.search).get("request");
-  const last = requested && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requested) ? requested : localStorage.getItem("factoryV3Last"); if (last) await show(last);
+  const rows = await history(); const requested = new URLSearchParams(location.search).get("request");
+  const last = requested && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requested) ? requested : localStorage.getItem("factoryV3Last") || (rows[0] && rows[0].id); if (last) await show(last);
 }
 $("login-form").onsubmit = async event => {
   event.preventDefault(); $("message").textContent = "";
