@@ -1,0 +1,16 @@
+{
+  "frontend_tests": 10,
+  "packaged_factory_tests": 93,
+  "packaged_material_tests": 55,
+  "browser_fixture": {
+    "deleted_card_absent": true,
+    "result_hidden": true,
+    "request_query_removed": true,
+    "success_message": true
+  },
+  "real_deleted_ids_no_media": [
+    "02feb2e3-31ae-4cf7-b139-56c47f8a8719",
+    "ed07f910-f736-40d5-b50c-ae03af198a19"
+  ],
+  "provider_calls": 0
+}

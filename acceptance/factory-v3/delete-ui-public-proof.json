@@ -1,0 +1,22 @@
+{
+  "index.html": {
+    "status": 200,
+    "cache_control": "no-store",
+    "sha256": "0d10c3b018fdfa7dac1143a293b4ce4ec608446d8540a68e83d918afba670cda"
+  },
+  "app.js": {
+    "status": 200,
+    "cache_control": "no-store",
+    "sha256": "3dcb298169c4c59adf6c0b16e40109fd1fb4a0324d7592f13678b72a6369eecf"
+  },
+  "style.css": {
+    "status": 200,
+    "cache_control": "no-store",
+    "sha256": "318a269a8c685759fde1adb6b1e60b2facc3bb70b62ea3e0a6b14580419d01dc"
+  },
+  "health": {
+    "status": "serving",
+    "project_ready": false,
+    "source_revision": "a58075b26c52855aee723a8d4df957dd36d27c2e"
+  }
+}
