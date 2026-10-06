@@ -10,6 +10,7 @@ from factory_v3.providers import PROVIDERS
 from .engine import MaterialUnavailable
 from .targets import validate_targets
 from .visuals import POLICY, candidate_limit
+from .source_spans import source_spans, bind_support
 
 
 def preparation_budgets(seconds):
@@ -74,9 +75,9 @@ class Operations:
 
     def research(self, request):
         sources = self.source.fetch(request['topic'], request['language'])
+        spans = source_spans(sources)
         schema = obj({'facts': array(obj({'id': string(), 'text': string(),
-            'support': array(obj({'source_id': string(s['id'] for s in sources),
-                                  'quote': string()}), 1, 3)}), 3, 8),
+            'support': array(obj({'span_id': string(s['id'] for s in spans)}), 1, 3)}), 3, 8),
             'required_fact_ids': array(string(), 3, 8),
             'visual_targets': array(obj({'id': string(), 'fact_ids': array(string(), 1, 8),
                 'must_show': string(), 'must_not_show': string(),
@@ -86,10 +87,11 @@ class Operations:
             f'For {request["seconds"]} seconds, aim for {desired_facts} distinct source-backed facts, '
             'with enough useful explanation for natural speech. Cover the full requested process, '
             'including its final outcome; do not spend all facts on its starting ingredients. '
-            'Extract at least three distinct atomic explanatory facts answering the topic, supported by exact source quotations. '
+            'Extract at least three distinct atomic explanatory facts answering the topic. '
+            'For each fact select support.span_id from the supplied source_spans; the server copies the exact original text. '
+            'Select only spans that actually support that fact, including its qualifiers and numbers. '
             'Separate the starting condition, concrete mechanism/details, and consequence or purpose where supported. '
             'Do not merge multiple mechanisms into one broad topic statement, or paraphrase the same fact to fill slots. '
-            'Each quote must be contiguous: retain intervening headings or use separate support entries. '
             'Mark at least three essential distinct facts. Define exactly three distinct visual_targets, each '
             'binding source fact_ids to concrete must_show and must_not_show conditions and an English photograph query. '
             'Targets are practical visual variety roles: overall setting, subject close-up, related object/detail '
@@ -98,8 +100,9 @@ class Operations:
             'Allow contextually relevant stock photographs; do not demand a rare precise action or anatomy angle. '
             'must_show names the broad dominant focus; must_not_show excludes substituting the same main-subject '
             'composition for every role. Facts are proved by source text, not photograph geometry.',
-            {**request, 'sources': sources}, schema)
-        evidence = contiguous_support({'sources': sources, 'facts': result['facts']})
+            {**request, 'sources': [{k: s[k] for k in ('id', 'url', 'title', 'sha256') if k in s}
+                                   for s in sources], 'source_spans': spans}, schema)
+        evidence = bind_support(sources, spans, result['facts'])
         validate_evidence(evidence)
         if len(set(result['required_fact_ids'])) < 3:
             raise MaterialUnavailable('explanation needs three distinct source-backed aspects before material search')

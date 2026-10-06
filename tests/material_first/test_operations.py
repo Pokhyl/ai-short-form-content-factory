@@ -18,7 +18,12 @@ class Model:
         self.calls.append(key)
         provider_schema(schema)
         if key == 'material-brief':
-            result = {'facts': self.fixtures.evidence['facts'],
+            facts = copy.deepcopy(self.fixtures.evidence['facts'])
+            for fact in facts:
+                fact['support'] = [{'span_id': next(s['id'] for s in context['source_spans']
+                    if support['source_id'] == s['source_id'] and support['quote'] in s['text'])}
+                    for support in fact['support']]
+            result = {'facts': facts,
                       'required_fact_ids': ['f0', 'f1', 'f2'], 'visual_targets': [
                           {'id': 'v'+str(i), 'fact_ids': ['f'+str(i)],
                            'must_show': 'Prominent explanatory detail '+str(i),

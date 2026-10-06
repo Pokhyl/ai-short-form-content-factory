@@ -1,0 +1,25 @@
+{
+  "state": "planned",
+  "request_id": "9dabd989-e5cd-44ba-8309-92af983d139e",
+  "topic": "Jak powstaje chleb: mieszanie ciasta, wyrastanie i pieczenie",
+  "language": "pl",
+  "seconds": 15,
+  "visual_validation_mode": "metadata",
+  "question": "Does the normal owner API complete the new server-bound citation protocol through photos, one TTS and exact-duration MP4?",
+  "maximum_fresh_requests": 1,
+  "maximum_request_posts": 1,
+  "model": "gemini-3.5-flash-lite",
+  "budgets": {
+    "gemini": 16,
+    "research_search": 1,
+    "source_fetch": 6,
+    "search_per_provider": 3,
+    "download": 20,
+    "metadata": 1,
+    "tts": 1
+  },
+  "expected_quota": "Model tokens and one TTS input length depend on the validated output; no paid fallback, free-tier gates retained. No extra isolated model diagnostic.",
+  "stop": "Any terminal failed/unknown ends this case; do not rerun the ID or submit another diagnostic case.",
+  "offline": "60 material +93 core tests; 16 language/duration controlled span cases; saved full real failure source corpus.",
+  "acceptance": "A pass verifies this case only; requires owner playback/review, no HUMAN or whole-project claim."
+}

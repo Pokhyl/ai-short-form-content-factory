@@ -1,0 +1,126 @@
+{
+  "project_ready": false,
+  "scope": "Controlled tests and saved actual receipts, not new provider acceptance",
+  "boundaries": [
+    {
+      "name": "owner intake/concurrency",
+      "test": {
+        "path": "tests/factory_v3/test_server.py",
+        "sha256": "4e2833117efb9191e8f0be538b32cc4275d7dadd504a2c8f799d38850315b8d5"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/image-postgres-driver.txt",
+        "sha256": "f1e98893640bb42741a15a3fee57750e53c34c7502f2c6ec9a48397e1f85d47a"
+      },
+      "remaining": "Fresh acceptance after citation change remains unverified."
+    },
+    {
+      "name": "credential gateway/free quota",
+      "test": {
+        "path": "tests/factory_v3/test_credential_http.py",
+        "sha256": "f04e4d2894b64218ed877d1d6ca34aa6098a4dc480091b58a09333b17f55e288"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/response-body-billing.json",
+        "sha256": "e6f2a67eac0a2195c3242c1e091bc17bd5de4f986548254471fc1322ca894031"
+      },
+      "remaining": "Per-request billing and quota gates still required."
+    },
+    {
+      "name": "fetched research/source citations",
+      "test": {
+        "path": "tests/material_first/test_source_spans.py",
+        "sha256": "7d83d62aebff265cd49c210ccab4103eaab76c255df88e61047275e3c972f4c7"
+      },
+      "saved_evidence": {
+        "path": "tests/material_first/fixtures/studio-ru30-quotation-failure.json",
+        "sha256": "79102b5ae89ee53861bdd1fae1c5a770739362f4d17a1cad59cbfab4936ea922"
+      },
+      "remaining": "New model ID-selection behavior needs one normal live case; offline cases cover all16 language/duration pairs."
+    },
+    {
+      "name": "three photo providers/download",
+      "test": {
+        "path": "tests/factory_v3/test_providers.py",
+        "sha256": "de42f20014aa54db8ad5edb1311a7dc61469b4c1e90ef7ac406e9ac501ac3061"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/providers-postgres.txt",
+        "sha256": "c1878230c95d6d88cd6260e1638cd716056ef556636b78f7eb073255a3fa648d"
+      },
+      "remaining": "Availability and relevance of unseen searches remain provider-dependent."
+    },
+    {
+      "name": "metadata/Vision/selection",
+      "test": {
+        "path": "tests/material_first/test_metadata_mode.py",
+        "sha256": "1c5b51681272f819216ae45fa349431f43c69aa594d33d3329434d39888e57bf"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/whole-photo-previews-20261006.json",
+        "sha256": "7e1f08b6f847ff6c9170ae8f48ebbe7e6de5faecfee3b887d4da0359e79d8577"
+      },
+      "remaining": "Metadata mode cannot prove pixels; unseen Vision judgments are not certified by saved receipts."
+    },
+    {
+      "name": "global variety/composition",
+      "test": {
+        "path": "tests/material_first/test_operations.py",
+        "sha256": "5db68dbbb88eede75b49684d140cb5af2d8affc981485992dd01252c71500b30"
+      },
+      "saved_evidence": {
+        "path": "tests/material_first/fixtures/coffee-en30-cadence-failure.json",
+        "sha256": "5d91000087643efd99932a04a87a7ccf594c5863b6d1f33a4c1d708bed2a98d4"
+      },
+      "remaining": "Actual new model prose and image variety remain unverified."
+    },
+    {
+      "name": "independent factual script review",
+      "test": {
+        "path": "tests/factory_v3/test_gemini.py",
+        "sha256": "7d9a5a05a16869f0f9202427b0468220ca5c43924af4bfb363446b7b5a742b7d"
+      },
+      "saved_evidence": {
+        "path": "tests/material_first/fixtures/bread-ru45-short-draft.json",
+        "sha256": "2999bd8741e0a675a1a2923b470a96f9132af3ab09fb7da21f79fde5a7e303f2"
+      },
+      "remaining": "Source span identity proves text origin, not semantic support; independent review remains mandatory."
+    },
+    {
+      "name": "one voice/alignment",
+      "test": {
+        "path": "tests/factory_v3/test_executor.py",
+        "sha256": "9fa4af4302e640b43dd5b38ac8211377a0313f024ae1ecc74354e776915d5983"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/connected-presentation-real-worker-fixture.json",
+        "sha256": "02024d1841b9130b866e8b12d55054e5756739cc4bf1512c10b5bd833c2d9ab5"
+      },
+      "remaining": "No fresh TTS or listening acceptance for this release."
+    },
+    {
+      "name": "whole photos/exact timing/render/audit",
+      "test": {
+        "path": "tests/material_first/test_connected_presentation.py",
+        "sha256": "ef97ed83482cfef69d3e7dacc69471b206d91310229c219aedb37b8823ff578e"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/whole-photo-previews-20261006.json",
+        "sha256": "7e1f08b6f847ff6c9170ae8f48ebbe7e6de5faecfee3b887d4da0359e79d8577"
+      },
+      "remaining": "Real cached worker outputs support renderer only; no fresh current-release MP4 yet."
+    },
+    {
+      "name": "owner review/save/physical deletion",
+      "test": {
+        "path": "tests/studio-delete.test.cjs",
+        "sha256": "dcab50bb9e783462ce1ee30c54e49be05f51f17cb00261599088835fc7828f75"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/delete-ui-checks.json",
+        "sha256": "6cff89d1ba35e87c05547d52c81977d8e51b3d0e7eb83a55ead74f7f1c69bb6d"
+      },
+      "remaining": "Explicit HUMAN acceptance of actual new MP4 remains absent."
+    }
+  ]
+}
