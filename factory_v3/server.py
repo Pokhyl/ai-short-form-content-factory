@@ -13,9 +13,10 @@ import threading
 import time
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, parse_qs
 from uuid import UUID
 from .runtime import Runtime, load_settings
+from .deletion import ensure_visible, deleted_ids, marker, remove_media
 from .preflight import asset_path, validate_asset
 
 PREFIX = "/factory-v3"
@@ -77,11 +78,13 @@ class Application:
         self.sessions = Sessions(runtime.settings["owner_token"])
         self.pool = concurrent.futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix="factory-v3")
         self.slots = threading.BoundedSemaphore(5)
+        self.media_lock = threading.RLock()
 
     def submit(self, data):
         if set(data) not in ({"request_id", "topic", "language", "seconds"}, {"request_id", "topic", "language", "seconds", "visual_validation_mode"}) or type(data["seconds"]) is not int:
             raise ValueError("only request identity, topic, language and duration allowed")
         request_id = identifier(data["request_id"])
+        ensure_visible(self.runtime.root, request_id)
         if not self.slots.acquire(blocking=False):
             raise OverflowError("queue full")
         try:
@@ -113,6 +116,17 @@ class Application:
         finally:
             self.slots.release()
 
+    def delete(self, request_id, data):
+        request_id = identifier(request_id)
+        if set(data) != {"delete"} or data["delete"] is not True:
+            raise ValueError("explicit video deletion required")
+        with self.media_lock:
+            if not marker(self.runtime.root, request_id).exists():
+                status = self.runtime.status(request_id)["status"]
+                if status not in {"qa_pass", "failed", "unknown"}:
+                    raise ValueError("running requests cannot be deleted")
+            return remove_media(self.runtime.root, request_id)
+
     def review(self, request_id):
         return self.runtime.ledger._call(
             "SELECT jsonb_build_object('decision',decision,'video_sha256',video_sha256,'comment',comment,'created_at',created_at) FROM factory_v3.human_reviews WHERE job_id=%s::uuid",
@@ -120,6 +134,7 @@ class Application:
 
     def detail(self, request_id):
         request_id = identifier(request_id)
+        ensure_visible(self.runtime.root, request_id)
         status = self.runtime.status(request_id)
         review = self.review(request_id)
         status["review"] = review
@@ -161,6 +176,7 @@ class Application:
 
     def video(self, request_id):
         request_id = identifier(request_id)
+        ensure_visible(self.runtime.root, request_id)
         state = self.runtime.ledger.snapshot(request_id)
         if state["status"] != "qa_pass":
             raise ValueError("video has not passed machine QA")
@@ -173,6 +189,7 @@ class Application:
         return file, "video/mp4"
 
     def photo(self, request_id, scene_id):
+        ensure_visible(self.runtime.root, request_id)
         state = self.runtime.ledger.snapshot(identifier(request_id))
         payload = state["frozen"]["payload"]
         if payload.get("schema") == "material-first":
@@ -189,6 +206,7 @@ class Application:
 
     def record_review(self, request_id, data):
         request_id = identifier(request_id)
+        ensure_visible(self.runtime.root, request_id)
         if set(data) != {"decision", "video_sha256", "comment"} or data["decision"] not in {"accepted", "rejected"}:
             raise ValueError("explicit decision required")
         if not isinstance(data["comment"], str) or len(data["comment"]) > 2000:
@@ -247,7 +265,7 @@ def handler(application):
                 raise ValueError("JSON object required")
             return value
 
-        def media(self, file, mime):
+        def media(self, file, mime, download_name=None):
             size = file.stat().st_size
             try:
                 start, end, partial = byte_range(self.headers.get("Range"), size)
@@ -258,6 +276,8 @@ def handler(application):
             self.send_header("Content-Type", mime)
             self.send_header("Content-Length", str(end-start+1))
             self.send_header("Accept-Ranges", "bytes")
+            if download_name:
+                self.send_header("Content-Disposition", 'attachment; filename="' + download_name + '"')
             self.send_header("Cache-Control", "private, no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
             if partial:
@@ -314,16 +334,21 @@ def handler(application):
                 self.reply(202 if result["created"] else 200, result)
             elif local == "/api/requests" and self.command == "GET":
                 result = application.runtime.ledger._call(
-                    "SELECT COALESCE(jsonb_agg(x ORDER BY x.created_at DESC),'[]'::jsonb) FROM (SELECT p.id,p.request,p.created_at,COALESCE(j.status,p.status) AS status FROM factory_v3.preparations p LEFT JOIN factory_v3.jobs j ON j.id=p.id ORDER BY p.created_at DESC LIMIT 50) x", ())
+                    "SELECT COALESCE(jsonb_agg(x ORDER BY x.created_at DESC),'[]'::jsonb) FROM (SELECT p.id,p.request,p.created_at,COALESCE(j.status,p.status) AS status FROM factory_v3.preparations p LEFT JOIN factory_v3.jobs j ON j.id=p.id WHERE NOT (p.id = ANY(%s::uuid[])) ORDER BY p.created_at DESC LIMIT 50) x", (deleted_ids(application.runtime.root),))
                 self.reply(200, result)
             elif len(parts) == 3 and parts[:2] == ["api", "requests"] and self.command == "GET":
                 self.reply(200, application.detail(parts[2]))
+            elif len(parts) == 4 and parts[:2] == ["api", "requests"] and parts[3] == "delete" and self.command == "POST":
+                self.reply(200, application.delete(parts[2], self.body()))
             elif len(parts) == 4 and parts[:2] == ["api", "requests"] and parts[3] == "review" and self.command == "POST":
                 self.reply(200, application.record_review(parts[2], self.body()))
             elif len(parts) == 2 and parts[0] == "video" and self.command in {"GET", "HEAD"}:
-                self.media(*application.video(parts[1]))
+                with application.media_lock:
+                    name = "video-" + identifier(parts[1]) + ".mp4" if parse_qs(urlsplit(self.path).query).get("download") == ["1"] else None
+                    self.media(*application.video(parts[1]), download_name=name)
             elif len(parts) == 3 and parts[0] == "photo" and self.command in {"GET", "HEAD"}:
-                self.media(*application.photo(parts[1], parts[2]))
+                with application.media_lock:
+                    self.media(*application.photo(parts[1], parts[2]))
             else:
                 self.reply(404, {"error": "not_found"})
 

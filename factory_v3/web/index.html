@@ -1,5 +1,66 @@
 <!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Фабрика видео</title><link rel="stylesheet" href="/factory-v3/style.css"><script src="/factory-v3/app.js" defer></script></head>
-<body><main><header><p class="eyebrow">CONTENT FACTORY · V3</p><h1>От темы к готовому видео</h1><p>Реальные фотографии, проверенные факты и вертикальное видео с озвучкой.</p></header>
-<section id="login"><h2>Вход владельца</h2><form id="login-form"><label>Код доступа<input id="access" type="password" autocomplete="current-password" required></label><button>Войти</button></form></section>
-<section id="workspace" hidden><form id="request-form"><label>Тема<textarea id="topic" maxlength="300" required placeholder="О чём должно быть видео?"></textarea></label><div class="row"><label>Язык<select id="language"><option value="pl">Polski</option><option value="en">English</option><option value="ru">Русский</option><option value="uk">Українська</option></select></label><label>Длительность<select id="seconds"><option>15</option><option>30</option><option>45</option><option>60</option></select> секунд</label></div><label>Проверка фотографий<select id="visualValidationMode"><option value="metadata">Стандартная — без Gemini Vision</option><option value="gemini">Gemini Vision</option></select></label><p class="note">В стандартном режиме фотографии выбираются по данным источника. Gemini используется для текста в обоих режимах.</p><button id="create">Создать видео</button><p class="note">Если сервис остановит задание, причина останется в его статусе. Повторная отправка запроса не запустит его снова.</p></form><h2>Задания</h2><div id="history"></div><section id="result" hidden><div class="row"><h2 id="result-title"></h2><button id="refresh" type="button" class="secondary">Обновить статус</button></div><p id="status" role="status"></p><video id="video" controls playsinline hidden></video><a id="download" hidden download>Скачать MP4</a><div id="review" hidden><p>Посмотрите видео и проверьте озвучку, смысл и соответствие фотографий.</p><label>Комментарий<textarea id="comment" maxlength="2000"></textarea></label><div class="row"><button id="accept" type="button">Принять после просмотра</button><button id="reject" type="button" class="secondary">Отклонить</button></div></div><p id="decision"></p><h3>Текст и фотографии</h3><p id="script"></p><div id="scenes"></div><h3>Источники фактов</h3><div id="sources"></div><p id="identity" class="note"></p></section></section><p id="message" role="alert"></p></main></body></html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Студия видео</title>
+  <link rel="stylesheet" href="/factory-v3/style.css">
+  <script src="/factory-v3/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="app-header">
+      <a class="brand" href="/factory-v3/" aria-label="Студия видео — главная"><span class="brand-mark" aria-hidden="true">H</span><span>Студия видео</span></a>
+      <span class="header-note">Тема → фотографии → видео</span>
+    </header>
+
+    <section id="login" class="login-card">
+      <span class="eyebrow">ВАША СТУДИЯ</span>
+      <h1>Добро пожаловать</h1>
+      <p class="muted">Войдите, чтобы создавать и просматривать видео.</p>
+      <form id="login-form">
+        <label for="access">Код доступа</label>
+        <input id="access" type="password" autocomplete="current-password" required placeholder="Введите код доступа">
+        <button class="primary full-width" type="submit">Войти в студию <span aria-hidden="true">→</span></button>
+      </form>
+    </section>
+
+    <section id="workspace" hidden>
+      <div class="page-heading"><div><span class="eyebrow">РАБОЧЕЕ ПРОСТРАНСТВО</span><h1>Создайте новое видео</h1><p class="muted">Задайте тему. Выберите язык и длительность.</p></div><span class="format-chip">9:16 · MP4</span></div>
+      <div class="workspace-grid">
+        <form id="request-form" class="panel">
+          <div class="panel-heading"><h2>Параметры видео</h2><span class="subtle">01</span></div>
+          <label for="topic">Тема</label>
+          <textarea id="topic" maxlength="300" required placeholder="Например, как делают хлеб — от муки до готовой буханки"></textarea>
+          <div class="field-grid">
+            <div><label for="language">Язык озвучки</label><select id="language"><option value="pl">Polski</option><option value="en">English</option><option value="ru">Русский</option><option value="uk">Українська</option></select></div>
+            <div><label for="seconds">Длительность</label><select id="seconds"><option value="15">15 секунд</option><option value="30">30 секунд</option><option value="45">45 секунд</option><option value="60">60 секунд</option></select></div>
+          </div>
+          <label for="visualValidationMode">Проверка фотографий</label>
+          <select id="visualValidationMode"><option value="metadata">Стандартная</option><option value="gemini">Gemini Vision</option></select>
+          <p class="field-hint">Стандартная — по описаниям. Vision — по изображениям.<br>Текст в обоих режимах готовит Gemini.</p>
+          <button id="create" class="primary full-width" type="submit">Создать видео <span aria-hidden="true">→</span></button>
+        </form>
+        <section class="panel history-panel"><div class="panel-heading"><h2>Ваши видео</h2><span class="subtle">02</span></div><p class="muted history-intro">Процесс создания и готовые результаты.</p><div id="history"></div></section>
+      </div>
+
+      <section id="result" class="panel result-panel" hidden>
+        <div class="result-heading"><div><span class="eyebrow">РЕЗУЛЬТАТ</span><h2 id="result-title"></h2></div><div class="result-actions"><button id="refresh" type="button" class="secondary">Обновить</button><button id="delete-video" type="button" class="danger">Удалить</button></div></div>
+        <p id="status" class="status-line" role="status"></p>
+        <div class="result-grid">
+          <div class="preview-column">
+            <div class="video-stage"><video id="video" controls playsinline hidden></video><div id="preview-placeholder"><span class="play-placeholder" aria-hidden="true">▷</span><p>Ваше видео появится здесь</p><span>Вертикальный формат · 9:16</span></div></div>
+            <a id="download" class="download-button" hidden download>Сохранить MP4 <span aria-hidden="true">↓</span></a>
+            <div id="review" hidden><p class="field-hint">Проверьте озвучку и фотографии перед принятием.</p><label for="comment">Комментарий</label><textarea id="comment" maxlength="2000" placeholder="Что понравилось или что нужно изменить?"></textarea><div class="review-actions"><button id="accept" type="button" class="primary">Принять видео</button><button id="reject" type="button" class="secondary">Отклонить</button></div></div>
+            <p id="decision" class="field-hint"></p>
+          </div>
+          <div class="content-column"><h3>Текст озвучки</h3><p id="script" class="script-text"></p><div class="section-heading"><h3>Фотографии</h3><span class="subtle">Без обрезки</span></div><div id="scenes"></div><details class="source-details"><summary>Источники фактов</summary><div id="sources"></div></details></div>
+        </div>
+        <details class="technical-details"><summary>Сведения о задании</summary><p id="identity" class="note"></p></details>
+      </section>
+    </section>
+    <p id="message" role="alert"></p>
+    <footer>Студия видео<span>Реальные фотографии · Ваш контроль над результатом</span></footer>
+  </main>
+</body>
+</html>

@@ -23,9 +23,15 @@ function link(url, text) {
 async function history() {
   const rows = await api("/api/requests");
   $("history").replaceChildren();
+  if (!rows.length) { const empty = document.createElement("p"); empty.className = "empty-history"; empty.textContent = "Пока нет видео. Создайте первое — оно появится здесь."; $("history").append(empty); }
   for (const row of rows) {
     const button = document.createElement("button");
-    button.textContent = row.request.topic + " · " + row.request.language.toUpperCase() + " · " + row.request.seconds + " с · " + (labels[row.status] || row.status);
+    button.className = "history-item"; button.dataset.state = row.status; button.dataset.requestId = row.id; button.setAttribute("aria-current", String(row.id === selected));
+    const title = document.createElement("span"); title.className = "history-title"; title.textContent = row.request.topic;
+    const meta = document.createElement("span"); meta.className = "history-meta";
+    const fields = document.createElement("span"); fields.textContent = row.request.language.toUpperCase() + " · " + row.request.seconds + " с · " + (row.request.visual_validation_mode === "metadata" ? "Стандартная" : "Vision");
+    const state = document.createElement("span"); state.className = "history-state"; state.textContent = labels[row.status] || row.status;
+    meta.append(fields, state); button.append(title, meta);
     button.onclick = () => show(row.id).catch(report);
     $("history").append(button);
   }
@@ -33,7 +39,9 @@ async function history() {
 }
 async function show(id) {
   clearTimeout(pollTimer); pollTimer = null;
-  selected = id; localStorage.setItem("factoryV3Last", id);
+  selected = id;
+  for (const button of $("history").children) if (button.dataset.requestId) button.setAttribute("aria-current", String(button.dataset.requestId === id));
+  localStorage.setItem("factoryV3Last", id);
   const response = await api("/api/requests/" + id);
   if (selected !== id) return;
   detail = response;
@@ -41,11 +49,14 @@ async function show(id) {
   $("status").textContent = (labels[detail.status] || detail.status) + " · " + (detail.request.visual_validation_mode === "metadata" ? "Стандартный режим" : "Gemini Vision") + (detail.error_code ? " · " + detail.error_code : "") + (detail.photo_count ? " · " + detail.photo_count + " фото" : "") + (detail.actual_duration_ms ? " · " + (detail.actual_duration_ms / 1000) + " с" : "");
   $("script").textContent = detail.script || "Текст появится после проверки фактов и фотографий.";
   const ready = detail.machine_pass === true;
+  $("delete-video").disabled = !["qa_pass", "failed", "unknown"].includes(detail.status);
+  $("delete-video").title = $("delete-video").disabled ? "Дождитесь завершения создания видео" : "Удалить видео и связанные файлы с сервера";
+  $("preview-placeholder").hidden = ready;
   $("video").hidden = !ready; $("download").hidden = !ready; $("review").hidden = !ready || !!detail.review;
   if (ready) {
     const url = base + "/video/" + id;
     if ($("video").getAttribute("src") !== url) $("video").src = url;
-    $("download").href = url;
+    $("download").href = url + "?download=1"; $("download").download = "video-" + id + ".mp4";
   } else { $("video").removeAttribute("src"); $("video").load(); }
   $("decision").textContent = detail.review ? (detail.review.decision === "accepted" ? "Вы приняли это видео." : "Вы отклонили это видео.") + (detail.review.comment ? " " + detail.review.comment : "") : (ready ? "Ожидает вашего просмотра и решения." : "");
   $("identity").textContent = "ID: " + id + " · версия: " + detail.source_revision + (detail.video_sha256 ? " · SHA-256: " + detail.video_sha256 : "");
@@ -95,3 +106,17 @@ async function decide(decision) {
 $("accept").onclick = () => decide("accepted");
 $("reject").onclick = () => decide("rejected");
 open().catch(error => { if (error.message !== "authentication_required") report(error); });
+
+$("delete-video").onclick = async () => {
+  if (!selected || $("delete-video").disabled) return;
+  if (!confirm("Удалить это видео и связанные файлы с сервера? Восстановить их будет нельзя.")) return;
+  const id = selected;
+  $("delete-video").disabled = true; clearTimeout(pollTimer); pollTimer = null;
+  $("video").pause(); $("video").removeAttribute("src"); $("video").load();
+  try {
+    await post("/api/requests/" + id + "/delete", {delete:true});
+    if (selected === id) { selected = null; detail = null; localStorage.removeItem("factoryV3Last"); $("result").hidden = true; }
+    const url = new URL(location.href); url.searchParams.delete("request"); window.history.replaceState(null, "", url);
+    await history(); $("message").textContent = "Видео и связанные файлы удалены с сервера.";
+  } catch(error) { report(error); $("delete-video").disabled = false; }
+};

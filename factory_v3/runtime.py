@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 from uuid import UUID
 from .credential_http import CredentialHTTP, MODEL
+from .deletion import ensure_visible
 from .download import PhotoDownload
 from .executor import Executor
 from .gemini import Gemini
@@ -39,6 +40,7 @@ class Runtime:
 
     def create(self, request_id, topic, language, seconds, *, visual_validation_mode=None):
         request_id = str(UUID(str(request_id)))
+        ensure_visible(self.root, request_id)
         if language not in {"pl","en","ru","uk"} or seconds not in {15,30,45,60}:
             raise ValueError("unsupported language/duration")
         if not isinstance(topic,str) or not 1 <= len(topic.strip()) <= 300:
@@ -90,6 +92,7 @@ class Runtime:
         return material_executor(self.ledger,self.root,adapters)
 
     def run(self, request_id):
+        ensure_visible(self.root, request_id)
         self.producer(request_id).prepare(request_id)
         executor = self.executor()
         for _ in range(4):
@@ -99,6 +102,7 @@ class Runtime:
         raise ValueError("bounded execution did not reach machine QA")
 
     def status(self, request_id):
+        ensure_visible(self.root, request_id)
         prep = self.preparations.snapshot(request_id)
         result = {"id":request_id,"request":prep["request"],"status":prep["status"],
                   "source_revision":prep["source_revision"],"error_code":prep["error_code"],
