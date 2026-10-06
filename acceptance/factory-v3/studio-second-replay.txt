@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<stdin>", line 18, in <module>
+  File "/app/material_first/engine.py", line 238, in prepare
+    brief = self.operations.research(deepcopy(request))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/material_first/operations.py", line 103, in research
+    validate_evidence(evidence)
+  File "/app/factory_v3/grounding.py", line 31, in validate_evidence
+    raise ValueError("fact support is not an exact source quotation")
+ValueError: fact support is not an exact source quotation
