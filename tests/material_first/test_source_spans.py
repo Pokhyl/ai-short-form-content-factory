@@ -16,6 +16,43 @@ def source(text, identity='source-1'):
 
 
 class SourceSpanTests(unittest.TestCase):
+    def test_saved_neutron_fact_scope_is_independent_of_controlled_photo_contexts(self):
+        saved = json.loads((Path(__file__).parent / 'fixtures/neutron-uk60-brief-failure.json').read_text())
+        draft = saved['draft']
+        mapped = {f for t in draft['visual_targets'] for f in t['fact_ids']}
+        self.assertEqual(set(draft['required_fact_ids']) - mapped, {'fact-3'})
+        # Actual saved source/fact response; newly selected photographic contexts
+        # are controlled here, not represented as a fresh provider response.
+        result = {k: copy.deepcopy(draft[k]) for k in ('facts', 'required_fact_ids')}
+        result['photo_contexts'] = {
+            'setting': {'subject': 'Photographic star fields in the night sky', 'query': 'night sky stars'},
+            'subject': {'subject': 'Photographic nebulae from astronomical observations', 'query': 'nebula astrophotography'},
+            'detail': {'subject': 'Telescopes used to observe distant stars', 'query': 'observatory telescope'}}
+        def generate(key, instruction, context, schema):
+            validate_json(result, schema)
+            return result, {'receipt_id': 'controlled-photo-contexts'}
+        ops = Operations('.', SimpleNamespace(fetch=lambda *args: saved['sources']),
+                         SimpleNamespace(generate=generate), None, None)
+        brief = ops.research({'topic': 'Нейтронная звезда', 'language': 'uk', 'seconds': 60})
+        self.assertEqual(brief['required_fact_ids'], draft['required_fact_ids'])
+        self.assertEqual(brief['evidence']['facts'][2]['text'], draft['facts'][2]['text'])
+        validate_evidence(brief['evidence'])
+        self.assertTrue(all(set(draft['required_fact_ids']) <= set(t['fact_ids']) for t in brief['visual_targets']))
+
+    def test_contextual_photos_cannot_excuse_missing_or_invented_narration_facts(self):
+        from material_first.engine import validate_story, MaterialUnavailable
+        from material_first.visuals import POLICY
+        evidence = {'facts': [{'id': f'f{i}'} for i in range(3)]}
+        request = {'presentation_policy': POLICY, 'required_fact_ids': ['f0', 'f1', 'f2']}
+        materials = [{'id': 'photo', 'sha256': 'unique', 'visible_description': 'Night sky',
+                      'source_interval': None, 'capacity_ms': 60000}]
+        beat = {'material_id': 'photo', 'narration': 'Controlled text', 'fact_ids': ['f0', 'f1']}
+        with self.assertRaisesRegex(MaterialUnavailable, 'required topic coverage'):
+            validate_story(request, evidence, materials, {'beats': [beat]})
+        beat['fact_ids'] = ['invented']
+        with self.assertRaisesRegex(ValueError, 'support'):
+            validate_story(request, evidence, materials, {'beats': [beat]})
+
     def test_full_saved_source_corpus_reproduces_failure_and_binds_actual_original(self):
         path = Path(__file__).parent / 'fixtures/studio-ru30-quotation-failure.json'
         fixture = json.loads(path.read_text())
@@ -90,9 +127,8 @@ class SourceSpanTests(unittest.TestCase):
                     facts = [{'id': f'f{i}', 'text': f'Controlled fact {i}',
                               'support': [{'span_id': spans[i % 2]['id']}]} for i in range(3)]
                     result = {'facts': facts, 'required_fact_ids': ['f0', 'f1', 'f2'],
-                        'visual_targets': [{'id': f'v{i}', 'fact_ids': [f'f{i}'],
-                            'must_show': f'Different role {i}', 'must_not_show': 'Other role',
-                            'query': f'context {i}'} for i in range(3)]}
+                        'photo_contexts': {role: {'subject': f'Different role {i}', 'query': f'context {i}'}
+                            for i, role in enumerate(('setting', 'subject', 'detail'))}}
                     validate_json(result, schema)
                     return result, {'receipt_id': 'controlled'}
                 ops = Operations('.', SimpleNamespace(fetch=lambda *args: sources),

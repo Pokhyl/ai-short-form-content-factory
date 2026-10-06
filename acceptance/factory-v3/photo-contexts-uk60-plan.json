@@ -1,0 +1,23 @@
+{
+  "id": "43e2b4cd-fddf-4b68-acf4-57cbcc720af2",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "maximum_fresh_requests": 1,
+  "question": "Does the separate source-fact/photographic-context protocol reach actual UK60 Vision output for the owner topic without the false fact-to-target gate?",
+  "immutable_failed_id": "e4e64b34-fd5a-461b-83a8-a04b4d87f9ee",
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 42,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "model": "gemini-3.5-flash-lite",
+  "expected_quota": "Model/image tokens depend on actual accepted pool, one validated TTS input; free-tier and monthly gates retained, no paid fallback.",
+  "stop": "Any terminal failure/unknown ends this verification; no resubmission or additional diagnostic job.",
+  "offline": "62 material+93 core; saved actual UK60 brief reproduces missing fact-3 before photos; controlled photo-context protocol retains every narration fact. Actual new planner/photos remain unverified."
+}

@@ -24,11 +24,9 @@ class Model:
                     if support['source_id'] == s['source_id'] and support['quote'] in s['text'])}
                     for support in fact['support']]
             result = {'facts': facts,
-                      'required_fact_ids': ['f0', 'f1', 'f2'], 'visual_targets': [
-                          {'id': 'v'+str(i), 'fact_ids': ['f'+str(i)],
-                           'must_show': 'Prominent explanatory detail '+str(i),
-                           'must_not_show': 'Generic subject without detail', 'query': 'detail '+str(i)}
-                          for i in range(3)]}
+                      'required_fact_ids': ['f0', 'f1', 'f2'], 'photo_contexts': {
+                          role: {'subject': 'Prominent explanatory detail '+str(i), 'query': 'detail '+str(i)}
+                          for i, role in enumerate(('setting', 'subject', 'detail'))}}
         elif key.startswith('material-inspect-batch:'):
             saved_calls = self.calls[:]
             row_schema = copy.deepcopy(schema['properties']['photos']['items'])

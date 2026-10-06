@@ -1,0 +1,130 @@
+{
+  "id": "e4e64b34-fd5a-461b-83a8-a04b4d87f9ee",
+  "request": {
+    "topic": "Нейтронная звезда",
+    "seconds": 60,
+    "language": "uk",
+    "visual_validation_mode": "gemini"
+  },
+  "draft": {
+    "facts": [
+      {
+        "id": "fact-1",
+        "text": "Нейтро́нная звезда́ — космическое тело, являющееся одним из возможных результатов эволюции звёзд, состоящее в основном из нейтронной сердцевины, покрытой сравнительно тонкой корой вещества.",
+        "support": [
+          {
+            "span_id": "s1-0-1094"
+          }
+        ]
+      },
+      {
+        "id": "fact-2",
+        "text": "Когда все ядерное топливо в активной зоне израсходовано, масса ядра звезды начинает превышать предел Чандрасекара, и ядро начинает быстро уплотняться под действием гравитации.",
+        "support": [
+          {
+            "span_id": "s1-1094-2113"
+          }
+        ]
+      },
+      {
+        "id": "fact-3",
+        "text": "При сжатии ядра происходит слияние электронов и протонов в нейтроны в процессе электронного захвата с образованием мощного потока нейтрино.",
+        "support": [
+          {
+            "span_id": "s1-2113-3302"
+          }
+        ]
+      },
+      {
+        "id": "fact-4",
+        "text": "Когда плотность звезды достигает ядерной плотности, давление вырожденного нейтронного газа останавливает сжатие, а внешняя оболочка отбрасывается потоком нейтрино при взрыве сверхновой.",
+        "support": [
+          {
+            "span_id": "s1-2113-3302"
+          }
+        ]
+      },
+      {
+        "id": "fact-5",
+        "text": "В соответствии с законом сохранения момента импульса нейтронная звезда приобретает очень высокую угловую скорость вращения благодаря резкому уменьшению момента инерции остатка.",
+        "support": [
+          {
+            "span_id": "s1-3302-4411"
+          }
+        ]
+      },
+      {
+        "id": "fact-6",
+        "text": "Многие нейтронные звёзды обладают чрезвычайно сильным магнитным полем и высокой скоростью вращения, что приводит к наблюдаемым проявлениям в виде пульсаров.",
+        "support": [
+          {
+            "span_id": "s1-5431-6565"
+          }
+        ]
+      },
+      {
+        "id": "fact-7",
+        "text": "Внутреннее строение нейтронной звезды включает слои, состоящие из атмосферы, внешней коры, внутренней коры, а также внешнего и внутреннего ядер.",
+        "support": [
+          {
+            "span_id": "s1-6565-7684"
+          }
+        ]
+      },
+      {
+        "id": "fact-8",
+        "text": "В момент рождения температура нейтронной звезды очень высока, но она быстро падает за счёт нейтринного охлаждения, переходя затем к медленному тепловому излучению.",
+        "support": [
+          {
+            "span_id": "s1-8766-9959"
+          }
+        ]
+      }
+    ],
+    "required_fact_ids": [
+      "fact-1",
+      "fact-3",
+      "fact-4",
+      "fact-5",
+      "fact-7"
+    ],
+    "visual_targets": [
+      {
+        "id": "target-1",
+        "fact_ids": [
+          "fact-1",
+          "fact-4"
+        ],
+        "must_show": "Cosmic nebula and supernova explosion remnant representing stellar evolution and neutron star birth",
+        "must_not_show": "Close up microscopic view of atomic particles or laboratory charts",
+        "query": "supernova remnant nebula space astrophotography"
+      },
+      {
+        "id": "target-2",
+        "fact_ids": [
+          "fact-5",
+          "fact-6"
+        ],
+        "must_show": "Isolated rotating neutron star with magnetic field lines and energetic particle beams",
+        "must_not_show": "A standard main sequence yellow star like the Sun",
+        "query": "pulsar neutron star magnetic field space art"
+      },
+      {
+        "id": "target-3",
+        "fact_ids": [
+          "fact-7",
+          "fact-8"
+        ],
+        "must_show": "Cross-section diagram illustrating the internal layers and dense core of a neutron star",
+        "must_not_show": "An ordinary rocky planet cross-section or generic sphere without layer details",
+        "query": "neutron star internal structure diagram cross section"
+      }
+    ]
+  },
+  "search_calls": 0,
+  "tts_calls": 0,
+  "cause": "essential source facts omitted from explanatory targets",
+  "missing_fact_ids": [
+    "fact-3"
+  ]
+}

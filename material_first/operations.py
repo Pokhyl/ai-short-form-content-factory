@@ -79,9 +79,9 @@ class Operations:
         schema = obj({'facts': array(obj({'id': string(), 'text': string(),
             'support': array(obj({'span_id': string(s['id'] for s in spans)}), 1, 3)}), 3, 8),
             'required_fact_ids': array(string(), 3, 8),
-            'visual_targets': array(obj({'id': string(), 'fact_ids': array(string(), 1, 8),
-                'must_show': string(), 'must_not_show': string(),
-                'query': {**string(), 'maxLength': 100}}), 3, 3)})
+            'photo_contexts': obj({role: obj({'subject': string(),
+                'query': {**string(), 'maxLength': 100}})
+                for role in ('setting', 'subject', 'detail')})})
         desired_facts = max(3, min(8, (request['seconds'] + 7) // 8))
         result, _ = self.gemini.generate('material-brief',
             f'For {request["seconds"]} seconds, aim for {desired_facts} distinct source-backed facts, '
@@ -92,25 +92,33 @@ class Operations:
             'Select only spans that actually support that fact, including its qualifiers and numbers. '
             'Separate the starting condition, concrete mechanism/details, and consequence or purpose where supported. '
             'Do not merge multiple mechanisms into one broad topic statement, or paraphrase the same fact to fill slots. '
-            'Mark at least three essential distinct facts. Define exactly three distinct visual_targets, each '
-            'binding source fact_ids to concrete must_show and must_not_show conditions and an English photograph query. '
-            'Targets are practical visual variety roles: overall setting, subject close-up, related object/detail '
-            'or consequence. They are not exact scientific proof or three synonyms for the same composition. '
+            'Mark at least three essential distinct facts for narration. Separately define photo_contexts: '
+            'setting, subject, detail. Each has a subject describing a real photographable context and a broad English stock-photo query. '
+            'Visual contexts illustrate the topic; they need not depict each essential fact. For hidden, microscopic, '
+            'historical or distant subjects use observable surroundings, related physical objects or observation equipment. '
+            'Never request a diagram, cross-section, field lines, imagined particle beams, space art or a synthetic rendering. '
+            'Prefer broad photographic categories with many available pictures over the exact rare object. '
+            'The three contexts must differ in dominant subject, scale or setting. '
             'For example, a flowering meadow, a bee close-up, and a flower/pollen detail are different roles. '
             'Allow contextually relevant stock photographs; do not demand a rare precise action or anatomy angle. '
-            'must_show names the broad dominant focus; must_not_show excludes substituting the same main-subject '
-            'composition for every role. Facts are proved by source text, not photograph geometry.',
+            'Facts are proved by source text, not photograph geometry.',
             {**request, 'sources': [{k: s[k] for k in ('id', 'url', 'title', 'sha256') if k in s}
                                    for s in sources], 'source_spans': spans}, schema)
         evidence = bind_support(sources, spans, result['facts'])
         validate_evidence(evidence)
         if len(set(result['required_fact_ids'])) < 3:
             raise MaterialUnavailable('explanation needs three distinct source-backed aspects before material search')
-        validate_targets(result['visual_targets'], {f['id'] for f in evidence['facts']})
-        if not set(result['required_fact_ids']) <= {f for t in result['visual_targets'] for f in t['fact_ids']}:
-            raise MaterialUnavailable('essential source facts omitted from explanatory targets')
+        fact_ids = [f['id'] for f in evidence['facts']]
+        if not set(result['required_fact_ids']) <= set(fact_ids):
+            raise ValueError('required narration facts unknown')
+        targets = [{'id': 'v' + str(i), 'fact_ids': fact_ids[:],
+                    'must_show': result['photo_contexts'][role]['subject'],
+                    'must_not_show': 'Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role',
+                    'query': result['photo_contexts'][role]['query']}
+                   for i, role in enumerate(('setting', 'subject', 'detail'))]
+        validate_targets(targets, fact_ids)
         return {'evidence': evidence, 'required_fact_ids': result['required_fact_ids'],
-                'queries': result['visual_targets'], 'visual_targets': result['visual_targets']}
+                'queries': targets, 'visual_targets': targets}
 
     def discover(self, request, queries):
         if not isinstance(queries, list) or not 1 <= len(queries) <= 3:
