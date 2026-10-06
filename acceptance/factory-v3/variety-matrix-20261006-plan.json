@@ -1,0 +1,34 @@
+{
+  "runtime_revision": "2c774258f6feecf50065043bf612ca455b2e9c94",
+  "authorization": "User approved the practical preview and explicitly requested other topics, languages and timings on2026-10-06.",
+  "cases": [
+    {
+      "key": "coffee-en30",
+      "topic": "How does coffee get from the coffee plant to your cup?",
+      "language": "en",
+      "seconds": 30
+    },
+    {
+      "key": "bread-ru45",
+      "topic": "Как делают хлеб: от зерна до готовой буханки?",
+      "language": "ru",
+      "seconds": 45
+    },
+    {
+      "key": "chocolate-uk60",
+      "topic": "Як виготовляють шоколад: від какао до плитки?",
+      "language": "uk",
+      "seconds": 60
+    }
+  ],
+  "execution": "Sequential fresh normal product requests, one POST per case. Never retry failed/unknown job IDs. Inspect saved receipts on failure; complete other distinct authorized cases.",
+  "per_case_limits": {
+    "gemini": 15,
+    "search": 9,
+    "download": 12,
+    "research_search": 1,
+    "source_fetch": 6,
+    "tts": 1
+  },
+  "stop": "Terminal job state for each case; report actual MP4 results and failures. No paid fallback. No full job repetition to test another prompt."
+}

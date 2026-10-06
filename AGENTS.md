@@ -1,3 +1,6 @@
+## User-authorized varied acceptance matrix — 2026-10-06
+The user accepted the practical preview and explicitly requested different topics, languages and durations. Run fresh normal EN30, RU45 andUK60 cases sequentially. This supersedes the prior prohibition on full live requests for this explicit matrix. Preserve free-only limits and failed-job immutability; do not repeat cases blindly. See acceptance/factory-v3/variety-matrix-20261006-plan.json.
+
 ## Latest user practicality override — 2026-10-05
 The user explicitly said not to fixate on accuracy. Favor practical relevant visual variety; do not require a perfect photograph proving every narrated mechanism or a rare exact anatomy/action shot. New visual_targets are broad composition roles, at least two of three discovered roles are enough. Preserve source-backed narration and free-only operation. Do not restore the earlier microscopic-detail/three-exact-target coverage gate. The retained requirement is multiple different full-frame9:16 shots and varied subjects/scales/context. No more full production runs to try another prompt; use saved corpus and actual existing media first.
 
