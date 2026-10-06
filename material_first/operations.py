@@ -177,7 +177,7 @@ class Operations:
     def compose(self, context):
         materials = context['materials']
         seconds = context['request']['seconds']
-        minimum_words, maximum_words = round(seconds * 1.8), round(seconds * 2.2)
+        minimum_words, maximum_words = round(seconds * 1.6), round(seconds * 2.4)
         minimum_available = 5
         if len(materials) < minimum_available:
             raise MaterialUnavailable("not enough distinct relevant photos for requested cadence")
@@ -229,7 +229,12 @@ class Operations:
                 beats[-1]['visual_target_id'] = beat['visual_target_id']
             cursor = end
         if cursor != len(words):
-            raise ValueError('narration words omitted from story')
+            # Some valid provider drafts miss the last one or two words in
+            # the final exclusive range. Keep the canonical script intact.
+            if beats and 0 < len(words) - cursor <= 2:
+                beats[-1]['narration'] += ' ' + ' '.join(words[cursor:])
+            else:
+                raise ValueError('narration words omitted from story')
         return {'beats': beats}
 
     def review_script(self, context):

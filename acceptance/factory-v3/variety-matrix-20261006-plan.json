@@ -16,10 +16,12 @@
       "seconds": 45
     },
     {
-      "key": "chocolate-uk60",
-      "topic": "Як виготовляють шоколад: від какао до плитки?",
+      "key": "water-cycle-uk60",
+      "topic": "Як працює кругообіг води в природі?",
       "language": "uk",
-      "seconds": 60
+      "seconds": 60,
+      "prior_topic": "Як виготовляють шоколад: від какао до плитки?",
+      "reason": "Chocolate yielded only4 accepted photos; user permits practical topic choice and requested different topics."
     }
   ],
   "execution": "Sequential fresh normal product requests, one POST per case. Never retry failed/unknown job IDs. Inspect saved receipts on failure; complete other distinct authorized cases.",

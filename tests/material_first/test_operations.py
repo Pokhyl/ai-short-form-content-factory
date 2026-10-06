@@ -156,7 +156,7 @@ class OperationTests(unittest.TestCase):
     def test_total_narration_budget_blocks_before_voice(self):
         from material_first.operations import NarrationBudgetExceeded
         model = SimpleNamespace(generate=lambda *args, **kwargs:
-            ({"words": ["word"] * 40, "beats": []}, {}))
+            ({"words": ["word"] * 50, "beats": []}, {}))
         operations = Operations('.', None, model, None, None)
         context = {"request": {"seconds": 15}, "materials": [{"id": "a"+str(i)} for i in range(5)],
                    "evidence": {"facts": [{"id": "f"}]}}
@@ -234,3 +234,16 @@ class OperationTests(unittest.TestCase):
         saved['facts'][0]['support'][0]['quote'] += ' Invented words.'
         with self.assertRaises(ValueError):
             validate_evidence(contiguous_support(saved))
+
+    def test_saved_russian_eighty_word_script_is_not_rejected_for_missing_one_estimated_word(self):
+        import json
+        saved = json.loads((Path(__file__).parent / 'fixtures/bread-ru45-pacing-failure.json').read_text())
+        self.assertEqual(len(saved['draft']['words']), 80)
+        class Composer:
+            def generate(self, key, instruction, context, schema):
+                validate_json(saved['draft'], schema)
+                return saved['draft'], {}
+        context = {'request': {'seconds':45,'visual_targets':saved['brief']['visual_targets']},
+                   'materials':saved['materials'],'evidence':{'facts':saved['brief']['facts']}}
+        result = Operations('.',None,Composer(),None,None).compose(context)
+        self.assertEqual(' '.join(b['narration'] for b in result['beats']), ' '.join(saved['draft']['words']))
