@@ -1,3 +1,7 @@
+## Download429 correction — 2026-10-07
+
+Owner continued with «и». fbeb0fc7 stopped unknown on explicit photo HTTP429 after13downloads/5Gemini,0TTS/MP4; immutable, no retry. New correction records explicit429 only for download as unavailable and skips remaining same-host candidates without calls/retries; source/model/paid429 and ambiguous transport remain terminal. SQL function restricts429 to download.213 controlled checks PASS (101core+112material). Deploy pending, no new verification case automatically. project_ready=false.
+
 ## Owner directs actual completion — 2026-10-07
 
 Owner explicitly asked«кого ждем?»; continue actual completion now. One new bounded normal UK60 Vision casefbeb0fc7-aa0f-44ad-a4dc-4556af9173f8 planned in continued-uk60-plan.json on LIVE0e65ccf after212 packaged checks and actual saved planner replay. This supersedes prior no-new-case stopping instruction for this case only. Same16Gemini/30downloads/9providersearches/1TTS/free-only; no failed-ID rerun. Stop on terminal error/unknown, preserve evidence. No current new MP4/HUMAN acceptance.

@@ -2,6 +2,8 @@
 import hashlib
 from pathlib import Path
 from uuid import UUID
+from urllib.parse import urlsplit
+from .preparation import ResourceUnavailable
 from .preflight import digest, validate_asset
 from .providers import media_url
 from .worker_adapters import probe_photo
@@ -12,9 +14,13 @@ class PhotoDownload:
         self.root = Path(root).resolve()
         self.request_id = str(UUID(str(request_id)))
         self.calls, self.http, self.probe = calls, http, probe
+        self.rate_limited_hosts = {}
 
     def download(self, candidate):
         url = media_url(candidate["provider"], candidate["media_url"])
+        host = urlsplit(url).hostname
+        if host in self.rate_limited_hosts:
+            raise ResourceUnavailable(self.rate_limited_hosts[host])
         identity = {"request_id": self.request_id, "asset_id": candidate["id"],
                     "url": url, "byte_limit": 8 * 1024 * 1024}
         def send():
@@ -42,6 +48,11 @@ class PhotoDownload:
                 asset['visual_fingerprint'] = fingerprint(file, asset['sha256'], dimensions['width'], dimensions['height'])
             validate_asset(self.root, asset)
             return asset
-        asset = self.calls.run("download:" + candidate["id"], "download", identity, send, allow_unavailable=True)
+        try:
+            asset = self.calls.run("download:" + candidate["id"], "download", identity, send, allow_unavailable=True)
+        except ResourceUnavailable as error:
+            if error.receipt.get("status") == 429:
+                self.rate_limited_hosts[host] = error.receipt
+            raise
         validate_asset(self.root, asset)
         return asset

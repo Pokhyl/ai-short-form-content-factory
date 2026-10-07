@@ -78,7 +78,8 @@ class BudgetedCalls:
             return response
         except BaseException as error:
             receipt = getattr(error, "receipt", None)
-            if allow_unavailable and isinstance(receipt, dict) and receipt.get("status") in {403, 404, 410}:
+            if allow_unavailable and isinstance(receipt, dict) and (receipt.get("status") in {403, 404, 410} or
+                    (kind == "download" and receipt.get("status") == 429)):
                 self.ledger.unavailable(self.request_id, key, receipt)
                 raise ResourceUnavailable(receipt) from None
             try:

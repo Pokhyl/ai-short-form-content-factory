@@ -1,0 +1,16 @@
+{
+  "id": "fbeb0fc7-aa0f-44ad-a4dc-4556af9173f8",
+  "status": "unknown",
+  "source_revision": "0e65ccf34dca945ff021808b63a8f145653d7100",
+  "terminal_call": {
+    "kind": "download",
+    "error_code": "HTTPFailure",
+    "status": 429,
+    "retry_after": "1"
+  },
+  "download_successes": 13,
+  "gemini_successes": 5,
+  "tts_calls": 0,
+  "mp4": false,
+  "rerun": false
+}

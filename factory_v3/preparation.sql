@@ -110,12 +110,13 @@ END $$;
 CREATE OR REPLACE FUNCTION factory_v3.unavailable_preparation_call(p_id uuid,p_key text,p_receipt jsonb)
 RETURNS void LANGUAGE plpgsql AS $$
 BEGIN
- IF NOT COALESCE((p_receipt->>'status')::int IN (403,404,410),false) THEN RAISE EXCEPTION 'not a definitive resource rejection'; END IF;
+ IF NOT COALESCE((p_receipt->>'status')::int IN (403,404,410,429),false) THEN RAISE EXCEPTION 'not a definitive resource rejection'; END IF;
  PERFORM 1 FROM factory_v3.preparations WHERE id=p_id AND status='preparing' FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'preparation terminal'; END IF;
  UPDATE factory_v3.preparation_calls SET state='failed',response=p_receipt,error_code='ResourceUnavailable',finished_at=now()
- WHERE preparation_id=p_id AND call_key=p_key AND state='started';
- IF NOT FOUND THEN RAISE EXCEPTION 'call not started'; END IF;
+ WHERE preparation_id=p_id AND call_key=p_key AND state='started'
+ AND ((p_receipt->>'status')::int != 429 OR kind='download');
+ IF NOT FOUND THEN RAISE EXCEPTION 'call not started or rejection not allowed for operation'; END IF;
 END $$;
 
 CREATE TABLE IF NOT EXISTS factory_v3.preparation_runs (

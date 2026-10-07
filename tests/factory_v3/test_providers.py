@@ -9,7 +9,7 @@ import urllib.error
 from pathlib import Path
 from factory_v3.download import PhotoDownload
 from factory_v3.http import HTTPFailure, JSONHTTP
-from factory_v3.preparation import BudgetedCalls
+from factory_v3.preparation import BudgetedCalls, ResourceUnavailable
 from factory_v3.providers import PhotoSearch, candidates, commons_license, media_url
 from factory_v3.preflight import digest
 from test_preparation import FakeLedger
@@ -143,6 +143,28 @@ class ProviderTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "changed"):
                 downloader.download(candidate)
             self.assertEqual(len(http.downloads), 1)
+
+    def test_download429_skips_host_without_retry_and_other_host_still_downloads(self):
+        class LimitedHTTP(HTTP):
+            def binary_receipt(self, url):
+                if 'cdn.pixabay.com' in url:
+                    self.downloads.append(url)
+                    raise HTTPFailure(429, {'Retry-After': '1'})
+                return super().binary_receipt(url)
+        with tempfile.TemporaryDirectory() as temp:
+            http = LimitedHTTP(); ledger = FakeLedger(); ledger.limit = 3
+            downloader = PhotoDownload(temp, 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+                BudgetedCalls(ledger, 'test'), http,
+                probe=lambda file: {'width': 1080, 'height': 1920})
+            first = candidates('pixabay', {'hits': [PIX]})[0]
+            other = dict(first, id='pixabay:2', media_url='https://cdn.pixabay.com/photo/other.jpg')
+            for candidate in [first, first, other]:
+                with self.assertRaises(ResourceUnavailable): downloader.download(candidate)
+            self.assertEqual(len(http.downloads), 1)
+            self.assertFalse(ledger.terminal)
+            downloader.download(candidates('pexels', {'photos': [PEX]})[0])
+            self.assertEqual(len(http.downloads), 2)
+            self.assertEqual(len(ledger.claims), 2)
 
     def test_http429_preserves_rate_headers_without_credential_url_or_body(self):
         class Opener:
