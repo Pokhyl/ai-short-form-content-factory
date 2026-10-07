@@ -1,0 +1,14 @@
+✔ classic script preserves native history; successful delete clears selection and refreshes cards (3.039125ms)
+✔ cancel leaves video and card intact without a server deletion (0.648125ms)
+✔ server refusal retains card and reports failure without claiming deletion (0.742ms)
+✔ terminal failure shows a saved failure notice instead of promising an upcoming video (0.552833ms)
+✔ active preparation keeps upcoming result visible and clears terminal notice (0.41125ms)
+✔ switching to a failed duplicate title updates the share URL and never leaves old video controls active (0.645458ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 65.944334

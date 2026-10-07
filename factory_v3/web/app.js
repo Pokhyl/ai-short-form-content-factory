@@ -39,7 +39,19 @@ async function loadHistory() {
 }
 async function show(id) {
   clearTimeout(pollTimer); pollTimer = null;
+  const changed = selected !== id;
   selected = id;
+  if (changed) {
+    detail = null;
+    $("result").hidden = true;
+    $("delete-video").disabled = true;
+    $("video").pause();
+  }
+  const url = new URL(location.href);
+  if (url.searchParams.get("request") !== id) {
+    url.searchParams.set("request", id);
+    window.history.replaceState(null, "", url);
+  }
   for (const button of $("history").children) if (button.dataset.requestId) button.setAttribute("aria-current", String(button.dataset.requestId === id));
   localStorage.setItem("factoryV3Last", id);
   const response = await api("/api/requests/" + id);
@@ -121,8 +133,10 @@ $("delete-video").onclick = async () => {
   $("video").pause(); $("video").removeAttribute("src"); $("video").load();
   try {
     await post("/api/requests/" + id + "/delete", {delete:true});
-    if (selected === id) { selected = null; detail = null; localStorage.removeItem("factoryV3Last"); $("result").hidden = true; }
-    const url = new URL(location.href); url.searchParams.delete("request"); window.history.replaceState(null, "", url);
+    if (selected === id) {
+      selected = null; detail = null; localStorage.removeItem("factoryV3Last"); $("result").hidden = true;
+      const url = new URL(location.href); url.searchParams.delete("request"); window.history.replaceState(null, "", url);
+    }
     await loadHistory(); $("message").textContent = "Видео и связанные файлы удалены с сервера.";
   } catch(error) { report(error); $("delete-video").disabled = false; }
 };
