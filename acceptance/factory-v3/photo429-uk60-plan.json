@@ -1,0 +1,25 @@
+{
+  "id": "4f18786e-dea3-431f-b57e-61db883fcb46",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "runtime_revision": "9e44cae80146436eb49b5af11ead526e46b117b3",
+  "authorization": "Owner explicitly directs actual work: почему ты ничего не делаешь. One new bounded normal request after deployed download429 correction.",
+  "maximum_fresh_requests": 1,
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 30,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "expected_steps": "brief -> nine search pools -> one availability planner -> up to eight independent pixel batches -> compose -> native edit -> complete keyed independent factual/native review -> one voice -> alignment -> exact60s whole-photo render/audit",
+  "question": "Does actual current availability planner select real metadata-grounded contexts and produce a qualified grounded Ukrainian MP4 without speculative hidden-object searches consuming equal download slots?",
+  "offline": "213 local and exact-image checks PASS; publichealth current revision.",
+  "remaining": "Unseen actual planner response, new target-qualified pixel judgments, complete keyed/native review, one voice and current MP4 not verified. Controlled metadata selection is not acceptance.",
+  "stop": "Any terminal error/unknown ends this case. Preserve failed ID, no repeat/new case automatically, no paid fallback/quota expansion/second TTS/manual approvals.",
+  "human_pass": false
+}
