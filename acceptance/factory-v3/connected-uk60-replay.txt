@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "<stdin>", line 50, in <module>
+  File "/app/material_first/engine.py", line 320, in prepare
+    validate_material(self.root, asset, self.probe)
+  File "/app/material_first/engine.py", line 57, in validate_material
+    raise ValueError("material resolution too low")
+ValueError: material resolution too low

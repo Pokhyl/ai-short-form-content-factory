@@ -1,0 +1,303 @@
+{
+  "saved_request": "46c7c281-737d-4264-bef1-6be273b59976",
+  "status": {
+    "id": "46c7c281-737d-4264-bef1-6be273b59976",
+    "request": {
+      "topic": "Нейтронная звезда",
+      "seconds": 60,
+      "language": "uk",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "failed",
+    "source_revision": "589e24fb3304d9ac12804ab82420665f367f46be",
+    "error_code": "ValueError",
+    "machine_pass": false,
+    "human_pass": false
+  },
+  "model_brief": {
+    "facts": [
+      {
+        "id": "fact-1",
+        "text": "Нейтронні зірки утворюються в результаті еволюції та подальшого гравітаційного колапсу та вибуху надзвичайно масивних зірок, початкова маса яких перевищувала масу Сонця більш ніж у 8 разів.",
+        "support": [
+          {
+            "span_id": "s1-1094-2113"
+          }
+        ]
+      },
+      {
+        "id": "fact-2",
+        "text": "Під час сильного стискання та електронного захоплення в недрах протозвезди протони та електрони зливаються, утворюючи нейтрони та потужний потік електронних нейтрино.",
+        "support": [
+          {
+            "span_id": "s1-2113-3302"
+          }
+        ]
+      },
+      {
+        "id": "fact-3",
+        "text": "Коли густина досягає ядерних значень 4·10^17 кг/м³, тиск виродженого нейтронного газу зупиняє подальше стискання зірки.",
+        "support": [
+          {
+            "span_id": "s1-2113-3302"
+          }
+        ]
+      },
+      {
+        "id": "fact-4",
+        "text": "Зберігаючи закон збереження кутового моменту під час різкого зменшення радіуса, нейтронна зірка набуває надзвичайно високої швидкості обертання навколо власної осі — до кількох сотень обертів за секунду.",
+        "support": [
+          {
+            "span_id": "s1-0-1094"
+          },
+          {
+            "span_id": "s1-3302-4411"
+          }
+        ]
+      },
+      {
+        "id": "fact-5",
+        "text": "При масі, порівнянній з масою Сонця, типовий радіус нейтронної зірки становить лише 10-20 кілометрів, що зумовлює колосальну середню густину речовини.",
+        "support": [
+          {
+            "span_id": "s1-0-1094"
+          }
+        ]
+      },
+      {
+        "id": "fact-6",
+        "text": "Магнітне поле на поверхні нейтронних зірок може досягати гігантських значень до 10^11 Тл і вище, створюючи потужну магнітосферу.",
+        "support": [
+          {
+            "span_id": "s1-0-1094"
+          }
+        ]
+      },
+      {
+        "id": "fact-7",
+        "text": "Потужне випромінювання та заряджені частинки виливаються вузькими пучками з магнітних полюсів об'єкта, утворюючи ефект космічного маяка, який спостерігається як пульсар.",
+        "support": [
+          {
+            "span_id": "s2-1064-2223"
+          },
+          {
+            "span_id": "s2-20704-21762"
+          }
+        ]
+      },
+      {
+        "id": "fact-8",
+        "text": "Взаємодія та зіткнення нейтронних зірок у подвійних системах призводять до виникнення потужних гравітаційних хвиль і нуклеосинтезу важких елементів, таких як золото і платина.",
+        "support": [
+          {
+            "span_id": "s2-2223-3153"
+          },
+          {
+            "span_id": "s2-34059-35142"
+          }
+        ]
+      }
+    ],
+    "required_fact_ids": [
+      "fact-1",
+      "fact-4",
+      "fact-5",
+      "fact-7"
+    ],
+    "photo_contexts": {
+      "setting": {
+        "subject": "Крабоподібна туманність із залишками спалаху надзвичайно масивної зірки",
+        "query": "Crab Nebula supernova remnant space",
+        "fact_ids": [
+          "fact-1"
+        ]
+      },
+      "subject": {
+        "subject": "Художня концепція компактної нейтронної зірки",
+        "query": "neutron star space art illustration",
+        "fact_ids": [
+          "fact-4",
+          "fact-5"
+        ]
+      },
+      "detail": {
+        "subject": "Стилізоване зображення пульсара з магнітними силовими лініями та променями випромінювання",
+        "query": "pulsar magnetic field beams animation",
+        "fact_ids": [
+          "fact-6",
+          "fact-7"
+        ]
+      }
+    }
+  },
+  "small_asset": {
+    "id": "wikimedia:6437008",
+    "path": "catalog/46c7c281-737d-4264-bef1-6be273b59976/e9bcab94806c0658999dbc559ebd69ca33e81b8a294e663c18c7b2f97db4c99b/selected.jpg",
+    "width": 300,
+    "author": "Cypress music",
+    "height": 200,
+    "sha256": "cd10dd6ca03327e360c8b81f5f4c4cd90533ef2bf8daf5c88698db349d931ef2",
+    "license": "Public Domain",
+    "provider": "wikimedia",
+    "media_url": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Pulsarwikipedia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "media_type": "photo",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Pulsarwikipedia.jpg",
+    "attribution": "Cypress music / Wikimedia Commons / Public domain",
+    "description": "Pulsar photo",
+    "license_url": "https://commons.wikimedia.org/wiki/Help:Public_domain",
+    "topic_protocol": "topic-specific-v1",
+    "visual_targets": [
+      {
+        "id": "v0",
+        "query": "Crab Nebula supernova remnant space",
+        "fact_ids": [
+          "fact-1"
+        ],
+        "must_show": "Крабоподібна туманність із залишками спалаху надзвичайно масивної зірки",
+        "must_not_show": "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role"
+      },
+      {
+        "id": "v1",
+        "query": "neutron star space art",
+        "fact_ids": [
+          "fact-4",
+          "fact-5"
+        ],
+        "must_show": "Художня концепція компактної нейтронної зірки",
+        "must_not_show": "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role"
+      },
+      {
+        "id": "v2",
+        "query": "pulsar",
+        "fact_ids": [
+          "fact-6",
+          "fact-7"
+        ],
+        "must_show": "Стилізоване зображення пульсара з магнітними силовими лініями та променями випромінювання",
+        "must_not_show": "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role"
+      }
+    ],
+    "discovery_query": "pulsar",
+    "source_metadata": {
+      "ns": 6,
+      "index": 2,
+      "title": "File:Pulsarwikipedia.jpg",
+      "pageid": 6437008,
+      "imageinfo": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Pulsarwikipedia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "mime": "image/jpeg",
+          "size": 13671,
+          "width": 300,
+          "height": 200,
+          "thumburl": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Pulsarwikipedia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+          "thumbwidth": 1600,
+          "extmetadata": {
+            "Artist": {
+              "value": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Cypress_music&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Cypress music (page does not exist)\">Cypress music</a>",
+              "source": "commons-desc-page"
+            },
+            "Credit": {
+              "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+              "source": "commons-desc-page"
+            },
+            "License": {
+              "value": "pd",
+              "hidden": "",
+              "source": "commons-templates"
+            },
+            "DateTime": {
+              "value": "2009-04-07 12:44:31",
+              "hidden": "",
+              "source": "mediawiki-metadata"
+            },
+            "Categories": {
+              "value": "Pulsar (musical group)|Self-published work|PD-self|Black and white group photographs of musicians",
+              "hidden": "",
+              "source": "commons-categories"
+            },
+            "ObjectName": {
+              "value": "Pulsarwikipedia",
+              "source": "mediawiki-metadata"
+            },
+            "UsageTerms": {
+              "value": "Public domain",
+              "source": "commons-desc-page"
+            },
+            "Assessments": {
+              "value": "",
+              "hidden": "",
+              "source": "commons-categories"
+            },
+            "Copyrighted": {
+              "value": "False",
+              "hidden": "",
+              "source": "commons-desc-page"
+            },
+            "Restrictions": {
+              "value": "",
+              "hidden": "",
+              "source": "commons-desc-page"
+            },
+            "DateTimeOriginal": {
+              "value": "2008-04-07",
+              "source": "commons-desc-page"
+            },
+            "ImageDescription": {
+              "value": "Pulsar photo",
+              "source": "commons-desc-page"
+            },
+            "LicenseShortName": {
+              "value": "Public domain",
+              "hidden": "",
+              "source": "commons-desc-page"
+            },
+            "AttributionRequired": {
+              "value": "false",
+              "hidden": "",
+              "source": "commons-desc-page"
+            },
+            "CommonsMetadataExtension": {
+              "value": 1.2,
+              "hidden": "",
+              "source": "extension"
+            }
+          },
+          "thumbheight": 1067,
+          "thumbattribs": {
+            "src": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Pulsarwikipedia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+            "width": 1600,
+            "height": 1067,
+            "loading": "lazy",
+            "decoding": "async"
+          },
+          "descriptionurl": "https://commons.wikimedia.org/wiki/File:Pulsarwikipedia.jpg",
+          "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=6437008"
+        }
+      ],
+      "imagerepository": "local"
+    },
+    "download_receipt": {
+      "status": 200,
+      "headers": {
+        "date": "Tue, 06 Oct 2026 21:01:22 GMT",
+        "content-type": "image/jpeg",
+        "x-ratelimit-limit": "600000, 600000;w=60",
+        "x-ratelimit-reset": "49",
+        "x-ratelimit-remaining": "599999"
+      }
+    },
+    "license_original": "Public domain",
+    "provider_asset_id": "6437008",
+    "visual_fingerprint": {
+      "rgb": "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",
+      "width": 300,
+      "height": 200,
+      "algorithm": "rgb32-v1",
+      "source_sha256": "cd10dd6ca03327e360c8b81f5f4c4cd90533ef2bf8daf5c88698db349d931ef2"
+    },
+    "discovery_target_id": "v2",
+    "visual_qualification_protocol": "qualified-target-v1"
+  },
+  "note": "Actual current brief requested synthetic subjects despite instructions. Downloaded Commons asset was300x200; local read-only replay raised material resolution too low before more images/text/TTS."
+}

@@ -79,3 +79,31 @@ class PhotographSearchTests(unittest.TestCase):
         for provider in ('wikimedia','pexels','pixabay'):
             self.assertTrue(any(c['provider']==provider for c in found))
         self.assertFalse(any(described_as_synthetic(c) for c in found))
+
+    def test_actual_art_query_becomes_an_observable_entity_requirement(self):
+        import json
+        from pathlib import Path
+        saved=json.loads((Path(__file__).parent/'fixtures/observable-candidate-failure.json').read_text())
+        contexts=saved['model_brief']['photo_contexts']
+        self.assertEqual(photograph_query(contexts['subject']['query']),'neutron star space')
+        self.assertEqual(photograph_query(contexts['detail']['query']),'pulsar')
+        self.assertIn('Художня',contexts['subject']['subject'])
+        self.assertIn('Стилізоване',contexts['detail']['subject'])
+
+    def test_actual_tiny_candidate_is_excluded_before_download_and_other_pools_survive(self):
+        import json
+        from pathlib import Path
+        small=json.loads((Path(__file__).parent/'fixtures/observable-candidate-failure.json').read_text())['small_asset']
+        good=dict(small,id='adequate-observation',width=1920,height=1920)
+        search=SimpleNamespace(search=lambda *args:{'candidates':[small,good]})
+        found=Operations('.',None,None,search,None).discover({'seconds':60,'presentation_policy':TOPIC_POLICY},['pulsar'])
+        self.assertEqual([c['id'] for c in found],['adequate-observation'])
+        self.assertEqual(small['width'],300);self.assertEqual(small['height'],200)
+
+    def test_provider_source_slug_declaring_visualization_rejects_even_with_sparse_caption(self):
+        self.assertTrue(described_as_synthetic({'description':'A star in space',
+            'source_url':'https://www.pexels.com/photo/dramatic-visualization-of-magnetic-neutron-star-38039464/'}))
+        self.assertTrue(described_as_synthetic({'description':'A subject',
+            'source_url':'https://www.pexels.com/photo/artist-s-concept-of-a-star-1/'}))
+        self.assertFalse(described_as_synthetic({'description':'A photograph of an artist',
+            'source_url':'https://www.pexels.com/photo/an-artist-at-work-1/'}))

@@ -114,7 +114,8 @@ class Operations:
         if not set(result['required_fact_ids']) <= set(fact_ids):
             raise ValueError('required narration facts unknown')
         targets = [{'id': 'v' + str(i), 'fact_ids': result['photo_contexts'][role]['fact_ids'][:],
-                    'must_show': result['photo_contexts'][role]['subject'],
+                    'must_show': (photograph_query(result['photo_contexts'][role]['query'])
+                                  if request.get('presentation_policy') == TOPIC_POLICY else result['photo_contexts'][role]['subject']),
                     'must_not_show': 'Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role',
                     'query': (photograph_query(result['photo_contexts'][role]['query'])
                               if request.get('presentation_policy') == TOPIC_POLICY else result['photo_contexts'][role]['query'])}
@@ -136,7 +137,8 @@ class Operations:
                 result = self.search.search(provider, query, 'all' if request.get('presentation_policy') in WHOLE_POLICIES else 'portrait')
                 pool = deepcopy(result['candidates'])
                 if request.get('presentation_policy') == TOPIC_POLICY:
-                    pool = [candidate for candidate in pool if not described_as_synthetic(candidate)]
+                    pool = [candidate for candidate in pool if not described_as_synthetic(candidate)
+                            and min(int(candidate.get('width',320)),int(candidate.get('height',320))) >= 320]
                     # Ranking, not a caption-only admission gate: sparse but
                     # relevant descriptions still reach independent inspection.
                     pool.sort(key=lambda candidate: -relevance(candidate, query))
@@ -216,6 +218,12 @@ class Operations:
             raise ValueError('unsupported actual photo bytes')
         return {'bytes': data, 'mime': mime, 'asset_id': asset['id']}
 
+    @staticmethod
+    def _image_metadata(asset):
+        return {**{key:asset[key] for key in ('source_url','author','license')},
+                'description':str(asset.get('description',''))[:4000],
+                'file_title':str(asset.get('source_metadata',{}).get('title',''))[:500]}
+
     def _inspection_schema(self, evidence, targets, qualified=False):
         schema = obj({'accepted': BOOL, 'is_real_material': BOOL,
             'medium': string(['photograph','observational_image','illustration','synthetic','unknown']),
@@ -276,7 +284,7 @@ class Operations:
         result, provenance = self.gemini.generate('material-inspect:' + asset['id'],
             self.INSPECTION_INSTRUCTION,
             {'topic': getattr(self,'topic',None), 'evidence': compact_evidence(evidence), 'visual_targets': targets,
-             'metadata': {k: asset[k] for k in ('source_url', 'author', 'license')}},
+             'metadata': self._image_metadata(asset)},
             self._inspection_schema(evidence, targets, asset.get('visual_qualification_protocol') == 'qualified-target-v1'), photo=self._photo(asset), max_tokens=2048)
         return self._inspection_receipt(asset, evidence, result, provenance)
 
@@ -301,7 +309,7 @@ class Operations:
         row_schema['required'].append('asset_id')
         schema = obj({'photos': array(row_schema, len(assets), len(assets))})
         context = {'topic': getattr(self,'topic',None), 'evidence': compact_evidence(evidence), 'visual_targets': targets,
-                   'assets': [{k: a[k] for k in ('id', 'source_url', 'author', 'license')} for a in assets]}
+                   'assets': [{'id':a['id'],**self._image_metadata(a)} for a in assets]}
         try:
             result, provenance = self.gemini.generate('material-inspect-batch:' + digest([a['id'] for a in assets]),
                 self.INSPECTION_INSTRUCTION, context, schema,

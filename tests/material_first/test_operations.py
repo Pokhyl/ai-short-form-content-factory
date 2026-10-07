@@ -417,3 +417,51 @@ class OperationTests(unittest.TestCase):
                 Producer(root,operations,probe=fixtures.probe).prepare('topic','pl',15)
             self.assertEqual(sum(k.startswith('material-inspect-batch:') for k in model.calls),1)
             self.assertNotIn('material-compose',model.calls)
+
+    def test_one_stale_dimension_small_file_does_not_abort_other_topic_photos(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);fixtures=Fixtures(root,['photo']*7)
+            for i,asset in enumerate(fixtures.assets):
+                file=root/asset['path'];file.write_bytes(b'\xff\xd8\xffphoto'+str(i).encode())
+                asset['sha256']=hashlib.sha256(file.read_bytes()).hexdigest()
+                asset.update(width=1920,height=1920)  # Provider may overstate actual selected file.
+            model=Model(fixtures)
+            operations=Operations(root,SimpleNamespace(fetch=lambda *args:fixtures.evidence['sources']),model,
+                SimpleNamespace(search=lambda *args:{'candidates':fixtures.assets}),fixtures)
+            probe=lambda path:({'width':300,'height':200,'duration_ms':None} if path.name=='0.jpg' else fixtures.probe(path))
+            frozen=Producer(root,operations,probe=probe).prepare('topic','pl',15)
+            self.assertNotIn('a0',{a['id'] for a in frozen['payload']['assets']})
+            self.assertEqual(len(frozen['payload']['visuals']),5)
+            self.assertIn('material-compose',model.calls)
+
+    def test_inspector_receives_bounded_object_identifying_caption(self):
+        asset={'source_url':'https://example.invalid/source','author':'Author','license':'CC0',
+               'description':'Actual named observational object '+('x'*5000),
+               'source_metadata':{'title':'File:Observed object.jpg'}}
+        metadata=Operations._image_metadata(asset)
+        self.assertEqual(len(metadata['description']),4000)
+        self.assertEqual(metadata['file_title'],'File:Observed object.jpg')
+        self.assertEqual(metadata['source_url'],asset['source_url'])
+
+    def test_current_physical_target_contract_cannot_retain_a_native_language_art_requirement(self):
+        import json
+        from material_first.presentation import TOPIC_POLICY
+        saved=json.loads((Path(__file__).parent/'fixtures/observable-candidate-failure.json').read_text())
+        with tempfile.TemporaryDirectory() as directory:
+            fixtures=Fixtures(Path(directory),['photo']*3)
+            class ArtContextModel(Model):
+                def generate(self,key,*args,**kwargs):
+                    result,provenance=super().generate(key,*args,**kwargs)
+                    if key=='material-brief':
+                        for i,role in enumerate(('setting','subject','detail')):
+                            result['photo_contexts'][role]={**saved['model_brief']['photo_contexts'][role], 'fact_ids':['f'+str(i)]}
+                    return result,provenance
+            ops=Operations(directory,SimpleNamespace(fetch=lambda *args:fixtures.evidence['sources']),ArtContextModel(fixtures),None,None)
+            brief=ops.research({'topic':'test','language':'uk','seconds':60,'presentation_policy':TOPIC_POLICY})
+            for target in brief['visual_targets']:
+                self.assertEqual(target['must_show'],target['query'])
+                self.assertNotIn('Художня',target['must_show'])
+                self.assertNotIn('Стилізоване',target['must_show'])
+            self.assertEqual(brief['visual_targets'][1]['must_show'],'neutron star space')
+            self.assertEqual(brief['visual_targets'][2]['must_show'],'pulsar')

@@ -22,6 +22,10 @@ class MaterialUnavailable(ValueError):
     pass
 
 
+class MaterialResolutionUnavailable(ValueError):
+    pass
+
+
 def probe_media(file):
     result = subprocess.run(
         ["ffprobe", "-v", "error", "-count_frames", "-show_streams", "-show_format", "-of", "json", str(file)],
@@ -54,7 +58,7 @@ def validate_material(root, asset, probe=probe_media):
         raise ValueError("material extension differs from declared type")
     actual = probe(path)
     if actual["width"] < 320 or actual["height"] < 320:
-        raise ValueError("material resolution too low")
+        raise MaterialResolutionUnavailable("material resolution too low")
     if kind == "video":
         if not isinstance(actual.get("duration_ms"), int) or actual["duration_ms"] <= 0:
             raise ValueError("video duration missing")
@@ -317,7 +321,12 @@ class Producer:
                     asset = self.operations.download(deepcopy(candidate))
                 except ResourceUnavailable:
                     continue
-                validate_material(self.root, asset, self.probe)
+                try:
+                    validate_material(self.root, asset, self.probe)
+                except MaterialResolutionUnavailable:
+                    if request.get('presentation_policy') == TOPIC_POLICY and asset.get('media_type') == 'photo':
+                        continue
+                    raise
                 if targets is not None and asset.get('visual_targets') != targets:
                     raise ValueError('download lost the original visual target contract')
                 if asset['id'] in assets or any(a['id'] == asset['id'] for a in batch):

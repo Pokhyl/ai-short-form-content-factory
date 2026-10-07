@@ -1,0 +1,58 @@
+{
+  "id": "46c7c281-737d-4264-bef1-6be273b59976",
+  "source_revision": "589e24fb3304d9ac12804ab82420665f367f46be",
+  "status": "failed",
+  "error_code": "ValueError",
+  "exact_offline_replay_error": "material resolution too low",
+  "call_summary": [
+    {
+      "kind": "download",
+      "state": "succeeded",
+      "count": 12
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 5
+    }
+  ],
+  "new_tts_calls": 0,
+  "video_created": false,
+  "human_pass": false,
+  "note": "Terminal failed ID immutable. Actual source asset300x200; raw Gemini approved a source-URL-declared visualization as observational. Actual planner emitted Ukrainian artistic/stylized subjects despite real-photo instruction. New generic fixes documented separately; this case is not resumed."
+}
