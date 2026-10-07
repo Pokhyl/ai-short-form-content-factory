@@ -1,3 +1,7 @@
+## Owner directs actual completion — 2026-10-07
+
+Owner explicitly asked«кого ждем?»; continue actual completion now. One new bounded normal UK60 Vision casefbeb0fc7-aa0f-44ad-a4dc-4556af9173f8 planned in continued-uk60-plan.json on LIVE0e65ccf after212 packaged checks and actual saved planner replay. This supersedes prior no-new-case stopping instruction for this case only. Same16Gemini/30downloads/9providersearches/1TTS/free-only; no failed-ID rerun. Stop on terminal error/unknown, preserve evidence. No current new MP4/HUMAN acceptance.
+
 ## Retrieval-first planner and article correction LIVE — 2026-10-07
 
 Runtime0e65ccf34dca945ff021808b63a8f145653d7100/imagefactory-v3:0e65ccf/imageIDsha256:0d92cf74a505e9a09f86665b3efa3d7f2961db1242902f0fdd81d87cc480fdee.212 exact-image network-disabled tests PASS, app-only protected deployment before==after, publichealth serving exactrevision. No existing request/media mutation. Current actual savedbc4afbb2 replay passes brief/all9query pools/actualmaterial-photo-plan and stops at missing saved first download,0 newprovider/model/TTS/DBwrites. Planner selected retrieved real-object metadata; article check fixed and exact unknown qualifier rejection retained. This closes actual planner parsing/identity, not current target-qualified pixel review, factual/native/voice/MP4 acceptance.

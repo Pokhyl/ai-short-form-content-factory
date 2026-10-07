@@ -1,0 +1,25 @@
+{
+  "id": "fbeb0fc7-aa0f-44ad-a4dc-4556af9173f8",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "runtime_revision": "0e65ccf34dca945ff021808b63a8f145653d7100",
+  "authorization": "Owner explicitly asked кого ждем? on2026-10-07, directing work to continue through actual current output. One bounded new normal case, no failed-ID retry.",
+  "maximum_fresh_requests": 1,
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 30,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "expected_steps": "brief -> nine search pools -> one availability planner -> up to eight independent pixel batches -> compose -> native edit -> complete keyed independent factual/native review -> one voice -> alignment -> exact60s whole-photo render/audit",
+  "question": "Does actual current availability planner select real metadata-grounded contexts and produce a qualified grounded Ukrainian MP4 without speculative hidden-object searches consuming equal download slots?",
+  "offline": "212 exact-image packaged checks PASS; actual saved availability planner/connected replay passes corrected article identity to first missing download; protected deployment/publichealth exact.",
+  "remaining": "Unseen actual planner response, new target-qualified pixel judgments, complete keyed/native review, one voice and current MP4 not verified. Controlled metadata selection is not acceptance.",
+  "stop": "Any terminal error/unknown ends this case. Preserve failed ID, no repeat/new case automatically, no paid fallback/quota expansion/second TTS/manual approvals.",
+  "human_pass": false
+}
