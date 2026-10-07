@@ -1,3 +1,7 @@
+## Combined strict/native/cadence corrections LIVE — 2026-10-07
+
+LIVE9c8501df53e2385e477e99ad11750d323ae28212/imagefactory-v3:9c8501d,216 exact-image checks PASS; protected app-only rollout snapshots unchanged, publichealth exact. Saved15oldphotos actually14distinct (192540464/194637119 copies); current fingerprint gates now propagated. Removing copy still feasible14photos/4paragraphs in offline cadence estimate. New normal strict UK60 Vision case c7bfd577-ac32-4d23-9451-ebd5aa926fee planned under owner «так не останавливайся» persistence; same bounded free-only budgets/1TTS. Actual new strict/native/video acceptance pending.
+
 ## Pre-voice cadence feasibility added from actual render failure — 2026-10-07
 
 491002b6 is immutable render-unknown/ValueError after1TTS (74856ms), noMP4. Pure saved ordered_visuals repro: final fact8 cooling paragraph requires3slots but only1eligiblephoto. New existing same-role contiguous paragraph partition search also checks estimated unique-photo cadence before accepting a partition/independentreview/TTS. It merges final fact6+fact8 samev2 with exact words/factunion preserved; actual saved voice timings then schedule15unique photos at75–150frames without zero-relevance filler. Final actual alignment remains authoritative; estimates are not a guarantee.216local checks PASS (115material+101core). Native/strict protocol corrections combined in pending build; currentLIVE remainsd2eb4de. Owner persistence authorization retained.
