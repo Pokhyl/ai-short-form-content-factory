@@ -47,7 +47,9 @@ class TopicQualityTests(unittest.TestCase):
         calls=[]
         def generate(key,instruction,context,schema):
             calls.append(key)
-            if key=='material-compose':result={'words':words,'beats':beats}
+            if key=='material-compose':
+                result={'beats':[{k:v for k,v in b.items() if k not in ('word_start','word_end')} |
+                         {'narration':' '.join(words[b['word_start']:b['word_end']])} for b in beats]}
             elif key=='material-language-edit':
                 self.assertIn('Ukrainian (uk-UA)',instruction)
                 result={'narration':[' '.join(changes.get(w,w) for w in text.split()) for text in context['narration']]}

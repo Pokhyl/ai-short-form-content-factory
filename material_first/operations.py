@@ -277,6 +277,9 @@ class Operations:
         return receipts
 
     def compose(self, context):
+        if context['request'].get('presentation_policy') == TOPIC_POLICY:
+            from .paragraphs import compose_paragraphs
+            return compose_paragraphs(self.gemini, context, NarrationBudgetExceeded)
         materials = context['materials']
         seconds = context['request']['seconds']
         minimum_words, maximum_words = round(seconds * 1.6), round(seconds * 2.4)
@@ -368,20 +371,6 @@ class Operations:
                 beats[-1]['narration'] += ' ' + ' '.join(words[cursor:])
             else:
                 raise ValueError('narration words omitted from story')
-        if context['request'].get('presentation_policy') == TOPIC_POLICY:
-            edit_schema = obj({'narration': array(string(), len(beats), len(beats))})
-            edited, _ = self.gemini.generate('material-language-edit',
-                'Proofread these consecutive narration paragraphs into natural standard native ' +
-                {'pl':'Polish (pl-PL)','en':'English (en-US)','ru':'Russian (ru-RU)','uk':'Ukrainian (uk-UA)'}[context['request']['language']] +
-                '. The input may contain words or inflections from another language. Correct them, including spelling, grammar and case agreement. '
-                'Do not transliterate foreign words into the target alphabet. Preserve every source-supported claim, qualifier and number. '
-                'Return one complete fluent paragraph string per input paragraph in the same order. '
-                'Do not add claims, delete explanations or change which paragraph asserts each fact.',
-                {'language': context['request']['language'], 'narration': [b['narration'] for b in beats],
-                 'evidence': compact_evidence(context['evidence'])}, edit_schema)
-            for beat,text in zip(beats,edited['narration']): beat['narration'] = text.strip()
-            if not minimum_words <= sum(len(b['narration'].split()) for b in beats) <= maximum_words:
-                raise NarrationBudgetExceeded('proofread narration outside word budget before TTS')
         return {'beats': beats}
 
     def review_script(self, context):

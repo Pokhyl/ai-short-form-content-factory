@@ -1,4 +1,4 @@
-"""Keep real-photo searches focused on entities, before paid inspection work."""
+"""Keep real-photo searches focused on entities, before image inspection."""
 import re
 
 SYNTHETIC = re.compile(

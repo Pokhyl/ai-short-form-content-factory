@@ -1,0 +1,1780 @@
+{
+  "status": {
+    "id": "c8294766-22ae-46c1-aeb7-f16930ec055a",
+    "request": {
+      "topic": "Нейтронная звезда",
+      "seconds": 60,
+      "language": "uk",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "failed",
+    "source_revision": "ec288f1f99097ecf0c8dc2fa58bb7d4ba8b4b005",
+    "error_code": "ModelSchemaError",
+    "machine_pass": false,
+    "human_pass": false
+  },
+  "calls": {
+    "search:pixabay:succeeded": 3,
+    "search:wikimedia:succeeded": 3,
+    "search:pexels:succeeded": 3,
+    "download:succeeded": 30,
+    "source_fetch:succeeded": 5,
+    "source_fetch:failed": 1,
+    "gemini:succeeded": 11,
+    "metadata:succeeded": 1,
+    "research_search:succeeded": 1
+  },
+  "model_calls": [
+    {
+      "key": "material-brief",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 18234,
+        "promptTokenCount": 17126,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 17126
+          }
+        ],
+        "candidatesTokenCount": 1108
+      },
+      "result": {
+        "facts": [
+          {
+            "id": "f1",
+            "text": "Нейтро́нная звезда́ — космическое тело, являющееся одним из возможных результатов эволюции звёзд, состоящее в основном из нейтронной сердцевины, покрытой сравнительно тонкой корой вещества.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              }
+            ]
+          },
+          {
+            "id": "f2",
+            "text": "Любая звезда главной последовательности с начальной массой, более чем в 8 раз превышающей массу Солнца, может в процессе эволюции превратиться в нейтронную звезду.",
+            "support": [
+              {
+                "span_id": "s1-1094-2113"
+              }
+            ]
+          },
+          {
+            "id": "f3",
+            "text": "Когда все ядерное топливо в активной зоне израсходовано, активная зона поддерживается от гравитационного сжатия только давлением вырожденного электронного газа.",
+            "support": [
+              {
+                "span_id": "s1-1094-2113"
+              }
+            ]
+          },
+          {
+            "id": "f4",
+            "text": "При последующем увеличении температуры происходит слияние электронов и протонов в нейтроны в процессе электронного захвата с образованием мощного потока электронных нейтрино.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f5",
+            "text": "Когда плотность звезды достигает ядерной плотности, давление вырожденного нейтронного идеального газа останавливает сжатие, а внешняя оболочка отбрасывается потоком нейтрино, превращая звезду в сверхновую.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f6",
+            "text": "После рассеивания внешней оболочки от звезды остаётся компактный звёздный остаток — нейтронная звезда с массой, сравнимой с массой Солнца, но с типичным радиусом лишь 10—20 километров.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f7",
+            "text": "Многие нейтронные звезды обладают чрезвычайно высокой скоростью осевого вращения до нескольких сотен оборотов в секунду и сильным магнитным полем.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              }
+            ]
+          },
+          {
+            "id": "f8",
+            "text": "В результате аккреции межзвёздного газа или процессов в магнитосфере нейтронная звезда может наблюдаться с Земли в разных спектральных диапазонах, включая рентгеновский и радиодиапазоны.",
+            "support": [
+              {
+                "span_id": "s1-5431-6565"
+              },
+              {
+                "span_id": "s1-6565-7684"
+              },
+              {
+                "span_id": "s3-0-1112"
+              }
+            ]
+          }
+        ],
+        "required_fact_ids": [
+          "f2",
+          "f4",
+          "f5",
+          "f6"
+        ],
+        "photo_contexts": {
+          "setting": {
+            "subject": "массивная звезда главной последовательности в космосе",
+            "query": "massive star in outer space",
+            "fact_ids": [
+              "f2"
+            ]
+          },
+          "subject": {
+            "subject": "остаток сверхновой в туманности",
+            "query": "supernova remnant nebula",
+            "fact_ids": [
+              "f5",
+              "f6"
+            ]
+          },
+          "detail": {
+            "subject": "нейтронная звезда и ее магнитное поле",
+            "query": "neutron star magnetosphere",
+            "fact_ids": [
+              "f1",
+              "f7",
+              "f8"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "key": "material-inspect-batch:6af4e645bcf2777a160115801037dc4f42e6b9f19023892c8970897c72332084",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10976,
+        "promptTokenCount": 9541,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5171
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4370
+          }
+        ],
+        "candidatesTokenCount": 1435
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant / explosion site associated with SN 2006jc",
+              "connection": "Captures the supernova event and pre-explosion stage leading to neutron star formation."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical image showing bright stellar points in the dark expanse of space with text labeling SN 2006jc and 11,000 light-years.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f2",
+                "detail": "Shows massive star evolution/supernova precursor stage."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Shows precursor star and supernova explosion position."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a nebula remnant."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show neutron star or magnetosphere."
+              }
+            ],
+            "asset_id": "wikimedia:163470036"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "CGI solar eclipse and star field",
+              "connection": "Digital illustration or composite offering a generic stellar scene."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A digitally rendered glowing star with a dark circular disc in front, surrounded by faint digital stars.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic computer graphic."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic computer graphic."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic computer graphic."
+              }
+            ],
+            "asset_id": "pexels:12491601"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "illustration",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Artistic rendering of a spiral galaxy",
+              "connection": "An artistic representation of a galaxy, unrelated to specific neutron star formation or remnants."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An artistic space illustration depicting a vibrant spiral galaxy with blue and orange gas clouds and bright stars against a dark background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Depicts a galaxy rather than a single massive star."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Depicts a galaxy rather than a supernova remnant."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a neutron star."
+              }
+            ],
+            "asset_id": "pixabay:11098"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula supernova remnant",
+              "connection": "The Crab Nebula is the remnant of the historical supernova explosion that hosts a central neutron star (pulsar)."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An intricate, colorful space telescope image of the Crab Nebula, showcasing expanding filaments of gas and a glowing central region.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "Visible expanding outer shell of a supernova remnant."
+              },
+              {
+                "fact_id": "f6",
+                "detail": "Represents the aftermath of a core-collapse supernova leaving a stellar remnant."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows the remnant rather than the initial massive star."
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Clearly displays the Crab Nebula supernova remnant."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The central neutron star is not visually resolved as a distinct magnetosphere."
+              }
+            ],
+            "asset_id": "wikimedia:516106"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:6c25ca998cdfd0c56e4bab9c9a391633905386076ef129dd0e311f04db8a6bbe",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11046,
+        "promptTokenCount": 9608,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4378
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 5230
+          }
+        ],
+        "candidatesTokenCount": 1438
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "supernova remnant nebula",
+              "connection": "Shows a supernova remnant formed during the evolution that leads to a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical image capturing the CTB 1 supernova remnant glowing in pink and blue hues against a background of scattered stars and deep space gas clouds.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "The image captures the expanding shell of gas left over after a supernova explosion."
+              },
+              {
+                "fact_id": "f6",
+                "detail": "Displays the expansive glowing structure formed from the discarded stellar envelope."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows no main-sequence star."
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Clearly depicts a supernova remnant nebula in deep space."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not display a neutron star or magnetosphere."
+              }
+            ],
+            "asset_id": "pexels:19798813"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula supernova remnant",
+              "connection": "Shows a famous supernova remnant containing a central neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A composite space telescope photograph of the Crab Nebula showing complex gaseous filaments and a bright central region surrounding the pulsar.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "Visualizes the expanding remnant cloud created by a core-collapse supernova."
+              },
+              {
+                "fact_id": "f6",
+                "detail": "Captures the remaining nebula surrounding the stellar core remnant."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a main-sequence star."
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Clearly displays a supernova remnant nebula."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not clearly resolve the neutron star's magnetosphere."
+              }
+            ],
+            "asset_id": "pixabay:11182"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "illustration",
+            "topic_relation": {
+              "kind": "direct_subject",
+              "visible_subject": "simulation graphic of neutron star magnetosphere",
+              "connection": "Rendered computer simulation showing merging neutron star magnetic fields."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A computer-generated visualization depicting magnetic field lines interacting between two merging objects against a black background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a main-sequence star."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a supernova remnant."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generated illustration rather than real photography."
+              }
+            ],
+            "asset_id": "wikimedia:182691705"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "illustration",
+            "topic_relation": {
+              "kind": "direct_subject",
+              "visible_subject": "artistic illustration of a neutron star",
+              "connection": "Digital artwork representing a neutron star and magnetic field lines."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A digital illustration showing a glowing blue sphere with curving magnetic field lines and energetic jets in space.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a main-sequence star."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a supernova remnant."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Digital illustration instead of a photograph."
+              }
+            ],
+            "asset_id": "pexels:38039151"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:b98cc3719b623e01efe483c132544d459952ddc2d287636a88c8091828a3de0a",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10839,
+        "promptTokenCount": 9498,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4325
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 5173
+          }
+        ],
+        "candidatesTokenCount": 1341
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "aurora borealis",
+              "connection": "The image shows an aurora in Earth atmosphere, which is completely unrelated to neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Green aurora lights glowing in the night sky with distant stars visible in the background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No massive star is depicted."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No supernova remnant is depicted."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star is depicted."
+              }
+            ],
+            "asset_id": "pixabay:3273425"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "interacting galaxies Arp 273",
+              "connection": "The image shows two interacting spiral galaxies, which is unrelated to the evolution or structure of neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Hubble Space Telescope capture of interacting galaxies UGC 1810 and UGC 1813, forming a rose-like shape against the deep space background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Galaxies are visible instead of a single massive star."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No supernova remnant nebula is shown."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star or magnetosphere is shown."
+              }
+            ],
+            "asset_id": "wikimedia:15008297"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "artist rendering of a pulsar or energetic star",
+              "connection": "The image is a digital or artistic illustration of a star with radiation beams, not an authentic photograph of a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A synthetic rendering of a bright luminous star emitting dual opposing beams of blue light across a starfield.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "It is a synthetic digital illustration, not a real photograph of a main-sequence star."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No supernova remnant nebula is shown."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "It is an artist's synthetic rendering rather than a real astronomical photograph."
+              }
+            ],
+            "asset_id": "pexels:7736057"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "emission nebula",
+              "connection": "The image depicts a diffuse emission nebula with dust lanes, which does not specifically show a neutron star or its formation stages."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A dense cosmic cloud of red and orange glowing gas with dark dust lanes and scattered stars throughout.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "A nebula is shown instead of a single massive star."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "A general emission nebula is shown rather than a specific documented supernova remnant."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star or magnetosphere is visible."
+              }
+            ],
+            "asset_id": "pixabay:67616"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:6261dc599085d5e48d0bfe479c69f850fa6188b89ba281aa67b18b33342185d7",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11164,
+        "promptTokenCount": 9652,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5273
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4379
+          }
+        ],
+        "candidatesTokenCount": 1512
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "supernova remnant",
+              "connection": "Shows the expanding filamentary gas shell resulting from a supernova explosion, which leaves behind a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical image capturing complex filaments of glowing gas and dust in the Vela Supernova Remnant against a star field.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "The expanding shell of gas represents the ejected outer envelope of a star after a supernova."
+              },
+              {
+                "fact_id": "f6",
+                "detail": "The remnant nebula surrounds the location of the compact stellar remnant left behind."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a main-sequence star."
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Detailed structure of a supernova remnant nebula is prominently shown."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show an individual neutron star or its magnetosphere."
+              }
+            ],
+            "asset_id": "wikimedia:146336166"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "supernova remnant nebula",
+              "connection": "Monochrome astronomical view of an expanding stellar remnant cloud from a supernova."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A black-and-white astronomical photograph showing the faint arcs and wispy filaments of a supernova remnant scattered with background stars.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "The image shows the dispersed outer shell of a star following a supernova."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a main-sequence star."
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Supernova remnant nebula filaments are clearly visible."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Individual neutron star is not depicted."
+              }
+            ],
+            "asset_id": "pexels:10064346"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Cassiopeia A supernova remnant",
+              "connection": "An astronomical composite showing the remnant gas cloud left by a core-collapse supernova explosion."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A colorful multi-wavelength space telescope image of the Cassiopeia A supernova remnant, displaying expanding shells of hot gas and debris.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "The glowing shell corresponds to the ejected envelope of a massive star."
+              },
+              {
+                "fact_id": "f6",
+                "detail": "Represents the aftermath stage where a dense stellar core (neutron star) remains."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a main-sequence star."
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Prominent supernova remnant nebula structure."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Central neutron star is obscured or not resolved as an individual object."
+              }
+            ],
+            "asset_id": "pixabay:11180"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "illustration",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "computer simulation visualization",
+              "connection": "Generated computer graphic visualization rather than a real photograph or observational astronomical image."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A computer-generated visualization showing a scientific simulation of merging objects with glowing blue magnetic field lines on a black background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a photograph."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a photograph."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a photograph."
+              }
+            ],
+            "asset_id": "wikimedia:182691854"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:66fffff2757f4d49a31b5c85f582472e4e4a432c46e2d01db9a7e9a14d20f9bd",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10931,
+        "promptTokenCount": 9535,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4348
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 5187
+          }
+        ],
+        "candidatesTokenCount": 1396
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "digital rendering of a neutron star",
+              "connection": "The image is an artist's digital 3D visualization, not a real photograph of a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A computer-generated illustration showing a glowing blue spherical core with curved magnetic field lines and particle jets extending into space against a background of stars.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a massive star on the main sequence."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a supernova remnant nebula."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Is a synthetic illustration rather than a photograph."
+              }
+            ],
+            "asset_id": "pexels:38039464"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "aurora borealis and starry night sky",
+              "connection": "The image shows an aurora over a snowy landscape with stars, unrelated to neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A wide-angle landscape photograph of a snowy ground and silhouetted trees underneath a vibrant night sky featuring the Milky Way and green and pink auroral lights.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a general night sky and aurora, not a specific massive star."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No supernova remnant visible."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star depicted."
+              }
+            ],
+            "asset_id": "pixabay:2491595"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "illustration",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "evolution steps of a star infographic",
+              "connection": "The image consists of a series of illustrated diagrams depicting stellar evolution."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A vertical composite infographic with five numbered frames showing artist renderings of stellar phases, including a blue supergiant, mass ejection, and supernova shock wave with descriptive text captions.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Panels show illustrations rather than a real photograph of a massive star."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Panels show schematic artistic representations of supernova stages."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a real photograph of a neutron star."
+              }
+            ],
+            "asset_id": "wikimedia:163470034"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "direct_subject",
+              "visible_subject": "bright star in the night sky",
+              "connection": "An astronomical photograph capturing a prominent star in the stellar field, representing massive stars of the main sequence."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A telescope photograph capturing a single exceptionally bright star with visible diffraction spikes positioned centrally against a dense background of numerous smaller distant stars.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f2",
+                "detail": "A prominent star is captured via astronomical photography in outer space."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "A prominent bright star in outer space."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a single bright star rather than a supernova remnant nebula."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a neutron star magnetosphere."
+              }
+            ],
+            "asset_id": "pexels:33931044"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:e89e4c33e3f73171b81fc451571490406180b9d9ee22c95e8abe81b8aa8beea3",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10981,
+        "promptTokenCount": 9496,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4342
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 5154
+          }
+        ],
+        "candidatesTokenCount": 1485
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "The Sun",
+              "connection": "The image shows a main sequence star similar to those that evolve into neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An observational photograph of the Sun displaying detailed surface granules, solar flare activity, and coronal plasma against a black background.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f2",
+                "detail": "The image depicts a stellar body before its core collapse and eventual supernova stage."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The entire solar disk is clearly visible showing prominent stellar surface features."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The image shows an active star, not a supernova remnant nebula."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The image shows the Sun rather than a compact neutron star."
+              }
+            ],
+            "asset_id": "pixabay:11582"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Cygnus Loop Supernova Remnant",
+              "connection": "Shows the expanded shell and glowing filaments of a supernova remnant left behind after stellar core collapse."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical ultraviolet image of the Cygnus Loop Nebula displaying intricate blue filaments and scattered stars.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "Visualizes the outer stellar envelope being cast off into space."
+              },
+              {
+                "fact_id": "f6",
+                "detail": "Depicts the expanding gas remnant after the core collapse."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a diffuse nebula instead of a compact main sequence star."
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The expanding filaments of the supernova remnant fill the frame."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not clearly resolve the central neutron star itself."
+              }
+            ],
+            "asset_id": "wikimedia:18919964"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Interstellar Nebula and Supernova Remnant Structure",
+              "connection": "Detailed view of complex gas shells and filaments associated with stellar evolutionary remnants."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical image showing complex networks of red and blue glowing gas clouds interspersed with numerous tiny background stars.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "Illustrates the diffuse gas structures formed from expelled stellar envelopes."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows gas nebulae rather than a single massive star."
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Detailed view of expanding nebula structures typical of stellar remnants."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No isolated neutron star or magnetosphere is distinctly highlighted."
+              }
+            ],
+            "asset_id": "pexels:30327373"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "illustration",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Digital artwork of a glowing planet",
+              "connection": "This is a computer-generated artistic rendering, not a real photograph of a neutron star or astronomical subject."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A digitally created illustration of a glowing reddish planetary body set against a vibrant colored space nebula background with synthetic light flares.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic illustration."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic illustration."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic illustration."
+              }
+            ],
+            "asset_id": "pixabay:7706677"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:de8633dd5f9e071891b4dd4a63d76015798982ce7628b0a0b7de6df7f8bf1d29",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10992,
+        "promptTokenCount": 9604,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4349
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 5255
+          }
+        ],
+        "candidatesTokenCount": 1388
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "direct_subject",
+              "visible_subject": "NASA computer visualization of neutron star merger magnetosphere",
+              "connection": "Visualizes interacting magnetic fields of merging neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A computer-generated visualization showing glowing purple and pink curved magnetic field lines around two central objects against a black background.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f7",
+                "detail": "Glowing magnetic field structures surrounding merging objects."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a main sequence star."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a supernova remnant nebula."
+              },
+              {
+                "target_id": "v2",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Computer visualization of neutron star magnetosphere."
+              }
+            ],
+            "asset_id": "wikimedia:182691735"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Star trails in night sky above a building",
+              "connection": "Generic star field photograph used as background scenery."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A long-exposure photograph showing concentric star trails around the celestial pole in the night sky above a minaret tower.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows general star trails rather than an individual massive star."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a supernova remnant."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a neutron star."
+              }
+            ],
+            "asset_id": "pexels:7931772"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant SN 2006jc",
+              "connection": "Shows a supernova event that leaves behind a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical image in false color showing a glowing, pixelated central bright region labeled 'SN 2006jc', indicating a supernova explosion in space.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "Bright exploding supernova remnant labeled SN 2006jc."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a supernova explosion rather than a main sequence star."
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Shows supernova remnant SN 2006jc."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not clearly resolve the neutron star core."
+              }
+            ],
+            "asset_id": "wikimedia:163470039"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Milky Way galaxy star field",
+              "connection": "Generic view of stars in the galaxy."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A wide-field photograph of the Milky Way galaxy showing dense bands of countless stars and cosmic dust clouds against a dark night sky.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Displays a generic galactic field of many stars."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a specific supernova remnant."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a neutron star."
+              }
+            ],
+            "asset_id": "pexels:36633070"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:42cadd4f51440f7ef792843028f4e414ed7bc548ec5c4b707200c07d86d12897",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 7937,
+        "promptTokenCount": 7162,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 2177
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 4985
+          }
+        ],
+        "candidatesTokenCount": 775
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "stylized digital space scene",
+              "connection": "The image is a generic computer-generated or artistically altered space wallpaper, not a verified real astronomical photograph."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "A digitally created or heavily processed space scene featuring a bright nebula cloud surrounded by stars against a dark background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No isolated massive main sequence star is specifically identifiable."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No scientifically validated supernova remnant is depicted here."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star or magnetosphere is shown."
+              }
+            ],
+            "asset_id": "pixabay:11099"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula supernova remnant",
+              "connection": "Shows the Crab Nebula, which is the expanding remnant of a supernova explosion that left behind a neutron star (pulsar) at its center."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical composite image of the Crab Nebula showing intricate filamentary structures of gas and dust with a bluish central emission powered by its pulsar.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "The expanding shell of gas visible as filaments corresponds to the outer envelope thrown off during the supernova."
+              },
+              {
+                "fact_id": "f6",
+                "detail": "The nebula surrounds the compact stellar remnant left behind after the supernova event."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows the aftermath, not the initial main sequence star."
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The entire frame clearly displays the Crab Nebula supernova remnant."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The central neutron star is unresolved in this wide nebula shot."
+              }
+            ],
+            "asset_id": "wikimedia:139881470"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-compose",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 19321,
+        "promptTokenCount": 18373,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 18373
+          }
+        ],
+        "candidatesTokenCount": 948
+      },
+      "result": {
+        "words": [
+          "Будь",
+          "яка",
+          "зоря",
+          "головної",
+          "послідовності",
+          "з",
+          "початковою",
+          "масою,",
+          "більшою",
+          "ніж",
+          "у",
+          "вісім",
+          "разів",
+          "перевищуючою",
+          "масу",
+          "Сонця,",
+          "може",
+          "в",
+          "процесі",
+          "своєї",
+          "еволюції",
+          "перетворитися",
+          "на",
+          "нейтронну",
+          "зорю.",
+          "Коли",
+          "густина",
+          "зорі",
+          "досягає",
+          "ядерної",
+          "густини,",
+          "тиск",
+          "виродженого",
+          "нейтронного",
+          "газу",
+          "повністю",
+          "зупиняє",
+          "подальше",
+          "гравітаційне",
+          "стискання,",
+          "а",
+          "зовнішня",
+          "оболонка",
+          "відкидається",
+          "потужним",
+          "потоком",
+          "нейтрино,",
+          "перетворюючи",
+          "об'єкт",
+          "на",
+          "наднову.",
+          "Після",
+          "розсіювання",
+          "зовнішніх",
+          "шарів",
+          "від",
+          "зорі",
+          "залишається",
+          "надзвичайно",
+          "компактний",
+          "зоряний",
+          "залишок",
+          "з",
+          "масою,",
+          "порівнянною",
+          "з",
+          "сонячною,",
+          "але",
+          "з",
+          "типовим",
+          "радіусом",
+          "лише",
+          "близько",
+          "десяти",
+          "чи",
+          "двадцяти",
+          "кілометрів.",
+          "Багато",
+          "таких",
+          "об'єктів",
+          "мають",
+          "неймовірну",
+          "швидкість",
+          "обертання",
+          "та",
+          "надзвичайно",
+          "сильні",
+          "магнітні",
+          "поля",
+          "в",
+          "глибинах",
+          "космосу."
+        ],
+        "beats": [
+          {
+            "material_id": "wikimedia:163470036",
+            "word_start": 0,
+            "word_end": 25,
+            "fact_ids": [
+              "f2"
+            ],
+            "visual_target_id": "v0"
+          },
+          {
+            "material_id": "wikimedia:516106",
+            "word_start": 25,
+            "word_end": 51,
+            "fact_ids": [
+              "f5",
+              "f6"
+            ],
+            "visual_target_id": "v1"
+          },
+          {
+            "material_id": "pixabay:11182",
+            "word_start": 51,
+            "word_end": 77,
+            "fact_ids": [
+              "f5",
+              "f6"
+            ],
+            "visual_target_id": "v1"
+          },
+          {
+            "material_id": "wikimedia:146336166",
+            "word_start": 77,
+            "word_end": 90,
+            "fact_ids": [
+              "f7"
+            ],
+            "visual_target_id": "v1"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-compose-length-repair",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 20037,
+        "promptTokenCount": 19089,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 19089
+          }
+        ],
+        "candidatesTokenCount": 948
+      },
+      "result": {
+        "words": [
+          "Будь",
+          "яка",
+          "зоря",
+          "головної",
+          "послідовності",
+          "з",
+          "початковою",
+          "масою,",
+          "більшою",
+          "ніж",
+          "у",
+          "вісім",
+          "разів",
+          "перевищуючою",
+          "масу",
+          "Сонця,",
+          "може",
+          "в",
+          "процесі",
+          "своєї",
+          "еволюції",
+          "перетворитися",
+          "на",
+          "нейтронну",
+          "зорю.",
+          "Коли",
+          "густина",
+          "зорі",
+          "досягає",
+          "ядерної",
+          "густини,",
+          "тиск",
+          "виродженого",
+          "нейтронного",
+          "газу",
+          "повністю",
+          "зупиняє",
+          "подальше",
+          "гравітаційне",
+          "стискання,",
+          "а",
+          "зовнішня",
+          "оболонка",
+          "відкидається",
+          "потужним",
+          "потоком",
+          "нейтрино,",
+          "перетворюючи",
+          "об'єкт",
+          "на",
+          "наднову.",
+          "Після",
+          "розсіювання",
+          "зовнішніх",
+          "шарів",
+          "від",
+          "зорі",
+          "залишається",
+          "надзвичайно",
+          "компактний",
+          "зоряний",
+          "залишок",
+          "з",
+          "масою,",
+          "порівнянною",
+          "з",
+          "сонячною,",
+          "але",
+          "з",
+          "типовим",
+          "радіусом",
+          "лише",
+          "близько",
+          "десяти",
+          "чи",
+          "двадцяти",
+          "кілометрів.",
+          "Багато",
+          "таких",
+          "об'єктів",
+          "мають",
+          "неймовірну",
+          "швидкість",
+          "обертання",
+          "та",
+          "надзвичайно",
+          "сильні",
+          "магнітні",
+          "поля",
+          "в",
+          "глибинах",
+          "космосу."
+        ],
+        "beats": [
+          {
+            "material_id": "wikimedia:163470036",
+            "word_start": 0,
+            "word_end": 25,
+            "fact_ids": [
+              "f2"
+            ],
+            "visual_target_id": "v0"
+          },
+          {
+            "material_id": "wikimedia:516106",
+            "word_start": 25,
+            "word_end": 51,
+            "fact_ids": [
+              "f5",
+              "f6"
+            ],
+            "visual_target_id": "v1"
+          },
+          {
+            "material_id": "pixabay:11182",
+            "word_start": 51,
+            "word_end": 77,
+            "fact_ids": [
+              "f5",
+              "f6"
+            ],
+            "visual_target_id": "v1"
+          },
+          {
+            "material_id": "wikimedia:146336166",
+            "word_start": 77,
+            "word_end": 91,
+            "fact_ids": [
+              "f7"
+            ],
+            "visual_target_id": "v1"
+          }
+        ]
+      }
+    }
+  ],
+  "new_voice_created": false,
+  "new_mp4_created": false,
+  "human_pass": false,
+  "finding": "Photos passed minimum cadence/role availability and reached composition. Both actual drafts contain92 words against minimum94; second schema rejection precedes native edit/review/TTS. Draft tagging also omits required f4, which paragraph compilation must reject rather than silently approve."
+}

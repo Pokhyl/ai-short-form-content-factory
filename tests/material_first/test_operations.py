@@ -51,12 +51,16 @@ class Model:
         elif key == 'material-language-edit':
             result = {'narration':context['narration'][:]}
         elif key == 'material-compose':
-            words = ['Source-supported'] + ['narration'] * (schema['properties']['words']['minItems'] - 1)
+            words = ['Source-supported'] + ['narration'] * (schema['properties']['words']['minItems'] - 1 if 'words' in schema['properties'] else 23)
             count = schema['properties']['beats']['minItems']
             result = {'words': words, 'beats': [
                 {'material_id': context['materials'][i]['id'],
                  'word_start': len(words)*i//count, 'word_end': len(words)*(i+1)//count,
                  'fact_ids': ['f'+str(i%3)], 'visual_target_id': 'v'+str(i%3)} for i in range(count)]}
+            if 'words' not in schema['properties']:
+                for beat in result['beats']:
+                    beat['narration']=' '.join(words[beat.pop('word_start'):beat.pop('word_end')])
+                del result['words']
         else:
             raise AssertionError(key)
         validate_json(result, schema)

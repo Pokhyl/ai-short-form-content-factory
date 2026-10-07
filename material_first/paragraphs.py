@@ -1,0 +1,57 @@
+"""Natural narration paragraphs; estimated length never needs model word indices."""
+from copy import deepcopy
+from factory_v3.gemini import obj, array, string, validate_json
+from factory_v3.grounding import compact_evidence
+
+
+LANGUAGES = {'pl':'Polish (pl-PL)','en':'English (en-US)','ru':'Russian (ru-RU)','uk':'Ukrainian (uk-UA)'}
+
+
+def compose_paragraphs(gemini, context, budget_error):
+    request = context['request'];seconds=request['seconds'];materials=context['materials']
+    # Words are only a pre-voice estimate. Actual synthesis duration still has
+    # to satisfy the existing bounded tempo fit and exact encoded-duration QA.
+    minimum_words, maximum_words = round(seconds*1.4), round(seconds*2.4)+2
+    maximum_beats=min(8,len(materials),seconds*2//5)
+    if maximum_beats<3:raise ValueError('not enough inspected paragraph anchors')
+    fields={'material_id':string(m['id'] for m in materials),'narration':{**string(),'maxLength':2400},
+            'fact_ids':array(string(f['id'] for f in context['evidence']['facts']),1,8)}
+    targets=request.get('visual_targets')
+    if targets is not None:fields['visual_target_id']=string(t['id'] for t in targets)
+    schema=obj({'beats':array(obj(fields),3,maximum_beats)})
+    instruction=(
+        'Write a continuous factual explanation in natural native '+LANGUAGES[request['language']]+'. '
+        f'Return 3 to {maximum_beats} complete narration paragraphs in order, not individual words or numerical word ranges. '
+        f'Aim for {round(seconds*2.1)} words total for {seconds} seconds; {minimum_words}–{maximum_words} is a pre-voice estimate. '
+        'Explain ALL required_fact_ids, including the essential mechanism and outcome; do not merely mention a related keyword. '
+        'Tag every source fact asserted by each paragraph in fact_ids. A paragraph often needs several IDs. '
+        'Preserve qualifiers and numbers. Do not invent claims to meet length. '
+        'Choose supplied inspected anchors and at least two available visual roles, using matched_visual_targets. '
+        'The anchor must have a direct factual connection to the paragraph. Images illustrate source-supported facts; '
+        'do not claim an invisible mechanism is visible. Natural clause boundaries matter; renderer schedules all photographs separately. '
+        'Use each anchor once; avoid unrelated filler and repeated generic compositions.')
+    if request.get('visual_validation_mode')=='metadata':
+        instruction+=' Provider metadata is not pixel evidence; do not assert that a specific action or detail is visibly shown.'
+    draft,_=gemini.generate('material-compose',instruction,
+                            {**context,'evidence':compact_evidence(context['evidence'])},schema)
+    validate_json(draft,schema)
+    beats=deepcopy(draft['beats'])
+    if any(len(set(b['fact_ids']))!=len(b['fact_ids']) for b in beats):
+        raise ValueError('duplicate paragraph fact identity')
+    narrated={f for b in beats for f in b['fact_ids']}
+    if not set(request.get('required_fact_ids',[]))<=narrated:
+        raise ValueError('paragraph draft omitted required source facts')
+    edit_schema=obj({'narration':array({**string(),'maxLength':2400},len(beats),len(beats))})
+    edited,_=gemini.generate('material-language-edit',
+        'Proofread these consecutive paragraphs into natural standard native '+LANGUAGES[request['language']]+'. '
+        'Correct foreign words, spelling, inflections and grammar; do not transliterate foreign words. '
+        'Preserve every claim, qualifier and number, and the source facts asserted by each paragraph. '
+        'Return complete paragraph strings in the same order. Do not add or delete explanations.',
+        {'language':request['language'],'narration':[b['narration'] for b in beats],
+         'evidence':compact_evidence(context['evidence'])},edit_schema)
+    validate_json(edited,edit_schema)
+    for beat,text in zip(beats,edited['narration']):beat['narration']=text.strip()
+    words=sum(len(b['narration'].split()) for b in beats)
+    if not minimum_words<=words<=maximum_words:
+        raise budget_error('native paragraphs outside pre-voice length estimate')
+    return {'beats':beats}

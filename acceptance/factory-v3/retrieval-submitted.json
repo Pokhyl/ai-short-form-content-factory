@@ -1,0 +1,14 @@
+{
+  "id": "c8294766-22ae-46c1-aeb7-f16930ec055a",
+  "state": "submitted",
+  "revision": "ec288f1f99097ecf0c8dc2fa58bb7d4ba8b4b005",
+  "started_at": "2026-10-07T06:36:44.125476+00:00",
+  "mode": "normal_owner_api",
+  "post_attempts": 1,
+  "http_status": 202,
+  "response": {
+    "id": "c8294766-22ae-46c1-aeb7-f16930ec055a",
+    "created": true,
+    "status": "preparing"
+  }
+}
