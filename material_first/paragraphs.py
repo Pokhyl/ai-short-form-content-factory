@@ -1,10 +1,18 @@
 """Natural narration paragraphs; estimated length never needs model word indices."""
 from copy import deepcopy
+import re
 from factory_v3.gemini import obj, array, string, validate_json
 from factory_v3.grounding import compact_evidence
 
 
 LANGUAGES = {'pl':'Polish (pl-PL)','en':'English (en-US)','ru':'Russian (ru-RU)','uk':'Ukrainian (uk-UA)'}
+
+
+def validate_native_surface(language, narration):
+    # Narrow regression gate for actual mixed-language output that received an
+    # incorrect model approval. This is not a complete language-quality proof.
+    if language == 'uk' and re.search(r'[ыъэё]|\b(?:сверхнов\w*|відброш\w*|остатка)\b', narration, re.I):
+        raise ValueError('Ukrainian narration contains observed non-native forms')
 
 
 def compact_materials(materials):
@@ -62,11 +70,14 @@ def compose_paragraphs(gemini, context, budget_error):
         'Proofread these consecutive paragraphs into natural standard native '+LANGUAGES[request['language']]+'. '
         'Correct foreign words, spelling, inflections and grammar; do not transliterate foreign words. '
         'Preserve every claim, qualifier and number, and the source facts asserted by each paragraph. '
-        'Return complete paragraph strings in the same order. Do not add or delete explanations.',
-        {'language':request['language'],'narration':[b['narration'] for b in beats],
-         'evidence':compact_evidence(context['evidence'])},edit_schema)
+        'Return complete paragraph strings in the same order. Do not add or delete explanations. '
+        'Edit only the supplied narration; never replace paragraphs with quotations from source text. '
+        'Spell scientific notation and units naturally for spoken narration while preserving exact values.',
+        {'language':request['language'],'narration':[b['narration'] for b in beats]},edit_schema)
     validate_json(edited,edit_schema)
-    for beat,text in zip(beats,edited['narration']):beat['narration']=text.strip()
+    for beat,text in zip(beats,edited['narration']):
+        validate_native_surface(request['language'], text)
+        beat['narration']=text.strip()
     words=sum(len(b['narration'].split()) for b in beats)
     if not minimum_words<=words<=maximum_words:
         raise budget_error('native paragraphs outside pre-voice length estimate')

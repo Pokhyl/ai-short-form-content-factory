@@ -58,6 +58,7 @@ class Model:
                     for match in result['target_matches']:
                         match['subject_qualifications_match'] = True
         elif key == 'material-language-edit':
+            assert set(context) == {'language', 'narration'}
             result = {'narration':context['narration'][:]}
         elif key == 'material-compose':
             words = ['Source-supported'] + ['narration'] * (schema['properties']['words']['minItems'] - 1 if 'words' in schema['properties'] else 23)
@@ -82,6 +83,13 @@ class Model:
 
 
 class OperationTests(unittest.TestCase):
+    def test_observed_source_copy_russianisms_cannot_pass_ukrainian_surface_gate(self):
+        from material_first.paragraphs import validate_native_surface
+        for text in ['спалаху сверхнової', 'радіус остатка зорі', 'оболонка відброшується', 'ы']:
+            with self.subTest(text=text), self.assertRaises(ValueError): validate_native_surface('uk', text)
+        validate_native_surface('uk', 'Залишок зорі: оболонка відкидається під час спалаху наднової.')
+        validate_native_surface('ru', 'Вспышка сверхновой')
+
     def test_large_original_photos_split_before_model_claim_without_reencoding(self):
         import hashlib
         with tempfile.TemporaryDirectory() as directory:

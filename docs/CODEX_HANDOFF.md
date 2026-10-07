@@ -1,3 +1,7 @@
+## Actual native edit copied defective source wording — 2026-10-07
+
+491002b6 reached voice on oldd2eb4de after30downloads/14Gemini. Actual language editor copied source-style paragraphs containing сверхнової/відброшується/остатка; script-review erroneously native_language_quality=true. Do NOT claim native/HUMAN acceptance. New editor receives only draft narration/language, source evidence remains exclusively in composition and independent factual review; no source-copy restoration. Narrow observed Ukrainian non-native-form regression gate blocks before TTS; not complete linguistic approval. Spoken scientific notation requested without changing values.215 local checks PASS. This combines with strict planner flags45bd089 (built but not deployed). Wait actual active terminal before app-only rollout, then fresh strict/native verification under owner persistence authorization.
+
 ## Availability planner protocol propagation corrected — 2026-10-07
 
 Code audit found plan_photos takes raw discovery pools before discover annotates selected rows. This dropped topic-specific-v1 fingerprinting and qualified-target-v1 inspection flags. New planner explicitly carries both protocol flags to all rebound candidates; no relaxed gates.214 local checks PASS. Active491002b6 on oldd2eb4de cannot certify corrected strict protocol. Build/package may proceed, deploy only after active work terminal. Owner persistence authorization remains; next fresh case must verify current strict protocol.
