@@ -1,0 +1,21 @@
+{
+  "diagnostic_id": "053b283c-64a7-4d57-9293-e23d8c3ce0d3",
+  "saved_request": "c8294766-22ae-46c1-aeb7-f16930ec055a",
+  "runtime_revision": "4021bd0978577bef8e90f905232eae8d630068bb",
+  "context_sha256": "7726398ecd1a3910eabbc3b14087805877ccc14bdbeecd599fd616e9da0280e1",
+  "question": "Actual current natural Ukrainian paragraph composition, one native edit and independent source/native review on saved grounded sources/materials; includes required electron-capture mechanism f4. This is a text boundary, not a new job or accepted video.",
+  "maximum_calls": {
+    "gemini": 3,
+    "read_only_billing_check": 1,
+    "research": 0,
+    "photo_search": 0,
+    "download": 0,
+    "tts": 0,
+    "render": 0,
+    "fresh_requests": 0
+  },
+  "quota_consumption": "Gemini Free Tier only; token usage unknown before responses; maxOutputTokens8192 per call, no paid fallback. Existing verified exact key/project proof required; actual billingEnabled=False immediately before generation.",
+  "stop": "One attempt per listed key. Any rejected or unknown response ends diagnostic; no retry or new diagnostic automatically. Preserve old failed request and existing media/DB rows.",
+  "offline": "87 material+96 core local and exact isolated packaged PASS; source-native negative fixtures reject omitted f4, foreign-word/native review failure and unsupported claims; actual saved context reconstructed read-only with 13 old inspections and required f2,f4,f5,f6. Old visual receipts do not certify current qualified visual protocol.",
+  "human_pass": false
+}
