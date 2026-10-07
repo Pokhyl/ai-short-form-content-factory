@@ -89,6 +89,14 @@ class OperationTests(unittest.TestCase):
             with self.subTest(text=text), self.assertRaises(ValueError): validate_native_surface('uk', text)
         validate_native_surface('uk', 'Залишок зорі: оболонка відкидається під час спалаху наднової.')
         validate_native_surface('ru', 'Вспышка сверхновой')
+        import json
+        actual = json.loads((Path(__file__).parent / 'fixtures/actual-uk-native-source-copy.json').read_text())
+        self.assertTrue(actual['model_native_language_quality'])
+        rejected = 0
+        for text in actual['narration']:
+            try: validate_native_surface('uk', text)
+            except ValueError: rejected += 1
+        self.assertEqual(rejected, 3)
 
     def test_large_original_photos_split_before_model_claim_without_reencoding(self):
         import hashlib
