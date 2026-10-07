@@ -74,6 +74,8 @@ def plan_photos(gemini, request, brief, pools, limit):
             return
         row = deepcopy(candidate)
         row['visual_targets'] = deepcopy(targets)
+        row['topic_protocol'] = 'topic-specific-v1'
+        row['visual_qualification_protocol'] = 'qualified-target-v1'
         row['photo_plan'] = {'receipt_id': provenance['receipt_id'],
                              'visual_targets_sha256': digest(targets),
                              'anchor_ids': [c['anchor_id'] for c in result['contexts']]}

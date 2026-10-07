@@ -1,3 +1,7 @@
+## Availability planner protocol propagation corrected — 2026-10-07
+
+Code audit found plan_photos takes raw discovery pools before discover annotates selected rows. This dropped topic-specific-v1 fingerprinting and qualified-target-v1 inspection flags. New planner explicitly carries both protocol flags to all rebound candidates; no relaxed gates.214 local checks PASS. Active491002b6 on oldd2eb4de cannot certify corrected strict protocol. Build/package may proceed, deploy only after active work terminal. Owner persistence authorization remains; next fresh case must verify current strict protocol.
+
 ## Owner authorizes persistence to actual output — 2026-10-07
 
 Explicit «так не останавливайся» supersedes prior stop-after-terminal/no-new-case instructions. Continue to actual MP4; on failure preserve immutable ID, diagnose saved evidence, make justified fix and verify a fresh normal case without another prompt. No blind repeats, same per-case free-only budgets/oneTTS/no paidfallback retained. Current bounded case 491002b6-10d1-4432-b219-183be781a228 on LIVEd2eb4de planned.

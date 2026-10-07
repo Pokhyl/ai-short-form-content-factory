@@ -59,6 +59,8 @@ class AvailabilityPlanningTests(unittest.TestCase):
         # falsely recorded as additional executed provider queries.
         self.assertTrue(all(c['discovery_query'] in {t['query'] for t in original['queries']} for c in candidates))
         self.assertFalse(any(c.get('accepted') for c in candidates))
+        self.assertTrue(all(c['topic_protocol'] == 'topic-specific-v1' for c in candidates))
+        self.assertTrue(all(c['visual_qualification_protocol'] == 'qualified-target-v1' for c in candidates))
 
     def test_invented_object_unknown_anchor_and_synthetic_label_are_terminal_without_retry(self):
         for replacement in ({'object_label': 'atomic nucleus'}, {'anchor_id': 'invented'},
