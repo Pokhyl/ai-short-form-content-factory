@@ -1,0 +1,6 @@
+Runtime source0e65ccf34dca945ff021808b63a8f145653d7100
+Exact image factory-v3:0e65ccf, network disabled, tests/acceptance read-only mounts
+112 material tests PASS
+100 core tests PASS
+Publichealth serving exactrevision, project_ready=false
+Actual saved planner/connected replay0 new model/provider/TTS calls and0DBwrites; stops at first missing saved download, not MP4 acceptance.

@@ -1,0 +1,31 @@
+{
+  "id": "bc4afbb2-0f60-40e2-9f21-8b547e403795",
+  "replay_revision": "0e65ccf34dca945ff021808b63a8f145653d7100",
+  "state": "missing_saved_call:download:wikimedia:194139229",
+  "new_provider_calls": 0,
+  "new_model_calls": 0,
+  "new_tts_calls": 0,
+  "database_writes": 0,
+  "used_saved_calls": [
+    "research-search",
+    "source:5a88f1cf6ae5f65ea8bf68adb6dc0ca310dca05fc46f1be535fc316ee1d92191",
+    "source:44b11ee754b98c6c19d6ddc5626ae47f8c036dcb664cc7e43738c123a3053e75",
+    "source:eb9cf0f478787732fc414b11bf2fed0b2ab8074ffcb5cfa2d53a2b084ace6048",
+    "source:863c846b49a5c7827e91c703e81457d332df3eaeca20ba006924be11300ba488",
+    "source:fb44a398607ba189752e615fa4d0290e70519ee928ce1f015c097e34f8810461",
+    "material-brief",
+    "search:f784d5219129ccd9543d01dd439c491580d38c413b7e32786cb01b8c643d736f",
+    "search:66018ee0b863674c87ae57125002602ac6c73daf1dba40f677be4f3988774df3",
+    "search:c5132955b361a3ad55985c22984df965ed9d711daf3af366d91695642f0daf50",
+    "search:101f3e11ff184372fa89487f79565efe06724ab6d6d7fa60275d9503762e15e4",
+    "search:5f25ae166029f29741e802bbf2d94f1b8a8b161bd60c342ff64419bf508d3dc4",
+    "search:ddf1802b2e035ae5a3a69429575273baa9800a6891b43e578c041b32489c4679",
+    "search:454228d641710596191f19a8da287e1b95b99a20331b4a8749a9351d489c69f2",
+    "search:424470d2b8429b744256c6a5a5006f4acee7d192b91fc0de2188fc69be61c463",
+    "search:e88b49383487a214a22ae85bc9f2240446eb6888ce52c4d21e06881e0bf79253",
+    "material-photo-plan"
+  ],
+  "inspected_inputs": 0,
+  "accepted_materials": 0,
+  "qualified_roles": {}
+}

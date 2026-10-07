@@ -1,12 +1,12 @@
 # Release gate — current execution contract
 
 ## Verified state — 2026-10-07
-- Branch factory-v3. LIVE source75f33ef786b08f43676d04c05ac30ceb7169a0ef; app-only deployment protected snapshots equal.
--207 local checks PASS, including controlled current topical preparation/freeze/verification/scheduling across16 language-duration pairs and terminal native/incomplete-review controls.204 exact runtime-image packaged checks PASS before adding the three connected tests.
-- Controlled/saved responses do not establish current provider image judgments, native quality, speech or MP4 acceptance.
-- One resumed normal owner UK60 Vision request2c31edc6-a77a-4961-8f14-5c06acd23cf5 submitted exactly once after committed bounded plan. Terminal MaterialUnavailable:9/30 qualified photographs, minimum12; no compose/TTS/MP4. Exact replay confirms saved cause.
-- Historical failed/deleted IDs stay immutable. No further request/diagnostic after this case terminates without a new evidence-backed plan and owner authorization.
-- Current case plan: acceptance/factory-v3/resumed-uk60-plan.json. Exact deployment: observable-deployment.json. project_ready=false.
+- Branchfactory-v3. LIVE source0e65ccf34dca945ff021808b63a8f145653d7100; app-only deployment protected snapshots equal and publichealth exact.
+-212 local and exact-image packaged checks PASS, including current retrieval-first planner plus controlled16-pair preparation/freeze/scheduling matrix and strict terminal controls.
+- Actual normalbc4afbb2 failed before downloads because valid metadata entity was prefixed withThe. Actual saved plan now passes corrected identity check; connected read-only replay reaches first missing saved download with0 new calls/DBwrites.
+- Latest planned case immutable failed,0downloads/0TTS/0MP4. No automatic new job/diagnostic or failed-ID rescue after terminal. All older failed/deleted IDs preserved.
+- New-target independent pixel/variety, complete factual/native review, one voice/current output and HUMAN acceptance remain unverified. Controlled/saved responses do not establish them.
+- Current11-boundary inventorycurrent-boundaries.json; evidenceavailability-current-connected-replay/actual-plan-replay/uk60-terminal/article-deployment.json. project_ready=false.
 
 ## Immediate work, entirely offline
 1. Produce one executable boundary inventory covering normal intake -> credential gateway -> research -> grounded outline -> all three photo providers -> download/exact bytes -> independent image review -> global unique assignment -> composition -> script review -> free quota -> one voice -> alignment -> render -> machine audit -> owner review. For each boundary distinguish actual native/provider evidence from controlled fixtures and list concrete uncovered failure modes. Do not count test totals as coverage.
