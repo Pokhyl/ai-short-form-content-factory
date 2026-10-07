@@ -1,0 +1,19 @@
+{
+  "id": "4f18786e-dea3-431f-b57e-61db883fcb46",
+  "actual_last_download_bytes": [
+    7011457,
+    1496657,
+    1793291,
+    32816
+  ],
+  "original_batch_bytes": 10334221,
+  "new_batch_bytes": [
+    7011457,
+    3322764
+  ],
+  "byte_limit": 8388608,
+  "new_provider_calls": 0,
+  "new_model_calls": 0,
+  "database_writes": 0,
+  "photos_reencoded": false
+}

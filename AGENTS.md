@@ -1,6 +1,6 @@
 ## Actual byte-batch boundary repaired — 2026-10-07
 
-Normal4f18786e failed ValueError after20downloads/6Gemini,0TTS/MP4. Exact saved read-only replay identifies image batch exceeds8MiB before model claim. New inspection partition packs original unchanged bytes into <=8MiB groups before calls; every subgroup remains inside existing16Gemini quota. No recompress/crop/budget expansion/old-ID retry.214 local checks PASS (113material+101core), exact-image/deployment pending. No new case automatically. project_ready=false.
+Normal4f18786e failed ValueError after20downloads/6Gemini,0TTS/MP4. Exact saved read-only replay identifies image batch exceeds8MiB before model claim. New inspection partition packs original unchanged bytes into <=8MiB groups before calls; every subgroup remains inside existing16Gemini quota. No recompress/crop/budget expansion/old-ID retry.214 local checks PASS (113material+101core), 214 exact-image checks PASS, LIVEd2eb4de42cdd1ff985d8c897834df7a7d1597ac4/imagefactory-v3:d2eb4de. Protected deployment snapshots unchanged and publichealth exact. Saved actual20-file replay passes prior8MiB failure and stops at missing subgroup response with0newcalls/DBwrites;9accepted of16alreadyinspected, no claim of completed coverage/MP4. No new case automatically. project_ready=false.
 
 ## Owner directs full output verification — 2026-10-07
 
