@@ -1,0 +1,1471 @@
+{
+  "status": {
+    "id": "9e7af537-c08f-464a-8b60-8a58bc29af3d",
+    "request": {
+      "topic": "Нейтронная звезда",
+      "seconds": 60,
+      "language": "uk",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "failed",
+    "source_revision": "15fc59ebf6e916ff5f12e549a67f948b02e08251",
+    "error_code": "MaterialUnavailable",
+    "machine_pass": false,
+    "human_pass": false
+  },
+  "call_summary": [
+    {
+      "kind": "download",
+      "state": "succeeded",
+      "count": 30
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 9
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 5
+    }
+  ],
+  "model_calls": [
+    {
+      "key": "material-brief",
+      "state": "succeeded",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 26633,
+        "promptTokenCount": 25481,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 25481
+          }
+        ],
+        "candidatesTokenCount": 1152
+      },
+      "result": {
+        "facts": [
+          {
+            "id": "f1",
+            "text": "Еволюція массивной звезды начинается тогда, когда в её недрах выгорает весь водород и ядро начинает поддерживаться от гравитационного сжатия только давлением вырожденного электронного газа.",
+            "support": [
+              {
+                "span_id": "s1-1094-2113"
+              }
+            ]
+          },
+          {
+            "id": "f2",
+            "text": "Когда масса железного ядра начинает превышать предел Чандрасекара, давление вырожденного электронного газа становится недостаточным, и ядро быстро уплотняется с повышением температуры выше 5⋅10^9 K.",
+            "support": [
+              {
+                "span_id": "s1-1094-2113"
+              },
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f3",
+            "text": "При сверхвысоких температурах происходит фотодиссоциация ядер железа на альфа-частицы, а затем слияние электронов и протонов в нейтроны в процессе электронного захвата с мощным потоком электронных нейтрино.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f4",
+            "text": "Когда плотность звезды достигает ядерной плотности 4⋅10^17 кг/м3, давление вырожденного нейтронного идеального газа Ферми — Дирака останавливает сжатие ядра.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f5",
+            "text": "Падение внешней оболочки звезды на нейтронное ядро останавливается и она отбрасывается потоком нейтрино, превращая объект в сверхновую.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f6",
+            "text": "После рассеивания внешней оболочки от звезды остаётся звёздный остаток — нейтронная звезда с массой, сравнимой с массой Солнца, но с типичным радиусом лишь 10—20 километров.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f7",
+            "text": "Благодаря сильному уменьшению моментов инерции при коллапсе, нейтронные звезды приобретают чрезвычайно высокую скорость осевого вращения до нескольких сотен оборотов в секунду.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-3302-4411"
+              }
+            ]
+          },
+          {
+            "id": "f8",
+            "text": "Многие нейтронные звезды обладают чрезвычайно сильным магнитным полем — до 10^11 Тл, а процессы в их магнитосфере ответственны за радиоизлучение пульсаров.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-5431-6565"
+              }
+            ]
+          }
+        ],
+        "required_fact_ids": [
+          "f2",
+          "f3",
+          "f4",
+          "f6",
+          "f7"
+        ],
+        "photo_contexts": {
+          "setting": {
+            "subject": "Крабовидная туманность",
+            "query": "Crab Nebula supernova remnant",
+            "fact_ids": [
+              "f5",
+              "f6"
+            ]
+          },
+          "subject": {
+            "subject": "Нейтронная звезда",
+            "query": "neutron star artist concept",
+            "fact_ids": [
+              "f6",
+              "f7",
+              "f8"
+            ]
+          },
+          "detail": {
+            "subject": "Пульсар",
+            "query": "pulsar magnetic field beam",
+            "fact_ids": [
+              "f7",
+              "f8"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "key": "material-inspect-batch:263f7c710906f35bf60092182637a5f91ed8adde32cd0ab9feacf20ea6341e04",
+      "state": "succeeded",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11089,
+        "promptTokenCount": 9722,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4342
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 5380
+          }
+        ],
+        "candidatesTokenCount": 1367
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant in space",
+              "connection": "Shows a supernova remnant, which is directly connected to the formation and lifecycle of a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical observational photograph showing a glowing, spherical supernova remnant nebula set against a star-filled background.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "A glowing spherical shell of gas expanding in space from a stellar remnant."
+              },
+              {
+                "fact_id": "f6",
+                "detail": "Remnant structure visible as an expanding nebula in deep space."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "A detailed spherical supernova remnant nebula."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a neutron star close-up or artist concept."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a pulsar with beaming jets."
+              }
+            ],
+            "asset_id": "pexels:19798813"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Hermit crab on sand",
+              "connection": "Uses the word 'crab' as a visual pun/analogy for Crab Nebula, but is an unrelated animal."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A close-up photograph of a small hermit crab with a dark striated shell on sandy ground.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a living crab instead of a nebula."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a living crab instead of a neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a living crab instead of a pulsar."
+              }
+            ],
+            "asset_id": "pixabay:4002544"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Rendered black hole and accretion disk",
+              "connection": "Depicts a black hole rather than a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A digital illustration or synthetic rendering of a black hole with a bright accretion disk in a starfield.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a supernova remnant."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a black hole, not a neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a pulsar."
+              }
+            ],
+            "asset_id": "pexels:23522825"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Woman with taped mouth on a couch",
+              "connection": "Completely unrelated human portrait."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A studio portrait of a red-haired woman wearing a white dress and sitting on a brown leather couch with tape across her mouth.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Unrelated portrait."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Unrelated portrait."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Unrelated portrait."
+              }
+            ],
+            "asset_id": "pixabay:2868727"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:60fb9bfa2c4f24d8d466ca6915cc4660907ec96effa3933a949956cd57d4c9b0",
+      "state": "succeeded",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11200,
+        "promptTokenCount": 9708,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5365
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4343
+          }
+        ],
+        "candidatesTokenCount": 1492
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Крабовидная туманность",
+              "connection": "Остаток вспышки сверхновой, внутри которого находится нейтронная звезда (пульсар)."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Телескопическое изображение туманности на фоне звездного неба с красным и синеватым свечением волокон.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "Туманность представляет собой расширяющуюся оболочку, сброшенную при взрыве сверхновой."
+              },
+              {
+                "fact_id": "f6",
+                "detail": "Внутри этого остатка сверхновой находится компактный звездный остаток — нейтронная звезда."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Видно четкое астрономическое изображение Крабовидной туманности — остатка сверхновой."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Сама нейтронная звезда неразличима как отдельный крупный объект на этом снимке туманности."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Струи или лучи пульсара не видны детально в данной оптической съемке."
+              }
+            ],
+            "asset_id": "pexels:17662495"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Туманность Кошачья Лапа",
+              "connection": "Это область звездообразования, не связанная напрямую с нейтронными звездами или остатками сверхновых."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Круглое поле зрения телескопа с яркими красными облаками эмиссионной туманности и множеством звезд.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Изображена другая туманность (NGC 6334), а не Крабовидная."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Нейтронные звезды не запечатлены."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Пульсар отсутствует."
+              }
+            ],
+            "asset_id": "pixabay:11142"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Планета с кольцами или атмосферой",
+              "connection": "Художественная иллюстрация экзопланеты, не являющаяся нейтронной звездой."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Графическая трехмерная модель планеты на фоне Млечного Пути.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Объект не является остатком сверхновой."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Изображена планета, а не нейтронная звезда."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Магнитные лучи пульсара отсутствуют."
+              }
+            ],
+            "asset_id": "wikimedia:135997734"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Абстрактная световая композиция",
+              "connection": "Стилизованная цифровая графика, имитирующая космические объекты."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Цифровая композиция с синими и оранжевыми световыми эффектами на темном фоне.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Нет Крабовидной туманности."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Нет реальной нейтронной звезды."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Нет структуры пульсара."
+              }
+            ],
+            "asset_id": "pexels:12696003"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:76f4cf5c0803a080b908a92229a8b567304a6d89c6de129bbe8c7f98d90efe53",
+      "state": "succeeded",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11047,
+        "promptTokenCount": 9707,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5373
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4334
+          }
+        ],
+        "candidatesTokenCount": 1340
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant nebula",
+              "connection": "Shows a supernova remnant cloud in space, related to the formation stages of neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical image displaying a glowing red and orange gas nebula floating amidst a field of distant stars.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "Glowing nebula expanding outwards in space."
+              },
+              {
+                "fact_id": "f6",
+                "detail": "Remnant structure left after a massive stellar explosion."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Supernova remnant cloud visible against the dark background."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No compact neutron star object is depicted directly."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No pulsed beams or magnetosphere emission shown."
+              }
+            ],
+            "asset_id": "pexels:16880954"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Sand crab on a beach",
+              "connection": "Merely shares a name metaphorically with the Crab Nebula, completely unrelated to astronomy or neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A close-up photograph of a small crab standing on sandy terrain.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Biological crab instead of an astronomical nebula."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No pulsar."
+              }
+            ],
+            "asset_id": "pixabay:8258856"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Fireworks display",
+              "connection": "Visually resembles an explosion in space, but is only a chemical fireworks display on Earth."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A long-exposure photograph of fireworks lighting up the night sky.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Fireworks explosion rather than a cosmic supernova remnant."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No pulsar."
+              }
+            ],
+            "asset_id": "pexels:14957420"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Star trails over landscape",
+              "connection": "Shows general night sky star trails due to Earth's rotation, not related to neutron stars or pulsars specifically."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A wide-angle night photograph showing circular star trails rotating around the celestial pole above a desert landscape.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "General star trails instead of a supernova remnant."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No individual neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No pulsar beam."
+              }
+            ],
+            "asset_id": "pixabay:9937087"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:807bc30064fbe7f278aa7e7ac654096d0674536d320b719335fe5b2105f8e165",
+      "state": "succeeded",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11021,
+        "promptTokenCount": 9685,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5388
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4297
+          }
+        ],
+        "candidatesTokenCount": 1336
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Aurora borealis over Norway",
+              "connection": "An atmospheric aurora is unrelated to neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A vertical night sky photograph showing green and purple aurora bands with stars in the background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No supernova remnant visible."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star depicted."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No pulsar beams shown."
+              }
+            ],
+            "asset_id": "pexels:29687520"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Landscape view of the Milky Way with a person holding a flashlight",
+              "connection": "A scenic night sky photo with a person holding a flashlight acting as general space scenery."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A person standing on a rocky coast at night pointing a flashlight upward toward the Milky Way galaxy arching across the sky.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No Crab nebula present."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No specific neutron star shown."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No pulsar magnetic field beam depicted."
+              }
+            ],
+            "asset_id": "pixabay:4667644"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant filament",
+              "connection": "Shows a glowing filamentary nebula representing the expanding outer shell of a supernova remnant."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A deep space observational composite image displaying vibrant pink, purple, and blue glowing filaments of a cosmic nebula against a black background.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "Glowing gas filaments illustrate the expanded outer shell of a supernova remnant."
+              },
+              {
+                "fact_id": "f6",
+                "detail": "Visualizes remnants associated with stellar collapse events."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Detailed nebular gas filaments characteristic of supernova remnants."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a point-source neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No pulsar beam structure visible."
+              }
+            ],
+            "asset_id": "pexels:34194986"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Stone abbey ruins",
+              "connection": "Architectural ruins have no connection to neutron stars or astrophysics."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An eye-level shot looking through a stone archway into the grassy courtyard of historical medieval ruins.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No supernova remnant."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No pulsar."
+              }
+            ],
+            "asset_id": "pixabay:2902709"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:a6e90641a86b5f70ee30f8142252fff4e017655d104696481ad918a068611251",
+      "state": "succeeded",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10983,
+        "promptTokenCount": 9759,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5392
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4367
+          }
+        ],
+        "candidatesTokenCount": 1224
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Abstract light trails against dark background",
+              "connection": "Abstract light display resembling cosmic phenomena used as generic imagery."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A photograph showing abstract orange and teal light streaks swirling across a dark background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show the Crab Nebula."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a pulsar."
+              }
+            ],
+            "asset_id": "pexels:21243629"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "illustration",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Black and white portrait sketch",
+              "connection": "An illustrated portrait sketch unrelated to astronomy."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A black and white line drawing illustration of a person with styled hair wearing a collared shirt.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a nebula."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a pulsar."
+              }
+            ],
+            "asset_id": "pixabay:5217533"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Aurora borealis / northern lights",
+              "connection": "Atmospheric phenomenon used as a generic visual metaphor for energetic beams."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A photograph capturing vibrant pink and green aurora light bands radiating in a dark night sky.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show the Crab Nebula."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a pulsar."
+              }
+            ],
+            "asset_id": "pexels:35069882"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Utility pole and electrical power lines",
+              "connection": "Electrical power pole structure unrelated to astrophysical objects."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A photograph of a concrete utility pole with power lines and insulators against a cloudy sky.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a nebula."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a pulsar."
+              }
+            ],
+            "asset_id": "pixabay:509540"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:b530f2a4ddf346320a626c28eaac46f7eb09866f971df35612963f076f4fea61",
+      "state": "succeeded",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 8057,
+        "promptTokenCount": 7387,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5200
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 2187
+          }
+        ],
+        "candidatesTokenCount": 670
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Swirling red and orange light pattern",
+              "connection": "Abstract graphic representation used as a generic visual metaphor, but does not depict a real neutron star or supernova remnant."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An abstract studio photograph of swirling red and orange light creating a vortex effect against a dark background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show the Crab Nebula."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show a pulsar."
+              }
+            ],
+            "asset_id": "pexels:14549215"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Night sky with Milky Way and a shooting star",
+              "connection": "General wide-field night sky astrophotography, lacking any specific neutron star, pulsar, or supernova remnant."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A wide-field astrophotography shot of the Milky Way across a starry night sky with a distinct shooting star streak and silhouettes of distant hills at the bottom.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not depict the Crab Nebula."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not depict a neutron star."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not depict a pulsar."
+              }
+            ],
+            "asset_id": "pixabay:559641"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:d49f53597fccf69e1d9b08d00fd0671a509ff75a809cde813fb91bd87b8045a4",
+      "state": "succeeded",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10981,
+        "promptTokenCount": 9732,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4345
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 5387
+          }
+        ],
+        "candidatesTokenCount": 1249
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "aurora borealis",
+              "connection": "aurora borealis is atmospheric phenomenon unrelated to neutron stars"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A night landscape showing the aurora borealis above a forest silhouette.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "aurora and trees"
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "aurora and trees"
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "aurora and trees"
+              }
+            ],
+            "asset_id": "pexels:28892592"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "vinyl record grooves",
+              "connection": "circular grooves are used as a generic analogy but do not show astronomical objects"
+            },
+            "subject_fully_visible": false,
+            "visible_description": "Close-up of golden curved ridges against a black background resembling vinyl or abstract metal.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "ridged surface"
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "ridged surface"
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "ridged surface"
+              }
+            ],
+            "asset_id": "pixabay:1838153"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Veil Nebula supernova remnant",
+              "connection": "supernova remnant is a direct evolutionary stage related to neutron star formation"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Astronomical photograph of the Veil Nebula showing glowing filaments of gas and dust against a star field.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "Visible expanding shell of a supernova remnant"
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "nebula filaments representing supernova remnants"
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "nebula structure"
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "nebula structure"
+              }
+            ],
+            "asset_id": "pexels:33991625"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "hermit crab",
+              "connection": "hermit crab is a terrestrial animal unrelated to neutron stars"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A close-up photograph of a red hermit crab perched on a twig.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "hermit crab"
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "hermit crab"
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "hermit crab"
+              }
+            ],
+            "asset_id": "pixabay:618770"
+          }
+        ]
+      }
+    },
+    {
+      "key": "material-inspect-batch:e1366087db368b85e30f5435fa0ba81bd3f6cfa9fa482b91807f96a349237aa8",
+      "state": "succeeded",
+      "model": "gemini-3.5-flash-lite",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11033,
+        "promptTokenCount": 9780,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5425
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4355
+          }
+        ],
+        "candidatesTokenCount": 1253
+      },
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "A person painting on a canvas",
+              "connection": "An artist painting is completely unrelated to neutron stars."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "An artist's hand holding a paintbrush and painting on a canvas in an indoor setting.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No Crab Nebula is visible."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star is visible."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No pulsar is visible."
+              }
+            ],
+            "asset_id": "pixabay:7250697"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "A dense globular star cluster",
+              "connection": "A crowded star field does not specifically depict the Crab Nebula, neutron stars, or pulsars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A dense cluster of numerous glittering white and reddish stars against a dark background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The image shows a star cluster, not the Crab Nebula supernova remnant."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No individual resolved neutron star or conceptual rendering is shown."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No pulsar beam is visible."
+              }
+            ],
+            "asset_id": "wikimedia:147925240"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Aurora borealis in the night sky",
+              "connection": "An aurora is an atmospheric phenomenon on Earth, unrelated to neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Green and purple auroral curtains glowing in the night sky with small distant stars.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No Crab Nebula is visible."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star is present."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No pulsar magnetic field beam is visible."
+              }
+            ],
+            "asset_id": "pexels:11213112"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "A parked motorcycle outdoors",
+              "connection": "A motorcycle has no connection to astrophysics or neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A modern black sports motorcycle parked on a grassy field with illuminated red ring headlights.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No Crab Nebula is visible."
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star is depicted."
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No pulsar is visible."
+              }
+            ],
+            "asset_id": "pixabay:7405084"
+          }
+        ]
+      }
+    }
+  ],
+  "raw_model_accepted_photos": 5,
+  "new_voice_created": false,
+  "new_mp4_created": false,
+  "human_pass": false,
+  "finding": "Planner still requested neutron star artist concept and pulsar magnetic field beam despite the photo-only instruction. Five photos were model-accepted, all matched setting v0 only; no subject/detail context matched. Unrelated props and prior black-hole CGI were rejected. Preparation stopped before composition/native proofread/TTS; no fresh Ukrainian audio verification.",
+  "next": "Use this saved planner/search/inspection evidence offline to enforce actual observable search contexts and availability planning. Do not repeat this failed ID or submit another request without closing that boundary."
+}
