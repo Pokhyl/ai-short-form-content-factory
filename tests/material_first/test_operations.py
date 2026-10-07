@@ -48,6 +48,9 @@ class Model:
                 result['target_matches'] = [{'target_id': t['id'], 'matches': t['id'] == 'v'+str(role),
                     'detail_prominent': t['id'] == 'v'+str(role), 'visible_detail': 'Observed concrete detail '+str(role)}
                     for t in context['visual_targets']]
+                if 'subject_qualifications_match' in schema['properties']['target_matches']['items']['properties']:
+                    for match in result['target_matches']:
+                        match['subject_qualifications_match'] = True
         elif key == 'material-language-edit':
             result = {'narration':context['narration'][:]}
         elif key == 'material-compose':
@@ -393,3 +396,24 @@ class OperationTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'schema captured'):
             ops.compose(context)
         self.assertEqual(captured[0]['properties']['beats']['maxItems'],6)
+
+    def test_reencoded_duplicate_pool_stops_before_image_calls_and_composition(self):
+        import hashlib, base64
+        from material_first.engine import MaterialUnavailable
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fixtures = Fixtures(root, ['photo'] * 6)
+            for i, asset in enumerate(fixtures.assets):
+                file = root / asset['path']
+                file.write_bytes(b'\xff\xd8\xffcontrolled-photo' + str(i).encode())
+                asset['sha256'] = hashlib.sha256(file.read_bytes()).hexdigest()
+                asset['visual_fingerprint'] = {'algorithm':'rgb32-v1', 'source_sha256':asset['sha256'],
+                    'width':1080,'height':1920, 'rgb':base64.b64encode(bytes(range(256))*12).decode()}
+            model = Model(fixtures)
+            operations = Operations(root,
+                SimpleNamespace(fetch=lambda *args: fixtures.evidence['sources']), model,
+                SimpleNamespace(search=lambda *args: {'candidates':fixtures.assets}), fixtures)
+            with self.assertRaisesRegex(MaterialUnavailable,'distinct photographs'):
+                Producer(root,operations,probe=fixtures.probe).prepare('topic','pl',15)
+            self.assertEqual(sum(k.startswith('material-inspect-batch:') for k in model.calls),1)
+            self.assertNotIn('material-compose',model.calls)

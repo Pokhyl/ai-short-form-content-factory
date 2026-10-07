@@ -37,6 +37,9 @@ class PhotoDownload:
                           "sha256": hashlib.sha256(raw).hexdigest(),
                           "width": dimensions["width"], "height": dimensions["height"],
                           "download_receipt": {k: v for k, v in receipt.items() if k != "body"}})
+            if candidate.get('topic_protocol') == 'topic-specific-v1':
+                from material_first.photo_identity import fingerprint
+                asset['visual_fingerprint'] = fingerprint(file, asset['sha256'], dimensions['width'], dimensions['height'])
             validate_asset(self.root, asset)
             return asset
         asset = self.calls.run("download:" + candidate["id"], "download", identity, send, allow_unavailable=True)

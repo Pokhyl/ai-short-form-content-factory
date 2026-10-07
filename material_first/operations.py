@@ -153,6 +153,7 @@ class Operations:
                         candidate['visual_targets'] = deepcopy(targets)
                     if request.get('presentation_policy') == TOPIC_POLICY:
                         candidate['topic_protocol'] = 'topic-specific-v1'
+                        candidate['visual_qualification_protocol'] = 'qualified-target-v1'
                     selected.append(candidate); seen.add(candidate['id'])
                     if len(selected) == candidate_limit(request['seconds'],request.get('presentation_policy',POLICY)):
                         return selected
@@ -176,7 +177,7 @@ class Operations:
             raise ValueError('unsupported actual photo bytes')
         return {'bytes': data, 'mime': mime, 'asset_id': asset['id']}
 
-    def _inspection_schema(self, evidence, targets):
+    def _inspection_schema(self, evidence, targets, qualified=False):
         schema = obj({'accepted': BOOL, 'is_real_material': BOOL,
             'medium': string(['photograph','observational_image','illustration','synthetic','unknown']),
             'topic_relation': obj({'kind': string(['direct_subject','direct_part_or_stage','generic_analogy','unrelated','unknown']), 'visible_subject': string(), 'connection': string()}),
@@ -188,6 +189,10 @@ class Operations:
                 'target_id': string(t['id'] for t in targets), 'matches': BOOL,
                 'detail_prominent': BOOL, 'visible_detail': string()}), len(targets), len(targets))
             schema['required'].append('target_matches')
+            if qualified:
+                row = schema['properties']['target_matches']['items']
+                row['properties']['subject_qualifications_match'] = BOOL
+                row['required'].append('subject_qualifications_match')
         return schema
 
     def _inspection_receipt(self, asset, evidence, result, provenance):
@@ -204,6 +209,8 @@ class Operations:
             and bool(relation['visible_subject'].strip()) and bool(relation['connection'].strip()))
         if asset.get('visual_targets') is not None:
             result['visual_targets_sha256'] = digest(asset['visual_targets'])
+            if asset.get('visual_qualification_protocol') == 'qualified-target-v1':
+                result['visual_qualification_protocol'] = 'qualified-target-v1'
         return {**result, 'asset_id': asset['id'], 'asset_sha256': asset['sha256'],
                 'evidence_sha256': digest(evidence), 'receipt_id': provenance['receipt_id'],
                 'model': self.gemini.model, 'provider_provenance': provenance}
@@ -217,6 +224,11 @@ class Operations:
         'visible_fact_details describe the concrete visible relationship without inventing hidden actions. '
         'Evaluate every visual_target as a practical composition role, not exact scientific proof. '
         'detail_prominent means that role is recognizable in the whole photo. '
+        'subject_qualifications_match evaluates the requested object class and defining qualifiers separately: '
+        'a generic member of a broader class is insufficient. A Sun image does not establish a massive '
+        'supernova progenitor; a generic bright star does not identify a neutron star. Use the depicted '
+        'object and reliable object-identifying metadata; if its defining qualifications are unknown, return false. '
+        'A documented associated remnant or physical stage can still match its own requested contextual role. '
         'Do not mark the same generic composition as every distinct role. '
         'Return one result for each supplied asset_id, preserving its identity; metadata is not proof.')
 
@@ -226,7 +238,7 @@ class Operations:
             self.INSPECTION_INSTRUCTION,
             {'topic': getattr(self,'topic',None), 'evidence': compact_evidence(evidence), 'visual_targets': targets,
              'metadata': {k: asset[k] for k in ('source_url', 'author', 'license')}},
-            self._inspection_schema(evidence, targets), photo=self._photo(asset), max_tokens=2048)
+            self._inspection_schema(evidence, targets, asset.get('visual_qualification_protocol') == 'qualified-target-v1'), photo=self._photo(asset), max_tokens=2048)
         return self._inspection_receipt(asset, evidence, result, provenance)
 
     def inspect_many(self, assets, evidence):
@@ -242,7 +254,10 @@ class Operations:
         targets = assets[0].get('visual_targets')
         if any(a.get('visual_targets') != targets for a in assets):
             raise ValueError('inspection batch roles differ')
-        row_schema = self._inspection_schema(evidence, targets)
+        qualified = assets[0].get('visual_qualification_protocol') == 'qualified-target-v1'
+        if any((a.get('visual_qualification_protocol') == 'qualified-target-v1') != qualified for a in assets):
+            raise ValueError('inspection batch qualification contracts differ')
+        row_schema = self._inspection_schema(evidence, targets, qualified)
         row_schema['properties']['asset_id'] = string(a['id'] for a in assets)
         row_schema['required'].append('asset_id')
         schema = obj({'photos': array(row_schema, len(assets), len(assets))})

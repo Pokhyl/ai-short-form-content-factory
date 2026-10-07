@@ -272,7 +272,7 @@ class Producer:
         candidates = self.operations.discover(deepcopy(request), deepcopy(brief["queries"]))
         if not isinstance(candidates, list) or len(candidates) > (self.max_materials or (candidate_limit(seconds,request["presentation_policy"]) if modern else 12)):
             raise ValueError("material discovery exceeded server budget")
-        assets, available, hashes = {}, [], set()
+        assets, available, hashes, fingerprints = {}, [], set(), []
         batch_size = 4 if modern else 1
         for offset in range(0, len(candidates), batch_size):
             batch = []
@@ -289,6 +289,15 @@ class Producer:
                 if asset['sha256'] in hashes:
                     continue
                 hashes.add(asset['sha256'])
+                sample = asset.get('visual_fingerprint')
+                if request.get('presentation_policy') == TOPIC_POLICY and sample:
+                    from .photo_identity import pixels, same_photo
+                    pixels(sample)
+                    if sample['source_sha256'] != asset['sha256']:
+                        raise ValueError('photo fingerprint source identity changed')
+                    if any(same_photo(sample, previous) for previous in fingerprints):
+                        continue
+                    fingerprints.append(sample)
                 batch.append(asset)
             if not batch:
                 continue
@@ -371,7 +380,13 @@ def verify(root, frozen, probe=probe_media):
             raise ValueError("observation has no real material")
         if 'visual_targets' in payload and asset.get('visual_targets') != payload['visual_targets']:
             raise ValueError('frozen asset targets differ from the original story targets')
-        validate_material(root, asset, probe)
+        dimensions = validate_material(root, asset, probe)
+        sample = asset.get('visual_fingerprint')
+        if sample is not None:
+            from .photo_identity import fingerprint
+            actual = fingerprint(asset_path(root, asset['path']), asset['sha256'], dimensions['width'], dimensions['height'])
+            if sample != actual:
+                raise ValueError('frozen photo fingerprint differs from source bytes')
         current = inspected_material(asset, original["inspection"], payload["evidence"], facts, payload.get("visual_validation_mode", "gemini"))
         if current != original:
             raise ValueError("frozen observation changed")

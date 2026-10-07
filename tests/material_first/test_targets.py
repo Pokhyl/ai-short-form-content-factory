@@ -74,3 +74,21 @@ class TargetTests(unittest.TestCase):
         self.assertEqual(' '.join(b['narration'] for b in result['beats']), ' '.join(words))
         self.assertEqual(result['merged_adjacent_beats'], 1)
         self.assertEqual({b['visual_target_id'] for b in result['beats']}, {'target-1','target-2','target-3'})
+
+    def test_broad_class_match_cannot_substitute_for_qualified_subject(self):
+        targets = [dict(t) for t in self.targets]
+        targets[0]['must_show'] = 'Massive star that can end as a supernova'
+        asset = {'visual_targets': targets, 'visual_qualification_protocol':'qualified-target-v1'}
+        receipt = {'visual_targets_sha256':digest(targets),
+            'visual_qualification_protocol':'qualified-target-v1', 'target_matches':[
+                {'target_id':t['id'], 'matches':True, 'detail_prominent':True,
+                 'visible_detail':'Sun' if i == 0 else 'Documented physical stage',
+                 'subject_qualifications_match':i != 0} for i,t in enumerate(targets)]}
+        self.assertEqual(set(matched_targets(asset,receipt)), {'v1','v2'})
+        # The broad class was accepted by the model; server scheduling still
+        # excludes it from the massive-progenitor role independently.
+        receipt['target_matches'][0]['subject_qualifications_match'] = True
+        self.assertEqual(set(matched_targets(asset,receipt)), {'v0','v1','v2'})
+        del receipt['visual_qualification_protocol']
+        with self.assertRaisesRegex(ValueError,'qualification inspection missing'):
+            matched_targets(asset,receipt)

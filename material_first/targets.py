@@ -32,12 +32,17 @@ def matched_targets(asset, receipt):
     matches = receipt.get('target_matches')
     if not isinstance(matches, list):
         raise ValueError('missing visual target inspection')
+    qualified = asset.get('visual_qualification_protocol') == 'qualified-target-v1'
+    if qualified and receipt.get('visual_qualification_protocol') != 'qualified-target-v1':
+        raise ValueError('subject qualification inspection missing')
     result, seen = {}, set()
     for match in matches:
         identity = match.get('target_id')
         if identity not in known or identity in seen:
             raise ValueError('invented or repeated inspected visual target')
         seen.add(identity)
+        if qualified and match.get('subject_qualifications_match') is not True:
+            continue
         if (match.get('matches') is not True or match.get('detail_prominent') is not True
                 or not isinstance(match.get('visible_detail'), str) or not match['visible_detail'].strip()):
             continue

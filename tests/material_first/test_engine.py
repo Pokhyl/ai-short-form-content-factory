@@ -188,3 +188,14 @@ class EngineTests(unittest.TestCase):
         result = match_materials(available, draft)
         self.assertEqual([b["material_id"] for b in result["beats"]], ["b", "a"])
         self.assertEqual([b["narration"] for b in result["beats"]], ["Food", "Pollination"])
+
+    def test_frozen_sample_must_redecode_to_the_exact_source_bytes(self):
+        from unittest.mock import patch
+        ops = Operations(self.root,['photo']*3)
+        frozen = self.run_prepare(ops)
+        asset = frozen['payload']['assets'][0]
+        asset['visual_fingerprint'] = {'source_sha256':asset['sha256'],'rgb':'forged-sample'}
+        frozen['sha256'] = digest(frozen['payload'])
+        with patch('material_first.photo_identity.fingerprint',return_value={'source_sha256':asset['sha256'],'rgb':'actual-sample'}):
+            with self.assertRaisesRegex(ValueError,'fingerprint differs'):
+                verify(self.root,frozen,ops.probe)
