@@ -152,6 +152,7 @@ class Operations:
                 query_pool.sort(key=lambda candidate: -relevance(candidate, query))
                 query_pools.append(query_pool)
         if topical:
+            self.discovery_pools = deepcopy(pools)
             # Give every provider/query an initial exposure (including sparse
             # captions), then rank jointly within each query. Equal quotas per
             # provider must not bury a relevant fourth result behind stock filler.
@@ -199,6 +200,17 @@ class Operations:
                     if len(selected) == candidate_limit(request['seconds'],request.get('presentation_policy',POLICY)):
                         return selected
         return selected
+
+    def resolve_photos(self, request, brief):
+        candidates = self.discover(request, brief['queries'])
+        if (request.get('presentation_policy') != TOPIC_POLICY
+                or request.get('visual_validation_mode', 'gemini') == 'metadata'):
+            return brief, candidates
+        from .photo_planning import plan_photos
+        # Collect the complete bounded search pools first. Role contracts are
+        # finalized once from available objects before any download/inspection.
+        return plan_photos(self.gemini, request, brief, self.discovery_pools,
+                           candidate_limit(request['seconds'], TOPIC_POLICY))
 
     def download(self, candidate):
         return self.downloader.download(candidate)

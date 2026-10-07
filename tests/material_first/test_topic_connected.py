@@ -25,6 +25,7 @@ class TopicFixtures(FixtureOperations):
         for asset in self.assets:
             asset.update(visual_targets=copy.deepcopy(self.targets),
                          visual_qualification_protocol='qualified-target-v1')
+            asset['description'] = ('Field', 'Flower', 'Pollen')[int(asset['id'][1:]) % 3]
         self.model_calls = []
         self.native_quality = True
         self.omit_review_fact = False
@@ -42,6 +43,12 @@ class TopicFixtures(FixtureOperations):
 
     def discover(self, request, queries):
         return super().discover(request, queries)[:candidate_limit(request['seconds'], TOPIC_POLICY)]
+
+    def resolve_photos(self, request, brief):
+        from material_first.photo_planning import plan_photos
+        candidates = self.discover(request, brief['queries'])
+        return plan_photos(self.adapter.gemini, request, brief, [candidates],
+                           candidate_limit(request['seconds'], TOPIC_POLICY))
 
     def inspect_many(self, assets, evidence):
         self.events.append('inspect-batch')
@@ -62,7 +69,10 @@ class TopicFixtures(FixtureOperations):
 
     def generate(self, key, instruction, context, schema):
         self.model_calls.append(key)
-        if key == 'material-compose':
+        if key == 'material-photo-plan':
+            result = {'contexts': [{'anchor_id': 'a' + str(i), 'object_label': t['must_show'],
+                                    'fact_ids': ['f0', 'f1', 'f2']} for i, t in enumerate(self.targets)]}
+        elif key == 'material-compose':
             phrases = {'pl': 'Kwiat wytwarza pyłek.', 'en': 'The flower produces pollen.',
                        'ru': 'Цветок производит пыльцу.', 'uk': 'Квітка утворює пилок.'}
             phrase = phrases[self.request['language']]
@@ -97,7 +107,7 @@ class TopicConnectedTests(unittest.TestCase):
                     ops = TopicFixtures(Path(tmp))
                     frozen = Producer(tmp, ops, probe=ops.probe).prepare('Controlled flower process', language, seconds)
                     payload = verify(tmp, frozen, ops.probe)
-                    self.assertEqual(ops.model_calls, ['material-compose', 'material-language-edit'])
+                    self.assertEqual(ops.model_calls, ['material-photo-plan', 'material-compose', 'material-language-edit'])
                     self.assertEqual(len(payload['visuals']), preferred_shots(seconds, TOPIC_POLICY))
                     timings = [{'start_ms': i * seconds * 1000 / 3,
                                 'end_ms': (i + 1) * seconds * 1000 / 3} for i in range(3)]

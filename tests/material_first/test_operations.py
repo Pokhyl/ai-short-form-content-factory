@@ -14,6 +14,8 @@ class Model:
     def __init__(self, fixtures):
         self.fixtures = fixtures
         self.calls = []
+        for i, asset in enumerate(fixtures.assets):
+            asset.setdefault('description', 'Controlled physical detail ' + str(i % 3))
     def generate(self, key, instruction, context, schema, **kwargs):
         self.calls.append(key)
         provider_schema(schema)
@@ -27,6 +29,10 @@ class Model:
                       'required_fact_ids': ['f0', 'f1', 'f2'], 'photo_contexts': {
                           role: {'subject': 'Prominent explanatory detail '+str(i), 'query': 'detail '+str(i), 'fact_ids':['f'+str(i)]}
                           for i, role in enumerate(('setting', 'subject', 'detail'))}}
+        elif key == 'material-photo-plan':
+            result = {'contexts': [{'anchor_id': context['candidates'][i]['id'],
+                                    'object_label': 'detail ' + str(i), 'fact_ids': ['f' + str(i)]}
+                                   for i in range(3)]}
         elif key.startswith('material-inspect-batch:'):
             saved_calls = self.calls[:]
             row_schema = copy.deepcopy(schema['properties']['photos']['items'])

@@ -1,0 +1,115 @@
+{
+  "saved_request": "2c31edc6-a77a-4961-8f14-5c06acd23cf5",
+  "fixture_sha256": "5a8daab3b58563cc0bccbc0d908a80c26a346156d487aa3918e903b3744bcbed",
+  "scope": "Controlled planner output over actual saved search results, not a provider response or pixel approval.",
+  "new_provider_calls": 0,
+  "new_model_calls": 0,
+  "database_writes": 0,
+  "new_tts_calls": 0,
+  "saved_searches": 9,
+  "controlled_model_steps": [
+    "material-photo-plan"
+  ],
+  "selected_count": 30,
+  "original_required_facts_unchanged": true,
+  "original_evidence_unchanged": true,
+  "new_targets": [
+    {
+      "id": "v0",
+      "fact_ids": [
+        "f4",
+        "f5"
+      ],
+      "must_show": "Crab Nebula",
+      "query": "Crab Nebula",
+      "must_not_show": "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role"
+    },
+    {
+      "id": "v1",
+      "fact_ids": [
+        "f4",
+        "f5"
+      ],
+      "must_show": "Eastern Veil Nebula",
+      "query": "Eastern Veil Nebula",
+      "must_not_show": "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role"
+    },
+    {
+      "id": "v2",
+      "fact_ids": [
+        "f4",
+        "f5"
+      ],
+      "must_show": "Jellyfish Nebula",
+      "query": "Jellyfish Nebula",
+      "must_not_show": "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role"
+    }
+  ],
+  "selected_query_origins": {
+    "v0": 23,
+    "v1": 5,
+    "v2": 2
+  },
+  "newly_exposed": [
+    {
+      "id": "pexels:16880954",
+      "description": "Capture of the vivid Jellyfish Nebula amidst the star-studded space."
+    },
+    {
+      "id": "pexels:35146489",
+      "description": "Captivating image of the Veil Nebula, a beautiful filamentary nebula in space."
+    },
+    {
+      "id": "pexels:37474955",
+      "description": "A vibrant image of the Jellyfish Nebula set against a star-filled outer space backdrop."
+    },
+    {
+      "id": "pexels:26607689",
+      "description": "A detailed view of the Crab Nebula showcasing its intricate structure in the cosmos."
+    },
+    {
+      "id": "pexels:17505905",
+      "description": "Dramatic view of the red Jellyfish Nebula amidst stars in the cosmos"
+    },
+    {
+      "id": "pixabay:67616",
+      "description": "stars, galaxy, space, rosette nebula, star clusters, milky way, outer space, universe, cosmos, celestial objects, astronomical objects, astronomy, stars, galaxy, galaxy, space, space, space, space, space, universe"
+    },
+    {
+      "id": "pixabay:11107",
+      "description": "christmas background, orion nebula, nature, emission nebula, constellation orion, orion, galaxy, starry sky, space, universe, night sky, sky, astronautics, nasa, space travel, astronomy, science, research, space wallpaper, space background"
+    },
+    {
+      "id": "pixabay:11143",
+      "description": "lagoon nebula, messier 8, ngc 6523, emission nebula, reflection nebulae, constellation sagittarius, galaxy, starry sky, space, universe, nature, night sky, sky, astronautics, space travel, space background"
+    },
+    {
+      "id": "pexels:22711142",
+      "description": "Mesmerizing view of the Bubble Nebula with vibrant stars in space."
+    },
+    {
+      "id": "pixabay:559641",
+      "description": "milky way, night sky, stars, starry sky, landscape, night, sky, space, star, astronomy, universe, starry, sparkle, galaxy, cosmos, nebula, moonlight, astrology, evening, nature, blue sky, blue stars, blue galaxy, blue night, blue universe"
+    },
+    {
+      "id": "pexels:10064346",
+      "description": "An awe-inspiring view of a supernova remnant amidst a field of stars in space."
+    },
+    {
+      "id": "pexels:19798813",
+      "description": "A detailed image of a supernova remnant showcasing intricate cosmic patterns and celestial beauty."
+    },
+    {
+      "id": "pixabay:5350588",
+      "description": "science, science channel, science channel episodes, science channel videos, how the universe works, science documentaries, universe, space, outer space, nasa, mike rowe, astronomy, astrophysics, supernova, black hole, stars, the sun, earth, planets, solar system, galaxy, milky way, physics, the big bang, neutron stars, outer space, supernova, supernova, supernova, supernova, supernova, black hole, black hole, black hole, black hole, black hole, solar system, solar system, neutron stars, neutron stars"
+    },
+    {
+      "id": "pixabay:1867616",
+      "description": "astronomy, 4k wallpaper 1920x1080, bright, sky background, constellation, night sky, dark, exploration, galaxy, free wallpaper, light, cool backgrounds, night, planet, free background, sky, starry, stars, full hd wallpaper, laptop wallpaper, nature, nature background, windows wallpaper, universe, hd wallpaper, wallpaper, 4k wallpaper, beautiful nature, beautiful wallpaper, wallpaper 4k, cute wallpaper, nature wallpaper, desktop backgrounds, wallpaper hd, background, space wallpaper, mac wallpaper, space background, zoom background"
+    }
+  ],
+  "pixel_approval": false,
+  "current_provider_plan_verified": false,
+  "video_created": false,
+  "human_pass": false
+}

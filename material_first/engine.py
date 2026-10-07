@@ -304,12 +304,18 @@ class Producer:
         if not required or len(set(required)) != len(required) or not set(required) <= facts.keys():
             raise ValueError("invalid original topic coverage")
         request["required_fact_ids"] = required
+        candidates = None
+        if hasattr(self.operations, 'resolve_photos'):
+            brief, candidates = self.operations.resolve_photos(deepcopy(request), deepcopy(brief))
+            if brief['evidence'] != evidence or brief['required_fact_ids'] != required:
+                raise ValueError('availability planning changed source evidence or required narration')
         targets = brief.get('visual_targets')
         if targets is not None:
             validate_targets(targets, facts)
             request['visual_targets'] = deepcopy(targets)
         # Discovery is global and topic-bound, not a search for one imagined shot.
-        candidates = self.operations.discover(deepcopy(request), deepcopy(brief["queries"]))
+        if candidates is None:
+            candidates = self.operations.discover(deepcopy(request), deepcopy(brief["queries"]))
         if not isinstance(candidates, list) or len(candidates) > (self.max_materials or (candidate_limit(seconds,request["presentation_policy"]) if modern else 12)):
             raise ValueError("material discovery exceeded server budget")
         assets, available, hashes, fingerprints = {}, [], set(), []
