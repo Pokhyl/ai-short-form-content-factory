@@ -1,13 +1,12 @@
 # Release gate — current execution contract
 
-## Verified state
-- Source: factory-v3; schema compiler code704f01a committed/pushed, later evidence checkpointf948757.
-- Live app runtime:2a6d997, NOT updated with schema compiler.
-- Live gateway:9891e8d9-bc62-4d97-8150-9242a22ab4e1, exact body contract verified;33 protected workflows unchanged.
-- Immutable new request7ef29657-1b98-4236-bcf6-01a7482c8f29: billing/research/3 sources succeeded; first outline400; preparationunknown; no TTS/MP4.
-- Native HTTP request/response contracts pass in exact isolated n8n image.79 local Python tests pass.
-- Model/key metadata200; simple schema200; original outline400; omission of string keywords still400; compact array grammar200. Compact test was MAX_TOKENS by design, NOT accepted product output.
-- No build/deploy/product/API call is currently planned to run automatically. No user acceptance exists.
+## Verified state — 2026-10-07
+- Branch factory-v3. LIVE source75f33ef786b08f43676d04c05ac30ceb7169a0ef; app-only deployment protected snapshots equal.
+-207 local checks PASS, including controlled current topical preparation/freeze/verification/scheduling across16 language-duration pairs and terminal native/incomplete-review controls.204 exact runtime-image packaged checks PASS before adding the three connected tests.
+- Controlled/saved responses do not establish current provider image judgments, native quality, speech or MP4 acceptance.
+- One resumed normal owner UK60 Vision request2c31edc6-a77a-4961-8f14-5c06acd23cf5 submitted exactly once after committed bounded plan. Terminal MaterialUnavailable:9/30 qualified photographs, minimum12; no compose/TTS/MP4. Exact replay confirms saved cause.
+- Historical failed/deleted IDs stay immutable. No further request/diagnostic after this case terminates without a new evidence-backed plan and owner authorization.
+- Current case plan: acceptance/factory-v3/resumed-uk60-plan.json. Exact deployment: observable-deployment.json. project_ready=false.
 
 ## Immediate work, entirely offline
 1. Produce one executable boundary inventory covering normal intake -> credential gateway -> research -> grounded outline -> all three photo providers -> download/exact bytes -> independent image review -> global unique assignment -> composition -> script review -> free quota -> one voice -> alignment -> render -> machine audit -> owner review. For each boundary distinguish actual native/provider evidence from controlled fixtures and list concrete uncovered failure modes. Do not count test totals as coverage.

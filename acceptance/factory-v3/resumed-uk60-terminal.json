@@ -1,0 +1,1650 @@
+{
+  "status": {
+    "id": "2c31edc6-a77a-4961-8f14-5c06acd23cf5",
+    "request": {
+      "topic": "Нейтронная звезда",
+      "seconds": 60,
+      "language": "uk",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "failed",
+    "source_revision": "75f33ef786b08f43676d04c05ac30ceb7169a0ef",
+    "error_code": "MaterialUnavailable",
+    "machine_pass": false,
+    "human_pass": false
+  },
+  "call_summary": [
+    {
+      "kind": "download",
+      "state": "succeeded",
+      "count": 30
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 9
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 5
+    }
+  ],
+  "model_calls": [
+    {
+      "key": "material-brief",
+      "result": {
+        "facts": [
+          {
+            "id": "f1",
+            "text": "Будь-яка зірка головної послідовності з початковою масою, що більш ніж у 8 разів перевищує масу Сонця, може еволюціонувати в нейтронну зірку після вигоряння водню та утворення залізного ядра в активній зоні.",
+            "support": [
+              {
+                "span_id": "s1-1094-2113"
+              }
+            ]
+          },
+          {
+            "id": "f2",
+            "text": "Коли ядерне паливо вичерпується, тиск виродженого електронного газу стає недостатнім, ядро починає швидко ущільнюватися, температура перевищує 5·10^9 K, і відбувається фотодиссоціація ядер заліза на альфа-частинки.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f3",
+            "text": "Під час подальшого підвищення температури електрони та протони зливаються в нейтрони через електронний захват, створюючи потужний потік електронних нейтрино.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f4",
+            "text": "Коли щільність досягає ядерної (4·10^17 кг/м³), тиск виродженого нейтронного газу зупиняє стискання, після чого зовнішня оболочка відкидається потоком нейтрино у вигляді спалаху наднової.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f5",
+            "text": "Зі сприятливого залишком утворюється компактний об'єкт із масою, порівнянною з масою Сонця, але з типовим радіусом лише 10—20 кілометрів і надзвичайно високою густиною.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              }
+            ]
+          },
+          {
+            "id": "f6",
+            "text": "Зберігаючи початковий кутовий момент при різкому зменшенні радіуса, нейтронна зірка набуває надзвичайно високої швидкості обертання і сильного магнітного поля.",
+            "support": [
+              {
+                "span_id": "s1-3302-4411"
+              }
+            ]
+          },
+          {
+            "id": "f7",
+            "text": "Упродовж тривалого часу нейтронна зірка поступово остигає: спершу за рахунок нейтринного охолодження в перші хвилини та місяці, а згодом — через фотонне теплове випромінювання поверхні.",
+            "support": [
+              {
+                "span_id": "s1-8766-9959"
+              }
+            ]
+          }
+        ],
+        "required_fact_ids": [
+          "f1",
+          "f3",
+          "f4",
+          "f5"
+        ],
+        "photo_contexts": {
+          "setting": {
+            "subject": "Overexposed gas nebula and stellar remnant after a supernova explosion",
+            "query": "supernova remnant nebula deep space astronomy",
+            "fact_ids": [
+              "f4",
+              "f5"
+            ]
+          },
+          "subject": {
+            "subject": "Dense compact neutron star glowing in space with intense magnetic field lines",
+            "query": "neutron star space art astronomy scientific illustration",
+            "fact_ids": [
+              "f5",
+              "f6"
+            ]
+          },
+          "detail": {
+            "subject": "Close-up of degenerate neutron core matter and subatomic particle interactions",
+            "query": "atomic nucleus dense matter physics abstract representation",
+            "fact_ids": [
+              "f2",
+              "f3"
+            ]
+          }
+        }
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 18186,
+        "promptTokenCount": 17123,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 17123
+          }
+        ],
+        "candidatesTokenCount": 1063
+      }
+    },
+    {
+      "key": "material-inspect-batch:03d9e5b855f054cb23e643e9b8d99302cfcc0a255a93e725582252043649a4e1",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supercomputer visualization of merging neutron stars",
+              "connection": "Digital simulation of merging neutron stars"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A dark background with a purple and pink glowing fluid-like dynamic simulation showing two faint circular objects near the center.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a supernova remnant",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic simulation graphic",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not an atomic nucleus",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:182691754"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Abstract art with a human eye and blue spheres",
+              "connection": "Graphic design representing quantum physics concepts"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A human eye flanked by two blue glossy spheres with a horizontal beam of blue light across a black background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Unrelated subject",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generic analogy",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Unrelated graphic",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:3864564"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "The Crab Nebula containing a central neutron star",
+              "connection": "Supernova remnant containing a pulsar / neutron star at its center"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical image of the Crab Nebula showing complex filamentary debris in orange and blue with bright stars and a central core region.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "Expanded shell and debris from a supernova explosion"
+              },
+              {
+                "fact_id": "f5",
+                "detail": "Compact remnant nebula surrounding the central collapsed star"
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Expanding tattered filamentary debris of a supernova remnant",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Location of the pulsar neutron star at the core",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not an isolated atomic nucleus",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:51481413"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supercomputer magnetic field lines visualization",
+              "connection": "Computer-generated simulation of merging neutron stars"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A computer-generated visualization showing tangled white, yellow, and red curved magnetic field lines around two central points on a black background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a photograph of a supernova remnant",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic visualization model",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a physical atomic nucleus",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:182691810"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10947,
+        "promptTokenCount": 9474,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5105
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4369
+          }
+        ],
+        "candidatesTokenCount": 1473
+      }
+    },
+    {
+      "key": "material-inspect-batch:2f7329cd05834e83b1e7a5ffecdee5541b185b284320491393ebde1876335d1f",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant 30 Doradus B containing a pulsar wind nebula",
+              "connection": "Shows a supernova remnant formed after the core collapse of a massive star, related to neutron star formation."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Composite space telescope image showing the complex supernova remnant 30 Doradus B with multi-colored gas clouds, filaments, and stellar fields.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "The image captures a supernova remnant resulting from an exploded star's outer shell expansion."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "Displays the extended nebula environment surrounding a compact stellar remnant."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Supernova remnant 30 Doradus B complex visible across multiple spectra.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No isolated neutron star is directly resolved as the primary subject.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No microscopic atomic nucleus or dense matter representation is depicted.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:144216872"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Interstellar supernova remnant nebula in deep space",
+              "connection": "Depicts an expanding supernova remnant structure related to the evolutionary stages leading to neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Deep space astrophotography showcasing intricate network of red and blue filaments of gas and dust with numerous background stars.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "Detailed view of expanding shell structures from a stellar explosion."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Filamentary structure characteristic of a supernova remnant nebula.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No distinct neutron star visible within the nebula field.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No subatomic or nuclear structure shown.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:30327373"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "The Crab Nebula (supernova remnant and pulsar wind nebula)",
+              "connection": "The Crab Nebula is the classic supernova remnant housing a central pulsar (neutron star)."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Composite space telescope image of the Crab Nebula showing bright energetic inner loops and outer wispy gas clouds against deep space.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "Visible expanding debris and synchrotron emission surrounding the core."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "Remnant structure created by a supernova explosion that left behind a compact star."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Crab Nebula supernova remnant clearly framed as the central object.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Pulsar wind nebula and central energetic source associated with a neutron star.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No atomic nucleus scale representation.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:11182"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "NICER X-ray telescope mounted on the International Space Station",
+              "connection": "An instrument designed to study neutron stars, but does not depict the neutron star itself or its formation stages."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Photograph of the NICER X-ray telescope instrument array attached to the ISS truss segment against a black space background with solar panels on the side.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Space station hardware instead of a supernova remnant.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Observatory instrument rather than a neutron star.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No atomic nucleus depiction.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:157956258"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11580,
+        "promptTokenCount": 9870,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4367
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 5503
+          }
+        ],
+        "candidatesTokenCount": 1710
+      }
+    },
+    {
+      "key": "material-inspect-batch:4ea8127206b3a901be4df32c41592cadf79167b5320b272175a1df10610e112a",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Computer-generated scientific visualization of merging neutron star magnetospheres",
+              "connection": "The image is a synthetic visualization, not a real observational photograph."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A computer-generated visualization showing magnetic field lines in yellow, red, and white around two merging central objects against a black background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Supercomputer simulation lines rather than an actual nebula photograph.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic rendering of magnetospheres.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Magnetic field lines of binary neutron stars.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:182691829"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "illustration",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Graphic icon of an atomic model",
+              "connection": "An artistic vector icon representing a generic atom, not a neutron star or dense matter."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A vector graphic showing a central blue sphere with green elliptical orbits around it against a white background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generic atomic symbol icon.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generic atomic symbol icon.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generic atomic symbol icon.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:3186261"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "X-ray observational image of the Galactic Center including Sagittarius A* and supernova remnants",
+              "connection": "The image shows the region around Sagittarius A* containing supernova remnants and pulsar wind nebulae associated with neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical X-ray image showing red, orange, and blue hues of gas clouds and numerous bright stellar points and filaments near the galactic center.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "The image captures supernova remnants and hot gas associated with stellar evolution and explosions."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "Features pulsar wind nebulae linked to rapidly spinning neutron stars."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Supernova remnant near the Galactic Center.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Pulsar wind nebulae formed by neutron stars.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Wide-field galactic center X-ray observation.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:189459203"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Computer simulation frame of merging neutron stars",
+              "connection": "A synthetic rendering and animation still, not a real observational photograph."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A vertical computer simulation frame displaying two central grey spheres enveloped in glowing orange and purple plasma with intersecting magnetic field lines.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Simulation graphic rather than astronomical photograph.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Simulation graphic rather than astronomical photograph.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Simulation graphic rather than atomic scale rendering.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:182691891"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11392,
+        "promptTokenCount": 9858,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5481
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4377
+          }
+        ],
+        "candidatesTokenCount": 1534
+      }
+    },
+    {
+      "key": "material-inspect-batch:65170ae0ac3524826641b307e6cf2f2966e41f5e8fe880d16cd597b76b442a1d",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "3D render of molecular chains",
+              "connection": "Abstract representation of microscopic particles used as a generic visual analogy"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A close-up 3D render showing interconnected colored spheres forming strands against a dark background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Molecular strands are shown instead of a supernova remnant nebula.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Molecular model instead of a neutron star in space.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Chains of spheres representing molecules rather than dense nuclear matter.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:13014236"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant nebula",
+              "connection": "Observational X-ray image of a supernova remnant left after a massive star collapse that forms a neutron star"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A circular, mottled X-ray astronomical image of the supernova remnant G292.0+1.8 showing glowing filaments and gas clouds against a black background.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "The image captures an expanding shell of gas from a supernova remnant."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "The nebula represents the aftermath of a massive star explosion that leaves behind a neutron star."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Supernova remnant nebula visible as an expanding shell of gas.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Nebula is the primary object, while the central pulsar is a point source.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Astronomical nebula rather than an atomic nucleus.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:155248644"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "direct_subject",
+              "visible_subject": "Merging neutron stars simulation",
+              "connection": "Supercomputer simulation showing tangled magnetospheres and high-energy emission regions of merging neutron stars"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A computer simulation rendering on a black background showing two glowing spherical objects surrounded by dynamic blue fluid-like magnetic field structures.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "Depicts compact stellar objects corresponding to neutron stars."
+              },
+              {
+                "fact_id": "f6",
+                "detail": "Illustrates intense magnetic fields and high-energy emission regions associated with neutron stars."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows neutron stars rather than a supernova remnant nebula.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Neutron stars shown clearly with their surrounding magnetospheres.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Astronomical simulation rather than an atomic nucleus.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:182691854"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Abstract graphic sphere design",
+              "connection": "Modern digital art piece serving as a generic visual metaphor"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An abstract digital graphic featuring an orange glowing sphere inside concentric translucent rings and patterns.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Abstract graphic design instead of a supernova remnant.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Digital art sphere instead of a neutron star.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generic sphere rendering instead of dense nuclear matter or atomic nucleus.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:12784315"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11260,
+        "promptTokenCount": 9634,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5245
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4389
+          }
+        ],
+        "candidatesTokenCount": 1626
+      }
+    },
+    {
+      "key": "material-inspect-batch:7abd137b0cada798ca3b34549130706c9109db58a2806fb8ee8dfa81d1b3b42e",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Chandra X-ray observatory image showing the supernova remnant Sgr A East and surrounding fields containing pulsar wind nebulae associated with neutron stars.",
+              "connection": "Provides observational data of a supernova remnant and environments housing pulsar wind nebulae produced by rapidly spinning neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An X-ray space telescope composite image displaying a dense star field with a bright central emission region, red and orange gas clouds, and numerous blue point sources and filaments.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "Displays extended hot gas regions corresponding to supernova remnant structures."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "Shows regions containing compact high-energy stellar remnants."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Supernova remnant nebula visible in deep space astronomy X-ray imagery.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Fields containing energetic phenomena linked to neutron stars.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Large-scale galactic X-ray composite rather than subatomic matter.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:8930425"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Computer generated visualization of merging neutron stars.",
+              "connection": "Rendered via scientific simulation software rather than optical or observational physical instrumentation."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A dark abstract rendering with swirling purple and white glowing gradients and two faint spherical centers.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic simulation render.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Simulated computer graphic rather than real astronomical photograph.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic physics illustration.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:182691768"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Terrestrial fire and smoke clouds acting as an artistic representation of an explosion.",
+              "connection": "Shows generic atmospheric clouds illuminated by fire, unrelated to actual astrophysical stellar remnants or atomic physics."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A dramatic stock photo of dense brown and grey smoke clouds illuminated from underneath by bright yellow and orange fire flames.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Terrestrial fire photography used as generic explosion analogy.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a neutron star.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not subatomic matter.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:2273069"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Chandra X-ray observatory wide-field image containing the Sgr A East supernova remnant and associated pulsar wind features.",
+              "connection": "Captures astronomical X-ray emissions from supernova remnants and regions populated by neutron star wind nebulae."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical X-ray image annotated with text 'SAGITTARIUS A*', displaying complex galactic center gas clouds, a bright central cluster, and scattered star sources against dark space.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "Visualizes extensive gas structures linked to supernova remnants."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "Includes regions associated with high-density stellar remnants."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Supernova remnant nebula visible in astronomical data.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Encompasses fields containing energetic counterparts of neutron stars.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Galactic-scale X-ray observation rather than microscopic atomic nucleus.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:189459147"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11529,
+        "promptTokenCount": 9855,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4346
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 5509
+          }
+        ],
+        "candidatesTokenCount": 1674
+      }
+    },
+    {
+      "key": "material-inspect-batch:e71aab2b0e394d8031ebf21e8f2bddc009e50fb8b4cfd6eb761028000ce76be1",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Fantasy photomontage of a figure looking at a swirling light source",
+              "connection": "Digital composite art representing abstract astronomical phenomena like black holes or singularities."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "A digital illustration or photomontage showing a person standing on a rocky cliff above clouds, looking up at a large swirling vortex of light and dark clouds in the sky.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No real supernova remnant nebula",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No real neutron star",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No atomic nucleus representation",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:2861107"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Chandra X-ray Observatory image of the galactic center region containing Sagittarius A* and surrounding supernova remnants and pulsar wind nebulae",
+              "connection": "The image captures the region containing supernova remnants and X-ray filaments produced by rapidly spinning neutron stars (pulsar wind nebulae) near the galactic center."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical X-ray image in false color displaying stars, gas clouds, and complex filamentary structures around the galactic center, labeled 'SAGITTARIUS A*'.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "Visible nebular structures represent supernova remnants and hot gas lobes."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "The region contains high-energy structures associated with neutron stars and pulsar wind nebulae."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Extended nebular emission depicting supernova remnants such as Sgr A East",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "X-ray filaments and pulsar wind nebulae associated with neutron stars",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No microscopic view of atomic nuclei",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:189459192"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 8006,
+        "promptTokenCount": 7133,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 2164
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 4969
+          }
+        ],
+        "candidatesTokenCount": 873
+      }
+    },
+    {
+      "key": "material-inspect-batch:f496852aaa34cc098cb24b4d5482d11bb1bb0e5d616ca2edd1ad3998b06369a8",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant nebula",
+              "connection": "Shows glowing gas and dust clouds from an ancient supernova remnant associated with neutron star formation stages."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "An astronomical astrophotography image depicting a dusty complex and faint nebulae, featuring a prominent brown reflection structure pointing horizontally and a vertical red glowing gas structure along the right side.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "Red glowing gas regions visible along the right side indicate ancient supernova remnant emissions."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Red glowing gas from an ancient supernova remnant visible along the right side.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No compact neutron star visible.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No microscopic atomic nucleus representation present.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:142528626"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Space telescope instrument",
+              "connection": "The NICER X-ray telescope is installed on the International Space Station to observe neutron stars, but the hardware itself is not a neutron star or its direct physical stage."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A close-up photograph of the NICER X-ray telescope mounted on the International Space Station, showing a grid of circular X-ray concentrator tubes against the blackness of space.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Instrument hardware instead of a supernova remnant.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "X-ray telescope instrument rather than a neutron star.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Space hardware instead of subatomic matter.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:157956263"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Abstract strand representation",
+              "connection": "Rendered digital visualization of DNA or molecular strands, used as a generic metaphor for biological or molecular structures."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A 3D render showing colorful spherical beads forming strands against a dark blue background, with some segments enclosed in translucent white envelopes.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic molecular graphic instead of deep space astronomy.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic strands instead of a neutron star.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Computer-generated strands rather than a scientific physical representation of atomic nuclei.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:25626515"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Eastern Veil Nebula (Supernova Remnant)",
+              "connection": "Captures NGC 6992, a portion of the Cygnus Loop supernova remnant, which is the expanding outer shell left after a massive star explosion that forms a neutron star."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "An astrophotography capture of the Eastern Veil Nebula featuring delicate, lace-like filamentary structures glowing in red and blue-green tones against a dense starfield.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "Filamentary ionized gas structures display the expanding blast wave of a supernova remnant."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "NGC 6992 Eastern Veil Nebula clearly displayed as a supernova remnant.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Nebula expansion remnant rather than the central neutron star itself.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Large-scale cosmic gas structure instead of microscopic dense matter physics.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:182489427"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11862,
+        "promptTokenCount": 10217,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5884
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4333
+          }
+        ],
+        "candidatesTokenCount": 1645
+      }
+    },
+    {
+      "key": "material-inspect-batch:ff48f55056600c9fe8f7868a846fff933d509c10cdc6eacfe78e0d94ce6c27a9",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Deep space nebula and star explosion",
+              "connection": "Depicts a generic cosmic explosion or nebula, but does not identify a specific documented neutron star or verified supernova remnant associated with the facts."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "An astronomical image showing a bright star with a jet-like feature amidst purple and red cosmic dust and clouds in deep space.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "A bright stellar explosion or energetic source is visible within surrounding cosmic dust."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generic deep space explosion scene without specific supernova remnant identification.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No identifiable neutron star is resolved.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show an atomic nucleus representation.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:10002074"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Spiral galaxy and background stars",
+              "connection": "Shows a galaxy, which is unrelated to the specific stellar collapse and neutron star formation process described in the text."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical view of a bright barred spiral galaxy viewed obliquely against a dark night sky filled with distant stars.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "A full galaxy is shown instead of a supernova remnant.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star is depicted.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show atomic scale matter.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:11098"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Graphic design of molecular or atomic models",
+              "connection": "Rendered 3D graphic models representing generic molecules, not real neutron star matter or a physical nucleus during electron capture."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Computer-generated 3D graphic design showing translucent colored spheres connected by rods, resembling molecular or atomic structures.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No supernova remnant.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic rendering of generic molecular connections.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:25626509"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Metal atomic model sculpture",
+              "connection": "A physical sculpture representing a stylized atomic model, serving as a generic analogy rather than actual subatomic physics or a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A close-up photograph of a metal sculpture shaped like a stylized Bohr model of an atom against a plain background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No supernova remnant.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Sculptural model of an atom rather than dense nuclear matter.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:636"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10035,
+        "promptTokenCount": 8539,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4329
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 4210
+          }
+        ],
+        "candidatesTokenCount": 1496
+      }
+    }
+  ],
+  "human_pass": false,
+  "exact_replay": {
+    "id": "2c31edc6-a77a-4961-8f14-5c06acd23cf5",
+    "replay_revision": "75f33ef786b08f43676d04c05ac30ceb7169a0ef",
+    "state": "material_unavailable",
+    "new_provider_calls": 0,
+    "new_model_calls": 0,
+    "new_tts_calls": 0,
+    "database_writes": 0,
+    "used_saved_calls": [
+      "research-search",
+      "source:5a88f1cf6ae5f65ea8bf68adb6dc0ca310dca05fc46f1be535fc316ee1d92191",
+      "source:44b11ee754b98c6c19d6ddc5626ae47f8c036dcb664cc7e43738c123a3053e75",
+      "source:863c846b49a5c7827e91c703e81457d332df3eaeca20ba006924be11300ba488",
+      "source:eb9cf0f478787732fc414b11bf2fed0b2ab8074ffcb5cfa2d53a2b084ace6048",
+      "source:fb44a398607ba189752e615fa4d0290e70519ee928ce1f015c097e34f8810461",
+      "material-brief",
+      "search:cf3cdb6645c083de33b2d7d9746cee2dcabfa1b3720151a300c3a7f489669da8",
+      "search:04e8963d4330ab913ee7269a9e9448c8642fe0dd930dcb0ed52e4909c2c7d679",
+      "search:5a27b248aa5be8877b52a1b77d468787b9097d6b6f8da77880f57e2400696794",
+      "search:c29dae76dc16b041e7f671845eee0ca5d010d6391653337fc3fc49a4ca87b34c",
+      "search:423504a0ac7b5d667e52eee1d469f559ba32202f89c46363b6a7c071879cb0d4",
+      "search:d13ed1ea274a88663c89b7587265126950f03341af3e88d8805a251ad8a582ea",
+      "search:527bfc634d40a0eb3cf847d8161cea025ead2ebd6acc170d1606eb386d3f497d",
+      "search:191a4de1d4942a3c8a359e180548d213ea35701b1e72426d592f2688331a45c6",
+      "search:cd303af3cf0223d69d8902044eefc50b28fd83bb15a4d2571f475acaf0ccb0ee",
+      "download:wikimedia:144216872",
+      "download:pexels:30327373",
+      "download:pixabay:11182",
+      "download:wikimedia:157956258",
+      "material-inspect-batch:2f7329cd05834e83b1e7a5ffecdee5541b185b284320491393ebde1876335d1f",
+      "download:pexels:10002074",
+      "download:pixabay:11098",
+      "download:pexels:25626509",
+      "download:pixabay:636",
+      "material-inspect-batch:ff48f55056600c9fe8f7868a846fff933d509c10cdc6eacfe78e0d94ce6c27a9",
+      "download:wikimedia:142528626",
+      "download:wikimedia:157956263",
+      "download:pexels:25626515",
+      "download:wikimedia:182489427",
+      "material-inspect-batch:f496852aaa34cc098cb24b4d5482d11bb1bb0e5d616ca2edd1ad3998b06369a8",
+      "download:wikimedia:182691754",
+      "download:pixabay:3864564",
+      "download:wikimedia:51481413",
+      "download:wikimedia:182691810",
+      "material-inspect-batch:03d9e5b855f054cb23e643e9b8d99302cfcc0a255a93e725582252043649a4e1",
+      "download:pexels:13014236",
+      "download:wikimedia:155248644",
+      "download:wikimedia:182691854",
+      "download:pexels:12784315",
+      "material-inspect-batch:65170ae0ac3524826641b307e6cf2f2966e41f5e8fe880d16cd597b76b442a1d",
+      "download:wikimedia:8930425",
+      "download:wikimedia:182691768",
+      "download:pixabay:2273069",
+      "download:wikimedia:189459147",
+      "material-inspect-batch:7abd137b0cada798ca3b34549130706c9109db58a2806fb8ee8dfa81d1b3b42e",
+      "download:wikimedia:182691829",
+      "download:pixabay:3186261",
+      "download:wikimedia:189459203",
+      "download:wikimedia:182691891",
+      "material-inspect-batch:4ea8127206b3a901be4df32c41592cadf79167b5320b272175a1df10610e112a",
+      "download:pixabay:2861107",
+      "download:wikimedia:189459192",
+      "material-inspect-batch:e71aab2b0e394d8031ebf21e8f2bddc009e50fb8b4cfd6eb761028000ce76be1"
+    ],
+    "inspected_inputs": 30,
+    "accepted_materials": 9,
+    "qualified_roles": {
+      "v0": 9,
+      "v1": 6
+    },
+    "terminal_reason": "not enough inspected distinct photographs for requested cadence"
+  },
+  "finding": "Current qualified inspection admits9 of30 real downloaded files, minimum12 needed for60s cadence. Model detail context requests atomic nucleus/dense matter/abstract representation; cleaning art words does not establish an observable source-related entity. No composition/edit/script review/TTS/MP4. Stop prompt-cleaning/full-case loop; use saved full pools and sources to redesign availability-based context selection, without invented fact tags, lower cadence thresholds or generic filler.",
+  "new_voice_created": false,
+  "video_created": false
+}

@@ -4,7 +4,7 @@ import json
 import os
 from factory_v3.runtime import Runtime, load_settings
 from factory_v3.preparation import ResourceUnavailable
-from material_first.engine import Producer
+from material_first.engine import Producer, inspected_material, MaterialUnavailable
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--id', required=True)
@@ -16,7 +16,7 @@ if prep['status'] not in {'failed', 'unknown', 'prepared'}:
 rows = runtime.ledger._call("SELECT jsonb_agg(jsonb_build_object('key',call_key,'response',response,'state',state)) "
                           "FROM factory_v3.preparation_calls WHERE preparation_id=%s::uuid", (args.id,))
 saved = {row['key']: row for row in rows}
-used, observed = [], {}
+used, observed = [], {'inspected_inputs': 0, 'accepted_materials': 0, 'qualified_roles': {}}
 
 class MissingSavedCall(RuntimeError):
     pass
@@ -45,12 +45,31 @@ def record_review(context):
     return review(context)
 
 ops.review_script = record_review
+inspect_many = ops.inspect_many
+
+def record_inspection(assets, evidence):
+    receipts = inspect_many(assets, evidence)
+    facts = {fact['id']: fact for fact in evidence['facts']}
+    observed['inspected_inputs'] += len(assets)
+    for asset, receipt in zip(assets, receipts):
+        material = inspected_material(asset, receipt, evidence, facts,
+                                     prep['request'].get('visual_validation_mode', 'gemini'))
+        if material is not None:
+            observed['accepted_materials'] += 1
+            for role in material.get('matched_visual_targets', {}):
+                observed['qualified_roles'][role] = observed['qualified_roles'].get(role, 0) + 1
+    return receipts
+
+ops.inspect_many = record_inspection
 request = prep['request']
 try:
     Producer('/data', ops).prepare(request['topic'], request['language'], request['seconds'])
     state = 'saved_complete_plan_replayed'
 except MissingSavedCall as error:
     state = 'missing_saved_call:' + str(error)
+except MaterialUnavailable as error:
+    state = 'material_unavailable'
+    observed['terminal_reason'] = str(error)
 print(json.dumps({'id': args.id, 'replay_revision': runtime.revision, 'state': state,
                   'new_provider_calls': 0, 'new_model_calls': 0, 'new_tts_calls': 0,
                   'database_writes': 0, 'used_saved_calls': used, **observed}, ensure_ascii=False, indent=2))
