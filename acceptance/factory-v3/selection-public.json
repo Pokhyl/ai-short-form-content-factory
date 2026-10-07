@@ -1,0 +1,9 @@
+{
+  "health": {
+    "status": "serving",
+    "project_ready": false,
+    "source_revision": "4fb2cebb43097a648d0353f839c4dcd4970e6549"
+  },
+  "public_javascript_sha256": "15334e37e21a9c49511fdea715c137bc2900f039541a799513b0d8919dec5ec8",
+  "source_matches": true
+}

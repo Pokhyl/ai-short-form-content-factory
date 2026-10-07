@@ -1,3 +1,6 @@
+## Selected card / link synchronization LIVE — 2026-10-07
+Runtime4fb2ceb UI-only update. Query request ID now matches selected card; old result actions hidden/disabled during new selection load. Protected state unchanged, public bytes verified,6 UI+7 selector checks PASS. No new generation calls. Latest9e7 remains failed before voice; previous3bf remains original rejected-quality MP4. Generator/native actual acceptance NOT established; saved-corpus offline next step unchanged.
+
 ## Topic/language bounded verification terminal — 2026-10-07
 Current LIVE15fc59e; planned9e7af537 is immutable failed MaterialUnavailable before compose/native edit/TTS. Saved actual planner still requested artist concept/field beams; only5 raw accepted setting photos, no other role coverage. No new corrected Ukrainian audio or MP4.165 packaged checks and isolated deployment verified; project NOT ready. Do not retry this ID or start another blind case. Continue observable contexts/availability offline from topic-language-terminal.json. See top handoff.
 
