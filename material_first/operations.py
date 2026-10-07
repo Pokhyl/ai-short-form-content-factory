@@ -316,6 +316,20 @@ class Operations:
         qualified = assets[0].get('visual_qualification_protocol') == 'qualified-target-v1'
         if any((a.get('visual_qualification_protocol') == 'qualified-target-v1') != qualified for a in assets):
             raise ValueError('inspection batch qualification contracts differ')
+        photos = [self._photo(asset) for asset in assets]
+        if any(not 0 < len(photo['bytes']) <= 8 * 1024 * 1024 for photo in photos):
+            raise ValueError('photo input exceeds byte budget')
+        if sum(len(photo['bytes']) for photo in photos) > 8 * 1024 * 1024:
+            # Partition exact original bytes before any model claim. Each smaller
+            # group still uses the same durable per-request Gemini budget.
+            groups, group, size = [], [], 0
+            for asset, photo in zip(assets, photos):
+                length = len(photo['bytes'])
+                if group and size + length > 8 * 1024 * 1024:
+                    groups.append(group); group, size = [], 0
+                group.append(asset); size += length
+            groups.append(group)
+            return [receipt for group in groups for receipt in self.inspect_many(group, evidence)]
         row_schema = self._inspection_schema(evidence, targets, qualified)
         row_schema['properties']['asset_id'] = string(a['id'] for a in assets)
         row_schema['required'].append('asset_id')
@@ -325,7 +339,7 @@ class Operations:
         try:
             result, provenance = self.gemini.generate('material-inspect-batch:' + digest([a['id'] for a in assets]),
                 self.INSPECTION_INSTRUCTION, context, schema,
-                photos=[self._photo(a) for a in assets], max_tokens=8192)
+                photos=photos, max_tokens=8192)
         except ModelSchemaError as error:
             # A completed bad individual row rejects that image, not its valid
             # neighbors. Provider failures/unknown calls are never retried.

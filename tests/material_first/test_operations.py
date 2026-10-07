@@ -82,6 +82,30 @@ class Model:
 
 
 class OperationTests(unittest.TestCase):
+    def test_large_original_photos_split_before_model_claim_without_reencoding(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fixtures = Fixtures(root, ['photo'] * 4)
+            originals = {}
+            for i, asset in enumerate(fixtures.assets):
+                data = b'\xff\xd8\xff' + bytes([i]) * (3 * 1024 * 1024)
+                (root / asset['path']).write_bytes(data)
+                asset['sha256'] = hashlib.sha256(data).hexdigest()
+                originals[asset['id']] = data
+            model = Model(fixtures); generate = model.generate; batches = []
+            def checked(key, instruction, context, schema, **kwargs):
+                if 'photos' in kwargs:
+                    photos = kwargs['photos']; batches.append([p['asset_id'] for p in photos])
+                    self.assertLessEqual(sum(len(p['bytes']) for p in photos), 8 * 1024 * 1024)
+                    for photo in photos: self.assertEqual(photo['bytes'], originals[photo['asset_id']])
+                return generate(key, instruction, context, schema, **kwargs)
+            model.generate = checked
+            operations = Operations(root, None, model, None, fixtures)
+            receipts = operations.inspect_many(fixtures.assets, fixtures.evidence)
+            self.assertEqual([r['asset_id'] for r in receipts], [a['id'] for a in fixtures.assets])
+            self.assertEqual([len(b) for b in batches], [2, 2])
+            self.assertEqual(sum(k.startswith('material-inspect-batch:') for k in model.calls), 2)
+
     def test_saved_uk60_95_words_preserved_without_rewrite_or_trailing_clause_loss(self):
         import json
         from material_first.visuals import POLICY

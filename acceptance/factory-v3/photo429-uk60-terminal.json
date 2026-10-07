@@ -1,0 +1,12 @@
+{
+  "id": "4f18786e-dea3-431f-b57e-61db883fcb46",
+  "status": "failed",
+  "error_code": "ValueError",
+  "exact_saved_replay_error": "image batch exceeds byte budget",
+  "download_successes": 20,
+  "gemini_successes": 6,
+  "tts_calls": 0,
+  "mp4": false,
+  "rerun": false,
+  "new_calls_in_diagnosis": 0
+}

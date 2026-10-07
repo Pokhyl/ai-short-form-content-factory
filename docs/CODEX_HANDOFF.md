@@ -1,3 +1,7 @@
+## Actual byte-batch boundary repaired — 2026-10-07
+
+Normal4f18786e failed ValueError after20downloads/6Gemini,0TTS/MP4. Exact saved read-only replay identifies image batch exceeds8MiB before model claim. New inspection partition packs original unchanged bytes into <=8MiB groups before calls; every subgroup remains inside existing16Gemini quota. No recompress/crop/budget expansion/old-ID retry.214 local checks PASS (113material+101core), exact-image/deployment pending. No new case automatically. project_ready=false.
+
 ## Owner directs full output verification — 2026-10-07
 
 Owner explicitly continues actual work. One new bounded UK60 Vision case 4f18786e-dea3-431f-b57e-61db883fcb46 on LIVE9e44cae planned; supersedes no-new-case stop for this case only. Original free-only budgets/no old-ID retry/no second TTS retained. Monitor to output or terminal reason.
