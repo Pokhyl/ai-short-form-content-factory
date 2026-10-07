@@ -1,0 +1,62 @@
+{
+  "id": "c8294766-22ae-46c1-aeb7-f16930ec055a",
+  "purpose": "actual inspected photo corpus, not a rendered/accepted video",
+  "assets": [
+    {
+      "id": "wikimedia:163470036",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Massive_Star_Burps,_Then_Explodes_(2007-sn2006jc_-_sn2006jc).jpg"
+    },
+    {
+      "id": "wikimedia:516106",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Crab_Nebula.jpg"
+    },
+    {
+      "id": "pexels:19798813",
+      "source_url": "https://www.pexels.com/photo/ctb-1-supernova-remnant-in-space-19798813/"
+    },
+    {
+      "id": "pixabay:11182",
+      "source_url": "https://pixabay.com/photos/cancer-fog-supernova-remnant-11182/"
+    },
+    {
+      "id": "wikimedia:146336166",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Vela_Supernova_Remnant_-_Noirlab2406a.jpg"
+    },
+    {
+      "id": "pexels:10064346",
+      "source_url": "https://www.pexels.com/photo/remains-of-stellar-cloud-after-explosion-of-supernova-10064346/"
+    },
+    {
+      "id": "pixabay:11180",
+      "source_url": "https://pixabay.com/photos/cassiopeia-a-cas-a-supernova-remnant-11180/"
+    },
+    {
+      "id": "pexels:33931044",
+      "source_url": "https://www.pexels.com/photo/bright-star-in-the-vast-starry-night-sky-33931044/"
+    },
+    {
+      "id": "pixabay:11582",
+      "source_url": "https://pixabay.com/photos/sun-solar-flare-space-outer-space-11582/"
+    },
+    {
+      "id": "wikimedia:18919964",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Ultraviolet_image_of_the_Cygnus_Loop_Nebula_crop.jpg"
+    },
+    {
+      "id": "pexels:30327373",
+      "source_url": "https://www.pexels.com/photo/stunning-view-of-interstellar-nebula-in-deep-space-30327373/"
+    },
+    {
+      "id": "wikimedia:163470039",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Massive_Star_Burps,_Then_Explodes_(2007-sn2006jc_-_sn2006jc_xrt).jpg"
+    },
+    {
+      "id": "wikimedia:139881470",
+      "source_url": "https://commons.wikimedia.org/wiki/File:The_Crab_Nebula_(weic2326a).jpg"
+    }
+  ],
+  "decoded_contact_viewed": true,
+  "human_pass": false,
+  "observed_limits": "Actual corpus includes repeated views/resolutions of Crab imagery, a generic bright star and the Sun. Restored relevant observational images do not establish qualified subject match or native Ukrainian/complete MP4 acceptance.",
+  "contact_sheet": "retrieval-actual-contact.jpg"
+}
