@@ -1,0 +1,5 @@
+Runtime source9ad9844f4562372cdb53a239bea05352f61ef085
+Exact image factory-v3:9ad9844; network disabled; tests/acceptance read-only mounts
+110 material tests PASS
+100 core tests PASS
+Publichealth serving exactrevision; project_ready=false

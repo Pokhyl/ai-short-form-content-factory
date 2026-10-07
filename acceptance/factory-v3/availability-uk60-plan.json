@@ -1,0 +1,25 @@
+{
+  "id": "bc4afbb2-0f60-40e2-9f21-8b547e403795",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "runtime_revision": "9ad9844f4562372cdb53a239bea05352f61ef085",
+  "authorization": "Owner resumed unfinished task with и after prior terminal. This one bounded case verifies the changed retrieval-first context protocol; no retry or additional case.",
+  "maximum_fresh_requests": 1,
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 30,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "expected_steps": "brief -> nine search pools -> one availability planner -> up to eight independent pixel batches -> compose -> native edit -> complete keyed independent factual/native review -> one voice -> alignment -> exact60s whole-photo render/audit",
+  "question": "Does actual current availability planner select real metadata-grounded contexts and produce a qualified grounded Ukrainian MP4 without speculative hidden-object searches consuming equal download slots?",
+  "offline": "210 local and exact-image packaged checks PASS, including16 current connected language-duration pairs with controlled planner/inspection/review, saved full9query pool replay, invented label/unknown anchor/no-retry regressions and unchanged metadata path. App-only deployment protected state equal; publichealth exact.",
+  "remaining": "Unseen actual planner response, new target-qualified pixel judgments, complete keyed/native review, one voice and current MP4 not verified. Controlled metadata selection is not acceptance.",
+  "stop": "Any terminal failure or unknown ends this case. Preserve immutable ID; no rerun or fresh case/diagnostic automatically, no paid fallback, quota expansion, manual narration/media replacement or second TTS.",
+  "human_pass": false
+}
