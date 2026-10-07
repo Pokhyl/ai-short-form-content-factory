@@ -1,0 +1,23 @@
+{
+  "id": "9e7af537-c08f-464a-8b60-8a58bc29af3d",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "runtime_revision": "15fc59ebf6e916ff5f12e549a67f948b02e08251",
+  "maximum_fresh_requests": 1,
+  "question": "Verify actual topic-specific image classification, fact-specific association and native Ukrainian paragraph proofreading through independent review and one real voice/MP4. User rejected unrelated imagery and Russian word pronunciation.",
+  "model": "gemini-3.5-flash-lite",
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 30,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "expected_quota": "Model/image tokens unknown until actual response; confirmed free-only model/billing gates retained. No paid fallback.",
+  "stop": "A terminal failure/unknown ends this planned case; preserve failed ID and inspect saved evidence, no blind retry or extra request.",
+  "offline": "72 material+93 core local checks; saved actual UK60 props/word drift corpus. Controlled generic-analogy rejection, real Crab-context positive control, paragraph proofreading preserving fact identity, native-quality false rejection, no-zero-filler scheduling. Old v1/v2 acceptance and moderate cadence retained. These checks do not prove new provider output quality."
+}
