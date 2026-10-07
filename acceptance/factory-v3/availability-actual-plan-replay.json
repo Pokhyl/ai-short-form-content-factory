@@ -1,0 +1,48 @@
+{
+  "saved_request": "bc4afbb2-0f60-40e2-9f21-8b547e403795",
+  "planner_response": "actual saved Gemini material-photo-plan",
+  "new_model_calls": 0,
+  "new_provider_calls": 0,
+  "database_writes": 0,
+  "labels_preserved": true,
+  "selected_count": 30,
+  "targets": [
+    {
+      "id": "v0",
+      "fact_ids": [
+        "f5",
+        "f6",
+        "f7",
+        "f8"
+      ],
+      "must_show": "The Crab Nebula Supernova Remnant",
+      "query": "Crab Nebula Supernova Remnant",
+      "must_not_show": "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role"
+    },
+    {
+      "id": "v1",
+      "fact_ids": [
+        "f4",
+        "f6",
+        "f7"
+      ],
+      "must_show": "The Crab Nebula",
+      "query": "Crab Nebula",
+      "must_not_show": "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role"
+    },
+    {
+      "id": "v2",
+      "fact_ids": [
+        "f5",
+        "f6",
+        "f7"
+      ],
+      "must_show": "SH2-248 aka \"Jellyfish Nebula\" in Hubble Palette",
+      "query": "SH2-248 aka \"Jellyfish Nebula\" in Hubble Palette",
+      "must_not_show": "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role"
+    }
+  ],
+  "pixel_acceptance": false,
+  "native_audio_acceptance": false,
+  "video_created": false
+}

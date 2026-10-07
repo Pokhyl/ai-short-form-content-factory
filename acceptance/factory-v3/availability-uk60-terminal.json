@@ -1,0 +1,243 @@
+{
+  "status": {
+    "id": "bc4afbb2-0f60-40e2-9f21-8b547e403795",
+    "request": {
+      "topic": "Нейтронная звезда",
+      "seconds": 60,
+      "language": "uk",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "failed",
+    "source_revision": "9ad9844f4562372cdb53a239bea05352f61ef085",
+    "error_code": "ValueError",
+    "machine_pass": false,
+    "human_pass": false
+  },
+  "call_summary": [
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 2
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 5
+    }
+  ],
+  "model_calls": [
+    {
+      "key": "material-brief",
+      "result": {
+        "facts": [
+          {
+            "id": "f1",
+            "text": "Будь-яка зірка головної послідовності з початковою масою, більш ніж у 8 разів перевищуючою масу Сонця, може в процесі еволюції перетворитися на нейтронну зірку.",
+            "support": [
+              {
+                "span_id": "s1-1094-2113"
+              }
+            ]
+          },
+          {
+            "id": "f2",
+            "text": "Коли все ядерне паливо в активній зоні вичерпано, ядро підтримується від гравитаційного стиснення тільки тиском виродженого електронного газу.",
+            "support": [
+              {
+                "span_id": "s1-1094-2113"
+              }
+            ]
+          },
+          {
+            "id": "f3",
+            "text": "Під час наступного колапсу електронне захоплення різко посилюється: електрони об'єднуються з протонами, утворюючи нейтрони та електронні нейтрино.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              },
+              {
+                "span_id": "s2-1094-2291"
+              }
+            ]
+          },
+          {
+            "id": "f4",
+            "text": "Коли щільність зірки досягає ядерної щільності 4·10^17 кг/м³, тиск виродженого нейтронного ідеального газу Фермі — Дірака зупиняє стиснення.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f5",
+            "text": "Падіння зовнішньої оболонки зірки на нейтронне ядро зупиняється, і вона відкидається потоком нейтрино, при цьому зірка перетворюється на наднову.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f6",
+            "text": "Після розсіювання зовнішньої оболонки від зірки залишається зоряний залишок — нейтронна зірка, маса якої порівняна з масою Сонця при тиовому радіусі 10–20 кілометрів.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f7",
+            "text": "Завдяки різкому зменшенню моменту інерції нейтронна зірка набуває надзвичайно високої кутової швидкості враження — до кількох сотень обертів на секунду.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-3302-4411"
+              }
+            ]
+          },
+          {
+            "id": "f8",
+            "text": "Багато нейтронних зірок володіють надзвичайно сильним магнітним полем — до 10^11 Тл.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              }
+            ]
+          }
+        ],
+        "required_fact_ids": [
+          "f1",
+          "f3",
+          "f6",
+          "f7"
+        ],
+        "photo_contexts": {
+          "setting": {
+            "subject": "масивна яскрава зоря головної послідовності в космосі",
+            "query": "massive main sequence star space",
+            "fact_ids": [
+              "f1",
+              "f2"
+            ]
+          },
+          "subject": {
+            "subject": "залишок наднової з нейтронною зіркою в центрі",
+            "query": "supernova remnant pulsar core",
+            "fact_ids": [
+              "f5",
+              "f6"
+            ]
+          },
+          "detail": {
+            "subject": "компактна нейтронна зірка з потужним магнітним полем",
+            "query": "neutron star intense magnetic field",
+            "fact_ids": [
+              "f7",
+              "f8"
+            ]
+          }
+        }
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 18288,
+        "promptTokenCount": 17120,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 17120
+          }
+        ],
+        "candidatesTokenCount": 1168
+      }
+    },
+    {
+      "key": "material-photo-plan",
+      "result": {
+        "contexts": [
+          {
+            "anchor_id": "wikimedia:15575739",
+            "object_label": "The Crab Nebula Supernova Remnant",
+            "fact_ids": [
+              "f5",
+              "f6",
+              "f7",
+              "f8"
+            ]
+          },
+          {
+            "anchor_id": "wikimedia:139881470",
+            "object_label": "The Crab Nebula",
+            "fact_ids": [
+              "f4",
+              "f6",
+              "f7"
+            ]
+          },
+          {
+            "anchor_id": "wikimedia:195238536",
+            "object_label": "SH2-248 aka \"Jellyfish Nebula\" in Hubble Palette",
+            "fact_ids": [
+              "f5",
+              "f6",
+              "f7"
+            ]
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 21133,
+        "promptTokenCount": 20897,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 20897
+          }
+        ],
+        "candidatesTokenCount": 236
+      }
+    }
+  ],
+  "human_pass": false,
+  "video_created": false,
+  "new_voice_created": false,
+  "finding": "Normal case failed before download: actual planner selected existing Spitzer/Webb Crab and Jellyfish observations, but added The before the exact filename fragment Crab Nebula Supernova Remnant. Literal object validation and equality to the article-stripped ranking query both falsely rejected the valid entity. Correction permits only leading English articles before exact metadata entity substring; copied object requirement retained, query canonicalized separately. Actual saved plan now passes offline with30 selected candidates. No new provider/model/TTS calls; current independent pixel/native/output gates remain unverified."
+}

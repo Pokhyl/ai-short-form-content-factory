@@ -1,3 +1,9 @@
+## Actual availability planner response verified offline; article boundary fixed — 2026-10-07
+
+Normalbc4afbb2-0f60-40e2-9f21-8b547e403795 submitted once on9ad9844, terminalValueError before any download/image inspection/compose/edit/review/TTS/MP4. Actual2Gemini(brief+availability planner)/9providersearches/5sourcefetchsuccess+1failed/1billing metadata. Planner selected real retrieved Spitzer/Webb Crab and Jellyfish anchors. First label prependedThe to exact title fragmentCrab Nebula Supernova Remnant; server literal metadata-copy check failed, and normalized-query equality would also rejectThe. Correction allows only leading English articles before an EXACT metadata entity substring, retains requirement and separately canonicalizes ranking query; unknown qualifiers/entities still terminal. No fuzzy source quotation or semantic approval.
+
+Actual saved model response and same full pools now resolve30 candidates offline; no new provider/model/TTS/DBwrites.112material+100core local checks PASS, including actual response fixture and invented qualifier negative control. Current image build/package/app-only rollout pending. Old job immutable, no further case automatically. Current actual new-target pixel review/factual/native/voice/MP4/HUMAN acceptance absent. See availability-uk60-terminal/actual-plan-replay.json and actual-article-failure fixture. project_ready=false.
+
 ## Availability contexts LIVE; one normal verification planned — 2026-10-07
 
 Runtime9ad9844f4562372cdb53a239bea05352f61ef085/imagefactory-v3:9ad9844/imageIDsha256:a191e324429b115ba7faae549501c5a21c2d4c6a8f7e307589d9171038e98e80.210 exact-image packaged checks PASS; app-only deployment completed with protected snapshots equal and publichealth exact. New Vision contexts finalized from complete eligible retrieved metadata before download; independent image/factual/native gates unchanged. No claim of new actual provider plan/native/MP4 acceptance.

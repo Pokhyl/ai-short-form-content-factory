@@ -79,3 +79,32 @@ class AvailabilityPlanningTests(unittest.TestCase):
         self.assertEqual(len(self.searches), 9)
         self.assertTrue(all(c['visual_targets'] == brief['visual_targets'] for c in candidates))
 
+    def test_copied_article_is_preserved_in_object_requirement_and_normalized_only_for_ranking(self):
+        # Actual availability response used labels beginning with "The".
+        for pool in self.saved['pools']:
+            for candidate in pool['candidates']:
+                if candidate['id'] == self.contexts[0]['anchor_id']:
+                    candidate['source_metadata']['title'] = 'File:Crab Nebula Supernova Remnant.jpg'
+        self.contexts[0]['object_label'] = 'The Crab Nebula Supernova Remnant'
+        brief, _ = self.operations().resolve_photos(
+            {'topic': 'Neutron star', 'seconds': 60, 'presentation_policy': TOPIC_POLICY}, self.brief())
+        self.assertEqual(brief['visual_targets'][0]['must_show'], 'The Crab Nebula Supernova Remnant')
+        self.assertEqual(brief['visual_targets'][0]['query'], 'Crab Nebula Supernova Remnant')
+
+    def test_actual_saved_plan_uses_same_anchor_metadata_without_regenerating_or_fuzzy_entity_matching(self):
+        saved = json.loads((Path(__file__).parent / 'fixtures/availability-actual-article-failure.json').read_text())
+        calls = []
+        def generate(key, instruction, context, schema):
+            calls.append(key)
+            validate_json(saved['model_result'], schema)
+            return saved['model_result'], {'receipt_id': 'saved-actual-plan'}
+        brief = {'evidence': {'sources': [], 'facts': [{'id': 'f' + str(i)} for i in range(1, 9)]},
+                 'required_fact_ids': ['f1', 'f2', 'f3']}
+        resolved, _ = plan_photos(SimpleNamespace(generate=generate), {'topic': 'Neutron star'},
+                                 brief, [saved['anchors']], 30)
+        self.assertEqual(resolved['visual_targets'][0]['query'], 'Crab Nebula Supernova Remnant')
+        self.assertEqual(calls, ['material-photo-plan'])
+        saved['model_result']['contexts'][0]['object_label'] = 'The Crab Nebula Neutron Core'
+        with self.assertRaisesRegex(ValueError, 'not copied'):
+            plan_photos(SimpleNamespace(generate=generate), {'topic': 'Neutron star'},
+                        brief, [saved['anchors']], 30)

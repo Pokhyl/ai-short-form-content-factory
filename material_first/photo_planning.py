@@ -4,6 +4,7 @@ Metadata establishes availability candidates only. It never approves a picture
 or proves its relationship to a narrated fact; the independent gates do that.
 """
 from copy import deepcopy
+import re
 from factory_v3.gemini import obj, array, string, validate_json
 from factory_v3.grounding import compact_evidence
 from factory_v3.preflight import digest
@@ -53,13 +54,16 @@ def plan_photos(gemini, request, brief, pools, limit):
     targets = []
     for index, row in enumerate(result['contexts']):
         label = row['object_label'].strip()
-        if (len(label) < 3 or not any(label in text for text in descriptions(known[row['anchor_id']]))
-                or photograph_query(label) != label):
+        entity = re.sub(r'^(?:the|a|an)\s+', '', label, flags=re.I)
+        if len(entity) < 3 or not any(entity in text for text in descriptions(known[row['anchor_id']])):
             raise ValueError('photo context object was not copied from retrieved real-entity metadata')
+        # Preserve the copied object requirement. Canonicalizing articles and
+        # whitespace for ranking does not change its documented identity.
+        query = photograph_query(label)
         if len(set(row['fact_ids'])) != len(row['fact_ids']):
             raise ValueError('duplicate photo context fact identity')
         targets.append({'id': 'v' + str(index), 'fact_ids': row['fact_ids'],
-                        'must_show': label, 'query': label,
+                        'must_show': label, 'query': query,
                         'must_not_show': 'Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role'})
     validate_targets(targets, {f['id'] for f in brief['evidence']['facts']})
     # Allocate remaining downloads globally to the available object contexts,
