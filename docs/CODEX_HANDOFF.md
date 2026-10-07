@@ -1,3 +1,7 @@
+## Owner authorizes persistence to actual output — 2026-10-07
+
+Explicit «так не останавливайся» supersedes prior stop-after-terminal/no-new-case instructions. Continue to actual MP4; on failure preserve immutable ID, diagnose saved evidence, make justified fix and verify a fresh normal case without another prompt. No blind repeats, same per-case free-only budgets/oneTTS/no paidfallback retained. Current bounded case 491002b6-10d1-4432-b219-183be781a228 on LIVEd2eb4de planned.
+
 ## Actual byte-batch boundary repaired — 2026-10-07
 
 Normal4f18786e failed ValueError after20downloads/6Gemini,0TTS/MP4. Exact saved read-only replay identifies image batch exceeds8MiB before model claim. New inspection partition packs original unchanged bytes into <=8MiB groups before calls; every subgroup remains inside existing16Gemini quota. No recompress/crop/budget expansion/old-ID retry.214 local checks PASS (113material+101core), 214 exact-image checks PASS, LIVEd2eb4de42cdd1ff985d8c897834df7a7d1597ac4/imagefactory-v3:d2eb4de. Protected deployment snapshots unchanged and publichealth exact. Saved actual20-file replay passes prior8MiB failure and stops at missing subgroup response with0newcalls/DBwrites;9accepted of16alreadyinspected, no claim of completed coverage/MP4. No new case automatically. project_ready=false.
