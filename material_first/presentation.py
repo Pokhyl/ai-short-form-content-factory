@@ -14,16 +14,18 @@ PHOTO_FILTER='scale=1080:1920:force_original_aspect_ratio=decrease:force_divisib
 
 LEGACY_POLICY = 'whole-photo-exact-v1'
 CALM_POLICY = 'whole-photo-exact-v2'
-WHOLE_POLICIES = {LEGACY_POLICY, CALM_POLICY}
+TOPIC_POLICY = 'whole-photo-topic-v3'
+CALM_POLICIES = {CALM_POLICY, TOPIC_POLICY}
+WHOLE_POLICIES = {LEGACY_POLICY, *CALM_POLICIES}
 
 def preferred_shots(seconds, policy=LEGACY_POLICY):
     if type(seconds) is not int or seconds not in {15,30,45,60}: raise ValueError('unsupported duration')
     if policy not in WHOLE_POLICIES: raise ValueError('unsupported cadence policy')
-    return math.ceil(seconds/(3.5 if policy == CALM_POLICY else 2))
+    return math.ceil(seconds/(3.5 if policy in CALM_POLICIES else 2))
 
 def minimum_shots(seconds, policy=LEGACY_POLICY):
     preferred_shots(seconds, policy)
-    return math.ceil(seconds/(5 if policy == CALM_POLICY else 2.5))
+    return math.ceil(seconds/(5 if policy in CALM_POLICIES else 2.5))
 
 def phrase_frames(timings, source_duration_ms, seconds):
     if not math.isfinite(source_duration_ms) or source_duration_ms <= 0:
@@ -38,7 +40,7 @@ def phrase_frames(timings, source_duration_ms, seconds):
 
 def visual_timeline(seconds, count, policy=LEGACY_POLICY, boundaries=()):
     preferred_shots(seconds, policy)
-    maximum = math.floor(seconds/2.5) if policy == CALM_POLICY else 32
+    maximum = math.floor(seconds/2.5) if policy in CALM_POLICIES else 32
     if type(count) is not int or not minimum_shots(seconds, policy)<=count<=maximum:
         raise ValueError('not enough distinct photographs for requested cadence')
     frames=seconds*FPS
@@ -67,7 +69,7 @@ def validate_timeline(seconds, count, timeline, policy=LEGACY_POLICY):
         if set(cut)!={'start_frame','end_frame'} or type(cut['start_frame']) is not int or type(cut['end_frame']) is not int:
             raise ValueError('invalid visual frame interval')
         if cut['start_frame']!=cursor or cut['end_frame']<=cursor: raise ValueError('visual frames not consecutive')
-        if policy==CALM_POLICY and not 75<=cut['end_frame']-cursor<=150:
+        if policy in CALM_POLICIES and not 75<=cut['end_frame']-cursor<=150:
             raise ValueError('visual hold outside moderate cadence')
         cursor=cut['end_frame']
     if cursor!=seconds*FPS: raise ValueError('visual frames do not cover requested duration')

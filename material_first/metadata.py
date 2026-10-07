@@ -17,10 +17,14 @@ def receipt(asset, evidence):
     relevant = bool(words(description) & words(query))
     excluded = bool(re.search(r'\b(?:illustration|diagram|drawing|rendering|generated|cartoon)\b', description, re.I))
     accepted = bool(target and query == target['query'] and description and relevant and not excluded and asset.get('media_type') == 'photo')
+    if asset.get('topic_protocol') == 'topic-specific-v1':
+        terms = words(query) - {'space','science','scientific','physics','abstract','generic','beautiful','nature','natural','laboratory','research','equipment'}
+        accepted = accepted and len(words(description) & terms) >= min(2,len(terms)) and bool(terms)
     identity = {key:asset.get(key) for key in ('id','sha256','description','discovery_target_id','discovery_query','visual_targets')}
     result = {'validation_method':'metadata', 'method_version':METHOD, 'accepted':accepted,
               'asset_id':asset['id'], 'asset_sha256':asset['sha256'], 'metadata_sha256':digest(identity),
               'evidence_sha256':digest(evidence)}
+    if asset.get('topic_protocol'): result['topic_protocol'] = asset['topic_protocol']
     result['receipt_id'] = digest(result)
     return result
 

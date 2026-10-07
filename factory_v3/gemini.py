@@ -190,9 +190,14 @@ class Gemini:
             "factual_checks": array(obj({"scene_id": string(s["id"] for s in scenes),
                 "fact_id": string(f["id"] for f in request["evidence"]["facts"]),
                 "narration_quote": string(), "supported": BOOL}), 1)})
+        from material_first.presentation import TOPIC_POLICY
+        native = request.get('presentation_policy') == TOPIC_POLICY
+        if native:
+            schema['properties']['native_language_quality'] = BOOL
+            schema['required'].append('native_language_quality')
         result, provenance = self.generate("script-review",
             "Independently audit every claim in the exact final narration against supplied source-supported facts. "
-            "Check language, every scene's visual contract and exclusions. For material-first plans, relevant contextual photographs may illustrate a mechanism without depicting its exact action or microscopic anatomy. Facts are verified against sources. Check that the supplied visual roles provide different dominant subjects, scales or contexts; reject a sequence composed entirely of near-identical subject-and-setting views. Do not require perfect literal image-to-phrase correspondence. Still photographs need not depict motion. "
+            "Check native vocabulary, spelling, grammar and inflections in the requested language, not merely alphabet or overall language identity. Set native_language_quality=false for mixed-language words or grammatical defects. Check every scene's visual contract and exclusions. For material-first plans, relevant contextual photographs may illustrate a mechanism without depicting its exact action or microscopic anatomy. Facts are verified against sources. Check that the supplied visual roles provide different dominant subjects, scales or contexts; reject a sequence composed entirely of near-identical subject-and-setting views. Do not require perfect literal image-to-phrase correspondence. Reject a generic analogy, laboratory prop or unrelated object sharing only the broad scientific field. Still photographs need not depict motion. "
             "In metadata visual_validation_mode, supplied photograph descriptions and roles are metadata-only, not pixel inspection; audit contextual relevance without claiming pixels were checked. Do not approve a fact merely because its ID is cited. Quote the actual words asserting each cited fact. "
             "Check that the narration actually answers the requested topic and essential mechanism, rather than merely describing pictured objects. "
             "Report false for omitted topic coverage, any unsupported statement, omitted cited fact or contradictory image requirement.",
@@ -202,6 +207,8 @@ class Gemini:
             "script_sha256": hashlib.sha256(request["script"].encode()).hexdigest(),
             "evidence_sha256": digest(request["evidence"]),
             "topic_sha256": hashlib.sha256(request["topic"].encode()).hexdigest()})
+        if native and result.get('native_language_quality') is not True:
+            raise ValueError('native-language proofreading review failed')
         validate_script_review(request["evidence"], request["language"], request["script"], scenes, result, topic=request["topic"])
         return result
 

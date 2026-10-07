@@ -14,7 +14,7 @@ from factory_v3.preparation import ResourceUnavailable
 from factory_v3.grounding import validate_evidence, validate_script_review
 from factory_v3.preflight import asset_path, digest, validate_asset
 from .targets import validate_targets, matched_targets
-from .visuals import POLICY, CALM_POLICY, WHOLE_POLICIES, candidate_limit, make_visuals, validate_visuals
+from .visuals import POLICY, CALM_POLICY, TOPIC_POLICY, WHOLE_POLICIES, candidate_limit, make_visuals, validate_visuals
 from .presentation import preferred_shots, minimum_shots
 
 
@@ -97,6 +97,12 @@ def inspected_material(asset, receipt, evidence, facts, validation_mode="gemini"
         capacity = end - start
         if capacity < 1000:
             return None
+    if receipt.get('inspection_protocol') == 'topic-specific-v1':
+        relation = receipt.get('topic_relation', {})
+        if (receipt.get('medium') not in {'photograph','observational_image'}
+            or relation.get('kind') not in {'direct_subject','direct_part_or_stage'}
+            or not str(relation.get('visible_subject','')).strip() or not str(relation.get('connection','')).strip()):
+            return None
     target_matches = matched_targets(asset, receipt)
     if target_matches is not None and not target_matches:
         return None
@@ -109,7 +115,7 @@ def inspected_material(asset, receipt, evidence, facts, validation_mode="gemini"
     return result
 
 
-def match_materials(available, draft, *, contextual=False):
+def match_materials(available, draft, *, contextual=False, topical=False):
     """Assign unique inspected pictures to claims, preferring model choices."""
     result = deepcopy(draft)
     known = {m['id']: m for m in available}
@@ -121,6 +127,7 @@ def match_materials(available, draft, *, contextual=False):
         facts = set(beat['fact_ids'])
         target = beat.get('visual_target_id')
         candidates = [m['id'] for m in available if (contextual or facts <= set(m['supported_fact_ids']))
+                      and (not topical or bool(facts & set(m['supported_fact_ids'])))
                       and (target is None or target in m.get('matched_visual_targets', {}))]
         candidates.sort(key=lambda identity: identity != beat['material_id'])
         options.append(candidates)
@@ -169,6 +176,8 @@ def validate_story(request, evidence, available, draft):
                 or len(set(fact_ids)) != len(fact_ids)
                 or not set(fact_ids) <= (allowed_facts if contextual else set(material["supported_fact_ids"]))):
             raise ValueError("narration exceeds inspected material support")
+        if request.get('presentation_policy') == TOPIC_POLICY and not set(fact_ids) & set(material['supported_fact_ids']):
+            raise MaterialUnavailable('paragraph anchor unrelated to its narrated subject')
         text = beat["narration"]
         if not isinstance(text, str) or not text.strip():
             raise ValueError("empty narration")
@@ -313,7 +322,7 @@ class Producer:
         composition = {"request": request, "evidence": evidence, "materials": available}
         draft = self.operations.compose(deepcopy(composition))
         if modern:
-            draft = match_materials(available, draft, contextual=True)
+            draft = match_materials(available, draft, contextual=True, topical=request.get('presentation_policy') == TOPIC_POLICY)
         else:
             draft = fit_materials(available, draft) if targets is not None else match_materials(available, draft)
         scenes = validate_story(request, evidence, available, draft)
@@ -321,6 +330,8 @@ class Producer:
         review_input = {**request, "script": script, "scenes": scenes,
                         "evidence": evidence, "materials": available}
         review = self.operations.review_script(deepcopy(review_input))
+        if request.get('presentation_policy') == TOPIC_POLICY and review.get('native_language_quality') is not True:
+            raise ValueError('native-language proofreading review missing')
         validate_script_review(evidence, language, script, scenes, review, topic=topic.strip())
         visuals = make_visuals(seconds, available, scenes,request["presentation_policy"]) if modern else None
         selected = {v['material_id'] for v in visuals} if modern else {s['material_id'] for s in scenes}
@@ -342,6 +353,8 @@ def verify(root, frozen, probe=probe_media):
         raise ValueError("material-first plan changed")
     if payload.get('presentation_policy') not in {None, *WHOLE_POLICIES}:
         raise ValueError('unsupported frozen presentation policy')
+    if payload.get('presentation_policy') == TOPIC_POLICY and payload['script_review'].get('native_language_quality') is not True:
+        raise ValueError('native-language proofreading review missing')
     facts = validate_evidence(payload["evidence"])
     assets = {a["id"]: a for a in payload["assets"]}
     if len(assets) != len(payload["assets"]):
@@ -350,6 +363,9 @@ def verify(root, frozen, probe=probe_media):
         raise ValueError('duplicate frozen observation identity')
     observations = []
     for original in payload["observations"]:
+        if (payload.get('presentation_policy') == TOPIC_POLICY and payload.get('visual_validation_mode','gemini') == 'gemini'
+            and original['inspection'].get('inspection_protocol') != 'topic-specific-v1'):
+            raise ValueError('topic-specific image inspection missing')
         asset = assets.get(original["id"])
         if asset is None:
             raise ValueError("observation has no real material")

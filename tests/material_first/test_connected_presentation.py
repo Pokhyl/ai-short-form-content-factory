@@ -141,6 +141,7 @@ class ConnectedPresentationTests(unittest.TestCase):
                 (root/a['path']).write_bytes(b'\xff\xd8\xffphoto'+bytes([i]))
                 a['sha256'] = hashlib.sha256((root/a['path']).read_bytes()).hexdigest()
             valid = {'asset_id':'a0','accepted':True,'is_real_material':True,
+                     'medium':'photograph','topic_relation':{'kind':'direct_subject','visible_subject':'Subject','connection':'Actual source-related object'},
                      'subject_fully_visible':True,'visible_description':'Source-related object',
                      'visible_fact_details':[{'fact_id':'f0','detail':'Visible source-related subject'}]}
             completed = ModelSchemaError({'photos':[valid, {'asset_id':'a1','accepted':'wrong-type'}]}, 'bad row')

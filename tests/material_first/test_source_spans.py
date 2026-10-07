@@ -25,9 +25,9 @@ class SourceSpanTests(unittest.TestCase):
         # are controlled here, not represented as a fresh provider response.
         result = {k: copy.deepcopy(draft[k]) for k in ('facts', 'required_fact_ids')}
         result['photo_contexts'] = {
-            'setting': {'subject': 'Photographic star fields in the night sky', 'query': 'night sky stars'},
-            'subject': {'subject': 'Photographic nebulae from astronomical observations', 'query': 'nebula astrophotography'},
-            'detail': {'subject': 'Telescopes used to observe distant stars', 'query': 'observatory telescope'}}
+            'setting': {'subject': 'Photographic star fields in the night sky', 'query': 'Crab pulsar', 'fact_ids':['fact-1']},
+            'subject': {'subject': 'Photographic nebulae from astronomical observations', 'query': 'supernova remnant', 'fact_ids':['fact-4']},
+            'detail': {'subject': 'Telescopes used to observe distant stars', 'query': 'Vela pulsar', 'fact_ids':['fact-7']}}
         def generate(key, instruction, context, schema):
             validate_json(result, schema)
             return result, {'receipt_id': 'controlled-photo-contexts'}
@@ -37,7 +37,8 @@ class SourceSpanTests(unittest.TestCase):
         self.assertEqual(brief['required_fact_ids'], draft['required_fact_ids'])
         self.assertEqual(brief['evidence']['facts'][2]['text'], draft['facts'][2]['text'])
         validate_evidence(brief['evidence'])
-        self.assertTrue(all(set(draft['required_fact_ids']) <= set(t['fact_ids']) for t in brief['visual_targets']))
+        self.assertEqual([t['fact_ids'] for t in brief['visual_targets']], [['fact-1'],['fact-4'],['fact-7']])
+        self.assertNotIn('fact-3',{f for t in brief['visual_targets'] for f in t['fact_ids']})
 
     def test_contextual_photos_cannot_excuse_missing_or_invented_narration_facts(self):
         from material_first.engine import validate_story, MaterialUnavailable
@@ -127,7 +128,7 @@ class SourceSpanTests(unittest.TestCase):
                     facts = [{'id': f'f{i}', 'text': f'Controlled fact {i}',
                               'support': [{'span_id': spans[i % 2]['id']}]} for i in range(3)]
                     result = {'facts': facts, 'required_fact_ids': ['f0', 'f1', 'f2'],
-                        'photo_contexts': {role: {'subject': f'Different role {i}', 'query': f'context {i}'}
+                        'photo_contexts': {role: {'subject': f'Different role {i}', 'query': f'context {i}', 'fact_ids':[f'f{i}']}
                             for i, role in enumerate(('setting', 'subject', 'detail'))}}
                     validate_json(result, schema)
                     return result, {'receipt_id': 'controlled'}

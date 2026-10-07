@@ -25,7 +25,7 @@ class Model:
                     for support in fact['support']]
             result = {'facts': facts,
                       'required_fact_ids': ['f0', 'f1', 'f2'], 'photo_contexts': {
-                          role: {'subject': 'Prominent explanatory detail '+str(i), 'query': 'detail '+str(i)}
+                          role: {'subject': 'Prominent explanatory detail '+str(i), 'query': 'detail '+str(i), 'fact_ids':['f'+str(i)]}
                           for i, role in enumerate(('setting', 'subject', 'detail'))}}
         elif key.startswith('material-inspect-batch:'):
             saved_calls = self.calls[:]
@@ -39,6 +39,7 @@ class Model:
             result = {'photos': rows}
         elif key.startswith('material-inspect:'):
             result = {'accepted': True, 'is_real_material': True, 'subject_fully_visible': True,
+                      'medium':'photograph','topic_relation':{'kind':'direct_subject','visible_subject':'Fixture subject','connection':'Depicts the supplied actual subject'},
                       'visible_description': 'Real subject visible',
                       'visible_fact_details': [{'fact_id': f, 'detail': 'Concrete visible structure '+f}
                                                for f in ['f0', 'f1', 'f2']]}
@@ -47,6 +48,8 @@ class Model:
                 result['target_matches'] = [{'target_id': t['id'], 'matches': t['id'] == 'v'+str(role),
                     'detail_prominent': t['id'] == 'v'+str(role), 'visible_detail': 'Observed concrete detail '+str(role)}
                     for t in context['visual_targets']]
+        elif key == 'material-language-edit':
+            result = {'narration':context['narration'][:]}
         elif key == 'material-compose':
             words = ['Source-supported'] + ['narration'] * (schema['properties']['words']['minItems'] - 1)
             count = schema['properties']['beats']['minItems']
@@ -59,7 +62,10 @@ class Model:
         validate_json(result, schema)
         return copy.deepcopy(result), {'receipt_id': key}
     def review_script(self, context):
-        return self.fixtures.review_script(context)
+        result = self.fixtures.review_script(context)
+        from material_first.presentation import TOPIC_POLICY
+        if context.get('presentation_policy') == TOPIC_POLICY: result['native_language_quality'] = True
+        return result
 
 
 class OperationTests(unittest.TestCase):
@@ -98,7 +104,8 @@ class OperationTests(unittest.TestCase):
             asset['sha256'] = hashlib.sha256(file.read_bytes()).hexdigest()
             model = SimpleNamespace(model='controlled-model', generate=lambda *args, **kwargs:
                 ({'accepted': True, 'is_real_material': True, 'subject_fully_visible': True,
-                  'visible_description': 'Bee sitting on a flower', 'visible_fact_details': []},
+                  'visible_description': 'Bee sitting on a flower', 'visible_fact_details': [],
+                  'medium':'photograph','topic_relation':{'kind':'direct_subject','visible_subject':'Bee','connection':'Actual subject'}},
                  {'receipt_id': 'inspection'}))
             result = Operations(root, None, model, None, None).inspect(asset, fixtures.evidence)
             self.assertFalse(result['accepted'])
@@ -126,7 +133,7 @@ class OperationTests(unittest.TestCase):
             self.assertEqual({s['visual_target_id'] for s in frozen['payload']['scenes']}, {'v0', 'v1', 'v2'})
             self.assertEqual(len(searches), 9)
             self.assertEqual(model.calls[0], 'material-brief')
-            self.assertEqual(model.calls[-1], 'material-compose')
+            self.assertEqual(model.calls[-1], 'material-language-edit')
             self.assertEqual(sum(k.startswith('material-inspect-batch:') for k in model.calls), 2)
             self.assertEqual(len(frozen['payload']['visuals']), 5)
             self.assertEqual(preparation_budgets(60)['gemini'], 16)

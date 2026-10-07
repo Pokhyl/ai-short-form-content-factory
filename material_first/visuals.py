@@ -1,6 +1,6 @@
 """Distinct visual pool, scheduled independently from narration paragraphs."""
 import math
-from .presentation import preferred_shots, visual_timeline, minimum_shots, phrase_frames, CALM_POLICY, WHOLE_POLICIES
+from .presentation import preferred_shots, visual_timeline, minimum_shots, phrase_frames, CALM_POLICY, CALM_POLICIES, TOPIC_POLICY, WHOLE_POLICIES
 
 POLICY = 'whole-photo-exact-v1'
 
@@ -64,25 +64,39 @@ def validate_visuals(payload, observations):
 
 
 def ordered_visuals(payload, timings, source_duration_ms):
-    """Prefer the current paragraph's role without repeating or holding photos."""
+    """Align cuts to paragraphs; topical plans never fill a slot with zero relevance."""
     policy = payload['presentation_policy']
-    boundaries = phrase_frames(timings,source_duration_ms,payload['seconds']) if policy == CALM_POLICY else ()
+    boundaries = phrase_frames(timings,source_duration_ms,payload['seconds']) if policy in CALM_POLICIES else ()
     cuts = visual_timeline(payload['seconds'], len(payload['visuals']),policy,boundaries)
     observations = {m['id']: m for m in payload['observations']}
-    unused = list(payload['visuals'])
-    result = []
+    slots=[]
     for cut in cuts:
-        midpoint_ms = ((cut['start_frame'] + cut['end_frame']) / 2
-                       / (payload['seconds'] * 30) * source_duration_ms)
-        index = min(range(len(timings)), key=lambda i:
-                    max(timings[i]['start_ms'] - midpoint_ms,
-                        midpoint_ms - timings[i]['end_ms'], 0))
-        scene = payload['scenes'][index]
-        def score(v):
-            m = observations[v['material_id']]
-            return (3 * (scene.get('visual_target_id') in m.get('matched_visual_targets', {}))
-                    + len(set(scene['evidence_ids']) & set(m['supported_fact_ids'])))
-        selected = max(unused, key=score)
-        unused.remove(selected)
-        result.append({**selected, **cut, 'narration_scene_id': scene['id']})
-    return result
+        midpoint_ms = (cut['start_frame']+cut['end_frame'])/2/(payload['seconds']*30)*source_duration_ms
+        index=min(range(len(timings)),key=lambda i:max(timings[i]['start_ms']-midpoint_ms,midpoint_ms-timings[i]['end_ms'],0))
+        slots.append((cut,payload['scenes'][index]))
+    def score(v,scene):
+        material=observations[v['material_id']]
+        overlap=len(set(scene['evidence_ids']) & set(material['supported_fact_ids']))
+        if policy==TOPIC_POLICY and not overlap: return 0
+        return 3*(scene.get('visual_target_id') in material.get('matched_visual_targets',{}))+overlap
+    if policy!=TOPIC_POLICY:
+        unused=list(payload['visuals']);result=[]
+        for cut,scene in slots:
+            chosen=max(unused,key=lambda v:score(v,scene));unused.remove(chosen)
+            result.append({**chosen,**cut,'narration_scene_id':scene['id']})
+        return result
+    options=[[i for i,v in sorted(enumerate(payload['visuals']),key=lambda row:-score(row[1],scene)) if score(v,scene)>0]
+             for _,scene in slots]
+    owners={}
+    def assign(slot,visited):
+        for photo in options[slot]:
+            if photo in visited: continue
+            visited.add(photo)
+            if photo not in owners or assign(owners[photo],visited):
+                owners[photo]=slot
+                return True
+        return False
+    for slot in sorted(range(len(slots)),key=lambda i:len(options[i])):
+        if not assign(slot,set()): raise ValueError('no subject-related photograph for a narration interval')
+    assignment={slot:photo for photo,slot in owners.items()}
+    return [{**payload['visuals'][assignment[i]],**cut,'narration_scene_id':scene['id']} for i,(cut,scene) in enumerate(slots)]

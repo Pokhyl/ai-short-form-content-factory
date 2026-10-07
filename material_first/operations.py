@@ -9,13 +9,13 @@ from factory_v3.preflight import asset_path, digest, validate_asset
 from factory_v3.providers import PROVIDERS
 from .engine import MaterialUnavailable
 from .targets import validate_targets
-from .visuals import POLICY, CALM_POLICY, WHOLE_POLICIES, candidate_limit
+from .visuals import POLICY, CALM_POLICY, CALM_POLICIES, TOPIC_POLICY, WHOLE_POLICIES, candidate_limit
 from .source_spans import source_spans, bind_support
 
 
 def preparation_budgets(seconds):
     return {'research_search': 1, 'source_fetch': 6, 'gemini': 16,
-            'download': candidate_limit(seconds,CALM_POLICY), 'metadata': 1, **{'search:' + p: 3 for p in PROVIDERS}}
+            'download': candidate_limit(seconds,TOPIC_POLICY), 'metadata': 1, **{'search:' + p: 3 for p in PROVIDERS}}
 
 
 def contiguous_support(evidence):
@@ -67,20 +67,21 @@ class NarrationBudgetExceeded(ValueError):
 
 
 class Operations:
-    presentation_policy = CALM_POLICY
+    presentation_policy = TOPIC_POLICY
 
     def __init__(self, root, research, gemini, search, downloader):
         self.root = Path(root)
         self.source, self.gemini, self.search, self.downloader = research, gemini, search, downloader
 
     def research(self, request):
+        self.topic = request['topic']
         sources = self.source.fetch(request['topic'], request['language'])
         spans = source_spans(sources)
         schema = obj({'facts': array(obj({'id': string(), 'text': string(),
             'support': array(obj({'span_id': string(s['id'] for s in spans)}), 1, 3)}), 3, 8),
             'required_fact_ids': array(string(), 3, 8),
             'photo_contexts': obj({role: obj({'subject': string(),
-                'query': {**string(), 'maxLength': 100}})
+                'query': {**string(), 'maxLength': 100}, 'fact_ids': array(string(), 1, 8)})
                 for role in ('setting', 'subject', 'detail')})})
         desired_facts = max(3, min(8, (request['seconds'] + 7) // 8))
         result, _ = self.gemini.generate('material-brief',
@@ -93,11 +94,11 @@ class Operations:
             'Separate the starting condition, concrete mechanism/details, and consequence or purpose where supported. '
             'Do not merge multiple mechanisms into one broad topic statement, or paraphrase the same fact to fill slots. '
             'Mark at least three essential distinct facts for narration. Separately define photo_contexts: '
-            'setting, subject, detail. Each has a subject describing a real photographable context and a broad English stock-photo query. '
-            'Visual contexts illustrate the topic; they need not depict each essential fact. For hidden, microscopic, '
-            'historical or distant subjects use observable surroundings, related physical objects or observation equipment. '
+            'setting, subject, detail. Each has a concrete physical subject, a short English entity-focused search query, and fact_ids explaining its direct relationship to specific supplied facts. '
+            'Every subject must be the actual requested object, its genuine physical component or stage, or a specifically identified associated object. Never substitute a generic parent category, decorative scenery, a laboratory prop or a visual analogy. For hidden, microscopic, '
+            'historical or distant subjects seek documented observations and named associated objects. Do not use unrelated scientific equipment, atomic models or generic landscapes merely because they share a broad theme. '
             'Never request a diagram, cross-section, field lines, imagined particle beams, space art or a synthetic rendering. '
-            'Prefer broad photographic categories with many available pictures over the exact rare object. '
+            'Prefer several documented related objects or genuine process stages over generic stock categories. Do not imply that an unrelated subject depicts an invisible mechanism. '
             'The three contexts must differ in dominant subject, scale or setting. '
             'For example, a flowering meadow, a bee close-up, and a flower/pollen detail are different roles. '
             'Allow contextually relevant stock photographs; do not demand a rare precise action or anatomy angle. '
@@ -111,7 +112,7 @@ class Operations:
         fact_ids = [f['id'] for f in evidence['facts']]
         if not set(result['required_fact_ids']) <= set(fact_ids):
             raise ValueError('required narration facts unknown')
-        targets = [{'id': 'v' + str(i), 'fact_ids': fact_ids[:],
+        targets = [{'id': 'v' + str(i), 'fact_ids': result['photo_contexts'][role]['fact_ids'][:],
                     'must_show': result['photo_contexts'][role]['subject'],
                     'must_not_show': 'Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role',
                     'query': result['photo_contexts'][role]['query']}
@@ -127,7 +128,7 @@ class Operations:
         targets = queries if queries and isinstance(queries[0], dict) else None
         for target in queries:
             query = target['query'] if targets else target
-            for provider in sorted(PROVIDERS):
+            for provider in (['wikimedia','pexels','pixabay'] if request.get('presentation_policy') == TOPIC_POLICY else sorted(PROVIDERS)):
                 result = self.search.search(provider, query, 'portrait')
                 pool = deepcopy(result['candidates'])
                 if targets:
@@ -143,6 +144,8 @@ class Operations:
                     candidate = deepcopy(pool[rank])
                     if targets:
                         candidate['visual_targets'] = deepcopy(targets)
+                    if request.get('presentation_policy') == TOPIC_POLICY:
+                        candidate['topic_protocol'] = 'topic-specific-v1'
                     selected.append(candidate); seen.add(candidate['id'])
                     if len(selected) == candidate_limit(request['seconds'],request.get('presentation_policy',POLICY)):
                         return selected
@@ -168,6 +171,8 @@ class Operations:
 
     def _inspection_schema(self, evidence, targets):
         schema = obj({'accepted': BOOL, 'is_real_material': BOOL,
+            'medium': string(['photograph','observational_image','illustration','synthetic','unknown']),
+            'topic_relation': obj({'kind': string(['direct_subject','direct_part_or_stage','generic_analogy','unrelated','unknown']), 'visible_subject': string(), 'connection': string()}),
             'subject_fully_visible': BOOL, 'visible_description': string(),
             'visible_fact_details': array(obj({'fact_id': string(f['id'] for f in evidence['facts']),
                                                'detail': string()}), 0, 8)})
@@ -184,7 +189,12 @@ class Operations:
         if any(not item['detail'].strip() for item in details) or len({item['fact_id'] for item in details}) != len(details):
             raise ValueError('inspection must give unique visible evidence per fact')
         result['supported_fact_ids'] = [item['fact_id'] for item in details]
-        result['accepted'] = result['accepted'] and result['subject_fully_visible'] and bool(details)
+        result['inspection_protocol'] = 'topic-specific-v1'
+        relation = result['topic_relation']
+        result['accepted'] = (result['accepted'] and result['subject_fully_visible'] and bool(details)
+            and result['medium'] in {'photograph','observational_image'}
+            and relation['kind'] in {'direct_subject','direct_part_or_stage'}
+            and bool(relation['visible_subject'].strip()) and bool(relation['connection'].strip()))
         if asset.get('visual_targets') is not None:
             result['visual_targets_sha256'] = digest(asset['visual_targets'])
         return {**result, 'asset_id': asset['id'], 'asset_sha256': asset['sha256'],
@@ -196,7 +206,7 @@ class Operations:
         'Describe what is actually visible. Accept real photographs with a relevant subject, detail '
         'or setting for the supplied topic/facts. Source text proves the narration; the picture need '
         'not show its exact action, historical date or microscopic mechanism. '
-        'Reject unrelated subjects, drawings, synthetic imagery and photographs cutting off the main subject. '
+        'Classify medium and topic_relation independently of accepted. generic_analogy means a prop, generic scenery or a different object offered as a metaphor. Reject these even if visually attractive or loosely associated with a scientific field. Require the actual requested subject or a directly related documented physical part/stage. A molecular model cannot depict a neutron star; a generic star field cannot identify a pulsar. Reject illustrations, synthetic images and unknown origins. Observational astronomical composites may be accepted when their actual depicted object is directly relevant. '
         'visible_fact_details describe the concrete visible relationship without inventing hidden actions. '
         'Evaluate every visual_target as a practical composition role, not exact scientific proof. '
         'detail_prominent means that role is recognizable in the whole photo. '
@@ -207,7 +217,7 @@ class Operations:
         targets = asset.get('visual_targets')
         result, provenance = self.gemini.generate('material-inspect:' + asset['id'],
             self.INSPECTION_INSTRUCTION,
-            {'evidence': compact_evidence(evidence), 'visual_targets': targets,
+            {'topic': getattr(self,'topic',None), 'evidence': compact_evidence(evidence), 'visual_targets': targets,
              'metadata': {k: asset[k] for k in ('source_url', 'author', 'license')}},
             self._inspection_schema(evidence, targets), photo=self._photo(asset), max_tokens=2048)
         return self._inspection_receipt(asset, evidence, result, provenance)
@@ -229,7 +239,7 @@ class Operations:
         row_schema['properties']['asset_id'] = string(a['id'] for a in assets)
         row_schema['required'].append('asset_id')
         schema = obj({'photos': array(row_schema, len(assets), len(assets))})
-        context = {'evidence': compact_evidence(evidence), 'visual_targets': targets,
+        context = {'topic': getattr(self,'topic',None), 'evidence': compact_evidence(evidence), 'visual_targets': targets,
                    'assets': [{k: a[k] for k in ('id', 'source_url', 'author', 'license')} for a in assets]}
         try:
             result, provenance = self.gemini.generate('material-inspect-batch:' + digest([a['id'] for a in assets]),
@@ -276,7 +286,7 @@ class Operations:
         preferred_beats = min(len(materials), 8, max(5, (seconds + 7) // 8))
         minimum_beats = minimum_available
         maximum_beats = min(len(materials), 8)
-        if context['request'].get('presentation_policy') == CALM_POLICY:
+        if context['request'].get('presentation_policy') in CALM_POLICIES:
             maximum_beats = min(maximum_beats, seconds * 2 // 5)
         schema = obj({'words': array(string(), minimum_words, maximum_words),
             'beats': array(obj({'material_id': string(m['id'] for m in materials),
@@ -351,6 +361,20 @@ class Operations:
                 beats[-1]['narration'] += ' ' + ' '.join(words[cursor:])
             else:
                 raise ValueError('narration words omitted from story')
+        if context['request'].get('presentation_policy') == TOPIC_POLICY:
+            edit_schema = obj({'narration': array(string(), len(beats), len(beats))})
+            edited, _ = self.gemini.generate('material-language-edit',
+                'Proofread these consecutive narration paragraphs into natural standard native ' +
+                {'pl':'Polish (pl-PL)','en':'English (en-US)','ru':'Russian (ru-RU)','uk':'Ukrainian (uk-UA)'}[context['request']['language']] +
+                '. The input may contain words or inflections from another language. Correct them, including spelling, grammar and case agreement. '
+                'Do not transliterate foreign words into the target alphabet. Preserve every source-supported claim, qualifier and number. '
+                'Return one complete fluent paragraph string per input paragraph in the same order. '
+                'Do not add claims, delete explanations or change which paragraph asserts each fact.',
+                {'language': context['request']['language'], 'narration': [b['narration'] for b in beats],
+                 'evidence': compact_evidence(context['evidence'])}, edit_schema)
+            for beat,text in zip(beats,edited['narration']): beat['narration'] = text.strip()
+            if not minimum_words <= sum(len(b['narration'].split()) for b in beats) <= maximum_words:
+                raise NarrationBudgetExceeded('proofread narration outside word budget before TTS')
         return {'beats': beats}
 
     def review_script(self, context):

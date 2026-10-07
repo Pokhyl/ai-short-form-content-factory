@@ -3,7 +3,7 @@ import json
 import math
 from pathlib import Path
 from .rendering import probe, run, sha
-from .presentation import visual_timeline, tempo_factor, phrase_frames, CALM_POLICY
+from .presentation import visual_timeline, tempo_factor, phrase_frames, CALM_POLICY, CALM_POLICIES
 from scripts.audit_final_media import pcm
 
 
@@ -20,7 +20,7 @@ def audit_whole(root, job_id, payload, expected_hash, expected_voice_hash, *, ti
     seconds = payload['seconds']
     segments = manifest['segments']
     policy = payload['presentation_policy']
-    boundaries = phrase_frames(timings,manifest['audio_duration_ms'],seconds) if policy == CALM_POLICY else ()
+    boundaries = phrase_frames(timings,manifest['audio_duration_ms'],seconds) if policy in CALM_POLICIES else ()
     cuts = visual_timeline(seconds, len(payload['visuals']),policy,boundaries)
     expected_assets = {x['sha256'] for x in payload['assets']}
     gates = {

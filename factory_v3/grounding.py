@@ -43,6 +43,8 @@ def validate_script_review(evidence, language, script, scenes, review, topic=Non
     if review.get("language")!=language or any(review.get(k) is not True for k in
         ("language_match","visual_contracts_match","no_unsupported_claims")):
         raise ValueError("script semantic/language review failed")
+    if 'native_language_quality' in review and review['native_language_quality'] is not True:
+        raise ValueError('native-language quality review failed')
     if topic is not None and (review.get("topic_covered") is not True or review.get("topic_sha256") != hashlib.sha256(topic.encode()).hexdigest()):
         raise ValueError("script does not answer the requested topic")
     expected={(s["id"],f) for s in scenes for f in s["evidence_ids"]}
