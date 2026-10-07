@@ -367,3 +367,18 @@ class OperationTests(unittest.TestCase):
         with self.assertRaises(ModelSchemaError):
             Operations('.', None, SimpleNamespace(generate=generate), None, None).compose(context)
         self.assertEqual(calls, ['material-compose', 'material-compose-length-repair'])
+
+    def test_calm_short_composition_cannot_create_more_anchors_than_the_hold_budget(self):
+        from material_first.visuals import CALM_POLICY
+        captured=[]
+        class Composer:
+            def generate(self,key,instruction,context,schema):
+                captured.append(schema)
+                raise RuntimeError('schema captured before any model call')
+        ops=Operations.__new__(Operations);ops.gemini=Composer()
+        materials=[{'id':str(i)} for i in range(8)]
+        # Only schema construction matters; source evidence stays compactable.
+        context={'request':{'seconds':15,'presentation_policy':CALM_POLICY},'materials':materials,'evidence':Fixtures(Path('.'),[]).evidence}
+        with self.assertRaisesRegex(RuntimeError,'schema captured'):
+            ops.compose(context)
+        self.assertEqual(captured[0]['properties']['beats']['maxItems'],6)

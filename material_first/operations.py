@@ -275,12 +275,15 @@ class Operations:
         # longer short require a perfect 12/12 discovery/inspection batch.
         preferred_beats = min(len(materials), 8, max(5, (seconds + 7) // 8))
         minimum_beats = minimum_available
+        maximum_beats = min(len(materials), 8)
+        if context['request'].get('presentation_policy') == CALM_POLICY:
+            maximum_beats = min(maximum_beats, seconds * 2 // 5)
         schema = obj({'words': array(string(), minimum_words, maximum_words),
             'beats': array(obj({'material_id': string(m['id'] for m in materials),
                 'word_start': {'type': 'number', 'minimum': 0, 'maximum': maximum_words},
                 'word_end': {'type': 'number', 'minimum': 1, 'maximum': maximum_words},
                 'fact_ids': array(string(f['id'] for f in context['evidence']['facts']), 1, 8)}),
-                minimum_beats, min(len(materials), 8))})
+                minimum_beats, maximum_beats)})
         targets = context['request'].get('visual_targets')
         if targets is not None:
             beat_schema = schema['properties']['beats']['items']
