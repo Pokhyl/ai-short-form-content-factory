@@ -1,6 +1,6 @@
 ## Download429 correction — 2026-10-07
 
-Owner continued with «и». fbeb0fc7 stopped unknown on explicit photo HTTP429 after13downloads/5Gemini,0TTS/MP4; immutable, no retry. New correction records explicit429 only for download as unavailable and skips remaining same-host candidates without calls/retries; source/model/paid429 and ambiguous transport remain terminal. SQL function restricts429 to download.213 controlled checks PASS (101core+112material). Deploy pending, no new verification case automatically. project_ready=false.
+Owner continued with «и». fbeb0fc7 stopped unknown on explicit photo HTTP429 after13downloads/5Gemini,0TTS/MP4; immutable, no retry. New correction records explicit429 only for download as unavailable and skips remaining same-host candidates without calls/retries; source/model/paid429 and ambiguous transport remain terminal. SQL function restricts429 to download.213 controlled checks PASS (101core+112material). LIVE9e44cae80146436eb49b5af11ead526e46b117b3/imagefactory-v3:9e44cae,213 exact-image network-disabled checks PASS. Download-only rejection SQL function updated; protected records/media snapshots unchanged during migration and rollout. No new verification case automatically. project_ready=false.
 
 ## Owner directs actual completion — 2026-10-07
 
