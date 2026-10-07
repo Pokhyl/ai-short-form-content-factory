@@ -150,6 +150,42 @@ def match_materials(available, draft, *, contextual=False, topical=False):
     return result
 
 
+def fit_contextual_paragraphs(available, draft, minimum=3):
+    """Join adjacent narration for one role without changing any asserted fact.
+
+    A hidden mechanism and its observable outcome can share a contextual
+    photograph. Search the bounded paragraph partitions, preserving speech
+    order and requiring the same global unique/relevance assignment afterwards.
+    """
+    if not 1 <= len(draft['beats']) <= 8 or not 1 <= minimum <= 8:
+        raise ValueError('bounded contextual paragraphs required')
+    queue = [deepcopy(draft)]
+    seen = set()
+    while queue:
+        current = queue.pop(0)
+        signature = digest(current['beats'])
+        if signature in seen:
+            continue
+        seen.add(signature)
+        try:
+            return match_materials(available, current, contextual=True, topical=True)
+        except MaterialUnavailable:
+            if len(current['beats']) <= minimum:
+                continue
+        for index, (left, right) in enumerate(zip(current['beats'], current['beats'][1:])):
+            if (left.get('visual_target_id') is None
+                    or left['visual_target_id'] != right.get('visual_target_id')):
+                continue
+            candidate = deepcopy(current)
+            combined = deepcopy(left)
+            combined['narration'] = left['narration'] + ' ' + right['narration']
+            combined['fact_ids'] = list(dict.fromkeys(left['fact_ids'] + right['fact_ids']))
+            candidate['beats'][index:index+2] = [combined]
+            candidate['merged_adjacent_beats'] = candidate.get('merged_adjacent_beats', 0) + 1
+            queue.append(candidate)
+    raise MaterialUnavailable('not enough distinct inspected pictures for narrated claims')
+
+
 def validate_story(request, evidence, available, draft):
     known = {m["id"]: m for m in available}
     contextual = request.get("presentation_policy") in WHOLE_POLICIES
@@ -331,7 +367,8 @@ class Producer:
         composition = {"request": request, "evidence": evidence, "materials": available}
         draft = self.operations.compose(deepcopy(composition))
         if modern:
-            draft = match_materials(available, draft, contextual=True, topical=request.get('presentation_policy') == TOPIC_POLICY)
+            draft = (fit_contextual_paragraphs(available, draft) if request.get('presentation_policy') == TOPIC_POLICY
+                     else match_materials(available, draft, contextual=True))
         else:
             draft = fit_materials(available, draft) if targets is not None else match_materials(available, draft)
         scenes = validate_story(request, evidence, available, draft)

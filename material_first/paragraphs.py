@@ -7,6 +7,21 @@ from factory_v3.grounding import compact_evidence
 LANGUAGES = {'pl':'Polish (pl-PL)','en':'English (en-US)','ru':'Russian (ru-RU)','uk':'Ukrainian (uk-UA)'}
 
 
+def compact_materials(materials):
+    """Keep semantic observations; HTTP receipts belong to server verification."""
+    fields = ('id','media_type','visible_description','supported_fact_ids',
+              'matched_visual_targets','source_interval')
+    inspection_fields = ('validation_method','medium','topic_relation','visible_fact_details',
+                         'target_matches','visual_qualification_protocol')
+    result = []
+    for material in materials:
+        row = {key:deepcopy(material[key]) for key in fields if key in material}
+        inspection = material.get('inspection', {})
+        row['inspection'] = {key:deepcopy(inspection[key]) for key in inspection_fields if key in inspection}
+        result.append(row)
+    return result
+
+
 def compose_paragraphs(gemini, context, budget_error):
     request = context['request'];seconds=request['seconds'];materials=context['materials']
     # Words are only a pre-voice estimate. Actual synthesis duration still has
@@ -33,7 +48,8 @@ def compose_paragraphs(gemini, context, budget_error):
     if request.get('visual_validation_mode')=='metadata':
         instruction+=' Provider metadata is not pixel evidence; do not assert that a specific action or detail is visibly shown.'
     draft,_=gemini.generate('material-compose',instruction,
-                            {**context,'evidence':compact_evidence(context['evidence'])},schema)
+                            {**context,'materials':compact_materials(materials),
+                             'evidence':compact_evidence(context['evidence'])},schema)
     validate_json(draft,schema)
     beats=deepcopy(draft['beats'])
     if any(len(set(b['fact_ids']))!=len(b['fact_ids']) for b in beats):

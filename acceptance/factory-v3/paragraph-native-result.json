@@ -1,0 +1,111 @@
+{
+  "diagnostic_id": "053b283c-64a7-4d57-9293-e23d8c3ce0d3",
+  "saved_request": "c8294766-22ae-46c1-aeb7-f16930ec055a",
+  "revision": "4021bd0978577bef8e90f905232eae8d630068bb",
+  "state": "terminal_failure",
+  "calls": [
+    {
+      "key": "free-tier",
+      "kind": "metadata",
+      "request_sha256": "0d592721e71fc5daaa0d2986d08254b47677146ad35cc9bf27037a6154416a13",
+      "state": "succeeded",
+      "response": {
+        "status": 200,
+        "body": {
+          "name": "projects/gen-lang-client-0532024148/billingInfo",
+          "projectId": "gen-lang-client-0532024148",
+          "billingAccountName": "",
+          "billingEnabled": false
+        }
+      }
+    },
+    {
+      "key": "material-compose",
+      "kind": "gemini",
+      "request_sha256": "c6dacf4992a4a178f38a6de34873824d414cba59493752c4ce2be2ab2e985d06",
+      "state": "succeeded",
+      "response": {
+        "status": 200,
+        "body": {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\n  \"beats\": [\n    {\n      \"material_id\": \"pixabay:11582\",\n      \"narration\": \"Нейтронна зірка є одним із можливих результатів еволюції зір, які формуються з масивних об'єктів головної послідовності з початковою масою, що більш ніж у 8 разів перевищує масу Сонця.\",\n      \"fact_ids\": [\n        \"f1\",\n        \"f2\"\n      ],\n      \"visual_target_id\": \"v0\"\n    },\n    {\n      \"material_id\": \"wikimedia:516106\",\n      \"narration\": \"Коли все ядерне паливо вичерпується, ядро ущільнюється, температура зростає, а під час електронного захвату утворюється потужний потік нейтрино.\",\n      \"fact_ids\": [\n        \"f3\",\n        \"f4\"\n      ],\n      \"visual_target_id\": \"v1\"\n    },\n    {\n      \"material_id\": \"pixabay:11180\",\n      \"narration\": \"Коли густина досягає ядерних значень, тиск виродженого нейтронного газу зупиняє стискання, а зовнішня оболонка відкидається потоком нейтрино, перетворюючи зірку на наднову.\",\n      \"fact_ids\": [\n        \"f5\"\n      ],\n      \"visual_target_id\": \"v1\"\n    },\n    {\n      \"material_id\": \"wikimedia:139881470\",\n      \"narration\": \"Після розсіювання зовнішньої оболонки залишається компактний зоряний залишок — нейтронна зірка з масою, порівнянною з масою Сонця, але з радіусом лише 10-20 кілометрів.\",\n      \"fact_ids\": [\n        \"f6\"\n      ],\n      \"visual_target_id\": \"v1\"\n    }\n  ]\n}",
+                    "thoughtSignature": "EmAKXgFpFH0TwTrj9Kyu6jOk1u0jDYMclzDsNnApZoOrgCMAeYdfaoMI7HHv69omrmFymZ0x4i/xAaqYRWXQLGqLpsmhmqeATOH3fz802szlvTlgOyRUauZmoH1h8W9BegM="
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 18258,
+            "candidatesTokenCount": 491,
+            "totalTokenCount": 18749,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 18258
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "modelVersion": "gemini-3.5-flash-lite",
+          "responseId": "pkTGariwGoPqkdUPsKjB6Aw"
+        }
+      }
+    },
+    {
+      "key": "material-language-edit",
+      "kind": "gemini",
+      "request_sha256": "485666dfff914a63d9f4e722ab1a15e3e992388ea3b36f36d5e07316c5c1c591",
+      "state": "succeeded",
+      "response": {
+        "status": 200,
+        "body": {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\n  \"narration\": [\n    \"Нейтронна зірка є одним із можливих результатів еволюції зір, які формуються з масивних об'єктів головної послідовності з початковою масою, що більш ніж у 8 разів перевищує масу Сонця.\",\n    \"Коли все ядерне паливо вичерпується, ядро ущільнюється, температура зростає, а під час електронного захвату утворюється потужний потік нейтрино.\",\n    \"Коли густина досягає ядерних значень, тиск виродженого нейтронного газу зупиняє стискання, а зовнішня оболонка відкидається потоком нейтрино, перетворюючи зірку на наднову.\",\n    \"Після розсіювання зовнішньої оболонки залишається компактний зоряний залишок — нейтронна зірка з масою, порівнянною з масою Сонця, але з радіусом лише 10-20 кілометрів.\"\n  ]\n}",
+                    "thoughtSignature": "EmAKXgFpFH0TxQ6mG/fRGROvJLxkHOb9yeXeo9aXr0hA8cuF7IhHxaJByPxt/CnJmo4jtISa5tP/08fwyqC7bpdiC2g+6lL4K+sHeQxEUWLHVBQ4QmINADgnWCBd2drxkUo="
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 4642,
+            "candidatesTokenCount": 248,
+            "totalTokenCount": 4890,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4642
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "modelVersion": "gemini-3.5-flash-lite",
+          "responseId": "qUTGarrDCqKwnsEP892BkA0"
+        }
+      }
+    }
+  ],
+  "fresh_requests": 0,
+  "tts_calls": 0,
+  "db_writes": 0,
+  "started_at": "2026-10-07T13:09:56.142707+00:00",
+  "error": "MaterialUnavailable",
+  "error_detail": "not enough distinct inspected pictures for narrated claims",
+  "human_pass": false,
+  "video_created": false
+}

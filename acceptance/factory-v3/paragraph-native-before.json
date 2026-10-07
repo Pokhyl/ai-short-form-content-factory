@@ -1,0 +1,104 @@
+{
+  "tables": {
+    "human_reviews": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "jobs": {
+      "rows": 11,
+      "digest": "e747ad0c704feab0afb693d86ce572f0"
+    },
+    "preparation_calls": {
+      "rows": 962,
+      "digest": "fff3707e3c3758c131bd02db1ccf2af4"
+    },
+    "preparation_runs": {
+      "rows": 36,
+      "digest": "bfee376e4c55bd9437d71dd3a0fc6487"
+    },
+    "preparations": {
+      "rows": 36,
+      "digest": "2cd47eeeec60f849aed3f47ef47b0064"
+    },
+    "provider_cache": {
+      "rows": 212,
+      "digest": "5c8013b38f4b7c7381c0605bfe31a1f2"
+    },
+    "stage_runs": {
+      "rows": 29,
+      "digest": "42f74f19ec06ca5d87aecfe955f61f62"
+    }
+  },
+  "workflows": {
+    "rows": 34,
+    "digest": "f03a2dc3cd6a4432330e3a5e2c7c84c2"
+  },
+  "active": {
+    "preparations": 0,
+    "stages": 0,
+    "n8n_executions": 0
+  },
+  "services": [
+    {
+      "name": "ai-short-form-n8n",
+      "id": "c9373532bb9a5ea44e4e93d6062cf16700feb00cdccbc937bf435291c5375a14",
+      "image": "sha256:307d6065be25619aa24cfc63a7c2f04ca56d084a08c05c8e9f189a89f353b1ec"
+    },
+    {
+      "name": "ai-short-form-postgres",
+      "id": "213f8d86785a2b1281060f593f81886d2d79fb47a709428673e16fba3b8728cd",
+      "image": "sha256:d3e1620b530c944afa6e887d22eb899824da68e19c52024bf98f5220c88a65b2"
+    },
+    {
+      "name": "n8n-caddy-1",
+      "id": "3913314c33d6d28aa6b6eb20251d2365bb289e717cb0c35cfb7f651162f52da6",
+      "image": "sha256:dedfbbeb703b2ce9ff4a98fc06aa9c7c7d9a42f0b7d778738c1dd3ef11dcc767"
+    },
+    {
+      "name": "n8n-ksef-demo-1",
+      "id": "c3d54c6a61cddad745048a0fe9aec95b3e374159c741d3eaf884f064c235787c",
+      "image": "sha256:0f07c1702a4cab388c66e41742d08a84f4da0584434470cac02f7ddc0a65b578"
+    },
+    {
+      "name": "n8n-n8n-1",
+      "id": "584b221b931466722128e04c83fbce3f7c637e30c4fa9946ef523f3c0f9dd964",
+      "image": "sha256:307d6065be25619aa24cfc63a7c2f04ca56d084a08c05c8e9f189a89f353b1ec"
+    },
+    {
+      "name": "n8n-postgres-1",
+      "id": "a599fb6dd95ed4ee6740e3d986ae8b8f9cca247c4d7d29061e5a1b0a9b2b8b43",
+      "image": "sha256:d4c3314b2dd74ff23cd6cd07e4d7e737cb6ef791c22a7cbd744cfbfb4815df72"
+    },
+    {
+      "name": "n8n-publisher-oauth-1",
+      "id": "aa8f4b36c600439ff532a9f6eac3b4f2b9763db38d364d4df9a4ebf4a3f90b81",
+      "image": "sha256:938e10ca9ebefca3ff1c9e5c6d84637b50f91c460e0f7023a710f644540cf84f"
+    },
+    {
+      "name": "n8n-recovery-merged",
+      "id": "6435b6649b1b372e5f4690c00b54582bf6b14ddcc6fdb4bc92c202518e2202eb",
+      "image": "sha256:307d6065be25619aa24cfc63a7c2f04ca56d084a08c05c8e9f189a89f353b1ec"
+    },
+    {
+      "name": "n8n-recovery-postgres",
+      "id": "b3476020edd0208e5fcbe8ee85cf554f4a5dfc21064ace2e9ccc9485da8800b8",
+      "image": "sha256:d3e1620b530c944afa6e887d22eb899824da68e19c52024bf98f5220c88a65b2"
+    },
+    {
+      "name": "shorts-v2-media-worker-1",
+      "id": "5824c94abaa6b901b6f7dd7c10110d72398b75069f24eefa22f31df2e8190ccb",
+      "image": "sha256:6b309a457c2471994bf792acbd85b7fda854e96b1336935607071b99d32df102"
+    },
+    {
+      "name": "shorts-v2-postgres-1",
+      "id": "57177172c6d986dcbf893c1f2e0b755bdda7da9e0aea000bb27aac48d0d4f2e1",
+      "image": "sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd"
+    },
+    {
+      "name": "shorts-v2-searxng-1",
+      "id": "1e5589e63ac991c12b26b02697a47d078e41b62263c6ac028be5879596e79922",
+      "image": "sha256:e0027a772aeeea55bf642256aae6fb3344ffa5f25ca665898c2ea821101334c4"
+    }
+  ],
+  "private_settings_sha256": "87656eaa5d331e868eae57c2faa807427bb8e5a3dc36a5d93ac1bca7aafc6386"
+}
