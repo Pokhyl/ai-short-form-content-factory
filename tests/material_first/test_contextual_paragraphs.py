@@ -4,6 +4,24 @@ from material_first.engine import fit_contextual_paragraphs,match_materials,vali
 
 
 class ContextualParagraphTests(unittest.TestCase):
+    def test_actual_cooling_paragraph_cadence_deficit_merges_same_role_before_voice(self):
+        from material_first.engine import paragraph_cadence_payload
+        from material_first.visuals import ordered_visuals
+        actual = json.loads((Path(__file__).parent/'fixtures/actual-uk60-cadence-deficit.json').read_text())
+        with self.assertRaisesRegex(ValueError, 'no subject-related photograph'):
+            paragraph_cadence_payload(actual['materials'], actual['draft'], actual['seconds'])
+        fitted = fit_contextual_paragraphs(actual['materials'], actual['draft'], seconds=actual['seconds'])
+        self.assertEqual(len(fitted['beats']), 4)
+        self.assertEqual(fitted['beats'][-1]['fact_ids'], ['fact-6', 'fact-8'])
+        self.assertEqual(' '.join(b['narration'] for b in fitted['beats']),
+                         ' '.join(b['narration'] for b in actual['draft']['beats']))
+        payload = paragraph_cadence_payload(actual['materials'], fitted, actual['seconds'])
+        timings = copy.deepcopy(actual['timings'][:4])
+        timings[-1]['end_ms'] = actual['timings'][-1]['end_ms']
+        ordered = ordered_visuals(payload, timings, actual['voice_duration_ms'])
+        self.assertEqual(len({v['material_id'] for v in ordered}), 15)
+        self.assertTrue(all(75 <= v['end_frame'] - v['start_frame'] <= 150 for v in ordered))
+
     def setUp(self):
         self.saved=json.loads((Path(__file__).parent/'fixtures/paragraph-anchor-failure.json').read_text())
         self.draft=copy.deepcopy(self.saved['responses']['material-compose'])

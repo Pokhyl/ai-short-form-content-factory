@@ -1,0 +1,18 @@
+{
+  "id": "491002b6-10d1-4432-b219-183be781a228",
+  "status": "unknown",
+  "terminal_stage": "render",
+  "error_code": "ValueError",
+  "exact_saved_pure_error": "no subject-related photograph for a narration interval",
+  "photos": 15,
+  "downloads": 30,
+  "gemini": 14,
+  "tts_calls": 1,
+  "voice_duration_ms": 74856,
+  "mp4": false,
+  "native_language_quality_model": true,
+  "native_quality_actual": false,
+  "strict_photo_protocols": false,
+  "rerun": false,
+  "new_calls_in_diagnosis": 0
+}

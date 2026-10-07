@@ -154,7 +154,26 @@ def match_materials(available, draft, *, contextual=False, topical=False):
     return result
 
 
-def fit_contextual_paragraphs(available, draft, minimum=3):
+def paragraph_cadence_payload(available, draft, seconds):
+    """Estimate paragraph durations before voice; final alignment remains authoritative."""
+    from .visuals import ordered_visuals
+    scenes = [{'id': 'beat-' + str(i + 1), 'material_id': beat['material_id'],
+               'evidence_ids': beat['fact_ids'], 'visual_target_id': beat.get('visual_target_id')}
+              for i, beat in enumerate(draft['beats'])]
+    payload = {'seconds': seconds, 'presentation_policy': TOPIC_POLICY,
+               'scenes': scenes, 'observations': available,
+               'visuals': make_visuals(seconds, available, scenes, TOPIC_POLICY)}
+    weights = [max(1, len(beat['narration'].split())) for beat in draft['beats']]
+    duration, cursor, total = seconds * 1000, 0, sum(weights)
+    timings = []
+    for weight in weights:
+        end = cursor + weight * duration / total
+        timings.append({'start_ms': cursor, 'end_ms': end}); cursor = end
+    ordered_visuals(payload, timings, duration)
+    return payload
+
+
+def fit_contextual_paragraphs(available, draft, minimum=3, *, seconds=None):
     """Join adjacent narration for one role without changing any asserted fact.
 
     A hidden mechanism and its observable outcome can share a contextual
@@ -172,7 +191,15 @@ def fit_contextual_paragraphs(available, draft, minimum=3):
             continue
         seen.add(signature)
         try:
-            return match_materials(available, current, contextual=True, topical=True)
+            matched = match_materials(available, current, contextual=True, topical=True)
+            if seconds is not None:
+                try:
+                    paragraph_cadence_payload(available, matched, seconds)
+                except ValueError as error:
+                    if str(error) != 'no subject-related photograph for a narration interval':
+                        raise
+                    raise MaterialUnavailable(str(error)) from None
+            return matched
         except MaterialUnavailable:
             if len(current['beats']) <= minimum:
                 continue
@@ -382,7 +409,7 @@ class Producer:
         composition = {"request": request, "evidence": evidence, "materials": available}
         draft = self.operations.compose(deepcopy(composition))
         if modern:
-            draft = (fit_contextual_paragraphs(available, draft) if request.get('presentation_policy') == TOPIC_POLICY
+            draft = (fit_contextual_paragraphs(available, draft, seconds=seconds) if request.get('presentation_policy') == TOPIC_POLICY
                      else match_materials(available, draft, contextual=True))
         else:
             draft = fit_materials(available, draft) if targets is not None else match_materials(available, draft)

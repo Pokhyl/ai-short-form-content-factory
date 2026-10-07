@@ -1,0 +1,283 @@
+{
+  "id": "491002b6-10d1-4432-b219-183be781a228",
+  "seconds": 60,
+  "materials": [
+    {
+      "id": "wikimedia:516106",
+      "sha256": "03663d1c811669a5bcf7902cf2dfc5f03fcc579c52f7421927966c71371ad395",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-4",
+        "fact-6"
+      ],
+      "matched_visual_targets": {
+        "v0": "The Crab Nebula is clearly depicted in its entirety as a prominent supernova remnant."
+      }
+    },
+    {
+      "id": "wikimedia:151097113",
+      "sha256": "9dddddcd68a9882db9c566cdaff49e457414751ab6bd6baa4d172b78b0f88c39",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-3",
+        "fact-5",
+        "fact-7"
+      ],
+      "matched_visual_targets": {
+        "v1": "Directly captures a lone neutron star alone in space."
+      }
+    },
+    {
+      "id": "wikimedia:170615847",
+      "sha256": "1d24ea967712549d087ad2f1f9679f11c254d44dcbb87675baafe502466aadf8",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-6"
+      ],
+      "matched_visual_targets": {
+        "v0": "Shows a nebula and stellar field associated with pulsar and supernova remnants.",
+        "v1": "Depicts the environment of a pulsar/neutron star.",
+        "v2": "Shows products of evolved massive stars."
+      }
+    },
+    {
+      "id": "wikimedia:15575739",
+      "sha256": "76e4d4e19beae96e9b63d6e9ab16f975930f0035a0337be657e71bafacc19b1e",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-4"
+      ],
+      "matched_visual_targets": {
+        "v0": "Crab Nebula supernova remnant captured by Spitzer Space Telescope"
+      }
+    },
+    {
+      "id": "wikimedia:15575922",
+      "sha256": "3497fe21e402934de610771de40c5960ecc1bb21b00d1f264d9052af0f67995f",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-6"
+      ],
+      "matched_visual_targets": {
+        "v0": "Crab Nebula remnant in alternative infrared channel composite"
+      }
+    },
+    {
+      "id": "wikimedia:190030419",
+      "sha256": "7048caff737e925ae51b960f15e0ba37ec7557273c246a66cb6975c6e09ed171",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-4",
+        "fact-6"
+      ],
+      "matched_visual_targets": {
+        "v0": "Clear depiction of the Crab Nebula supernova remnant."
+      }
+    },
+    {
+      "id": "wikimedia:54701968",
+      "sha256": "fe33d251ca27b998c08aa296112968de0a6d6135c5457408f3177d4c1802828a",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-3",
+        "fact-5",
+        "fact-7"
+      ],
+      "matched_visual_targets": {
+        "v1": "Shows the compact pulsar source acting as a stellar remnant."
+      }
+    },
+    {
+      "id": "wikimedia:51392703",
+      "sha256": "67d8fd4d58c96b7f1f84b72d5b2ea236f2569774b7b627092861391626804979",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-3",
+        "fact-5",
+        "fact-7"
+      ],
+      "matched_visual_targets": {
+        "v1": "Highlights the rotating neutron star and inner wind nebula."
+      }
+    },
+    {
+      "id": "wikimedia:195238536",
+      "sha256": "b54da1c5edb561c297fbb257f0595131702f31bd2031ffec45a15a917b2cfd27",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-2",
+        "fact-3",
+        "fact-8"
+      ],
+      "matched_visual_targets": {
+        "v2": "Represents the product and context of massive star evolution and supernova remnants."
+      }
+    },
+    {
+      "id": "wikimedia:139881470",
+      "sha256": "fde03b09dcf55adf1808388219ef9eb2a4a14a788babc267c47d62aaa1081c86",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-6"
+      ],
+      "matched_visual_targets": {
+        "v0": "The Crab Nebula and its central region are clearly captured."
+      }
+    },
+    {
+      "id": "wikimedia:148830351",
+      "sha256": "2433deaa9529f244d94da2658ab7afde1401521370eeb47fd0308f91ccf93478",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-4",
+        "fact-6"
+      ],
+      "matched_visual_targets": {
+        "v0": "The Crab Nebula remnant and its central neutron star environment are prominently featured on the left.",
+        "v2": "Presents multiple neutron star remnant systems (Crab and Vela)."
+      }
+    },
+    {
+      "id": "wikimedia:149412251",
+      "sha256": "8ad0f8d289bf7e9eb11f181bf8b6cae30790e428444e9ba800c7218d60cfc93d",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-4"
+      ],
+      "matched_visual_targets": {
+        "v0": "Features the Crab Nebula remnant containing a pulsar.",
+        "v2": "Includes multiple neutron star environments."
+      }
+    },
+    {
+      "id": "wikimedia:194637119",
+      "sha256": "e4c2d1d10f9ea89eca2a74bb5d134c3903c6da762330c3f838947542125340f9",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-4",
+        "fact-6"
+      ],
+      "matched_visual_targets": {
+        "v0": "the Crab Nebula with its central pulsar",
+        "v1": "the central neutron star visible within the nebula",
+        "v2": "supernova remnant produced by a massive star"
+      }
+    },
+    {
+      "id": "wikimedia:192540464",
+      "sha256": "e781c96980d17b92291c791e498edc81243419378d187aed8c6a20f866bf6d60",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-4",
+        "fact-6"
+      ],
+      "matched_visual_targets": {
+        "v0": "The entire Crab Nebula is prominently displayed with its complex filamentary shell and central emission structures."
+      }
+    },
+    {
+      "id": "wikimedia:53181985",
+      "sha256": "130ff0597e33e133d9780783f6036ea4c7e8df3f4cbc41904e34d82429d09aa6",
+      "media_type": "photo",
+      "supported_fact_ids": [
+        "fact-1",
+        "fact-3"
+      ],
+      "matched_visual_targets": {
+        "v0": "The Crab Nebula is clearly captured across the frame in a smooth, single-filter view."
+      }
+    }
+  ],
+  "draft": {
+    "beats": [
+      {
+        "material_id": "wikimedia:516106",
+        "narration": "Нейтронна зоря є космічним тілом, що складається в основному з нейтронної серцевини, вкритої порівняно тонкою корою речовини у вигляді важких атомних ядер і електронів.",
+        "fact_ids": [
+          "fact-1"
+        ],
+        "visual_target_id": "v0"
+      },
+      {
+        "material_id": "wikimedia:151097113",
+        "narration": "Коли густина зорі досягає ядерної густини, тиск виродженого нейтронного ідеального газу зупиняє стискання, а падіння зовнішньої оболонки зорі на нейтронне ядро зупиняється і відброшується від ядра зорі потоком нейтрино, при цьому зоря перетворюється на наднову.",
+        "fact_ids": [
+          "fact-3"
+        ],
+        "visual_target_id": "v1"
+      },
+      {
+        "material_id": "wikimedia:192540464",
+        "narration": "Оскільки радіус остатка зорі у багато разів менший від радіуса батьківської зорі, момент інерції остатка різко зменшується, і відповідно до закону збереження моменту імпульсу нейтронна зоря набуває дуже високої кутової швидкості обертання.",
+        "fact_ids": [
+          "fact-4"
+        ],
+        "visual_target_id": "v0"
+      },
+      {
+        "material_id": "wikimedia:148830351",
+        "narration": "Магнітне поле на поверхні нейтронних зір досягає значення 10^12—10^13 Гс, і саме процеси в магнітосфері нейтронних зір відповідальні за радіовипромінювання пульсарів.",
+        "fact_ids": [
+          "fact-6"
+        ],
+        "visual_target_id": "v2"
+      },
+      {
+        "material_id": "wikimedia:195238536",
+        "narration": "У момент народження нейтронної зорі в результаті спалаху сверхнової її температура є дуже високою — порядку 10^11 K, але вона дуже швидко падає за рахунок нейтринного охолодження.",
+        "fact_ids": [
+          "fact-8"
+        ],
+        "visual_target_id": "v2"
+      }
+    ]
+  },
+  "timings": [
+    {
+      "end_ms": 10800,
+      "coverage": 1.0,
+      "start_ms": 50,
+      "scene_key": "beat-1",
+      "scene_uuid": "e019e499-3958-5c38-9688-e627104f1e0a"
+    },
+    {
+      "end_ms": 28000,
+      "coverage": 0.991031,
+      "start_ms": 11050,
+      "scene_key": "beat-2",
+      "scene_uuid": "2ceb526d-d904-546f-9864-8f50f4209674"
+    },
+    {
+      "end_ms": 44550,
+      "coverage": 0.995122,
+      "start_ms": 28050,
+      "scene_key": "beat-3",
+      "scene_uuid": "9402d99b-8f88-59f1-9114-ce67fa3139dc"
+    },
+    {
+      "end_ms": 60000,
+      "coverage": 0.992908,
+      "start_ms": 45050,
+      "scene_key": "beat-4",
+      "scene_uuid": "5fb69e4b-baa7-5d57-9b89-03e8d15a6807"
+    },
+    {
+      "end_ms": 74856,
+      "coverage": 0.993289,
+      "start_ms": 60050,
+      "scene_key": "beat-5",
+      "scene_uuid": "32a62849-e11d-56da-ae01-066ac1793263"
+    }
+  ],
+  "voice_duration_ms": 74856,
+  "original_render_error": "no subject-related photograph for a narration interval",
+  "human_pass": false
+}
