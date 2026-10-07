@@ -11,6 +11,7 @@ from .engine import MaterialUnavailable
 from .targets import validate_targets
 from .visuals import POLICY, CALM_POLICY, CALM_POLICIES, TOPIC_POLICY, WHOLE_POLICIES, candidate_limit
 from .source_spans import source_spans, bind_support
+from .photo_queries import photograph_query, described_as_synthetic, relevance
 
 
 def preparation_budgets(seconds):
@@ -115,7 +116,8 @@ class Operations:
         targets = [{'id': 'v' + str(i), 'fact_ids': result['photo_contexts'][role]['fact_ids'][:],
                     'must_show': result['photo_contexts'][role]['subject'],
                     'must_not_show': 'Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role',
-                    'query': result['photo_contexts'][role]['query']}
+                    'query': (photograph_query(result['photo_contexts'][role]['query'])
+                              if request.get('presentation_policy') == TOPIC_POLICY else result['photo_contexts'][role]['query'])}
                    for i, role in enumerate(('setting', 'subject', 'detail'))]
         validate_targets(targets, fact_ids)
         return {'evidence': evidence, 'required_fact_ids': result['required_fact_ids'],
@@ -129,8 +131,13 @@ class Operations:
         for target in queries:
             query = target['query'] if targets else target
             for provider in (['wikimedia','pexels','pixabay'] if request.get('presentation_policy') == TOPIC_POLICY else sorted(PROVIDERS)):
-                result = self.search.search(provider, query, 'portrait')
+                result = self.search.search(provider, query, 'all' if request.get('presentation_policy') in WHOLE_POLICIES else 'portrait')
                 pool = deepcopy(result['candidates'])
+                if request.get('presentation_policy') == TOPIC_POLICY:
+                    pool = [candidate for candidate in pool if not described_as_synthetic(candidate)]
+                    # Ranking, not a caption-only admission gate: sparse but
+                    # relevant descriptions still reach independent inspection.
+                    pool.sort(key=lambda candidate: -relevance(candidate, query))
                 if targets:
                     for candidate in pool:
                         candidate['discovery_target_id'] = target['id']

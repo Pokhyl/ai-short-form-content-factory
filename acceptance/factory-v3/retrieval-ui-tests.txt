@@ -1,0 +1,21 @@
+✔ classic script preserves native history; successful delete clears selection and refreshes cards (3.120125ms)
+✔ cancel leaves video and card intact without a server deletion (0.640167ms)
+✔ server refusal retains card and reports failure without claiming deletion (0.598416ms)
+✔ terminal failure shows a saved failure notice instead of promising an upcoming video (0.55675ms)
+✔ active preparation keeps upcoming result visible and clears terminal notice (0.535791ms)
+✔ switching to a failed duplicate title updates the share URL and never leaves old video controls active (0.835541ms)
+✔ M3 defaults omitted visual validation mode to metadata (0.708416ms)
+✔ M3 accepts explicit Gemini visual validation mode (0.155084ms)
+✔ M3 rejects unknown visual validation mode (0.125917ms)
+✔ M3 persists visual validation mode through four-argument create_job (0.087709ms)
+✔ job schema persists metadata or gemini mode (0.083834ms)
+✔ Studio routes to replacement exposing visual quality mode and submitting it (0.171667ms)
+✔ latest job API exposes visual validation mode (0.428833ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 70.004417

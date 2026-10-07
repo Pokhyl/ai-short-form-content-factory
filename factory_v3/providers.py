@@ -9,7 +9,7 @@ from .preflight import digest
 PROVIDERS = {"pixabay", "pexels", "wikimedia"}
 MEDIA_HOSTS = {"pixabay": {"pixabay.com", "cdn.pixabay.com"},
                "pexels": {"images.pexels.com"},
-               "wikimedia": {"upload.wikimedia.org"}}
+               "wikimedia": {"upload.wikimedia.org", "thumb.wikimedia.org"}}
 
 
 def safe_url(url, hosts):
@@ -39,6 +39,20 @@ def commons_license(name):
     if re.fullmatch(r"CC BY(?: [1-4]\.0)?", normalized):
         return "CC BY"
     raise ValueError("unsupported Wikimedia license")
+
+
+def commons_license_url(metadata, license_name):
+    value = metadata.get("LicenseUrl", {}).get("value")
+    if value:
+        return safe_url(value, {"creativecommons.org", "www.creativecommons.org", "commons.wikimedia.org"})
+    # Commons' public-domain records often have no LicenseUrl. Use the
+    # extension's documented default only with an explicit PD declaration.
+    # Missing links on a copyrighted/unknown record are still ineligible.
+    if (license_name == "Public Domain"
+            and metadata.get("Copyrighted", {}).get("value") == "False"
+            and metadata.get("NonFree", {}).get("value") != "True"):
+        return "https://commons.wikimedia.org/wiki/Help:Public_domain"
+    raise ValueError("missing Wikimedia license URL")
 
 
 class ProviderCache:
@@ -71,7 +85,8 @@ def candidates(provider, body):
     elif provider == "pexels":
         entries = body.get("photos", [])[:8]
     else:
-        entries = list(body.get("query", {}).get("pages", {}).values())[:20]
+        entries = sorted(body.get("query", {}).get("pages", {}).values(),
+                         key=lambda entry: entry.get("index", 100000))[:20]
     for entry in entries:
         try:
             if provider == "pixabay":
@@ -102,13 +117,13 @@ def candidates(provider, body):
                     continue
                 metadata = info["extmetadata"]
                 raw_license = metadata["LicenseShortName"]["value"]
+                license_name = commons_license(raw_license)
                 author = clean_text(metadata["Artist"]["value"])
                 asset = {"id": "wikimedia:" + str(entry["pageid"]), "provider": provider,
                     "provider_asset_id": str(entry["pageid"]),
                     "source_url": safe_url(info["descriptionurl"], {"commons.wikimedia.org"}),
-                    "author": author, "license": commons_license(raw_license), "license_original": clean_text(raw_license),
-                    "license_url": safe_url(metadata["LicenseUrl"]["value"],
-                        {"creativecommons.org", "www.creativecommons.org"}),
+                    "author": author, "license": license_name, "license_original": clean_text(raw_license),
+                    "license_url": commons_license_url(metadata, license_name),
                     "media_url": info.get("thumburl") or info["url"],
                     "width": info.get("thumbwidth", info["width"]), "height": info.get("thumbheight", info["height"]),
                     "description": clean_text(metadata.get("ImageDescription", {}).get("value", entry.get("title", ""))),

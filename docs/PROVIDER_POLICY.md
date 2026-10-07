@@ -1,3 +1,6 @@
+## Wikimedia retrieval compatibility — 2026-10-07
+Current official metadata/thumbnail docs checked: CommonsMetadata explicitly describes Copyrighted=False public-domain metadata and its default public-domain schema license link as https://commons.wikimedia.org/wiki/Help:Public_domain (https://www.mediawiki.org/wiki/Extension:CommonsMetadata). MissingLicenseUrl may use that link only with explicit normalizedPublic Domain + Copyrighted=False and NonFree!=True; actual per-file source URL, original metadata and attribution remain. Missing licensed/copyrighted/unknown links still rejected. Explicit unsafe license URLs still rejected. Thumbnail API now returns thumb.wikimedia.org (https://phabricator.wikimedia.org/T439443); exact host added beside upload.wikimedia.org, no arbitrary hosts or constructed thumbnail URLs. Actual saved API corpus reproduces both admission bugs; no new provider calls in replay. Picture type/relevance still needs independent inspection; PD is not a real-photo declaration.
+
 # Provider Policy
 
 Updated: 2026-10-05 (Gemini key policy/pricing recheck; earlier provider proofs retained)
