@@ -126,10 +126,12 @@ class Operations:
     def discover(self, request, queries):
         if not isinstance(queries, list) or not 1 <= len(queries) <= 3:
             raise ValueError('bounded material queries required')
-        pools = []
+        pools, query_pools = [], []
+        topical = request.get('presentation_policy') == TOPIC_POLICY
         targets = queries if queries and isinstance(queries[0], dict) else None
         for target in queries:
             query = target['query'] if targets else target
+            query_pool = []
             for provider in (['wikimedia','pexels','pixabay'] if request.get('presentation_policy') == TOPIC_POLICY else sorted(PROVIDERS)):
                 result = self.search.search(provider, query, 'all' if request.get('presentation_policy') in WHOLE_POLICIES else 'portrait')
                 pool = deepcopy(result['candidates'])
@@ -143,6 +145,43 @@ class Operations:
                         candidate['discovery_target_id'] = target['id']
                         candidate['discovery_query'] = query
                 pools.append(pool)
+                query_pool.extend(pool)
+            if topical:
+                query_pool.sort(key=lambda candidate: -relevance(candidate, query))
+                query_pools.append(query_pool)
+        if topical:
+            # Give every provider/query an initial exposure (including sparse
+            # captions), then rank jointly within each query. Equal quotas per
+            # provider must not bury a relevant fourth result behind stock filler.
+            selected, seen = [], set()
+            limit = candidate_limit(request['seconds'], TOPIC_POLICY)
+            def take(candidate):
+                if candidate['id'] in seen:
+                    return
+                candidate = deepcopy(candidate)
+                if targets:
+                    candidate['visual_targets'] = deepcopy(targets)
+                candidate['topic_protocol'] = 'topic-specific-v1'
+                candidate['visual_qualification_protocol'] = 'qualified-target-v1'
+                selected.append(candidate)
+                seen.add(candidate['id'])
+            for pool in pools:
+                first = next((c for c in pool if c['id'] not in seen), None)
+                if first is not None:
+                    take(first)
+                    if len(selected) == limit:
+                        return selected
+            while len(selected) < limit:
+                before = len(selected)
+                for pool in query_pools:
+                    first = next((c for c in pool if c['id'] not in seen), None)
+                    if first is not None:
+                        take(first)
+                        if len(selected) == limit:
+                            return selected
+                if len(selected) == before:
+                    break
+            return selected
         # Round-robin provider/query results rather than exhausting one provider.
         selected, seen = [], set()
         for rank in range(40):

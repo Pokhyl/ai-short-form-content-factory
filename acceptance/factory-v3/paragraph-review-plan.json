@@ -1,0 +1,21 @@
+{
+  "diagnostic_id": "c0075ad8-de33-4a23-a5eb-aa35816ed8eb",
+  "saved_request": "c8294766-22ae-46c1-aeb7-f16930ec055a",
+  "runtime_revision": "0f66f5146ff9e1fd8344b3792e128ffa393db527",
+  "context_sha256": "7726398ecd1a3910eabbc3b14087805877ccc14bdbeecd599fd616e9da0280e1",
+  "question": "One independent production script/source/native review of actual saved natural paragraphs after deterministic same-role consolidation. No repeated composition/edit. Saved visual receipts are old and include known Sun mismatch; this diagnostic cannot approve current qualified visuals or create a video. Inspect audit flags and exact required fact coverage.",
+  "maximum_calls": {
+    "gemini": 1,
+    "read_only_billing_check": 1,
+    "composition": 0,
+    "language_edit": 0,
+    "research": 0,
+    "download": 0,
+    "tts": 0,
+    "fresh_requests": 0
+  },
+  "quota_consumption": "Verified Gemini Free Tier only; input tokens unknown, maxOutputTokens8192; actual billingEnabled=False required before call; no paid fallback.",
+  "stop": "One script-review attempt; record rejection or unknown and stop. No repeated audit or composition automatically. Failed c829 and previous diagnostic remain immutable.",
+  "offline": "Current production contextual consolidation fixture4→3 preserves exact words/fact IDs; independent source/native review still missing.98 material tests including saved nine-provider/query pools, caption fairness/sparse exposure and explicit simulation filtering pass; full packaged previous core96 passed.",
+  "human_pass": false
+}

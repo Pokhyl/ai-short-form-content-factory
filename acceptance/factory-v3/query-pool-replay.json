@@ -1,0 +1,108 @@
+{
+  "saved_request": "c8294766-22ae-46c1-aeb7-f16930ec055a",
+  "new_provider_calls": 0,
+  "database_writes": 0,
+  "old_selected": 30,
+  "new_selected": 30,
+  "saved_searches_replayed": 9,
+  "old_provider_counts": {
+    "wikimedia": 11,
+    "pexels": 10,
+    "pixabay": 9
+  },
+  "new_provider_counts": {
+    "wikimedia": 22,
+    "pexels": 5,
+    "pixabay": 3
+  },
+  "newly_exposed": [
+    {
+      "id": "wikimedia:182691810",
+      "description": "Same as above but looking down along the system’s orbital axis.Credit: NASA’s Goddard Space Flight Center/D. Skiathas et al. 2025Alt text: Top view of neutron star merger magnetic field lines",
+      "source_url": "https://commons.wikimedia.org/wiki/File:NASA_Supercomputer_Probes_Tangled_Magnetospheres_of_Merging_Neutron_Stars_(SVS14884_-_Lines_Above_Still).jpg"
+    },
+    {
+      "id": "wikimedia:15566470",
+      "description": "For the universe's biggest stars, even death is a show. Massive stars typically end their lives in explosive cataclysms, or supernovae, flinging abundant amounts of hot gas and radiation into outer space. Remnants of these dramatic deaths can linger for thousands of years and be easily detected by professional astronomers.\n However, not all stars like attention. Thirty thousand light-years away in the Cepheus constellation, astronomers think they've found a massive star whose death barely made a peep. Remnants of this shy star's supernova would have gone completely unnoticed if the super-sensitive eyes of NASA's Spitzer Space Telescope hadn't accidentally stumbled upon it.\n  These three panels illustrate just how shy this star is. Unlike most supernova remnants, which are detectable at a variety of wavelengths ranging from radio to X-rays, this source only shows up in mid-infrared images taken by Spitzer's Multiband Imaging Photometer (MIPS). The remnant can be seen as a red-orange blob at the center of the picture.\n  Although the visible-light (left) and near-infrared (middle) images capture the exact same region of space, the source is completely invisible in both pictures. Astronomers suspect that the remnant's elusiveness is due to its location away from our Milky Way galaxy's dusty main disk, which contains most of the galaxy's stars. A supernova is most noticeable when the material expelled during the star's furious death throes violently collides with surrounding dust. Since the shy star sits away from the galaxy's dusty and crowded disk, the hot gas and radiation it flung into space had little surrounding material to crash into. Thus, it is largely invisible at most wavelengths.\n  MIPS did not need dust to see the remnant. The mid-infrared instrument was able to directly detect the oxygen-rich gas from the supernova's explosive death throes.\n  The visible-light (left) image is a three-color composite of data from the California Institute of Technology's Digitized Sky Survey. In this image, light with a wavelength of 0.44 microns is represented as blue, 0.55-micron light is green, and 0.9-micron light is red.\n \nThe near-infrared (middle) image is a two-color composite of data from Spitzer's infrared array camera. In this image, starlight captured at 4.5 microns is represented in blue, and 8-micron light from dust is green. The far-infrared image (right) combines the infrared array camera data with the multiband imaging photometer data, which show light of 24 microns in red.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:The_(Almost)_Invisible_Aftermath_of_a_Massive_Star%27s_Death.jpg"
+    },
+    {
+      "id": "wikimedia:148830328",
+      "description": "The Crab Nebula is the remnant of a supernova explosion that was seen on Earth in 1054 AD. It is 6000 light years from Earth. At the center of the bright nebula is a rapidly spinning neutron star, or pulsar that emits pulses of radiation 30 times a second.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Crab_Nebula_(1999-0052_-_0052_optical).jpg"
+    },
+    {
+      "id": "wikimedia:182691829",
+      "description": "Same as above but looking at the system from 45 degrees above the orbital plane.Credit: NASA’s Goddard Space Flight Center/D. Skiathas et al. 2025Alt text: Oblique view of neutron star merger magnetic field lines",
+      "source_url": "https://commons.wikimedia.org/wiki/File:NASA_Supercomputer_Probes_Tangled_Magnetospheres_of_Merging_Neutron_Stars_(SVS14884_-_Lines_Inclined_Still).jpg"
+    },
+    {
+      "id": "wikimedia:105259936",
+      "description": "In the quest to better understand the birth of stars and the formation of new worlds, astronomers have used NASA's Spitzer Space Telescope to examine the massive stars contained in a cloudy region called Sharpless 140. This cloud is a star-forming microcosm that exhibits, within a relatively small area, all of the classic manifestations of stellar birth. \n  Sharpless 140 lies almost 3,000 light-years from Earth in the constellation Cepheus. At its heart is a cluster of three deeply embedded young stars, which are each several thousand times brighter than the sun. Though they are strikingly visible in this image from Spitzer's infrared array camera, they are completely obscured in visible light, buried within the core of the surrounding dust cloud. \n  The extreme youth of at least one of these stars is indicated by the presence of a stream of gas moving at high velocities. Such outflows are signatures of the processes surrounding a star that is still gobbling up material as part of its formation. \n  The bright red bowl, or arc, seen in this image traces the outer surface of the dense dust cloud encasing the young stars. This arc is made up primarily of organic compounds called polycyclic aromatic hydrocarbons, which glow on the surface of the cloud. Ultraviolet light from a nearby bright star outside of the image is \"eating away\" at these molecules. Eventually, this light will destroy the dust envelope and the masked young stars will emerge. \n \nThis false-color image was taken on Oct. 11, 2003.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Released_to_Public_Massive_Stars_in_Cloudy_Region_called_Sharpless_140_by_NASA_JPL-Caltech_Spitzer_Space_Telescope_(NASA)_(300043984).jpg"
+    },
+    {
+      "id": "wikimedia:148830323",
+      "description": "The Crab Nebula is the remnant of a supernova explosion that was seen on Earth in 1054 AD. It is 6000 light years from Earth. At the center of the bright nebula is a rapidly spinning neutron star, or pulsar that emits pulses of radiation 30 times a second.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Crab_Nebula_(1999-0052_-_0052_radio).jpg"
+    },
+    {
+      "id": "wikimedia:182691891",
+      "description": "Shorter vertical version of the narrated video. Versions with and without on-screen text for the narration are available (the no-text version has \"NoToS\" in the file name).Credit: NASA's Goddard Space Flight CenterAlt text: Short narrated video introducing simulations of merging neutron star magnetospheresMusic: “A Theory Develops,” Pip Heywood [PRS], Universal Production MusicComplete transcript available.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:NASA_Supercomputer_Probes_Tangled_Magnetospheres_of_Merging_Neutron_Stars_(SVS14884_-_NS_Binary_Sim_REEL_Still2).jpg"
+    },
+    {
+      "id": "wikimedia:30512561",
+      "description": "Floating at the centre of this new Hubble image is a lidless purple eye, staring back at us through space. This ethereal object, known officially as [SBW2007] 1 but sometimes nicknamed SBW1, is a nebula with a giant star at its centre. The star was originally twenty times more massive than our Sun, and is now encased in a swirling ring of purple gas, the remains of the distant era when it cast off its outer layers via violent pulsations and winds.\n But the star is not just any star; scientists say that it is destined to go supernova! 26 years ago, another star with striking similarities went supernova — SN 1987A. Early Hubble images of SN 1987A show eerie similarities to SBW1. Both stars had identical rings of the same size and age, which were travelling at similar speeds; both were located in similar HII regions; and they had the same brightness. In this way SBW1 is a snapshot of SN1987a's appearance before it exploded, and unsurprisingly, astronomers love studying them together.\n  At a distance of more than 20 000 light-years it will be safe to watch when the supernova goes off. If we are very lucky it may happen in our own lifetimes...\n \nA version of this image was entered into the Hubble's Hidden Treasures image processing competition by contestant Nick Rose.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:A_star_set_to_explode.jpg"
+    },
+    {
+      "id": "wikimedia:148830334",
+      "description": "The Crab Nebula is the remnant of a supernova explosion that was seen on Earth in 1054 AD. It is 6000 light years from Earth. At the center of the bright nebula is a rapidly spinning neutron star, or pulsar that emits pulses of radiation 30 times a second.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Crab_Nebula_(1999-0052_-_0052_infrared).jpg"
+    },
+    {
+      "id": "wikimedia:192665431",
+      "description": "The Hubble Space Telescope has imaged the star field around the Cepheid variable V1 in M31. This image shows individually resolved stars in the outer disk of the Andromeda Galaxy. The soft, brown swirls are dust lanes are obscuring light from stars farther away from our line of sight. The blue cluster towards the upper right of the image contains massive young stars that are emitting intense ultraviolet light. The Cepheid variable, V1, the first Cepheid ever found outside of our own galaxy, is a moderate looking star in the lower left of the image.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Hubble%E2%80%99s_cepheid_in_the_Andromeda_Galaxy_(ann1110a).jpg"
+    },
+    {
+      "id": "wikimedia:149496748",
+      "description": "The NASA/ESA/CSA James Webb Space Telescope dissected the Crab Nebula’s structure, aiding astronomers as they continue to evaluate leading theories about the supernova remnant’s origins. With the data collected by Webb’s NIRCam (Near-Infrared Camera) and MIRI (Mid-Infrared Instrument), a team of scientists were able to closely inspect some of the Crab Nebula’s major components.For the first time ever, astronomers mapped the warm dust emission throughout this supernova remnant. Represented here as fluffy magenta material, the dust grains form a cage-like structure that is most apparent toward the lower left and upper right portions of the remnant. Filaments of dust are also threaded throughout the Crab’s interior and sometimes coincide with regions of doubly ionised sulphur (sulphur III), coloured in green. Yellow-white mottled filaments, which form large loop-like structures around the supernova remnant’s centre, represent areas where dust and doubly ionised sulphur overlap.The dust’s cage-like structure helps constrain some, but not all of the ghostly synchrotron emission represented in blue. The emission resembles wisps of smoke, most notable toward the Crab’s centre. The thin blue ribbons follow the magnetic field lines created by the Crab’s pulsar heart — a rapidly rotating neutron star.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Crab_Nebula_(MIRI_and_NIRCam_image)_(weic2417a).jpg"
+    }
+  ],
+  "new_selected_ids": [
+    "wikimedia:163470036",
+    "pexels:12491601",
+    "pixabay:11098",
+    "wikimedia:516106",
+    "pexels:19798813",
+    "pixabay:11182",
+    "wikimedia:182691854",
+    "pexels:38039151",
+    "pixabay:3273425",
+    "wikimedia:15008297",
+    "wikimedia:146336166",
+    "wikimedia:182691768",
+    "wikimedia:163470034",
+    "wikimedia:18919964",
+    "wikimedia:182691754",
+    "wikimedia:163470039",
+    "wikimedia:139881470",
+    "wikimedia:182691810",
+    "wikimedia:15566470",
+    "wikimedia:148830328",
+    "wikimedia:182691829",
+    "wikimedia:105259936",
+    "wikimedia:148830323",
+    "wikimedia:182691891",
+    "wikimedia:30512561",
+    "wikimedia:148830334",
+    "pexels:38039464",
+    "wikimedia:192665431",
+    "wikimedia:149496748",
+    "pexels:7931772"
+  ],
+  "pixel_relevance_certified": false
+}

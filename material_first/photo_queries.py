@@ -5,8 +5,9 @@ SYNTHETIC = re.compile(
     r"\b(?:artist(?:['’]s)?[- _]*(?:concept|impression)|concept\s+art|"
     r"artistic\s+(?:concept|impression|rendering)|illustrations?|schematic|diagram|"
     r"cross[- ]section|synthetic\s+rendering|3d\s+render(?:ing)?|"
-    r"computer[- ]generated|animation|visuali[sz]ation)\b", re.I)
-INVISIBLE = re.compile(r"\b(?:magnetic\s+field\s+beams?|field\s+lines|imagined\s+particle\s+beams?)\b", re.I)
+    r"computer[- ]generated|(?:this|computer|supercomputer|numerical)\s+simulations?|"
+    r"simulated\s+(?:image|scene|view)|animation|visuali[sz]ation)\b", re.I)
+INVISIBLE = re.compile(r"\b(?:magnetospheres?|magnetic\s+field\s+beams?|field\s+lines|imagined\s+particle\s+beams?)\b", re.I)
 
 
 def photograph_query(query):
@@ -27,4 +28,5 @@ def described_as_synthetic(candidate):
 
 def relevance(candidate, query):
     from .metadata import words
-    return len(words(str(candidate.get("description", ""))) & words(query))
+    text = str(candidate.get("description", "")) + " " + str(candidate.get("source_metadata", {}).get("title", ""))
+    return len(words(text) & words(query))
