@@ -192,20 +192,33 @@ class Gemini:
                 "narration_quote": string(), "supported": BOOL}), 1)})
         from material_first.presentation import TOPIC_POLICY
         native = request.get('presentation_policy') == TOPIC_POLICY
+        assertions = {}
         if native:
+            assertions = {'assertion_' + str(i + 1): {'scene_id':scene['id'], 'fact_id':fact_id}
+                for i, (scene, fact_id) in enumerate((scene,fact_id) for scene in scenes for fact_id in scene['evidence_ids'])}
+            if not 1 <= len(assertions) <= 64:
+                raise ValueError('bounded factual assertions required')
+            schema['properties']['factual_checks'] = obj({key:obj({'narration_quote':string(), 'supported':BOOL})
+                for key in assertions})
             schema['properties']['native_language_quality'] = BOOL
             schema['required'].append('native_language_quality')
         review_context = {**request, 'evidence': compact_evidence(request['evidence'])}
+        if native:
+            review_context['required_assertions'] = assertions
         if native and 'materials' in request:
             from material_first.paragraphs import compact_materials
             review_context['materials'] = compact_materials(request['materials'])
         result, provenance = self.generate("script-review",
             "Independently audit every claim in the exact final narration against supplied source-supported facts. "
+            "For required_assertions, return every named factual_checks field, including nonessential cited facts. "
+            "Each key identifies one exact scene/fact pair. Quote its actual narrated assertion; if it is absent or unsupported, set supported=false. Never omit a key or check only required_fact_ids. "
             "Check native vocabulary, spelling, grammar and inflections in the requested language, not merely alphabet or overall language identity. Set native_language_quality=false for mixed-language words or grammatical defects. Check every scene's visual contract and exclusions. For material-first plans, relevant contextual photographs may illustrate a mechanism without depicting its exact action or microscopic anatomy. Facts are verified against sources. Check that the supplied visual roles provide different dominant subjects, scales or contexts; reject a sequence composed entirely of near-identical subject-and-setting views. Do not require perfect literal image-to-phrase correspondence. Reject a generic analogy, laboratory prop or unrelated object sharing only the broad scientific field. Still photographs need not depict motion. "
             "In metadata visual_validation_mode, supplied photograph descriptions and roles are metadata-only, not pixel inspection; audit contextual relevance without claiming pixels were checked. Do not approve a fact merely because its ID is cited. Quote the actual words asserting each cited fact. "
             "Check that the narration actually answers the requested topic and essential mechanism, rather than merely describing pictured objects. "
             "Report false for omitted topic coverage, any unsupported statement, omitted cited fact or contradictory image requirement.",
             review_context, schema)
+        if native:
+            result['factual_checks'] = [{**pair, **result['factual_checks'][key]} for key,pair in assertions.items()]
         result.update({"receipt_id": provenance["receipt_id"], "model": self.model,
             "provider_provenance": provenance,
             "script_sha256": hashlib.sha256(request["script"].encode()).hexdigest(),

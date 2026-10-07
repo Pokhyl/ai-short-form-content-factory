@@ -127,6 +127,53 @@ class GeminiTests(unittest.TestCase):
             self.adapter.review_script(request)
         self.assertEqual(len(self.http.requests), 1)
 
+    def native_review_fixture(self):
+        from pathlib import Path
+        saved=json.loads((Path(__file__).parent/'fixtures/partial-native-review.json').read_text())
+        request=saved['request']
+        response={k:v for k,v in saved['actual_review'].items() if k!='factual_checks'}
+        pairs=[(scene,fact) for scene in request['scenes'] for fact in scene['evidence_ids']]
+        response['factual_checks']={'assertion_'+str(i+1):
+            {'narration_quote':scene['narration'],'supported':True} for i,(scene,fact) in enumerate(pairs)}
+        return saved,request,response,pairs
+
+    def test_native_review_requires_every_named_scene_fact_pair(self):
+        saved,request,response,pairs=self.native_review_fixture()
+        self.assertEqual(len(saved['actual_review']['factual_checks']),4)
+        self.assertEqual(len(pairs),6)
+        self.http.result=response  # Controlled completion, not new semantic approval.
+        result=self.adapter.review_script(request)
+        self.assertEqual([(c['scene_id'],c['fact_id']) for c in result['factual_checks']],
+                         [(s['id'],f) for s,f in pairs])
+        body=self.http.requests[0][2]
+        checks=body['generationConfig']['responseJsonSchema']['properties']['factual_checks']
+        self.assertEqual(checks['type'],'object')
+        self.assertEqual(len(checks['required']),6)
+        context=json.loads(body['contents'][0]['parts'][0]['text'])
+        self.assertEqual(len(context['required_assertions']),6)
+        self.assertEqual(len(self.http.requests),1)
+
+    def test_native_named_check_cannot_omit_even_a_nonessential_fact(self):
+        _,request,response,_=self.native_review_fixture()
+        del response['factual_checks']['assertion_1']
+        self.http.result=response
+        with self.assertRaisesRegex(ValueError,'schema'):self.adapter.review_script(request)
+        self.assertEqual(len(self.http.requests),1)
+
+    def test_named_check_rejects_unsupported_fact_and_nonverbatim_quote(self):
+        _,request,response,_=self.native_review_fixture()
+        response['factual_checks']['assertion_1']['supported']=False
+        self.http.result=response
+        with self.assertRaisesRegex(ValueError,'not supported'):self.adapter.review_script(request)
+        self.assertEqual(len(self.http.requests),1)
+
+    def test_named_check_rejects_invented_narration_quote(self):
+        _,request,response,_=self.native_review_fixture()
+        response['factual_checks']['assertion_1']['narration_quote']='Invented claim.'
+        self.http.result=response
+        with self.assertRaisesRegex(ValueError,'actual narration'):self.adapter.review_script(request)
+        self.assertEqual(len(self.http.requests),1)
+
     def test_narration_composer_receives_fixed_contracts_and_no_tools(self):
         f = self.fixture
         request = {"topic": "controlled", "language": "pl", "seconds": 15,

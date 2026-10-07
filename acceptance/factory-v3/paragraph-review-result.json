@@ -1,0 +1,173 @@
+{
+  "diagnostic_id": "c0075ad8-de33-4a23-a5eb-aa35816ed8eb",
+  "saved_request": "c8294766-22ae-46c1-aeb7-f16930ec055a",
+  "revision": "0f66f5146ff9e1fd8344b3792e128ffa393db527",
+  "state": "terminal_failure",
+  "calls": [
+    {
+      "key": "free-tier",
+      "kind": "metadata",
+      "request_sha256": "0d592721e71fc5daaa0d2986d08254b47677146ad35cc9bf27037a6154416a13",
+      "state": "succeeded",
+      "response": {
+        "status": 200,
+        "body": {
+          "name": "projects/gen-lang-client-0532024148/billingInfo",
+          "projectId": "gen-lang-client-0532024148",
+          "billingAccountName": "",
+          "billingEnabled": false
+        }
+      }
+    },
+    {
+      "key": "script-review",
+      "kind": "gemini",
+      "request_sha256": "ca7f522a8aa956c406f33f139b1115d8096f3e86ecc06a925329c274599c5730",
+      "state": "succeeded",
+      "response": {
+        "status": 200,
+        "body": {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\n  \"language\": \"uk\",\n  \"language_match\": true,\n  \"visual_contracts_match\": true,\n  \"no_unsupported_claims\": true,\n  \"topic_covered\": true,\n  \"factual_checks\": [\n    {\n      \"scene_id\": \"beat-1\",\n      \"fact_id\": \"f2\",\n      \"narration_quote\": \"Нейтронна зірка є одним із можливих результатів еволюції зір, які формуються з масивних об'єктів головної послідовності з початковою масою, що більш ніж у 8 разів перевищує масу Сонця.\",\n      \"supported\": true\n    },\n    {\n      \"scene_id\": \"beat-2\",\n      \"fact_id\": \"f4\",\n      \"narration_quote\": \"Коли все ядерне паливо вичерпується, ядро ущільнюється, температура зростає, а під час електронного захвату утворюється потужний потік нейтрино.\",\n      \"supported\": true\n    },\n    {\n      \"scene_id\": \"beat-2\",\n      \"fact_id\": \"f5\",\n      \"narration_quote\": \"Коли густина досягає ядерних значень, тиск виродженого нейтронного газу зупиняє стискання, а зовнішня оболонка відкидається потоком нейтрино, перетворюючи зірку на наднову.\",\n      \"supported\": true\n    },\n    {\n      \"scene_id\": \"beat-3\",\n      \"fact_id\": \"f6\",\n      \"narration_quote\": \"Після розсіювання зовнішньої оболонки залишається компактний зоряний залишок — нейтронна зірка з масою, порівнянною з масою Сонця, але з радіусом лише 10-20 кілометрів.\",\n      \"supported\": true\n    }\n  ],\n  \"native_language_quality\": true\n}",
+                    "thoughtSignature": "EmAKXgFpFH0TLNS+43BVKaGs4+5/uqH7mDrH+SUGLFK+NkjlmLD606UZeC3tDVVUQZxHkV7CJASpw3XL7LAMpMO3wTSowKTLL56mRcM7b0wcTzE2YhZ97z51koFC3aJGVL8="
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 10024,
+            "candidatesTokenCount": 473,
+            "totalTokenCount": 10497,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 10024
+              }
+            ],
+            "serviceTier": "standard"
+          },
+          "modelVersion": "gemini-3.5-flash-lite",
+          "responseId": "pkjGauntNLickdUPvre7MA"
+        }
+      }
+    }
+  ],
+  "fresh_requests": 0,
+  "tts_calls": 0,
+  "db_writes": 0,
+  "started_at": "2026-10-07T13:27:01.599679+00:00",
+  "draft": {
+    "beats": [
+      {
+        "material_id": "pixabay:11582",
+        "narration": "Нейтронна зірка є одним із можливих результатів еволюції зір, які формуються з масивних об'єктів головної послідовності з початковою масою, що більш ніж у 8 разів перевищує масу Сонця.",
+        "fact_ids": [
+          "f1",
+          "f2"
+        ],
+        "visual_target_id": "v0"
+      },
+      {
+        "material_id": "wikimedia:516106",
+        "narration": "Коли все ядерне паливо вичерпується, ядро ущільнюється, температура зростає, а під час електронного захвату утворюється потужний потік нейтрино. Коли густина досягає ядерних значень, тиск виродженого нейтронного газу зупиняє стискання, а зовнішня оболонка відкидається потоком нейтрино, перетворюючи зірку на наднову.",
+        "fact_ids": [
+          "f3",
+          "f4",
+          "f5"
+        ],
+        "visual_target_id": "v1"
+      },
+      {
+        "material_id": "wikimedia:139881470",
+        "narration": "Після розсіювання зовнішньої оболонки залишається компактний зоряний залишок — нейтронна зірка з масою, порівнянною з масою Сонця, але з радіусом лише 10-20 кілометрів.",
+        "fact_ids": [
+          "f6"
+        ],
+        "visual_target_id": "v1"
+      }
+    ],
+    "merged_adjacent_beats": 1
+  },
+  "script": "Нейтронна зірка є одним із можливих результатів еволюції зір, які формуються з масивних об'єктів головної послідовності з початковою масою, що більш ніж у 8 разів перевищує масу Сонця. Коли все ядерне паливо вичерпується, ядро ущільнюється, температура зростає, а під час електронного захвату утворюється потужний потік нейтрино. Коли густина досягає ядерних значень, тиск виродженого нейтронного газу зупиняє стискання, а зовнішня оболонка відкидається потоком нейтрино, перетворюючи зірку на наднову. Після розсіювання зовнішньої оболонки залишається компактний зоряний залишок — нейтронна зірка з масою, порівнянною з масою Сонця, але з радіусом лише 10-20 кілометрів.",
+  "words": 90,
+  "scenes": [
+    {
+      "id": "beat-1",
+      "material_id": "pixabay:11582",
+      "narration": "Нейтронна зірка є одним із можливих результатів еволюції зір, які формуються з масивних об'єктів головної послідовності з початковою масою, що більш ніж у 8 разів перевищує масу Сонця.",
+      "evidence_ids": [
+        "f1",
+        "f2"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "contract": {
+        "visual_intent": "массивная звезда главной последовательности в космосе",
+        "must_show": [
+          "массивная звезда главной последовательности в космосе",
+          "The entire solar disk is clearly visible showing prominent stellar surface features."
+        ],
+        "must_not_show": [
+          "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role"
+        ]
+      },
+      "visual_target_id": "v0"
+    },
+    {
+      "id": "beat-2",
+      "material_id": "wikimedia:516106",
+      "narration": "Коли все ядерне паливо вичерпується, ядро ущільнюється, температура зростає, а під час електронного захвату утворюється потужний потік нейтрино. Коли густина досягає ядерних значень, тиск виродженого нейтронного газу зупиняє стискання, а зовнішня оболонка відкидається потоком нейтрино, перетворюючи зірку на наднову.",
+      "evidence_ids": [
+        "f3",
+        "f4",
+        "f5"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "contract": {
+        "visual_intent": "остаток сверхновой в туманности",
+        "must_show": [
+          "остаток сверхновой в туманности",
+          "Clearly displays the Crab Nebula supernova remnant."
+        ],
+        "must_not_show": [
+          "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role"
+        ]
+      },
+      "visual_target_id": "v1"
+    },
+    {
+      "id": "beat-3",
+      "material_id": "wikimedia:139881470",
+      "narration": "Після розсіювання зовнішньої оболонки залишається компактний зоряний залишок — нейтронна зірка з масою, порівнянною з масою Сонця, але з радіусом лише 10-20 кілометрів.",
+      "evidence_ids": [
+        "f6"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "contract": {
+        "visual_intent": "остаток сверхновой в туманности",
+        "must_show": [
+          "остаток сверхновой в туманности",
+          "The entire frame clearly displays the Crab Nebula supernova remnant."
+        ],
+        "must_not_show": [
+          "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role"
+        ]
+      },
+      "visual_target_id": "v1"
+    }
+  ],
+  "error": "ValueError",
+  "error_detail": "semantic review omitted narrated facts",
+  "human_pass": false,
+  "video_created": false
+}
