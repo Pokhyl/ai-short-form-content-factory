@@ -1,0 +1,23 @@
+{
+  "id": "46c7c281-737d-4264-bef1-6be273b59976",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "runtime_revision": "589e24fb3304d9ac12804ab82420665f367f46be",
+  "maximum_fresh_requests": 1,
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 30,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "question": "One normal current-runtime UK60 Vision case through grounded source facts, merged-query retrieval/entity-only searches, qualified direct-subject real photos, conservative source-bound copy rejection, complete native paragraphs/same-role consolidation, exact keyed independent fact/native audit, one voice and exact60s moderate whole-photo MP4. No old voice/file reuse or rescue of failed IDs.",
+  "offline": "100 core+98 material current-source packaged network-disabled PASS; actual nine-search replay changes exposure without increasing30-download budget; original-byte real JPEG copy rejection and distinct Hubble/Webb retention verified; actual natural paragraphs/edit completed; partial4/6 factual audit omission reproduced and keyed mandatory assertions regression added with omission/false/nonverbatim negative controls.",
+  "remaining_provider_uncertainty": "Current qualified inspection, new entity-only neutron-star query, complete keyed factual audit and full voice/render output are NOT certified by offline fixtures. This single case tests those connected boundaries; not all languages/durations or HUMAN acceptance.",
+  "stop": "Any terminal failure/unknown ends this case. Preserve ID, do not rerun or start another new case automatically; inspect persisted responses before further work. No paid fallback, quota expansion, manual script/media replacement or another TTS.",
+  "human_pass": false
+}
