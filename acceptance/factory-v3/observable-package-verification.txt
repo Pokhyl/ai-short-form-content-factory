@@ -1,0 +1,6 @@
+Exact image: factory-v3:75f33ef
+Network disabled; tests and acceptance mounted read-only.
+material_first:104 tests PASS
+factory_v3:100 tests PASS
+Public health: serving, source_revision75f33ef786b08f43676d04c05ac30ceb7169a0ef, project_ready=false
+No product/provider/TTS calls.
