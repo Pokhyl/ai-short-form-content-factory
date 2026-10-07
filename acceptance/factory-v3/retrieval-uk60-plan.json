@@ -1,0 +1,22 @@
+{
+  "id": "c8294766-22ae-46c1-aeb7-f16930ec055a",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "runtime_revision": "ec288f1f99097ecf0c8dc2fa58bb7d4ba8b4b005",
+  "maximum_fresh_requests": 1,
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 30,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "question": "Actual restored Commons observational photos, entity-only unrestricted-aspect retrieval, specific subject/fact inspection and native Ukrainian paragraphs/one voice/exact moderate-cadence MP4. Saved public API replay now admits 37 files versus 2; image quality not established by metadata.",
+  "offline": "75 material+96 core packaged network-disabled PASS;13 UI checks; exact failed-query normalization and saved real public-domain/thumbnail-host/rank regressions.",
+  "stop": "Terminal failure/unknown ends this case. Preserve ID, no repeat or another fresh case automatically. Inspect saved responses offline. No paid fallback or budget expansion.",
+  "human_pass": false
+}
