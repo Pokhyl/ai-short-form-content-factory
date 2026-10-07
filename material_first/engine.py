@@ -14,8 +14,8 @@ from factory_v3.preparation import ResourceUnavailable
 from factory_v3.grounding import validate_evidence, validate_script_review
 from factory_v3.preflight import asset_path, digest, validate_asset
 from .targets import validate_targets, matched_targets
-from .visuals import POLICY, candidate_limit, make_visuals, validate_visuals
-from .presentation import preferred_shots
+from .visuals import POLICY, CALM_POLICY, WHOLE_POLICIES, candidate_limit, make_visuals, validate_visuals
+from .presentation import preferred_shots, minimum_shots
 
 
 class MaterialUnavailable(ValueError):
@@ -145,7 +145,7 @@ def match_materials(available, draft, *, contextual=False):
 
 def validate_story(request, evidence, available, draft):
     known = {m["id"]: m for m in available}
-    contextual = request.get("presentation_policy") == POLICY
+    contextual = request.get("presentation_policy") in WHOLE_POLICIES
     allowed_facts = {f["id"] for f in evidence["facts"]}
     beats = draft.get("beats")
     if not isinstance(beats, list) or not 1 <= len(beats) <= len(available):
@@ -237,9 +237,9 @@ class Producer:
         if not isinstance(topic, str) or not 1 <= len(topic.strip()) <= 300:
             raise ValueError("bounded topic required")
         request = {"topic": topic.strip(), "language": language, "seconds": seconds}
-        modern = getattr(self.operations, "presentation_policy", None) == POLICY
+        modern = getattr(self.operations, "presentation_policy", None) in WHOLE_POLICIES
         if modern:
-            request["presentation_policy"] = POLICY
+            request["presentation_policy"] = self.operations.presentation_policy
             if hasattr(self.operations, "visual_validation_mode"):
                 request["visual_validation_mode"] = self.operations.visual_validation_mode
                 if request["visual_validation_mode"] not in {"metadata", "gemini"}:
@@ -261,7 +261,7 @@ class Producer:
             request['visual_targets'] = deepcopy(targets)
         # Discovery is global and topic-bound, not a search for one imagined shot.
         candidates = self.operations.discover(deepcopy(request), deepcopy(brief["queries"]))
-        if not isinstance(candidates, list) or len(candidates) > (self.max_materials or (candidate_limit(seconds) if modern else 12)):
+        if not isinstance(candidates, list) or len(candidates) > (self.max_materials or (candidate_limit(seconds,request["presentation_policy"]) if modern else 12)):
             raise ValueError("material discovery exceeded server budget")
         assets, available, hashes = {}, [], set()
         batch_size = 4 if modern else 1
@@ -294,7 +294,7 @@ class Producer:
                     available.append(material)
             covered_now = set().union(*(set(m['supported_fact_ids']) for m in available)) if available else set()
             target_coverage = set().union(*(set(m.get('matched_visual_targets', {})) for m in available)) if available else set()
-            desired = preferred_shots(seconds) if modern else min(12, (seconds * 6 + 14) // 15, len(candidates))
+            desired = preferred_shots(seconds,request["presentation_policy"]) if modern else min(12, (seconds * 6 + 14) // 15, len(candidates))
             if (len(available) >= desired
                     and (modern or set(required) <= covered_now)
                     and (targets is None or len(target_coverage) >= 2)):
@@ -302,7 +302,7 @@ class Producer:
         covered = set().union(*(set(m['supported_fact_ids']) for m in available)) if available else set()
         if not modern and not set(required) <= covered:
             raise MaterialUnavailable('essential topic facts have no inspected real material')
-        if modern and len(available) < math.ceil(seconds / 2.5):
+        if modern and len(available) < minimum_shots(seconds,request["presentation_policy"]):
             raise MaterialUnavailable('not enough inspected distinct photographs for requested cadence')
         if targets is not None:
             covered_targets = set().union(*(set(m.get('matched_visual_targets', {})) for m in available))
@@ -322,7 +322,7 @@ class Producer:
                         "evidence": evidence, "materials": available}
         review = self.operations.review_script(deepcopy(review_input))
         validate_script_review(evidence, language, script, scenes, review, topic=topic.strip())
-        visuals = make_visuals(seconds, available, scenes) if modern else None
+        visuals = make_visuals(seconds, available, scenes,request["presentation_policy"]) if modern else None
         selected = {v['material_id'] for v in visuals} if modern else {s['material_id'] for s in scenes}
         payload = {"schema": "material-first", **request, "script": script, "scenes": scenes,
             "assets": [assets[k] for k in sorted(selected)], "evidence": evidence,
@@ -340,7 +340,7 @@ def verify(root, frozen, probe=probe_media):
     payload = frozen["payload"]
     if payload.get("schema") != "material-first" or digest(payload) != frozen.get("sha256"):
         raise ValueError("material-first plan changed")
-    if payload.get('presentation_policy') not in {None, POLICY}:
+    if payload.get('presentation_policy') not in {None, *WHOLE_POLICIES}:
         raise ValueError('unsupported frozen presentation policy')
     facts = validate_evidence(payload["evidence"])
     assets = {a["id"]: a for a in payload["assets"]}
@@ -360,7 +360,7 @@ def verify(root, frozen, probe=probe_media):
         if current != original:
             raise ValueError("frozen observation changed")
         observations.append(current)
-    if payload.get('presentation_policy') == POLICY:
+    if payload.get('presentation_policy') in WHOLE_POLICIES:
         validate_visuals(payload, observations)
     beats = [{"material_id": s["material_id"], "narration": s["narration"],
               "fact_ids": s["evidence_ids"]} for s in payload["scenes"]]

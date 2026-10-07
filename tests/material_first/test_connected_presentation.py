@@ -27,7 +27,7 @@ class ModernFixtures(Fixtures):
             self.support[a['id']] = ['f0', 'f1', 'f2']
 
     def discover(self, request, queries):
-        return super().discover(request, queries)[:candidate_limit(request['seconds'])]
+        return super().discover(request, queries)[:candidate_limit(request['seconds'],request['presentation_policy'])]
 
     def inspect_many(self, assets, evidence):
         self.events.append('batch:' + str(len(assets)))
@@ -166,3 +166,16 @@ class ConnectedPresentationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'identity'):
                 Operations(root,None,model,None,None).inspect_many(fixtures.assets,fixtures.evidence)
             self.assertEqual(model.generate.call_count,1)
+
+    def test_new_calm_pipeline_uses_eighteen_images_and_legacy_plans_still_verify(self):
+        from material_first.visuals import CALM_POLICY
+        with tempfile.TemporaryDirectory() as tmp:
+            ops=ModernFixtures(Path(tmp),32);ops.presentation_policy=CALM_POLICY
+            frozen=Producer(tmp,ops,probe=ops.probe).prepare('topic','uk',60)
+            payload=verify(tmp,frozen,ops.probe)
+            self.assertEqual(len(payload['visuals']),18)
+            timings=[{'start_ms':0,'end_ms':6100}]+[{'start_ms':6100+(i-1)*13475,'end_ms':6100+i*13475} for i in range(1,5)]
+            ordered=ordered_visuals(payload,timings,60000)
+            self.assertEqual(len(ordered),18)
+            self.assertIn(183,[x['end_frame'] for x in ordered])
+            self.assertEqual(ordered[-1]['end_frame'],1800)

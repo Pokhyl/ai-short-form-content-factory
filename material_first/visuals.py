@@ -1,16 +1,16 @@
 """Distinct visual pool, scheduled independently from narration paragraphs."""
 import math
-from .presentation import preferred_shots, visual_timeline
+from .presentation import preferred_shots, visual_timeline, minimum_shots, phrase_frames, CALM_POLICY, WHOLE_POLICIES
 
 POLICY = 'whole-photo-exact-v1'
 
 
-def candidate_limit(seconds):
-    return preferred_shots(seconds) + 12
+def candidate_limit(seconds, policy=POLICY):
+    return preferred_shots(seconds, policy) + 12
 
 
-def make_visuals(seconds, materials, scenes):
-    minimum = math.ceil(seconds / 2.5)
+def make_visuals(seconds, materials, scenes, policy=POLICY):
+    minimum = minimum_shots(seconds,policy)
     if len(materials) < minimum:
         raise ValueError('not enough inspected distinct photos for requested cadence')
     by_id = {m['id']: m for m in materials}
@@ -23,7 +23,7 @@ def make_visuals(seconds, materials, scenes):
     for m in materials:
         role = next(iter(m.get('matched_visual_targets', {})), 'context')
         groups.setdefault(role, []).append(m['id'])
-    count = min(len(materials), max(preferred_shots(seconds), len(selected)), 32)
+    count = min(len(materials), max(preferred_shots(seconds,policy), len(selected)), 32)
     while len(selected) < count:
         progressed = False
         for group in groups.values():
@@ -33,7 +33,7 @@ def make_visuals(seconds, materials, scenes):
                 progressed = True
         if not progressed:
             break
-    visual_timeline(seconds, len(selected))
+    visual_timeline(seconds, len(selected),policy)
     return [{'id': 'photo-' + str(i + 1), 'material_id': identity}
             for i, identity in enumerate(selected)]
 
@@ -42,7 +42,7 @@ def validate_visuals(payload, observations):
     visuals = payload.get('visuals')
     if not isinstance(visuals, list):
         raise ValueError('frozen visual pool missing')
-    visual_timeline(payload['seconds'], len(visuals))
+    visual_timeline(payload['seconds'], len(visuals),payload['presentation_policy'])
     known = {m['id']: m for m in observations}
     ids, materials, hashes = set(), set(), set()
     for i, visual in enumerate(visuals, 1):
@@ -65,7 +65,9 @@ def validate_visuals(payload, observations):
 
 def ordered_visuals(payload, timings, source_duration_ms):
     """Prefer the current paragraph's role without repeating or holding photos."""
-    cuts = visual_timeline(payload['seconds'], len(payload['visuals']))
+    policy = payload['presentation_policy']
+    boundaries = phrase_frames(timings,source_duration_ms,payload['seconds']) if policy == CALM_POLICY else ()
+    cuts = visual_timeline(payload['seconds'], len(payload['visuals']),policy,boundaries)
     observations = {m['id']: m for m in payload['observations']}
     unused = list(payload['visuals'])
     result = []

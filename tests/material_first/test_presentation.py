@@ -28,3 +28,27 @@ class PresentationTests(unittest.TestCase):
         cuts=visual_timeline(60,29)
         self.assertEqual(cuts[-1]['end_frame'],1800)
         self.assertTrue(all(62<=c['end_frame']-c['start_frame']<=63 for c in cuts))
+
+    def test_calm_cadence_uses_moderate_counts_and_prefers_phrase_boundaries(self):
+        from material_first.presentation import CALM_POLICY, phrase_frames
+        for seconds,count in [(15,5),(30,9),(45,13),(60,18)]:
+            self.assertEqual(preferred_shots(seconds,CALM_POLICY),count)
+            cuts=visual_timeline(seconds,count,CALM_POLICY)
+            self.assertEqual(cuts[-1]['end_frame'],seconds*30)
+            self.assertTrue(all(75<=c['end_frame']-c['start_frame']<=150 for c in cuts))
+        boundaries=phrase_frames([{'start_ms':0,'end_ms':6100},{'start_ms':6100,'end_ms':60000}],60000,60)
+        cuts=visual_timeline(60,18,CALM_POLICY,boundaries)
+        self.assertIn(183,[c['end_frame'] for c in cuts])
+        self.assertTrue(all(75<=c['end_frame']-c['start_frame']<=150 for c in cuts))
+        with self.assertRaises(ValueError):visual_timeline(60,30,CALM_POLICY)
+        # Existing immutable v1 output retains its original exact 2s timeline.
+        self.assertEqual(visual_timeline(60,30)[0],{'start_frame':0,'end_frame':60})
+
+    def test_calm_schedule_keeps_every_frame_with_dense_adversarial_phrase_edges(self):
+        from material_first.presentation import CALM_POLICY, validate_timeline
+        for seconds,count in [(15,5),(30,9),(45,13),(60,18)]:
+            cuts=visual_timeline(seconds,count,CALM_POLICY,range(1,seconds*30,13))
+            validate_timeline(seconds,count,cuts,CALM_POLICY)
+            self.assertEqual(sum(c['end_frame']-c['start_frame'] for c in cuts),seconds*30)
+            altered=[dict(c) for c in cuts];altered[1]['start_frame']+=1
+            with self.assertRaises(ValueError):validate_timeline(seconds,count,altered,CALM_POLICY)

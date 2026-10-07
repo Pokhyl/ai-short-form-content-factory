@@ -10,7 +10,7 @@ from factory_v3.executor import Executor
 from .engine import verify
 from .rendering import render, sha
 from .presentation import render_whole_photos, visual_timeline
-from .visuals import POLICY, ordered_visuals
+from .visuals import POLICY, CALM_POLICY, WHOLE_POLICIES, ordered_visuals
 from .qa import audit_whole
 from factory_v3.worker_adapters import identity
 import json
@@ -18,7 +18,7 @@ import json
 
 class PhotoWorker(WorkerAdapters):
     def _duration_window(self, payload):
-        if payload.get('presentation_policy') == POLICY:
+        if payload.get('presentation_policy') in WHOLE_POLICIES:
             return round(payload['seconds'] * 650), round(payload['seconds'] * 1500)
         return round(payload["seconds"] * 800), round(payload["seconds"] * 1200)
 
@@ -30,20 +30,20 @@ class PhotoWorker(WorkerAdapters):
     def _validate_scene_count(self, payload):
         if payload.get("schema") != "material-first" or not payload.get("scenes"):
             raise ValueError("material-first story required")
-        if payload.get("presentation_policy") == POLICY:
-            visual_timeline(payload["seconds"], len(payload["visuals"]))
+        if payload.get("presentation_policy") in WHOLE_POLICIES:
+            visual_timeline(payload["seconds"], len(payload["visuals"]),payload["presentation_policy"])
         if any(a.get("media_type") != "photo" for a in payload["assets"]):
             raise ValueError("photo fallback adapter requires photographs")
 
     def _stage_photos(self, job_id, payload):
         projected = deepcopy(payload)
-        if payload.get('presentation_policy') == POLICY:
+        if payload.get('presentation_policy') in WHOLE_POLICIES:
             projected['scenes'] = payload['visuals']
         projected["selection"] = {s["id"]: s["material_id"] for s in projected["scenes"]}
         return super()._stage_photos(job_id, projected)
 
     def render(self, job_id, payload, outputs):
-        if payload.get('presentation_policy') != POLICY:
+        if payload.get('presentation_policy') not in WHOLE_POLICIES:
             return super().render(job_id, payload, outputs)
         voice, alignment = outputs['voice'], outputs['align']
         source = self.root / 'voiceovers' / job_id / 'final.mp3'
@@ -60,7 +60,7 @@ class PhotoWorker(WorkerAdapters):
                 raise ValueError('staged visual differs from frozen reviewed photograph')
             photos.append(photo['path'])
         directory = self.root / 'renders' / job_id
-        proof = render_whole_photos(directory, source, photos, payload['seconds'])
+        proof = render_whole_photos(directory, source, photos, payload['seconds'], policy=payload['presentation_policy'], timeline=[{k:v[k] for k in ('start_frame','end_frame')} for v in ordered])
         if proof['source_audio_duration_ms'] != voice['duration_ms']:
             raise ValueError('stored voice duration changed')
         segments = []
@@ -80,13 +80,13 @@ class PhotoWorker(WorkerAdapters):
             'requested_duration_ms': payload['seconds'] * 1000, 'target_duration_ms': payload['seconds'] * 1000,
             'actual_duration_ms': proof['actual_duration_ms'], 'frame_count': proof['frame_count'],
             'shot_count': proof['shot_count'], 'framing': proof['framing'],
-            'segments': segments, 'duration_policy': POLICY}
+            'segments': segments, 'duration_policy': payload['presentation_policy']}
         (directory / 'manifest.json').write_text(json.dumps(result, indent=2) + '\n')
         return result
 
     def qa(self, job_id, payload, outputs):
-        if payload.get('presentation_policy') == POLICY:
-            result = audit_whole(self.root, job_id, payload, outputs['render']['sha256'], outputs['voice']['sha256'])
+        if payload.get('presentation_policy') in WHOLE_POLICIES:
+            result = audit_whole(self.root, job_id, payload, outputs['render']['sha256'], outputs['voice']['sha256'], timings=outputs['align']['scene_timings'])
             return {'status': 'ready', 'machine_pass': True, 'human_pass': False, **result}
         result = self.audit(job_id, payload["seconds"], self.root,
                             expected_scenes=len(payload["scenes"]), audio_window=self._duration_window(payload))

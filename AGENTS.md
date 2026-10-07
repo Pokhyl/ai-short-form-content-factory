@@ -1,3 +1,6 @@
+## Owner cadence correction — 2026-10-07
+User rejected fixed2s/image as too frequent. This supersedes the earlier2s preferred cadence/minimumceil(seconds/2.5) for NEW plans. New versionwhole-photo-exact-v2 targets3.5s/image (15/30/45/60s→5/9/13/18), prefers nearby narration paragraph boundaries, holds2.5–5s, exact30fpsduration and whole-image matte retained. Existing frozenv1 plans/files keep their original schedule. Rebuild a separate cached preview with existing voice/photos, no new model/TTS/product calls. Deploy generic new cadence for future normal requests; do not overwrite immutable current video.
+
 ## UK60 actual output and remaining quality limits — 2026-10-06
 Fresh3bf60490 qa_pass at currentLIVE73ba470, exact60s/1800frames/30 whole images, oneTTS, public playback/download verified. No new product case planned. Machine/service language approval did not establish clean Ukrainian; actual draft contains Russian forms. Exact decodedframe20 looks like black-hole CGI despite image approval. Current output may be viewed but not whole-project/HUMAN accepted. Preserve frozen plan/voice/files and old failed/deleted IDs; next improve language and synthetic-image inspection from saved real corpus rather than launch another full experiment. See top handoff/evidence uk60-completion-result/contact, uk60-language-observation.
 

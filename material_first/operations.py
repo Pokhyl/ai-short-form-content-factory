@@ -9,13 +9,13 @@ from factory_v3.preflight import asset_path, digest, validate_asset
 from factory_v3.providers import PROVIDERS
 from .engine import MaterialUnavailable
 from .targets import validate_targets
-from .visuals import POLICY, candidate_limit
+from .visuals import POLICY, CALM_POLICY, WHOLE_POLICIES, candidate_limit
 from .source_spans import source_spans, bind_support
 
 
 def preparation_budgets(seconds):
     return {'research_search': 1, 'source_fetch': 6, 'gemini': 16,
-            'download': candidate_limit(seconds), 'metadata': 1, **{'search:' + p: 3 for p in PROVIDERS}}
+            'download': candidate_limit(seconds,CALM_POLICY), 'metadata': 1, **{'search:' + p: 3 for p in PROVIDERS}}
 
 
 def contiguous_support(evidence):
@@ -67,7 +67,7 @@ class NarrationBudgetExceeded(ValueError):
 
 
 class Operations:
-    presentation_policy = POLICY
+    presentation_policy = CALM_POLICY
 
     def __init__(self, root, research, gemini, search, downloader):
         self.root = Path(root)
@@ -144,7 +144,7 @@ class Operations:
                     if targets:
                         candidate['visual_targets'] = deepcopy(targets)
                     selected.append(candidate); seen.add(candidate['id'])
-                    if len(selected) == candidate_limit(request['seconds']):
+                    if len(selected) == candidate_limit(request['seconds'],request.get('presentation_policy',POLICY)):
                         return selected
         return selected
 
@@ -263,12 +263,12 @@ class Operations:
         materials = context['materials']
         seconds = context['request']['seconds']
         minimum_words, maximum_words = round(seconds * 1.6), round(seconds * 2.4)
-        if context['request'].get('presentation_policy') == POLICY:
+        if context['request'].get('presentation_policy') in WHOLE_POLICIES:
             # Word count is an estimate. Actual voice duration and bounded
             # pitch-preserving fitting determine the exact delivery duration.
             minimum_words = max(1, minimum_words - 2)
             maximum_words += 2
-        minimum_available = 3 if context['request'].get('presentation_policy') == POLICY else 5
+        minimum_available = 3 if context['request'].get('presentation_policy') in WHOLE_POLICIES else 5
         if len(materials) < minimum_available:
             raise MaterialUnavailable("not enough distinct relevant photos for requested cadence")
         # Aim for frequent changes, but rejected candidates do not make a

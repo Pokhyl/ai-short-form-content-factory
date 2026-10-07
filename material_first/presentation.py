@@ -12,17 +12,66 @@ from .rendering import probe,sha,run
 FPS=30
 PHOTO_FILTER='scale=1080:1920:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=0x101820,setsar=1,fps=30,format=yuv420p'
 
-def preferred_shots(seconds):
-    if type(seconds) is not int or seconds not in {15,30,45,60}: raise ValueError('unsupported duration')
-    return math.ceil(seconds/2)
+LEGACY_POLICY = 'whole-photo-exact-v1'
+CALM_POLICY = 'whole-photo-exact-v2'
+WHOLE_POLICIES = {LEGACY_POLICY, CALM_POLICY}
 
-def visual_timeline(seconds, count):
-    preferred_shots(seconds)
-    if type(count) is not int or not math.ceil(seconds/2.5)<=count<=32:
+def preferred_shots(seconds, policy=LEGACY_POLICY):
+    if type(seconds) is not int or seconds not in {15,30,45,60}: raise ValueError('unsupported duration')
+    if policy not in WHOLE_POLICIES: raise ValueError('unsupported cadence policy')
+    return math.ceil(seconds/(3.5 if policy == CALM_POLICY else 2))
+
+def minimum_shots(seconds, policy=LEGACY_POLICY):
+    preferred_shots(seconds, policy)
+    return math.ceil(seconds/(5 if policy == CALM_POLICY else 2.5))
+
+def phrase_frames(timings, source_duration_ms, seconds):
+    if not math.isfinite(source_duration_ms) or source_duration_ms <= 0:
+        raise ValueError('invalid source duration for phrase timing')
+    result = set()
+    for timing in timings:
+        start, end = timing['start_ms'], timing['end_ms']
+        if not all(math.isfinite(x) for x in (start, end)) or not 0 <= start < end <= source_duration_ms:
+            raise ValueError('phrase timing outside source voice')
+        result.update(round(x/source_duration_ms*seconds*FPS) for x in (start,end))
+    return sorted(x for x in result if 0 < x < seconds*FPS)
+
+def visual_timeline(seconds, count, policy=LEGACY_POLICY, boundaries=()):
+    preferred_shots(seconds, policy)
+    maximum = math.floor(seconds/2.5) if policy == CALM_POLICY else 32
+    if type(count) is not int or not minimum_shots(seconds, policy)<=count<=maximum:
         raise ValueError('not enough distinct photographs for requested cadence')
     frames=seconds*FPS
-    return [{'start_frame':frames*i//count,'end_frame':frames*(i+1)//count}
-            for i in range(count)]
+    if policy == LEGACY_POLICY:
+        return [{'start_frame':frames*i//count,'end_frame':frames*(i+1)//count} for i in range(count)]
+    if any(type(x) is not int or not 0 < x < frames for x in boundaries):
+        raise ValueError('invalid phrase boundary frame')
+    # Prefer nearby paragraph boundaries while retaining a moderate cadence.
+    # Feasibility bounds prevent either a flash frame or a long final hold.
+    edges=[0]
+    for i in range(1,count):
+        remaining=count-i
+        low=max(edges[-1]+75, frames-remaining*150)
+        high=min(edges[-1]+150, frames-remaining*75)
+        target=max(low,min(high,round(frames*i/count)))
+        nearby=[x for x in boundaries if low<=x<=high and abs(x-target)<=27]
+        edges.append(min(nearby,key=lambda x:(abs(x-target),x)) if nearby else target)
+    edges.append(frames)
+    return [{'start_frame':a,'end_frame':b} for a,b in zip(edges,edges[1:])]
+
+def validate_timeline(seconds, count, timeline, policy=LEGACY_POLICY):
+    visual_timeline(seconds,count,policy)
+    if not isinstance(timeline,list) or len(timeline)!=count: raise ValueError('visual timeline count differs')
+    cursor=0
+    for cut in timeline:
+        if set(cut)!={'start_frame','end_frame'} or type(cut['start_frame']) is not int or type(cut['end_frame']) is not int:
+            raise ValueError('invalid visual frame interval')
+        if cut['start_frame']!=cursor or cut['end_frame']<=cursor: raise ValueError('visual frames not consecutive')
+        if policy==CALM_POLICY and not 75<=cut['end_frame']-cursor<=150:
+            raise ValueError('visual hold outside moderate cadence')
+        cursor=cut['end_frame']
+    if cursor!=seconds*FPS: raise ValueError('visual frames do not cover requested duration')
+    return timeline
 
 def tempo_factor(source_seconds,target_seconds):
     preferred_shots(target_seconds)
@@ -32,10 +81,10 @@ def tempo_factor(source_seconds,target_seconds):
     if not .65<=factor<=1.5: raise ValueError('narration too far from requested time')
     return factor
 
-def render_whole_photos(directory, audio_source, photos, seconds):
+def render_whole_photos(directory, audio_source, photos, seconds, *, policy=LEGACY_POLICY, timeline=None):
     """Exclusive new artifact; never overwrites source audio or photographs."""
     directory=Path(directory);audio_source=Path(audio_source);photos=[Path(x) for x in photos]
-    timeline=visual_timeline(seconds,len(photos));hashes=[sha(p) for p in photos]
+    timeline=validate_timeline(seconds,len(photos), timeline if timeline is not None else visual_timeline(seconds,len(photos),policy),policy);hashes=[sha(p) for p in photos]
     if len(set(hashes))!=len(hashes): raise ValueError('repeated photo bytes')
     original_ms=round(float(probe(audio_source)['format']['duration'])*1000)
     source_audio_hash=sha(audio_source)

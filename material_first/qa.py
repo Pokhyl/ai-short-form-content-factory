@@ -3,11 +3,11 @@ import json
 import math
 from pathlib import Path
 from .rendering import probe, run, sha
-from .presentation import visual_timeline, tempo_factor
+from .presentation import visual_timeline, tempo_factor, phrase_frames, CALM_POLICY
 from scripts.audit_final_media import pcm
 
 
-def audit_whole(root, job_id, payload, expected_hash, expected_voice_hash):
+def audit_whole(root, job_id, payload, expected_hash, expected_voice_hash, *, timings=None):
     directory = Path(root) / 'renders' / job_id
     final, fitted = directory / 'final.mp4', directory / 'fitted.wav'
     source = Path(root) / 'voiceovers' / job_id / 'final.mp3'
@@ -19,7 +19,9 @@ def audit_whole(root, job_id, payload, expected_hash, expected_voice_hash):
         raise ValueError('unexpected final streams')
     seconds = payload['seconds']
     segments = manifest['segments']
-    cuts = visual_timeline(seconds, len(payload['visuals']))
+    policy = payload['presentation_policy']
+    boundaries = phrase_frames(timings,manifest['audio_duration_ms'],seconds) if policy == CALM_POLICY else ()
+    cuts = visual_timeline(seconds, len(payload['visuals']),policy,boundaries)
     expected_assets = {x['sha256'] for x in payload['assets']}
     gates = {
         'exact_duration': all(round(float(d) * 1000) == seconds * 1000
