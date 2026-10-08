@@ -17,12 +17,28 @@
   "fix": "Server-owned repair prose uses exact required word_N fields; each value validated as one word. Source/native/independent factual/cadence gates retained.",
   "tests": "130 material + 103 core PASS",
   "pending": [
-    "fresh bounded normal request",
-    "independent factual/native acceptance and one TTS/alignment/exact MP4"
+    "representative PL15/EN30/RU45 matrix",
+    "human acceptance remains false"
   ],
   "project_ready": false,
-  "updated_at": "2026-10-08T15:40:33.289829+00:00",
+  "updated_at": "2026-10-08T15:50:17.675498+00:00",
   "protected_rollout_unchanged": true,
   "next_case": "72705d11-4556-4a4a-b751-676cc71e215d",
-  "next_case_state": "planned"
+  "next_case_state": "qa_pass",
+  "next_case_observed": {
+    "downloads": 30,
+    "gemini_succeeded": 14,
+    "tts": 1,
+    "completed": [
+      "voice",
+      "align",
+      "render",
+      "qa"
+    ],
+    "mp4": true,
+    "duration_ms": 60000,
+    "photos": 17,
+    "sha256": "43d91fbb7387be1397f4431fda7ad65459c848a0c481ba9561abdf16d14d05b8"
+  },
+  "active_snapshot_note": "idle snapshot applies before submission; current case preparing"
 }

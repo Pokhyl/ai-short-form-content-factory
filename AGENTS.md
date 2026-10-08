@@ -1,3 +1,7 @@
+## Actual UK60 MP4 passes machine QA; representative matrix next — 2026-10-08
+
+72705d11 qa_pass on LIVE1d9476b:30downloads/14Gemini/1TTS, independent keyed factual/native review, voice/alignment/render/QA complete. Exact60000ms/17uniquephotos/sha256:43d91fbb7387be1397f4431fda7ad65459c848a0c481ba9561abdf16d14d05b8. Public owner detail/history/download Range206 verified; contact sheet visually inspected. Local work/video-72705d11.mp4 hash matches. Evidence acceptance/factory-v3/wordslots-uk60-output. human_pass=false;project_ready=false pending representative PL15/EN30/RU45 matrix under recorded authorization. All old failedIDs immutable;free-only/oneTTS retained.
+
 ## Exact repair word slots LIVE; bounded current verification — 2026-10-08
 
 LIVE1d9476b52591b3b04dd7b67bb35c7b4c96b952c7/imagefactory-v3:1d9476b/sha256:bbdfcfc5050aef27ea4d81017ae0f86c8d6dca95dbcde413e37dca56f015cd01.233 exact-image network-disabled checks PASS; protected snapshots equal/publichealth exact. Fresh normalUK60Vision72705d11-4556-4a4a-b751-676cc71e215d planned under owner persistence, same free-only budgets/oneTTS. Verify actual word-slot correction, independentnative/factualreview/voice/alignment/exactMP4. f64cdc2d and all old failed IDs immutable. CLI checkpoint acceptance/factory-v3/keyed-word-budget/checkpoint.json;project_ready=false.

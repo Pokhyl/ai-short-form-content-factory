@@ -1,5 +1,5 @@
 {
-  "source_revision": "e26193e60e966dcb35a70ab200780293c63855ef",
+  "source_revision": "1d9476b52591b3b04dd7b67bb35c7b4c96b952c7",
   "prerequisite": "Current UK60 normal case must pass independent factual/native review, one voice, alignment, exactMP4/media QA before these cases are submitted.",
   "authorization": "User continues whole-project work; prior explicit varied topics/languages/durations acceptance matrix.",
   "sequence": [
@@ -62,5 +62,6 @@
   "stop": "Stop first terminal failure/unknown, retain immutable ID; inspect saved complete boundaries before another new case. No blind repeats, no second TTS, no paid fallback/quota expansion.",
   "human_pass": false,
   "project_ready": false,
-  "prerequisite_request_id": "f64cdc2d-d54d-4b70-a98c-a42ad94dbb68"
+  "prerequisite_request_id": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "prerequisite_state": "qa_pass"
 }

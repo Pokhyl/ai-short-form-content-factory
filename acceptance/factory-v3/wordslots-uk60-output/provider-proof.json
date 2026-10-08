@@ -1,0 +1,1893 @@
+{
+  "status": {
+    "id": "72705d11-4556-4a4a-b751-676cc71e215d",
+    "request": {
+      "topic": "Нейтронная звезда",
+      "seconds": 60,
+      "language": "uk",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "qa_running",
+    "source_revision": "1d9476b52591b3b04dd7b67bb35c7b4c96b952c7",
+    "error_code": null,
+    "machine_pass": false,
+    "human_pass": false,
+    "completed": [
+      "align",
+      "voice",
+      "render"
+    ]
+  },
+  "call_summary": [
+    {
+      "kind": "download",
+      "state": "succeeded",
+      "count": 30
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 14
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 5
+    }
+  ],
+  "model_calls": [
+    {
+      "key": "material-brief",
+      "result": {
+        "facts": [
+          {
+            "id": "f-1",
+            "text": "Нейтронні зірки утворюються в результаті еволюції та подальшого гравітаційного колапсу масивних зірок головної послідовності, початкова маса яких перевищує масу Сонця більш ніж у 8 разів.",
+            "support": [
+              {
+                "span_id": "s1-1094-2113"
+              }
+            ]
+          },
+          {
+            "id": "f-2",
+            "text": "Коли ядерне паливо вигоряє і тиск вирожденного електронного газу стає недостатнім для підтримки рівноваги, ядро зірки починає стрімко ущільнюватися, що призводить до електронного захвату і злиття електронів та протонів у нейтрони.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f-3",
+            "text": "Під час колапсу утворюється могутній потік нейтрино, а коли густина сягає ядерної (4·10^17 кг/м³), тиск вирожденного нейтронного газу зупиняє стискання, після чого зовнішня оболонка відкидається у вигляді вибуху наднової.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f-4",
+            "text": "Зберігаючи початковий момент імпульсу при багаторазовому зменшенні радіуса, нейтронна зірка набуває надзвичайно високої швидкості обертання — до кількох сотень обертів на секунду.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-3302-4411"
+              }
+            ]
+          },
+          {
+            "id": "f-5",
+            "text": "Магнітне поле нейтронних зірок є екстремально сильним і досягає значень до 10^11 Тл, а у магнетарів воно може підніматися ще вище.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-5431-6565"
+              }
+            ]
+          },
+          {
+            "id": "f-6",
+            "text": "При типовій масі, що порівнянна з масою Сонця (переважно від 1,3 до 1,5 мас Сонця), радіус нейтронної зірки становить лише близько 10-20 кілометрів, що зумовлює її колосальну середню густину.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-4411-5431"
+              }
+            ]
+          },
+          {
+            "id": "f-7",
+            "text": "Модель маяка пояснює періодичне імпульсне випромінювання пульсарів тим, що їхня магнітна вісь не збігається з віссю враження, і спрямовані пучки випромінювання з полюсів прокреслюють кола у просторі.",
+            "support": [
+              {
+                "span_id": "s2-1064-2223"
+              },
+              {
+                "span_id": "s2-20704-21762"
+              }
+            ]
+          },
+          {
+            "id": "f-8",
+            "text": "У подвійних системах нейтронні зірки можуть аккреціювати речовину з компаньйона або зрештою зливатися, породжуючи гравітаційні хвилі та спалахи кілонових, які вважаються джерелом важких елементів у Всесвіті.",
+            "support": [
+              {
+                "span_id": "s2-2223-3153"
+              },
+              {
+                "span_id": "s2-25131-26194"
+              }
+            ]
+          }
+        ],
+        "required_fact_ids": [
+          "f-1",
+          "f-3",
+          "f-4",
+          "f-6",
+          "f-7"
+        ],
+        "photo_contexts": {
+          "setting": {
+            "subject": "Supernova remnant E0102-72.3",
+            "query": "Supernova remnant E0102-72.3",
+            "fact_ids": [
+              "f-1",
+              "f-3"
+            ],
+            "support_span_ids": [
+              "s3-0-1094"
+            ]
+          },
+          "subject": {
+            "subject": "Crab Nebula pulsar",
+            "query": "Crab Nebula pulsar",
+            "fact_ids": [
+              "f-4",
+              "f-6",
+              "f-7"
+            ],
+            "support_span_ids": [
+              "s3-6942-7790"
+            ]
+          },
+          "detail": {
+            "subject": "RX J185635-3754 optical counterpart",
+            "query": "RX J185635-3754 optical counterpart",
+            "fact_ids": [
+              "f-6"
+            ],
+            "support_span_ids": [
+              "s2-29541-30645"
+            ]
+          }
+        }
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 27476,
+        "promptTokenCount": 26003,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 26003
+          }
+        ],
+        "candidatesTokenCount": 1473
+      }
+    },
+    {
+      "key": "material-compose",
+      "result": {
+        "beats": [
+          {
+            "material_id": "wikimedia:149392658",
+            "narration": "Нейтронні зірки утворюються в результаті еволюції та подальшого гравітаційного колапсу масивних зірок головної послідовності, чия початкова маса перевищує масу Сонця у вісім разів. Коли ядерне паливо повністю вигоряє, тиск виродженого електронного газу стає недостатнім, що спричиняє електронний захват та злиття частинок у нейтрони. Під час колапсу виникає потужний потік нейтрино, а досягнення ядерної густини зупиняє стискання і породжує вибух наднової.",
+            "fact_ids": [
+              "f-1",
+              "f-2",
+              "f-3"
+            ],
+            "visual_target_id": "v0"
+          },
+          {
+            "material_id": "wikimedia:110234010",
+            "narration": "Зберігаючи початковий момент імпульсу під час різкого зменшення радіуса, такі об'єкти набувають надзвичайно високої швидкості обертання та екстремального магнітного поля. При типовій масі, порівнянній з сонячною, їхній радіус становить лише десять-двадцять кілометрів. Модель маяка пояснює імпульсне випромінювання пульсарів тим, що їхня магнітна вісь не збігається з віссю обертання, створюючи спрямовані пучки з полюсів.",
+            "fact_ids": [
+              "f-4",
+              "f-5",
+              "f-6",
+              "f-7"
+            ],
+            "visual_target_id": "v1"
+          },
+          {
+            "material_id": "wikimedia:129539683",
+            "narration": "Унікальні характеристики таких космічних тіл, зокрема їхня висока температура та потужне випромінювання, дозволяють астрономам досліджувати їх у різних діапазонах спектра, включаючи оптичний.",
+            "fact_ids": [
+              "f-6"
+            ],
+            "visual_target_id": "v2"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 15154,
+        "promptTokenCount": 14579,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 14579
+          }
+        ],
+        "candidatesTokenCount": 575
+      }
+    },
+    {
+      "key": "material-compose-length-repair",
+      "result": {
+        "paragraph_1": {
+          "words": {
+            "word_1": "Нейтронні",
+            "word_2": "зірки",
+            "word_3": "утворюються",
+            "word_4": "внаслідок",
+            "word_5": "еволюції",
+            "word_6": "та",
+            "word_7": "гравітаційного",
+            "word_8": "колапсу",
+            "word_9": "масивних",
+            "word_10": "зірок",
+            "word_11": "з",
+            "word_12": "початковою",
+            "word_13": "масою",
+            "word_14": "більшою",
+            "word_15": "за",
+            "word_16": "Сонце",
+            "word_17": "у",
+            "word_18": "вісім",
+            "word_19": "разів.",
+            "word_20": "Коли",
+            "word_21": "ядерне",
+            "word_22": "паливо",
+            "word_23": "вигоряє,",
+            "word_24": "тиск",
+            "word_25": "електронів",
+            "word_26": "падає,",
+            "word_27": "спричиняючи",
+            "word_28": "злиття",
+            "word_29": "часток",
+            "word_30": "у",
+            "word_31": "нейтрони.",
+            "word_32": "Під",
+            "word_33": "час",
+            "word_34": "колапсу",
+            "word_35": "виділяються",
+            "word_36": "нейтрино",
+            "word_37": "й",
+            "word_38": "стається",
+            "word_39": "вибух",
+            "word_40": "наднової.",
+            "word_41": "Зірка"
+          },
+          "fact_ids": [
+            "f-1",
+            "f-2",
+            "f-3"
+          ]
+        },
+        "paragraph_2": {
+          "words": {
+            "word_1": "Зберігаючи",
+            "word_2": "початковий",
+            "word_3": "момент",
+            "word_4": "імпульсу",
+            "word_5": "при",
+            "word_6": "значному",
+            "word_7": "зменшенні",
+            "word_8": "радіуса,",
+            "word_9": "нейтронна",
+            "word_10": "зірка",
+            "word_11": "набуває",
+            "word_12": "надзвичайно",
+            "word_13": "високої",
+            "word_14": "швидкості",
+            "word_15": "обертання.",
+            "word_16": "Магнітне",
+            "word_17": "поле",
+            "word_18": "таких",
+            "word_19": "об'єктів",
+            "word_20": "досягає",
+            "word_21": "екстремальних",
+            "word_22": "значень,",
+            "word_23": "а",
+            "word_24": "при",
+            "word_25": "типовій",
+            "word_26": "масі,",
+            "word_27": "порівнянній",
+            "word_28": "з",
+            "word_29": "сонячною,",
+            "word_30": "їхній",
+            "word_31": "радіус",
+            "word_32": "становить",
+            "word_33": "лише",
+            "word_34": "близько",
+            "word_35": "десяти",
+            "word_36": "кілометрів.",
+            "word_37": "Модель",
+            "word_38": "маяка",
+            "word_39": "чітко",
+            "word_40": "пояснює",
+            "word_41": "імпульсне",
+            "word_42": "випромінювання",
+            "word_43": "внаслідок",
+            "word_44": "незбігу",
+            "word_45": "осей",
+            "word_46": "і",
+            "word_47": "руху",
+            "word_48": "пучків",
+            "word_49": "випромінювання."
+          },
+          "fact_ids": [
+            "f-4",
+            "f-5",
+            "f-6",
+            "f-7"
+          ]
+        },
+        "paragraph_3": {
+          "words": {
+            "word_1": "Неймовірні",
+            "word_2": "фізичні",
+            "word_3": "властивості",
+            "word_4": "і",
+            "word_5": "висока",
+            "word_6": "густина",
+            "word_7": "роблять",
+            "word_8": "ці",
+            "word_9": "космічні",
+            "word_10": "тіла",
+            "word_11": "надзвичайно",
+            "word_12": "важливими",
+            "word_13": "для",
+            "word_14": "сучасних",
+            "word_15": "астрофізичних",
+            "word_16": "досліджень",
+            "word_17": "та",
+            "word_18": "розуміння",
+            "word_19": "еволюції",
+            "word_20": "масивних",
+            "word_21": "зоряних",
+            "word_22": "систем",
+            "word_23": "по",
+            "word_24": "сій",
+            "word_25": "досліджуваній",
+            "word_26": "широкій",
+            "word_27": "області",
+            "word_28": "наукового",
+            "word_29": "світу",
+            "word_30": "завдяки",
+            "word_31": "унікальним",
+            "word_32": "характеристикам",
+            "word_33": "та",
+            "word_34": "стабільним",
+            "word_35": "періодам",
+            "word_36": "пульсації",
+            "word_37": "сигналів."
+          },
+          "fact_ids": [
+            "f-4"
+          ]
+        }
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 17522,
+        "promptTokenCount": 15783,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 15783
+          }
+        ],
+        "candidatesTokenCount": 1739
+      }
+    },
+    {
+      "key": "material-inspect-batch:4cf10178704b3df49a87a680c66fe9ac403d5dfa0166d3322223863c1f56f0f3",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula with pulsar",
+              "connection": "The image shows the Crab Nebula, which contains a pulsar (neutron star) at its center."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical composite image showing an elliptical cloud of gas and dust (Crab Nebula) with glowing filaments and a bright central region featuring jets and rings surrounding a neutron star.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-4",
+                "detail": "The central pulsar rotates rapidly, creating observable high-energy outflows."
+              },
+              {
+                "fact_id": "f-5",
+                "detail": "The surrounding nebula is shaped by the magnetic field and relativistic particles from the central neutron star."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Supernova remnant shown is the Crab Nebula, not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The Crab Nebula and its central pulsar are clearly visible.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The object shown is the Crab Nebula, not RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:192540464"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula",
+              "connection": "Infrared observational image of the Crab Nebula, housing a neutron star pulsar at its core."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An infrared view of the Crab Nebula displaying orange-red outer filaments and internal yellow-green loops of dust and synchrotron radiation.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-6",
+                "detail": "The nebula surrounds a compact neutron star remnant resulting from a supernova."
+              },
+              {
+                "fact_id": "f-7",
+                "detail": "Synchrotron emission from accelerated particles is visible throughout the interior."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows the Crab Nebula, not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Shows the Crab Nebula associated with the Crab pulsar.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:139881470"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula",
+              "connection": "Infrared photograph of the Crab Nebula containing the central neutron star/pulsar."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An infrared astronomical image of the Crab Nebula rendered in warm yellow and orange tones against a dark background with scattered stars.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-4",
+                "detail": "The nebula is powered by the rotational energy of the central neutron star."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows the Crab Nebula, not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Shows the Crab Nebula containing the Crab pulsar.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:148830334"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 19390,
+        "promptTokenCount": 18009,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 14750
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 3259
+          }
+        ],
+        "candidatesTokenCount": 1381
+      }
+    },
+    {
+      "key": "material-inspect-batch:52a1e413ddbe8874033246877c4adb738b9d8a79ac96a831a3417b9a621c75ff",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Supernova remnant E0102-72.3",
+              "connection": "The image shows the supernova remnant E0102-72.3 rather than a direct view or proof of a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A multi-wavelength composite image showing the circular structure of supernova remnant E0102-72.3.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Supernova remnant E0102-72.3",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Supernova remnant",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Supernova remnant",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:149392659"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Supernova remnant E0102-72.3 velocity map",
+              "connection": "The image shows a velocity map of supernova remnant E0102-72.3, not the neutron star itself."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An X-ray velocity map of supernova remnant E0102-72.3 with superimposed directional arrows.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Velocity map of supernova remnant",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Velocity map",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Velocity map",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:149354396"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Supernova remnant E0102-72.3 in optical and x-ray",
+              "connection": "The image shows the optical counterpart field and remnant, but not the neutron star target."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical field view displaying background stars and the central filamentary structure of supernova remnant E0102-72.3.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Remnant structure in optical field",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Remnant structure",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Remnant structure",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:187437208"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 18831,
+        "promptTokenCount": 17710,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 3296
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 14414
+          }
+        ],
+        "candidatesTokenCount": 1121
+      }
+    },
+    {
+      "key": "material-inspect-batch:9b8c65dd079acb649d03d10767e6642317485df6c67f5fe8d3c8a13753dd5611",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant E0102-72.3",
+              "connection": "Shows the supernova remnant whose core collapsed to form a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A multi-wavelength composite image showing the expanding shell of supernova remnant E0102-72.3 with glowing gas rings.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-1",
+                "detail": "Displays the expanding remnant resulting from the core collapse of a massive star."
+              },
+              {
+                "fact_id": "f-3",
+                "detail": "Highlights the outer shock wave and inner processed material ejected during the supernova."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Supernova remnant E0102-72.3 visible as an expanding ring-like structure.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not the Crab Nebula pulsar.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:149392658"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Unidentified nebulous field",
+              "connection": "Does not clearly depict the requested specific pulsar context."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "A monochrome astronomical image showing faint filamentary structures and scattered point sources.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Insufficient identification for the Crab Pulsar.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:149452842"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula and its central pulsar time sequence",
+              "connection": "Displays the Crab Nebula alongside millisecond time-slice observations of its central neutron star pulsar."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical composite containing an image of the Crab Nebula on the left and a series of time-sequenced zoomed slices of the central pulsar on the right.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-4",
+                "detail": "Illustrates the rapidly rotating pulsar at the center of the nebula."
+              },
+              {
+                "fact_id": "f-7",
+                "detail": "Shows phased optical pulses corresponding to the rapid rotation period of the neutron star."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Crab Nebula pulsar shown in context and via time-resolved pulses.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:137750506"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula interior and Crab Pulsar",
+              "connection": "Shows the Crab Nebula with a magnified inset detailing the core region containing the neutron star pulsar."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A composite Hubble Space Telescope image showing the entire Crab Nebula on the left and a close-up of its dynamic inner region containing the pulsar on the right.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-4",
+                "detail": "Depicts the inner environment powered by the rapidly spinning neutron star."
+              },
+              {
+                "fact_id": "f-7",
+                "detail": "Highlights the energetic structures and synchrotron emission driven by the pulsar."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Core region highlighting the Crab Pulsar and surrounding inner nebula.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:149419638"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 23234,
+        "promptTokenCount": 21461,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 17119
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4342
+          }
+        ],
+        "candidatesTokenCount": 1773
+      }
+    },
+    {
+      "key": "material-inspect-batch:abcaaba69c4cecc726aeeceacf8a1edeaba1bab1555e35e7c33b3118b02991f2",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula and Crab Pulsar",
+              "connection": "The image shows the Crab Nebula, which contains the Crab Pulsar, a rapidly spinning neutron star formed by a supernova core collapse."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical composite image of the Crab Nebula showing complex filamentary structures in red, green, and blue against a dark starry background.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-4",
+                "detail": "The central region contains the Crab pulsar, which originates from the supernova remnant core collapse."
+              },
+              {
+                "fact_id": "f-7",
+                "detail": "Synchrotron emission from relativistic electrons accelerated by the neutron star's magnetic field is visible as blue light."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The image depicts the Crab Nebula, not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The Crab Nebula and its central neutron star (pulsar) are clearly visible.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The image does not show RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:11658037"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant E0102-72.3",
+              "connection": "The image displays the supernova remnant E0102-72.3, which contains a candidate neutron star formed by core collapse."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A multi-wavelength composite image showing the circular expanding shell of the supernova remnant E0102-72.3 with distinct inner green loops and outer red and blue boundaries.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-1",
+                "detail": "Displays the extended debris field from the collapse of a massive star."
+              },
+              {
+                "fact_id": "f-3",
+                "detail": "Represents the ejected outer shell following core collapse."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The supernova remnant E0102-72.3 is clearly depicted across the multi-wavelength composite.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The image is not of the Crab Nebula pulsar.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The image does not show RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:29739560"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant E0102-72.3",
+              "connection": "The image features the supernova remnant E0102-72.3, marking the site of a massive stellar explosion that produced a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A Chandra X-ray and optical composite image of supernova remnant E0102-72.3 showing a ring-like structure of debris surrounded by numerous background stars.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-1",
+                "detail": "Showcases the debris resulting from the evolution and collapse of a massive star."
+              },
+              {
+                "fact_id": "f-3",
+                "detail": "Illustrates the expanding shell structure generated during a supernova event."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Supernova remnant E0102-72.3 is prominently displayed in the central field.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The image does not depict the Crab Nebula pulsar.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The image does not show RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:68756041"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 14695,
+        "promptTokenCount": 13190,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 9920
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 3270
+          }
+        ],
+        "candidatesTokenCount": 1505
+      }
+    },
+    {
+      "key": "material-inspect-batch:c8a5ff6287fa0b9cd9c48e001864067b8a7211599c46be4905fe17d011683c0d",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant E0102-72.3",
+              "connection": "Shows the supernova remnant E0102-72.3, which represents the stage following the explosion of a massive star that forms a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical composite image showing the colorful ringed structure of the supernova remnant E0102-72.3 against a starry background.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-1",
+                "detail": "The image depicts the expanding remnant resulting from the gravitational collapse and explosion of a massive star."
+              },
+              {
+                "fact_id": "f-3",
+                "detail": "The outer and inner shock waves visible in the remnant correspond to the aftermath of the shell being ejected by the explosion."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The central ringed supernova remnant E0102-72.3 is clearly displayed.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The object is E0102-72.3, not the Crab Nebula pulsar.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The object is E0102-72.3, not the RX J185635-3754 optical counterpart.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:187437224"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Generic stellar gas filaments",
+              "connection": "The image shows generic filaments against a star field without establishing any specific documented neutron star or remnant identity."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A black and white image displaying wispy nebular filaments and a dense star field.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Lacks the specific features of E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not clearly depict the Crab Nebula pulsar.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show the optical counterpart of RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:10064346"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula pulsar environment",
+              "connection": "Shows the Crab Nebula, containing the central pulsar formed by a supernova explosion."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An intricate cosmic web of gas and dust filaments making up the Crab Nebula, with a bright central region.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-4",
+                "detail": "The nebula surrounds the rapidly spinning pulsar formed during the core-collapse supernova."
+              },
+              {
+                "fact_id": "f-7",
+                "detail": "The energetic processes and relativistic wind from the central pulsar power the surrounding nebula structure."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The nebula is the Crab Nebula, not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The Crab Nebula and its central region containing the pulsar are prominently shown.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The object is the Crab Nebula, not RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:26607689"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula pulsar",
+              "connection": "Shows the Crab Nebula and the central engine/pulsar powered by rotational and magnetic energy."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A multi-wavelength telescopic view of the Crab Nebula highlighting the glowing inner torus and synchrotron emission.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-5",
+                "detail": "The high-energy features around the center reflect the intense magnetic field and particle acceleration driven by the pulsar."
+              },
+              {
+                "fact_id": "f-7",
+                "detail": "The inner rings and wisps show the energetic outflow powered by the misaligned magnetic axis of the spinning neutron star."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Depicts the Crab Nebula rather than E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The Crab Nebula pulsar wind nebula and central source are clearly visible.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:11182"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 15820,
+        "promptTokenCount": 13956,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4354
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 9602
+          }
+        ],
+        "candidatesTokenCount": 1864
+      }
+    },
+    {
+      "key": "material-inspect-batch:def1ff573b6549de779b4b7ea4ddb38ecdbcd1f0875cbcfd1b181ef40a1b8dd7",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula",
+              "connection": "The Crab Nebula is the supernova remnant containing the Crab Nebula pulsar, a well-documented neutron star formed during the core collapse of a massive star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical composite image showing the Crab Nebula against a star field, with orange filaments surrounding a bright blue inner glow.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-4",
+                "detail": "The central region contains the fast-spinning pulsar formed during the supernova."
+              },
+              {
+                "fact_id": "f-6",
+                "detail": "The nebula represents the expanded remnant surrounding a compact stellar core."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows the Crab Nebula, not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The Crab Nebula and its central region containing the pulsar are clearly depicted.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:516106"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Generic nebula and star field",
+              "connection": "The image depicts a generic nebula from a stock photo library without verified scientific connection to any specific neutron star or supernova remnant requested."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "A digital graphic of a reddish emission nebula and scattered stars against a black background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not the Crab Nebula pulsar.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:16880954"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10295,
+        "promptTokenCount": 9447,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 2178
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 7269
+          }
+        ],
+        "candidatesTokenCount": 848
+      }
+    },
+    {
+      "key": "material-inspect-batch:e4be28d266f0b6739cc6f8fdbae84fe8ccb1ab7d1490781d2b23dd9904b71f4f",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_subject",
+              "visible_subject": "Crab Nebula",
+              "connection": "The Crab Nebula contains a pulsar at its center which is a neutron star formed from a supernova."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical photograph showing the Crab Nebula against a black starfield, displaying filamentary structures in red and internal wisps in blue.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-4",
+                "detail": "The Crab Nebula surrounds the central neutron star formed from a historical supernova."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows the Crab Nebula, not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Shows the Crab Nebula containing the central pulsar.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows the Crab Nebula, not RX J185635-3754.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:17662495"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "A small crab on a beach",
+              "connection": "Visual pun on the word 'crab' from Crab Nebula."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A close-up photograph of a small crab walking on a sandy beach.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "A biological crab on a beach.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "A biological crab on a beach.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "A biological crab on a beach.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:9179589"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_subject",
+              "visible_subject": "Isolated Neutron Star RX J185635-3754",
+              "connection": "An optical image from the Hubble Space Telescope showing the isolated neutron star RX J185635-3754."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical image from the Hubble Space Telescope with an arrow pointing to the optical counterpart of isolated neutron star RX J185635-3754.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-6",
+                "detail": "Displays the pinpoint optical counterpart of a neutron star."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows RX J185635-3754, not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows RX J185635-3754, not the Crab pulsar.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Shows the optical counterpart of RX J185635-3754.",
+                "subject_qualifications_match": true
+              }
+            ],
+            "asset_id": "wikimedia:129539683"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Binoculars on a patterned cloth",
+              "connection": "Generic optical instrument representing astronomy."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A pair of black binoculars resting on a patterned textile surface.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Binoculars.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Binoculars.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Binoculars.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:431488"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 13711,
+        "promptTokenCount": 12143,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4335
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 7808
+          }
+        ],
+        "candidatesTokenCount": 1568
+      }
+    },
+    {
+      "key": "material-inspect-batch:f7c6f5dc20588c97a14f775e14897d7c9d7cb6c88d2f6ec1553dd76beffdc5d7",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant E0102-72.3",
+              "connection": "Shows the supernova remnant containing a candidate neutron star formed from a massive star collapse."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical X-ray image showing the ring-like structure of the supernova remnant E0102-72.3 against a black background.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-1",
+                "detail": "Represents the aftermath of a massive star evolution and core collapse."
+              },
+              {
+                "fact_id": "f-2",
+                "detail": "Displays the expanding remnant following core compaction and explosion."
+              },
+              {
+                "fact_id": "f-3",
+                "detail": "Depicts the shell ejected during the supernova event."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The distinct ring-like structure of supernova remnant E0102-72.3 is clearly visible in the image.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The Crab Nebula pulsar is not depicted here.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The optical counterpart of RX J185635-3754 is not shown in this image.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:148804754"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "CTB 1 supernova remnant",
+              "connection": "A different supernova remnant not matching the specified query objects."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "A detailed deep-space photograph of the CTB 1 supernova remnant showing glowing reddish filaments and scattered background stars.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "E0102-72.3 is not shown.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The Crab Nebula pulsar is not present.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "RX J185635-3754 is not present.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:19798813"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Cassiopeia A supernova remnant",
+              "connection": "Cassiopeia A is a different supernova remnant than the requested targets."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "A colorful multi-wavelength astronomical composite image of the Cassiopeia A supernova remnant with glowing filaments and numerous foreground/background stars.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "E0102-72.3 is not shown.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The Crab pulsar is not depicted.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "RX J185635-3754 is not shown.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:11180"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula pulsar",
+              "connection": "Combines optical and X-ray imaging of the Crab Nebula, highlighting the inner core containing the rapidly spinning neutron star/pulsar."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A combined optical and X-ray space telescope composite showing the intricate filaments of the Crab Nebula and the bright inner region where the Crab pulsar resides.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f-4",
+                "detail": "Demonstrates the nebula powered by the rapidly rotating central neutron star."
+              },
+              {
+                "fact_id": "f-5",
+                "detail": "Visualizes synchrotron emission driven by intense magnetic fields and relativistic particles."
+              },
+              {
+                "fact_id": "f-6",
+                "detail": "Shows the compact stellar remnant born from the 1054 supernova."
+              },
+              {
+                "fact_id": "f-7",
+                "detail": "Illustrates the pulsar environment responsible for pulsed electromagnetic radiation."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "E0102-72.3 is not shown.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The Crab Nebula containing the central pulsar is prominently displayed.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "RX J185635-3754 is not present.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:110234010"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 18053,
+        "promptTokenCount": 16236,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 11868
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4368
+          }
+        ],
+        "candidatesTokenCount": 1817
+      }
+    },
+    {
+      "key": "material-language-edit",
+      "result": {
+        "narration": [
+          "Нейтронні зірки утворюються внаслідок еволюції та гравітаційного колапсу масивних зірок із початковою масою більшою за сонячну у вісім разів. Коли ядерне паливо вигоряє, тиск електронів падає, спричиняючи злиття часток у нейтрони.",
+          "Зберігаючи початковий момент імпульсу при зменшенні радіуса, зірка набуває високої швидкості обертання. Магнітне поле сягає екстремальних значень, а при типовій масі, порівнянній з сонячною, радіус становить близько десяти кілометрів. Модель маяка пояснює імпульсне випромінювання.",
+          "Неймовірні фізичні властивості і висока густина роблять ці космічні тіла важливими для сучасних астрофізичних досліджень та розуміння еволюції масивних зоряних систем завдяки унікальним характеристикам і стабільним періодам пульсації сигналів у науковому світі."
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 872,
+        "promptTokenCount": 608,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 608
+          }
+        ],
+        "candidatesTokenCount": 264
+      }
+    },
+    {
+      "key": "material-photo-plan",
+      "result": {
+        "v0": {
+          "anchor_id": "wikimedia:149392658",
+          "fact_ids": [
+            "f-1",
+            "f-2",
+            "f-3"
+          ]
+        },
+        "v1": {
+          "anchor_id": "wikimedia:110234010",
+          "fact_ids": [
+            "f-4",
+            "f-5",
+            "f-6",
+            "f-7"
+          ]
+        },
+        "v2": {
+          "anchor_id": "wikimedia:129539683",
+          "fact_ids": [
+            "f-6",
+            "f-8"
+          ]
+        }
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11264,
+        "promptTokenCount": 11075,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 11075
+          }
+        ],
+        "candidatesTokenCount": 189
+      }
+    },
+    {
+      "key": "script-review",
+      "result": {
+        "language": "uk",
+        "language_match": true,
+        "visual_contracts_match": true,
+        "no_unsupported_claims": true,
+        "topic_covered": true,
+        "factual_checks": {
+          "assertion_1": {
+            "narration_quote": "Нейтронні зірки утворюються внаслідок еволюції та гравітаційного колапсу масивних зірок із початковою масою більшою за сонячну у вісім разів.",
+            "supported": true
+          },
+          "assertion_2": {
+            "narration_quote": "Коли ядерне паливо вигоряє, тиск електронів падає, спричиняючи злиття часток у нейтрони.",
+            "supported": true
+          },
+          "assertion_3": {
+            "narration_quote": "Коли ядерне паливо вигоряє, тиск електронів падає, спричиняючи злиття часток у нейтрони.",
+            "supported": true
+          },
+          "assertion_4": {
+            "narration_quote": "Зберігаючи початковий момент імпульсу при зменшенні радіуса, зірка набуває високої швидкості обертання.",
+            "supported": true
+          },
+          "assertion_5": {
+            "narration_quote": "Магнітне поле сягає екстремальних значень, а при типовій масі, порівнянній з сонячною, радіус становить близько десяти кілометрів.",
+            "supported": true
+          },
+          "assertion_6": {
+            "narration_quote": "Магнітне поле сягає екстремальних значень, а при типовій масі, порівнянній з сонячною, радіус становить близько десяти кілометрів.",
+            "supported": true
+          },
+          "assertion_7": {
+            "narration_quote": "Модель маяка пояснює імпульсне випромінювання.",
+            "supported": true
+          },
+          "assertion_8": {
+            "narration_quote": "Неймовірні фізичні властивості і висока густина роблять ці космічні тіла важливими для сучасних астрофізичних досліджень та розуміння еволюції масивних зоряних систем завдяки унікальним характеристикам і стабільним періодам пульсації сигналів у науковому світі.",
+            "supported": true
+          }
+        },
+        "native_language_quality": true
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 15787,
+        "promptTokenCount": 15189,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 15189
+          }
+        ],
+        "candidatesTokenCount": 598
+      }
+    }
+  ],
+  "human_pass": false
+}
