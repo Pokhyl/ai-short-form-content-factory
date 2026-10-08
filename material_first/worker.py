@@ -25,7 +25,48 @@ class PhotoWorker(WorkerAdapters):
     def voice(self, job_id, payload, outputs, before_send):
         from .speech_timing import validate_timing
         validate_timing(payload['script'], payload.get('speech_timing'), payload['language'], payload['seconds'])
+        if payload.get('voice_correction'):
+            return self.corrected_voice(job_id,payload,before_send)
         return super().voice(job_id, payload, outputs, before_send)
+
+    def corrected_voice(self, job_id, payload, before_send):
+        import os
+        import shutil
+        from .voice_correction import fit, rewrite
+        self._validate_scene_count(payload)
+        staged=self._stage_photos(job_id,payload)
+        directory=self.root/'voiceovers'/job_id
+        directory.mkdir(parents=True,exist_ok=False)
+        def synthesize(number,frozen):
+            before_send(number,frozen)
+            encoded,expected=self.voice_provider.synthesize(payload['language'],frozen['payload']['script'])
+            attempt_id=identity(job_id,'voice-attempt',str(number))
+            result=self._post('/voiceovers/'+attempt_id,{'audio_base64':encoded})
+            if result.get('status')!='ready' or result.get('sha256')!=expected:
+                raise ValueError('stored correction voice differs from synthesis')
+            source=self.root/'voiceovers'/attempt_id
+            if sha(source/'final.mp3')!=expected:
+                raise ValueError('correction audio bytes changed')
+            target=directory/('attempt-'+str(number))
+            shutil.move(str(source),str(target))
+            result['storage_path']=str(target/'final.mp3')
+            return result
+        def persist(number,frozen,result):
+            attempt_id=identity(job_id,'voice-attempt',str(number))
+            self._voice_measurement(attempt_id,frozen['payload'],result)
+            receipt={'frozen':frozen,'voice':result}
+            with (directory/('attempt-'+str(number))/'correction.json').open('x') as stream:
+                json.dump(receipt,stream,ensure_ascii=False)
+            self.measure_voice_revision(job_id,number,result)
+        def correct(number,current,duration):
+            return rewrite(current,duration,self.correction_gemini(job_id,number))
+        result,frozen,attempts=fit(payload,synthesize,correct,
+                                  lambda plan:verify(self.root,plan),persist)
+        os.link(result['storage_path'],directory/'final.mp3')
+        result.update(job_id=job_id,storage_path=str(directory/'final.mp3'),
+                      staged_photos=staged,effective_frozen=frozen,voice_attempts=attempts)
+        with (directory/'manifest.json').open('x') as stream:json.dump(result,stream)
+        return result
 
     def _voice_measurement(self, job_id, payload, result):
         from .speech_timing import record_sample

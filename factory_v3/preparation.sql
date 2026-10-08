@@ -44,7 +44,11 @@ BEGIN
  SELECT * INTO STRICT prep FROM factory_v3.preparations WHERE id=p_id FOR UPDATE;
  IF prep.source_revision IS DISTINCT FROM p_revision THEN RAISE EXCEPTION 'source revision changed'; END IF;
  IF COALESCE(char_length(p_key),0)=0 OR COALESCE(char_length(p_kind),0)=0 THEN RAISE EXCEPTION 'call identity missing'; END IF;
- IF prep.status<>'preparing' THEN RAISE EXCEPTION 'preparation terminal'; END IF;
+ IF prep.status<>'preparing' AND NOT (prep.status='prepared' AND p_kind='gemini'
+   AND p_key ~ '^voice-fit:[23]:(rewrite|script-review)$'
+   AND EXISTS(SELECT 1 FROM factory_v3.jobs WHERE id=p_id AND status='voice_running'
+     AND frozen->'payload'->'voice_correction' = '{"protocol":"measured-text-correction-v1","max_attempts":3}'::jsonb))
+ THEN RAISE EXCEPTION 'preparation terminal'; END IF;
  SELECT * INTO existing FROM factory_v3.preparation_calls WHERE preparation_id=p_id AND call_key=p_key;
  IF FOUND THEN
   IF existing.kind=p_kind AND existing.request_hash=p_hash AND existing.state='succeeded' THEN
@@ -65,7 +69,9 @@ END $$;
 CREATE OR REPLACE FUNCTION factory_v3.finish_preparation_call(p_id uuid,p_key text,p_response jsonb)
 RETURNS void LANGUAGE plpgsql AS $$
 BEGIN
- PERFORM 1 FROM factory_v3.preparations WHERE id=p_id AND status='preparing' FOR UPDATE;
+ PERFORM 1 FROM factory_v3.preparations WHERE id=p_id AND (status='preparing' OR (status='prepared'
+  AND p_key ~ '^voice-fit:[23]:(rewrite|script-review)$'
+  AND EXISTS(SELECT 1 FROM factory_v3.jobs WHERE id=p_id AND status='voice_running'))) FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'preparation terminal'; END IF;
  UPDATE factory_v3.preparation_calls SET state='succeeded',response=p_response,finished_at=now()
  WHERE preparation_id=p_id AND call_key=p_key AND state='started';
@@ -74,12 +80,14 @@ END $$;
 CREATE OR REPLACE FUNCTION factory_v3.fail_preparation_call(p_id uuid,p_key text,p_code text,p_receipt jsonb DEFAULT NULL)
 RETURNS void LANGUAGE plpgsql AS $$
 BEGIN
- PERFORM 1 FROM factory_v3.preparations WHERE id=p_id AND status='preparing' FOR UPDATE;
+ PERFORM 1 FROM factory_v3.preparations WHERE id=p_id AND (status='preparing' OR (status='prepared'
+  AND p_key ~ '^voice-fit:[23]:(rewrite|script-review)$'
+  AND EXISTS(SELECT 1 FROM factory_v3.jobs WHERE id=p_id AND status='voice_running'))) FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'preparation terminal'; END IF;
  UPDATE factory_v3.preparation_calls SET state='unknown',error_code=p_code,response=p_receipt,finished_at=now()
  WHERE preparation_id=p_id AND call_key=p_key AND state='started';
  IF NOT FOUND THEN RAISE EXCEPTION 'call not started'; END IF;
- UPDATE factory_v3.preparations SET status='unknown' WHERE id=p_id;
+ UPDATE factory_v3.preparations SET status='unknown' WHERE id=p_id AND status='preparing';
 END $$;
 CREATE OR REPLACE FUNCTION factory_v3.complete_preparation(p_id uuid,p_frozen jsonb,p_revision text)
 RETURNS void LANGUAGE plpgsql AS $$

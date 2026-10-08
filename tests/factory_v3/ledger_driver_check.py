@@ -114,6 +114,41 @@ with tempfile.TemporaryDirectory() as directory:
         connection.execute("INSERT INTO factory_v3.human_reviews(job_id,video_sha256,decision,comment) VALUES(%s,%s,'rejected','changed') ON CONFLICT(job_id) DO NOTHING",(first,"b"*64))
         saved=connection.execute("SELECT decision,video_sha256 FROM factory_v3.human_reviews WHERE job_id=%s",(first,)).fetchone()
         assert saved==("accepted","a"*64)
+    # Actual transactional accounting for measured text corrections.
+    from copy import deepcopy
+    from material_first.voice_correction import POLICY
+    correction_id=str(uuid.uuid4())
+    corrected=deepcopy(frozen)
+    corrected['payload'].update(voice_correction=dict(POLICY),topic='Controlled topic')
+    corrected['sha256']=digest(corrected['payload'])
+    runtime.create(correction_id,'Controlled topic','pl',15)
+    runtime.preparations.complete(correction_id,corrected)
+    ledger.claim(correction_id,'voice',corrected['sha256'])
+    def account_revision():
+        try:ledger.account_voice_revision(correction_id,1,corrected);return 'claimed'
+        except psycopg.Error:return 'blocked'
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+        assert sorted(pool.map(lambda _:account_revision(),range(2)))==['blocked','claimed']
+    try:ledger.account_voice_revision(correction_id,2,corrected)
+    except psycopg.Error:pass
+    else:raise AssertionError('unmeasured voice was retried')
+    ledger.measure_voice_revision(correction_id,1,{'duration_ms':12000,'sha256':'a'*64})
+    correction_calls=BudgetedCalls(runtime.preparations,correction_id)
+    correction_calls.run('voice-fit:2:rewrite','gemini',{'test':True},lambda:{'body':{}})
+    try:correction_calls.run('unrelated','gemini',{},lambda:{})
+    except psycopg.Error:pass
+    else:raise AssertionError('prepared job allowed unrelated provider call')
+    for attempt in (2,3):
+        ledger.account_voice_revision(correction_id,attempt,corrected)
+        ledger.measure_voice_revision(correction_id,attempt,{'duration_ms':14500,'sha256':'b'*64})
+    try:ledger.account_voice_revision(correction_id,4,corrected)
+    except psycopg.Error:pass
+    else:raise AssertionError('fourth synthesis admitted')
+    ledger.fail(correction_id,'voice','controlled_stop',True)
+    try:correction_calls.run('voice-fit:3:rewrite','gemini',{},lambda:{})
+    except psycopg.Error:pass
+    else:raise AssertionError('terminal voice correction repeated')
+    print('BOUNDED_CORRECTION_POSTGRES_PASS: race, measured-only advance, three-attempt cap, terminal block')
     print(json.dumps({"status":"passed","psycopg":psycopg.__version__,
       "real_postgres":True,"packaged_runtime":True,"request_identity_immutable":True,"owner_review_insert_once":True,
       "concurrent_producer_claims":producer_race,"preparation_unknown_blocks":True,"full_stage_chain":True,"single_voice_attempt":True,

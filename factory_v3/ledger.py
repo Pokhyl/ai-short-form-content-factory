@@ -37,6 +37,14 @@ class PostgresLedger:
     def account_voice_attempt(self, job_id):
         self._call("SELECT factory_v3.account_voice_attempt(%s::uuid)", (job_id,))
 
+    def account_voice_revision(self, job_id, attempt, frozen):
+        self._call("SELECT factory_v3.account_voice_revision(%s::uuid,%s,%s::jsonb)",
+                   (job_id,attempt,json.dumps(frozen)))
+
+    def measure_voice_revision(self, job_id, attempt, result):
+        self._call("SELECT factory_v3.measure_voice_revision(%s::uuid,%s,%s::jsonb)",
+                   (job_id,attempt,json.dumps(result)))
+
     def finish(self, job_id, stage, output):
         self._call("SELECT factory_v3.finish_stage(%s::uuid,%s,%s::jsonb)",
                    (job_id, stage, json.dumps(output)))

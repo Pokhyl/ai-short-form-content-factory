@@ -143,7 +143,7 @@ class Application:
             state = self.runtime.ledger.snapshot(request_id)
         except KeyError:
             return status
-        payload = state["frozen"]["payload"]
+        payload = state.get("outputs",{}).get("voice",{}).get("effective_frozen",state["frozen"])["payload"]
         assets = {asset["id"]: asset for asset in payload["assets"]}
         status["script"] = payload["script"]
         status["sources"] = [
@@ -191,7 +191,7 @@ class Application:
     def photo(self, request_id, scene_id):
         ensure_visible(self.runtime.root, request_id)
         state = self.runtime.ledger.snapshot(identifier(request_id))
-        payload = state["frozen"]["payload"]
+        payload = state.get("outputs",{}).get("voice",{}).get("effective_frozen",state["frozen"])["payload"]
         if payload.get("schema") == "material-first":
             selected = next(s["material_id"] for s in payload.get("visuals", payload["scenes"]) if s["id"] == scene_id)
         else:

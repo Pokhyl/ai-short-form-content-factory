@@ -82,14 +82,28 @@ class Runtime:
                         free_tier_confirmed=True)
         search = PhotoSearch(calls,ProviderCache(self.ledger),self.gateway,
                              lambda provider:"gateway-managed",self.settings["credential_scope"])
-        return DurableProducer(self.root, self.preparations,
+        producer = DurableProducer(self.root, self.preparations,
             Operations(self.root, Research(calls,self.direct), gemini, search,
                        PortraitDownload(self.root, PhotoDownload(self.root,request_id,calls,self.direct)),
                        documented_contexts=True), authorize=authorize)
+        producer.operations.voice_correction_enabled = True
+        return producer
+
+    def correction_gemini(self, job_id, attempt):
+        from copy import copy
+        gemini = copy(self.producer(job_id).operations.gemini)
+        base = gemini.calls
+        class PrefixedCalls:
+            def run(self, key, kind, request, invoke, **kwargs):
+                return base.run('voice-fit:'+str(attempt)+':'+key, kind, request, invoke, **kwargs)
+        gemini.calls = PrefixedCalls()
+        return gemini
 
     def executor(self):
         adapters = PhotoWorker(self.root,GoogleVoice(lambda:"gateway-managed",self.gateway),
                                    "http://shorts-v2-media-worker-1:3001",audit,http=self.direct)
+        adapters.correction_gemini = self.correction_gemini
+        adapters.measure_voice_revision = self.ledger.measure_voice_revision
         return material_executor(self.ledger,self.root,adapters)
 
     def run(self, request_id):

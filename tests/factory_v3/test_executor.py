@@ -119,3 +119,21 @@ class ExecutorTests(unittest.TestCase):
         with self.assertRaises(ReconciliationRequired):
             self.executor.run_next("controlled-job")
         self.assertEqual(self.adapters.calls, ["voice"])
+
+class CorrectedPlanTests(unittest.TestCase):
+    def test_following_stages_receive_final_reviewed_text_and_original_remains_immutable(self):
+        from material_first.voice_correction import POLICY
+        from factory_v3.preflight import digest
+        original={'voice_correction':dict(POLICY),'script':'before','scenes':[{'id':'s','narration':'before'}]}
+        final=copy.deepcopy(original);final['script']='after';final['scenes'][0]['narration']='after'
+        frozen={'payload':original,'sha256':digest(original)}
+        effective={'payload':final,'sha256':digest(final)}
+        ledger=LedgerDouble();ledger.create('job',frozen)
+        ledger.job['status']='voice_ready';ledger.job['outputs']['voice']={'effective_frozen':effective}
+        class Adapter:
+            def align(self,job,payload,outputs):
+                assert payload['script']=='after'
+                return {'status':'ready'}
+        Executor(ledger,'.',Adapter(),verifier=lambda root,f:f['payload']).run_next('job')
+        self.assertEqual(ledger.job['frozen']['payload']['script'],'before')
+        self.assertEqual(ledger.job['status'],'align_ready')

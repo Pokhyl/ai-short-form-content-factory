@@ -47,7 +47,7 @@ Free-only enforcement:
 - these 90% ceilings are project engineering safety settings, not Google recommendations;
 - fail closed when the internal ceiling is reached;
 - no paid fallback;
-- one final TTS synthesis per job only.
+- Legacy plans: one TTS synthesis only. Owner-authorized measured-text-correction-v1 plans: maximum three separately accounted sends; correction only after a completed measured duration mismatch, never after an ambiguous response. Existing monthly ceilings and free-only policy remain enforced.
 
 ## Pixabay
 Live production credential verification — 2026-09-19:

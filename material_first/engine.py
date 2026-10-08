@@ -336,6 +336,9 @@ class Producer:
         modern = getattr(self.operations, "presentation_policy", None) in WHOLE_POLICIES
         if modern:
             request["presentation_policy"] = self.operations.presentation_policy
+            if getattr(self.operations, "voice_correction_enabled", False):
+                from .voice_correction import POLICY as VOICE_POLICY
+                request["voice_correction"] = dict(VOICE_POLICY)
             if hasattr(self.operations, "visual_validation_mode"):
                 request["visual_validation_mode"] = self.operations.visual_validation_mode
                 if request["visual_validation_mode"] not in {"metadata", "gemini"}:

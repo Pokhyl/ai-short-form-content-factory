@@ -34,12 +34,26 @@ class Executor:
         frozen = snapshot["frozen"]
         # Revalidate files/contracts before every step, including immediately before TTS.
         payload = self.verify(self.media_root, frozen)
+        effective=snapshot['outputs'].get('voice',{}).get('effective_frozen')
+        if effective is not None:
+            from material_first.voice_correction import validate_revision
+            validate_revision(payload,effective['payload'])
+            payload=self.verify(self.media_root,effective)
         self.ledger.claim(job_id, stage, frozen["sha256"])
         try:
             if stage == "voice":
                 accounted = False
-                def before_send():
+                def before_send(attempt=None, revised=None):
                     nonlocal accounted
+                    if attempt is not None:
+                        from material_first.voice_correction import POLICY, validate_revision
+                        if payload.get('voice_correction') != POLICY:
+                            raise ValueError('voice correction not authorized by frozen plan')
+                        validate_revision(payload,revised['payload'])
+                        self.verify(self.media_root,revised)
+                        self.ledger.account_voice_revision(job_id,attempt,revised)
+                        accounted=True
+                        return
                     if accounted:
                         raise ValueError("voice send already armed")
                     self.verify(self.media_root, frozen)
