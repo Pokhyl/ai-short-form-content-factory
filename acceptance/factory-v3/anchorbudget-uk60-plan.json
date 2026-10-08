@@ -1,0 +1,25 @@
+{
+  "id": "e2f5f864-84b3-4ade-8d4a-c9f1659356f0",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "runtime_revision": "108a9ee373b02893961e10c9e4a114f15c2437f3",
+  "authorization": "Owner says так не останавливайся: continue to actual output, diagnose/fix successive failures and verify again without waiting for another prompt. Prior automatic stop instructions superseded. Each new case remains bounded, failed IDs immutable.",
+  "maximum_fresh_requests": 1,
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 30,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "expected_steps": "brief -> nine search pools -> one availability planner -> up to eight independent pixel batches -> compose -> native edit -> complete keyed independent factual/native review -> one voice -> alignment -> exact60s whole-photo render/audit",
+  "question": "Does actual current availability planner select real metadata-grounded contexts and produce a qualified grounded Ukrainian MP4 without speculative hidden-object searches consuming equal download slots?",
+  "offline": "218 exact-image checks PASS; actual forge/crescent fixture rejected before downloads; roles restricted to independently qualified anchor IDs; native edit receives total budget without extra call; protected rollout/publichealth exact.",
+  "remaining": "Unseen actual planner response, new target-qualified pixel judgments, complete keyed/native review, one voice and current MP4 not verified. Controlled metadata selection is not acceptance.",
+  "stop": "Terminal case remains immutable. Diagnose saved evidence, fix actual blocker before any fresh normal case; do not blindly repeat. No paid fallback/quota expansion/second TTS/manual approvals.",
+  "human_pass": false
+}

@@ -1,3 +1,7 @@
+## Source-class and approved-anchor budget corrections LIVE — 2026-10-08
+
+LIVE108a9ee373b02893961e10c9e4a114f15c2437f3/imagefactory-v3:108a9ee;218 exact-image checks PASS, protected app-only rollout unchanged/publichealth exact. Actualc7 failed0TTS/MP4, immutable. New bounded strict UK60 case e2f5f864-84b3-4ade-8d4a-c9f1659356f0 planned under owner persistence authorization. Check source-class gate, >=2actual pixel-qualified anchors, native budget/factual review, one voice/actual cadence/MP4. No old-ID rerun, paidfallback or quota expansion.
+
 ## Actual overlong copy and foreign visual anchors corrected — 2026-10-08
 
 Strictc7bfd577 failed NarrationBudgetExceeded before review/TTS/MP4:186words,limit146;26downloads succeeded,1definitive unavailable,12Gemini. Actual planner pickedforge andcrescent as neutron-star contexts. New source-derived object-class lexical backstop rejects actual source-foreign labels before downloads; metadata is still NOT approval. At least2actual selected anchor images must independently qualify for their roles before composition; schema/story only use validated anchor roles; anchors retained in frozen visuals and verification recomputes mapping. Existing single native edit now receives total word budget and tightens phrasing without dropping claims/numbers; no additional correction call.218local checks PASS (117material+101core), current actual source-foreign fixture rejected. Build/deploy/new bounded case pending under owner persistence instruction.
