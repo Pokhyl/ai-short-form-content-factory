@@ -1,0 +1,25 @@
+{
+  "id": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "runtime_revision": "1d9476b52591b3b04dd7b67bb35c7b4c96b952c7",
+  "authorization": "Owner explicitly не останавливайся пока проект не будет готов; continue through diagnosed failures under unchanged bounded free-only budgets and immutable failed IDs.",
+  "maximum_fresh_requests": 1,
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 30,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "expected_steps": "brief -> nine search pools -> one availability planner -> up to eight independent pixel batches -> compose -> native edit -> complete keyed independent factual/native review -> one voice -> alignment -> exact60s whole-photo render/audit",
+  "question": "Does exact keyed word-slot correction preserve source/native/factual quality and reach one voice/exact60s MP4?",
+  "offline": "233 local and exact-image network-disabled checks PASS",
+  "remaining": "Actual current provider reply and downstream output pending",
+  "stop": "Terminal case remains immutable. Diagnose saved evidence, fix actual blocker before any fresh normal case; do not blindly repeat. No paid fallback/quota expansion/second TTS/manual approvals.",
+  "human_pass": false
+}

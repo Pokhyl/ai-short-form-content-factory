@@ -6,8 +6,8 @@
   "gemini": 9,
   "tts": 0,
   "mp4": false,
-  "live_revision": "e26193e60e966dcb35a70ab200780293c63855ef",
-  "live_image": "sha256:bef2432c7ef806461d67523519d39381150cd5f827f98765d7a34a547e128fa1",
+  "live_revision": "1d9476b52591b3b04dd7b67bb35c7b4c96b952c7",
+  "live_image": "sha256:bbdfcfc5050aef27ea4d81017ae0f86c8d6dca95dbcde413e37dca56f015cd01",
   "active": {
     "preparations": 0,
     "stages": 0,
@@ -17,11 +17,12 @@
   "fix": "Server-owned repair prose uses exact required word_N fields; each value validated as one word. Source/native/independent factual/cadence gates retained.",
   "tests": "130 material + 103 core PASS",
   "pending": [
-    "exact image build and network-disabled checks",
-    "app-only protected rollout",
     "fresh bounded normal request",
     "independent factual/native acceptance and one TTS/alignment/exact MP4"
   ],
   "project_ready": false,
-  "updated_at": "2026-10-08T15:40:33.289829+00:00"
+  "updated_at": "2026-10-08T15:40:33.289829+00:00",
+  "protected_rollout_unchanged": true,
+  "next_case": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "next_case_state": "planned"
 }

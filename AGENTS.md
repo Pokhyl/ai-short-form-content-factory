@@ -1,3 +1,7 @@
+## Exact repair word slots LIVE; bounded current verification — 2026-10-08
+
+LIVE1d9476b52591b3b04dd7b67bb35c7b4c96b952c7/imagefactory-v3:1d9476b/sha256:bbdfcfc5050aef27ea4d81017ae0f86c8d6dca95dbcde413e37dca56f015cd01.233 exact-image network-disabled checks PASS; protected snapshots equal/publichealth exact. Fresh normalUK60Vision72705d11-4556-4a4a-b751-676cc71e215d planned under owner persistence, same free-only budgets/oneTTS. Verify actual word-slot correction, independentnative/factualreview/voice/alignment/exactMP4. f64cdc2d and all old failed IDs immutable. CLI checkpoint acceptance/factory-v3/keyed-word-budget/checkpoint.json;project_ready=false.
+
 ## Actual keyed paragraph budget failure closed offline — 2026-10-08
 
 f64cdc2d immutable ValueError,20downloads/9Gemini/0TTS/MP4 on LIVEe26193e. Exact saved replay reproduces paragraph violates server-owned cadence contract: returned prose ignores per-paragraph counts. Single existing repair now uses server-required ordered word_N slots with exactly one word per value; no extra calls or relaxed semantic/native/factual/cadence gates. Actual old reply, missing slots and multiword slots rejected before native; controlled actual18-photo structural reply passes.233local checks PASS (130material+103core). Server idle, exact LIVE image verified. Build/package/app-only rollout/fresh normal output pending. CLI continuation authorized; foreign/untracked changes retained. Checkpoint acceptance/factory-v3/keyed-word-budget/checkpoint.json;project_ready=false.
