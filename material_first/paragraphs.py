@@ -159,12 +159,15 @@ def compose_paragraphs(gemini, context, budget_error):
             fit_contextual_paragraphs(materials,{'beats':planned_beats},seconds=seconds,
                                      anchor_ids=request['validated_visual_anchors'].values())
             repair_schema = obj({'paragraph_'+str(i+1):obj({
-                'narration':{**string(),'maxLength':2400},
+                'words':obj({'word_'+str(j+1):{**string(),'maxLength':80}
+                             for j in range(paragraph_plan[i]['word_budget']['preferred'])}),
                 'fact_ids':array(string(f['id'] for f in context['evidence']['facts']),1,8)})
                 for i in range(len(paragraph_plan))})
             repair_identity_instruction = (
                 'Follow the server-owned paragraph_plan exactly. Return paragraph_1, paragraph_2 and paragraph_3. '
-                'Each must stay inside its own word_budget, explain ALL of its required_fact_ids, and explicitly assert at least one of its identifying_fact_ids. '
+                'Return each paragraph as its ordered words object: each word_N value is exactly one spoken word with punctuation attached, no spaces. '
+                'Together the words form natural continuous prose. Fill every supplied word key in order. '
+                'Each must explain ALL of its required_fact_ids, and explicitly assert at least one of its identifying_fact_ids. '
                 'Explain mechanisms alongside their observed outcomes. The server supplies anchor and role identities; do not choose other assignments. '
                 'Write a natural continuous explanation without repeating the same claim in every paragraph. ')
         repaired, _ = gemini.generate('material-compose-length-repair',
@@ -183,7 +186,11 @@ def compose_paragraphs(gemini, context, budget_error):
         if paragraph_plan:
             structured=[]
             for i,contract in enumerate(paragraph_plan):
-                paragraph=repaired['paragraph_'+str(i+1)]
+                paragraph=deepcopy(repaired['paragraph_'+str(i+1)])
+                tokens=[paragraph['words']['word_'+str(j+1)] for j in range(contract['word_budget']['preferred'])]
+                if any(len(token.split())!=1 or token!=token.strip() for token in tokens):
+                    raise ValueError('paragraph word slot must contain exactly one word')
+                paragraph={'narration':' '.join(tokens),'fact_ids':paragraph['fact_ids']}
                 count=len(paragraph['narration'].split())
                 if (not contract['word_budget']['minimum']<=count<=contract['word_budget']['maximum']
                         or not set(contract['required_fact_ids'])<=set(paragraph['fact_ids'])

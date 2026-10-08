@@ -10,9 +10,37 @@ class ParagraphTests(unittest.TestCase):
     def controlled_plan_reply(plan):
         # Structural coverage only; these tokens never claim provider prose approval.
         return {'paragraph_'+str(i+1):{
-            'narration':' '.join(['контрольне']*p['word_budget']['preferred']),
+            'words':{'word_'+str(j+1):'контрольне' for j in range(p['word_budget']['preferred'])},
             'fact_ids':list(dict.fromkeys(p['required_fact_ids']+p['identifying_fact_ids']))}
             for i,p in enumerate(plan)}
+
+    def test_actual_keyed_budget_failure_and_word_slot_controls(self):
+        saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-keyed-budget-failure.json').read_text())
+        from factory_v3.gemini import provider_schema
+        for defect in ('saved','missing','multiword','valid'):
+            calls=[]
+            def generate(key,instruction,payload,schema):
+                calls.append(key)
+                if key=='material-compose':return copy.deepcopy(saved['draft']),{}
+                if key=='material-language-edit':return {'narration':payload['narration']},{}
+                plan=payload['paragraph_plan']
+                compiled=provider_schema(schema)
+                words=compiled['properties']['paragraph_1']['properties']['words']
+                self.assertEqual(len(words['required']),plan[0]['word_budget']['preferred'])
+                if defect=='saved':return copy.deepcopy(saved['failed_repair']),{}
+                reply=self.controlled_plan_reply(plan)
+                if defect=='missing':reply['paragraph_1']['words'].pop('word_1')
+                if defect=='multiword':reply['paragraph_1']['words']['word_1']='два слова'
+                return reply,{}
+            ops=Operations('.',None,SimpleNamespace(generate=generate),None,None)
+            with self.subTest(defect=defect):
+                if defect=='valid':
+                    result=ops.compose(copy.deepcopy(saved['composition_context']))
+                    self.assertEqual(sum(len(b['narration'].split()) for b in result['beats']),125)
+                    self.assertEqual(calls[-1],'material-language-edit')
+                else:
+                    with self.assertRaises(ValueError):ops.compose(copy.deepcopy(saved['composition_context']))
+                    self.assertNotIn('material-language-edit',calls)
 
     def test_actual_rare_role_overlong_draft_uses_preverified_server_allocation(self):
         saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-rare-role-overlong.json').read_text())

@@ -1,0 +1,27 @@
+{
+  "case": "f64cdc2d-d54d-4b70-a98c-a42ad94dbb68",
+  "state": "immutable_failed",
+  "error": "paragraph violates server-owned cadence contract",
+  "downloads": 20,
+  "gemini": 9,
+  "tts": 0,
+  "mp4": false,
+  "live_revision": "e26193e60e966dcb35a70ab200780293c63855ef",
+  "live_image": "sha256:bef2432c7ef806461d67523519d39381150cd5f827f98765d7a34a547e128fa1",
+  "active": {
+    "preparations": 0,
+    "stages": 0,
+    "n8n_executions": 0
+  },
+  "diagnosis": "Exact saved compose replay reproduces repair ignoring individual word budgets. No new provider calls or database writes.",
+  "fix": "Server-owned repair prose uses exact required word_N fields; each value validated as one word. Source/native/independent factual/cadence gates retained.",
+  "tests": "130 material + 103 core PASS",
+  "pending": [
+    "exact image build and network-disabled checks",
+    "app-only protected rollout",
+    "fresh bounded normal request",
+    "independent factual/native acceptance and one TTS/alignment/exact MP4"
+  ],
+  "project_ready": false,
+  "updated_at": "2026-10-08T15:40:33.289829+00:00"
+}
