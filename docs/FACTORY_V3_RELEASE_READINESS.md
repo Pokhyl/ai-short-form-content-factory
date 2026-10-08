@@ -1,3 +1,20 @@
+# Current release readiness — 2026-10-08
+
+Project_ready=false. Owner has explicitly requested persistence to the completed project. Current deployed source is 0789b7110249c8a55dfe4147a268fc2dbd1ddd7e. The exact packaged runtime passed 227 network-disabled checks; protected app-only rollout and public health were verified. Test totals are not production acceptance.
+
+| Boundary | Verified evidence | Remaining |
+|---|---|---|
+| Intake, ledger, free-only gateway, existing PostgreSQL/media contracts | Prior real service proofs; unchanged protected state; current billing metadata succeeded | Preserve per-request quota checks |
+| Documented image retrieval | Actual named source queries retrieved 13 independently accepted unique images in case 1702 | Current restored source-object target semantics and unseen queries |
+| Source/fact identity and native composition | Current controlled 16-pair prepare/freeze/schedule matrix; exact-source support and tamper gates | Actual complete native/factual review after bounded recovery |
+| Pre-voice length and photo cadence | Actual 63-word/13-image failure retained; controlled source-aware correction covers length, source scope, anchor identity and cadence together | Actual new model response |
+| One voice, alignment, exact render and media audit | Previous compatible actual media proofs; current deterministic package gates | Current release MP4 and representative PL15/EN30/RU45/UK60 acceptance |
+| Owner review | Review/save/delete service evidence retained | Actual output playback and explicit owner acceptance; no unsupported listening/HUMAN claim |
+
+Current bounded UK60 case: ce246d3d-add4-4c79-a278-089b5734e6cd. On any terminal failure preserve its ID, diagnose saved evidence, close the connected cause offline, then continue within unchanged free-only budgets. No blind stochastic repeats. Next representative cases use normal owner inputs sequentially; no source/job rescue or second TTS per case.
+
+Prior records below are historical evidence.
+
 ## Latest state — 2026-10-06
 
 Project_ready=false. Live app revisioncab79d3. New exact-duration/whole-photo renderer is implemented and verified against30/45/60s cached previews with15/23/29 distinct photos;41 replacement+84 legacy tests pass. Automatic-product integration and deployment remain pending. Current authoritative evidence: acceptance/factory-v3/whole-photo-previews-20261006.json and top CODEX_HANDOFF. Older release states below are historical.
