@@ -1,0 +1,9 @@
+{
+  "id": "e9c352c8-b755-4ce3-9e46-e6f7c87aa3ee",
+  "revision": "7c64d3d585b66d2d217a5f35b696e9265081ac0b",
+  "status": "failed",
+  "tts_calls": 0,
+  "selected_estimate_seconds": 59.814,
+  "review_failure": "semantic check does not quote actual narration",
+  "diagnosis": "assertion8 belongs to third paragraph but reviewer quoted second paragraph. Third paragraph lacks its assigned physical claim. Do not bypass quotation/grounding validation; rewrite receives explicit must_explain source facts for every paragraph."
+}

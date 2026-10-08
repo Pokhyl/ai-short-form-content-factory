@@ -51,9 +51,11 @@ def rewrite(payload, measured_ms, gemini):
               'characters_per_second':characters/(measured_ms/1000),
               'minimum_estimated_seconds':payload['seconds']-1,
               'maximum_estimated_seconds':payload['seconds']}
+    facts={f['id']:f for f in payload['evidence']['facts']}
     paragraphs={
         'paragraph_'+str(i+1): {'previous_text':scene['narration'],
             'fact_ids':scene['evidence_ids'],
+            'must_explain':[facts[identity] for identity in scene['evidence_ids']],
             'target_words':max(1,round(len(scene['narration'].split())*ratio)),
             'target_characters':max(1,round(len(scene['narration'])*ratio))}
         for i,scene in enumerate(payload['scenes'])}
@@ -64,7 +66,10 @@ def rewrite(payload, measured_ms, gemini):
         'The current text FAILED measured speech timing and must change. This is rewriting, not proofreading. '
         'Write natural native '+payload['language']+'. Return a complete paragraph string for every named key. '
         'Use paragraph target_words and target_characters to distribute the change across all paragraphs. '
-        'Preserve every cited claim, number, qualifier, subject and source grounding, using DIFFERENT wording. '
+        'Every paragraph must explicitly explain EVERY fact in its own must_explain list. A fact stated in another paragraph does not count. '
+        'Replace vague importance/research/significance wording with the supplied physical explanation; do not preserve unsupported filler from previous_text. '
+        'Preserve the source facts, numbers, qualifiers and paragraph subjects, using DIFFERENT wording. '
+        'When a fact is assigned to more than one paragraph, explain it in each with a different useful emphasis instead of generic filler. '
         'For expansion, explain the same cited mechanisms more explicitly using their supplied facts. '
         'For shortening, replace wordy constructions with concise equivalents. '
         'Do not add generic importance claims, repetition, filler, new facts or voice instructions. '
