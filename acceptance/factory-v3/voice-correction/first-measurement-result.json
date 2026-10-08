@@ -1,0 +1,16 @@
+{
+  "id": "f98e91e7-b22e-46b0-8c6d-8dc05b6f4bbf",
+  "revision": "70131e4cf41bc03b51e133282cde572ab58d57d9",
+  "tts_calls": 1,
+  "duration_ms": 52056,
+  "rewrite_calls": 1,
+  "rewrite_words_before": 97,
+  "rewrite_words_after": 97,
+  "rewrite_characters_before": 774,
+  "rewrite_characters_after": 774,
+  "error": "duration correction returned unchanged text",
+  "prompt_tokens": 29133,
+  "status": "unknown",
+  "second_tts_sent": false,
+  "diagnosis": "Full source articles inflated correction context. Replace with exact compact source quotations and per-paragraph expansion targets; keep unchanged-text rejection."
+}

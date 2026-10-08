@@ -93,16 +93,17 @@ class RewriteTests(unittest.TestCase):
         text=' '.join(['example']*100)
         original={'voice_correction':dict(POLICY),'seconds':60,'language':'en','script':text,
                   'scenes':[{'id':'s1','narration':text,'evidence_ids':['f1']}],
-                  'evidence':{},'observations':[],'script_review':{'old_approval':True}}
+                  'evidence':{'facts':[],'sources':[]},'observations':[],'script_review':{'old_approval':True}}
         revised_text=' '.join(['example']*119)
-        gemini=Mock();gemini.generate.return_value=({'narration':[revised_text]}, {})
+        gemini=Mock();gemini.generate.return_value=({'paragraph_1':revised_text}, {})
         gemini.review_script.return_value={'independent_review':True}
         revised=rewrite(original,50000,gemini)
         self.assertEqual(revised['payload']['script'],revised_text)
         self.assertEqual(revised['payload']['speech_timing']['words_per_second'],2)
         self.assertNotIn('script_review',gemini.review_script.call_args.args[0])
+        self.assertEqual(gemini.generate.call_args.args[2]['paragraphs']['paragraph_1']['target_words'],119)
         self.assertEqual(original['script'],text)
-        gemini.generate.return_value=({'narration':[text]}, {})
+        gemini.generate.return_value=({'paragraph_1':text}, {})
         gemini.review_script.reset_mock()
         with self.assertRaisesRegex(ValueError,'unchanged'):rewrite(original,50000,gemini)
         gemini.review_script.assert_not_called()
