@@ -18,6 +18,14 @@ class HTTPFailure(RuntimeError):
         super().__init__("HTTP request rejected: " + str(code))
 
 
+class InvalidHTTPJSON(RuntimeError):
+    def __init__(self, receipt):
+        self.receipt = {'status': receipt['status'],
+                        'headers': response_headers(receipt['headers']),
+                        'body_bytes': len(receipt['body']), 'error_reason': 'INVALID_JSON_RESPONSE'}
+        super().__init__('HTTP endpoint returned invalid JSON; result requires reconciliation')
+
+
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, request, fp, code, message, headers, new_url):
         raise ValueError("unexpected HTTP redirect")
@@ -51,7 +59,10 @@ class JSONHTTP:
 
     def request_receipt(self, method, url, body=None, headers=None, timeout=30):
         receipt = self._raw(method, url, body, headers, timeout, 20 * 1024 * 1024)
-        receipt["body"] = json.loads(receipt["body"])
+        try:
+            receipt["body"] = json.loads(receipt["body"])
+        except (ValueError, UnicodeError):
+            raise InvalidHTTPJSON(receipt) from None
         return receipt
 
     def binary_receipt(self, url, *, timeout=60, limit=8 * 1024 * 1024):

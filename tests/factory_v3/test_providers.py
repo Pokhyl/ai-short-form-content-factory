@@ -166,6 +166,21 @@ class ProviderTests(unittest.TestCase):
             self.assertEqual(len(http.downloads), 2)
             self.assertEqual(len(ledger.claims), 2)
 
+    def test_empty_gateway_response_has_safe_evidence_and_no_automatic_repeat(self):
+        from factory_v3.http import InvalidHTTPJSON
+        http = JSONHTTP(); sends = []
+        def empty(*args):
+            sends.append(1)
+            return {'status':200,'headers':{'Content-Type':'text/html','Set-Cookie':'secret'},'body':b''}
+        http._raw = empty
+        with self.assertRaises(InvalidHTTPJSON) as observed:
+            http.request_receipt('POST', 'http://gateway.invalid', {'token':'secret'})
+        self.assertEqual(len(sends), 1)
+        self.assertEqual(observed.exception.receipt, {'status':200,'headers':{'content-type':'text/html'},
+            'body_bytes':0,'error_reason':'INVALID_JSON_RESPONSE'})
+        self.assertNotIn('secret', str(observed.exception))
+        self.assertNotIn('secret', json.dumps(observed.exception.receipt))
+
     def test_http429_preserves_rate_headers_without_credential_url_or_body(self):
         class Opener:
             def open(self, request, timeout):

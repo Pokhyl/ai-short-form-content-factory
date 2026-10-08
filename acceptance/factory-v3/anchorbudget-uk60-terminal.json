@@ -1,0 +1,14 @@
+{
+  "id": "e2f5f864-84b3-4ade-8d4a-c9f1659356f0",
+  "status": "unknown",
+  "terminal_call": "metadata",
+  "error_code": "JSONDecodeError",
+  "receipt": null,
+  "n8n_execution_id": 12732,
+  "n8n_log": "ECONNRESET in OAuth HTTP request",
+  "stale_execution_cleared_without_restart": true,
+  "provider_model_calls": 0,
+  "tts_calls": 0,
+  "mp4": false,
+  "rerun": false
+}

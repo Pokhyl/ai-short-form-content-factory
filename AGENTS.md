@@ -1,3 +1,7 @@
+## Google metadata transport failure reconciled read-only — 2026-10-08
+
+Newe2f5f864 stoppedunknown on first metadata JSONDecodeError,0model/download/TTS/MP4. Native gateway execution12732 remainedrunning withOAuth ECONNRESET logs, then cleared before proposed restart (restart NOT executed). No credential/workflow/permission changes or provider fallback. New HTTP JSON decoder records safe status/allowedheaders/bodybytecount/errorreason for invalid JSON without body/credential disclosure or retry.102core checks PASS, exact build pending. Once packaged/deployed, fresh normal verification allowed for this identified transient read-only failure; old ID immutable, billing gate never bypassed.
+
 ## Source-class and approved-anchor budget corrections LIVE — 2026-10-08
 
 LIVE108a9ee373b02893961e10c9e4a114f15c2437f3/imagefactory-v3:108a9ee;218 exact-image checks PASS, protected app-only rollout unchanged/publichealth exact. Actualc7 failed0TTS/MP4, immutable. New bounded strict UK60 case e2f5f864-84b3-4ade-8d4a-c9f1659356f0 planned under owner persistence authorization. Check source-class gate, >=2actual pixel-qualified anchors, native budget/factual review, one voice/actual cadence/MP4. No old-ID rerun, paidfallback or quota expansion.
