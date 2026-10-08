@@ -1,0 +1,14 @@
+{
+  "job_id": "257f0a09-c79f-4845-b6d3-0c1c18deae66",
+  "source_revision": "738d3f5a6ca74d80b159ecba087351a0f74f33dd",
+  "status": "unknown",
+  "gemini_succeeded": 3,
+  "downloads_succeeded": 8,
+  "failure_stage": "material-inspect-batch",
+  "http_status": 503,
+  "error_status": "UNAVAILABLE",
+  "error_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+  "tts_calls": 0,
+  "machine_pass": false,
+  "project_ready": false
+}
