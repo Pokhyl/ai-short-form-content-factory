@@ -1,0 +1,16 @@
+{
+  "failed_id": "ce246d3d-add4-4c79-a278-089b5734e6cd",
+  "failure": "photo context object was not copied from retrieved real-entity metadata",
+  "cause": "Model label Supernova remnant E0102-72.3 is not a contiguous substring of metadata, while the complete server source query is already independently matched to this anchor.",
+  "fix": "Use server-owned documented object query; copied-label validation retained for legacy plans. Complete documented anchor identity, unique anchor, source and independent pixel gates retained.",
+  "actual_saved_replay": "passes planning; no later provider responses exist for this failed case",
+  "local_tests": {
+    "material_first": 125,
+    "factory_v3": 103
+  },
+  "new_provider_calls": 0,
+  "database_writes": 0,
+  "tts_calls": 0,
+  "mp4": false,
+  "project_ready": false
+}

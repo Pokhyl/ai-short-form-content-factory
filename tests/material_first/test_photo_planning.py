@@ -12,6 +12,26 @@ from material_first.photo_queries import described_as_synthetic
 
 
 class AvailabilityPlanningTests(unittest.TestCase):
+    def test_actual_documented_label_order_uses_server_object_and_rejects_wrong_anchor(self):
+        saved = json.loads((Path(__file__).parent/'fixtures/actual-documented-label-order.json').read_text())
+        calls = []
+        def generate(*args):
+            calls.append(args[0])
+            return saved['model_result'], {'receipt_id':'saved-actual-label-order'}
+        brief = {'evidence':saved['evidence'], 'visual_targets':saved['targets']}
+        pools = [p['candidates'] for p in saved['pools']]
+        resolved, candidates = plan_photos(SimpleNamespace(generate=generate), saved['request'], brief, pools, 30)
+        self.assertEqual(len(candidates), 30)
+        self.assertEqual(calls, ['material-photo-plan'])
+        original = {c['id']:c['query'] for c in saved['evidence']['visual_contexts']}
+        for row, target in zip(saved['model_result']['contexts'], resolved['visual_targets']):
+            self.assertEqual(target['must_show'], original[row['source_context_id']])
+        saved['model_result']['contexts'][2]['anchor_id'] = saved['model_result']['contexts'][0]['anchor_id']
+        saved['model_result']['contexts'][0]['anchor_id'] = 'wikimedia:80137098'
+        saved['model_result']['contexts'][1]['anchor_id'] = 'wikimedia:148804754'
+        with self.assertRaisesRegex(ValueError, 'changed the documented source object'):
+            plan_photos(SimpleNamespace(generate=generate), saved['request'], brief, pools, 30)
+
     def test_actual_planetarium_and_artist_conception_are_ineligible_before_download(self):
         actual = json.loads((Path(__file__).parent/'fixtures/actual-availability-medium-contradiction.json').read_text())
         by_id = {c['id']: c for c in actual['candidates']}

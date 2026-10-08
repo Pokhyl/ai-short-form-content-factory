@@ -89,7 +89,10 @@ def plan_photos(gemini, request, brief, pools, limit):
     for index, row in enumerate(result['contexts']):
         label = row['object_label'].strip()
         entity = re.sub(r'^(?:the|a|an)\s+', '', label, flags=re.I)
-        if len(entity) < 3 or not any(entity in text for text in descriptions(known[row['anchor_id']])):
+        # Documented plans use the server-owned source query below. A model's
+        # display label cannot add requirements or replace that object; only
+        # legacy plans use the copied label as their actual visual contract.
+        if not contexts and (len(entity) < 3 or not any(entity in text for text in descriptions(known[row['anchor_id']]))):
             raise ValueError('photo context object was not copied from retrieved real-entity metadata')
         # Preserve the copied object requirement. Canonicalizing articles and
         # whitespace for ranking does not change its documented identity.
