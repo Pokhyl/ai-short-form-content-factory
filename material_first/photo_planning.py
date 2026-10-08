@@ -57,15 +57,29 @@ def plan_photos(gemini, request, brief, pools, limit):
     if contexts:
         # Each source-owned object gets its own disjoint identity enum. A
         # provider cannot bind an otherwise eligible image to a different row.
+        eligible = {t['id']:[c['id'] for c in anchors if context_words(t['query']) <=
+                    context_words(' '.join(descriptions(c)))] for t in contexts}
+        owners = {}
+        def assign_context(identity, visited):
+            for candidate_id in eligible[identity]:
+                if candidate_id in visited:continue
+                visited.add(candidate_id)
+                previous=owners.get(candidate_id)
+                if previous is None or assign_context(previous,visited):
+                    owners[candidate_id]=identity
+                    return True
+            return False
+        for t in sorted(contexts,key=lambda t:len(eligible[t['id']])):
+            if not assign_context(t['id'],set()):
+                raise ValueError('documented object has no distinct metadata anchor')
         assigned = {t['id']:[] for t in contexts}
+        for candidate_id, identity in owners.items():assigned[identity].append(candidate_id)
         for candidate in anchors:
-            matching = [t for t in contexts if context_words(t['query']) <=
-                        context_words(' '.join(descriptions(candidate)))]
+            if candidate['id'] in owners:continue
+            matching = [t for t in contexts if candidate['id'] in eligible[t['id']]]
             if matching:
                 owner = max(matching,key=lambda t:len(context_words(t['query'])))
                 assigned[owner['id']].append(candidate['id'])
-        if any(not assigned[t['id']] for t in contexts):
-            raise ValueError('documented object has no distinct metadata anchor')
         schema = obj({t['id']:obj({'anchor_id':string(assigned[t['id']]),
             'fact_ids':array(string(f['id'] for f in brief['evidence']['facts']),1,8)}) for t in contexts})
     result, provenance = gemini.generate('material-photo-plan',

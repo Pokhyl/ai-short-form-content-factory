@@ -57,6 +57,19 @@ class AvailabilityPlanningTests(unittest.TestCase):
             plan_photos(SimpleNamespace(generate=invalid),saved['request'],brief,
                         [p['candidates'] for p in saved['pools']],30)
 
+    def test_shared_metadata_keeps_three_distinct_anchor_choices_without_cross_row_identity(self):
+        contexts=[{'id':'v'+str(i),'query':q} for i,q in enumerate(['Flower','Pollen','Bee'])]
+        candidates=[{'id':'shared'+str(i),'description':'Flower Pollen Bee','source_metadata':{}} for i in range(3)]
+        brief={'evidence':{'visual_contexts':contexts,'facts':[{'id':'f1'}]},'visual_targets':[]}
+        def generate(key,instruction,payload,schema):
+            enums=[p['properties']['anchor_id']['enum'] for p in schema['properties'].values()]
+            self.assertTrue(all(enums))
+            self.assertEqual(len({e[0] for e in enums}),3)
+            return {id:{'anchor_id':p['properties']['anchor_id']['enum'][0],'fact_ids':['f1']}
+                    for id,p in schema['properties'].items()},{'receipt_id':'controlled-shared-metadata'}
+        _,selected=plan_photos(SimpleNamespace(generate=generate),{'seconds':15,'topic':'Pollination'},brief,[candidates],17)
+        self.assertEqual(len(selected),3)
+
     def test_actual_planetarium_and_artist_conception_are_ineligible_before_download(self):
         actual = json.loads((Path(__file__).parent/'fixtures/actual-availability-medium-contradiction.json').read_text())
         by_id = {c['id']: c for c in actual['candidates']}
