@@ -1,0 +1,25 @@
+{
+  "id": "351ec71d-bfca-49c2-82d1-05cf50180696",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "runtime_revision": "ceb9b6e577e5271315124f29ac6edd2eb1509db7",
+  "authorization": "Owner explicitly не останавливайся пока проект не будет готов; continue through diagnosed failures under unchanged bounded free-only budgets and immutable failed IDs.",
+  "maximum_fresh_requests": 1,
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 30,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "expected_steps": "brief -> nine search pools -> one availability planner -> up to eight independent pixel batches -> compose -> native edit -> complete keyed independent factual/native review -> one voice -> alignment -> exact60s whole-photo render/audit",
+  "question": "Does one source-aware cadence repair freely regroup the actually inspected anchors and preserve required mechanisms through native/factual review to exact60s MP4?",
+  "offline": "229local checks PASS; exact12photo actual context regression, old infeasible repair rejected, controlled regrouped cadence accepted. Package checks pending.",
+  "remaining": "Unseen actual planner response, new target-qualified pixel judgments, complete keyed/native review, one voice and current MP4 not verified. Controlled metadata selection is not acceptance.",
+  "stop": "Terminal case remains immutable. Diagnose saved evidence, fix actual blocker before any fresh normal case; do not blindly repeat. No paid fallback/quota expansion/second TTS/manual approvals.",
+  "human_pass": false
+}
