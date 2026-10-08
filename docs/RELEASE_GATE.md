@@ -1,14 +1,15 @@
 # Release gate — current execution contract
 
 ## Verified state — 2026-10-07
-- Branchfactory-v3. LIVE source0e65ccf34dca945ff021808b63a8f145653d7100; app-only deployment protected snapshots equal and publichealth exact.
--212 local and exact-image packaged checks PASS, including current retrieval-first planner plus controlled16-pair preparation/freeze/scheduling matrix and strict terminal controls.
-- Actual normalbc4afbb2 failed before downloads because valid metadata entity was prefixed withThe. Actual saved plan now passes corrected identity check; connected read-only replay reaches first missing saved download with0 new calls/DBwrites.
-- Latest planned case immutable failed,0downloads/0TTS/0MP4. No automatic new job/diagnostic or failed-ID rescue after terminal. All older failed/deleted IDs preserved.
-- New-target independent pixel/variety, complete factual/native review, one voice/current output and HUMAN acceptance remain unverified. Controlled/saved responses do not establish them.
-- Current11-boundary inventorycurrent-boundaries.json; evidenceavailability-current-connected-replay/actual-plan-replay/uk60-terminal/article-deployment.json. project_ready=false.
 
-## Immediate work, entirely offline
+- LIVE source9c8501df53e2385e477e99ad11750d323ae28212.216 exact-image checks PASS; app-only rollout protected snapshots equal/publichealth exact.
+- Explicit owner instruction «так не останавливайся» authorizes continuing through diagnosed failures to actual output; supersedes historical automatic stops. Every fresh normal case remains bounded/free-only; failed/deleted IDs immutable, no blind repeats/second TTS for same case.
+- Actual491002b6 reached one voice/alignment, then render stopped because fact8 paragraph needed3slots with1eligible photo. Native editor copied Russianisms despite model language approval, and raw planner pools dropped strict photo protocol flags. No native/HUMAN/MP4 approval.
+- Current corrections propagate strict subject and original-byte fingerprints; partition oversized image groups; skip rate-limited photo hosts without retries; keep native editor independent of source wording and block observed wrong forms; check estimated unique-photo cadence and merge only adjacent same-role paragraphs before review/TTS.
+- Actual saved15photos contain1visual copy.14distinct photos remain cadence-feasible after same-role merge; original actual voice timing replay with15different byte files also passes assignment. These are offline assignment proofs, not new output approval.
+- New normal strict UK60 Vision c7bfd577-ac32-4d23-9451-ebd5aa926fee submitted on current revision. Actual new qualified photos/native text/voice/final MP4 verification pending. project_ready=false.
+
+## Boundary verification contract
 1. Produce one executable boundary inventory covering normal intake -> credential gateway -> research -> grounded outline -> all three photo providers -> download/exact bytes -> independent image review -> global unique assignment -> composition -> script review -> free quota -> one voice -> alignment -> render -> machine audit -> owner review. For each boundary distinguish actual native/provider evidence from controlled fixtures and list concrete uncovered failure modes. Do not count test totals as coverage.
 2. Reconstruct the failed request from persisted research/source receipts without network. Bind the reconstructed outline payload to the stored request hash. Retain a sanitized reproducible fixture, not an unexplained screenshot or temporary log.
 3. Connect existing components in a deterministic replay runner using saved real responses where available; keep controlled missing-provider fixtures visibly labelled. Use actual installed n8n HTTP execute, actual PostgreSQL claims/quota and actual media decode/render where those boundaries are exercised. No live production database mutation.

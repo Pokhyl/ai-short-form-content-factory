@@ -154,7 +154,25 @@ def match_materials(available, draft, *, contextual=False, topical=False):
     return result
 
 
-def paragraph_cadence_payload(available, draft, seconds):
+def validated_context_anchors(assets, materials):
+    """Metadata anchor identity becomes usable only after its own pixel approval."""
+    planned = [a for a in assets.values() if a.get('photo_plan')]
+    if not planned:
+        return None
+    plan = planned[0]['photo_plan']; targets = planned[0]['visual_targets']
+    if len(plan['anchor_ids']) != len(targets):
+        raise ValueError('context anchor identities incomplete')
+    if any(a['photo_plan'] != plan for a in planned):
+        raise ValueError('context planning receipts differ')
+    known = {m['id']: m for m in materials}
+    usable = {t['id']: anchor for t, anchor in zip(targets, plan['anchor_ids'])
+              if anchor in known and t['id'] in known[anchor].get('matched_visual_targets', {})}
+    if len(usable) < 2:
+        raise MaterialUnavailable('fewer than two photo contexts have independently approved anchor images')
+    return usable
+
+
+def paragraph_cadence_payload(available, draft, seconds, *, anchor_ids=()):
     """Estimate paragraph durations before voice; final alignment remains authoritative."""
     from .visuals import ordered_visuals
     scenes = [{'id': 'beat-' + str(i + 1), 'material_id': beat['material_id'],
@@ -162,7 +180,7 @@ def paragraph_cadence_payload(available, draft, seconds):
               for i, beat in enumerate(draft['beats'])]
     payload = {'seconds': seconds, 'presentation_policy': TOPIC_POLICY,
                'scenes': scenes, 'observations': available,
-               'visuals': make_visuals(seconds, available, scenes, TOPIC_POLICY)}
+               'visuals': make_visuals(seconds, available, scenes, TOPIC_POLICY, anchor_ids=anchor_ids)}
     weights = [max(1, len(beat['narration'].split())) for beat in draft['beats']]
     duration, cursor, total = seconds * 1000, 0, sum(weights)
     timings = []
@@ -173,7 +191,7 @@ def paragraph_cadence_payload(available, draft, seconds):
     return payload
 
 
-def fit_contextual_paragraphs(available, draft, minimum=3, *, seconds=None):
+def fit_contextual_paragraphs(available, draft, minimum=3, *, seconds=None, anchor_ids=()):
     """Join adjacent narration for one role without changing any asserted fact.
 
     A hidden mechanism and its observable outcome can share a contextual
@@ -194,7 +212,7 @@ def fit_contextual_paragraphs(available, draft, minimum=3, *, seconds=None):
             matched = match_materials(available, current, contextual=True, topical=True)
             if seconds is not None:
                 try:
-                    paragraph_cadence_payload(available, matched, seconds)
+                    paragraph_cadence_payload(available, matched, seconds, anchor_ids=anchor_ids)
                 except ValueError as error:
                     if str(error) != 'no subject-related photograph for a narration interval':
                         raise
@@ -256,6 +274,8 @@ def validate_story(request, evidence, available, draft):
                          "must_show": [material["visible_description"]], "must_not_show": []}})
         if known_targets is not None:
             target_id = beat['visual_target_id']
+            if 'validated_visual_anchors' in request and target_id not in request['validated_visual_anchors']:
+                raise MaterialUnavailable('story uses an unapproved context anchor')
             if target_id not in known_targets or target_id not in material.get('matched_visual_targets', {}):
                 raise MaterialUnavailable('picture does not show the exact explanatory target')
             target = known_targets[target_id]
@@ -406,10 +426,14 @@ class Producer:
                 raise MaterialUnavailable('different explanatory visuals unavailable; only one composition role')
         if sum(m["capacity_ms"] for m in available) < seconds * 1000:
             raise MaterialUnavailable("inspected real material has insufficient duration")
+        if request.get('presentation_policy') == TOPIC_POLICY and request.get('visual_validation_mode') == 'gemini':
+            anchors = validated_context_anchors(assets, available)
+            if anchors is not None:
+                request['validated_visual_anchors'] = anchors
         composition = {"request": request, "evidence": evidence, "materials": available}
         draft = self.operations.compose(deepcopy(composition))
         if modern:
-            draft = (fit_contextual_paragraphs(available, draft, seconds=seconds) if request.get('presentation_policy') == TOPIC_POLICY
+            draft = (fit_contextual_paragraphs(available, draft, seconds=seconds, anchor_ids=request.get('validated_visual_anchors', {}).values()) if request.get('presentation_policy') == TOPIC_POLICY
                      else match_materials(available, draft, contextual=True))
         else:
             draft = fit_materials(available, draft) if targets is not None else match_materials(available, draft)
@@ -421,7 +445,7 @@ class Producer:
         if request.get('presentation_policy') == TOPIC_POLICY and review.get('native_language_quality') is not True:
             raise ValueError('native-language proofreading review missing')
         validate_script_review(evidence, language, script, scenes, review, topic=topic.strip())
-        visuals = make_visuals(seconds, available, scenes,request["presentation_policy"]) if modern else None
+        visuals = make_visuals(seconds, available, scenes,request["presentation_policy"], anchor_ids=request.get("validated_visual_anchors", {}).values()) if modern else None
         selected = {v['material_id'] for v in visuals} if modern else {s['material_id'] for s in scenes}
         payload = {"schema": "material-first", **request, "script": script, "scenes": scenes,
             "assets": [assets[k] for k in sorted(selected)], "evidence": evidence,
@@ -470,6 +494,9 @@ def verify(root, frozen, probe=probe_media):
         if current != original:
             raise ValueError("frozen observation changed")
         observations.append(current)
+    if 'validated_visual_anchors' in payload:
+        if validated_context_anchors(assets, observations) != payload['validated_visual_anchors']:
+            raise ValueError('frozen approved context anchors changed')
     if payload.get('presentation_policy') in WHOLE_POLICIES:
         validate_visuals(payload, observations)
     beats = [{"material_id": s["material_id"], "narration": s["narration"],

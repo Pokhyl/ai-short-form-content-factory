@@ -1,0 +1,253 @@
+{
+  "id": "c7bfd577-ac32-4d23-9451-ebd5aa926fee",
+  "targets": [
+    {
+      "id": "v0",
+      "fact_ids": [
+        "f5",
+        "f6"
+      ],
+      "must_show": "supernova remnant E0102-72.3 space telescope",
+      "must_not_show": "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role",
+      "query": "supernova remnant E0102-72.3 space telescope"
+    },
+    {
+      "id": "v1",
+      "fact_ids": [
+        "f7",
+        "f8"
+      ],
+      "must_show": "Crab Nebula pulsar center astrophotography",
+      "must_not_show": "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role",
+      "query": "Crab Nebula pulsar center astrophotography"
+    },
+    {
+      "id": "v2",
+      "fact_ids": [
+        "f2",
+        "f3",
+        "f4"
+      ],
+      "must_show": "massive star iron core collapse simulation",
+      "must_not_show": "Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role",
+      "query": "massive star iron core collapse simulation"
+    }
+  ],
+  "model_result": {
+    "contexts": [
+      {
+        "anchor_id": "pixabay:550622",
+        "object_label": "forge",
+        "fact_ids": [
+          "f1",
+          "f2",
+          "f3"
+        ]
+      },
+      {
+        "anchor_id": "pixabay:11182",
+        "object_label": "supernova remnant",
+        "fact_ids": [
+          "f4",
+          "f5",
+          "f6"
+        ]
+      },
+      {
+        "anchor_id": "pixabay:4900302",
+        "object_label": "crescent",
+        "fact_ids": [
+          "f6",
+          "f7",
+          "f8"
+        ]
+      }
+    ]
+  },
+  "anchors": [
+    {
+      "id": "pixabay:550622",
+      "description": "forge, craft, hot, to form, iron, blacksmith, blacksmithing, glow, stole, forge, iron, iron, iron, iron, iron, blacksmith, blacksmith, blacksmith, blacksmith",
+      "source_metadata": {
+        "id": 550622,
+        "name": "forge, craft, hot",
+        "tags": "forge, craft, hot, to form, iron, blacksmith, blacksmithing, glow, stole, forge, iron, iron, iron, iron, iron, blacksmith, blacksmith, blacksmith, blacksmith",
+        "type": "photo",
+        "user": "ptdh",
+        "likes": 185,
+        "views": 92632,
+        "pageURL": "https://pixabay.com/photos/forge-craft-hot-to-form-iron-550622/",
+        "userURL": "https://pixabay.com/users/275507/",
+        "user_id": 275507,
+        "comments": 38,
+        "isGRated": true,
+        "downloads": 57489,
+        "imageSize": 1212160,
+        "imageWidth": 3008,
+        "previewURL": "https://cdn.pixabay.com/photo/2014/11/29/17/57/forge-550622_150.jpg",
+        "collections": 1774,
+        "imageHeight": 2000,
+        "isLowQuality": false,
+        "noAiTraining": false,
+        "previewWidth": 150,
+        "userImageURL": "",
+        "webformatURL": "https://pixabay.com/get/g0717739132b323bf85f0fc89441139254199da7ce2509b6dba298c8dc2e47042e92b6e1092e4a4e9ec9d6a9188de7e08_640.jpg",
+        "isAiGenerated": false,
+        "largeImageURL": "https://pixabay.com/get/g55da1262ea2859ed4a6119ed3d58d2fffcd5c7b08718cbac1debffd8a00bab498076ee934d9a8c4973e0e464eae44d09bdd20ad40f314f9b1aa769dd37bd22e4_1280.jpg",
+        "previewHeight": 99,
+        "webformatWidth": 640,
+        "webformatHeight": 425
+      }
+    },
+    {
+      "id": "pixabay:11182",
+      "description": "cancer fog, supernova remnant, supernova, pulsar wind nebula, constellation taurus, constellation messier catalog, m 1, ngc 1952, galaxy, starry sky, space, universe, night sky, heaven, astronautics, nasa, space travel, supernova, supernova, supernova, supernova, supernova",
+      "source_metadata": {
+        "id": 11182,
+        "name": "cancer fog, supernova remnant, supernova",
+        "tags": "cancer fog, supernova remnant, supernova, pulsar wind nebula, constellation taurus, constellation messier catalog, m 1, ngc 1952, galaxy, starry sky, space, universe, night sky, heaven, astronautics, nasa, space travel, supernova, supernova, supernova, supernova, supernova",
+        "type": "photo",
+        "user": "WikiImages",
+        "likes": 81,
+        "views": 33347,
+        "pageURL": "https://pixabay.com/photos/cancer-fog-supernova-remnant-11182/",
+        "userURL": "https://pixabay.com/users/1897/",
+        "user_id": 1897,
+        "comments": 5,
+        "isGRated": true,
+        "downloads": 22071,
+        "imageSize": 441019,
+        "imageWidth": 2400,
+        "previewURL": "https://cdn.pixabay.com/photo/2011/12/15/11/24/crab-nebula-11182_150.jpg",
+        "collections": 104,
+        "imageHeight": 2400,
+        "isLowQuality": false,
+        "noAiTraining": false,
+        "previewWidth": 150,
+        "userImageURL": "https://cdn.pixabay.com/user/2012/06/03/15-50-21-3_250x250.jpg",
+        "webformatURL": "https://pixabay.com/get/g2f00dd6506046e01a56c0dd7e3d5937548b37d83afbbb3a694cd33f460d40bd6960bd7581f7f293af72786a76c37b957_640.jpg",
+        "isAiGenerated": false,
+        "largeImageURL": "https://pixabay.com/get/gc65ece13fe2142a9ed94d726422ab7913541f2483590759e3350481feba73de1fd1c89b0009f5513415021bc7e15571a_1280.jpg",
+        "previewHeight": 150,
+        "webformatWidth": 640,
+        "webformatHeight": 640
+      }
+    },
+    {
+      "id": "pixabay:4900302",
+      "description": "half moon, moon, night, sky, space, blue, lunar, star, clouds, moonlight, luna, atmosphere, crescent, astronomy, nature, half, telescope, halal, ramadan, allah, crater, science, white, telephoto, creation, night sky, black sky, black moon, black science, black clouds, black stars, black night, blue sky, black natural",
+      "source_metadata": {
+        "id": 4900302,
+        "name": "half moon, moon, night",
+        "tags": "half moon, moon, night, sky, space, blue, lunar, star, clouds, moonlight, luna, atmosphere, crescent, astronomy, nature, half, telescope, halal, ramadan, allah, crater, science, white, telephoto, creation, night sky, black sky, black moon, black science, black clouds, black stars, black night, blue sky, black natural",
+        "type": "photo",
+        "user": "dayamay",
+        "likes": 321,
+        "views": 221080,
+        "pageURL": "https://pixabay.com/photos/half-moon-moon-night-sky-space-4900302/",
+        "userURL": "https://pixabay.com/users/7372173/",
+        "user_id": 7372173,
+        "comments": 68,
+        "isGRated": true,
+        "downloads": 166657,
+        "imageSize": 2851792,
+        "imageWidth": 5568,
+        "previewURL": "https://cdn.pixabay.com/photo/2020/03/04/02/32/half-moon-4900302_150.jpg",
+        "collections": 326,
+        "imageHeight": 3712,
+        "isLowQuality": false,
+        "noAiTraining": false,
+        "previewWidth": 150,
+        "userImageURL": "https://cdn.pixabay.com/user/2021/05/02/03-24-21-417_250x250.jpg",
+        "webformatURL": "https://pixabay.com/get/g07945d082a416120aac167ce23cd1321c446496d28c1beb641ba829f796ec884432acb0541f0a3e5892c54295c42f184cee2dbe09e5f6cdcfa5f965f81033ef6_640.jpg",
+        "isAiGenerated": false,
+        "largeImageURL": "https://pixabay.com/get/g9bd18a1a7616537025f0a87da1093d2cf6df0f6f3f9abff804c9ddded832509db7956b70c909605eaffd0e4e1407428b7663b9938dbd43b5f9edc95769122d27_1280.jpg",
+        "previewHeight": 100,
+        "webformatWidth": 640,
+        "webformatHeight": 427
+      }
+    }
+  ],
+  "compose": {
+    "beats": [
+      {
+        "material_id": "wikimedia:149392658",
+        "narration": "Еволюція нейтронної зірки починається з масивної зорі головної послідовності, яка перевищує масу Сонця більш ніж у 8 разів і з часом повністю випалює водень у своєму центрі.",
+        "fact_ids": [
+          "f1"
+        ],
+        "visual_target_id": "v0"
+      },
+      {
+        "material_id": "pexels:10064346",
+        "narration": "Коли все ядерне паливо в активній зоні вичерпується, утворюється щільне залізне ядро, яке спочатку утримується від гравітаційного колапсу завдяки тиску виродженого електронного газу.",
+        "fact_ids": [
+          "f2"
+        ],
+        "visual_target_id": "v0"
+      },
+      {
+        "material_id": "pixabay:11180",
+        "narration": "У міру зростання маси залізного ядра починається інтенсивний електронний захват, під час якого електрони зливаються з протонами, утворюючи потік електронних нейтрино та нейтрони.",
+        "fact_ids": [
+          "f3"
+        ],
+        "visual_target_id": "v0"
+      },
+      {
+        "material_id": "wikimedia:29739560",
+        "narration": "Коли щільність речовини досягає ядерного рівня 4 на 10 у 17 степені кілограмів на метр кубічний, тиск виродженого нейтронного газу зупиняє подальше стискання ядра.",
+        "fact_ids": [
+          "f4"
+        ],
+        "visual_target_id": "v1"
+      },
+      {
+        "material_id": "pexels:12793507",
+        "narration": "Падіння зовнішньої оболонки зірки зупиняється на нейтронному ядрі й потужний потік нейтрино відкидає її назовні, перетворюючи зорю на наднову.",
+        "fact_ids": [
+          "f5"
+        ],
+        "visual_target_id": "v1"
+      },
+      {
+        "material_id": "pexels:16880954",
+        "narration": "Після розсіювання зовнішньої оболонки від зорі залишається компактний зірковий залишок — нейтронна зірка, маса якої зазвичай порівнянна з масою Сонця при крихітному радіусі 10—20 кілометрів.",
+        "fact_ids": [
+          "f6"
+        ],
+        "visual_target_id": "v1"
+      },
+      {
+        "material_id": "pexels:33931040",
+        "narration": "Завдяки різкому зменшенню моменту інерції під час колапсу нейтронна зірка набуває надзвичайно високої швидкості осьового обертання — до кількох сотен обертів на секунду.",
+        "fact_ids": [
+          "f7"
+        ],
+        "visual_target_id": "v2"
+      },
+      {
+        "material_id": "pexels:17662495",
+        "narration": "Навколо нейтронних зірок утворюються потужні магнітні поля до 10 у 11 степені Тесла, а процеси в їхній магнітосфері відповідають за радіовипромінювання пульсарів.",
+        "fact_ids": [
+          "f8"
+        ],
+        "visual_target_id": "v2"
+      }
+    ]
+  },
+  "edited": {
+    "narration": [
+      "Еволюція нейтронної зірки починається з масивної зорі головної послідовності, яка перевищує масу Сонця більш ніж у 8 разів і з часом повністю випалює водень у своєму центрі.",
+      "Коли все ядерне паливо в активній зоні вичерпується, утворюється щільне залізне ядро, яке спочатку утримується від гравітаційного колапсу завдяки тиску виродженого електронного газу.",
+      "У міру зростання маси залізного ядра починається інтенсивний електронний захват, під час якого електрони зливаються з протонами, утворюючи потік електронних нейтрино та нейтрони.",
+      "Коли щільність речовини досягає ядерного рівня 4 на 10 у 17 степені кілограмів на метр кубічний, тиск виродженого нейтронного газу зупиняє подальше стискання ядра.",
+      "Падіння зовнішньої оболонки зірки зупиняється на нейтронному ядрі й потужний потік нейтрино відкидає її назовні, перетворюючи зорю на наднову.",
+      "Після розсіювання зовнішньої оболонки від зорі залишається компактний зірковий залишок — нейтронна зірка, маса якої зазвичай порівнянна з масою Сонця при крихітному радіусі 10—20 кілометрів.",
+      "Завдяки різкому зменшенню моменту інерції під час колапсу нейтронна зірка набуває надзвичайно високої швидкості осьового обертання — до кількох сотен обертів на секунду.",
+      "Навколо нейтронних зірок утворюються потужні магнітні поля до 10 у 11 степені Тесла, а процеси в їхній магнітосфері відповідають за радіовипромінювання пульсарів."
+    ]
+  },
+  "words": 186,
+  "human_pass": false
+}

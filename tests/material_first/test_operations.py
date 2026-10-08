@@ -58,7 +58,7 @@ class Model:
                     for match in result['target_matches']:
                         match['subject_qualifications_match'] = True
         elif key == 'material-language-edit':
-            assert set(context) == {'language', 'narration'}
+            assert set(context) == {'language', 'narration', 'word_budget'}
             result = {'narration':context['narration'][:]}
         elif key == 'material-compose':
             words = ['Source-supported'] + ['narration'] * (schema['properties']['words']['minItems'] - 1 if 'words' in schema['properties'] else 23)

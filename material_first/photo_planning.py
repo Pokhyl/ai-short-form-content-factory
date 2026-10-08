@@ -10,6 +10,7 @@ from factory_v3.grounding import compact_evidence
 from factory_v3.preflight import digest
 from .photo_queries import photograph_query, relevance
 from .targets import validate_targets
+from .metadata import words
 
 
 def descriptions(candidate):
@@ -37,6 +38,8 @@ def plan_photos(gemini, request, brief, pools, limit):
         'Choose concrete physical objects or documented directly related stages of the requested topic. '
         'For each choose an anchor_id and copy object_label EXACTLY from that candidate description or title. '
         'Use a concise identifying noun phrase, including defining qualifiers or a documented object name. '
+        'Include the actual physical object class: a crescent shape alone is not an object identity; a forge cannot stand for stellar iron matter. '
+        'Anchor labels must name a subject class or object from the source-derived retrieval queries. '
         'Never select a generic parent category, prop, metaphor, scientific equipment, invisible mechanism, '
         'artistic depiction or source-internal matter merely because it shares a theme. '
         'For distant or hidden mechanisms choose documented associated visible objects or stages; source text '
@@ -52,6 +55,8 @@ def plan_photos(gemini, request, brief, pools, limit):
     if len({row['anchor_id'] for row in result['contexts']}) != 3:
         raise ValueError('photo contexts need three distinct availability anchors')
     targets = []
+    subject_terms = set().union(*(words(t['query']) for t in brief.get('visual_targets', brief.get('queries', [])) if isinstance(t, dict)))
+    subject_terms -= {'space', 'deep', 'astronomy', 'scientific', 'physics', 'abstract', 'representation', 'simulation'}
     for index, row in enumerate(result['contexts']):
         label = row['object_label'].strip()
         entity = re.sub(r'^(?:the|a|an)\s+', '', label, flags=re.I)
@@ -60,6 +65,8 @@ def plan_photos(gemini, request, brief, pools, limit):
         # Preserve the copied object requirement. Canonicalizing articles and
         # whitespace for ranking does not change its documented identity.
         query = photograph_query(label)
+        if subject_terms and not words(label) & subject_terms:
+            raise ValueError('photo context lacks a source-derived subject class or object name')
         if len(set(row['fact_ids'])) != len(row['fact_ids']):
             raise ValueError('duplicate photo context fact identity')
         targets.append({'id': 'v' + str(index), 'fact_ids': row['fact_ids'],

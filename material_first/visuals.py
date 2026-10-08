@@ -9,7 +9,7 @@ def candidate_limit(seconds, policy=POLICY):
     return preferred_shots(seconds, policy) + 12
 
 
-def make_visuals(seconds, materials, scenes, policy=POLICY):
+def make_visuals(seconds, materials, scenes, policy=POLICY, *, anchor_ids=()):
     minimum = minimum_shots(seconds,policy)
     if len(materials) < minimum:
         raise ValueError('not enough inspected distinct photos for requested cadence')
@@ -19,6 +19,11 @@ def make_visuals(seconds, materials, scenes, policy=POLICY):
     for scene in scenes:
         if scene['material_id'] not in selected:
             selected.append(scene['material_id'])
+    for anchor in anchor_ids:
+        if anchor not in by_id:
+            raise ValueError('validated context anchor absent from inspected pool')
+        if anchor not in selected:
+            selected.append(anchor)
     groups = {}
     for m in materials:
         role = next(iter(m.get('matched_visual_targets', {})), 'context')

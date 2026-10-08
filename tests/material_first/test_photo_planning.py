@@ -12,6 +12,24 @@ from material_first.photo_queries import described_as_synthetic
 
 
 class AvailabilityPlanningTests(unittest.TestCase):
+    def test_actual_forge_and_crescent_contexts_fail_source_class_gate(self):
+        actual = json.loads((Path(__file__).parent/'fixtures/actual-source-foreign-contexts.json').read_text())
+        def generate(key, instruction, context, schema):
+            return actual['model_result'], {'receipt_id': 'actual-saved-context-response'}
+        brief = {'queries': actual['targets'], 'evidence': {'facts': [{'id':'f'+str(i)} for i in range(1,9)]}}
+        with self.assertRaisesRegex(ValueError, 'source-derived subject class'):
+            plan_photos(SimpleNamespace(generate=generate), {'topic':'Neutron star'}, brief, [actual['anchors']], 30)
+
+    def test_context_variety_requires_two_independently_approved_anchor_images(self):
+        from material_first.engine import validated_context_anchors, MaterialUnavailable
+        targets = [{'id':'v'+str(i)} for i in range(3)]
+        assets = {id:{'photo_plan':{'anchor_ids':['a','b','c']},'visual_targets':targets} for id in ['a','b','c']}
+        unrelated_anchor = [{'id':'b','matched_visual_targets':{'v1':'actual observed object'}},
+                            {'id':'other','matched_visual_targets':{'v2':'same shape, different object'}}]
+        with self.assertRaises(MaterialUnavailable): validated_context_anchors(assets, unrelated_anchor)
+        proven = unrelated_anchor + [{'id':'a','matched_visual_targets':{'v0':'actual observed object'}}]
+        self.assertEqual(validated_context_anchors(assets, proven), {'v0':'a','v1':'b'})
+
     def setUp(self):
         self.saved = json.loads((Path(__file__).parent / 'fixtures/availability-query-pools.json').read_text())
         self.contexts = [

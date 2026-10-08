@@ -42,7 +42,7 @@
       "name": "three photo providers/download",
       "test": {
         "path": "tests/factory_v3/test_providers.py",
-        "sha256": "90d93c737f97234b1b1ddc9294fbbcfaf317b49e44ab8eb0d5c785bf1be63f00"
+        "sha256": "f2d9c45a6a944d0913afa798702be9fc60984a041f8942b6aabde085a5926d55"
       },
       "saved_evidence": {
         "path": "acceptance/factory-v3/providers-postgres.txt",
@@ -54,13 +54,13 @@
       "name": "retrieved metadata context planning",
       "test": {
         "path": "tests/material_first/test_photo_planning.py",
-        "sha256": "fb9d79383a7c223d1e96c6daeb4c421d40fbf918327c0e9db7f07189626f5f3a"
+        "sha256": "2269ef54dc622e4c179c6f666a6a9e53e34cf53bdaf60c5e223ea19e1fec80d1"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/availability-current-connected-replay.json",
-        "sha256": "583c24e0eedb9760b7479dbda01d31c04e9da18e0ad080bed0c0080bbb0f1cab"
+        "path": "acceptance/factory-v3/wholeplan-saved-distinctness.json",
+        "sha256": "3570e2c47bfbdc156afdf023588c21f71f0a70a10a25f8e946ebe9ef037775a3"
       },
-      "remaining": "Actual saved planner now passes on LIVE0e65ccf through first missing download; no current target-qualified pixel inspection or MP4 yet."
+      "remaining": "Planner strict protocol flags now propagated; actual old15 photos contain1copy/14distinct. Current strict-qualified output pending."
     },
     {
       "name": "metadata/Vision/selection",
@@ -78,11 +78,11 @@
       "name": "global variety/composition",
       "test": {
         "path": "tests/material_first/test_topic_connected.py",
-        "sha256": "ad58ef9b7c07826a7f1d2175a820740a7371b896bd69d923b74388128e6ea4d5"
+        "sha256": "7925f07dcb4bd64bf9f84da233f2aaf7cdd2cab3bf633163144d2b458d3d09d1"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/resumed-uk60-plan.json",
-        "sha256": "d0a73beb466ff200531b466ba0d8efa6685dc0e1b9171645a096ff17aede04d6"
+        "path": "acceptance/factory-v3/wholeplan-uk60-plan.json",
+        "sha256": "2148081856c8af89244ee1f1602437598b5de3358c0ca4a3d4885c7ac3abe272"
       },
       "remaining": "Controlled current topical16-pair prepare/freeze/schedule matrix passes; actual new model prose, qualified images and image variety remain unverified."
     },
@@ -93,10 +93,10 @@
         "sha256": "388a6128055e964972d506950fd51c77c0e80e82458dd4cac4998f3ddaf55114"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/query-review-deployment.json",
-        "sha256": "9eb1fd10676675ec94cec730364d932337e0d78797bc590dd0e96f12876157c5"
+        "path": "acceptance/factory-v3/bytebatch-uk60-terminal.json",
+        "sha256": "6fd230b84de3d99ae045ad37b6da22241015be1206a08a953d36eb01631012e4"
       },
-      "remaining": "Exact keyed narrated-fact schema deployed; incomplete actual historical review remains rejected. Current case has no accepted full factual/native review yet."
+      "remaining": "Actual old keyed review approved defective native wording. Native editor isolated from source text and observed-form gate added; new actual full review remains pending."
     },
     {
       "name": "one voice/alignment",
@@ -105,10 +105,10 @@
         "sha256": "9fa4af4302e640b43dd5b38ac8211377a0313f024ae1ecc74354e776915d5983"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/connected-presentation-real-worker-fixture.json",
-        "sha256": "02024d1841b9130b866e8b12d55054e5756739cc4bf1512c10b5bd833c2d9ab5"
+        "path": "acceptance/factory-v3/bytebatch-uk60-terminal.json",
+        "sha256": "6fd230b84de3d99ae045ad37b6da22241015be1206a08a953d36eb01631012e4"
       },
-      "remaining": "No fresh TTS or listening acceptance for this release."
+      "remaining": "Old491002b6 actual one voice/alignment succeeded but source native wording and spoken notation unacceptable; new current voice/listening pending."
     },
     {
       "name": "whole photos/exact timing/render/audit",
@@ -120,7 +120,7 @@
         "path": "acceptance/factory-v3/whole-photo-previews-20261006.json",
         "sha256": "7e1f08b6f847ff6c9170ae8f48ebbe7e6de5faecfee3b887d4da0359e79d8577"
       },
-      "remaining": "Real cached worker outputs support renderer only; no fresh current-release MP4 yet."
+      "remaining": "Old actual render stopped at contextual cadence; saved timings now pass same-role consolidation. Current MP4/audit pending."
     },
     {
       "name": "owner review/save/physical deletion",

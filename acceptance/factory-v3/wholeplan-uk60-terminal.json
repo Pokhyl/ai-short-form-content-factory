@@ -1,0 +1,67 @@
+{
+  "id": "c7bfd577-ac32-4d23-9451-ebd5aa926fee",
+  "status": "failed",
+  "error_code": "NarrationBudgetExceeded",
+  "actual_words": 186,
+  "maximum_words": 146,
+  "calls": [
+    {
+      "kind": "download",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "download",
+      "state": "succeeded",
+      "count": 26
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 12
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "failed",
+      "count": 2
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 4
+    }
+  ],
+  "tts_calls": 0,
+  "mp4": false,
+  "source_foreign_contexts": [
+    "forge",
+    "crescent"
+  ],
+  "strict_photo_protocols": true,
+  "rerun": false
+}

@@ -79,7 +79,7 @@ class TopicFixtures(FixtureOperations):
             repetitions = max(1, round(self.request['seconds'] * 2 / (3 * len(phrase.split()))))
             result = {'beats': [{'material_id': context['materials'][i]['id'],
                                   'narration': ' '.join([phrase] * repetitions),
-                                  'fact_ids': ['f' + str(i)], 'visual_target_id': 'v' + str(i)}
+                                  'fact_ids': ['f' + str(i)], 'visual_target_id': schema['properties']['beats']['items']['properties']['visual_target_id']['enum'][i % len(schema['properties']['beats']['items']['properties']['visual_target_id']['enum'])]}
                                  for i in range(3)]}
         elif key == 'material-language-edit':
             result = {'narration': context['narration']}

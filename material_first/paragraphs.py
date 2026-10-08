@@ -40,13 +40,17 @@ def compose_paragraphs(gemini, context, budget_error):
     fields={'material_id':string(m['id'] for m in materials),'narration':{**string(),'maxLength':2400},
             'fact_ids':array(string(f['id'] for f in context['evidence']['facts']),1,8)}
     targets=request.get('visual_targets')
-    if targets is not None:fields['visual_target_id']=string(t['id'] for t in targets)
+    if targets is not None:
+        allowed = request.get('validated_visual_anchors', {t['id']: None for t in targets})
+        fields['visual_target_id']=string(t['id'] for t in targets if t['id'] in allowed)
     schema=obj({'beats':array(obj(fields),3,maximum_beats)})
     instruction=(
         'Write a continuous factual explanation in natural native '+LANGUAGES[request['language']]+'. '
         f'Return 3 to {maximum_beats} complete narration paragraphs in order, not individual words or numerical word ranges. '
         f'Aim for {round(seconds*2.1)} words total for {seconds} seconds; {minimum_words}–{maximum_words} is a pre-voice estimate. '
         'Explain ALL required_fact_ids, including the essential mechanism and outcome; do not merely mention a related keyword. '
+        'Summarize source facts in your own concise words. Do not copy every evidence fact or quote entire source paragraphs. '
+        'Optional facts may be omitted; required facts and their essential mechanisms may not. '
         'Tag every source fact asserted by each paragraph in fact_ids. A paragraph often needs several IDs. '
         'Preserve qualifiers and numbers. Do not invent claims to meet length. '
         'Choose supplied inspected anchors and at least two available visual roles, using matched_visual_targets. '
@@ -72,8 +76,11 @@ def compose_paragraphs(gemini, context, budget_error):
         'Preserve every claim, qualifier and number, and the source facts asserted by each paragraph. '
         'Return complete paragraph strings in the same order. Do not add or delete explanations. '
         'Edit only the supplied narration; never replace paragraphs with quotations from source text. '
-        'Spell scientific notation and units naturally for spoken narration while preserving exact values.',
-        {'language':request['language'],'narration':[b['narration'] for b in beats]},edit_schema)
+        'Spell scientific notation and units naturally for spoken narration while preserving exact values. '
+        f'Tighten wording to {minimum_words}–{maximum_words} words TOTAL, preferably {round(seconds*2.1)}. '
+        'Shorten redundant phrasing without dropping any asserted claim, qualifier or number.',
+        {'language':request['language'],'narration':[b['narration'] for b in beats],
+         'word_budget':{'minimum':minimum_words,'maximum':maximum_words,'preferred':round(seconds*2.1)}},edit_schema)
     validate_json(edited,edit_schema)
     for beat,text in zip(beats,edited['narration']):
         validate_native_surface(request['language'], text)
