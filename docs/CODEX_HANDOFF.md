@@ -1,3 +1,7 @@
+## Saved duration audit: timing estimator is not a completed redesign — 2026-10-08
+
+Read-only audit of8existing original voice-stage durations acrossPL/UK: leave-one-out median words+characters predicts durations with up to4.870s absolute error. Historical exact voice identity is not independently verified, so this is a corpus warning rather than same-voice accuracy certification. No provider calls, DBwrites or media edits. Evidence acceptance/factory-v3/speech-timing/saved-duration-audit.json; reproducible script alongside it. Do not describe estimate+rejection as reliable exact-duration generation. Gemini503 is not the sole remaining blocker. Natural speech, exact requested duration and oneTTS cannot be guaranteed by a text-length estimate. Before further live runs, resolve the post-synthesis duration strategy within the owner contract; preserve words/speed and do not silently add seconds of dead air or shorten the requested video. Existing fail-closed duration and originalPCM gates remain live. project_ready=false.
+
 ## Resumed timing verification — 2026-10-08
 
 Fresh normal request257f0a09-c79f-4845-b6d3-0c1c18deae66 on LIVE738d3f5 reached3successful Gemini calls and8downloads, then immutableunknown at second photo-inspection batch: Gemini503UNAVAILABLE/high demand. No newTTS/MP4. Earlier provider recovery was partial; exact60s natural-voice verification remains blocked upstream. Do not repeat failedID or claim ready. Evidence: acceptance/factory-v3/speech-timing/resumed-provider-busy.json.

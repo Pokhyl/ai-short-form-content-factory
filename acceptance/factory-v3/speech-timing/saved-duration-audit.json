@@ -1,0 +1,73 @@
+{
+  "method": "leave-one-out on saved original voice-stage duration and frozen text; grouped by language; historical exact voice identity not independently verified",
+  "samples": [
+    {
+      "id": "88d14e84-581e-438c-8b62-ea2d749272ae",
+      "language": "pl",
+      "peer_count": 4,
+      "actual_seconds": 17.688,
+      "estimated_seconds": 16.299,
+      "error_seconds": -1.389
+    },
+    {
+      "id": "768b2466-8fab-4f3c-b979-411cab91e678",
+      "language": "pl",
+      "peer_count": 4,
+      "actual_seconds": 17.664,
+      "estimated_seconds": 18.308,
+      "error_seconds": 0.644
+    },
+    {
+      "id": "e95a77a5-2b66-4590-8620-4a53ba827dcd",
+      "language": "pl",
+      "peer_count": 4,
+      "actual_seconds": 14.424,
+      "estimated_seconds": 17.135,
+      "error_seconds": 2.711
+    },
+    {
+      "id": "72705d11-4556-4a4a-b751-676cc71e215d",
+      "language": "uk",
+      "peer_count": 2,
+      "actual_seconds": 50.928,
+      "estimated_seconds": 52.751,
+      "error_seconds": 1.823
+    },
+    {
+      "id": "31641843-a2c5-43fc-ad77-d27f47ec14d3",
+      "language": "pl",
+      "peer_count": 4,
+      "actual_seconds": 16.584,
+      "estimated_seconds": 16.836,
+      "error_seconds": 0.252
+    },
+    {
+      "id": "9dabd989-e5cd-44ba-8309-92af983d139e",
+      "language": "pl",
+      "peer_count": 4,
+      "actual_seconds": 19.128,
+      "estimated_seconds": 17.749,
+      "error_seconds": -1.379
+    },
+    {
+      "id": "3bf60490-c179-484d-991d-4fb5c16ca1a1",
+      "language": "uk",
+      "peer_count": 2,
+      "actual_seconds": 60.888,
+      "estimated_seconds": 62.846,
+      "error_seconds": 1.958
+    },
+    {
+      "id": "491002b6-10d1-4432-b219-183be781a228",
+      "language": "uk",
+      "peer_count": 2,
+      "actual_seconds": 74.856,
+      "estimated_seconds": 69.986,
+      "error_seconds": -4.87
+    }
+  ],
+  "maximum_absolute_error_seconds": 4.87,
+  "new_provider_calls": 0,
+  "database_writes": 0,
+  "conclusion": "Word/character estimate alone cannot establish the one-second natural-duration window."
+}
