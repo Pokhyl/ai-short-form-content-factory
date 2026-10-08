@@ -17,11 +17,11 @@
   "fix": "Server-owned repair prose uses exact required word_N fields; each value validated as one word. Source/native/independent factual/cadence gates retained.",
   "tests": "130 material + 103 core PASS",
   "pending": [
-    "representative PL15/EN30/RU45 matrix",
+    "source-grounded availability assessment for representative matrix; no blind new case",
     "human acceptance remains false"
   ],
   "project_ready": false,
-  "updated_at": "2026-10-08T15:50:17.675498+00:00",
+  "updated_at": "2026-10-08T15:52:37.917192+00:00",
   "protected_rollout_unchanged": true,
   "next_case": "72705d11-4556-4a4a-b751-676cc71e215d",
   "next_case_state": "qa_pass",
@@ -40,5 +40,12 @@
     "photos": 17,
     "sha256": "43d91fbb7387be1397f4431fda7ad65459c848a0c481ba9561abdf16d14d05b8"
   },
-  "active_snapshot_note": "idle snapshot applies before submission; current case preparing"
+  "active_snapshot_note": "idle snapshot applies before submission; current case preparing",
+  "variety_matrix": {
+    "pl15": "immutable_failed before download/TTS/MP4; two full documented-object metadata pools empty",
+    "pl15_id": "f2ed10e4-79cd-4363-a753-304c3be9b02d",
+    "en30": "not submitted",
+    "ru45": "not submitted",
+    "replay": "52 candidates; exact saved response replay, no calls/writes"
+  }
 }

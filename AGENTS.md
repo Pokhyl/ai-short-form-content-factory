@@ -1,3 +1,7 @@
+## UK60 video retained; PL15 matrix stops on actual availability — 2026-10-08
+
+Actual72705d11 UK60 MP4 qa_pass retained at work/video-72705d11.mp4;exact60000ms/17photos/1TTS,hash43d91fbb7387be1397f4431fda7ad65459c848a0c481ba9561abdf16d14d05b8. PL15f2ed10e4 submitted once on LIVE1d9476b, immutableValueError before downloads/TTS/MP4,1Gemini. Full saved52-candidate replay: zero complete metadata matches for freshly baked bread cooling rack and fresh yeast block;3matches kneading bread dough in a bowl. No anchor substitution/query weakening/new provider calls/DBwrites. Evidence acceptance/factory-v3/matrix-pl15-terminal. EN30/RU45 remain unsubmitted per stop-first-terminal matrix. Next source-grounded availability assessment, no blind repeat. human_pass=false;project_ready=false. Compact checkpoint acceptance/factory-v3/keyed-word-budget/checkpoint.json.
+
 ## Actual UK60 MP4 passes machine QA; representative matrix next — 2026-10-08
 
 72705d11 qa_pass on LIVE1d9476b:30downloads/14Gemini/1TTS, independent keyed factual/native review, voice/alignment/render/QA complete. Exact60000ms/17uniquephotos/sha256:43d91fbb7387be1397f4431fda7ad65459c848a0c481ba9561abdf16d14d05b8. Public owner detail/history/download Range206 verified; contact sheet visually inspected. Local work/video-72705d11.mp4 hash matches. Evidence acceptance/factory-v3/wordslots-uk60-output. human_pass=false;project_ready=false pending representative PL15/EN30/RU45 matrix under recorded authorization. All old failedIDs immutable;free-only/oneTTS retained.

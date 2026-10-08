@@ -1,0 +1,139 @@
+{
+  "status": {
+    "id": "f2ed10e4-79cd-4363-a753-304c3be9b02d",
+    "request": {
+      "topic": "Jak powstaje chleb na drożdżach",
+      "seconds": 15,
+      "language": "pl",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "failed",
+    "source_revision": "1d9476b52591b3b04dd7b67bb35c7b4c96b952c7",
+    "error_code": "ValueError",
+    "machine_pass": false,
+    "human_pass": false
+  },
+  "call_summary": [
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 3
+    }
+  ],
+  "model_calls": [
+    {
+      "key": "material-brief",
+      "result": {
+        "facts": [
+          {
+            "id": "fact-1",
+            "text": "Pracę w domowej piekarni zaczynamy od rozczynu w sytuacji, w której korzystamy ze świeżych drożdży. Przygotowanie zaczynu warto rozpocząć od podgrzania wody lub mleka, a płyn powinien być letni.",
+            "support": [
+              {
+                "span_id": "s1-0-1126"
+              }
+            ]
+          },
+          {
+            "id": "fact-2",
+            "text": "W trakcie wyrabiania ciasta na bazie mąki pszennej, orkiszowej lub żytniej tworzy się gluten, który zatrzyma bąbelki dwutlenku węgla i sprawi, że chleb będzie puszysty.",
+            "support": [
+              {
+                "span_id": "s1-3393-4488"
+              }
+            ]
+          },
+          {
+            "id": "fact-3",
+            "text": "Po wyjęciu rumianego pieczywa z piekarnika warto uzbroić się w cierpliwość i wyłożyć je na kuchenną kratkę, aby się nie zaparzyło od dołu.",
+            "support": [
+              {
+                "span_id": "s1-11363-12056"
+              }
+            ]
+          }
+        ],
+        "required_fact_ids": [
+          "fact-1",
+          "fact-2",
+          "fact-3"
+        ],
+        "photo_contexts": {
+          "setting": {
+            "subject": "młody bochenek chleba na kuchennej kratce do studzenia",
+            "query": "freshly baked bread cooling rack",
+            "fact_ids": [
+              "fact-3"
+            ],
+            "support_span_ids": [
+              "s1-11363-12056"
+            ]
+          },
+          "subject": {
+            "subject": "świeże drożdże w kostce",
+            "query": "fresh yeast block",
+            "fact_ids": [
+              "fact-1"
+            ],
+            "support_span_ids": [
+              "s1-0-1126"
+            ]
+          },
+          "detail": {
+            "subject": "surowe ciasto chlebowe wyrabiane w misie",
+            "query": "kneading bread dough in a bowl",
+            "fact_ids": [
+              "fact-2"
+            ],
+            "support_span_ids": [
+              "s1-3393-4488"
+            ]
+          }
+        }
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10322,
+        "promptTokenCount": 9671,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 9671
+          }
+        ],
+        "candidatesTokenCount": 651
+      }
+    }
+  ],
+  "human_pass": false
+}
