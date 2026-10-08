@@ -1,0 +1,11 @@
+{
+  "id": "f98e91e7-b22e-46b0-8c6d-8dc05b6f4bbf",
+  "revision": "70131e4cf41bc03b51e133282cde572ab58d57d9",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "mode": "existing factory-generated reviewed script as regression input; real new measured TTS and automatic text correction; not new discovery/composition acceptance",
+  "max_gemini_calls": 4,
+  "max_tts_calls": 3,
+  "free_only": true,
+  "stop": "first terminal; no provider retry",
+  "required": "original source plan unchanged; exact natural voice and effective revised script; actual60s MP4"
+}
