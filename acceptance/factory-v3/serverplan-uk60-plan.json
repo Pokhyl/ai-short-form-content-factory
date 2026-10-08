@@ -1,0 +1,25 @@
+{
+  "id": "69886858-769d-48d2-b4ae-2cfc80eba4f7",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "runtime_revision": "8a1818b9187745dd7865961c716adbd3dd63ba7c",
+  "authorization": "Owner explicitly не останавливайся пока проект не будет готов; continue through diagnosed failures under unchanged bounded free-only budgets and immutable failed IDs.",
+  "maximum_fresh_requests": 1,
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 30,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "expected_steps": "brief -> nine search pools -> one availability planner -> up to eight independent pixel batches -> compose -> native edit -> complete keyed independent factual/native review -> one voice -> alignment -> exact60s whole-photo render/audit",
+  "question": "Does server-owned preverified three-paragraph allocation constrain real prose sufficiently to reach independent native/factual review, one voice, alignment and exact60s MP4?",
+  "offline": "230local checks PASS. Actual12/13/15 unique-photo saved context structural schedule controls verified. Model chooses keyed prose/facts only under fixed server word/anchor plan; actual new native/factual approval pending.",
+  "remaining": "Unseen actual planner response, new target-qualified pixel judgments, complete keyed/native review, one voice and current MP4 not verified. Controlled metadata selection is not acceptance.",
+  "stop": "Terminal case remains immutable. Diagnose saved evidence, fix actual blocker before any fresh normal case; do not blindly repeat. No paid fallback/quota expansion/second TTS/manual approvals.",
+  "human_pass": false
+}
