@@ -1,0 +1,11 @@
+{
+  "id": "e3d03a07-6bee-446c-8d78-c53acc30bac9",
+  "revision": "8068ed136287c8606f196aadc3899bad708be9f3",
+  "mode": "saved actual52.056s measurement -> fresh per-paragraph fact-bound rewrite -> whole-paragraph duration selection -> independent review -> actual voice/alignment/render/QA",
+  "max_new_gemini_calls": 6,
+  "max_new_tts_calls": 3,
+  "free_only": true,
+  "no_manual_narration": true,
+  "new_discovery_acceptance": false,
+  "stop": "first terminal; all earlier failures immutable"
+}
