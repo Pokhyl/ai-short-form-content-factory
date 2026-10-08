@@ -1,0 +1,15 @@
+{
+  "request_id": "b59ceb5d-3384-4b35-827f-9d6b2740344c",
+  "revision": "de5094f0aceee928cc389b1e836015070f739c99",
+  "normal_owner_api": true,
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "max_gemini_calls": 16,
+  "max_tts_calls": 3,
+  "tts_characters": "exact revised text accounted before every send; bounded by existing monthly ceiling",
+  "providers": "existing verified free-only Gemini and Google Cloud TTS",
+  "stop": "first terminal outcome; no network retries or repetition of failed IDs",
+  "unresolved_question": "Can normal preparation and measured text corrections yield 59-60 seconds original-speed speech and exact 60-second MP4?",
+  "status": "planned"
+}
