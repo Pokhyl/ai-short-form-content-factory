@@ -1,5 +1,6 @@
 """Bounded measured-duration correction; completed samples are never retried."""
 from copy import deepcopy
+from itertools import product
 from factory_v3.preflight import digest
 from factory_v3.gemini import obj, string, validate_json
 from factory_v3.grounding import compact_evidence
@@ -17,6 +18,21 @@ def validate_revision(original, revised):
     for before, after in zip(original['scenes'], revised['scenes']):
         if {k:v for k,v in before.items() if k != 'narration'} != {k:v for k,v in after.items() if k != 'narration'}:
             raise ValueError('voice correction changed paragraph grounding')
+
+
+
+def select_paragraphs(payload, proposed, timing):
+    """Choose whole reviewed-source paragraph variants, never splice words/audio."""
+    from .speech_timing import estimated_seconds
+    scenes=payload['scenes']
+    if not 1 <= len(scenes) <= 8 or len(proposed) != len(scenes):
+        raise ValueError('bounded paragraph alternatives required')
+    originals=[s['narration'] for s in scenes]
+    choices=[list(dict.fromkeys([old,new])) for old,new in zip(originals,proposed)]
+    target=payload['seconds']-.5
+    return list(min(product(*choices),key=lambda paragraphs:(
+        abs(estimated_seconds(' '.join(paragraphs),timing)-target),
+        sum(a!=b for a,b in zip(originals,paragraphs)))))
 
 
 def rewrite(payload, measured_ms, gemini):
@@ -62,7 +78,9 @@ def rewrite(payload, measured_ms, gemini):
         text=result['paragraph_'+str(i)]
         validate_native_surface(payload['language'],text)
         scene['narration']=text.strip()
-    revised['script']=' '.join(s['narration'] for s in revised['scenes'])
+    selected=select_paragraphs(payload,[s['narration'] for s in revised['scenes']],timing)
+    for scene,text in zip(revised['scenes'],selected):scene['narration']=text
+    revised['script']=' '.join(selected)
     if revised['script'] == payload['script']:
         raise ValueError('duration correction returned unchanged text')
     revised['speech_timing']=timing

@@ -120,3 +120,19 @@ class FirstMeasurementTests(unittest.TestCase):
         with self.assertRaises(ValueError):validate_plan_timing(p)
         p['voice_correction']={'max_attempts':99}
         with self.assertRaises(ValueError):validate_plan_timing(p)
+
+class ParagraphSelectionTests(unittest.TestCase):
+    def test_saved_model_overshoot_can_use_complete_paragraph_variants_without_extra_model_call(self):
+        import json
+        from pathlib import Path
+        from material_first.voice_correction import select_paragraphs
+        from material_first.speech_timing import estimated_seconds
+        sample=json.loads((Path(__file__).parent/'fixtures/voice-rewrite-overshoot.json').read_text())
+        original=' '.join(sample['original']);duration=sample['actual_duration_ms']/1000
+        timing={'words_per_second':len(original.split())/duration,'characters_per_second':len(original)/duration}
+        p={'seconds':60,'scenes':[{'narration':t} for t in sample['original']]}
+        selected=select_paragraphs(p,sample['proposed'],timing)
+        self.assertGreater(estimated_seconds(' '.join(sample['proposed']),timing),72)
+        self.assertAlmostEqual(estimated_seconds(' '.join(selected),timing),59.814,places=3)
+        self.assertEqual(selected,[sample['original'][0],sample['proposed'][1],sample['proposed'][2]])
+        for i,text in enumerate(selected):self.assertIn(text,[sample['original'][i],sample['proposed'][i]])
