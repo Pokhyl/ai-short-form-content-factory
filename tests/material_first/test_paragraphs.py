@@ -6,6 +6,32 @@ from material_first.presentation import TOPIC_POLICY
 
 
 class ParagraphTests(unittest.TestCase):
+    @staticmethod
+    def controlled_plan_reply(plan):
+        # Structural coverage only; these tokens never claim provider prose approval.
+        return {'paragraph_'+str(i+1):{
+            'narration':' '.join(['контрольне']*p['word_budget']['preferred']),
+            'fact_ids':list(dict.fromkeys(p['required_fact_ids']+p['identifying_fact_ids']))}
+            for i,p in enumerate(plan)}
+
+    def test_actual_rare_role_overlong_draft_uses_preverified_server_allocation(self):
+        saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-rare-role-overlong.json').read_text())
+        context=saved['composition_context'];calls=[]
+        def generate(key,instruction,payload,schema):
+            calls.append(key)
+            if key=='material-compose':return saved['draft'],{}
+            if key=='material-compose-length-repair':
+                plan=payload['paragraph_plan']
+                self.assertEqual([p['visual_target_id'] for p in plan],['v1','v2','v2'])
+                self.assertEqual(set(schema['properties']),{'paragraph_1','paragraph_2','paragraph_3'})
+                return self.controlled_plan_reply(plan),{}
+            return {'narration':payload['narration']},{}
+        result=Operations('.',None,SimpleNamespace(generate=generate),None,None).compose(context)
+        self.assertEqual(calls,['material-compose','material-compose-length-repair','material-language-edit'])
+        from material_first.engine import fit_contextual_paragraphs
+        fit_contextual_paragraphs(context['materials'],result,seconds=60,
+                                 anchor_ids=context['request']['validated_visual_anchors'].values())
+
     def test_actual_infeasible_anchors_can_be_regrouped_once_before_native(self):
         saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-infeasible-fixed-anchors.json').read_text())
         context=saved['composition_context']; calls=[]
@@ -21,9 +47,9 @@ class ParagraphTests(unittest.TestCase):
             calls.append(key)
             if key=='material-compose':return copy.deepcopy(saved['draft']),{}
             if key=='material-compose-length-repair':
-                self.assertIn('regroup paragraphs',instruction)
+                self.assertIn('server-owned paragraph_plan',instruction)
                 self.assertEqual(payload['cadence_guidance']['fact_photo_capacity']['f4'],0)
-                return copy.deepcopy(repaired),{}
+                return self.controlled_plan_reply(payload['paragraph_plan']),{}
             self.assertEqual(key,'material-language-edit')
             return {'narration':payload['narration']},{}
         result=Operations('.',None,SimpleNamespace(generate=generate),None,None).compose(context)
@@ -52,21 +78,15 @@ class ParagraphTests(unittest.TestCase):
                 self.assertEqual(payload['evidence']['facts'],context['evidence']['facts'])
                 self.assertEqual(payload['cadence_guidance']['maximum_total_seconds_per_role']['v2'],5)
                 self.assertIsNotNone(payload['cadence_error'])
-                repaired=copy.deepcopy(beats)
-                # Explicitly controlled length response, not linguistic/factual acceptance.
-                for b,count in zip(repaired[:3],(26,31,31)):
-                    b['narration']+=' контрольне'*max(0,count-len(b['narration'].split()))
-                repaired[3]['narration']='Протонейтронна зірка остигає, залишаючи компактну щільну нейтронну зірку.'
-                repaired[3]['fact_ids']=['f5','f7']
-                return {'beats':repaired},{}
+                return self.controlled_plan_reply(payload['paragraph_plan']),{}
             self.assertEqual(key,'material-language-edit')
             self.assertEqual(set(payload),{'language','narration','word_budget'})
             return {'narration':payload['narration']},{}
         result=Operations('.',None,SimpleNamespace(generate=generate),None,None).compose(context)
         self.assertEqual(calls,['material-compose','material-compose-length-repair','material-language-edit'])
         self.assertGreaterEqual(sum(len(b['narration'].split()) for b in result['beats']),84)
-        self.assertEqual([{k:b[k] for k in ('material_id','visual_target_id')} for b in result['beats']],
-                         [{k:b[k] for k in ('material_id','visual_target_id')} for b in beats])
+        self.assertEqual(len(result['beats']),3)
+        self.assertTrue({b['material_id'] for b in result['beats']} <= {m['id'] for m in context['materials']})
         self.assertTrue(set(context['request']['required_fact_ids']) <= {f for b in result['beats'] for f in b['fact_ids']})
         from material_first.engine import fit_contextual_paragraphs
         fit_contextual_paragraphs(context['materials'],result,seconds=60,

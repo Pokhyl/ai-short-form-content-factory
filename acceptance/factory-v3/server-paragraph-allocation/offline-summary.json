@@ -1,0 +1,16 @@
+{
+  "failed_id": "351ec71d-bfca-49c2-82d1-05cf50180696",
+  "actual_unique_approved_photos": 15,
+  "role_counts": {
+    "v0": 1,
+    "v1": 5,
+    "v2": 9
+  },
+  "cause": "Completed initial and free repair both allocate40+words to the one-photo starting role; existing guidance and free regrouping do not establish feasible role durations.",
+  "new_method": "Server selects three distinct inspected anchors across two best-covered roles, allocates individual word budgets and required/observed facts. Provider returns keyed paragraph text/facts only, cannot return alternate anchor identities. Server validates counts/facts and full global unique cadence before native edit; native sees only prose and total/individual word budgets.",
+  "saved_context_allocation_controls": "actual12/13/15-photo corpora pass; controlled tokens prove structure only, not new semantic/native provider acceptance",
+  "local_checks": 230,
+  "tts_calls": 0,
+  "mp4": false,
+  "project_ready": false
+}
