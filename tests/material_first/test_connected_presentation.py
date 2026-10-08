@@ -126,12 +126,12 @@ class ConnectedPresentationTests(unittest.TestCase):
             self.assertEqual(after['framing'], 'original-whole')
             self.assertEqual(len(list(Path(tmp).iterdir())), 1)
 
-    def test_fitted_voice_window_accepts_saved_samples_without_resynthesis(self):
+    def test_natural_voice_window_rejects_saved_stretched_samples(self):
         worker = PhotoWorker('.', None, 'http://localhost:3001', None)
-        for seconds, duration in [(30,22248),(45,57552),(60,73416)]:
+        for seconds, duration in [(30,22248),(45,57552),(60,73416),(60,50928)]:
             low, high = worker._duration_window({'seconds':seconds,'presentation_policy':POLICY})
-            self.assertLessEqual(low, duration);self.assertGreaterEqual(high, duration)
-            self.assertLessEqual(candidate_limit(seconds), 42)
+            self.assertFalse(low <= duration <= high)
+            self.assertEqual((low,high),(seconds*1000-1000,seconds*1000))
 
     def test_completed_bad_inspection_row_rejects_only_that_photo_without_retry(self):
         from factory_v3.gemini import ModelSchemaError

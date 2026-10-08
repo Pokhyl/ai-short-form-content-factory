@@ -13,12 +13,14 @@ class PresentationTests(unittest.TestCase):
     def test_previous_six_or_eight_photos_cannot_cover_long_video(self):
         for seconds,count in [(30,6),(45,8),(60,8)]:
             with self.assertRaises(ValueError):visual_timeline(seconds,count)
-    def test_saved_three_voices_fit_requested_duration_with_bounded_tempo(self):
-        for original,seconds in [(22.248,30),(57.552,45),(73.416,60)]:
-            rate=tempo_factor(original,seconds)
-            self.assertAlmostEqual(original/rate,seconds)
-        for original in [5,100]:
-            with self.assertRaises(ValueError):tempo_factor(original,30)
+    def test_duration_mismatch_cannot_be_hidden_by_slowing_or_accelerating_voice(self):
+        for original, seconds in [(50.928,60),(22.248,30),(57.552,45),(73.416,60)]:
+            with self.assertRaisesRegex(ValueError, 'changing speech speed is forbidden'):
+                tempo_factor(original,seconds)
+        for original, seconds in [(59,60),(59.9,60),(60,60),(14,15)]:
+            self.assertEqual(tempo_factor(original,seconds),1.0)
+        for original in [58.999,60.001]:
+            with self.assertRaises(ValueError):tempo_factor(original,60)
     def test_nonfinite_audio_and_unsupported_target_are_rejected(self):
         for duration in [float('nan'),float('inf'),0,-1]:
             with self.assertRaises(ValueError):tempo_factor(duration,30)

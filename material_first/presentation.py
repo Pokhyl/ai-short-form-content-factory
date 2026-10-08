@@ -1,7 +1,7 @@
 """Whole-photo presentation and exact, frame-counted delivery duration.
 
 Narration and visual cuts are separate: a sentence may span several photos.
-Original TTS bytes are retained; tempo fitting changes speed but not pitch.
+Original TTS speech keeps its natural speed; only a short silent tail is allowed.
 This module does not certify source facts or unseen-photo relevance.
 """
 import math
@@ -79,9 +79,11 @@ def tempo_factor(source_seconds,target_seconds):
     preferred_shots(target_seconds)
     if not math.isfinite(source_seconds) or source_seconds <= 0:
         raise ValueError('invalid source audio duration')
-    factor=source_seconds/target_seconds
-    if not .65<=factor<=1.5: raise ValueError('narration too far from requested time')
-    return factor
+    # A duration mismatch must never be concealed by changing speech speed.
+    # At most one second of trailing silence preserves the requested frame count.
+    if not 0 <= target_seconds - source_seconds <= 1:
+        raise ValueError('natural narration must end within one second of requested time; changing speech speed is forbidden')
+    return 1.0
 
 def render_whole_photos(directory, audio_source, photos, seconds, *, policy=LEGACY_POLICY, timeline=None):
     """Exclusive new artifact; never overwrites source audio or photographs."""
@@ -96,7 +98,7 @@ def render_whole_photos(directory, audio_source, photos, seconds, *, policy=LEGA
     # Keep the encoded original immutable; no new TTS and no second synthesis.
     fitted=directory/'fitted.wav'
     run(['ffmpeg','-nostdin','-v','error','-n','-i',str(audio_source),'-vn',
-         '-af',f'atempo={rate:.10f},apad,atrim=duration={seconds}',
+         '-af',f'apad,atrim=duration={seconds}',
          '-ar','48000','-ac','1','-c:a','pcm_s16le',str(fitted)])
     if round(float(probe(fitted)['format']['duration'])*1000)!=seconds*1000:
         raise ValueError('fitted audio duration differs from requested time')
@@ -137,7 +139,7 @@ def render_whole_photos(directory, audio_source, photos, seconds, *, policy=LEGA
            'frame_count':int(v[0]['nb_frames']),'shot_count':len(photos),'unique_photo_count':len(set(hashes)),
            'framing':'whole photograph, aspect preserved, solid matte, no crop or blur',
            'source_audio_sha256':source_audio_hash,'source_audio_duration_ms':original_ms,
-           'audio_tempo_factor':rate,'fitted_audio_sha256':sha(fitted),'audio_policy':'pitch-preserving tempo fit, original unchanged',
+           'audio_tempo_factor':rate,'fitted_audio_sha256':sha(fitted),'audio_policy':'natural speed, at most one second trailing silence, original unchanged',
            'new_tts_calls':0,'full_decode_pass':True,'video_sha256':sha(final),
            'timeline':timeline,'photos':[{'path':str(p),'sha256':h} for p,h in zip(photos,hashes)]}
     (directory/'proof.json').write_text(json.dumps(proof,indent=2)+'\n')

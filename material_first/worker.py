@@ -1,6 +1,6 @@
 """Photo fallback bridge to the existing continuous-voice renderer.
 
-New plans use whole photographs, independent visual cuts and exact-duration fitted voice.
+New plans use whole photographs, independent visual cuts and natural-speed voice with at most one second of trailing silence.
 Source-video interval rendering remains a separate adapter boundary.
 """
 from copy import deepcopy
@@ -19,7 +19,7 @@ import json
 class PhotoWorker(WorkerAdapters):
     def _duration_window(self, payload):
         if payload.get('presentation_policy') in WHOLE_POLICIES:
-            return round(payload['seconds'] * 650), round(payload['seconds'] * 1500)
+            return payload['seconds'] * 1000 - 1000, payload['seconds'] * 1000
         return round(payload["seconds"] * 800), round(payload["seconds"] * 1200)
 
     def _post(self, path, payload, timeout=60):
