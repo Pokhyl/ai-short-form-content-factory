@@ -1,0 +1,11 @@
+{
+  "failed_id": "5cfa7e3b-55a1-4d59-ab8b-120fb774b614",
+  "accepted_unique_photos": 12,
+  "cause": "Draft has paragraphs whose only facts have zero eligible photographs; previous repair freezes this impossible paragraph/role/anchor structure.",
+  "fix": "Single cadence repair may regroup narration and reselect already-inspected anchors/approved roles. Length-only repair retains identities. Original required facts and independent native/factual review preserved; no unavailable fact becomes pixel evidence.",
+  "controlled_test": "three paragraphs with100/10/10 controlled words and genuine saved photo/fact identities pass global unique12-photo cadence; not provider native/factual acceptance.",
+  "local_checks": 229,
+  "tts_calls": 0,
+  "mp4": false,
+  "project_ready": false
+}

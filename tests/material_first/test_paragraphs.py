@@ -6,6 +6,39 @@ from material_first.presentation import TOPIC_POLICY
 
 
 class ParagraphTests(unittest.TestCase):
+    def test_actual_infeasible_anchors_can_be_regrouped_once_before_native(self):
+        saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-infeasible-fixed-anchors.json').read_text())
+        context=saved['composition_context']; calls=[]
+        repaired={'beats':[
+            {'material_id':'wikimedia:516106','visual_target_id':'v0','fact_ids':['f1','f4','f5','f6'],
+             'narration':' '.join(['контрольне']*100)},
+            {'material_id':'wikimedia:151097113','visual_target_id':'v1','fact_ids':['f2'],
+             'narration':' '.join(['контрольне']*10)},
+            {'material_id':'wikimedia:80137098','visual_target_id':'v2','fact_ids':['f8'],
+             'narration':' '.join(['контрольне']*10)}]}
+        # Controlled structure proves allocation only, not new native/factual provider approval.
+        def generate(key,instruction,payload,schema):
+            calls.append(key)
+            if key=='material-compose':return copy.deepcopy(saved['draft']),{}
+            if key=='material-compose-length-repair':
+                self.assertIn('regroup paragraphs',instruction)
+                self.assertEqual(payload['cadence_guidance']['fact_photo_capacity']['f4'],0)
+                return copy.deepcopy(repaired),{}
+            self.assertEqual(key,'material-language-edit')
+            return {'narration':payload['narration']},{}
+        result=Operations('.',None,SimpleNamespace(generate=generate),None,None).compose(context)
+        self.assertEqual(calls,['material-compose','material-compose-length-repair','material-language-edit'])
+        self.assertEqual(len(result['beats']),3)
+        from material_first.engine import fit_contextual_paragraphs
+        fit_contextual_paragraphs(context['materials'],result,seconds=60,
+                                 anchor_ids=context['request']['validated_visual_anchors'].values())
+        def failed(key,*args):
+            if key=='material-compose':return copy.deepcopy(saved['draft']),{}
+            if key=='material-compose-length-repair':return copy.deepcopy(saved['failed_repair']),{}
+            raise AssertionError('native must not run for infeasible saved repair')
+        with self.assertRaises(ValueError):
+            Operations('.',None,SimpleNamespace(generate=failed),None,None).compose(context)
+
     def test_actual_short_draft_gets_one_bounded_source_aware_repair_before_native_edit(self):
         actual=json.loads((Path(__file__).parent/'fixtures/actual-uk60-short-paragraphs.json').read_text())
         beats=copy.deepcopy(actual['draft']['beats'])

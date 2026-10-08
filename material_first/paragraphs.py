@@ -48,6 +48,8 @@ def compose_paragraphs(gemini, context, budget_error):
     cadence_guidance = {'seconds':seconds,
         'minimum_unique_photos':math.ceil(seconds/5),
         'anchor_related_fact_ids':{m['id']:m.get('supported_fact_ids',[]) for m in materials},
+        'fact_photo_capacity':{f['id']:5*sum(f['id'] in m.get('supported_fact_ids',[]) for m in materials)
+                               for f in context['evidence']['facts']},
         'maximum_total_seconds_per_role':{t['id']:min(seconds,5*sum(
             t['id'] in m.get('matched_visual_targets',{}) for m in materials)) for t in targets or []}}
     model_context = {**context,'materials':compact_materials(materials),
@@ -94,26 +96,37 @@ def compose_paragraphs(gemini, context, budget_error):
             return str(error)
         return None
     cadence_error = cadence_problem(beats)
+    paragraph_diagnostics = [{'paragraph':i+1, 'fact_ids':b['fact_ids'],
+        'eligible_photo_count':sum(bool(set(b['fact_ids']) & set(m.get('supported_fact_ids',[])))
+            and (b.get('visual_target_id') is None or b['visual_target_id'] in m.get('matched_visual_targets',{}))
+            for m in materials)} for i,b in enumerate(beats)]
     if not minimum_words <= words <= maximum_words or cadence_error:
         # One separately keyed correction of a completed valid draft, inside
         # the existing durable Gemini ceiling. Provider failures are terminal.
         repair_schema = deepcopy(schema)
-        repair_schema['properties']['beats']['minItems'] = len(beats)
-        repair_schema['properties']['beats']['maxItems'] = len(beats)
+        if not cadence_error:
+            repair_schema['properties']['beats']['minItems'] = len(beats)
+            repair_schema['properties']['beats']['maxItems'] = len(beats)
+        repair_identity_instruction = (
+            'The completed visual assignment is infeasible. You may regroup paragraphs and choose different supplied inspected anchors and approved roles. '
+            'Move hidden mechanisms into paragraphs that also explicitly explain a related observed outcome; do not leave a paragraph tagged only with facts absent from ALL its role photos. '
+            'Every paragraph must assert at least one identifying anchor_related_fact_id. Include it in fact_ids only when the narration actually explains it. '
+            if cadence_error else 'Preserve the same paragraphs, their order, anchor identities and visual roles. ')
         repaired, _ = gemini.generate('material-compose-length-repair',
             instruction + f' The completed draft has {words} words. Rewrite to {minimum_words}–{maximum_words}, '
-            f'preferably {round(seconds*2.1)}. Preserve the same paragraphs, their order, anchor identities, '
-            'visual roles and ALL required_fact_ids across the continuous narration. Preserve every supported original claim, number and qualifier. '
+            f'preferably {round(seconds*2.1)}. ' + repair_identity_instruction +
+            'Preserve ALL required_fact_ids across the continuous narration and every supported original claim, number and qualifier. '
             'Expand too-short paragraphs with explanatory details from the supplied source facts; '
             'shorten excessive wording without dropping those facts. No repetition, padding or invented facts. '
-            'Redistribute paragraph lengths and source-backed explanations within the fixed anchors to respect cadence_guidance; '
+            'Redistribute paragraph lengths and source-backed explanations over the inspected anchors to respect cadence_guidance; '
             'a rare one-photo role must remain a short clause while better-covered roles carry more explanation. '
             'Correct fact_ids to the facts actually asserted in each revised paragraph. Never merely add a citation without explaining it; '
             'omit an optional fact_id that the paragraph does not assert. All required source facts must remain fully explained.',
-            {**model_context, 'completed_draft':deepcopy(beats), 'cadence_error':cadence_error}, repair_schema)
+            {**model_context, 'completed_draft':deepcopy(beats), 'cadence_error':cadence_error,
+             'paragraph_diagnostics':paragraph_diagnostics}, repair_schema)
         validate_json(repaired, repair_schema)
-        for original, revised in zip(beats, repaired['beats']):
-            if (any(original.get(k) != revised.get(k) for k in ('material_id', 'visual_target_id'))
+        for index, revised in enumerate(repaired['beats']):
+            if ((not cadence_error and any(beats[index].get(k) != revised.get(k) for k in ('material_id', 'visual_target_id')))
                     or len(set(revised['fact_ids'])) != len(revised['fact_ids'])):
                 raise ValueError('length repair changed paragraph source or visual identity')
         beats = deepcopy(repaired['beats'])
