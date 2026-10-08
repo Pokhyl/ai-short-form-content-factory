@@ -1,0 +1,82 @@
+{
+  "id": "1aa4d47e-fffe-4229-bd3b-86fa7cd9bb3c",
+  "status": {
+    "id": "1aa4d47e-fffe-4229-bd3b-86fa7cd9bb3c",
+    "request": {
+      "topic": "Нейтронная звезда",
+      "seconds": 60,
+      "language": "uk",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "failed",
+    "source_revision": "f55566575e3493b0314505440430f9d3b00689c4",
+    "error_code": "MaterialUnavailable",
+    "machine_pass": false,
+    "human_pass": false
+  },
+  "calls": [
+    {
+      "kind": "download",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "download",
+      "state": "succeeded",
+      "count": 20
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 10
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 5
+    }
+  ],
+  "inspected_count": 19,
+  "accepted_real_before_other_gates": 5,
+  "required_minimum": 12,
+  "tts_calls": 0,
+  "mp4": false,
+  "new_blockers": [
+    "Planner selected an illustration-only merger anchor and a Type Ia supernova contextual anchor; pixel review falsely associated Kepler with neutron-star formation.",
+    "Only five real images accepted before identity/cadence gates, below twelve for UK60."
+  ],
+  "authoritative_contradiction": "https://www.nasa.gov/universe/kepler-supernova-remnant/",
+  "next": "Replay complete saved candidate pools and all inspection responses offline; close planner object-relationship/availability feasibility together, not another blind normal run. Preserve source scope, real-medium, uniqueness, cadence and free-only gates.",
+  "human_pass": false,
+  "project_ready": false
+}

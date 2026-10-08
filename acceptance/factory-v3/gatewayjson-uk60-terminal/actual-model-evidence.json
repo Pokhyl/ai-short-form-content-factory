@@ -1,0 +1,1201 @@
+{
+  "status": {
+    "id": "1aa4d47e-fffe-4229-bd3b-86fa7cd9bb3c",
+    "request": {
+      "topic": "Нейтронная звезда",
+      "seconds": 60,
+      "language": "uk",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "failed",
+    "source_revision": "f55566575e3493b0314505440430f9d3b00689c4",
+    "error_code": "MaterialUnavailable",
+    "machine_pass": false,
+    "human_pass": false
+  },
+  "call_summary": [
+    {
+      "kind": "download",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "download",
+      "state": "succeeded",
+      "count": 20
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 10
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 5
+    }
+  ],
+  "model_calls": [
+    {
+      "key": "material-brief",
+      "result": {
+        "facts": [
+          {
+            "id": "fact-1",
+            "text": "Будь-яка зірка головної послідовності з початковою масою, що більш ніж у 8 разів перевищує масу Сонця, може в процесі еволюції перетворитися на нейтронну зірку.",
+            "support": [
+              {
+                "span_id": "s1-1094-2113"
+              }
+            ]
+          },
+          {
+            "id": "fact-2",
+            "text": "Коли все ядерне паливо в активній зоні вичерпано, ядро підтримується від гравитаційного стискання тільки тиском виродженого електронного газу.",
+            "support": [
+              {
+                "span_id": "s1-1094-2113"
+              }
+            ]
+          },
+          {
+            "id": "fact-3",
+            "text": "При подальшому стисканні відбувається злиття електронів і протонів у нейтрони в процесі електронного захвату з утворенням потужного потоку електронних нейтрино.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "fact-4",
+            "text": "Коли густина зірки досягає ядерної густини 4·10^17 кг/м3, тиск виродженого нейтронного ідеального газу Фермі — Дірака зупиняє стискання.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "fact-5",
+            "text": "Падіння зовнішньої оболонки зірки на нейтронне ядро зупиняється, і вона відкидається від ядра потоком нейтрино, при цьому зірка перетворюється на наднову.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "fact-6",
+            "text": "Після розсіювання зовнішньої оболонки від зірки залишається зоряний залишок — нейтронна зірка, маса якої зазвичай порівняна з масою Сонця при типовому радіусі лише 10—20 кілометрів.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "fact-7",
+            "text": "Багато нейтронних зірок володіють надзвичайно високою швидкістю осьового обертання — до кількох сотень оборотів на секунду, і надзвичайно сильним магнітним полем.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              }
+            ]
+          },
+          {
+            "id": "fact-8",
+            "text": "У момент народження нейтронної зірки в результаті спалаху наднової її температура дуже висока — порядку 10^11 K, але вона дуже швидко падає за рахунок нейтринного охолодження.",
+            "support": [
+              {
+                "span_id": "s1-8766-9959"
+              }
+            ]
+          }
+        ],
+        "required_fact_ids": [
+          "fact-1",
+          "fact-3",
+          "fact-6",
+          "fact-7"
+        ],
+        "photo_contexts": {
+          "setting": {
+            "subject": "масивна зірка головної послідовності",
+            "query": "massive main sequence star space",
+            "fact_ids": [
+              "fact-1"
+            ]
+          },
+          "subject": {
+            "subject": "нейтронна зірка",
+            "query": "neutron star space art astronomy",
+            "fact_ids": [
+              "fact-6",
+              "fact-7"
+            ]
+          },
+          "detail": {
+            "subject": "залишок наднової",
+            "query": "supernova remnant space telescope",
+            "fact_ids": [
+              "fact-5",
+              "fact-8"
+            ]
+          }
+        }
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 18627,
+        "promptTokenCount": 17501,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 17501
+          }
+        ],
+        "candidatesTokenCount": 1126
+      }
+    },
+    {
+      "key": "material-inspect-batch:005b05d81d723b620469d263f5fd0824cfad9202d078661f080e52edd2419874",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Globular star cluster Omega Centauri containing a black hole",
+              "connection": "The image shows a dense star cluster where a black hole was found, which is unrelated to neutron star formation or Kepler's supernova remnant."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical image showing the globular star cluster Omega Centauri with thousands of stars and an inset showing a specific region containing a discovered black hole.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a dense star cluster, not specific stages of star formation.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star merger is depicted.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Kepler's Supernova Remnant is not visible here.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:195627220"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "NGC 460 open cluster and surrounding gas clouds in the Small Magellanic Cloud",
+              "connection": "The image depicts a star-forming region in a dwarf galaxy, which does not show neutron stars or supernova remnants."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical space telescope photograph featuring misty blue gas clouds and multiple glowing stars of an open cluster.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not illustrate specific stellar evolution stages for neutron stars.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star merger is shown.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not depict Kepler's Supernova Remnant.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:161594187"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "NGC 7129 star-forming region with stellar jets and protostars",
+              "connection": "The image displays a stellar nursery with protostars and jets captured by James Webb Space Telescope, unrelated to Kepler's Supernova Remnant."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An infrared space telescope capture showing a complex nebula with prominent diffraction spikes around stars, golden cavities of gas, and reddish glowing plumes.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows general star formation rather than the specific neutron star formation sequence.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star merger is visible.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show Kepler's Supernova Remnant.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:201158027"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11321,
+        "promptTokenCount": 10151,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 3241
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 6910
+          }
+        ],
+        "candidatesTokenCount": 1170
+      }
+    },
+    {
+      "key": "material-inspect-batch:007e29dfcf8fe41ec383f4858285dc593d2e80c5baeca42af014bd2ea4877480",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant CTB 37A",
+              "connection": "Shows a supernova remnant, which is directly related to the formation stage of a neutron star following a supernova explosion."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical composite image showing the supernova remnant CTB 37A with glowing debris in X-rays (blue) and radio waves (pink), expanding into a cooler cloud of gas and dust visible in infrared light (orange) against a starfield.",
+            "visible_fact_details": [
+              {
+                "fact_id": "fact-5",
+                "detail": "The image captures a supernova remnant, representing the aftermath of a supernova explosion where the outer shell of a star is thrown off."
+              },
+              {
+                "fact_id": "fact-6",
+                "detail": "Displays expanding gaseous debris and stellar remnants resulting from a stellar collapse and explosion."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The image shows a remnant, not the initial main sequence star formation stages.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The image depicts a single supernova remnant, not a neutron star merger event.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The image displays CTB 37A, a documented galactic supernova remnant analogous to supernova remnant subjects.",
+                "subject_qualifications_match": true
+              }
+            ],
+            "asset_id": "wikimedia:110541918"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 6163,
+        "promptTokenCount": 5633,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 1089
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 4544
+          }
+        ],
+        "candidatesTokenCount": 530
+      }
+    },
+    {
+      "key": "material-inspect-batch:08f8f6ff68972d3afed904aef2b5fd0ed45c499c0b6e9a08800a487556a3c5d9",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Moon and evening star",
+              "connection": "The image shows a crescent moon and a bright star, which are unrelated to the stages of neutron star formation."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A dark night sky featuring a thin crescent moon and a single small star or planet below it.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "A crescent moon and a star",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "A crescent moon and a star",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "A crescent moon and a star",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:39068571"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Artist's illustration of a magnetar with magnetic field lines",
+              "connection": "The image is a computer-generated illustration, not a real observational photograph."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A digital art rendering of a glowing star with visible magnetic field arcs against a starfield background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Illustration of a star",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Illustration of a star",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Illustration of a star",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:5603793"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Kepler's Supernova Remnant",
+              "connection": "Multi-wavelength composite of Kepler's Supernova Remnant, directly representing the supernova stage associated with the formation of neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A colorful, multi-wavelength composite image showing a glowing expanding cloud of gas and dust forming a roughly spherical supernova remnant.",
+            "visible_fact_details": [
+              {
+                "fact_id": "fact-5",
+                "detail": "The expanding multi-colored shell represents the remnants of the outer envelope thrown off during a supernova."
+              },
+              {
+                "fact_id": "fact-6",
+                "detail": "The expanding nebulosity marks the site where a stellar core collapse and supernova occurred."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Supernova remnant shell",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Supernova remnant shell",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Multi-wavelength composite of Kepler's Supernova Remnant",
+                "subject_qualifications_match": true
+              }
+            ],
+            "asset_id": "wikimedia:14301"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Generic supernova remnant",
+              "connection": "Shows a supernova remnant, but metadata does not specifically identify it as Kepler's Supernova Remnant."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A black and white astronomical photograph showing faint filaments and arcs of a stellar cloud against a dense starfield.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Faint nebulous filaments",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Faint nebulous filaments",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Faint nebulous filaments",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:10064346"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10987,
+        "promptTokenCount": 9462,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4346
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 5116
+          }
+        ],
+        "candidatesTokenCount": 1525
+      }
+    },
+    {
+      "key": "material-inspect-batch:3bf7976f758ad428d7b03891abc611589e5d380a2bfa69f10b385ffe5f306dea",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "illustration",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Diagrams and illustrations explaining neutron star characteristics and structure",
+              "connection": "The image is an infographic containing synthetic computer illustrations and diagrams rather than a real observational photograph of any specific stage, merger, or remnant."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "An infographic composed of multiple graphical illustrations and diagrams, including a rendering of a neutron star superimposed over an aerial satellite view of a landscape, cross-section diagrams with text labels showing layers and density, and wireframe spheres illustrating gravity effects.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No stages of star formation are depicted.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star merger is depicted.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No real observational image of Kepler's Supernova Remnant is present.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:59501023"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 5947,
+        "promptTokenCount": 5534,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 1100
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 4434
+          }
+        ],
+        "candidatesTokenCount": 413
+      }
+    },
+    {
+      "key": "material-inspect-batch:3f712956f63bc76225992e145cd37bb0ef09b022ccbd02b872775689cabd4df1",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Kepler's Supernova Remnant",
+              "connection": "Infrared observational data showing the expanding dust shells and shock wave remnants from a supernova explosion that leaves behind a neutron star."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "An infrared space telescope close-up image showing a bright reddish-orange glowing arc of dust and gas filaments with several point-like embedded stars against a dark background.",
+            "visible_fact_details": [
+              {
+                "fact_id": "fact-5",
+                "detail": "Glowing extended gas and dust features corresponding to the outer expanding material ejected during a supernova explosion."
+              },
+              {
+                "fact_id": "fact-6",
+                "detail": "An extended astronomical remnant resulting from a historical supernova event."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No stages of general star formation are shown.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No binary neutron star merger event is depicted.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Infrared observational view of Kepler's Supernova Remnant.",
+                "subject_qualifications_match": true
+              }
+            ],
+            "asset_id": "wikimedia:180923700"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Kepler's Supernova Remnant",
+              "connection": "Visible-light observational data showing the detailed knots and filaments of Kepler's supernova remnant."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "A wide-field space telescope image in visible light showing a rich star field interspersed with intricate reddish and yellowish filamentary arcs and bright knots of gas.",
+            "visible_fact_details": [
+              {
+                "fact_id": "fact-5",
+                "detail": "Visible light emission from shocked gas, knots, and expanding filaments of a supernova remnant."
+              },
+              {
+                "fact_id": "fact-6",
+                "detail": "Remnant structures left behind after a supernova explosion."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a depiction of star formation stages.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not a depiction of a neutron star merger.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Visible light image of Kepler's Supernova Remnant displaying shock wave knots and filaments.",
+                "subject_qualifications_match": true
+              }
+            ],
+            "asset_id": "wikimedia:180923693"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 8085,
+        "promptTokenCount": 7139,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 4949
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 2190
+          }
+        ],
+        "candidatesTokenCount": 946
+      }
+    },
+    {
+      "key": "material-inspect-batch:8a2f1b7d9bec35dbb46bbb5d17dacc751a7de3ead615f9e3e9927e77a01afe4f",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Molecular cloud Orion A showing star-forming regions and stages of star formation",
+              "connection": "Depicts regions where massive stars form, which are progenitors of neutron stars."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An infrared space telescope view of the Orion Molecular Cloud region filled with glowing gas, dust, and numerous young stars at various stages of formation.",
+            "visible_fact_details": [
+              {
+                "fact_id": "fact-1",
+                "detail": "Displays stellar embryos and pre-main sequence stars within massive gas clouds."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Regions containing young stars and dense gas clouds corresponding to star formation stages.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No colliding neutron stars visible.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No supernova remnant depicted.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:194139229"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Artist rendering of a solar eclipse",
+              "connection": "Synthetic illustration not depicting the actual scientific phenomenon."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "A synthetic rendering of a star with a dark circular disc passing in front of it, set against a starfield.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic eclipse rendering.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic eclipse rendering.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Synthetic eclipse rendering.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:12491601"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Generic space nebula background illustration",
+              "connection": "Stock illustration of a generic nebula, lacking specific connection to neutron star formation or remnants."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "An artistic digital space background showing a colorful emission nebula and scattered stars.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generic nebula graphic.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generic nebula graphic.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generic nebula graphic.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:11099"
+          },
+          {
+            "accepted": true,
+            "is_real_material": false,
+            "medium": "illustration",
+            "topic_relation": {
+              "kind": "direct_subject",
+              "visible_subject": "Planetarium visualization of a neutron star merger",
+              "connection": "Explicitly illustrates the collision of two neutron stars emitting gravitational waves and light."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A digital planetarium visualization showing two dense compact objects merging at the center of concentric ripples representing gravitational waves.",
+            "visible_fact_details": [
+              {
+                "fact_id": "fact-3",
+                "detail": "Illustrates binary compact stellar remnants merging."
+              },
+              {
+                "fact_id": "fact-4",
+                "detail": "Depicts high-density stellar material interacting under extreme conditions."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Merger event rather than formation stages.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Two neutron stars colliding with surrounding gravitational wave ripples.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Merger event rather than a supernova remnant.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:165844980"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11008,
+        "promptTokenCount": 9482,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 5126
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4356
+          }
+        ],
+        "candidatesTokenCount": 1526
+      }
+    },
+    {
+      "key": "material-inspect-batch:9f632d252fe34c8a9f5a595e71d695a98cf73ad0086e4c47ead65b6afd68da3c",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Cassiopeia A supernova remnant",
+              "connection": "It shows a different supernova remnant (Cassiopeia A), not Kepler's Supernova Remnant or stages of star formation/neutron star merger."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical composite image of the Cassiopeia A supernova remnant against a field of background stars.",
+            "visible_fact_details": [
+              {
+                "fact_id": "fact-6",
+                "detail": "The image displays an expanding stellar remnant from a supernova explosion."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a supernova remnant, not star formation stages.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a supernova remnant, not a binary neutron star merger event.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows Cassiopeia A, not Kepler's Supernova Remnant.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:11180"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Kepler's Supernova Remnant",
+              "connection": "Infrared observational data of Kepler's Supernova Remnant, which is formed by the explosion of a star leaving behind a potential neutron star remnant."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An infrared observational image showing the glowing red expanding gas and dust cloud of Kepler's Supernova Remnant.",
+            "visible_fact_details": [
+              {
+                "fact_id": "fact-5",
+                "detail": "The image shows the expanding shell ejected during a supernova event."
+              },
+              {
+                "fact_id": "fact-6",
+                "detail": "The visible glowing gas and dust represent the remnant shell left behind after the stellar core collapse."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a supernova remnant, not initial star formation stages.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a supernova remnant, not a neutron star merger.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Clearly displays Kepler's Supernova Remnant in infrared data.",
+                "subject_qualifications_match": true
+              }
+            ],
+            "asset_id": "wikimedia:180923536"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Kepler's Supernova Remnant",
+              "connection": "Combined infrared and star field image of Kepler's Supernova Remnant, depicting the expanding remnant shell associated with neutron star formation."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An observational image showing Kepler's Supernova Remnant in infrared (orange-red center) surrounded by cyan-colored background stars.",
+            "visible_fact_details": [
+              {
+                "fact_id": "fact-5",
+                "detail": "Displays the expanding shell of gas and dust from a supernova explosion."
+              },
+              {
+                "fact_id": "fact-6",
+                "detail": "Illustrates the expanding stellar debris field that remains after core collapse."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a supernova remnant, not early star formation.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows a single supernova remnant, not a neutron star merger.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Clearly displays Kepler's Supernova Remnant with surrounding stars.",
+                "subject_qualifications_match": true
+              }
+            ],
+            "asset_id": "wikimedia:180923603"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 9595,
+        "promptTokenCount": 8223,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 4943
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 3280
+          }
+        ],
+        "candidatesTokenCount": 1372
+      }
+    },
+    {
+      "key": "material-inspect-batch:b23710cfa78d5e17d6d1a9031a0015b8605f7ba3d74591669d81acf32dc1b813",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "digital space art",
+              "connection": "The image is a generic computer-generated illustration of a galaxy or cosmic explosion, not a real astronomical photograph or specific scientific target."
+            },
+            "subject_fully_visible": false,
+            "visible_description": "A digital illustration showing a bright, elongated galaxy-like structure with blue and red gaseous nebulae against a dark, starry background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generic digital space art",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generic digital space art",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Generic digital space art",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:11098"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 5927,
+        "promptTokenCount": 5560,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 1092
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 4468
+          }
+        ],
+        "candidatesTokenCount": 367
+      }
+    },
+    {
+      "key": "material-photo-plan",
+      "result": {
+        "contexts": [
+          {
+            "anchor_id": "wikimedia:194139229",
+            "object_label": "Stages of Star Formation",
+            "fact_ids": [
+              "fact-1",
+              "fact-2"
+            ]
+          },
+          {
+            "anchor_id": "wikimedia:165844980",
+            "object_label": "Neutron Star Merger",
+            "fact_ids": [
+              "fact-3",
+              "fact-4"
+            ]
+          },
+          {
+            "anchor_id": "wikimedia:14301",
+            "object_label": "Kepler's Supernova Remnant",
+            "fact_ids": [
+              "fact-5",
+              "fact-6",
+              "fact-7",
+              "fact-8"
+            ]
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 15202,
+        "promptTokenCount": 14984,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 14984
+          }
+        ],
+        "candidatesTokenCount": 218
+      }
+    }
+  ],
+  "human_pass": false
+}
