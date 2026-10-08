@@ -1,0 +1,25 @@
+{
+  "id": "1aa4d47e-fffe-4229-bd3b-86fa7cd9bb3c",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "runtime_revision": "f55566575e3493b0314505440430f9d3b00689c4",
+  "authorization": "Owner says так не останавливайся: continue to actual output, diagnose/fix successive failures and verify again without waiting for another prompt. Prior automatic stop instructions superseded. Each new case remains bounded, failed IDs immutable.",
+  "maximum_fresh_requests": 1,
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 30,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "expected_steps": "brief -> nine search pools -> one availability planner -> up to eight independent pixel batches -> compose -> native edit -> complete keyed independent factual/native review -> one voice -> alignment -> exact60s whole-photo render/audit",
+  "question": "Does the normal current gateway metadata call recover from prior transient OAuth ECONNRESET, and current strict native pipeline reach MP4?",
+  "offline": "219 exact-image checks PASS; protected deployment unchanged; public Google roots reachable. Previous metadata ECONNRESET settled without restart. New safe invalid JSON evidence deployed; billing gate retained.",
+  "remaining": "Unseen actual planner response, new target-qualified pixel judgments, complete keyed/native review, one voice and current MP4 not verified. Controlled metadata selection is not acceptance.",
+  "stop": "Terminal case remains immutable. Diagnose saved evidence, fix actual blocker before any fresh normal case; do not blindly repeat. No paid fallback/quota expansion/second TTS/manual approvals.",
+  "human_pass": false
+}

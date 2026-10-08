@@ -1,3 +1,7 @@
+## Resume after interrupted chat; gateway evidence LIVE — 2026-10-08
+
+f55566575e3493b0314505440430f9d3b00689c4 deployed,219 exact-image checks PASS,protected snapshot unchanged. Server idle with0preparations/stages/n8n executions. Public Google roots reachable without credentials; this does not certify authenticated metadata. Owner continues previous task here. One fresh bounded normal UK60 case 1aa4d47e-fffe-4229-bd3b-86fa7cd9bb3c planned, same free-only budgets/oneTTS/no failed-ID retry. Previous e2f5f864 immutable unknown. Continue actual output under prior persistence authorization; inspect actual metadata response then downstream gates. No current MP4/HUMAN acceptance.
+
 ## Google metadata transport failure reconciled read-only — 2026-10-08
 
 Newe2f5f864 stoppedunknown on first metadata JSONDecodeError,0model/download/TTS/MP4. Native gateway execution12732 remainedrunning withOAuth ECONNRESET logs, then cleared before proposed restart (restart NOT executed). No credential/workflow/permission changes or provider fallback. New HTTP JSON decoder records safe status/allowedheaders/bodybytecount/errorreason for invalid JSON without body/credential disclosure or retry.102core checks PASS, exact build pending. Once packaged/deployed, fresh normal verification allowed for this identified transient read-only failure; old ID immutable, billing gate never bypassed.
