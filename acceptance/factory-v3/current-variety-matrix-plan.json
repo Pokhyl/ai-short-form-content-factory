@@ -1,0 +1,65 @@
+{
+  "source_revision": "ceb9b6e577e5271315124f29ac6edd2eb1509db7",
+  "prerequisite": "Current UK60 normal case must pass independent factual/native review, one voice, alignment, exactMP4/media QA before these cases are submitted.",
+  "authorization": "User continues whole-project work; prior explicit varied topics/languages/durations acceptance matrix.",
+  "sequence": [
+    {
+      "id": "f2ed10e4-79cd-4363-a753-304c3be9b02d",
+      "topic": "Jak powstaje chleb na drożdżach",
+      "language": "pl",
+      "seconds": 15,
+      "visual_validation_mode": "gemini",
+      "budgets": {
+        "research_search": 1,
+        "source_fetch": 6,
+        "gemini": 16,
+        "download": 17,
+        "metadata": 1,
+        "search:pixabay": 3,
+        "search:pexels": 3,
+        "search:wikimedia": 3,
+        "tts": 1
+      }
+    },
+    {
+      "id": "3cda72ff-7343-4906-a958-def6ed4f3fc1",
+      "topic": "How wind turbines generate electricity",
+      "language": "en",
+      "seconds": 30,
+      "visual_validation_mode": "gemini",
+      "budgets": {
+        "research_search": 1,
+        "source_fetch": 6,
+        "gemini": 16,
+        "download": 21,
+        "metadata": 1,
+        "search:pixabay": 3,
+        "search:pexels": 3,
+        "search:wikimedia": 3,
+        "tts": 1
+      }
+    },
+    {
+      "id": "78f0f31c-6c54-4962-91ed-36cd3cd1c54e",
+      "topic": "Как пчёлы опыляют растения",
+      "language": "ru",
+      "seconds": 45,
+      "visual_validation_mode": "gemini",
+      "budgets": {
+        "research_search": 1,
+        "source_fetch": 6,
+        "gemini": 16,
+        "download": 25,
+        "metadata": 1,
+        "search:pixabay": 3,
+        "search:pexels": 3,
+        "search:wikimedia": 3,
+        "tts": 1
+      }
+    }
+  ],
+  "maximum_requests_per_case": 1,
+  "stop": "Stop first terminal failure/unknown, retain immutable ID; inspect saved complete boundaries before another new case. No blind repeats, no second TTS, no paid fallback/quota expansion.",
+  "human_pass": false,
+  "project_ready": false
+}
