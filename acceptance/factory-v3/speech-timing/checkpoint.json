@@ -1,0 +1,27 @@
+{
+  "source_revision": "738d3f5a6ca74d80b159ecba087351a0f74f33dd",
+  "live_deployment_complete": true,
+  "protected_state_unchanged": true,
+  "local_tests": 238,
+  "exact_image_tests": 238,
+  "factory_preparation_replay_passed": true,
+  "replay_provider_calls": 0,
+  "replay_database_writes": 0,
+  "factory_tts_calls": 0,
+  "requested_60s_natural_output_verified": false,
+  "normal_requests": [
+    {
+      "id": "31411119-363c-4d77-afff-dd72510440a1",
+      "status": "unknown",
+      "upstream_status": 503,
+      "phase": "material-brief"
+    },
+    {
+      "id": "b210c655-1d6c-4e49-862d-a6ca3bcf8480",
+      "status": "unknown",
+      "upstream_status": 503,
+      "phase": "material-brief"
+    }
+  ],
+  "next_step": "After Gemini capacity recovers, verify a fresh normal factory request; preserve both unknown IDs; do not produce a hand-made replacement or claim project ready."
+}

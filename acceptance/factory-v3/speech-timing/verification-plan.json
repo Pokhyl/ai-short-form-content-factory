@@ -1,0 +1,12 @@
+{
+  "request_id": "31411119-363c-4d77-afff-dd72510440a1",
+  "source_revision": "738d3f5a6ca74d80b159ecba087351a0f74f33dd",
+  "mode": "normal owner API, no manually supplied script or voice",
+  "seconds": 60,
+  "language": "uk",
+  "required": "factory-generated reviewed prose; one natural TTS; original speech PCM retained; exact 60-second MP4",
+  "old_job_unchanged": true,
+  "local_tests": 238,
+  "exact_image_tests": 238,
+  "status": "submitted"
+}

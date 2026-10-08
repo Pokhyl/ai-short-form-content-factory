@@ -1,0 +1,11 @@
+{
+  "id": "31411119-363c-4d77-afff-dd72510440a1",
+  "status": "unknown",
+  "phase": "material-brief",
+  "upstream_status": 503,
+  "reason": "Gemini model high demand",
+  "tts_calls": 0,
+  "original_id_immutable": true,
+  "next_request": "b210c655-1d6c-4e49-862d-a6ca3bcf8480",
+  "next_request_reason": "one fresh normal verification after upstream overload cooldown; same per-case limits; no old-ID resubmission"
+}
