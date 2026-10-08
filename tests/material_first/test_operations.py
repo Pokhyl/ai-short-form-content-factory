@@ -187,6 +187,7 @@ class OperationTests(unittest.TestCase):
             operations = Operations(root,
                 SimpleNamespace(fetch=lambda *args: fixtures.evidence['sources']), model,
                 SimpleNamespace(search=search), fixtures, documented_contexts=True)
+            operations.visual_validation_mode = 'gemini'
             frozen = Producer(root, operations, probe=fixtures.probe).prepare('topic', 'pl', 15)
             self.assertEqual(len(frozen['payload']['scenes']), 3)
             self.assertEqual({s['visual_target_id'] for s in frozen['payload']['scenes']}, {'v0', 'v1', 'v2'})

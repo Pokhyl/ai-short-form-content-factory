@@ -1,0 +1,90 @@
+{
+  "status": {
+    "id": "1702cdc0-9f8e-43b6-8b13-9c36ee4a1fec",
+    "request": {
+      "topic": "Нейтронная звезда",
+      "seconds": 60,
+      "language": "uk",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "failed",
+    "source_revision": "09162ca9e5aae9679f74a985e3eba8ded9bf703a",
+    "error_code": "NarrationBudgetExceeded",
+    "machine_pass": false,
+    "human_pass": false
+  },
+  "call_summary": [
+    {
+      "kind": "download",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "download",
+      "state": "succeeded",
+      "count": 22
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 11
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 5
+    }
+  ],
+  "actual_approved_unique_materials": 13,
+  "old_role_counts": {
+    "v0": 8,
+    "v1": 4,
+    "v2": 1
+  },
+  "actual_words": 63,
+  "minimum_words": 84,
+  "maximum_words": 146,
+  "tts_calls": 0,
+  "mp4": false,
+  "offline_actual_context_replay": {
+    "new_provider_calls": 0,
+    "database_writes": 0
+  },
+  "new_corrections": [
+    "Preserve original exact documented query instead of imposing copied instrument/filename qualifiers.",
+    "One separately keyed source-aware length/cadence correction before isolated native proofreader, inside existing16Gemini limit.",
+    "Preserve paragraph anchors and required factual scope; corrected per-paragraph assertions/citations undergo independent full review."
+  ],
+  "project_ready": false,
+  "human_pass": false
+}

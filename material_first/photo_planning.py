@@ -94,16 +94,22 @@ def plan_photos(gemini, request, brief, pools, limit):
         # Preserve the copied object requirement. Canonicalizing articles and
         # whitespace for ranking does not change its documented identity.
         query = photograph_query(label)
+        target_label = label
         if contexts:
             source_context = next(t for t in contexts if t['id'] == row['source_context_id'])
             if not context_words(source_context['query']) <= context_words(' '.join(descriptions(known[row['anchor_id']]))):
                 raise ValueError('photo anchor changed the documented source object')
+            # The copied filename identifies an availability anchor. It must
+            # not invent extra instrument/view/filename requirements beyond
+            # the exact original source-supported physical object contract.
+            query = photograph_query(source_context['query'])
+            target_label = query
         if not contexts and subject_terms and not words(label) & subject_terms:
             raise ValueError('photo context lacks a source-derived subject class or object name')
         if len(set(row['fact_ids'])) != len(row['fact_ids']):
             raise ValueError('duplicate photo context fact identity')
         targets.append({'id': 'v' + str(index), 'fact_ids': row['fact_ids'],
-                        'must_show': label, 'query': query,
+                        'must_show': target_label, 'query': query,
                         'must_not_show': 'Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role'})
     validate_targets(targets, {f['id'] for f in brief['evidence']['facts']})
     # Allocate remaining downloads globally to the available object contexts,

@@ -1,0 +1,1410 @@
+{
+  "status": {
+    "id": "1702cdc0-9f8e-43b6-8b13-9c36ee4a1fec",
+    "request": {
+      "topic": "Нейтронная звезда",
+      "seconds": 60,
+      "language": "uk",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "failed",
+    "source_revision": "09162ca9e5aae9679f74a985e3eba8ded9bf703a",
+    "error_code": "NarrationBudgetExceeded",
+    "machine_pass": false,
+    "human_pass": false
+  },
+  "call_summary": [
+    {
+      "kind": "download",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "download",
+      "state": "succeeded",
+      "count": 22
+    },
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 11
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 5
+    }
+  ],
+  "model_calls": [
+    {
+      "key": "material-brief",
+      "result": {
+        "facts": [
+          {
+            "id": "f1",
+            "text": "Нейтро́нная звезда́ — космическое тело, являющееся одним из возможных результатов эволюции звёзд, состоящее в основном из нейтронной сердцевины, покрытой сравнительно тонкой корой вещества в виде тяжёлых атомных ядер и электронов.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              }
+            ]
+          },
+          {
+            "id": "f2",
+            "text": "Любая звезда главной последовательности с начальной массой, более чем в 8 раз превышающей массу Солнца, может в процессе эволюции превратиться в нейтронную звезду.",
+            "support": [
+              {
+                "span_id": "s1-1094-2113"
+              }
+            ]
+          },
+          {
+            "id": "f3",
+            "text": "Когда все ядерное топливо в активной зоне израсходовано, ядро начинает быстро уплотняться под действием гравитации, что приводит к электронному захвату и слиянию электронов и протонов в нейтроны.",
+            "support": [
+              {
+                "span_id": "s1-1094-2113"
+              },
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f4",
+            "text": "Когда плотность звезды достигает ядерной плотности, давление вырожденного нейтронного газа останавливает сжатие, а падение внешней оболочки отбрасывается потоком нейтрино, превращая звезду в сверхновую.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              }
+            ]
+          },
+          {
+            "id": "f5",
+            "text": "После рассеивания внешней оболочки от звезды остаётся звёздный остаток — нейтронная звезда, обладающая огромной плотностью, сильным магнитным полем и высокой скоростью вращения.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-2113-3302"
+              },
+              {
+                "span_id": "s1-3302-4411"
+              }
+            ]
+          },
+          {
+            "id": "f6",
+            "text": "В момент рождения в результате вспышки сверхновой температура протонейтронной звезды очень высока, но она быстро падает за счёт нейтринного охлаждения.",
+            "support": [
+              {
+                "span_id": "s1-8766-9959"
+              },
+              {
+                "span_id": "s2-4630-5758"
+              }
+            ]
+          },
+          {
+            "id": "f7",
+            "text": "Горячая протонейтронная звезда постепенно остывает, испуская нейтрино, и превращается в обычную нейтронную звезду — компактный остаток массивной звезды.",
+            "support": [
+              {
+                "span_id": "s2-5758-6942"
+              }
+            ]
+          },
+          {
+            "id": "f8",
+            "text": "Если масса остатка превышает определенный предел (предел Оппенгеймера — Волкова или порог коллапса), давление вещества уже не способно остановить гравитационное сжатие, и возникает чёрная дыра.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              },
+              {
+                "span_id": "s1-5431-6565"
+              },
+              {
+                "span_id": "s2-7790-8965"
+              }
+            ]
+          }
+        ],
+        "required_fact_ids": [
+          "f1",
+          "f3",
+          "f5",
+          "f7"
+        ],
+        "photo_contexts": {
+          "setting": {
+            "subject": "Crab Nebula",
+            "query": "Crab Nebula",
+            "fact_ids": [
+              "f5",
+              "f7"
+            ],
+            "support_span_ids": [
+              "s2-6942-7790"
+            ]
+          },
+          "subject": {
+            "subject": "supernova remnant E0102-72.3",
+            "query": "supernova remnant E0102-72.3",
+            "fact_ids": [
+              "f4",
+              "f5"
+            ],
+            "support_span_ids": [
+              "s2-0-1094"
+            ]
+          },
+          "detail": {
+            "subject": "neutron star",
+            "query": "neutron star",
+            "fact_ids": [
+              "f1",
+              "f5"
+            ],
+            "support_span_ids": [
+              "s1-0-1094"
+            ]
+          }
+        }
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 18902,
+        "promptTokenCount": 17611,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 17611
+          }
+        ],
+        "candidatesTokenCount": 1291
+      }
+    },
+    {
+      "key": "material-photo-plan",
+      "result": {
+        "contexts": [
+          {
+            "anchor_id": "wikimedia:516106",
+            "object_label": "Crab Nebula",
+            "fact_ids": [
+              "f1",
+              "f5"
+            ],
+            "source_context_id": "v0"
+          },
+          {
+            "anchor_id": "wikimedia:148804754",
+            "object_label": "E0102 - Chandra X-ray Image of E0102-72 3 with Scale Bar (1999-snrg-more-1).jpg",
+            "fact_ids": [
+              "f2",
+              "f3",
+              "f4"
+            ],
+            "source_context_id": "v1"
+          },
+          {
+            "anchor_id": "wikimedia:151097113",
+            "object_label": "Hubble Sees a Neutron Star Alone in Space (opo9732b).jpg",
+            "fact_ids": [
+              "f6",
+              "f7",
+              "f8"
+            ],
+            "source_context_id": "v2"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 11536,
+        "promptTokenCount": 11242,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 11242
+          }
+        ],
+        "candidatesTokenCount": 294
+      }
+    },
+    {
+      "key": "material-inspect-batch:68d7d21c70b21e28125538b987875413ecbd3356c9c1cf16250240e7574df58f",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula",
+              "connection": "The Crab Nebula is a supernova remnant containing a neutron star at its center."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical image showing the Crab Nebula with colorful filaments and a glowing blue central region set against a black background of space.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f1",
+                "detail": "The image displays an extended nebula resulting from stellar evolution and supernova explosion."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "Shows the expanding remnant surrounding the central stellar core remnant."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The entire Crab Nebula is clearly visible in the image.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "This is the Crab Nebula, not the E0102-72.3 remnant.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows an extended nebula rather than an isolated neutron star view.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:516106"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula",
+              "connection": "The Crab Nebula is a supernova remnant housing a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical photograph of the Crab Nebula positioned in a star field against a dark background.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f1",
+                "detail": "Displays the supernova remnant structure."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "Represents the aftermath of a stellar explosion."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The Crab Nebula is clearly visible in the center.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not the E0102-72.3 remnant.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not an isolated single neutron star image.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:17662495"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Crab on a beach",
+              "connection": "A literal animal crab, used as an irrelevant visual pun or generic analogy for the Crab Nebula."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A small crab on a sandy beach.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows an actual beach crab, not the nebula.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Unrelated animal.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Unrelated animal.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:9179589"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "supernova remnant E0102-72.3",
+              "connection": "Supernova remnant E0102-72.3 contains a candidate neutron star formed from a massive star collapse."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A circular X-ray image of a glowing ring-like supernova remnant with a scale bar in the corner.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f2",
+                "detail": "Represents the remnant from the collapse and explosion of a massive star."
+              },
+              {
+                "fact_id": "f3",
+                "detail": "Visualizes the outer shell and structure associated with core collapse."
+              },
+              {
+                "fact_id": "f4",
+                "detail": "Shows the ejected outer envelope of a supernova."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "This is E0102-72.3, not the Crab Nebula.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The supernova remnant E0102-72.3 is clearly displayed.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows an extended remnant rather than a single neutron star.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:148804754"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 18984,
+        "promptTokenCount": 17256,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 12896
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4360
+          }
+        ],
+        "candidatesTokenCount": 1728
+      }
+    },
+    {
+      "key": "material-inspect-batch:a978b04f24302e6bcb0ac939901a6634fb779d4712e4d34fac606d5c33361b0e",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "CTB 1 supernova remnant",
+              "connection": "Depicts CTB 1, which is a different supernova remnant than the Crab Nebula or E0102-72.3."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical photograph of the CTB 1 supernova remnant showing a glowing reddish and blueish spherical shell of gas against a dense star field.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "CTB 1 remnant instead of Crab Nebula",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "CTB 1 remnant instead of E0102-72.3",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No isolated neutron star shown",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:19798813"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Cassiopeia A supernova remnant",
+              "connection": "Depicts Cassiopeia A, which is a different supernova remnant than requested."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A multi-wavelength composite image of Cassiopeia A showing bright multicolored filaments and knotty structures of a supernova remnant.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Cassiopeia A instead of Crab Nebula",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Cassiopeia A instead of E0102-72.3",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No neutron star depicted",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:11180"
+          },
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "illustration",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "Computer simulation rendering of a neutron star",
+              "connection": "Digital artist's rendering rather than a real observational photograph."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A computer-generated illustration showing a compact object with an accretion disk and gravitational lensing effects against a background of stars.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Rendering instead of Crab Nebula",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Rendering instead of E0102-72.3",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Simulated artwork instead of Hubble photograph",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:106335471"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "photograph",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Crescent moon and a bright star or planet",
+              "connection": "Shows a crescent moon and a planetary conjunction, completely unrelated to neutron stars or supernova remnants."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A night sky photograph showing a thin crescent moon in the upper portion and a single bright point of light below it against a solid black background.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Moon and star instead of Crab Nebula",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Moon and star instead of E0102-72.3",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Moon instead of neutron star",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pexels:39068571"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 13246,
+        "promptTokenCount": 11757,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 7397
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4360
+          }
+        ],
+        "candidatesTokenCount": 1489
+      }
+    },
+    {
+      "key": "material-inspect-batch:7b937aa8b1c16a08cebb10fc5db728050a27ef3fb1977dcd280c4d3c3b314bc3",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": false,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "artist rendering of a magnetar",
+              "connection": "computer-generated illustration depicting a neutron star"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Digital rendering of a glowing neutron star with magnetic field lines extending into space against a background of stars.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "artistic illustration of a star",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "artistic illustration of a star",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "artistic illustration of a star",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "pixabay:5603793"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "lone neutron star in space",
+              "connection": "direct observation of a neutron star by the Hubble Space Telescope"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Observational telescopic image showing a distant star field against a dark background with several red and faint blue stellar objects.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f5",
+                "detail": "observational image of a compact stellar remnant identified as a neutron star"
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "star field",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "star field",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "lone neutron star captured in visible light",
+                "subject_qualifications_match": true
+              }
+            ],
+            "asset_id": "wikimedia:151097113"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula",
+              "connection": "astronomical image showing the Crab Nebula supernova remnant containing a pulsar at its center"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Complex nebula structure showing colorful glowing filaments of gas and dust with a central region emitting synchrotron radiation.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f1",
+                "detail": "nebula showing the remnant of a stellar evolution process"
+              },
+              {
+                "fact_id": "f5",
+                "detail": "nebula surrounding a central pulsar"
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Crab Nebula with filamentary structure",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Crab Nebula",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Crab Nebula",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:139881470"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "X-ray image of the Crab Nebula",
+              "connection": "Chandra X-ray observatory image of the Crab Nebula showing the central pulsar and energetic torus structure"
+            },
+            "subject_fully_visible": true,
+            "visible_description": "Monochrome X-ray view of the Crab Nebula displaying inner rings, jets, and the central energetic region surrounding the pulsar.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f4",
+                "detail": "supernova remnant central region showing high-energy emission from the pulsar"
+              },
+              {
+                "fact_id": "f5",
+                "detail": "central energetic structure powered by the spinning neutron star"
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "X-ray view of the Crab Nebula",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "X-ray view of the Crab Nebula",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "X-ray view of the Crab Nebula",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:148830344"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 18874,
+        "promptTokenCount": 17269,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 12926
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4343
+          }
+        ],
+        "candidatesTokenCount": 1605
+      }
+    },
+    {
+      "key": "material-inspect-batch:0a4b2137123d1d854290824a3f5b64e2e9cd300acc0aaae8fc00f64638b6189a",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula",
+              "connection": "The Crab Nebula is a supernova remnant containing a rapidly spinning neutron star (pulsar) at its center."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An infrared and optical space telescope composite image showing the Crab Nebula with its intricate wispy filaments and synchrotron emission structures.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f1",
+                "detail": "Shows the extended gaseous remnant structure resulting from stellar evolution and supernova explosion."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "Represents the extended cosmic remnant left after the core collapse and supernova event."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The entire Crab Nebula structure is visible in great detail.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "This is the Crab Nebula, not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows an extended nebula rather than an isolated neutron star.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:149496748"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula",
+              "connection": "The Crab Nebula is the classic supernova remnant housing a neutron star pulsar at its center."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A classic multi-wavelength space telescope image of the Crab Nebula set against a starfield, displaying colorful gas filaments and a glowing core.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f1",
+                "detail": "Displays the tattered remains and expanding structure of a exploded stellar core."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "Illustrates the nebular remnant left behind following a supernova explosion."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The Crab Nebula is clearly and centrally displayed.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Depicts the Crab Nebula, not remnant E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows an extended nebula rather than an isolated point-source neutron star.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:149605500"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant E0102-72.3",
+              "connection": "Supernova remnant E0102-72.3 is an expanding shell from a massive star explosion that contains a candidate neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical image from the Chandra X-ray Observatory showing the ring-like structure of supernova remnant E0102-72.3 with glowing gas and surrounding background stars.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f2",
+                "detail": "Represents the debris shell from the core-collapse supernova of a massive progenitor star."
+              },
+              {
+                "fact_id": "f3",
+                "detail": "Shows the expanding remnant resulting from core collapse and shock waves."
+              },
+              {
+                "fact_id": "f4",
+                "detail": "Displays the outer shell and shocked gas associated with a supernova explosion."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows supernova remnant E0102-72.3, not the Crab Nebula.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Supernova remnant E0102-72.3 is clearly captured in the frame.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows an extended supernova remnant instead of an isolated neutron star.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:68756041"
+          },
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "unrelated",
+              "visible_subject": "Multi-wavelength composite of supernova remnant E0102-72",
+              "connection": "The requested target for this asset slot is an isolated neutron star image (opo9732b), whereas this image depicts supernova remnant E0102-72."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A multi-wavelength composite image featuring glowing colored gas clouds and shock fronts of supernova remnant E0102-72.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show the Crab Nebula.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Depicts a different presentation of E0102-72 rather than the required Chandra source image view.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Does not show an isolated neutron star.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:149392658"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 19357,
+        "promptTokenCount": 17485,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 4354
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 13131
+          }
+        ],
+        "candidatesTokenCount": 1872
+      }
+    },
+    {
+      "key": "material-inspect-batch:b6d546eb812aba2919fcab9a4220b11b059e847e1d6fa4b2b5bff72c31e916b8",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant E0102-72.3",
+              "connection": "Multiwavelength observational composite showing the supernova remnant E0102-72.3 which contains a candidate neutron star formed from stellar collapse."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A multiwavelength composite image of a round, ring-like supernova remnant with magenta outer shock boundaries, central blue X-ray emission, and green optical filaments.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f2",
+                "detail": "The image captures the remnant of a massive star that underwent core collapse."
+              },
+              {
+                "fact_id": "f3",
+                "detail": "The expanding structure displays shells formed after core nuclear fuel was exhausted."
+              },
+              {
+                "fact_id": "f4",
+                "detail": "Shows the ejected outer envelope and shock waves resulting from a supernova explosion."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not the Crab Nebula.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Supernova remnant E0102-72.3 shown in multiwavelength composite.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not an isolated image of a single neutron star.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:149392659"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Supernova remnant E0102-72.3 with velocity arrows",
+              "connection": "Chandra X-ray image highlighting expanding gas and shock dynamics inside the supernova remnant that produced a neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "An astronomical X-ray false-color image of the supernova remnant E0102-72.3 featuring a circular ring of glowing gas annotated with velocity arrows.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f3",
+                "detail": "Depicts expanding shell material driven outward following core collapse."
+              },
+              {
+                "fact_id": "f4",
+                "detail": "Illustrates dynamics associated with the remnant envelope and reverse shock waves."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not the Crab Nebula.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "Supernova remnant E0102-72.3 X-ray image with scale and vectors.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Not an isolated view of a neutron star.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:149354396"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 10985,
+        "promptTokenCount": 9980,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 7802
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 2178
+          }
+        ],
+        "candidatesTokenCount": 1005
+      }
+    },
+    {
+      "key": "material-inspect-batch:53035681076cb376c6e27f75cd43c09357d355499207aaee0f1778e6cf4bc0be",
+      "result": {
+        "photos": [
+          {
+            "accepted": false,
+            "is_real_material": true,
+            "medium": "synthetic",
+            "topic_relation": {
+              "kind": "generic_analogy",
+              "visible_subject": "satellite imagery combined with a digitally rendered stellar object",
+              "connection": "The image is a composite graphic showing a conceptual rendering of a neutron star superimposed over an aerial photograph of Munich as a size comparison."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A synthetic composite image featuring a glowing blue sphere representing a neutron star positioned over a detailed satellite photograph of a metropolitan city.",
+            "visible_fact_details": [],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No Crab Nebula is depicted.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "No supernova remnant E0102-72.3 is present.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "The image uses a conceptual graphic rather than an actual observation of a neutron star alone in space.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:170549995"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 8553,
+        "promptTokenCount": 8153,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 7072
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 1081
+          }
+        ],
+        "candidatesTokenCount": 400
+      }
+    },
+    {
+      "key": "material-inspect-batch:d07b844c7de5bd3446d4a822dcaf961605b104e0b4eb2792d86b283ba23a1f3f",
+      "result": {
+        "photos": [
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula composite",
+              "connection": "Composite astronomical image showing the Crab Nebula and its central neutron star/pulsar remnant resulting from a supernova explosion."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A detailed multi-wavelength composite image of the Crab Nebula against a black star-studded background, displaying expanding filaments of gas and a bright central region containing the Crab Pulsar.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f1",
+                "detail": "The nebula surrounding the central compact remnant is visible as extensive glowing filaments."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "The central region contains the compact stellar remnant (pulsar) left behind by a supernova."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The Crab Nebula and its central engine are clearly visible in the composite image.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows the Crab Nebula, not E0102-72.3.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Shows the Crab Nebula structure rather than an isolated neutron star close-up.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:110234010"
+          },
+          {
+            "accepted": true,
+            "is_real_material": true,
+            "medium": "observational_image",
+            "topic_relation": {
+              "kind": "direct_part_or_stage",
+              "visible_subject": "Crab Nebula in Multiple Wavelengths",
+              "connection": "Multi-wavelength observational composite panels displaying the Crab Nebula across radio, infrared, visible, ultraviolet, X-rays, and gamma rays, highlighting the supernova remnant and its central neutron star."
+            },
+            "subject_fully_visible": true,
+            "visible_description": "A horizontal multi-panel comparison of the Crab Nebula imaged across six different bands of the electromagnetic spectrum, labeled from radio to gamma rays.",
+            "visible_fact_details": [
+              {
+                "fact_id": "f1",
+                "detail": "Multiwavelength views show the extended gaseous shell and core structure of the supernova remnant."
+              },
+              {
+                "fact_id": "f5",
+                "detail": "High-energy panels capture emission generated by the central rotating neutron star."
+              }
+            ],
+            "target_matches": [
+              {
+                "target_id": "v0",
+                "matches": true,
+                "detail_prominent": true,
+                "visible_detail": "The Crab Nebula is displayed across multiple wavelength panels.",
+                "subject_qualifications_match": true
+              },
+              {
+                "target_id": "v1",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Displays the Crab Nebula, not the E0102-72.3 remnant.",
+                "subject_qualifications_match": false
+              },
+              {
+                "target_id": "v2",
+                "matches": false,
+                "detail_prominent": false,
+                "visible_detail": "Presents extended nebular views rather than an isolated neutron star image.",
+                "subject_qualifications_match": false
+              }
+            ],
+            "asset_id": "wikimedia:38800932"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 15332,
+        "promptTokenCount": 14349,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 2192
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 12157
+          }
+        ],
+        "candidatesTokenCount": 983
+      }
+    },
+    {
+      "key": "material-compose",
+      "result": {
+        "beats": [
+          {
+            "material_id": "wikimedia:148804754",
+            "narration": "Нейтронна зірка є одним із можливих результатів еволюції масивних зір, що складається з нейтронної серцевини та тонкої кори.",
+            "fact_ids": [
+              "f1",
+              "f2"
+            ],
+            "visual_target_id": "v1"
+          },
+          {
+            "material_id": "wikimedia:148830344",
+            "narration": "Коли ядерне паливо в активній зоні вичерпується, ядро починає стрімко ущільнюватися під дією гравітації.",
+            "fact_ids": [
+              "f3",
+              "f4"
+            ],
+            "visual_target_id": "v0"
+          },
+          {
+            "material_id": "wikimedia:516106",
+            "narration": "У момент народження температура протонейтронної зірки дуже висока, але швидко падає завдяки потужному нейтринному охолодженню.",
+            "fact_ids": [
+              "f5",
+              "f6"
+            ],
+            "visual_target_id": "v0"
+          },
+          {
+            "material_id": "wikimedia:151097113",
+            "narration": "Гаряча протонейтронна зірка поступово остигає та перетворюється на звичайну нейтронну зірку — компактний і щільний залишок.",
+            "fact_ids": [
+              "f7",
+              "f8"
+            ],
+            "visual_target_id": "v2"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 12557,
+        "promptTokenCount": 12125,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 12125
+          }
+        ],
+        "candidatesTokenCount": 432
+      }
+    },
+    {
+      "key": "material-language-edit",
+      "result": {
+        "narration": [
+          "Нейтронна зірка є одним із можливих результатів еволюції масивних зір, що складається з нейтронної серцевини та тонкої кори.",
+          "Коли ядерне паливо в активній зоні вичерпується, ядро починає стрімко ущільнюватися під дією гравітації.",
+          "У момент народження температура протонейтронної зірки дуже висока, але швидко падає завдяки потужному нейтринному охолодженню.",
+          "Гаряча протонейтронна зірка поступово остигає та перетворюється на звичайну нейтронну зірку — компактний і щільний залишок."
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 518,
+        "promptTokenCount": 349,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 349
+          }
+        ],
+        "candidatesTokenCount": 169
+      }
+    }
+  ],
+  "human_pass": false
+}

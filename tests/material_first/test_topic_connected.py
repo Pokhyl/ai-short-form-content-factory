@@ -15,6 +15,7 @@ from test_engine import Operations as FixtureOperations
 
 class TopicFixtures(FixtureOperations):
     presentation_policy = TOPIC_POLICY
+    visual_validation_mode = 'gemini'
 
     def __init__(self, root):
         super().__init__(root, ['photo'] * 24)
@@ -35,7 +36,12 @@ class TopicFixtures(FixtureOperations):
 
     def research(self, request):
         self.request = request
-        return {**super().research(request), 'visual_targets': copy.deepcopy(self.targets)}
+        brief = {**super().research(request), 'visual_targets': copy.deepcopy(self.targets)}
+        brief['evidence']['visual_contexts'] = [
+            {'id': target['id'], 'subject': target['must_show'], 'query': target['query'],
+             'support': copy.deepcopy(brief['evidence']['facts'][i]['support'])}
+            for i, target in enumerate(self.targets)]
+        return brief
 
     def probe(self, path):
         return {'width': 300 if path.stem in self.tiny else 1080,
@@ -71,7 +77,8 @@ class TopicFixtures(FixtureOperations):
         self.model_calls.append(key)
         if key == 'material-photo-plan':
             result = {'contexts': [{'anchor_id': 'a' + str(i), 'object_label': t['must_show'],
-                                    'fact_ids': ['f0', 'f1', 'f2']} for i, t in enumerate(self.targets)]}
+                                    'fact_ids': ['f0', 'f1', 'f2'], 'source_context_id': t['id']}
+                                   for i, t in enumerate(self.targets)]}
         elif key == 'material-compose':
             phrases = {'pl': 'Kwiat wytwarza pyłek.', 'en': 'The flower produces pollen.',
                        'ru': 'Цветок производит пыльцу.', 'uk': 'Квітка утворює пилок.'}

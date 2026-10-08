@@ -1,5 +1,6 @@
 """Natural narration paragraphs; estimated length never needs model word indices."""
 from copy import deepcopy
+import math
 import re
 from factory_v3.gemini import obj, array, string, validate_json
 from factory_v3.grounding import compact_evidence
@@ -44,10 +45,18 @@ def compose_paragraphs(gemini, context, budget_error):
         allowed = request.get('validated_visual_anchors', {t['id']: None for t in targets})
         fields['visual_target_id']=string(t['id'] for t in targets if t['id'] in allowed)
     schema=obj({'beats':array(obj(fields),3,maximum_beats)})
+    cadence_guidance = {'seconds':seconds,
+        'minimum_unique_photos':math.ceil(seconds/5),
+        'anchor_related_fact_ids':{m['id']:m.get('supported_fact_ids',[]) for m in materials},
+        'maximum_total_seconds_per_role':{t['id']:min(seconds,5*sum(
+            t['id'] in m.get('matched_visual_targets',{}) for m in materials)) for t in targets or []}}
+    model_context = {**context,'materials':compact_materials(materials),
+                     'evidence':compact_evidence(context['evidence']), 'cadence_guidance':cadence_guidance}
     instruction=(
         'Write a continuous factual explanation in natural native '+LANGUAGES[request['language']]+'. '
         f'Return 3 to {maximum_beats} complete narration paragraphs in order, not individual words or numerical word ranges. '
-        f'Aim for {round(seconds*2.1)} words total for {seconds} seconds; {minimum_words}–{maximum_words} is a pre-voice estimate. '
+        f'Write {minimum_words}–{maximum_words} words TOTAL, preferably {round(seconds*2.1)}, for {seconds} seconds. '
+        'This total is required before voice synthesis; do not return a shorter abstract. '
         'Explain ALL required_fact_ids, including the essential mechanism and outcome; do not merely mention a related keyword. '
         'Summarize source facts in your own concise words. Do not copy every evidence fact or quote entire source paragraphs. '
         'Optional facts may be omitted; required facts and their essential mechanisms may not. '
@@ -55,13 +64,16 @@ def compose_paragraphs(gemini, context, budget_error):
         'Preserve qualifiers and numbers. Do not invent claims to meet length. '
         'Choose supplied inspected anchors and at least two available visual roles, using matched_visual_targets. '
         'The anchor must have a direct factual connection to the paragraph. Images illustrate source-supported facts; '
+        'Respect cadence_guidance: a role with one eligible photo can occupy at most five seconds total, '
+        'so use only a brief clause there and explain longer mechanisms over roles with more eligible photos. '
+        'Estimate time by that role\'s share of ALL narration words, not by paragraph count. '
+        'Each paragraph must explicitly explain at least one source fact in its anchor_related_fact_ids, '
+        'tagging that asserted identifying fact as well as any source-supported hidden mechanism. '
         'do not claim an invisible mechanism is visible. Natural clause boundaries matter; renderer schedules all photographs separately. '
         'Use each anchor once; avoid unrelated filler and repeated generic compositions.')
     if request.get('visual_validation_mode')=='metadata':
         instruction+=' Provider metadata is not pixel evidence; do not assert that a specific action or detail is visibly shown.'
-    draft,_=gemini.generate('material-compose',instruction,
-                            {**context,'materials':compact_materials(materials),
-                             'evidence':compact_evidence(context['evidence'])},schema)
+    draft,_=gemini.generate('material-compose',instruction,model_context,schema)
     validate_json(draft,schema)
     beats=deepcopy(draft['beats'])
     if any(len(set(b['fact_ids']))!=len(b['fact_ids']) for b in beats):
@@ -69,6 +81,49 @@ def compose_paragraphs(gemini, context, budget_error):
     narrated={f for b in beats for f in b['fact_ids']}
     if not set(request.get('required_fact_ids',[]))<=narrated:
         raise ValueError('paragraph draft omitted required source facts')
+    words = sum(len(b['narration'].split()) for b in beats)
+    def cadence_problem(paragraphs):
+        if 'validated_visual_anchors' not in request or not all(
+                {'matched_visual_targets','supported_fact_ids','sha256'} <= m.keys() for m in materials):
+            return None
+        from .engine import fit_contextual_paragraphs, MaterialUnavailable
+        try:
+            fit_contextual_paragraphs(materials, {'beats':paragraphs}, seconds=seconds,
+                                     anchor_ids=request['validated_visual_anchors'].values())
+        except MaterialUnavailable as error:
+            return str(error)
+        return None
+    cadence_error = cadence_problem(beats)
+    if not minimum_words <= words <= maximum_words or cadence_error:
+        # One separately keyed correction of a completed valid draft, inside
+        # the existing durable Gemini ceiling. Provider failures are terminal.
+        repair_schema = deepcopy(schema)
+        repair_schema['properties']['beats']['minItems'] = len(beats)
+        repair_schema['properties']['beats']['maxItems'] = len(beats)
+        repaired, _ = gemini.generate('material-compose-length-repair',
+            instruction + f' The completed draft has {words} words. Rewrite to {minimum_words}–{maximum_words}, '
+            f'preferably {round(seconds*2.1)}. Preserve the same paragraphs, their order, anchor identities, '
+            'visual roles and ALL required_fact_ids across the continuous narration. Preserve every supported original claim, number and qualifier. '
+            'Expand too-short paragraphs with explanatory details from the supplied source facts; '
+            'shorten excessive wording without dropping those facts. No repetition, padding or invented facts. '
+            'Redistribute paragraph lengths and source-backed explanations within the fixed anchors to respect cadence_guidance; '
+            'a rare one-photo role must remain a short clause while better-covered roles carry more explanation. '
+            'Correct fact_ids to the facts actually asserted in each revised paragraph. Never merely add a citation without explaining it; '
+            'omit an optional fact_id that the paragraph does not assert. All required source facts must remain fully explained.',
+            {**model_context, 'completed_draft':deepcopy(beats), 'cadence_error':cadence_error}, repair_schema)
+        validate_json(repaired, repair_schema)
+        for original, revised in zip(beats, repaired['beats']):
+            if (any(original.get(k) != revised.get(k) for k in ('material_id', 'visual_target_id'))
+                    or len(set(revised['fact_ids'])) != len(revised['fact_ids'])):
+                raise ValueError('length repair changed paragraph source or visual identity')
+        beats = deepcopy(repaired['beats'])
+        if not set(request.get('required_fact_ids', [])) <= {f for b in beats for f in b['fact_ids']}:
+            raise ValueError('length repair omitted required source facts')
+        if not minimum_words <= sum(len(b['narration'].split()) for b in beats) <= maximum_words:
+            raise budget_error('bounded paragraph length repair outside pre-voice estimate')
+        if cadence_problem(beats):
+            from .engine import MaterialUnavailable
+            raise MaterialUnavailable('bounded paragraph repair still lacks related unique-photo cadence')
     edit_schema=obj({'narration':array({**string(),'maxLength':2400},len(beats),len(beats))})
     edited,_=gemini.generate('material-language-edit',
         'Proofread these consecutive paragraphs into natural standard native '+LANGUAGES[request['language']]+'. '

@@ -6,6 +6,78 @@ from material_first.presentation import TOPIC_POLICY
 
 
 class ParagraphTests(unittest.TestCase):
+    def test_actual_short_draft_gets_one_bounded_source_aware_repair_before_native_edit(self):
+        actual=json.loads((Path(__file__).parent/'fixtures/actual-uk60-short-paragraphs.json').read_text())
+        beats=copy.deepcopy(actual['draft']['beats'])
+        context=copy.deepcopy(actual['composition_context'])
+        calls=[]
+        def generate(key,instruction,payload,schema):
+            calls.append(key)
+            if key=='material-compose':return copy.deepcopy(actual['draft']),{}
+            if key=='material-compose-length-repair':
+                self.assertEqual(payload['completed_draft'],beats)
+                self.assertEqual(payload['evidence']['facts'],context['evidence']['facts'])
+                self.assertEqual(payload['cadence_guidance']['maximum_total_seconds_per_role']['v2'],5)
+                self.assertIsNotNone(payload['cadence_error'])
+                repaired=copy.deepcopy(beats)
+                # Explicitly controlled length response, not linguistic/factual acceptance.
+                for b,count in zip(repaired[:3],(26,31,31)):
+                    b['narration']+=' контрольне'*max(0,count-len(b['narration'].split()))
+                repaired[3]['narration']='Протонейтронна зірка остигає, залишаючи компактну щільну нейтронну зірку.'
+                repaired[3]['fact_ids']=['f5','f7']
+                return {'beats':repaired},{}
+            self.assertEqual(key,'material-language-edit')
+            self.assertEqual(set(payload),{'language','narration','word_budget'})
+            return {'narration':payload['narration']},{}
+        result=Operations('.',None,SimpleNamespace(generate=generate),None,None).compose(context)
+        self.assertEqual(calls,['material-compose','material-compose-length-repair','material-language-edit'])
+        self.assertGreaterEqual(sum(len(b['narration'].split()) for b in result['beats']),84)
+        self.assertEqual([{k:b[k] for k in ('material_id','visual_target_id')} for b in result['beats']],
+                         [{k:b[k] for k in ('material_id','visual_target_id')} for b in beats])
+        self.assertTrue(set(context['request']['required_fact_ids']) <= {f for b in result['beats'] for f in b['fact_ids']})
+        from material_first.engine import fit_contextual_paragraphs
+        fit_contextual_paragraphs(context['materials'],result,seconds=60,
+                                 anchor_ids=context['request']['validated_visual_anchors'].values())
+
+    def test_completed_invalid_repair_is_terminal_before_native_or_voice(self):
+        actual=json.loads((Path(__file__).parent/'fixtures/actual-uk60-short-paragraphs.json').read_text())
+        context={'request':{'seconds':60,'language':'uk','presentation_policy':TOPIC_POLICY,
+            'visual_targets':[{'id':'v'+str(i)} for i in range(3)]},
+            'materials':[{'id':b['material_id']} for b in actual['draft']['beats']],
+            'evidence':{'facts':actual['facts'],'sources':[]}}
+        for defect in ('short','identity','provider'):
+            calls=[]
+            def generate(key,*args):
+                calls.append(key)
+                if key=='material-compose':return copy.deepcopy(actual['draft']),{}
+                self.assertEqual(key,'material-compose-length-repair')
+                if defect=='provider':raise RuntimeError('ambiguous provider transport')
+                result=copy.deepcopy(actual['draft'])
+                if defect=='identity':result['beats'][0]['material_id']=result['beats'][1]['material_id']
+                return result,{}
+            with self.subTest(defect=defect), self.assertRaises((ValueError,RuntimeError)):
+                Operations('.',None,SimpleNamespace(generate=generate),None,None).compose(context)
+            self.assertEqual(calls,['material-compose','material-compose-length-repair'])
+
+    def test_cadence_or_required_fact_failure_after_one_repair_stops_before_native(self):
+        actual=json.loads((Path(__file__).parent/'fixtures/actual-uk60-short-paragraphs.json').read_text())
+        context=copy.deepcopy(actual['composition_context'])
+        for defect in ('cadence','required'):
+            calls=[]
+            def generate(key,*args):
+                calls.append(key)
+                if key=='material-compose':return copy.deepcopy(actual['draft']),{}
+                self.assertEqual(key,'material-compose-length-repair')
+                result=copy.deepcopy(actual['draft'])
+                for b,count in zip(result['beats'],(26,31,31,8)):
+                    words=b['narration'].split()
+                    b['narration']=' '.join((words+['контрольне']*count)[:count])
+                if defect=='required':result['beats'][0]['fact_ids']=['f2']
+                return result,{}
+            with self.subTest(defect=defect), self.assertRaises(ValueError):
+                Operations('.',None,SimpleNamespace(generate=generate),None,None).compose(context)
+            self.assertEqual(calls,['material-compose','material-compose-length-repair'])
+
     def setUp(self):
         saved=json.loads((Path(__file__).parent/'fixtures/neutron-uk60-92-word-failure.json').read_text())
         original=saved['drafts'][0];self.beats=[]

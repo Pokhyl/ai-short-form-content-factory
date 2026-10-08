@@ -35,14 +35,22 @@ class AvailabilityPlanningTests(unittest.TestCase):
         contexts = [{'id':'v'+str(i), 'subject':name, 'query':name, 'support':[]}
                     for i,name in enumerate(['Crab Nebula', 'Eastern Veil Nebula', 'Jellyfish Nebula'])]
         brief = self.brief(); brief['evidence']['visual_contexts'] = contexts
+        filename = 'File:Crab Nebula - Optical Telescope Data (catalog123).jpg'
+        for pool in self.saved['pools']:
+            for candidate in pool['candidates']:
+                if candidate['id'] == self.contexts[0]['anchor_id']:
+                    candidate['source_metadata']['title'] = filename
+        self.contexts[0]['object_label'] = filename
         observed = []
         def generate(key, instruction, context, schema):
             observed.extend(context['candidates'])
             result = {'contexts':[{**row,'source_context_id':'v'+str(i)} for i,row in enumerate(self.contexts)]}
             validate_json(result,schema)
             return result, {'receipt_id':'controlled-documented-object-plan'}
-        plan_photos(SimpleNamespace(generate=generate), {'topic':'Neutron star','seconds':15},
-                    brief, [p['candidates'] for p in self.saved['pools']], 30)
+        resolved, _ = plan_photos(SimpleNamespace(generate=generate), {'topic':'Neutron star','seconds':15},
+                                 brief, [p['candidates'] for p in self.saved['pools']], 30)
+        self.assertEqual(resolved['visual_targets'][0]['must_show'], 'Crab Nebula')
+        self.assertEqual(resolved['visual_targets'][0]['query'], 'Crab Nebula')
         self.assertTrue(observed)
         for row in observed:
             text = context_words(' '.join(row['descriptions']))
