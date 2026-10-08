@@ -1,0 +1,25 @@
+{
+  "id": "1702cdc0-9f8e-43b6-8b13-9c36ee4a1fec",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "visual_validation_mode": "gemini",
+  "runtime_revision": "09162ca9e5aae9679f74a985e3eba8ded9bf703a",
+  "authorization": "Owner explicitly не останавливайся пока проект не будет готов; continue through diagnosed failures under unchanged bounded free-only budgets and immutable failed IDs.",
+  "maximum_fresh_requests": 1,
+  "maximum_calls": {
+    "gemini": 16,
+    "download": 30,
+    "search_per_provider": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "metadata": 1,
+    "tts": 1
+  },
+  "expected_steps": "brief -> nine search pools -> one availability planner -> up to eight independent pixel batches -> compose -> native edit -> complete keyed independent factual/native review -> one voice -> alignment -> exact60s whole-photo render/audit",
+  "question": "Can exact-source documented named queries retrieve enough real related observations, choose supported contexts, and complete current factual/native/one-voice/UK60 MP4 gates?",
+  "offline": "224 current checks PASS locally and exact image with network disabled. Actual film/artist-conception records rejected; contradictory same-object TypeIa record preserved. Current documented full prepare path and16source language-duration matrix tested; metadata availability is not pixel approval.",
+  "remaining": "Unseen actual planner response, new target-qualified pixel judgments, complete keyed/native review, one voice and current MP4 not verified. Controlled metadata selection is not acceptance.",
+  "stop": "Terminal case remains immutable. Diagnose saved evidence, fix actual blocker before any fresh normal case; do not blindly repeat. No paid fallback/quota expansion/second TTS/manual approvals.",
+  "human_pass": false
+}
