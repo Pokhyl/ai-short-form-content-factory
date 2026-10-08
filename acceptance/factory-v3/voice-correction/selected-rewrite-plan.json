@@ -1,0 +1,13 @@
+{
+  "id": "e9c352c8-b755-4ce3-9e46-e6f7c87aa3ee",
+  "revision": "7c64d3d585b66d2d217a5f35b696e9265081ac0b",
+  "mode": "exact saved actual measurement plus saved model paragraph candidate -> deployed deterministic selection -> fresh independent review -> actual voice/alignment/render/QA",
+  "source_measurement": "f98e91e7-b22e-46b0-8c6d-8dc05b6f4bbf",
+  "source_candidate": "742e27ca-05e5-4e86-820e-316c3e22d58b",
+  "max_new_gemini_calls": 5,
+  "max_new_tts_calls": 3,
+  "free_only": true,
+  "no_manual_prose": true,
+  "normal_discovery_acceptance": false,
+  "stop": "first terminal; old failed IDs immutable"
+}
