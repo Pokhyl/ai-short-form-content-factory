@@ -23,8 +23,8 @@ class PhotoWorker(WorkerAdapters):
         return round(payload["seconds"] * 800), round(payload["seconds"] * 1200)
 
     def voice(self, job_id, payload, outputs, before_send):
-        from .speech_timing import validate_timing
-        validate_timing(payload['script'], payload.get('speech_timing'), payload['language'], payload['seconds'])
+        from .speech_timing import validate_plan_timing
+        validate_plan_timing(payload)
         if payload.get('voice_correction'):
             return self.corrected_voice(job_id,payload,before_send)
         return super().voice(job_id, payload, outputs, before_send)

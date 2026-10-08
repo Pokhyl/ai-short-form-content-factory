@@ -72,3 +72,14 @@ def validate_timing(text, budget, language=None, seconds=None):
     duration=estimated_seconds(text,budget)
     if not budget['minimum_estimated_seconds'] <= duration <= budget['maximum_estimated_seconds']:
         raise ValueError('narration misses calibrated natural-voice timing before synthesis')
+
+
+def validate_plan_timing(payload):
+    # Measured-feedback plans must be allowed to reach their first measurement;
+    # the historical text estimate is guidance, not proof of actual duration.
+    if 'voice_correction' in payload:
+        from .voice_correction import POLICY
+        if payload['voice_correction'] != POLICY:
+            raise ValueError('unsupported measured voice correction policy')
+        return
+    validate_timing(payload['script'],payload.get('speech_timing'),payload['language'],payload['seconds'])

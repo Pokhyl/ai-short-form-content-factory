@@ -1,3 +1,7 @@
+## Voice boundary follow-up — 2026-10-08
+
+Saved-material live composition0d9cf03a failed beforeTTS: cadence repair returned empty word slots. Saved replay diagnoses unsupported optional-f8 visual allocation followed by forced-word filler; do not accept/trim that response or retryID. This is an upstream composition reliability blocker, separate from measured audio correction. New measured-feedback plans now treat the initial text-duration estimate as guidance so actual measurement can drive correction; legacy plans retain their strict estimate gate. Next smallest regression uses the existing factory-generated, source-reviewed97-word original plan72705d11 as immutable INPUT under a freshID, followed by actual new TTS/automatic correction/review/TTS and downstream checks. This tests the deployed generic voice stage, not fresh composition/search acceptance. No hand-written narration.
+
 ## Measured voice correction LIVE; connected boundary verification — 2026-10-08
 
 LIVEde5094f0aceee928cc389b1e836015070f739c99 / imagesha256:a5763ad8e18847bc7fdd84915b6bd0fdebeeca2b60e081a41376b24230eaae2f.247 exact-image tests and isolated PostgreSQL checks PASS, including concurrent synthesis accounting, unmeasured/ambiguous blocking,3attempt cap, terminal immutability. App-only rollout plus transactional factory_v3 function migration and new empty voice_revisions table; all prior rows/workflows/settings/supporting services unchanged. Publichealth exact. Later additional rewrite-feedback test PASS locally (248total).

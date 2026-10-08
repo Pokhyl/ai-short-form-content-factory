@@ -1,0 +1,8 @@
+{
+  "id": "0d9cf03a-5178-4442-a24c-fea5f6a9dc33",
+  "status": "failed",
+  "error": "ModelSchemaError",
+  "stage": "material-compose-length-repair",
+  "tts_calls": 0,
+  "diagnosis": "Initial prose assigned optional f8 to zero eligible photographs; server cadence repair returned empty trailing word slots and filler. No relaxed grounding or empty-slot acceptance. Voice correction not reached."
+}

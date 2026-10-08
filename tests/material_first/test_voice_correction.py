@@ -106,3 +106,16 @@ class RewriteTests(unittest.TestCase):
         gemini.review_script.reset_mock()
         with self.assertRaisesRegex(ValueError,'unchanged'):rewrite(original,50000,gemini)
         gemini.review_script.assert_not_called()
+
+class FirstMeasurementTests(unittest.TestCase):
+    def test_measured_feedback_can_reach_first_measurement_but_legacy_estimate_stays_strict(self):
+        from material_first.speech_timing import validate_plan_timing
+        p={'language':'uk','seconds':60,'script':'short', 'voice_correction':dict(POLICY),
+           'speech_timing':{'protocol':'natural-voice-timing-v1','locale':'uk-UA',
+            'voice':'uk-UA-Chirp3-HD-Enceladus','words_per_second':2,'characters_per_second':15,
+            'minimum_estimated_seconds':59,'maximum_estimated_seconds':60}}
+        validate_plan_timing(p)
+        del p['voice_correction']
+        with self.assertRaises(ValueError):validate_plan_timing(p)
+        p['voice_correction']={'max_attempts':99}
+        with self.assertRaises(ValueError):validate_plan_timing(p)
