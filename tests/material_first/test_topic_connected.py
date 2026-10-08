@@ -76,9 +76,8 @@ class TopicFixtures(FixtureOperations):
     def generate(self, key, instruction, context, schema):
         self.model_calls.append(key)
         if key == 'material-photo-plan':
-            result = {'contexts': [{'anchor_id': 'a' + str(i), 'object_label': t['must_show'],
-                                    'fact_ids': ['f0', 'f1', 'f2'], 'source_context_id': t['id']}
-                                   for i, t in enumerate(self.targets)]}
+            result = {t['id']:{'anchor_id':'a'+str(i),'fact_ids':['f0','f1','f2']}
+                      for i,t in enumerate(self.targets)}
         elif key == 'material-compose':
             phrases = {'pl': 'Kwiat wytwarza pyłek.', 'en': 'The flower produces pollen.',
                        'ru': 'Цветок производит пыльцу.', 'uk': 'Квітка утворює пилок.'}

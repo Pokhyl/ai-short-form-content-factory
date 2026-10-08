@@ -55,10 +55,22 @@ def plan_photos(gemini, request, brief, pools, limit):
         'fact_ids': array(string(f['id'] for f in brief['evidence']['facts']), 1, 8),
     }), 3, 3)})
     if contexts:
-        row = schema['properties']['contexts']['items']
-        row['properties']['source_context_id'] = string(t['id'] for t in contexts)
-        row['required'].append('source_context_id')
+        # Each source-owned object gets its own disjoint identity enum. A
+        # provider cannot bind an otherwise eligible image to a different row.
+        assigned = {t['id']:[] for t in contexts}
+        for candidate in anchors:
+            matching = [t for t in contexts if context_words(t['query']) <=
+                        context_words(' '.join(descriptions(candidate)))]
+            if matching:
+                owner = max(matching,key=lambda t:len(context_words(t['query'])))
+                assigned[owner['id']].append(candidate['id'])
+        if any(not assigned[t['id']] for t in contexts):
+            raise ValueError('documented object has no distinct metadata anchor')
+        schema = obj({t['id']:obj({'anchor_id':string(assigned[t['id']]),
+            'fact_ids':array(string(f['id'] for f in brief['evidence']['facts']),1,8)}) for t in contexts})
     result, provenance = gemini.generate('material-photo-plan',
+        'For a keyed documented schema return ONLY anchor_id and fact_ids under each source-context key; the server supplies the exact object labels. '
+        'The copied-label instructions below apply only to the legacy contexts-array schema. '
         'Plan three different real-photo contexts AFTER retrieval, using the supplied availability metadata. '
         'Choose concrete physical objects or documented directly related stages of the requested topic. '
         'For each choose an anchor_id and copy object_label EXACTLY from that candidate description or title. '
@@ -70,7 +82,7 @@ def plan_photos(gemini, request, brief, pools, limit):
         'For distant or hidden mechanisms choose documented associated visible objects or stages; source text '
         'proves the mechanism and photographs illustrate the actual associated objects. '
         'Bind each context to the supplied source fact_ids that explain its direct relationship. '
-        'If documented visual_contexts exist, bind source_context_id to the supplied exact source-supported object; '
+        'If documented visual_contexts exist, return the keyed source-context objects required by the schema; each anchor enum belongs to that exact object. '
         'do not replace that object with a different named example merely because both share a general class. '
         'Read all records for the same named object, including contrary classifications. Reject incompatible subtypes and synthetic media. '
         'Prefer contexts with several likely distinct real photographs in the retrieved pool, rather than '
@@ -81,6 +93,9 @@ def plan_photos(gemini, request, brief, pools, limit):
          'candidates': [{'id': c['id'], 'descriptions': descriptions(c)} for c in anchors],
          'minimum_distinct_photographs': math.ceil(request.get('seconds', 15) / 5)}, schema)
     validate_json(result, schema)
+    if contexts:
+        result={'contexts':[{**result[t['id']], 'source_context_id':t['id'],
+                             'object_label':t['query']} for t in contexts]}
     if len({row['anchor_id'] for row in result['contexts']}) != 3:
         raise ValueError('photo contexts need three distinct availability anchors')
     targets = []

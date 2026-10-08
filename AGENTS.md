@@ -1,3 +1,7 @@
+## Actual cross-context anchor mismatch closed offline — 2026-10-08
+
+69886858 immutableValueError onLIVE8a1818b before download/TTS/MP4; server paragraph allocation not reached. Full read-only replay confirms photoanchor changed documented source object. Pools contain7/9/15qualified metadata candidates for original source contexts; planner incorrectly binds wikimedia11658037 to CrabNebulapulsarM1 though it matches different context. New documented plan schema keyed by source-owned context with disjoint per-object anchor enums; generated labels/context IDs removed. Originalcompletequery/independentpixels/uniqueness/sourcefacts unchanged; legacy array plans retained.231local checksPASS, including controlled16pair full prepare/freeze/schedule matrix and actual cross-row fixture; no new provider approval. Build/package/deploy/fresh actual output pending. Samefreeonly/oneTTS/oldIDs immutable;project_ready=false.
+
 ## Server-owned paragraph allocation LIVE — 2026-10-08
 
 LIVE8a1818b9187745dd7865961c716adbd3dd63ba7c/imagefactory-v3:8a1818b/sha256:d00f465cb1a6d9fff493488fed634f46df12e0fcfa1e816e85c481a4257b87be.230exact-image network-disabled checksPASS; app-only protected snapshots equal/publichealth exact. Fresh normalUK60Vision69886858-769d-48d2-b4ae-2cfc80eba4f7 planned under owner persistence. Verify keyed source-aware paragraphs under server counts/anchors, independent native/factual review, onevoice/alignment/exactMP4. PriorfailedIDs immutable; no blindrepeat/paidfallback/quota expansion. Actualoutputpending;project_ready=false.

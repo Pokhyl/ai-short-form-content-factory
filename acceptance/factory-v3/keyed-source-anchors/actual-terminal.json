@@ -1,0 +1,265 @@
+{
+  "status": {
+    "id": "69886858-769d-48d2-b4ae-2cfc80eba4f7",
+    "request": {
+      "topic": "Нейтронная звезда",
+      "seconds": 60,
+      "language": "uk",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "failed",
+    "source_revision": "8a1818b9187745dd7865961c716adbd3dd63ba7c",
+    "error_code": "ValueError",
+    "machine_pass": false,
+    "human_pass": false
+  },
+  "call_summary": [
+    {
+      "kind": "gemini",
+      "state": "succeeded",
+      "count": 2
+    },
+    {
+      "kind": "metadata",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "research_search",
+      "state": "succeeded",
+      "count": 1
+    },
+    {
+      "kind": "search:pexels",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:pixabay",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "search:wikimedia",
+      "state": "succeeded",
+      "count": 3
+    },
+    {
+      "kind": "source_fetch",
+      "state": "failed",
+      "count": 1
+    },
+    {
+      "kind": "source_fetch",
+      "state": "succeeded",
+      "count": 5
+    }
+  ],
+  "model_calls": [
+    {
+      "key": "material-brief",
+      "result": {
+        "facts": [
+          {
+            "id": "f1",
+            "text": "Нейтронні зірки утворюються в результаті еволюції та подальших вибухів наднових зір, початкова маса яких перевищувала масу Сонця більш ніж у 8 разів.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-1094-2113"
+              }
+            ]
+          },
+          {
+            "id": "f2",
+            "text": "Коли ядерне пальне в активній зоні вичерпується, виникає електронний захват: електрони та протони зливаються в нейтрони з утворенням потужного потоку нейтрино.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              },
+              {
+                "span_id": "s2-1094-2291"
+              }
+            ]
+          },
+          {
+            "id": "f3",
+            "text": "Під час колапсу ядра виділяється величезна кількість енергії, приблизно 99% якої відлітає у космос у вигляді нейтрино й антинейтрино.",
+            "support": [
+              {
+                "span_id": "s2-2291-3485"
+              }
+            ]
+          },
+          {
+            "id": "f4",
+            "text": "Коли густина досягає ядерної, тиск вирожденного нейтронного газу зупиняє подальше стискання, формуючи компактний зоряний залишок.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              },
+              {
+                "span_id": "s2-2291-3485"
+              }
+            ]
+          },
+          {
+            "id": "f5",
+            "text": "Типовий радіус нейтронної зорі становить лише 10-20 кілометрів при масі, порівняній з масою Сонця, що обумовлює надзвичайно високу густину та сильну гравітацію.",
+            "support": [
+              {
+                "span_id": "s1-0-1094"
+              },
+              {
+                "span_id": "s1-3302-4411"
+              }
+            ]
+          },
+          {
+            "id": "f6",
+            "text": "Завдяки збереженню моменту імпульсу при різкому зменшенні радіуса залишка, нейтронна зоря набуває надзвичайно високої швидкості обертання.",
+            "support": [
+              {
+                "span_id": "s1-3302-4411"
+              }
+            ]
+          },
+          {
+            "id": "f7",
+            "text": "Сильні магнітні поля та швидке обертання зумовлюють появу регулярних імпульсів випромінювання, завдяки чому багато таких обєктів спостерігаються як пульсари.",
+            "support": [
+              {
+                "span_id": "s1-5431-6565"
+              },
+              {
+                "span_id": "s1-11157-12230"
+              }
+            ]
+          },
+          {
+            "id": "f8",
+            "text": "Якщо маса залишка перевищує верхню межу, внутрішній тиск вже не може зупинити гравітаційний колапс, і обєкт перетворюється на чорну діру.",
+            "support": [
+              {
+                "span_id": "s1-2113-3302"
+              },
+              {
+                "span_id": "s2-7790-8965"
+              }
+            ]
+          }
+        ],
+        "required_fact_ids": [
+          "f1",
+          "f3",
+          "f4",
+          "f5",
+          "f7"
+        ],
+        "photo_contexts": {
+          "setting": {
+            "subject": "Залишок наднової",
+            "query": "Supernova remnant E0102-72.3",
+            "fact_ids": [
+              "f1",
+              "f3",
+              "f4"
+            ],
+            "support_span_ids": [
+              "s2-0-1094"
+            ]
+          },
+          "subject": {
+            "subject": "Пульсар у центрі Крабоподібної туманності",
+            "query": "Crab Nebula pulsar M1",
+            "fact_ids": [
+              "f5",
+              "f6",
+              "f7"
+            ],
+            "support_span_ids": [
+              "s2-6942-7790"
+            ]
+          },
+          "detail": {
+            "subject": "Нейтронна зоря",
+            "query": "Neutron star illustration",
+            "fact_ids": [
+              "f5",
+              "f8"
+            ],
+            "support_span_ids": [
+              "s1-0-1094"
+            ]
+          }
+        }
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 18938,
+        "promptTokenCount": 17610,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 17610
+          }
+        ],
+        "candidatesTokenCount": 1328
+      }
+    },
+    {
+      "key": "material-photo-plan",
+      "result": {
+        "contexts": [
+          {
+            "anchor_id": "wikimedia:148804754",
+            "object_label": "Chandra X-ray Image of E0102-72.3 with Scale Bar",
+            "fact_ids": [
+              "f1",
+              "f2",
+              "f3",
+              "f4"
+            ],
+            "source_context_id": "v0"
+          },
+          {
+            "anchor_id": "wikimedia:11658037",
+            "object_label": "Crab Nebula in Taurus",
+            "fact_ids": [
+              "f1",
+              "f5",
+              "f6",
+              "f7"
+            ],
+            "source_context_id": "v1"
+          },
+          {
+            "anchor_id": "wikimedia:151097113",
+            "object_label": "Hubble Sees a Neutron Star Alone in Space",
+            "fact_ids": [
+              "f5",
+              "f7",
+              "f8"
+            ],
+            "source_context_id": "v2"
+          }
+        ]
+      },
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 12683,
+        "promptTokenCount": 12478,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 12478
+          }
+        ],
+        "candidatesTokenCount": 205
+      }
+    }
+  ],
+  "human_pass": false
+}

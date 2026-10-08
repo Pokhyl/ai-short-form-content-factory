@@ -36,9 +36,9 @@ class Model:
             result = {'contexts': [{'anchor_id': context['candidates'][i]['id'],
                                     'object_label': 'detail ' + str(i), 'fact_ids': ['f' + str(i)]}
                                    for i in range(3)]}
-            if 'source_context_id' in schema['properties']['contexts']['items']['properties']:
-                for i, row in enumerate(result['contexts']):
-                    row['source_context_id'] = 'v' + str(i)
+            if 'contexts' not in schema['properties']:
+                result={id:{'anchor_id':p['properties']['anchor_id']['enum'][0],'fact_ids':['f'+str(i)]}
+                        for i,(id,p) in enumerate(schema['properties'].items())}
         elif key.startswith('material-inspect-batch:'):
             saved_calls = self.calls[:]
             row_schema = copy.deepcopy(schema['properties']['photos']['items'])

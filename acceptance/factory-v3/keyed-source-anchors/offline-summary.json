@@ -1,0 +1,17 @@
+{
+  "failed_id": "69886858-769d-48d2-b4ae-2cfc80eba4f7",
+  "failure": "photo anchor changed the documented source object",
+  "actual_unavailable": false,
+  "eligible_metadata_counts": {
+    "v0": 7,
+    "v1": 9,
+    "v2": 15
+  },
+  "cause": "Independent anchor_id/source_context_id enums allow otherwise eligible neutron-star image to be bound to the documented Crab Nebula pulsar M1 row. Complete exact-object gate correctly rejects it.",
+  "fix": "Keyed per-source-context schema with disjoint metadata-qualified anchor enums. Server binds original source context/query; no generated copied display labels/context IDs. Legacy array protocol retained when no documented contexts. Original identity/pixels/unique/factual gates unchanged.",
+  "local_checks": 231,
+  "connected_controlled_matrix": "16language/duration pairs PASS",
+  "tts_calls": 0,
+  "mp4": false,
+  "project_ready": false
+}

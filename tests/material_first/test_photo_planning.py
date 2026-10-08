@@ -17,7 +17,8 @@ class AvailabilityPlanningTests(unittest.TestCase):
         calls = []
         def generate(*args):
             calls.append(args[0])
-            return saved['model_result'], {'receipt_id':'saved-actual-label-order'}
+            return {r['source_context_id']:{k:r[k] for k in ('anchor_id','fact_ids')}
+                    for r in saved['model_result']['contexts']}, {'receipt_id':'controlled-keyed-plan-over-saved-pools'}
         brief = {'evidence':saved['evidence'], 'visual_targets':saved['targets']}
         pools = [p['candidates'] for p in saved['pools']]
         resolved, candidates = plan_photos(SimpleNamespace(generate=generate), saved['request'], brief, pools, 30)
@@ -29,8 +30,32 @@ class AvailabilityPlanningTests(unittest.TestCase):
         saved['model_result']['contexts'][2]['anchor_id'] = saved['model_result']['contexts'][0]['anchor_id']
         saved['model_result']['contexts'][0]['anchor_id'] = 'wikimedia:80137098'
         saved['model_result']['contexts'][1]['anchor_id'] = 'wikimedia:148804754'
-        with self.assertRaisesRegex(ValueError, 'changed the documented source object'):
+        with self.assertRaisesRegex(ValueError, 'unexpected identity'):
             plan_photos(SimpleNamespace(generate=generate), saved['request'], brief, pools, 30)
+
+    def test_actual_wrong_source_anchor_is_excluded_by_keyed_disjoint_schema(self):
+        saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-anchor-row-mismatch.json').read_text())
+        brief={'evidence':saved['evidence'],'visual_targets':saved['targets']}
+        observed=[]
+        def generate(key,instruction,payload,schema):
+            enums=[set(p['properties']['anchor_id']['enum']) for p in schema['properties'].values()]
+            self.assertNotIn('wikimedia:11658037',schema['properties']['v1']['properties']['anchor_id']['enum'])
+            self.assertTrue(all(not a&b for i,a in enumerate(enums) for b in enums[i+1:]))
+            result={id:{'anchor_id':p['properties']['anchor_id']['enum'][0],'fact_ids':['f1']}
+                    for id,p in schema['properties'].items()}
+            observed.append(result)
+            return result,{'receipt_id':'controlled-keyed-selection'}
+        resolved,candidates=plan_photos(SimpleNamespace(generate=generate),saved['request'],brief,
+                                     [p['candidates'] for p in saved['pools']],30)
+        self.assertEqual(len(candidates),30)
+        self.assertEqual([t['query'] for t in resolved['visual_targets']],
+                         [t['query'] for t in saved['evidence']['visual_contexts']])
+        def invalid(*args):
+            result=copy.deepcopy(observed[0]);result['v1']['anchor_id']='wikimedia:11658037'
+            return result,{'receipt_id':'controlled-invalid-cross-row-anchor'}
+        with self.assertRaisesRegex(ValueError,'unexpected identity'):
+            plan_photos(SimpleNamespace(generate=invalid),saved['request'],brief,
+                        [p['candidates'] for p in saved['pools']],30)
 
     def test_actual_planetarium_and_artist_conception_are_ineligible_before_download(self):
         actual = json.loads((Path(__file__).parent/'fixtures/actual-availability-medium-contradiction.json').read_text())
@@ -64,7 +89,7 @@ class AvailabilityPlanningTests(unittest.TestCase):
         observed = []
         def generate(key, instruction, context, schema):
             observed.extend(context['candidates'])
-            result = {'contexts':[{**row,'source_context_id':'v'+str(i)} for i,row in enumerate(self.contexts)]}
+            result = {'v'+str(i):{k:row[k] for k in ('anchor_id','fact_ids')} for i,row in enumerate(self.contexts)}
             validate_json(result,schema)
             return result, {'receipt_id':'controlled-documented-object-plan'}
         resolved, _ = plan_photos(SimpleNamespace(generate=generate), {'topic':'Neutron star','seconds':15},
