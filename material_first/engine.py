@@ -430,6 +430,9 @@ class Producer:
             anchors = validated_context_anchors(assets, available)
             if anchors is not None:
                 request['validated_visual_anchors'] = anchors
+        if modern and hasattr(self.operations, 'speech_timing_budget'):
+            budget = self.operations.speech_timing_budget(language, seconds)
+            if budget is not None:request['speech_timing'] = budget
         composition = {"request": request, "evidence": evidence, "materials": available}
         draft = self.operations.compose(deepcopy(composition))
         if modern:
@@ -510,4 +513,6 @@ def verify(root, frozen, probe=probe_media):
         raise ValueError("continuous narration changed")
     validate_script_review(payload["evidence"], payload["language"], payload["script"],
                            payload["scenes"], payload["script_review"], topic=payload["topic"])
+    from .speech_timing import validate_timing
+    validate_timing(payload['script'], payload.get('speech_timing'), payload['language'], payload['seconds'])
     return payload

@@ -124,6 +124,8 @@ class WorkerAdapters:
         result = self._post("/voiceovers/"+job_id,{"audio_base64":encoded})
         if result.get("status")!="ready" or result.get("sha256")!=expected_hash:
             raise ValueError("stored voice differs from synthesized voice")
+        if hasattr(self, '_voice_measurement'):
+            self._voice_measurement(job_id, payload, result)
         low,high = self._duration_window(payload)
         if not low <= result["duration_ms"] <= high:
             raise VoiceDurationMismatch("voice duration outside accepted window; no re-synthesis")

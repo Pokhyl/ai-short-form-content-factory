@@ -22,6 +22,16 @@ class PhotoWorker(WorkerAdapters):
             return payload['seconds'] * 1000 - 1000, payload['seconds'] * 1000
         return round(payload["seconds"] * 800), round(payload["seconds"] * 1200)
 
+    def voice(self, job_id, payload, outputs, before_send):
+        from .speech_timing import validate_timing
+        validate_timing(payload['script'], payload.get('speech_timing'), payload['language'], payload['seconds'])
+        return super().voice(job_id, payload, outputs, before_send)
+
+    def _voice_measurement(self, job_id, payload, result):
+        from .speech_timing import record_sample
+        record_sample(self.root, job_id, payload['language'], payload['script'],
+                      result['duration_ms'], result['sha256'])
+
     def _post(self, path, payload, timeout=60):
         if path.startswith("/renders/"):
             return render(self.root, path.removeprefix("/renders/"), payload)

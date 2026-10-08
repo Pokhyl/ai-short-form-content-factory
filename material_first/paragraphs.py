@@ -67,9 +67,13 @@ def cadence_paragraph_plan(materials, targets, required, preferred_words):
 
 def compose_paragraphs(gemini, context, budget_error):
     request = context['request'];seconds=request['seconds'];materials=context['materials']
-    # Words are only a pre-voice estimate. Actual synthesis duration still has
-    # to satisfy the existing bounded tempo fit and exact encoded-duration QA.
+    # Calibrate text before synthesis; measured audio is never stretched.
     minimum_words, maximum_words = round(seconds*1.4), round(seconds*2.4)+2
+    timing=request.get('speech_timing')
+    preferred_words=round(seconds*2.1)
+    if timing:
+        minimum_words,maximum_words=timing['minimum_words'],timing['maximum_words']
+        preferred_words=timing['preferred_words']
     maximum_beats=min(8,len(materials),seconds*2//5)
     if maximum_beats<3:raise ValueError('not enough inspected paragraph anchors')
     fields={'material_id':string(m['id'] for m in materials),'narration':{**string(),'maxLength':2400},
@@ -91,7 +95,7 @@ def compose_paragraphs(gemini, context, budget_error):
     instruction=(
         'Write a continuous factual explanation in natural native '+LANGUAGES[request['language']]+'. '
         f'Return 3 to {maximum_beats} complete narration paragraphs in order, not individual words or numerical word ranges. '
-        f'Write {minimum_words}–{maximum_words} words TOTAL, preferably {round(seconds*2.1)}, for {seconds} seconds. '
+        f'Write {minimum_words}–{maximum_words} words TOTAL, preferably {preferred_words}, for {seconds} seconds. '
         'This total is required before voice synthesis; do not return a shorter abstract. '
         'Explain ALL required_fact_ids, including the essential mechanism and outcome; do not merely mention a related keyword. '
         'Summarize source facts in your own concise words. Do not copy every evidence fact or quote entire source paragraphs. '
@@ -109,6 +113,11 @@ def compose_paragraphs(gemini, context, budget_error):
         'Use each anchor once; avoid unrelated filler and repeated generic compositions.')
     if request.get('visual_validation_mode')=='metadata':
         instruction+=' Provider metadata is not pixel evidence; do not assert that a specific action or detail is visibly shown.'
+    if timing:
+        instruction += (f" Natural voice calibration requires approximately {timing['preferred_characters']} characters "
+                        f"and {preferred_words} words. Actual speech speed is unchanged; there is no tempo fitting. "
+                        "Expand useful source-backed explanation instead of producing a short summary. ")
+        model_context['speech_timing']=timing
     draft,_=gemini.generate('material-compose',instruction,model_context,schema)
     validate_json(draft,schema)
     beats=deepcopy(draft['beats'])
@@ -135,7 +144,12 @@ def compose_paragraphs(gemini, context, budget_error):
             and (b.get('visual_target_id') is None or b['visual_target_id'] in m.get('matched_visual_targets',{}))
             for m in materials)} for i,b in enumerate(beats)]
     paragraph_plan = None
-    if not minimum_words <= words <= maximum_words or cadence_error:
+    from .speech_timing import validate_timing
+    def timing_problem(paragraphs):
+        try:validate_timing(' '.join(b['narration'] for b in paragraphs), timing, request['language'], seconds)
+        except ValueError:return True
+        return False
+    if not minimum_words <= words <= maximum_words or cadence_error or timing_problem(beats):
         # One separately keyed correction of a completed valid draft, inside
         # the existing durable Gemini ceiling. Provider failures are terminal.
         repair_schema = deepcopy(schema)
@@ -147,7 +161,7 @@ def compose_paragraphs(gemini, context, budget_error):
             'Move hidden mechanisms into paragraphs that also explicitly explain a related observed outcome; do not leave a paragraph tagged only with facts absent from ALL its role photos. '
             'Every paragraph must assert at least one identifying anchor_related_fact_id. Include it in fact_ids only when the narration actually explains it. '
             if cadence_error else 'Preserve the same paragraphs, their order, anchor identities and visual roles. ')
-        paragraph_plan = (cadence_paragraph_plan(materials, targets, request.get('required_fact_ids',[]), round(seconds*2.1))
+        paragraph_plan = (cadence_paragraph_plan(materials, targets, request.get('required_fact_ids',[]), preferred_words)
                           if cadence_error else None)
         if paragraph_plan:
             from .engine import fit_contextual_paragraphs
@@ -172,7 +186,7 @@ def compose_paragraphs(gemini, context, budget_error):
                 'Write a natural continuous explanation without repeating the same claim in every paragraph. ')
         repaired, _ = gemini.generate('material-compose-length-repair',
             instruction + f' The completed draft has {words} words. Rewrite to {minimum_words}–{maximum_words}, '
-            f'preferably {round(seconds*2.1)}. ' + repair_identity_instruction +
+            f'preferably {preferred_words}. ' + repair_identity_instruction +
             'Preserve ALL required_fact_ids across the continuous narration and every supported original claim, number and qualifier. '
             'Expand too-short paragraphs with explanatory details from the supplied source facts; '
             'shorten excessive wording without dropping those facts. No repetition, padding or invented facts. '
@@ -219,11 +233,13 @@ def compose_paragraphs(gemini, context, budget_error):
         'Return complete paragraph strings in the same order. Do not add or delete explanations. '
         'Edit only the supplied narration; never replace paragraphs with quotations from source text. '
         'Spell scientific notation and units naturally for spoken narration while preserving exact values. '
-        f'Tighten wording to {minimum_words}–{maximum_words} words TOTAL, preferably {round(seconds*2.1)}. '
+        f'Tighten wording to {minimum_words}–{maximum_words} words TOTAL, preferably {preferred_words}. '
         'Shorten redundant phrasing without dropping any asserted claim, qualifier or number. '
-        'If word_budget contains paragraphs, preserve those individual word limits as well as the total.',
+        'If word_budget contains paragraphs, preserve those individual word limits as well as the total. '
+        + (f" Keep approximately {timing['preferred_characters']} characters, including spaces, for the calibrated natural voice; do not shorten the text below its timing contract." if timing else ''),
         {'language':request['language'],'narration':[b['narration'] for b in beats],
-         'word_budget':{'minimum':minimum_words,'maximum':maximum_words,'preferred':round(seconds*2.1),
+         **({'speech_timing':timing} if timing else {}),
+         'word_budget':{'minimum':minimum_words,'maximum':maximum_words,'preferred':preferred_words,
                         **({'paragraphs':[p['word_budget'] for p in paragraph_plan]} if paragraph_plan else {})}},edit_schema)
     validate_json(edited,edit_schema)
     for beat,text in zip(beats,edited['narration']):
@@ -232,4 +248,5 @@ def compose_paragraphs(gemini, context, budget_error):
     words=sum(len(b['narration'].split()) for b in beats)
     if not minimum_words<=words<=maximum_words:
         raise budget_error('native paragraphs outside pre-voice length estimate')
+    if timing_problem(beats):raise budget_error('native edit misses calibrated natural-voice timing')
     return {'beats':beats}

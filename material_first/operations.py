@@ -75,6 +75,10 @@ class Operations:
         self.source, self.gemini, self.search, self.downloader = research, gemini, search, downloader
         self.documented_contexts = documented_contexts
 
+    def speech_timing_budget(self, language, seconds):
+        from .speech_timing import timing_budget
+        return timing_budget(self.root, language, seconds)
+
     def research(self, request):
         self.topic = request['topic']
         sources = self.source.fetch(request['topic'], request['language'])
