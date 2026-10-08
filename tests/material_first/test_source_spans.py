@@ -130,11 +130,18 @@ class SourceSpanTests(unittest.TestCase):
                     result = {'facts': facts, 'required_fact_ids': ['f0', 'f1', 'f2'],
                         'photo_contexts': {role: {'subject': f'Different role {i}', 'query': f'context {i}', 'fact_ids':[f'f{i}']}
                             for i, role in enumerate(('setting', 'subject', 'detail'))}}
+                    for row in result['photo_contexts'].values():
+                        row['support_span_ids'] = [spans[0]['id']]
                     validate_json(result, schema)
                     return result, {'receipt_id': 'controlled'}
                 ops = Operations('.', SimpleNamespace(fetch=lambda *args: sources),
-                                 SimpleNamespace(generate=generate), None, None)
+                                 SimpleNamespace(generate=generate), None, None, documented_contexts=True)
                 brief = ops.research({'topic': 'Controlled', 'language': language, 'seconds': seconds})
                 validate_evidence(brief['evidence'])
                 self.assertEqual(calls, ['material-brief'])
                 self.assertEqual(brief['evidence']['facts'][1]['support'][0]['source_id'], 'source-2')
+                self.assertEqual(len(brief['evidence']['visual_contexts']), 3)
+                tampered = copy.deepcopy(brief['evidence'])
+                tampered['visual_contexts'][0]['support'][0]['quote'] = 'invented association'
+                with self.assertRaisesRegex(ValueError, 'visual context support'):
+                    validate_evidence(tampered)

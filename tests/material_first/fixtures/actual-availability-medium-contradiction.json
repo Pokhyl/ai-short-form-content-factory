@@ -1,0 +1,552 @@
+{
+  "origin_request": "1aa4d47e-fffe-4229-bd3b-86fa7cd9bb3c",
+  "candidates": [
+    {
+      "id": "wikimedia:165844980",
+      "provider": "wikimedia",
+      "description": "A still frame from the planetarium show, Messengers of Time and Space, visualizing two  neutron stars  colliding. Messengers of Time and Space is available in 4K fulldome format and can be  downloaded online .",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Neutron_Star_Merger_(noirlab2518f).jpg",
+      "source_metadata": {
+        "ns": 6,
+        "index": 12,
+        "title": "File:Neutron Star Merger (noirlab2518f).jpg",
+        "pageid": 165844980,
+        "imageinfo": [
+          {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/6/64/Neutron_Star_Merger_%28noirlab2518f%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "mime": "image/jpeg",
+            "size": 1370293,
+            "width": 4096,
+            "height": 4096,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Neutron_Star_Merger_%28noirlab2518f%29.jpg/1920px-Neutron_Star_Merger_%28noirlab2518f%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1600,
+            "extmetadata": {
+              "Artist": {
+                "value": "International Gemini Observatory/NOIRLab/NSF/AURA/Double Dome Films",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://noirlab.edu/public/images/noirlab2518f\">Neutron Star Merger</a>",
+                "source": "commons-desc-page"
+              },
+              "License": {
+                "value": "cc-by-4.0",
+                "hidden": "",
+                "source": "commons-templates"
+              },
+              "DateTime": {
+                "value": "2025-05-23 08:01:36",
+                "hidden": "",
+                "source": "mediawiki-metadata"
+              },
+              "Categories": {
+                "value": "Neutron star merger|NOIRLab Images|NOIRLab files uploaded by OptimusPrimeBot",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by/4.0",
+                "source": "commons-desc-page"
+              },
+              "ObjectName": {
+                "value": "Neutron Star Merger (noirlab2518f)",
+                "source": "mediawiki-metadata"
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution 4.0",
+                "source": "commons-desc-page"
+              },
+              "Assessments": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "Attribution": {
+                "value": "NOIRLab",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "Restrictions": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "22 May 2025 (upload date)",
+                "source": "commons-desc-page"
+              },
+              "ImageDescription": {
+                "value": "A still frame from the planetarium show, Messengers of Time and Space, visualizing two <a class=\"external text\" href=\"https://en.wikipedia.org/wiki/Neutron_star\">neutron stars</a> colliding. Messengers of Time and Space is available in 4K fulldome format and can be <a rel=\"nofollow\" class=\"external text\" href=\"https://noirlab.edu/public/videos/messengers/\">downloaded online</a>.",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY 4.0",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "hidden": "",
+                "source": "extension"
+              }
+            },
+            "thumbheight": 1600,
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Neutron_Star_Merger_%28noirlab2518f%29.jpg/1920px-Neutron_Star_Merger_%28noirlab2518f%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "width": 1600,
+              "height": 1600,
+              "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Neutron_Star_Merger_%28noirlab2518f%29.jpg/3840px-Neutron_Star_Merger_%28noirlab2518f%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x",
+              "loading": "lazy",
+              "decoding": "async"
+            },
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Neutron_Star_Merger_(noirlab2518f).jpg",
+            "responsiveUrls": {
+              "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Neutron_Star_Merger_%28noirlab2518f%29.jpg/3840px-Neutron_Star_Merger_%28noirlab2518f%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+            },
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=165844980"
+          }
+        ],
+        "imagerepository": "local"
+      }
+    },
+    {
+      "id": "wikimedia:155279395",
+      "provider": "wikimedia",
+      "description": "This artist's conception illustrates 1E 1207.4-5209, a neutron star with a polar hot spot and a strong magnetic field (purple lines). The neutron star is about 7,000 light years from Earth. The graph in the box to the right of the star shows the expected (dashed blue line) and the observed (solid green line) spectra of the X-radiation from the hot spot. The dips in the observed spectrum are absorption features due to gas in the atmosphere of the neutron star. According to the team of scientists that made the Chandra observation of 1E 1207, the most likely explanation for the dips in the spectrum is absorption by helium ions in a magnetic field about a hundred trillion times more intense than the Earth's magnetic field. This interpretation implies that the strong gravity of the neutron star has reduced the energy of the photons by 17 percent. The reduction of photon energy, known as the gravitational redshift, enables astronomers to relate the mass to the radius of the star. This information can then be used to help determine whether the collapsed star is composed mostly of neutrons, or contains large amounts of sub-nuclear particles called pions, kaons, or free quarks.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:1E_1207_4-5209-_X-rays_Probe_Gravitational_Field_Of_A_Neutron_Star_(2002-1132_-_1132_illustration_spec).jpg",
+      "source_metadata": {
+        "ns": 6,
+        "index": 19,
+        "title": "File:1E 1207 4-5209- X-rays Probe Gravitational Field Of A Neutron Star (2002-1132 - 1132 illustration spec).jpg",
+        "pageid": 155279395,
+        "imageinfo": [
+          {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/1E_1207_4-5209-_X-rays_Probe_Gravitational_Field_Of_A_Neutron_Star_%282002-1132_-_1132_illustration_spec%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "mime": "image/jpeg",
+            "size": 184013,
+            "width": 720,
+            "height": 468,
+            "thumburl": "https://upload.wikimedia.org/wikipedia/commons/4/4e/1E_1207_4-5209-_X-rays_Probe_Gravitational_Field_Of_A_Neutron_Star_%282002-1132_-_1132_illustration_spec%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+            "thumbwidth": 1600,
+            "extmetadata": {
+              "Artist": {
+                "value": "Illustration: NASA/CXC/M.Weiss; Graph: NASA/PSU/G.Pavlov et al.",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://chandra.si.edu/photo/2002/1132\">1E 1207.4-5209: X-rays Probe Gravitational Field Of A Neutron Star</a>",
+                "source": "commons-desc-page"
+              },
+              "License": {
+                "value": "pd",
+                "hidden": "",
+                "source": "commons-templates"
+              },
+              "DateTime": {
+                "value": "2024-11-17 22:37:22",
+                "hidden": "",
+                "source": "mediawiki-metadata"
+              },
+              "Categories": {
+                "value": "PD NASA|Neutron stars|ACIS images|Chandra files uploaded by OptimusPrimeBot",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "ObjectName": {
+                "value": "1E 1207 4-5209- X-rays Probe Gravitational Field Of A Neutron Star (2002-1132 - 1132 illustration spec)",
+                "source": "mediawiki-metadata"
+              },
+              "UsageTerms": {
+                "value": "Public domain",
+                "source": "commons-desc-page"
+              },
+              "Assessments": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "Copyrighted": {
+                "value": "False",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "Restrictions": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "6 June 2002 (upload date)",
+                "source": "commons-desc-page"
+              },
+              "ImageDescription": {
+                "value": "This artist's conception illustrates 1E 1207.4-5209, a neutron star with a polar hot spot and a strong magnetic field (purple lines). The neutron star is about 7,000 light years from Earth. The graph in the box to the right of the star shows the expected (dashed blue line) and the observed (solid green line) spectra of the X-radiation from the hot spot. The dips in the observed spectrum are absorption features due to gas in the atmosphere of the neutron star. According to the team of scientists that made the Chandra observation of 1E 1207, the most likely explanation for the dips in the spectrum is absorption by helium ions in a magnetic field about a hundred trillion times more intense than the Earth's magnetic field. This interpretation implies that the strong gravity of the neutron star has reduced the energy of the photons by 17 percent. The reduction of photon energy, known as the gravitational redshift, enables astronomers to relate the mass to the radius of the star. This information can then be used to help determine whether the collapsed star is composed mostly of neutrons, or contains large amounts of sub-nuclear particles called pions, kaons, or free quarks.",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "Public domain",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "false",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "hidden": "",
+                "source": "extension"
+              }
+            },
+            "thumbheight": 1040,
+            "thumbattribs": {
+              "src": "https://upload.wikimedia.org/wikipedia/commons/4/4e/1E_1207_4-5209-_X-rays_Probe_Gravitational_Field_Of_A_Neutron_Star_%282002-1132_-_1132_illustration_spec%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+              "width": 1600,
+              "height": 1040,
+              "loading": "lazy",
+              "decoding": "async"
+            },
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:1E_1207_4-5209-_X-rays_Probe_Gravitational_Field_Of_A_Neutron_Star_(2002-1132_-_1132_illustration_spec).jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=155279395"
+          }
+        ],
+        "imagerepository": "local"
+      }
+    },
+    {
+      "id": "wikimedia:104602817",
+      "provider": "wikimedia",
+      "description": "SN 1604, also known as Kepler's Supernova, Kepler's Nova or  Kepler's Star, was a Type Ia supernova that occurred in the Milky Way, in the constellation the Ophiuchus. Appearing in 1604, it is the most recent supernova in our galaxy to have been unquestionably observed by the naked eye, occurring no farther than\n 20,000 light-years from Earth.\n  Technical Details-\n \n  Chandra X-ray - High Energy (4-6 keV) - Bule \n Chandra X-ray - Low Energy (0.3-1.4 keV) - Green \n Hubble Optical - WFPC2 F658N - Yellow \n Spitzer Infrared - MIPS 24 microns - Red  \n Processing:\n-FITS LIBERATOR\n-Photoshop\n  Data Credit ; NASA/Hubble/Chandra/Spitzer\n \nProcessing : AMAL BIJU",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Kepler%27s_Supernova_Remnant.jpg",
+      "source_metadata": {
+        "ns": 6,
+        "index": 20,
+        "title": "File:Kepler's Supernova Remnant.jpg",
+        "pageid": 104602817,
+        "imageinfo": [
+          {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Kepler%27s_Supernova_Remnant.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "mime": "image/jpeg",
+            "size": 183727,
+            "width": 750,
+            "height": 750,
+            "thumburl": "https://upload.wikimedia.org/wikipedia/commons/d/db/Kepler%27s_Supernova_Remnant.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+            "thumbwidth": 1600,
+            "extmetadata": {
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Amalb2&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Amalb2 (page does not exist)\">AMAL BIJU </a>",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "License": {
+                "value": "cc-by-sa-4.0",
+                "hidden": "",
+                "source": "commons-templates"
+              },
+              "DateTime": {
+                "value": "2021-04-29 06:09:01",
+                "hidden": "",
+                "source": "mediawiki-metadata"
+              },
+              "Categories": {
+                "value": "Kepler's Supernova|Self-published work|Images by Spitzer Space Telescope|Images by the Chandra X-ray Observatory|Hubble images of supernovas",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/4.0",
+                "source": "commons-desc-page"
+              },
+              "ObjectName": {
+                "value": "Kepler's Supernova Remnant",
+                "source": "mediawiki-metadata"
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 4.0",
+                "source": "commons-desc-page"
+              },
+              "Assessments": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "Restrictions": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2021-04-28",
+                "source": "commons-desc-page"
+              },
+              "ImageDescription": {
+                "value": "SN 1604, also known as Kepler's Supernova, Kepler's Nova or  Kepler's Star, was a Type Ia supernova that occurred in the Milky Way, in the constellation the Ophiuchus. Appearing in 1604, it is the most recent supernova in our galaxy to have been unquestionably observed by the naked eye, occurring no farther than\n<p>20,000 light-years from Earth.\n</p><p>Technical Details-\n</p>\n<ul><li>Chandra X-ray - High Energy (4-6 keV) - Bule</li>\n<li>Chandra X-ray - Low Energy (0.3-1.4 keV) - Green</li>\n<li>Hubble Optical - WFPC2 F658N - Yellow</li>\n<li>Spitzer Infrared - MIPS 24 microns - Red</li></ul>\n<p>Processing:\n-FITS LIBERATOR\n-Photoshop\n</p><p>Data Credit ; NASA/Hubble/Chandra/Spitzer\n</p>\nProcessing : AMAL BIJU",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 4.0",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "hidden": "",
+                "source": "extension"
+              }
+            },
+            "thumbheight": 1600,
+            "thumbattribs": {
+              "src": "https://upload.wikimedia.org/wikipedia/commons/d/db/Kepler%27s_Supernova_Remnant.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+              "width": 1600,
+              "height": 1600,
+              "loading": "lazy",
+              "decoding": "async"
+            },
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Kepler%27s_Supernova_Remnant.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=104602817"
+          }
+        ],
+        "imagerepository": "local"
+      }
+    },
+    {
+      "id": "wikimedia:180923603",
+      "provider": "wikimedia",
+      "description": "This image shows the remains of Kepler's Supernova, the most recent exploding star to be seen in the Milky Way Galaxy. It was first observed 400 years ago when it was thought to be 'a new star'. In fact, it was the the gas and dust from an exploding star, rapidly expanding. These remnants have now reached a diameter of 14 light years wide and are still expanding at 4 million miles per hour.This image, taken by the Spitzer Space Telescope in the Infrared,  shows microscopic dust particles — coloured red — that have been heated by the supernova shock wave.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Spitzer_Space_Telescope-_Kepler%27s_Supernova_Remnant_(infrared_data)_(opo0429j).jpg",
+      "source_metadata": {
+        "ns": 6,
+        "index": 4,
+        "title": "File:Spitzer Space Telescope- Kepler's Supernova Remnant (infrared data) (opo0429j).jpg",
+        "pageid": 180923603,
+        "imageinfo": [
+          {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Spitzer_Space_Telescope-_Kepler%27s_Supernova_Remnant_%28infrared_data%29_%28opo0429j%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "mime": "image/jpeg",
+            "size": 312129,
+            "width": 1090,
+            "height": 1090,
+            "thumburl": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Spitzer_Space_Telescope-_Kepler%27s_Supernova_Remnant_%28infrared_data%29_%28opo0429j%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+            "thumbwidth": 1600,
+            "extmetadata": {
+              "Artist": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" data-mw-original-href=\"http://www.nasa.gov\" href=\"https://www.nasa.gov\">NASA</a>, <a rel=\"nofollow\" class=\"external text\" href=\"http://www.esa.int\">ESA</a>, R. Sankrit and W. Blair (Johns Hopkins University)",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://esahubble.org/images/opo0429j\">Spitzer Space Telescope: Kepler's Supernova Remnant (infrared data)</a>",
+                "source": "commons-desc-page"
+              },
+              "License": {
+                "value": "pd",
+                "hidden": "",
+                "source": "commons-templates"
+              },
+              "DateTime": {
+                "value": "2025-12-29 22:02:55",
+                "hidden": "",
+                "source": "mediawiki-metadata"
+              },
+              "Categories": {
+                "value": "Kepler's Supernova|Images by Spitzer Space Telescope|Hubble files uploaded by OptimusPrimeBot",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "ObjectName": {
+                "value": "Spitzer Space Telescope- Kepler's Supernova Remnant (infrared data) (opo0429j)",
+                "source": "mediawiki-metadata"
+              },
+              "UsageTerms": {
+                "value": "Public domain",
+                "source": "commons-desc-page"
+              },
+              "Assessments": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "Copyrighted": {
+                "value": "False",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "Restrictions": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "6 October 2004 (upload date)",
+                "source": "commons-desc-page"
+              },
+              "ImageDescription": {
+                "value": "This image shows the remains of Kepler's Supernova, the most recent exploding star to be seen in the Milky Way Galaxy. It was first observed 400 years ago when it was thought to be 'a new star'. In fact, it was the the gas and dust from an exploding star, rapidly expanding. These remnants have now reached a diameter of 14 light years wide and are still expanding at 4 million miles per hour.This image, taken by the Spitzer Space Telescope in the Infrared, <span>shows microscopic dust particles — coloured red — that have been heated by the supernova shock wave.</span>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "Public domain",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "false",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "hidden": "",
+                "source": "extension"
+              }
+            },
+            "thumbheight": 1600,
+            "thumbattribs": {
+              "src": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Spitzer_Space_Telescope-_Kepler%27s_Supernova_Remnant_%28infrared_data%29_%28opo0429j%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+              "width": 1600,
+              "height": 1600,
+              "loading": "lazy",
+              "decoding": "async"
+            },
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Spitzer_Space_Telescope-_Kepler%27s_Supernova_Remnant_(infrared_data)_(opo0429j).jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=180923603"
+          }
+        ],
+        "imagerepository": "local"
+      }
+    },
+    {
+      "id": "wikimedia:194139229",
+      "provider": "wikimedia",
+      "description": "This NASA/ESA/CSA James Webb Space Telescope Picture of the Month shows the giant molecular cloud Orion A, an area of the sky replete with star-forming clouds. ESA/Webb, NASA & CSA, T. Megeath, M. Zamani (ESA/Webb) Acknowledgement: M. H. Özsaraç This image, captured by NASA’s James Webb Space Telescope and released on June 5, 2026, shows just a small portion of one of the Orion Molecular Clouds, a long and massive filament of cold gas and dust beyond the Orion Nebula. Every stage of star formation — from the youngest stellar embryos to protoplanetary discs to newly-minted pre-main sequence stars — is contained within this scene which stretches 150 light-years across. Read more about this image. Image credit: ESA/Webb, NASA & CSA, T. Megeath, M. Zamani (ESA/Webb); Acknowledgement: M. H. Özsaraç",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Stages_of_Star_Formation_(webb_potm2605a).jpg",
+      "source_metadata": {
+        "ns": 6,
+        "index": 1,
+        "title": "File:Stages of Star Formation (webb potm2605a).jpg",
+        "pageid": 194139229,
+        "imageinfo": [
+          {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Stages_of_Star_Formation_%28webb_potm2605a%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "mime": "image/jpeg",
+            "size": 2463926,
+            "width": 4000,
+            "height": 2353,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Stages_of_Star_Formation_%28webb_potm2605a%29.jpg/1920px-Stages_of_Star_Formation_%28webb_potm2605a%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1600,
+            "extmetadata": {
+              "Artist": {
+                "value": "ESA/Webb, NASA &amp; CSA, T. Megeath, M. Zamani (ESA/Webb) Acknowledgement: M. H. Özsaraç",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.nasa.gov/image-article/stages-of-star-formation/\">Stages of Star Formation</a>",
+                "source": "commons-desc-page"
+              },
+              "License": {
+                "value": "pd",
+                "hidden": "",
+                "source": "commons-templates"
+              },
+              "DateTime": {
+                "value": "2026-06-19 13:05:36",
+                "hidden": "",
+                "source": "mediawiki-metadata"
+              },
+              "Categories": {
+                "value": "PD NASA|Orion Molecular Cloud Complex|Photos in Flickr Explore|James Webb Space Telescope images of nebulae|NASA Website files uploaded by OptimusPrimeBot",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "ObjectName": {
+                "value": "Stages of Star Formation (webb potm2605a)",
+                "source": "mediawiki-metadata"
+              },
+              "UsageTerms": {
+                "value": "Public domain",
+                "source": "commons-desc-page"
+              },
+              "Assessments": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "Copyrighted": {
+                "value": "False",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "Restrictions": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "18 June 2026, 16:13:13 (upload date)",
+                "source": "commons-desc-page"
+              },
+              "ImageDescription": {
+                "value": "This NASA/ESA/CSA James Webb Space Telescope Picture of the Month shows the giant molecular cloud Orion A, an area of the sky replete with star-forming clouds. ESA/Webb, NASA &amp; CSA, T. Megeath, M. Zamani (ESA/Webb) Acknowledgement: M. H. Özsaraç This image, captured by NASA’s James Webb Space Telescope and released on June 5, 2026, shows just a small portion of one of the Orion Molecular Clouds, a long and massive filament of cold gas and dust beyond the Orion Nebula. Every stage of star formation — from the youngest stellar embryos to protoplanetary discs to newly-minted pre-main sequence stars — is contained within this scene which stretches 150 light-years across. Read more about this image. Image credit: ESA/Webb, NASA &amp; CSA, T. Megeath, M. Zamani (ESA/Webb); Acknowledgement: M. H. Özsaraç",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "Public domain",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "false",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "hidden": "",
+                "source": "extension"
+              }
+            },
+            "thumbheight": 941,
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Stages_of_Star_Formation_%28webb_potm2605a%29.jpg/1920px-Stages_of_Star_Formation_%28webb_potm2605a%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "width": 1600,
+              "height": 941,
+              "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Stages_of_Star_Formation_%28webb_potm2605a%29.jpg/3840px-Stages_of_Star_Formation_%28webb_potm2605a%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x",
+              "loading": "lazy",
+              "decoding": "async"
+            },
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Stages_of_Star_Formation_(webb_potm2605a).jpg",
+            "responsiveUrls": {
+              "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Stages_of_Star_Formation_%28webb_potm2605a%29.jpg/3840px-Stages_of_Star_Formation_%28webb_potm2605a%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+            },
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=194139229"
+          }
+        ],
+        "imagerepository": "local"
+      }
+    }
+  ],
+  "new_provider_calls": 0
+}

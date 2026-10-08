@@ -4,10 +4,10 @@ from urllib.parse import urlsplit, unquote
 
 SYNTHETIC = re.compile(
     r"\b(?:artist(?:['’]s|\s+s)?[- _]*(?:concept|impression)|concept\s+art|"
-    r"artistic\s+(?:concept|impression|rendering)|illustrations?|schematic|diagram|"
+    r"artistic\s+(?:concept|impression|rendering)|artist(?:['’]s|\s+s)?\s+conception|illustrations?|illustrated|schematic|diagram|"
     r"cross[- ]section|synthetic\s+rendering|3d\s+render(?:ing)?|"
     r"computer[- ]generated|(?:this|computer|supercomputer|numerical)\s+simulations?|"
-    r"simulated\s+(?:image|scene|view)|animation|visuali[sz]ation)\b", re.I)
+    r"simulated\s+(?:image|scene|view)|planetarium\s+show|animation|visuali[sz](?:ation|ing))\b", re.I)
 INVISIBLE = re.compile(r"\b(?:magnetospheres?|magnetic\s+field\s+beams?|field\s+lines|imagined\s+particle\s+beams?)\b", re.I)
 
 

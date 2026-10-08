@@ -21,6 +21,17 @@ def validate_evidence(evidence):
             raise ValueError("research source text hash mismatch")
         by_source[key]=source
     by_fact = {}
+    contexts = evidence.get('visual_contexts', [])
+    if 'visual_contexts' in evidence and (len(contexts) != 3 or {c.get('id') for c in contexts} != {'v0', 'v1', 'v2'}):
+        raise ValueError('documented visual context identities incomplete')
+    for context in contexts:
+        if not context.get('subject') or not context.get('query') or not context.get('support'):
+            raise ValueError('documented visual context missing')
+        for support in context['support']:
+            source = by_source.get(support.get('source_id'))
+            quote = support.get('quote')
+            if source is None or not isinstance(quote, str) or not quote or quote not in source['text']:
+                raise ValueError('visual context support is not an exact source quotation')
     for fact in facts:
         if fact["id"] in by_fact or not fact.get("text") or not fact.get("support"):
             raise ValueError("duplicate or unsupported fact")
@@ -70,6 +81,7 @@ def compact_evidence(evidence):
     articles for each image. The original hashes continue to bind local QA.
     """
     from copy import deepcopy
-    return {"facts": deepcopy(evidence["facts"]), "sources": [
+    return {**({'visual_contexts': deepcopy(evidence['visual_contexts'])} if 'visual_contexts' in evidence else {}),
+        "facts": deepcopy(evidence["facts"]), "sources": [
         {key: source[key] for key in ("id", "url", "sha256")}
         for source in evidence.get("sources", [])]}

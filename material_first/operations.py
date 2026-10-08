@@ -70,9 +70,10 @@ class NarrationBudgetExceeded(ValueError):
 class Operations:
     presentation_policy = TOPIC_POLICY
 
-    def __init__(self, root, research, gemini, search, downloader):
+    def __init__(self, root, research, gemini, search, downloader, *, documented_contexts=False):
         self.root = Path(root)
         self.source, self.gemini, self.search, self.downloader = research, gemini, search, downloader
+        self.documented_contexts = documented_contexts
 
     def research(self, request):
         self.topic = request['topic']
@@ -85,6 +86,10 @@ class Operations:
                 'query': {**string(), 'maxLength': 100}, 'fact_ids': array(string(), 1, 8)})
                 for role in ('setting', 'subject', 'detail')})})
         desired_facts = max(3, min(8, (request['seconds'] + 7) // 8))
+        if self.documented_contexts:
+            for context_schema in schema['properties']['photo_contexts']['properties'].values():
+                context_schema['properties']['support_span_ids'] = array(string(s['id'] for s in spans), 1, 3)
+                context_schema['required'].append('support_span_ids')
         result, _ = self.gemini.generate('material-brief',
             f'For {request["seconds"]} seconds, aim for {desired_facts} distinct source-backed facts, '
             'with enough useful explanation for natural speech. Cover the full requested process, '
@@ -100,6 +105,11 @@ class Operations:
             'historical or distant subjects seek documented observations and named associated objects. Do not use unrelated scientific equipment, atomic models or generic landscapes merely because they share a broad theme. '
             'Never request a diagram, cross-section, field lines, imagined particle beams, space art or a synthetic rendering. '
             'Prefer several documented related objects or genuine process stages over generic stock categories. Do not imply that an unrelated subject depicts an invisible mechanism. '
+            'When support_span_ids are required, select source spans explicitly documenting each photo subject and its relationship. '
+            'For distant or hidden subjects, search named observable associated objects mentioned in those spans, using their conventional English name or catalog identifier. '
+            'For a named associated object, the query is just its searchable entity name or catalog identifier, not an entire mechanism or a demand for photographic proof. '
+            'Do not waste a query on an invisible object when the sources name observable associated objects. '
+            'Avoid generic search padding such as space, astronomy or telescope: retain the physical subject and defining qualifiers. '
             'The three contexts must differ in dominant subject, scale or setting. '
             'For example, a flowering meadow, a bee close-up, and a flower/pollen detail are different roles. '
             'Allow contextually relevant stock photographs; do not demand a rare precise action or anatomy angle. '
@@ -107,6 +117,15 @@ class Operations:
             {**request, 'sources': [{k: s[k] for k in ('id', 'url', 'title', 'sha256') if k in s}
                                    for s in sources], 'source_spans': spans}, schema)
         evidence = bind_support(sources, spans, result['facts'])
+        if self.documented_contexts:
+            contexts = []
+            for index, role in enumerate(('setting', 'subject', 'detail')):
+                row = result['photo_contexts'][role]
+                bound = bind_support(sources, spans, [{'id': role, 'text': row['subject'],
+                    'support': [{'span_id': identity} for identity in row['support_span_ids']]}])
+                contexts.append({'id': 'v' + str(index), 'subject': row['subject'],
+                    'query': photograph_query(row['query']), 'support': bound['facts'][0]['support']})
+            evidence['visual_contexts'] = contexts
         validate_evidence(evidence)
         if len(set(result['required_fact_ids'])) < 3:
             raise MaterialUnavailable('explanation needs three distinct source-backed aspects before material search')
@@ -234,7 +253,9 @@ class Operations:
     def _image_metadata(asset):
         return {**{key:asset[key] for key in ('source_url','author','license')},
                 'description':str(asset.get('description',''))[:4000],
-                'file_title':str(asset.get('source_metadata',{}).get('title',''))[:500]}
+                'file_title':str(asset.get('source_metadata',{}).get('title',''))[:500],
+                **({'related_object_metadata': deepcopy(asset['related_object_metadata'])}
+                   if asset.get('related_object_metadata') else {})}
 
     def _inspection_schema(self, evidence, targets, qualified=False):
         schema = obj({'accepted': BOOL, 'is_real_material': BOOL,
@@ -288,6 +309,9 @@ class Operations:
         'supernova progenitor; a generic bright star does not identify a neutron star. Use the depicted '
         'object and reliable object-identifying metadata; if its defining qualifications are unknown, return false. '
         'A documented associated remnant or physical stage can still match its own requested contextual role. '
+        'Check documented visual_contexts and related_object_metadata for the actual relationship and incompatible subtypes. '
+        'A shared general category does not establish a shared mechanism or outcome; an image of a different subtype must not be described as the narrated process. '
+        'Use corroborating records only when they identify the same object. Unknown or contradicted relationships are not direct_part_or_stage. '
         'Do not mark the same generic composition as every distinct role. '
         'Return one result for each supplied asset_id, preserving its identity; metadata is not proof.')
 

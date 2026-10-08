@@ -29,10 +29,16 @@ class Model:
                       'required_fact_ids': ['f0', 'f1', 'f2'], 'photo_contexts': {
                           role: {'subject': 'Prominent explanatory detail '+str(i), 'query': 'detail '+str(i), 'fact_ids':['f'+str(i)]}
                           for i, role in enumerate(('setting', 'subject', 'detail'))}}
+            if 'support_span_ids' in schema['properties']['photo_contexts']['properties']['setting']['properties']:
+                for row in result['photo_contexts'].values():
+                    row['support_span_ids'] = [context['source_spans'][0]['id']]
         elif key == 'material-photo-plan':
             result = {'contexts': [{'anchor_id': context['candidates'][i]['id'],
                                     'object_label': 'detail ' + str(i), 'fact_ids': ['f' + str(i)]}
                                    for i in range(3)]}
+            if 'source_context_id' in schema['properties']['contexts']['items']['properties']:
+                for i, row in enumerate(result['contexts']):
+                    row['source_context_id'] = 'v' + str(i)
         elif key.startswith('material-inspect-batch:'):
             saved_calls = self.calls[:]
             row_schema = copy.deepcopy(schema['properties']['photos']['items'])
@@ -180,7 +186,7 @@ class OperationTests(unittest.TestCase):
                 return {'candidates': fixtures.assets}
             operations = Operations(root,
                 SimpleNamespace(fetch=lambda *args: fixtures.evidence['sources']), model,
-                SimpleNamespace(search=search), fixtures)
+                SimpleNamespace(search=search), fixtures, documented_contexts=True)
             frozen = Producer(root, operations, probe=fixtures.probe).prepare('topic', 'pl', 15)
             self.assertEqual(len(frozen['payload']['scenes']), 3)
             self.assertEqual({s['visual_target_id'] for s in frozen['payload']['scenes']}, {'v0', 'v1', 'v2'})
@@ -190,6 +196,7 @@ class OperationTests(unittest.TestCase):
             self.assertEqual(sum(k.startswith('material-inspect-batch:') for k in model.calls), 2)
             self.assertEqual(len(frozen['payload']['visuals']), 5)
             self.assertEqual(preparation_budgets(60)['gemini'], 16)
+            self.assertEqual(len(frozen['payload']['evidence']['visual_contexts']), 3)
             from material_first.engine import verify
             from factory_v3.preflight import digest
             altered = copy.deepcopy(frozen)

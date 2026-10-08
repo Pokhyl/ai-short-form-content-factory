@@ -50,6 +50,10 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.http.calls[0]["provider"],"google_metadata")
         self.assertTrue(ledger.terminal)
 
+    def test_current_runtime_requires_documented_photo_contexts_without_gateway_calls(self):
+        self.assertTrue(self.runtime.producer(REQUEST_ID).operations.documented_contexts)
+        self.assertEqual(self.http.calls, [])
+
     def test_missing_free_tier_confirmation_never_calls_gateway(self):
         runtime=Runtime({**SETTINGS,"gemini_free_tier_confirmed":False},
                         self.root,REVISION,ledger=object(),http=self.http)

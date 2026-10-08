@@ -84,7 +84,8 @@ class Runtime:
                              lambda provider:"gateway-managed",self.settings["credential_scope"])
         return DurableProducer(self.root, self.preparations,
             Operations(self.root, Research(calls,self.direct), gemini, search,
-                       PortraitDownload(self.root, PhotoDownload(self.root,request_id,calls,self.direct))), authorize=authorize)
+                       PortraitDownload(self.root, PhotoDownload(self.root,request_id,calls,self.direct)),
+                       documented_contexts=True), authorize=authorize)
 
     def executor(self):
         adapters = PhotoWorker(self.root,GoogleVoice(lambda:"gateway-managed",self.gateway),

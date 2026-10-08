@@ -12,6 +12,51 @@ from material_first.photo_queries import described_as_synthetic
 
 
 class AvailabilityPlanningTests(unittest.TestCase):
+    def test_actual_planetarium_and_artist_conception_are_ineligible_before_download(self):
+        actual = json.loads((Path(__file__).parent/'fixtures/actual-availability-medium-contradiction.json').read_text())
+        by_id = {c['id']: c for c in actual['candidates']}
+        self.assertTrue(described_as_synthetic(by_id['wikimedia:165844980']))
+        self.assertTrue(described_as_synthetic(by_id['wikimedia:155279395']))
+        self.assertFalse(described_as_synthetic(by_id['wikimedia:104602817']))
+
+    def test_actual_same_object_records_preserve_contrary_type_classification(self):
+        from material_first.photo_planning import object_records
+        actual = json.loads((Path(__file__).parent/'fixtures/actual-availability-medium-contradiction.json').read_text())
+        records = object_records("Kepler's Supernova Remnant", actual['candidates'])
+        self.assertEqual({r['asset_id'] for r in records}, {'wikimedia:104602817', 'wikimedia:180923603'})
+        self.assertTrue(any('Type Ia' in r['description'] for r in records))
+        asset = {'source_url':'https://example.invalid/image', 'author':'Author', 'license':'CC0',
+                 'related_object_metadata':records}
+        self.assertEqual(Operations._image_metadata(asset)['related_object_metadata'], records)
+
+    def test_documented_objects_filter_other_named_objects_before_planner_call(self):
+        from material_first.photo_planning import context_words
+        self.assertIn('e0102', context_words('E0102-72.3'))
+        contexts = [{'id':'v'+str(i), 'subject':name, 'query':name, 'support':[]}
+                    for i,name in enumerate(['Crab Nebula', 'Eastern Veil Nebula', 'Jellyfish Nebula'])]
+        brief = self.brief(); brief['evidence']['visual_contexts'] = contexts
+        observed = []
+        def generate(key, instruction, context, schema):
+            observed.extend(context['candidates'])
+            result = {'contexts':[{**row,'source_context_id':'v'+str(i)} for i,row in enumerate(self.contexts)]}
+            validate_json(result,schema)
+            return result, {'receipt_id':'controlled-documented-object-plan'}
+        plan_photos(SimpleNamespace(generate=generate), {'topic':'Neutron star','seconds':15},
+                    brief, [p['candidates'] for p in self.saved['pools']], 30)
+        self.assertTrue(observed)
+        for row in observed:
+            text = context_words(' '.join(row['descriptions']))
+            self.assertTrue(any(context_words(c['query']) <= text for c in contexts))
+        self.assertFalse(any('Kepler' in ' '.join(row['descriptions']) for row in observed))
+
+    def test_impossible_documented_availability_stops_before_new_model_or_download(self):
+        brief = self.brief()
+        brief['evidence']['visual_contexts'] = [{'id':'v0','query':'unretrieved catalog identifier'}]
+        def forbidden(*args): raise AssertionError('model must not be called')
+        with self.assertRaisesRegex(ValueError,'availability candidates'):
+            plan_photos(SimpleNamespace(generate=forbidden), {'topic':'Neutron star','seconds':60},
+                        brief, [p['candidates'] for p in self.saved['pools']], 30)
+
     def test_actual_forge_and_crescent_contexts_fail_source_class_gate(self):
         actual = json.loads((Path(__file__).parent/'fixtures/actual-source-foreign-contexts.json').read_text())
         def generate(key, instruction, context, schema):
