@@ -86,3 +86,23 @@ class WorkerCorrectionTests(unittest.TestCase):
             self.assertEqual((Path(root)/'voiceovers'/job/'final.mp3').read_bytes(),samples[1])
             self.assertEqual(output['effective_frozen']['payload']['script'],'new')
             self.assertEqual([call.args[1] for call in provider.synthesize.call_args_list],['old','new'])
+
+class RewriteTests(unittest.TestCase):
+    def test_measured_rate_drives_new_text_and_independent_review_gets_no_old_approval(self):
+        from material_first.voice_correction import rewrite
+        text=' '.join(['example']*100)
+        original={'voice_correction':dict(POLICY),'seconds':60,'language':'en','script':text,
+                  'scenes':[{'id':'s1','narration':text,'evidence_ids':['f1']}],
+                  'evidence':{},'observations':[],'script_review':{'old_approval':True}}
+        revised_text=' '.join(['example']*119)
+        gemini=Mock();gemini.generate.return_value=({'narration':[revised_text]}, {})
+        gemini.review_script.return_value={'independent_review':True}
+        revised=rewrite(original,50000,gemini)
+        self.assertEqual(revised['payload']['script'],revised_text)
+        self.assertEqual(revised['payload']['speech_timing']['words_per_second'],2)
+        self.assertNotIn('script_review',gemini.review_script.call_args.args[0])
+        self.assertEqual(original['script'],text)
+        gemini.generate.return_value=({'narration':[text]}, {})
+        gemini.review_script.reset_mock()
+        with self.assertRaisesRegex(ValueError,'unchanged'):rewrite(original,50000,gemini)
+        gemini.review_script.assert_not_called()

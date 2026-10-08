@@ -1,0 +1,12 @@
+{
+  "id": "0d9cf03a-5178-4442-a24c-fea5f6a9dc33",
+  "mode": "saved verified material corpus plus live normal composition/review/voice/alignment/render",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "de5094f0aceee928cc389b1e836015070f739c99",
+  "new_manual_text": false,
+  "fresh_search_or_image_calls": 0,
+  "max_gemini_calls": 8,
+  "max_tts_calls": 3,
+  "question": "Verify measured narration correction and exact audio downstream independently of search outages",
+  "stop": "first terminal; no retries of failed IDs; not a fresh-discovery acceptance"
+}
