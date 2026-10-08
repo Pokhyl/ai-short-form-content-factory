@@ -1,0 +1,20 @@
+{
+  "source_revision": "10d4be5dd7ea83d62518a8d29ea47451093fdd1f",
+  "deployment": "complete",
+  "protected_state_unchanged": true,
+  "public_health_revision_verified": true,
+  "image_id": "sha256:eb4e53f2751fba6d10198840aceb464f1ffee097cfc245eb6e633b661b768e32",
+  "local_tests": 233,
+  "exact_image_tests": 233,
+  "network_disabled_package_checks": true,
+  "preview_seconds": 50.934,
+  "preview_original_audio_correlation": 0.9999804518941281,
+  "preview_full_decode_pass": true,
+  "original_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "original_job_unchanged": true,
+  "new_tts_calls": 0,
+  "new_provider_calls": 0,
+  "human_pass": false,
+  "requested_60_second_output_complete": false,
+  "note": "Owner rejects slowed audio. Separate natural-speed preview is about51s, not60s. New renderer rejects duration mismatch rather than modifying speech speed. No new product case was started."
+}
