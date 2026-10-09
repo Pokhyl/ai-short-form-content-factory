@@ -1,0 +1,7 @@
+{
+  "source_revision": "eb91d53409c40f9abbb75d2e83f42f1494b852cb",
+  "state": "complete",
+  "image_id": "sha256:ed256dc408699af1fb8bbdc12c874b9f1797f0e54642bb96573364ec5173a4ec",
+  "network_disabled": true,
+  "postgres_checks": true
+}

@@ -2,7 +2,7 @@
   "task": "Factory redesign for natural speech and exact requested duration",
   "owner_authorized_resynthesis": true,
   "max_syntheses_per_new_job": 3,
-  "live_revision": "e4167aa632bd65805439ad2173b26805ddf9a6f6",
+  "live_revision": "eb91d53409c40f9abbb75d2e83f42f1494b852cb",
   "pending_revision": null,
   "last_actual_voice_ms": 52056,
   "actual_final_60s_verified": false,
@@ -12,7 +12,8 @@
     "prior exact images and real isolated PostgreSQL",
     "prior app-only deployments preserve old rows/services",
     "255 exact-image unit checks plus isolated PostgreSQL after task temporary cleanup",
-    "257 exact-image checks, real PostgreSQL cached-failure and bounded-voice regressions, app-only protected state unchanged"
+    "257 exact-image checks, real PostgreSQL cached-failure and bounded-voice regressions, app-only protected state unchanged",
+    "264 exact-image tests, isolated PostgreSQL, app-only protected snapshot unchanged"
   ],
   "remaining": [
     "normal request outcome",
@@ -32,8 +33,8 @@
   ],
   "project_ready": false,
   "last_failure": "Prompt instruction and valid span IDs do not establish that a photo object is actually named in the selected span. The brief requested representation and radiation beams despite real-photo instructions.",
-  "pending_change": "Exact source mentions and object-name-only queries, one bounded pre-search correction. 156 material tests pass. Exact release and bounded source-context generation pending.",
-  "active_id": null,
-  "mode": "normal owner API; fresh research, photos and prose",
+  "pending_change": null,
+  "active_id": "494db698-d8d3-4606-93cb-55b4ab9116d3",
+  "mode": "Saved-source context-generation boundary only; two Gemini calls maximum, no photo searches or TTS",
   "disk_free_after_cleanup_bytes": 521789440
 }

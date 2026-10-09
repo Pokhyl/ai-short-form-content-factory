@@ -1,3 +1,7 @@
+## Source context diagnostic active — 2026-10-09
+
+LIVE eb91d53409c40f9abbb75d2e83f42f1494b852cb;image ed256dc4.264exact-image tests and isolatedPostgreSQLPASS; protected deployment state unchanged. Bounded saved-source generation diagnostic494db698-d8d3-4606-93cb-55b4ab9116d3 started once; up to2Gemini,0searches/0TTS. Check /data/checks/source-context-<ID>/receipt.json before actions. Initial local script syntax error occurred before any execution; corrected script is actual run. No actual60s output;project_ready=false.
+
 ## Source-context boundary failure, not a voice result — 2026-10-09
 
 b57b982e terminal failed before download/TTS. All9 search steps completed;61candidates. Saved read-only replay: documented object has no distinct metadata anchor. Actual brief used neutron star representation (0matches) and pulsar radiation beam; selected spans did not name chosen Crab object. Real sources contain named observed remnants. No another full smoke: close source-context generation boundary first. New opt-in validator requires exact source-language object mention in selected span and query==English subject, rejects depiction/invisible-beam requests, permits one bounded context-only correction without changing facts or budgets.156 material testsPASS. Exact-image checks and bounded provider evidence pending; project_ready=false.
