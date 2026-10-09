@@ -2,21 +2,21 @@
   "task": "Factory redesign for natural speech and exact requested duration",
   "owner_authorized_resynthesis": true,
   "max_syntheses_per_new_job": 3,
-  "live_revision": "71103e02c04b3f52f87f5d2b99fa7208644c1236",
+  "live_revision": "3ea4790931263cf25d9bcfdfe071b4329dec4088",
   "pending_revision": null,
   "last_actual_voice_ms": 52056,
   "actual_final_60s_verified": false,
-  "current_code": "Three complete fact-bound variants per paragraph, deterministic duration selection, independent factual/native review, max3 separately accounted natural-speed syntheses, final reviewed plan downstream",
+  "current_code": "3 essential source facts; natural paragraph repair; explicit optional empty-search receipt; measured voice feedback with complete alternatives; max3 accounted syntheses",
   "closed_checks": [
     "250 local tests",
     "prior exact images and real isolated PostgreSQL",
-    "prior app-only deployments preserve old rows/services"
+    "prior app-only deployments preserve old rows/services",
+    "255 exact-image unit checks plus isolated PostgreSQL after task temporary cleanup"
   ],
   "remaining": [
-    "actual accepted corrected speech and final60s video",
-    "normal composition word-slot failure",
-    "normal discovery empty Pixabay response",
-    "human audio acceptance"
+    "normal request outcome",
+    "actual natural speech and exact60s MP4",
+    "human listening acceptance"
   ],
   "do_not_repeat": [
     "b59ceb5d-3384-4b35-827f-9d6b2740344c",
@@ -29,5 +29,8 @@
   ],
   "project_ready": false,
   "last_failure": "Legacy full-fact variants minimum138words estimated72.776s. No additional synthesis.",
-  "pending_change": "3 essential facts; natural paragraph repair; optional empty-search response; full normal verification required"
+  "pending_change": null,
+  "active_id": "44fd65e4-7237-4535-83e2-36fc0c24a11d",
+  "mode": "normal owner API; fresh research, photos and prose",
+  "disk_free_after_cleanup_bytes": 521789440
 }
