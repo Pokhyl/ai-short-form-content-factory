@@ -95,16 +95,16 @@ class RewriteTests(unittest.TestCase):
                   'scenes':[{'id':'s1','narration':text,'evidence_ids':['f1']}],
                   'evidence':{'facts':[{'id':'f1','text':'The source mechanism.','support':[]}],'sources':[]},'observations':[],'script_review':{'old_approval':True}}
         revised_text=' '.join(['example']*119)
-        gemini=Mock();gemini.generate.return_value=({'paragraph_1':revised_text}, {})
+        gemini=Mock();gemini.generate.return_value=({'paragraph_1':{'compact':' '.join(['example']*105),'balanced':revised_text,'expanded':' '.join(['example']*135)}}, {})
         gemini.review_script.return_value={'independent_review':True}
         revised=rewrite(original,50000,gemini)
         self.assertEqual(revised['payload']['script'],revised_text)
         self.assertEqual(revised['payload']['speech_timing']['words_per_second'],2)
         self.assertNotIn('script_review',gemini.review_script.call_args.args[0])
         self.assertEqual(gemini.generate.call_args.args[2]['paragraphs']['paragraph_1']['target_words'],119)
-        self.assertEqual(gemini.generate.call_args.args[2]['paragraphs']['paragraph_1']['must_explain'],original['evidence']['facts'])
+        self.assertEqual(gemini.generate.call_args.args[2]['paragraphs']['paragraph_1']['must_explain'],[{'id':'f1','claim':'The source mechanism.'}])
         self.assertEqual(original['script'],text)
-        gemini.generate.return_value=({'paragraph_1':text}, {})
+        gemini.generate.return_value=({'paragraph_1':dict.fromkeys(['compact','balanced','expanded'],text)}, {})
         gemini.review_script.reset_mock()
         with self.assertRaisesRegex(ValueError,'unchanged'):rewrite(original,50000,gemini)
         gemini.review_script.assert_not_called()
@@ -137,3 +137,13 @@ class ParagraphSelectionTests(unittest.TestCase):
         self.assertAlmostEqual(estimated_seconds(' '.join(selected),timing),59.814,places=3)
         self.assertEqual(selected,[sample['original'][0],sample['proposed'][1],sample['proposed'][2]])
         for i,text in enumerate(selected):self.assertIn(text,[sample['original'][i],sample['proposed'][i]])
+
+class VariantSelectionTests(unittest.TestCase):
+    def test_complete_new_variants_are_selected_without_reusing_old_generic_paragraph(self):
+        from material_first.voice_correction import select_paragraphs
+        p={'seconds':15,'scenes':[{'narration':'old unsupported filler'}]}
+        variants=[' '.join(['mechanism']*n) for n in (20,29,40)]
+        selected=select_paragraphs(p,[variants],{'words_per_second':2,'characters_per_second':20})
+        self.assertEqual(selected,[variants[1]])
+        with self.assertRaises(ValueError):
+            select_paragraphs(p,[variants+['extra']],{'words_per_second':2,'characters_per_second':20})

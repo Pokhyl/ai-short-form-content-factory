@@ -1,0 +1,32 @@
+{
+  "task": "Factory redesign for natural speech and exact requested duration",
+  "owner_authorized_resynthesis": true,
+  "max_syntheses_per_new_job": 3,
+  "live_revision": "8068ed136287c8606f196aadc3899bad708be9f3",
+  "pending_revision": null,
+  "last_actual_voice_ms": 52056,
+  "actual_final_60s_verified": false,
+  "current_code": "measured text feedback; durable per-attempt quota; whole-paragraph alternatives; explicit facts per paragraph; downstream effective reviewed plan",
+  "closed_checks": [
+    "250 local tests",
+    "prior exact images and real isolated PostgreSQL",
+    "prior app-only deployments preserve old rows/services"
+  ],
+  "remaining": [
+    "actual accepted corrected speech and final60s video",
+    "normal composition word-slot failure",
+    "normal discovery empty Pixabay response",
+    "human audio acceptance"
+  ],
+  "do_not_repeat": [
+    "b59ceb5d-3384-4b35-827f-9d6b2740344c",
+    "0d9cf03a-5178-4442-a24c-fea5f6a9dc33",
+    "f98e91e7-b22e-46b0-8c6d-8dc05b6f4bbf",
+    "742e27ca-05e5-4e86-820e-316c3e22d58b",
+    "e9c352c8-b755-4ce3-9e46-e6f7c87aa3ee",
+    "e3d03a07-6bee-446c-8d78-c53acc30bac9"
+  ],
+  "project_ready": false,
+  "last_failure": "Single proposed paragraphs had85/99/29words versus original31/34/32; no candidate made timing progress. No new TTS.",
+  "pending_change": "Three complete fact-bound alternatives per paragraph; deterministic selection; independent factual review; bounded existing sends"
+}

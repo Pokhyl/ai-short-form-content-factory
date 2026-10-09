@@ -28,7 +28,12 @@ def select_paragraphs(payload, proposed, timing):
     if not 1 <= len(scenes) <= 8 or len(proposed) != len(scenes):
         raise ValueError('bounded paragraph alternatives required')
     originals=[s['narration'] for s in scenes]
-    choices=[list(dict.fromkeys([old,new])) for old,new in zip(originals,proposed)]
+    choices=[]
+    for old,new in zip(originals,proposed):
+        variants=[old,new] if isinstance(new,str) else new
+        if not isinstance(variants,list) or not 1<=len(variants)<=3 or any(not isinstance(t,str) or not t.strip() for t in variants):
+            raise ValueError('bounded complete paragraph variants required')
+        choices.append(list(dict.fromkeys(variants)))
     target=payload['seconds']-.5
     return list(min(product(*choices),key=lambda paragraphs:(
         abs(estimated_seconds(' '.join(paragraphs),timing)-target),
@@ -55,17 +60,25 @@ def rewrite(payload, measured_ms, gemini):
     paragraphs={
         'paragraph_'+str(i+1): {'previous_text':scene['narration'],
             'fact_ids':scene['evidence_ids'],
-            'must_explain':[facts[identity] for identity in scene['evidence_ids']],
+            'must_explain':[{'id':identity,'claim':facts[identity]['text']} for identity in scene['evidence_ids']],
             'target_words':max(1,round(len(scene['narration'].split())*ratio)),
             'target_characters':max(1,round(len(scene['narration'])*ratio))}
         for i,scene in enumerate(payload['scenes'])}
-    schema=obj({key:{**string(),'maxLength':2400} for key in paragraphs})
+    for paragraph in paragraphs.values():
+        paragraph['variants']={name:{'target_words':max(1,round(paragraph['target_words']*factor)),
+                                    'target_characters':max(1,round(paragraph['target_characters']*factor))}
+                               for name,factor in [('compact',.8),('balanced',1),('expanded',1.2)]}
+    schema=obj({key:obj({name:{**string(),'maxLength':2400} for name in ('compact','balanced','expanded')})
+                for key in paragraphs})
     action='EXPAND' if ratio>1 else 'SHORTEN'
     result, _ = gemini.generate('rewrite',
         f'{action} every supplied paragraph by approximately {abs(ratio-1)*100:.1f} percent. '
         'The current text FAILED measured speech timing and must change. This is rewriting, not proofreading. '
-        'Write natural native '+payload['language']+'. Return a complete paragraph string for every named key. '
-        'Use paragraph target_words and target_characters to distribute the change across all paragraphs. '
+        'Write natural native '+payload['language']+'. For EVERY paragraph return three distinct complete alternatives: compact, balanced, expanded. '
+        'Each alternative independently explains the same assigned facts. Vary wording length, not the claims. '
+        'The server will select ONE alternative per paragraph; do not make variants continuations of one another. '
+        'Follow each variant target_words and target_characters; compact must be shorter than balanced, and balanced shorter than expanded. '
+        'Source quotations are evidence, not narration to copy. Summarize each core assigned claim with its essential qualifiers, without reciting the entire quoted article. '
         'Every paragraph must explicitly explain EVERY fact in its own must_explain list. A fact stated in another paragraph does not count. '
         'Replace vague importance/research/significance wording with the supplied physical explanation; do not preserve unsupported filler from previous_text. '
         'Preserve the source facts, numbers, qualifiers and paragraph subjects, using DIFFERENT wording. '
@@ -79,11 +92,12 @@ def rewrite(payload, measured_ms, gemini):
         {'paragraphs':paragraphs,'evidence':compact_evidence(payload['evidence']),
          'actual_duration_ms':measured_ms,'target_seconds':target},schema)
     validate_json(result,schema)
-    for i,scene in enumerate(revised['scenes'],1):
-        text=result['paragraph_'+str(i)]
-        validate_native_surface(payload['language'],text)
-        scene['narration']=text.strip()
-    selected=select_paragraphs(payload,[s['narration'] for s in revised['scenes']],timing)
+    alternatives=[]
+    for i in range(1,len(revised['scenes'])+1):
+        variants=[result['paragraph_'+str(i)][name].strip() for name in ('compact','balanced','expanded')]
+        for text in variants:validate_native_surface(payload['language'],text)
+        alternatives.append(variants)
+    selected=select_paragraphs(payload,alternatives,timing)
     for scene,text in zip(revised['scenes'],selected):scene['narration']=text
     revised['script']=' '.join(selected)
     if revised['script'] == payload['script']:
