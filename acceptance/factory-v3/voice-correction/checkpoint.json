@@ -2,11 +2,11 @@
   "task": "Factory redesign for natural speech and exact requested duration",
   "owner_authorized_resynthesis": true,
   "max_syntheses_per_new_job": 3,
-  "live_revision": "8068ed136287c8606f196aadc3899bad708be9f3",
+  "live_revision": "71103e02c04b3f52f87f5d2b99fa7208644c1236",
   "pending_revision": null,
   "last_actual_voice_ms": 52056,
   "actual_final_60s_verified": false,
-  "current_code": "measured text feedback; durable per-attempt quota; whole-paragraph alternatives; explicit facts per paragraph; downstream effective reviewed plan",
+  "current_code": "Three complete fact-bound variants per paragraph, deterministic duration selection, independent factual/native review, max3 separately accounted natural-speed syntheses, final reviewed plan downstream",
   "closed_checks": [
     "250 local tests",
     "prior exact images and real isolated PostgreSQL",
@@ -28,5 +28,6 @@
   ],
   "project_ready": false,
   "last_failure": "Single proposed paragraphs had85/99/29words versus original31/34/32; no candidate made timing progress. No new TTS.",
-  "pending_change": "Three complete fact-bound alternatives per paragraph; deterministic selection; independent factual review; bounded existing sends"
+  "pending_change": null,
+  "active_id": "6f2fed83-4433-4c49-8df4-8cc6ef77cf0b"
 }
