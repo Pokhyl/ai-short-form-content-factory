@@ -1,0 +1,15 @@
+{
+  "id": "44fd65e4-7237-4535-83e2-36fc0c24a11d",
+  "revision": "3ea4790931263cf25d9bcfdfe071b4329dec4088",
+  "mode": "normal owner API, new research/photo discovery/composition/review/voice/render",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "max_gemini_calls": 16,
+  "max_tts_calls": 3,
+  "free_only": true,
+  "manual_text": false,
+  "saved_corpus_replay": false,
+  "question": "Does concise3-core-fact planning plus natural paragraphs and measured correction yield exact60s original-speed narration?",
+  "stop": "first terminal; preserve all previous IDs"
+}
