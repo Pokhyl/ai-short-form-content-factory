@@ -2,7 +2,7 @@
   "task": "Factory redesign for natural speech and exact requested duration",
   "owner_authorized_resynthesis": true,
   "max_syntheses_per_new_job": 3,
-  "live_revision": "3ea4790931263cf25d9bcfdfe071b4329dec4088",
+  "live_revision": "e4167aa632bd65805439ad2173b26805ddf9a6f6",
   "pending_revision": null,
   "last_actual_voice_ms": 52056,
   "actual_final_60s_verified": false,
@@ -11,7 +11,8 @@
     "250 local tests",
     "prior exact images and real isolated PostgreSQL",
     "prior app-only deployments preserve old rows/services",
-    "255 exact-image unit checks plus isolated PostgreSQL after task temporary cleanup"
+    "255 exact-image unit checks plus isolated PostgreSQL after task temporary cleanup",
+    "257 exact-image checks, real PostgreSQL cached-failure and bounded-voice regressions, app-only protected state unchanged"
   ],
   "remaining": [
     "normal request outcome",
@@ -30,8 +31,8 @@
   ],
   "project_ready": false,
   "last_failure": "44fd65e4 terminal unknown before TTS: existing unknown Pixabay cache refusal. Generic typed optional-search handling added; no cache mutation or repeat.",
-  "pending_change": "Read-only classification of saved started/unknown provider cache; 108 core tests pass; exact image and PostgreSQL pending.",
-  "active_id": null,
+  "pending_change": null,
+  "active_id": "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3",
   "mode": "normal owner API; fresh research, photos and prose",
   "disk_free_after_cleanup_bytes": 521789440
 }

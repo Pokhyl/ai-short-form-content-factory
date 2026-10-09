@@ -1,3 +1,7 @@
+## Active normal factory test — 2026-10-09 15:51 UTC
+
+LIVE e4167aa632bd65805439ad2173b26805ddf9a6f6, image624183b3.257 exact-image tests and isolated PostgreSQLPASS; cache refusal handled without repeat or mutation. App-only deployment protected state unchanged. Normal owner API accepted b57b982e-3fe0-4341-a9f9-ed93cfa3adb3 once. Inspect its state before actions; no old ID retries. Natural60s output not yet verified;project_ready=false.
+
 ## Saved search failure handling — 2026-10-09
 
 44fd65e4 is terminal unknown before TTS; never repeat. Existing unknown Pixabay cache claim blocked normal preparation before HTTP. Generic typed classification now preserves the failed cache, returns explicit unavailable search with actual receipt, and allows other providers. Other database/provider errors remain terminal.108 core testsPASS; real isolated PostgreSQL and exact-image checks/deployment pending. No actual60s result yet; project_ready=false.
