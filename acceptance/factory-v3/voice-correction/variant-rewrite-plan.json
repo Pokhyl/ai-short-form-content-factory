@@ -1,0 +1,11 @@
+{
+  "id": "6f2fed83-4433-4c49-8df4-8cc6ef77cf0b",
+  "revision": "71103e02c04b3f52f87f5d2b99fa7208644c1236",
+  "mode": "saved actual measurement -> new three-variant source-bound rewrite and deterministic selection -> independent review -> actual voice/alignment/render/QA",
+  "max_gemini_calls": 6,
+  "max_tts_calls": 3,
+  "free_only": true,
+  "stop": "first terminal, no retry of prior IDs",
+  "no_manual_prose": true,
+  "fresh_discovery_acceptance": false
+}
