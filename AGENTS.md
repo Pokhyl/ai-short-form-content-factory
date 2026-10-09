@@ -1,3 +1,7 @@
+## Context generation remains unverified — 2026-10-09
+
+494db698 is terminal; two completed Gemini responses retained Cyrillic-only subject/query despite English instructions. No photos/TTS. First repair corrected wrong source span but missed query language. Added aggregate violation reporting and pre-search English-query validation;157 material checksPASS, pending release. Do not start another full smoke until isolated context generation succeeds. LIVEeb91d53 remains, actual60s audio/video not verified;project_ready=false.
+
 ## Source context diagnostic active — 2026-10-09
 
 LIVE eb91d53409c40f9abbb75d2e83f42f1494b852cb;image ed256dc4.264exact-image tests and isolatedPostgreSQLPASS; protected deployment state unchanged. Bounded saved-source generation diagnostic494db698-d8d3-4606-93cb-55b4ab9116d3 started once; up to2Gemini,0searches/0TTS. Check /data/checks/source-context-<ID>/receipt.json before actions. Initial local script syntax error occurred before any execution; corrected script is actual run. No actual60s output;project_ready=false.

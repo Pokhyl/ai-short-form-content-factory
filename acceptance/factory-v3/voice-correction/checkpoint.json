@@ -29,12 +29,13 @@
     "e3d03a07-6bee-446c-8d78-c53acc30bac9",
     "6f2fed83-4433-4c49-8df4-8cc6ef77cf0b",
     "44fd65e4-7237-4535-83e2-36fc0c24a11d",
-    "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3"
+    "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3",
+    "494db698-d8d3-4606-93cb-55b4ab9116d3"
   ],
   "project_ready": false,
-  "last_failure": "Prompt instruction and valid span IDs do not establish that a photo object is actually named in the selected span. The brief requested representation and radiation beams despite real-photo instructions.",
-  "pending_change": null,
-  "active_id": "494db698-d8d3-4606-93cb-55b4ab9116d3",
+  "last_failure": "494db698: both completed context responses used Cyrillic-only queries; terminal before searches or TTS. No more full runs until actual source-context generation succeeds.",
+  "pending_change": "Aggregate all source-context violations and reject non-English queries within the bounded repair gate;157 material tests passed.",
+  "active_id": null,
   "mode": "Saved-source context-generation boundary only; two Gemini calls maximum, no photo searches or TTS",
   "disk_free_after_cleanup_bytes": 521789440
 }

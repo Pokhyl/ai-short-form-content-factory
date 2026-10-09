@@ -31,6 +31,12 @@ class ContextTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'only the source-linked'):
             validate_context_mentions(rows,self.spans)
 
+    def test_correction_receives_all_actual_language_errors_together(self):
+        rows=copy.deepcopy(self.rows)
+        for row in rows.values():row['subject']=row['query']=row['source_mention']
+        with self.assertRaises(ValueError) as failure:validate_context_mentions(rows,self.spans)
+        for role in rows:self.assertIn(role+': query and subject must be English',str(failure.exception))
+
     def run_research(self, mode):
         source={'id':'source','url':'https://example.invalid/source','title':'Observed objects','text':self.text,'sha256':hashlib.sha256(self.text.encode()).hexdigest()}
         keys=[];facts=[]

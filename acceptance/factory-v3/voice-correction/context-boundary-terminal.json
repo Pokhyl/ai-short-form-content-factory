@@ -1,0 +1,10 @@
+{
+  "id": "494db698-d8d3-4606-93cb-55b4ab9116d3",
+  "source_job": "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3",
+  "revision": "eb91d53409c40f9abbb75d2e83f42f1494b852cb",
+  "state": "terminal_failure",
+  "max_gemini_calls": 2,
+  "tts_sends": 0,
+  "error": "ValueError",
+  "reason": "photo query has no actual subject after excluding synthetic scene modifiers"
+}
