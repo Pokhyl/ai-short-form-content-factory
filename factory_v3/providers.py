@@ -55,13 +55,29 @@ def commons_license_url(metadata, license_name):
     raise ValueError("missing Wikimedia license URL")
 
 
+class ProviderQueryUnavailable(RuntimeError):
+    def __init__(self, state, receipt):
+        self.state, self.receipt = state, receipt
+        super().__init__('saved provider query is pending or ambiguous; no repeat')
+
+
 class ProviderCache:
     def __init__(self, postgres):
         self.postgres = postgres
 
     def run(self, identity, provider, send):
         key = digest(identity)
-        claim = self.postgres._call("SELECT factory_v3.claim_provider_cache(%s,%s)", (key, provider))
+        try:
+            claim = self.postgres._call("SELECT factory_v3.claim_provider_cache(%s,%s)", (key, provider))
+        except Exception as error:
+            # Only the cache's explicit no-repeat refusal is optional. Database
+            # outages, identity mismatches and budget failures remain errors.
+            if (getattr(error,'sqlstate',None) == 'P0001' and
+                getattr(getattr(error,'diag',None),'message_primary',None) == 'provider query pending or ambiguous'):
+                saved=self.postgres._call("SELECT jsonb_build_object('provider',provider,'state',state,'receipt',receipt) FROM factory_v3.provider_cache WHERE identity_hash=%s",(key,))
+                if saved and saved['provider']==provider and saved['state'] in {'started','unknown'}:
+                    raise ProviderQueryUnavailable(saved['state'],saved['receipt']) from None
+            raise
         if claim["cached"]:
             return claim["receipt"]
         try:
@@ -182,6 +198,8 @@ class PhotoSearch:
             from .http import InvalidHTTPJSON
             try:
                 return self.cache.run(identity, provider, send)
+            except ProviderQueryUnavailable as error:
+                return {'adapter_status':'unavailable','cache_state':error.state,'failure_receipt':error.receipt}
             except InvalidHTTPJSON as error:
                 # A completed empty search response contributes no candidates.
                 # Preserve the actual failure, do not cache it or retry the read.

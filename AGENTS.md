@@ -1,3 +1,7 @@
+## Saved search failure handling — 2026-10-09
+
+44fd65e4 is terminal unknown before TTS; never repeat. Existing unknown Pixabay cache claim blocked normal preparation before HTTP. Generic typed classification now preserves the failed cache, returns explicit unavailable search with actual receipt, and allows other providers. Other database/provider errors remain terminal.108 core testsPASS; real isolated PostgreSQL and exact-image checks/deployment pending. No actual60s result yet; project_ready=false.
+
 ## Normal factory verification running — 2026-10-09
 
 LIVE3ea4790931263cf25d9bcfdfe071b4329dec4088; image sha256:a357cf9b82fccfdd1bed61a95dcfdfa23f75cd0dd5d317be817165c7265d2a99.255 exact-image tests and real isolated PostgreSQLPASS. Initial isolatedDB startup failed because server disk was full; removed13 task-owned source/archive temporaries (~500MB), preserved all data/voices/rows, reran isolatedDB successfully. App-only rollout protected snapshots unchanged. Normal owner request44fd65e4-7237-4535-83e2-36fc0c24a11d submitted once03:34:38UTC; no manual script or saved corpus replay. Check current status before any operation. Read compact acceptance/factory-v3/voice-correction/checkpoint.json. No actual60s natural result yet;project_ready=false.

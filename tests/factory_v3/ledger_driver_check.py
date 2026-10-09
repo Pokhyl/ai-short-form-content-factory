@@ -114,6 +114,20 @@ with tempfile.TemporaryDirectory() as directory:
         connection.execute("INSERT INTO factory_v3.human_reviews(job_id,video_sha256,decision,comment) VALUES(%s,%s,'rejected','changed') ON CONFLICT(job_id) DO NOTHING",(first,"b"*64))
         saved=connection.execute("SELECT decision,video_sha256 FROM factory_v3.human_reviews WHERE job_id=%s",(first,)).fetchone()
         assert saved==("accepted","a"*64)
+    # Preserve an actual failed cache record while allowing another provider.
+    from factory_v3.providers import ProviderCache, ProviderQueryUnavailable
+    from factory_v3.http import InvalidHTTPJSON
+    cache=ProviderCache(ledger);identity={'controlled_cache':str(uuid.uuid4())}
+    def empty_search():raise InvalidHTTPJSON({'status':200,'headers':{},'body':b''})
+    try:cache.run(identity,'pixabay',empty_search)
+    except InvalidHTTPJSON:pass
+    else:raise AssertionError('empty provider response accepted')
+    def forbidden_search():raise AssertionError('ambiguous cached search repeated')
+    try:cache.run(identity,'pixabay',forbidden_search)
+    except ProviderQueryUnavailable as error:
+        assert error.state=='unknown' and error.receipt['body_bytes']==0
+    else:raise AssertionError('saved cache refusal not classified')
+    print('CACHED_UNAVAILABLE_READ_ONLY_PASS')
     # Actual transactional accounting for measured text corrections.
     from copy import deepcopy
     from material_first.voice_correction import POLICY

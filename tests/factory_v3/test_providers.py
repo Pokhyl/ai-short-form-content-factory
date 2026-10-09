@@ -221,3 +221,28 @@ class EmptySearchTests(unittest.TestCase):
         search=PhotoSearch(BudgetedCalls(ledger,'job'),Cache(),http,lambda p:'controlled','scope')
         with self.assertRaises(InvalidHTTPJSON):search.search('pixabay','topic','all')
         self.assertTrue(ledger.terminal)
+
+class SavedUnavailableSearchTests(unittest.TestCase):
+    def test_saved_ambiguous_query_is_not_sent_again_or_mutated(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock
+        from factory_v3.providers import ProviderCache
+        class Refusal(Exception):
+            sqlstate='P0001'
+            diag=SimpleNamespace(message_primary='provider query pending or ambiguous')
+        database=Mock();database._call.side_effect=[Refusal(),{'provider':'pixabay','state':'unknown','receipt':{'status':200,'body_bytes':0}}]
+        http=Mock();ledger=FakeLedger()
+        search=PhotoSearch(BudgetedCalls(ledger,'job'),ProviderCache(database),http,lambda p:'controlled','scope')
+        result=search.search('pixabay','topic','all')
+        self.assertEqual(result['candidates'],[]);self.assertEqual(result['receipt']['cache_state'],'unknown')
+        http.request_receipt.assert_not_called();self.assertFalse(ledger.terminal)
+        self.assertEqual(database._call.call_count,2)
+        self.assertNotIn('UPDATE',database._call.call_args.args[0])
+    def test_unrelated_database_failure_is_never_hidden(self):
+        from unittest.mock import Mock
+        from factory_v3.providers import ProviderCache
+        database=Mock();database._call.side_effect=OSError('database unavailable')
+        ledger=FakeLedger();http=Mock()
+        search=PhotoSearch(BudgetedCalls(ledger,'job'),ProviderCache(database),http,lambda p:'controlled','scope')
+        with self.assertRaises(OSError):search.search('pixabay','topic','all')
+        self.assertTrue(ledger.terminal);http.request_receipt.assert_not_called()

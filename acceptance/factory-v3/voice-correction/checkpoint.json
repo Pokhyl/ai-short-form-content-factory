@@ -25,12 +25,13 @@
     "742e27ca-05e5-4e86-820e-316c3e22d58b",
     "e9c352c8-b755-4ce3-9e46-e6f7c87aa3ee",
     "e3d03a07-6bee-446c-8d78-c53acc30bac9",
-    "6f2fed83-4433-4c49-8df4-8cc6ef77cf0b"
+    "6f2fed83-4433-4c49-8df4-8cc6ef77cf0b",
+    "44fd65e4-7237-4535-83e2-36fc0c24a11d"
   ],
   "project_ready": false,
-  "last_failure": "Legacy full-fact variants minimum138words estimated72.776s. No additional synthesis.",
-  "pending_change": null,
-  "active_id": "44fd65e4-7237-4535-83e2-36fc0c24a11d",
+  "last_failure": "44fd65e4 terminal unknown before TTS: existing unknown Pixabay cache refusal. Generic typed optional-search handling added; no cache mutation or repeat.",
+  "pending_change": "Read-only classification of saved started/unknown provider cache; 108 core tests pass; exact image and PostgreSQL pending.",
+  "active_id": null,
   "mode": "normal owner API; fresh research, photos and prose",
   "disk_free_after_cleanup_bytes": 521789440
 }
