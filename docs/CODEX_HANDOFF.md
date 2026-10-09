@@ -1,3 +1,7 @@
+## Source-context boundary failure, not a voice result — 2026-10-09
+
+b57b982e terminal failed before download/TTS. All9 search steps completed;61candidates. Saved read-only replay: documented object has no distinct metadata anchor. Actual brief used neutron star representation (0matches) and pulsar radiation beam; selected spans did not name chosen Crab object. Real sources contain named observed remnants. No another full smoke: close source-context generation boundary first. New opt-in validator requires exact source-language object mention in selected span and query==English subject, rejects depiction/invisible-beam requests, permits one bounded context-only correction without changing facts or budgets.156 material testsPASS. Exact-image checks and bounded provider evidence pending; project_ready=false.
+
 ## Active normal factory test — 2026-10-09 15:51 UTC
 
 LIVE e4167aa632bd65805439ad2173b26805ddf9a6f6, image624183b3.257 exact-image tests and isolated PostgreSQLPASS; cache refusal handled without repeat or mutation. App-only deployment protected state unchanged. Normal owner API accepted b57b982e-3fe0-4341-a9f9-ed93cfa3adb3 once. Inspect its state before actions; no old ID retries. Natural60s output not yet verified;project_ready=false.

@@ -27,12 +27,13 @@
     "e9c352c8-b755-4ce3-9e46-e6f7c87aa3ee",
     "e3d03a07-6bee-446c-8d78-c53acc30bac9",
     "6f2fed83-4433-4c49-8df4-8cc6ef77cf0b",
-    "44fd65e4-7237-4535-83e2-36fc0c24a11d"
+    "44fd65e4-7237-4535-83e2-36fc0c24a11d",
+    "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3"
   ],
   "project_ready": false,
-  "last_failure": "44fd65e4 terminal unknown before TTS: existing unknown Pixabay cache refusal. Generic typed optional-search handling added; no cache mutation or repeat.",
-  "pending_change": null,
-  "active_id": "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3",
+  "last_failure": "Prompt instruction and valid span IDs do not establish that a photo object is actually named in the selected span. The brief requested representation and radiation beams despite real-photo instructions.",
+  "pending_change": "Exact source mentions and object-name-only queries, one bounded pre-search correction. 156 material tests pass. Exact release and bounded source-context generation pending.",
+  "active_id": null,
   "mode": "normal owner API; fresh research, photos and prose",
   "disk_free_after_cleanup_bytes": 521789440
 }

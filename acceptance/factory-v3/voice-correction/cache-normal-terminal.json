@@ -1,0 +1,30 @@
+{
+  "id": "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3",
+  "status": "failed",
+  "tts_sends": 0,
+  "new_calls_in_replay": 0,
+  "diagnosis": {
+    "offline_failure": "ValueError",
+    "reason": "documented object has no distinct metadata anchor",
+    "traceback": "Traceback (most recent call last):\n  File \"<stdin>\", line 26, in <module>\n  File \"/app/material_first/engine.py\", line 359, in prepare\n    brief, candidates = self.operations.resolve_photos(deepcopy(request), deepcopy(brief))\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/app/material_first/operations.py\", line 243, in resolve_photos\n    return plan_photos(self.gemini, request, brief, self.discovery_pools,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/app/material_first/photo_planning.py\", line 74, in plan_photos\n    raise ValueError('documented object has no distinct metadata anchor')\nValueError: documented object has no distinct metadata anchor\n",
+    "new_provider_calls": 0,
+    "database_writes": 0
+  },
+  "pool_count": 61,
+  "contexts": [
+    {
+      "query": "Crab Nebula supernova remnant",
+      "matching": 11
+    },
+    {
+      "query": "neutron star representation",
+      "matching": 0
+    },
+    {
+      "query": "pulsar radiation beam",
+      "matching": 4
+    }
+  ],
+  "contradicted_assumption": "Prompt instruction and valid span IDs do not establish that a photo object is actually named in the selected span. The brief requested representation and radiation beams despite real-photo instructions.",
+  "next_boundary": "Source-linked photo context generation only, at most two Gemini calls, no TTS or full production rerun."
+}

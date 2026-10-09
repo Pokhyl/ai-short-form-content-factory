@@ -97,6 +97,9 @@ class Operations:
             for context_schema in schema['properties']['photo_contexts']['properties'].values():
                 context_schema['properties']['support_span_ids'] = array(string(s['id'] for s in spans), 1, 3)
                 context_schema['required'].append('support_span_ids')
+                if measured_feedback:
+                    context_schema['properties']['source_mention'] = {**string(), 'maxLength':160}
+                    context_schema['required'].append('source_mention')
         result, _ = self.gemini.generate('material-brief',
             (('Select exactly THREE essential atomic facts that together answer the topic: starting condition, main mechanism, outcome. '
               'Keep each fact a concise single claim; split compound source explanations into optional facts. '
@@ -116,6 +119,9 @@ class Operations:
             'Never request a diagram, cross-section, field lines, imagined particle beams, space art or a synthetic rendering. '
             'Prefer several documented related objects or genuine process stages over generic stock categories. Do not imply that an unrelated subject depicts an invisible mechanism. '
             'When support_span_ids are required, select source spans explicitly documenting each photo subject and its relationship. '
+            'When source_mention is required, copy the exact object name in its ORIGINAL SOURCE LANGUAGE from one selected span. '
+            'Set subject and query to the SAME conventional English object name or catalog identifier, with no added mechanism, representation, or image requirements. '
+            'A citation to general physics is not evidence for a named object absent from that span. '
             'For distant or hidden subjects, search named observable associated objects mentioned in those spans, using their conventional English name or catalog identifier. '
             'For a named associated object, the query is just its searchable entity name or catalog identifier, not an entire mechanism or a demand for photographic proof. '
             'Do not waste a query on an invisible object when the sources name observable associated objects. '
@@ -126,6 +132,27 @@ class Operations:
             'Facts are proved by source text, not photograph geometry.'),
             {**request, 'sources': [{k: s[k] for k in ('id', 'url', 'title', 'sha256') if k in s}
                                    for s in sources], 'source_spans': spans}, schema)
+        if self.documented_contexts and measured_feedback:
+            from .photo_contexts import validate_context_mentions
+            try:
+                validate_context_mentions(result['photo_contexts'], spans)
+            except ValueError as error:
+                # One completed semantic correction, before any search. Facts
+                # are server-owned here and cannot be revised by this call.
+                repaired, _ = self.gemini.generate('material-photo-context-repair',
+                    'Correct only the three photo contexts. Copy source_mention EXACTLY from a selected source span in its original language. '
+                    'The span must name the actual object and explain its direct relationship to the topic. '
+                    'Use the SAME conventional English physical object name or catalog identifier for subject and query. '
+                    'For hidden or distant mechanisms choose named observable associated objects documented in the sources. '
+                    'Never request a representation, drawing, invisible beam, synthetic image, unrelated prop or generic scenery. '
+                    'Keep fact_ids grounded in the supplied unchanged facts. Prefer distinct observable subjects or stages. '
+                    'These are retrieval candidates, not proof of image availability or factual correctness.',
+                    {'topic':request['topic'], 'facts':result['facts'], 'source_spans':spans,
+                     'rejected_contexts':result['photo_contexts'], 'failure':str(error)},
+                    schema['properties']['photo_contexts'])
+                validate_json(repaired, schema['properties']['photo_contexts'])
+                validate_context_mentions(repaired, spans)
+                result={**result, 'photo_contexts':repaired}
         evidence = bind_support(sources, spans, result['facts'])
         if self.documented_contexts:
             contexts = []

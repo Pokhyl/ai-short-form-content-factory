@@ -1,0 +1,5 @@
+CACHED_UNAVAILABLE_READ_ONLY_PASS
+BOUNDED_CORRECTION_POSTGRES_PASS: race, measured-only advance, three-attempt cap, terminal block
+{"status": "passed", "psycopg": "3.3.6", "real_postgres": true, "packaged_runtime": true, "request_identity_immutable": true, "owner_review_insert_once": true, "concurrent_producer_claims": ["claimed", "blocked"], "preparation_unknown_blocks": true, "full_stage_chain": true, "single_voice_attempt": true, "ambiguous_result_blocks": true, "concurrent_claims": ["blocked", "claimed"], "controlled_provider_calls": 2, "actual_provider_calls": 0}
+
+ISOLATED_TEST_CONTAINER_REMOVED
