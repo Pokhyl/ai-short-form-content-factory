@@ -1,0 +1,15 @@
+{
+  "id": "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3",
+  "revision": "e4167aa632bd65805439ad2173b26805ddf9a6f6",
+  "mode": "normal_owner_api",
+  "topic": "Нейтронная звезда",
+  "language": "uk",
+  "seconds": 60,
+  "unresolved_question": "Can normal discovery skip preserved failed optional searches and generate reviewed natural narration, then measured correction and exact MP4?",
+  "max_gemini_calls": 16,
+  "max_tts_sends": 3,
+  "providers": "Existing free-only Gemini, configured photo adapters, Google TTS; unchanged monthly ceilings",
+  "expected_consumption": "Unknown until measured; each TTS text accounted before send",
+  "stop": "First terminal result; do not retry failed ID or ambiguous provider call",
+  "prerequisites": "257 exact-image tests, real isolated PostgreSQL regression, exact app-only release and preserved state"
+}
