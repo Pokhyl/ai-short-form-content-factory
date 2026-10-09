@@ -519,3 +519,18 @@ class OperationTests(unittest.TestCase):
                 self.assertNotIn('Стилізоване',target['must_show'])
             self.assertEqual(brief['visual_targets'][1]['must_show'],'neutron star space')
             self.assertEqual(brief['visual_targets'][2]['must_show'],'pulsar')
+
+class MeasuredResearchTests(unittest.TestCase):
+    def test_three_core_facts_are_required_without_discarding_source_inventory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fixtures=Fixtures(Path(directory),['photo']*3);model=Model(fixtures)
+            original=model.generate
+            def generate(key,instruction,context,schema,**kwargs):
+                self.assertEqual(schema['properties']['required_fact_ids']['maxItems'],3)
+                self.assertIn('THREE essential atomic facts',instruction)
+                return original(key,instruction,context,schema,**kwargs)
+            model.generate=generate
+            ops=Operations(directory,SimpleNamespace(fetch=lambda *args:fixtures.evidence['sources']),model,None,None)
+            ops.voice_correction_enabled=True
+            result=ops.research({'topic':'Controlled topic','language':'uk','seconds':60})
+            self.assertEqual(len(result['required_fact_ids']),3)

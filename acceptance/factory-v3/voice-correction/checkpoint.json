@@ -24,10 +24,10 @@
     "f98e91e7-b22e-46b0-8c6d-8dc05b6f4bbf",
     "742e27ca-05e5-4e86-820e-316c3e22d58b",
     "e9c352c8-b755-4ce3-9e46-e6f7c87aa3ee",
-    "e3d03a07-6bee-446c-8d78-c53acc30bac9"
+    "e3d03a07-6bee-446c-8d78-c53acc30bac9",
+    "6f2fed83-4433-4c49-8df4-8cc6ef77cf0b"
   ],
   "project_ready": false,
-  "last_failure": "Single proposed paragraphs had85/99/29words versus original31/34/32; no candidate made timing progress. No new TTS.",
-  "pending_change": null,
-  "active_id": "6f2fed83-4433-4c49-8df4-8cc6ef77cf0b"
+  "last_failure": "Legacy full-fact variants minimum138words estimated72.776s. No additional synthesis.",
+  "pending_change": "3 essential facts; natural paragraph repair; optional empty-search response; full normal verification required"
 }

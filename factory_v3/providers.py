@@ -178,6 +178,17 @@ class PhotoSearch:
                 raise ValueError("provider credential unavailable")
             return self.http.request_receipt("GET", url + "?" + urlencode(request_params),
                                              headers=headers, timeout=30)
-        receipt = self.calls.run("search:" + digest(identity), "search:" + provider, identity,
-                                 lambda: self.cache.run(identity, provider, send))
+        def fetch():
+            from .http import InvalidHTTPJSON
+            try:
+                return self.cache.run(identity, provider, send)
+            except InvalidHTTPJSON as error:
+                # A completed empty search response contributes no candidates.
+                # Preserve the actual failure, do not cache it or retry the read.
+                if error.receipt.get('status') == 200 and error.receipt.get('body_bytes') == 0:
+                    return {'adapter_status':'unavailable','failure_receipt':error.receipt}
+                raise
+        receipt = self.calls.run("search:" + digest(identity), "search:" + provider, identity, fetch)
+        if receipt.get('adapter_status') == 'unavailable':
+            return {"identity":identity,"receipt":receipt,"candidates":[]}
         return {"identity": identity, "receipt": receipt, "candidates": candidates(provider, receipt["body"])}

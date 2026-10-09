@@ -194,3 +194,30 @@ class ProviderTests(unittest.TestCase):
         self.assertEqual(error.receipt["headers"], {"x-ratelimit-remaining": "0", "retry-after": "60"})
         self.assertNotIn("secret", str(error))
         self.assertNotIn("secret", json.dumps(error.receipt))
+
+class EmptySearchTests(unittest.TestCase):
+    def test_empty_completed_search_does_not_block_other_provider_or_repeat_read(self):
+        from factory_v3.http import InvalidHTTPJSON
+        class ProviderHTTP:
+            def __init__(self):self.calls=0
+            def request_receipt(self,method,url,headers,timeout):
+                self.calls+=1
+                if 'pixabay.com' in url:raise InvalidHTTPJSON({'status':200,'headers':{},'body':b''})
+                return {'status':200,'body':{'photos':[PEX]}}
+        ledger=FakeLedger();ledger.limit=2;http=ProviderHTTP();cache=Cache()
+        search=PhotoSearch(BudgetedCalls(ledger,'job'),cache,http,lambda p:'controlled','scope')
+        empty=search.search('pixabay','topic','all')
+        self.assertEqual(empty['candidates'],[])
+        self.assertEqual(empty['receipt']['failure_receipt']['body_bytes'],0)
+        self.assertEqual(cache.entries,{})
+        self.assertEqual(search.search('pixabay','topic','all'),empty)
+        self.assertEqual(len(search.search('pexels','topic','all')['candidates']),1)
+        self.assertFalse(ledger.terminal);self.assertEqual(http.calls,2)
+    def test_nonempty_invalid_response_remains_terminal(self):
+        from factory_v3.http import InvalidHTTPJSON
+        from unittest.mock import Mock
+        http=Mock();http.request_receipt.side_effect=InvalidHTTPJSON({'status':200,'headers':{},'body':b'broken'})
+        ledger=FakeLedger()
+        search=PhotoSearch(BudgetedCalls(ledger,'job'),Cache(),http,lambda p:'controlled','scope')
+        with self.assertRaises(InvalidHTTPJSON):search.search('pixabay','topic','all')
+        self.assertTrue(ledger.terminal)

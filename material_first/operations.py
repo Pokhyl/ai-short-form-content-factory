@@ -89,12 +89,18 @@ class Operations:
             'photo_contexts': obj({role: obj({'subject': string(),
                 'query': {**string(), 'maxLength': 100}, 'fact_ids': array(string(), 1, 8)})
                 for role in ('setting', 'subject', 'detail')})})
-        desired_facts = max(3, min(8, (request['seconds'] + 7) // 8))
+        measured_feedback = getattr(self,'voice_correction_enabled',False)
+        if measured_feedback:
+            schema['properties']['required_fact_ids']=array(string(),3,3)
+        desired_facts = max(3, min(6 if measured_feedback else 8, (request['seconds'] + 7) // 8))
         if self.documented_contexts:
             for context_schema in schema['properties']['photo_contexts']['properties'].values():
                 context_schema['properties']['support_span_ids'] = array(string(s['id'] for s in spans), 1, 3)
                 context_schema['required'].append('support_span_ids')
         result, _ = self.gemini.generate('material-brief',
+            (('Select exactly THREE essential atomic facts that together answer the topic: starting condition, main mechanism, outcome. '
+              'Keep each fact a concise single claim; split compound source explanations into optional facts. '
+              'Do not make every discovered fact mandatory or require every source detail/number in the narration. ' if measured_feedback else '') +
             f'For {request["seconds"]} seconds, aim for {desired_facts} distinct source-backed facts, '
             'with enough useful explanation for natural speech. Cover the full requested process, '
             'including its final outcome; do not spend all facts on its starting ingredients. '
@@ -117,7 +123,7 @@ class Operations:
             'The three contexts must differ in dominant subject, scale or setting. '
             'For example, a flowering meadow, a bee close-up, and a flower/pollen detail are different roles. '
             'Allow contextually relevant stock photographs; do not demand a rare precise action or anatomy angle. '
-            'Facts are proved by source text, not photograph geometry.',
+            'Facts are proved by source text, not photograph geometry.'),
             {**request, 'sources': [{k: s[k] for k in ('id', 'url', 'title', 'sha256') if k in s}
                                    for s in sources], 'source_spans': spans}, schema)
         evidence = bind_support(sources, spans, result['facts'])
@@ -131,6 +137,8 @@ class Operations:
                     'query': photograph_query(row['query']), 'support': bound['facts'][0]['support']})
             evidence['visual_contexts'] = contexts
         validate_evidence(evidence)
+        if measured_feedback and len(set(result['required_fact_ids'])) != 3:
+            raise ValueError('measured narration requires exactly three essential facts')
         if len(set(result['required_fact_ids'])) < 3:
             raise MaterialUnavailable('explanation needs three distinct source-backed aspects before material search')
         fact_ids = [f['id'] for f in evidence['facts']]

@@ -209,3 +209,22 @@ class ParagraphTests(unittest.TestCase):
             self.calls=[]
             with self.assertRaises((ValueError,NarrationBudgetExceeded)):self.run_compose(edited=edited)
             self.assertEqual(self.calls,['material-compose','material-language-edit'])
+
+class MeasuredParagraphTests(unittest.TestCase):
+    def test_feedback_plan_uses_natural_paragraphs_instead_of_individual_word_slots(self):
+        from material_first.voice_correction import POLICY
+        saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-keyed-budget-failure.json').read_text())
+        context=copy.deepcopy(saved['composition_context']);context['request']['voice_correction']=dict(POLICY)
+        calls=[]
+        def generate(key,instruction,payload,schema):
+            calls.append(key)
+            if key=='material-compose':return copy.deepcopy(saved['draft']),{}
+            if key=='material-language-edit':return {'narration':payload['narration']},{}
+            self.assertIn('narration',schema['properties']['paragraph_1']['properties'])
+            self.assertNotIn('words',schema['properties']['paragraph_1']['properties'])
+            return {'paragraph_'+str(i+1):{'narration':' '.join(['контрольне']*(p['word_budget']['preferred']-1)),
+                   'fact_ids':list(dict.fromkeys(p['required_fact_ids']+p['identifying_fact_ids']))}
+                    for i,p in enumerate(payload['paragraph_plan'])},{}
+        result=Operations('.',None,SimpleNamespace(generate=generate),None,None).compose(context)
+        self.assertEqual(calls,['material-compose','material-compose-length-repair','material-language-edit'])
+        self.assertTrue(set(context['request']['required_fact_ids'])<={f for b in result['beats'] for f in b['fact_ids']})
