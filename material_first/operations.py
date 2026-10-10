@@ -141,7 +141,8 @@ class Operations:
                                    for s in sources], 'source_spans': spans}, schema)
         if self.documented_contexts and measured_feedback:
             from .research_review import reviewed_brief
-            result=reviewed_brief(self.gemini,request,sources,spans,schema,result)
+            result=reviewed_brief(self.gemini,request,sources,spans,schema,result,
+                check_photos=not (getattr(self,'availability_first_contexts',False) and request.get('visual_validation_mode','gemini')!='metadata'))
         evidence = bind_support(sources, spans, result['facts'])
         if self.documented_contexts:
             contexts = []
@@ -151,7 +152,8 @@ class Operations:
                     'support': [{'span_id': identity} for identity in row['support_span_ids']]}])
                 contexts.append({'id': 'v' + str(index), 'subject': row['subject'],
                     'query': photograph_query(row['query']), 'support': bound['facts'][0]['support']})
-            evidence['visual_contexts'] = contexts
+            if not (getattr(self,'availability_first_contexts',False) and request.get('visual_validation_mode','gemini')!='metadata'):
+                evidence['visual_contexts'] = contexts
         validate_evidence(evidence)
         if measured_feedback and len(set(result['required_fact_ids'])) != 3:
             raise ValueError('measured narration requires exactly three essential facts')
@@ -253,6 +255,10 @@ class Operations:
         if (request.get('presentation_policy') != TOPIC_POLICY
                 or request.get('visual_validation_mode', 'gemini') == 'metadata'):
             return brief, candidates
+        if getattr(self,'availability_first_contexts',False) and 'visual_contexts' not in brief['evidence']:
+            from .retrieved_contexts import plan_retrieved_contexts
+            return plan_retrieved_contexts(self.gemini,request,brief,self.discovery_pools,
+                candidate_limit(request['seconds'],TOPIC_POLICY))
         from .photo_planning import plan_photos
         # Collect the complete bounded search pools first. Role contracts are
         # finalized once from available objects before any download/inspection.

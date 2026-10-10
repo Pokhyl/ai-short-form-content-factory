@@ -1,0 +1,18 @@
+{
+  "state": "offline_contract_checks_passed",
+  "tests": {
+    "material_first": 172,
+    "factory_v3": 108
+  },
+  "actual_saved_search_responses": 9,
+  "unique_saved_candidates": 61,
+  "provider_calls_this_change": 0,
+  "tts_calls_this_change": 0,
+  "project_ready": false,
+  "limitations": [
+    "Controlled semantic responses test boundaries only, not actual selection correctness.",
+    "The actual-semantic-brief fixture intentionally contains a previously rejected claim; never use it as live acceptance input.",
+    "Fresh independent retrieved-object review and actual pixel selection remain unverified."
+  ],
+  "change": "Freeze reviewed source facts before discovery; finalize visual contexts from actual retrieved metadata with exact source mentions and an independent semantic review. Preserve all pixel, unique-photo, voice and duration gates."
+}

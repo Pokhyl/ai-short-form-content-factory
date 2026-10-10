@@ -99,6 +99,45 @@ class EngineTests(unittest.TestCase):
         self.assertTrue(all(a["media_type"] == "photo" for a in result["payload"]["assets"]))
         self.assertGreater(ops.events.index("compose"), ops.events.index("inspect:a2"))
 
+    def test_retrieved_contexts_attach_without_changing_original_evidence(self):
+        ops = Operations(self.root, ["photo", "photo", "photo"])
+        ops.availability_first_contexts = True
+        def resolve(request, brief):
+            brief['evidence']['visual_contexts'] = [
+                {'id': 'v'+str(i), 'subject': 'Object '+str(i), 'query': 'Object '+str(i),
+                 'support': copy.deepcopy(brief['evidence']['facts'][i]['support'])}
+                for i in range(3)]
+            return brief, copy.deepcopy(ops.assets)
+        ops.resolve_photos = resolve
+        result = self.run_prepare(ops)
+        self.assertIn('inspect:a0', ops.events)
+        self.assertEqual(len(result['payload']['scenes']), 3)
+
+    def test_retrieved_planner_cannot_mutate_frozen_source_scope(self):
+        for mutation in ('fact', 'source', 'required', 'missing_contexts'):
+            with self.subTest(mutation=mutation):
+                ops = Operations(self.root, ["photo", "photo", "photo"])
+                ops.availability_first_contexts = True
+                def resolve(request, brief):
+                    if mutation == 'fact': brief['evidence']['facts'][0]['text'] = 'Changed claim'
+                    if mutation == 'source': brief['evidence']['sources'][0]['url'] = 'https://example.invalid/other'
+                    if mutation == 'required': brief['required_fact_ids'] = ['f0']
+                    return brief, copy.deepcopy(ops.assets)
+                ops.resolve_photos = resolve
+                with self.assertRaisesRegex(ValueError, 'availability planning'):
+                    self.run_prepare(ops)
+                self.assertFalse(any(e.startswith('inspect:') for e in ops.events))
+                self.assertNotIn('compose', ops.events)
+
+    def test_legacy_planner_cannot_attach_new_contexts(self):
+        ops = Operations(self.root, ["photo", "photo", "photo"])
+        def resolve(request, brief):
+            brief['evidence']['visual_contexts'] = []
+            return brief, copy.deepcopy(ops.assets)
+        ops.resolve_photos = resolve
+        with self.assertRaisesRegex(ValueError, 'changed source evidence'):
+            self.run_prepare(ops)
+
     def test_single_real_video_can_cover_minute_without_seventeen_shots(self):
         ops = Operations(self.root, ["video"])
         ops.support["a0"] = ["f0", "f1", "f2"]

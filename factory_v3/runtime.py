@@ -87,6 +87,7 @@ class Runtime:
                        PortraitDownload(self.root, PhotoDownload(self.root,request_id,calls,self.direct)),
                        documented_contexts=True), authorize=authorize)
         producer.operations.voice_correction_enabled = True
+        producer.operations.availability_first_contexts = True
         return producer
 
     def correction_gemini(self, job_id, attempt):

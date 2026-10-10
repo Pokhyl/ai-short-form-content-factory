@@ -144,6 +144,10 @@ def plan_photos(gemini, request, brief, pools, limit):
                         'must_show': target_label, 'query': query,
                         'must_not_show': 'Drawings, diagrams, synthetic images, unrelated subjects or identical composition in every role'})
     validate_targets(targets, {f['id'] for f in brief['evidence']['facts']})
+    return allocate_photos(brief,pools,known,targets,result['contexts'],provenance,limit)
+
+
+def allocate_photos(brief,pools,known,targets,contexts,provenance,limit):
     # Allocate remaining downloads globally to the available object contexts,
     # rather than reserving equal slots for a speculative unavailable query.
     selected, seen = [], set()
@@ -156,7 +160,7 @@ def plan_photos(gemini, request, brief, pools, limit):
         row['visual_qualification_protocol'] = 'qualified-target-v1'
         row['photo_plan'] = {'receipt_id': provenance['receipt_id'],
                              'visual_targets_sha256': digest(targets),
-                             'anchor_ids': [c['anchor_id'] for c in result['contexts']]}
+                             'anchor_ids': [c['anchor_id'] for c in contexts]}
         related = []
         for target in targets:
             if context_words(target['query']) <= context_words(' '.join(descriptions(candidate))):
@@ -169,7 +173,7 @@ def plan_photos(gemini, request, brief, pools, limit):
         first = next((c for c in pool if c['id'] not in seen), None)
         if first is not None:
             take(first)
-    for context in result['contexts']:
+    for context in contexts:
         take(known[context['anchor_id']])
     ranked = sorted(known.values(), key=lambda c: -max(relevance(c, t['query']) for t in targets))
     for candidate in ranked:

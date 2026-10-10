@@ -40,3 +40,14 @@ class ResearchReviewTests(unittest.TestCase):
             return result,{}
         with self.assertRaisesRegex(ValueError,'fields differ'):self.run_case(generate)
         self.assertEqual(self.calls,['material-brief-review:1'])
+
+    def test_facts_only_review_omits_speculative_photo_decisions(self):
+        def generate(key,instruction,context,schema):
+            self.calls.append(key)
+            self.assertNotIn('photo_contexts',context)
+            self.assertNotIn('photo_contexts',schema['properties'])
+            self.assertNotIn('photo_contexts',schema['required'])
+            return {'facts':{f['id']:{'supported':True,'reason':'Controlled decision only'} for f in context['facts']}},{}
+        result=reviewed_brief(SimpleNamespace(generate=generate),{'topic':'Neutron star'},self.sources,self.spans,self.schema,copy.deepcopy(self.draft),check_photos=False)
+        self.assertEqual(result['facts'],self.draft['facts'])
+        self.assertEqual(self.calls,['material-brief-review:1'])

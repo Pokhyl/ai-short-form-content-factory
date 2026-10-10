@@ -357,7 +357,17 @@ class Producer:
         candidates = None
         if hasattr(self.operations, 'resolve_photos'):
             brief, candidates = self.operations.resolve_photos(deepcopy(request), deepcopy(brief))
-            if brief['evidence'] != evidence or brief['required_fact_ids'] != required:
+            if getattr(self.operations,'availability_first_contexts',False) and 'visual_contexts' not in evidence:
+                # Source facts freeze before discovery; visual contexts freeze
+                # only after actual retrieved objects have been source-checked.
+                final_core={k:v for k,v in brief['evidence'].items() if k!='visual_contexts'}
+                if final_core!=evidence or brief['required_fact_ids']!=required:
+                    raise ValueError('availability planning changed source evidence or required narration')
+                if 'visual_contexts' not in brief['evidence']:
+                    raise ValueError('availability planning omitted final documented contexts')
+                validate_evidence(brief['evidence'])
+                evidence=brief['evidence']
+            elif brief['evidence'] != evidence or brief['required_fact_ids'] != required:
                 raise ValueError('availability planning changed source evidence or required narration')
         targets = brief.get('visual_targets')
         if targets is not None:
