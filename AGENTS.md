@@ -1,3 +1,7 @@
+## Independent research preflight LIVE and checking — 2026-10-10
+
+LIVE9ab44b8/image9a69699e;269exact-image checks and isolatedPostgreSQLPASS, protected app-only deployment equal. Provisional facts and observable photo subjects independently reviewed before discovery, maxonewhole-draftrevision thenreview, normal16Geminiceiling unchanged. Isolated704d6427-3e16-4c29-a143-83abbb89b57b running once, max4Gemini/0search/0TTS; check /data/checks/source-context-<ID>/receipt.json. Source fixtureb57b982e. Gatewayf664e9e2 remainsverified. No actual60s output;project_ready=false.
+
 ## Structural pass exposes semantic research defect — 2026-10-10
 
 57b86a61 completed isolated research; no searches/TTS. English fields and source mentions now structurally valid. Actual review of saved brief finds neutron core invisible-photo demand and unsupported extremely small mass assertion. Therefore NOT material-plan or video acceptance; do not start fullrun based on structuralpass. Artifact acceptance/factory-v3/voice-correction/english-boundary-brief.json. Need generic semantic preflight of draft facts and observable objects before discovery; keep exact source/voice guards. LIVE218841a;gatewayf664e9e2;project_ready=false.

@@ -2,7 +2,7 @@
   "task": "Factory redesign for natural speech and exact requested duration",
   "owner_authorized_resynthesis": true,
   "max_syntheses_per_new_job": 3,
-  "live_revision": "218841a5e2549a8a6fe07439d7957b8b580499d0",
+  "live_revision": "9ab44b83180b60a324b31357e29c4b8c46fbcc61",
   "pending_revision": null,
   "last_actual_voice_ms": 52056,
   "actual_final_60s_verified": false,
@@ -16,7 +16,8 @@
     "264 exact-image tests, isolated PostgreSQL, app-only protected snapshot unchanged",
     "265 exact-image tests and isolated PostgreSQL on0299a79; protected app-only deployment; actual two-response language regression",
     "266 exact-image tests, real isolated PostgreSQL,218841a app-only protected state unchanged",
-    "Actual English object schema/source mention structural check passed; NOT semantic or video acceptance"
+    "Actual English object schema/source mention structural check passed; NOT semantic or video acceptance",
+    "269 exact-image tests, isolated PostgreSQL,9ab44b8 protected app-only rollout"
   ],
   "remaining": [
     "normal request outcome",
@@ -39,9 +40,9 @@
   ],
   "project_ready": false,
   "last_failure": "English schema passed structural validation but semantic inspection found invisible neutron core requested as a photo and unsupported extremely small mass claim. No photos/TTS; full production run intentionally not started.",
-  "pending_change": "Independent provisional fact/observable-photo review before discovery; one whole-draft revision and second review, no network retries.161material tests pass; actual review boundary pending. Normal Gemini ceiling16 unchanged.",
-  "active_id": null,
-  "mode": "Saved-source context-generation boundary only; two Gemini calls maximum, no photo searches or TTS",
+  "pending_change": null,
+  "active_id": "704d6427-3e16-4c29-a143-83abbb89b57b",
+  "mode": "Isolated source-backed research with independent semantic review;max4Gemini,0photo searches,0TTS",
   "disk_free_after_cleanup_bytes": 521789440,
   "gateway_version": "f664e9e2-837b-4042-9ba6-fa6565b7e97e"
 }
