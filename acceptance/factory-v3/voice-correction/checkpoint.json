@@ -2,7 +2,7 @@
   "task": "Factory redesign for natural speech and exact requested duration",
   "owner_authorized_resynthesis": true,
   "max_syntheses_per_new_job": 3,
-  "live_revision": "0299a79bf136fe716fd3f14dc038a07d87e86cb1",
+  "live_revision": "218841a5e2549a8a6fe07439d7957b8b580499d0",
   "pending_revision": null,
   "last_actual_voice_ms": 52056,
   "actual_final_60s_verified": false,
@@ -14,7 +14,8 @@
     "255 exact-image unit checks plus isolated PostgreSQL after task temporary cleanup",
     "257 exact-image checks, real PostgreSQL cached-failure and bounded-voice regressions, app-only protected state unchanged",
     "264 exact-image tests, isolated PostgreSQL, app-only protected snapshot unchanged",
-    "265 exact-image tests and isolated PostgreSQL on0299a79; protected app-only deployment; actual two-response language regression"
+    "265 exact-image tests and isolated PostgreSQL on0299a79; protected app-only deployment; actual two-response language regression",
+    "266 exact-image tests, real isolated PostgreSQL,218841a app-only protected state unchanged"
   ],
   "remaining": [
     "normal request outcome",
@@ -36,8 +37,8 @@
   ],
   "project_ready": false,
   "last_failure": "fc560075 correction call unknown: gateway HTTP200 body_bytes0; n8n logs contain read ECONNRESET. No retry, no photo search/TTS.",
-  "pending_change": "Explicit english_photo_object wire field; server constructs subject/query.158 material tests passed; exact image and isolated generation pending.",
-  "active_id": null,
+  "pending_change": null,
+  "active_id": "57b86a61-d950-44bb-b63b-aa01181df328",
   "mode": "Saved-source context-generation boundary only; two Gemini calls maximum, no photo searches or TTS",
   "disk_free_after_cleanup_bytes": 521789440,
   "gateway_version": "f664e9e2-837b-4042-9ba6-fa6565b7e97e"

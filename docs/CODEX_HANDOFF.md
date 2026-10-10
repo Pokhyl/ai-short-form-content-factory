@@ -1,3 +1,7 @@
+## Explicit English schema active verification — 2026-10-10
+
+LIVE218841a image6a0324ca,266exact-image tests and isolatedPostgreSQLPASS; protected app-only rollout equal. Gatewayf664e9e2 active, native transport failures produce explicitunknown receipts. New-schema isolated saved-source diagnostic57b86a61-d950-44bb-b63b-aa01181df328 running once, max2Gemini/0searches/0TTS. Check /data/checks/source-context-<ID>/receipt.json before next action. Do not retryfc560075 ambiguouscall. No60s output;project_ready=false.
+
 ## Gateway transport repaired; explicit language field next — 2026-10-10
 
 Native gateway versionf664e9e2-837b-4042-9ba6-fa6565b7e97e active/history verified; health200, protected data and unrelated workflows unchanged. Actual installed HTTP execute test produces safe502 UNKNOWN_PROVIDER_RESULT after one mockedECONNRESET send, no retry. fc560075 remains immutableunknown; do not replay its ambiguous repair. New research wire protocol uses one english_photo_object field instead of bilingual-confused duplicate subject/query; server binds both, original source_mention remains separate.158material testsPASS. Build/deploy and a distinct new-protocol isolated generation pending. No60s outcome;project_ready=false.
