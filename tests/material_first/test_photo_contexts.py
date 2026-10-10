@@ -37,6 +37,15 @@ class ContextTests(unittest.TestCase):
         with self.assertRaises(ValueError) as failure:validate_context_mentions(rows,self.spans)
         for role in rows:self.assertIn(role+': query and subject must be English',str(failure.exception))
 
+    def test_saved_initial_and_repaired_responses_report_every_wrong_language(self):
+        import json
+        from pathlib import Path
+        saved=json.loads((Path(__file__).parent/'fixtures/actual-context-query-language.json').read_text())
+        for key, rows in saved['responses'].items():
+            with self.subTest(key=key), self.assertRaises(ValueError) as failure:
+                validate_context_mentions(rows,saved['spans'])
+            for role in rows:self.assertIn(role+': query and subject must be English',str(failure.exception))
+
     def run_research(self, mode):
         source={'id':'source','url':'https://example.invalid/source','title':'Observed objects','text':self.text,'sha256':hashlib.sha256(self.text.encode()).hexdigest()}
         keys=[];facts=[]

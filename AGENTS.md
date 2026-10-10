@@ -1,3 +1,7 @@
+## Aggregate context correction verification active — 2026-10-10
+
+LIVE0299a79/image9431d473.265exact-image tests plus realPostgreSQLPASS; deployment protected snapshots equal. Actual494db698 initial/repaired responses now saved as fixture and both reject all3Cyrillic queries before search. Boundedfc560075-06e4-43d9-94aa-aa8cd566dc22 source-context check running, max2Gemini/0search/0TTS. Never repeatfailedIDs. No actual60s output yet;project_ready=false.
+
 ## Context generation remains unverified — 2026-10-09
 
 494db698 is terminal; two completed Gemini responses retained Cyrillic-only subject/query despite English instructions. No photos/TTS. First repair corrected wrong source span but missed query language. Added aggregate violation reporting and pre-search English-query validation;157 material checksPASS, pending release. Do not start another full smoke until isolated context generation succeeds. LIVEeb91d53 remains, actual60s audio/video not verified;project_ready=false.

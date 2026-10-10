@@ -2,7 +2,7 @@
   "task": "Factory redesign for natural speech and exact requested duration",
   "owner_authorized_resynthesis": true,
   "max_syntheses_per_new_job": 3,
-  "live_revision": "eb91d53409c40f9abbb75d2e83f42f1494b852cb",
+  "live_revision": "0299a79bf136fe716fd3f14dc038a07d87e86cb1",
   "pending_revision": null,
   "last_actual_voice_ms": 52056,
   "actual_final_60s_verified": false,
@@ -13,7 +13,8 @@
     "prior app-only deployments preserve old rows/services",
     "255 exact-image unit checks plus isolated PostgreSQL after task temporary cleanup",
     "257 exact-image checks, real PostgreSQL cached-failure and bounded-voice regressions, app-only protected state unchanged",
-    "264 exact-image tests, isolated PostgreSQL, app-only protected snapshot unchanged"
+    "264 exact-image tests, isolated PostgreSQL, app-only protected snapshot unchanged",
+    "265 exact-image tests and isolated PostgreSQL on0299a79; protected app-only deployment; actual two-response language regression"
   ],
   "remaining": [
     "normal request outcome",
@@ -34,8 +35,8 @@
   ],
   "project_ready": false,
   "last_failure": "494db698: both completed context responses used Cyrillic-only queries; terminal before searches or TTS. No more full runs until actual source-context generation succeeds.",
-  "pending_change": "Aggregate all source-context violations and reject non-English queries within the bounded repair gate;157 material tests passed.",
-  "active_id": null,
+  "pending_change": null,
+  "active_id": "fc560075-06e4-43d9-94aa-aa8cd566dc22",
   "mode": "Saved-source context-generation boundary only; two Gemini calls maximum, no photo searches or TTS",
   "disk_free_after_cleanup_bytes": 521789440
 }
