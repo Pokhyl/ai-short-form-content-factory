@@ -1,0 +1,24 @@
+{
+  "job": "704d6427-3e16-4c29-a143-83abbb89b57b",
+  "new_photo_searches": 0,
+  "tts_sends": 0,
+  "result": "Rejected after one draft revision; independent guard worked but generation quality did not pass",
+  "initial_objects": [
+    "supernova remnant",
+    "neutron star",
+    "stellar core"
+  ],
+  "revised_objects": [
+    "space telescope",
+    "neutron star",
+    "astronomical object"
+  ],
+  "confirmed_generation_defects": [
+    "Invisible stellar interior chosen as photo subject",
+    "Repair substituted observational equipment and generic category instead of topic objects"
+  ],
+  "review_defect": "Reviewer demanded resolved optical surface detail not required by query; actual multiwavelength observational images must not be rejected merely for being observations. Hidden interiors and synthetic depictions remain disallowed.",
+  "contradicted_assumption": "Source-span membership and further prompt constraints alone establish a usable visual plan. They do not.",
+  "next_method": "Compare source-linked object inventory with actual retrieved observational-photo metadata before finalizing visual contexts. Keep source facts immutable once reviewed and all actual pixel, uniqueness, voice and duration gates. No further full production smoke or repeat of same speculative three-role generation approach until saved corpus closes this stage interaction.",
+  "project_ready": false
+}

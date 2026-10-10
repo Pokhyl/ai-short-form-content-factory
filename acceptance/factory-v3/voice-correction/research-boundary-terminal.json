@@ -1,0 +1,10 @@
+{
+  "id": "704d6427-3e16-4c29-a143-83abbb89b57b",
+  "source_job": "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3",
+  "revision": "9ab44b83180b60a324b31357e29c4b8c46fbcc61",
+  "state": "terminal_failure",
+  "max_gemini_calls": 4,
+  "tts_sends": 0,
+  "error": "ValueError",
+  "reason": "research preflight failed after one revision: photo subject: A neutron star is an extremely dense stellar remnant whose detailed surface and appearance cannot be directly resolved into a real photograph depicting its actual surface features without simulation or artistic rendering.; photo detail: An astronomical object of this type does not qualify as a directly observable object for a clear photographic detail without conceptual or simulated representation."
+}

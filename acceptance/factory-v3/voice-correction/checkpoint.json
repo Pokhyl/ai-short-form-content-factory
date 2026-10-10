@@ -36,12 +36,13 @@
     "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3",
     "494db698-d8d3-4606-93cb-55b4ab9116d3",
     "fc560075-06e4-43d9-94aa-aa8cd566dc22",
-    "57b86a61-d950-44bb-b63b-aa01181df328"
+    "57b86a61-d950-44bb-b63b-aa01181df328",
+    "704d6427-3e16-4c29-a143-83abbb89b57b"
   ],
   "project_ready": false,
-  "last_failure": "English schema passed structural validation but semantic inspection found invisible neutron core requested as a photo and unsupported extremely small mass claim. No photos/TTS; full production run intentionally not started.",
-  "pending_change": null,
-  "active_id": "704d6427-3e16-4c29-a143-83abbb89b57b",
+  "last_failure": "Rejected after one draft revision; independent guard worked but generation quality did not pass",
+  "pending_change": "Compare source-linked object inventory with actual retrieved observational-photo metadata before finalizing visual contexts. Keep source facts immutable once reviewed and all actual pixel, uniqueness, voice and duration gates. No further full production smoke or repeat of same speculative three-role generation approach until saved corpus closes this stage interaction.",
+  "active_id": null,
   "mode": "Isolated source-backed research with independent semantic review;max4Gemini,0photo searches,0TTS",
   "disk_free_after_cleanup_bytes": 521789440,
   "gateway_version": "f664e9e2-837b-4042-9ba6-fa6565b7e97e"

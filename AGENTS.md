@@ -1,3 +1,7 @@
+## Research generation approach stopped on semantic evidence — 2026-10-10
+
+704d6427 terminal after one revision,4Gemini/0photo searches/0TTS. Initialsupernova-remnant/neutron-star/stellar-core replaced withspace-telescope/neutron-star/astronomical-object. Independent gate rejects; generator remains unusable. Reviewer also invented resolved-surface/optical requirements, rejecting legitimate multiwavelength observations in principle. Do NOT repeat this speculative three-role prompt/repair approach or another full smoke. Read research-boundary-analysis.json for new availability-based stage-interaction hypothesis; compare saved actual metadata/source-linked objects before changing contracts. LIVE9ab44b8;gatewayf664e9e2;all priorIDs immutable;noactual60soutput;project_ready=false.
+
 ## Independent research preflight LIVE and checking — 2026-10-10
 
 LIVE9ab44b8/image9a69699e;269exact-image checks and isolatedPostgreSQLPASS, protected app-only deployment equal. Provisional facts and observable photo subjects independently reviewed before discovery, maxonewhole-draftrevision thenreview, normal16Geminiceiling unchanged. Isolated704d6427-3e16-4c29-a143-83abbb89b57b running once, max4Gemini/0search/0TTS; check /data/checks/source-context-<ID>/receipt.json. Source fixtureb57b982e. Gatewayf664e9e2 remainsverified. No actual60s output;project_ready=false.
