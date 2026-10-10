@@ -1,0 +1,12 @@
+{
+  "id": "54f5e033-b06b-469d-a164-5e9e7c519a4b",
+  "gateway_execution_id": "12901",
+  "error_reason": "OAUTH_GRANT_REJECTED",
+  "status": 502,
+  "gemini_calls": 0,
+  "searches": 0,
+  "tts_sends": 0,
+  "gateway_version": "00833c8b-2db2-45b8-b88e-cdc246d52098",
+  "readiness_probe": 403,
+  "next": "User sign-in to n8n; reconnect existing Google account credential8KbFC6GBZOd18bzG with unchanged permissions, then fresh bounded verification. Never rerun failed IDs."
+}

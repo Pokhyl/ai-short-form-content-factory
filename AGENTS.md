@@ -1,3 +1,7 @@
+## Confirmed Google OAuth blocker — 2026-10-10
+
+Gateway00833c8b active/verified;safe category diagnostics ac9260d,108core+native exact-n8n testsPASS.54f5e033 terminal metadata-only OAUTH_GRANT_REJECTED,gateway12901;0Gemini/0search/0TTS. Google account credential8KbFC6GBZOd18bzG needs reconnect with unchanged permissions. Chrome tab1692197482 opened publisher.hodor.com.pl/signin, user login required; handoff marked. Prior6d753c8c terminal404 during n8n activation; actualhealth200 was premature. Route now403 unauthenticated confirms readiness; new scripts/check_factory_v3_gateway_ready.py and OPERATOR_RULES enforce exactroute check. AllfailedIDsimmutable. LIVEapp8fa79a4, no actual60soutput. After login, reconnect OAuth then fresh bounded saved-corpus check; do not bypass free-only authorization.
+
 ## Retrieved boundary stopped before model — 2026-10-10
 
 ca3681f2 terminal: gemini-billing-check metadata stateunknown, HTTP502/UPSTREAM_RESPONSE_UNAVAILABLE, gatewayexecution12900.0Gemini/0search/0TTS. Never repeatID. Bounded n8n logs/executionlookup yielded no diagnostic details; causeunknown, do not infer quota/credentials. New availability planning not yet tested with realmodel. LIVE8fa79a4,280exact-image tests+isolatedPostgreSQLPASS, protectedstateunchanged. Next diagnose billing transport without bypassing free-only authorization, then fresh explicitly bounded saved-corpus planner/review if availability restored. No fullsmoke or60soutput claim. Evidence retrieved-boundary-terminal.json;project_ready=false.

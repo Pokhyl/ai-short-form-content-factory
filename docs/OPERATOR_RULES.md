@@ -73,3 +73,7 @@
 ## Product delivery method — 2026-10-04
 
 The user requested a radical change of working method and GitHub continuity. Follow docs/DELIVERY_STRATEGY.md and root AGENTS.md. Old chronological next-smoke notes do not authorize repeating the one-job/one-patch cycle. Preserve strict product/production contracts; do not infer permission to replace architecture. Commit and push meaningful evidence-backed checkpoints.
+
+## Gateway activation readiness
+
+After restarting n8n, healthz200 and activeVersionId do not prove webhook activation. Run scripts/check_factory_v3_gateway_ready.py inside the app container; require unauthenticated POST401/403 on the exact gateway route before any diagnostic/provider call. A404 is not ready. This probe must never include credentials or reach a provider.

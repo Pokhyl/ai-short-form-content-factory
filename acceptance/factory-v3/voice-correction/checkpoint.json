@@ -39,23 +39,30 @@
     "fc560075-06e4-43d9-94aa-aa8cd566dc22",
     "57b86a61-d950-44bb-b63b-aa01181df328",
     "704d6427-3e16-4c29-a143-83abbb89b57b",
-    "ca3681f2-4137-40d7-88a6-f1f11b2d6584"
+    "ca3681f2-4137-40d7-88a6-f1f11b2d6584",
+    "6d753c8c-b3d2-4608-b3ac-d281c5d496fe",
+    "54f5e033-b06b-469d-a164-5e9e7c519a4b"
   ],
   "project_ready": false,
-  "last_failure": "Billing metadata upstream unavailable: gateway12900, HTTP502;0Gemini/0search/0TTS. Actual retrieved-object selection remains untested.",
+  "last_failure": "Confirmed OAUTH_GRANT_REJECTED from Google authorization; gateway12901.0Gemini/0search/0TTS. Browser opened n8n signin; user login required.",
   "pending_change": "Freeze reviewed source facts before discovery; finalize visual contexts from actual retrieved metadata with exact source mentions and an independent semantic review. Preserve all pixel, unique-photo, voice and duration gates.",
   "active_id": null,
-  "mode": "New architecture deployed; external verification blocked before model by billing metadata transport",
+  "mode": "Awaiting n8n login to reconnect existing Google OAuth grant; no provider retries",
   "disk_free_after_cleanup_bytes": 521789440,
-  "gateway_version": "f664e9e2-837b-4042-9ba6-fa6565b7e97e",
+  "gateway_version": "00833c8b-2db2-45b8-b88e-cdc246d52098",
   "planned_boundary": {
-    "id": "ca3681f2-4137-40d7-88a6-f1f11b2d6584",
-    "question": "Can actual retrieved objects satisfy source identity and independent semantic review?",
+    "id": "54f5e033-b06b-469d-a164-5e9e7c519a4b",
+    "status": "terminal OAuth rejection before model",
+    "question": "Classify billing authorization failure after safe gateway diagnostics; if authorization succeeds, test actual retrieved objects and independent review.",
+    "max_metadata_calls": 1,
     "max_gemini_calls": 2,
     "new_searches": 0,
     "tts_sends": 0,
-    "quota_tokens": "unknown; bounded two model calls within existing free-only settings",
-    "stop": "Any schema/semantic/provider error is terminal; no retry",
-    "status": "terminal before model; do not repeat"
+    "quota_tokens": "unknown; existing free-only limits remain",
+    "stop": "Any provider, validation or semantic error terminal; no retries"
+  },
+  "gateway_readiness": {
+    "unauthenticated_post_status": 403,
+    "provider_calls": 0
   }
 }
