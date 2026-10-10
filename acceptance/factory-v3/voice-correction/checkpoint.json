@@ -20,10 +20,9 @@
     "269 exact-image tests, isolated PostgreSQL,9ab44b8 protected app-only rollout"
   ],
   "remaining": [
-    "Diagnose billing metadata transport without bypassing free-only authorization",
-    "Bounded actual selection and independent review on verified source facts plus saved full search pools",
-    "Full factory acceptance and exact natural60s output",
-    "Human listening acceptance"
+    "Revise generic object-to-source bridge/diversity planning using saved actual candidate/source corpus; preserve strict source identity and pixel gates",
+    "Then verify retrieved contexts with a bounded provider check",
+    "Full product acceptance, natural exact60s output and human listening"
   ],
   "do_not_repeat": [
     "b59ceb5d-3384-4b35-827f-9d6b2740344c",
@@ -41,28 +40,36 @@
     "704d6427-3e16-4c29-a143-83abbb89b57b",
     "ca3681f2-4137-40d7-88a6-f1f11b2d6584",
     "6d753c8c-b3d2-4608-b3ac-d281c5d496fe",
-    "54f5e033-b06b-469d-a164-5e9e7c519a4b"
+    "54f5e033-b06b-469d-a164-5e9e7c519a4b",
+    "0d60b3ab-8c94-4e98-9b4d-c5156f5921e1"
   ],
   "project_ready": false,
-  "last_failure": "Confirmed OAUTH_GRANT_REJECTED from Google authorization; gateway12901.0Gemini/0search/0TTS. Browser opened n8n signin; user login required.",
+  "last_failure": "Saved-corpus retrieved-context diagnostic terminal: model selected Crab Nebula three times; strict diversity validator stopped before independent review. 1 Gemini,0 search,0 TTS. OAuth now passes read-only billing probe.",
   "pending_change": "Freeze reviewed source facts before discovery; finalize visual contexts from actual retrieved metadata with exact source mentions and an independent semantic review. Preserve all pixel, unique-photo, voice and duration gates.",
   "active_id": null,
-  "mode": "Awaiting n8n login to reconnect existing Google OAuth grant; no provider retries",
+  "mode": "OAuth reconnected and read-only billing probe passes; source-linked visual plan still rejects repeated Crab Nebula target",
   "disk_free_after_cleanup_bytes": 521789440,
   "gateway_version": "00833c8b-2db2-45b8-b88e-cdc246d52098",
   "planned_boundary": {
-    "id": "54f5e033-b06b-469d-a164-5e9e7c519a4b",
-    "status": "terminal OAuth rejection before model",
-    "question": "Classify billing authorization failure after safe gateway diagnostics; if authorization succeeds, test actual retrieved objects and independent review.",
-    "max_metadata_calls": 1,
+    "id": "0d60b3ab-8c94-4e98-9b4d-c5156f5921e1",
+    "status": "terminal repeated visual target",
     "max_gemini_calls": 2,
     "new_searches": 0,
     "tts_sends": 0,
-    "quota_tokens": "unknown; existing free-only limits remain",
-    "stop": "Any provider, validation or semantic error terminal; no retries"
+    "quota_tokens": "unknown; free-tier credential; existing cap unchanged",
+    "stop": "Any model, semantic or validation error terminal; do not retry",
+    "actual_gemini_calls": 1
   },
   "gateway_readiness": {
     "unauthenticated_post_status": 403,
     "provider_calls": 0
+  },
+  "oauth_reconnect": {
+    "account_email_mismatch_fixed": "removed missing .it suffix from login form; existing password used without exposing it",
+    "n8n_ui": "authenticated; Google account connected",
+    "read_only_probe_id": "758793e0-698a-4dd8-bc3e-ed6f8e9b52d9",
+    "billing_authorization": "passed",
+    "gemini_generations": 0,
+    "tts_sends": 0
   }
 }

@@ -1,0 +1,28 @@
+{
+  "id": "0d60b3ab-8c94-4e98-9b4d-c5156f5921e1",
+  "revision": "8fa79a445e9498c338bd05ff50c4c8b46fbcc61",
+  "state": "terminal_failure",
+  "gemini_generations": 1,
+  "new_photo_searches": 0,
+  "tts_sends": 0,
+  "failed_gate": "repeated visual target is not explanatory variety",
+  "selected": [
+    {
+      "anchor_id": "wikimedia:148830328",
+      "label": "Crab Nebula",
+      "source_mention": "Neutron-star article lead"
+    },
+    {
+      "anchor_id": "wikimedia:148830334",
+      "label": "Crab Nebula",
+      "source_mention": "neutron-density-pressure passage"
+    },
+    {
+      "anchor_id": "wikimedia:148830323",
+      "label": "Crab Nebula",
+      "source_mention": "neutron-star mass/radius passage"
+    }
+  ],
+  "independent_review_called": false,
+  "project_ready": false
+}
