@@ -1,0 +1,13 @@
+{
+  "id": "57b86a61-d950-44bb-b63b-aa01181df328",
+  "revision": "218841a5e2549a8a6fe07439d7957b8b580499d0",
+  "source_job": "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3",
+  "question": "Does the new single english_photo_object schema separate search language from literal source mentions? This is a changed protocol, not a repeat of the ambiguous prior correction.",
+  "max_gemini_calls": 2,
+  "expected_token_consumption": "Unknown; bounded existing source corpus and two calls maximum",
+  "tts_sends": 0,
+  "new_photo_searches": 0,
+  "new_source_fetches": 0,
+  "stop": "First returned outcome; no retry on failure; boundary acceptance is not video acceptance",
+  "provider": "Existing confirmed unbilled Gemini only"
+}
