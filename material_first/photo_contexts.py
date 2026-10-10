@@ -23,3 +23,10 @@ def validate_context_mentions(contexts, spans):
             errors.append(role + ': query and subject must be English; keep original source language only in source_mention')
     if errors:
         raise ValueError('; '.join(errors))
+
+
+def bind_english_objects(contexts):
+    """The server owns the query: one explicit English field, no duplicate labels."""
+    return {role:{**{k:v for k,v in row.items() if k!='english_photo_object'},
+                  'subject':row['english_photo_object'], 'query':row['english_photo_object']}
+            for role,row in contexts.items()}

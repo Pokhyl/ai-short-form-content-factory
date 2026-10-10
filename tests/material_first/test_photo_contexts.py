@@ -64,6 +64,9 @@ class ContextTests(unittest.TestCase):
                 self.assertEqual(context['facts'],facts)
                 result=copy.deepcopy(self.repaired)
                 if mode=='invalid_twice':result['detail']['source_mention']='Invented object'
+            wire_rows=result['photo_contexts'] if key=='material-brief' else result
+            for row in wire_rows.values():
+                row['english_photo_object']=row.pop('subject');row.pop('query')
             validate_json(result,schema)
             return result,{'receipt_id':key}
         ops=Operations('.',SimpleNamespace(fetch=lambda *args:[source]),SimpleNamespace(generate=generate),None,None,documented_contexts=True)
@@ -71,6 +74,7 @@ class ContextTests(unittest.TestCase):
         try:
             result=ops.research({'topic':'Neutron stars','language':'uk','seconds':60})
             self.assertEqual([f['text'] for f in result['evidence']['facts']],[f['text'] for f in facts])
+            self.assertEqual([t['query'] for t in result['queries']],['Crab Nebula','Cassiopeia A','Puppis A'])
         finally:self.keys=keys
 
     def test_valid_contexts_need_no_extra_call(self):

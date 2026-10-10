@@ -36,8 +36,9 @@
   ],
   "project_ready": false,
   "last_failure": "fc560075 correction call unknown: gateway HTTP200 body_bytes0; n8n logs contain read ECONNRESET. No retry, no photo search/TTS.",
-  "pending_change": "Gateway HTTP nodes continue to sanitizer on error and emit safe502 UNKNOWN_PROVIDER_RESULT. Actual installed n8n parser/response tests pass; publication pending.",
+  "pending_change": "Explicit english_photo_object wire field; server constructs subject/query.158 material tests passed; exact image and isolated generation pending.",
   "active_id": null,
   "mode": "Saved-source context-generation boundary only; two Gemini calls maximum, no photo searches or TTS",
-  "disk_free_after_cleanup_bytes": 521789440
+  "disk_free_after_cleanup_bytes": 521789440,
+  "gateway_version": "f664e9e2-837b-4042-9ba6-fa6565b7e97e"
 }

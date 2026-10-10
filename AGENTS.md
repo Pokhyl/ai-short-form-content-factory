@@ -1,3 +1,7 @@
+## Gateway transport repaired; explicit language field next — 2026-10-10
+
+Native gateway versionf664e9e2-837b-4042-9ba6-fa6565b7e97e active/history verified; health200, protected data and unrelated workflows unchanged. Actual installed HTTP execute test produces safe502 UNKNOWN_PROVIDER_RESULT after one mockedECONNRESET send, no retry. fc560075 remains immutableunknown; do not replay its ambiguous repair. New research wire protocol uses one english_photo_object field instead of bilingual-confused duplicate subject/query; server binds both, original source_mention remains separate.158material testsPASS. Build/deploy and a distinct new-protocol isolated generation pending. No60s outcome;project_ready=false.
+
 ## Aggregate context correction verification active — 2026-10-10
 
 LIVE0299a79/image9431d473.265exact-image tests plus realPostgreSQLPASS; deployment protected snapshots equal. Actual494db698 initial/repaired responses now saved as fixture and both reject all3Cyrillic queries before search. Boundedfc560075-06e4-43d9-94aa-aa8cd566dc22 source-context check running, max2Gemini/0search/0TTS. Never repeatfailedIDs. No actual60s output yet;project_ready=false.

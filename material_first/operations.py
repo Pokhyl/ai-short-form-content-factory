@@ -100,6 +100,11 @@ class Operations:
                 if measured_feedback:
                     context_schema['properties']['source_mention'] = {**string(), 'maxLength':160}
                     context_schema['required'].append('source_mention')
+                    for field in ('subject','query'):
+                        del context_schema['properties'][field]
+                        context_schema['required'].remove(field)
+                    context_schema['properties']['english_photo_object'] = {**string(), 'maxLength':100}
+                    context_schema['required'].append('english_photo_object')
         result, _ = self.gemini.generate('material-brief',
             (('Select exactly THREE essential atomic facts that together answer the topic: starting condition, main mechanism, outcome. '
               'Keep each fact a concise single claim; split compound source explanations into optional facts. '
@@ -120,7 +125,9 @@ class Operations:
             'Prefer several documented related objects or genuine process stages over generic stock categories. Do not imply that an unrelated subject depicts an invisible mechanism. '
             'When support_span_ids are required, select source spans explicitly documenting each photo subject and its relationship. '
             'When source_mention is required, copy the exact object name in its ORIGINAL SOURCE LANGUAGE from one selected span. '
-            'Set subject and query to the SAME conventional English object name or catalog identifier, with no added mechanism, representation, or image requirements. '
+            'When english_photo_object is present, write ONLY the conventional ENGLISH object name or catalog identifier there; the server creates the query. '
+            'The narration language applies to facts, never to english_photo_object. Only source_mention preserves the source language. '
+            'For the legacy schema set subject and query to the same English name. Do not add mechanism or depiction requirements. '
             'A citation to general physics is not evidence for a named object absent from that span. '
             'For distant or hidden subjects, search named observable associated objects mentioned in those spans, using their conventional English name or catalog identifier. '
             'For a named associated object, the query is just its searchable entity name or catalog identifier, not an entire mechanism or a demand for photographic proof. '
@@ -133,7 +140,8 @@ class Operations:
             {**request, 'sources': [{k: s[k] for k in ('id', 'url', 'title', 'sha256') if k in s}
                                    for s in sources], 'source_spans': spans}, schema)
         if self.documented_contexts and measured_feedback:
-            from .photo_contexts import validate_context_mentions
+            from .photo_contexts import validate_context_mentions, bind_english_objects
+            result={**result, 'photo_contexts':bind_english_objects(result['photo_contexts'])}
             try:
                 validate_context_mentions(result['photo_contexts'], spans)
             except ValueError as error:
@@ -142,7 +150,8 @@ class Operations:
                 repaired, _ = self.gemini.generate('material-photo-context-repair',
                     'Correct only the three photo contexts. Copy source_mention EXACTLY from a selected source span in its original language. '
                     'The span must name the actual object and explain its direct relationship to the topic. '
-                    'Use the SAME conventional English physical object name or catalog identifier for subject and query. '
+                    'Write english_photo_object in ENGLISH, independently of the topic or narration language. The server uses it as the search query. '
+                    'Only source_mention uses the original source language. '
                     'For hidden or distant mechanisms choose named observable associated objects documented in the sources. '
                     'Never request a representation, drawing, invisible beam, synthetic image, unrelated prop or generic scenery. '
                     'Keep fact_ids grounded in the supplied unchanged facts. Prefer distinct observable subjects or stages. '
@@ -151,6 +160,7 @@ class Operations:
                      'rejected_contexts':result['photo_contexts'], 'failure':str(error)},
                     schema['properties']['photo_contexts'])
                 validate_json(repaired, schema['properties']['photo_contexts'])
+                repaired=bind_english_objects(repaired)
                 validate_context_mentions(repaired, spans)
                 result={**result, 'photo_contexts':repaired}
         evidence = bind_support(sources, spans, result['facts'])

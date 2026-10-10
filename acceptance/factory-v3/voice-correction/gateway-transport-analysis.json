@@ -1,0 +1,19 @@
+{
+  "observed_job": "fc560075-06e4-43d9-94aa-aa8cd566dc22",
+  "client_receipt": {
+    "status": 200,
+    "body_bytes": 0,
+    "error_reason": "INVALID_JSON_RESPONSE"
+  },
+  "gateway_logs": "read ECONNRESET present in inspected recent window; individual execution data not retained",
+  "reproduced_failure_class": "Native upstream transport error previously bypassed Return receipt; continueRegularOutput routes it to sanitizer",
+  "actual_native_test": {
+    "passed": true,
+    "transport_sends": 1,
+    "provider_calls": 0,
+    "error_status": "UNKNOWN_PROVIDER_RESULT",
+    "sanitized_status": 502
+  },
+  "retry_policy": "No retries; ambiguous requests remain terminal; this does not establish that provider received or rejected the request",
+  "remaining": "Source-context generation and natural60s full output still unverified"
+}
