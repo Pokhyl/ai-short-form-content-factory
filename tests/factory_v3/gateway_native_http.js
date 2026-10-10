@@ -38,5 +38,15 @@ const context = {
     ([key,value])=>key.toLowerCase()==='content-type' && value==='application/json'));
   assert.strictEqual(captured.uri,payload.url);
   assert.strictEqual(result[0][0].json.body,'{"ok":true}');
-  console.log(JSON.stringify({status:'passed',native_http_execute:true,provider_calls:0,production_mutations:0}));
+  let sends=0;
+  context.continueOnFail=()=>node.onError==='continueRegularOutput';
+  context.helpers.requestWithAuthentication=async()=>{sends++;throw new Error('read ECONNRESET');};
+  const failed=await new HttpRequestV3().execute.call(context);
+  assert.strictEqual(sends,1);
+  const code=workflow.nodes.find(n=>n.name==='Sanitize receipt').parameters.jsCode;
+  const receipt=new Function('$input','$execution',code)({first:()=>failed[0][0]},{id:'controlled-transport'})[0].json;
+  assert.strictEqual(receipt.status,502);
+  assert.strictEqual(receipt.error_status,'UNKNOWN_PROVIDER_RESULT');
+  assert.strictEqual(receipt.body,null);
+  console.log(JSON.stringify({status:'passed',native_http_execute:true,native_transport_failure_receipt:true,transport_sends:sends,provider_calls:0,production_mutations:0}));
 })().catch(error=>{console.error(error);process.exitCode=1});
