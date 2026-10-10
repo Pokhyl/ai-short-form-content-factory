@@ -74,8 +74,18 @@ let status = Number(upstream.statusCode);
 if (!Number.isInteger(status) || status < 100 || status > 599) {
   // A transport failure may occur after the provider accepted the request.
   // Never retry it or leak native error objects containing request credentials.
+  const nativeError = upstream.error;
+  const hint = typeof nativeError === 'string' ? nativeError :
+    [nativeError?.code, nativeError?.name, nativeError?.message, nativeError?.description].filter(v=>typeof v==='string').join(' ');
+  // Match known signatures but never return any native text or request object.
+  let reason = 'UPSTREAM_RESPONSE_UNAVAILABLE';
+  if (/invalid_grant|refresh token.*(?:expired|revoked)|authorization grant.*(?:invalid|expired|revoked)/i.test(hint)) reason='OAUTH_GRANT_REJECTED';
+  else if (/ECONNRESET|socket hang up/i.test(hint)) reason='UPSTREAM_CONNECTION_RESET';
+  else if (/ETIMEDOUT|ESOCKETTIMEDOUT|timed?\\s*out/i.test(hint)) reason='UPSTREAM_TIMEOUT';
+  else if (/ENOTFOUND|EAI_AGAIN/i.test(hint)) reason='UPSTREAM_DNS_FAILURE';
+  else if (/ECONNREFUSED/i.test(hint)) reason='UPSTREAM_CONNECTION_REFUSED';
   return [{json:{status:502, headers:{}, body:null,
-    error_status:'UNKNOWN_PROVIDER_RESULT', error_reason:'UPSTREAM_RESPONSE_UNAVAILABLE',
+    error_status:'UNKNOWN_PROVIDER_RESULT', error_reason:reason,
     gateway_execution_id:String($execution.id)}}];
 }
 const allowed = new Set(['date','cache-control','retry-after','content-type','x-ratelimit-limit','x-ratelimit-remaining','x-ratelimit-reset']);

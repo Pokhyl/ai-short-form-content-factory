@@ -1,0 +1,17 @@
+{
+  "native_parser": "passed",
+  "native_http_execute": "passed",
+  "transport_sends_per_failure": 1,
+  "provider_calls": 0,
+  "core_tests": 108,
+  "categories": [
+    "OAUTH_GRANT_REJECTED",
+    "UPSTREAM_CONNECTION_RESET",
+    "UPSTREAM_TIMEOUT",
+    "UPSTREAM_DNS_FAILURE",
+    "UPSTREAM_CONNECTION_REFUSED",
+    "UPSTREAM_RESPONSE_UNAVAILABLE"
+  ],
+  "secrets_omitted": true,
+  "upstream_root_cause": "not yet known"
+}

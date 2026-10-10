@@ -77,6 +77,21 @@ for (const errorOutput of [{error:'read ECONNRESET'}, {error:{message:'timeout',
   assert.strictEqual(receipt.body,null);
   assert(!JSON.stringify(receipt).includes('secret-fixture'));
 }
+for (const [error,reason] of [
+  ['read ECONNRESET Bearer secret-fixture','UPSTREAM_CONNECTION_RESET'],
+  [{code:'ETIMEDOUT',request:{password:'secret-fixture'}},'UPSTREAM_TIMEOUT'],
+  ['getaddrinfo EAI_AGAIN','UPSTREAM_DNS_FAILURE'],
+  ['connect ECONNREFUSED','UPSTREAM_CONNECTION_REFUSED'],
+  [{message:'invalid_grant',description:'secret-fixture'},'OAUTH_GRANT_REJECTED'],
+  ['The provided authorization grant is invalid or expired. secret-fixture','OAUTH_GRANT_REJECTED'],
+  ['Unknown failure secret-fixture','UPSTREAM_RESPONSE_UNAVAILABLE'],
+]) {
+  const receipt=normalizeReceipt({error});
+  assert.strictEqual(receipt.error_reason,reason);
+  assert.strictEqual(receipt.error_status,'UNKNOWN_PROVIDER_RESULT');
+  assert.strictEqual(receipt.body,null);
+  assert(!JSON.stringify(receipt).includes('secret-fixture'));
+}
 const response = workflow.nodes.find(n => n.type.endsWith('.respondToWebhook'));
 assert.deepStrictEqual(JSON.parse(expression(response.parameters.responseBody)), payload);
 console.log(JSON.stringify({status: 'passed', actual_n8n_parser: true, actual_n8n_text_response_branch: true, provider_response_contracts: 6,

@@ -47,6 +47,7 @@ const context = {
   const receipt=new Function('$input','$execution',code)({first:()=>failed[0][0]},{id:'controlled-transport'})[0].json;
   assert.strictEqual(receipt.status,502);
   assert.strictEqual(receipt.error_status,'UNKNOWN_PROVIDER_RESULT');
+  assert.strictEqual(receipt.error_reason,'UPSTREAM_CONNECTION_RESET');
   assert.strictEqual(receipt.body,null);
   console.log(JSON.stringify({status:'passed',native_http_execute:true,native_transport_failure_receipt:true,transport_sends:sends,provider_calls:0,production_mutations:0}));
 })().catch(error=>{console.error(error);process.exitCode=1});
