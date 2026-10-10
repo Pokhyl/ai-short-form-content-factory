@@ -1,3 +1,7 @@
+## Structural pass exposes semantic research defect — 2026-10-10
+
+57b86a61 completed isolated research; no searches/TTS. English fields and source mentions now structurally valid. Actual review of saved brief finds neutron core invisible-photo demand and unsupported extremely small mass assertion. Therefore NOT material-plan or video acceptance; do not start fullrun based on structuralpass. Artifact acceptance/factory-v3/voice-correction/english-boundary-brief.json. Need generic semantic preflight of draft facts and observable objects before discovery; keep exact source/voice guards. LIVE218841a;gatewayf664e9e2;project_ready=false.
+
 ## Explicit English schema active verification — 2026-10-10
 
 LIVE218841a image6a0324ca,266exact-image tests and isolatedPostgreSQLPASS; protected app-only rollout equal. Gatewayf664e9e2 active, native transport failures produce explicitunknown receipts. New-schema isolated saved-source diagnostic57b86a61-d950-44bb-b63b-aa01181df328 running once, max2Gemini/0searches/0TTS. Check /data/checks/source-context-<ID>/receipt.json before next action. Do not retryfc560075 ambiguouscall. No60s output;project_ready=false.
