@@ -18,6 +18,7 @@ def node(name, kind, version, parameters, position, credentials=None):
         value["credentials"] = credentials
     if kind == "httpRequest":
         value["retryOnFail"] = False
+        value["onError"] = "continueRegularOutput"
     nodes.append(value)
 
 node("Authenticated provider request", "webhook", 2, {
@@ -70,7 +71,13 @@ for index, provider in enumerate(providers):
 normalize = """
 const upstream = $input.first().json;
 let status = Number(upstream.statusCode);
-if (!Number.isInteger(status)) throw new Error('invalid upstream status');
+if (!Number.isInteger(status) || status < 100 || status > 599) {
+  // A transport failure may occur after the provider accepted the request.
+  // Never retry it or leak native error objects containing request credentials.
+  return [{json:{status:502, headers:{}, body:null,
+    error_status:'UNKNOWN_PROVIDER_RESULT', error_reason:'UPSTREAM_RESPONSE_UNAVAILABLE',
+    gateway_execution_id:String($execution.id)}}];
+}
 const allowed = new Set(['date','cache-control','retry-after','content-type','x-ratelimit-limit','x-ratelimit-remaining','x-ratelimit-reset']);
 const headers = {};
 for (const [key,value] of Object.entries(upstream.headers || {})) {

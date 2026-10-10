@@ -31,12 +31,13 @@
     "6f2fed83-4433-4c49-8df4-8cc6ef77cf0b",
     "44fd65e4-7237-4535-83e2-36fc0c24a11d",
     "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3",
-    "494db698-d8d3-4606-93cb-55b4ab9116d3"
+    "494db698-d8d3-4606-93cb-55b4ab9116d3",
+    "fc560075-06e4-43d9-94aa-aa8cd566dc22"
   ],
   "project_ready": false,
-  "last_failure": "494db698: both completed context responses used Cyrillic-only queries; terminal before searches or TTS. No more full runs until actual source-context generation succeeds.",
-  "pending_change": null,
-  "active_id": "fc560075-06e4-43d9-94aa-aa8cd566dc22",
+  "last_failure": "fc560075 correction call unknown: gateway HTTP200 body_bytes0; n8n logs contain read ECONNRESET. No retry, no photo search/TTS.",
+  "pending_change": "Gateway HTTP nodes continue to sanitizer on error and emit safe502 UNKNOWN_PROVIDER_RESULT. Actual installed n8n parser/response tests pass; publication pending.",
+  "active_id": null,
   "mode": "Saved-source context-generation boundary only; two Gemini calls maximum, no photo searches or TTS",
   "disk_free_after_cleanup_bytes": 521789440
 }

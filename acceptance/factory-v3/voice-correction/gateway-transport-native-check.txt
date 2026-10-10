@@ -1,0 +1,1 @@
+{"status":"passed","actual_n8n_parser":true,"actual_n8n_text_response_branch":true,"provider_response_contracts":6,"object_expressions_rejected":3,"serialized_fields_checked":6,"provider_calls":0,"production_mutations":0}

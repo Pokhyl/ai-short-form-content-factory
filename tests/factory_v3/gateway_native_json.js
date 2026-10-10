@@ -61,11 +61,21 @@ const oldOutput = mapNative(nativeResponse, 'data', String);
 assert.strictEqual(oldOutput.body, undefined);
 assert.strictEqual(normalizeReceipt(oldOutput).status, 502);
 for (const node of workflow.nodes.filter(n => n.type.endsWith('.httpRequest'))) {
+  assert.strictEqual(node.onError, 'continueRegularOutput');
+  assert.strictEqual(node.retryOnFail, false);
   const options=node.parameters.options.response.response;
   assert.strictEqual(options.responseFormat, 'text');
   assert.strictEqual(options.outputPropertyName, 'body');
   const output=mapNative(nativeResponse, options.outputPropertyName, String);
   assert.deepStrictEqual(normalizeReceipt(output).body, JSON.parse(nativeResponse.body));
+}
+// The native continue-on-error output must still reach a safe explicit receipt.
+for (const errorOutput of [{error:'read ECONNRESET'}, {error:{message:'timeout',request:{headers:{Authorization:'secret-fixture'}}}}, {}]) {
+  const receipt=normalizeReceipt(errorOutput);
+  assert.strictEqual(receipt.status,502);
+  assert.strictEqual(receipt.error_status,'UNKNOWN_PROVIDER_RESULT');
+  assert.strictEqual(receipt.body,null);
+  assert(!JSON.stringify(receipt).includes('secret-fixture'));
 }
 const response = workflow.nodes.find(n => n.type.endsWith('.respondToWebhook'));
 assert.deepStrictEqual(JSON.parse(expression(response.parameters.responseBody)), payload);
