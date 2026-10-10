@@ -1,3 +1,7 @@
+## Retrieved boundary stopped before model — 2026-10-10
+
+ca3681f2 terminal: gemini-billing-check metadata stateunknown, HTTP502/UPSTREAM_RESPONSE_UNAVAILABLE, gatewayexecution12900.0Gemini/0search/0TTS. Never repeatID. Bounded n8n logs/executionlookup yielded no diagnostic details; causeunknown, do not infer quota/credentials. New availability planning not yet tested with realmodel. LIVE8fa79a4,280exact-image tests+isolatedPostgreSQLPASS, protectedstateunchanged. Next diagnose billing transport without bypassing free-only authorization, then fresh explicitly bounded saved-corpus planner/review if availability restored. No fullsmoke or60soutput claim. Evidence retrieved-boundary-terminal.json;project_ready=false.
+
 ## Retrieved-object planning LIVE; bounded check dispatched — 2026-10-10
 
 LIVE8fa79a4/image141d72b7:280exact-image tests plus isolatedPostgreSQLPASS; app-only deployment protected state identical, publichealth200/exactrevision. Diagnosticca3681f2-4137-40d7-88a6-f1f11b2d6584 uses initial704d independently supported facts and9savedsearchpools/61candidates;max2Gemini/0newsearch/0TTS. Inspect /data/checks/retrieved-context-<ID>/receipt.json; never repeat after started/unknown. Runner /data/checks/retrieved-input-ca3681f2/run.py, PYTHONPATH=/app. No actual selected-context pass or60soutput claimed. Gatewayunchanged;project_ready=false.

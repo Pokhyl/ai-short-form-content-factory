@@ -20,7 +20,7 @@
     "269 exact-image tests, isolated PostgreSQL,9ab44b8 protected app-only rollout"
   ],
   "remaining": [
-    "Exact-image verification of availability-first implementation",
+    "Diagnose billing metadata transport without bypassing free-only authorization",
     "Bounded actual selection and independent review on verified source facts plus saved full search pools",
     "Full factory acceptance and exact natural60s output",
     "Human listening acceptance"
@@ -38,13 +38,14 @@
     "494db698-d8d3-4606-93cb-55b4ab9116d3",
     "fc560075-06e4-43d9-94aa-aa8cd566dc22",
     "57b86a61-d950-44bb-b63b-aa01181df328",
-    "704d6427-3e16-4c29-a143-83abbb89b57b"
+    "704d6427-3e16-4c29-a143-83abbb89b57b",
+    "ca3681f2-4137-40d7-88a6-f1f11b2d6584"
   ],
   "project_ready": false,
-  "last_failure": "Rejected after one draft revision; independent guard worked but generation quality did not pass",
+  "last_failure": "Billing metadata upstream unavailable: gateway12900, HTTP502;0Gemini/0search/0TTS. Actual retrieved-object selection remains untested.",
   "pending_change": "Freeze reviewed source facts before discovery; finalize visual contexts from actual retrieved metadata with exact source mentions and an independent semantic review. Preserve all pixel, unique-photo, voice and duration gates.",
-  "active_id": "ca3681f2-4137-40d7-88a6-f1f11b2d6584",
-  "mode": "Bounded retrieved-context diagnostic dispatched; max2Gemini,0search,0TTS",
+  "active_id": null,
+  "mode": "New architecture deployed; external verification blocked before model by billing metadata transport",
   "disk_free_after_cleanup_bytes": 521789440,
   "gateway_version": "f664e9e2-837b-4042-9ba6-fa6565b7e97e",
   "planned_boundary": {
@@ -55,6 +56,6 @@
     "tts_sends": 0,
     "quota_tokens": "unknown; bounded two model calls within existing free-only settings",
     "stop": "Any schema/semantic/provider error is terminal; no retry",
-    "status": "dispatched; inspect receipt before further action"
+    "status": "terminal before model; do not repeat"
   }
 }

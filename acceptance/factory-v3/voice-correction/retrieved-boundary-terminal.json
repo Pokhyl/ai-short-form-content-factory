@@ -1,0 +1,19 @@
+{
+  "id": "ca3681f2-4137-40d7-88a6-f1f11b2d6584",
+  "revision": "8fa79a445e9498c338bd05ff50c4c231b18d56c5",
+  "state": "terminal_failure",
+  "failure_stage": "free_only_billing_authorization",
+  "metadata_call": {
+    "key": "gemini-billing-check",
+    "state": "unknown",
+    "status": 502,
+    "error_reason": "UPSTREAM_RESPONSE_UNAVAILABLE",
+    "error_status": "UNKNOWN_PROVIDER_RESULT",
+    "gateway_execution_id": "12900"
+  },
+  "gemini_calls": 0,
+  "new_photo_searches": 0,
+  "tts_sends": 0,
+  "cause": "Unverified: bounded gateway logs and execution lookup returned no details. Do not infer provider quota, credentials, billing or model failure.",
+  "project_ready": false
+}
