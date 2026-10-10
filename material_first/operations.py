@@ -140,29 +140,8 @@ class Operations:
             {**request, 'sources': [{k: s[k] for k in ('id', 'url', 'title', 'sha256') if k in s}
                                    for s in sources], 'source_spans': spans}, schema)
         if self.documented_contexts and measured_feedback:
-            from .photo_contexts import validate_context_mentions, bind_english_objects
-            result={**result, 'photo_contexts':bind_english_objects(result['photo_contexts'])}
-            try:
-                validate_context_mentions(result['photo_contexts'], spans)
-            except ValueError as error:
-                # One completed semantic correction, before any search. Facts
-                # are server-owned here and cannot be revised by this call.
-                repaired, _ = self.gemini.generate('material-photo-context-repair',
-                    'Correct only the three photo contexts. Copy source_mention EXACTLY from a selected source span in its original language. '
-                    'The span must name the actual object and explain its direct relationship to the topic. '
-                    'Write english_photo_object in ENGLISH, independently of the topic or narration language. The server uses it as the search query. '
-                    'Only source_mention uses the original source language. '
-                    'For hidden or distant mechanisms choose named observable associated objects documented in the sources. '
-                    'Never request a representation, drawing, invisible beam, synthetic image, unrelated prop or generic scenery. '
-                    'Keep fact_ids grounded in the supplied unchanged facts. Prefer distinct observable subjects or stages. '
-                    'These are retrieval candidates, not proof of image availability or factual correctness.',
-                    {'topic':request['topic'], 'facts':result['facts'], 'source_spans':spans,
-                     'rejected_contexts':result['photo_contexts'], 'failure':str(error)},
-                    schema['properties']['photo_contexts'])
-                validate_json(repaired, schema['properties']['photo_contexts'])
-                repaired=bind_english_objects(repaired)
-                validate_context_mentions(repaired, spans)
-                result={**result, 'photo_contexts':repaired}
+            from .research_review import reviewed_brief
+            result=reviewed_brief(self.gemini,request,sources,spans,schema,result)
         evidence = bind_support(sources, spans, result['facts'])
         if self.documented_contexts:
             contexts = []

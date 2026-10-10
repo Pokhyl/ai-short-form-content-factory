@@ -51,6 +51,8 @@ class ContextTests(unittest.TestCase):
         keys=[];facts=[]
         def generate(key,instruction,context,schema):
             keys.append(key)
+            if key.startswith('material-brief-review:'):
+                return {'facts':{f['id']:{'supported':True,'reason':'Supported by exact fixture source'} for f in context['facts']},'photo_contexts':{role:{'source_supported':True,'observable_object':True,'reason':'Observed fixture object'} for role in context['photo_contexts']}},{'receipt_id':key}
             if key=='material-brief':
                 span=context['source_spans'][0]['id']
                 rows=copy.deepcopy(self.rows)
@@ -60,11 +62,12 @@ class ContextTests(unittest.TestCase):
                 facts.extend([{'id':'f'+str(i),'text':claim,'support':[{'span_id':span}]} for i,claim in enumerate(self.text.split('. ')[:3])])
                 result={'facts':facts,'required_fact_ids':['f0','f1','f2'],'photo_contexts':rows}
             else:
-                self.assertEqual(key,'material-photo-context-repair')
-                self.assertEqual(context['facts'],facts)
-                result=copy.deepcopy(self.repaired)
-                if mode=='invalid_twice':result['detail']['source_mention']='Invented object'
-            wire_rows=result['photo_contexts'] if key=='material-brief' else result
+                self.assertEqual(key,'material-brief-repair')
+                self.assertEqual(context['rejected_draft']['facts'],facts)
+                rows=copy.deepcopy(self.repaired)
+                if mode=='invalid_twice':rows['detail']['source_mention']='Invented object'
+                result={'facts':facts,'required_fact_ids':['f0','f1','f2'],'photo_contexts':rows}
+            wire_rows=result['photo_contexts']
             for row in wire_rows.values():
                 row['english_photo_object']=row.pop('subject');row.pop('query')
             validate_json(result,schema)
@@ -78,11 +81,11 @@ class ContextTests(unittest.TestCase):
         finally:self.keys=keys
 
     def test_valid_contexts_need_no_extra_call(self):
-        self.run_research('valid');self.assertEqual(self.keys,['material-brief'])
+        self.run_research('valid');self.assertEqual(self.keys,['material-brief','material-brief-review:1'])
 
     def test_completed_bad_context_gets_one_repair_without_changing_facts(self):
-        self.run_research('repair');self.assertEqual(self.keys,['material-brief','material-photo-context-repair'])
+        self.run_research('repair');self.assertEqual(self.keys,['material-brief','material-brief-repair','material-brief-review:2'])
 
     def test_second_invalid_context_stops_without_search_or_third_call(self):
         with self.assertRaisesRegex(ValueError,'does not contain'):self.run_research('invalid_twice')
-        self.assertEqual(self.keys,['material-brief','material-photo-context-repair'])
+        self.assertEqual(self.keys,['material-brief','material-brief-repair'])
