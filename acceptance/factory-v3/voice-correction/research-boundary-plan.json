@@ -1,0 +1,13 @@
+{
+  "id": "704d6427-3e16-4c29-a143-83abbb89b57b",
+  "revision": "9ab44b83180b60a324b31357e29c4b8c46fbcc61",
+  "source_job": "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3",
+  "question": "Does independent semantic review and one bounded provisional-draft revision produce supported facts and observable source-linked English photo objects?",
+  "max_gemini_calls": 4,
+  "expected_token_consumption": "Unknown; bounded existing source corpus and two calls maximum",
+  "tts_sends": 0,
+  "new_photo_searches": 0,
+  "new_source_fetches": 0,
+  "stop": "First returned outcome; no retry on failure; boundary acceptance is not video acceptance",
+  "provider": "Existing confirmed unbilled Gemini only"
+}
