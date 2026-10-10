@@ -1,0 +1,13 @@
+{
+  "id": "fc560075-06e4-43d9-94aa-aa8cd566dc22",
+  "revision": "0299a79bf136fe716fd3f14dc038a07d87e86cb1",
+  "source_job": "b57b982e-3fe0-4341-a9f9-ed93cfa3adb3",
+  "question": "Does aggregate correction of all source mention and English query violations produce valid source-linked photo contexts?",
+  "max_gemini_calls": 2,
+  "expected_token_consumption": "Unknown; bounded existing source corpus and two calls maximum",
+  "tts_sends": 0,
+  "new_photo_searches": 0,
+  "new_source_fetches": 0,
+  "stop": "First returned outcome; no retry on failure; boundary acceptance is not video acceptance",
+  "provider": "Existing confirmed unbilled Gemini only"
+}
