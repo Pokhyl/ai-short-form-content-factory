@@ -2,8 +2,8 @@
   "task": "Factory redesign for natural speech and exact requested duration",
   "owner_authorized_resynthesis": true,
   "max_syntheses_per_new_job": 3,
-  "live_revision": "9ab44b83180b60a324b31357e29c4b8c46fbcc61",
-  "pending_revision": "availability-first implementation; commit recorded in Git",
+  "live_revision": "8fa79a445e9498c338bd05ff50c4c231b18d56c5",
+  "pending_revision": null,
   "last_actual_voice_ms": 52056,
   "actual_final_60s_verified": false,
   "current_code": "3 essential source facts; natural paragraph repair; explicit optional empty-search receipt; measured voice feedback with complete alternatives; max3 accounted syntheses",
@@ -43,8 +43,18 @@
   "project_ready": false,
   "last_failure": "Rejected after one draft revision; independent guard worked but generation quality did not pass",
   "pending_change": "Freeze reviewed source facts before discovery; finalize visual contexts from actual retrieved metadata with exact source mentions and an independent semantic review. Preserve all pixel, unique-photo, voice and duration gates.",
-  "active_id": null,
-  "mode": "Offline saved-corpus checks passed; no new provider calls",
+  "active_id": "ca3681f2-4137-40d7-88a6-f1f11b2d6584",
+  "mode": "Bounded retrieved-context diagnostic dispatched; max2Gemini,0search,0TTS",
   "disk_free_after_cleanup_bytes": 521789440,
-  "gateway_version": "f664e9e2-837b-4042-9ba6-fa6565b7e97e"
+  "gateway_version": "f664e9e2-837b-4042-9ba6-fa6565b7e97e",
+  "planned_boundary": {
+    "id": "ca3681f2-4137-40d7-88a6-f1f11b2d6584",
+    "question": "Can actual retrieved objects satisfy source identity and independent semantic review?",
+    "max_gemini_calls": 2,
+    "new_searches": 0,
+    "tts_sends": 0,
+    "quota_tokens": "unknown; bounded two model calls within existing free-only settings",
+    "stop": "Any schema/semantic/provider error is terminal; no retry",
+    "status": "dispatched; inspect receipt before further action"
+  }
 }
