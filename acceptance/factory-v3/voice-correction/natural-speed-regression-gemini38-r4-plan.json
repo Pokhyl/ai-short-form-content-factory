@@ -1,0 +1,39 @@
+{
+  "id": "c24578b3-14fa-4c24-908e-6f37b3ea20ad",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "1013cbe21e8f4f3f702bd76ea47d9d1b29a1d874",
+  "model": "gemini-3.8-flash",
+  "question": "Does the deployed factory produce a natural-speed 60-second Ukrainian voiceover and render it without slowing the audio?",
+  "mode": "Reuse the frozen source facts, reviewed paragraphs, and approved photographs; use measured voice correction, then align, render, and machine-audit.",
+  "predecessor": {
+    "id": "7011aacc-698b-4784-9644-e46ab759392d",
+    "state": "failed_terminal",
+    "reason": "Three actual TTS durations missed the 59–60s window; the rewrite selector now calibrates its next target from the measured overrun."
+  },
+  "limits": {
+    "tts_sends": 3,
+    "gemini_calls": 4,
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "new_research": 0,
+    "paid_fallback": false,
+    "video_renders": 1,
+    "machine_qa_runs": 1
+  },
+  "acceptance": {
+    "measured_voice_duration_ms": [
+      59000,
+      60000
+    ],
+    "audio_tempo_factor": 1.0,
+    "trailing_silence_ms_max": 1000,
+    "source_plan_and_fact_grounding_unchanged": true,
+    "machine_qa_pass": true
+  },
+  "stop": "Single attempt per external send. Stop on any failed or ambiguous call, on the third out-of-window voice, or before exceeding these limits. Never time-stretch narration or reuse a terminal ID.",
+  "quota": "The credential fingerprint matches the existing proof for the same unbilled project. Gemini 3.8 Flash is confirmed available by model metadata and listed on Google's Free Tier. Paid fallback is prohibited.",
+  "status": "planned",
+  "project_ready_before": false,
+  "sequence": "r4; unique terminal-safe identity, same frozen source, bounded to 3 TTS and 4 Gemini calls."
+}
