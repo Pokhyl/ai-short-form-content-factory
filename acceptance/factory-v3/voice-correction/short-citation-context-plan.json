@@ -17,6 +17,6 @@
   },
   "expected_quota_consumption": "At most two calls on the configured free-only Gemini project; paid fallback prohibited.",
   "stop": "Require nine saved searches; stop on any failure. Never repeat this ID or any earlier failed ID.",
-  "status": "planned",
+  "status": "terminal failure; planner chose exact mentions but not their selected spans",
   "project_ready_before": false
 }

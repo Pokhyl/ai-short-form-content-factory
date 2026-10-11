@@ -1,0 +1,17 @@
+{
+  "id": "7d8e5b78-8e97-4cc6-9f3d-9ee0ea7318d6",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "e4bd5452dfbf02f0bacf6dd95e6ed7c23a4618c6",
+  "state": "terminal_failure_before_independent_review",
+  "error": "Model selected source_mention strings that existed verbatim in the supplied evidence but selected span IDs that omitted those mentions.",
+  "fresh_gemini_calls": ["material-photo-plan"],
+  "saved_search_responses_replayed": 9,
+  "new_searches": 0,
+  "new_downloads": 0,
+  "new_photo_inspections": 0,
+  "tts_sends": 0,
+  "render_or_qa": false,
+  "preparation_terminal": "DiagnosticBoundaryFailure",
+  "project_ready": false,
+  "never_repeat_id": true
+}
