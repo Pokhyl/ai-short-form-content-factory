@@ -22,6 +22,14 @@
     "All earlier diagnostic IDs are terminal; use this fresh ID once only.",
     "The nine saved search identities match exactly."
   ],
+  "deployment_receipt": "bounded-span-planner-deployment.json",
+  "deployment_verified": true,
+  "saved_search_preflight": {
+    "expected": 9,
+    "reconstructed": 9,
+    "exact_match": true,
+    "provider_calls": 0
+  },
   "stop": "Stop on revision or identity mismatch, schema rejection after bounded span normalization, planner/reviewer failure, repeated anchor, or any provider action outside the limits. Never create a product job.",
   "status": "planned",
   "project_ready_before": false
