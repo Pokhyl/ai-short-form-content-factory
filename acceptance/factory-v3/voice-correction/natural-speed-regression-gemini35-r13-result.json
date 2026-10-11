@@ -1,0 +1,24 @@
+{
+  "id": "c9c44b61-18fc-4651-8362-398968b905be",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "5e745705662e2f2bec8d7da7e2a191648a8281e9",
+  "model": "gemini-3.5-flash-lite",
+  "state": "failed_terminal",
+  "job_status": "unknown",
+  "latest_stage": {
+    "stage": "voice",
+    "state": "unknown",
+    "error_code": "ValueError"
+  },
+  "tts_sends": 1,
+  "gemini_calls": 1,
+  "metadata_calls": 1,
+  "measured_voice_durations_ms": [
+    53448
+  ],
+  "render_count": 0,
+  "failure_type": "ValueError",
+  "failure": "Ukrainian narration contains observed non-native forms",
+  "rewrite_review": "One unselected expanded paragraph variant contained “густины”; the chosen text was never proofread or synthesized.",
+  "project_ready": false
+}

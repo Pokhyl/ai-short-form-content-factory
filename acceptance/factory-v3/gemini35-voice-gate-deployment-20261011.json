@@ -1,0 +1,27 @@
+{
+  "plan": "acceptance/factory-v3/gemini35-voice-gate-plan-20261011.json",
+  "status": "started",
+  "source_commit": "35890a627d95997c2613dc6a28c79077406b075d",
+  "new_app_image": {
+    "tag": "factory-v3:gemini35-35890a6-r1",
+    "image_id": "sha256:8826e7e14ddd81bbffbf08017e172e7578436cbcf229f4f7bd1571743fa079f7"
+  },
+  "predeploy": {
+    "app_image": "factory-v3:gemini35-5e74570-r1",
+    "app_image_id": "sha256:4faa68ecf1252fd180cede9c2e4aaeb1eed6645e22168c40ffd5b2e310bf02ca",
+    "snapshot": "acceptance/factory-v3/gemini35-voice-gate-predeploy-20261011.json",
+    "studio_root_http": 200,
+    "factory_health_http": 200,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "running_n8n_executions": 0
+  },
+  "actions": {
+    "app_recreate_no_deps": "not_started",
+    "provider_calls": 0,
+    "tts_calls": 0,
+    "database_migrations": 0,
+    "n8n_restarts": 0
+  },
+  "project_ready": false
+}

@@ -1,0 +1,8 @@
+{
+  "tag": "factory-v3:gemini35-35890a6-r1",
+  "image_id": "sha256:8826e7e14ddd81bbffbf08017e172e7578436cbcf229f4f7bd1571743fa079f7",
+  "source_commit": "35890a627d95997c2613dc6a28c79077406b075d",
+  "built_on": "ubuntu-4gb-hel1-1",
+  "build_source": "/tmp/factory-v3-35890a6",
+  "deployed": false
+}

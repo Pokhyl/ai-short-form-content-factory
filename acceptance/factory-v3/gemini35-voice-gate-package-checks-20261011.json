@@ -1,0 +1,21 @@
+{
+  "source_commit": "35890a627d95997c2613dc6a28c79077406b075d",
+  "app_image": "factory-v3:gemini35-35890a6-r1",
+  "app_image_id": "sha256:8826e7e14ddd81bbffbf08017e172e7578436cbcf229f4f7bd1571743fa079f7",
+  "network_enabled": false,
+  "provider_calls": 0,
+  "production_mutations": 0,
+  "checks": [
+    {
+      "suite": "factory_v3",
+      "passed": 112,
+      "failed": 0
+    },
+    {
+      "suite": "material_first",
+      "passed": 179,
+      "failed": 0
+    }
+  ],
+  "change": "Validate only the selected and proofread narration alternative; unrelated unselected variants no longer block the measured voice correction."
+}

@@ -1,0 +1,34 @@
+{
+  "id": "gemini35-voice-gate-20261011",
+  "question": "Does the voice correction gate validate the selected, proofread paragraph rather than rejecting the run for an unused alternative?",
+  "failure_evidence": "r13 selected no second TTS because an unselected expanded Ukrainian variant contained the Russian form “густины”. The shallow surface gate checked all variants before selection and proofreading.",
+  "change": {
+    "source_commit": "35890a627d95997c2613dc6a28c79077406b075d",
+    "image": "factory-v3:gemini35-35890a6-r1",
+    "image_id": "sha256:8826e7e14ddd81bbffbf08017e172e7578436cbcf229f4f7bd1571743fa079f7",
+    "behavior": "Select one complete paragraph alternative, proofread it, then apply the native-surface gate before the next TTS send."
+  },
+  "preconditions": {
+    "app_image": "factory-v3:gemini35-5e74570-r1",
+    "app_health": "healthy",
+    "active_preparations": 0,
+    "active_stages": 0,
+    "running_n8n_executions": 0,
+    "predeploy_snapshot": "acceptance/factory-v3/gemini35-voice-gate-predeploy-20261011.json"
+  },
+  "limits": {
+    "app_recreates": 1,
+    "provider_calls_during_deployment": 0,
+    "tts_calls_during_deployment": 0,
+    "database_migrations": 0,
+    "n8n_restarts": 0,
+    "paid_fallback": false
+  },
+  "rollback": {
+    "image": "factory-v3:gemini35-5e74570-r1",
+    "image_id": "sha256:4faa68ecf1252fd180cede9c2e4aaeb1eed6645e22168c40ffd5b2e310bf02ca"
+  },
+  "status": "planned",
+  "postdeploy_snapshot": "acceptance/factory-v3/gemini35-voice-gate-postdeploy-20261011.json",
+  "fresh_acceptance_plan_required_before_provider_call": true
+}
