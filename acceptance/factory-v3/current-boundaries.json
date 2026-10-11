@@ -2,16 +2,23 @@
   "project_ready": false,
   "scope": "Controlled tests and saved actual receipts, not new provider acceptance",
   "latest_voice_acceptance": {
-    "id": "35b0c680-3857-4f3b-95bb-57377e5ad380",
+    "id": "19e8ad95-60a2-48cc-893b-491e235d9fd3",
     "state": "failed_terminal",
-    "duration_ms": 52704,
-    "failure_type": "HTTPFailure",
-    "gateway_status": 503,
-    "proofread_step_reached": false,
+    "measured_voice_durations_ms": [
+      50928,
+      59616
+    ],
+    "job_status": "unknown",
+    "latest_stage": {
+      "stage": "render",
+      "state": "unknown",
+      "error_code": "ValueError"
+    },
+    "failure_type": "ValueError",
     "render_count": 0,
     "receipt": {
-      "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r11-result.json",
-      "sha256": "4b6e20a69aa1646e2f0e99afd0d2cafecdc6dfdb478d495ccf4fd5b1c5a28095"
+      "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json",
+      "sha256": "8abb4b817745450dfe3df4073498248aee6d1a00f938f9ad4af1c75f18b8ba39"
     }
   },
   "boundaries": [
@@ -46,10 +53,10 @@
         "sha256": "ae90c3a062063ecd05a369ec766d01f0e1c4e2dac0c155abb0abda4efe5bd89e"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/source-spans-pl15-result.json",
-        "sha256": "3441c305683b2f62a18a6501c787310b0181a4879ccf5c6522b9cfb91f7b321c"
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json",
+        "sha256": "5f77ab822c1d46211d7c4d2116408bfe51f620e13f0ce9b38c567083bec5e78b"
       },
-      "remaining": "Actual prior PL15 source-span case passed; unseen source-span selection and semantic support still require independent review."
+      "remaining": "r14 reused a frozen source-grounded plan; unseen source quality and support remain provider-dependent."
     },
     {
       "name": "three photo providers/download",
@@ -70,10 +77,10 @@
         "sha256": "e894773daefc10fcf738a9abdbfad9e7f91485136187f22d3c47026dfb15ad23"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/wholeplan-saved-distinctness.json",
-        "sha256": "3570e2c47bfbdc156afdf023588c21f71f0a70a10a25f8e946ebe9ef037775a3"
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json",
+        "sha256": "5f77ab822c1d46211d7c4d2116408bfe51f620e13f0ce9b38c567083bec5e78b"
       },
-      "remaining": "Planner strict protocol flags now propagated; actual old15 photos contain1copy/14distinct. Current strict-qualified output pending."
+      "remaining": "r14 reused frozen, reviewed materials; fresh discovery and enough relevant photos for every scene remain unproven."
     },
     {
       "name": "metadata/Vision/selection",
@@ -82,10 +89,10 @@
         "sha256": "1c5b51681272f819216ae45fa349431f43c69aa594d33d3329434d39888e57bf"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/whole-photo-previews-20261006.json",
-        "sha256": "7e1f08b6f847ff6c9170ae8f48ebbe7e6de5faecfee3b887d4da0359e79d8577"
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json",
+        "sha256": "5f77ab822c1d46211d7c4d2116408bfe51f620e13f0ce9b38c567083bec5e78b"
       },
-      "remaining": "Metadata mode cannot prove pixels; unseen Vision judgments are not certified by saved receipts."
+      "remaining": "17 reviewed photos were frozen; only5 supported the longest scene. New retrieval must produce sufficient scene coverage."
     },
     {
       "name": "global variety/composition",
@@ -94,34 +101,46 @@
         "sha256": "eca9404bfd7199fa4dd5833d11596c6b90d7a48d46d70d3cf98a3b8fc85e9de4"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/wholeplan-uk60-plan.json",
-        "sha256": "2148081856c8af89244ee1f1602437598b5de3358c0ca4a3d4885c7ac3abe272"
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json",
+        "sha256": "5f77ab822c1d46211d7c4d2116408bfe51f620e13f0ce9b38c567083bec5e78b"
       },
-      "remaining": "Controlled current topical16-pair prepare/freeze/schedule matrix passes; actual new model prose, qualified images and image variety remain unverified."
+      "remaining": "Controlled topical preparation/scheduling tests pass; live relevant-photo coverage failed at exact timing in r14."
+    },
+    {
+      "name": "topical photo cadence preflight before voice",
+      "test": {
+        "path": "tests/material_first/test_topic_quality.py",
+        "sha256": "5f1f69f7f3f9502f2cb72deb04e5ba97c5de3d669745e331ab5fbb41ba659bfc"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/visual-capacity-preflight-20261011.json",
+        "sha256": "fbc87feb723fde9444d22b8d92369ec0035591735c959ee06a8b51baa02354fa"
+      },
+      "remaining": "Word- and character-weighted estimates now stop impossible plans before TTS; actual measured scene timing remains authoritative at render."
     },
     {
       "name": "independent factual script review",
       "test": {
         "path": "tests/factory_v3/test_gemini.py",
-        "sha256": "c9c4147582876b7b9314a5a081b2448fa13020381030d563df170755f52a7768"
+        "sha256": "e2b02d81826af0de8417617465bb4a33d884c4863434c04319d2274714c72b7a"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r9-result.json",
-        "sha256": "271c9c0a96c22b60ece56f0cf0d39fce7b5acfa70118a7c4073b1364fe692ae6"
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json",
+        "sha256": "8abb4b817745450dfe3df4073498248aee6d1a00f938f9ad4af1c75f18b8ba39"
       },
-      "remaining": "The latest completed independent review rejected selected Ukrainian grammar. The constrained proofread fix is deployed, but r10/r11 stopped before proofread/review on Gemini HTTP503."
+      "remaining": "r14 reached voice correction and semantic review on the source-bound script; unseen topics and scripts still require provider review."
     },
     {
       "name": "deployed constrained proofread -> review",
       "test": {
         "path": "tests/material_first/test_voice_correction.py",
-        "sha256": "4578d51dd7a716ab14794c65347853cde3e8df5bf087472c97f2e598fe414f02"
+        "sha256": "52de64979d366eab5e3100a69f8d46dc3e853a7ffb7d1617b94a7085b9c92385"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r11-result.json",
-        "sha256": "4b6e20a69aa1646e2f0e99afd0d2cafecdc6dfdb478d495ccf4fd5b1c5a28095"
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json",
+        "sha256": "8abb4b817745450dfe3df4073498248aee6d1a00f938f9ad4af1c75f18b8ba39"
       },
-      "remaining": "Offline regression passes and code is deployed; live proofread has not run because r11 rewrite received Gemini HTTP503 first."
+      "remaining": "r14 used2 voice sends and3 Gemini calls; no audio playback or owner listening review is evidenced."
     },
     {
       "name": "one voice/alignment",
@@ -130,10 +149,10 @@
         "sha256": "864e3788b3295c76b0fd167200c2921448327d79f0b453ec55d8992c5d249906"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r11-result.json",
-        "sha256": "4b6e20a69aa1646e2f0e99afd0d2cafecdc6dfdb478d495ccf4fd5b1c5a28095"
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json",
+        "sha256": "8abb4b817745450dfe3df4073498248aee6d1a00f938f9ad4af1c75f18b8ba39"
       },
-      "remaining": "Latest r11 reached one natural TTS at 52,704 ms, then stopped on Gemini HTTP503. No corrected voice, alignment, or listening acceptance."
+      "remaining": "Measured voices were50,928 and59,616 ms; exact alignment reached the render stage. No successful final audio/video package exists."
     },
     {
       "name": "whole photos/exact timing/render/audit",
@@ -142,10 +161,10 @@
         "sha256": "aa51bc782eb995d0b0559dc43c48169843cdf91149a0efb5812e4a68407a41af"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r11-result.json",
-        "sha256": "4b6e20a69aa1646e2f0e99afd0d2cafecdc6dfdb478d495ccf4fd5b1c5a28095"
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json",
+        "sha256": "8abb4b817745450dfe3df4073498248aee6d1a00f938f9ad4af1c75f18b8ba39"
       },
-      "remaining": "r11 stopped before alignment/render; no current-release MP4 or final-media audit exists."
+      "remaining": "r14 stopped at render with no subject-related photo for an interval; no MP4 or final-media audit exists."
     },
     {
       "name": "owner review/save/physical deletion",

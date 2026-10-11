@@ -33,5 +33,7 @@
     "protected_database_counts_unchanged": true,
     "other_service_ids_images_and_restart_counts_unchanged": true
   },
+  "deployment_status": "deployed_and_healthy",
+  "deployment_receipt": "acceptance/factory-v3/visual-capacity-preflight-deployment-20261011.json",
   "project_ready": false
 }

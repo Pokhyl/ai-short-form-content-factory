@@ -1,6 +1,8 @@
 {
-  "tag": "factory-v3:2a6d997",
-  "image_id": "sha256:c509487e0a156a457ee0bb3ef1ee1372edd47609b3d5bd01fca22ff5066a9c51",
-  "source_commit": "2a6d9971be21bd38bfc913ab1804d7bb698a96d9",
-  "deployed": false
+  "tag": "factory-v3:gemini35-visual-preflight-amd64-20261011-r1",
+  "image_id": "sha256:8de104ba3b23804c93d293715a77559c7f02ee4d3a66127c211b519043c252d6",
+  "platform": "linux/amd64",
+  "source_commit": "4f49448dc6c4a7f63fc8dfa31881da2c1ba576bd",
+  "deployed": true,
+  "deployment_receipt": "acceptance/factory-v3/visual-capacity-preflight-deployment-20261011.json"
 }

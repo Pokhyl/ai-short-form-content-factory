@@ -4,11 +4,13 @@
     "id": "19e8ad95-60a2-48cc-893b-491e235d9fd3",
     "state": "failed_terminal",
     "stage": "render",
-    "reason": "17 unique reviewed photographs could not cover all topical narration intervals; the first interval had only 5 eligible photographs for 9 cuts.",
+    "reason": "17 unique reviewed photographs could not cover all topical narration intervals; the first 31-second interval had only 5 eligible photographs for 9 cuts.",
     "tts_sends": 2,
     "gemini_calls": 3,
-    "audio_tempo_factor": 1.0,
+    "measured_voice_durations_ms": [50928, 59616],
+    "tempo_adjustment": "none; render did not start",
     "render_count": 0,
+    "failure": "no subject-related photograph for a narration interval",
     "immutable": true
   },
   "change": {

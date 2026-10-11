@@ -1,0 +1,39 @@
+{
+  "deployed_at": "2026-10-11T21:30:00Z",
+  "source_commit": "4f49448dc6c4a7f63fc8dfa31881da2c1ba576bd",
+  "image": "factory-v3:gemini35-visual-preflight-amd64-20261011-r1",
+  "image_id": "sha256:8de104ba3b23804c93d293715a77559c7f02ee4d3a66127c211b519043c252d6",
+  "platform": "linux/amd64",
+  "container": {
+    "name": "factory-v3-app",
+    "id": "d41805c28a963ab5cb3f9fba9bd25cb1eef192c3ce02bb9bdac6f34dc8ab865f",
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0,
+    "revision": "4f49448dc6c4a7f63fc8dfa31881da2c1ba576bd",
+    "health_http": 200
+  },
+  "free_tier": {
+    "model": "gemini-3.5-flash-lite",
+    "billing_enabled": false,
+    "confirmed": true
+  },
+  "studio_http": 200,
+  "database_before_after": {
+    "jobs": 28,
+    "active_jobs": 0,
+    "preparations": 102,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0
+  },
+  "unchanged_services": {
+    "shorts-v2-media-worker-1": "5824c94abaa6",
+    "ai-short-form-n8n": "c9373532bb9a",
+    "n8n-caddy-1": "3913314c33d6"
+  },
+  "provider_calls": 0,
+  "new_jobs": 0,
+  "initial_arm64_attempt": "failed_healthcheck_and_rolled_back_before_successful_amd64_rollout",
+  "project_ready": false
+}

@@ -1,0 +1,32 @@
+{
+  "id": "19e8ad95-60a2-48cc-893b-491e235d9fd3",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "35890a627d95997c2613dc6a28c79077406b075d",
+  "state": "failed_terminal",
+  "new_research": 0,
+  "photo_searches": 0,
+  "photo_downloads": 0,
+  "photo_inspections": 0,
+  "tts_sends": 2,
+  "gemini_calls": 3,
+  "render_count": 0,
+  "source_plan_sha256": "e6293af1c7c46e73990d6210e0beda3b2cbb4c3975c44c79ccc36ea71ffd68e1",
+  "initial_plan_sha256": "69f44573a29dd3ac9bd5d81378a89d96580535d899f7f82b64feb67ca362d2ec",
+  "metadata_calls": 1,
+  "job_status": "unknown",
+  "latest_stage": {
+    "stage": "render",
+    "state": "unknown",
+    "error_code": "ValueError"
+  },
+  "measured_voice_durations_ms": [
+    50928,
+    59616
+  ],
+  "voice_audio_sha256": [
+    "02aef69022897ed892caf31c9e70f3e6186a76c79998ca8dba7fdc712da7c771",
+    "a4ce1e8087247bbe135c16a6e132a37911ba77d7708a6f3762096014c088bd75"
+  ],
+  "failure_type": "ValueError",
+  "failure": "no subject-related photograph for a narration interval"
+}
