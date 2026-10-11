@@ -21,6 +21,14 @@
     "Exact revision 4f1f1b3f9147ad111d85cbff23a1f49bc5a7a18a is deployed and healthy.",
     "The previous replay is terminal and immutable; use this fresh ID once only."
   ],
+  "deployment_receipt": "repair-immutability-deployment.json",
+  "deployment_verified": true,
+  "saved_search_preflight": {
+    "expected": 9,
+    "reconstructed": 9,
+    "exact_match": true,
+    "provider_calls": 0
+  },
   "stop": "Stop if revision or nine saved response identities differ, if the repair changes an approved role, if a candidate anchor is repeated, or if any provider action escapes the declared limits. Never create a product job.",
   "status": "planned",
   "project_ready_before": false
