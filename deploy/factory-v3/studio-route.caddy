@@ -1,0 +1,12 @@
+# Insert inside studio.hodor.com.pl, before its static-file fallback.
+# Keep /factory-v3 intact for same-origin API, media and static assets.
+@studio_root path /
+handle @studio_root {
+    rewrite * /factory-v3/
+    reverse_proxy factory-v3-app:3002
+}
+
+@factory_v3 path /factory-v3 /factory-v3/*
+handle @factory_v3 {
+    reverse_proxy factory-v3-app:3002
+}
