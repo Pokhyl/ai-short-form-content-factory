@@ -1,0 +1,17 @@
+{
+  "id": "18c871a3-68f5-4f60-8e3c-165e332109f4",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "ec0c02e748e51a6b5a9c71b4b81d330576ac52f5",
+  "state": "terminal_failure_before_independent_review",
+  "error": "Repeated Crab Nebula labels failed the three-distinct-explanatory-target gate, despite different anchor files.",
+  "fresh_gemini_calls": ["material-photo-plan"],
+  "saved_search_responses_replayed": 9,
+  "new_searches": 0,
+  "new_downloads": 0,
+  "new_photo_inspections": 0,
+  "tts_sends": 0,
+  "render_or_qa": false,
+  "preparation_terminal": "DiagnosticBoundaryFailure",
+  "project_ready": false,
+  "never_repeat_id": true
+}
