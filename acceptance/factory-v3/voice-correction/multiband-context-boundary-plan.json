@@ -1,0 +1,23 @@
+{
+  "id": "efeeb5ea-53bb-44d8-96e7-91a3149db147",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "source_job_human_pass": false,
+  "revision": "025999fb80f9dd5e9eaa760145acfa96727ad31e",
+  "question": "Does the saved neutron-star source and actual retrieved photo pool now pass source-linked multiwavelength planning and independent review?",
+  "mode": "saved source/search replay; plan and reviewer only",
+  "limits": {
+    "metadata_authorization_calls": 1,
+    "gemini_generation_calls": 2,
+    "new_research_searches": 0,
+    "new_source_fetches": 0,
+    "new_photo_searches": 0,
+    "new_photo_downloads": 0,
+    "new_photo_inspections": 0,
+    "tts_sends": 0,
+    "render_or_qa": false
+  },
+  "expected_quota_consumption": "Unknown before provider receipts; free-only Gemini is required and no paid fallback is allowed.",
+  "stop": "Stop on authorization, saved-response, provider, schema, semantic-review or validation failure. Never repeat this ID or any old failed ID.",
+  "status": "planned",
+  "project_ready_before": false
+}
