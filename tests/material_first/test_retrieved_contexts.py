@@ -57,8 +57,14 @@ class RetrievedContextTests(unittest.TestCase):
         def mutate(rows):rows['v0']['fact_ids']=['invented-fact']
         with self.assertRaisesRegex(ValueError,'unexpected identity'):self.run_plan(mutate)
 
-    def test_repeated_object_labels_are_rejected_even_with_distinct_files(self):
+    def test_repeated_object_labels_are_qualified_by_explicit_observation_bands(self):
         def mutate(rows):
+            rows['v0']['anchor_id']='wikimedia:148830328'
+            rows['v1']['anchor_id']='wikimedia:148830334'
+            rows['v2']['anchor_id']='wikimedia:148830323'
             for row in rows.values():row['english_photo_object']='Crab Nebula'
-        with self.assertRaisesRegex(ValueError,'repeated visual target'):self.run_plan(mutate)
-        self.assertEqual(self.calls,['material-photo-plan'])
+        result,_=self.run_plan(mutate)
+        self.assertEqual([target['must_show'] for target in result['visual_targets']],
+            ['Crab Nebula (optical observation)','Crab Nebula (infrared observation)',
+             'Crab Nebula (radio observation)'])
+        self.assertEqual(self.calls,['material-photo-plan','material-photo-plan-review'])
