@@ -21,6 +21,8 @@ class RetrievedContextTests(unittest.TestCase):
         def generate(key,instruction,context,schema):
             self.calls.append(key)
             if key=='material-photo-plan':
+                self.assertIn('verbatim contiguous substring',instruction)
+                self.assertIn('literally contains that exact substring',instruction)
                 result=copy.deepcopy(self.choice)
                 if mutation:mutation(result)
                 return result,{'receipt_id':'controlled-selection'}
