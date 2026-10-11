@@ -32,7 +32,10 @@ function validateProviderRequest(input) {
         !Array.isArray(body.contents) || body.contents.length !== 1 ||
         body.generationConfig?.candidateCount !== 1 ||
         body.generationConfig?.responseMimeType !== 'application/json' ||
-        Object.keys(body.generationConfig || {}).some(k => !['candidateCount','maxOutputTokens','responseMimeType','responseJsonSchema'].includes(k)) ||
+        Object.keys(body.generationConfig || {}).some(k => !['candidateCount','maxOutputTokens','responseMimeType','responseJsonSchema','thinkingConfig'].includes(k)) ||
+        (body.generationConfig?.thinkingConfig !== undefined &&
+          (Object.keys(body.generationConfig.thinkingConfig).length !== 1 ||
+           !['low','medium','high'].includes(body.generationConfig.thinkingConfig.thinkingLevel))) ||
         !Number.isInteger(body.generationConfig?.maxOutputTokens) ||
         body.generationConfig.maxOutputTokens < 1 || body.generationConfig.maxOutputTokens > 16384 ||
         JSON.stringify(body).length > 14 * 1024 * 1024) throw new Error('unsupported Gemini request');

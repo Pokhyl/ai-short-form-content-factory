@@ -90,7 +90,7 @@ def rewrite(payload, measured_ms, gemini):
         f'{round(words*ratio)} words and {round(characters*ratio)} characters including spaces. '
         'Return prose, never separate word slots. Do not copy the previous text unchanged.',
         {'paragraphs':paragraphs,'evidence':compact_evidence(payload['evidence']),
-         'actual_duration_ms':measured_ms,'target_seconds':target},schema)
+         'actual_duration_ms':measured_ms,'target_seconds':target},schema,thinking_level='low')
     validate_json(result,schema)
     alternatives=[]
     for i in range(1,len(revised['scenes'])+1):

@@ -18,6 +18,14 @@ for (const [provider,request] of Object.entries(good)) {
   assert.strictEqual(result.provider,provider);
   assert(result.url.startsWith('https://'));
 }
+const lowThinking = structuredClone(good.gemini);
+lowThinking.body.generationConfig.thinkingConfig = {thinkingLevel:'low'};
+assert.strictEqual(validate({provider:'gemini',request:lowThinking}).provider,'gemini');
+for (const thinkingConfig of [{thinkingLevel:'minimal'}, {thinkingLevel:'low',budget:1}, {}]) {
+  const invalid={...good.gemini,body:{...good.gemini.body,generationConfig:{
+    ...good.gemini.body.generationConfig,thinkingConfig}}};
+  assert.throws(()=>validate({provider:'gemini',request:invalid}));
+}
 assert.throws(()=>validate({provider:'unknown',request:{}}));
 assert.throws(()=>validate({provider:'pixabay',request:{query:{...good.pixabay.query,key:'not-allowed'}}}));
 assert.throws(()=>validate({provider:'google_tts',request:{body:{...good.google_tts.body,audioConfig:{audioEncoding:'MP3',speakingRate:1.2}}}}));

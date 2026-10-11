@@ -77,6 +77,18 @@ class GeminiTests(unittest.TestCase):
                 self.generate()
         self.assertEqual(len(self.http.requests), 1)
 
+    def test_thinking_level_is_opt_in_and_bounded(self):
+        self.generate()
+        self.assertNotIn("thinkingConfig", self.http.requests[-1][2]["generationConfig"])
+        self.adapter.generate("rewrite", "controlled", {"question": "test"},
+                              obj({"answer": string()}), thinking_level="low")
+        self.assertEqual(self.http.requests[-1][2]["generationConfig"]["thinkingConfig"],
+                         {"thinkingLevel": "low"})
+        for invalid in ["minimal", "none", " LOW", "xhigh"]:
+            with self.assertRaisesRegex(ValueError, "thinking level"):
+                self.adapter.generate("bad", "controlled", {}, obj({"answer": string()}),
+                                      thinking_level=invalid)
+
     def test_invalid_schema_and_duplicate_fields_are_rejected(self):
         self.http.result = {"answer": "test", "approval": True}
         with self.assertRaisesRegex(ValueError, "schema"):
