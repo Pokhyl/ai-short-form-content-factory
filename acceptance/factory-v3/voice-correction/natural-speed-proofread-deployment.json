@@ -1,0 +1,44 @@
+{
+  "source_commit": "c2ae7774b50413f5f80ac8cd8266686ca9a6eec2",
+  "image": "factory-v3:gemini36-c2ae777-r1",
+  "image_id": "sha256:6ec13739c677e9b66fc6539901b353c6f55dca116fbacdbf81572ee1e6389f22",
+  "previous_image": "factory-v3:gemini36-b805306-r1",
+  "previous_image_id": "sha256:dfd8c5b18c7667e30631d8545c2a6dc7e1b6608e2cdc4828ec317fdf294f7a49",
+  "container": "factory-v3-app",
+  "deployed": true,
+  "scope": "Compose recreated only app with --no-deps. Settings mount, media volume, networks, restart policy, resource limits and healthcheck were preserved.",
+  "database_migration": {
+    "file": "factory_v3/proofread_call_migration.sql",
+    "transactional": true,
+    "functions_updated": [
+      "claim_preparation_call",
+      "finish_preparation_call",
+      "fail_preparation_call"
+    ],
+    "proofread_key_verified": true,
+    "legacy_key_removed": true
+  },
+  "database_counts_before_and_after": {
+    "jobs": {
+      "qa_pass": 7,
+      "unknown": 15,
+      "prepared": 1
+    },
+    "preparations": {
+      "failed": 56,
+      "unknown": 18,
+      "prepared": 23
+    },
+    "active_stages": 0
+  },
+  "verification": {
+    "container_status": "healthy",
+    "restart_count": 0,
+    "source_revision": "c2ae7774b50413f5f80ac8cd8266686ca9a6eec2",
+    "studio_root_http": 200,
+    "factory_health": "serving",
+    "r10_id": "8a50ef02-3f4f-4db2-8ef3-fffe6315682e",
+    "r10_started_once": true,
+    "project_ready": false
+  }
+}
