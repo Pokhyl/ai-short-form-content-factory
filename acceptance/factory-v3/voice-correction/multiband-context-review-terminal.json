@@ -1,9 +1,9 @@
 {
-  "id": "024d19eb-7872-47d0-a24c-b9ad67eadb70",
+  "id": "cfd0798a-7e63-4b5c-9ce7-27ea262ae9e4",
   "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
-  "revision": "fd8f27df635dbc034417ab2ba0bbf1ea9bafb151",
+  "revision": "ae4d67308e3d7076f094bbaa322c5b8f29cf16af",
   "state": "terminal_failure_at_independent_review",
-  "error": "Reviewer rejected E0102-72.3: actual candidate metadata does not explicitly connect the pictured supernova remnant to the neutron-star topic.",
+  "error": "Reviewer correctly rejected the E0102 oxygen ring because metadata did not connect it directly to a neutron star.",
   "fresh_gemini_calls": ["material-photo-plan", "material-photo-plan-review"],
   "saved_search_responses_replayed": 9,
   "new_searches": 0,
