@@ -24,6 +24,7 @@ def validate_revision(original, revised):
 def select_paragraphs(payload, proposed, timing):
     """Choose whole reviewed-source paragraph variants, never splice words/audio."""
     from .speech_timing import estimated_seconds
+    from .visuals import preflight_visual_capacity
     scenes=payload['scenes']
     if not 1 <= len(scenes) <= 8 or len(proposed) != len(scenes):
         raise ValueError('bounded paragraph alternatives required')
@@ -35,9 +36,20 @@ def select_paragraphs(payload, proposed, timing):
             raise ValueError('bounded complete paragraph variants required')
         choices.append(list(dict.fromkeys(variants)))
     target=timing.get('selection_target_seconds',payload['seconds']-.5)
-    return list(min(product(*choices),key=lambda paragraphs:(
+    ranked=sorted(product(*choices),key=lambda paragraphs:(
         abs(estimated_seconds(' '.join(paragraphs),timing)-target),
-        sum(a!=b for a,b in zip(originals,paragraphs)))))
+        sum(a!=b for a,b in zip(originals,paragraphs))))
+    for paragraphs in ranked:
+        candidate=deepcopy(payload)
+        for scene,text in zip(candidate['scenes'],paragraphs):
+            scene['narration']=text
+        candidate['script']=' '.join(paragraphs)
+        try:
+            preflight_visual_capacity(candidate)
+        except ValueError:
+            continue
+        return list(paragraphs)
+    raise ValueError('no paragraph alternative combination preserves topical photo cadence')
 
 
 def proofread_selected(payload, selected, gemini):

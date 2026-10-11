@@ -7,6 +7,10 @@
 - Evidence: `acceptance/factory-v3/visual-capacity-preflight-20261011.json` and `acceptance/factory-v3/visual-capacity-preflight-deployment-20261011.json`. The first image was built ARM64, failed on the AMD64 VPS and was rolled back immediately. The reusable image builder now defaults to `linux/amd64`; exact amd64 image network-disabled suites pass. The compatible image is deployed and healthy at revision `4f49448`; Studio200, free-tier proof remains `gemini-3.5-flash-lite` with billing false. Database counts and other service IDs/images are unchanged. No provider calls or new jobs. The fix is deployed but not product-accepted. `project_ready=false`.
 - Next: finish the connected offline release gate, then run one fresh bounded normal case; never repeat r14 or any failed ID. Preserve the natural-speed voice rule and strict visual relevance.
 
+## Follow-on voice-variant selection correction — 2026-10-11
+
+The deployed preflight blocks r14's corrected plan before a second TTS. A further generic correction now filters already-generated paragraph combinations by the same visual-capacity gate before proofread/review, then chooses the closest duration fit among feasible combinations. Regression uses the saved r14 photo/fact graph and controlled alternatives. Local material-first 182/182 and factory-v3 112/112 pass; this selector change is not yet packaged or deployed. Plan: `acceptance/factory-v3/voice-variant-photo-feasibility-plan-20261011.json`. No provider calls. `project_ready=false`.
+
 ## Verified state — 2026-10-07
 
 - LIVE source9c8501df53e2385e477e99ad11750d323ae28212.216 exact-image checks PASS; app-only rollout protected snapshots equal/publichealth exact.

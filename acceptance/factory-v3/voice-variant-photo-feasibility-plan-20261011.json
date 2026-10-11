@@ -1,0 +1,25 @@
+{
+  "problem": "A measured voice correction can choose a globally length-optimal paragraph combination that concentrates narration in a scene with too few unique relevant photographs, even when another returned combination is feasible.",
+  "change": {
+    "file": "material_first/voice_correction.py",
+    "behavior": "Rank the already returned complete paragraph combinations by measured-duration estimate; before proofread/review or another TTS, select the closest combination that passes topical photo-capacity preflight. Fail before another provider call only if no returned combination is feasible.",
+    "external_calls_added": 0,
+    "source_facts_or_visual_contract_changed": false
+  },
+  "regression": {
+    "fixture": "tests/material_first/fixtures/r14-topical-preflight-replay.json",
+    "case": "The global length-best variant overfills the first scene; a slightly longer alternative preserves the five-photo capacity and is selected.",
+    "test": "tests/material_first/test_voice_correction.py::RewriteTests::test_variant_selection_prefers_best_duration_fit_that_preserves_photo_cadence"
+  },
+  "verification": {
+    "material_first": "182 passed",
+    "factory_v3": "112 passed",
+    "provider_calls": 0
+  },
+  "deployment": {
+    "current_runtime_revision": "4f49448dc6c4a7f63fc8dfa31881da2c1ba576bd",
+    "current_selector_deployed": false,
+    "next_image_platform": "linux/amd64",
+    "project_ready": false
+  }
+}

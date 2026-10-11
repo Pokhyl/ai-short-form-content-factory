@@ -88,6 +88,30 @@ class WorkerCorrectionTests(unittest.TestCase):
             self.assertEqual([call.args[1] for call in provider.synthesize.call_args_list],['old','new'])
 
 class RewriteTests(unittest.TestCase):
+    def test_variant_selection_prefers_best_duration_fit_that_preserves_photo_cadence(self):
+        import json
+        from pathlib import Path
+        from material_first.voice_correction import select_paragraphs
+        from material_first.visuals import preflight_visual_capacity
+        saved=json.loads((Path(__file__).parent/'fixtures/r14-topical-preflight-replay.json').read_text())
+        def text(words):return ' '.join(['foobar']*words)
+        scenes=[{**scene,'narration':text(31)} for scene in saved['scenes']]
+        observations=[{'id':photo['material_id'],'supported_fact_ids':photo['supported_fact_ids'],
+                       'matched_visual_targets':{identity:True for identity in photo['target_ids']}}
+                      for photo in saved['photos_in_visual_order']]
+        payload={'presentation_policy':saved['presentation_policy'],'seconds':60,
+                 'scenes':scenes,'script':' '.join(s['narration'] for s in scenes),
+                 'observations':observations,
+                 'visuals':[{'id':'photo-'+str(i),'material_id':photo['material_id']}
+                            for i,photo in enumerate(saved['photos_in_visual_order'],1)]}
+        variants=[[text(n) for n in values] for values in ((35,40,63),(30,54,60),(24,36,48))]
+        timing={'words_per_second':2,'characters_per_second':14,'selection_target_seconds':58.5}
+        selected=select_paragraphs(payload,variants,timing)
+        candidate={**payload,'scenes':[{**scene,'narration':paragraph}
+                                      for scene,paragraph in zip(scenes,selected)]}
+        preflight_visual_capacity(candidate)
+        self.assertNotEqual(len(selected[0].split()),63)
+
     def test_native_surface_gate_checks_selected_proofread_variant_only(self):
         from material_first.voice_correction import rewrite
         text=' '.join(['example']*100)
