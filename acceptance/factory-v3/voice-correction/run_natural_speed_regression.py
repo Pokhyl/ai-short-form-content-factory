@@ -6,10 +6,11 @@ from pathlib import Path
 
 from factory_v3.runtime import Runtime, load_settings
 from factory_v3.preflight import digest
+from factory_v3.diagnostics import refresh_preparation_progress
 from material_first.engine import verify
 from material_first.voice_correction import POLICY
 
-IDENTITY = 'c899d0d5-de1b-4b35-903c-e8ac63bce4a4'
+IDENTITY = '05b073c3-b6b7-463b-8909-7274a01c8d75'
 SOURCE = '72705d11-4556-4a4a-b751-676cc71e215d'
 REVISION = 'bd3b6ca321664094bf5cac12a8c23a27d80fea5f'
 
@@ -42,22 +43,7 @@ def save():
 
 def refresh_counts():
     """Read durable call reservations even when a stage exits by exception."""
-    calls = r.ledger._call(
-        "SELECT COALESCE(jsonb_object_agg(kind,n),'{}'::jsonb) FROM "
-        "(SELECT kind,count(*) AS n FROM factory_v3.preparation_calls "
-        "WHERE preparation_id=%s::uuid GROUP BY kind) counts", (IDENTITY,))
-    voice = r.ledger._call(
-        "SELECT count(*) AS n FROM factory_v3.voice_revisions "
-        "WHERE job_id=%s::uuid", (IDENTITY,))
-    stage = r.ledger._call(
-        "SELECT jsonb_build_object('stage',stage,'state',state,'error_code',error_code) "
-        "FROM factory_v3.stage_runs WHERE job_id=%s::uuid ORDER BY started_at DESC LIMIT 1",
-        (IDENTITY,))
-    job = r.ledger.snapshot(IDENTITY)
-    receipt.update(
-        tts_sends=voice['n'], gemini_calls=calls.get('gemini', 0),
-        metadata_calls=calls.get('metadata', 0), job_status=job['status'],
-        latest_stage=stage)
+    receipt.update(refresh_preparation_progress(r.ledger, IDENTITY))
 
 
 try:

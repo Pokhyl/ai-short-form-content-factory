@@ -1,0 +1,23 @@
+{
+  "id": "c899d0d5-de1b-4b35-903c-e8ac63bce4a4",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "bd3b6ca321664094bf5cac12a8c23a27d80fea5f",
+  "state": "failed_terminal",
+  "failure": {
+    "type": "TypeError",
+    "message": "'int' object is not subscriptable",
+    "location": "diagnostic runner durable counter refresh before provider authorization"
+  },
+  "external_calls": {
+    "gemini": 0,
+    "metadata": 0,
+    "tts": 0,
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "renders": 0
+  },
+  "source_plan_verified": true,
+  "cause": "PostgresLedger._call returns row[0]; COUNT(*) is therefore an integer, but the runner indexed it as a mapping.",
+  "correction": "Use a shared read-only progress helper that consumes the scalar count, covered by tests/factory_v3/test_diagnostics.py.",
+  "reusable": false
+}
