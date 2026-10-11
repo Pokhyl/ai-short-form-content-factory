@@ -1,0 +1,31 @@
+{
+  "id": "586f7f16-d1b3-4de3-8e11-b7088c285952",
+  "state": "failed_terminal_immutable",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "ecd6e3bd2d3eeccfba844583dce68f37926fdca0",
+  "calls": {
+    "saved_search_replays": 9,
+    "gemini": [
+      "material-photo-plan",
+      "material-photo-plan-review",
+      "material-photo-plan-repair"
+    ],
+    "new_searches": 0,
+    "downloads": 0,
+    "pixel_inspections": 0,
+    "tts": 0,
+    "render_or_qa": false
+  },
+  "review": {
+    "approved_roles": ["v0", "v2"],
+    "rejected_roles": ["v1"],
+    "v1_reason": "Selected supernova-remnant metadata did not identify a neutron star.",
+    "repair_issue": "The repair reused v2's anchor for v1. Literal-source normalization also changed the already-approved v0, and the server rejected it before validating the repaired anchors."
+  },
+  "saved_pool": {
+    "unique_candidates": 63,
+    "metadata_mentions_neutron_star_pulsar_or_crab_nebula": 29,
+    "provider_calls": 0
+  },
+  "result": "No accepted photo plan was returned. No image bytes were downloaded or inspected. project_ready=false."
+}

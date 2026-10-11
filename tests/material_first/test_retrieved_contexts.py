@@ -16,7 +16,7 @@ class RetrievedContextTests(unittest.TestCase):
         ids=['wikimedia:516106','wikimedia:139881470','wikimedia:51481413']
         self.choice={f'v{i}':{'anchor_id':a,'english_photo_object':['Crab Nebula','neutron star','core of the Crab Nebula'][i],'source_mention':'Крабовидная туманность',
             'support_span_ids':[self.span['id']],'fact_ids':[self.brief['required_fact_ids'][i]]} for i,a in enumerate(ids)}
-        self.calls=[];self.review_mode=None;self.review_count=0
+        self.calls=[];self.review_mode=None;self.review_count=0;self.review_contexts=[]
     def run_plan(self, mutation=None, reject=False):
         def generate(key,instruction,context,schema):
             self.calls.append(key)
@@ -30,15 +30,30 @@ class RetrievedContextTests(unittest.TestCase):
                     self.assertIn('explicitly named in the exact file title or URL',instruction)
                 else:
                     self.assertIn('different actual candidate',instruction)
+                    self.assertIn('not used by any approved role',instruction)
+                    if reject:
+                        for role in ('v0','v1','v2'):
+                            repair_ids=schema['properties'][role]['properties']['anchor_id']['enum']
+                            self.assertNotIn(self.choice[role]['anchor_id'],repair_ids)
+                    else:
+                        for role in ('v0','v1'):
+                            self.assertEqual(schema['properties'][role]['properties']['anchor_id']['enum'],
+                                             [self.choice[role]['anchor_id']])
+                        repair_ids=schema['properties']['v2']['properties']['anchor_id']['enum']
+                        self.assertNotIn(self.choice['v0']['anchor_id'],repair_ids)
+                        self.assertNotIn(self.choice['v1']['anchor_id'],repair_ids)
+                        self.assertNotIn(self.choice['v2']['anchor_id'],repair_ids)
                 result=copy.deepcopy(self.choice)
                 if key=='material-photo-plan-repair' and reject:
                     for role,identity in zip(('v0','v1','v2'),('wikimedia:148830328','wikimedia:148830334','wikimedia:148830323')):
                         result[role]['anchor_id']=identity;result[role]['english_photo_object']='Crab Nebula'
                 if key=='material-photo-plan-repair' and self.review_mode=='repair_once':
                     result['v2']['anchor_id']='wikimedia:148830323';result['v2']['english_photo_object']='pulsar'
+                    result['v0']['source_mention']='invented paraphrase of an approved context'
                 if mutation:mutation(result)
                 return result,{'receipt_id':'controlled-selection'}
             self.assertIn(key,{'material-photo-plan-review','material-photo-plan-review:repair'})
+            self.review_contexts.append(copy.deepcopy(context['contexts']))
             self.review_count+=1
             self.assertIn('multiwavelength',instruction)
             self.assertIn('surface detail',instruction)
@@ -87,6 +102,7 @@ class RetrievedContextTests(unittest.TestCase):
         self.review_mode='repair_once'
         result,_=self.run_plan()
         self.assertEqual(result['visual_targets'][2]['query'],'pulsar')
+        self.assertEqual(self.review_contexts[1]['v0']['source_topic_mention'],'Крабовидная туманность')
         self.assertEqual(self.calls,['material-photo-plan','material-photo-plan-review','material-photo-plan-repair','material-photo-plan-review:repair'])
     def test_repeated_anchor_cannot_fill_three_contexts(self):
         def mutate(rows):rows['v1']['anchor_id']=rows['v0']['anchor_id']
