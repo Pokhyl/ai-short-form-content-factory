@@ -1,0 +1,22 @@
+{
+  "id": "024d19eb-7872-47d0-a24c-b9ad67eadb70",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "fd8f27df635dbc034417ab2ba0bbf1ea9bafb151",
+  "question": "Does the strengthened deployed planner produce three distinct source-linked photo contexts and pass independent review using saved evidence and saved search results?",
+  "mode": "saved frozen evidence and provider-response replay; planner and reviewer only",
+  "limits": {
+    "metadata_authorization_calls": 0,
+    "gemini_generation_calls": 2,
+    "new_research_searches": 0,
+    "new_source_fetches": 0,
+    "new_photo_searches": 0,
+    "new_photo_downloads": 0,
+    "new_photo_inspections": 0,
+    "tts_sends": 0,
+    "render_or_qa": false
+  },
+  "expected_quota_consumption": "At most two calls on the configured free-only Gemini project; paid fallback prohibited.",
+  "stop": "Require all nine saved search responses and stop on any failure. Never repeat this ID or earlier failed IDs.",
+  "status": "planned",
+  "project_ready_before": false
+}

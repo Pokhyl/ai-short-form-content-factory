@@ -17,6 +17,6 @@
   },
   "expected_quota_consumption": "Two calls using the verified free-only Gemini project; paid fallback prohibited.",
   "stop": "Require all nine saved provider-cache responses. Stop on any external search, missing replay, provider, schema, semantic review or validation failure. Never repeat this ID or earlier failed IDs.",
-  "status": "planned",
+  "status": "terminal failure; planner citations did not contain two exact source mentions",
   "project_ready_before": false
 }

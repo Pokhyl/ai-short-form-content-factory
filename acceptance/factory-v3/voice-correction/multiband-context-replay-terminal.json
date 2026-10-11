@@ -1,0 +1,17 @@
+{
+  "id": "646f628c-7e0a-4732-8162-23db485ebaae",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "025999fb80f9dd5e9eaa760145acfa96727ad31e",
+  "state": "terminal_failure_before_independent_review",
+  "error": "Planner selected support spans that did not contain the source mentions; source_mention was paraphrased for two contexts.",
+  "fresh_gemini_calls": ["material-photo-plan"],
+  "saved_search_responses_replayed": 9,
+  "new_searches": 0,
+  "new_downloads": 0,
+  "new_photo_inspections": 0,
+  "tts_sends": 0,
+  "render_or_qa": false,
+  "preparation_terminal": "DiagnosticBoundaryFailure",
+  "project_ready": false,
+  "never_repeat_id": true
+}
