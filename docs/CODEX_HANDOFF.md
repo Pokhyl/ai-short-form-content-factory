@@ -1,3 +1,13 @@
+## Последнее состояние: prompt correction развернут, product acceptance не пройден — 2026-10-11
+
+После r7 опубликованное исправление валидатора `VIDEO-V3-Credential-Gateway` пропустило Gemini 3.6 Flash rewrite и независимый review (оба HTTP 200). Но review вернул `native_language_quality=false` на неграмотном падеже в украинском варианте; r7 `b886012b-2f44-4b08-86d1-be0ab12b4e52` immutable `failed_terminal`: первый TTS 50,928 ms, 1 TTS + 2 Gemini + 1 metadata call, 0 alignment/render/QA. Детали в `acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r7-result.json`.
+
+В rewrite prompt добавлены общие требования вычитывать падежное управление, согласование и формы, с примером украинского «завдяки закону». Полный применённый код прошёл factory-v3 111/111, material-first 177/177 и gateway check. Commit `b805306cac0e12530dca087ccf947e4f70abcaa5` запушен в `origin/factory-v3`. На production развернут `factory-v3:gemini36-b805306-r1`, digest `sha256:dfd8c5b18c7667e30631d8545c2a6dc7e1b6608e2cdc4828ec317fdf294f7a49`; app `healthy`, точная revision подтверждена, Studio `https://studio.hodor.com.pl/` отвечает 200. `gemini-3.6-flash`, `billing_enabled=false`, `gemini_free_tier_confirmed=true` сохранены. До/после rollout DB status counts совпали. Старый queued заказ `c899d0d5-de1b-4b35-903c-e8ac63bce4a4` остался `prepared` без stage runs. См. `acceptance/factory-v3/voice-correction/natural-speed-voice-prompt-deployment.json`.
+
+Готового natural-speed 59–60s MP4 всё ещё нет; `project_ready=false`. Следующий новый генерационный acceptance запуск отложен до закрытия offline blocker matrix в `docs/DELIVERY_STRATEGY.md`, согласно рабочему процессу, и не должен использовать ни один terminal ID.
+
+---
+
 ## Текущий статус: шлюз исправлен, voice acceptance всё ещё не пройден — 2026-10-11
 
 Live Studio: `https://studio.hodor.com.pl/`, public UI без пароля (деплой записан ниже). Production app остаётся на `factory-v3:gemini36-457d788-r1`, revision `457d78899ca396c489971a573280e8d9e83de966`; фактический free-tier billing proof `billingEnabled=false`. Опубликованная версия `VIDEO-V3-Credential-Gateway` исправлена: validator проверяет `generationConfig.thinkingConfig.thinkingLevel`, Gemini rewrite и independent review прошли по HTTP 200.

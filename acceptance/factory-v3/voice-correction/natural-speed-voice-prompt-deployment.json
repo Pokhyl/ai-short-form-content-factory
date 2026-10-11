@@ -1,0 +1,43 @@
+{
+  "source_commit": "b805306cac0e12530dca087ccf947e4f70abcaa5",
+  "image": "factory-v3:gemini36-b805306-r1",
+  "image_id": "sha256:dfd8c5b18c7667e30631d8545c2a6dc7e1b6608e2cdc4828ec317fdf294f7a49",
+  "previous_image": "factory-v3:gemini36-457d788-r1",
+  "previous_image_id": "sha256:778e5d9637fd2cd24fee49fe6e21368849683d5190fbc8667b860f4735a698f1",
+  "deployed": true,
+  "container": "factory-v3-app",
+  "scope": "Compose recreated only service app with --no-deps; original settings mount, media volume, networks, restart policy and healthcheck preserved.",
+  "verification": {
+    "container_status": "running",
+    "healthcheck": "healthy",
+    "source_revision": "b805306cac0e12530dca087ccf947e4f70abcaa5",
+    "studio_root_http": 200,
+    "factory_health": {
+      "status": "serving",
+      "project_ready": false,
+      "source_revision": "b805306cac0e12530dca087ccf947e4f70abcaa5"
+    },
+    "gemini_model": "gemini-3.6-flash",
+    "billing_enabled": false,
+    "gemini_free_tier_confirmed": true
+  },
+  "database_counts_before_and_after": {
+    "jobs": {
+      "qa_pass": 7,
+      "unknown": 14,
+      "prepared": 1
+    },
+    "preparations": {
+      "failed": 56,
+      "unknown": 18,
+      "prepared": 22
+    }
+  },
+  "queued_order_preserved": {
+    "id": "c899d0d5-de1b-4b35-903c-e8ac63bce4a4",
+    "status": "prepared",
+    "stages": []
+  },
+  "production_generation_attempts_during_deploy": 0,
+  "project_ready": false
+}
