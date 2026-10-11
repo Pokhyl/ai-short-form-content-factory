@@ -40,6 +40,26 @@ def save():
                      ensure_ascii=False), flush=True)
 
 
+def refresh_counts():
+    """Read durable call reservations even when a stage exits by exception."""
+    calls = r.ledger._call(
+        "SELECT COALESCE(jsonb_object_agg(kind,n),'{}'::jsonb) FROM "
+        "(SELECT kind,count(*) AS n FROM factory_v3.preparation_calls "
+        "WHERE preparation_id=%s::uuid GROUP BY kind) counts", (IDENTITY,))
+    voice = r.ledger._call(
+        "SELECT count(*) AS n FROM factory_v3.voice_revisions "
+        "WHERE job_id=%s::uuid", (IDENTITY,))
+    stage = r.ledger._call(
+        "SELECT jsonb_build_object('stage',stage,'state',state,'error_code',error_code) "
+        "FROM factory_v3.stage_runs WHERE job_id=%s::uuid ORDER BY started_at DESC LIMIT 1",
+        (IDENTITY,))
+    job = r.ledger.snapshot(IDENTITY)
+    receipt.update(
+        tts_sends=voice['n'], gemini_calls=calls.get('gemini', 0),
+        metadata_calls=calls.get('metadata', 0), job_status=job['status'],
+        latest_stage=stage)
+
+
 try:
     source = r.ledger.snapshot(SOURCE)['frozen']
     frozen = copy.deepcopy(source)
@@ -65,6 +85,7 @@ try:
     executor = r.executor()
     for stage in ('voice', 'align', 'render', 'qa'):
         receipt['state'] = stage
+        refresh_counts()
         save()
         state = executor.run_next(IDENTITY)
 
@@ -98,6 +119,10 @@ try:
         receipt['acceptance'] = True
     save()
 except BaseException as error:
+    try:
+        refresh_counts()
+    except Exception as accounting_error:
+        receipt['accounting_error'] = type(accounting_error).__name__
     receipt.update(state='failed_terminal', failure_type=type(error).__name__,
                    failure=str(error)[:1000])
     save()
