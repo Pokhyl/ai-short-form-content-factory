@@ -4,8 +4,8 @@
 
 - Natural-speed acceptance r14 `19e8ad95-60a2-48cc-893b-491e235d9fd3` is immutable `failed_terminal`: 2 TTS sends and 3 Gemini calls produced a natural-speed 59,616 ms voice, but render stopped because 17 unique photos could not cover all topical intervals. The first 31-second interval had only 5 relevant photographs for 9 cuts. No render was produced.
 - `material_first.verify` now checks word- and character-weighted scene timing estimates with the same unique, subject-related scheduler before voice synthesis. Exact measured timing remains the render gate. Regression: insufficient pool rejects before voice; a fully relevant 17-photo control passes. Material-first 180/180 and factory-v3 112/112 pass.
-- Evidence: `acceptance/factory-v3/visual-capacity-preflight-20261011.json`. This correction is not deployed or product-accepted. No provider calls or production changes were made. `project_ready=false`.
-- Next: commit/push, exact-source image/package checks, scoped app-only deploy with protected-state comparison, then continue the release gate. Never repeat r14 or any failed ID; do not start a new normal case until the connected offline release gate is complete.
+- Evidence: `acceptance/factory-v3/visual-capacity-preflight-20261011.json`. The first image was accidentally built as ARM64 on the Apple Silicon workstation, failed on the AMD64 VPS, and was rolled back immediately. App is healthy again on `35890a6`; DB counts and other service IDs/images are unchanged. The reusable image builder now defaults to `linux/amd64`; exact amd64 image network-disabled suites pass. The correction is not yet deployed or product-accepted. `project_ready=false`.
+- Next: apply the already committed app-only rollout with the exact amd64 image, verify protected state, then continue the release gate. Never repeat r14 or any failed ID; do not start a new normal case until the connected offline release gate is complete.
 
 ## Verified state — 2026-10-07
 

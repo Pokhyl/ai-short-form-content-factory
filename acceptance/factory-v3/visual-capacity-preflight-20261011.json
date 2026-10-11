@@ -24,9 +24,11 @@
     "regression": "A 17-photo plan with 5 images for a long scene is rejected before voice; a fully relevant 17-photo control passes.",
     "material_first": "180 tests passed",
     "factory_v3": "112 tests passed",
-    "packaged_image": "factory-v3:gemini35-visual-preflight-20261011-r1",
-    "packaged_image_id": "sha256:e467b9cd410213bd644e9c282b2febc168543c62786a63463dd64b8900972000",
-    "packaged_network_disabled_tests": "material-first 180/180; factory-v3 112/112"
+    "packaged_image": "factory-v3:gemini35-visual-preflight-amd64-20261011-r1",
+    "packaged_image_id": "sha256:8de104ba3b23804c93d293715a77559c7f02ee4d3a66127c211b519043c252d6",
+    "platform": "linux/amd64",
+    "packaged_network_disabled_tests": "material-first 180/180; factory-v3 112/112",
+    "platform_mismatch_attempt": "A linux/arm64 image was briefly started on the linux/amd64 VPS and failed health checks. It was immediately rolled back to the prior image. Database counts and other service IDs/images remained unchanged."
   },
   "limitations": [
     "Word and character estimates do not replace measured TTS timing; render still performs exact interval assignment.",

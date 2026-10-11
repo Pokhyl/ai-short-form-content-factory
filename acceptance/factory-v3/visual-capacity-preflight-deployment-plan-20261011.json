@@ -1,7 +1,8 @@
 {
   "source_commit": "4f596dfb94707ea69c8a3e90b67b4e1afa0a93db",
-  "image": "factory-v3:gemini35-visual-preflight-20261011-r1",
-  "image_id": "sha256:e467b9cd410213bd644e9c282b2febc168543c62786a63463dd64b8900972000",
+  "image": "factory-v3:gemini35-visual-preflight-amd64-20261011-r1",
+  "image_id": "sha256:8de104ba3b23804c93d293715a77559c7f02ee4d3a66127c211b519043c252d6",
+  "platform": "linux/amd64",
   "previous_image": "factory-v3:gemini35-35890a6-r1",
   "previous_revision": "35890a627d95997c2613dc6a28c79077406b075d",
   "scope": "Replace only the factory-v3-app container image. Preserve compose configuration, settings, media volume, PostgreSQL, n8n workflows, credential gateway, Caddy and all other containers.",
@@ -25,5 +26,12 @@
   "provider_calls": 0,
   "new_jobs": 0,
   "rollback_image": "factory-v3:gemini35-35890a6-r1",
+  "previous_attempt": {
+    "image": "factory-v3:gemini35-visual-preflight-20261011-r1",
+    "platform": "linux/arm64",
+    "result": "failed_healthcheck_and_immediately_rolled_back",
+    "protected_database_counts_unchanged": true,
+    "other_service_ids_images_and_restart_counts_unchanged": true
+  },
   "project_ready": false
 }
