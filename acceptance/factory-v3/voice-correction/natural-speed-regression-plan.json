@@ -1,0 +1,29 @@
+{
+  "id": "1c2bafd9-00a0-47c1-884c-372265df5fe5",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "fe7fab4acbe6d36e1a76458087436358a62c7b7a",
+  "question": "Can the current factory rewrite a reviewed script against measured TTS duration and deliver a 60-second video with natural-speed narration?",
+  "mode": "reuse the frozen source facts, reviewed paragraphs and approved photographs; enable measured voice correction; synthesize, measure, correct text at most twice, then render and machine-audit",
+  "limits": {
+    "tts_sends": 3,
+    "gemini_calls": 4,
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "new_research": 0,
+    "paid_fallback": false,
+    "video_renders": 1,
+    "machine_qa_runs": 1
+  },
+  "acceptance": {
+    "measured_voice_duration_ms": [59000, 60000],
+    "audio_tempo_factor": 1.0,
+    "trailing_silence_ms_max": 1000,
+    "source_plan_and_fact_grounding_unchanged": true,
+    "machine_qa_pass": true
+  },
+  "stop": "Treat every send as single-attempt. Stop on failed/ambiguous TTS, correction or review, on the third out-of-window measurement, or before any action outside these limits. Never time-stretch narration or create another job under this ID.",
+  "quota": "Verified free-only Gemini project; at most four generation/review calls; paid fallback prohibited.",
+  "status": "planned",
+  "project_ready_before": false
+}
