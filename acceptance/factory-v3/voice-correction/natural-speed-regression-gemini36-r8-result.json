@@ -1,0 +1,12 @@
+{
+  "id": "d43e2348-eaa5-4027-bae2-913b8d760846",
+  "state": "failed_preflight",
+  "failure": "Runner revision mismatch: expected 457d788, production b805306.",
+  "database_mutations": 0,
+  "gemini_calls": 0,
+  "tts_sends": 0,
+  "research_or_photo_calls": 0,
+  "source_job_touched": false,
+  "id_registered": false,
+  "retry": "Do not reuse; plan r9 uses fresh ID and exact deployed revision."
+}

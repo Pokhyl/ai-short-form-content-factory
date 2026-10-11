@@ -1,0 +1,39 @@
+{
+  "id": "c4f70733-74d0-4e6d-ac88-aaf5f7dfb4a7",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "b805306cac0e12530dca087ccf947e4f70abcaa5",
+  "model": "gemini-3.6-flash",
+  "question": "Does the deployed factory produce a natural-speed 60-second Ukrainian voiceover and render it without slowing the audio?",
+  "mode": "Reuse the frozen source facts, reviewed paragraphs, and approved photographs; use measured voice correction, then align, render, and machine-audit.",
+  "predecessor": {
+    "id": "d43e2348-eaa5-4027-bae2-913b8d760846",
+    "state": "failed_preflight",
+    "reason": "Runner was pinned to 457d788; exited before any database or provider action. This ID is not reused."
+  },
+  "limits": {
+    "tts_sends": 3,
+    "gemini_calls": 4,
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "new_research": 0,
+    "paid_fallback": false,
+    "video_renders": 1,
+    "machine_qa_runs": 1
+  },
+  "acceptance": {
+    "measured_voice_duration_ms": [
+      59000,
+      60000
+    ],
+    "audio_tempo_factor": 1.0,
+    "trailing_silence_ms_max": 1000,
+    "source_plan_and_fact_grounding_unchanged": true,
+    "machine_qa_pass": true
+  },
+  "stop": "One attempt per external send. Stop on any failed or ambiguous call, on the third out-of-window voice, or before exceeding the limits. Never time-stretch narration or reuse a terminal ID.",
+  "quota": "Production Gemini project billing remains confirmed disabled. Gateway metadata for gemini-3.6-flash returned HTTP 200 and lists generateContent; Google pricing lists standard Gemini 3.6 Flash at no charge on Free Tier. No paid fallback.",
+  "status": "planned",
+  "project_ready_before": false,
+  "sequence": "r9; focused natural-speed voice acceptance on the deployed b805306 image after grammar prompt correction."
+}

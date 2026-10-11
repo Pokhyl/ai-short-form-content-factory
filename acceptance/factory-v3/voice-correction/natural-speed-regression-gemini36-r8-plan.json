@@ -33,7 +33,8 @@
   },
   "stop": "One attempt per external send. Stop on any failed or ambiguous call, on the third out-of-window voice, or before exceeding the limits. Never time-stretch narration or reuse a terminal ID.",
   "quota": "Production Gemini project billing remains confirmed disabled. Gateway metadata for gemini-3.6-flash returned HTTP 200 and lists generateContent; Google pricing lists standard Gemini 3.6 Flash at no charge on Free Tier. No paid fallback.",
-  "status": "planned",
+  "status": "failed_preflight",
   "project_ready_before": false,
-  "sequence": "r8; focused natural-speed voice acceptance after deploying the grammar-proofreading prompt correction."
+  "sequence": "r8; focused natural-speed voice acceptance after deploying the grammar-proofreading prompt correction.",
+  "failure": "The runner revision constant remained pinned to 457d788 while production was on b805306. It exited before checking or creating the preparation; zero database/provider/TTS calls."
 }
