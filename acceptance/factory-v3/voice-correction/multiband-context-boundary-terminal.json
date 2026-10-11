@@ -1,0 +1,15 @@
+{
+  "id": "efeeb5ea-53bb-44d8-96e7-91a3149db147",
+  "revision": "025999fb80f9dd5e9eaa760145acfa96727ad31e",
+  "state": "terminal_failure_before_context_planner",
+  "error": "ModelSchemaError: model response array exceeds bounds",
+  "cause": "The old saved material-brief response does not satisfy the current research schema.",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "billing_probe": "succeeded; confirmed free-only project",
+  "gemini_generations": 0,
+  "new_searches": 0,
+  "new_downloads": 0,
+  "tts_sends": 0,
+  "project_ready": false,
+  "never_repeat_id": true
+}
