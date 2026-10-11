@@ -16,24 +16,36 @@ class RetrievedContextTests(unittest.TestCase):
         ids=['wikimedia:516106','wikimedia:139881470','wikimedia:51481413']
         self.choice={f'v{i}':{'anchor_id':a,'english_photo_object':['Crab Nebula','neutron star','core of the Crab Nebula'][i],'source_mention':'Крабовидная туманность',
             'support_span_ids':[self.span['id']],'fact_ids':[self.brief['required_fact_ids'][i]]} for i,a in enumerate(ids)}
-        self.calls=[]
+        self.calls=[];self.review_mode=None;self.review_count=0
     def run_plan(self, mutation=None, reject=False):
         def generate(key,instruction,context,schema):
             self.calls.append(key)
-            if key=='material-photo-plan':
-                self.assertIn('verbatim contiguous substring',instruction)
-                self.assertIn('short 3–80 character verbatim contiguous substring',instruction)
-                self.assertIn('literally contains that exact substring',instruction)
-                self.assertIn('A relation only through a cause, aftermath',instruction)
-                self.assertIn('The three English photo-object labels must be distinct',instruction)
-                self.assertIn('explicitly named in the exact file title or URL',instruction)
+            if key in {'material-photo-plan','material-photo-plan-repair'}:
+                if key=='material-photo-plan':
+                    self.assertIn('verbatim contiguous substring',instruction)
+                    self.assertIn('short 3–80 character verbatim contiguous substring',instruction)
+                    self.assertIn('literally contains that exact substring',instruction)
+                    self.assertIn('A relation only through a cause, aftermath',instruction)
+                    self.assertIn('The three English photo-object labels must be distinct',instruction)
+                    self.assertIn('explicitly named in the exact file title or URL',instruction)
+                else:
+                    self.assertIn('different actual candidate',instruction)
                 result=copy.deepcopy(self.choice)
+                if key=='material-photo-plan-repair' and reject:
+                    for role,identity in zip(('v0','v1','v2'),('wikimedia:148830328','wikimedia:148830334','wikimedia:148830323')):
+                        result[role]['anchor_id']=identity;result[role]['english_photo_object']='Crab Nebula'
+                if key=='material-photo-plan-repair' and self.review_mode=='repair_once':
+                    result['v2']['anchor_id']='wikimedia:148830323';result['v2']['english_photo_object']='pulsar'
                 if mutation:mutation(result)
                 return result,{'receipt_id':'controlled-selection'}
-            self.assertEqual(key,'material-photo-plan-review')
+            self.assertIn(key,{'material-photo-plan-review','material-photo-plan-review:repair'})
+            self.review_count+=1
             self.assertIn('multiwavelength',instruction)
             self.assertIn('surface detail',instruction)
-            return {'contexts':{k:{'source_identity_supported':True,'topic_related':not reject,'metadata_compatible':True,'reason':'Controlled review decision; not an actual model acceptance'} for k in context['contexts']},'distinct_contexts':True},{'receipt_id':'controlled-review'}
+            def topic_related(role):
+                if reject:return False
+                return not(self.review_mode=='repair_once' and self.review_count==1 and role=='v2')
+            return {'contexts':{k:{'source_identity_supported':True,'topic_related':topic_related(k),'metadata_compatible':True,'reason':'Controlled review decision; not an actual model acceptance'} for k in context['contexts']},'distinct_contexts':True},{'receipt_id':'controlled-review'}
         return plan_retrieved_contexts(SimpleNamespace(generate=generate),{'topic':'Neutron star','seconds':60},self.brief,self.pools,30)
     def test_actual_pool_can_replace_unavailable_hint_without_changing_facts(self):
         original=copy.deepcopy(self.brief)
@@ -62,7 +74,12 @@ class RetrievedContextTests(unittest.TestCase):
         self.assertIn(rows['v0']['source_mention'],next(s['text'] for s in spans if s['id']==rows['v0']['support_span_ids'][0]))
     def test_independent_rejection_is_terminal_without_extra_generation(self):
         with self.assertRaisesRegex(ValueError,'context review failed'):self.run_plan(reject=True)
-        self.assertEqual(self.calls,['material-photo-plan','material-photo-plan-review'])
+        self.assertEqual(self.calls,['material-photo-plan','material-photo-plan-review','material-photo-plan-repair','material-photo-plan-review:repair'])
+    def test_rejected_context_is_replaced_and_reviewed_again(self):
+        self.review_mode='repair_once'
+        result,_=self.run_plan()
+        self.assertEqual(result['visual_targets'][2]['query'],'pulsar')
+        self.assertEqual(self.calls,['material-photo-plan','material-photo-plan-review','material-photo-plan-repair','material-photo-plan-review:repair'])
     def test_repeated_anchor_cannot_fill_three_contexts(self):
         def mutate(rows):rows['v1']['anchor_id']=rows['v0']['anchor_id']
         with self.assertRaisesRegex(ValueError,'distinct anchors'):self.run_plan(mutate)
