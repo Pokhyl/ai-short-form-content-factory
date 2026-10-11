@@ -14,7 +14,7 @@ import datetime
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT/"acceptance/factory-v3/account-check.json"
 PRIVATE = Path("/var/lib/factory-v3")
-MODEL = "gemini-3.5-flash-lite"
+MODEL = "gemini-3.8-flash"
 IDS = {"gemini":"zsRz2tvE57EKe8zy", "google":"8KbFC6GBZOd18bzG"}
 RECORD = {"diagnostic_id":"v3-account-boundary-20261005","generation_calls":0,
           "tts_calls":0,"billing_mutations":0,"calls":[],"free_tier_confirmed":False,

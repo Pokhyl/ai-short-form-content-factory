@@ -6,7 +6,7 @@ const workflow = JSON.parse(fs.readFileSync(path.join(process.argv[2], 'workflow
 const body = {systemInstruction:{parts:[{text:'Controlled instruction'}]},
   contents:[{role:'user',parts:[{text:'Żółty цветок 🌼'}]}],
   generationConfig:{responseMimeType:'application/json',responseJsonSchema:{type:'object',properties:{ok:{type:'boolean'}},required:['ok']},candidateCount:1,maxOutputTokens:128}};
-const payload = {method:'POST',url:'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent',body};
+const payload = {method:'POST',url:'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',body};
 const node = workflow.nodes.find(n=>n.name==='Upstream gemini');
 let captured;
 const context = {

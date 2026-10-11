@@ -5,7 +5,7 @@ function validateProviderRequest(input) {
   const request = input.request || {};
   const query = request.query || {};
   const body = request.body;
-  const model = 'gemini-3.5-flash-lite';
+  const model = 'gemini-3.8-flash';
   const boundedQuery = (q) => {
     if (typeof q !== 'string' || !q.trim() || q.length > 100) throw new Error('photo query exceeds bounds');
   };
