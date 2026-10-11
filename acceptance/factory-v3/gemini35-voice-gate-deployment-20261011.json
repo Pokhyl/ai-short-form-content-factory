@@ -1,6 +1,6 @@
 {
   "plan": "acceptance/factory-v3/gemini35-voice-gate-plan-20261011.json",
-  "status": "started",
+  "status": "completed",
   "source_commit": "35890a627d95997c2613dc6a28c79077406b075d",
   "new_app_image": {
     "tag": "factory-v3:gemini35-35890a6-r1",
@@ -17,11 +17,32 @@
     "running_n8n_executions": 0
   },
   "actions": {
-    "app_recreate_no_deps": "not_started",
+    "app_recreate_no_deps": "completed",
     "provider_calls": 0,
     "tts_calls": 0,
     "database_migrations": 0,
     "n8n_restarts": 0
   },
-  "project_ready": false
+  "project_ready": false,
+  "postdeploy": {
+    "app_image": "factory-v3:gemini35-35890a6-r1",
+    "app_image_id": "sha256:8826e7e14ddd81bbffbf08017e172e7578436cbcf229f4f7bd1571743fa079f7",
+    "app_status": "running",
+    "app_health": "healthy",
+    "app_restarts": 0,
+    "studio_root_http": 200,
+    "factory_health_http": 200,
+    "settings_proof_model": "gemini-3.5-flash-lite",
+    "billing_enabled": false,
+    "gateway_unauthorized_route_http": 403,
+    "database_snapshot_unchanged": true,
+    "workflow_snapshot_unchanged": true,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "running_n8n_executions": 0,
+    "provider_calls": 0,
+    "tts_calls": 0,
+    "n8n_restarts": 0,
+    "snapshot": "acceptance/factory-v3/gemini35-voice-gate-postdeploy-20261011.json"
+  }
 }

@@ -28,7 +28,8 @@
     "image": "factory-v3:gemini35-5e74570-r1",
     "image_id": "sha256:4faa68ecf1252fd180cede9c2e4aaeb1eed6645e22168c40ffd5b2e310bf02ca"
   },
-  "status": "planned",
+  "status": "deployed",
   "postdeploy_snapshot": "acceptance/factory-v3/gemini35-voice-gate-postdeploy-20261011.json",
-  "fresh_acceptance_plan_required_before_provider_call": true
+  "fresh_acceptance_plan_required_before_provider_call": true,
+  "deployment_receipt": "acceptance/factory-v3/gemini35-voice-gate-deployment-20261011.json"
 }

@@ -1,0 +1,42 @@
+{
+  "id": "19e8ad95-60a2-48cc-893b-491e235d9fd3",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "35890a627d95997c2613dc6a28c79077406b075d",
+  "model": "gemini-3.5-flash-lite",
+  "question": "Does the corrected production factory produce a natural-speed 60-second Ukrainian voiceover and render it without slowing the audio?",
+  "mode": "Reuse frozen source facts, reviewed paragraphs and approved photographs; use measured voice correction, then align, render and machine-audit.",
+  "predecessor": {
+    "id": "c9c44b61-18fc-4651-8362-398968b905be",
+    "state": "failed_terminal",
+    "reason": "An unselected expanded variant failed a shallow Ukrainian surface check before selection/proofreading. The gate fix is deployed under source revision 35890a6."
+  },
+  "deployment_commit": "5ae05cc",
+  "app_image": "factory-v3:gemini35-35890a6-r1",
+  "limits": {
+    "tts_sends": 3,
+    "gemini_calls": 6,
+    "metadata_calls": 1,
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "new_research": 0,
+    "paid_fallback": false,
+    "video_renders": 1,
+    "machine_qa_runs": 1
+  },
+  "acceptance": {
+    "measured_voice_duration_ms": [
+      59000,
+      60000
+    ],
+    "audio_tempo_factor": 1.0,
+    "trailing_silence_ms_max": 1000,
+    "source_plan_and_fact_grounding_unchanged": true,
+    "machine_qa_pass": true
+  },
+  "stop": "One attempt per external send. Stop on failed or ambiguous calls, third out-of-window voice, or before exceeding limits. Never time-stretch or use paid fallback.",
+  "status": "planned",
+  "terminal_receipt": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json",
+  "project_ready_before": false,
+  "sequence": "r14; one fresh bounded acceptance on deployed source 35890a6."
+}
