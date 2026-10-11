@@ -1,0 +1,7 @@
+{
+  "source_commit": "c2ae7774b50413f5f80ac8cd8266686ca9a6eec2",
+  "image": "factory-v3:gemini36-c2ae777-r1",
+  "image_id": "sha256:6ec13739c677e9b66fc6539901b353c6f55dca116fbacdbf81572ee1e6389f22",
+  "built_on": "ubuntu-4gb-hel1-1",
+  "deployed": false
+}

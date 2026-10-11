@@ -1,0 +1,40 @@
+{
+  "id": "8a50ef02-3f4f-4db2-8ef3-fffe6315682e",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "c2ae7774b50413f5f80ac8cd8266686ca9a6eec2",
+  "model": "gemini-3.6-flash",
+  "question": "Does the deployed factory produce a natural-speed 60-second Ukrainian voiceover and render it without slowing the audio?",
+  "mode": "Reuse the frozen source facts, reviewed paragraphs, and approved photographs; use measured voice correction, then align, render, and machine-audit.",
+  "predecessor": {
+    "id": "c4f70733-74d0-4e6d-ac88-aaf5f7dfb4a7",
+    "state": "failed_terminal",
+    "reason": "r9 confirmed that prompt-only proofreading is insufficient; independent Ukrainian language review rejected the selected text. r10 includes a constrained proofread call before independent review."
+  },
+  "limits": {
+    "tts_sends": 3,
+    "gemini_calls": 6,
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "new_research": 0,
+    "paid_fallback": false,
+    "video_renders": 1,
+    "machine_qa_runs": 1
+  },
+  "acceptance": {
+    "measured_voice_duration_ms": [
+      59000,
+      60000
+    ],
+    "audio_tempo_factor": 1.0,
+    "trailing_silence_ms_max": 1000,
+    "source_plan_and_fact_grounding_unchanged": true,
+    "machine_qa_pass": true
+  },
+  "stop": "One attempt per external send. Stop on failed/ambiguous calls, on third out-of-window voice, or before exceeding limits. Never time-stretch narration or reuse a terminal ID.",
+  "quota": "Production Gemini project billing remains confirmed disabled. Gateway metadata for gemini-3.6-flash returned HTTP 200 and lists generateContent; Google pricing lists standard Gemini 3.6 Flash at no charge on Free Tier. No paid fallback.",
+  "status": "planned",
+  "project_ready_before": false,
+  "terminal_receipt": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r9-result.json",
+  "sequence": "r10; deployed constrained proofreading fix with independent review, then natural-speed voice, render, and machine QA."
+}

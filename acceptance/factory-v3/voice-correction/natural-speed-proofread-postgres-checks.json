@@ -1,0 +1,17 @@
+{
+  "source_commit": "c2ae7774b50413f5f80ac8cd8266686ca9a6eec2",
+  "isolated_postgresql": "passed",
+  "packaged_runtime": "passed",
+  "postgres_driver": "psycopg 3.3.6",
+  "voice_correction_call_keys": [
+    "rewrite",
+    "proofread",
+    "script-review"
+  ],
+  "ledger": "passed",
+  "preparation_replay_and_budgets": "passed",
+  "ambiguous_call_blocks": "passed",
+  "provider_cache": "passed",
+  "actual_provider_calls": 0,
+  "test_container_removed": true
+}
