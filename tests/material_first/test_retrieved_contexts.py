@@ -24,7 +24,8 @@ class RetrievedContextTests(unittest.TestCase):
                 self.assertIn('verbatim contiguous substring',instruction)
                 self.assertIn('literally contains that exact substring',instruction)
                 self.assertIn('A relation only through a cause, aftermath',instruction)
-                self.assertIn('explicitly named wavelength bands',instruction)
+                self.assertIn('The three English photo-object labels must be distinct',instruction)
+                self.assertIn('explicitly named in the exact file title or URL',instruction)
                 result=copy.deepcopy(self.choice)
                 if mutation:mutation(result)
                 return result,{'receipt_id':'controlled-selection'}
