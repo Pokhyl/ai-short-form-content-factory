@@ -33,7 +33,8 @@
   },
   "stop": "One attempt per external send. Stop on failed/ambiguous calls, on third out-of-window voice, or before exceeding limits. Never time-stretch narration or reuse a terminal ID.",
   "quota": "Production Gemini project billing remains confirmed disabled. Gateway metadata for gemini-3.6-flash returned HTTP 200 and lists generateContent; Google pricing lists standard Gemini 3.6 Flash at no charge on Free Tier. No paid fallback.",
-  "status": "planned",
+  "status": "failed_terminal",
+  "terminal_receipt": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r11-result.json",
   "project_ready_before": false,
-  "sequence": "r11; one fresh bounded acceptance attempt on deployed c2ae777 after confirmed temporary provider UNAVAILABLE, exercising constrained proofreading and independent review."
+  "sequence": "r11; one fresh bounded acceptance attempt on deployed c2ae777 after confirmed temporary provider UNAVAILABLE. Gemini returned HTTP 503 before constrained proofreading or independent review; no retry for this ID."
 }
