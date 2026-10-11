@@ -1,0 +1,27 @@
+{
+  "id": "a77cf91c-93ee-49d2-90e0-309d8d0e6fb1",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "4f1f1b3f9147ad111d85cbff23a1f49bc5a7a18a",
+  "question": "Does one bounded reviewer-guided repair preserve both approved photo contexts and select a distinct eligible anchor for the single rejected role?",
+  "mode": "saved frozen source evidence and exact replay of the nine successful saved photo-search receipts; deployed planner and independent reviewer code",
+  "limits": {
+    "metadata_authorization_calls": 0,
+    "gemini_generation_calls": 4,
+    "saved_search_replays": 9,
+    "new_research_searches": 0,
+    "new_source_fetches": 0,
+    "new_photo_searches": 0,
+    "new_photo_downloads": 0,
+    "new_photo_inspections": 0,
+    "tts_sends": 0,
+    "render_or_qa": false
+  },
+  "expected_quota_consumption": "At most four calls on the configured free-only Gemini project; paid fallback prohibited.",
+  "preconditions": [
+    "Exact revision 4f1f1b3f9147ad111d85cbff23a1f49bc5a7a18a is deployed and healthy.",
+    "The previous replay is terminal and immutable; use this fresh ID once only."
+  ],
+  "stop": "Stop if revision or nine saved response identities differ, if the repair changes an approved role, if a candidate anchor is repeated, or if any provider action escapes the declared limits. Never create a product job.",
+  "status": "planned",
+  "project_ready_before": false
+}
