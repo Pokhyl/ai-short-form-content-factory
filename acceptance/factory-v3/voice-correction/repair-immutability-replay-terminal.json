@@ -1,0 +1,21 @@
+{
+  "id": "a77cf91c-93ee-49d2-90e0-309d8d0e6fb1",
+  "state": "failed_terminal_immutable",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "4f1f1b3f9147ad111d85cbff23a1f49bc5a7a18a",
+  "saved_search_replays": 9,
+  "saved_search_hashes_exact": true,
+  "saved_gemini_replays": 0,
+  "live_gemini_calls": 0,
+  "saved_planner_hash": "1a50c64dccda06a2e523b2a083b9596ac89f8d26c224de547da0b8e205439940",
+  "current_planner_hash": "453a1be790ea7e1ef35dda044c95a474c6be5c4655fa947f1a19aafdb3d8fccc",
+  "saved_first_review_hash": "5bcf758b3d79dbb16f794ab39dbc56478b8380d9ebfbbd5d4e88a2bcf1056f38",
+  "current_first_review_hash": "5bcf758b3d79dbb16f794ab39dbc56478b8380d9ebfbbd5d4e88a2bcf1056f38",
+  "exact_matching_saved_planner_response_exists": false,
+  "new_searches": 0,
+  "downloads": 0,
+  "pixel_inspections": 0,
+  "tts": 0,
+  "render_or_qa": false,
+  "result": "Stopped before provider call because the saved planner response did not match the exact current request hash. No approximate replay was used. project_ready=false."
+}

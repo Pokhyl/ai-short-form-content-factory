@@ -32,6 +32,7 @@
     "provider_calls": 0
   },
   "stop": "Before any Gemini send, stop if the exact request hashes for both saved responses differ. Then stop if revision or nine saved response identities differ, if the repair changes an approved role, if a candidate anchor is repeated, or if any provider action escapes the declared limits. Never create a product job.",
-  "status": "planned",
+  "status": "failed_terminal",
+  "terminal_receipt": "repair-immutability-replay-terminal.json",
   "project_ready_before": false
 }

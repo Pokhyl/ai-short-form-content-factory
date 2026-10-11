@@ -1,0 +1,27 @@
+{
+  "id": "3eb3a9c9-9da7-4b12-82d3-7652f7983b65",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "4f1f1b3f9147ad111d85cbff23a1f49bc5a7a18a",
+  "question": "Does the deployed photo planner and independent reviewer produce a valid source-bound plan, and when a repair is needed, preserve approved roles while selecting distinct replacement anchors?",
+  "mode": "saved frozen source evidence plus exact replay of nine successful saved photo-search receipts; fresh production planner/reviewer responses",
+  "limits": {
+    "metadata_authorization_calls": 0,
+    "gemini_generation_calls": 4,
+    "new_research_searches": 0,
+    "new_source_fetches": 0,
+    "new_photo_searches": 0,
+    "new_photo_downloads": 0,
+    "new_photo_inspections": 0,
+    "tts_sends": 0,
+    "render_or_qa": false
+  },
+  "expected_quota_consumption": "At most four calls on the configured free-only Gemini project; paid fallback prohibited.",
+  "preconditions": [
+    "Exact revision 4f1f1b3f9147ad111d85cbff23a1f49bc5a7a18a is deployed and healthy.",
+    "The earlier diagnostic IDs are terminal; this fresh ID is used once only.",
+    "All nine saved photo-search identities match the source request."
+  ],
+  "stop": "Stop on any identity mismatch, planner/reviewer failure, change to an approved role, repeated anchor, or provider action outside the limits. Never create a product job.",
+  "status": "planned",
+  "project_ready_before": false
+}
