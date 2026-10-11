@@ -75,6 +75,7 @@ class Application:
             raise ValueError("exact HTTPS public origin required")
         self.origin = origin.rstrip("/")
         self.runtime = runtime
+        self.public_access = runtime.settings.get("public_access") is True
         self.sessions = Sessions(runtime.settings["owner_token"])
         self.pool = concurrent.futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix="factory-v3")
         self.slots = threading.BoundedSemaphore(5)
@@ -249,6 +250,8 @@ def handler(application):
                 self.wfile.write(body)
 
         def authenticated(self):
+            if application.public_access:
+                return True
             cookie = SimpleCookie()
             try:
                 cookie.load(self.headers.get("Cookie", ""))

@@ -6,10 +6,7 @@ const labels = {preparing:"Подготовка: факты и фотограф�
 async function api(path, options = {}) {
   const response = await fetch(base + path, {credentials:"same-origin",...options});
   const body = await response.json();
-  if (!response.ok) {
-    if (response.status === 401) { $("login").hidden = false; $("workspace").hidden = true; }
-    throw new Error(body.error || "Ошибка запроса");
-  }
+  if (!response.ok) throw new Error(body.error || "Ошибка запроса");
   return body;
 }
 const post = (path, data) => api(path, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
@@ -95,14 +92,10 @@ async function show(id) {
   for (const source of detail.sources || []) { const item = document.createElement("div"); item.className = "source"; item.append(link(source.url,source.title || source.url)); $("sources").append(item); }
 }
 async function open() {
-  await api("/api/session"); $("login").hidden = true; $("workspace").hidden = false;
+  $("workspace").hidden = false;
   const rows = await loadHistory(); const requested = new URLSearchParams(location.search).get("request");
   const last = requested && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requested) ? requested : localStorage.getItem("factoryV3Last") || (rows[0] && rows[0].id); if (last) await show(last);
 }
-$("login-form").onsubmit = async event => {
-  event.preventDefault(); $("message").textContent = "";
-  try { await post("/api/session",{token:$("access").value}); $("access").value = ""; await open(); } catch(error) { report(error); }
-};
 $("request-form").onsubmit = async event => {
   event.preventDefault(); $("message").textContent = ""; $("create").disabled = true;
   const fields = {topic:$("topic").value.trim(),language:$("language").value,seconds:Number($("seconds").value),visual_validation_mode:$("visualValidationMode").value};
