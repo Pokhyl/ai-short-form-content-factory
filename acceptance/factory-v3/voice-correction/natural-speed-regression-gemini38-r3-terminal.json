@@ -1,0 +1,62 @@
+{
+  "id": "7011aacc-698b-4784-9644-e46ab759392d",
+  "state": "failed_terminal",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "59484cb450ee60840be22605da7ce238b0867603",
+  "source_plan_sha256": "e6293af1c7c46e73990d6210e0beda3b2cbb4c3975c44c79ccc36ea71ffd68e1",
+  "counts": {
+    "metadata_calls": 1,
+    "gemini_calls": 4,
+    "tts_sends": 3,
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "new_research": 0,
+    "render_count": 0
+  },
+  "voice_durations_ms": [
+    50928,
+    63504,
+    61968
+  ],
+  "voice_audio_sha256": [
+    "02aef69022897ed892caf31c9e70f3e6186a76c79998ca8dba7fdc712da7c771",
+    "a0378c316a11a042bcc792226e286d9a106611ce1b89655b00b043b9b336ba09",
+    "c55b49dd2029027532e0816458f8d54706e752d73ee8b0bfceefebab05d53f22"
+  ],
+  "gemini_responses": [
+    {
+      "http_status": 200,
+      "finish_reason": "STOP",
+      "total_tokens": 8536,
+      "candidate_tokens": 949
+    },
+    {
+      "http_status": 200,
+      "finish_reason": "STOP",
+      "total_tokens": 146255,
+      "thought_tokens": 822,
+      "candidate_tokens": 609
+    },
+    {
+      "http_status": 200,
+      "finish_reason": "STOP",
+      "total_tokens": 8545,
+      "candidate_tokens": 901
+    },
+    {
+      "http_status": 200,
+      "finish_reason": "STOP",
+      "total_tokens": 147300,
+      "thought_tokens": 1885,
+      "candidate_tokens": 607
+    }
+  ],
+  "latest_stage": {
+    "stage": "voice",
+    "state": "unknown",
+    "error_code": "VoiceDurationMismatch"
+  },
+  "failure": "Three actual TTS measurements missed the 59000–60000 ms acceptance window; render correctly did not run.",
+  "acceptance": false
+}

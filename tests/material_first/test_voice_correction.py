@@ -109,6 +109,31 @@ class RewriteTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'unchanged'):rewrite(original,50000,gemini)
         gemini.review_script.assert_not_called()
 
+    def test_measured_overrun_calibrates_next_selection_without_weakening_actual_window(self):
+        from material_first.voice_correction import rewrite
+        from material_first.speech_timing import estimated_seconds
+        text=' '.join(['example']*100)
+        original={'voice_correction':dict(POLICY),'seconds':60,'language':'uk','script':text,
+            'scenes':[{'id':'s1','narration':text,'evidence_ids':['f1']}],
+            'evidence':{'facts':[{'id':'f1','text':'The source mechanism.','support':[]}],'sources':[]},
+            'observations':[],
+            'speech_timing':{'protocol':'natural-voice-timing-v1','locale':'uk-UA',
+                'voice':'uk-UA-Chirp3-HD-Enceladus','words_per_second':100/59.5,
+                'characters_per_second':len(text)/59.5,'selection_target_seconds':59.5,
+                'minimum_estimated_seconds':59,'maximum_estimated_seconds':60}}
+        variants=[' '.join(['example']*n) for n in (80,88,110)]
+        gemini=Mock();gemini.generate.return_value=({'paragraph_1':dict(zip(
+            ('compact','balanced','expanded'),variants))},{})
+        gemini.review_script.return_value={'independent_review':True}
+        revised=rewrite(original,63504,gemini)
+        context=gemini.generate.call_args.args[2]
+        self.assertEqual(context['target_seconds'],56)
+        self.assertEqual(context['voice_acceptance_window_seconds'],[59,60])
+        self.assertEqual(context['paragraphs']['paragraph_1']['target_words'],88)
+        self.assertEqual(revised['payload']['speech_timing']['selection_target_seconds'],56)
+        self.assertLess(abs(estimated_seconds(revised['payload']['script'],
+            revised['payload']['speech_timing'])-56),.2)
+
 class FirstMeasurementTests(unittest.TestCase):
     def test_measured_feedback_can_reach_first_measurement_but_legacy_estimate_stays_strict(self):
         from material_first.speech_timing import validate_plan_timing

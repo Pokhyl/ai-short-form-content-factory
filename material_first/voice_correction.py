@@ -34,7 +34,7 @@ def select_paragraphs(payload, proposed, timing):
         if not isinstance(variants,list) or not 1<=len(variants)<=3 or any(not isinstance(t,str) or not t.strip() for t in variants):
             raise ValueError('bounded complete paragraph variants required')
         choices.append(list(dict.fromkeys(variants)))
-    target=payload['seconds']-.5
+    target=timing.get('selection_target_seconds',payload['seconds']-.5)
     return list(min(product(*choices),key=lambda paragraphs:(
         abs(estimated_seconds(' '.join(paragraphs),timing)-target),
         sum(a!=b for a,b in zip(originals,paragraphs)))))
@@ -47,13 +47,24 @@ def rewrite(payload, measured_ms, gemini):
         raise ValueError('completed voice measurement required')
     revised = deepcopy(payload)
     target = payload['seconds'] - .5
-    ratio = target / (measured_ms / 1000)
+    selection_target = target
+    previous_timing = payload.get('speech_timing')
+    if isinstance(previous_timing,dict) and previous_timing.get('selection_target_seconds') is not None:
+        previous_estimate = estimated_seconds(payload['script'],previous_timing)
+        if previous_estimate > 0:
+            observed_factor = (measured_ms / 1000) / previous_estimate
+            # Correct only a measured overrun in the previous estimated text.
+            # The final gate remains the actual 59–60s TTS measurement.
+            if 1.02 < observed_factor < 1.2:
+                selection_target = max(payload['seconds']-4,target/observed_factor)
+    ratio = selection_target / (measured_ms / 1000)
     words = len(payload['script'].split())
     characters = len(payload['script'].strip())
     locale, voice = VOICES[payload['language']]
     timing = {'protocol':'natural-voice-timing-v1','locale':locale,'voice':voice,
               'words_per_second':words/(measured_ms/1000),
               'characters_per_second':characters/(measured_ms/1000),
+              'selection_target_seconds':selection_target,
               'minimum_estimated_seconds':payload['seconds']-1,
               'maximum_estimated_seconds':payload['seconds']}
     facts={f['id']:f for f in payload['evidence']['facts']}
@@ -90,7 +101,9 @@ def rewrite(payload, measured_ms, gemini):
         f'{round(words*ratio)} words and {round(characters*ratio)} characters including spaces. '
         'Return prose, never separate word slots. Do not copy the previous text unchanged.',
         {'paragraphs':paragraphs,'evidence':compact_evidence(payload['evidence']),
-         'actual_duration_ms':measured_ms,'target_seconds':target},schema,thinking_level='low')
+         'actual_duration_ms':measured_ms,'target_seconds':selection_target,
+         'voice_acceptance_window_seconds':[payload['seconds']-1,payload['seconds']]},
+        schema,thinking_level='low')
     validate_json(result,schema)
     alternatives=[]
     for i in range(1,len(revised['scenes'])+1):
@@ -106,7 +119,7 @@ def rewrite(payload, measured_ms, gemini):
     # Estimates cannot certify a one-second window. Require meaningful progress;
     # only the next measured audio can pass the actual duration gate.
     previous_error=abs(measured_ms/1000-target)
-    revised_error=abs(estimated_seconds(revised['script'],timing)-target)
+    revised_error=abs(estimated_seconds(revised['script'],timing)-selection_target)
     if revised_error >= previous_error or revised_error > max(.25,previous_error*.65):
         raise ValueError('rewritten narration did not materially correct measured duration')
     revised['script_review']=gemini.review_script({**{k:v for k,v in revised.items() if k != 'script_review'},'materials':revised['observations']})
