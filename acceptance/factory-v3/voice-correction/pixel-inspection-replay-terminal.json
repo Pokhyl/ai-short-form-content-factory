@@ -1,0 +1,19 @@
+{
+  "id": "bcb79625-cd94-4c7f-9112-e7801613aae7",
+  "state": "failed_terminal_immutable",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "planner_diagnostic": "99046c44-935a-42bc-9907-6091eb2a35d4",
+  "revision": "fe7fab4acbe6d36e1a76458087436358a62c7b7a",
+  "failure_phase": "exact-planner-replay",
+  "failure_type": "RuntimeError",
+  "failure": "The reconstructed material-photo-plan request hash did not match the saved response; the guarded replay stopped before any download.",
+  "saved_gemini_response_replays": 0,
+  "live_gemini_calls": 0,
+  "photo_downloads": 0,
+  "photo_pixel_inspections": 0,
+  "new_searches": 0,
+  "tts_sends": 0,
+  "render_or_qa": false,
+  "product_job_created": false,
+  "result": "No photo, audio or video acceptance. A new immutable plan is required after reproducing and correcting the request-hash mismatch offline."
+}

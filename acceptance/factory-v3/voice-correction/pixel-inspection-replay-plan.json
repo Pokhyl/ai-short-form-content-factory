@@ -24,6 +24,7 @@
     "All four saved planner/reviewer request hashes match before any photo download."
   ],
   "stop": "Stop on any request-hash mismatch before downloading, a download ambiguity/failure, changed original bytes, an inspection identity error, or any action outside the limits. Never create a product job or repeat a failed ID.",
-  "status": "planned",
+  "status": "failed_terminal",
+  "terminal_receipt": "pixel-inspection-replay-terminal.json",
   "project_ready_before": false
 }
