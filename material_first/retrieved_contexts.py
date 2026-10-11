@@ -47,8 +47,8 @@ def _qualify_repeated_objects(rows, known):
             row['english_photo_object'] = qualified
 
 
-def _bind_literal_source_mentions(rows, spans):
-    """Bind exact model-selected mentions to source spans that contain them."""
+def _bind_literal_source_mentions(rows, spans, topic=None):
+    """Bind mentions to literal source text, falling back to the requested topic."""
     catalog = {span['id']: span for span in spans}
     for row in rows.values():
         mention = row.get('source_mention', '').strip()
@@ -56,6 +56,17 @@ def _bind_literal_source_mentions(rows, spans):
         if any(identity in catalog and mention in catalog[identity]['text'] for identity in selected):
             continue
         matches = [span for span in spans if mention and mention in span['text']]
+        if not matches and topic:
+            # Models sometimes return a plausible inflection or paraphrase that
+            # is not actually quoted. Anchor the source mention to the exact
+            # requested topic phrase when the frozen evidence contains it.
+            for span in spans:
+                match = re.search(re.escape(topic), span['text'], re.I)
+                if match and 3 <= len(match.group(0)) <= 80:
+                    mention = match.group(0)
+                    row['source_mention'] = mention
+                    matches = [span]
+                    break
         if not matches:
             continue
         selected_sources = {catalog[identity]['source_id'] for identity in selected if identity in catalog}
@@ -83,7 +94,7 @@ def plan_retrieved_contexts(gemini,request,brief,pools,limit):
 
     def materialize(chosen):
         validate_json(chosen,schema)
-        _bind_literal_source_mentions(chosen,spans)
+        _bind_literal_source_mentions(chosen,spans,request.get('topic'))
         if len({row['anchor_id'] for row in chosen.values()})!=3:
             raise ValueError('retrieved contexts require distinct anchors')
         _qualify_repeated_objects(chosen,known)
@@ -159,7 +170,7 @@ def plan_retrieved_contexts(gemini,request,brief,pools,limit):
              'source_spans':spans,'candidates':[{'id':c['id'],'descriptions':descriptions(c)} for c in anchors],
              'previous_selection':prior,'review_failures':review['contexts'],'distinct_contexts_failure':not review['distinct_contexts']},schema)
         validate_json(repaired,schema)
-        _bind_literal_source_mentions(repaired,spans)
+        _bind_literal_source_mentions(repaired,spans,request.get('topic'))
         for key in selected:
             if key not in rejected_roles and repaired[key]!=prior[key]:
                 raise ValueError('photo-plan repair changed a reviewer-approved context')

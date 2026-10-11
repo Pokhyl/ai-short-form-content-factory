@@ -62,9 +62,10 @@ class RetrievedContextTests(unittest.TestCase):
         def mutate(rows):rows['v1']['english_photo_object']='hidden neutron core'
         with self.assertRaisesRegex(ValueError,'absent from actual anchor'):self.run_plan(mutate)
         self.assertEqual(self.calls,['material-photo-plan'])
-    def test_selected_object_without_source_mention_stops(self):
+    def test_unquoted_source_mention_is_replaced_with_exact_topic_quote(self):
         def mutate(rows):rows['v0']['source_mention']='Invented associated object'
-        with self.assertRaisesRegex(ValueError,'does not contain'):self.run_plan(mutate)
+        self.run_plan(mutate)
+        self.assertEqual(self.calls,['material-photo-plan','material-photo-plan-review'])
     def test_exact_source_mention_is_bound_to_its_literal_span(self):
         rows={'v0':{'source_mention':'пульсар','support_span_ids':['s1']}}
         spans=[{'id':'s1','source_id':'source-a','text':'Общий контекст нейтронных звёзд.'},
@@ -72,6 +73,13 @@ class RetrievedContextTests(unittest.TestCase):
         _bind_literal_source_mentions(rows,spans)
         self.assertEqual(rows['v0']['support_span_ids'],['s2','s1'])
         self.assertIn(rows['v0']['source_mention'],next(s['text'] for s in spans if s['id']==rows['v0']['support_span_ids'][0]))
+    def test_unquoted_model_inflection_falls_back_to_exact_topic_phrase(self):
+        rows={'v0':{'source_mention':'пульсаров','support_span_ids':['s1']}}
+        spans=[{'id':'s1','source_id':'source-a','text':'Общий контекст нейтронных звёзд.'},
+               {'id':'s2','source_id':'source-b','text':'Нейтронная звезда — компактный объект.'}]
+        _bind_literal_source_mentions(rows,spans,'нейтронная звезда')
+        self.assertEqual(rows['v0']['source_mention'],'Нейтронная звезда')
+        self.assertEqual(rows['v0']['support_span_ids'],['s2','s1'])
     def test_independent_rejection_is_terminal_without_extra_generation(self):
         with self.assertRaisesRegex(ValueError,'context review failed'):self.run_plan(reject=True)
         self.assertEqual(self.calls,['material-photo-plan','material-photo-plan-review','material-photo-plan-repair','material-photo-plan-review:repair'])

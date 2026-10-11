@@ -17,6 +17,18 @@
   },
   "expected_quota_consumption": "At most four calls on the configured free-only Gemini project; paid fallback prohibited.",
   "stop": "Require all nine saved searches; stop on any failure. Never repeat this ID or earlier failed IDs.",
-  "status": "planned",
-  "project_ready_before": false
+  "status": "terminal_failure",
+  "project_ready_before": false,
+  "result": {
+    "error": "ValueError: v2: selected source span does not contain the object mention",
+    "actual_cause": "Gemini supplied plausible inflections/paraphrases that were not literal source substrings; the current binding only relocated literal matches and could not recover a nonliteral mention.",
+    "fresh_gemini_calls": ["material-photo-plan"],
+    "saved_search_responses_replayed": 9,
+    "new_searches": 0,
+    "downloads": 0,
+    "inspections": 0,
+    "tts_sends": 0,
+    "render_or_qa": false,
+    "project_ready": false
+  }
 }
