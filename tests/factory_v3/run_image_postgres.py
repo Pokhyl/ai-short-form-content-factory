@@ -28,6 +28,7 @@ createdb -h /tmp -U shorts shorts_factory
   "-e","V3_TEST_DATABASE_URL=postgresql://shorts@127.0.0.1:5432/shorts_factory",
   "-v",str(root/"tests/factory_v3/ledger_driver_check.py")+":/fixtures/driver.py:ro",
   "-v",str(root/"db/02-provider-budget.sql")+":/fixtures/budget.sql:ro",
+  "-v",str(root/"factory_v3/proofread_call_migration.sql")+":/fixtures/proofread_call_migration.sql:ro",
   args.image,"/fixtures/driver.py"],capture_output=True,text=True,timeout=30)
  (root/"acceptance/factory-v3/image-postgres-driver.txt").write_text(result.stdout+result.stderr)
  print(result.stdout+result.stderr)

@@ -17,7 +17,10 @@ dsn=os.environ["V3_TEST_DATABASE_URL"]
 with psycopg.connect(dsn) as connection:
     connection.execute(Path("/fixtures/budget.sql").read_text(),prepare=False)
     connection.execute(Path("/app/factory_v3/ledger.sql").read_text(),prepare=False)
-    connection.execute(Path("/app/factory_v3/preparation.sql").read_text(),prepare=False)
+    legacy_preparation=Path("/app/factory_v3/preparation.sql").read_text().replace(
+        "(rewrite|proofread|script-review)","(rewrite|script-review)")
+    connection.execute(legacy_preparation,prepare=False)
+    connection.execute(Path("/fixtures/proofread_call_migration.sql").read_text(),prepare=False)
     connection.execute(Path("/app/factory_v3/provider_cache.sql").read_text(),prepare=False)
     connection.execute(Path("/app/factory_v3/review.sql").read_text(),prepare=False)
     connection.execute("""INSERT INTO factory.provider_budget_limits
