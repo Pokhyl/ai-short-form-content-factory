@@ -1,8 +1,10 @@
 import copy,json,unittest
 from pathlib import Path
 from types import SimpleNamespace
-from material_first.retrieved_contexts import plan_retrieved_contexts,_bind_literal_source_mentions
+from material_first.retrieved_contexts import (plan_retrieved_contexts,_bind_literal_source_mentions,
+    _generate_bounded_support_spans)
 from material_first.source_spans import source_spans,bind_support
+from factory_v3.gemini import ModelSchemaError,obj,array,string
 
 ROOT=Path(__file__).parent/'fixtures'
 class RetrievedContextTests(unittest.TestCase):
@@ -95,6 +97,21 @@ class RetrievedContextTests(unittest.TestCase):
         _bind_literal_source_mentions(rows,spans,'нейтронная звезда')
         self.assertEqual(rows['v0']['source_mention'],'Нейтронная звезда')
         self.assertEqual(rows['v0']['support_span_ids'],['s2','s1'])
+    def test_completed_plan_compacts_only_overlong_spans_and_keeps_literal_mention(self):
+        spans=[{'id':f's{i}','source_id':'source','text':('Pulsar is in this exact span.' if i==5 else f'Context {i}.')}
+            for i in range(1,6)]
+        result={'v0':{'source_mention':'Pulsar','support_span_ids':[s['id'] for s in spans]}}
+        schema=obj({'v0':obj({'source_mention':string(),
+            'support_span_ids':array(string(s['id'] for s in spans),1,3)})})
+        class CompletedButOverlong:
+            def generate(self,*args,**kwargs):
+                error=ModelSchemaError(copy.deepcopy(result),'completed response exceeds support-span bound')
+                error.provenance={'receipt_id':'completed-response'}
+                raise error
+        normalized,provenance=_generate_bounded_support_spans(
+            CompletedButOverlong(),'material-photo-plan','',{},schema,spans)
+        self.assertEqual(normalized['v0']['support_span_ids'],['s5','s1','s2'])
+        self.assertEqual(provenance['receipt_id'],'completed-response')
     def test_independent_rejection_is_terminal_without_extra_generation(self):
         with self.assertRaisesRegex(ValueError,'context review failed'):self.run_plan(reject=True)
         self.assertEqual(self.calls,['material-photo-plan','material-photo-plan-review','material-photo-plan-repair','material-photo-plan-review:repair'])

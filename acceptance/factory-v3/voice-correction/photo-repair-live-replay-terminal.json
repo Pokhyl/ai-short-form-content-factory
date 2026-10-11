@@ -1,0 +1,24 @@
+{
+  "id": "3eb3a9c9-9da7-4b12-82d3-7652f7983b65",
+  "state": "failed_terminal_immutable",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "4f1f1b3f9147ad111d85cbff23a1f49bc5a7a18a",
+  "saved_search_replays": 9,
+  "live_gemini_calls": 1,
+  "completed_gemini_call": "material-photo-plan",
+  "reviewer_called": false,
+  "failure_type": "ModelSchemaError",
+  "failure": "One support_span_ids array had five items, exceeding the local maximum of three.",
+  "source_span_evidence": {
+    "affected_role": "v2",
+    "provided_span_count": 5,
+    "literal_mention_span_index": 2,
+    "unknown_span_ids": 0
+  },
+  "new_searches": 0,
+  "downloads": 0,
+  "pixel_inspections": 0,
+  "tts": 0,
+  "render_or_qa": false,
+  "result": "The completed response was saved once; no retry occurred. A generic bounded compaction preserves the exact mention span and revalidates every other field. project_ready=false."
+}

@@ -22,6 +22,7 @@
     "All nine saved photo-search identities match the source request."
   ],
   "stop": "Stop on any identity mismatch, planner/reviewer failure, change to an approved role, repeated anchor, or provider action outside the limits. Never create a product job.",
-  "status": "planned",
+  "status": "failed_terminal",
+  "terminal_receipt": "photo-repair-live-replay-terminal.json",
   "project_ready_before": false
 }
