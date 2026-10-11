@@ -88,6 +88,24 @@ class WorkerCorrectionTests(unittest.TestCase):
             self.assertEqual([call.args[1] for call in provider.synthesize.call_args_list],['old','new'])
 
 class RewriteTests(unittest.TestCase):
+    def test_native_surface_gate_checks_selected_proofread_variant_only(self):
+        from material_first.voice_correction import rewrite
+        text=' '.join(['example']*100)
+        original={'voice_correction':dict(POLICY),'seconds':60,'language':'uk','script':text,
+                  'scenes':[{'id':'s1','narration':text,'evidence_ids':['f1']}],
+                  'evidence':{'facts':[{'id':'f1','text':'The source mechanism.','support':[]}],'sources':[]},
+                  'observations':[]}
+        variants=[' '.join(['example']*110),
+                  ' '.join(['example']*119),
+                  ' '.join(['example']*140)+' густины']
+        gemini=Mock();gemini.generate.side_effect=[
+            ({'paragraph_1':dict(zip(('compact','balanced','expanded'),variants))},{}),
+            ({'paragraph_1':variants[1]}, {})]
+        gemini.review_script.return_value={'independent_review':True}
+        revised=rewrite(original,50000,gemini)
+        self.assertEqual(revised['payload']['scenes'][0]['narration'],variants[1])
+        self.assertNotIn('густины',revised['payload']['script'])
+
     def test_selected_ukrainian_text_is_edited_before_independent_review(self):
         from material_first.voice_correction import proofread_selected
         bad='Електронний захоплення зупиняє стискання радіуса.'

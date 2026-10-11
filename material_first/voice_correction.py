@@ -145,7 +145,6 @@ def rewrite(payload, measured_ms, gemini):
     alternatives=[]
     for i in range(1,len(revised['scenes'])+1):
         variants=[result['paragraph_'+str(i)][name].strip() for name in ('compact','balanced','expanded')]
-        for text in variants:validate_native_surface(payload['language'],text)
         alternatives.append(variants)
     selected=select_paragraphs(payload,alternatives,timing)
     for scene,text in zip(revised['scenes'],selected):scene['narration']=text
