@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-11",
+  "state": "deployed-and-route-verified",
+  "source_revision": "c921bd0a12bb06f22de477a0cceb8824b283603b",
+  "image": {
+    "tag": "factory-v3:c921bd0",
+    "id": "sha256:c8c9ed1a62d84eeedba8c94b18a77d83bcddba7338f0037d46a63c808c0995b0"
+  },
+  "studio": {
+    "origin": "https://studio.hodor.com.pl/",
+    "password_prompt": false,
+    "public_access": true,
+    "root_http_status": 200,
+    "root_stayed_on_studio_origin": true,
+    "studio_ui_present": true,
+    "app_js_http_status": 200,
+    "session_api_without_cookie_http_status": 200,
+    "session_api_without_cookie_authenticated": true
+  },
+  "former_publisher_factory_route": {
+    "url": "https://publisher.hodor.com.pl/factory-v3/",
+    "http_status": 404
+  },
+  "caddy": {
+    "validated": true,
+    "reloaded": true,
+    "new_sha256": "e83acf1dcfdbbf50ea75cea36359502d4b42b4b2a0a04e8605ed5c358a2af854",
+    "backup_path": "/opt/n8n/Caddyfile.pre-studio-c921bd0",
+    "backup_sha256": "f5c5f0b1074d244ceaa9cf05e0fb4fe4df3d825ab665f47ca2869ac2ab6a9436"
+  },
+  "settings": {
+    "public_origin": "https://studio.hodor.com.pl",
+    "public_access": true,
+    "mode": "0600",
+    "backup_path": "/var/lib/factory-v3/settings.json.pre-studio-20261011-c921bd0",
+    "before_sha256": "87656eaa5d331e868eae57c2faa807427bb8e5a3dc36a5d93ac1bca7aafc6386",
+    "after_sha256": "54f6106fc4e7fec5b51e5a753b48fbc7e5bdd3d1fa118ec3188b96bcb6620566",
+    "other_settings_unchanged": true
+  },
+  "runtime": {
+    "container": "factory-v3-app",
+    "state": "running-and-healthy",
+    "health_http_status": 200,
+    "project_ready": false,
+    "active_preparations_before_restart": 0,
+    "active_jobs_before_restart": 0,
+    "active_stages_before_restart": 0,
+    "started_provider_calls_before_restart": 0,
+    "provider_calls_during_deployment": 0,
+    "new_video_created": false,
+    "test_suite_run": false
+  },
+  "public_access_note": "The studio and its history/API are available without a password to anyone who can reach the site. Same-origin POST validation and existing queue/provider budgets remain enabled."
+}
