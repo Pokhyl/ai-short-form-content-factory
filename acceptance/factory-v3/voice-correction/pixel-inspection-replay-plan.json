@@ -1,0 +1,29 @@
+{
+  "id": "bcb79625-cd94-4c7f-9112-e7801613aae7",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "planner_diagnostic": "99046c44-935a-42bc-9907-6091eb2a35d4",
+  "revision": "fe7fab4acbe6d36e1a76458087436358a62c7b7a",
+  "question": "Do the three distinct selected original photographs pass exact-byte, topic-specific pixel inspection for their assigned visual roles?",
+  "mode": "replay the exact saved evidence, nine photo-search receipts, and four planner/reviewer responses only when all request hashes match; download and inspect the three resulting exact anchors",
+  "limits": {
+    "saved_search_replays": 9,
+    "saved_gemini_response_replays": 4,
+    "live_gemini_image_calls": 3,
+    "photo_downloads": 3,
+    "photo_pixel_inspections": 3,
+    "new_research_searches": 0,
+    "new_source_fetches": 0,
+    "new_photo_searches": 0,
+    "tts_sends": 0,
+    "render_or_qa": false
+  },
+  "expected_quota_consumption": "At most three image Gemini calls and three single-attempt photo downloads; free-only Gemini project; no paid fallback.",
+  "preconditions": [
+    "Exact revision fe7fab4acbe6d36e1a76458087436358a62c7b7a is deployed and healthy.",
+    "The planner diagnostic and this request use fresh immutable IDs.",
+    "All four saved planner/reviewer request hashes match before any photo download."
+  ],
+  "stop": "Stop on any request-hash mismatch before downloading, a download ambiguity/failure, changed original bytes, an inspection identity error, or any action outside the limits. Never create a product job or repeat a failed ID.",
+  "status": "planned",
+  "project_ready_before": false
+}
