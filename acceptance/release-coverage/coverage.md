@@ -1,24 +1,24 @@
 # Release coverage inventory
 
-Source commit: `60589e9b78b686c48b1608082204ff2703de2005`. Generated with `python3 scripts/inventory_release_coverage.py --output-dir acceptance/release-coverage`.
+Source commit: `8a630204dfa87dc7a53f7137966db98a7a35ee36`. Generated with `python3 scripts/inventory_release_coverage.py --output-dir acceptance/release-coverage`.
 
-Static literal-reference inventory and explicit JSON fields, with manually inspected boundary evidence limits. No source evaluation, provider calls, DB calls or production mutations. Missing literal references may be dynamic; language/topic absence means unknown, not unsupported.
+Static literal-reference inventory and explicit JSON fields, with manually inspected boundary evidence limits. No source evaluation, provider calls, DB calls or production mutations. Historical source hashes are reported as drift; historical test-log hashes and the newer release checkpoint hashes are verified independently. Missing literal references may be dynamic; language/topic absence means unknown, not unsupported.
 
 ## Verified checkpoint and scope
 
-Node883/883 and SQL8/8 are stored, hash-verified offline results. They are not whole-product acceptance. Separate worker runners are not included in Node883. This inventory calls no models and changes no production state.
+Historical checkpoint logs: Node 883/883 and SQL 8/8. Log hashes PASS. Source files changed since that historical checkpoint: 3; see `coverage.json`. Separate worker runners are not included in the Node count. This inventory calls no models and changes no production state.
 
 | Inventory | Count |
 |---|---:|
-| tracked_fixture_count | 41 |
-| tracked_runner_count | 94 |
-| node_suite_file_count | 81 |
+| tracked_fixture_count | 44 |
+| tracked_runner_count | 137 |
+| node_suite_file_count | 83 |
 | sql_runner_count | 8 |
-| separate_runner_count | 5 |
+| separate_runner_count | 46 |
 
 Separate runners: 5/5 PASS on recorded worker/n8n image IDs, without network. Includes two real full-resolution FFmpeg renders using synthetic audio/images. Initial 45s harness timeout and successful bounded 110s retry are both retained. See `separate-checks.json`; this is not a real multilingual product acceptance.
 
-Latest checks: Node886/886, SQL8/8 retained with unchanged SQL/workflow hashes, separate runners5/5, current native integrated9 unique selections. S4/S8 received two fresh provider responses; the other seven are saved responses with matching current sources and contracts. This is offline release evidence, not a new production acceptance.
+Archived 2026-10-04 visual checkpoint: Node886/886, SQL8/8, separate runners5/5, and an integrated nine-unique-selection replay. S4/S8 used two fresh provider responses; seven were saved responses. Hashes prove those historical artifacts only; this is not current voice/model evidence or current production acceptance.
 
 ## Stage boundaries
 
@@ -57,6 +57,7 @@ Metadata records source fields, not inferred language from prose or filenames. M
 | `tests/fixtures/m5-9660-final-word-count-compliance.json` | pl | 15 | 1 |
 | `tests/fixtures/m5-9672-precision-continuity.json` | pl | 15 | 1 |
 | `tests/fixtures/m5-9910-storyboard-repair.json` | unknown | unknown | 1 |
+| `tests/fixtures/m5-m8-12126-contract.json` | pl | 30 | 1 |
 | `tests/fixtures/m7-9802-alignment.json` | unknown | unknown | 1 |
 | `tests/fixtures/m7-short-terminal-scene.json` | unknown | unknown | 1 |
 | `tests/fixtures/m7-trailing-asr-hallucination.json` | pl | unknown | 1 |
@@ -69,6 +70,8 @@ Metadata records source fields, not inferred language from prose or filenames. M
 | `tests/fixtures/m8-12040-surface-owner.json` | unknown | unknown | 2 |
 | `tests/fixtures/m8-12093-paired-preview.json` | unknown | unknown | 2 |
 | `tests/fixtures/m8-12108-fastening-contract.json` | pl | 30 | 3 |
+| `tests/fixtures/m8-12126-full-pools.json` | unknown | unknown | 0 |
+| `tests/fixtures/m8-12126-source-responses.json` | unknown | unknown | 0 |
 | `tests/fixtures/m8-9229-live-overlay-provider-responses.json` | unknown | unknown | 2 |
 | `tests/fixtures/m8-9229-s5-paired-current.json` | unknown | unknown | 1 |
 | `tests/fixtures/m8-9229-saved-provider-responses.json` | unknown | unknown | 2 |
@@ -88,5 +91,7 @@ Metadata records source fields, not inferred language from prose or filenames. M
 1. Add or establish executable connected stage-boundary replay where inventory shows only separate checks.
 2. Deploy and verify exact changed components only after closure.
 3. Complete representative current-release multilingual/duration final-media acceptance; no current-release four-case evidence established.
+4. Current factory-v3 voice acceptance remains blocked: r10/r11 received Gemini 3.6 Flash HTTP 503 before proofreading; no natural-speed MP4 was produced.
+5. Align the committed 3.5 Flash-Lite app, gateway, and free-tier proof on production before a fresh acceptance ID.
 
 Machine-readable fixture hashes, schemas, provenance fields, runner references and boundaries are in `coverage.json`. Report generation itself is not a test run.

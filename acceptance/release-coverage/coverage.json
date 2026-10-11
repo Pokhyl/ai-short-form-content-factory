@@ -1,10 +1,27 @@
 {
-  "schema_version": 1,
-  "source_commit": "60589e9b78b686c48b1608082204ff2703de2005",
-  "method": "Static literal-reference inventory and explicit JSON fields, with manually inspected boundary evidence limits. No source evaluation, provider calls, DB calls or production mutations. Missing literal references may be dynamic; language/topic absence means unknown, not unsupported.",
+  "schema_version": 2,
+  "source_commit": "8a630204dfa87dc7a53f7137966db98a7a35ee36",
+  "method": "Static literal-reference inventory and explicit JSON fields, with manually inspected boundary evidence limits. No source evaluation, provider calls, DB calls or production mutations. Historical source hashes are reported as drift; historical test-log hashes and the newer release checkpoint hashes are verified independently. Missing literal references may be dynamic; language/topic absence means unknown, not unsupported.",
   "provider_calls": 0,
   "production_mutations": 0,
-  "checkpoint_hashes_valid": true,
+  "historical_test_log_hashes_valid": true,
+  "historical_source_drift": [
+    {
+      "path": "workflows/VIDEO-M5-Script-Storyboard.json",
+      "checkpoint_sha256": "907f7eb5baef72434623cdf424303badcb547acc4ec1e1103b3786a417002c20",
+      "current_sha256": "62451c11d16141139ec0d938a939f2c18cb2fa721fe6a727bb05ee765aa330c0"
+    },
+    {
+      "path": "workflows/VIDEO-M8-Multi-Source-Visuals.json",
+      "checkpoint_sha256": "a078b5f450189f2344dd3520835a12f22aac04236f82a66349250a3fdd0047dc",
+      "current_sha256": "e78d28b2bb029d650c3c4d8cf2faf41e8d76dc9e67521ba23b6bff1e4f8b084f"
+    },
+    {
+      "path": "tests/m5-m8-12108-fastening-contract.test.cjs",
+      "checkpoint_sha256": "81f8af1e925f92f739b5a56858b872b85abdef8592144e07bac66bf7294c774d",
+      "current_sha256": "36305ce97370c5375a1a0621a2f03cf763d578af935ddd6b20a2403252dc2a69"
+    }
+  ],
   "checkpoint_results": {
     "node_tests": {
       "total": 883,
@@ -18,12 +35,15 @@
   },
   "product_ready": false,
   "summary": {
-    "tracked_fixture_count": 41,
-    "tracked_runner_count": 94,
-    "node_suite_file_count": 81,
+    "tracked_fixture_count": 44,
+    "tracked_runner_count": 137,
+    "node_suite_file_count": 83,
     "sql_runner_count": 8,
-    "separate_runner_count": 5,
-    "fixtures_without_identified_literal_runner": []
+    "separate_runner_count": 46,
+    "fixtures_without_identified_literal_runner": [
+      "tests/fixtures/m8-12126-full-pools.json",
+      "tests/fixtures/m8-12126-source-responses.json"
+    ]
   },
   "fixtures": [
     {
@@ -477,6 +497,37 @@
       ]
     },
     {
+      "path": "tests/fixtures/m5-m8-12126-contract.json",
+      "sha256": "53d782192b2797a9f1ec84b582d85e4e9ac5151eb623f6e5b5a17f4a089ab771",
+      "bytes": 107456,
+      "top_level_keys": [
+        "context",
+        "generate_response",
+        "provenance",
+        "repair_response",
+        "validate_initial",
+        "visual_begin"
+      ],
+      "explicit_metadata": {
+        "languages": [
+          "pl"
+        ],
+        "target_seconds": [
+          30
+        ],
+        "topics": [
+          "jak działa zszywacz biurowy"
+        ],
+        "execution_ids": [],
+        "job_ids": [
+          "9bf5e97c-0059-48a8-8e5d-7da1b1feb923"
+        ]
+      },
+      "literal_reference_runners": [
+        "tests/m5-m8-12126-contract.test.cjs"
+      ]
+    },
+    {
       "path": "tests/fixtures/m7-9802-alignment.json",
       "sha256": "56a6d0f2405e1623af53ab593241719b1d166f44877df027999c9e1f19f6ad23",
       "bytes": 36181,
@@ -847,6 +898,49 @@
       ]
     },
     {
+      "path": "tests/fixtures/m8-12126-full-pools.json",
+      "sha256": "ce1288e5420d30d6c8a688b5b4680e032d5367ce11df22e7859c486479ab9af2",
+      "bytes": 1256527,
+      "top_level_keys": [
+        "candidate_sets",
+        "normalized",
+        "provenance",
+        "requests",
+        "vision_reviews"
+      ],
+      "explicit_metadata": {
+        "languages": [],
+        "target_seconds": [],
+        "topics": [],
+        "execution_ids": [
+          "12126"
+        ],
+        "job_ids": [
+          "9bf5e97c-0059-48a8-8e5d-7da1b1feb923"
+        ]
+      },
+      "literal_reference_runners": []
+    },
+    {
+      "path": "tests/fixtures/m8-12126-source-responses.json",
+      "sha256": "4d96756bdbcdb3c12535da413878ef3f09f9abd55d9e962bebb79bcdbfa861ea",
+      "bytes": 2227626,
+      "top_level_keys": [
+        "entries",
+        "provenance"
+      ],
+      "explicit_metadata": {
+        "languages": [],
+        "target_seconds": [],
+        "topics": [],
+        "execution_ids": [],
+        "job_ids": [
+          "9bf5e97c-0059-48a8-8e5d-7da1b1feb923"
+        ]
+      },
+      "literal_reference_runners": []
+    },
+    {
       "path": "tests/fixtures/m8-9229-live-overlay-provider-responses.json",
       "sha256": "dc13ce7c9effa740540f5df19b6d203331d054af7fc49333e6a917b392dca003",
       "bytes": 557972,
@@ -1127,6 +1221,168 @@
       "literal_script_references": [
         "scripts/audit_final_media.py"
       ],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/ledger_driver_check.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/run_image_postgres.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/run_postgres_ledger.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_catalog.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_credential_http.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_deletion.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_diagnostics.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_executor.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_gemini.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_preflight.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_preparation.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_producer.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_providers.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_research.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_runtime.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_server.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_visual_plan.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/factory_v3/test_worker_adapters.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
       "fixture_references_with_script_closure": [],
       "worker_source_reference": false,
       "test_title_count_static": 0
@@ -1541,6 +1797,20 @@
       "test_title_count_static": 18
     },
     {
+      "path": "tests/m5-m8-12126-contract.test.cjs",
+      "runner_group": "node_test_suite",
+      "literal_workflow_references": [
+        "VIDEO-M5-Script-Storyboard.json",
+        "VIDEO-M8-Multi-Source-Visuals.json"
+      ],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [
+        "tests/fixtures/m5-m8-12126-contract.json"
+      ],
+      "worker_source_reference": false,
+      "test_title_count_static": 11
+    },
+    {
       "path": "tests/m5-must-not-show-context.test.cjs",
       "runner_group": "node_test_suite",
       "literal_workflow_references": [
@@ -1899,6 +2169,215 @@
       "test_title_count_static": 5
     },
     {
+      "path": "tests/material_first/render_fixture.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [
+        "scripts/audit_final_media.py"
+      ],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/render_local_fixture.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_connected_presentation.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_contextual_paragraphs.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_engine.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_metadata_mode.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_operations.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_paragraphs.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_photo_contexts.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_photo_identity.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_photo_planning.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_photo_queries.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_presentation.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_research_review.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_retrieved_contexts.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_source_spans.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_speech_timing.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_targets.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_topic_connected.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_topic_quality.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_voice_correction.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/test_worker.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
+      "path": "tests/material_first/whole_pipeline_render_fixture.py",
+      "runner_group": "separate_runner",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 0
+    },
+    {
       "path": "tests/measured-draft-reuse.test.cjs",
       "runner_group": "node_test_suite",
       "literal_workflow_references": [
@@ -2003,6 +2482,15 @@
       ],
       "worker_source_reference": false,
       "test_title_count_static": 26
+    },
+    {
+      "path": "tests/studio-delete.test.cjs",
+      "runner_group": "node_test_suite",
+      "literal_workflow_references": [],
+      "literal_script_references": [],
+      "fixture_references_with_script_closure": [],
+      "worker_source_reference": false,
+      "test_title_count_static": 6
     },
     {
       "path": "tests/timing-measurements.test.cjs",
@@ -2314,7 +2802,9 @@
   "release_blockers": [
     "Add or establish executable connected stage-boundary replay where inventory shows only separate checks.",
     "Deploy and verify exact changed components only after closure.",
-    "Complete representative current-release multilingual/duration final-media acceptance; no current-release four-case evidence established."
+    "Complete representative current-release multilingual/duration final-media acceptance; no current-release four-case evidence established.",
+    "Current factory-v3 voice acceptance remains blocked: r10/r11 received Gemini 3.6 Flash HTTP 503 before proofreading; no natural-speed MP4 was produced.",
+    "Align the committed 3.5 Flash-Lite app, gateway, and free-tier proof on production before a fresh acceptance ID."
   ],
   "separate_runtime_checks": {
     "worker_source_sha256": "37faf271dac3845b5a7a247dd765e6b4c3fc41d45cdb966f976879791f2c7c61",
@@ -2405,6 +2895,29 @@
       "acceptance/release-coverage/integrated-visual-replay.json": "704376cc935beeb59afdded6336a6128e2f5e08bba6209f0efe76f96aadc9b45"
     },
     "deployment_evidence": "acceptance/release-coverage/deployment-verified.json",
-    "created_job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923"
+    "created_job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+    "production_launch": {
+      "attempted_at": "2026-10-04T17:48:43.532740+00:00",
+      "prelaunch_head": "f7bbbde7e68d1426520d23f91fd3b6d1f90131c1",
+      "job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+      "http_status": 202,
+      "response": {
+        "job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+        "accepted": true,
+        "status": "processing"
+      },
+      "launch_count": 1
+    },
+    "jobs_launched": 1,
+    "production_terminal": {
+      "job_id": "9bf5e97c-0059-48a8-8e5d-7da1b1feb923",
+      "status": "visuals_failed",
+      "execution_id": 12126,
+      "blockers": [
+        "S9: no candidate passes photographic binding intent",
+        "S6 and S8 each approve only the same candidate: unique assignment impossible independently of S9",
+        "M5 removes authored internal-component requirements; final accepted narration includes forbidden filler Koniec."
+      ]
+    }
   }
 }

@@ -31,7 +31,7 @@
       "name": "credential gateway/free quota",
       "test": {
         "path": "tests/factory_v3/test_credential_http.py",
-        "sha256": "f04e4d2894b64218ed877d1d6ca34aa6098a4dc480091b58a09333b17f55e288"
+        "sha256": "699a5afb4e4235439bde367f5cb0a358dd19baf5f4b0fe3ecf0213df3170c11b"
       },
       "saved_evidence": {
         "path": "acceptance/factory-v3/response-body-billing.json",
@@ -103,7 +103,7 @@
       "name": "independent factual script review",
       "test": {
         "path": "tests/factory_v3/test_gemini.py",
-        "sha256": "9cca580e8819deed613ba2b95d028088db67d42f89ad0f738c2c50f8e769438b"
+        "sha256": "c9c4147582876b7b9314a5a081b2448fa13020381030d563df170755f52a7768"
       },
       "saved_evidence": {
         "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r9-result.json",
