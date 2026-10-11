@@ -23,6 +23,8 @@ class RetrievedContextTests(unittest.TestCase):
             if key=='material-photo-plan':
                 self.assertIn('verbatim contiguous substring',instruction)
                 self.assertIn('literally contains that exact substring',instruction)
+                self.assertIn('A relation only through a cause, aftermath',instruction)
+                self.assertIn('explicitly named wavelength bands',instruction)
                 result=copy.deepcopy(self.choice)
                 if mutation:mutation(result)
                 return result,{'receipt_id':'controlled-selection'}
