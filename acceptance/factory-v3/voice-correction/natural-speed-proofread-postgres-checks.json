@@ -8,6 +8,8 @@
     "proofread",
     "script-review"
   ],
+  "legacy_allowlist_upgrade_test": "passed",
+  "proofread_call_key_claim_finish_fail": "passed",
   "ledger": "passed",
   "preparation_replay_and_budgets": "passed",
   "ambiguous_call_blocks": "passed",
