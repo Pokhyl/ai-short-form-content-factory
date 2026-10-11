@@ -172,6 +172,14 @@ class GeminiTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'schema'):self.adapter.review_script(request)
         self.assertEqual(len(self.http.requests),1)
 
+    def test_native_language_quality_false_rejects_the_reviewed_script(self):
+        _,request,response,_=self.native_review_fixture()
+        response['native_language_quality']=False
+        self.http.result=response
+        with self.assertRaisesRegex(ValueError,'native-language proofreading review failed'):
+            self.adapter.review_script(request)
+        self.assertEqual(len(self.http.requests),1)
+
     def test_named_check_rejects_unsupported_fact_and_nonverbatim_quote(self):
         _,request,response,_=self.native_review_fixture()
         response['factual_checks']['assertion_1']['supported']=False
