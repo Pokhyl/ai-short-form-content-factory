@@ -1,0 +1,27 @@
+{
+  "id": "e0f49eaa-c5af-474c-84ce-d2873901be19",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "04df6dac7aa6d2206d92e54ba2f7c565a4e52a48",
+  "model": "gemini-3.5-flash-lite",
+  "state": "failed_terminal",
+  "job_status": "unknown",
+  "latest_stage": {
+    "stage": "voice",
+    "state": "unknown",
+    "error_code": "ValueError"
+  },
+  "tts_sends": 1,
+  "gemini_calls": 3,
+  "metadata_calls": 1,
+  "measured_voice_durations_ms": [
+    52704
+  ],
+  "render_count": 0,
+  "failure_type": "ValueError",
+  "failure": "semantic check does not quote actual narration",
+  "review_http_status": 200,
+  "review_model": "gemini-3.5-flash-lite",
+  "review_prompt_tokens": 144783,
+  "review_result": "The reviewer quoted an unsupported sentence for an omitted fact; local exact-narration validation rejected it. No render was started.",
+  "project_ready": false
+}

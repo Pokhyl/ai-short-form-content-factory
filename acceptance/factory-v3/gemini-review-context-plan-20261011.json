@@ -35,7 +35,8 @@
     "image": "factory-v3:gemini35-04df6da-r1",
     "image_id": "sha256:595114f473f7b1c847e26a1a9e19a38156f142f5292c93e5c00cba1920378768"
   },
-  "status": "planned",
+  "status": "deployed",
   "postdeploy_snapshot": "acceptance/factory-v3/gemini-review-context-postdeploy-snapshot-20261011.json",
-  "separate_acceptance_plan_required_before_any_provider_call": true
+  "separate_acceptance_plan_required_before_any_provider_call": true,
+  "deployment_receipt": "acceptance/factory-v3/gemini-review-context-deployment-20261011.json"
 }

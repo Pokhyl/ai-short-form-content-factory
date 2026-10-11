@@ -1,6 +1,6 @@
 {
   "plan": "acceptance/factory-v3/gemini-review-context-plan-20261011.json",
-  "status": "started",
+  "status": "completed",
   "source_commit": "5e745705662e2f2bec8d7da7e2a191648a8281e9",
   "new_app_image": {
     "tag": "factory-v3:gemini35-5e74570-r1",
@@ -17,7 +17,7 @@
     "running_n8n_executions": 0
   },
   "actions": {
-    "app_recreate_no_deps": "not_started",
+    "app_recreate_no_deps": "completed",
     "provider_calls": 0,
     "tts_calls": 0,
     "database_migrations": 0,
@@ -27,5 +27,24 @@
     "app_image": "factory-v3:gemini35-04df6da-r1",
     "app_image_id": "sha256:595114f473f7b1c847e26a1a9e19a38156f142f5292c93e5c00cba1920378768"
   },
-  "project_ready": false
+  "project_ready": false,
+  "postdeploy": {
+    "app_image": "factory-v3:gemini35-5e74570-r1",
+    "app_image_id": "sha256:4faa68ecf1252fd180cede9c2e4aaeb1eed6645e22168c40ffd5b2e310bf02ca",
+    "app_status": "running",
+    "app_health": "healthy",
+    "app_restarts": 0,
+    "studio_root_http": 200,
+    "factory_health_http": 200,
+    "gateway_unauthorized_route_http": 403,
+    "gateway_active": true,
+    "gateway_model": "gemini-3.5-flash-lite",
+    "settings_proof_model": "gemini-3.5-flash-lite",
+    "billing_enabled": false,
+    "n8n_restart_count": 0,
+    "provider_calls": 0,
+    "tts_calls": 0,
+    "database_migrations": 0,
+    "postdeploy_snapshot": "acceptance/factory-v3/gemini-review-context-postdeploy-snapshot-20261011.json"
+  }
 }

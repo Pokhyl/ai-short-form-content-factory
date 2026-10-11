@@ -1,0 +1,41 @@
+{
+  "id": "c9c44b61-18fc-4651-8362-398968b905be",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "5e745705662e2f2bec8d7da7e2a191648a8281e9",
+  "model": "gemini-3.5-flash-lite",
+  "question": "Does the deployed Gemini 3.5 factory now produce a natural-speed 60-second Ukrainian voiceover and render it without slowing the audio after narrowing semantic-review context?",
+  "mode": "Reuse frozen source facts, reviewed paragraphs and approved photos; measure natural TTS, correct text only, align, render, and machine-audit.",
+  "predecessor": {
+    "id": "e0f49eaa-c5af-474c-84ce-d2873901be19",
+    "state": "failed_terminal",
+    "reason": "The former reviewer input included 144783 prompt tokens of unrelated image/provider receipts and hallucinated a quote. The focused-review fix is deployed in a new app image; never replay the failed ID."
+  },
+  "deployment_commit": "af0652b0b84757db16c318dc137bde3f34e169e2",
+  "limits": {
+    "tts_sends": 3,
+    "gemini_calls": 6,
+    "metadata_calls": 1,
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "new_research": 0,
+    "paid_fallback": false,
+    "video_renders": 1,
+    "machine_qa_runs": 1
+  },
+  "acceptance": {
+    "measured_voice_duration_ms": [
+      59000,
+      60000
+    ],
+    "audio_tempo_factor": 1.0,
+    "trailing_silence_ms_max": 1000,
+    "source_plan_and_fact_grounding_unchanged": true,
+    "machine_qa_pass": true
+  },
+  "stop": "One attempt per external send. Stop on failed or ambiguous calls, third out-of-window voice, or before exceeding limits. No time-stretch or paid fallback.",
+  "status": "planned",
+  "terminal_receipt": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r13-result.json",
+  "project_ready_before": false,
+  "sequence": "r13; one fresh bounded acceptance on deployed source 5e74570."
+}
