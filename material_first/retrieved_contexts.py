@@ -47,6 +47,23 @@ def _qualify_repeated_objects(rows, known):
             row['english_photo_object'] = qualified
 
 
+def _bind_literal_source_mentions(rows, spans):
+    """Bind exact model-selected mentions to source spans that contain them."""
+    catalog = {span['id']: span for span in spans}
+    for row in rows.values():
+        mention = row.get('source_mention', '').strip()
+        selected = row.get('support_span_ids', [])
+        if any(identity in catalog and mention in catalog[identity]['text'] for identity in selected):
+            continue
+        matches = [span for span in spans if mention and mention in span['text']]
+        if not matches:
+            continue
+        selected_sources = {catalog[identity]['source_id'] for identity in selected if identity in catalog}
+        exact = next((span for span in matches if span['source_id'] in selected_sources), matches[0])
+        row['support_span_ids'] = [exact['id']] + [identity for identity in selected
+                                                   if identity != exact['id']][:2]
+
+
 def plan_retrieved_contexts(gemini,request,brief,pools,limit):
     validate_evidence(brief['evidence'])
     if 'visual_contexts' in brief['evidence']:
@@ -77,6 +94,7 @@ def plan_retrieved_contexts(gemini,request,brief,pools,limit):
         {'topic':request['topic'],'facts':facts,'required_fact_ids':brief['required_fact_ids'],'source_spans':spans,
          'candidates':[{'id':c['id'],'descriptions':descriptions(c)} for c in anchors]},schema)
     validate_json(selected,schema)
+    _bind_literal_source_mentions(selected,spans)
     if len({row['anchor_id'] for row in selected.values()})!=3:
         raise ValueError('retrieved contexts require distinct anchors')
     _qualify_repeated_objects(selected, known)

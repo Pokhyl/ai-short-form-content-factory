@@ -1,7 +1,7 @@
 import copy,json,unittest
 from pathlib import Path
 from types import SimpleNamespace
-from material_first.retrieved_contexts import plan_retrieved_contexts
+from material_first.retrieved_contexts import plan_retrieved_contexts,_bind_literal_source_mentions
 from material_first.source_spans import source_spans,bind_support
 
 ROOT=Path(__file__).parent/'fixtures'
@@ -53,6 +53,13 @@ class RetrievedContextTests(unittest.TestCase):
     def test_selected_object_without_source_mention_stops(self):
         def mutate(rows):rows['v0']['source_mention']='Invented associated object'
         with self.assertRaisesRegex(ValueError,'does not contain'):self.run_plan(mutate)
+    def test_exact_source_mention_is_bound_to_its_literal_span(self):
+        rows={'v0':{'source_mention':'пульсар','support_span_ids':['s1']}}
+        spans=[{'id':'s1','source_id':'source-a','text':'Общий контекст нейтронных звёзд.'},
+               {'id':'s2','source_id':'source-b','text':'В центре туманности находится пульсар.'}]
+        _bind_literal_source_mentions(rows,spans)
+        self.assertEqual(rows['v0']['support_span_ids'],['s2','s1'])
+        self.assertIn(rows['v0']['source_mention'],next(s['text'] for s in spans if s['id']==rows['v0']['support_span_ids'][0]))
     def test_independent_rejection_is_terminal_without_extra_generation(self):
         with self.assertRaisesRegex(ValueError,'context review failed'):self.run_plan(reject=True)
         self.assertEqual(self.calls,['material-photo-plan','material-photo-plan-review'])
