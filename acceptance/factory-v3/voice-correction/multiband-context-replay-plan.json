@@ -1,0 +1,22 @@
+{
+  "id": "646f628c-7e0a-4732-8162-23db485ebaae",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "025999fb80f9dd5e9eaa760145acfa96727ad31e",
+  "question": "Does the deployed multiwavelength context planner produce three distinct source-linked contexts and pass its independent review when given the saved neutron-star evidence and saved photo search pool?",
+  "mode": "saved frozen evidence and provider-cache search replay; planner and reviewer only",
+  "limits": {
+    "metadata_authorization_calls": 0,
+    "gemini_generation_calls": 2,
+    "new_research_searches": 0,
+    "new_source_fetches": 0,
+    "new_photo_searches": 0,
+    "new_photo_downloads": 0,
+    "new_photo_inspections": 0,
+    "tts_sends": 0,
+    "render_or_qa": false
+  },
+  "expected_quota_consumption": "Two calls using the verified free-only Gemini project; paid fallback prohibited.",
+  "stop": "Require all nine saved provider-cache responses. Stop on any external search, missing replay, provider, schema, semantic review or validation failure. Never repeat this ID or earlier failed IDs.",
+  "status": "planned",
+  "project_ready_before": false
+}
