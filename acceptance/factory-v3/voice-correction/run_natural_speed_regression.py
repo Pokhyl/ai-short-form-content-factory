@@ -9,9 +9,9 @@ from factory_v3.preflight import digest
 from material_first.engine import verify
 from material_first.voice_correction import POLICY
 
-IDENTITY = '1c2bafd9-00a0-47c1-884c-372265df5fe5'
+IDENTITY = 'c899d0d5-de1b-4b35-903c-e8ac63bce4a4'
 SOURCE = '72705d11-4556-4a4a-b751-676cc71e215d'
-REVISION = 'fe7fab4acbe6d36e1a76458087436358a62c7b7a'
+REVISION = 'bd3b6ca321664094bf5cac12a8c23a27d80fea5f'
 
 r = Runtime(load_settings('/run/factory-v3/settings.json'), '/data',
             os.environ['FACTORY_V3_REVISION'])
