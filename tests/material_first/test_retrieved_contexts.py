@@ -22,6 +22,7 @@ class RetrievedContextTests(unittest.TestCase):
             self.calls.append(key)
             if key=='material-photo-plan':
                 self.assertIn('verbatim contiguous substring',instruction)
+                self.assertIn('short 3–80 character verbatim contiguous substring',instruction)
                 self.assertIn('literally contains that exact substring',instruction)
                 self.assertIn('A relation only through a cause, aftermath',instruction)
                 self.assertIn('The three English photo-object labels must be distinct',instruction)
