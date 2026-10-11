@@ -1,0 +1,35 @@
+{
+  "source_commit": "04df6dac7aa6d2206d92e54ba2f7c565a4e52a48",
+  "app_image": "factory-v3:gemini35-04df6da-r1",
+  "app_image_id": "sha256:595114f473f7b1c847e26a1a9e19a38156f142f5292c93e5c00cba1920378768",
+  "network_enabled": false,
+  "provider_calls": 0,
+  "production_mutations": 0,
+  "checks": [
+    {
+      "suite": "factory_v3",
+      "passed": 112,
+      "failed": 0
+    },
+    {
+      "suite": "material_first",
+      "passed": 178,
+      "failed": 0
+    },
+    {
+      "suite": "native_n8n_http_node_mock",
+      "runtime_image": "n8nio/n8n:2.37.10",
+      "runtime_image_id": "sha256:307d6065be25619aa24cfc63a7c2f04ca56d084a08c05c8e9f189a89f353b1ec",
+      "passed": true,
+      "transport_sends": 1
+    },
+    {
+      "suite": "gateway_validator",
+      "passed": true,
+      "paid_route_rejected": true,
+      "retry_enabled": false
+    }
+  ],
+  "predeploy_snapshot": "acceptance/factory-v3/gemini-model-alignment-predeploy-snapshot.json",
+  "project_ready": false
+}
