@@ -105,3 +105,37 @@ def ordered_visuals(payload, timings, source_duration_ms):
         if not assign(slot,set()): raise ValueError('no subject-related photograph for a narration interval')
     assignment={slot:photo for photo,slot in owners.items()}
     return [{**payload['visuals'][assignment[i]],**cut,'narration_scene_id':scene['id']} for i,(cut,scene) in enumerate(slots)]
+
+
+def preflight_visual_capacity(payload):
+    """Reject topical plans whose estimated scene cadence exceeds relevant photos.
+
+    Actual TTS timings are not available before voice synthesis. Check both word-
+    and character-weighted timing estimates so a scene that dominates either
+    estimate cannot consume synthesis/alignment before its visual pool is known
+    to be insufficient. This is a conservative early stop; render still checks
+    the exact measured timings.
+    """
+    if payload.get('presentation_policy') != TOPIC_POLICY:
+        return
+    scenes = payload.get('scenes', [])
+    if not scenes:
+        raise ValueError('topical visual preflight requires narration scenes')
+    seconds = payload['seconds']
+    for measure in ('words', 'characters'):
+        weights = [len(scene['narration'].split()) if measure == 'words'
+                   else len(scene['narration'].strip()) for scene in scenes]
+        if any(weight <= 0 for weight in weights):
+            raise ValueError('topical visual preflight requires nonempty narration scenes')
+        total = sum(weights)
+        cursor = 0
+        timings = []
+        for weight in weights:
+            end = cursor + seconds * 1000 * weight / total
+            timings.append({'start_ms': cursor, 'end_ms': end})
+            cursor = end
+        try:
+            ordered_visuals(payload, timings, seconds * 1000)
+        except ValueError as error:
+            raise ValueError('topical visual pool cannot cover ' + measure +
+                             '-weighted scene cadence before voice: ' + str(error)) from error

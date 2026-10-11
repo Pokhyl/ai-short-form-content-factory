@@ -14,7 +14,7 @@ from factory_v3.preparation import ResourceUnavailable
 from factory_v3.grounding import validate_evidence, validate_script_review
 from factory_v3.preflight import asset_path, digest, validate_asset
 from .targets import validate_targets, matched_targets
-from .visuals import POLICY, CALM_POLICY, TOPIC_POLICY, WHOLE_POLICIES, candidate_limit, make_visuals, validate_visuals
+from .visuals import POLICY, CALM_POLICY, TOPIC_POLICY, WHOLE_POLICIES, candidate_limit, make_visuals, validate_visuals, preflight_visual_capacity
 from .presentation import preferred_shots, minimum_shots
 
 
@@ -515,6 +515,7 @@ def verify(root, frozen, probe=probe_media):
             raise ValueError('frozen approved context anchors changed')
     if payload.get('presentation_policy') in WHOLE_POLICIES:
         validate_visuals(payload, observations)
+    preflight_visual_capacity(payload)
     beats = [{"material_id": s["material_id"], "narration": s["narration"],
               "fact_ids": s["evidence_ids"]} for s in payload["scenes"]]
     if 'visual_targets' in payload:

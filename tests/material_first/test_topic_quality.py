@@ -3,7 +3,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from material_first.operations import Operations
 from material_first.engine import inspected_material
-from material_first.visuals import ordered_visuals
+from material_first.visuals import ordered_visuals, preflight_visual_capacity
 from material_first.presentation import TOPIC_POLICY,preferred_shots
 from factory_v3.gemini import validate_json
 from factory_v3.grounding import validate_script_review
@@ -71,3 +71,20 @@ class TopicQualityTests(unittest.TestCase):
         payload['observations'][-1]['supported_fact_ids']=['unrelated']
         with self.assertRaisesRegex(ValueError,'subject-related'):
             ordered_visuals(payload,timings,15000)
+
+    def test_visual_capacity_failure_is_caught_before_voice_and_sufficient_pool_passes(self):
+        def plan(first_scene_photos):
+            scenes=[{'id':'one','evidence_ids':['f1','f2','f3'],'narration':' '.join(['first']*52)},
+                    {'id':'two','evidence_ids':['f4'],'narration':' '.join(['second']*27)},
+                    {'id':'three','evidence_ids':['f5'],'narration':' '.join(['third']*21)}]
+            observations=[]
+            for index in range(17):
+                facts=(['f1','f2','f3','f4','f5'] if first_scene_photos == 17
+                       else ['f1','f2','f3'] if index < first_scene_photos else ['f4','f5'])
+                observations.append({'id':str(index),'supported_fact_ids':facts,'matched_visual_targets':{}})
+            return {'presentation_policy':TOPIC_POLICY,'seconds':60,
+                    'visuals':[{'id':'photo-'+str(i),'material_id':str(i-1)} for i in range(1,18)],
+                    'scenes':scenes,'observations':observations}
+        with self.assertRaisesRegex(ValueError,'before voice'):
+            preflight_visual_capacity(plan(5))
+        preflight_visual_capacity(plan(17))

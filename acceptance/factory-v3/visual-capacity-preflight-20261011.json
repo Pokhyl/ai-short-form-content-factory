@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-11",
+  "failure_case": {
+    "id": "19e8ad95-60a2-48cc-893b-491e235d9fd3",
+    "state": "failed_terminal",
+    "stage": "render",
+    "reason": "17 unique reviewed photographs could not cover all topical narration intervals; the first interval had only 5 eligible photographs for 9 cuts.",
+    "tts_sends": 2,
+    "gemini_calls": 3,
+    "audio_tempo_factor": 1.0,
+    "render_count": 0,
+    "immutable": true
+  },
+  "change": {
+    "files": [
+      "material_first/visuals.py",
+      "material_first/engine.py"
+    ],
+    "behavior": "Before voice synthesis, estimate per-scene duration by both word count and character count and require the existing unique relevant-photo scheduler to cover both estimates. Exact measured timing validation at render remains in place.",
+    "provider_calls": 0,
+    "production_changes": 0
+  },
+  "verification": {
+    "regression": "A 17-photo plan with 5 images for a long scene is rejected before voice; a fully relevant 17-photo control passes.",
+    "material_first": "180 tests passed",
+    "factory_v3": "112 tests passed"
+  },
+  "limitations": [
+    "Word and character estimates do not replace measured TTS timing; render still performs exact interval assignment.",
+    "No new acceptance job, deployment, audio playback or HUMAN review is included in this checkpoint.",
+    "project_ready remains false."
+  ]
+}

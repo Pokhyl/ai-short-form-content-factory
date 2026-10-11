@@ -1,5 +1,12 @@
 # Release gate — current execution contract
 
+## Latest topical-photo failure and offline correction — 2026-10-11
+
+- Natural-speed acceptance r14 `19e8ad95-60a2-48cc-893b-491e235d9fd3` is immutable `failed_terminal`: 2 TTS sends and 3 Gemini calls produced a natural-speed 59,616 ms voice, but render stopped because 17 unique photos could not cover all topical intervals. The first 31-second interval had only 5 relevant photographs for 9 cuts. No render was produced.
+- `material_first.verify` now checks word- and character-weighted scene timing estimates with the same unique, subject-related scheduler before voice synthesis. Exact measured timing remains the render gate. Regression: insufficient pool rejects before voice; a fully relevant 17-photo control passes. Material-first 180/180 and factory-v3 112/112 pass.
+- Evidence: `acceptance/factory-v3/visual-capacity-preflight-20261011.json`. This correction is not deployed or product-accepted. No provider calls or production changes were made. `project_ready=false`.
+- Next: commit/push, exact-source image/package checks, scoped app-only deploy with protected-state comparison, then continue the release gate. Never repeat r14 or any failed ID; do not start a new normal case until the connected offline release gate is complete.
+
 ## Verified state — 2026-10-07
 
 - LIVE source9c8501df53e2385e477e99ad11750d323ae28212.216 exact-image checks PASS; app-only rollout protected snapshots equal/publichealth exact.
