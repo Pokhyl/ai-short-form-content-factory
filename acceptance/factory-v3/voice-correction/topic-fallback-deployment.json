@@ -1,0 +1,59 @@
+{
+  "state": "complete",
+  "code_commit": "ecd6e3bd2d3eeccfba844583dce68f37926fdca0",
+  "plan_commit": "d8fb0a5",
+  "image": "factory-v3:ecd6e3b",
+  "image_id": "sha256:f08a2e19ce326def3c331848457619ae5ed66ddf9a40a17de6cffd86c1a38453",
+  "app": {
+    "container_id": "1d4383995301bda03d6823a9e7d8246d90c8b30a6f06d2175409764acb20ed23",
+    "revision": "ecd6e3bd2d3eeccfba844583dce68f37926fdca0",
+    "health": "healthy",
+    "restarts": 0
+  },
+  "rollback": {
+    "previous_image_id": "sha256:996d57f271b48c8916c8ce4cc76e370ac597c0de5789fbc1157461d0593657b6",
+    "previous_container_id": "2ebc4c14641895d298804691848255756081079cf505343f839fcc8ea0cd1c43",
+    "intermediate_wrong_environment_container_id": "ba3fb2c6a29b4e3fd030070643a7629d10bb0d2138a1cd8d0ba68dd795816a2a",
+    "both_containers_stopped": true
+  },
+  "image_smoke": {
+    "network_disabled": true,
+    "revision_matches": true,
+    "topic_fallback_output": "Нейтронная звезда",
+    "literal_span_bound": true
+  },
+  "tests": {
+    "focused_retrieved_contexts": "10/10 passed",
+    "material_first": "175/175 passed",
+    "factory_v3": "108/108 passed"
+  },
+  "public_checks": {
+    "studio_root_http": 200,
+    "factory_health_http": 200
+  },
+  "unrelated_services": {
+    "n8n_container_id": "c9373532bb9a5ea44e4e93d6062cf16700feb00cdccbc937bf435291c5375a14",
+    "caddy_container_id": "3913314c33d6d28aa6b6eb20251d2365bb289e717cb0c35cfb7f651162f52da6",
+    "media_worker_container_id": "5824c94abaa6b901b6f7dd7c10110d72398b75069f24eefa22f31df2e8190ccb",
+    "all_restart_counts": 0,
+    "all_unchanged": true
+  },
+  "database_row_counts_before_and_after": {
+    "jobs": 14,
+    "preparations": 83,
+    "preparation_calls": 1769,
+    "provider_cache": 336,
+    "stage_runs": 37,
+    "human_reviews": 0,
+    "active_preparations": 0,
+    "active_stages": 0
+  },
+  "saved_search_hash_preflight": {
+    "expected": 9,
+    "reconstructed": 9,
+    "exact_match": true,
+    "provider_calls": 0
+  },
+  "provider_calls_during_deployment": 0,
+  "project_ready": false
+}
