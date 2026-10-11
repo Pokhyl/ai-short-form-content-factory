@@ -1,0 +1,21 @@
+{
+  "source_commit": "5e745705662e2f2bec8d7da7e2a191648a8281e9",
+  "app_image": "factory-v3:gemini35-5e74570-r1",
+  "app_image_id": "sha256:4faa68ecf1252fd180cede9c2e4aaeb1eed6645e22168c40ffd5b2e310bf02ca",
+  "network_enabled": false,
+  "provider_calls": 0,
+  "production_mutations": 0,
+  "checks": [
+    {
+      "suite": "factory_v3",
+      "passed": 112,
+      "failed": 0
+    },
+    {
+      "suite": "material_first",
+      "passed": 178,
+      "failed": 0
+    }
+  ],
+  "review_context_regression": "No raw assets, visuals, or voice correction receipt in semantic-review request; exact script, scenes, evidence preserved."
+}

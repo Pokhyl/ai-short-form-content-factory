@@ -1,0 +1,41 @@
+{
+  "id": "gemini-review-context-20261011",
+  "question": "Does reducing semantic-review input to the final narration, scenes, evidence and compact visual observations prevent irrelevant image receipts from drowning the exact quote audit?",
+  "cause": "r12 Gemini 3.5 review received 144783 prompt tokens including unrelated detailed asset/provider receipts; it hallucinated a sentence for an omitted fact and was correctly rejected by exact narration validation.",
+  "change": {
+    "source_commit": "5e745705662e2f2bec8d7da7e2a191648a8281e9",
+    "app_image": "factory-v3:gemini35-5e74570-r1",
+    "app_image_id": "sha256:4faa68ecf1252fd180cede9c2e4aaeb1eed6645e22168c40ffd5b2e310bf02ca",
+    "implementation": "Send only language, script, scenes, topic, presentation policy, visual validation mode, compact evidence and compact materials to the semantic reviewer."
+  },
+  "preconditions": {
+    "app_image": "factory-v3:gemini35-04df6da-r1",
+    "app_health": "healthy",
+    "studio_root_http": 200,
+    "factory_health_http": 200,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "running_n8n_executions": 0,
+    "n8n_workflow_state": "already active with Gemini 3.5 gateway",
+    "predeploy_snapshot": "acceptance/factory-v3/gemini-review-context-predeploy-snapshot-20261011.json"
+  },
+  "scope": {
+    "recreate": "factory-v3 app only, no dependency recreation",
+    "preserve": "settings, gateway workflow, billing disabled, schemas, database and all unrelated workflows"
+  },
+  "limits": {
+    "provider_calls_during_deployment": 0,
+    "tts_calls_during_deployment": 0,
+    "app_recreates": 1,
+    "database_migrations": 0,
+    "n8n_restarts": 0,
+    "paid_fallback": false
+  },
+  "rollback": {
+    "image": "factory-v3:gemini35-04df6da-r1",
+    "image_id": "sha256:595114f473f7b1c847e26a1a9e19a38156f142f5292c93e5c00cba1920378768"
+  },
+  "status": "planned",
+  "postdeploy_snapshot": "acceptance/factory-v3/gemini-review-context-postdeploy-snapshot-20261011.json",
+  "separate_acceptance_plan_required_before_any_provider_call": true
+}
