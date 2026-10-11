@@ -40,6 +40,41 @@ def select_paragraphs(payload, proposed, timing):
         sum(a!=b for a,b in zip(originals,paragraphs)))))
 
 
+def proofread_selected(payload, selected, gemini):
+    """Repair grammar after variant selection while preserving paragraph contracts."""
+    schema=obj({'paragraph_'+str(i+1):{**string(),'maxLength':2400}
+                for i in range(len(selected))})
+    facts={f['id']:f['text'] for f in payload['evidence']['facts']}
+    paragraphs={}
+    for i,(scene,text) in enumerate(zip(payload['scenes'],selected),1):
+        paragraphs['paragraph_'+str(i)]={
+            'text':text,
+            'assigned_facts':[{'id':fact_id,'claim':facts[fact_id]}
+                              for fact_id in scene['evidence_ids']]}
+    result,_=gemini.generate('proofread',
+        'Proofread the selected narration in native '+payload['language']+'. '
+        'This is a constrained language edit, not a rewrite: fix grammar, case, inflection, agreement, spelling, '
+        'and unnatural phrasing with the smallest necessary changes. In Ukrainian, for example, use '
+        '“електронне захоплення”, not “електронний захоплення”, and “завдяки закону”. '
+        'Preserve every source-supported claim, number, qualifier, paragraph meaning, and paragraph order. '
+        'Do not add, remove, generalize, or strengthen facts. Keep each paragraph close to its input length '
+        'so measured speech duration does not drift. Return every paragraph exactly once as complete prose.',
+        {'language':payload['language'],'paragraphs':paragraphs},schema,thinking_level='low')
+    validate_json(result,schema)
+    revised=deepcopy(payload)
+    corrected=[]
+    for i,scene in enumerate(revised['scenes'],1):
+        text=result['paragraph_'+str(i)].strip()
+        if not text:
+            raise ValueError('proofread narration paragraph is empty')
+        validate_native_surface(payload['language'],text)
+        scene['narration']=text
+        corrected.append(text)
+    revised['script']=' '.join(corrected)
+    validate_revision(payload,revised)
+    return revised
+
+
 def rewrite(payload, measured_ms, gemini):
     from .speech_timing import estimated_seconds
     from factory_v3.worker_adapters import VOICES
@@ -124,6 +159,7 @@ def rewrite(payload, measured_ms, gemini):
     revised_error=abs(estimated_seconds(revised['script'],timing)-selection_target)
     if revised_error >= previous_error or revised_error > max(.25,previous_error*.65):
         raise ValueError('rewritten narration did not materially correct measured duration')
+    revised=proofread_selected(revised,selected,gemini)
     revised['script_review']=gemini.review_script({**{k:v for k,v in revised.items() if k != 'script_review'},'materials':revised['observations']})
     validate_revision(payload,revised)
     return {'payload':revised,'sha256':digest(revised)}

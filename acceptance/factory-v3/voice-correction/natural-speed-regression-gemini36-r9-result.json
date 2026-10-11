@@ -1,0 +1,38 @@
+{
+  "id": "c4f70733-74d0-4e6d-ac88-aaf5f7dfb4a7",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "b805306cac0e12530dca087ccf947e4f70abcaa5",
+  "state": "failed_terminal",
+  "job_status": "unknown",
+  "latest_stage": {
+    "stage": "voice",
+    "state": "unknown",
+    "error_code": "ValueError"
+  },
+  "failure": "native-language proofreading review failed",
+  "tts_sends": 1,
+  "measured_voice_durations_ms": [
+    54384
+  ],
+  "voice_audio_sha256": [
+    "ba39e430d6a70a729573016630ffc03d43c9a7c20b67b00c0c63922f624d1801"
+  ],
+  "gemini_calls": 2,
+  "metadata_calls": 1,
+  "new_research": 0,
+  "photo_searches": 0,
+  "photo_downloads": 0,
+  "photo_inspections": 0,
+  "render_count": 0,
+  "project_ready": false,
+  "diagnosis": {
+    "source": "read-only replay of r9 saved provider responses",
+    "selected_text_examples": [
+      "електронний захоплення",
+      "стискання радіуса"
+    ],
+    "reviewer": "native_language_quality=false; cited factual checks remained supported",
+    "fix": "insert a bounded grammar-only proofreading call after variant selection and before independent script review; preserve paragraph/fact contracts and fail closed on the independent review"
+  },
+  "receipt_source": "/var/lib/docker/volumes/shorts-v2_media_data/_data/checks/natural-speed-regression-c4f70733-74d0-4e6d-ac88-aaf5f7dfb4a7/receipt.json"
+}

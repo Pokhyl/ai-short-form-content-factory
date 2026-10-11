@@ -149,6 +149,7 @@ with tempfile.TemporaryDirectory() as directory:
     ledger.measure_voice_revision(correction_id,1,{'duration_ms':12000,'sha256':'a'*64})
     correction_calls=BudgetedCalls(runtime.preparations,correction_id)
     correction_calls.run('voice-fit:2:rewrite','gemini',{'test':True},lambda:{'body':{}})
+    correction_calls.run('voice-fit:2:proofread','gemini',{'test':'bounded-language-edit'},lambda:{'body':{}})
     try:correction_calls.run('unrelated','gemini',{},lambda:{})
     except psycopg.Error:pass
     else:raise AssertionError('prepared job allowed unrelated provider call')

@@ -88,6 +88,20 @@ class WorkerCorrectionTests(unittest.TestCase):
             self.assertEqual([call.args[1] for call in provider.synthesize.call_args_list],['old','new'])
 
 class RewriteTests(unittest.TestCase):
+    def test_selected_ukrainian_text_is_edited_before_independent_review(self):
+        from material_first.voice_correction import proofread_selected
+        bad='Електронний захоплення зупиняє стискання радіуса.'
+        good='Електронне захоплення зупиняє стискання ядра.'
+        payload={'language':'uk','script':bad,'scenes':[{'id':'s1','narration':bad,
+            'evidence_ids':['f1']}], 'evidence':{'facts':[{'id':'f1',
+            'text':'Electron capture and core collapse.'}]}}
+        gemini=Mock();gemini.generate.return_value=({'paragraph_1':good},{})
+        revised=proofread_selected(payload,[bad],gemini)
+        self.assertEqual(revised['script'],good)
+        self.assertEqual(revised['scenes'][0]['evidence_ids'],['f1'])
+        self.assertIn({'id':'f1','claim':'Electron capture and core collapse.'},
+                      gemini.generate.call_args.args[2]['paragraphs']['paragraph_1']['assigned_facts'])
+
     def test_measured_rate_drives_new_text_and_independent_review_gets_no_old_approval(self):
         from material_first.voice_correction import rewrite
         text=' '.join(['example']*100)
@@ -95,20 +109,25 @@ class RewriteTests(unittest.TestCase):
                   'scenes':[{'id':'s1','narration':text,'evidence_ids':['f1']}],
                   'evidence':{'facts':[{'id':'f1','text':'The source mechanism.','support':[]}],'sources':[]},'observations':[],'script_review':{'old_approval':True}}
         revised_text=' '.join(['example']*119)
-        gemini=Mock();gemini.generate.return_value=({'paragraph_1':{'compact':' '.join(['example']*105),'balanced':revised_text,'expanded':' '.join(['example']*135)}}, {})
+        gemini=Mock();gemini.generate.side_effect=[
+            ({'paragraph_1':{'compact':' '.join(['example']*105),'balanced':revised_text,'expanded':' '.join(['example']*135)}}, {}),
+            ({'paragraph_1':revised_text}, {})]
         gemini.review_script.return_value={'independent_review':True}
         revised=rewrite(original,50000,gemini)
-        prompt=gemini.generate.call_args.args[1]
+        prompt=gemini.generate.call_args_list[0].args[1]
         self.assertIn('Proofread every alternative for native grammar',prompt)
         self.assertIn('завдяки закону',prompt)
         self.assertIn('required case',prompt)
+        proofread_prompt=gemini.generate.call_args_list[1].args[1]
+        self.assertIn('smallest necessary changes',proofread_prompt)
+        self.assertEqual(gemini.generate.call_args_list[1].args[0],'proofread')
         self.assertEqual(revised['payload']['script'],revised_text)
         self.assertEqual(revised['payload']['speech_timing']['words_per_second'],2)
         self.assertNotIn('script_review',gemini.review_script.call_args.args[0])
-        self.assertEqual(gemini.generate.call_args.args[2]['paragraphs']['paragraph_1']['target_words'],119)
-        self.assertEqual(gemini.generate.call_args.args[2]['paragraphs']['paragraph_1']['must_explain'],[{'id':'f1','claim':'The source mechanism.'}])
+        self.assertEqual(gemini.generate.call_args_list[0].args[2]['paragraphs']['paragraph_1']['target_words'],119)
+        self.assertEqual(gemini.generate.call_args_list[0].args[2]['paragraphs']['paragraph_1']['must_explain'],[{'id':'f1','claim':'The source mechanism.'}])
         self.assertEqual(original['script'],text)
-        gemini.generate.return_value=({'paragraph_1':dict.fromkeys(['compact','balanced','expanded'],text)}, {})
+        gemini.generate.side_effect=[({'paragraph_1':dict.fromkeys(['compact','balanced','expanded'],text)}, {})]
         gemini.review_script.reset_mock()
         with self.assertRaisesRegex(ValueError,'unchanged'):rewrite(original,50000,gemini)
         gemini.review_script.assert_not_called()
@@ -126,11 +145,12 @@ class RewriteTests(unittest.TestCase):
                 'characters_per_second':len(text)/59.5,'selection_target_seconds':59.5,
                 'minimum_estimated_seconds':59,'maximum_estimated_seconds':60}}
         variants=[' '.join(['example']*n) for n in (80,88,110)]
-        gemini=Mock();gemini.generate.return_value=({'paragraph_1':dict(zip(
-            ('compact','balanced','expanded'),variants))},{})
+        selected=variants[1]
+        gemini=Mock();gemini.generate.side_effect=[({'paragraph_1':dict(zip(
+            ('compact','balanced','expanded'),variants))},{}),({'paragraph_1':selected},{})]
         gemini.review_script.return_value={'independent_review':True}
         revised=rewrite(original,63504,gemini)
-        context=gemini.generate.call_args.args[2]
+        context=gemini.generate.call_args_list[0].args[2]
         self.assertEqual(context['target_seconds'],56)
         self.assertEqual(context['voice_acceptance_window_seconds'],[59,60])
         self.assertEqual(context['paragraphs']['paragraph_1']['target_words'],88)

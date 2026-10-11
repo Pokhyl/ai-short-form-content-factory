@@ -33,7 +33,8 @@
   },
   "stop": "One attempt per external send. Stop on any failed or ambiguous call, on the third out-of-window voice, or before exceeding the limits. Never time-stretch narration or reuse a terminal ID.",
   "quota": "Production Gemini project billing remains confirmed disabled. Gateway metadata for gemini-3.6-flash returned HTTP 200 and lists generateContent; Google pricing lists standard Gemini 3.6 Flash at no charge on Free Tier. No paid fallback.",
-  "status": "planned",
+  "status": "failed_terminal",
   "project_ready_before": false,
-  "sequence": "r9; focused natural-speed voice acceptance on the deployed b805306 image after grammar prompt correction."
+  "terminal_receipt": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r9-result.json",
+  "sequence": "r9 was executed once on deployed b805306 and is immutable. It exposed that prompt-only proofreading did not correct the selected Ukrainian variant; the independent language gate stopped before alignment/render."
 }

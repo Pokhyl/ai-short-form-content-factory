@@ -45,7 +45,7 @@ BEGIN
  IF prep.source_revision IS DISTINCT FROM p_revision THEN RAISE EXCEPTION 'source revision changed'; END IF;
  IF COALESCE(char_length(p_key),0)=0 OR COALESCE(char_length(p_kind),0)=0 THEN RAISE EXCEPTION 'call identity missing'; END IF;
  IF prep.status<>'preparing' AND NOT (prep.status='prepared' AND p_kind='gemini'
-   AND p_key ~ '^voice-fit:[23]:(rewrite|script-review)$'
+   AND p_key ~ '^voice-fit:[23]:(rewrite|proofread|script-review)$'
    AND EXISTS(SELECT 1 FROM factory_v3.jobs WHERE id=p_id AND status='voice_running'
      AND frozen->'payload'->'voice_correction' = '{"protocol":"measured-text-correction-v1","max_attempts":3}'::jsonb))
  THEN RAISE EXCEPTION 'preparation terminal'; END IF;
@@ -70,7 +70,7 @@ CREATE OR REPLACE FUNCTION factory_v3.finish_preparation_call(p_id uuid,p_key te
 RETURNS void LANGUAGE plpgsql AS $$
 BEGIN
  PERFORM 1 FROM factory_v3.preparations WHERE id=p_id AND (status='preparing' OR (status='prepared'
-  AND p_key ~ '^voice-fit:[23]:(rewrite|script-review)$'
+  AND p_key ~ '^voice-fit:[23]:(rewrite|proofread|script-review)$'
   AND EXISTS(SELECT 1 FROM factory_v3.jobs WHERE id=p_id AND status='voice_running'))) FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'preparation terminal'; END IF;
  UPDATE factory_v3.preparation_calls SET state='succeeded',response=p_response,finished_at=now()
@@ -81,7 +81,7 @@ CREATE OR REPLACE FUNCTION factory_v3.fail_preparation_call(p_id uuid,p_key text
 RETURNS void LANGUAGE plpgsql AS $$
 BEGIN
  PERFORM 1 FROM factory_v3.preparations WHERE id=p_id AND (status='preparing' OR (status='prepared'
-  AND p_key ~ '^voice-fit:[23]:(rewrite|script-review)$'
+  AND p_key ~ '^voice-fit:[23]:(rewrite|proofread|script-review)$'
   AND EXISTS(SELECT 1 FROM factory_v3.jobs WHERE id=p_id AND status='voice_running'))) FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'preparation terminal'; END IF;
  UPDATE factory_v3.preparation_calls SET state='unknown',error_code=p_code,response=p_receipt,finished_at=now()

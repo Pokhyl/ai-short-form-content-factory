@@ -1,4 +1,16 @@
-## Последнее состояние: prompt correction развернут, product acceptance не пройден — 2026-10-11
+## Последнее состояние: r9 доказал дефект language-correction stage, offline fix проверен — 2026-10-11
+
+r9 `c4f70733-74d0-4e6d-ac88-aaf5f7dfb4a7` immutable `failed_terminal` на активной production revision `b805306cac0e12530dca087ccf947e4f70abcaa5`: 1 естественный TTS (54,384 ms), 2 Gemini + 1 metadata, 0 alignment/render/QA. Read-only replay сохранённых ответов показал выбранные ошибки `електронний захоплення` и `стискання радіуса`; независимый review корректно вернул `native_language_quality=false`. Полный receipt и причина: `acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r9-result.json`. r9 ID не использовать повторно.
+
+Локальный фикс добавляет отдельный grammar-only `proofread` после выбора варианта и до независимого script-review. Он передаёт факты и каждый абзац, ограничивает исправление малыми языковыми правками, сохраняет paragraph/fact/visual/source contracts и оставляет review обязательным. Durable SQL call-key allowlist расширен ровно для `voice-fit:[23]:proofread`. Регрессионный тест исправляет точную украинскую форму; PostgreSQL driver test проверяет отдельный durable `proofread` call. Проверено: factory-v3 112/112, material-first 178/178, `git diff --check` пока ожидается. Локальный Docker daemon выключен, поэтому SQL integration должна пройти на изолированной временной PostgreSQL на VPS, не в production DB.
+
+Активная production revision всё ещё `b805306`, контейнер `factory-v3-app` healthy, Studio HTTP 200. Основной checkout сервера `/opt/ai-short-form-content-factory` имеет посторонние незакоммиченные изменения в Studio/deploy; их не трогать и не использовать для сборки. Собирать clean commit из `origin/factory-v3` в отдельном временном checkout, сохранить действующие settings/media mounts/networks/healthcheck, применить только идемпотентную V3 preparation-function миграцию и проверить точную revision/DB counts до нового job.
+
+Следующее: SQL изолированно PASS → обновить terminal artifacts/tests/handoff, commit+push и проверить remote SHA → собрать/проверить чистый образ → заменить только factory-v3 app и обновить три preparation functions → health/revision/данные неизменны → свежий отдельный bounded прогон r10 (макс 3 TTS, 4 Gemini, 0 search/download/research, 1 render/QA, free-only), затем проверить фактический 59–60s voice и MP4 tempo=1.0. Никаких заявлений о готовом результате до фактического MP4. `project_ready=false`.
+
+---
+
+## Ранее: prompt correction развернут, product acceptance не пройден — 2026-10-11
 
 После r7 опубликованное исправление валидатора `VIDEO-V3-Credential-Gateway` пропустило Gemini 3.6 Flash rewrite и независимый review (оба HTTP 200). Но review вернул `native_language_quality=false` на неграмотном падеже в украинском варианте; r7 `b886012b-2f44-4b08-86d1-be0ab12b4e52` immutable `failed_terminal`: первый TTS 50,928 ms, 1 TTS + 2 Gemini + 1 metadata call, 0 alignment/render/QA. Детали в `acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r7-result.json`.
 
