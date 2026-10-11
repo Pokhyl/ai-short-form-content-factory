@@ -23,13 +23,20 @@
     "production_changes": 0
   },
   "verification": {
-    "regression": "A 17-photo plan with 5 images for a long scene is rejected before voice; a fully relevant 17-photo control passes.",
-    "material_first": "180 tests passed",
+    "regression": "Synthetic insufficient coverage is rejected; exact saved r14 corrected plan is rejected before its second TTS; a fully relevant 17-photo control passes.",
+    "saved_r14_replay": {
+      "initial_plan_sha256": "69f44573a29dd3ac9bd5d81378a89d96580535d899f7f82b64feb67ca362d2ec",
+      "initial_plan_preflight": "pass",
+      "corrected_plan_sha256": "03aaba93adf19cf5d7e7f5431208f6b5da7be6e70ab74283020140c6c0cea22f",
+      "corrected_plan_preflight": "blocked before second TTS",
+      "fixture": "tests/material_first/fixtures/r14-topical-preflight-replay.json"
+    },
+    "material_first": "181 tests passed",
     "factory_v3": "112 tests passed",
     "packaged_image": "factory-v3:gemini35-visual-preflight-amd64-20261011-r1",
     "packaged_image_id": "sha256:8de104ba3b23804c93d293715a77559c7f02ee4d3a66127c211b519043c252d6",
     "platform": "linux/amd64",
-    "packaged_network_disabled_tests": "material-first 180/180; factory-v3 112/112",
+    "packaged_network_disabled_tests": "material-first 181/181; factory-v3 112/112",
     "platform_mismatch_attempt": "A linux/arm64 image was briefly started on the linux/amd64 VPS and failed health checks. It was immediately rolled back to the prior image. Database counts and other service IDs/images remained unchanged."
   },
   "limitations": [

@@ -110,13 +110,13 @@
       "name": "topical photo cadence preflight before voice",
       "test": {
         "path": "tests/material_first/test_topic_quality.py",
-        "sha256": "5f1f69f7f3f9502f2cb72deb04e5ba97c5de3d669745e331ab5fbb41ba659bfc"
+        "sha256": "d379671f8ed9a900db2f62aa3471bee1517cbbabb4fb61504c0123bff082336b"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/visual-capacity-preflight-20261011.json",
-        "sha256": "fbc87feb723fde9444d22b8d92369ec0035591735c959ee06a8b51baa02354fa"
+        "path": "tests/material_first/fixtures/r14-topical-preflight-replay.json",
+        "sha256": "746a63f83824f7403847c0cbc3ceb24554a2caa8aa533b8c81a84e5f1f5c09cf"
       },
-      "remaining": "Word- and character-weighted estimates now stop impossible plans before TTS; actual measured scene timing remains authoritative at render."
+      "remaining": "Saved r14 initial plan passes; its corrected plan is rejected before the second TTS. Actual measured scene timing remains authoritative at render."
     },
     {
       "name": "independent factual script review",

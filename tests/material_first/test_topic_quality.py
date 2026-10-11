@@ -9,6 +9,7 @@ from factory_v3.gemini import validate_json
 from factory_v3.grounding import validate_script_review
 
 FIXTURE=Path(__file__).parent/'fixtures/neutron-uk60-relevance-language-failure.json'
+R14_PREFLIGHT=Path(__file__).parent/'fixtures/r14-topical-preflight-replay.json'
 class TopicQualityTests(unittest.TestCase):
     def setUp(self):self.saved=json.loads(FIXTURE.read_text())
     def test_saved_generic_props_cannot_be_admitted_by_positive_accepted_boolean(self):
@@ -88,3 +89,22 @@ class TopicQualityTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'before voice'):
             preflight_visual_capacity(plan(5))
         preflight_visual_capacity(plan(17))
+
+    def test_saved_r14_corrected_plan_is_rejected_before_second_tts(self):
+        saved=json.loads(R14_PREFLIGHT.read_text())
+        def weighted_text(words,characters):
+            text=('x '* (words-1))+'x'
+            return text+'x'*(characters-len(text))
+        scenes=[{**scene,'narration':weighted_text(scene['words'],scene['characters'])}
+                for scene in saved['scenes']]
+        observations=[{'id':photo['material_id'],
+                       'supported_fact_ids':photo['supported_fact_ids'],
+                       'matched_visual_targets':{identity:True for identity in photo['target_ids']}}
+                      for photo in saved['photos_in_visual_order']]
+        payload={'presentation_policy':saved['presentation_policy'],'seconds':saved['seconds'],
+                 'scenes':scenes,'observations':observations,
+                 'visuals':[{'id':'photo-'+str(i),'material_id':photo['material_id']}
+                            for i,photo in enumerate(saved['photos_in_visual_order'],1)]}
+        with self.assertRaisesRegex(ValueError,'words-weighted scene cadence before voice') as caught:
+            preflight_visual_capacity(payload)
+        self.assertEqual(str(caught.exception),saved['actual_preflight'])

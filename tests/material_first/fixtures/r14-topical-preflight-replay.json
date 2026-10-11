@@ -1,0 +1,33 @@
+{
+  "case_id": "19e8ad95-60a2-48cc-893b-491e235d9fd3",
+  "attempt": 2,
+  "plan_sha256": "03aaba93adf19cf5d7e7f5431208f6b5da7be6e70ab74283020140c6c0cea22f",
+  "voice_duration_ms": 59616,
+  "seconds": 60,
+  "presentation_policy": "whole-photo-topic-v3",
+  "scenes": [
+    {"id": "beat-1", "evidence_ids": ["f-1", "f-2", "f-3"], "words": 63, "characters": 483},
+    {"id": "beat-2", "evidence_ids": ["f-4", "f-5", "f-6", "f-7"], "words": 30, "characters": 241},
+    {"id": "beat-3", "evidence_ids": ["f-4"], "words": 24, "characters": 191}
+  ],
+  "photos_in_visual_order": [
+    {"material_id": "wikimedia:148804754", "supported_fact_ids": ["f-1", "f-2", "f-3"], "target_ids": ["v0"]},
+    {"material_id": "wikimedia:110234010", "supported_fact_ids": ["f-4", "f-5", "f-6", "f-7"], "target_ids": ["v1"]},
+    {"material_id": "pexels:17662495", "supported_fact_ids": ["f-4"], "target_ids": ["v1"]},
+    {"material_id": "wikimedia:149392658", "supported_fact_ids": ["f-1", "f-3"], "target_ids": ["v0"]},
+    {"material_id": "wikimedia:129539683", "supported_fact_ids": ["f-6"], "target_ids": ["v2"]},
+    {"material_id": "wikimedia:29739560", "supported_fact_ids": ["f-1", "f-3"], "target_ids": ["v0"]},
+    {"material_id": "wikimedia:137750506", "supported_fact_ids": ["f-4", "f-7"], "target_ids": ["v1"]},
+    {"material_id": "wikimedia:68756041", "supported_fact_ids": ["f-1", "f-3"], "target_ids": ["v0"]},
+    {"material_id": "wikimedia:149419638", "supported_fact_ids": ["f-4", "f-7"], "target_ids": ["v1"]},
+    {"material_id": "wikimedia:187437224", "supported_fact_ids": ["f-1", "f-3"], "target_ids": ["v0"]},
+    {"material_id": "wikimedia:192540464", "supported_fact_ids": ["f-4", "f-5"], "target_ids": ["v1"]},
+    {"material_id": "wikimedia:139881470", "supported_fact_ids": ["f-6", "f-7"], "target_ids": ["v1"]},
+    {"material_id": "wikimedia:148830334", "supported_fact_ids": ["f-4"], "target_ids": ["v1"]},
+    {"material_id": "wikimedia:11658037", "supported_fact_ids": ["f-4", "f-7"], "target_ids": ["v1"]},
+    {"material_id": "pexels:26607689", "supported_fact_ids": ["f-4", "f-7"], "target_ids": ["v1"]},
+    {"material_id": "pixabay:11182", "supported_fact_ids": ["f-5", "f-7"], "target_ids": ["v1"]},
+    {"material_id": "wikimedia:516106", "supported_fact_ids": ["f-4", "f-6"], "target_ids": ["v1"]}
+  ],
+  "actual_preflight": "topical visual pool cannot cover words-weighted scene cadence before voice: no subject-related photograph for a narration interval"
+}
