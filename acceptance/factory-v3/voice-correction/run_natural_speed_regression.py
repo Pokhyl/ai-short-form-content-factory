@@ -12,7 +12,7 @@ from material_first.voice_correction import POLICY
 
 IDENTITY = '05b073c3-b6b7-463b-8909-7274a01c8d75'
 SOURCE = '72705d11-4556-4a4a-b751-676cc71e215d'
-REVISION = 'bd3b6ca321664094bf5cac12a8c23a27d80fea5f'
+REVISION = '90f0ffcee9793da950bc3c018b66815a27df7fa0'
 
 r = Runtime(load_settings('/run/factory-v3/settings.json'), '/data',
             os.environ['FACTORY_V3_REVISION'])
