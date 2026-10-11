@@ -1,0 +1,46 @@
+{
+  "id": "b886012b-2f44-4b08-86d1-be0ab12b4e52",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "457d78899ca396c489971a573280e8d9e83de966",
+  "model": "gemini-3.6-flash",
+  "state": "failed_terminal",
+  "preparation_state": "prepared",
+  "failure_stage": "voice-fit:2:script-review",
+  "failure_type": "ValueError",
+  "failure": "native-language proofreading review failed",
+  "review_result": {
+    "language": "uk",
+    "language_match": true,
+    "visual_contracts_match": true,
+    "no_unsupported_claims": true,
+    "topic_covered": true,
+    "native_language_quality": false
+  },
+  "completed_voice_attempts": [
+    {
+      "attempt": 1,
+      "duration_ms": 50928,
+      "sha256": "02aef69022897ed892caf31c9e70f3e6186a76c79998ca8dba7fdc712da7c771"
+    }
+  ],
+  "calls": {
+    "tts": 1,
+    "gemini": 2,
+    "metadata": 1,
+    "provider_http_statuses": [
+      200,
+      200,
+      200
+    ]
+  },
+  "new_research": 0,
+  "photo_searches": 0,
+  "photo_downloads": 0,
+  "photo_inspections": 0,
+  "alignment": false,
+  "render_count": 0,
+  "video_qa": false,
+  "source_plan_and_assets_changed": false,
+  "project_ready": false,
+  "diagnosis": "The published n8n validator typo is fixed and Gemini rewrite/review now return HTTP 200. The strict independent language gate correctly rejected an ungrammatical rewrite. Generic prompt reinforcement for case government and inflection is under offline verification; do not retry this ID."
+}

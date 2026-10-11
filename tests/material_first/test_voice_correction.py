@@ -98,6 +98,10 @@ class RewriteTests(unittest.TestCase):
         gemini=Mock();gemini.generate.return_value=({'paragraph_1':{'compact':' '.join(['example']*105),'balanced':revised_text,'expanded':' '.join(['example']*135)}}, {})
         gemini.review_script.return_value={'independent_review':True}
         revised=rewrite(original,50000,gemini)
+        prompt=gemini.generate.call_args.args[1]
+        self.assertIn('Proofread every alternative for native grammar',prompt)
+        self.assertIn('завдяки закону',prompt)
+        self.assertIn('required case',prompt)
         self.assertEqual(revised['payload']['script'],revised_text)
         self.assertEqual(revised['payload']['speech_timing']['words_per_second'],2)
         self.assertNotIn('script_review',gemini.review_script.call_args.args[0])

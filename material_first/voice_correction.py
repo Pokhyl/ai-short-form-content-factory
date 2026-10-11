@@ -86,6 +86,8 @@ def rewrite(payload, measured_ms, gemini):
         f'{action} every supplied paragraph by approximately {abs(ratio-1)*100:.1f} percent. '
         'The current text FAILED measured speech timing and must change. This is rewriting, not proofreading. '
         'Write natural native '+payload['language']+'. For EVERY paragraph return three distinct complete alternatives: compact, balanced, expanded. '
+        'Proofread every alternative for native grammar before returning it: check each preposition’s required case, noun/adjective/verb inflection, agreement, and natural word order. '
+        'In Ukrainian, for example, write “завдяки закону”, never “завдяки закон”. Do not leave a known grammar defect in any length variant. '
         'Each alternative independently explains the same assigned facts. Vary wording length, not the claims. '
         'The server will select ONE alternative per paragraph; do not make variants continuations of one another. '
         'Follow each variant target_words and target_characters; compact must be shorter than balanced, and balanced shorter than expanded. '
