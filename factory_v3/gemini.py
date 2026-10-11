@@ -208,7 +208,14 @@ class Gemini:
                 for key in assertions})
             schema['properties']['native_language_quality'] = BOOL
             schema['required'].append('native_language_quality')
-        review_context = {**request, 'evidence': compact_evidence(request['evidence'])}
+        # Keep the reviewer focused on the final narration and its evidence.
+        # Passing the full factory payload also included detailed image/provider
+        # receipts, which can dwarf the script and distract the model from exact
+        # narration quotes. The semantic audit only needs these fields.
+        review_context = {key: request[key] for key in
+            ('language', 'script', 'scenes', 'topic', 'presentation_policy',
+             'visual_validation_mode') if key in request}
+        review_context['evidence'] = compact_evidence(request['evidence'])
         if native:
             review_context['required_assertions'] = assertions
         if native and 'materials' in request:

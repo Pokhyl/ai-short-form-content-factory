@@ -153,6 +153,9 @@ class GeminiTests(unittest.TestCase):
         saved,request,response,pairs=self.native_review_fixture()
         self.assertEqual(len(saved['actual_review']['factual_checks']),4)
         self.assertEqual(len(pairs),6)
+        request['assets']=[{'inspection':{'provider_provenance':'x'*10000}}]
+        request['visuals']=[{'debug_receipt':'x'*10000}]
+        request['voice_correction']={'internal_timing_receipt':'x'*10000}
         self.http.result=response  # Controlled completion, not new semantic approval.
         result=self.adapter.review_script(request)
         self.assertEqual([(c['scene_id'],c['fact_id']) for c in result['factual_checks']],
@@ -163,6 +166,11 @@ class GeminiTests(unittest.TestCase):
         self.assertEqual(len(checks['required']),6)
         context=json.loads(body['contents'][0]['parts'][0]['text'])
         self.assertEqual(len(context['required_assertions']),6)
+        self.assertNotIn('assets',context)
+        self.assertNotIn('visuals',context)
+        self.assertNotIn('voice_correction',context)
+        self.assertEqual(context['script'],request['script'])
+        self.assertEqual(context['scenes'],request['scenes'])
         self.assertEqual(len(self.http.requests),1)
 
     def test_native_named_check_cannot_omit_even_a_nonessential_fact(self):
