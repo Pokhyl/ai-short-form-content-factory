@@ -1,0 +1,50 @@
+{
+  "state": "started-before-app-replacement",
+  "started_at_utc": "2026-10-11T08:47:21Z",
+  "source_revision": "025999fb80f9dd5e9eaa760145acfa96727ad31e",
+  "commits": [
+    "1cf13d1 Allow metadata-grounded multiwavelength visual contexts",
+    "025999f Cover multiwavelength repeated visual targets"
+  ],
+  "verification": {
+    "focused_retrieved_contexts_tests": "7/7 passed",
+    "material_first_tests_local": "172/172 passed",
+    "factory_v3_tests_local": "108/108 passed",
+    "exact_image_tests_network_disabled": "172 material_first + 108 factory_v3 passed",
+    "docker_image_version": "025999fb80f9dd5e9eaa760145acfa96727ad31e"
+  },
+  "new_image": {
+    "tag": "factory-v3:025999f",
+    "id": "sha256:ba3f529d9064b872560e095cf9748d96a45f051375f58a71147648e0c3f93ddb"
+  },
+  "previous_app": {
+    "tag": "factory-v3:c921bd0",
+    "id": "sha256:c8c9ed1a62d84eeedba8c94b18a77d83bcddba7338f0037d46a63c808c0995b0",
+    "source_revision": "c921bd0a12bb06f22de477a0cceb8824b283603b",
+    "compose_path": "/opt/ai-short-form-content-factory/.tmp/v3-studio-public-c921bd0/compose-public.yaml",
+    "health_status": "healthy",
+    "studio_root_http": 200
+  },
+  "preflight": {
+    "active_preparations": 0,
+    "started_preparation_calls": 0,
+    "running_jobs": 0,
+    "started_stages": 0,
+    "n8n_running_nondeleted_executions": 0,
+    "caddy_sha256": "e83acf1dcfdbbf50ea75cea36359502d4b42b4b2a0a04e8605ed5c358a2af854",
+    "settings_sha256": "54f6106fc4e7fec5b51e5a753b48fbc7e5bdd3d1fa118ec3188b96bcb6620566"
+  },
+  "new_compose": {
+    "path": "/opt/ai-short-form-content-factory/.tmp/v3-multiband-025999f/compose-public.yaml",
+    "validated": true,
+    "only_change": "app image tag c921bd0 -> 025999f",
+    "existing_compose_preserved": true
+  },
+  "deployment_actions_so_far": {
+    "app_replaced": false,
+    "provider_calls": 0,
+    "n8n_restarted": false,
+    "caddy_reloaded": false,
+    "new_video_created": false
+  }
+}
