@@ -31,6 +31,7 @@
     "provider_calls": 0
   },
   "stop": "Stop on revision or identity mismatch, schema rejection after bounded span normalization, planner/reviewer failure, repeated anchor, or any provider action outside the limits. Never create a product job.",
-  "status": "planned",
+  "status": "complete",
+  "terminal_receipt": "bounded-span-planner-replay-terminal.json",
   "project_ready_before": false
 }

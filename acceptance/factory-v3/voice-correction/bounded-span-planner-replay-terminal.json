@@ -1,0 +1,41 @@
+{
+  "id": "99046c44-935a-42bc-9907-6091eb2a35d4",
+  "state": "complete_diagnostic_only",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "fe7fab4acbe6d36e1a76458087436358a62c7b7a",
+  "gemini_calls": [
+    "material-photo-plan",
+    "material-photo-plan-review",
+    "material-photo-plan-repair",
+    "material-photo-plan-review:repair"
+  ],
+  "saved_search_receipts_replayed": 9,
+  "initial_review": {
+    "approved_roles": ["v0", "v1"],
+    "rejected_roles": ["v2"]
+  },
+  "repair_used": true,
+  "approved_roles_preserved": true,
+  "final_anchor_ids": [
+    "wikimedia:11658037",
+    "wikimedia:129539683",
+    "wikimedia:192540464"
+  ],
+  "final_anchor_ids_unique": true,
+  "new_photo_searches": 0,
+  "photo_downloads": 0,
+  "photo_pixel_inspections": 0,
+  "tts_sends": 0,
+  "render_or_qa": false,
+  "database_row_counts_before_and_after": {
+    "jobs": [14, 14],
+    "preparations": [86, 87],
+    "preparation_calls": [1773, 1777],
+    "provider_cache": [336, 336],
+    "stage_runs": [37, 37],
+    "human_reviews": [0, 0],
+    "active_preparations": [0, 0]
+  },
+  "project_ready": false,
+  "result": "The completed and independently reviewed metadata plan passed the repair boundary. This is not photo-pixel, audio, render or product acceptance."
+}
