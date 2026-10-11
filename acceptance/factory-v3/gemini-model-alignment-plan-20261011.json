@@ -47,5 +47,7 @@
     "Studio root remains public and factory-v3 health returns HTTP 200.",
     "A separate fresh acceptance plan and unique ID must be committed before any generation/TTS call."
   ],
-  "status": "planned"
+  "status": "deployed",
+  "deployment_receipt": "acceptance/factory-v3/gemini-model-alignment-deployment-20261011.json",
+  "postdeploy_snapshot": "acceptance/factory-v3/gemini-model-alignment-postdeploy-snapshot.json"
 }

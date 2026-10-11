@@ -1,6 +1,6 @@
 {
   "plan": "acceptance/factory-v3/gemini-model-alignment-plan-20261011.json",
-  "status": "started",
+  "status": "completed",
   "source_commit": "04df6dac7aa6d2206d92e54ba2f7c565a4e52a48",
   "new_app_image": {
     "tag": "factory-v3:gemini35-04df6da-r1",
@@ -31,18 +31,44 @@
     "active_gateway_backup_sha256": "4bd23217ca50801d9b9ae3a672fcc11550ea724871d5d4bc9c5b5f5ab1e8e438"
   },
   "actions": {
-    "private_settings_model_update": "not_started",
-    "gateway_import": "not_started",
-    "gateway_publish": "not_started",
-    "app_recreate_no_deps": "not_started",
+    "private_settings_model_update": "completed",
+    "gateway_import": "completed",
+    "gateway_publish": "completed",
+    "app_recreate_no_deps": "completed",
     "provider_generation_calls": 0,
     "tts_calls": 0,
-    "database_migrations": 0
+    "database_migrations": 0,
+    "n8n_restart_after_cli_publish": "completed"
   },
   "rollback": {
     "previous_app_tag": "factory-v3:gemini36-c2ae777-r1",
     "previous_settings_proof_model": "gemini-3.6-flash",
     "previous_gateway_export": "acceptance/factory-v3/gemini-model-alignment-gateway-before.json"
   },
-  "project_ready": false
+  "project_ready": true,
+  "postdeploy": {
+    "app_image": "factory-v3:gemini35-04df6da-r1",
+    "app_image_id": "sha256:595114f473f7b1c847e26a1a9e19a38156f142f5292c93e5c00cba1920378768",
+    "app_status": "running",
+    "app_health": "healthy",
+    "app_restarts": 0,
+    "studio_root_http": 200,
+    "factory_health_http": 200,
+    "settings_proof_model": "gemini-3.5-flash-lite",
+    "billing_enabled": false,
+    "settings_mode": "0600",
+    "active_gateway_model": "gemini-3.5-flash-lite",
+    "active_gateway": true,
+    "gateway_nodes": 11,
+    "gateway_route_unauthorized_http": 403,
+    "unrelated_workflows": {
+      "rows": 33,
+      "digest": "44e4a112302bd3a729452bd863f7f7cd"
+    },
+    "v3_database_snapshot": "acceptance/factory-v3/gemini-model-alignment-postdeploy-snapshot.json",
+    "active_preparations": 0,
+    "active_stages": 0,
+    "running_n8n_executions": 0,
+    "n8n_restarted_because_publish_cli_warned_live_changes_require_restart": true
+  }
 }
