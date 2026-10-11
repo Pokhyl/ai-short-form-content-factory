@@ -7,7 +7,7 @@
   "gemini_free_tier_confirmed": false,
   "free_tier_proof": {
     "billing_enabled": null,
-    "model": "gemini-3.6-flash",
+    "model": "gemini-3.5-flash-lite",
     "project_id": "UNVERIFIED",
     "credential_sha256": "UNVERIFIED"
   }

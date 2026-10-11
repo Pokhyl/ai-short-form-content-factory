@@ -1,0 +1,51 @@
+{
+  "id": "gemini-model-alignment-20261011",
+  "question": "Can the deployed factory use its documented free-tier model consistently across app, settings proof, and native gateway after repeated Gemini 3.6/3.8 capacity failures?",
+  "current_state": {
+    "app_model": "gemini-3.6-flash",
+    "settings_proof_model": "gemini-3.6-flash",
+    "active_gateway_model": "gemini-3.6-flash",
+    "billing_enabled": false,
+    "source_of_mismatch": "docs/PROVIDER_POLICY.md and deploy/factory-v3/settings.json.example select gemini-3.5-flash-lite; prior generated workflow JSON had drifted to gemini-3.8-flash. Production currently runs 3.6 consistently."
+  },
+  "target": {
+    "model": "gemini-3.5-flash-lite",
+    "model_metadata": "Production Gemini key returned HTTP 200 and generateContent in acceptance/factory-v3/account-check.json.",
+    "free_tier": "Official Google pricing lists standard input/output as free; current project billingInfo is false in acceptance/factory-v3/enabled-project-billing.json.",
+    "structured_output_and_thinking": "Official model/API documentation confirms structured outputs and thinkingLevel support.",
+    "sources": [
+      "https://ai.google.dev/gemini-api/docs/pricing",
+      "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite",
+      "https://ai.google.dev/gemini-api/docs/generate-content/thinking"
+    ]
+  },
+  "scope": {
+    "app": "Update the fixed V3 Gemini model URL and matching local settings example.",
+    "gateway": "Regenerate and publish only VIDEO-V3-Credential-Gateway from the reviewed source validator.",
+    "private_settings": "Change only free_tier_proof.model; preserve all credentials, project ID, tokens, DB URL, origin, and file mode 0600.",
+    "preserved": "All unrelated workflows, schemas, media, voices, quotas, Studio routing/auth settings, and paid-fallback prohibition."
+  },
+  "preconditions": [
+    "Commit and push runtime, generated workflow, and offline regression evidence before production changes.",
+    "Verify app image revision, active gateway model/version, billing false, active jobs zero, and protected workflow fingerprints.",
+    "If exact identities or protected-state snapshots differ, stop before mutation."
+  ],
+  "limits": {
+    "new_model_generation_calls": 0,
+    "new_tts_calls": 0,
+    "new_production_jobs": 0,
+    "workflow_imports": 1,
+    "workflow_publications": 1,
+    "app_service_recreates": 1,
+    "paid_fallback": false,
+    "database_migrations": 0
+  },
+  "postconditions": [
+    "Only the named gateway workflow is published, with active validator and model metadata URL both set to gemini-3.5-flash-lite.",
+    "Only factory-v3 app runs the exact committed image; settings proof model matches and billing remains false.",
+    "All unrelated workflow fingerprints and DB counts match their pre-deploy snapshot.",
+    "Studio root remains public and factory-v3 health returns HTTP 200.",
+    "A separate fresh acceptance plan and unique ID must be committed before any generation/TTS call."
+  ],
+  "status": "planned"
+}

@@ -17,6 +17,10 @@ for (const [provider,request] of Object.entries(good)) {
   const result=validate({provider,request});
   assert.strictEqual(result.provider,provider);
   assert(result.url.startsWith('https://'));
+  if (provider==='gemini') assert.strictEqual(result.url,
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent');
+  if (provider==='gemini_info') assert.strictEqual(result.url,
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite');
 }
 const lowThinking = structuredClone(good.gemini);
 lowThinking.body.generationConfig.thinkingConfig = {thinkingLevel:'low'};

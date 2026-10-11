@@ -1,6 +1,19 @@
 {
   "project_ready": false,
   "scope": "Controlled tests and saved actual receipts, not new provider acceptance",
+  "latest_voice_acceptance": {
+    "id": "35b0c680-3857-4f3b-95bb-57377e5ad380",
+    "state": "failed_terminal",
+    "duration_ms": 52704,
+    "failure_type": "HTTPFailure",
+    "gateway_status": 503,
+    "proofread_step_reached": false,
+    "render_count": 0,
+    "receipt": {
+      "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r11-result.json",
+      "sha256": "4b6e20a69aa1646e2f0e99afd0d2cafecdc6dfdb478d495ccf4fd5b1c5a28095"
+    }
+  },
   "boundaries": [
     {
       "name": "owner intake/concurrency",
@@ -30,7 +43,7 @@
       "name": "fetched research/source citations",
       "test": {
         "path": "tests/material_first/test_source_spans.py",
-        "sha256": "f2cca95dba876e981972bca12b97e1419b58825214dc8f910f9fdd49ce3beecf"
+        "sha256": "ae90c3a062063ecd05a369ec766d01f0e1c4e2dac0c155abb0abda4efe5bd89e"
       },
       "saved_evidence": {
         "path": "acceptance/factory-v3/source-spans-pl15-result.json",
@@ -42,7 +55,7 @@
       "name": "three photo providers/download",
       "test": {
         "path": "tests/factory_v3/test_providers.py",
-        "sha256": "f2d9c45a6a944d0913afa798702be9fc60984a041f8942b6aabde085a5926d55"
+        "sha256": "4fb271954a025441734bee0ed570b05d62303dfe6db92e91d660e4fa5948af02"
       },
       "saved_evidence": {
         "path": "acceptance/factory-v3/providers-postgres.txt",
@@ -54,7 +67,7 @@
       "name": "retrieved metadata context planning",
       "test": {
         "path": "tests/material_first/test_photo_planning.py",
-        "sha256": "2269ef54dc622e4c179c6f666a6a9e53e34cf53bdaf60c5e223ea19e1fec80d1"
+        "sha256": "e894773daefc10fcf738a9abdbfad9e7f91485136187f22d3c47026dfb15ad23"
       },
       "saved_evidence": {
         "path": "acceptance/factory-v3/wholeplan-saved-distinctness.json",
@@ -78,7 +91,7 @@
       "name": "global variety/composition",
       "test": {
         "path": "tests/material_first/test_topic_connected.py",
-        "sha256": "7925f07dcb4bd64bf9f84da233f2aaf7cdd2cab3bf633163144d2b458d3d09d1"
+        "sha256": "eca9404bfd7199fa4dd5833d11596c6b90d7a48d46d70d3cf98a3b8fc85e9de4"
       },
       "saved_evidence": {
         "path": "acceptance/factory-v3/wholeplan-uk60-plan.json",
@@ -90,37 +103,49 @@
       "name": "independent factual script review",
       "test": {
         "path": "tests/factory_v3/test_gemini.py",
-        "sha256": "388a6128055e964972d506950fd51c77c0e80e82458dd4cac4998f3ddaf55114"
+        "sha256": "9cca580e8819deed613ba2b95d028088db67d42f89ad0f738c2c50f8e769438b"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/bytebatch-uk60-terminal.json",
-        "sha256": "6fd230b84de3d99ae045ad37b6da22241015be1206a08a953d36eb01631012e4"
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r9-result.json",
+        "sha256": "271c9c0a96c22b60ece56f0cf0d39fce7b5acfa70118a7c4073b1364fe692ae6"
       },
-      "remaining": "Actual old keyed review approved defective native wording. Native editor isolated from source text and observed-form gate added; new actual full review remains pending."
+      "remaining": "The latest completed independent review rejected selected Ukrainian grammar. The constrained proofread fix is deployed, but r10/r11 stopped before proofread/review on Gemini HTTP503."
+    },
+    {
+      "name": "deployed constrained proofread -> review",
+      "test": {
+        "path": "tests/material_first/test_voice_correction.py",
+        "sha256": "4578d51dd7a716ab14794c65347853cde3e8df5bf087472c97f2e598fe414f02"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r11-result.json",
+        "sha256": "4b6e20a69aa1646e2f0e99afd0d2cafecdc6dfdb478d495ccf4fd5b1c5a28095"
+      },
+      "remaining": "Offline regression passes and code is deployed; live proofread has not run because r11 rewrite received Gemini HTTP503 first."
     },
     {
       "name": "one voice/alignment",
       "test": {
         "path": "tests/factory_v3/test_executor.py",
-        "sha256": "9fa4af4302e640b43dd5b38ac8211377a0313f024ae1ecc74354e776915d5983"
+        "sha256": "864e3788b3295c76b0fd167200c2921448327d79f0b453ec55d8992c5d249906"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/bytebatch-uk60-terminal.json",
-        "sha256": "6fd230b84de3d99ae045ad37b6da22241015be1206a08a953d36eb01631012e4"
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r11-result.json",
+        "sha256": "4b6e20a69aa1646e2f0e99afd0d2cafecdc6dfdb478d495ccf4fd5b1c5a28095"
       },
-      "remaining": "Old491002b6 actual one voice/alignment succeeded but source native wording and spoken notation unacceptable; new current voice/listening pending."
+      "remaining": "Latest r11 reached one natural TTS at 52,704 ms, then stopped on Gemini HTTP503. No corrected voice, alignment, or listening acceptance."
     },
     {
       "name": "whole photos/exact timing/render/audit",
       "test": {
         "path": "tests/material_first/test_connected_presentation.py",
-        "sha256": "5acfa4dd03dae981b7109505adf65609f72fe24b99df7633e4fd0491317890de"
+        "sha256": "aa51bc782eb995d0b0559dc43c48169843cdf91149a0efb5812e4a68407a41af"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/whole-photo-previews-20261006.json",
-        "sha256": "7e1f08b6f847ff6c9170ae8f48ebbe7e6de5faecfee3b887d4da0359e79d8577"
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r11-result.json",
+        "sha256": "4b6e20a69aa1646e2f0e99afd0d2cafecdc6dfdb478d495ccf4fd5b1c5a28095"
       },
-      "remaining": "Old actual render stopped at contextual cadence; saved timings now pass same-role consolidation. Current MP4/audit pending."
+      "remaining": "r11 stopped before alignment/render; no current-release MP4 or final-media audit exists."
     },
     {
       "name": "owner review/save/physical deletion",
