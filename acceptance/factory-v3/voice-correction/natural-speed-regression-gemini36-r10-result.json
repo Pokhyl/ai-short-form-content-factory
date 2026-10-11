@@ -1,0 +1,38 @@
+{
+  "id": "8a50ef02-3f4f-4db2-8ef3-fffe6315682e",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "c2ae7774b50413f5f80ac8cd8266686ca9a6eec2",
+  "state": "failed_terminal",
+  "job_status": "unknown",
+  "latest_stage": {
+    "stage": "voice",
+    "state": "unknown",
+    "error_code": "HTTPFailure"
+  },
+  "tts_sends": 1,
+  "measured_voice_durations_ms": [
+    52704
+  ],
+  "voice_audio_sha256": [
+    "87f56882bbe9296a497494b4625709220cbfd86a0d92ea06a1c6339cd6b65744"
+  ],
+  "gemini_calls": 1,
+  "metadata_calls": 1,
+  "new_research": 0,
+  "photo_searches": 0,
+  "photo_downloads": 0,
+  "photo_inspections": 0,
+  "render_count": 0,
+  "failure_type": "HTTPFailure",
+  "failure": "HTTP request rejected: 503",
+  "gateway_receipt": {
+    "call_key": "voice-fit:2:rewrite",
+    "status": 503,
+    "error_status": "UNAVAILABLE",
+    "error_reason": null,
+    "error_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "gateway_execution_id": "12965"
+  },
+  "proofread_step_reached": false,
+  "project_ready": false
+}

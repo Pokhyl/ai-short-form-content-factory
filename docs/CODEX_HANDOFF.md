@@ -1,4 +1,4 @@
-## Последнее состояние: proofread fix развернут; bounded r10 выполняется — 2026-10-11
+## Последнее состояние: proofread fix развернут; r11 подготовлен после transient Gemini 503 — 2026-10-11
 
 r9 `c4f70733-74d0-4e6d-ac88-aaf5f7dfb4a7` immutable `failed_terminal` на активной production revision `b805306cac0e12530dca087ccf947e4f70abcaa5`: 1 естественный TTS (54,384 ms), 2 Gemini + 1 metadata, 0 alignment/render/QA. Read-only replay сохранённых ответов показал выбранные ошибки `електронний захоплення` и `стискання радіуса`; независимый review корректно вернул `native_language_quality=false`. Полный receipt и причина: `acceptance/factory-v3/voice-correction/natural-speed-regression-gemini36-r9-result.json`. r9 ID не использовать повторно.
 
@@ -6,7 +6,7 @@ r9 `c4f70733-74d0-4e6d-ac88-aaf5f7dfb4a7` immutable `failed_terminal` на ак�
 
 Production обновлён до `factory-v3:gemini36-c2ae777-r1`, digest `sha256:6ec13739c677e9b66fc6539901b353c6f55dca116fbacdbf81572ee1e6389f22`; app healthy, restart count0, точная revision c2ae777, Studio HTTP200. Идемпотентная транзакционная миграция изменила только три preparation-функции; подтвердили `proofread` accepted/legacy removed, counts jobs/preparations и active stages совпали до/после. Receipt: `acceptance/factory-v3/voice-correction/natural-speed-proofread-deployment.json`. Основной серверный checkout с посторонними dirty Studio/deploy файлами не затрагивался.
 
-Fresh r10 `8a50ef02-3f4f-4db2-8ef3-fffe6315682e` запущен один раз по committed plan `natural-speed-regression-gemini36-r10-plan.json`: максимум3 TTS,6 Gemini,0 search/download/research,1 render/QA, billing disabled/no paid fallback. Runner job `job_1693f9fcd028`; читать только её receipt на завершении, не повторять ID. Проверить voice 59–60s, exact audio SHA, render duration60s, tempo factor1.0 и machine QA. `project_ready=false` до успешного MP4.
+r10 `8a50ef02-3f4f-4db2-8ef3-fffe6315682e` immutable `failed_terminal`: один естественный TTS 52,704 ms, затем Gemini `voice-fit:2:rewrite` ответил HTTP503 `UNAVAILABLE` с сообщением о временно высокой нагрузке. 1 TTS + 1 Gemini + 1 metadata; proofread не reached, 0 render. Gateway execution ID12965; result: `natural-speed-regression-gemini36-r10-result.json`. Не повторять ID. Свежий r11 `35b0c680-3857-4f3b-95bb-57377e5ad380` подготовлен на ту же deployed revision и модель с теми же строгими ограничениями: максимум3 TTS/6 Gemini/0 searches/downloads/research/1 render/QA, без paid fallback. Перед любым вызовом commit+push plan/runner. Это один ограниченный run, не повторять ни r10, ни r11 после terminal state. `project_ready=false`.
 
 ---
 

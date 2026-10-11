@@ -1,0 +1,39 @@
+{
+  "id": "35b0c680-3857-4f3b-95bb-57377e5ad380",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "c2ae7774b50413f5f80ac8cd8266686ca9a6eec2",
+  "model": "gemini-3.6-flash",
+  "question": "Does the deployed factory produce a natural-speed 60-second Ukrainian voiceover and render it without slowing the audio?",
+  "mode": "Reuse the frozen source facts, reviewed paragraphs, and approved photographs; use measured voice correction, then align, render, and machine-audit.",
+  "predecessor": {
+    "id": "8a50ef02-3f4f-4db2-8ef3-fffe6315682e",
+    "state": "failed_terminal",
+    "reason": "Google Gemini 3.6 Flash returned HTTP 503 UNAVAILABLE due to temporary high demand before the deployed proofread step was reached. This fresh ID is a single bounded continuation; no failed ID is replayed."
+  },
+  "limits": {
+    "tts_sends": 3,
+    "gemini_calls": 6,
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "new_research": 0,
+    "paid_fallback": false,
+    "video_renders": 1,
+    "machine_qa_runs": 1
+  },
+  "acceptance": {
+    "measured_voice_duration_ms": [
+      59000,
+      60000
+    ],
+    "audio_tempo_factor": 1.0,
+    "trailing_silence_ms_max": 1000,
+    "source_plan_and_fact_grounding_unchanged": true,
+    "machine_qa_pass": true
+  },
+  "stop": "One attempt per external send. Stop on failed/ambiguous calls, on third out-of-window voice, or before exceeding limits. Never time-stretch narration or reuse a terminal ID.",
+  "quota": "Production Gemini project billing remains confirmed disabled. Gateway metadata for gemini-3.6-flash returned HTTP 200 and lists generateContent; Google pricing lists standard Gemini 3.6 Flash at no charge on Free Tier. No paid fallback.",
+  "status": "planned",
+  "project_ready_before": false,
+  "sequence": "r11; one fresh bounded acceptance attempt on deployed c2ae777 after confirmed temporary provider UNAVAILABLE, exercising constrained proofreading and independent review."
+}
