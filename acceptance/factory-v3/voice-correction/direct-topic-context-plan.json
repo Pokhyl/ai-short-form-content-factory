@@ -1,0 +1,22 @@
+{
+  "id": "18c871a3-68f5-4f60-8e3c-165e332109f4",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "ec0c02e",
+  "question": "Does the direct-topic-object planner produce three supported visual contexts and pass its independent metadata review using saved evidence and saved photo searches?",
+  "mode": "saved frozen evidence and provider-response replay; planner and reviewer only",
+  "limits": {
+    "metadata_authorization_calls": 0,
+    "gemini_generation_calls": 2,
+    "new_research_searches": 0,
+    "new_source_fetches": 0,
+    "new_photo_searches": 0,
+    "new_photo_downloads": 0,
+    "new_photo_inspections": 0,
+    "tts_sends": 0,
+    "render_or_qa": false
+  },
+  "expected_quota_consumption": "At most two calls on the configured free-only Gemini project; paid fallback prohibited.",
+  "stop": "Require all nine saved search responses. Stop on any failure. Never repeat this ID or any earlier failed ID.",
+  "status": "planned",
+  "project_ready_before": false
+}

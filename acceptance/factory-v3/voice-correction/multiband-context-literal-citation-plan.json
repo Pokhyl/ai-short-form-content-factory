@@ -17,6 +17,6 @@
   },
   "expected_quota_consumption": "At most two calls on the configured free-only Gemini project; paid fallback prohibited.",
   "stop": "Require all nine saved search responses and stop on any failure. Never repeat this ID or earlier failed IDs.",
-  "status": "planned",
+  "status": "terminal failure; independent review rejected an unrelated supernova remnant",
   "project_ready_before": false
 }

@@ -1,0 +1,17 @@
+{
+  "id": "024d19eb-7872-47d0-a24c-b9ad67eadb70",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "fd8f27df635dbc034417ab2ba0bbf1ea9bafb151",
+  "state": "terminal_failure_at_independent_review",
+  "error": "Reviewer rejected E0102-72.3: actual candidate metadata does not explicitly connect the pictured supernova remnant to the neutron-star topic.",
+  "fresh_gemini_calls": ["material-photo-plan", "material-photo-plan-review"],
+  "saved_search_responses_replayed": 9,
+  "new_searches": 0,
+  "new_downloads": 0,
+  "new_photo_inspections": 0,
+  "tts_sends": 0,
+  "render_or_qa": false,
+  "preparation_terminal": "DiagnosticBoundaryFailure",
+  "project_ready": false,
+  "never_repeat_id": true
+}
