@@ -1,0 +1,47 @@
+{
+  "id": "e0f49eaa-c5af-474c-84ce-d2873901be19",
+  "source_job": "72705d11-4556-4a4a-b751-676cc71e215d",
+  "revision": "04df6dac7aa6d2206d92e54ba2f7c565a4e52a48",
+  "model": "gemini-3.5-flash-lite",
+  "question": "Does the updated deployed factory produce a natural-speed 60-second Ukrainian voiceover and render it without slowing the audio?",
+  "mode": "Reuse the frozen source facts, reviewed paragraphs, and approved photographs; use measured voice correction, then align, render, and machine-audit.",
+  "predecessor": {
+    "id": "35b0c680-3857-4f3b-95bb-57377e5ad380",
+    "state": "failed_terminal",
+    "reason": "Gemini 3.6 returned HTTP 503 before proofreading. This is a new ID on the committed Gemini 3.5 factory build; no failed ID is replayed."
+  },
+  "limits": {
+    "tts_sends": 3,
+    "gemini_calls": 6,
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "new_research": 0,
+    "paid_fallback": false,
+    "video_renders": 1,
+    "machine_qa_runs": 1
+  },
+  "acceptance": {
+    "measured_voice_duration_ms": [
+      59000,
+      60000
+    ],
+    "audio_tempo_factor": 1.0,
+    "trailing_silence_ms_max": 1000,
+    "source_plan_and_fact_grounding_unchanged": true,
+    "machine_qa_pass": true
+  },
+  "stop": "One attempt per external send. Stop on failed or ambiguous calls, on third out-of-window voice, or before exceeding limits. Never time-stretch narration or reuse a terminal ID.",
+  "quota": "Production billing is confirmed disabled. Use only gemini-3.5-flash-lite; paid fallback prohibited.",
+  "preconditions": {
+    "deployment_commit": "da7b73a",
+    "deployment_status": "completed",
+    "gateway_auth_route_http": 403,
+    "v3_database_snapshot_unchanged": true,
+    "unrelated_workflows_unchanged": true
+  },
+  "status": "planned",
+  "terminal_receipt": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r12-result.json",
+  "project_ready_before": false,
+  "sequence": "r12; one bounded natural-speed acceptance attempt on deployed source 04df6da."
+}
