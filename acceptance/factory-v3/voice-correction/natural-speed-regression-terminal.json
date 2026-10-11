@@ -12,6 +12,8 @@
   "gemini_state": "unknown",
   "gemini_http_status": 503,
   "gemini_gateway_error": "UNAVAILABLE",
+  "gemini_gateway_execution_id": "12926",
+  "gemini_error_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
   "metadata_calls": 1,
   "metadata_state": "succeeded",
   "photo_searches": 0,
@@ -21,5 +23,5 @@
   "alignment_or_qa": false,
   "acceptance": false,
   "project_ready": false,
-  "notes": "The voice correction request failed at the provider gateway. The immutable preparation remains unknown; do not retry this ID. No render or finished video was produced."
+  "notes": "The voice correction request failed because the Gemini model reported high demand. The immutable preparation remains unknown; do not retry this ID. No render or finished video was produced."
 }
