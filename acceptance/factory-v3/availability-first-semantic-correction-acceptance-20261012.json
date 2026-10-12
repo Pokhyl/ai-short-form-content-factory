@@ -98,7 +98,15 @@
     "request_id_will_not_be_retried": true
   },
   "fix": {
-    "commit_pending": true,
-    "description": "Allow at most one additional duplicate-subject repair after the first completed structural repair still repeats canonical labels. Restrict each repair to new available anchor IDs; preserve strict failure when no distinct candidate or valid labels remain."
+    "commit": "bc3eaae53e4a41678ca2e3239658009815ddf69e",
+    "description": "Allow at most one additional duplicate-subject repair after a completed structural repair still repeats canonical labels. New attempt uses unused candidate anchors; existing semantic/source/pixel gates stay strict.",
+    "deployed": true,
+    "image": "factory-v3:distinct-context-repair-amd64-20261012-r1",
+    "image_id": "sha256:9dc8944aa81df939ce9c7bbbb75d05839727adae9f851878598a689f3fc9b996",
+    "container_id": "3c6d08a92156116fe5448dac16ab784028637519226257251f4d2dcc7aa2246f",
+    "health": "healthy",
+    "public_health_http": 200,
+    "studio_http": 200,
+    "disk_free_mb_after": 358
   }
 }
