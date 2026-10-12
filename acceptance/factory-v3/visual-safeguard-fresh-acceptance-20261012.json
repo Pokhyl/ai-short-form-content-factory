@@ -1,0 +1,55 @@
+{
+  "id": "71d66aee-b30c-4591-8fe9-2650f376af96",
+  "created_at": "2026-10-12 07:10:07 UTC",
+  "question": "Does the latest deployed visual safeguard filter allow the Ukrainian 60-second neutron-star flow to reach photo inspection and finish at natural speed?",
+  "request": {
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60
+  },
+  "source": {
+    "branch_head": "9b35ad8e43ecaee7083db51eb9be8ec3c6603b49",
+    "runtime_revision": "4f985f500a8ea5c36ccbda95d59c6a2096dfaccf",
+    "image": "factory-v3:gemini35-visual-dedupe-rendition-filter-amd64-20261012-r1",
+    "image_id": "sha256:819f5d221a96c4e692b065ad6c0251a859af15924efcc00a5c1c60131793a7b3",
+    "studio": "https://studio.hodor.com.pl"
+  },
+  "preflight": {
+    "jobs": 28,
+    "active_jobs": 0,
+    "preparations": 105,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0,
+    "root_free_mb": 366
+  },
+  "limits": {
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini_total": 16,
+    "photo_searches_per_provider": 3,
+    "photo_providers": [
+      "pexels",
+      "pixabay",
+      "wikimedia"
+    ],
+    "photo_downloads": 30,
+    "tts_sends_max": 3,
+    "tts_voice": "uk-UA-Chirp3-HD-Enceladus",
+    "renders": 1,
+    "machine_qa": 1,
+    "paid_fallback": false
+  },
+  "stop_conditions": [
+    "Submit this exact request ID once; never retry it.",
+    "Preserve any ambiguous provider result as terminal/unknown.",
+    "Stop at first source, factuality, relevance, free-quota, duration, alignment, render or machine-audit failure.",
+    "Do not weaken natural-speed voice, topical relevance, exact 60-second output or QA.",
+    "Stop media generation if /data free space falls below 100 MB.",
+    "One request only in this acceptance."
+  ],
+  "status": "planned_not_submitted",
+  "submission_attempts": 0,
+  "provider_calls": 0,
+  "project_ready": false
+}\n
