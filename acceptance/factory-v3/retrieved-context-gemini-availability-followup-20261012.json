@@ -47,7 +47,63 @@
     "This plan authorizes one request only."
   ],
   "status": "planned_not_submitted",
-  "submission_attempts": 0,
-  "provider_calls": 0,
-  "project_ready": false
+  "submission_attempts": 1,
+  "provider_calls": {
+    "gemini": 5,
+    "photo_searches": 9,
+    "photo_downloads": 0,
+    "tts_sends": 0
+  },
+  "project_ready": false,
+  "run_state": "failed_terminal_before_photo_download_or_voice",
+  "submitted_at": "2026-10-12T07:00:04.655485Z",
+  "actual": {
+    "preparation_status": "failed",
+    "error_code": "ValueError",
+    "failure_boundary": "retrieved context structural repair validation",
+    "research_searches": 1,
+    "source_fetches": {
+      "succeeded": 4,
+      "failed_unavailable": 2
+    },
+    "gemini_calls": 5,
+    "photo_searches": {
+      "wikimedia": 3,
+      "pexels": 3,
+      "pixabay": 3
+    },
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "tts_sends": 0,
+    "renders": 0,
+    "machine_qa": 0,
+    "source_revision": "2625d61cbb4b7c5d95c70c31903bfc86e24bf192",
+    "repair_response": {
+      "v0": {
+        "anchor_id": "wikimedia:106718119",
+        "english_photo_object": "Neutron star 2"
+      },
+      "v1": {
+        "anchor_id": "wikimedia:146250070",
+        "english_photo_object": "Neutron Star"
+      },
+      "v2": {
+        "anchor_id": "wikimedia:146250120",
+        "english_photo_object": "Neutron Star"
+      }
+    },
+    "repair_anchor_metadata": {
+      "wikimedia:106718119": "File:Neutron star 2.png",
+      "wikimedia:146250070": "File:Neutron Star (26195322166).png",
+      "wikimedia:146250120": "File:Neutron Star (26194729776).png"
+    },
+    "validation": "Fail-closed because roles v1 and v2 repeated the same visual target label after case normalization; no job was created.",
+    "active_jobs_after": 0,
+    "active_preparations_after": 0,
+    "active_stages_after": 0,
+    "active_provider_calls_after": 0,
+    "root_free_mb_after": 367,
+    "job_id_will_not_be_retried": true,
+    "repair_call_reached": true
+  }
 }

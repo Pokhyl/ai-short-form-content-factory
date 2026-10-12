@@ -55,6 +55,28 @@ class RetrievedContextRepairTests(unittest.TestCase):
         self.assertEqual(result,selected)
         gemini.generate.assert_not_called()
 
+    def test_repair_fails_closed_when_model_uses_case_or_number_to_fake_variety(self):
+        fixture=json.loads((Path(__file__).parent/'fixtures/duplicate-neutron-context-plan.json').read_text())
+        selected={key:dict(row) for key,row in fixture['duplicate_plan'].items()}
+        known={row['id']:{'id':row['id'],'description':row['title'],
+                         'source_metadata':{'title':row['title']}} for row in fixture['metadata']}
+        anchors=[{'id':identity} for identity in known]
+        schema=obj({key:obj({'anchor_id':string(known),
+            'english_photo_object':{**string(),'maxLength':100},
+            'source_mention':{**string(),'maxLength':160},
+            'support_span_ids':array(string(['s1-0-1094','s1-1094-2113','s1-2113-3302']),1,3),
+            'fact_ids':array(string(['fact-1','fact-2','fact-3']),1,8)}) for key in ('v0','v1','v2')})
+        repaired={key:dict(row) for key,row in selected.items()}
+        repaired['v0'].update(anchor_id='wikimedia:155249958',english_photo_object='Neutron star 2')
+        repaired['v2'].update(anchor_id='wikimedia:125053149',english_photo_object='NEUTRON STAR')
+        gemini=Mock();gemini.generate.return_value=(repaired,{})
+        spans=[{'id':span,'source_id':'source','text':'Нейтронная звезда нейтронную зорю сверхновую'}
+               for span in ('s1-0-1094','s1-1094-2113','s1-2113-3302')]
+        with self.assertRaisesRegex(ValueError,'did not select distinct subjects'):
+            _repair_duplicate_context_labels(gemini,{'topic':'Нейтронная звезда'},[],spans,
+                schema,selected,anchors,known)
+        self.assertEqual(gemini.generate.call_count,1)
+
 
 if __name__=='__main__':
     unittest.main()

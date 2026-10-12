@@ -4,6 +4,7 @@ from urllib.parse import urlsplit, unquote
 
 SYNTHETIC = re.compile(
     r"\b(?:artist(?:['’]s|\s+s)?[- _]*(?:concept|impression)|concept\s+art|"
+    r"artist(?:['’]s|\s+s)?[- _]*(?:renderings?|renditions?)|"
     r"artistic\s+(?:concept|impression|rendering)|artist(?:['’]s|\s+s)?\s+conception|illustrations?|illustrated|schematic|diagram|"
     r"cross[- ]section|synthetic\s+rendering|3d\s+render(?:ing)?|"
     r"computer[- ]generated|(?:this|computer|supercomputer|numerical)\s+simulations?|"

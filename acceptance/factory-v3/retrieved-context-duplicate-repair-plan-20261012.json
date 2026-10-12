@@ -49,17 +49,29 @@
     "rollback_image": "factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1"
   },
   "follow_up_acceptance": {
-    "id": "b9f0421b-6a25-4a73-90d6-11c677627cc4",
-    "state": "unknown_terminal_before_visual_planning",
-    "reason": "Gemini high demand (UNAVAILABLE) during material brief factual repair. No photo search or structural visual-context repair reached; ID not retried.",
+    "id": "fcee52f6-1af8-4102-be60-8002cceb3055",
+    "state": "failed_terminal_before_photo_download_or_voice",
+    "failure": "Repair model returned duplicate Neutron Star labels for two different anchors; the strict validator stopped preparation. It also selected one source described as an artist rendering, revealing a missing synthetic-caption pattern.",
     "provider_calls": {
-      "gemini_succeeded": 1,
-      "gemini_unknown": 1,
+      "gemini": 5,
       "research_search": 1,
       "source_fetch": 6,
-      "photo_searches": 0,
+      "photo_searches": 9,
+      "photo_downloads": 0,
       "tts_sends": 0
     },
+    "next_offline_change": "Reject artist-rendering captions explicitly and preserve a regression for the exact duplicate repair response; do not weaken unique-target checks.",
+    "project_ready": false
+  },
+  "subsequent_offline_change": {
+    "changes": [
+      "Reject artist-rendering and artist-rendition captions as synthetic before visual context selection.",
+      "Treat trailing numeric suffixes and parenthesized numeric IDs as cosmetic when checking visual object distinctness.",
+      "Strengthen the bounded structural repair instruction against capitalization, numbering and file-ID tricks."
+    ],
+    "tests": "PASS: material-first 186; factory-v3 112",
+    "amd64_network_disabled_image_tests": "pending",
+    "deployment": "pending",
     "project_ready": false
   }
 }

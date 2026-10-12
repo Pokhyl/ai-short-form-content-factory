@@ -18,6 +18,9 @@ class PhotographSearchTests(unittest.TestCase):
 
     def test_known_art_excluded_but_companion_illustrator_credit_not_a_photo_rejection(self):
         self.assertTrue(described_as_synthetic({'description':'A pulsar', 'source_metadata':{'title':"File:Artist's concept of PSR B1257.jpg"}}))
+        self.assertTrue(described_as_synthetic({'description':"Computer artist's rendering of a compact neutron star with accretion disk."}))
+        self.assertTrue(described_as_synthetic({'source_metadata':{'title':"File:Artist's rendering of neutron star.png"}}))
+        self.assertTrue(described_as_synthetic({'description':"Artist's rendition of a distant galaxy."}))
         self.assertFalse(described_as_synthetic({'description':'X-ray observation of a pulsar', 'source_metadata':{'imageinfo':[{'extmetadata':{'Artist':{'value':'Illustrations: Controlled'}}}]}}))
 
     def test_whole_photo_search_keeps_all_aspects_and_prioritizes_caption_match_without_excluding_sparse_photos(self):
