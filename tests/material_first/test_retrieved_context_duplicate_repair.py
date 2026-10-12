@@ -4,11 +4,20 @@ from pathlib import Path
 from unittest.mock import Mock
 
 from factory_v3.gemini import array, obj, string
-from material_first.retrieved_contexts import _repair_duplicate_context_labels
+from material_first.retrieved_contexts import _has_descriptive_metadata, _repair_duplicate_context_labels
 from material_first.targets import validate_targets
 
 
 class RetrievedContextRepairTests(unittest.TestCase):
+    def test_bare_neutron_star_filename_is_not_a_visual_anchor(self):
+        self.assertFalse(_has_descriptive_metadata({'id':'wikimedia:1','description':'.',
+            'source_metadata':{'title':'File:Neutron star 2.png'}}))
+        self.assertFalse(_has_descriptive_metadata({'id':'wikimedia:2','description':'Neutron Star',
+            'source_metadata':{'title':'File:Neutron Star (26195322166).png'}}))
+        self.assertTrue(_has_descriptive_metadata({'id':'wikimedia:3',
+            'description':'This is the first direct look at a lone neutron star, seen by Hubble.',
+            'source_metadata':{'title':'File:Hubble Sees a Neutron Star Alone in Space.jpg'}}))
+
     def test_live_duplicate_neutron_star_labels_get_one_bounded_repair(self):
         fixture=json.loads((Path(__file__).parent/'fixtures/duplicate-neutron-context-plan.json').read_text())
         metadata=fixture['metadata']

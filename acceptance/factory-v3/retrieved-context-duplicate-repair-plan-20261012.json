@@ -69,20 +69,27 @@
       "Treat trailing numeric suffixes and parenthesized numeric IDs as cosmetic when checking visual object distinctness.",
       "Strengthen the bounded structural repair instruction against capitalization, numbering and file-ID tricks."
     ],
-    "tests": "PASS: material-first 186; factory-v3 112",
-    "amd64_network_disabled_image_tests": "PASS: material-first 186; factory-v3 112",
+    "tests": "PASS: material-first 187; factory-v3 112",
+    "amd64_network_disabled_image_tests": "pending",
     "deployment": {
-      "status": "deployed_healthy",
-      "source_commit": "4f985f500a8ea5c36ccbda95d59c6a2096dfaccf",
-      "image": "factory-v3:gemini35-visual-dedupe-rendition-filter-amd64-20261012-r1",
-      "image_id": "sha256:819f5d221a96c4e692b065ad6c0251a859af15924efcc00a5c1c60131793a7b3",
-      "studio_root_http": 200,
-      "provider_calls": 0,
-      "new_jobs": 0,
-      "preparations_after": 105,
-      "active_work_after": 0
+      "status": "pending"
     },
     "project_ready": false,
     "deployment_receipt": "acceptance/factory-v3/visual-dedupe-rendition-filter-deployment-20261012.json"
+  },
+  "latest_acceptance": {
+    "id": "71d66aee-b30c-4591-8fe9-2650f376af96",
+    "status": "failed_terminal_before_photo_download_or_voice",
+    "failure": "Independent metadata review rejected a NICER instrument substitute; one allowed repair selected a bare Neutron star 2 file with no substantive description, and review rejected it.",
+    "provider_calls": {
+      "gemini": 6,
+      "research_search": 1,
+      "source_fetch": 5,
+      "photo_searches": 9,
+      "photo_downloads": 0,
+      "tts_sends": 0
+    },
+    "next_offline_change": "Exclude anchors whose only evidence is a bare filename or a generic two-word topic label; leave semantic review and pixel approval strict.",
+    "project_ready": false
   }
 }

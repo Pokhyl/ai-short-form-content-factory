@@ -29,6 +29,18 @@ def _observation_band(candidate):
     return next((name for name, pattern in _OBSERVATION_BANDS if pattern.search(metadata)), None)
 
 
+def _has_descriptive_metadata(candidate):
+    """Require enough human-readable metadata to distinguish an object from a bare filename."""
+    boilerplate={'file','image','photo','photograph','picture','jpeg','jpg','png','webp'}
+    for value in descriptions(candidate):
+        text=re.sub(r'(?i)^\s*file\s*:', ' ', str(value))
+        text=re.sub(r'(?i)\.(?:jpe?g|png|webp|tiff?)\b', ' ', text)
+        tokens=set(re.findall(r'[a-z]{3,}',text.casefold()))-boilerplate
+        if len(tokens)>=3:
+            return True
+    return False
+
+
 def _context_object_identity(label):
     """Ignore cosmetic numeric suffixes so filenames cannot fake visual variety."""
     value=re.sub(r'\s*\(\s*\d+\s*\)\s*$','',str(label).strip())
@@ -160,7 +172,7 @@ def plan_retrieved_contexts(gemini,request,brief,pools,limit):
     known={}
     for pool in pools:
         for candidate in pool:known.setdefault(candidate['id'],candidate)
-    anchors=[c for c in known.values() if any(descriptions(c)) and not described_as_synthetic(c)]
+    anchors=[c for c in known.values() if _has_descriptive_metadata(c) and not described_as_synthetic(c)]
     if len(anchors)<max(3,math.ceil(request['seconds']/5)):
         raise ValueError('retrieval lacks enough real-photo availability candidates')
     sources=brief['evidence']['sources'];spans=source_spans(sources)
