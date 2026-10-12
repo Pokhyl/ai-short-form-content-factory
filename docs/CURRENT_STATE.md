@@ -1,6 +1,6 @@
 ## Latest acceptance blocker — 2026-10-12
 
-UK60 r14 remains immutable and failed at render. New offline correction lets a duration-ranked paragraph variant also select a shorter cadence-feasible subset from the already reviewed photos; it cannot add, replace, or reorder images. The saved r14 graph now has a regression showing a feasible 12-photo subset, while measured TTS duration and render alignment remain final gates. Local tests pass: material-first 183, factory-v3 112. No provider calls or production jobs. Deployment to the production amd64 app is pending. `project_ready=false`; no accepted MP4 or human audio review.
+UK60 r14 remains immutable and failed at render. New offline correction lets a duration-ranked paragraph variant also select a shorter cadence-feasible subset from the already reviewed photos; it cannot add, replace, or reorder images. The saved r14 graph now has a regression showing a feasible 12-photo subset, while measured TTS duration and render alignment remain final gates. Local and network-disabled amd64 image tests pass: material-first 183, factory-v3 112. Image `gemini35-voice-adaptive-photo-pool-amd64-20261012-r1` runs healthy at revision `516d98f`; Studio is HTTP200; DB remains 28 jobs/102 preparations with zero active work; no provider calls or new jobs. `project_ready=false`; no accepted MP4 or human audio review. Deployment receipt: `acceptance/factory-v3/adaptive-voice-visual-pool-deployment-20261012.json`.
 
 ## Previous acceptance blocker — 2026-10-11
 

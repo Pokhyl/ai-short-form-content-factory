@@ -13,7 +13,7 @@ The deployed preflight blocks r14's corrected plan before a second TTS. A furthe
 
 ## Adaptive photo-pool voice correction — 2026-10-12
 
-Offline replay showed that no saved paragraph combination passes topical cadence with all 17 r14 photos, while a smaller subset of the same reviewed photos can pass. The selector now tries approved visual-pool prefixes at the minimum safe cadence and prunes only unused approved assets/observations after selection. No external calls or production jobs. Local suites pass (183 material-first, 112 factory-v3). Production build/deployment is pending. `project_ready=false`; r14 remains a failed immutable job and no final video is claimed.
+Offline replay showed that no saved paragraph combination passes topical cadence with all 17 r14 photos, while a smaller subset of the same reviewed photos can pass. The selector now tries approved visual-pool prefixes at the minimum safe cadence and prunes only unused approved assets/observations after selection. Local and network-disabled amd64 image suites pass (183 material-first, 112 factory-v3). Image `factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1` is deployed and healthy at revision `516d98f`; Studio200; DB and other service IDs unchanged; no provider calls or production jobs. Receipt: `acceptance/factory-v3/adaptive-voice-visual-pool-deployment-20261012.json`. `project_ready=false`; r14 remains immutable and failed, and no final video is claimed.
 
 ## Verified state — 2026-10-07
 

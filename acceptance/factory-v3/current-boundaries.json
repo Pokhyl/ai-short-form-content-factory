@@ -114,7 +114,7 @@
       },
       "saved_evidence": {
         "path": "acceptance/factory-v3/adaptive-voice-visual-pool-plan-20261012.json",
-        "sha256": "ec2b403ea73f66d5df2820c286c640975dfa85e47b74050cb3ea07346ac117fa"
+        "sha256": "063466d254d07e6d0e23983901d0199d244de3ed31adfbaaaa3e8ce7ec9740b0"
       },
       "remaining": "Offline r14 variants can use a smaller subset of unchanged approved photos; adaptive selector is locally tested but production build/deployment and a fresh successful output remain pending."
     },

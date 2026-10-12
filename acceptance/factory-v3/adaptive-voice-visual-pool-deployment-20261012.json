@@ -1,0 +1,35 @@
+{
+  "deployed_at": "2026-10-12T03:35:00Z",
+  "source_commit": "516d98f36b1bc77c9b798557c2053a5e5f6a1eb6",
+  "image": "factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1",
+  "image_id": "sha256:673dd9d2d7a3dae71a8abd63006dca6f1beb13b568d40ad791d11f02b4201cce",
+  "platform": "linux/amd64",
+  "container": {
+    "name": "factory-v3-app",
+    "id": "4a8d696059621ff4a610e8a968c6449d5b54ca3e65903f63d168db1bafe1601e",
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0,
+    "revision": "516d98f36b1bc77c9b798557c2053a5e5f6a1eb6",
+    "health_http": 200
+  },
+  "studio_http": 200,
+  "database_after": {
+    "jobs": 28,
+    "active_jobs": 0,
+    "preparations": 102,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0
+  },
+  "unchanged_services": {
+    "shorts-v2-media-worker-1": "5824c94abaa6",
+    "ai-short-form-n8n": "c9373532bb9a",
+    "n8n-caddy-1": "3913314c33d6"
+  },
+  "root_disk_free": "370 MB (99% used)",
+  "provider_calls": 0,
+  "new_jobs": 0,
+  "rollback_image": "factory-v3:gemini35-voice-variant-preflight-amd64-20261011-r2",
+  "project_ready": false
+}

@@ -18,9 +18,12 @@
     "production_jobs": 0
   },
   "deployment": {
-    "status": "pending",
+    "status": "deployed_and_healthy",
     "platform": "linux/amd64",
-    "planned_tag": "factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1",
+    "image": "factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1",
+    "image_id": "sha256:673dd9d2d7a3dae71a8abd63006dca6f1beb13b568d40ad791d11f02b4201cce",
+    "source_revision": "516d98f36b1bc77c9b798557c2053a5e5f6a1eb6",
+    "receipt": "acceptance/factory-v3/adaptive-voice-visual-pool-deployment-20261012.json",
     "project_ready": false
   }
 }

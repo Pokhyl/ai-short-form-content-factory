@@ -1,8 +1,8 @@
 {
-  "tag": "factory-v3:gemini35-voice-variant-preflight-amd64-20261011-r2",
-  "image_id": "sha256:899c63de1d2a069e9d959a6a8ee33d7003ce746e150d61f6910d797ca54d2487",
+  "tag": "factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1",
+  "image_id": "sha256:673dd9d2d7a3dae71a8abd63006dca6f1beb13b568d40ad791d11f02b4201cce",
   "platform": "linux/amd64",
-  "source_commit": "614090f4bad6ed20d4d658143be36c4f173b68aa",
+  "source_commit": "516d98f36b1bc77c9b798557c2053a5e5f6a1eb6",
   "deployed": true,
-  "deployment_receipt": "acceptance/factory-v3/voice-variant-preflight-deployment-20261011.json"
+  "deployment_receipt": "acceptance/factory-v3/adaptive-voice-visual-pool-deployment-20261012.json"
 }
