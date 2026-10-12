@@ -107,16 +107,16 @@
       "remaining": "Controlled topical preparation/scheduling tests pass; live relevant-photo coverage failed at exact timing in r14."
     },
     {
-      "name": "topical photo cadence preflight before voice",
+      "name": "topical photo cadence preflight and voice variant selection",
       "test": {
-        "path": "tests/material_first/test_topic_quality.py",
-        "sha256": "d379671f8ed9a900db2f62aa3471bee1517cbbabb4fb61504c0123bff082336b"
+        "path": "tests/material_first/test_voice_correction.py",
+        "sha256": "6cc9e15fb4982be3b970586ff67ded43de1c830ed27f48ddc329e2025c32b58d"
       },
       "saved_evidence": {
-        "path": "tests/material_first/fixtures/r14-topical-preflight-replay.json",
-        "sha256": "746a63f83824f7403847c0cbc3ceb24554a2caa8aa533b8c81a84e5f1f5c09cf"
+        "path": "acceptance/factory-v3/adaptive-voice-visual-pool-plan-20261012.json",
+        "sha256": "ec2b403ea73f66d5df2820c286c640975dfa85e47b74050cb3ea07346ac117fa"
       },
-      "remaining": "Saved r14 initial plan passes; its corrected plan is rejected before the second TTS. Actual measured scene timing remains authoritative at render."
+      "remaining": "Offline r14 variants can use a smaller subset of unchanged approved photos; adaptive selector is locally tested but production build/deployment and a fresh successful output remain pending."
     },
     {
       "name": "independent factual script review",
@@ -134,7 +134,7 @@
       "name": "deployed constrained proofread -> review",
       "test": {
         "path": "tests/material_first/test_voice_correction.py",
-        "sha256": "52de64979d366eab5e3100a69f8d46dc3e853a7ffb7d1617b94a7085b9c92385"
+        "sha256": "6cc9e15fb4982be3b970586ff67ded43de1c830ed27f48ddc329e2025c32b58d"
       },
       "saved_evidence": {
         "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json",

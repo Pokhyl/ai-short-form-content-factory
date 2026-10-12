@@ -10,7 +10,10 @@ POLICY = {'protocol': 'measured-text-correction-v1', 'max_attempts': 3}
 
 
 def validate_revision(original, revised):
+    topical = original.get('presentation_policy') == 'whole-photo-topic-v3'
     allowed = {'script', 'scenes', 'script_review', 'speech_timing'}
+    if topical:
+        allowed |= {'assets', 'observations', 'visuals'}
     if {k:v for k,v in original.items() if k not in allowed} != {k:v for k,v in revised.items() if k not in allowed}:
         raise ValueError('voice correction changed immutable source or visual contract')
     if len(original['scenes']) != len(revised['scenes']):
@@ -18,13 +21,32 @@ def validate_revision(original, revised):
     for before, after in zip(original['scenes'], revised['scenes']):
         if {k:v for k,v in before.items() if k != 'narration'} != {k:v for k,v in after.items() if k != 'narration'}:
             raise ValueError('voice correction changed paragraph grounding')
+    if not topical:
+        return
+    # A correction may discard already-reviewed photos to restore a feasible
+    # cadence. It may never add, edit, or reorder the approved material pool.
+    for key in ('assets', 'observations'):
+        before = {item['id']:item for item in original.get(key, [])}
+        after = {item['id']:item for item in revised.get(key, [])}
+        if len(after) != len(revised.get(key, [])) or any(before.get(identity) != item for identity,item in after.items()):
+            raise ValueError('voice correction changed or added approved visual material')
+    before_visuals = {item['material_id']:i for i,item in enumerate(original.get('visuals', []))}
+    after_visuals = revised.get('visuals', [])
+    if (not isinstance(after_visuals, list)
+            or any(set(item) != {'id','material_id'} or item['id'] != 'photo-'+str(i)
+                   or item['material_id'] not in before_visuals for i,item in enumerate(after_visuals,1))
+            or [before_visuals[item['material_id']] for item in after_visuals] != sorted(
+                before_visuals[item['material_id']] for item in after_visuals)
+            or {item['id'] for item in revised.get('assets', [])}
+               != {item['material_id'] for item in after_visuals}
+            or {item['id'] for item in revised.get('observations', [])}
+               != {item['material_id'] for item in after_visuals}):
+        raise ValueError('voice correction changed or added visual identities')
 
-
-
-def select_paragraphs(payload, proposed, timing):
+def select_paragraphs_and_visuals(payload, proposed, timing, *, allow_shrink=True):
     """Choose whole reviewed-source paragraph variants, never splice words/audio."""
     from .speech_timing import estimated_seconds
-    from .visuals import preflight_visual_capacity
+    from .visuals import preflight_visual_capacity, TOPIC_POLICY
     scenes=payload['scenes']
     if not 1 <= len(scenes) <= 8 or len(proposed) != len(scenes):
         raise ValueError('bounded paragraph alternatives required')
@@ -39,17 +61,33 @@ def select_paragraphs(payload, proposed, timing):
     ranked=sorted(product(*choices),key=lambda paragraphs:(
         abs(estimated_seconds(' '.join(paragraphs),timing)-target),
         sum(a!=b for a,b in zip(originals,paragraphs))))
+    if payload.get('presentation_policy') != TOPIC_POLICY:
+        return list(ranked[0]), deepcopy(payload.get('visuals', []))
+    visuals=payload.get('visuals', [])
+    from .visuals import minimum_shots
+    minimum=minimum_shots(payload['seconds'],payload['presentation_policy'])
     for paragraphs in ranked:
         candidate=deepcopy(payload)
         for scene,text in zip(candidate['scenes'],paragraphs):
             scene['narration']=text
         candidate['script']=' '.join(paragraphs)
-        try:
-            preflight_visual_capacity(candidate)
-        except ValueError:
-            continue
-        return list(paragraphs)
+        # Keep the earliest approved photos first: preparation already orders
+        # them to preserve scene anchors and rotate visual roles. Shorter pools
+        # spread the same narration over longer, still bounded photo cuts.
+        counts=range(minimum, len(visuals)+1) if allow_shrink else (len(visuals),)
+        for count in counts:
+            candidate['visuals']=visuals[:count]
+            try:
+                preflight_visual_capacity(candidate)
+            except ValueError:
+                continue
+            return list(paragraphs), deepcopy(candidate['visuals'])
     raise ValueError('no paragraph alternative combination preserves topical photo cadence')
+
+
+def select_paragraphs(payload, proposed, timing):
+    """Choose a duration-fit paragraph combination with feasible photo cadence."""
+    return select_paragraphs_and_visuals(payload, proposed, timing, allow_shrink=False)[0]
 
 
 def proofread_selected(payload, selected, gemini):
@@ -158,9 +196,14 @@ def rewrite(payload, measured_ms, gemini):
     for i in range(1,len(revised['scenes'])+1):
         variants=[result['paragraph_'+str(i)][name].strip() for name in ('compact','balanced','expanded')]
         alternatives.append(variants)
-    selected=select_paragraphs(payload,alternatives,timing)
+    selected,selected_visuals=select_paragraphs_and_visuals(payload,alternatives,timing)
     for scene,text in zip(revised['scenes'],selected):scene['narration']=text
     revised['script']=' '.join(selected)
+    if revised.get('presentation_policy') == 'whole-photo-topic-v3':
+        selected_materials={visual['material_id'] for visual in selected_visuals}
+        revised['visuals']=selected_visuals
+        revised['assets']=[asset for asset in revised.get('assets', []) if asset['id'] in selected_materials]
+        revised['observations']=[item for item in revised.get('observations', []) if item['id'] in selected_materials]
     if revised['script'] == payload['script']:
         raise ValueError('duration correction returned unchanged text')
     revised['speech_timing']=timing

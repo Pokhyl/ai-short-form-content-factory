@@ -1,0 +1,39 @@
+{
+  "deployed_at": "2026-10-11T23:49:28Z",
+  "source_commit": "614090f4bad6ed20d4d658143be36c4f173b68aa",
+  "image": "factory-v3:gemini35-voice-variant-preflight-amd64-20261011-r2",
+  "image_id": "sha256:899c63de1d2a069e9d959a6a8ee33d7003ce746e150d61f6910d797ca54d2487",
+  "platform": "linux/amd64",
+  "container": {
+    "name": "factory-v3-app",
+    "id": "4ed6f1743d39d538ffaf36adc00ba38b08a6b53d6c2fb291598523377060c915",
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0,
+    "revision": "614090f4bad6ed20d4d658143be36c4f173b68aa",
+    "health_http": 200
+  },
+  "studio_http": 200,
+  "free_tier": {
+    "model": "gemini-3.5-flash-lite",
+    "billing_enabled": false,
+    "confirmed": true
+  },
+  "database_after": {
+    "jobs": 28,
+    "active_jobs": 0,
+    "preparations": 102,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0
+  },
+  "unchanged_services": {
+    "shorts-v2-media-worker-1": "5824c94abaa6",
+    "ai-short-form-n8n": "c9373532bb9a",
+    "n8n-caddy-1": "3913314c33d6"
+  },
+  "root_disk_free": "371 MB (99% used)",
+  "provider_calls": 0,
+  "new_jobs": 0,
+  "project_ready": false
+}

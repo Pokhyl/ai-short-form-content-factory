@@ -88,6 +88,47 @@ class WorkerCorrectionTests(unittest.TestCase):
             self.assertEqual([call.args[1] for call in provider.synthesize.call_args_list],['old','new'])
 
 class RewriteTests(unittest.TestCase):
+    def test_r14_variants_reduce_only_approved_photos_to_restore_cadence(self):
+        import json
+        from pathlib import Path
+        from material_first.voice_correction import select_paragraphs_and_visuals, validate_revision
+        from material_first.visuals import preflight_visual_capacity
+        saved=json.loads((Path(__file__).parent/'fixtures/r14-topical-preflight-replay.json').read_text())
+        def text(words,characters):
+            lengths=[1]*words;extra=characters-(2*words-1)
+            for i in range(words):
+                addition=min(extra,40);lengths[i]+=addition;extra-=addition
+            return ' '.join('x'*length for length in lengths)
+        scenes=[{**scene,'narration':text(scene['words'],scene['characters'])}
+                for scene in saved['scenes']]
+        observations=[{'id':photo['material_id'],'supported_fact_ids':photo['supported_fact_ids'],
+                       'matched_visual_targets':{identity:True for identity in photo['target_ids']}}
+                      for photo in saved['photos_in_visual_order']]
+        payload={'presentation_policy':saved['presentation_policy'],'seconds':60,'scenes':scenes,
+                 'script':' '.join(scene['narration'] for scene in scenes),'observations':observations,
+                 'assets':[{'id':photo['material_id']} for photo in saved['photos_in_visual_order']],
+                 'visuals':[{'id':'photo-'+str(i),'material_id':photo['material_id']}
+                            for i,photo in enumerate(saved['photos_in_visual_order'],1)]}
+        sizes=[[(27,194),(63,480),(76,610)],[(30,241),(52,418),(71,538)],
+               [(24,191),(48,405),(59,508)]]
+        variants=[[text(words,characters) for words,characters in paragraph] for paragraph in sizes]
+        timing={'words_per_second':2.297,'characters_per_second':17.97,'selection_target_seconds':59.5}
+        selected,visuals=select_paragraphs_and_visuals(payload,variants,timing)
+        candidate={**payload,'visuals':visuals,
+                   'scenes':[{**scene,'narration':narration}
+                             for scene,narration in zip(scenes,selected)]}
+        selected_ids={item['material_id'] for item in visuals}
+        candidate['assets']=[item for item in payload['assets'] if item['id'] in selected_ids]
+        candidate['observations']=[item for item in observations if item['id'] in selected_ids]
+        self.assertEqual([(len(value.split()),len(value)) for value in selected],[(63,480),(30,241),(48,405)])
+        self.assertEqual(len(visuals),12)
+        self.assertEqual({item['material_id'] for item in visuals},
+                         {item['material_id'] for item in payload['visuals'][:12]})
+        preflight_visual_capacity(candidate)
+        validate_revision(payload,candidate)
+        changed={**candidate,'assets':[{'id':'invented-photo'}]+candidate['assets']}
+        with self.assertRaises(ValueError):validate_revision(payload,changed)
+
     def test_variant_selection_prefers_best_duration_fit_that_preserves_photo_cadence(self):
         import json
         from pathlib import Path

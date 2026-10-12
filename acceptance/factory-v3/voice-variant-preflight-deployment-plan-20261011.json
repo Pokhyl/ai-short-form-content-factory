@@ -20,5 +20,7 @@
     "free-tier model remains gemini-3.5-flash-lite with billing disabled"
   ],
   "rollback_image": "factory-v3:gemini35-visual-preflight-amd64-20261011-r1",
+  "deployment_status": "deployed_and_healthy",
+  "deployment_receipt": "acceptance/factory-v3/voice-variant-preflight-deployment-20261011.json",
   "project_ready": false
 }

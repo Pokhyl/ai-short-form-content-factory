@@ -17,8 +17,11 @@
     "provider_calls": 0
   },
   "deployment": {
-    "current_runtime_revision": "4f49448dc6c4a7f63fc8dfa31881da2c1ba576bd",
-    "current_selector_deployed": false,
+    "current_runtime_revision": "614090f4bad6ed20d4d658143be36c4f173b68aa",
+    "current_selector_deployed": true,
+    "image": "factory-v3:gemini35-voice-variant-preflight-amd64-20261011-r2",
+    "image_id": "sha256:899c63de1d2a069e9d959a6a8ee33d7003ce746e150d61f6910d797ca54d2487",
+    "deployment_receipt": "acceptance/factory-v3/voice-variant-preflight-deployment-20261011.json",
     "next_image_platform": "linux/amd64",
     "project_ready": false
   }

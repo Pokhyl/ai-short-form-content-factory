@@ -1,0 +1,26 @@
+{
+  "problem": "The saved r14 alternatives have no duration-feasible combination over all 17 approved photos, but some combinations become cadence-feasible when the correction drops unused photos from the already approved pool.",
+  "change": {
+    "file": "material_first/voice_correction.py",
+    "behavior": "Rank complete reviewed paragraph combinations by measured-duration estimate. For each combination, try approved visual-pool prefixes from the five-second minimum cadence up to the existing pool size. Select only when topical capacity passes, then retain only the selected original assets and observations.",
+    "visual_constraints": "No photo is added, edited, duplicated, or reordered. Existing scene anchors, source facts, measured natural-speed audio gate, and exact render timing remain enforced.",
+    "external_calls_added": 0
+  },
+  "regression": {
+    "fixture": "tests/material_first/fixtures/r14-topical-preflight-replay.json",
+    "test": "tests/material_first/test_voice_correction.py::RewriteTests::test_r14_variants_reduce_only_approved_photos_to_restore_cadence",
+    "result": "The saved 17-photo topical graph selects a feasible 12-photo subset with complete paragraph variants; the resulting revision accepts only unchanged approved photo bytes and rejects an invented asset."
+  },
+  "verification": {
+    "material_first": "183 passed",
+    "factory_v3": "112 passed",
+    "provider_calls": 0,
+    "production_jobs": 0
+  },
+  "deployment": {
+    "status": "pending",
+    "platform": "linux/amd64",
+    "planned_tag": "factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1",
+    "project_ready": false
+  }
+}

@@ -9,7 +9,11 @@
 
 ## Follow-on voice-variant selection correction — 2026-10-11
 
-The deployed preflight blocks r14's corrected plan before a second TTS. A further generic correction now filters already-generated paragraph combinations by the same visual-capacity gate before proofread/review, then chooses the closest duration fit among feasible combinations. Regression uses the saved r14 photo/fact graph and controlled alternatives. Local material-first 182/182 and factory-v3 112/112 pass; this selector change is not yet packaged or deployed. Plan: `acceptance/factory-v3/voice-variant-photo-feasibility-plan-20261011.json`. No provider calls. `project_ready=false`.
+The deployed preflight blocks r14's corrected plan before a second TTS. A further generic correction filters already-generated paragraph combinations by the same visual-capacity gate before proofread/review, then chooses the closest duration fit among feasible combinations. Regression uses the saved r14 photo/fact graph and controlled alternatives. Exact amd64 image suites pass (material-first 182/182, factory-v3 112/112). Image r2 is deployed and healthy at revision `614090f`; Studio200, free-tier proof unchanged, DB counts unchanged, no provider calls or new jobs. Receipt: `acceptance/factory-v3/voice-variant-preflight-deployment-20261011.json`. Plan: `acceptance/factory-v3/voice-variant-photo-feasibility-plan-20261011.json`. `project_ready=false`.
+
+## Adaptive photo-pool voice correction — 2026-10-12
+
+Offline replay showed that no saved paragraph combination passes topical cadence with all 17 r14 photos, while a smaller subset of the same reviewed photos can pass. The selector now tries approved visual-pool prefixes at the minimum safe cadence and prunes only unused approved assets/observations after selection. No external calls or production jobs. Local suites pass (183 material-first, 112 factory-v3). Production build/deployment is pending. `project_ready=false`; r14 remains a failed immutable job and no final video is claimed.
 
 ## Verified state — 2026-10-07
 
