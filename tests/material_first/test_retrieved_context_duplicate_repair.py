@@ -81,10 +81,48 @@ class RetrievedContextRepairTests(unittest.TestCase):
         gemini=Mock();gemini.generate.return_value=(repaired,{})
         spans=[{'id':span,'source_id':'source','text':'Нейтронная звезда нейтронную зорю сверхновую'}
                for span in ('s1-0-1094','s1-1094-2113','s1-2113-3302')]
-        with self.assertRaisesRegex(ValueError,'did not select distinct subjects'):
+        with self.assertRaisesRegex(ValueError,'unexpected identity'):
             _repair_duplicate_context_labels(gemini,{'topic':'Нейтронная звезда'},[],spans,
                 schema,selected,anchors,known)
-        self.assertEqual(gemini.generate.call_count,1)
+        self.assertEqual(gemini.generate.call_count,2)
+
+    def test_second_bounded_repair_uses_new_anchors_after_duplicate_labels(self):
+        fixture=json.loads((Path(__file__).parent/'fixtures/duplicate-neutron-context-plan.json').read_text())
+        metadata=fixture['metadata']+[
+            {'id':'wikimedia:6706920','title':'Tycho Supernova Remnant'},
+            {'id':'wikimedia:29635352','title':'Supernova Remnant SN 1006'}]
+        known={row['id']:{'id':row['id'],'description':row['title'],
+                         'source_metadata':{'title':row['title']}} for row in metadata}
+        anchors=[{'id':row['id']} for row in metadata]
+        selected=fixture['duplicate_plan'];fact_ids=['fact-1','fact-2','fact-3']
+        schema=obj({key:obj({'anchor_id':string(known),
+            'english_photo_object':{**string(),'maxLength':100},'source_mention':{**string(),'maxLength':160},
+            'support_span_ids':array(string(['s1-0-1094','s1-1094-2113','s1-2113-3302']),1,3),
+            'fact_ids':array(string(fact_ids),1,8)}) for key in ('v0','v1','v2')})
+        first={key:dict(row) for key,row in selected.items()}
+        first['v0'].update(anchor_id='wikimedia:155249958',english_photo_object='Vela Supernova Remnant')
+        first['v2'].update(anchor_id='wikimedia:125053149',english_photo_object='vela supernova remnant')
+        gemini=Mock()
+        def generate(key,instruction,context,repair_schema):
+            if key=='material-photo-plan-structural-repair': return first,{}
+            second={role:dict(row) for role,row in first.items()}
+            for role,identity,label in [('v0','wikimedia:6706920','Tycho Supernova Remnant'),
+                                         ('v2','wikimedia:29635352','Supernova Remnant SN 1006')]:
+                allowed=repair_schema['properties'][role]['properties']['anchor_id']['enum']
+                choice=identity if identity in allowed else next((x for x in allowed if x not in {r['anchor_id'] for k,r in second.items() if k!=role}),None)
+                if choice is None: raise AssertionError('second repair has no distinct permitted anchor')
+                second[role].update(anchor_id=choice,english_photo_object=label)
+            return second,{}
+        gemini.generate.side_effect=generate
+        spans=[{'id':span,'source_id':'source','text':'Нейтронная звезда нейтронную зорю сверхновую'}
+               for span in ('s1-0-1094','s1-1094-2113','s1-2113-3302')]
+        result=_repair_duplicate_context_labels(gemini,{'topic':'Нейтронная звезда'},[],spans,
+            schema,selected,anchors,known)
+        self.assertEqual(gemini.generate.call_count,2)
+        self.assertEqual(gemini.generate.call_args_list[0].args[0],'material-photo-plan-structural-repair')
+        self.assertEqual(gemini.generate.call_args_list[1].args[0],'material-photo-plan-structural-repair:2')
+        self.assertEqual(len({row['anchor_id'] for row in result.values()}),3)
+        self.assertEqual(len({row['english_photo_object'].casefold() for row in result.values()}),3)
 
 
 if __name__=='__main__':
