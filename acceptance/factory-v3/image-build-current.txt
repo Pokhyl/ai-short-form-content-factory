@@ -5,7 +5,7 @@
 #1 DONE 0.0s
 
 #2 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm
-#2 DONE 0.5s
+#2 DONE 0.8s
 
 #3 [internal] load .dockerignore
 #3 transferring context: 2B done
@@ -16,10 +16,10 @@
 #4 DONE 0.0s
 
 #5 [internal] load build context
-#5 transferring context: 391.59kB 0.0s done
+#5 transferring context: 391.82kB done
 #5 DONE 0.0s
 
-#6 [4/8] COPY factory_v3/requirements.txt /app/requirements.txt
+#6 [2/8] RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
 #6 CACHED
 
 #7 [5/8] RUN pip install --no-cache-dir -r /app/requirements.txt
@@ -28,7 +28,7 @@
 #8 [3/8] WORKDIR /app
 #8 CACHED
 
-#9 [2/8] RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
+#9 [4/8] COPY factory_v3/requirements.txt /app/requirements.txt
 #9 CACHED
 
 #10 [6/8] COPY factory_v3 /app/factory_v3
@@ -42,9 +42,9 @@
 
 #13 exporting to image
 #13 exporting layers 0.0s done
-#13 exporting manifest sha256:b0566fd5e4ea345b0e5d7667b95f60e6df1057c5ed31fc1ebdd27af1d83f90b9 done
-#13 exporting config sha256:6b5ee1d38bd0d0ad420eab97b27056a07d1675b299493535dc198c96825cf615 done
-#13 exporting attestation manifest sha256:4d086ed5fa59b017b158d105afcdafedcc7fc9578ecc5883b31e00c6af5edab6 done
-#13 exporting manifest list sha256:a4f28ebc5d5dc86c43ea4b0f87c495dd97ad13a14bb2041a90903e2234ca1127 done
-#13 naming to docker.io/library/factory-v3:gemini35-described-anchor-filter-amd64-20261012-r1 done
+#13 exporting manifest sha256:54f961c2f1f48b44eb2c10f36726b759970742b914dbe7082f41536385e8600c done
+#13 exporting config sha256:b9b11f63dd4a0ba3d3b5bdbca320c5e7083f0eceeef67bfcf9c3406353bbe478 done
+#13 exporting attestation manifest sha256:bf3823b2281c47c49a034e1bda77689383ae06d754a44821bfd56fde75bec9d3 done
+#13 exporting manifest list sha256:4269b48f117483252fe1efed43d5a9087f8601fefac301fda0d284ca29f46851 done
+#13 naming to docker.io/library/factory-v3:gemini35-provisional-visual-hints-amd64-20261012-r1 done
 #13 DONE 0.1s

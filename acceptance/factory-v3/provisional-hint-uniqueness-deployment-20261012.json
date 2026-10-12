@@ -1,0 +1,39 @@
+{
+  "deployed_at": "2026-10-12T07:18:52Z",
+  "source_commit": "648d3dd75a8a86986c2f9d22975196657b411b5b",
+  "image": "factory-v3:gemini35-provisional-visual-hints-amd64-20261012-r1",
+  "image_id": "sha256:4269b48f117483252fe1efed43d5a9087f8601fefac301fda0d284ca29f46851",
+  "platform": "linux/amd64",
+  "container": {
+    "name": "factory-v3-app",
+    "id": "fc29a19cb9872668403bf9c8a5250d33cd50ac27d1983a159ad8d380ba400fa3",
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0,
+    "health_http": 200,
+    "revision": "648d3dd75a8a86986c2f9d22975196657b411b5b"
+  },
+  "studio_root_http": 200,
+  "database_after": {
+    "jobs": 28,
+    "active_jobs": 0,
+    "preparations": 107,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0
+  },
+  "unchanged_services": {
+    "shorts-v2-media-worker-1": "5824c94abaa6",
+    "ai-short-form-n8n": "c9373532bb9a",
+    "n8n-caddy-1": "3913314c33d6"
+  },
+  "root_disk_free": "365 MB (99% used)",
+  "provider_calls": 0,
+  "new_jobs": 0,
+  "rollback_image": "factory-v3:gemini35-described-anchor-filter-amd64-20261012-r1",
+  "network_disabled_image_tests": {
+    "material_first": 188,
+    "factory_v3": 112
+  },
+  "project_ready": false
+}

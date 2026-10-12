@@ -1,7 +1,7 @@
 {
-  "tag": "factory-v3:gemini35-described-anchor-filter-amd64-20261012-r1",
-  "image_id": "sha256:a4f28ebc5d5dc86c43ea4b0f87c495dd97ad13a14bb2041a90903e2234ca1127",
+  "tag": "factory-v3:gemini35-provisional-visual-hints-amd64-20261012-r1",
+  "image_id": "sha256:4269b48f117483252fe1efed43d5a9087f8601fefac301fda0d284ca29f46851",
   "platform": "linux/amd64",
-  "source_commit": "b7841a551defc693d37ba8815e2a31d3177c8e9e",
+  "source_commit": "648d3dd75a8a86986c2f9d22975196657b411b5b",
   "deployed": true
 }

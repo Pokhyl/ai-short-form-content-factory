@@ -70,12 +70,20 @@
       "Strengthen the bounded structural repair instruction against capitalization, numbering and file-ID tricks."
     ],
     "tests": "PASS: material-first 188; factory-v3 112",
-    "amd64_network_disabled_image_tests": "pending",
+    "amd64_network_disabled_image_tests": "PASS: material-first 188; factory-v3 112",
     "deployment": {
-      "status": "pending"
+      "status": "deployed_healthy",
+      "source_commit": "648d3dd75a8a86986c2f9d22975196657b411b5b",
+      "image": "factory-v3:gemini35-provisional-visual-hints-amd64-20261012-r1",
+      "image_id": "sha256:4269b48f117483252fe1efed43d5a9087f8601fefac301fda0d284ca29f46851",
+      "studio_root_http": 200,
+      "provider_calls": 0,
+      "new_jobs": 0,
+      "preparations_after": 107,
+      "active_work_after": 0
     },
     "project_ready": false,
-    "deployment_receipt": "acceptance/factory-v3/described-anchor-filter-deployment-20261012.json"
+    "deployment_receipt": "acceptance/factory-v3/provisional-hint-uniqueness-deployment-20261012.json"
   },
   "latest_acceptance": {
     "id": "39d12eda-e186-4d07-8e60-e3b6173d63d9",
