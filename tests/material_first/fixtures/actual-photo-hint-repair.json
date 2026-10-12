@@ -1,0 +1,23 @@
+{
+  "provenance": {
+    "preparation_id": "6914b51b-f8c3-47d1-919e-f7b5cc15ffce",
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60,
+    "material_brief_request_hash": "cedf617ffa5c7302110eba2c232bfc19a3731d35eb603b86dd61aed48c8d1a89",
+    "material_brief_repair_request_hash": "e11288ebecb8202ebcf3b9cb8e3c44483d108721a7c5a5893743ea07b8c367e8",
+    "photo_review_mode": "facts_only",
+    "source_payload_included": false
+  },
+  "initial_photo_contexts": {
+    "setting": {"english_photo_object": "Supernova remnant", "source_mention": "сверхновых", "support_span_ids": ["s1-0-1094"], "fact_ids": ["f1"]},
+    "subject": {"english_photo_object": "Neutron star", "source_mention": "нейтронної звезды", "support_span_ids": ["s1-4411-5431"], "fact_ids": ["f2"]},
+    "detail": {"english_photo_object": "Pulsar magnetosphere", "source_mention": "магнітного поля", "support_span_ids": ["s1-13394-14533"], "fact_ids": ["f3"]}
+  },
+  "repaired_photo_contexts": {
+    "setting": {"english_photo_object": "space", "source_mention": "космічне тіло", "support_span_ids": ["s1-0-1094"], "fact_ids": ["f1"]},
+    "subject": {"english_photo_object": "neutron star", "source_mention": "нейтронної звезды", "support_span_ids": ["s1-4411-5431"], "fact_ids": ["f2"]},
+    "detail": {"english_photo_object": "Hubble Space Telescope", "source_mention": "телескопа Хаббл", "support_span_ids": ["s2-29541-30645"], "fact_ids": ["f3"]}
+  },
+  "observed_provider_searches": ["space", "neutron star", "Hubble Space Telescope"]
+}

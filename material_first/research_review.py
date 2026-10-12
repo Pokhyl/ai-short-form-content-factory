@@ -1,8 +1,9 @@
 """Review provisional research before its facts and visual objects become binding."""
+from copy import deepcopy
 from factory_v3.gemini import obj, string, BOOL, validate_json
 from factory_v3.grounding import validate_evidence
 from .source_spans import bind_support
-from .photo_contexts import bind_english_objects, validate_context_mentions
+from .photo_contexts import bind_english_objects, validate_context_mentions, validate_search_hints
 
 
 def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_photos=True):
@@ -11,10 +12,12 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
     # reviewed revision still contains a specifically rejected claim.
     for attempt in range(3):
         semantic_reviewed = False
+        query_only_repair = False
         try:
             validate_json(draft, schema)
             normalized={**draft,'photo_contexts':bind_english_objects(draft['photo_contexts'])}
             validate_context_mentions(normalized['photo_contexts'],spans)
+            validate_search_hints(normalized['photo_contexts'],request['topic'])
             evidence=bind_support(sources,spans,draft['facts'])
             validate_evidence(evidence)
             ids={f['id'] for f in evidence['facts']}
@@ -28,6 +31,7 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
                 contexts[role]={'english_photo_object':row['subject'],'fact_ids':row['fact_ids'],'support':bound['facts'][0]['support']}
         except ValueError as error:
             failures=[str(error)]
+            query_only_repair = 'search hint' in failures[0]
         else:
             if not check_photos:contexts={}
             review_schema=obj({'facts':obj({f['id']:obj({'supported':BOOL,'reason':string()}) for f in evidence['facts']}),
@@ -55,6 +59,7 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
         if attempt == 2 or (attempt == 1 and not semantic_reviewed):
             revision_count = attempt
             raise ValueError(f'research preflight failed after {revision_count} revisions: '+'; '.join(failures))
+        rejected_draft = deepcopy(draft)
         draft,_=gemini.generate('material-brief-repair',
             'Revise this provisional research plan to resolve ALL supplied validation/review failures. '
             'When a reviewer rejects a factual claim, preserve its exact source qualifiers and certainty; '
@@ -63,9 +68,18 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
             'Return three essential concise atomic facts that answer the topic, with exact supporting span IDs; optional details may be omitted. '
             'Correct unsupported claims; these provisional facts have not yet been frozen or used for narration. '
             'Choose observable real-photo subjects or named associated objects explicitly documented in the sources. '
+            'Never use a broad category such as space or equipment unrelated to the requested topic as a search hint. '
             'Never demand a photograph of an invisible internal mechanism, schematic, representation or unrelated prop. '
             'Write english_photo_object only in ENGLISH. Copy source_mention literally in its original language from a selected support span. '
             'Keep the original topic and provide setting, subject and detail contexts with valid fact_ids. '
             'The server will independently validate and review your revised plan once more.',
-            {'request':request,'source_spans':spans,'rejected_draft':draft,'failures':failures},schema)
+            {'request':request,'source_spans':spans,'rejected_draft':rejected_draft,'failures':failures},schema)
+        if query_only_repair:
+            if draft.get('facts') != rejected_draft.get('facts') or draft.get('required_fact_ids') != rejected_draft.get('required_fact_ids'):
+                raise ValueError('photo search repair changed source-backed facts')
+            for role, row in rejected_draft['photo_contexts'].items():
+                repaired = draft['photo_contexts'][role]
+                for field in ('fact_ids', 'support_span_ids', 'source_mention'):
+                    if repaired.get(field) != row.get(field):
+                        raise ValueError('photo search repair changed '+role+' source bindings')
     raise AssertionError('bounded research review exhausted')
