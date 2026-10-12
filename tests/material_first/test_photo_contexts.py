@@ -2,7 +2,7 @@ import copy
 import hashlib
 import unittest
 from types import SimpleNamespace
-from material_first.photo_contexts import validate_context_mentions
+from material_first.photo_contexts import validate_context_mentions, validate_search_hints
 from material_first.operations import Operations
 from factory_v3.gemini import validate_json
 
@@ -15,6 +15,18 @@ class ContextTests(unittest.TestCase):
 
     def test_multilingual_named_objects_preserve_actual_mentions(self):
         validate_context_mentions(self.rows,self.spans)
+
+    def test_search_hints_reject_generic_categories_and_unrelated_equipment(self):
+        validate_search_hints(self.rows, 'Neutron stars')
+        for bad in ('space', 'Hubble Space Telescope'):
+            rows=copy.deepcopy(self.rows);rows['detail']['query']=bad
+            with self.subTest(query=bad),self.assertRaises(ValueError):
+                validate_search_hints(rows, 'Neutron stars')
+
+    def test_equipment_is_valid_when_it_is_the_requested_subject(self):
+        rows=copy.deepcopy(self.rows);rows['detail']['query']='Hubble Space Telescope'
+        validate_search_hints(rows, 'Hubble Space Telescope observations')
+        validate_search_hints(rows, 'Телескоп Хаббл')
 
     def test_unrelated_selected_span_cannot_ground_a_named_object(self):
         with self.assertRaisesRegex(ValueError,'does not contain'):
@@ -46,7 +58,7 @@ class ContextTests(unittest.TestCase):
                 validate_context_mentions(rows,saved['spans'])
             for role in rows:self.assertIn(role+': query and subject must be English',str(failure.exception))
 
-    def run_research(self, mode, availability_first=False, duplicate=False):
+    def run_research(self, mode, availability_first=False, duplicate=False, weak_hint=False, mutate_repair=False):
         source={'id':'source','url':'https://example.invalid/source','title':'Observed objects','text':self.text,'sha256':hashlib.sha256(self.text.encode()).hexdigest()}
         keys=[];facts=[]
         def generate(key,instruction,context,schema):
@@ -63,6 +75,7 @@ class ContextTests(unittest.TestCase):
                     for row in rows.values():row['subject']=row['query']='Crab Nebula'
                 for row in rows.values():row['support_span_ids']=[span]
                 self.repaired=copy.deepcopy(rows)
+                if weak_hint:rows['setting']['subject']=rows['setting']['query']='space'
                 if mode!='valid':rows['subject']['query']=rows['subject']['subject']='neutron star representation'
                 facts.extend([{'id':'f'+str(i),'text':claim,'support':[{'span_id':span}]} for i,claim in enumerate(self.text.split('. ')[:3])])
                 result={'facts':facts,'required_fact_ids':['f0','f1','f2'],'photo_contexts':rows}
@@ -75,6 +88,7 @@ class ContextTests(unittest.TestCase):
             wire_rows=result['photo_contexts']
             for row in wire_rows.values():
                 row['english_photo_object']=row.pop('subject');row.pop('query')
+                if mutate_repair and key=='material-brief-repair':result['facts'][0]['text']+=' invented claim'
             validate_json(result,schema)
             return result,{'receipt_id':key}
         ops=Operations('.',SimpleNamespace(fetch=lambda *args:[source]),SimpleNamespace(generate=generate),None,None,documented_contexts=True)
@@ -91,6 +105,15 @@ class ContextTests(unittest.TestCase):
 
     def test_valid_contexts_need_no_extra_call(self):
         self.run_research('valid');self.assertEqual(self.keys,['material-brief','material-brief-review:1'])
+
+    def test_broad_search_hint_gets_one_repair_before_semantic_review(self):
+        self.run_research('valid',weak_hint=True)
+        self.assertEqual(self.keys,['material-brief','material-brief-repair','material-brief-review:1'])
+
+    def test_photo_search_repair_cannot_change_claims(self):
+        with self.assertRaisesRegex(ValueError,'changed source-backed facts'):
+            self.run_research('valid',weak_hint=True,mutate_repair=True)
+        self.assertEqual(self.keys,['material-brief','material-brief-repair'])
 
     def test_completed_bad_context_gets_one_repair_without_changing_facts(self):
         self.run_research('repair');self.assertEqual(self.keys,['material-brief','material-brief-repair','material-brief-review:2'])
