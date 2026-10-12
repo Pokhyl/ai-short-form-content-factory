@@ -1,0 +1,55 @@
+{
+  "id": "73a08578-fb58-4d99-a84b-d69e3e8d80c8",
+  "created_at": "2026-10-12T07:19:32Z",
+  "question": "Does the deployed availability-first flow resolve repeated provisional context labels from retrieved metadata and produce the UK60 neutron-star output through natural-speed voice and QA?",
+  "request": {
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60
+  },
+  "source": {
+    "branch_head": "759f44d204efe15dc07d93af698aade094eb7c34",
+    "runtime_revision": "648d3dd75a8a86986c2f9d22975196657b411b5b",
+    "image": "factory-v3:gemini35-provisional-visual-hints-amd64-20261012-r1",
+    "image_id": "sha256:4269b48f117483252fe1efed43d5a9087f8601fefac301fda0d284ca29f46851",
+    "studio": "https://studio.hodor.com.pl"
+  },
+  "preflight": {
+    "jobs": 28,
+    "active_jobs": 0,
+    "preparations": 107,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0,
+    "root_free_mb": 365
+  },
+  "limits": {
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini_total": 16,
+    "photo_searches_per_provider": 3,
+    "photo_providers": [
+      "pexels",
+      "pixabay",
+      "wikimedia"
+    ],
+    "photo_downloads": 30,
+    "tts_sends_max": 3,
+    "tts_voice": "uk-UA-Chirp3-HD-Enceladus",
+    "renders": 1,
+    "machine_qa": 1,
+    "paid_fallback": false
+  },
+  "stop_conditions": [
+    "Submit this ID once; never retry it.",
+    "Preserve ambiguous provider outcomes as terminal/unknown.",
+    "Stop at first factuality, source, relevance, quota, duration, alignment, render or machine-audit failure.",
+    "Keep natural-speed voice, photo relevance, exact duration and QA gates unchanged.",
+    "Stop media generation if /data free space falls below 100 MB.",
+    "This plan authorizes one request only."
+  ],
+  "status": "planned_not_submitted",
+  "submission_attempts": 0,
+  "provider_calls": 0,
+  "project_ready": false
+}
