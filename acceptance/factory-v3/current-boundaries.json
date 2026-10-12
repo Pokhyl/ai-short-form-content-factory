@@ -77,10 +77,22 @@
         "sha256": "e894773daefc10fcf738a9abdbfad9e7f91485136187f22d3c47026dfb15ad23"
       },
       "saved_evidence": {
-        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json",
-        "sha256": "5f77ab822c1d46211d7c4d2116408bfe51f620e13f0ce9b38c567083bec5e78b"
+        "path": "acceptance/factory-v3/adaptive-voice-pool-fresh-acceptance-20261012.json",
+        "sha256": "7718924b75bbb499c2d18d69cba0599ade43741dabded123a18c691e1c73b687"
       },
-      "remaining": "r14 reused frozen, reviewed materials; fresh discovery and enough relevant photos for every scene remain unproven."
+      "remaining": "Fresh searches ran, but preparation stopped before downloads because the selected plan repeated one target label; distinct source-grounded contexts and actual photo review remain pending."
+    },
+    {
+      "name": "retrieved visual-context duplicate repair",
+      "test": {
+        "path": "tests/material_first/test_retrieved_contexts.py",
+        "sha256": "2e0a98a150c63e401fd5463c6367dba2a89ce8cd0c0cf6e0baf5b2c8b01844a9"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/retrieved-context-duplicate-repair-plan-20261012.json",
+        "sha256": "16f7ce4bacbe6c817572dc6504ea7dbdfce4715d4e1dc481acf2f7a31abe3f0d"
+      },
+      "remaining": "One bounded structural repair is locally implemented; it is not yet tested in the packaged image or deployed."
     },
     {
       "name": "metadata/Vision/selection",

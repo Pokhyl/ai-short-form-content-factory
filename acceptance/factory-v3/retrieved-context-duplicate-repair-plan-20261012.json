@@ -1,0 +1,33 @@
+{
+  "problem": "Fresh acceptance 7e35a252-eff1-4202-b534-a30371a2f9aa stopped before downloads because the retrieved-context planner selected two different files with the same visual target label, 'neutron star'.",
+  "evidence": {
+    "fixture": "tests/material_first/fixtures/duplicate-neutron-context-plan.json",
+    "reproduction": "After metadata-backed band qualification, validate_targets raises 'repeated visual target is not explanatory variety'.",
+    "provider_calls_before_failure": {
+      "gemini": 3,
+      "photo_searches": 9,
+      "photo_downloads": 0,
+      "tts_sends": 0
+    }
+  },
+  "change": {
+    "file": "material_first/retrieved_contexts.py",
+    "behavior": "When selected metadata anchors still collapse to duplicate object labels, make at most one structural repair call using disjoint enums of already retrieved candidate IDs. Preserve unaffected contexts and the rejected roles' source mentions, support spans, and fact assignments. Revalidate unique anchor and object identities, source links, factual review, and later pixel relevance before voice.",
+    "new_searches_or_downloads": 0,
+    "maximum_extra_gemini_calls": 1,
+    "existing_total_gemini_budget": 16
+  },
+  "regression": {
+    "test": "tests/material_first/test_retrieved_contexts.py::RetrievedContextRepairTests.test_live_duplicate_neutron_star_labels_get_one_bounded_repair",
+    "control": "tests/material_first/test_retrieved_contexts.py::RetrievedContextRepairTests.test_distinct_contexts_do_not_make_a_repair_call"
+  },
+  "verification": {
+    "local_tests": "PASS: material-first 185; factory-v3 112; git diff --check pending",
+    "provider_calls": 0,
+    "production_jobs": 0
+  },
+  "deployment": {
+    "status": "pending",
+    "project_ready": false
+  }
+}

@@ -15,6 +15,10 @@ The deployed preflight blocks r14's corrected plan before a second TTS. A furthe
 
 Offline replay showed that no saved paragraph combination passes topical cadence with all 17 r14 photos, while a smaller subset of the same reviewed photos can pass. The selector now tries approved visual-pool prefixes at the minimum safe cadence and prunes only unused approved assets/observations after selection. Local and network-disabled amd64 image suites pass (183 material-first, 112 factory-v3). Image `factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1` is deployed and healthy at revision `516d98f`; Studio200; DB and other service IDs unchanged; no provider calls or production jobs. Receipt: `acceptance/factory-v3/adaptive-voice-visual-pool-deployment-20261012.json`. `project_ready=false`; r14 remains immutable and failed, and no final video is claimed.
 
+## Duplicate retrieved-context repair — 2026-10-12
+
+The one bounded fresh UK60 case `7e35a252-eff1-4202-b534-a30371a2f9aa` failed before photo download because Gemini reused the same “neutron star” target label for two contexts; the strict variety check correctly stopped preparation. No photo was downloaded or inspected, and no TTS/render ran. A bounded structural repair now selects distinct candidates from the existing retrieval results and preserves the fact/source assignments; independent source review and pixel approval remain required. Local tests pass (material-first 185, factory-v3 112); packaged-image verification and redeployment are pending. The failed request remains immutable; no second fresh case is part of this run. Plan/evidence: `acceptance/factory-v3/retrieved-context-duplicate-repair-plan-20261012.json` and `acceptance/factory-v3/adaptive-voice-pool-fresh-acceptance-20261012.json`.
+
 ## Verified state — 2026-10-07
 
 - LIVE source9c8501df53e2385e477e99ad11750d323ae28212.216 exact-image checks PASS; app-only rollout protected snapshots equal/publichealth exact.

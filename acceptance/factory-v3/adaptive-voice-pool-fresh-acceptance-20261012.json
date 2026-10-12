@@ -44,6 +44,26 @@
     "studio_http": 200,
     "root_free_mb": 370
   },
-  "status": "planned_not_submitted",
+  "status": "failed_terminal_before_photo_download_or_voice",
+  "actual": {
+    "http_status": 202,
+    "preparation_status": "failed",
+    "error_code": "ValueError",
+    "failure_boundary": "metadata visual-context materialization",
+    "failure": "The saved Gemini plan assigned the same target label, 'neutron star', to v0 and v2. Replaying the exact selection through validate_targets raises 'repeated visual target is not explanatory variety'.",
+    "research_searches": 1,
+    "source_fetches": {"succeeded": 3, "failed_unavailable": 2},
+    "gemini_calls": 3,
+    "photo_searches": {"wikimedia": 3, "pexels": 3, "pixabay": 3},
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "tts_sends": 0,
+    "renders": 0,
+    "machine_qa": 0,
+    "storage_free_mb_after": 369,
+    "active_work_after": 0,
+    "job_id_will_not_be_retried": true
+  },
+  "next_offline_change": "Add one metadata-constrained structural repair call for duplicate source-backed visual labels, then retain independent target validation and image review.",
   "project_ready": false
 }
