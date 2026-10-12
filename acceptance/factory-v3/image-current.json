@@ -1,7 +1,7 @@
 {
-  "tag": "factory-v3:gemini35-provisional-visual-hints-amd64-20261012-r1",
-  "image_id": "sha256:4269b48f117483252fe1efed43d5a9087f8601fefac301fda0d284ca29f46851",
+  "tag": "factory-v3:research-review-correction-amd64-20261012-r1",
+  "image_id": "sha256:0b681e6182f0ca3f2d5b527f06e2ab4faf1ac936c1a9485cf4f78e20671bc665",
   "platform": "linux/amd64",
-  "source_commit": "648d3dd75a8a86986c2f9d22975196657b411b5b",
-  "deployed": true
+  "source_commit": "57349d3c8531dae56a6216b3f0f2541377bc742d",
+  "deployed": false
 }

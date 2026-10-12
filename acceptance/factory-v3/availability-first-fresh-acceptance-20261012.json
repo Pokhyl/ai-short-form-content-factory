@@ -64,7 +64,10 @@
     "failure_boundary": "independent material-brief fact review before any photo search",
     "failure": "The single allowed draft correction changed supported material and introduced a universal claim about supernovae. Independent review rejected that qualifier; no further correction was allowed.",
     "research_searches": 1,
-    "source_fetches": {"succeeded": 3, "failed_unavailable": 2},
+    "source_fetches": {
+      "succeeded": 3,
+      "failed_unavailable": 2
+    },
     "gemini_calls": 3,
     "photo_searches": 0,
     "photo_downloads": 0,
@@ -82,7 +85,15 @@
     "request_id_will_not_be_retried": true
   },
   "fix": {
-    "commit_pending": true,
-    "description": "Allow exactly one additional correction after independent semantic review rejects a claim, while preserving the one-correction cap for malformed drafts. Require corrections to retain source qualifiers and keep already accepted facts unchanged."
+    "commit": "57349d3c8531dae56a6216b3f0f2541377bc742d",
+    "description": "Allow exactly one additional correction after independent semantic review rejects a claim, while retaining the one-correction cap for malformed drafts. Require corrections to keep source qualifiers and preserve accepted facts.",
+    "deployed": true,
+    "image": "factory-v3:research-review-correction-amd64-20261012-r1",
+    "image_id": "sha256:b0a222c0ecd584dd5751bd9916f8354fe7fb345a3e9ca63334e111f8b3ec052a",
+    "container_id": "6160f7e3092b2fbc33a5f9e16ab3a5eb880aaa5fce0b443640600f00a0067483",
+    "health": "healthy",
+    "public_health_http": 200,
+    "studio_http": 200,
+    "disk_free_mb_after": 363
   }
 }

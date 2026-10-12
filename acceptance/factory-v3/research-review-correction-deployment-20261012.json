@@ -1,0 +1,40 @@
+{
+  "deployed_at": "2026-10-12T07:28:00Z",
+  "source_commit": "57349d3c8531dae56a6216b3f0f2541377bc742d",
+  "image": "factory-v3:research-review-correction-amd64-20261012-r1",
+  "image_id": "sha256:b0a222c0ecd584dd5751bd9916f8354fe7fb345a3e9ca63334e111f8b3ec052a",
+  "platform": "linux/amd64",
+  "container": {
+    "name": "factory-v3-app",
+    "id": "6160f7e3092b2fbc33a5f9e16ab3a5eb880aaa5fce0b443640600f00a0067483",
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0,
+    "health_http": 200,
+    "revision": "57349d3c8531dae56a6216b3f0f2541377bc742d"
+  },
+  "studio_root_http": 200,
+  "database_after": {
+    "jobs": 28,
+    "active_jobs": 0,
+    "preparations": 108,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0
+  },
+  "unchanged_services": {
+    "shorts-v2-media-worker-1": "5824c94abaa6",
+    "ai-short-form-n8n": "c9373532bb9a",
+    "n8n-caddy-1": "3913314c33d6"
+  },
+  "root_disk_free_mb": 363,
+  "provider_calls": 0,
+  "new_jobs": 0,
+  "network_disabled_image_tests": {
+    "factory_v3": 112,
+    "material_first": 189
+  },
+  "postgres_image_check": "Not run: required local shorts-v2-postgres-1 container is absent. Production database was not used for tests.",
+  "rollback_image": "factory-v3:gemini35-provisional-visual-hints-amd64-20261012-r1",
+  "project_ready": false
+}

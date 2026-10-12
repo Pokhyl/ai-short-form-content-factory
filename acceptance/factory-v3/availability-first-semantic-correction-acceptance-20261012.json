@@ -1,0 +1,56 @@
+{
+  "id": "68dfda1c-3d8c-44a2-871c-ef1967f63820",
+  "created_at": "2026-10-12T07:28:29Z",
+  "question": "Does the deployed bounded semantic correction allow a fresh Ukrainian neutron-star request to pass fact review and produce a natural-speed 60-second video that passes final QA?",
+  "request": {
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60
+  },
+  "source": {
+    "branch_head_before_plan": "57349d3c8531dae56a6216b3f0f2541377bc742d",
+    "runtime_revision": "57349d3c8531dae56a6216b3f0f2541377bc742d",
+    "image": "factory-v3:research-review-correction-amd64-20261012-r1",
+    "image_id": "sha256:b0a222c0ecd584dd5751bd9916f8354fe7fb345a3e9ca63334e111f8b3ec052a",
+    "studio": "https://studio.hodor.com.pl"
+  },
+  "preflight": {
+    "jobs": 28,
+    "active_jobs": 0,
+    "preparations": 108,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0,
+    "root_free_mb": 363
+  },
+  "limits": {
+    "metadata": 1,
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini_total": 16,
+    "photo_searches_per_provider": 3,
+    "photo_providers": [
+      "pexels",
+      "pixabay",
+      "wikimedia"
+    ],
+    "photo_downloads": 30,
+    "tts_sends_max": 3,
+    "tts_voice": "uk-UA-Chirp3-HD-Enceladus",
+    "renders": 1,
+    "machine_qa": 1,
+    "paid_fallback": false
+  },
+  "stop_conditions": [
+    "Submit this ID once; never retry it.",
+    "Preserve ambiguous provider outcomes as terminal/unknown.",
+    "Stop at first factuality, source, relevance, quota, duration, alignment, render or machine-audit failure.",
+    "Keep natural-speed voice, relevant real photographs, exact duration and QA gates unchanged.",
+    "Stop media generation if /data free space falls below 100 MB.",
+    "This plan authorizes one request only."
+  ],
+  "status": "planned_not_submitted",
+  "submission_attempts": 0,
+  "provider_calls": 0,
+  "project_ready": false
+}

@@ -5,18 +5,18 @@
 #1 DONE 0.0s
 
 #2 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm
-#2 DONE 0.8s
+#2 DONE 1.0s
 
 #3 [internal] load .dockerignore
 #3 transferring context: 2B done
 #3 DONE 0.0s
 
 #4 [1/8] FROM docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258
-#4 resolve docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258 0.0s done
+#4 resolve docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258 done
 #4 DONE 0.0s
 
 #5 [internal] load build context
-#5 transferring context: 391.82kB done
+#5 transferring context: 392.54kB done
 #5 DONE 0.0s
 
 #6 [2/8] RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
@@ -42,9 +42,9 @@
 
 #13 exporting to image
 #13 exporting layers 0.0s done
-#13 exporting manifest sha256:54f961c2f1f48b44eb2c10f36726b759970742b914dbe7082f41536385e8600c done
-#13 exporting config sha256:b9b11f63dd4a0ba3d3b5bdbca320c5e7083f0eceeef67bfcf9c3406353bbe478 done
-#13 exporting attestation manifest sha256:bf3823b2281c47c49a034e1bda77689383ae06d754a44821bfd56fde75bec9d3 done
-#13 exporting manifest list sha256:4269b48f117483252fe1efed43d5a9087f8601fefac301fda0d284ca29f46851 done
-#13 naming to docker.io/library/factory-v3:gemini35-provisional-visual-hints-amd64-20261012-r1 done
-#13 DONE 0.1s
+#13 exporting manifest sha256:6c5d839fe22e5ca2bf773735f4f9307bbcae9c94fffe2ed06841ec0963043cf4 done
+#13 exporting config sha256:20a2f9cc81addb541cf638c58bc3fbf652cae88b3a8ec98e5229fbd5aa4204c5 done
+#13 exporting attestation manifest sha256:e69bc959c71cb071c5507951b3ea54d8f3b9818b4c95adb40ff2213b550c63bb done
+#13 exporting manifest list sha256:0b681e6182f0ca3f2d5b527f06e2ab4faf1ac936c1a9485cf4f78e20671bc665 done
+#13 naming to docker.io/library/factory-v3:research-review-correction-amd64-20261012-r1 done
+#13 DONE 0.0s
