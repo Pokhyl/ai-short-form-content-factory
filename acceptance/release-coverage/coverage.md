@@ -1,6 +1,6 @@
 # Release coverage inventory
 
-Source commit: `8a630204dfa87dc7a53f7137966db98a7a35ee36`. Generated with `python3 scripts/inventory_release_coverage.py --output-dir acceptance/release-coverage`.
+Source commit: `03830441ab647a135c62da142841a71d98f528b4`. Generated with `python3 scripts/inventory_release_coverage.py --output-dir acceptance/release-coverage`.
 
 Static literal-reference inventory and explicit JSON fields, with manually inspected boundary evidence limits. No source evaluation, provider calls, DB calls or production mutations. Historical source hashes are reported as drift; historical test-log hashes and the newer release checkpoint hashes are verified independently. Missing literal references may be dynamic; language/topic absence means unknown, not unsupported.
 
@@ -11,10 +11,10 @@ Historical checkpoint logs: Node 883/883 and SQL 8/8. Log hashes PASS. Source fi
 | Inventory | Count |
 |---|---:|
 | tracked_fixture_count | 44 |
-| tracked_runner_count | 137 |
+| tracked_runner_count | 138 |
 | node_suite_file_count | 83 |
 | sql_runner_count | 8 |
-| separate_runner_count | 46 |
+| separate_runner_count | 47 |
 
 Separate runners: 5/5 PASS on recorded worker/n8n image IDs, without network. Includes two real full-resolution FFmpeg renders using synthetic audio/images. Initial 45s harness timeout and successful bounded 110s retry are both retained. See `separate-checks.json`; this is not a real multilingual product acceptance.
 

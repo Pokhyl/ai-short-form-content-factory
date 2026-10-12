@@ -21,6 +21,20 @@
       "sha256": "8abb4b817745450dfe3df4073498248aee6d1a00f938f9ad4af1c75f18b8ba39"
     }
   },
+  "latest_photo_availability_acceptance": {
+    "id": "6914b51b-f8c3-47d1-919e-f7b5cc15ffce",
+    "state": "failed",
+    "failure": "MaterialUnavailable: not enough inspected distinct photographs for requested cadence",
+    "photo_downloads": 30,
+    "photos_inspected": 30,
+    "photos_accepted": 1,
+    "tts_calls": 0,
+    "renders": 0,
+    "receipt": {
+      "path": "acceptance/factory-v3/availability-first-distinct-context-acceptance-20261012.json",
+      "sha256": "9086e11e90d9d3f20d4f283f7d890ee20612d6229771f7f37248eed8f15bc9c0"
+    }
+  },
   "boundaries": [
     {
       "name": "owner intake/concurrency",

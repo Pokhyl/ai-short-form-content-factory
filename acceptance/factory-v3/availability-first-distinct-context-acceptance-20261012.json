@@ -17,11 +17,11 @@
   "preflight": {
     "jobs": 28,
     "active_jobs": 0,
-    "preparations": 109,
+    "preparations": 110,
     "active_preparations": 0,
     "active_stages": 0,
     "active_provider_calls": 0,
-    "root_free_mb": 358
+    "root_free_mb": 327
   },
   "limits": {
     "metadata": 1,
@@ -49,8 +49,66 @@
     "Stop media generation if /data free space falls below 100 MB.",
     "This plan authorizes one request only."
   ],
-  "status": "planned_not_submitted",
-  "submission_attempts": 0,
-  "provider_calls": 0,
-  "project_ready": false
+  "status": "terminal_failed",
+  "submission_attempts": 1,
+  "provider_calls": 62,
+  "project_ready": false,
+  "result": {
+    "preparation_id": "6914b51b-f8c3-47d1-919e-f7b5cc15ffce",
+    "terminal_status": "failed",
+    "terminal_error": "MaterialUnavailable: not enough inspected distinct photographs for requested cadence",
+    "gemini_calls_used": 15,
+    "photo_searches": {
+      "wikimedia": 3,
+      "pexels": 3,
+      "pixabay": 3
+    },
+    "photo_downloads": 30,
+    "inspected_photos": 30,
+    "accepted_photos": 1,
+    "accepted_asset": "wikimedia:151097113",
+    "tts_calls": 0,
+    "renders": 0,
+    "machine_qa": 0,
+    "diagnosis": "Photo search returned generic star fields, unrelated astronomical objects, diagrams and artist concepts. Independent pixel inspection accepted one Hubble image of RX J185635-3754. The request stopped before narration/TTS/render as designed; do not retry this ID.",
+    "inspection_breakdown": {
+      "accepted_real_topic_observations": 1,
+      "rejected_unrelated_observational_images": 12,
+      "rejected_unrelated_photographs": 8,
+      "rejected_synthetic_images": 6,
+      "rejected_illustrations": 3,
+      "interpretation": "29/30 were rejected by the existing visual gate. The failure is a real search/availability shortfall, not a voice or render defect."
+    },
+    "saved_catalog_mb": 21,
+    "verified_named_neutron_star_mentions": [
+      "RX J185635−3754",
+      "RX J0720.4-3125",
+      "RBS1556",
+      "RBS1223"
+    ],
+    "replay_status": "Source/search/model/inspection receipts and 21 MB photo catalog exist on production; a complete read-only replay has not yet been performed.",
+    "confirmed_search_queries": [
+      {
+        "query": "space",
+        "impact": "Wikimedia returned shuttle/person/storm/deep-field results; Pixabay/Pexels returned generic cosmic/stock results."
+      },
+      {
+        "query": "neutron star",
+        "impact": "Returned diagrams, simulations, artist concepts and generic star/galaxy images alongside the one valid Hubble observation."
+      },
+      {
+        "query": "Hubble Space Telescope",
+        "impact": "Equipment-name search returned unrelated moon, nebula and galaxy imagery."
+      }
+    ],
+    "source_entities_found_offline": [
+      "RX J185635−3754",
+      "RX J0720.4-3125",
+      "RBS1556",
+      "RBS1223"
+    ],
+    "source_entities_present_in_saved_search_pool_metadata": [],
+    "root_cause": "The reviewed brief allowed generic “space” and equipment-only “Hubble Space Telescope” as photo search hints. Their broad provider results consumed the bounded candidate/download budget. No deterministic pre-search contract rejects these weak hints; strict pixel-level photo review then correctly stopped the request.",
+    "next_offline_action": "Design and test a generic source-grounded observable-entity query contract using saved multi-topic fixtures; retain exact image relevance, uniqueness and cadence gates."
+  }
 }

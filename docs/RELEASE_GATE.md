@@ -1,5 +1,13 @@
 # Release gate — current execution contract
 
+## Последняя UK60-проверка фото — 2026-10-12
+
+Подготовка `6914b51b-f8c3-47d1-919e-f7b5cc15ffce` остановилась до narration/TTS: из 30 загруженных и проверенных фотографий лишь одна прошла независимую проверку релевантности и реального наблюдательного материала. Требуемый минимум для 60 секунд — 12 уникальных фото; поэтому остановка штатная. Звук и монтаж этой попытки не оценивались. ID immutable; повтор запрещён.
+
+Сохранённые запросы показали дефект до поиска: `space`, `neutron star`, `Hubble Space Telescope`. Запрос `space` вернул общие фоны/стоковые изображения; запрос по телескопу — посторонние галактики и туманности. В доступных исходниках есть конкретные каталожные имена нейтронных звёзд, но общий генератор не выбрал их как поисковые сущности. Пиксельная проверка сработала строго и остановила плохой пул. Следующая офлайн-работа — обобщённый валидатор/выбор наблюдаемых сущностей на multi-topic corpus, затем connected replay всех затронутых границ. Не исправлять одним тематическим запросом и не снижать требования к фото.
+
+Сохранённое подтверждение: `acceptance/factory-v3/availability-first-distinct-context-acceptance-20261012.json`; отчёт текущих границ: `acceptance/factory-v3/current-boundaries.json`. До следующего production запуска воспроизвести именно весь путь фото по сохранённым данным, проверить причины отклонения кандидатов и закрыть общий connected offline release gate. Не снижать минимум фото, не принимать иллюстрации вместо наблюдений и не считать тесты компонентов доказательством сквозного результата.
+
 ## Latest topical-photo failure and offline correction — 2026-10-11
 
 - Natural-speed acceptance r14 `19e8ad95-60a2-48cc-893b-491e235d9fd3` is immutable `failed_terminal`: 2 TTS sends measured 50,928 and 59,616 ms, and 3 Gemini calls were made. Render stopped because 17 unique photos could not cover all topical intervals. The first 31-second interval had only 5 relevant photographs for 9 cuts. No render was produced.
@@ -39,3 +47,4 @@ Only after the offline inventory/connected suite closes, consolidate unavoidable
 
 ## Communication and persistence
 One concise update per completed stage or material blocker; no mechanical per-tool narration. One checkpoint for completed code+evidence+next action; maintain this compact status instead of repeatedly prepending the same long history. If the next step does not reduce a named unresolved boundary, do not execute it.
+## Previous topical-photo failure and offline correction — 2026-10-11

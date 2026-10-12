@@ -27,6 +27,9 @@ def inventory():
         return {'path': name, 'sha256': hashlib.sha256(data).hexdigest()}
     voice_path = 'acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json'
     latest_voice = json.loads((ROOT / voice_path).read_text())
+    availability_path = 'acceptance/factory-v3/availability-first-distinct-context-acceptance-20261012.json'
+    latest_availability = json.loads((ROOT / availability_path).read_text())
+    availability = latest_availability['result']
     return {'project_ready': False, 'scope': 'Controlled tests and saved actual receipts, not new provider acceptance',
             'latest_voice_acceptance': {'id': latest_voice['id'], 'state': latest_voice['state'],
                                         'measured_voice_durations_ms': latest_voice['measured_voice_durations_ms'],
@@ -35,6 +38,16 @@ def inventory():
                                         'failure_type': latest_voice['failure_type'],
                                         'render_count': latest_voice['render_count'],
                                         'receipt': proof(voice_path)},
+            'latest_photo_availability_acceptance': {
+                'id': availability['preparation_id'],
+                'state': availability['terminal_status'],
+                'failure': availability['terminal_error'],
+                'photo_downloads': availability['photo_downloads'],
+                'photos_inspected': availability['inspected_photos'],
+                'photos_accepted': availability['accepted_photos'],
+                'tts_calls': availability['tts_calls'],
+                'renders': availability['renders'],
+                'receipt': proof(availability_path)},
             'boundaries': [{'name': name, 'test': proof(test), 'saved_evidence': proof(evidence),
                             'remaining': remaining} for name, test, evidence, remaining in BOUNDARIES]}
 
@@ -42,4 +55,6 @@ if __name__ == '__main__':
     output = ROOT / 'acceptance/factory-v3/current-boundaries.json'
     output.write_text(json.dumps(inventory(), indent=2) + '\n')
     report = inventory()
-    print(json.dumps({'boundaries': len(BOUNDARIES), 'latest_voice_acceptance': report['latest_voice_acceptance'], 'project_ready': False}))
+    print(json.dumps({'boundaries': len(BOUNDARIES),
+                      'latest_photo_availability_acceptance': report['latest_photo_availability_acceptance'],
+                      'latest_voice_acceptance': report['latest_voice_acceptance'], 'project_ready': False}))
