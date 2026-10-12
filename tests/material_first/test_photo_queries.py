@@ -21,6 +21,15 @@ class PhotographSearchTests(unittest.TestCase):
         self.assertTrue(described_as_synthetic({'description':"Computer artist's rendering of a compact neutron star with accretion disk."}))
         self.assertTrue(described_as_synthetic({'source_metadata':{'title':"File:Artist's rendering of neutron star.png"}}))
         self.assertTrue(described_as_synthetic({'description':"Artist's rendition of a distant galaxy."}))
+        for title, description in [
+            ('File:Image 13382-4U-1820-30.jpg', 'Size comparison of a neutron star and white dwarf'),
+            ('File:Neutron Star characteristics.png', 'Neutron Star characteristics'),
+            ('File:Neutron star over Munich.jpg', 'Displayed at the ESO Supernova Planetarium and Visitor Centre'),
+            ('File:Neutron star infographic.jpg', 'An infographic about neutron stars'),
+        ]:
+            self.assertTrue(described_as_synthetic({'description':description,'source_metadata':{'title':title}}))
+        self.assertFalse(described_as_synthetic({'description':'Direct Hubble observation of a lone neutron star',
+            'source_metadata':{'title':'File:Hubble Sees a Neutron Star Alone in Space.jpg'}}))
         self.assertFalse(described_as_synthetic({'description':'X-ray observation of a pulsar', 'source_metadata':{'imageinfo':[{'extmetadata':{'Artist':{'value':'Illustrations: Controlled'}}}]}}))
 
     def test_whole_photo_search_keeps_all_aspects_and_prioritizes_caption_match_without_excluding_sparse_photos(self):

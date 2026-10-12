@@ -181,8 +181,11 @@ def plan_retrieved_contexts(gemini,request,brief,pools,limit):
     for pool in pools:
         for candidate in pool:known.setdefault(candidate['id'],candidate)
     anchors=[c for c in known.values() if _has_descriptive_metadata(c) and not described_as_synthetic(c)]
-    if len(anchors)<max(3,math.ceil(request['seconds']/5)):
-        raise ValueError('retrieval lacks enough real-photo availability candidates')
+    # These are three planning anchors, not the final visual pool. A duration-
+    # scaled photo quota here rejects a request before any file is downloaded
+    # or inspected. Enforce the duration quota after independent pixel review.
+    if len(anchors)<3:
+        raise ValueError('retrieval lacks three described real-photo planning anchors')
     sources=brief['evidence']['sources'];spans=source_spans(sources)
     facts=brief['evidence']['facts'];ids={f['id'] for f in facts}
     schema=obj({key:obj({'anchor_id':string(c['id'] for c in anchors),

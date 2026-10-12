@@ -19,7 +19,7 @@ class RetrievedContextTests(unittest.TestCase):
         self.choice={f'v{i}':{'anchor_id':a,'english_photo_object':['Crab Nebula','neutron star','core of the Crab Nebula'][i],'source_mention':'Крабовидная туманность',
             'support_span_ids':[self.span['id']],'fact_ids':[self.brief['required_fact_ids'][i]]} for i,a in enumerate(ids)}
         self.calls=[];self.review_mode=None;self.review_count=0;self.review_contexts=[]
-    def run_plan(self, mutation=None, reject=False):
+    def run_plan(self, mutation=None, reject=False, pools=None):
         def generate(key,instruction,context,schema):
             self.calls.append(key)
             if key in {'material-photo-plan','material-photo-plan-repair'}:
@@ -63,7 +63,7 @@ class RetrievedContextTests(unittest.TestCase):
                 if reject:return False
                 return not(self.review_mode=='repair_once' and self.review_count==1 and role=='v2')
             return {'contexts':{k:{'source_identity_supported':True,'topic_related':topic_related(k),'metadata_compatible':True,'reason':'Controlled review decision; not an actual model acceptance'} for k in context['contexts']},'distinct_contexts':True},{'receipt_id':'controlled-review'}
-        return plan_retrieved_contexts(SimpleNamespace(generate=generate),{'topic':'Neutron star','seconds':60},self.brief,self.pools,30)
+        return plan_retrieved_contexts(SimpleNamespace(generate=generate),{'topic':'Neutron star','seconds':60},self.brief,self.pools if pools is None else pools,30)
     def test_actual_pool_can_replace_unavailable_hint_without_changing_facts(self):
         original=copy.deepcopy(self.brief)
         result,candidates=self.run_plan()
@@ -75,6 +75,14 @@ class RetrievedContextTests(unittest.TestCase):
         self.assertEqual(len(candidates),30)
         self.assertEqual(self.calls,['material-photo-plan','material-photo-plan-review'])
         self.assertTrue(all('accepted' not in c for c in candidates))
+
+    def test_three_planning_anchors_are_enough_before_pixel_inspection(self):
+        wanted={row['anchor_id'] for row in self.choice.values()}
+        candidates=[candidate for pool in self.pools for candidate in pool if candidate['id'] in wanted]
+        self.assertEqual({candidate['id'] for candidate in candidates},wanted)
+        result,selected=self.run_plan(pools=[candidates])
+        self.assertEqual(len(selected),3)
+        self.assertEqual(len(result['visual_targets']),3)
     def test_invented_photo_label_stops_before_review(self):
         def mutate(rows):rows['v1']['english_photo_object']='hidden neutron core'
         with self.assertRaisesRegex(ValueError,'absent from actual anchor'):self.run_plan(mutate)
