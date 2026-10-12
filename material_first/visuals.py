@@ -6,7 +6,9 @@ POLICY = 'whole-photo-exact-v1'
 
 
 def candidate_limit(seconds, policy=POLICY):
-    return preferred_shots(seconds, policy) + 12
+    # Topic images pass strict pixel-level relevance checks; a broader bounded
+    # candidate pool prevents a viable topic from dying on a thin search page.
+    return preferred_shots(seconds, policy) + (27 if policy == TOPIC_POLICY else 12)
 
 
 def make_visuals(seconds, materials, scenes, policy=POLICY, *, anchor_ids=()):

@@ -188,13 +188,13 @@ class AvailabilityPlanningTests(unittest.TestCase):
                 'queries': self.saved['targets'], 'visual_targets': self.saved['targets']}
 
     def test_actual_pool_replaces_imaginary_nucleus_contract_before_download_within_same_budget(self):
-        request = {'topic': 'Нейтронная звезда', 'language': 'uk', 'seconds': 60,
+        request = {'topic': 'compact object', 'language': 'uk', 'seconds': 60,
                    'presentation_policy': TOPIC_POLICY, 'visual_validation_mode': 'gemini'}
         original = copy.deepcopy(self.brief())
         resolved, candidates = self.operations().resolve_photos(request, original)
         self.assertEqual(len(self.searches), 9)
         self.assertEqual(self.calls, ['material-photo-plan'])
-        self.assertEqual(len(candidates), 30)
+        self.assertEqual(len(candidates), 45)
         self.assertEqual(resolved['evidence'], original['evidence'])
         self.assertEqual(resolved['required_fact_ids'], original['required_fact_ids'])
         self.assertEqual(resolved['visual_targets'][2]['must_show'], 'Jellyfish Nebula')
@@ -215,7 +215,7 @@ class AvailabilityPlanningTests(unittest.TestCase):
             with self.subTest(replacement=replacement):
                 self.setUp(); self.contexts[0].update(replacement)
                 with self.assertRaises(ValueError):
-                    self.operations().resolve_photos({'topic': 'Neutron star', 'seconds': 60,
+                    self.operations().resolve_photos({'topic': 'compact object', 'seconds': 60,
                                                       'presentation_policy': TOPIC_POLICY}, self.brief())
                 self.assertEqual(self.calls, ['material-photo-plan'])
 
@@ -236,7 +236,7 @@ class AvailabilityPlanningTests(unittest.TestCase):
                     candidate['source_metadata']['title'] = 'File:Crab Nebula Supernova Remnant.jpg'
         self.contexts[0]['object_label'] = 'The Crab Nebula Supernova Remnant'
         brief, _ = self.operations().resolve_photos(
-            {'topic': 'Neutron star', 'seconds': 60, 'presentation_policy': TOPIC_POLICY}, self.brief())
+            {'topic': 'compact object', 'seconds': 60, 'presentation_policy': TOPIC_POLICY}, self.brief())
         self.assertEqual(brief['visual_targets'][0]['must_show'], 'The Crab Nebula Supernova Remnant')
         self.assertEqual(brief['visual_targets'][0]['query'], 'Crab Nebula Supernova Remnant')
 

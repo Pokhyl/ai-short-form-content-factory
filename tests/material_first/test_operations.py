@@ -196,7 +196,7 @@ class OperationTests(unittest.TestCase):
             self.assertEqual(model.calls[-1], 'material-language-edit')
             self.assertEqual(sum(k.startswith('material-inspect-batch:') for k in model.calls), 2)
             self.assertEqual(len(frozen['payload']['visuals']), 5)
-            self.assertEqual(preparation_budgets(60)['gemini'], 16)
+            self.assertEqual(preparation_budgets(60)['gemini'], 20)
             self.assertEqual(len(frozen['payload']['evidence']['visual_contexts']), 3)
             from material_first.engine import verify
             from factory_v3.preflight import digest

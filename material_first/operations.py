@@ -11,12 +11,13 @@ from .engine import MaterialUnavailable
 from .targets import validate_targets
 from .visuals import POLICY, CALM_POLICY, CALM_POLICIES, TOPIC_POLICY, WHOLE_POLICIES, candidate_limit
 from .source_spans import source_spans, bind_support
-from .photo_queries import photograph_query, described_as_synthetic, relevance
+from .photo_queries import photograph_query, described_as_synthetic, relevance, observational_archive_topic
 
 
 def preparation_budgets(seconds):
-    return {'research_search': 1, 'source_fetch': 6, 'gemini': 16,
-            'download': candidate_limit(seconds,TOPIC_POLICY), 'metadata': 1, **{'search:' + p: 3 for p in PROVIDERS}}
+    downloads=candidate_limit(seconds,TOPIC_POLICY)
+    return {'research_search': 1, 'source_fetch': 6, 'gemini': max(16,(downloads+3)//4+8),
+            'download': downloads, 'metadata': 1, **{'search:' + p: 3 for p in PROVIDERS}}
 
 
 def contiguous_support(evidence):
@@ -206,10 +207,12 @@ class Operations:
         pools, query_pools = [], []
         topical = request.get('presentation_policy') == TOPIC_POLICY
         targets = queries if queries and isinstance(queries[0], dict) else None
+        providers = (['wikimedia'] if topical and observational_archive_topic(request.get('topic'))
+                     else ['wikimedia','pexels','pixabay'] if topical else sorted(PROVIDERS))
         for target in queries:
             query = target['query'] if targets else target
             query_pool = []
-            for provider in (['wikimedia','pexels','pixabay'] if request.get('presentation_policy') == TOPIC_POLICY else sorted(PROVIDERS)):
+            for provider in providers:
                 result = self.search.search(provider, query, 'all' if request.get('presentation_policy') in WHOLE_POLICIES else 'portrait')
                 pool = deepcopy(result['candidates'])
                 if request.get('presentation_policy') == TOPIC_POLICY:

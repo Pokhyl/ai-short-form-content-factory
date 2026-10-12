@@ -11,6 +11,16 @@ SYNTHETIC = re.compile(
     r"computer[- ]generated|(?:this|computer|supercomputer|numerical)\s+simulations?|"
     r"simulated\s+(?:image|scene|view)|planetarium\s+show|animation|visuali[sz](?:ation|ing))\b", re.I)
 INVISIBLE = re.compile(r"\b(?:magnetospheres?|magnetic\s+field\s+beams?|field\s+lines|imagined\s+particle\s+beams?)\b", re.I)
+OBSERVATIONAL_ARCHIVE_TOPIC = re.compile(
+    r"\b(?:neutron\s+stars?|magnetars?|pulsars?|supernovas?(?:\s+remnants?)?|"
+    r"black\s+holes?|quasars?|exoplanets?)\b|"
+    r"нейтрон\w*|пульсар\w*|магнетар\w*|сверхнов\w*|наднов\w*|"
+    r"квазар\w*|экзопланет\w*|чорн\w*\s+дір\w*|черн\w*\s+дыр\w*", re.I)
+
+
+def observational_archive_topic(topic):
+    """Remote astronomical objects need documented observation archives, not stock search."""
+    return bool(OBSERVATIONAL_ARCHIVE_TOPIC.search(str(topic or '')))
 
 
 def photograph_query(query):

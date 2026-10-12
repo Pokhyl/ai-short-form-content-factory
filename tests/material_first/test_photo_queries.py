@@ -1,11 +1,17 @@
 import unittest
 from types import SimpleNamespace
-from material_first.photo_queries import photograph_query, described_as_synthetic
+from material_first.photo_queries import photograph_query, described_as_synthetic, observational_archive_topic
 from material_first.operations import Operations
 from material_first.presentation import TOPIC_POLICY, LEGACY_POLICY
 
 
 class PhotographSearchTests(unittest.TestCase):
+    def test_remote_astronomical_objects_use_observational_archive_search(self):
+        for topic in ('Neutron star', 'Pulsar PSR J0437', 'Нейтронная звезда', 'Нейтронна зоря'):
+            self.assertTrue(observational_archive_topic(topic))
+        for topic in ('How coffee is roasted', 'How a factory makes steel'):
+            self.assertFalse(observational_archive_topic(topic))
+
     def test_unobservable_modifiers_removed_without_replacing_actual_entity(self):
         for query, expected in [('neutron star artist concept','neutron star'),
                                 ('pulsar magnetic field beam','pulsar'),
@@ -48,6 +54,18 @@ class PhotographSearchTests(unittest.TestCase):
         self.assertEqual([a['id'] for a in legacy],['a','b','c','d'])
         self.assertEqual({x[2] for x in calls},{'all'})
 
+    def test_astronomy_search_uses_wikimedia_instead_of_generic_stock_results(self):
+        calls=[]
+        def search(provider,query,orientation):
+            calls.append((provider,query,orientation))
+            return {'candidates':[{'id':provider+str(len(calls)),'description':'Direct observatory image'}]}
+        ops=Operations('.',None,None,SimpleNamespace(search=search),None)
+        rows=ops.discover({'topic':'Нейтронная звезда','seconds':60,'presentation_policy':TOPIC_POLICY},
+                          ['neutron star','pulsar','supernova remnant'])
+        self.assertEqual([row[0] for row in calls],['wikimedia']*3)
+        self.assertEqual(len(rows),3)
+        self.assertTrue(all(row['topic_protocol']=='topic-specific-v1' for row in rows))
+
     def test_deeper_relevant_results_are_not_buried_by_equal_provider_quotas(self):
         calls=[]
         queries=['Crab Nebula','Cassiopeia remnant','Westerlund cluster']
@@ -58,9 +76,9 @@ class PhotographSearchTests(unittest.TestCase):
             return {'candidates':rows}
         found=Operations('.',None,None,SimpleNamespace(search=search),None).discover(
             {'seconds':60,'presentation_policy':TOPIC_POLICY},queries)
-        self.assertEqual(len(found),30)
+        self.assertEqual(len(found),45)
         self.assertEqual(len(calls),9)
-        self.assertEqual(len({c['id'] for c in found}),30)
+        self.assertEqual(len({c['id'] for c in found}),45)
         for query in queries:
             self.assertIn('wikimedia'+query+'7',{c['id'] for c in found})
             for provider in ('wikimedia','pexels','pixabay'):
@@ -85,8 +103,8 @@ class PhotographSearchTests(unittest.TestCase):
             return {'candidates':next(p['candidates'] for p in saved['pools'] if p['provider']==provider and p['query']==query)}
         found=Operations('.',None,None,SimpleNamespace(search=search),None).discover(
             {'seconds':60,'presentation_policy':TOPIC_POLICY},saved['targets'])
-        self.assertEqual(len(found),30)
-        self.assertEqual(len({c['id'] for c in found}),30)
+        self.assertEqual(len(found),45)
+        self.assertEqual(len({c['id'] for c in found}),45)
         self.assertGreater(sum(c['provider']=='wikimedia' for c in found),11)
         for provider in ('wikimedia','pexels','pixabay'):
             self.assertTrue(any(c['provider']==provider for c in found))
