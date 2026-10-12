@@ -26,7 +26,8 @@ class AvailabilityPlanningTests(unittest.TestCase):
         with patch('material_first.retrieved_contexts.plan_retrieved_contexts',
                    side_effect=PhotoPlanReviewFailed('metadata plan rejected')):
             resolved, passed = ops.resolve_photos(request, brief)
-        self.assertIs(resolved, brief)
+        self.assertIsNot(resolved, brief)
+        self.assertTrue(resolved.pop('_pixel_review_fallback'))
         self.assertIs(passed, candidates)
 
     def test_actual_documented_label_order_uses_server_object_and_rejects_wrong_anchor(self):

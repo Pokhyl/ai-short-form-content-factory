@@ -357,15 +357,22 @@ class Producer:
         candidates = None
         if hasattr(self.operations, 'resolve_photos'):
             brief, candidates = self.operations.resolve_photos(deepcopy(request), deepcopy(brief))
+            pixel_review_fallback = brief.pop('_pixel_review_fallback', False)
+            if type(pixel_review_fallback) is not bool:
+                raise ValueError('invalid photo-planning fallback marker')
             if getattr(self.operations,'availability_first_contexts',False) and 'visual_contexts' not in evidence:
                 # Source facts freeze before discovery; visual contexts freeze
                 # only after actual retrieved objects have been source-checked.
                 final_core={k:v for k,v in brief['evidence'].items() if k!='visual_contexts'}
                 if final_core!=evidence or brief['required_fact_ids']!=required:
                     raise ValueError('availability planning changed source evidence or required narration')
-                if 'visual_contexts' not in brief['evidence']:
+                if ('visual_contexts' not in brief['evidence'] and not (
+                        pixel_review_fallback
+                        and request.get('presentation_policy') == TOPIC_POLICY
+                        and request.get('visual_validation_mode') == 'gemini')):
                     raise ValueError('availability planning omitted final documented contexts')
-                validate_evidence(brief['evidence'])
+                if 'visual_contexts' in brief['evidence']:
+                    validate_evidence(brief['evidence'])
                 evidence=brief['evidence']
             elif brief['evidence'] != evidence or brief['required_fact_ids'] != required:
                 raise ValueError('availability planning changed source evidence or required narration')

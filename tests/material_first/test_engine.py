@@ -7,6 +7,7 @@ from pathlib import Path
 
 from factory_v3.preflight import digest
 from material_first.engine import Producer, MaterialUnavailable, verify
+from material_first.presentation import TOPIC_POLICY
 
 
 class Operations:
@@ -112,6 +113,27 @@ class EngineTests(unittest.TestCase):
         result = self.run_prepare(ops)
         self.assertIn('inspect:a0', ops.events)
         self.assertEqual(len(result['payload']['scenes']), 3)
+
+    def test_rejected_metadata_plan_reaches_pixel_inspection(self):
+        ops = Operations(self.root, ["photo", "photo", "photo"])
+        ops.presentation_policy = TOPIC_POLICY
+        ops.visual_validation_mode = "gemini"
+        ops.availability_first_contexts = True
+        ops.inspect_many = lambda assets, evidence: [ops.inspect(asset, evidence) for asset in assets]
+        original_review = ops.review_script
+        def review(request):
+            result = original_review(request)
+            result["native_language_quality"] = True
+            return result
+        ops.review_script = review
+        def resolve(request, brief):
+            brief["_pixel_review_fallback"] = True
+            return brief, copy.deepcopy(ops.assets)
+        ops.resolve_photos = resolve
+        with self.assertRaisesRegex(ValueError, 'topic-specific image inspection missing'):
+            self.run_prepare(ops, seconds=15)
+        self.assertIn("inspect:a0", ops.events)
+        self.assertIn("compose", ops.events)
 
     def test_retrieved_planner_cannot_mutate_frozen_source_scope(self):
         for mutation in ('fact', 'source', 'required', 'missing_contexts'):

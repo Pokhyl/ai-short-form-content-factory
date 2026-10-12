@@ -291,7 +291,9 @@ class Operations:
                 # Metadata planning is only a search optimization. Let the
                 # source-bound candidate pool reach pixel Vision when it cannot
                 # produce a reviewed plan; the real-photo gate remains strict.
-                return brief, candidates
+                fallback = deepcopy(brief)
+                fallback['_pixel_review_fallback'] = True
+                return fallback, candidates
         from .photo_planning import plan_photos
         # Collect the complete bounded search pools first. Role contracts are
         # finalized once from available objects before any download/inspection.
