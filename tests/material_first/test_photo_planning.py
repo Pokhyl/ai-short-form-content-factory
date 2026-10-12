@@ -3,6 +3,7 @@ import json
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from factory_v3.gemini import validate_json
 from material_first.operations import Operations
@@ -12,6 +13,22 @@ from material_first.photo_queries import described_as_synthetic
 
 
 class AvailabilityPlanningTests(unittest.TestCase):
+    def test_rejected_metadata_plan_falls_through_to_pixel_review_candidates(self):
+        from material_first.retrieved_contexts import PhotoPlanReviewFailed
+        ops = Operations('.', None, SimpleNamespace(), SimpleNamespace(), None)
+        ops.availability_first_contexts = True
+        ops.discovery_pools = []
+        brief = {'evidence': {'facts': []}, 'queries': [{'id': 'v0', 'query': 'neutron star'}]}
+        candidates = [{'id': 'candidate-1'}]
+        ops.discover = lambda request, queries: candidates
+        request = {'topic': 'Neutron star', 'seconds': 60,
+                   'presentation_policy': TOPIC_POLICY, 'visual_validation_mode': 'gemini'}
+        with patch('material_first.retrieved_contexts.plan_retrieved_contexts',
+                   side_effect=PhotoPlanReviewFailed('metadata plan rejected')):
+            resolved, passed = ops.resolve_photos(request, brief)
+        self.assertIs(resolved, brief)
+        self.assertIs(passed, candidates)
+
     def test_actual_documented_label_order_uses_server_object_and_rejects_wrong_anchor(self):
         saved = json.loads((Path(__file__).parent/'fixtures/actual-documented-label-order.json').read_text())
         calls = []

@@ -11,6 +11,10 @@ from .photo_planning import descriptions,allocate_photos,object_records
 from .targets import validate_targets
 
 
+class PhotoPlanReviewFailed(ValueError):
+    """The bounded metadata review rejected a plan; pixel review can still decide."""
+
+
 _OBSERVATION_BANDS = (
     ('ultraviolet', re.compile(r'\bultraviolet\b', re.I)),
     ('infrared', re.compile(r'\binfrared\b', re.I)),
@@ -259,7 +263,7 @@ def plan_retrieved_contexts(gemini,request,brief,pools,limit):
         if not failures:
             break
         if attempt==1:
-            raise ValueError('retrieved context review failed: '+'; '.join(failures))
+            raise PhotoPlanReviewFailed('retrieved context review failed: '+'; '.join(failures))
         rejected_roles={key for key,row in review['contexts'].items()
                         if not all(row[field] for field in ('source_identity_supported','topic_related','metadata_compatible'))}
         if not rejected_roles:
