@@ -1,0 +1,15 @@
+Photo hint repair retry package acceptance
+
+Source commit: f45c6ecef9c397f6a515d494e74dcb0997fe77fa
+Image: factory-v3:repair-retry-f45c6ec-amd64
+Image ID: sha256:e613eb5f47f8bd480fc97a93531b68ab9636ae4231bf70a11ce93f2eb5b8913e
+Platform: linux/amd64
+Deployed: no
+
+Checks (network disabled, fixtures read-only):
+- Local targeted regression tests: 23/23
+- Local material_first suite: 198/198
+- Packaged material_first suite: 198/198
+- Packaged factory_v3 suite: 112/112
+
+Limits: production unchanged; no fresh provider/TTS/render; no owner acceptance; project_ready=false.

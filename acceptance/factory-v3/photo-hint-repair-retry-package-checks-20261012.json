@@ -1,0 +1,43 @@
+{
+  "component": "distinct durable keys and full two-correction retry bound for reviewed photo hints",
+  "source_commit": "f45c6ecef9c397f6a515d494e74dcb0997fe77fa",
+  "image": {
+    "tag": "factory-v3:repair-retry-f45c6ec-amd64",
+    "image_id": "sha256:e613eb5f47f8bd480fc97a93531b68ab9636ae4231bf70a11ce93f2eb5b8913e",
+    "platform": "linux/amd64",
+    "deployed": false
+  },
+  "checks": [
+    {
+      "name": "local targeted regressions",
+      "command": "python3 -m unittest tests.material_first.test_research_review tests.material_first.test_photo_contexts",
+      "passed": 23,
+      "failed": 0
+    },
+    {
+      "name": "local material_first",
+      "command": "python3 -m unittest discover -s tests/material_first",
+      "passed": 198,
+      "failed": 0
+    },
+    {
+      "name": "packaged material_first",
+      "command": "docker run --rm --network none --platform linux/amd64 ... -m unittest discover -s /tests/material_first",
+      "passed": 198,
+      "failed": 0,
+      "fixture_mounts": "read-only"
+    },
+    {
+      "name": "packaged factory_v3",
+      "command": "docker run --rm --network none --platform linux/amd64 ... -m unittest discover -s /tests/factory_v3",
+      "passed": 112,
+      "failed": 0,
+      "fixture_mounts": "read-only"
+    }
+  ],
+  "limits": [
+    "Production remains on the prior image.",
+    "No fresh provider, TTS, render, owner acceptance, or deployment evidence.",
+    "Project remains not ready."
+  ]
+}
