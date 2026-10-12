@@ -1,0 +1,53 @@
+{
+  "id": "fcee52f6-1af8-4102-be60-8002cceb3055",
+  "created_at": "2026-10-12T07:02:27Z",
+  "question": "Can a new normal UK60 neutron-star request pass the temporary Gemini availability failure and exercise the deployed visual-context repair?",
+  "request": {
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60
+  },
+  "reason_for_new_id": "The prior unique ID is terminal unknown after the Gemini gateway returned UNAVAILABLE for a material-brief repair call. It will not be repeated. This is a separately planned bounded acceptance after that transient failure.",
+  "source": {
+    "branch_head": "62647fec1e9584da0551a2641b59e7c5c78b17c9",
+    "runtime_revision": "2625d61cbb4b7c5d95c70c31903bfc86e24bf192",
+    "image": "factory-v3:gemini35-retrieved-context-repair-amd64-20261012-r1",
+    "image_id": "sha256:576bcd9ab1891ffcb1a981f795a9e143e74339f78a20221a58ab022c9c953287",
+    "studio": "https://studio.hodor.com.pl"
+  },
+  "preflight": {
+    "active_jobs": 0,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0,
+    "root_free_mb": 367
+  },
+  "limits": {
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini_total": 16,
+    "photo_searches_per_provider": 3,
+    "photo_providers": [
+      "pexels",
+      "pixabay",
+      "wikimedia"
+    ],
+    "photo_downloads": 30,
+    "tts_sends_max": 3,
+    "renders": 1,
+    "machine_qa": 1,
+    "paid_fallback": false
+  },
+  "stop_conditions": [
+    "Submit this exact request ID once; never retry it.",
+    "Preserve any ambiguous provider result as terminal/unknown.",
+    "Stop at the first source, relevance, quota, voice-duration, alignment, render or machine-audit failure.",
+    "Keep natural-speed voice, visual relevance, exact 60-second duration and QA gates unchanged.",
+    "Stop media generation if /data free space falls below 100 MB.",
+    "This plan authorizes one request only."
+  ],
+  "status": "planned_not_submitted",
+  "submission_attempts": 0,
+  "provider_calls": 0,
+  "project_ready": false
+}
