@@ -36,11 +36,11 @@
     }
   },
   "latest_photo_hint_package": {
-    "component": "pre-search photo search hint validation and bounded repair",
-    "source_commit": "2cb7bf77d8c0955228c32c6b72278c224e26f426",
+    "component": "pre-search photo hint validation after both initial brief and review repair",
+    "source_commit": "e0f36979d40a1306d2c9b4e6367acba350588f3b",
     "image": {
-      "tag": "factory-v3:photo-query-hints-2cb7bf7-amd64",
-      "image_id": "sha256:c0d6e658822892cbb99dacf97d0f6f66859ed4980f03f814bcc67de9cd01661e",
+      "tag": "factory-v3:photo-hint-review-e0f3697-amd64",
+      "image_id": "sha256:22c92bd3bfb5e037c24ff624542482e9b1cb8730462d1d89bc064ee9de215214",
       "platform": "linux/amd64",
       "deployed": false
     },
@@ -48,32 +48,32 @@
       {
         "name": "local material_first",
         "command": "python3 -m unittest discover -s tests/material_first",
-        "passed": 194,
+        "passed": 197,
         "failed": 0
       },
       {
         "name": "packaged material_first",
-        "command": "docker run --rm --network none --platform linux/amd64 ... python3 -m unittest discover -s /tests/material_first",
-        "passed": 194,
+        "command": "docker run --rm --network none --platform linux/amd64 ... -m unittest discover -s /tests/material_first",
+        "passed": 197,
         "failed": 0,
-        "acceptance_mount": "read-only"
+        "fixture_mounts": "read-only"
       },
       {
         "name": "packaged factory_v3",
-        "command": "docker run --rm --network none --platform linux/amd64 ... python3 -m unittest discover -s /tests/factory_v3",
+        "command": "docker run --rm --network none --platform linux/amd64 ... -m unittest discover -s /tests/factory_v3",
         "passed": 112,
         "failed": 0,
-        "acceptance_and_source_mounts": "read-only"
+        "fixture_mounts": "read-only"
       }
     ],
     "limits": [
-      "Controlled offline regressions and packaging only.",
-      "No fresh provider quality, owner acceptance, deployment, TTS, or render evidence.",
+      "The actual repaired photo hints and stored call hashes are captured in tests/material_first/fixtures/actual-photo-hint-repair.json.",
+      "Full source/provider replay bundle is still incomplete; no fresh provider, TTS, render, owner acceptance, or deployment evidence.",
       "Project remains not ready."
     ],
     "receipt": {
-      "path": "acceptance/factory-v3/photo-query-hints-package-checks-20261012.json",
-      "sha256": "521c460c64e15b9f861bae5c06cd31e3f139971e85c739162a53ed8b4b8e5d0f"
+      "path": "acceptance/factory-v3/photo-hint-review-package-checks-20261012.json",
+      "sha256": "26b7f7572304c50680cb3de928a8902a2ff4e036a5988defcd214aaa5a9071ce"
     }
   },
   "boundaries": [
@@ -123,7 +123,7 @@
         "path": "acceptance/factory-v3/providers-postgres.txt",
         "sha256": "c1878230c95d6d88cd6260e1638cd716056ef556636b78f7eb073255a3fa648d"
       },
-      "remaining": "Generic pre-search category/equipment hints now get one source-grounded repair; 194 material-first and 112 Factory v3 packaged tests pass network-disabled on commit 2cb7bf7. Fresh provider availability and real-photo relevance remain unverified."
+      "remaining": "Actual PostgreSQL brief repair changed photo hints to space and Hubble Space Telescope; the review loop now revalidates after repair. Commit e0f3697 passes 197 material-first and 112 Factory v3 packaged tests network-disabled. Full source/provider replay and fresh provider availability/real-photo relevance remain unverified."
     },
     {
       "name": "retrieved metadata context planning",

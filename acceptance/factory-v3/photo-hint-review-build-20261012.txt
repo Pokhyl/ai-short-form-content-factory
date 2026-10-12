@@ -1,0 +1,50 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 566B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm
+#2 DONE 1.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/8] FROM docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258
+#4 resolve docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258 done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 398.71kB done
+#5 DONE 0.0s
+
+#6 [5/8] RUN pip install --no-cache-dir -r /app/requirements.txt
+#6 CACHED
+
+#7 [3/8] WORKDIR /app
+#7 CACHED
+
+#8 [4/8] COPY factory_v3/requirements.txt /app/requirements.txt
+#8 CACHED
+
+#9 [2/8] RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
+#9 CACHED
+
+#10 [6/8] COPY factory_v3 /app/factory_v3
+#10 CACHED
+
+#11 [7/8] COPY material_first /app/material_first
+#11 DONE 0.0s
+
+#12 [8/8] COPY scripts/audit_final_media.py /app/scripts/audit_final_media.py
+#12 DONE 0.0s
+
+#13 exporting to image
+#13 exporting layers 0.0s done
+#13 exporting manifest sha256:8663b62253e771286210aae11ecc2196674bb67400af5f02d1af3bef59ee4d3c done
+#13 exporting config sha256:14d12348ed09c561e87704842bf42ccb5860e6db6e1abd5f242628027a0c7127 done
+#13 exporting attestation manifest sha256:a62b50b41cd2d09b94a75e6f4d618d88970fba16bff6bc4c4dc45c8272908985 done
+#13 exporting manifest list sha256:22c92bd3bfb5e037c24ff624542482e9b1cb8730462d1d89bc064ee9de215214 done
+#13 naming to docker.io/library/factory-v3:photo-hint-review-e0f3697-amd64 done
+#13 DONE 0.1s

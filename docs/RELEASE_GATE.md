@@ -2,11 +2,11 @@
 
 ## Generic photo-search hint gate — 2026-10-12
 
-Commit `2cb7bf77d8c0955228c32c6b72278c224e26f426` adds a topic-aware pre-search gate: a broad category or unrelated equipment hint gets one bounded repair from the fetched source spans; the server rejects any repair that changes facts, required fact IDs, or source bindings. A second invalid hint stops before photo-provider search. Regression includes `space`, an unrelated Hubble telescope hint for neutron stars, relevant named objects, and Hubble as the actual English or Russian topic.
+Commit `2cb7bf77d8c0955228c32c6b72278c224e26f426` added a topic-aware pre-search gate. Read-only inspection of the actual failed preparation in PostgreSQL exposed a second path: the initial brief was acceptable, but `material-brief-repair` changed its hints to `space` and `Hubble Space Telescope`; the following review checked facts only. Commit `e0f36979d40a1306d2c9b4e6367acba350588f3b` therefore revalidates after each repair in the review loop. A query-only correction cannot alter facts, fact IDs, or source bindings. The regression fixture records actual model outputs and call hashes; it explicitly does not contain the full source payload.
 
-The offline material-first suite passed 194/194 locally and in the exact AMD64 runtime image; Factory v3 passed 112/112 in that image. Packaged checks ran with networking disabled. Image `factory-v3:photo-query-hints-2cb7bf7-amd64` (`sha256:c0d6e658822892cbb99dacf97d0f6f66859ed4980f03f814bcc67de9cd01661e`) was built from that commit and was not deployed. Receipt: `acceptance/factory-v3/photo-query-hints-package-checks-20261012.json`.
+The offline material-first suite passed 197/197 locally and in the exact AMD64 runtime image; Factory v3 passed 112/112 in that image. Packaged checks ran with networking disabled. Image `factory-v3:photo-hint-review-e0f3697-amd64` (`sha256:22c92bd3bfb5e037c24ff624542482e9b1cb8730462d1d89bc064ee9de215214`) was built from that commit and was not deployed. Receipt: `acceptance/factory-v3/photo-hint-review-package-checks-20261012.json`.
 
-This closes only the offline pre-search regression and package boundary. It does not prove unseen provider availability or photo quality, and it supplies no new successful MP4. Keep `project_ready=false`; do not run a fresh production request until the connected offline release gate below is closed.
+This closes only the offline pre-search/review-repair regression and package boundary. The exact source/provider replay bundle, unseen provider availability, photo quality, and full connected release gate remain open; no new MP4 is evidenced. Keep `project_ready=false`; do not run a fresh production request until the connected offline release gate below is closed.
 
 ## Последняя UK60-проверка фото — 2026-10-12
 

@@ -1,0 +1,37 @@
+{
+  "component": "pre-search photo hint validation after both initial brief and review repair",
+  "source_commit": "e0f36979d40a1306d2c9b4e6367acba350588f3b",
+  "image": {
+    "tag": "factory-v3:photo-hint-review-e0f3697-amd64",
+    "image_id": "sha256:22c92bd3bfb5e037c24ff624542482e9b1cb8730462d1d89bc064ee9de215214",
+    "platform": "linux/amd64",
+    "deployed": false
+  },
+  "checks": [
+    {
+      "name": "local material_first",
+      "command": "python3 -m unittest discover -s tests/material_first",
+      "passed": 197,
+      "failed": 0
+    },
+    {
+      "name": "packaged material_first",
+      "command": "docker run --rm --network none --platform linux/amd64 ... -m unittest discover -s /tests/material_first",
+      "passed": 197,
+      "failed": 0,
+      "fixture_mounts": "read-only"
+    },
+    {
+      "name": "packaged factory_v3",
+      "command": "docker run --rm --network none --platform linux/amd64 ... -m unittest discover -s /tests/factory_v3",
+      "passed": 112,
+      "failed": 0,
+      "fixture_mounts": "read-only"
+    }
+  ],
+  "limits": [
+    "The actual repaired photo hints and stored call hashes are captured in tests/material_first/fixtures/actual-photo-hint-repair.json.",
+    "Full source/provider replay bundle is still incomplete; no fresh provider, TTS, render, owner acceptance, or deployment evidence.",
+    "Project remains not ready."
+  ]
+}

@@ -8,7 +8,7 @@ BOUNDARIES = [
  ('owner intake/concurrency', 'tests/factory_v3/test_server.py', 'acceptance/factory-v3/image-postgres-driver.txt', 'Fresh acceptance after citation change remains unverified.'),
  ('credential gateway/free quota', 'tests/factory_v3/test_credential_http.py', 'acceptance/factory-v3/response-body-billing.json', 'Per-request billing and quota gates still required.'),
  ('fetched research/source citations', 'tests/material_first/test_source_spans.py', 'acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json', 'r14 reused a frozen source-grounded plan; unseen source quality and support remain provider-dependent.'),
- ('three photo providers/download', 'tests/factory_v3/test_providers.py', 'acceptance/factory-v3/providers-postgres.txt', 'Generic pre-search category/equipment hints now get one source-grounded repair; 194 material-first and 112 Factory v3 packaged tests pass network-disabled on commit 2cb7bf7. Fresh provider availability and real-photo relevance remain unverified.'),
+ ('three photo providers/download', 'tests/factory_v3/test_providers.py', 'acceptance/factory-v3/providers-postgres.txt', 'Actual PostgreSQL brief repair changed photo hints to space and Hubble Space Telescope; the review loop now revalidates after repair. Commit e0f3697 passes 197 material-first and 112 Factory v3 packaged tests network-disabled. Full source/provider replay and fresh provider availability/real-photo relevance remain unverified.'),
  ('retrieved metadata context planning', 'tests/material_first/test_photo_planning.py', 'acceptance/factory-v3/adaptive-voice-pool-fresh-acceptance-20261012.json', 'Availability-first now treats repeated brief labels as search hints; final retrieved target uniqueness remains strict before any photo download. Deployed and ready for fresh acceptance.'),
  ('retrieved visual-context duplicate repair', 'tests/material_first/test_retrieved_contexts.py', 'acceptance/factory-v3/retrieved-context-duplicate-repair-plan-20261012.json', 'One bounded structural repair passes local and network-disabled amd64 image suites and is deployed; fresh live source/pixel quality remains unproven.'),
  ('metadata/Vision/selection', 'tests/material_first/test_metadata_mode.py', 'acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json', '17 reviewed photos were frozen; only5 supported the longest scene. New retrieval must produce sufficient scene coverage.'),
@@ -29,7 +29,7 @@ def inventory():
     latest_voice = json.loads((ROOT / voice_path).read_text())
     availability_path = 'acceptance/factory-v3/availability-first-distinct-context-acceptance-20261012.json'
     latest_availability = json.loads((ROOT / availability_path).read_text())
-    package_path = 'acceptance/factory-v3/photo-query-hints-package-checks-20261012.json'
+    package_path = 'acceptance/factory-v3/photo-hint-review-package-checks-20261012.json'
     package = json.loads((ROOT / package_path).read_text())
     availability = latest_availability['result']
     return {'project_ready': False, 'scope': 'Controlled tests and saved actual receipts, not new provider acceptance',
