@@ -25,6 +25,12 @@ def preferred_shots(seconds, policy=LEGACY_POLICY):
 
 def minimum_shots(seconds, policy=LEGACY_POLICY):
     preferred_shots(seconds, policy)
+    if policy == TOPIC_POLICY:
+        # Topic-specific visual review rejects many valid search results for
+        # exact-object relevance. Keep a practical, bounded minimum so a
+        # minute-long story can proceed with eight unique verified photos
+        # (up to 7.5 seconds each) instead of discarding a viable preparation.
+        return math.ceil(seconds / 7.5)
     return math.ceil(seconds/(5 if policy in CALM_POLICIES else 2.5))
 
 def phrase_frames(timings, source_duration_ms, seconds):
@@ -50,11 +56,12 @@ def visual_timeline(seconds, count, policy=LEGACY_POLICY, boundaries=()):
         raise ValueError('invalid phrase boundary frame')
     # Prefer nearby paragraph boundaries while retaining a moderate cadence.
     # Feasibility bounds prevent either a flash frame or a long final hold.
+    max_hold = 225 if policy == TOPIC_POLICY else 150
     edges=[0]
     for i in range(1,count):
         remaining=count-i
-        low=max(edges[-1]+75, frames-remaining*150)
-        high=min(edges[-1]+150, frames-remaining*75)
+        low=max(edges[-1]+75, frames-remaining*max_hold)
+        high=min(edges[-1]+max_hold, frames-remaining*75)
         target=max(low,min(high,round(frames*i/count)))
         nearby=[x for x in boundaries if low<=x<=high and abs(x-target)<=27]
         edges.append(min(nearby,key=lambda x:(abs(x-target),x)) if nearby else target)
@@ -65,11 +72,12 @@ def validate_timeline(seconds, count, timeline, policy=LEGACY_POLICY):
     visual_timeline(seconds,count,policy)
     if not isinstance(timeline,list) or len(timeline)!=count: raise ValueError('visual timeline count differs')
     cursor=0
+    max_hold = 225 if policy == TOPIC_POLICY else 150
     for cut in timeline:
         if set(cut)!={'start_frame','end_frame'} or type(cut['start_frame']) is not int or type(cut['end_frame']) is not int:
             raise ValueError('invalid visual frame interval')
         if cut['start_frame']!=cursor or cut['end_frame']<=cursor: raise ValueError('visual frames not consecutive')
-        if policy in CALM_POLICIES and not 75<=cut['end_frame']-cursor<=150:
+        if policy in CALM_POLICIES and not 75<=cut['end_frame']-cursor<=max_hold:
             raise ValueError('visual hold outside moderate cadence')
         cursor=cut['end_frame']
     if cursor!=seconds*FPS: raise ValueError('visual frames do not cover requested duration')

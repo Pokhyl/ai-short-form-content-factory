@@ -88,7 +88,7 @@ class WorkerCorrectionTests(unittest.TestCase):
             self.assertEqual([call.args[1] for call in provider.synthesize.call_args_list],['old','new'])
 
 class RewriteTests(unittest.TestCase):
-    def test_r14_variants_reduce_only_approved_photos_to_restore_cadence(self):
+    def test_r14_variants_can_use_nine_approved_photos_for_topical_cadence(self):
         import json
         from pathlib import Path
         from material_first.voice_correction import select_paragraphs_and_visuals, validate_revision
@@ -121,9 +121,9 @@ class RewriteTests(unittest.TestCase):
         candidate['assets']=[item for item in payload['assets'] if item['id'] in selected_ids]
         candidate['observations']=[item for item in observations if item['id'] in selected_ids]
         self.assertEqual([(len(value.split()),len(value)) for value in selected],[(63,480),(30,241),(48,405)])
-        self.assertEqual(len(visuals),12)
+        self.assertEqual(len(visuals),9)
         self.assertEqual({item['material_id'] for item in visuals},
-                         {item['material_id'] for item in payload['visuals'][:12]})
+                         {item['material_id'] for item in payload['visuals'][:9]})
         preflight_visual_capacity(candidate)
         validate_revision(payload,candidate)
         changed={**candidate,'assets':[{'id':'invented-photo'}]+candidate['assets']}

@@ -54,3 +54,15 @@ class PresentationTests(unittest.TestCase):
             self.assertEqual(sum(c['end_frame']-c['start_frame'] for c in cuts),seconds*30)
             altered=[dict(c) for c in cuts];altered[1]['start_frame']+=1
             with self.assertRaises(ValueError):validate_timeline(seconds,count,altered,CALM_POLICY)
+
+    def test_topic_policy_can_use_eight_verified_photos_for_sixty_seconds(self):
+        from material_first.presentation import TOPIC_POLICY, minimum_shots, validate_timeline
+        for seconds, minimum in [(15, 2), (30, 4), (45, 6), (60, 8)]:
+            self.assertEqual(minimum_shots(seconds, TOPIC_POLICY), minimum)
+            cuts = visual_timeline(seconds, minimum, TOPIC_POLICY)
+            validate_timeline(seconds, minimum, cuts, TOPIC_POLICY)
+            self.assertEqual(cuts[0]['start_frame'], 0)
+            self.assertEqual(cuts[-1]['end_frame'], seconds * 30)
+            self.assertLessEqual(max(c['end_frame'] - c['start_frame'] for c in cuts), 225)
+        with self.assertRaises(ValueError):
+            visual_timeline(60, 7, TOPIC_POLICY)
