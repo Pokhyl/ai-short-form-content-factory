@@ -5,30 +5,30 @@
 #1 DONE 0.0s
 
 #2 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm
-#2 DONE 1.0s
+#2 DONE 0.5s
 
 #3 [internal] load .dockerignore
 #3 transferring context: 2B done
 #3 DONE 0.0s
 
 #4 [1/8] FROM docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258
-#4 resolve docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258 done
+#4 resolve docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258 0.0s done
 #4 DONE 0.0s
 
 #5 [internal] load build context
-#5 transferring context: 391.04kB done
+#5 transferring context: 391.59kB 0.0s done
 #5 DONE 0.0s
 
-#6 [5/8] RUN pip install --no-cache-dir -r /app/requirements.txt
+#6 [4/8] COPY factory_v3/requirements.txt /app/requirements.txt
 #6 CACHED
 
-#7 [4/8] COPY factory_v3/requirements.txt /app/requirements.txt
+#7 [5/8] RUN pip install --no-cache-dir -r /app/requirements.txt
 #7 CACHED
 
-#8 [2/8] RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
+#8 [3/8] WORKDIR /app
 #8 CACHED
 
-#9 [3/8] WORKDIR /app
+#9 [2/8] RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
 #9 CACHED
 
 #10 [6/8] COPY factory_v3 /app/factory_v3
@@ -42,9 +42,9 @@
 
 #13 exporting to image
 #13 exporting layers 0.0s done
-#13 exporting manifest sha256:d0bf0535abf63a3c6d9a8de491e7b251340c6bb712d4f431ded6874e5ab2794a done
-#13 exporting config sha256:88addcb9eb233af0bf51c98f8d38215e41dec55079ecefcd96550329dcd9380c done
-#13 exporting attestation manifest sha256:a44053fdd8bf3163c4445b4bf5559154baa2cbf574fb210ca0f914570066588b done
-#13 exporting manifest list sha256:819f5d221a96c4e692b065ad6c0251a859af15924efcc00a5c1c60131793a7b3 done
-#13 naming to docker.io/library/factory-v3:gemini35-visual-dedupe-rendition-filter-amd64-20261012-r1 done
+#13 exporting manifest sha256:b0566fd5e4ea345b0e5d7667b95f60e6df1057c5ed31fc1ebdd27af1d83f90b9 done
+#13 exporting config sha256:6b5ee1d38bd0d0ad420eab97b27056a07d1675b299493535dc198c96825cf615 done
+#13 exporting attestation manifest sha256:4d086ed5fa59b017b158d105afcdafedcc7fc9578ecc5883b31e00c6af5edab6 done
+#13 exporting manifest list sha256:a4f28ebc5d5dc86c43ea4b0f87c495dd97ad13a14bb2041a90903e2234ca1127 done
+#13 naming to docker.io/library/factory-v3:gemini35-described-anchor-filter-amd64-20261012-r1 done
 #13 DONE 0.1s

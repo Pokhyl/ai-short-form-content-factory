@@ -1,0 +1,39 @@
+{
+  "deployed_at": "2026-10-12T07:14:09Z",
+  "source_commit": "b7841a551defc693d37ba8815e2a31d3177c8e9e",
+  "image": "factory-v3:gemini35-described-anchor-filter-amd64-20261012-r1",
+  "image_id": "sha256:a4f28ebc5d5dc86c43ea4b0f87c495dd97ad13a14bb2041a90903e2234ca1127",
+  "platform": "linux/amd64",
+  "container": {
+    "name": "factory-v3-app",
+    "id": "fa2279a498ecc221b48e7482af1cec45816d63ffe4df09affab3a1557d908019",
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0,
+    "health_http": 200,
+    "revision": "b7841a551defc693d37ba8815e2a31d3177c8e9e"
+  },
+  "studio_root_http": 200,
+  "database_after": {
+    "jobs": 28,
+    "active_jobs": 0,
+    "preparations": 106,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0
+  },
+  "unchanged_services": {
+    "shorts-v2-media-worker-1": "5824c94abaa6",
+    "ai-short-form-n8n": "c9373532bb9a",
+    "n8n-caddy-1": "3913314c33d6"
+  },
+  "root_disk_free": "365 MB (99% used)",
+  "provider_calls": 0,
+  "new_jobs": 0,
+  "rollback_image": "factory-v3:gemini35-visual-dedupe-rendition-filter-amd64-20261012-r1",
+  "network_disabled_image_tests": {
+    "material_first": 187,
+    "factory_v3": 112
+  },
+  "project_ready": false
+}
