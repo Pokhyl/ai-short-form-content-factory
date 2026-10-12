@@ -1,5 +1,13 @@
 # Release gate — current execution contract
 
+## Repair-call identity and retry bound — 2026-10-12
+
+Every initial/review model repair now has a distinct durable call key. The review loop can use both allowed corrections when a repaired draft still fails pre-review validation, then stops. Regression covers fact repair → broad/equipment search hints → query-only correction and rejects call-key reuse. Local material-first checks pass 198/198. Exact amd64 package suites remain pending; no deployment or fresh provider request. `project_ready=false`.
+
+## Repair-call identity and retry bound — 2026-10-12
+
+Every initial/review model repair now has a distinct durable call key. The review loop can use both allowed corrections when a repaired draft still fails pre-review validation, then stops. Regression covers fact repair → broad/equipment search hints → query-only correction and rejects call-key reuse. Local material-first checks pass 198/198. Exact amd64 package suites remain pending; no deployment or fresh provider request. `project_ready=false`.
+
 ## Generic photo-search hint gate — 2026-10-12
 
 Commit `2cb7bf77d8c0955228c32c6b72278c224e26f426` added a topic-aware pre-search gate. Read-only inspection of the actual failed preparation in PostgreSQL exposed a second path: the initial brief was acceptable, but `material-brief-repair` changed its hints to `space` and `Hubble Space Telescope`; the following review checked facts only. Commit `e0f36979d40a1306d2c9b4e6367acba350588f3b` therefore revalidates after each repair in the review loop. A query-only correction cannot alter facts, fact IDs, or source bindings. The regression fixture records actual model outputs and call hashes; it explicitly does not contain the full source payload.

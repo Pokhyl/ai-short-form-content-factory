@@ -79,16 +79,16 @@ class ContextTests(unittest.TestCase):
                 if mode!='valid':rows['subject']['query']=rows['subject']['subject']='neutron star representation'
                 facts.extend([{'id':'f'+str(i),'text':claim,'support':[{'span_id':span}]} for i,claim in enumerate(self.text.split('. ')[:3])])
                 result={'facts':facts,'required_fact_ids':['f0','f1','f2'],'photo_contexts':rows}
-            else:
-                self.assertEqual(key,'material-brief-repair')
-                self.assertEqual(context['rejected_draft']['facts'],facts)
+            elif key.startswith('material-brief-repair:'):
+                if key=='material-brief-repair:initial':
+                    self.assertEqual(context['rejected_draft']['facts'],facts)
                 rows=copy.deepcopy(self.repaired)
                 if mode=='invalid_twice':rows['detail']['source_mention']='Invented object'
                 result={'facts':facts,'required_fact_ids':['f0','f1','f2'],'photo_contexts':rows}
             wire_rows=result['photo_contexts']
             for row in wire_rows.values():
                 row['english_photo_object']=row.pop('subject');row.pop('query')
-                if mutate_repair and key=='material-brief-repair':result['facts'][0]['text']+=' invented claim'
+                if mutate_repair and key=='material-brief-repair:initial':result['facts'][0]['text']+=' invented claim'
             validate_json(result,schema)
             return result,{'receipt_id':key}
         ops=Operations('.',SimpleNamespace(fetch=lambda *args:[source]),SimpleNamespace(generate=generate),None,None,documented_contexts=True)
@@ -108,19 +108,20 @@ class ContextTests(unittest.TestCase):
 
     def test_broad_search_hint_gets_one_repair_before_semantic_review(self):
         self.run_research('valid',weak_hint=True)
-        self.assertEqual(self.keys,['material-brief','material-brief-repair','material-brief-review:1'])
+        self.assertEqual(self.keys,['material-brief','material-brief-repair:initial','material-brief-review:1'])
 
     def test_photo_search_repair_cannot_change_claims(self):
         with self.assertRaisesRegex(ValueError,'changed source-backed facts'):
             self.run_research('valid',weak_hint=True,mutate_repair=True)
-        self.assertEqual(self.keys,['material-brief','material-brief-repair'])
+        self.assertEqual(self.keys,['material-brief','material-brief-repair:initial'])
 
     def test_completed_bad_context_gets_one_repair_without_changing_facts(self):
-        self.run_research('repair');self.assertEqual(self.keys,['material-brief','material-brief-repair','material-brief-review:2'])
+        self.run_research('repair');self.assertEqual(self.keys,['material-brief','material-brief-repair:review:1','material-brief-review:2'])
 
-    def test_second_invalid_context_stops_without_search_or_third_call(self):
+    def test_two_invalid_context_repairs_stop_without_search_or_extra_calls(self):
         with self.assertRaisesRegex(ValueError,'does not contain'):self.run_research('invalid_twice')
-        self.assertEqual(self.keys,['material-brief','material-brief-repair'])
+        self.assertEqual(self.keys,['material-brief','material-brief-repair:review:1',
+            'material-brief-repair:review:2'])
 
     def test_availability_first_keeps_duplicate_labels_as_hints_for_retrieval(self):
         self.run_research('valid',availability_first=True,duplicate=True)

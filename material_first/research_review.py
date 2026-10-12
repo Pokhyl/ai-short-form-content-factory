@@ -56,11 +56,11 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
                          if not row['source_supported'] or not row['observable_object']]
             if not failures:return normalized
             semantic_reviewed = True
-        if attempt == 2 or (attempt == 1 and not semantic_reviewed):
+        if attempt == 2:
             revision_count = attempt
             raise ValueError(f'research preflight failed after {revision_count} revisions: '+'; '.join(failures))
         rejected_draft = deepcopy(draft)
-        draft,_=gemini.generate('material-brief-repair',
+        draft,_=gemini.generate('material-brief-repair:review:'+str(attempt+1),
             'Revise this provisional research plan to resolve ALL supplied validation/review failures. '
             'When a reviewer rejects a factual claim, preserve its exact source qualifiers and certainty; '
             'remove unsupported scope such as universal wording instead of paraphrasing or strengthening it. '

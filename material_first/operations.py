@@ -145,7 +145,7 @@ class Operations:
                 validate_search_hints(result['photo_contexts'], request['topic'])
             except ValueError as error:
                 original = deepcopy(result)
-                result, _ = self.gemini.generate('material-brief-repair',
+                result, _ = self.gemini.generate('material-brief-repair:initial',
                     'Repair only the photo search hints rejected below. Do not change any fact, required_fact_ids, '
                     'fact_ids, source spans, or source mentions. Replace broad categories and equipment unrelated '
                     'to the requested topic with concrete, observable objects explicitly named in the supplied '

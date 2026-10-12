@@ -1,5 +1,9 @@
 ## Latest acceptance blocker — 2026-10-12
 
+Последний gate-аудит выявил две ошибки retry-пути: повторные модельные ремонты делили один durable call key, а цикл обрывался перед второй разрешённой коррекцией. Исправлены уникальные ключи initial/review и лимит ровно в две коррекции; regression воспроизводит fact repair → плохие photo hints → query-only repair. Целевые тесты 23/23 и material-first 198/198 PASS. Точная amd64 package-проверка ещё впереди; production не менялся.
+
+The latest local gate audit found two more factory defects: repair calls reused one durable request key, and the bounded review loop stopped before its second allowed correction. Fixes now assign distinct initial/review keys and allow two corrections before terminal rejection. A regression covers fact repair followed by bad photo hints and a query-only repair. Targeted checks 23/23 and material-first 198/198 pass. Exact packaged amd64 checks remain pending; production is unchanged.
+
 UK60 preparation `6914b51b-f8c3-47d1-919e-f7b5cc15ffce` is immutable: 30 photos downloaded/inspected, 1 accepted, then stopped before TTS/render because 60 seconds requires at least 12 unique photos. Production still runs `factory-v3:distinct-context-repair-amd64-20261012-r1`, revision `bc3eaae`; no deployment or provider calls were made during this work. Read-only status: 28 jobs, 110 preparations, no active work, 327 MB free. Studio remains public at `https://studio.hodor.com.pl/`, without a password.
 
 Post-failure PostgreSQL receipts showed the initial brief was repaired into the actual search hints `space`, `neutron star`, and `Hubble Space Telescope`; the following review checked facts only. The pushed fix now validates hints after every repair and prevents a query-only repair from changing facts/source bindings. Actual repaired hints and call hashes are in `tests/material_first/fixtures/actual-photo-hint-repair.json`; this fixture deliberately lacks the complete source/provider payload.

@@ -23,33 +23,33 @@ class ResearchReviewTests(unittest.TestCase):
             'photo_contexts':{role:{'source_supported':True,'observable_object':supported,'reason':'A hidden interior cannot be shown by a real photo'} for role in context['photo_contexts']}}
     def test_actual_bad_plan_stops_after_two_revisions(self):
         def generate(key,instruction,context,schema):
-            if key=='material-brief-repair':
+            if key.startswith('material-brief-repair:review:'):
                 self.assertTrue(any('photo subject' in f for f in context['failures']))
                 return copy.deepcopy(self.draft),{}
             self.assertIn('чрезвычайно малой массой',context['facts'][-1]['text'])
             self.assertEqual(context['photo_contexts']['subject']['english_photo_object'],'neutron core')
             return self.review(context,False),{}
         with self.assertRaisesRegex(ValueError,'after 2 revisions'):self.run_case(generate)
-        self.assertEqual(self.calls,['material-brief-review:1','material-brief-repair','material-brief-review:2','material-brief-repair','material-brief-review:3'])
+        self.assertEqual(self.calls,['material-brief-review:1','material-brief-repair:review:1','material-brief-review:2','material-brief-repair:review:2','material-brief-review:3'])
 
     def test_reviewer_rejection_gets_one_targeted_correction(self):
         def generate(key,instruction,context,schema):
             if key=='material-brief-review:1':
                 return self.review(context,False),{}
-            if key=='material-brief-repair':
+            if key.startswith('material-brief-repair:review:'):
                 self.assertIn('preserve its exact source qualifiers',instruction)
                 return copy.deepcopy(self.draft),{}
             return self.review(context,True),{}
         reviewed_brief(SimpleNamespace(generate=lambda key,*args: (self.calls.append(key) or generate(key,*args))),
             {'topic':'Нейтронная звезда','seconds':60,'language':'uk'},self.sources,self.spans,self.schema,copy.deepcopy(self.draft))
-        self.assertEqual(self.calls,['material-brief-review:1','material-brief-repair','material-brief-review:2'])
+        self.assertEqual(self.calls,['material-brief-review:1','material-brief-repair:review:1','material-brief-review:2'])
 
     def test_search_hints_are_rechecked_after_brief_repair_before_review(self):
         bad=copy.deepcopy(self.draft)
         bad['photo_contexts']['setting']['english_photo_object']='space'
         bad['photo_contexts']['detail']['english_photo_object']='Hubble Space Telescope'
         def generate(key,instruction,context,schema):
-            if key=='material-brief-repair':
+            if key.startswith('material-brief-repair:review:'):
                 self.assertTrue(any('broad category' in failure for failure in context['failures']))
                 self.assertTrue(any('equipment' in failure for failure in context['failures']))
                 fixed=copy.deepcopy(bad)
@@ -60,20 +60,41 @@ class ResearchReviewTests(unittest.TestCase):
             return self.review(context),{}
         result=reviewed_brief(SimpleNamespace(generate=lambda key,*args:(self.calls.append(key) or generate(key,*args))),
             {'topic':'Нейтронная звезда','seconds':60,'language':'uk'},self.sources,self.spans,self.schema,bad)
-        self.assertEqual(self.calls,['material-brief-repair','material-brief-review:2'])
+        self.assertEqual(self.calls,['material-brief-repair:review:1','material-brief-review:2'])
         self.assertEqual(result['photo_contexts']['setting']['subject'],'massive star')
+
+    def test_fact_repair_then_hint_repair_use_distinct_durable_call_keys(self):
+        bad=copy.deepcopy(self.draft)
+        bad['photo_contexts']['setting']['english_photo_object']='space'
+        bad['photo_contexts']['detail']['english_photo_object']='Hubble Space Telescope'
+        def generate(key,instruction,context,schema):
+            if key=='material-brief-review:1':
+                return self.review(context,False),{}
+            if key=='material-brief-repair:review:1':
+                return copy.deepcopy(bad),{}
+            if key=='material-brief-repair:review:2':
+                fixed=copy.deepcopy(context['rejected_draft'])
+                fixed['photo_contexts']['setting']['english_photo_object']='massive star'
+                fixed['photo_contexts']['detail']['english_photo_object']='neutron star'
+                return fixed,{}
+            self.assertEqual(key,'material-brief-review:3')
+            return self.review(context),{}
+        result=self.run_case(generate)
+        self.assertEqual(result['photo_contexts']['setting']['subject'],'massive star')
+        self.assertEqual(self.calls,['material-brief-review:1','material-brief-repair:review:1',
+            'material-brief-repair:review:2','material-brief-review:3'])
 
     def test_search_hint_only_repair_cannot_change_facts_or_source_bindings(self):
         bad=copy.deepcopy(self.draft)
         bad['photo_contexts']['setting']['english_photo_object']='space'
         def generate(key,instruction,context,schema):
-            self.assertEqual(key,'material-brief-repair')
+            self.assertEqual(key,'material-brief-repair:review:1')
             changed=copy.deepcopy(bad);changed['facts'][0]['text']+=' unsupported'
             return changed,{}
         with self.assertRaisesRegex(ValueError,'changed source-backed facts'):
             reviewed_brief(SimpleNamespace(generate=lambda key,*args:(self.calls.append(key) or generate(key,*args))),
                 {'topic':'Нейтронная звезда','seconds':60,'language':'uk'},self.sources,self.spans,self.schema,bad)
-        self.assertEqual(self.calls,['material-brief-repair'])
+        self.assertEqual(self.calls,['material-brief-repair:review:1'])
 
     def test_saved_actual_repair_that_caused_broad_provider_search_is_rejected(self):
         saved=json.loads((Path(__file__).parent/'fixtures/actual-photo-hint-repair.json').read_text())
