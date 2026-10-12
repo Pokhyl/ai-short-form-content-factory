@@ -50,8 +50,47 @@
     "Stop media generation if /data free space falls below 100 MB.",
     "No additional fresh case in this acceptance."
   ],
-  "run_state": "planned_not_submitted",
-  "submission_attempts": 0,
-  "provider_calls": 0,
-  "project_ready": false
+  "run_state": "unknown_terminal_before_visual_planning",
+  "submission_attempts": 1,
+  "provider_calls": 2,
+  "project_ready": false,
+  "submitted_at": "2026-10-12T07:00:04.655485Z",
+  "submission": {
+    "http_status": 202,
+    "created": true,
+    "endpoint": "https://studio.hodor.com.pl/factory-v3/api/requests"
+  },
+  "actual": {
+    "preparation_status": "unknown",
+    "error_code": "HTTPFailure",
+    "failure_boundary": "material brief factual repair, before photo planning",
+    "gateway_error_status": "UNAVAILABLE",
+    "gateway_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "gateway_execution_id": "12995",
+    "research_searches": 1,
+    "source_fetches": {
+      "succeeded": 4,
+      "failed_unavailable": 2
+    },
+    "gemini_calls": {
+      "succeeded": 1,
+      "unknown": 1
+    },
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "tts_sends": 0,
+    "renders": 0,
+    "machine_qa": 0,
+    "preparations_after": 104,
+    "jobs_after": 28,
+    "active_jobs_after": 0,
+    "active_preparations_after": 0,
+    "active_stages_after": 0,
+    "active_provider_calls_after": 0,
+    "root_free_mb_after": 367,
+    "job_id_will_not_be_retried": true,
+    "visual_duplicate_repair_reached": false
+  },
+  "terminal_reason": "Gemini gateway returned UNAVAILABLE for the single material-brief-repair call; the ledger recorded the send as unknown. No retry was attempted."
 }
