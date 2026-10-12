@@ -48,8 +48,39 @@
     "Stop media generation if /data free space falls below 100 MB.",
     "This acceptance authorizes one request only."
   ],
-  "status": "planned_not_submitted",
-  "submission_attempts": 0,
-  "provider_calls": 0,
-  "project_ready": false
+  "status": "failed_terminal_before_photo_search",
+  "submission_attempts": 1,
+  "provider_calls": {
+    "gemini": 3,
+    "research_search": 1,
+    "source_fetch": 6,
+    "photo_searches": 0
+  },
+  "project_ready": false,
+  "actual": {
+    "preparation_status": "failed",
+    "error_code": "ValueError",
+    "failure_boundary": "pre-search visual-target validation of provisional material brief",
+    "failure": "The final material-brief repair reused the same supernova label for setting and detail; current code validates query hints as final visual targets before retrieval.",
+    "research_searches": 1,
+    "source_fetches": {
+      "succeeded": 4,
+      "failed_unavailable": 2
+    },
+    "gemini_calls": 3,
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "tts_sends": 0,
+    "renders": 0,
+    "machine_qa": 0,
+    "jobs_after": 28,
+    "preparations_after": 107,
+    "active_jobs_after": 0,
+    "active_preparations_after": 0,
+    "active_stages_after": 0,
+    "active_provider_calls_after": 0,
+    "root_free_mb_after": 365,
+    "job_id_will_not_be_retried": true
+  }
 }

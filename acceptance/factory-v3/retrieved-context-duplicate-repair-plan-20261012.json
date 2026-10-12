@@ -69,35 +69,27 @@
       "Treat trailing numeric suffixes and parenthesized numeric IDs as cosmetic when checking visual object distinctness.",
       "Strengthen the bounded structural repair instruction against capitalization, numbering and file-ID tricks."
     ],
-    "tests": "PASS: material-first 187; factory-v3 112",
-    "amd64_network_disabled_image_tests": "PASS: material-first 187; factory-v3 112",
+    "tests": "PASS: material-first 188; factory-v3 112",
+    "amd64_network_disabled_image_tests": "pending",
     "deployment": {
-      "status": "deployed_healthy",
-      "source_commit": "b7841a551defc693d37ba8815e2a31d3177c8e9e",
-      "image": "factory-v3:gemini35-described-anchor-filter-amd64-20261012-r1",
-      "image_id": "sha256:a4f28ebc5d5dc86c43ea4b0f87c495dd97ad13a14bb2041a90903e2234ca1127",
-      "studio_root_http": 200,
-      "provider_calls": 0,
-      "new_jobs": 0,
-      "preparations_after": 106,
-      "active_work_after": 0
+      "status": "pending"
     },
     "project_ready": false,
     "deployment_receipt": "acceptance/factory-v3/described-anchor-filter-deployment-20261012.json"
   },
   "latest_acceptance": {
-    "id": "71d66aee-b30c-4591-8fe9-2650f376af96",
-    "status": "failed_terminal_before_photo_download_or_voice",
-    "failure": "Independent metadata review rejected a NICER instrument substitute; one allowed repair selected a bare Neutron star 2 file with no substantive description, and review rejected it.",
+    "id": "39d12eda-e186-4d07-8e60-e3b6173d63d9",
+    "status": "failed_terminal_before_photo_search",
+    "failure": "Material brief repair repeated a supernova query label in two provisional roles; validate_targets rejected it before the availability-first retrieval planner.",
     "provider_calls": {
-      "gemini": 6,
+      "gemini": 3,
       "research_search": 1,
-      "source_fetch": 5,
-      "photo_searches": 9,
+      "source_fetch": 6,
+      "photo_searches": 0,
       "photo_downloads": 0,
       "tts_sends": 0
     },
-    "next_offline_change": "Exclude anchors whose only evidence is a bare filename or a generic two-word topic label; leave semantic review and pixel approval strict.",
+    "next_offline_change": "Allow repeated subjects only for provisional search hints in availability-first flow; retain strict uniqueness after retrieved-context planning and before downloads.",
     "project_ready": false
   }
 }

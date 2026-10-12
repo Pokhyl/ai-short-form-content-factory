@@ -2,7 +2,7 @@
 from factory_v3.preflight import digest
 
 
-def validate_targets(targets, facts):
+def validate_targets(targets, facts, *, allow_repeated_subjects=False):
     if not isinstance(targets, list) or len(targets) != 3:
         raise ValueError('three distinct explanatory visual targets required')
     seen = set()
@@ -17,7 +17,7 @@ def validate_targets(targets, facts):
         if any(not isinstance(target[k], str) or not target[k].strip()
                for k in ('must_show', 'must_not_show', 'query')):
             raise ValueError('visual target needs concrete inclusion, exclusion and search')
-    if len({t['must_show'].strip().casefold() for t in targets}) != 3:
+    if not allow_repeated_subjects and len({t['must_show'].strip().casefold() for t in targets}) != 3:
         raise ValueError('repeated visual target is not explanatory variety')
     return {t['id']: t for t in targets}
 

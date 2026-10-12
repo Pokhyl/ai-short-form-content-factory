@@ -80,7 +80,7 @@
         "path": "acceptance/factory-v3/adaptive-voice-pool-fresh-acceptance-20261012.json",
         "sha256": "7718924b75bbb499c2d18d69cba0599ade43741dabded123a18c691e1c73b687"
       },
-      "remaining": "Live repair passed unique labels but selected a poorly described anchor; deployed descriptive-metadata guard now excludes bare titles. Fresh pixel-reviewed success remains pending."
+      "remaining": "Live failures include repeated provisional brief labels before search; availability-first now treats them as hints while final retrieved targets remain strict. New guard is locally tested and awaiting deployment."
     },
     {
       "name": "retrieved visual-context duplicate repair",
@@ -90,7 +90,7 @@
       },
       "saved_evidence": {
         "path": "acceptance/factory-v3/retrieved-context-duplicate-repair-plan-20261012.json",
-        "sha256": "2d1cf4c611f1d65319f6bfa08a50d5b97064ee5fe9234313883446d02a9896ee"
+        "sha256": "525702a0e306be01b11b31db81ba935ba7db634127e992ec0f0151159d78c244"
       },
       "remaining": "One bounded structural repair passes local and network-disabled amd64 image suites and is deployed; fresh live source/pixel quality remains unproven."
     },

@@ -46,16 +46,21 @@ class ContextTests(unittest.TestCase):
                 validate_context_mentions(rows,saved['spans'])
             for role in rows:self.assertIn(role+': query and subject must be English',str(failure.exception))
 
-    def run_research(self, mode):
+    def run_research(self, mode, availability_first=False, duplicate=False):
         source={'id':'source','url':'https://example.invalid/source','title':'Observed objects','text':self.text,'sha256':hashlib.sha256(self.text.encode()).hexdigest()}
         keys=[];facts=[]
         def generate(key,instruction,context,schema):
             keys.append(key)
             if key.startswith('material-brief-review:'):
-                return {'facts':{f['id']:{'supported':True,'reason':'Supported by exact fixture source'} for f in context['facts']},'photo_contexts':{role:{'source_supported':True,'observable_object':True,'reason':'Observed fixture object'} for role in context['photo_contexts']}},{'receipt_id':key}
+                review={'facts':{f['id']:{'supported':True,'reason':'Supported by exact fixture source'} for f in context['facts']}}
+                if 'photo_contexts' in context:
+                    review['photo_contexts']={role:{'source_supported':True,'observable_object':True,'reason':'Observed fixture object'} for role in context['photo_contexts']}
+                return review,{'receipt_id':key}
             if key=='material-brief':
                 span=context['source_spans'][0]['id']
                 rows=copy.deepcopy(self.rows)
+                if duplicate:
+                    for row in rows.values():row['subject']=row['query']='Crab Nebula'
                 for row in rows.values():row['support_span_ids']=[span]
                 self.repaired=copy.deepcopy(rows)
                 if mode!='valid':rows['subject']['query']=rows['subject']['subject']='neutron star representation'
@@ -74,10 +79,14 @@ class ContextTests(unittest.TestCase):
             return result,{'receipt_id':key}
         ops=Operations('.',SimpleNamespace(fetch=lambda *args:[source]),SimpleNamespace(generate=generate),None,None,documented_contexts=True)
         ops.voice_correction_enabled=True
+        ops.availability_first_contexts=availability_first
         try:
             result=ops.research({'topic':'Neutron stars','language':'uk','seconds':60})
             self.assertEqual([f['text'] for f in result['evidence']['facts']],[f['text'] for f in facts])
-            self.assertEqual([t['query'] for t in result['queries']],['Crab Nebula','Cassiopeia A','Puppis A'])
+            if duplicate:
+                self.assertEqual([t['query'] for t in result['queries']],['Crab Nebula']*3)
+            else:
+                self.assertEqual([t['query'] for t in result['queries']],['Crab Nebula','Cassiopeia A','Puppis A'])
         finally:self.keys=keys
 
     def test_valid_contexts_need_no_extra_call(self):
@@ -89,3 +98,7 @@ class ContextTests(unittest.TestCase):
     def test_second_invalid_context_stops_without_search_or_third_call(self):
         with self.assertRaisesRegex(ValueError,'does not contain'):self.run_research('invalid_twice')
         self.assertEqual(self.keys,['material-brief','material-brief-repair'])
+
+    def test_availability_first_keeps_duplicate_labels_as_hints_for_retrieval(self):
+        self.run_research('valid',availability_first=True,duplicate=True)
+        self.assertEqual(self.keys,['material-brief','material-brief-review:1'])

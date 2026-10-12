@@ -169,7 +169,9 @@ class Operations:
                     'query': (photograph_query(result['photo_contexts'][role]['query'])
                               if request.get('presentation_policy') == TOPIC_POLICY else result['photo_contexts'][role]['query'])}
                    for i, role in enumerate(('setting', 'subject', 'detail'))]
-        validate_targets(targets, fact_ids)
+        validate_targets(targets, fact_ids, allow_repeated_subjects=(
+            getattr(self,'availability_first_contexts',False)
+            and request.get('visual_validation_mode','gemini')!='metadata'))
         return {'evidence': evidence, 'required_fact_ids': result['required_fact_ids'],
                 'queries': targets, 'visual_targets': targets}
 
