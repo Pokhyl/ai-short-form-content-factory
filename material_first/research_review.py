@@ -6,7 +6,11 @@ from .photo_contexts import bind_english_objects, validate_context_mentions
 
 
 def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_photos=True):
-    for attempt in range(2):
+    # An initially malformed draft may consume one repair before it is ready
+    # for semantic review. Keep one additional correction available when that
+    # reviewed revision still contains a specifically rejected claim.
+    for attempt in range(3):
+        semantic_reviewed = False
         try:
             validate_json(draft, schema)
             normalized={**draft,'photo_contexts':bind_english_objects(draft['photo_contexts'])}
@@ -47,10 +51,15 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
             failures += ['photo '+key+': '+row['reason'] for key,row in review.get('photo_contexts',{}).items()
                          if not row['source_supported'] or not row['observable_object']]
             if not failures:return normalized
-        if attempt:
-            raise ValueError('research preflight failed after one revision: '+'; '.join(failures))
+            semantic_reviewed = True
+        if attempt == 2 or (attempt == 1 and not semantic_reviewed):
+            revision_count = attempt
+            raise ValueError(f'research preflight failed after {revision_count} revisions: '+'; '.join(failures))
         draft,_=gemini.generate('material-brief-repair',
             'Revise this provisional research plan to resolve ALL supplied validation/review failures. '
+            'When a reviewer rejects a factual claim, preserve its exact source qualifiers and certainty; '
+            'remove unsupported scope such as universal wording instead of paraphrasing or strengthening it. '
+            'Keep already supported facts unchanged unless their own review decision rejects them. '
             'Return three essential concise atomic facts that answer the topic, with exact supporting span IDs; optional details may be omitted. '
             'Correct unsupported claims; these provisional facts have not yet been frozen or used for narration. '
             'Choose observable real-photo subjects or named associated objects explicitly documented in the sources. '

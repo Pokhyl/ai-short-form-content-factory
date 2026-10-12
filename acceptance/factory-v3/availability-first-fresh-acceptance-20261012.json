@@ -48,8 +48,41 @@
     "Stop media generation if /data free space falls below 100 MB.",
     "This plan authorizes one request only."
   ],
-  "status": "planned_not_submitted",
-  "submission_attempts": 0,
-  "provider_calls": 0,
-  "project_ready": false
+  "status": "failed_terminal_before_photo_search",
+  "submission_attempts": 1,
+  "provider_calls": {
+    "metadata": 1,
+    "research_search": 1,
+    "source_fetch": 5,
+    "gemini": 3,
+    "photo_searches": 0
+  },
+  "project_ready": false,
+  "actual": {
+    "preparation_status": "failed",
+    "error_code": "ValueError",
+    "failure_boundary": "independent material-brief fact review before any photo search",
+    "failure": "The single allowed draft correction changed supported material and introduced a universal claim about supernovae. Independent review rejected that qualifier; no further correction was allowed.",
+    "research_searches": 1,
+    "source_fetches": {"succeeded": 3, "failed_unavailable": 2},
+    "gemini_calls": 3,
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "photo_inspections": 0,
+    "tts_sends": 0,
+    "renders": 0,
+    "machine_qa": 0,
+    "jobs_after": 28,
+    "preparations_after": 108,
+    "active_jobs_after": 0,
+    "active_preparations_after": 0,
+    "active_stages_after": 0,
+    "active_provider_calls_after": 0,
+    "root_free_mb_after": 365,
+    "request_id_will_not_be_retried": true
+  },
+  "fix": {
+    "commit_pending": true,
+    "description": "Allow exactly one additional correction after independent semantic review rejects a claim, while preserving the one-correction cap for malformed drafts. Require corrections to retain source qualifiers and keep already accepted facts unchanged."
+  }
 }

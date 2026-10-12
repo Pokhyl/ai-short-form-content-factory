@@ -20,7 +20,7 @@ class ResearchReviewTests(unittest.TestCase):
     def review(self, context, supported=True):
         return {'facts':{f['id']:{'supported':supported,'reason':'Check mass qualifier against quoted source'} for f in context['facts']},
             'photo_contexts':{role:{'source_supported':True,'observable_object':supported,'reason':'A hidden interior cannot be shown by a real photo'} for role in context['photo_contexts']}}
-    def test_actual_bad_plan_cannot_escape_two_negative_independent_reviews(self):
+    def test_actual_bad_plan_stops_after_two_revisions(self):
         def generate(key,instruction,context,schema):
             if key=='material-brief-repair':
                 self.assertTrue(any('photo subject' in f for f in context['failures']))
@@ -28,7 +28,19 @@ class ResearchReviewTests(unittest.TestCase):
             self.assertIn('чрезвычайно малой массой',context['facts'][-1]['text'])
             self.assertEqual(context['photo_contexts']['subject']['english_photo_object'],'neutron core')
             return self.review(context,False),{}
-        with self.assertRaisesRegex(ValueError,'after one revision'):self.run_case(generate)
+        with self.assertRaisesRegex(ValueError,'after 2 revisions'):self.run_case(generate)
+        self.assertEqual(self.calls,['material-brief-review:1','material-brief-repair','material-brief-review:2','material-brief-repair','material-brief-review:3'])
+
+    def test_reviewer_rejection_gets_one_targeted_correction(self):
+        def generate(key,instruction,context,schema):
+            if key=='material-brief-review:1':
+                return self.review(context,False),{}
+            if key=='material-brief-repair':
+                self.assertIn('preserve its exact source qualifiers',instruction)
+                return copy.deepcopy(self.draft),{}
+            return self.review(context,True),{}
+        reviewed_brief(SimpleNamespace(generate=lambda key,*args: (self.calls.append(key) or generate(key,*args))),
+            {'topic':'Нейтронная звезда','seconds':60,'language':'uk'},self.sources,self.spans,self.schema,copy.deepcopy(self.draft))
         self.assertEqual(self.calls,['material-brief-review:1','material-brief-repair','material-brief-review:2'])
     def test_review_network_ambiguity_never_causes_a_revision_or_retry(self):
         def generate(*args):raise OSError('controlled connection reset')
