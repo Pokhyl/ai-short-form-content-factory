@@ -1,5 +1,13 @@
 # Release gate — current execution contract
 
+## Generic photo-search hint gate — 2026-10-12
+
+Commit `2cb7bf77d8c0955228c32c6b72278c224e26f426` adds a topic-aware pre-search gate: a broad category or unrelated equipment hint gets one bounded repair from the fetched source spans; the server rejects any repair that changes facts, required fact IDs, or source bindings. A second invalid hint stops before photo-provider search. Regression includes `space`, an unrelated Hubble telescope hint for neutron stars, relevant named objects, and Hubble as the actual English or Russian topic.
+
+The offline material-first suite passed 194/194 locally and in the exact AMD64 runtime image; Factory v3 passed 112/112 in that image. Packaged checks ran with networking disabled. Image `factory-v3:photo-query-hints-2cb7bf7-amd64` (`sha256:c0d6e658822892cbb99dacf97d0f6f66859ed4980f03f814bcc67de9cd01661e`) was built from that commit and was not deployed. Receipt: `acceptance/factory-v3/photo-query-hints-package-checks-20261012.json`.
+
+This closes only the offline pre-search regression and package boundary. It does not prove unseen provider availability or photo quality, and it supplies no new successful MP4. Keep `project_ready=false`; do not run a fresh production request until the connected offline release gate below is closed.
+
 ## Последняя UK60-проверка фото — 2026-10-12
 
 Подготовка `6914b51b-f8c3-47d1-919e-f7b5cc15ffce` остановилась до narration/TTS: из 30 загруженных и проверенных фотографий лишь одна прошла независимую проверку релевантности и реального наблюдательного материала. Требуемый минимум для 60 секунд — 12 уникальных фото; поэтому остановка штатная. Звук и монтаж этой попытки не оценивались. ID immutable; повтор запрещён.

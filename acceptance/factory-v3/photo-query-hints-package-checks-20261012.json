@@ -1,0 +1,37 @@
+{
+  "component": "pre-search photo search hint validation and bounded repair",
+  "source_commit": "2cb7bf77d8c0955228c32c6b72278c224e26f426",
+  "image": {
+    "tag": "factory-v3:photo-query-hints-2cb7bf7-amd64",
+    "image_id": "sha256:c0d6e658822892cbb99dacf97d0f6f66859ed4980f03f814bcc67de9cd01661e",
+    "platform": "linux/amd64",
+    "deployed": false
+  },
+  "checks": [
+    {
+      "name": "local material_first",
+      "command": "python3 -m unittest discover -s tests/material_first",
+      "passed": 194,
+      "failed": 0
+    },
+    {
+      "name": "packaged material_first",
+      "command": "docker run --rm --network none --platform linux/amd64 ... python3 -m unittest discover -s /tests/material_first",
+      "passed": 194,
+      "failed": 0,
+      "acceptance_mount": "read-only"
+    },
+    {
+      "name": "packaged factory_v3",
+      "command": "docker run --rm --network none --platform linux/amd64 ... python3 -m unittest discover -s /tests/factory_v3",
+      "passed": 112,
+      "failed": 0,
+      "acceptance_and_source_mounts": "read-only"
+    }
+  ],
+  "limits": [
+    "Controlled offline regressions and packaging only.",
+    "No fresh provider quality, owner acceptance, deployment, TTS, or render evidence.",
+    "Project remains not ready."
+  ]
+}

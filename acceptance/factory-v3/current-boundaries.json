@@ -35,6 +35,47 @@
       "sha256": "9086e11e90d9d3f20d4f283f7d890ee20612d6229771f7f37248eed8f15bc9c0"
     }
   },
+  "latest_photo_hint_package": {
+    "component": "pre-search photo search hint validation and bounded repair",
+    "source_commit": "2cb7bf77d8c0955228c32c6b72278c224e26f426",
+    "image": {
+      "tag": "factory-v3:photo-query-hints-2cb7bf7-amd64",
+      "image_id": "sha256:c0d6e658822892cbb99dacf97d0f6f66859ed4980f03f814bcc67de9cd01661e",
+      "platform": "linux/amd64",
+      "deployed": false
+    },
+    "checks": [
+      {
+        "name": "local material_first",
+        "command": "python3 -m unittest discover -s tests/material_first",
+        "passed": 194,
+        "failed": 0
+      },
+      {
+        "name": "packaged material_first",
+        "command": "docker run --rm --network none --platform linux/amd64 ... python3 -m unittest discover -s /tests/material_first",
+        "passed": 194,
+        "failed": 0,
+        "acceptance_mount": "read-only"
+      },
+      {
+        "name": "packaged factory_v3",
+        "command": "docker run --rm --network none --platform linux/amd64 ... python3 -m unittest discover -s /tests/factory_v3",
+        "passed": 112,
+        "failed": 0,
+        "acceptance_and_source_mounts": "read-only"
+      }
+    ],
+    "limits": [
+      "Controlled offline regressions and packaging only.",
+      "No fresh provider quality, owner acceptance, deployment, TTS, or render evidence.",
+      "Project remains not ready."
+    ],
+    "receipt": {
+      "path": "acceptance/factory-v3/photo-query-hints-package-checks-20261012.json",
+      "sha256": "521c460c64e15b9f861bae5c06cd31e3f139971e85c739162a53ed8b4b8e5d0f"
+    }
+  },
   "boundaries": [
     {
       "name": "owner intake/concurrency",
@@ -82,7 +123,7 @@
         "path": "acceptance/factory-v3/providers-postgres.txt",
         "sha256": "c1878230c95d6d88cd6260e1638cd716056ef556636b78f7eb073255a3fa648d"
       },
-      "remaining": "Availability and relevance of unseen searches remain provider-dependent."
+      "remaining": "Generic pre-search category/equipment hints now get one source-grounded repair; 194 material-first and 112 Factory v3 packaged tests pass network-disabled on commit 2cb7bf7. Fresh provider availability and real-photo relevance remain unverified."
     },
     {
       "name": "retrieved metadata context planning",
