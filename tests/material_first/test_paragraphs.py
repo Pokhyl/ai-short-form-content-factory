@@ -42,6 +42,37 @@ class ParagraphTests(unittest.TestCase):
                     with self.assertRaises(ValueError):ops.compose(copy.deepcopy(saved['composition_context']))
                     self.assertNotIn('material-language-edit',calls)
 
+    def test_short_but_cadence_feasible_draft_gets_server_owned_word_slots(self):
+        from material_first.presentation import TOPIC_POLICY
+        materials=[]
+        for index in range(12):
+            role='v1' if index < 2 else 'v0'
+            materials.append({'id':'m'+str(index),'media_type':'photo',
+                'visible_description':'A neutron star observation','supported_fact_ids':['f0'],
+                'matched_visual_targets':{role:{'score':1}},'sha256':'hash-'+str(index),
+                'inspection':{'validation_method':'gemini_pixel_review'}})
+        context={'request':{'seconds':60,'language':'uk','presentation_policy':TOPIC_POLICY,
+            'visual_validation_mode':'gemini','required_fact_ids':['f0'],
+            'visual_targets':[{'id':'v0'},{'id':'v1'}],
+            'validated_visual_anchors':{'v0':'m2','v1':'m0'}},
+            'materials':materials,'evidence':{'facts':[{'id':'f0','text':'source fact'}],'sources':[]}}
+        short={'beats':[
+            {'material_id':'m0','visual_target_id':'v1','fact_ids':['f0'],'narration':' '.join(['факт']*10)},
+            {'material_id':'m2','visual_target_id':'v0','fact_ids':['f0'],'narration':' '.join(['факт']*25)},
+            {'material_id':'m3','visual_target_id':'v0','fact_ids':['f0'],'narration':' '.join(['факт']*25)}]}
+        calls=[]
+        def generate(key,instruction,payload,schema):
+            calls.append(key)
+            if key=='material-compose':return copy.deepcopy(short),{}
+            if key=='material-compose-length-repair':
+                self.assertIsNone(payload['cadence_error'])
+                self.assertLessEqual(abs(sum(p['word_budget']['preferred'] for p in payload['paragraph_plan'])-126),2)
+                return self.controlled_plan_reply(payload['paragraph_plan']),{}
+            return {'narration':payload['narration']},{}
+        result=Operations('.',None,SimpleNamespace(generate=generate),None,None).compose(context)
+        self.assertEqual(calls,['material-compose','material-compose-length-repair','material-language-edit'])
+        self.assertGreaterEqual(sum(len(b['narration'].split()) for b in result['beats']),84)
+
     def test_actual_rare_role_overlong_draft_uses_preverified_server_allocation(self):
         saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-rare-role-overlong.json').read_text())
         context=saved['composition_context'];calls=[]

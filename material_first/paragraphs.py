@@ -152,7 +152,8 @@ def compose_paragraphs(gemini, context, budget_error):
         try:validate_timing(' '.join(b['narration'] for b in paragraphs), timing, request['language'], seconds)
         except ValueError:return True
         return False
-    if not minimum_words <= words <= maximum_words or cadence_error or timing_problem(beats):
+    length_problem = not minimum_words <= words <= maximum_words or timing_problem(beats)
+    if length_problem or cadence_error:
         # One separately keyed correction of a completed valid draft, inside
         # the existing durable Gemini ceiling. Provider failures are terminal.
         repair_schema = deepcopy(schema)
@@ -164,8 +165,13 @@ def compose_paragraphs(gemini, context, budget_error):
             'Move hidden mechanisms into paragraphs that also explicitly explain a related observed outcome; do not leave a paragraph tagged only with facts absent from ALL its role photos. '
             'Every paragraph must assert at least one identifying anchor_related_fact_id. Include it in fact_ids only when the narration actually explains it. '
             if cadence_error else 'Preserve the same paragraphs, their order, anchor identities and visual roles. ')
+        # If a model misses the narration budget, give it a server-owned word
+        # allocation as well as a repair prompt. Free-form length requests have
+        # repeatedly produced another short draft; fixed word slots make the
+        # pre-voice duration target enforceable without stretching synthesized
+        # audio. The scheduler still verifies that the chosen photos support it.
         paragraph_plan = (cadence_paragraph_plan(materials, targets, request.get('required_fact_ids',[]), preferred_words)
-                          if cadence_error else None)
+                          if cadence_error or length_problem else None)
         if paragraph_plan:
             from .engine import fit_contextual_paragraphs
             # Verify the server's own allocation against the actual global
