@@ -1,0 +1,49 @@
+{
+  "question": "Does the deployed adaptive voice/photo selector produce a natural-speed Ukrainian 60-second neutron-star video with unique subject-related photos?",
+  "request": {
+    "id": "7e35a252-eff1-4202-b534-a30371a2f9aa",
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60
+  },
+  "source": {
+    "immutable_predecessor": "19e8ad95-60a2-48cc-893b-491e235d9fd3",
+    "predecessor_will_not_be_retried": true,
+    "deployed_revision": "516d98f36b1bc77c9b798557c2053a5e5f6a1eb6",
+    "image": "factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1"
+  },
+  "provider_limits": {
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini_total": 16,
+    "searches_per_provider": 3,
+    "photo_providers": ["pexels", "pixabay", "wikimedia"],
+    "photo_downloads": 30,
+    "metadata_requests": 1,
+    "tts_sends_max": 3,
+    "tts_voice": "uk-UA-Chirp3-HD-Enceladus",
+    "tts_monthly_ceiling": "Existing PostgreSQL quota gate; no paid fallback",
+    "renders": 1,
+    "machine_qa": 1
+  },
+  "expected_quota": "Gemini text requests use the verified free tier; photo searches/downloads are bounded by the server budgets above. TTS may use one send if the first measured duration passes, otherwise at most two measured corrections; monthly character budget is enforced in PostgreSQL. Per-run provider consumption beyond these hard caps is unknown until the job ends.",
+  "stop_conditions": [
+    "No repeat if a provider response is ambiguous; preserve the request as terminal/unknown.",
+    "Stop at the first source, relevance, free-quota, voice-duration, alignment, render, or machine-audit failure.",
+    "Do not weaken natural-speed audio, topical photo relevance, exact 60-second output, or machine QA gates.",
+    "Do not submit this request ID twice or create a second fresh case in this run.",
+    "Current storage headroom is 370 MB; monitor /data during processing and stop if free space approaches 100 MB."
+  ],
+  "preflight": {
+    "active_jobs": 0,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0,
+    "jobs": 28,
+    "preparations": 102,
+    "studio_http": 200,
+    "root_free_mb": 370
+  },
+  "status": "planned_not_submitted",
+  "project_ready": false
+}
