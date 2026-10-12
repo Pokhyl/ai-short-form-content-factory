@@ -90,9 +90,9 @@
       },
       "saved_evidence": {
         "path": "acceptance/factory-v3/retrieved-context-duplicate-repair-plan-20261012.json",
-        "sha256": "16f7ce4bacbe6c817572dc6504ea7dbdfce4715d4e1dc481acf2f7a31abe3f0d"
+        "sha256": "2a53996bedae6f303a8ab3f9fb5f9c40686a2637a0bbf7ede8f2e29e433a1826"
       },
-      "remaining": "One bounded structural repair is locally implemented; it is not yet tested in the packaged image or deployed."
+      "remaining": "One bounded structural repair passes local and network-disabled amd64 image suites and is deployed; fresh live source/pixel quality remains unproven."
     },
     {
       "name": "metadata/Vision/selection",

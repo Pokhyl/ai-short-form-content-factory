@@ -22,12 +22,30 @@
     "control": "tests/material_first/test_retrieved_contexts.py::RetrievedContextRepairTests.test_distinct_contexts_do_not_make_a_repair_call"
   },
   "verification": {
-    "local_tests": "PASS: material-first 185; factory-v3 112; git diff --check pending",
-    "provider_calls": 0,
-    "production_jobs": 0
+    "local_tests": "PASS: material-first 185; factory-v3 112",
+    "amd64_network_disabled_image_tests": "PASS: material-first 185; factory-v3 112",
+    "git_diff_check": "PASS",
+    "provider_calls_during_build_deploy_verify": 0,
+    "production_jobs_created_during_build_deploy_verify": 0
   },
   "deployment": {
-    "status": "pending",
-    "project_ready": false
+    "status": "deployed_healthy",
+    "deployed_at": "2026-10-12T04:49:31Z",
+    "source_commit": "2625d61cbb4b7c5d95c70c31903bfc86e24bf192",
+    "image": "factory-v3:gemini35-retrieved-context-repair-amd64-20261012-r1",
+    "image_id": "sha256:576bcd9ab1891ffcb1a981f795a9e143e74339f78a20221a58ab022c9c953287",
+    "container_id": "5dac8c299ac3d09bbf638ee26a464a88407c6349badd7500c5f91d02384437ee",
+    "health_http": 200,
+    "studio_http": 200,
+    "database_after": {
+      "jobs": 28,
+      "active_jobs": 0,
+      "preparations": 103,
+      "active_preparations": 0,
+      "active_stages": 0,
+      "active_provider_calls": 0
+    },
+    "project_ready": false,
+    "rollback_image": "factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1"
   }
 }

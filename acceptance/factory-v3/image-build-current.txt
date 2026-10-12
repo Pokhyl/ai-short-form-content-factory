@@ -16,16 +16,16 @@
 #4 DONE 0.0s
 
 #5 [internal] load build context
-#5 transferring context: 387.04kB done
+#5 transferring context: 390.47kB done
 #5 DONE 0.0s
 
 #6 [4/8] COPY factory_v3/requirements.txt /app/requirements.txt
 #6 CACHED
 
-#7 [2/8] RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
+#7 [5/8] RUN pip install --no-cache-dir -r /app/requirements.txt
 #7 CACHED
 
-#8 [5/8] RUN pip install --no-cache-dir -r /app/requirements.txt
+#8 [2/8] RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
 #8 CACHED
 
 #9 [3/8] WORKDIR /app
@@ -42,10 +42,9 @@
 
 #13 exporting to image
 #13 exporting layers 0.0s done
-#13 exporting manifest sha256:182c573aae0fff965b6b2ad22263251497a6ec81369ba9eac19bc7da71537c8d done
-#13 exporting config sha256:c0b84237585ddadaf23f3f9604405047b582991ca8991fdef0672768b51b9c1a done
-#13 exporting attestation manifest sha256:f2c3991f37350b92c02f9ceb2a118950f32dcb9dc5d6d33dde8a80e4e659ca81 done
-#13 exporting manifest list sha256:673dd9d2d7a3dae71a8abd63006dca6f1beb13b568d40ad791d11f02b4201cce done
-#13 naming to docker.io/library/factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1
-#13 naming to docker.io/library/factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1 done
-#13 DONE 0.1s
+#13 exporting manifest sha256:72763736f6ddc57e86e93d9dcc3746949e8b2f34e8de331ed9e886b8e80b1cc3 done
+#13 exporting config sha256:beecdbe6fb0fe698e81c4cafbbe90e51b3276643fec9a25cefc540420815586b done
+#13 exporting attestation manifest sha256:a3bbd5b823447249819dafd8d7c9e78b6425d9e60c063f5cd270f0ef70f3661c done
+#13 exporting manifest list sha256:576bcd9ab1891ffcb1a981f795a9e143e74339f78a20221a58ab022c9c953287 done
+#13 naming to docker.io/library/factory-v3:gemini35-retrieved-context-repair-amd64-20261012-r1 done
+#13 DONE 0.0s

@@ -1,0 +1,44 @@
+{
+  "deployed_at": "2026-10-12T04:49:31Z",
+  "source_commit": "2625d61cbb4b7c5d95c70c31903bfc86e24bf192",
+  "image": "factory-v3:gemini35-retrieved-context-repair-amd64-20261012-r1",
+  "image_id": "sha256:576bcd9ab1891ffcb1a981f795a9e143e74339f78a20221a58ab022c9c953287",
+  "platform": "linux/amd64",
+  "container": {
+    "name": "factory-v3-app",
+    "id": "5dac8c299ac3d09bbf638ee26a464a88407c6349badd7500c5f91d02384437ee",
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0,
+    "health_http": 200
+  },
+  "studio_http": 200,
+  "database_after": {
+    "jobs": 28,
+    "active_jobs": 0,
+    "preparations": 103,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0
+  },
+  "unchanged_services": {
+    "shorts-v2-media-worker-1": "5824c94abaa6",
+    "ai-short-form-n8n": "c9373532bb9a",
+    "n8n-caddy-1": "3913314c33d6"
+  },
+  "root_disk_free": "368 MB (99% used)",
+  "provider_calls": 0,
+  "new_jobs": 0,
+  "rollback_image": "factory-v3:gemini35-voice-adaptive-photo-pool-amd64-20261012-r1",
+  "verification": {
+    "network_disabled_image_tests": {
+      "material_first": 185,
+      "factory_v3": 112
+    },
+    "local_tests": {
+      "material_first": 185,
+      "factory_v3": 112
+    }
+  },
+  "project_ready": false
+}
