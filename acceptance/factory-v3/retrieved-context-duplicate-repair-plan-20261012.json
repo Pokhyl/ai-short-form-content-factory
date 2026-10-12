@@ -70,8 +70,19 @@
       "Strengthen the bounded structural repair instruction against capitalization, numbering and file-ID tricks."
     ],
     "tests": "PASS: material-first 186; factory-v3 112",
-    "amd64_network_disabled_image_tests": "pending",
-    "deployment": "pending",
-    "project_ready": false
+    "amd64_network_disabled_image_tests": "PASS: material-first 186; factory-v3 112",
+    "deployment": {
+      "status": "deployed_healthy",
+      "source_commit": "4f985f500a8ea5c36ccbda95d59c6a2096dfaccf",
+      "image": "factory-v3:gemini35-visual-dedupe-rendition-filter-amd64-20261012-r1",
+      "image_id": "sha256:819f5d221a96c4e692b065ad6c0251a859af15924efcc00a5c1c60131793a7b3",
+      "studio_root_http": 200,
+      "provider_calls": 0,
+      "new_jobs": 0,
+      "preparations_after": 105,
+      "active_work_after": 0
+    },
+    "project_ready": false,
+    "deployment_receipt": "acceptance/factory-v3/visual-dedupe-rendition-filter-deployment-20261012.json"
   }
 }

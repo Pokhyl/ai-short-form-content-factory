@@ -16,13 +16,13 @@
 #4 DONE 0.0s
 
 #5 [internal] load build context
-#5 transferring context: 390.47kB done
+#5 transferring context: 391.04kB done
 #5 DONE 0.0s
 
-#6 [4/8] COPY factory_v3/requirements.txt /app/requirements.txt
+#6 [5/8] RUN pip install --no-cache-dir -r /app/requirements.txt
 #6 CACHED
 
-#7 [5/8] RUN pip install --no-cache-dir -r /app/requirements.txt
+#7 [4/8] COPY factory_v3/requirements.txt /app/requirements.txt
 #7 CACHED
 
 #8 [2/8] RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
@@ -42,9 +42,9 @@
 
 #13 exporting to image
 #13 exporting layers 0.0s done
-#13 exporting manifest sha256:72763736f6ddc57e86e93d9dcc3746949e8b2f34e8de331ed9e886b8e80b1cc3 done
-#13 exporting config sha256:beecdbe6fb0fe698e81c4cafbbe90e51b3276643fec9a25cefc540420815586b done
-#13 exporting attestation manifest sha256:a3bbd5b823447249819dafd8d7c9e78b6425d9e60c063f5cd270f0ef70f3661c done
-#13 exporting manifest list sha256:576bcd9ab1891ffcb1a981f795a9e143e74339f78a20221a58ab022c9c953287 done
-#13 naming to docker.io/library/factory-v3:gemini35-retrieved-context-repair-amd64-20261012-r1 done
-#13 DONE 0.0s
+#13 exporting manifest sha256:d0bf0535abf63a3c6d9a8de491e7b251340c6bb712d4f431ded6874e5ab2794a done
+#13 exporting config sha256:88addcb9eb233af0bf51c98f8d38215e41dec55079ecefcd96550329dcd9380c done
+#13 exporting attestation manifest sha256:a44053fdd8bf3163c4445b4bf5559154baa2cbf574fb210ca0f914570066588b done
+#13 exporting manifest list sha256:819f5d221a96c4e692b065ad6c0251a859af15924efcc00a5c1c60131793a7b3 done
+#13 naming to docker.io/library/factory-v3:gemini35-visual-dedupe-rendition-filter-amd64-20261012-r1 done
+#13 DONE 0.1s

@@ -1,0 +1,39 @@
+{
+  "deployed_at": "2026-10-12T07:09:37Z",
+  "source_commit": "4f985f500a8ea5c36ccbda95d59c6a2096dfaccf",
+  "image": "factory-v3:gemini35-visual-dedupe-rendition-filter-amd64-20261012-r1",
+  "image_id": "sha256:819f5d221a96c4e692b065ad6c0251a859af15924efcc00a5c1c60131793a7b3",
+  "platform": "linux/amd64",
+  "container": {
+    "name": "factory-v3-app",
+    "id": "f97196b6e19dae40bf3bfb888a7bb2f7d1b3dff2238fb7d88199b910a945956c",
+    "status": "running",
+    "health": "healthy",
+    "restart_count": 0,
+    "health_http": 200,
+    "revision": "4f985f500a8ea5c36ccbda95d59c6a2096dfaccf"
+  },
+  "studio_root_http": 200,
+  "database_after": {
+    "jobs": 28,
+    "active_jobs": 0,
+    "preparations": 105,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0
+  },
+  "unchanged_services": {
+    "shorts-v2-media-worker-1": "5824c94abaa6",
+    "ai-short-form-n8n": "c9373532bb9a",
+    "n8n-caddy-1": "3913314c33d6"
+  },
+  "root_disk_free": "366 MB (99% used)",
+  "provider_calls": 0,
+  "new_jobs": 0,
+  "rollback_image": "factory-v3:gemini35-retrieved-context-repair-amd64-20261012-r1",
+  "network_disabled_image_tests": {
+    "material_first": 186,
+    "factory_v3": 112
+  },
+  "project_ready": false
+}

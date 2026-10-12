@@ -1,7 +1,7 @@
 {
-  "tag": "factory-v3:gemini35-retrieved-context-repair-amd64-20261012-r1",
-  "image_id": "sha256:576bcd9ab1891ffcb1a981f795a9e143e74339f78a20221a58ab022c9c953287",
+  "tag": "factory-v3:gemini35-visual-dedupe-rendition-filter-amd64-20261012-r1",
+  "image_id": "sha256:819f5d221a96c4e692b065ad6c0251a859af15924efcc00a5c1c60131793a7b3",
   "platform": "linux/amd64",
-  "source_commit": "2625d61cbb4b7c5d95c70c31903bfc86e24bf192",
+  "source_commit": "4f985f500a8ea5c36ccbda95d59c6a2096dfaccf",
   "deployed": true
 }
