@@ -1,0 +1,57 @@
+{
+  "id": "b9f0421b-6a25-4a73-90d6-11c677627cc4",
+  "question": "Does the deployed duplicate-context repair allow a natural-speed Ukrainian 60-second neutron-star video to pass source, visual, voice, render and QA gates?",
+  "request": {
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60
+  },
+  "source": {
+    "fix_commit": "2625d61cbb4b7c5d95c70c31903bfc86e24bf192",
+    "current_branch_head": "fc38df66bca94613b9433189a18ffadde0ce7e51",
+    "image": "factory-v3:gemini35-retrieved-context-repair-amd64-20261012-r1",
+    "image_id": "sha256:576bcd9ab1891ffcb1a981f795a9e143e74339f78a20221a58ab022c9c953287",
+    "health_http": 200,
+    "studio_http": 200
+  },
+  "preflight": {
+    "jobs": 28,
+    "active_jobs": 0,
+    "preparations": 103,
+    "active_preparations": 0,
+    "active_stages": 0,
+    "active_provider_calls": 0,
+    "root_free_mb": 367,
+    "provider_calls": 0
+  },
+  "provider_limits": {
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini_total": 16,
+    "searches_per_provider": 3,
+    "photo_providers": [
+      "pexels",
+      "pixabay",
+      "wikimedia"
+    ],
+    "photo_downloads": 30,
+    "metadata_requests": 1,
+    "tts_sends_max": 3,
+    "tts_voice": "uk-UA-Chirp3-HD-Enceladus",
+    "tts_monthly_ceiling": "Existing PostgreSQL quota gate; no paid fallback",
+    "renders": 1,
+    "machine_qa": 1
+  },
+  "stop_conditions": [
+    "POST this exact request ID once and never retry it.",
+    "If provider result is ambiguous, preserve state as terminal/unknown; do not resubmit.",
+    "Stop at first source, relevance, free-quota, voice-duration, alignment, render or machine-audit failure.",
+    "Do not weaken natural-speed audio, topical visual relevance, exact 60-second duration or QA gates.",
+    "Stop media generation if /data free space falls below 100 MB.",
+    "No additional fresh case in this acceptance."
+  ],
+  "run_state": "planned_not_submitted",
+  "submission_attempts": 0,
+  "provider_calls": 0,
+  "project_ready": false
+}
