@@ -4,7 +4,7 @@ from .http import JSONHTTP, HTTPFailure
 
 
 GATEWAY = "http://ai-short-form-n8n:5678/webhook/factory-v3-internal-provider"
-MODEL = "gemini-3.5-flash-lite"
+MODEL = "gemini-3.1-flash-lite"
 
 
 class CredentialHTTP:

@@ -3,10 +3,10 @@ Current official metadata/thumbnail docs checked: CommonsMetadata explicitly des
 
 # Provider Policy
 
-Updated: 2026-10-05 (Gemini key policy/pricing recheck; earlier provider proofs retained)
+Updated: 2026-10-13 (selected free-tier model availability recovery)
 
 ## Gemini Developer API
-Selected text model: gemini-3.5-flash-lite.
+Selected text model: gemini-3.1-flash-lite. Google documents this stable model with structured outputs and free standard-tier text/image input and text output.
 
 Verified from official Google documentation:
 - stable GA model;

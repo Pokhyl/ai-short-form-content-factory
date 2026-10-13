@@ -31,7 +31,7 @@ class CredentialHTTPTests(unittest.TestCase):
         self.assertEqual(receipt["gateway_execution_id"], "controlled")
 
     def test_only_selected_model_endpoint_is_forwarded(self):
-        self.assertEqual(MODEL, "gemini-3.5-flash-lite")
+        self.assertEqual(MODEL, "gemini-3.1-flash-lite")
         self.transport.request_receipt("POST",
             "https://generativelanguage.googleapis.com/v1beta/models/"+MODEL+":generateContent", {})
         with self.assertRaises(ValueError):

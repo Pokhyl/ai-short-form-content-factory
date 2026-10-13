@@ -1,0 +1,39 @@
+{
+  "id": "684b0fda-846f-442b-b1c4-6ce54cac8202",
+  "state": "failed_terminal",
+  "request": {
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60,
+    "visual_validation_mode": "gemini"
+  },
+  "runtime_revision": "89cd2a0f01d55b31587c43ef5ef61270be35037d",
+  "maximum_calls": {
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini": 20,
+    "download": 45,
+    "search_per_provider": 3,
+    "metadata": 1,
+    "voice_attempts": 3
+  },
+  "authorization": "One fresh end-to-end Studio acceptance on the deployed factory revision; old failed IDs remain unchanged.",
+  "result": {
+    "status": "unknown",
+    "error": "HTTP 503 UNAVAILABLE",
+    "gateway_execution_id": "13120",
+    "failed_call": "material-brief",
+    "completed_before_failure": {
+      "gemini_billing_check": 1,
+      "research_search": 1,
+      "source_fetch_success": 3,
+      "source_fetch_failed": 2
+    },
+    "photo_searches": 0,
+    "photo_downloads": 0,
+    "tts_calls": 0,
+    "renders": 0,
+    "new_provider_attempts_for_this_id": 0,
+    "cause": "Google returned a durable 503 response; the failed request is immutable and will not be retried."
+  }
+}

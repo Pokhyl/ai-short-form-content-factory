@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-13",
+  "question": "Can the factory proceed beyond its first Gemini brief on a stable free-tier model after gemini-3.5-flash-lite returned HTTP 503 UNAVAILABLE?",
+  "failed_request_id": "684b0fda-846f-442b-b1c4-6ce54cac8202",
+  "failed_call": "material-brief",
+  "failure": {
+    "http_status": 503,
+    "provider_status": "UNAVAILABLE",
+    "gateway_execution_id": "13120",
+    "photos_downloaded": 0,
+    "tts_calls": 0,
+    "renders": 0
+  },
+  "model": "gemini-3.1-flash-lite",
+  "official_evidence": [
+    {
+      "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
+      "supports": "Stable model; multimodal input and structured outputs."
+    },
+    {
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "supports": "Standard free-tier text/image input and text output for Gemini 3.1 Flash-Lite."
+    }
+  ],
+  "guardrails": {
+    "paid_fallback": false,
+    "provider_retries_on_unknown_result": false,
+    "failed_request_reused": false,
+    "existing_source_photo_voice_and_timing_gates_relaxed": false
+  },
+  "required_before_new_acceptance": [
+    "Update app, private gateway source and generated workflow to the same model endpoint.",
+    "Pass material-first and factory-v3 tests, gateway validators, exact linux/amd64 packaged suites with network disabled.",
+    "Verify only the authorized gateway workflow changed, app health/model revision, free-tier billing=false, protected production snapshots, and no active work before/after scoped rollout.",
+    "Create one new bounded UK60 Vision request only after the model proof; keep its ID immutable."
+  ],
+  "stop_conditions": [
+    "Model metadata or billing proof is unavailable or not free-tier.",
+    "Provider returns an ambiguous result; never retry that request ID.",
+    "Any unrelated workflow, database row, service image, credential or billing state changes."
+  ],
+  "project_ready": false
+}

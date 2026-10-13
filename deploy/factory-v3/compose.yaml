@@ -1,7 +1,7 @@
 name: factory-v3
 services:
   app:
-    image: factory-v3:efe7580
+    image: factory-v3:model-3.1-flash-lite-20261013-amd64
     pull_policy: never
     container_name: factory-v3-app
     entrypoint: [python3, -m, factory_v3.server]

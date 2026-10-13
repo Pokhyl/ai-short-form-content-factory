@@ -13,7 +13,7 @@ REVISION="a"*40
 SETTINGS={"database_url":"postgresql://controlled.invalid/test",
           "broker_token":"controlled-"+"x"*40, "credential_scope":"controlled",
           "gemini_free_tier_confirmed":True,
-          "free_tier_proof":{"billing_enabled":False,"model":"gemini-3.5-flash-lite",
+          "free_tier_proof":{"billing_enabled":False,"model":"gemini-3.1-flash-lite",
                              "project_id":"controlled-project","credential_sha256":"controlled"}}
 
 

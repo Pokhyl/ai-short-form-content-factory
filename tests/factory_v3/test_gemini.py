@@ -53,7 +53,7 @@ class GeminiTests(unittest.TestCase):
         self.ledger.limit = 20
         self.http = HTTP({"answer": "controlled"})
         self.adapter = Gemini(BudgetedCalls(self.ledger, "test"), lambda: "controlled-secret",
-                              self.http, model="gemini-3.5-flash-lite", free_tier_confirmed=True)
+                              self.http, model="gemini-3.1-flash-lite", free_tier_confirmed=True)
 
     def tearDown(self):
         self.fixture.tearDown()
@@ -100,7 +100,7 @@ class GeminiTests(unittest.TestCase):
 
     def test_free_tier_gate_blocks_before_http(self):
         with self.assertRaisesRegex(ValueError, "free-tier"):
-            Gemini(None, None, self.http, model="gemini-3.5-flash-lite", free_tier_confirmed=False)
+            Gemini(None, None, self.http, model="gemini-3.1-flash-lite", free_tier_confirmed=False)
         self.assertEqual(self.http.requests, [])
 
     def test_exact_photo_bytes_and_all_review_hashes(self):

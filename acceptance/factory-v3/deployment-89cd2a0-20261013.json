@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-13",
+  "state": "deployed_and_verified",
+  "scope": "factory-v3 app container only",
+  "source_revision": "89cd2a0f01d55b31587c43ef5ef61270be35037d",
+  "image": {
+    "tag": "factory-v3:narration-word-slots-89cd2a0-amd64",
+    "id": "sha256:175adf0e8082a258cb238d369896b023f385b03eb6ea2a892531698ec4c334c3",
+    "platform": "linux/amd64"
+  },
+  "previous_running_image": "factory-v3:astro-search-dc48fc0-amd64",
+  "rollback_image_id": "sha256:ed4525febc0ccebf4bcdbc3ae6a6ae7c5f617accd85e6482601566c9fcdce33e",
+  "verification": {
+    "container_state": "running",
+    "container_health": "healthy",
+    "revision_env": "89cd2a0f01d55b31587c43ef5ef61270be35037d",
+    "studio_http": 200,
+    "public_health_http": 200,
+    "active_preparations_before_and_after": 0,
+    "active_stages_before_and_after": 0,
+    "active_n8n_executions_before_and_after": 0,
+    "protected_database_workflows_services_and_settings_unchanged": true,
+    "production_provider_calls": 0,
+    "production_requests_created": 0
+  },
+  "predeploy_snapshot": {
+    "jobs": [28, "fc6d60bc6911356b9bc96e883d3bb567"],
+    "preparation_calls": [2230, "907ddd3bca1f7de4c8d339820d51d237"],
+    "preparation_runs": [103, "456db0d3f3b5c04c25c33aa61f950021"],
+    "preparations": [116, "0779df43b8cadd6fe1b300aaf28b7b80"],
+    "provider_cache": [361, "20ea4c1c7148b8364b7fc62afc1db62c"],
+    "stage_runs": [52, "7bbd7044882681c1268d57af1558d1c6"],
+    "voice_revisions": [18, "c5202965cb0f01dabf18946f5eced0b7"],
+    "workflows": [34, "1d3d690af259739a9666d223ce76819b"],
+    "private_settings_sha256": "b783f6dd58f091c2c64fb86bfa35a8221628d4e7eb79133af5015c43230b6ec9"
+  },
+  "postdeploy_matches_predeploy": true,
+  "notes": [
+    "The Docker healthcheck and public Studio/health routes passed.",
+    "The app port is not published on the host; verification used the container healthcheck and public routed endpoints."
+  ]
+}
