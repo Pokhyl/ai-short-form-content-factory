@@ -5,10 +5,17 @@
   "source_commit": "89cd2a0f01d55b31587c43ef5ef61270be35037d",
   "deployed": false,
   "network_disabled_tests": {
-    "tests/material_first": {"passed": 205, "failed": 0},
-    "tests/factory_v3": {"passed": 112, "failed": 0}
+    "tests/material_first": {
+      "passed": 205,
+      "failed": 0
+    },
+    "tests/factory_v3": {
+      "passed": 112,
+      "failed": 0
+    }
   },
   "local_regression": "test_short_but_cadence_feasible_draft_gets_server_owned_word_slots",
   "production_acceptance": "not run; release gate in docs/DELIVERY_STRATEGY.md remains open",
-  "current_production_source": "dc48fc0c55e579b7c2a750c21cdc59826890e5a8"
+  "current_production_source": "dc48fc0c55e579b7c2a750c21cdc59826890e5a8",
+  "deployment_blocker": "Production VPS root filesystem is 100% full with approximately 250 MB free; no image transfer or container mutation was attempted."
 }
