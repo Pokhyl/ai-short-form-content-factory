@@ -22,6 +22,33 @@
       "supports": "Standard free-tier text/image input and text output for Gemini 3.1 Flash-Lite."
     }
   ],
+  "production_preflight": {
+    "app_revision": "89cd2a0f01d55b31587c43ef5ef61270be35037d",
+    "app_image": "factory-v3:narration-word-slots-89cd2a0-amd64",
+    "current_settings_model": "gemini-3.5-flash-lite",
+    "current_settings_billing_enabled": false,
+    "current_settings_credential_sha256": "4184d804b53524b29138a4f4adb7145fd32f59d6e985fb37f21909ee2960bba2",
+    "gemini_3_1_model_info_http_status": 200,
+    "gemini_3_1_generateContent_supported": true,
+    "selected_key_fingerprint_matches_existing_proof": true,
+    "google_oauth_refresh": "passed",
+    "google_key_owner_lookup_http_status": 403,
+    "billing_info_without_quota_project_header_http_status": 403,
+    "billing_info_with_quota_project_header": "not run: VPS SentinelX disconnected before script start",
+    "billing_enabled_for_3_1": "not freshly confirmed; existing settings proof says false for the same project/key on 2026-10-05",
+    "production_generation_calls": 0,
+    "production_tts_calls": 0,
+    "production_mutations": 0,
+    "gateway": {
+      "active": true,
+      "active_version_id": "08d9b8f0-7048-439b-a9f0-f0dfd1c9a476",
+      "other_workflow_count": 33,
+      "other_workflow_fingerprint": "499380cabb0e4dd50a412cb7a9a77ad0",
+      "active_n8n_executions": 0
+    },
+    "server_connection": "offline since 2026-10-13T18:41:05.828418+00:00",
+    "server_checkout": "dirty and divergent; do not pull or modify it"
+  },
   "guardrails": {
     "paid_fallback": false,
     "provider_retries_on_unknown_result": false,
@@ -31,6 +58,7 @@
   "required_before_new_acceptance": [
     "Update app, private gateway source and generated workflow to the same model endpoint.",
     "Pass material-first and factory-v3 tests, gateway validators, exact linux/amd64 packaged suites with network disabled.",
+    "When the VPS reconnects, verify billingInfo with x-goog-user-project for the existing project; only if billingEnabled=false, update the private app proof, publish only the exact authorized gateway workflow, and deploy the exact tested app image. Do not pull into the dirty VPS checkout.",
     "Verify only the authorized gateway workflow changed, app health/model revision, free-tier billing=false, protected production snapshots, and no active work before/after scoped rollout.",
     "Create one new bounded UK60 Vision request only after the model proof; keep its ID immutable."
   ],
