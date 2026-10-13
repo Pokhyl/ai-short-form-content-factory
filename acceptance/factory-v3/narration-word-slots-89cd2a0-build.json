@@ -1,0 +1,14 @@
+{
+  "tag": "factory-v3:narration-word-slots-89cd2a0-amd64",
+  "image_id": "sha256:175adf0e8082a258cb238d369896b023f385b03eb6ea2a892531698ec4c334c3",
+  "platform": "linux/amd64",
+  "source_commit": "89cd2a0f01d55b31587c43ef5ef61270be35037d",
+  "deployed": false,
+  "network_disabled_tests": {
+    "tests/material_first": {"passed": 205, "failed": 0},
+    "tests/factory_v3": {"passed": 112, "failed": 0}
+  },
+  "local_regression": "test_short_but_cadence_feasible_draft_gets_server_owned_word_slots",
+  "production_acceptance": "not run; release gate in docs/DELIVERY_STRATEGY.md remains open",
+  "current_production_source": "dc48fc0c55e579b7c2a750c21cdc59826890e5a8"
+}
