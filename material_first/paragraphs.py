@@ -168,8 +168,9 @@ def compose_paragraphs(gemini, context, budget_error):
         # If a model misses the narration budget, give it a server-owned word
         # allocation as well as a repair prompt. Free-form length requests have
         # repeatedly produced another short draft; fixed word slots make the
-        # pre-voice duration target enforceable without stretching synthesized
-        # audio. The scheduler still verifies that the chosen photos support it.
+        # pre-voice word estimate enforceable without stretching synthesized
+        # audio. Actual duration remains a later audio gate, and the scheduler
+        # still verifies that the chosen photos support the paragraph plan.
         paragraph_plan = (cadence_paragraph_plan(materials, targets, request.get('required_fact_ids',[]), preferred_words)
                           if cadence_error or length_problem else None)
         if paragraph_plan:
