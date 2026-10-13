@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-13",
+  "source_revision": "398ebebecbd012129359f7a5fa9aad68d34160cc",
+  "image": {
+    "tag": "factory-v3:model-3.1-flash-lite-20261013-amd64",
+    "digest": "sha256:9d6af3a0f2b7323653693828c9565854cb73777867fef30af316dcdb57304995",
+    "platform": "linux/amd64"
+  },
+  "checks": {
+    "material_first": {"passed": 205, "failed": 0},
+    "factory_v3": {"passed": 112, "failed": 0},
+    "gateway_validator": "passed",
+    "git_diff_check": "passed",
+    "network": "disabled",
+    "tests_mount": "read-only",
+    "acceptance_fixtures_mount": "read-only"
+  },
+  "deployment": "not yet deployed",
+  "provider_calls": 0,
+  "production_requests": 0,
+  "project_ready": false
+}
