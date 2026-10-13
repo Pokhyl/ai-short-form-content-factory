@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-13",
+  "source_revision": "89cd2a0f01d55b31587c43ef5ef61270be35037d",
+  "source_commit_at_recording": "2777bc9",
+  "scope": "Deterministic connected-contract and exact amd64 package checks only",
+  "local_checks": {
+    "tests/material_first": {"passed": 205, "failed": 0},
+    "tests/factory_v3": {"passed": 112, "failed": 0},
+    "connected_language_duration_pairs": 16,
+    "fixture_provider_mode": "controlled; no external provider calls"
+  },
+  "packaged_image": {
+    "tag": "factory-v3:narration-word-slots-89cd2a0-amd64",
+    "image_id": "sha256:175adf0e8082a258cb238d369896b023f385b03eb6ea2a892531698ec4c334c3",
+    "platform": "linux/amd64",
+    "network": "disabled",
+    "tests_material_first": {"passed": 205, "failed": 0},
+    "tests_factory_v3": {"passed": 112, "failed": 0},
+    "fixture_mounts": "read-only"
+  },
+  "production_provider_calls": 0,
+  "production_mutations": 0,
+  "production_request_created": false,
+  "remaining": [
+    "Prior saved replay bc4afbb2-0f60-40e2-9f21-8b547e403795 stops at the first missing photo download; latest preparation receipts have not been replayed.",
+    "Photo media files were removed in the explicitly requested disk cleanup; replaying the latest source/provider plan would require restoring or re-downloading those images.",
+    "No current-release provider-backed photo/pixel inspection, natural-speed voice, rendered MP4, or owner acceptance is established.",
+    "Do not deploy or create a new acceptance request until remaining source/provider and release gates are closed."
+  ],
+  "project_ready": false
+}
