@@ -42,6 +42,23 @@ class ContextTests(unittest.TestCase):
         rows['subject']['query']=rows['subject']['subject']='RX J185635-3754'
         validate_search_hints(rows,'Neutron stars',spans)
 
+    def test_supported_catalog_families_keep_full_suffix_and_component(self):
+        identifiers = [
+            'RX J185635-3754', 'RBS 1223', 'PSR B0531+21', 'NGC 1952', 'IC 443',
+            'SNR 0506-68.0', 'SN 1987A', 'SGR 1806-20', 'GRO J1008-57', '4U 0142+61',
+        ]
+        for identity in identifiers:
+            with self.subTest(identity=identity):
+                rows = copy.deepcopy(self.rows)
+                for row in rows.values():
+                    row['support_span_ids'] = ['catalogued-object']
+                    row['query'] = row['subject'] = 'neutron star'
+                spans = [{'id': 'catalogued-object', 'text': identity + ' is a catalogued neutron star.'}]
+                with self.assertRaisesRegex(ValueError, 'source-named observable catalog object'):
+                    validate_search_hints(rows, 'Neutron stars', spans)
+                rows['subject']['query'] = rows['subject']['subject'] = identity
+                validate_search_hints(rows, 'Neutron stars', spans)
+
     def test_catalogue_names_outside_selected_evidence_do_not_force_a_query(self):
         rows=copy.deepcopy(self.rows)
         for row in rows.values():row['support_span_ids']=['selected']

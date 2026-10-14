@@ -17,7 +17,8 @@ EQUIPMENT_ALIASES = {
 STOP_WORDS = {'the','a','an','of','for','and','in','on','space','outer','astronomy','cosmos','universe','science','nature','technology','photo','photograph','image','images'}
 EQUIPMENT_WORDS = {'telescope','telescopes','microscope','microscopes','camera','cameras','observatory','observatories','laboratory','laboratories','detector','detectors','satellite','satellites'}
 OBSERVABLE_CATALOG_ID = re.compile(
-    r"\b(?:RX|RBS|PSR|NGC|IC|SNR|SN|SGR|GRO|4U)\s*[A-Z]?\s*\d{3,6}(?:[.-]\d+)?\b", re.I)
+    r"\b(?:RX|RBS|PSR|NGC|IC|SNR|SN|SGR|GRO|4U)\s*[A-Z]?\s*"
+    r"\d{3,6}(?:[.-]\d{1,6}(?:\.\d+)?[A-Z]?)?(?:[A-Z])?(?:\+\d{1,4})?\b", re.I)
 
 
 def validate_search_hints(contexts, topic, source_spans=None):
