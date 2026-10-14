@@ -1,23 +1,29 @@
 {
   "component": "source-grounded observable photo-query validation",
   "created_at": "2026-10-14",
-  "source_commit": "f2197d06dafa95840920b90dd7267047ea919207",
+  "source_commit": "bb16b2c00625361b49250479c478682b0c45327d",
   "image": {
-    "tag": "factory-v3:source-entities-f2197d0-amd64",
-    "image_id": "sha256:6dc7b4d51765e85ca2edac68c5a76770aa7c4ce329a976d4b25c2328d054c420",
+    "tag": "factory-v3:source-entities-bb16b2c-amd64",
+    "image_id": "sha256:90b79ba1b758dfa49a629186e1de77049b5c6bbdff036a043d6c543214056080",
     "platform": "linux/amd64",
     "deployed": false
   },
   "checks": [
     {
+      "name": "focused pre-search saved-source regression",
+      "passed": 1,
+      "failed": 0,
+      "result": "The saved neutron-star source plus the old bad repair (space, neutron star, Hubble Space Telescope) stops before script review or any provider search."
+    },
+    {
       "name": "local material-first",
-      "passed": 208,
+      "passed": 209,
       "failed": 0
     },
     {
       "name": "packaged material-first",
       "command": "docker run --rm --network none --platform linux/amd64 ... python3 -m unittest discover -s /tests/material_first -p 'test_*.py'",
-      "passed": 208,
+      "passed": 209,
       "failed": 0,
       "tests_and_acceptance_mounts": "read-only"
     },
@@ -31,7 +37,7 @@
   ],
   "limits": [
     "Offline code and packaging evidence only.",
-    "Saved-pool connected replay and provider availability are not verified by this receipt.",
+    "The saved provider pools do not contain results for the newly required RX/RBS identifiers, so provider availability and sufficient relevant-photo coverage remain unverified.",
     "No production deployment, request, TTS or render was performed.",
     "Product acceptance remains open; project_ready=false."
   ]
