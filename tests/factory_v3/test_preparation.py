@@ -1,7 +1,8 @@
 """Controlled callbacks only; no provider requests."""
 import unittest
 from unittest.mock import patch
-from factory_v3.preparation import BudgetedCalls, PreparationLedger
+from factory_v3.preparation import BudgetedCalls, PreparationLedger, SavedRequestMismatch, verify_saved_request
+from factory_v3.preflight import digest
 
 
 class FakeLedger:
@@ -43,6 +44,17 @@ class FakeLedger:
 
 
 class PreparationTests(unittest.TestCase):
+    def test_saved_response_replay_requires_exact_request_identity(self):
+        request = {"method": "POST", "url": "https://example.invalid", "body": {"topic": "test"}}
+        self.assertEqual(verify_saved_request(request, digest(request)), digest(request))
+        changed = {**request, "body": {"topic": "different"}}
+        with self.assertRaises(SavedRequestMismatch) as caught:
+            verify_saved_request(changed, digest(request))
+        self.assertEqual(caught.exception.expected, digest(request))
+        self.assertEqual(caught.exception.observed, digest(changed))
+        with self.assertRaises(SavedRequestMismatch):
+            verify_saved_request(request, None)
+
     def test_success_replays_without_second_callback(self):
         ledger = FakeLedger()
         calls = BudgetedCalls(ledger, "controlled")

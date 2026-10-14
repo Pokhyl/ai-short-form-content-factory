@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-14",
+  "source_commit_before_change": "10dabff7ae3c73124cd03f44f68a4a48d6abe1a6",
+  "change": "Saved provider responses are returned only when the reconstructed canonical request hash matches the preparation ledger hash.",
+  "image": {
+    "tag": "factory-v3:replay-hash-guard-20261014-amd64",
+    "image_id": "sha256:1dfd609a2dbbf385caa895660a7ad7843b54edb54c62f5adc790ab0335406c47",
+    "platform": "linux/amd64"
+  },
+  "checks": [
+    {
+      "name": "focused replay identity regression",
+      "command": "python3 -m unittest tests.factory_v3.test_preparation",
+      "passed": 7,
+      "failed": 0
+    },
+    {
+      "name": "packaged material_first",
+      "command": "python3 -m unittest discover -s /tests/material_first",
+      "passed": 210,
+      "failed": 0,
+      "network": "disabled",
+      "fixture_mounts": "read-only"
+    },
+    {
+      "name": "packaged factory_v3",
+      "command": "python3 -m unittest discover -s /tests/factory_v3",
+      "passed": 113,
+      "failed": 0,
+      "network": "disabled",
+      "fixture_mounts": "read-only"
+    }
+  ],
+  "production_provider_calls": 0,
+  "production_mutations": 0,
+  "deployment": false,
+  "tts_calls": 0,
+  "renders": 0,
+  "project_ready": false
+}

@@ -9,6 +9,21 @@ class ResourceUnavailable(ValueError):
         super().__init__("selected resource definitively unavailable")
 
 
+class SavedRequestMismatch(ValueError):
+    def __init__(self, expected, observed):
+        self.expected = expected
+        self.observed = observed
+        super().__init__("saved provider request identity does not match replay")
+
+
+def verify_saved_request(request, expected_hash):
+    """Require an exact identity match before returning a saved provider response."""
+    observed = digest(request)
+    if not isinstance(expected_hash, str) or observed != expected_hash:
+        raise SavedRequestMismatch(expected_hash, observed)
+    return observed
+
+
 class PreparationLedger:
     def __init__(self, postgres, revision):
         if not isinstance(revision, str) or not revision.strip():

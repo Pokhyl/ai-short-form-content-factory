@@ -1,5 +1,11 @@
 # Release gate — current execution contract
 
+## Saved-response replay hash guard — 2026-10-14
+
+The offline preparation replay previously selected cached provider responses by call key without verifying the reconstructed request identity. It now compares the exact canonical request digest with the saved ledger hash before returning any cached response; a mismatch is terminal and reports only the two hashes. Regression: `test_saved_response_replay_requires_exact_request_identity`. Exact AMD64 package `factory-v3:replay-hash-guard-20261014-amd64` (`sha256:1dfd609a2dbbf385caa895660a7ad7843b54edb54c62f5adc790ab0335406c47`) passes material-first 210/210 and Factory v3 113/113 with networking disabled and test/evidence mounts read-only. Receipt: `acceptance/factory-v3/replay-hash-guard-package-20261014.json`.
+
+This corrects the replay tool's evidence boundary only. The saved neutron-star `material-brief` request still hashes to `cbb3d357…` rather than the ledger's `cedf617f…`; its original body is absent locally and from the linked n8n execution database. No provider call, production mutation, deployment, TTS or render occurred. `project_ready=false`.
+
 ## Full catalog identifier matching — 2026-10-14
 
 The first source-named query gate missed supernova names with letter suffixes (for example `SN 1987A`) and shortened pulsar/catalog identifiers at `+` components. The matcher now preserves common suffix, decimal, and component forms across all ten configured catalog families. A table-driven regression requires each full source identifier in a query and rejects a broad `neutron star` query. Local suites pass: material-first 210/210, Factory v3 112/112. Exact image `factory-v3:catalog-id-suffix-4546304-amd64` (`sha256:755ec6bad85283a3e035fe985c8fac7b59e68de2d670e1a5e62b383c1d995437`) passes both packaged suites with networking disabled and read-only test/source/acceptance mounts. Receipt: `acceptance/factory-v3/catalog-id-suffix-package-checks-20261014.json`. Saved pools still have no results for these named identifiers, so provider availability and enough relevant-photo coverage remain unverified. No deployment or production request; `project_ready=false`.

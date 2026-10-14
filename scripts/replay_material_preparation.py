@@ -3,7 +3,7 @@ import argparse
 import json
 import os
 from factory_v3.runtime import Runtime, load_settings
-from factory_v3.preparation import ResourceUnavailable
+from factory_v3.preparation import ResourceUnavailable, SavedRequestMismatch, verify_saved_request
 from material_first.engine import Producer, inspected_material, MaterialUnavailable
 
 parser = argparse.ArgumentParser()
@@ -13,7 +13,7 @@ runtime = Runtime(load_settings('/run/factory-v3/settings.json'), '/data', os.en
 prep = runtime.preparations.snapshot(args.id)
 if prep['status'] not in {'failed', 'unknown', 'prepared'}:
     raise ValueError('replay only an inactive saved preparation')
-rows = runtime.ledger._call("SELECT jsonb_agg(jsonb_build_object('key',call_key,'response',response,'state',state)) "
+rows = runtime.ledger._call("SELECT jsonb_agg(jsonb_build_object('key',call_key,'response',response,'state',state,'request_hash',request_hash)) "
                           "FROM factory_v3.preparation_calls WHERE preparation_id=%s::uuid", (args.id,))
 saved = {row['key']: row for row in rows}
 used, observed = [], {'inspected_inputs': 0, 'accepted_materials': 0, 'qualified_roles': {}}
@@ -26,6 +26,7 @@ class Replay:
         if key not in saved:
             raise MissingSavedCall(key)
         row = saved[key]
+        verify_saved_request(request, row.get('request_hash'))
         if row['state'] == 'failed' and kwargs.get('allow_unavailable'):
             raise ResourceUnavailable(row['response'])
         if row['state'] != 'succeeded':
@@ -67,6 +68,9 @@ try:
     state = 'saved_complete_plan_replayed'
 except MissingSavedCall as error:
     state = 'missing_saved_call:' + str(error)
+except SavedRequestMismatch as error:
+    state = 'saved_request_hash_mismatch'
+    observed['request_hash_mismatch'] = {'expected': error.expected, 'observed': error.observed}
 except MaterialUnavailable as error:
     state = 'material_unavailable'
     observed['terminal_reason'] = str(error)
