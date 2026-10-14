@@ -1,10 +1,13 @@
 import copy
 import hashlib
+import json
 import unittest
+from pathlib import Path
 from types import SimpleNamespace
 from material_first.photo_contexts import validate_context_mentions, validate_search_hints
 from material_first.operations import Operations
 from factory_v3.gemini import validate_json
+from material_first.source_spans import source_spans
 
 class ContextTests(unittest.TestCase):
     def setUp(self):
@@ -27,6 +30,37 @@ class ContextTests(unittest.TestCase):
         rows=copy.deepcopy(self.rows);rows['detail']['query']='Hubble Space Telescope'
         validate_search_hints(rows, 'Hubble Space Telescope observations')
         validate_search_hints(rows, 'Телескоп Хаббл')
+
+    def test_catalogued_observable_in_selected_evidence_must_drive_a_search(self):
+        rows=copy.deepcopy(self.rows)
+        for row in rows.values():
+            row['support_span_ids']=['catalogued-object']
+            row['query']=row['subject']='neutron star'
+        spans=[{'id':'catalogued-object','text':'RX J185635-3754 is a nearby neutron star.'}]
+        with self.assertRaisesRegex(ValueError,'source-named observable catalog object'):
+            validate_search_hints(rows,'Neutron stars',spans)
+        rows['subject']['query']=rows['subject']['subject']='RX J185635-3754'
+        validate_search_hints(rows,'Neutron stars',spans)
+
+    def test_catalogue_names_outside_selected_evidence_do_not_force_a_query(self):
+        rows=copy.deepcopy(self.rows)
+        for row in rows.values():row['support_span_ids']=['selected']
+        validate_search_hints(rows,'Neutron stars',[
+            {'id':'selected','text':'Neutron stars are compact stellar remnants.'},
+            {'id':'other','text':'RX J185635-3754 is a nearby neutron star.'}])
+
+    def test_saved_neutron_sources_require_one_of_their_named_observable_objects(self):
+        saved=json.loads((Path(__file__).parent/'fixtures/neutron-uk60-brief-failure.json').read_text())
+        spans=source_spans(saved['sources'])
+        source_span=next(span for span in spans if 'RX J185635-3754' in span['text'])
+        rows=copy.deepcopy(self.rows)
+        for row in rows.values():
+            row['support_span_ids']=[source_span['id']]
+            row['query']=row['subject']='neutron star'
+        with self.assertRaisesRegex(ValueError,'source-named observable catalog object'):
+            validate_search_hints(rows,'Нейтронная звезда',spans)
+        rows['detail']['query']=rows['detail']['subject']='RX J185635-3754'
+        validate_search_hints(rows,'Нейтронная звезда',spans)
 
     def test_unrelated_selected_span_cannot_ground_a_named_object(self):
         with self.assertRaisesRegex(ValueError,'does not contain'):

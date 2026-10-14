@@ -17,7 +17,7 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
             validate_json(draft, schema)
             normalized={**draft,'photo_contexts':bind_english_objects(draft['photo_contexts'])}
             validate_context_mentions(normalized['photo_contexts'],spans)
-            validate_search_hints(normalized['photo_contexts'],request['topic'])
+            validate_search_hints(normalized['photo_contexts'],request['topic'],spans)
             evidence=bind_support(sources,spans,draft['facts'])
             validate_evidence(evidence)
             ids={f['id'] for f in evidence['facts']}

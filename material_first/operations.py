@@ -143,7 +143,7 @@ class Operations:
                                    for s in sources], 'source_spans': spans}, schema)
         if self.documented_contexts:
             try:
-                validate_search_hints(result['photo_contexts'], request['topic'])
+                validate_search_hints(result['photo_contexts'], request['topic'], spans)
             except ValueError as error:
                 original = deepcopy(result)
                 result, _ = self.gemini.generate('material-brief-repair:initial',
@@ -164,7 +164,7 @@ class Operations:
                     for field in ('fact_ids', 'support_span_ids', 'source_mention'):
                         if repaired.get(field) != row.get(field):
                             raise ValueError('photo search repair changed '+role+' source bindings')
-                validate_search_hints(result['photo_contexts'], request['topic'])
+                validate_search_hints(result['photo_contexts'], request['topic'], spans)
         if self.documented_contexts and measured_feedback:
             from .research_review import reviewed_brief
             result=reviewed_brief(self.gemini,request,sources,spans,schema,result,

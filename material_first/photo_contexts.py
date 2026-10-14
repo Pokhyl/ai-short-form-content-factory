@@ -16,24 +16,39 @@ EQUIPMENT_ALIASES = {
 }
 STOP_WORDS = {'the','a','an','of','for','and','in','on','space','outer','astronomy','cosmos','universe','science','nature','technology','photo','photograph','image','images'}
 EQUIPMENT_WORDS = {'telescope','telescopes','microscope','microscopes','camera','cameras','observatory','observatories','laboratory','laboratories','detector','detectors','satellite','satellites'}
+OBSERVABLE_CATALOG_ID = re.compile(
+    r"\b(?:RX|RBS|PSR|NGC|IC|SNR|SN|SGR|GRO|4U)\s*[A-Z]?\s*\d{3,6}(?:[.-]\d+)?\b", re.I)
 
 
-def validate_search_hints(contexts, topic):
-    """Reject search hints that name only a broad category or unrelated equipment."""
+def validate_search_hints(contexts, topic, source_spans=None):
+    """Reject broad hints and require source-named observed entities when available."""
     topic_words = set(re.findall(r"[a-z0-9]+", topic.casefold())) - STOP_WORDS
     errors = []
+    span_catalog = {span['id']: span['text'] for span in (source_spans or [])}
+    has_source_linked_catalog_id = False
     for role, row in contexts.items():
         query = row.get('query') or row.get('english_photo_object') or row.get('subject') or ''
         normalized = re.sub(r"\s+", " ", query.casefold()).strip(" .,:;-")
         if GENERIC_SEARCH.fullmatch(normalized):
             errors.append(role + ': search hint names only a broad category')
-            continue
-        if EQUIPMENT.search(normalized):
+        elif EQUIPMENT.search(normalized):
             named_words = set(re.findall(r"[a-z0-9]+", normalized)) - STOP_WORDS - EQUIPMENT_WORDS
             query_equipment = {name for name, pattern in EQUIPMENT_ALIASES.items() if pattern.search(normalized)}
             topic_equipment = {name for name, pattern in EQUIPMENT_ALIASES.items() if pattern.search(topic)}
             if not named_words.intersection(topic_words) and not query_equipment.intersection(topic_equipment):
                 errors.append(role + ': search hint names equipment without a topic-linked object')
+        selected_spans = row.get('support_span_ids', [])
+        source_ids = {match.group(0) for identity in selected_spans
+                      for match in OBSERVABLE_CATALOG_ID.finditer(span_catalog.get(identity, ''))}
+        if source_ids:
+            normalized_query = re.sub(r'[^a-z0-9]', '', normalized)
+            if any(re.sub(r'[^a-z0-9]', '', identity.casefold()) in normalized_query
+                   for identity in source_ids):
+                has_source_linked_catalog_id = True
+    if span_catalog and not has_source_linked_catalog_id and any(
+            OBSERVABLE_CATALOG_ID.search(span_catalog.get(identity, ''))
+            for row in contexts.values() for identity in row.get('support_span_ids', [])):
+        errors.append('photo contexts: use a source-named observable catalog object when one is present in the selected evidence')
     if errors:
         raise ValueError('; '.join(errors))
 

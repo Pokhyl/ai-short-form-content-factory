@@ -1,3 +1,7 @@
+## Offline photo-query checkpoint — 2026-10-14
+
+Local change on `factory-v3` requires at least one photo query to use an astronomical catalog object named in the selected source spans, when such an identifier is present. This targets the saved failure where broad queries spent the candidate budget despite source-named RX/RBS objects. Regression is based on `neutron-uk60-brief-failure.json`; control confirms identifiers outside selected evidence do not force a query. Focused tests 38/38; full material-first 208/208; Factory v3 112/112; `git diff --check` passes. This patch is not committed, packaged for AMD64, deployed or production-accepted. No new job or provider call. Continue with connected saved-pool replay and exact package checks; keep `project_ready=false`. Existing unrelated dirty acceptance/work files were left untouched.
+
 ## Текущее состояние — 2026-10-13
 
 Production app развернут на revision `89cd2a0f01d55b31587c43ef5ef61270be35037d`, image `factory-v3:narration-word-slots-89cd2a0-amd64`; container healthy, Studio и `/factory-v3/health` HTTP 200. Pre/post snapshot совпадает: jobs 28, preparations 116, preparation calls 2230, stages 52, reviews 0, workflows 34, no active preparation/stage/n8n execution. Предыдущий app image сохранён для отката. Receipt: `acceptance/factory-v3/deployment-89cd2a0-20261013.json`.

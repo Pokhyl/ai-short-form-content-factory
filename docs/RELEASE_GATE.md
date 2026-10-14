@@ -1,5 +1,11 @@
 # Release gate — current execution contract
 
+## Source-grounded observable photo queries — 2026-10-14
+
+Offline code now checks selected research spans for named astronomical catalog objects (RX, RBS, PSR, NGC, IC, SNR, SN, SGR, GRO and 4U). When a selected span contains one, at least one of the three photo queries must use that identifier. This closes the gap where a broad but technically topic-related query such as `neutron star` could consume the bounded search budget while the cited source already named observable objects. Broad categories and unrelated equipment remain rejected; source bindings and downstream photo-quality gates are unchanged.
+
+Regression uses the saved neutron-star source that names RX J185635-3754 and verifies a generic query stops before search while the source-named query passes. Control verifies identifiers elsewhere in the corpus do not force an unrelated selected context to change. Focused tests: 38/38; full local material-first: 208/208; Factory v3: 112/112; `git diff --check` passes. This is local/offline evidence only: exact AMD64 packaged checks, full saved-pool connected replay, provider availability, deployment and new media acceptance remain open. No production request was sent; `project_ready=false`.
+
 ## Repair-call identity and retry bound — 2026-10-12
 
 Every initial/review model repair now has a distinct durable call key. The review loop can use both allowed corrections when a repaired draft still fails pre-review validation, then stops. Regression covers fact repair → broad/equipment search hints → query-only correction and rejects call-key reuse. Local material-first checks pass 198/198. Exact amd64 package suites remain pending; no deployment or fresh provider request. `project_ready=false`.
