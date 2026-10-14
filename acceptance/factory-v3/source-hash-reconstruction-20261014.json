@@ -1,0 +1,52 @@
+{
+  "component": "saved neutron-star source to material-brief request replay",
+  "created_at": "2026-10-14",
+  "preparation": {
+    "id": "6914b51b-f8c3-47d1-919e-f7b5cc15ffce",
+    "status": "failed",
+    "error_code": "MaterialUnavailable",
+    "request": {
+      "topic": "Нейтронная звезда",
+      "language": "uk",
+      "seconds": 60
+    },
+    "source_revision": "bc3eaae53e4a41678ca2e3239658009815ddf69e"
+  },
+  "saved_material_brief": {
+    "request_hash": "cedf617ffa5c7302110eba2c232bfc19a3731d35eb603b86dd61aed48c8d1a89",
+    "response_model_version": "gemini-3.5-flash-lite",
+    "response_http_status": 200,
+    "photo_context_fields": [
+      "english_photo_object",
+      "fact_ids",
+      "source_mention",
+      "support_span_ids"
+    ]
+  },
+  "replay": {
+    "method": "Read-only PostgreSQL snapshot. Replayed the saved research-search and six source-fetch requests through the deployed application code, then rebuilt the normal Producer request fields before hashing the Gemini request. Replay stopped before using the saved model response.",
+    "matched_research_search_and_source_fetches": 7,
+    "material_brief_reconstructed_request_hash": "cbb3d3574f2b82bbda681b8912a5b5d56014a32ecf8251f50dd4b34de1019b5c",
+    "material_brief_hash_matches_saved": false,
+    "source_hashes_in_reconstructed_context": [
+      "1201fb9e1fd93b13ff9cfc11dbcfb54f46167e8470c435dac990661a9ab4aade",
+      "f40401db283ebf875f4eb4f407f4f91ffa8fa1f884a0e40d2bc531e57c17d761",
+      "ba69a53818b230809f7eb637d4274539d89ce669c1b54f504efa20aa1c6ce43a"
+    ],
+    "source_span_count": 67,
+    "reconstructed_context_sha256": "46c4583df3203bebcd9dd4da780e502dd22bc41058f912abffae3c8f8e59b54d",
+    "gateway_execution_id": "13030",
+    "gateway_execution_body_available": false,
+    "current_gateway_image_revision": "398ebebecbd012129359f7a5fa9aad68d34160cc",
+    "provider_calls": 0,
+    "model_calls": 0,
+    "database_writes": 0
+  },
+  "limits": [
+    "The preparation ledger stores request hashes and responses, not the original model request body.",
+    "The associated n8n execution body for execution 13030 is absent from the connected execution database.",
+    "The outline request therefore remains unbound to its saved request hash; no approximate replay was accepted.",
+    "Connected offline release gate remains open; no new provider request, deployment, TTS, or render was authorized."
+  ],
+  "project_ready": false
+}
