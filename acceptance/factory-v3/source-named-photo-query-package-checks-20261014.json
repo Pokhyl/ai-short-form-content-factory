@@ -1,0 +1,38 @@
+{
+  "component": "source-grounded observable photo-query validation",
+  "created_at": "2026-10-14",
+  "source_commit": "f2197d06dafa95840920b90dd7267047ea919207",
+  "image": {
+    "tag": "factory-v3:source-entities-f2197d0-amd64",
+    "image_id": "sha256:6dc7b4d51765e85ca2edac68c5a76770aa7c4ce329a976d4b25c2328d054c420",
+    "platform": "linux/amd64",
+    "deployed": false
+  },
+  "checks": [
+    {
+      "name": "local material-first",
+      "passed": 208,
+      "failed": 0
+    },
+    {
+      "name": "packaged material-first",
+      "command": "docker run --rm --network none --platform linux/amd64 ... python3 -m unittest discover -s /tests/material_first -p 'test_*.py'",
+      "passed": 208,
+      "failed": 0,
+      "tests_and_acceptance_mounts": "read-only"
+    },
+    {
+      "name": "packaged factory-v3",
+      "command": "docker run --rm --network none --platform linux/amd64 ... python3 -m unittest discover -s /tests/factory_v3 -p 'test_*.py'",
+      "passed": 112,
+      "failed": 0,
+      "tests_source_and_acceptance_mounts": "read-only"
+    }
+  ],
+  "limits": [
+    "Offline code and packaging evidence only.",
+    "Saved-pool connected replay and provider availability are not verified by this receipt.",
+    "No production deployment, request, TTS or render was performed.",
+    "Product acceptance remains open; project_ready=false."
+  ]
+}
