@@ -62,6 +62,44 @@ class ContextTests(unittest.TestCase):
         rows['detail']['query']=rows['detail']['subject']='RX J185635-3754'
         validate_search_hints(rows,'Нейтронная звезда',spans)
 
+    def test_saved_source_and_old_bad_repair_stop_before_review_or_search(self):
+        saved=json.loads((Path(__file__).parent/'fixtures/neutron-uk60-brief-failure.json').read_text())
+        source=saved['sources'][1]
+        spans=source_spans([source])
+        source_span=next(span for span in spans if 'RX J185635-3754' in span['text'])
+        source['sha256']=hashlib.sha256(source['text'].encode()).hexdigest()
+        ids=['f1','f2','f3']
+        facts=[{'id':identity,'text':'source claim '+identity,
+                'support':[{'span_id':source_span['id']}]} for identity in ids]
+        rows={role:{'english_photo_object':'neutron star',
+                    'source_mention':'RX J185635-3754',
+                    'support_span_ids':[source_span['id']],
+                    'fact_ids':[identity]}
+              for role,identity in zip(('setting','subject','detail'),ids)}
+        keys=[];searches=[];reviews=[]
+        def generate(key,instruction,context,schema):
+            keys.append(key)
+            result={'facts':copy.deepcopy(facts),'required_fact_ids':ids,
+                    'photo_contexts':copy.deepcopy(rows)}
+            if key=='material-brief-repair:initial':
+                result['photo_contexts']['setting']['english_photo_object']='space'
+                result['photo_contexts']['detail']['english_photo_object']='Hubble Space Telescope'
+            else:
+                self.assertEqual(key,'material-brief')
+            validate_json(result,schema)
+            return result,{'receipt_id':key}
+        ops=Operations('.',SimpleNamespace(fetch=lambda *args:[source]),
+            SimpleNamespace(generate=generate),
+            SimpleNamespace(search=lambda *args:(searches.append(args) or {'candidates':[]})),
+            None,documented_contexts=True)
+        ops.voice_correction_enabled=True
+        ops.review_script=lambda *args:(reviews.append(args) or {})
+        with self.assertRaisesRegex(ValueError,'catalog object'):
+            ops.research({'topic':'Нейтронная звезда','language':'uk','seconds':60})
+        self.assertEqual(keys,['material-brief','material-brief-repair:initial'])
+        self.assertEqual(searches,[])
+        self.assertEqual(reviews,[])
+
     def test_unrelated_selected_span_cannot_ground_a_named_object(self):
         with self.assertRaisesRegex(ValueError,'does not contain'):
             validate_context_mentions(self.rows,[{'id':'s1','text':'General neutron star physics, without named objects.'}])
