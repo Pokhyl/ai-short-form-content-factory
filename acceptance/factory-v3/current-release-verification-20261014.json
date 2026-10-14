@@ -1,0 +1,14 @@
+{
+  "project_ready": false,
+  "source_revision": "ffba6212247ca82f5cd54da743e29a414f1d5b97",
+  "image_id": "sha256:a3c0294b37f76c5da4d5afda73d443b2b208bbbb1f39b7a026b3caf02f9819f5",
+  "package_checks": {"factory_v3": 114, "material_first": 210, "network": "none", "runtime_source": "installed image; no source overlays"},
+  "legacy_replay_limit": "The original photo directory for ee866914-e050-4685-aa61-8f6676e8645d is absent after the requested cleanup. Old request bodies were not archived. Historical whole-pipeline replay cannot establish acceptance of the new release; it remains unverified, not waived as passed.",
+  "verification_decision": "Replace the unfinishable legacy replay prerequisite with current deterministic connected checks plus one bounded new normal request to collect missing provider evidence. Preserve photo, factual, voice-speed, exact-duration and final-media gates. This is a continuation of the owner's instruction to finish the factory and change the ineffective verification approach.",
+  "deployment_scope": "Only factory-v3-app; preserve settings, gateway, all other containers and all existing request rows.",
+  "request": {"request_id": "bd2ac26d-970a-4ac9-9cd3-5b1e7910fecc", "topic": "Нейтронная звезда", "language": "uk", "seconds": 60, "visual_validation_mode": "gemini"},
+  "budgets": {"research_search": 1, "source_fetch": 6, "gemini": 20, "download": 45, "metadata": 1, "search:pexels": 3, "search:pixabay": 3, "search:wikimedia": 3, "tts_maximum": 3},
+  "quota": "Existing free-only model proof and durable TTS monthly ceilings; exact model tokens and TTS characters unknown until generated.",
+  "stop_conditions": ["Any protected deployment state changes", "Any failed or ambiguous provider operation; never repeat this ID", "Existing quality gates reject the output"],
+  "submitted": false
+}

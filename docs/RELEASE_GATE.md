@@ -1,5 +1,11 @@
 # Release gate — current execution contract
 
+## Current release verification — 2026-10-14
+
+Read `acceptance/factory-v3/current-release-verification-20261014.json` for the current bounded plan. Live inspection found revision398ebeb, latest request332ebac7 stopped at the gateway's startup404 before any generation, and the route now correctly rejects unauthenticated access with403. One read-only billing check returned200 with billing disabled. The admission correction prevents a missing route from consuming a new request ID. Exact server imageffba621 passes114 core and210 material-first tests without networking or runtime source overlays.
+
+The owner again requested completion after rejecting the ineffective repeated verification approach. Original photos of the newer composition failureee866914 are confirmed absent after cleanup; old request bodies were not archived. Their full replay remains unavailable and must not be called passing. Supersede the historical indefinite prerequisite to reconstruct deleted evidence with the explicit current plan: preserve all output-quality gates, verify protected deployment state, deploy only the tested app, then collect current provider evidence with one fresh bounded normal request. No old ID reruns, fabricated approvals, lowered quality gates or readiness claims. Any resulting failure is evidence to diagnose, not permission for blind retries.
+
 ## Saved-response replay hash guard — 2026-10-14
 
 The offline preparation replay previously selected cached provider responses by call key without verifying the reconstructed request identity. It now compares the exact canonical request digest with the saved ledger hash before returning any cached response; a mismatch is terminal and reports only the two hashes. Regression: `test_saved_response_replay_requires_exact_request_identity`. Exact AMD64 package `factory-v3:replay-hash-guard-20261014-amd64` (`sha256:1dfd609a2dbbf385caa895660a7ad7843b54edb54c62f5adc790ab0335406c47`) passes material-first 210/210 and Factory v3 113/113 with networking disabled and test/evidence mounts read-only. Receipt: `acceptance/factory-v3/replay-hash-guard-package-20261014.json`.
