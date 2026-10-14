@@ -1,5 +1,6 @@
 """Executable evidence inventory; file hashes are provenance, not acceptance."""
 import hashlib
+import argparse
 import json
 from pathlib import Path
 
@@ -8,9 +9,9 @@ BOUNDARIES = [
  ('owner intake/concurrency', 'tests/factory_v3/test_server.py', 'acceptance/factory-v3/image-postgres-driver.txt', 'Fresh acceptance after citation change remains unverified.'),
  ('credential gateway/free quota', 'tests/factory_v3/test_credential_http.py', 'acceptance/factory-v3/response-body-billing.json', 'Per-request billing and quota gates still required.'),
  ('fetched research/source citations', 'tests/material_first/test_source_spans.py', 'acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json', 'r14 reused a frozen source-grounded plan; unseen source quality and support remain provider-dependent.'),
- ('three photo providers/download', 'tests/factory_v3/test_providers.py', 'acceptance/factory-v3/providers-postgres.txt', 'Actual PostgreSQL brief repair changed photo hints to space and Hubble Space Telescope; the review loop now revalidates after repair. Commit e0f3697 passes 197 material-first and 112 Factory v3 packaged tests network-disabled. Full source/provider replay and fresh provider availability/real-photo relevance remain unverified.'),
- ('retrieved metadata context planning', 'tests/material_first/test_photo_planning.py', 'acceptance/factory-v3/adaptive-voice-pool-fresh-acceptance-20261012.json', 'Availability-first now treats repeated brief labels as search hints; final retrieved target uniqueness remains strict before any photo download. Deployed and ready for fresh acceptance.'),
- ('retrieved visual-context duplicate repair', 'tests/material_first/test_retrieved_contexts.py', 'acceptance/factory-v3/retrieved-context-duplicate-repair-plan-20261012.json', 'One bounded structural repair passes local and network-disabled amd64 image suites and is deployed; fresh live source/pixel quality remains unproven.'),
+ ('three photo providers/download', 'tests/factory_v3/test_providers.py', 'acceptance/factory-v3/source-named-photo-query-package-checks-20261014.json', 'The source-grounded catalog-object gate now blocks broad neutron-star/space/equipment queries before search; the saved neutron-star regression confirms zero provider searches. Exact RX/RBS provider pools, downloaded bytes, and relevant-photo coverage remain unavailable, so the live photo boundary is still open.'),
+ ('retrieved metadata context planning', 'tests/material_first/test_photo_planning.py', 'acceptance/factory-v3/source-named-photo-query-package-checks-20261014.json', 'Source-named query planning is packaged and tested offline. Results for the newly required catalog identifiers and sufficient distinct photo coverage remain unverified.'),
+ ('retrieved visual-context duplicate repair', 'tests/material_first/test_retrieved_contexts.py', 'acceptance/factory-v3/source-named-photo-query-package-checks-20261014.json', 'Current packaged suites pass with read-only source/test mounts and networking disabled; this receipt proves the offline source-entity change only, not live retrieved pixels.'),
  ('metadata/Vision/selection', 'tests/material_first/test_metadata_mode.py', 'acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json', '17 reviewed photos were frozen; only5 supported the longest scene. New retrieval must produce sufficient scene coverage.'),
  ('global variety/composition', 'tests/material_first/test_topic_connected.py', 'acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json', 'Controlled topical preparation/scheduling tests pass; live relevant-photo coverage failed at exact timing in r14.'),
  ('topical photo cadence preflight and voice variant selection', 'tests/material_first/test_voice_correction.py', 'acceptance/factory-v3/adaptive-voice-visual-pool-plan-20261012.json', 'Offline r14 variants can use a smaller subset of unchanged approved photos; adaptive selector is locally tested but production build/deployment and a fresh successful output remain pending.'),
@@ -29,7 +30,7 @@ def inventory():
     latest_voice = json.loads((ROOT / voice_path).read_text())
     availability_path = 'acceptance/factory-v3/availability-first-distinct-context-acceptance-20261012.json'
     latest_availability = json.loads((ROOT / availability_path).read_text())
-    package_path = 'acceptance/factory-v3/photo-hint-review-package-checks-20261012.json'
+    package_path = 'acceptance/factory-v3/source-named-photo-query-package-checks-20261014.json'
     package = json.loads((ROOT / package_path).read_text())
     availability = latest_availability['result']
     return {'project_ready': False, 'scope': 'Controlled tests and saved actual receipts, not new provider acceptance',
@@ -55,7 +56,12 @@ def inventory():
                             'remaining': remaining} for name, test, evidence, remaining in BOUNDARIES]}
 
 if __name__ == '__main__':
-    output = ROOT / 'acceptance/factory-v3/current-boundaries.json'
+    parser = argparse.ArgumentParser(description='Write a read-only Factory v3 boundary inventory to a new path.')
+    parser.add_argument('--output', required=True, help='New output path relative to repository root; existing files are never overwritten.')
+    args = parser.parse_args()
+    output = ROOT / args.output
+    if output.exists():
+        parser.error(f'refusing to overwrite existing file: {args.output}')
     output.write_text(json.dumps(inventory(), indent=2) + '\n')
     report = inventory()
     print(json.dumps({'boundaries': len(BOUNDARIES),
