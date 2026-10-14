@@ -5,6 +5,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 from factory_v3.runtime import Runtime, load_settings
+from factory_v3.http import HTTPFailure
+from factory_v3.readiness import GatewayUnavailable
 from test_preparation import FakeLedger
 
 
@@ -21,6 +23,8 @@ class HTTP:
     def __init__(self):
         self.calls=[]
     def request(self, method, url, body, headers, timeout):
+        if body == {} and headers == {}:
+            raise HTTPFailure(403, {})
         self.calls.append(body)
         return {"status":200,"headers":{},"body":{"projectId":"controlled-project","billingEnabled":True}}
     def request_receipt(self,*args,**kwargs):
@@ -94,6 +98,25 @@ class RuntimeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"not be reused"):
             self.runtime.create(REQUEST_ID,"controlled","pl",15)
         self.runtime.preparations.create.assert_not_called()
+
+    def test_unregistered_gateway_does_not_consume_request_and_same_id_can_be_submitted(self):
+        self.runtime.preparations = Mock()
+        self.runtime.preparations.snapshot.side_effect = KeyError()
+        transport = Mock()
+        self.runtime.direct = transport
+        for outcome in (HTTPFailure(404, {}), HTTPFailure(502, {}),
+                        RuntimeError('transport unavailable'), {"status": 200}):
+            transport.request.side_effect = outcome if isinstance(outcome, Exception) else None
+            transport.request.return_value = outcome
+            with self.assertRaises(GatewayUnavailable):
+                self.runtime.create(REQUEST_ID, 'controlled', 'pl', 15)
+            self.runtime.preparations.create.assert_not_called()
+            args, kwargs = transport.request.call_args
+            self.assertEqual(args[2:], ({}, {}))
+            self.assertEqual(kwargs, {'timeout': 5})
+        transport.request.side_effect = HTTPFailure(403, {})
+        self.assertTrue(self.runtime.create(REQUEST_ID, 'controlled', 'pl', 15)['created'])
+        self.runtime.preparations.create.assert_called_once()
 
     def test_private_settings_and_exact_source_revision_required(self):
         file=self.root/"settings.json"

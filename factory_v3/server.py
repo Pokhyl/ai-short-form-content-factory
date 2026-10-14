@@ -16,6 +16,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit, parse_qs
 from uuid import UUID
 from .runtime import Runtime, load_settings
+from .readiness import GatewayUnavailable
 from .deletion import ensure_visible, deleted_ids, marker, remove_media
 from .preflight import asset_path, validate_asset
 
@@ -369,6 +370,8 @@ def handler(application):
                 pass
             except OverflowError:
                 self.reply(429, {"error": "queue_full"})
+            except GatewayUnavailable:
+                self.reply(503, {"error": "gateway_not_ready"})
             except KeyError:
                 self.reply(404, {"error": "not_found"})
             except (ValueError, TypeError, StopIteration):

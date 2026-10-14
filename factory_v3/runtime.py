@@ -17,6 +17,7 @@ from material_first.portrait import PortraitDownload
 from material_first.worker import PhotoWorker, executor as material_executor
 from .providers import PhotoSearch, ProviderCache
 from .research import Research
+from .readiness import check_gateway
 from .worker_adapters import WorkerAdapters, GoogleVoice
 from scripts.audit_final_media import audit
 
@@ -61,6 +62,9 @@ class Runtime:
         if any((self.root / directory / request_id).exists()
                for directory in ("voiceovers","visuals","renders")):
             raise ValueError("existing media job ID must not be reused")
+        # n8n healthz can pass before webhook registration. Do not consume an
+        # immutable request ID (or provider budget) while that route is absent.
+        check_gateway(self.direct)
         self.preparations.create(request_id, request, preparation_budgets(seconds))
         return {"id":request_id,"created":True,"status":"preparing"}
 

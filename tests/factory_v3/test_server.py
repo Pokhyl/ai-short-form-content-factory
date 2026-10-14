@@ -9,6 +9,7 @@ import unittest
 from unittest.mock import Mock, patch
 from http.server import ThreadingHTTPServer
 from factory_v3.server import Application, Sessions, byte_range, handler
+from factory_v3.readiness import GatewayUnavailable
 
 OWNER = "controlled-owner-" + "x"*40
 ORIGIN = "https://publisher.hodor.com.pl"
@@ -188,6 +189,11 @@ class ServerTests(unittest.TestCase):
             self.assertIn("HttpOnly",headers["Set-Cookie"])
             self.assertIn("Secure",headers["Set-Cookie"])
             auth={"Content-Type":"application/json","Origin":ORIGIN,"Cookie":headers["Set-Cookie"].split(";")[0]}
+            with patch.object(self.runtime, 'create', side_effect=GatewayUnavailable('controlled')):
+                code, _, body = send("POST", "/api/requests", self.request(), auth)
+                self.assertEqual((code, body), (503, {"error": "gateway_not_ready"}))
+                self.assertEqual(self.runtime.created, set())
+                self.app.pool.submit.assert_not_called()
             self.assertEqual(send("POST","/api/requests",self.request(),auth)[0],202)
             self.assertEqual(send("POST","/api/requests",self.request(),auth)[0],200)
             self.assertEqual(self.app.pool.submit.call_count,1)

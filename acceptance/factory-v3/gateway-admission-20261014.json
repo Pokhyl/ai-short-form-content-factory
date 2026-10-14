@@ -1,0 +1,34 @@
+{
+  "project_ready": false,
+  "observed_live_revision": "398ebebecbd012129359f7a5fa9aad68d34160cc",
+  "latest_request": "332ebac7-7e8d-4e97-949a-46734e6ef8d8",
+  "latest_failure": {
+    "call": "gemini-billing-check",
+    "http_status": 404,
+    "generation_calls": 0,
+    "tts_calls": 0
+  },
+  "current_unauthenticated_gateway_probe": 403,
+  "correction": "Check the unauthenticated gateway route before persisting a new request. Return 503 gateway_not_ready without creating a preparation, consuming provider quota or submitting a worker. Existing request identities remain read-only.",
+  "local_checks": {
+    "factory_v3": 114,
+    "material_first": 210
+  },
+  "next_read_only_diagnostic": {
+    "question": "Does the currently registered gateway return an unbilled proof for the configured Gemini project?",
+    "operation": "Google billing metadata through existing credential gateway",
+    "maximum_calls": 1,
+    "generation_calls": 0,
+    "tts_calls": 0,
+    "stop_condition": "Any failure or billingEnabled other than false; no retry or generation"
+  },
+  "deployed": false,
+  "billing_diagnostic_result": {
+    "status": 200,
+    "project_matches": true,
+    "billing_enabled": false,
+    "configured_model": "gemini-3.1-flash-lite",
+    "generation_calls": 0,
+    "tts_calls": 0
+  }
+}

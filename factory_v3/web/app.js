@@ -10,7 +10,7 @@ async function api(path, options = {}) {
   return body;
 }
 const post = (path, data) => api(path, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
-const report = error => { $("message").textContent = error.message; };
+const report = error => { $("message").textContent = error.message === "gateway_not_ready" ? "Сервис создания видео ещё запускается. Задание не создано. Попробуйте отправить его позже." : error.message; };
 function link(url, text) {
   const a = document.createElement("a");
   try { const u = new URL(url); if (!["http:","https:"].includes(u.protocol) || u.username || u.password) throw new Error(); a.href = u.href; }
