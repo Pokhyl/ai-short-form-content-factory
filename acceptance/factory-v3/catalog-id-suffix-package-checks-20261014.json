@@ -1,0 +1,58 @@
+{
+  "component": "complete astronomy catalog identifier matching",
+  "created_at": "2026-10-14",
+  "source_commit": "4546304",
+  "image": {
+    "tag": "factory-v3:catalog-id-suffix-4546304-amd64",
+    "image_id": "sha256:755ec6bad85283a3e035fe985c8fac7b59e68de2d670e1a5e62b383c1d995437",
+    "platform": "linux/amd64",
+    "deployed": false
+  },
+  "regression": {
+    "catalog_families": [
+      "RX J185635-3754",
+      "RBS 1223",
+      "PSR B0531+21",
+      "NGC 1952",
+      "IC 443",
+      "SNR 0506-68.0",
+      "SN 1987A",
+      "SGR 1806-20",
+      "GRO J1008-57",
+      "4U 0142+61"
+    ],
+    "checks": "Each full source identifier is required in at least one query; a broad neutron-star hint is rejected."
+  },
+  "checks": [
+    {
+      "name": "local material-first",
+      "passed": 210,
+      "failed": 0
+    },
+    {
+      "name": "local factory-v3",
+      "passed": 112,
+      "failed": 0
+    },
+    {
+      "name": "packaged material-first",
+      "command": "docker run --rm --network none --platform linux/amd64 --entrypoint python3 ... -m unittest discover -s /tests/material_first -p 'test_*.py'",
+      "passed": 210,
+      "failed": 0,
+      "test_and_acceptance_mounts": "read-only"
+    },
+    {
+      "name": "packaged factory-v3",
+      "command": "docker run --rm --network none --platform linux/amd64 --entrypoint python3 ... -m unittest discover -s /tests/factory_v3 -p 'test_*.py'",
+      "passed": 112,
+      "failed": 0,
+      "test_source_and_acceptance_mounts": "read-only"
+    }
+  ],
+  "limits": [
+    "Offline matching, tests, and packaging evidence only.",
+    "Saved provider pools still have no results for these source-named identifiers; actual provider availability and sufficient relevant-photo coverage remain unverified.",
+    "No deployment, production request, TTS, or render was performed.",
+    "project_ready=false."
+  ]
+}

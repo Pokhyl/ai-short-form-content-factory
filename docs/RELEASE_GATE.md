@@ -1,5 +1,9 @@
 # Release gate — current execution contract
 
+## Full catalog identifier matching — 2026-10-14
+
+The first source-named query gate missed supernova names with letter suffixes (for example `SN 1987A`) and shortened pulsar/catalog identifiers at `+` components. The matcher now preserves common suffix, decimal, and component forms across all ten configured catalog families. A table-driven regression requires each full source identifier in a query and rejects a broad `neutron star` query. Local suites pass: material-first 210/210, Factory v3 112/112. Exact image `factory-v3:catalog-id-suffix-4546304-amd64` (`sha256:755ec6bad85283a3e035fe985c8fac7b59e68de2d670e1a5e62b383c1d995437`) passes both packaged suites with networking disabled and read-only test/source/acceptance mounts. Receipt: `acceptance/factory-v3/catalog-id-suffix-package-checks-20261014.json`. Saved pools still have no results for these named identifiers, so provider availability and enough relevant-photo coverage remain unverified. No deployment or production request; `project_ready=false`.
+
 ## Source-grounded observable photo queries — 2026-10-14
 
 Offline code now checks selected research spans for named astronomical catalog objects (RX, RBS, PSR, NGC, IC, SNR, SN, SGR, GRO and 4U). When a selected span contains one, at least one of the three photo queries must use that identifier. This closes the gap where a broad but technically topic-related query such as `neutron star` could consume the bounded search budget while the cited source already named observable objects. Broad categories and unrelated equipment remain rejected; source bindings and downstream photo-quality gates are unchanged.

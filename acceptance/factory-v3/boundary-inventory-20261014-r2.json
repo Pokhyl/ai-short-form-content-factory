@@ -1,0 +1,270 @@
+{
+  "project_ready": false,
+  "scope": "Controlled tests and saved actual receipts, not new provider acceptance",
+  "latest_voice_acceptance": {
+    "id": "19e8ad95-60a2-48cc-893b-491e235d9fd3",
+    "state": "failed_terminal",
+    "measured_voice_durations_ms": [
+      50928,
+      59616
+    ],
+    "job_status": "unknown",
+    "latest_stage": {
+      "stage": "render",
+      "state": "unknown",
+      "error_code": "ValueError"
+    },
+    "failure_type": "ValueError",
+    "render_count": 0,
+    "receipt": {
+      "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json",
+      "sha256": "8abb4b817745450dfe3df4073498248aee6d1a00f938f9ad4af1c75f18b8ba39"
+    }
+  },
+  "latest_photo_availability_acceptance": {
+    "id": "6914b51b-f8c3-47d1-919e-f7b5cc15ffce",
+    "state": "failed",
+    "failure": "MaterialUnavailable: not enough inspected distinct photographs for requested cadence",
+    "photo_downloads": 30,
+    "photos_inspected": 30,
+    "photos_accepted": 1,
+    "tts_calls": 0,
+    "renders": 0,
+    "receipt": {
+      "path": "acceptance/factory-v3/availability-first-distinct-context-acceptance-20261012.json",
+      "sha256": "9086e11e90d9d3f20d4f283f7d890ee20612d6229771f7f37248eed8f15bc9c0"
+    }
+  },
+  "latest_photo_hint_package": {
+    "component": "complete astronomy catalog identifier matching",
+    "created_at": "2026-10-14",
+    "source_commit": "4546304",
+    "image": {
+      "tag": "factory-v3:catalog-id-suffix-4546304-amd64",
+      "image_id": "sha256:755ec6bad85283a3e035fe985c8fac7b59e68de2d670e1a5e62b383c1d995437",
+      "platform": "linux/amd64",
+      "deployed": false
+    },
+    "regression": {
+      "catalog_families": [
+        "RX J185635-3754",
+        "RBS 1223",
+        "PSR B0531+21",
+        "NGC 1952",
+        "IC 443",
+        "SNR 0506-68.0",
+        "SN 1987A",
+        "SGR 1806-20",
+        "GRO J1008-57",
+        "4U 0142+61"
+      ],
+      "checks": "Each full source identifier is required in at least one query; a broad neutron-star hint is rejected."
+    },
+    "checks": [
+      {
+        "name": "local material-first",
+        "passed": 210,
+        "failed": 0
+      },
+      {
+        "name": "local factory-v3",
+        "passed": 112,
+        "failed": 0
+      },
+      {
+        "name": "packaged material-first",
+        "command": "docker run --rm --network none --platform linux/amd64 --entrypoint python3 ... -m unittest discover -s /tests/material_first -p 'test_*.py'",
+        "passed": 210,
+        "failed": 0,
+        "test_and_acceptance_mounts": "read-only"
+      },
+      {
+        "name": "packaged factory-v3",
+        "command": "docker run --rm --network none --platform linux/amd64 --entrypoint python3 ... -m unittest discover -s /tests/factory_v3 -p 'test_*.py'",
+        "passed": 112,
+        "failed": 0,
+        "test_source_and_acceptance_mounts": "read-only"
+      }
+    ],
+    "limits": [
+      "Offline matching, tests, and packaging evidence only.",
+      "Saved provider pools still have no results for these source-named identifiers; actual provider availability and sufficient relevant-photo coverage remain unverified.",
+      "No deployment, production request, TTS, or render was performed.",
+      "project_ready=false."
+    ],
+    "receipt": {
+      "path": "acceptance/factory-v3/catalog-id-suffix-package-checks-20261014.json",
+      "sha256": "8b26ea87f96bfa1ca066265c60375fa7254568a00db214fc1e87b2bea11c082a"
+    }
+  },
+  "boundaries": [
+    {
+      "name": "owner intake/concurrency",
+      "test": {
+        "path": "tests/factory_v3/test_server.py",
+        "sha256": "4e2833117efb9191e8f0be538b32cc4275d7dadd504a2c8f799d38850315b8d5"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/image-postgres-driver.txt",
+        "sha256": "f1e98893640bb42741a15a3fee57750e53c34c7502f2c6ec9a48397e1f85d47a"
+      },
+      "remaining": "Fresh acceptance after citation change remains unverified."
+    },
+    {
+      "name": "credential gateway/free quota",
+      "test": {
+        "path": "tests/factory_v3/test_credential_http.py",
+        "sha256": "580cf2232c346e1c726fb142ee63d1cc03fa2a43ef69b1c922c810d197dc1aa9"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/response-body-billing.json",
+        "sha256": "e6f2a67eac0a2195c3242c1e091bc17bd5de4f986548254471fc1322ca894031"
+      },
+      "remaining": "Per-request billing and quota gates still required."
+    },
+    {
+      "name": "fetched research/source citations",
+      "test": {
+        "path": "tests/material_first/test_source_spans.py",
+        "sha256": "ae90c3a062063ecd05a369ec766d01f0e1c4e2dac0c155abb0abda4efe5bd89e"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json",
+        "sha256": "5f77ab822c1d46211d7c4d2116408bfe51f620e13f0ce9b38c567083bec5e78b"
+      },
+      "remaining": "r14 reused a frozen source-grounded plan; unseen source quality and support remain provider-dependent."
+    },
+    {
+      "name": "three photo providers/download",
+      "test": {
+        "path": "tests/factory_v3/test_providers.py",
+        "sha256": "4fb271954a025441734bee0ed570b05d62303dfe6db92e91d660e4fa5948af02"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/catalog-id-suffix-package-checks-20261014.json",
+        "sha256": "8b26ea87f96bfa1ca066265c60375fa7254568a00db214fc1e87b2bea11c082a"
+      },
+      "remaining": "The source-grounded catalog-object gate now blocks broad neutron-star/space/equipment queries before search and preserves complete identifiers. Exact provider pools, downloaded bytes, and relevant-photo coverage remain unavailable, so the live photo boundary is still open."
+    },
+    {
+      "name": "retrieved metadata context planning",
+      "test": {
+        "path": "tests/material_first/test_photo_planning.py",
+        "sha256": "9ed07356e1b3a0754a766c9824541971df118cccb71e8c5f05e656e384a0b262"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/catalog-id-suffix-package-checks-20261014.json",
+        "sha256": "8b26ea87f96bfa1ca066265c60375fa7254568a00db214fc1e87b2bea11c082a"
+      },
+      "remaining": "Complete source-named query matching is packaged and tested offline. Provider results for these identifiers and sufficient distinct photo coverage remain unverified."
+    },
+    {
+      "name": "retrieved visual-context duplicate repair",
+      "test": {
+        "path": "tests/material_first/test_retrieved_contexts.py",
+        "sha256": "abcf1b30f0d4c68e3c9b7cb00b3451dd43eb24d597c0b5357b7d8721e896a614"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/catalog-id-suffix-package-checks-20261014.json",
+        "sha256": "8b26ea87f96bfa1ca066265c60375fa7254568a00db214fc1e87b2bea11c082a"
+      },
+      "remaining": "Current packaged suites pass with read-only source/test mounts and networking disabled; this receipt proves offline source-entity matching only, not live retrieved pixels."
+    },
+    {
+      "name": "metadata/Vision/selection",
+      "test": {
+        "path": "tests/material_first/test_metadata_mode.py",
+        "sha256": "1c5b51681272f819216ae45fa349431f43c69aa594d33d3329434d39888e57bf"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json",
+        "sha256": "5f77ab822c1d46211d7c4d2116408bfe51f620e13f0ce9b38c567083bec5e78b"
+      },
+      "remaining": "17 reviewed photos were frozen; only5 supported the longest scene. New retrieval must produce sufficient scene coverage."
+    },
+    {
+      "name": "global variety/composition",
+      "test": {
+        "path": "tests/material_first/test_topic_connected.py",
+        "sha256": "eca9404bfd7199fa4dd5833d11596c6b90d7a48d46d70d3cf98a3b8fc85e9de4"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-plan.json",
+        "sha256": "5f77ab822c1d46211d7c4d2116408bfe51f620e13f0ce9b38c567083bec5e78b"
+      },
+      "remaining": "Controlled topical preparation/scheduling tests pass; live relevant-photo coverage failed at exact timing in r14."
+    },
+    {
+      "name": "topical photo cadence preflight and voice variant selection",
+      "test": {
+        "path": "tests/material_first/test_voice_correction.py",
+        "sha256": "3e0f76316495b00ec29874f88e23acdc400d6f94fae843334baa920f1b02ea9a"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/adaptive-voice-visual-pool-plan-20261012.json",
+        "sha256": "063466d254d07e6d0e23983901d0199d244de3ed31adfbaaaa3e8ce7ec9740b0"
+      },
+      "remaining": "Offline r14 variants can use a smaller subset of unchanged approved photos; adaptive selector is locally tested but production build/deployment and a fresh successful output remain pending."
+    },
+    {
+      "name": "independent factual script review",
+      "test": {
+        "path": "tests/factory_v3/test_gemini.py",
+        "sha256": "5a24daa185123b615de61ae1c7e6232e4d9fa97493e492ea3f9363ec85f0f3b0"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json",
+        "sha256": "8abb4b817745450dfe3df4073498248aee6d1a00f938f9ad4af1c75f18b8ba39"
+      },
+      "remaining": "r14 reached voice correction and semantic review on the source-bound script; unseen topics and scripts still require provider review."
+    },
+    {
+      "name": "deployed constrained proofread -> review",
+      "test": {
+        "path": "tests/material_first/test_voice_correction.py",
+        "sha256": "3e0f76316495b00ec29874f88e23acdc400d6f94fae843334baa920f1b02ea9a"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json",
+        "sha256": "8abb4b817745450dfe3df4073498248aee6d1a00f938f9ad4af1c75f18b8ba39"
+      },
+      "remaining": "r14 used2 voice sends and3 Gemini calls; no audio playback or owner listening review is evidenced."
+    },
+    {
+      "name": "one voice/alignment",
+      "test": {
+        "path": "tests/factory_v3/test_executor.py",
+        "sha256": "864e3788b3295c76b0fd167200c2921448327d79f0b453ec55d8992c5d249906"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json",
+        "sha256": "8abb4b817745450dfe3df4073498248aee6d1a00f938f9ad4af1c75f18b8ba39"
+      },
+      "remaining": "Measured voices were50,928 and59,616 ms; exact alignment reached the render stage. No successful final audio/video package exists."
+    },
+    {
+      "name": "whole photos/exact timing/render/audit",
+      "test": {
+        "path": "tests/material_first/test_connected_presentation.py",
+        "sha256": "aa51bc782eb995d0b0559dc43c48169843cdf91149a0efb5812e4a68407a41af"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/voice-correction/natural-speed-regression-gemini35-r14-result.json",
+        "sha256": "8abb4b817745450dfe3df4073498248aee6d1a00f938f9ad4af1c75f18b8ba39"
+      },
+      "remaining": "r14 stopped at render with no subject-related photo for an interval; no MP4 or final-media audit exists."
+    },
+    {
+      "name": "owner review/save/physical deletion",
+      "test": {
+        "path": "tests/studio-delete.test.cjs",
+        "sha256": "361223ef40f5d65bc6cfb5373e6ce3f01c58f1208ea323c448e457a0c182d69f"
+      },
+      "saved_evidence": {
+        "path": "acceptance/factory-v3/delete-ui-checks.json",
+        "sha256": "6cff89d1ba35e87c05547d52c81977d8e51b3d0e7eb83a55ead74f7f1c69bb6d"
+      },
+      "remaining": "Explicit HUMAN acceptance of actual new MP4 remains absent."
+    }
+  ]
+}
