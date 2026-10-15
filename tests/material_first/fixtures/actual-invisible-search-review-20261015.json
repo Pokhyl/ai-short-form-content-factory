@@ -1,0 +1,193 @@
+{
+  "provenance": {
+    "model": "gemini-3.1-flash-lite",
+    "request_id": "bd2ac26d-970a-4ac9-9cd3-5b1e7910fecc",
+    "type": "isolated diagnostic; not production approval"
+  },
+  "draft": {
+    "facts": [
+      {
+        "id": "fact-1",
+        "text": "Нейтронні зорі виникають внаслідок спалахів наднових.",
+        "support": [
+          {
+            "span_id": "s1-0-1094"
+          }
+        ]
+      },
+      {
+        "id": "fact-2",
+        "text": "Під час стиснення ядра зорі відбувається злиття електронів та протонів у нейтрони в процесі електронного захоплення.",
+        "support": [
+          {
+            "span_id": "s1-2113-3302"
+          }
+        ]
+      },
+      {
+        "id": "fact-3",
+        "text": "Типовий радіус нейтронної зірки становить 10–20 кілометрів, а її стабільність підтримується тиском виродженого нейтронного газу.",
+        "support": [
+          {
+            "span_id": "s1-0-1094"
+          },
+          {
+            "span_id": "s1-4411-5431"
+          }
+        ]
+      }
+    ],
+    "required_fact_ids": [
+      "fact-1",
+      "fact-2",
+      "fact-3"
+    ],
+    "photo_contexts": {
+      "setting": {
+        "fact_ids": [
+          "fact-1"
+        ],
+        "support_span_ids": [
+          "s1-0-1094"
+        ],
+        "source_mention": "вспышек сверхновых звёзд",
+        "english_photo_object": "supernova remnant"
+      },
+      "subject": {
+        "fact_ids": [
+          "fact-3"
+        ],
+        "support_span_ids": [
+          "s1-0-1094"
+        ],
+        "source_mention": "Нейтро́нная звезда́",
+        "english_photo_object": "neutron star"
+      },
+      "detail": {
+        "fact_ids": [
+          "fact-2"
+        ],
+        "support_span_ids": [
+          "s1-2113-3302"
+        ],
+        "source_mention": "слияние электронов и протонов в нейтроны",
+        "english_photo_object": "neutron star core"
+      }
+    }
+  },
+  "reviews": [
+    {
+      "key": "material-brief-review:1",
+      "result": {
+        "facts": {
+          "fact-1": {
+            "supported": true,
+            "reason": "The source explicitly states that according to modern views, neutron stars arise as a result of supernova explosions."
+          },
+          "fact-2": {
+            "supported": true,
+            "reason": "The source confirms that during core collapse, electrons and protons merge into neutrons via electron capture."
+          },
+          "fact-3": {
+            "supported": true,
+            "reason": "The source states the typical radius is 10-20 km and that gravitational compression is resisted by the pressure of degenerate neutron gas (or nuclear matter)."
+          }
+        },
+        "photo_contexts": {
+          "setting": {
+            "source_supported": true,
+            "observable_object": true,
+            "reason": "A supernova remnant is an observable astronomical object resulting from a supernova, which is the formation site for neutron stars."
+          },
+          "subject": {
+            "source_supported": true,
+            "observable_object": false,
+            "reason": "While the existence of neutron stars is supported, they are typically too small and faint to be resolved in direct photographs; depictions are generally artist illustrations or simulations."
+          },
+          "detail": {
+            "source_supported": true,
+            "observable_object": false,
+            "reason": "The core is an internal structure of a celestial body and cannot be observed directly through photography."
+          }
+        }
+      }
+    },
+    {
+      "key": "material-brief-review:2",
+      "result": {
+        "facts": {
+          "fact-1": {
+            "supported": true,
+            "reason": "The source explicitly states that according to modern views, neutron stars arise as a result of supernova explosions."
+          },
+          "fact-2": {
+            "supported": true,
+            "reason": "The source describes the process of electron capture where electrons and protons fuse into neutrons during the stellar core collapse."
+          },
+          "fact-3": {
+            "supported": true,
+            "reason": "The source confirms the typical radius is 10–20 km and mentions the role of degenerate neutron gas pressure in preventing gravitational collapse."
+          }
+        },
+        "photo_contexts": {
+          "setting": {
+            "source_supported": true,
+            "observable_object": true,
+            "reason": "Supernova remnants are the observable physical aftermath of the supernova events that produce neutron stars."
+          },
+          "subject": {
+            "source_supported": false,
+            "observable_object": false,
+            "reason": "A distant star field does not distinguish a neutron star, which is typically too small and faint to be resolved in a standard stellar field photograph."
+          },
+          "detail": {
+            "source_supported": false,
+            "observable_object": false,
+            "reason": "A telescopic view of a galaxy is too broad and does not represent the specific subject of a single neutron star."
+          }
+        }
+      }
+    },
+    {
+      "key": "material-brief-review:3",
+      "result": {
+        "facts": {
+          "fact-1": {
+            "supported": true,
+            "reason": "The source explicitly states that according to modern concepts, neutron stars arise as a result of supernova explosions."
+          },
+          "fact-2": {
+            "supported": true,
+            "reason": "The source describes how, at increasing temperatures, electrons and protons merge into neutrons through electron capture."
+          },
+          "fact-3": {
+            "supported": true,
+            "reason": "The source confirms the typical radius is 10-20 kilometers and that pressure from degenerate neutron gas (or nuclear matter) prevents further collapse."
+          }
+        },
+        "photo_contexts": {
+          "setting": {
+            "source_supported": false,
+            "observable_object": false,
+            "reason": "While the source mentions supernovae, a 'supernova remnant' is a specific large-scale nebular object not explicitly detailed or defined as the visual setting for a neutron star in the text."
+          },
+          "subject": {
+            "source_supported": false,
+            "observable_object": false,
+            "reason": "The text mentions a binary star collision as a header but does not establish a binary system as the standard visual subject for representing a typical neutron star."
+          },
+          "detail": {
+            "source_supported": false,
+            "observable_object": false,
+            "reason": "The 'glowing stellar core' describes an internal state during collapse which is not an externally observable object."
+          }
+        }
+      }
+    }
+  ],
+  "terminal": {
+    "event": "terminal",
+    "error": "ValueError",
+    "message": "research preflight failed after 2 revisions: photo setting: While the source mentions supernovae, a 'supernova remnant' is a specific large-scale nebular object not explicitly detailed or defined as the visual setting for a neutron star in the text.; photo subject: The text mentions a binary star collision as a header but does not establish a binary system as the standard visual subject for representing a typical neutron star.; photo detail: The 'glowing stellar core' describes an internal state during collapse which is not an externally observable object."
+  }
+}

@@ -4,7 +4,7 @@ import json
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
-from material_first.photo_contexts import validate_context_mentions, validate_search_hints
+from material_first.photo_contexts import validate_context_mentions, validate_search_hints, source_catalog_references
 from material_first.operations import Operations
 from factory_v3.gemini import validate_json
 from material_first.source_spans import source_spans
@@ -46,6 +46,7 @@ class ContextTests(unittest.TestCase):
         identifiers = [
             'RX J185635-3754', 'RBS 1223', 'PSR B0531+21', 'NGC 1952', 'IC 443',
             'SNR 0506-68.0', 'SN 1987A', 'SGR 1806-20', 'GRO J1008-57', '4U 0142+61',
+            'RX J1856.5-3754', 'PSR J1614–2230', 'PSR J1614−2230',
         ]
         for identity in identifiers:
             with self.subTest(identity=identity):
@@ -103,6 +104,8 @@ class ContextTests(unittest.TestCase):
                 result['photo_contexts']['detail']['english_photo_object']='Hubble Space Telescope'
             else:
                 self.assertEqual(key,'material-brief')
+                self.assertTrue(any(row['english_photo_object'] == 'RX J185635-3754'
+                                    for row in context['source_catalog_references']))
             validate_json(result,schema)
             return result,{'receipt_id':key}
         ops=Operations('.',SimpleNamespace(fetch=lambda *args:[source]),
@@ -224,3 +227,15 @@ class ContextTests(unittest.TestCase):
         self.assertEqual(self.keys, ['material-brief', 'material-brief-review:1',
                                     'material-brief-repair:review:1', 'material-brief-review:2',
                                     'material-brief-repair:review:2', 'material-brief-review:3'])
+
+    def test_source_reference_inventory_preserves_full_names_and_literal_bindings(self):
+        spans = [{'id': 'first', 'text': 'PSR J1614–2230 and RX J1856.5-3754 are named here.'},
+                 {'id': 'second', 'text': 'PSR J1614-2230 repeats the same identifier; SN 1987A is another.'}]
+        refs = source_catalog_references(spans)
+        self.assertEqual([r['english_photo_object'] for r in refs],
+                         ['PSR J1614-2230', 'RX J1856.5-3754', 'SN 1987A'])
+        for row in refs:
+            span = next(s for s in spans if s['id'] == row['support_span_ids'][0])
+            self.assertIn(row['source_mention'], span['text'])
+        self.assertEqual(source_catalog_references(spans, maximum=2), refs[:2])
+        self.assertEqual(source_catalog_references([{'id': 'none', 'text': 'No catalogued object.'}]), [])

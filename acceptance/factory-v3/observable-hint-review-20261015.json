@@ -23,5 +23,21 @@
     "stop": "normal result or first terminal failure; no retries"
   },
   "remote_evidence": "/var/lib/factory-v3/gateway-admission-20261014/observable-review-events.jsonl",
-  "diagnostic_job": "job_753fdb2b7c6b"
+  "diagnostic_job": "job_753fdb2b7c6b",
+  "diagnostic_result": {
+    "generation_calls": 5,
+    "state": "rejected_after_two_revisions",
+    "actual_fixture": "tests/material_first/fixtures/actual-invisible-search-review-20261015.json",
+    "meaning": "Restored review detects unobservable interiors and unsupported object links; existing draft repair did not produce acceptable contexts. No photo search/TTS."
+  },
+  "follow_on_change": {
+    "hypothesis": "Forced beginning/mechanism/outcome for a neutral object topic drives invisible-process choices; free-form contexts ignore source-named objects.",
+    "implementation": "Use input-dependent editorial angle; give generation and repairs a deterministic bounded inventory of full literal catalog names and source-span bindings. Names are candidates only, never image availability or semantic approval.",
+    "regression": "Full decimal/signed and Unicode-dash catalog names, deduplication, exact literal span binding, 24-name bound, absent names; real source inventory reaches generation adapter.",
+    "checks": {
+      "factory_v3": 115,
+      "material_first": 212
+    },
+    "deployed": false
+  }
 }

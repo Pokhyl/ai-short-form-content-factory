@@ -1,5 +1,9 @@
 # Release gate — current execution contract
 
+## Observable search inputs — 2026-10-15
+
+Current source restores source-support/observability review before provider search even in availability-first mode; final visual contracts remain deferred. The actual saved draft passed facts-only review while requesting a neutron-star core. Restored review rejected this and both bounded revisions (five model calls, no searches/TTS); fixture and evidence are in observable-hint-review-20261015.json. Do not repeat that failed draft-repair approach. Generation now distinguishes a neutral object topic from a requested process and receives exact source-catalog reference candidates. This is a new input-selection hypothesis, not semantic acceptance. Local212 material/115 core checks pass; package and bounded saved-source evidence pending. Live remains ffba621; do not claim a new video or readiness.
+
 ## Replay reconstruction correction — 2026-10-15
 
 Same-version research request bd2ac26d now reconstructs to its exact stored hash e2ee3932… after restoring visual_validation_mode in the replay entrypoint. Prior claims that absent archived bodies made reconstruction impossible were too strong: the replay tool omitted a production input. Legacy deleted photographs remain a separate limit. The normal request remains immutable unknown after Gemini503. One separately recorded exact-request diagnostic returned200/STOP (11,069 input +650 output tokens), but its selected source mention failed local validation. Existing bounded research repair/review is being checked in isolation; no production retry, photo search or TTS. See acceptance/factory-v3/replay-mode-and-provider-diagnostic-20261015.json. No readiness claim.

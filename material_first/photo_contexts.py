@@ -18,7 +18,26 @@ STOP_WORDS = {'the','a','an','of','for','and','in','on','space','outer','astrono
 EQUIPMENT_WORDS = {'telescope','telescopes','microscope','microscopes','camera','cameras','observatory','observatories','laboratory','laboratories','detector','detectors','satellite','satellites'}
 OBSERVABLE_CATALOG_ID = re.compile(
     r"\b(?:RX|RBS|PSR|NGC|IC|SNR|SN|SGR|GRO|4U)\s*[A-Z]?\s*"
-    r"\d{3,6}(?:[.-]\d{1,6}(?:\.\d+)?[A-Z]?)?(?:[A-Z])?(?:\+\d{1,4})?\b", re.I)
+    r"\d{3,6}(?:\.\d+)?(?:[-–−+]\d{1,6}(?:\.\d+)?)?[A-Z]?\b", re.I)
+
+
+def source_catalog_references(spans, maximum=24):
+    """Literal source names to consider, not evidence of image availability."""
+    references, known = [], set()
+    for span in spans:
+        for match in OBSERVABLE_CATALOG_ID.finditer(span['text']):
+            literal = match.group(0)
+            query = re.sub(r'\s+', ' ', literal).translate(str.maketrans({'–': '-', '−': '-'}))
+            identity = re.sub(r'\s+', '', query).casefold()
+            if identity in known:
+                continue
+            known.add(identity)
+            references.append({'source_mention': literal, 'english_photo_object': query,
+                               'support_span_ids': [span['id']]})
+            if len(references) == maximum:
+                return references
+    return references
+
 
 
 def validate_search_hints(contexts, topic, source_spans=None):

@@ -3,7 +3,7 @@ from copy import deepcopy
 from factory_v3.gemini import obj, string, BOOL, validate_json
 from factory_v3.grounding import validate_evidence
 from .source_spans import bind_support
-from .photo_contexts import bind_english_objects, validate_context_mentions, validate_search_hints
+from .photo_contexts import bind_english_objects, validate_context_mentions, validate_search_hints, source_catalog_references
 
 
 def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_photos=True):
@@ -73,7 +73,8 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
             'Write english_photo_object only in ENGLISH. Copy source_mention literally in its original language from a selected support span. '
             'Keep the original topic and provide setting, subject and detail contexts with valid fact_ids. '
             'The server will independently validate and review your revised plan once more.',
-            {'request':request,'source_spans':spans,'rejected_draft':rejected_draft,'failures':failures},schema)
+            {'request':request,'source_spans':spans,'source_catalog_references':source_catalog_references(spans),
+             'rejected_draft':rejected_draft,'failures':failures},schema)
         if query_only_repair:
             if draft.get('facts') != rejected_draft.get('facts') or draft.get('required_fact_ids') != rejected_draft.get('required_fact_ids'):
                 raise ValueError('photo search repair changed source-backed facts')
