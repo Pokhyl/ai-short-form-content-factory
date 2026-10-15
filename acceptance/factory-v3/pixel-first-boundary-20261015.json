@@ -1,0 +1,23 @@
+{
+  "id": "77e13e1f-15f6-4ed9-b055-b9b6dd245d8b",
+  "source_preparation": "53a0eb07-2d9b-456c-8ed5-4d76e39851e3",
+  "question": "Does normal discovery filtering and actual pixel inspection yield enough unique directly relevant photographs for UK60 before composition?",
+  "revision": "66de3eaa2a31d19f865e7f4aab6521d8c705224a",
+  "max_downloads": 30,
+  "max_gemini_calls": 12,
+  "max_metadata_calls": 1,
+  "new_searches": 0,
+  "tts": 0,
+  "render": 0,
+  "stop": "Capture composition input or first terminal failure; no composition model call; never rerun ID",
+  "quota": "Free-only proof required; actual model tokens unknown before responses",
+  "image_id": "sha256:fbe521d0d22332aa92aa81ce2bfee507cdd953d47b12f500d3bed5402c615091",
+  "package_tests": {
+    "material": 217,
+    "core": 122
+  },
+  "state": "running",
+  "server_receipt": "/data/checks/pixel-first-20261015/receipt.json",
+  "tool_job": "job_b6541ee72e50",
+  "deployed": false
+}
