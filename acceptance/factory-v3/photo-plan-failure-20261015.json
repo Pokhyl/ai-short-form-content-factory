@@ -1,0 +1,24 @@
+{
+  "project_ready": false,
+  "request_id": "53a0eb07-2d9b-456c-8ed5-4d76e39851e3",
+  "replay_revision": "c32b512ca916108b941ee86eb7bd6fca97a950ae",
+  "request_hash": "dafa464dce29ecccb641c680b4dd82aa669dbaf5caeb703eb65e475d7e4e8985",
+  "reconstructed_fact_order": [
+    "fact-2",
+    "fact-3",
+    "fact-1"
+  ],
+  "terminal_reason": "photo object label is absent from actual anchor metadata",
+  "label": "pulsar system",
+  "anchor": "wikimedia:1758217",
+  "provenance_category": "Depictions of exoplanets generated with Celestia",
+  "new_provider_calls": 0,
+  "new_tts_calls": 0,
+  "database_writes": 0,
+  "local_tests": {
+    "material": 216,
+    "core": 122
+  },
+  "deployed": false,
+  "actual_image_quality_verified": false
+}

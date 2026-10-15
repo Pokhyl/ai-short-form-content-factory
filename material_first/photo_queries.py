@@ -38,7 +38,16 @@ def described_as_synthetic(candidate):
     # actual file title/description, not its credit string.
     source_path = unquote(urlsplit(str(candidate.get("source_url", ""))).path).replace("-", " ").replace("_", " ")
     text = str(candidate.get("description", "")) + " " + str(candidate.get("source_metadata", {}).get("title", "")) + " " + source_path
-    return bool(SYNTHETIC.search(text))
+    if SYNTHETIC.search(text):
+        return True
+    # Wikimedia categories describe the actual file's provenance. Credits and
+    # broad subject categories (e.g. images of simulation equipment) do not.
+    for info in candidate.get('source_metadata', {}).get('imageinfo', []):
+        categories = info.get('extmetadata', {}).get('Categories', {}).get('value', '')
+        for category in str(categories).split('|'):
+            if re.search(r'\b(?:depictions?\b.*\bgenerated\s+(?:with|by)|computer[- ]generated\s+(?:images?|art)|3d\s+renderings?|artist[’\x27]s\s+(?:impressions?|concepts?))\b', category, re.I):
+                return True
+    return False
 
 
 def relevance(candidate, query):

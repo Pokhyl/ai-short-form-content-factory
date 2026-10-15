@@ -1,0 +1,102 @@
+{
+  "preparation_id": "53a0eb07-2d9b-456c-8ed5-4d76e39851e3",
+  "source_revision": "c32b512ca916108b941ee86eb7bd6fca97a950ae",
+  "metadata_only": true,
+  "selection": {
+    "v0": {
+      "anchor_id": "wikimedia:129539683",
+      "english_photo_object": "neutron star",
+      "source_mention": "нейтронная звезда",
+      "support_span_ids": [
+        "s1-0-1094",
+        "s3-29712-30816"
+      ],
+      "fact_ids": [
+        "fact-2"
+      ]
+    },
+    "v1": {
+      "anchor_id": "wikimedia:177378121",
+      "english_photo_object": "cosmic cannonball",
+      "source_mention": "нейтронная звезда",
+      "support_span_ids": [
+        "s1-3302-4411",
+        "s3-6779-7929"
+      ],
+      "fact_ids": [
+        "fact-1"
+      ]
+    },
+    "v2": {
+      "anchor_id": "wikimedia:1758217",
+      "english_photo_object": "pulsar system",
+      "source_mention": "пульсар",
+      "support_span_ids": [
+        "s1-11157-12230",
+        "s3-30816-31855"
+      ],
+      "fact_ids": [
+        "fact-3"
+      ]
+    }
+  },
+  "candidates": [
+    {
+      "id": "wikimedia:129539683",
+      "description": "This is the first direct look, in visible light, at a lone neutronstar, as seen by NASA/ESA Hubble Space Telescope. The Hubble results show thestar is very hot (1.2 million degrees Fahrenheit or about 670 thousand degrees Celsius at the surface), and can be no larger than 16.8 miles (28 kilometers) across. These resultsprove that the object must be a neutron star, because no other knowntype of object can be this hot, small, and dim (below 25th magnitude). The first clue that there was a neutron star at this location came in1992, when the ROSAT (the Roentgen Satellite) found a bright X-ray source without any optical counterpart in optical sky surveys. Hubble's Wide Field Planetary Camera 2 was used in October 1996 to undertake asensitive search for the optical object, and found a stellar pinpointof light within only 2 arc seconds (1/900th the diameter of the Moon) ofthe X-ray position. Astronomers haven't directly measured the neutronstar's distance, but fortunately the neutron star lies in front of amolecular cloud known to be about 400 light-years away in the southernconstellation Corona Australis.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Isolated_Neutron_Star_RX_J185635-3754_-_opo9732a.jpg",
+      "source_metadata": {
+        "title": "File:Isolated Neutron Star RX J185635-3754 - opo9732a.jpg",
+        "imageinfo": [
+          {
+            "extmetadata": {
+              "Categories": {
+                "value": "RX J1856.5-3754|Hubble images of individual stars",
+                "hidden": "",
+                "source": "commons-categories"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "wikimedia:177378121",
+      "description": "This graphic shows a wide-field view of the Puppis A supernova remnant along with a close-up image of the neutron star, known as RX J0822-4300, that is moving at a blistering pace. The larger field-of-view is a composite of X-ray data from the ROSAT satellite (pink) and optical data (purple), from the Cerro Tololo Inter-American Observatory 0.9-meter telescope, which highlights oxygen emission. Astronomers think Puppis A was created when a massive star ended its life in a supernova explosion about 3,700 years ago, forming an incredibly dense object called a neutron star and releasing debris into space. The neutron star was ejected by the explosion. The inset box shows two observations of this neutron star obtained with the Chandra X-ray Observatory over the span of five years, between December 1999 and April 2005. By combining how far it has moved across the sky with its distance from Earth, astronomers determined the cosmic cannonball is moving at over 3 million miles per hour, one of the fastest moving stars ever observed. At this rate, RX J0822-4300 is destined to escape from the Milky Way after millions of years, even though it has only traveled about 20 light years so far. The results from this study suggest the supernova explosion was lop-sided, kicking the neutron star in one direction and much of the debris from the explosion in the other. The estimated location of the explosion is shown in a labeled version of the composite image. The direction of motion of the cannonball, shown by an arrow, is in the opposite direction to the overall motion of the oxygen debris, seen in the upper left. In each case, the arrows show the estimated motion over the next 1,000 years. The oxygen clumps are believed to be massive enough so that momentum is conserved in the aftermath of the explosion, as required by fundamental physics.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:RX_J0822-4300_in_Puppis_A-_Chandra_Discovers_Cosmic_Cannonball_(2007-puppis_-).jpg",
+      "source_metadata": {
+        "title": "File:RX J0822-4300 in Puppis A- Chandra Discovers Cosmic Cannonball (2007-puppis -).jpg",
+        "imageinfo": [
+          {
+            "extmetadata": {
+              "Categories": {
+                "value": "PD NASA|Puppis A|RX J0822-4300|HRC images|Chandra files uploaded by OptimusPrimeBot",
+                "hidden": "",
+                "source": "commons-categories"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "wikimedia:1758217",
+      "description": "Pulsar <a href=\"https://en.wikipedia.org/wiki/PSR_B1257%2B12\" class=\"extiw\" title=\"en:PSR B1257+12\">PSR B1257+12</a> currently has three confirmed planets. But because they were discovered before the modern naming of extrasolar planets became common, the planets were named in order from the star and with uppercase letters.",
+      "source_url": "https://commons.wikimedia.org/wiki/File:PSR_1257%2B12_System.JPG",
+      "source_metadata": {
+        "title": "File:PSR 1257+12 System.JPG",
+        "imageinfo": [
+          {
+            "extmetadata": {
+              "Categories": {
+                "value": "PSR B1257+12|Self-published work|PD-self|Depictions of exoplanets generated with Celestia",
+                "hidden": "",
+                "source": "commons-categories"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

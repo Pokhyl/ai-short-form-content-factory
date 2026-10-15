@@ -32,5 +32,13 @@
   "stop": "First terminal/unknown state; never rerun this ID. Explicit503 retries occur only within normal live preparing state and total budget.",
   "submitted": true,
   "submission_http_status": 202,
-  "initial_status": "preparing"
+  "initial_status": "preparing",
+  "terminal": {
+    "status": "failed",
+    "error_code": "ValueError",
+    "stage": "material-photo-plan",
+    "reason": "photo object label is absent from actual anchor metadata",
+    "new_tts_calls": 0,
+    "new_mp4": false
+  }
 }

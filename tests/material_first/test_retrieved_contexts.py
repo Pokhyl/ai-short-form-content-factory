@@ -24,6 +24,8 @@ class RetrievedContextTests(unittest.TestCase):
             self.calls.append(key)
             if key in {'material-photo-plan','material-photo-plan-repair'}:
                 if key=='material-photo-plan':
+                    enum = schema['properties']['v0']['properties']['fact_ids']['items']['enum']
+                    self.assertEqual(enum, sorted(enum))
                     self.assertIn('verbatim contiguous substring',instruction)
                     self.assertIn('short 3–80 character verbatim contiguous substring',instruction)
                     self.assertIn('literally contains that exact substring',instruction)
@@ -132,6 +134,36 @@ class RetrievedContextTests(unittest.TestCase):
     def test_repeated_anchor_cannot_fill_three_contexts(self):
         def mutate(rows):rows['v1']['anchor_id']=rows['v0']['anchor_id']
         with self.assertRaisesRegex(ValueError,'distinct anchors'):self.run_plan(mutate)
+
+    def test_actual_unbound_label_discards_plan_and_preserves_pixel_review_input(self):
+        from material_first.operations import Operations
+        from material_first.presentation import TOPIC_POLICY
+        from material_first.retrieved_contexts import PhotoPlanReviewFailed
+        from unittest.mock import patch
+        saved = json.loads((ROOT/'actual-photo-plan-53a0.json').read_text())
+        rejected = saved['selection']['v2']
+        self.pools.append([next(c for c in saved['candidates'] if c['id'] == rejected['anchor_id'])])
+        # Use the actual rejected label against an eligible observation anchor:
+        # the separately tested provenance filter now removes the Celestia file.
+        def mutate(rows):
+            rows['v2']['english_photo_object'] = rejected['english_photo_object']
+        with self.assertRaisesRegex(PhotoPlanReviewFailed, 'label is absent'):
+            self.run_plan(mutate)
+        ops = Operations('.', None, None, None, None)
+        ops.availability_first_contexts = True
+        ops.discovery_pools = self.pools
+        candidates = [c for pool in self.pools[:-1] for c in pool]
+        ops.discover = lambda request, queries: candidates
+        original = copy.deepcopy(self.brief)
+        with patch('material_first.retrieved_contexts.plan_retrieved_contexts',
+                   side_effect=lambda *args: self.run_plan(mutate)):
+            resolved, passed = ops.resolve_photos({'topic': 'Neutron star', 'seconds': 60,
+                'presentation_policy': TOPIC_POLICY, 'visual_validation_mode': 'gemini'}, self.brief)
+        self.assertTrue(resolved.pop('_pixel_review_fallback'))
+        self.assertEqual(resolved, original)
+        self.assertEqual(self.brief, original)
+        self.assertIs(passed, candidates)
+        self.assertNotIn('material-photo-plan-review', self.calls)
     def test_unknown_fact_cannot_replace_original_scope(self):
         def mutate(rows):rows['v0']['fact_ids']=['invented-fact']
         with self.assertRaisesRegex(ValueError,'unexpected identity'):self.run_plan(mutate)

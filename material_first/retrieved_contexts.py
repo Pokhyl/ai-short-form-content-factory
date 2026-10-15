@@ -195,7 +195,7 @@ def plan_retrieved_contexts(gemini,request,brief,pools,limit):
     schema=obj({key:obj({'anchor_id':string(c['id'] for c in anchors),
         'english_photo_object':{**string(),'maxLength':100},'source_mention':{**string(),'maxLength':160},
         'support_span_ids':array(string(s['id'] for s in spans),1,3),
-        'fact_ids':array(string(ids),1,8)}) for key in ('v0','v1','v2')})
+        'fact_ids':array(string(sorted(ids)),1,8)}) for key in ('v0','v1','v2')})
 
     def materialize(chosen):
         validate_json(chosen,schema)
@@ -209,7 +209,7 @@ def plan_retrieved_contexts(gemini,request,brief,pools,limit):
             anchor=known[row['anchor_id']];label=row['subject'].strip()
             object_label=re.sub(r'\s+\((?:ultraviolet|infrared|gamma-ray|x-ray|radio|optical) observation\)$','',label,flags=re.I)
             if not any(object_label.casefold() in text.casefold() for text in descriptions(anchor)):
-                raise ValueError('photo object label is absent from actual anchor metadata')
+                raise PhotoPlanReviewFailed('photo object label is absent from actual anchor metadata')
             band_match=re.search(r'\((ultraviolet|infrared|gamma-ray|x-ray|radio|optical) observation\)$',label,re.I)
             if band_match and _observation_band(anchor)!=band_match.group(1).casefold():
                 raise ValueError('observation qualifier is absent from exact anchor filename metadata')

@@ -6,6 +6,31 @@ from material_first.presentation import TOPIC_POLICY, LEGACY_POLICY
 
 
 class PhotographSearchTests(unittest.TestCase):
+    def test_actual_celestia_category_rejects_render_but_keeps_observations(self):
+        import json
+        from pathlib import Path
+        saved = json.loads((Path(__file__).parent/'fixtures/actual-photo-plan-53a0.json').read_text())
+        decisions = {c['id']: described_as_synthetic(c) for c in saved['candidates']}
+        self.assertEqual(decisions, {'wikimedia:129539683': False,
+                                    'wikimedia:177378121': False, 'wikimedia:1758217': True})
+        calls = []
+        def search(provider, query, orientation):
+            calls.append(provider)
+            return {'candidates': saved['candidates']}
+        ops = Operations('.', None, None, SimpleNamespace(search=search), None)
+        candidates = ops.discover({'topic': 'Neutron star', 'seconds': 60,
+                                  'presentation_policy': TOPIC_POLICY}, ['neutron star'])
+        self.assertEqual({c['id'] for c in candidates},
+                         {'wikimedia:129539683', 'wikimedia:177378121'})
+        self.assertEqual(calls, ['wikimedia'])
+
+    def test_provenance_categories_do_not_reject_photographed_equipment_or_processed_data(self):
+        for categories in ('Computer simulation laboratories', 'False-color astronomical images',
+                           'Photographs of artists', 'Hubble images of individual stars'):
+            candidate = {'description': 'Actual observation', 'source_metadata': {
+                'imageinfo': [{'extmetadata': {'Categories': {'value': categories}}}]}}
+            self.assertFalse(described_as_synthetic(candidate), categories)
+
     def test_remote_astronomical_objects_use_observational_archive_search(self):
         for topic in ('Neutron star', 'Pulsar PSR J0437', 'Нейтронная звезда', 'Нейтронна зоря'):
             self.assertTrue(observational_archive_topic(topic))
