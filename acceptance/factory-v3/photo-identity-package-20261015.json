@@ -37,6 +37,12 @@
     "provider_calls": 0,
     "passed": true
   },
-  "deployment": "pending",
+  "deployment": {
+    "verified": true,
+    "public_revision": "3e1ae53a28bf1e7a42a7ecc1e12df2c5af07aff8",
+    "protected_state_equal": true,
+    "gateway_status": 403,
+    "server_receipt": "/var/lib/factory-v3/photo-identity-20261015/rollout.json"
+  },
   "next": "protected snapshot and app-only rollout; sequential representative normal cases, starting PL15 bread. Saved astronomy pool remains insufficient for UK60; do not reuse failed IDs or count it as acceptance."
 }
