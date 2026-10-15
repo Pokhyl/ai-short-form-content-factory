@@ -1,6 +1,12 @@
-## Verified package and connected matrix — 2026-10-15 21:33 UTC
+## Current continuation — 2026-10-15
 
-Runtime3e1ae53/image4ec35443 passes122 core+222 material tests with zero skips, network none and no runtime overlay. Test-only4ff3697 is pushed; its pixel-first connected matrix passes all16 language/duration subcases plus synthetic/unrelated rejection. Exact original77e1 photo replay detects exactly2 known framed duplicate pairs: true unique count10, insufficient for UK60. No new provider calls/TTS/render. Receipt photo-identity-package-20261015.json. LIVE now3e1ae53/image4ec35443. App-only rollout verified: all factory table/function hashes, n8n workflow/history, settings and supporting containers unchanged; public exact revision, gateway403. Release /var/lib/factory-v3/photo-identity-20261015. One normal breadPL15 Vision request dispatched via public API; submission job_0ebc5f43352f, immutable ID in bread-normal-plan.json, result bread-normal-submission.json. Inspect actual state; do not repeat submission. Next finish this representative case and diagnose any failure from saved evidence, not more neutron-only prompt tuning. Whole-project acceptance remains unproven. Historical notes below are superseded by this checkpoint.
+LIVE3e1ae53/image4ec35443: pixel-first plus framed-photo dedup, verified app-only rollout preserved DB/settings/n8n/supporting services. 122core+222material exact-image tests zero skips; original77e1 replay finds exactly2 duplicate pairs, true unique10 (UK60 insufficient).
+
+Normal breadPL15 request4731d936-38a1-4864-9e08-4042ed349ccb TERMINAL failed KeyError after material-compose; no TTS/render. Never rerun. Provisional visual_targets leaked through new pixel-first path; overlong draft invokes paragraph allocation which indexes absent validated_visual_anchors. Full strict replay stopped earlier at image-request hash mismatch (likely persisted nested key ordering, unconfirmed); do NOT claim exact full replay passed.
+
+Fix fd387f5 pushed: strip provisional roles from copied brief/candidates, retain discovery metadata and strict fact/topic gates; use approved-role paragraph allocation only when anchors exist. Connected matrix now includes actual-shaped provisional roles and both initial/overlong drafts across16 pairs; separate no-anchors length regression passes. Full prior225material/122core passed locally (5 OpenCV skips); final package must include added226th test. Build job_ec7806be798a, release /var/lib/factory-v3/pixel-role-contract-20261015, source /var/lib/factory-v3/photo-provenance-20261015/source. Next inspect build, run exact-image full suites zero skips before any rollout/new normal case. No project acceptance or new MP4. Preserve unrelated dirty acceptance/work files.
+
+Historical notes below are superseded.
 
 ## General photo identity candidate — 2026-10-15
 
