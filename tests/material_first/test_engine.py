@@ -255,7 +255,7 @@ class EngineTests(unittest.TestCase):
         ops = Operations(self.root,['photo']*3)
         frozen = self.run_prepare(ops)
         asset = frozen['payload']['assets'][0]
-        asset['visual_fingerprint'] = {'source_sha256':asset['sha256'],'rgb':'forged-sample'}
+        asset['visual_fingerprint'] = {'algorithm':'rgb32-v1','source_sha256':asset['sha256'],'rgb':'forged-sample'}
         frozen['sha256'] = digest(frozen['payload'])
         with patch('material_first.photo_identity.fingerprint',return_value={'source_sha256':asset['sha256'],'rgb':'actual-sample'}):
             with self.assertRaisesRegex(ValueError,'fingerprint differs'):

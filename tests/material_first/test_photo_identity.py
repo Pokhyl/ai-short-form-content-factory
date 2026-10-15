@@ -39,7 +39,7 @@ class PhotoIdentityTests(unittest.TestCase):
     def test_decode_bound_to_source_without_modifying_file(self):
         raw = pixels(self.samples[0])
         with patch('material_first.photo_identity.subprocess.check_output', return_value=raw) as decode:
-            result=fingerprint('/source.jpg','source-sha',1920,1920)
+            result=fingerprint('/source.jpg','source-sha',1920,1920,algorithm='rgb32-v1')
         self.assertEqual(result['source_sha256'],'source-sha')
         self.assertEqual(pixels(result),raw)
         self.assertEqual(decode.call_args.kwargs['timeout'],20)

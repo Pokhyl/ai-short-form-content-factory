@@ -16,8 +16,25 @@
     "material": 217,
     "core": 122
   },
-  "state": "running",
+  "state": "completed_not_accepted",
   "server_receipt": "/data/checks/pixel-first-20261015/receipt.json",
   "tool_job": "job_b6541ee72e50",
-  "deployed": false
+  "deployed": false,
+  "result": {
+    "machine_state": "pixel_feasibility_passed",
+    "accepted_count": 12,
+    "visual_audit": "Repeated views with borders/captions were counted as distinct; not sufficient unique-photo evidence",
+    "example_pairs": [
+      [
+        "wikimedia:129539683",
+        "wikimedia:5905339"
+      ],
+      [
+        "wikimedia:129539490",
+        "wikimedia:178212438"
+      ]
+    ],
+    "tts": 0,
+    "render": 0
+  }
 }

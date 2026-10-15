@@ -497,6 +497,7 @@ def verify(root, frozen, probe=probe_media):
     if len({m['id'] for m in payload['observations']}) != len(payload['observations']):
         raise ValueError('duplicate frozen observation identity')
     observations = []
+    verified_fingerprints = []
     for original in payload["observations"]:
         if (payload.get('presentation_policy') == TOPIC_POLICY and payload.get('visual_validation_mode','gemini') == 'gemini'
             and original['inspection'].get('inspection_protocol') != 'topic-specific-v1'):
@@ -509,10 +510,15 @@ def verify(root, frozen, probe=probe_media):
         dimensions = validate_material(root, asset, probe)
         sample = asset.get('visual_fingerprint')
         if sample is not None:
-            from .photo_identity import fingerprint
-            actual = fingerprint(asset_path(root, asset['path']), asset['sha256'], dimensions['width'], dimensions['height'])
+            from .photo_identity import fingerprint, same_photo
+            actual = fingerprint(asset_path(root, asset['path']), asset['sha256'], dimensions['width'], dimensions['height'],
+                                 algorithm=sample['algorithm'])
             if sample != actual:
                 raise ValueError('frozen photo fingerprint differs from source bytes')
+            if sample['algorithm'] == 'rgb32-sift-v2':
+                if any(same_photo(sample, prior) for prior in verified_fingerprints):
+                    raise ValueError('duplicate frozen photograph view')
+                verified_fingerprints.append(sample)
         current = inspected_material(asset, original["inspection"], payload["evidence"], facts, payload.get("visual_validation_mode", "gemini"))
         if current != original:
             raise ValueError("frozen observation changed")
