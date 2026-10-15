@@ -61,10 +61,11 @@
     "stage": "after material-compose before TTS",
     "provisional_roles_leaked_into_pixel_first": true,
     "length_repair_requires_missing_validated_visual_anchors": true,
-    "strict_full_replay": "hash mismatch at first image batch; not claimed reproduced end-to-end",
+    "strict_full_replay": "Exact saved requests matched after restoring visual_targets dictionary key order from identical reconstructed candidates; reached paragraphs.py184 KeyError validated_visual_anchors. Zero provider calls/database writes.",
     "regression": "controlled connected initial/overlong drafts across all 16 language/duration pairs; separate length repair without approved anchor mapping",
     "fix_revision": "fd387f5",
     "tts": 0,
-    "render": 0
+    "render": 0,
+    "replay_job": "job_27defb123101"
   }
 }
