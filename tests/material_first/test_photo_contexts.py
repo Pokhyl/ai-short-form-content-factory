@@ -125,7 +125,8 @@ class ContextTests(unittest.TestCase):
             validate_context_mentions(self.rows,[{'id':'s1','text':'General neutron star physics, without named objects.'}])
 
     def test_actual_bad_query_classes_are_rejected_before_search(self):
-        for query in ['neutron star representation','pulsar radiation beam','neutron star diagram']:
+        for query in ['neutron star representation','pulsar radiation beam','neutron star diagram',
+                      'neutron star core', 'stellar core', 'internal neutron star core']:
             rows=copy.deepcopy(self.rows);rows['subject'].update(subject=query,query=query)
             with self.subTest(query=query),self.assertRaisesRegex(ValueError,'depiction or invisible'):
                 validate_context_mentions(rows,self.spans)
@@ -168,7 +169,9 @@ class ContextTests(unittest.TestCase):
                 for row in rows.values():row['support_span_ids']=[span]
                 self.repaired=copy.deepcopy(rows)
                 if weak_hint:rows['setting']['subject']=rows['setting']['query']='space'
-                if mode!='valid':rows['subject']['query']=rows['subject']['subject']='neutron star representation'
+                if mode!='valid':
+                    rows['subject']['query']=rows['subject']['subject']=(
+                        'neutron star core' if mode=='hidden_core' else 'neutron star representation')
                 facts.extend([{'id':'f'+str(i),'text':claim,'support':[{'span_id':span}]} for i,claim in enumerate(self.text.split('. ')[:3])])
                 result={'facts':facts,'required_fact_ids':['f0','f1','f2'],'photo_contexts':rows}
             elif key.startswith('material-brief-repair:'):
@@ -221,12 +224,16 @@ class ContextTests(unittest.TestCase):
         self.run_research('valid',availability_first=True,duplicate=True)
         self.assertEqual(self.keys,['material-brief','material-brief-review:1'])
 
-    def test_availability_first_rejects_unobservable_search_objects_before_discovery(self):
-        with self.assertRaisesRegex(ValueError, 'Unobservable interior'):
-            self.run_research('valid', availability_first=True, reject_photos=True)
-        self.assertEqual(self.keys, ['material-brief', 'material-brief-review:1',
-                                    'material-brief-repair:review:1', 'material-brief-review:2',
-                                    'material-brief-repair:review:2', 'material-brief-review:3'])
+    def test_availability_first_defers_photo_availability_to_actual_retrieval(self):
+        # A text-only reviewer cannot rule out point-source observations by
+        # inventing a resolved-surface requirement. Actual pixel gates decide.
+        self.run_research('valid', availability_first=True, reject_photos=True)
+        self.assertEqual(self.keys, ['material-brief', 'material-brief-review:1'])
+
+    def test_invisible_core_hint_is_repaired_before_search_without_predicting_image_availability(self):
+        self.run_research('hidden_core', availability_first=True)
+        self.assertEqual(self.keys, ['material-brief', 'material-brief-repair:review:1',
+                                    'material-brief-review:2'])
 
     def test_source_reference_inventory_preserves_full_names_and_literal_bindings(self):
         spans = [{'id': 'first', 'text': 'PSR J1614–2230 and RX J1856.5-3754 are named here.'},

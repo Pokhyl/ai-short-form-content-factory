@@ -9,7 +9,7 @@
   },
   "local_checks": {
     "factory_v3": 115,
-    "material_first": 211
+    "material_first": 213
   },
   "diagnostic_plan": {
     "question": "Can existing bounded review reject and repair actual saved impossible search object?",
@@ -39,5 +39,13 @@
       "material_first": 212
     },
     "deployed": false
-  }
+  },
+  "follow_on_provider_result": {
+    "state": "failed",
+    "generation_calls": 4,
+    "reason": "Text-only reviewer incorrectly demanded resolved photographs of named neutron stars, then repair introduced equipment and mutated facts.",
+    "deployed": false,
+    "remote_evidence": "/var/lib/factory-v3/observable-inputs-20261015/research-events.jsonl"
+  },
+  "final_boundary_decision": "Do not ship restored speculative photo observability review. Retain factual review and exact source mention checks before retrieval, explicitly reject concealed astronomical core requests in the local hint validator, and let existing retrieved-object and original-pixel review establish actual photo suitability. Keep new source-name inventory and topic-appropriate editorial angle."
 }

@@ -10,7 +10,7 @@ SYNTHETIC = re.compile(
     r"cross[- ]section|synthetic\s+rendering|3d\s+render(?:ing)?|"
     r"computer[- ]generated|(?:this|computer|supercomputer|numerical)\s+simulations?|"
     r"simulated\s+(?:image|scene|view)|planetarium\s+show|animation|visuali[sz](?:ation|ing))\b", re.I)
-INVISIBLE = re.compile(r"\b(?:magnetospheres?|magnetic\s+field\s+beams?|field\s+lines|imagined\s+particle\s+beams?)\b", re.I)
+INVISIBLE = re.compile(r"\b(?:magnetospheres?|magnetic\s+field\s+beams?|field\s+lines|imagined\s+particle\s+beams?|(?:neutron\s+star|stellar|planetary)\s+(?:inner\s+|internal\s+)?cores?|(?:inner|internal)\s+(?:neutron\s+star|stellar|planetary)\s+cores?)\b", re.I)
 OBSERVATIONAL_ARCHIVE_TOPIC = re.compile(
     r"\b(?:neutron\s+stars?|magnetars?|pulsars?|supernovas?(?:\s+remnants?)?|"
     r"black\s+holes?|quasars?|exoplanets?)\b|"

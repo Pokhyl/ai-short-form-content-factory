@@ -2,7 +2,7 @@
 
 ## Observable search inputs — 2026-10-15
 
-Current source restores source-support/observability review before provider search even in availability-first mode; final visual contracts remain deferred. The actual saved draft passed facts-only review while requesting a neutron-star core. Restored review rejected this and both bounded revisions (five model calls, no searches/TTS); fixture and evidence are in observable-hint-review-20261015.json. Do not repeat that failed draft-repair approach. Generation now distinguishes a neutral object topic from a requested process and receives exact source-catalog reference candidates. This is a new input-selection hypothesis, not semantic acceptance. Local212 material/115 core checks pass; package and bounded saved-source evidence pending. Live remains ffba621; do not claim a new video or readiness.
+Candidate re-enabling speculative text-only image observability review was tested and rejected before deployment: it incorrectly demanded resolved photographs of named neutron stars, then pushed repairs toward unrelated equipment. Live remains ffba621. Final candidate keeps source/fact validation before retrieval, explicitly rejects hidden astronomical core hints locally, and retains actual retrieved-object/pixel inspection as the image suitability gate. It also removes the forced process narrative for neutral object topics and supplies exact source-catalog reference names. Local213 material/115 core checks pass; final package/provider evidence pending. All diagnostic failures remain evidence, never product acceptance. See acceptance/factory-v3/observable-hint-review-20261015.json.
 
 ## Replay reconstruction correction — 2026-10-15
 
