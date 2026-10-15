@@ -1,0 +1,309 @@
+{
+  "id": "27fbabb7-8659-4ce5-b4b4-8742169ad6b8",
+  "acceptance": false,
+  "reason": "Caption review accepted a NASA poster and invented a direct topic link for remnant-only metadata",
+  "candidates": [
+    {
+      "id": "wikimedia:35293317",
+      "provider": "wikimedia",
+      "provider_asset_id": "35293317",
+      "source_url": "https://commons.wikimedia.org/wiki/File:SuperNova-PuppisA-XRay-20140910.jpg",
+      "author": "NASA/CXC/IAFE/G. Dubner et al & ESA/XMM-Newton",
+      "license": "Public Domain",
+      "license_original": "Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Help:Public_domain",
+      "media_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/SuperNova-PuppisA-XRay-20140910.jpg/1920px-SuperNova-PuppisA-XRay-20140910.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1600,
+      "height": 1600,
+      "description": "Unprecedented X-ray View of Supernova Remains  — The destructive results of a powerful supernova explosion reveal themselves in a delicate tapestry of X-ray light, as seen in this image from NASA’s Chandra X-Ray Observatory and the European Space Agency's XMM-Newton.\n The image shows the remains of a supernova that would have been witnessed on Earth about 3,700 years ago. The remnant is called Puppis A, and is around 7,000 light years away and about 10 light years across. This image provides the most complete and detailed X-ray view of Puppis A ever obtained, made by combining a mosaic of different Chandra and XMM-Newton observations. Low-energy X-rays are shown in red, medium-energy X-rays are in green and high energy X-rays are colored blue.\n  These observations act as a probe of the gas surrounding Puppis A, known as the interstellar medium. The complex appearance of the remnant shows that Puppis A is expanding into an interstellar medium that probably has a knotty structure.\n  Supernova explosions forge the heavy elements that can provide the raw material from which future generations of stars and planets will form. Studying how supernova remnants expand into the galaxy and interact with other material provides critical clues into our own origins.\n \nA paper describing these results was published in the July 2013 issue of Astronomy and Astrophysics and is available online. The first author is Gloria Dubner from the Instituto de Astronomía y Física del Espacio in Buenos Aires in Argentina.",
+      "attribution": "NASA/CXC/IAFE/G. Dubner et al & ESA/XMM-Newton / Wikimedia Commons / Public domain",
+      "media_type": "photo",
+      "source_metadata": {
+        "ns": 6,
+        "index": 12,
+        "title": "File:SuperNova-PuppisA-XRay-20140910.jpg",
+        "pageid": 35293317,
+        "imageinfo": [
+          {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/1/13/SuperNova-PuppisA-XRay-20140910.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "mime": "image/jpeg",
+            "size": 2700933,
+            "width": 3600,
+            "height": 3600,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/SuperNova-PuppisA-XRay-20140910.jpg/1920px-SuperNova-PuppisA-XRay-20140910.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1600,
+            "extmetadata": {
+              "Artist": {
+                "value": "NASA/CXC/IAFE/G. Dubner et al &amp; ESA/XMM-Newton",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a rel=\"nofollow\" class=\"external free\" href=\"http://chandra.harvard.edu/photo/2014/puppisa/\">http://chandra.harvard.edu/photo/2014/puppisa/</a> (<a rel=\"nofollow\" class=\"external text\" href=\"http://chandra.harvard.edu/photo/2014/puppisa/puppisa_lg.jpg\">image link</a>); see also <a rel=\"nofollow\" class=\"external free\" href=\"https://www.nasa.gov/chandra/multimedia/puppisA-2014.html\">https://www.nasa.gov/chandra/multimedia/puppisA-2014.html</a> and <a rel=\"nofollow\" class=\"external free\" href=\"https://xmm-tools.cosmos.esa.int/external/xmm_science/gallery/public/level3.php?id=1185\">https://xmm-tools.cosmos.esa.int/external/xmm_science/gallery/public/level3.php?id=1185</a>",
+                "source": "commons-desc-page"
+              },
+              "License": {
+                "value": "pd",
+                "hidden": "",
+                "source": "commons-templates"
+              },
+              "DateTime": {
+                "value": "2014-09-11 11:19:00",
+                "hidden": "",
+                "source": "mediawiki-metadata"
+              },
+              "Categories": {
+                "value": "PD NASA|CC-BY-SA-3.0-IGO|Puppis A|Content created by the European Space Agency|Images by the Chandra X-ray Observatory|XMM-Newton images",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "ObjectName": {
+                "value": "SuperNova-PuppisA-XRay-20140910",
+                "source": "mediawiki-metadata"
+              },
+              "UsageTerms": {
+                "value": "Public domain",
+                "source": "commons-desc-page"
+              },
+              "Assessments": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "Copyrighted": {
+                "value": "False",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "Restrictions": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2014-08-22 10:29:57",
+                "source": "commons-desc-page"
+              },
+              "ImageDescription": {
+                "value": "<b>Unprecedented X-ray View of Supernova Remains</b> — The destructive results of a powerful supernova explosion reveal themselves in a delicate tapestry of X-ray light, as seen in this image from NASA’s Chandra X-Ray Observatory and the European Space Agency's XMM-Newton.\n<p>The image shows the remains of a supernova that would have been witnessed on Earth about 3,700 years ago. The remnant is called Puppis A, and is around 7,000 light years away and about 10 light years across. This image provides the most complete and detailed X-ray view of Puppis A ever obtained, made by combining a mosaic of different Chandra and XMM-Newton observations. Low-energy X-rays are shown in red, medium-energy X-rays are in green and high energy X-rays are colored blue.\n</p><p>These observations act as a probe of the gas surrounding Puppis A, known as the interstellar medium. The complex appearance of the remnant shows that Puppis A is expanding into an interstellar medium that probably has a knotty structure.\n</p><p>Supernova explosions forge the heavy elements that can provide the raw material from which future generations of stars and planets will form. Studying how supernova remnants expand into the galaxy and interact with other material provides critical clues into our own origins.\n</p>\nA paper describing these results was published in the July 2013 issue of Astronomy and Astrophysics and is available online. The first author is Gloria Dubner from the Instituto de Astronomía y Física del Espacio in Buenos Aires in Argentina.",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "Public domain",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "false",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "hidden": "",
+                "source": "extension"
+              }
+            },
+            "thumbheight": 1600,
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/SuperNova-PuppisA-XRay-20140910.jpg/1920px-SuperNova-PuppisA-XRay-20140910.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "width": 1600,
+              "height": 1600,
+              "srcset": "https://upload.wikimedia.org/wikipedia/commons/1/13/SuperNova-PuppisA-XRay-20140910.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x",
+              "loading": "lazy",
+              "decoding": "async"
+            },
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:SuperNova-PuppisA-XRay-20140910.jpg",
+            "responsiveUrls": {
+              "2": "https://upload.wikimedia.org/wikipedia/commons/1/13/SuperNova-PuppisA-XRay-20140910.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+            },
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=35293317"
+          }
+        ],
+        "imagerepository": "local"
+      },
+      "discovery_target_id": "v0",
+      "discovery_query": "SNR G260.4-3.4"
+    },
+    {
+      "id": "wikimedia:83600934",
+      "provider": "wikimedia",
+      "provider_asset_id": "83600934",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Zombie_Worlds_FINAL_39x.png",
+      "author": "NASA/JPL-CalTech",
+      "license": "Public Domain",
+      "license_original": "Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Help:Public_domain",
+      "media_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Zombie_Worlds_FINAL_39x.png/1920px-Zombie_Worlds_FINAL_39x.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "width": 1600,
+      "height": 2305,
+      "description": "\"Planets caught in the horrifying grip of an undead star - PSR B1257+12 presents Zombie Worlds: Poltergeist Draugr Phobetor\" - \"These doomed worlds were among the first and creepiest to be discovered as they orbit an undead star known as a pulsar. Pulsar planets like Poltergeist and its neighboring worlds, Phobetor and Draugr, are consumed with constant radiation from the star’s core. Nothing but the undead can subsist in this most inhospitable corner of the galaxy.\"\nPoster from the NASA Exoplanets Exploration Program's Exoplanet Travel Bureau",
+      "attribution": "NASA/JPL-CalTech / Wikimedia Commons / Public domain",
+      "media_type": "photo",
+      "source_metadata": {
+        "ns": 6,
+        "index": 1,
+        "title": "File:Zombie Worlds FINAL 39x.png",
+        "pageid": 83600934,
+        "imageinfo": [
+          {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Zombie_Worlds_FINAL_39x.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "mime": "image/png",
+            "size": 93174045,
+            "width": 6813,
+            "height": 9813,
+            "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Zombie_Worlds_FINAL_39x.png/1920px-Zombie_Worlds_FINAL_39x.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+            "thumbwidth": 1600,
+            "extmetadata": {
+              "Artist": {
+                "value": "NASA/JPL-CalTech",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://exoplanets.nasa.gov/multimedia/exoplanet-travel-bureau/?page=0&amp;per_page=25&amp;order=pub_date+desc%2C+id+desc&amp;search=&amp;category=122%3A174\">https://exoplanets.nasa.gov/multimedia/exoplanet-travel-bureau/?page=0&amp;per_page=25&amp;order=pub_date+desc%2C+id+desc&amp;search=&amp;category=122%3A174</a>",
+                "source": "commons-desc-page"
+              },
+              "License": {
+                "value": "pd",
+                "hidden": "",
+                "source": "commons-templates"
+              },
+              "DateTime": {
+                "value": "2019-11-02 17:50:23",
+                "hidden": "",
+                "source": "mediawiki-metadata"
+              },
+              "Categories": {
+                "value": "PSR B1257+12|PD NASA|Large images|Files uploaded by Rhododendrites (all)|NASA Halloween posters|Featured pictures in the public domain|Featured pictures of space posters|Featured pictures by others nominated by Rhododendrites|Other photographs uploaded by Rhododendrites - NASA",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "ObjectName": {
+                "value": "Zombie Worlds FINAL 39x",
+                "source": "mediawiki-metadata"
+              },
+              "UsageTerms": {
+                "value": "Public domain",
+                "source": "commons-desc-page"
+              },
+              "Assessments": {
+                "value": "featured",
+                "hidden": "",
+                "source": "commons-categories"
+              },
+              "Copyrighted": {
+                "value": "False",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "Restrictions": {
+                "value": "",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2019",
+                "source": "commons-desc-page"
+              },
+              "ImageDescription": {
+                "value": "\"Planets caught in the horrifying grip of an undead star - PSR B1257+12 presents Zombie Worlds: Poltergeist Draugr Phobetor\" - \"These doomed worlds were among the first and creepiest to be discovered as they orbit an undead star known as a pulsar. Pulsar planets like Poltergeist and its neighboring worlds, Phobetor and Draugr, are consumed with constant radiation from the star’s core. Nothing but the undead can subsist in this most inhospitable corner of the galaxy.\"\nPoster from the NASA Exoplanets Exploration Program's Exoplanet Travel Bureau",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "Public domain",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "false",
+                "hidden": "",
+                "source": "commons-desc-page"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "hidden": "",
+                "source": "extension"
+              }
+            },
+            "thumbheight": 2305,
+            "thumbattribs": {
+              "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Zombie_Worlds_FINAL_39x.png/1920px-Zombie_Worlds_FINAL_39x.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+              "width": 1600,
+              "height": 2305,
+              "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Zombie_Worlds_FINAL_39x.png/3840px-Zombie_Worlds_FINAL_39x.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x",
+              "loading": "lazy",
+              "decoding": "async"
+            },
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Zombie_Worlds_FINAL_39x.png",
+            "responsiveUrls": {
+              "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Zombie_Worlds_FINAL_39x.png/3840px-Zombie_Worlds_FINAL_39x.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+            },
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=83600934"
+          }
+        ],
+        "imagerepository": "local"
+      },
+      "discovery_target_id": "v2",
+      "discovery_query": "PSR B1257+12"
+    }
+  ],
+  "model_results": {
+    "material-photo-plan": {
+      "v0": {
+        "anchor_id": "wikimedia:35293317",
+        "english_photo_object": "Supernova remnant",
+        "source_mention": "взрывов массивных звёзд",
+        "support_span_ids": [
+          "s3-34230-35313"
+        ],
+        "fact_ids": [
+          "fact-1"
+        ]
+      },
+      "v1": {
+        "anchor_id": "wikimedia:129539683",
+        "english_photo_object": "Neutron star",
+        "source_mention": "нейтронная звезда",
+        "support_span_ids": [
+          "s1-0-1094"
+        ],
+        "fact_ids": [
+          "fact-2"
+        ]
+      },
+      "v2": {
+        "anchor_id": "wikimedia:83600934",
+        "english_photo_object": "Pulsar",
+        "source_mention": "пульсар",
+        "support_span_ids": [
+          "s3-20875-21933"
+        ],
+        "fact_ids": [
+          "fact-3"
+        ]
+      }
+    },
+    "material-photo-plan-review": {
+      "contexts": {
+        "v0": {
+          "source_identity_supported": true,
+          "topic_related": true,
+          "metadata_compatible": true,
+          "reason": "The metadata explicitly connects the supernova remnant Puppis A to the formation of neutron stars as the dense remnants of massive star explosions."
+        },
+        "v1": {
+          "source_identity_supported": true,
+          "topic_related": true,
+          "metadata_compatible": true,
+          "reason": "The metadata identifies RX J1856.5-3754 as a neutron star and provides observational data regarding its size and temperature, supporting the scientific concept."
+        },
+        "v2": {
+          "source_identity_supported": true,
+          "topic_related": true,
+          "metadata_compatible": true,
+          "reason": "The metadata explicitly identifies the subject PSR B1257+12 as a pulsar, a type of rotating, magnetized neutron star, connecting the object directly to the requested topic."
+        }
+      },
+      "distinct_contexts": true
+    }
+  }
+}

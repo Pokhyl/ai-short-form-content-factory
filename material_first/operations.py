@@ -295,17 +295,13 @@ class Operations:
                 or request.get('visual_validation_mode', 'gemini') == 'metadata'):
             return brief, candidates
         if getattr(self,'availability_first_contexts',False) and 'visual_contexts' not in brief['evidence']:
-            from .retrieved_contexts import plan_retrieved_contexts, PhotoPlanReviewFailed
-            try:
-                return plan_retrieved_contexts(self.gemini,request,brief,self.discovery_pools,
-                    candidate_limit(request['seconds'],TOPIC_POLICY))
-            except PhotoPlanReviewFailed:
-                # Metadata planning is only a search optimization. Let the
-                # source-bound candidate pool reach pixel Vision when it cannot
-                # produce a reviewed plan; the real-photo gate remains strict.
-                fallback = deepcopy(brief)
-                fallback['_pixel_review_fallback'] = True
-                return fallback, candidates
+            # Captions cannot establish depicted subjects or photographic medium.
+            # Inspect the bounded original images before choosing narrative roles.
+            # The engine still freezes facts, requires topic-specific pixel receipts,
+            # checks unique-photo coverage, and validates the composed narrative.
+            pixel_first = deepcopy(brief)
+            pixel_first['_pixel_review_fallback'] = True
+            return pixel_first, candidates
         from .photo_planning import plan_photos
         # Collect the complete bounded search pools first. Role contracts are
         # finalized once from available objects before any download/inspection.

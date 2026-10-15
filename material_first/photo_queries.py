@@ -40,11 +40,15 @@ def described_as_synthetic(candidate):
     text = str(candidate.get("description", "")) + " " + str(candidate.get("source_metadata", {}).get("title", "")) + " " + source_path
     if SYNTHETIC.search(text):
         return True
+    if re.search(r'(?:^|\n)\s*poster\s+(?:from|by|for)\b', str(candidate.get('description', '')), re.I):
+        return True
     # Wikimedia categories describe the actual file's provenance. Credits and
     # broad subject categories (e.g. images of simulation equipment) do not.
     for info in candidate.get('source_metadata', {}).get('imageinfo', []):
         categories = info.get('extmetadata', {}).get('Categories', {}).get('value', '')
         for category in str(categories).split('|'):
+            if re.search(r'\bposters\b', category, re.I) and not re.match(r'\s*photographs of\b', category, re.I):
+                return True
             if re.search(r'\b(?:depictions?\b.*\bgenerated\s+(?:with|by)|computer[- ]generated\s+(?:images?|art)|3d\s+renderings?|artist[’\x27]s\s+(?:impressions?|concepts?))\b', category, re.I):
                 return True
     return False

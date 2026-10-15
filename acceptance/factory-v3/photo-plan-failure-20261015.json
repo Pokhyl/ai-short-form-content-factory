@@ -20,5 +20,35 @@
     "core": 122
   },
   "deployed": false,
-  "actual_image_quality_verified": false
+  "actual_image_quality_verified": false,
+  "candidate_revision": "aad03b69f65033fe408e83d1bfdc5d86248f9916",
+  "candidate_image": "sha256:9caf199e1f9534813dd533bb1f610d992ae76b62bccbf20b402dfc152df4f975",
+  "boundary_plan": {
+    "id": "27fbabb7-8659-4ce5-b4b4-8742169ad6b8",
+    "question": "Can the exact candidate image select and independently review source-linked contexts from saved 53a0 pools after removing explicit synthetic provenance?",
+    "model": "gemini-3.1-flash-lite",
+    "max_gemini_calls": 6,
+    "max_metadata_calls": 1,
+    "new_searches": 0,
+    "downloads": 0,
+    "tts_calls": 0,
+    "quota": "Free-only billing proof required; tokens unknown until actual response",
+    "stop": "First result or exception; never retry ID; no full preparation"
+  },
+  "boundary_result": {
+    "id": "27fbabb7-8659-4ce5-b4b4-8742169ad6b8",
+    "model_reported_pass": true,
+    "accepted_as_product_evidence": false,
+    "reason": "Independent caption reviewer accepted a NASA poster and invented direct topic connection for remnant-only metadata",
+    "gemini_calls": 2,
+    "metadata_calls": 1,
+    "total_tokens": 46446,
+    "downloads": 0,
+    "tts": 0
+  },
+  "strategy_change": "New availability-first Vision path goes directly from bounded discovery to actual pixel inspection; caption-only planning no longer mandatory. Existing medium/topic/unique-photo/factual/natural-voice gates remain.",
+  "package_tests_aad03b6": {
+    "material": 216,
+    "core": 122
+  }
 }

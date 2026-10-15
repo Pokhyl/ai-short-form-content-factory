@@ -1,3 +1,7 @@
+## Pixel-first correction — 2026-10-15
+
+LIVE remains c32b512. Candidate aad03b6 exact-image216 material/122 core checks passed, but bounded27fbabb7 caption plan/review falsely approved a NASA poster and remnant-only metadata. That model pass is NOT acceptance. Stop iterative caption-plan prompt repair: new availability-first Vision preparation now takes bounded discovered photos directly to existing strict pixel inspection, then chooses narration from approved materials. Explicit synthetic provenance and poster categories are filtered before inspection. Source facts, direct-topic relation, unique-photo minimum, factual/native narration and natural-voice gates remain. No deployment or MP4 yet. Next: packaged tests and bounded saved-search actual-pixel feasibility before any full normal run. Fixture actual-caption-review-false-positive-27fb.json; receipt photo-plan-failure-20261015.json.
+
 # Release gate — current execution contract
 
 ## Explicit model overload policy — 2026-10-15

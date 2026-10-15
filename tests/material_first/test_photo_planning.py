@@ -13,8 +13,7 @@ from material_first.photo_queries import described_as_synthetic
 
 
 class AvailabilityPlanningTests(unittest.TestCase):
-    def test_rejected_metadata_plan_falls_through_to_pixel_review_candidates(self):
-        from material_first.retrieved_contexts import PhotoPlanReviewFailed
+    def test_availability_first_reaches_pixel_review_without_caption_model_calls(self):
         ops = Operations('.', None, SimpleNamespace(), SimpleNamespace(), None)
         ops.availability_first_contexts = True
         ops.discovery_pools = []
@@ -24,8 +23,9 @@ class AvailabilityPlanningTests(unittest.TestCase):
         request = {'topic': 'Neutron star', 'seconds': 60,
                    'presentation_policy': TOPIC_POLICY, 'visual_validation_mode': 'gemini'}
         with patch('material_first.retrieved_contexts.plan_retrieved_contexts',
-                   side_effect=PhotoPlanReviewFailed('metadata plan rejected')):
+                   side_effect=AssertionError('caption planning must not run')) as planner:
             resolved, passed = ops.resolve_photos(request, brief)
+        planner.assert_not_called()
         self.assertIsNot(resolved, brief)
         self.assertTrue(resolved.pop('_pixel_review_fallback'))
         self.assertIs(passed, candidates)

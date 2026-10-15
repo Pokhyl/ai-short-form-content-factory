@@ -6,6 +6,30 @@ from material_first.presentation import TOPIC_POLICY, LEGACY_POLICY
 
 
 class PhotographSearchTests(unittest.TestCase):
+    def test_actual_caption_approved_poster_is_excluded_before_any_model_call(self):
+        import json, copy
+        from pathlib import Path
+        saved = json.loads((Path(__file__).parent/'fixtures/actual-caption-review-false-positive-27fb.json').read_text())
+        poster = next(c for c in saved['candidates'] if c['id'] == 'wikimedia:83600934')
+        observation = next(c for c in saved['candidates'] if c['id'] == 'wikimedia:35293317')
+        self.assertTrue(saved['model_results']['material-photo-plan-review']['contexts']['v2']['metadata_compatible'])
+        self.assertTrue(described_as_synthetic(poster))
+        self.assertFalse(described_as_synthetic(observation))
+        original = {'evidence': {'facts': []}, 'required_fact_ids': ['f1'], 'queries': ['pulsar']}
+        brief = copy.deepcopy(original)
+        def search(*args): return {'candidates': [poster, observation]}
+        def generate(*args, **kwargs): self.fail('caption model must not run before pixels')
+        ops = Operations('.', None, SimpleNamespace(generate=generate), SimpleNamespace(search=search), None)
+        ops.availability_first_contexts = True
+        resolved, candidates = ops.resolve_photos({'topic': 'Neutron star', 'seconds': 60,
+            'presentation_policy': TOPIC_POLICY, 'visual_validation_mode': 'gemini'}, brief)
+        self.assertEqual([c['id'] for c in candidates], [observation['id']])
+        self.assertTrue(resolved.pop('_pixel_review_fallback'))
+        self.assertEqual(resolved, original)
+        self.assertEqual(brief, original)
+        self.assertNotIn('visual_targets', candidates[0])
+        self.assertEqual(candidates[0]['visual_qualification_protocol'], 'qualified-target-v1')
+
     def test_actual_celestia_category_rejects_render_but_keeps_observations(self):
         import json
         from pathlib import Path
