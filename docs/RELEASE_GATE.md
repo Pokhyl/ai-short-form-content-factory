@@ -1,5 +1,9 @@
 # Release gate — current execution contract
 
+## Explicit model overload policy — 2026-10-15
+
+Image8387808 is deployed and publichealth/protected active-n8n+settings+container snapshots pass. New normal fce05cde is immutable unknown after material-brief503/UNAVAILABLE (gateway13142); no photos/TTS. Repeating full jobs after overload is ineffective. Google documents503 as a transient error suitable for exponential backoff. Candidate policy distinguishes this explicit rejection from ambiguous transport: at most3 separately claimed/budgeted attempts inside a NEW preparing job, never replaying an old terminal ID. Existing total model ceiling stays fixed; TTS/voice-stage corrections, timeouts,502,429 and missing provenance do not retry. One additive SQL function records the explicit rejection without terminating preparation. Local122 core/213 material checks pass; real isolated DB and package checks pending. See model-unavailable-policy-20261015.json. No new full request until those gates and scoped deployment complete.
+
 ## Observable search inputs — 2026-10-15
 
 Candidate re-enabling speculative text-only image observability review was tested and rejected before deployment: it incorrectly demanded resolved photographs of named neutron stars, then pushed repairs toward unrelated equipment. Live remains ffba621. Final candidate keeps source/fact validation before retrieval, explicitly rejects hidden astronomical core hints locally, and retains actual retrieved-object/pixel inspection as the image suitability gate. It also removes the forced process narrative for neutral object topics and supplies exact source-catalog reference names. Local213 material/115 core checks pass; final package/provider evidence pending. All diagnostic failures remain evidence, never product acceptance. See acceptance/factory-v3/observable-hint-review-20261015.json.

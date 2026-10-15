@@ -1,0 +1,41 @@
+{
+  "project_ready": false,
+  "source_revision": "8387808029c09b46dab9134f5597ca58738dda23",
+  "image_id": "sha256:afd1dd8b64eeacc6ba462e050cf19ecef391b7f561d3dc5e11f4650abdd96f04",
+  "request": {
+    "request_id": "fce05cde-043d-4bfa-94c4-6f088282280f",
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60,
+    "visual_validation_mode": "gemini"
+  },
+  "reason": "Exact final image passes115 core/213 material checks and hash-verified saved-source research boundary with one real factual review. Collect current full normal-path evidence after scoped verified rollout.",
+  "preconditions": [
+    "verified app-only deployment",
+    "public exact revision",
+    "protected state unchanged",
+    "no active preparation"
+  ],
+  "budgets": {
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini": 20,
+    "download": 45,
+    "metadata": 1,
+    "search:pexels": 3,
+    "search:pixabay": 3,
+    "search:wikimedia": 3,
+    "tts_max": 3
+  },
+  "quota": "Existing unbilled Gemini proof and durable monthly TTS ceilings. Token/character use unknown until responses.",
+  "stop": "First terminal rejection or unknown operation; never restart the ID; inspect actual evidence before another run.",
+  "submitted": true,
+  "submission_http_status": 202,
+  "terminal_status": "unknown",
+  "terminal_stage": "material-brief",
+  "terminal_provider_status": 503,
+  "terminal_provider_code": "UNAVAILABLE",
+  "gateway_execution_id": "13142",
+  "new_tts_calls": 0,
+  "final_video": null
+}

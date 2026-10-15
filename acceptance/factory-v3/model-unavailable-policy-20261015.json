@@ -1,0 +1,13 @@
+{
+  "project_ready": false,
+  "deployed": false,
+  "cause": "Repeated explicit Gemini503/UNAVAILABLE rejects otherwise valid preparation; treating it as an unknown send makes every transient overload terminal.",
+  "reference": "https://ai.google.dev/gemini-api/docs/troubleshooting",
+  "policy": "New preparing jobs only: at most3 distinct physical claims for explicit trusted gateway503/UNAVAILABLE with execution ID, exponential2/4second delays, Retry-After respected up to30seconds. Every physical claim consumes existing total Gemini budget. No repeats after timeouts, 502,429, missing provenance, ledger uncertainty, completed malformed output, TTS or voice-stage corrections. Historical terminal IDs remain immutable.",
+  "database_change": "One additive model_unavailable_preparation_call function; no row migrations or reopening historical jobs.",
+  "local_checks": {
+    "factory_v3": 122,
+    "material_first": 213
+  },
+  "next": "isolated actual PostgreSQL assertions, exact image checks, additive function+app scoped rollout, one bounded new normal request"
+}

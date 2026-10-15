@@ -1,6 +1,6 @@
 {
   "project_ready": false,
-  "deployed": false,
+  "deployed": true,
   "problem": "Availability-first research disabled semantic photo-object review even though the provisional objects immediately become provider search queries. Real saved result passed facts-only review while requesting neutron star core.",
   "change": "Require existing source-support and observability review of search hints before discovery; keep final available-photo contracts deferred until retrieval. No new review stage or increased repair budget.",
   "regression": {
@@ -47,5 +47,22 @@
     "deployed": false,
     "remote_evidence": "/var/lib/factory-v3/observable-inputs-20261015/research-events.jsonl"
   },
-  "final_boundary_decision": "Do not ship restored speculative photo observability review. Retain factual review and exact source mention checks before retrieval, explicitly reject concealed astronomical core requests in the local hint validator, and let existing retrieved-object and original-pixel review establish actual photo suitability. Keep new source-name inventory and topic-appropriate editorial angle."
+  "final_boundary_decision": "Do not ship restored speculative photo observability review. Retain factual review and exact source mention checks before retrieval, explicitly reject concealed astronomical core requests in the local hint validator, and let existing retrieved-object and original-pixel review establish actual photo suitability. Keep new source-name inventory and topic-appropriate editorial angle.",
+  "source_revision": "8387808029c09b46dab9134f5597ca58738dda23",
+  "image_id": "sha256:afd1dd8b64eeacc6ba462e050cf19ecef391b7f561d3dc5e11f4650abdd96f04",
+  "package_checks": {
+    "factory_v3": 115,
+    "material_first": 213,
+    "network": "none",
+    "runtime_source_overlays": false
+  },
+  "final_research_boundary": {
+    "state": "approved",
+    "new_generation_calls": 1,
+    "exact_reused_brief_hash": "2d4037f76c5e08698c852702c0850548be6560ce220330ffe9040d7e97a1e641",
+    "photo_searches": 0,
+    "tts_calls": 0
+  },
+  "protected_rollout_state_equal": true,
+  "active_n8n_database": "n8n-publisher-restore-pg/short_video_factory"
 }

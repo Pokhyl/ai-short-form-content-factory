@@ -3,7 +3,7 @@ import argparse
 import json
 import os
 from factory_v3.runtime import Runtime, load_settings
-from factory_v3.preparation import ResourceUnavailable, SavedRequestMismatch, verify_saved_request
+from factory_v3.preparation import ResourceUnavailable, SavedRequestMismatch, verify_saved_request, ModelUnavailable, model_unavailable_receipt
 from material_first.engine import Producer, inspected_material, MaterialUnavailable
 
 parser = argparse.ArgumentParser()
@@ -31,6 +31,8 @@ class Replay:
             raise MissingSavedCall(key)
         row = saved[key]
         verify_saved_request(request, row.get('request_hash'))
+        if row['state'] == 'failed' and kwargs.get('allow_model_unavailable') and model_unavailable_receipt(row['response']):
+            raise ModelUnavailable(row['response'])
         if row['state'] == 'failed' and kwargs.get('allow_unavailable'):
             raise ResourceUnavailable(row['response'])
         if row['state'] != 'succeeded':
@@ -42,6 +44,7 @@ ops = runtime.producer(args.id).operations
 # DurableProducer sets this before constructing the production request. Omitting
 # it changes the actual model prompt and makes even same-version replay fail.
 ops.visual_validation_mode = prep['request'].get('visual_validation_mode', 'gemini')
+ops.gemini.sleep = lambda seconds: None  # Historical rejection waits already elapsed.
 for component in (ops.source, ops.gemini, ops.search, ops.downloader, ops.downloader.downloader):
     component.calls = Replay()
 review = ops.review_script
@@ -75,6 +78,8 @@ try:
     state = 'saved_complete_plan_replayed'
 except MissingSavedCall as error:
     state = 'missing_saved_call:' + str(error)
+except ModelUnavailable:
+    state = 'saved_model_unavailable'
 except SavedCallUnavailable as error:
     state = 'saved_call_unavailable:' + str(error)
 except SavedRequestMismatch as error:

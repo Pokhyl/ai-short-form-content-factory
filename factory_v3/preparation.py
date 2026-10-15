@@ -9,6 +9,19 @@ class ResourceUnavailable(ValueError):
         super().__init__("selected resource definitively unavailable")
 
 
+def model_unavailable_receipt(receipt):
+    return (isinstance(receipt, dict) and receipt.get('status') == 503
+            and receipt.get('error_status') == 'UNAVAILABLE'
+            and isinstance(receipt.get('gateway_execution_id'), str)
+            and receipt['gateway_execution_id'].isdigit())
+
+
+class ModelUnavailable(RuntimeError):
+    def __init__(self, receipt):
+        self.receipt = receipt
+        super().__init__('model temporarily unavailable after explicit provider rejection')
+
+
 class SavedRequestMismatch(ValueError):
     def __init__(self, expected, observed):
         self.expected = expected
@@ -64,6 +77,10 @@ class PreparationLedger:
         self.postgres._call("SELECT factory_v3.unavailable_preparation_call(%s::uuid,%s,%s::jsonb)",
                             (request_id, key, json.dumps(receipt)))
 
+    def model_unavailable(self, request_id, key, receipt):
+        self.postgres._call('SELECT factory_v3.model_unavailable_preparation_call(%s::uuid,%s,%s::jsonb)',
+                            (request_id, key, json.dumps(receipt)))
+
     def reject(self, request_id, code):
         self.postgres._call("SELECT factory_v3.reject_preparation(%s::uuid,%s,%s)",
                             (request_id, code, self.revision))
@@ -79,10 +96,12 @@ class BudgetedCalls:
         self.ledger = ledger
         self.request_id = request_id
 
-    def run(self, key, kind, public_request, invoke, *, allow_unavailable=False):
+    def run(self, key, kind, public_request, invoke, *, allow_unavailable=False, allow_model_unavailable=False):
         # Include all identity-affecting settings, NEVER credentials.
         claim = self.ledger.claim(self.request_id, key, kind, digest(public_request))
         if claim.get("unavailable"):
+            if allow_model_unavailable and kind == 'gemini' and model_unavailable_receipt(claim['response']):
+                raise ModelUnavailable(claim['response'])
             raise ResourceUnavailable(claim["response"])
         if claim["cached"]:
             return claim["response"]
@@ -93,6 +112,12 @@ class BudgetedCalls:
             return response
         except BaseException as error:
             receipt = getattr(error, "receipt", None)
+            from .http import HTTPFailure
+            if (allow_model_unavailable and kind == 'gemini' and isinstance(error, HTTPFailure)
+                    and model_unavailable_receipt(receipt)):
+                # A lost ledger write still blocks another send via its started claim.
+                self.ledger.model_unavailable(self.request_id, key, receipt)
+                raise ModelUnavailable(receipt) from None
             if allow_unavailable and isinstance(receipt, dict) and (receipt.get("status") in {403, 404, 410} or
                     (kind == "download" and receipt.get("status") == 429)):
                 self.ledger.unavailable(self.request_id, key, receipt)
