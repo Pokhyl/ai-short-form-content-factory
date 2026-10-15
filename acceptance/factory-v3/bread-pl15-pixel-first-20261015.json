@@ -1,0 +1,60 @@
+{
+  "bread-normal-plan.json": {
+    "request": {
+      "request_id": "4731d936-38a1-4864-9e08-4042ed349ccb",
+      "topic": "Jak powstaje chleb",
+      "language": "pl",
+      "seconds": 15,
+      "visual_validation_mode": "gemini"
+    },
+    "revision": "3e1ae53a28bf1e7a42a7ecc1e12df2c5af07aff8",
+    "question": "Normal full factory after pixel-first and global framed-photo dedup, on a different everyday topic, Polish15 seconds",
+    "budgets": {
+      "research_search": 1,
+      "source_fetch": 6,
+      "gemini": 16,
+      "download": 32,
+      "metadata": 1,
+      "search:pexels": 3,
+      "search:wikimedia": 3,
+      "search:pixabay": 3,
+      "tts_max": 3
+    },
+    "quota": "free-only runtime authorization, existing monthly TTS ceilings, token and character costs unknown until responses",
+    "stop": "first terminal or unknown; never repeat ID",
+    "project_ready": false
+  },
+  "bread-normal-submission.json": {
+    "http": 202,
+    "body": {
+      "id": "4731d936-38a1-4864-9e08-4042ed349ccb",
+      "created": true,
+      "status": "preparing"
+    }
+  },
+  "rollout.json": {
+    "protected_state_equal": true,
+    "health": {
+      "status": "serving",
+      "project_ready": false,
+      "source_revision": "3e1ae53a28bf1e7a42a7ecc1e12df2c5af07aff8"
+    },
+    "gateway_status": 403,
+    "image": "sha256:4ec35443bbbfa3e02306352532fac313ffdd554cef18cdfb10da6c7626d230c2"
+  },
+  "current_status": {
+    "id": "4731d936-38a1-4864-9e08-4042ed349ccb",
+    "request": {
+      "topic": "Jak powstaje chleb",
+      "seconds": 15,
+      "language": "pl",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "preparing",
+    "source_revision": "3e1ae53a28bf1e7a42a7ecc1e12df2c5af07aff8",
+    "error_code": null,
+    "machine_pass": false,
+    "human_pass": false,
+    "review": null
+  }
+}

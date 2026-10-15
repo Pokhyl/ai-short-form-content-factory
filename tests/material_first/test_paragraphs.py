@@ -6,6 +6,26 @@ from material_first.presentation import TOPIC_POLICY
 
 
 class ParagraphTests(unittest.TestCase):
+    def test_length_repair_does_not_require_approved_context_anchors(self):
+        saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-keyed-budget-failure.json').read_text())
+        context=copy.deepcopy(saved['composition_context'])
+        context['request'].pop('validated_visual_anchors',None)
+        calls=[]
+        def generate(key,instruction,payload,schema):
+            calls.append(key)
+            if key=='material-compose':
+                draft=copy.deepcopy(saved['draft'])
+                for beat in draft['beats']:beat['narration']=' '.join(['контрольне']*100)
+                return draft,{}
+            if key=='material-compose-length-repair':
+                self.assertIsNone(payload['paragraph_plan'])
+                beats=copy.deepcopy(payload['completed_draft'])
+                for beat in beats:beat['narration']=' '.join(['контрольне']*42)
+                return {'beats':beats},{}
+            return {'narration':payload['narration']},{}
+        Operations('.',None,SimpleNamespace(generate=generate),None,None).compose(context)
+        self.assertIn('material-compose-length-repair',calls)
+
     @staticmethod
     def controlled_plan_reply(plan):
         # Structural coverage only; these tokens never claim provider prose approval.

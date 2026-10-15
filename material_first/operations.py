@@ -300,6 +300,10 @@ class Operations:
             # The engine still freezes facts, requires topic-specific pixel receipts,
             # checks unique-photo coverage, and validates the composed narrative.
             pixel_first = deepcopy(brief)
+            pixel_first.pop('visual_targets', None)
+            candidates = deepcopy(candidates)
+            for candidate in candidates:
+                candidate.pop('visual_targets', None)
             pixel_first['_pixel_review_fallback'] = True
             return pixel_first, candidates
         from .photo_planning import plan_photos

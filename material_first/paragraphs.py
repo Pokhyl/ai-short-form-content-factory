@@ -172,7 +172,7 @@ def compose_paragraphs(gemini, context, budget_error):
         # audio. Actual duration remains a later audio gate, and the scheduler
         # still verifies that the chosen photos support the paragraph plan.
         paragraph_plan = (cadence_paragraph_plan(materials, targets, request.get('required_fact_ids',[]), preferred_words)
-                          if cadence_error or length_problem else None)
+                          if 'validated_visual_anchors' in request and (cadence_error or length_problem) else None)
         if paragraph_plan:
             from .engine import fit_contextual_paragraphs
             # Verify the server's own allocation against the actual global

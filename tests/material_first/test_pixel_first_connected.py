@@ -19,15 +19,24 @@ class PixelFirstFixtures(TopicFixtures):
 
     def __init__(self, root):
         super().__init__(root)
-        self.targets = []
         self.reject_medium = None
         self.reject_relation = None
-        for asset in self.assets:
-            asset.pop('visual_targets')
 
     def research(self, request):
         self.request = request
-        return FixtureOperations.research(self, request)
+        return {**FixtureOperations.research(self, request),
+                'visual_targets': copy.deepcopy(self.targets)}
+
+    def inspect_many(self, assets, evidence):
+        for asset in assets:
+            assert 'visual_targets' not in asset, 'search hints leaked into pixel contracts'
+        rows = super().inspect_many(assets, evidence)
+        for row in rows:
+            if self.reject_medium:
+                row['medium'] = self.reject_medium
+            if self.reject_relation:
+                row['topic_relation']['kind'] = self.reject_relation
+        return rows
 
     def generate(self, key, instruction, context, schema):
         if key != 'material-compose':
@@ -42,17 +51,31 @@ class PixelFirstFixtures(TopicFixtures):
         validate_json(result, schema)
         return result, {'receipt_id': 'controlled-compose'}
 
-    def inspect_many(self, assets, evidence):
-        rows = super().inspect_many(assets, evidence)
-        for row in rows:
-            if self.reject_medium:
-                row['medium'] = self.reject_medium
-            if self.reject_relation:
-                row['topic_relation']['kind'] = self.reject_relation
-        return rows
-
-
 class PixelFirstConnectedTests(unittest.TestCase):
+    def test_overlong_pixel_first_draft_reaches_bounded_length_repair(self):
+        class Overlong(PixelFirstFixtures):
+            def generate(self, key, instruction, context, schema):
+                if key == 'material-compose-length-repair':
+                    self.model_calls.append(key)
+                    assert context['paragraph_plan'] is None
+                    return self.normal_draft, {'receipt_id': 'controlled-repair'}
+                result, receipt = super().generate(key, instruction, context, schema)
+                if key == 'material-compose':
+                    self.normal_draft = copy.deepcopy(result)
+                    for beat in result['beats']:
+                        beat['narration'] = ' '.join([beat['narration']] * 5)
+                return result, receipt
+
+        for language in ('pl', 'en', 'ru', 'uk'):
+            for seconds in (15, 30, 45, 60):
+                with self.subTest(language=language, seconds=seconds), tempfile.TemporaryDirectory() as tmp:
+                    ops = Overlong(Path(tmp))
+                    frozen = Producer(tmp, ops, probe=ops.probe).prepare('Controlled flower process', language, seconds)
+                    payload = verify(tmp, frozen, ops.probe)
+                    self.assertNotIn('visual_targets', payload)
+                    self.assertEqual(ops.model_calls, ['material-compose', 'material-compose-length-repair',
+                                                     'material-language-edit'])
+
     def test_all_language_duration_pairs_reach_frozen_plan_without_caption_calls(self):
         for language in ('pl', 'en', 'ru', 'uk'):
             for seconds in (15, 30, 45, 60):

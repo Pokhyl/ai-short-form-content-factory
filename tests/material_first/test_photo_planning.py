@@ -28,7 +28,7 @@ class AvailabilityPlanningTests(unittest.TestCase):
         planner.assert_not_called()
         self.assertIsNot(resolved, brief)
         self.assertTrue(resolved.pop('_pixel_review_fallback'))
-        self.assertIs(passed, candidates)
+        self.assertEqual(passed, candidates)
 
     def test_actual_documented_label_order_uses_server_object_and_rejects_wrong_anchor(self):
         saved = json.loads((Path(__file__).parent/'fixtures/actual-documented-label-order.json').read_text())

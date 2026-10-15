@@ -162,7 +162,7 @@ class RetrievedContextTests(unittest.TestCase):
         self.assertTrue(resolved.pop('_pixel_review_fallback'))
         self.assertEqual(resolved, original)
         self.assertEqual(self.brief, original)
-        self.assertIs(passed, candidates)
+        self.assertEqual(passed, candidates)
         self.assertNotIn('material-photo-plan-review', self.calls)
     def test_unknown_fact_cannot_replace_original_scope(self):
         def mutate(rows):rows['v0']['fact_ids']=['invented-fact']
