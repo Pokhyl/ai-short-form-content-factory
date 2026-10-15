@@ -1,0 +1,42 @@
+{
+  "project_ready": false,
+  "runtime_revision": "3e1ae53a28bf1e7a42a7ecc1e12df2c5af07aff8",
+  "image": "sha256:4ec35443bbbfa3e02306352532fac313ffdd554cef18cdfb10da6c7626d230c2",
+  "package_checks": {
+    "factory_v3": 122,
+    "material_first": 222,
+    "skipped": 0,
+    "network": "none",
+    "runtime_overlay": false
+  },
+  "connected_matrix": {
+    "test_revision": "4ff3697",
+    "tests": 2,
+    "language_duration_cases": 16,
+    "controlled_providers": true,
+    "negative_cases": [
+      "synthetic",
+      "generic_analogy",
+      "unknown_relation"
+    ],
+    "passed": true
+  },
+  "actual_saved_photos": {
+    "accepted_before": 12,
+    "unique_after": 10,
+    "duplicate_pairs": [
+      [
+        "wikimedia:129539683",
+        "wikimedia:5905339"
+      ],
+      [
+        "wikimedia:129539490",
+        "wikimedia:178212438"
+      ]
+    ],
+    "provider_calls": 0,
+    "passed": true
+  },
+  "deployment": "pending",
+  "next": "protected snapshot and app-only rollout; sequential representative normal cases, starting PL15 bread. Saved astronomy pool remains insufficient for UK60; do not reuse failed IDs or count it as acceptance."
+}
