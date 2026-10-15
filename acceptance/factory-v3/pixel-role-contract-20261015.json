@@ -1,0 +1,61 @@
+{
+  "image.json": {
+    "tag": "factory-v3:pixel-role-contract-fd387f5-amd64",
+    "image_id": "sha256:cd8c12edb301c9935beab8eebe1c76767e7b27ebd40f7cbb7664f000ada7fb3e",
+    "platform": "linux/amd64",
+    "source_commit": "fd387f5c3130bf409fdc0a0c3ddffc5922476af6",
+    "deployed": false
+  },
+  "package-checks.json": {
+    "factory_v3": {
+      "returncode": 0,
+      "summary": "..........................................................................................................................\n----------------------------------------------------------------------\nRan 122 tests in 0.753s\n\nOK\n"
+    },
+    "material_first": {
+      "returncode": 0,
+      "summary": "..................................................................................................................................................................................................................................\n----------------------------------------------------------------------\nRan 226 tests in 22.398s\n\nOK\n"
+    }
+  },
+  "rollout.json": {
+    "protected_state_equal": true,
+    "health": {
+      "status": "serving",
+      "project_ready": false,
+      "source_revision": "fd387f5c3130bf409fdc0a0c3ddffc5922476af6"
+    },
+    "gateway_status": 403
+  },
+  "bread-normal-plan.json": {
+    "request": {
+      "request_id": "bb06c742-008d-4901-a4a6-c787840b3fec",
+      "topic": "Jak powstaje chleb",
+      "language": "pl",
+      "seconds": 15,
+      "visual_validation_mode": "gemini"
+    },
+    "revision": "fd387f5c3130bf409fdc0a0c3ddffc5922476af6",
+    "reason": "Exact saved replay confirms missing approved anchors; generic role contract fix and348 exact image tests passed",
+    "budgets": {
+      "research_search": 1,
+      "source_fetch": 6,
+      "gemini": 16,
+      "download": 32,
+      "metadata": 1,
+      "search:pexels": 3,
+      "search:wikimedia": 3,
+      "search:pixabay": 3,
+      "tts_max": 3
+    },
+    "quota": "free-only runtime authorization and existing monthly TTS ceilings; token/character amounts unknown",
+    "stop": "First terminal or unknown; never rerun ID",
+    "project_ready": false
+  },
+  "bread-normal-submission.json": {
+    "http": 202,
+    "body": {
+      "id": "bb06c742-008d-4901-a4a6-c787840b3fec",
+      "created": true,
+      "status": "preparing"
+    }
+  }
+}
