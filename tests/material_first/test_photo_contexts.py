@@ -147,7 +147,7 @@ class ContextTests(unittest.TestCase):
                 validate_context_mentions(rows,saved['spans'])
             for role in rows:self.assertIn(role+': query and subject must be English',str(failure.exception))
 
-    def run_research(self, mode, availability_first=False, duplicate=False, weak_hint=False, mutate_repair=False):
+    def run_research(self, mode, availability_first=False, duplicate=False, weak_hint=False, mutate_repair=False, reject_photos=False):
         source={'id':'source','url':'https://example.invalid/source','title':'Observed objects','text':self.text,'sha256':hashlib.sha256(self.text.encode()).hexdigest()}
         keys=[];facts=[]
         def generate(key,instruction,context,schema):
@@ -155,7 +155,7 @@ class ContextTests(unittest.TestCase):
             if key.startswith('material-brief-review:'):
                 review={'facts':{f['id']:{'supported':True,'reason':'Supported by exact fixture source'} for f in context['facts']}}
                 if 'photo_contexts' in context:
-                    review['photo_contexts']={role:{'source_supported':True,'observable_object':True,'reason':'Observed fixture object'} for role in context['photo_contexts']}
+                    review['photo_contexts']={role:{'source_supported':True,'observable_object':not reject_photos,'reason':'Unobservable interior' if reject_photos else 'Observed fixture object'} for role in context['photo_contexts']}
                 return review,{'receipt_id':key}
             if key=='material-brief':
                 span=context['source_spans'][0]['id']
@@ -186,6 +186,8 @@ class ContextTests(unittest.TestCase):
         try:
             result=ops.research({'topic':'Neutron stars','language':'uk','seconds':60})
             self.assertEqual([f['text'] for f in result['evidence']['facts']],[f['text'] for f in facts])
+            if availability_first:
+                self.assertNotIn('visual_contexts', result['evidence'])
             if duplicate:
                 self.assertEqual([t['query'] for t in result['queries']],['Crab Nebula']*3)
             else:
@@ -215,3 +217,10 @@ class ContextTests(unittest.TestCase):
     def test_availability_first_keeps_duplicate_labels_as_hints_for_retrieval(self):
         self.run_research('valid',availability_first=True,duplicate=True)
         self.assertEqual(self.keys,['material-brief','material-brief-review:1'])
+
+    def test_availability_first_rejects_unobservable_search_objects_before_discovery(self):
+        with self.assertRaisesRegex(ValueError, 'Unobservable interior'):
+            self.run_research('valid', availability_first=True, reject_photos=True)
+        self.assertEqual(self.keys, ['material-brief', 'material-brief-review:1',
+                                    'material-brief-repair:review:1', 'material-brief-review:2',
+                                    'material-brief-repair:review:2', 'material-brief-review:3'])

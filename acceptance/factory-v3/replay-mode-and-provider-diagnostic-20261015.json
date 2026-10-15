@@ -21,5 +21,14 @@
     "mentions": "setting: selected source span does not contain the object mention"
   },
   "remote_evidence": "/var/lib/factory-v3/gateway-admission-20261014",
-  "rollout_evidence_limitation": "The before/after workflow fingerprint used the inactive ai-short-form-postgres DB. It is not proof for active n8n workflow state. Actual active gateway version was subsequently read from n8n-publisher-restore-pg/short_video_factory as 6ef9870b-e3f9-45f6-a729-8c386f65041a, model gemini-3.1-flash-lite; only app rollout was performed."
+  "rollout_evidence_limitation": "The before/after workflow fingerprint used the inactive ai-short-form-postgres DB. It is not proof for active n8n workflow state. Actual active gateway version was subsequently read from n8n-publisher-restore-pg/short_video_factory as 6ef9870b-e3f9-45f6-a729-8c386f65041a, model gemini-3.1-flash-lite; only app rollout was performed.",
+  "research_validation": {
+    "new_generation_calls": 3,
+    "source_mentions": "passed after two bounded repairs",
+    "facts": "independent review passed",
+    "photos": "excluded from review by availability_first setting; final query neutron star core remained",
+    "photo_searches": 0,
+    "tts_calls": 0,
+    "database_writes": 0
+  }
 }

@@ -167,8 +167,10 @@ class Operations:
                 validate_search_hints(result['photo_contexts'], request['topic'], spans)
         if self.documented_contexts and measured_feedback:
             from .research_review import reviewed_brief
-            result=reviewed_brief(self.gemini,request,sources,spans,schema,result,
-                check_photos=not (getattr(self,'availability_first_contexts',False) and request.get('visual_validation_mode','gemini')!='metadata'))
+            # Retrieval finalizes the available objects later, but these hints
+            # already spend the search budget. They must name observable,
+            # source-supported objects even before a final photo plan exists.
+            result=reviewed_brief(self.gemini,request,sources,spans,schema,result)
         evidence = bind_support(sources, spans, result['facts'])
         if self.documented_contexts:
             contexts = []

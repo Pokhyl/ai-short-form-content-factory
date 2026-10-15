@@ -1,0 +1,27 @@
+{
+  "project_ready": false,
+  "deployed": false,
+  "problem": "Availability-first research disabled semantic photo-object review even though the provisional objects immediately become provider search queries. Real saved result passed facts-only review while requesting neutron star core.",
+  "change": "Require existing source-support and observability review of search hints before discovery; keep final available-photo contracts deferred until retrieval. No new review stage or increased repair budget.",
+  "regression": {
+    "before": "test_availability_first_rejects_unobservable_search_objects_before_discovery failed: no exception raised",
+    "after": "passed; valid observed duplicate hints still accepted and evidence visual_contexts remains deferred"
+  },
+  "local_checks": {
+    "factory_v3": 115,
+    "material_first": 211
+  },
+  "diagnostic_plan": {
+    "question": "Can existing bounded review reject and repair actual saved impossible search object?",
+    "model": "gemini-3.1-flash-lite",
+    "generation_max": 5,
+    "output_tokens_max_per_call": 8192,
+    "input_tokens": "unknown",
+    "photo_searches": 0,
+    "tts_calls": 0,
+    "database_writes": 0,
+    "stop": "normal result or first terminal failure; no retries"
+  },
+  "remote_evidence": "/var/lib/factory-v3/gateway-admission-20261014/observable-review-events.jsonl",
+  "diagnostic_job": "job_753fdb2b7c6b"
+}
