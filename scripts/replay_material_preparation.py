@@ -21,6 +21,10 @@ used, observed = [], {'inspected_inputs': 0, 'accepted_materials': 0, 'qualified
 class MissingSavedCall(RuntimeError):
     pass
 
+class SavedCallUnavailable(RuntimeError):
+    pass
+
+
 class Replay:
     def run(self, key, kind, request, invoke, **kwargs):
         if key not in saved:
@@ -30,11 +34,14 @@ class Replay:
         if row['state'] == 'failed' and kwargs.get('allow_unavailable'):
             raise ResourceUnavailable(row['response'])
         if row['state'] != 'succeeded':
-            raise ValueError('saved call is not known successful')
+            raise SavedCallUnavailable(key + ':' + row['state'])
         used.append(key)
         return row['response']
 
 ops = runtime.producer(args.id).operations
+# DurableProducer sets this before constructing the production request. Omitting
+# it changes the actual model prompt and makes even same-version replay fail.
+ops.visual_validation_mode = prep['request'].get('visual_validation_mode', 'gemini')
 for component in (ops.source, ops.gemini, ops.search, ops.downloader, ops.downloader.downloader):
     component.calls = Replay()
 review = ops.review_script
@@ -68,6 +75,8 @@ try:
     state = 'saved_complete_plan_replayed'
 except MissingSavedCall as error:
     state = 'missing_saved_call:' + str(error)
+except SavedCallUnavailable as error:
+    state = 'saved_call_unavailable:' + str(error)
 except SavedRequestMismatch as error:
     state = 'saved_request_hash_mismatch'
     observed['request_hash_mismatch'] = {'expected': error.expected, 'observed': error.observed}

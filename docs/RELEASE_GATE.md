@@ -1,5 +1,9 @@
 # Release gate — current execution contract
 
+## Replay reconstruction correction — 2026-10-15
+
+Same-version research request bd2ac26d now reconstructs to its exact stored hash e2ee3932… after restoring visual_validation_mode in the replay entrypoint. Prior claims that absent archived bodies made reconstruction impossible were too strong: the replay tool omitted a production input. Legacy deleted photographs remain a separate limit. The normal request remains immutable unknown after Gemini503. One separately recorded exact-request diagnostic returned200/STOP (11,069 input +650 output tokens), but its selected source mention failed local validation. Existing bounded research repair/review is being checked in isolation; no production retry, photo search or TTS. See acceptance/factory-v3/replay-mode-and-provider-diagnostic-20261015.json. No readiness claim.
+
 ## Current release verification — 2026-10-14
 
 Read `acceptance/factory-v3/current-release-verification-20261014.json` for the current bounded plan. Live inspection found revision398ebeb, latest request332ebac7 stopped at the gateway's startup404 before any generation, and the route now correctly rejects unauthenticated access with403. One read-only billing check returned200 with billing disabled. The admission correction prevents a missing route from consuming a new request ID. Exact server imageffba621 passes114 core and210 material-first tests without networking or runtime source overlays.

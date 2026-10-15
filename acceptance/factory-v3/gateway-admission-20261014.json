@@ -22,7 +22,7 @@
     "tts_calls": 0,
     "stop_condition": "Any failure or billingEnabled other than false; no retry or generation"
   },
-  "deployed": false,
+  "deployed": true,
   "billing_diagnostic_result": {
     "status": 200,
     "project_matches": true,
@@ -30,5 +30,17 @@
     "configured_model": "gemini-3.1-flash-lite",
     "generation_calls": 0,
     "tts_calls": 0
-  }
+  },
+  "source_revision": "ffba6212247ca82f5cd54da743e29a414f1d5b97",
+  "image_id": "sha256:a3c0294b37f76c5da4d5afda73d443b2b208bbbb1f39b7a026b3caf02f9819f5",
+  "protected_state_equal": true,
+  "public_health_status": 200,
+  "public_access": true,
+  "package_checks": {
+    "factory_v3": 114,
+    "material_first": 210,
+    "network": "none",
+    "source_overlays": false
+  },
+  "protected_state_equal_scope": "settings hash, unrelated container identities/images, existing request counts; workflow snapshot accidentally used inactive DB and does not establish active n8n fingerprint equality"
 }

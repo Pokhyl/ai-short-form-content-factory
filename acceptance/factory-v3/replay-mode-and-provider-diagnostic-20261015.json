@@ -1,0 +1,25 @@
+{
+  "project_ready": false,
+  "request_id": "bd2ac26d-970a-4ac9-9cd3-5b1e7910fecc",
+  "production_job_unchanged": true,
+  "replay_fix": "Restore visual_validation_mode exactly as DurableProducer does before building model requests. Report inactive non-successful saved calls without invoking providers.",
+  "exact_request_hash": "e2ee39320048d26a1c454c94e67c16f8e70e02158619e6205753908e06f00813",
+  "exact_hash_verified_on_server": true,
+  "regression": "runpy replay entrypoint against actual DurableProducer request construction; default/Gemini/metadata modes and succeeded/failed/unknown saved calls",
+  "full_request_diagnostic": {
+    "status": 200,
+    "generation_calls": 1,
+    "prompt_tokens": 11069,
+    "output_tokens": 650,
+    "finish_reason": "STOP",
+    "tts_calls": 0,
+    "database_writes": 0,
+    "meaning": "Exact request can complete; prior 503 not evidence of a persistent prompt-size incompatibility. Output still requires normal factual/source checks."
+  },
+  "local_validation": {
+    "search_hints": "pass",
+    "mentions": "setting: selected source span does not contain the object mention"
+  },
+  "remote_evidence": "/var/lib/factory-v3/gateway-admission-20261014",
+  "rollout_evidence_limitation": "The before/after workflow fingerprint used the inactive ai-short-form-postgres DB. It is not proof for active n8n workflow state. Actual active gateway version was subsequently read from n8n-publisher-restore-pg/short_video_factory as 6ef9870b-e3f9-45f6-a729-8c386f65041a, model gemini-3.1-flash-lite; only app rollout was performed."
+}

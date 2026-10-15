@@ -1,50 +1,28 @@
-# Factory v3 — availability before voice
+# Video factory runtime
 
-Replacement authorized2026-10-04. Product readiness remains false.
+The deployed Studio is at https://studio.hodor.com.pl/factory-v3/. The `/factory-v3` path is the application route on the Studio host, not a separate publisher deployment. Public access is configured by the private runtime settings.
 
-Order: research -> review real downloaded media -> compose grounded narration from available material -> freeze globally feasible plan -> one TTS -> exact-audio alignment -> existing renderer -> actual MP4 audit -> explicit human review.
+The complete request path is implemented and wired in `runtime.py`:
 
-Implemented:
-- Global maximum matching, exact deficit witnesses, byte-level uniqueness and frozen asset/contract provenance.
-- PostgreSQL-only runtime ledger: atomic stage claims, exact character budget through existing factory quota functions, one voice attempt, immutable terminal/ambiguous states through the runtime functions.
-- Executor rechecks the frozen plan immediately before sending voice and executes one stage per invocation. It never repeats a claimed operation after a lost response.
-- Google TTS adapter uses the selected four voices, no speech manipulation and no duration retries.
-- Existing media-worker adapters stage the exact reviewed files, align the stored voice, render from real timestamps and invoke the actual full-decode/audio-identity audit.
-- Internal CLI and Dockerfile. Public callers must not submit their own visual approval receipts.
+1. Studio accepts topic, PL/EN/RU/UK, and 15/30/45/60 seconds. A new request is admitted only after the credential route is available.
+2. `material_first` researches sources, retrieves candidate photographs, inspects exact downloaded images, selects relevant distinct materials, and composes and reviews narration.
+3. The credential gateway handles provider credentials. Gemini requires an unbilled project; Google TTS has durable monthly character ceilings. Credentials are never supplied by public callers.
+4. The worker synthesizes natural-speed speech, aligns it, renders whole photographs into a vertical video, and audits the resulting media. Measured-text-correction plans allow at most three separately accounted voice sends; ambiguous calls are not repeated.
+5. Studio exposes the script, sources, photo attribution, completed MP4, explicit owner review, and scoped media deletion. Machine QA does not imply owner acceptance.
 
-Runtime setup (not deployed):
-1. Apply factory_v3/ledger.sql to the project PostgreSQL after existing factory provider-budget functions.
-2. Build with docker build -f factory_v3/Dockerfile -t factory-v3:VERSION .
-3. Provide V3_DATABASE_URL as a secret and a mounted V3_GOOGLE_ACCESS_TOKEN_FILE. Token refresh/provisioning is not yet integrated; an expired token fails without retry.
-4. Share the same media volume at /data and internal network with shorts-v2-media-worker-1.
-5. Call the internal CLI:
-   python3 -m factory_v3.cli create JOB_UUID --plan frozen.json
-   python3 -m factory_v3.cli step JOB_UUID
-   python3 -m factory_v3.cli status JOB_UUID
+Implementation and deployment do not establish product reliability. **The project is not accepted as ready.** See `docs/RELEASE_GATE.md` and `acceptance/factory-v3/current-release-verification-20261014.json` for the current evidence and bounded verification plan. Historical missing-adapter lists in earlier versions of this README described initial scaffolding and are no longer accurate.
 
-Each step advances at most one stage. A running/unknown/failed stage requires evidence-based reconciliation; do not launch it again. QA pass is machine acceptance, never HUMAN PASS.
+## Runtime and persistence
 
-Verification:
-- python3 -m unittest discover -s tests/factory_v3 -v (32 unique tests)
-- python3 tests/factory_v3/run_postgres_ledger.py (isolated offline PostgreSQL; no production writes)
-- python3 factory_v3/visual_plan.py acceptance/release-coverage/12126-assignment-deficits.json --output acceptance/factory-v3/failed-12126-preflight.json (expected blocked7/9, exit2)
+`server.py` provides the UI/API and a bounded single worker. `cli.py` provides operator commands. PostgreSQL stores preparation calls, budgets, immutable request identities, execution stages and reviews. `material_first` owns current production planning and media behavior; the older `Producer` in this package is not the current runtime entrypoint.
 
-Catalog preparation implemented: exact source hashes/support quotations, strict real-photo receipts bound to file/contract/evidence, bounded global coverage before composition, fixed visual contracts/citations, mandatory semantic script review bound to final narration/language/evidence. All32 tests pass. New model callbacks are controlled tests, not provider acceptance.
+The application container shares the media volume with the media worker. `deploy/factory-v3/compose.yaml` describes the service; an explicitly recorded override selects the deployed image. Private settings live outside the repository. Build from committed source and verify the exact image before rollout. Do not pull into the dirty production checkout or replay a failed job ID.
 
-Still missing: live discovery/download/vision and composition/semantic adapters, durable preparation budgets, automatic credentials, public intake/review, deployment and actual-media release acceptance. The new executor has NOT processed a production job. Controlled tests are not provider acceptance.
+## Local verification
 
-## Durable preparation operations
+```sh
+python3 -m unittest discover -s tests/factory_v3
+python3 -m unittest discover -s tests/material_first
+```
 
-Apply preparation.sql after ledger.sql in the isolated/new V3 schema. PreparationLedger requires the exact producer source revision. BudgetedCalls records each external operation before sending, caches successful exact requests, and stops after ambiguous errors. Server-owned budgets and request identities must never contain credentials. This is an internal trust boundary, not a public endpoint for caller-supplied approvals. Current verification is controlled callbacks and actual isolated PostgreSQL; no new live provider acceptance.
-
-## Budgeted Gemini adapter
-
-Gemini uses trusted server credentials and free-tier deployment confirmation, exact model selection, durable BudgetedCalls, bounded structured output and full render-photo bytes. compose/review_script/review_photo are ready for producer integration. Successful raw responses, usage and selected rate headers remain in the preparation ledger. Current model/HTTP tests are controlled; live credentials, free-tier access and model-specific schema admission remain unverified.
-
-## Photo sources and exact-byte download
-
-Apply provider_cache.sql after ledger.sql/preparation.sql. PhotoSearch uses server credentials, BudgetedCalls and a PostgreSQL24h ProviderCache. Pending/unknown claims require explicit reconciliation. PhotoDownload stores bounded selected candidates once, retaining SHA/provenance and ffprobe dimensions for exact Gemini/render reuse. Current source tests are controlled, not live acceptance.
-
-## Connected trusted producer
-
-Producer creates a durable request with server-owned duration-scaled budgets, claims preparation once, fetches evidence, derives source-supported units and three distinct query contexts, reviews at most three exact photos per unit, checks globally unique factual coverage before composition, and freezes independently reviewed narration. A definitive selected-resource403/404/410 can be skipped without retry inside the original budget;A photo-download429 skips the rate-limited host for the remaining preparation without retries; ambiguous results and429 from other operation types stop. Tests connect the full preparation path using controlled responses. Runtime credential wiring/public intake/live acceptance remain pending.
+For package tests, mount fixtures at `/app/tests` and `/app/acceptance`, read-only, with networking disabled. Keep the runtime modules from the image; mounting source over them would test different code. Provider-backed media and owner acceptance require separate evidence.
