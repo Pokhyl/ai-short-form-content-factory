@@ -1,0 +1,36 @@
+{
+  "project_ready": false,
+  "source_revision": "c32b512ca916108b941ee86eb7bd6fca97a950ae",
+  "image_id": "sha256:bb22414223a15fd99c057e9043240b93018b5a6db9559a9e8427e75d9e91a2ef",
+  "request": {
+    "request_id": "53a0eb07-2d9b-456c-8ed5-4d76e39851e3",
+    "topic": "Нейтронная звезда",
+    "language": "uk",
+    "seconds": 60,
+    "visual_validation_mode": "gemini"
+  },
+  "reason": "Current transient-overload failure reproduced offline; strict explicit503 classification, bounded physical attempts and immutable unknown jobs verified in exact image and real isolated PostgreSQL.",
+  "preconditions": [
+    "additive function body verified",
+    "exact app image publichealth",
+    "existing factory tables and other functions unchanged",
+    "active n8n workflows and other containers unchanged"
+  ],
+  "budgets": {
+    "research_search": 1,
+    "source_fetch": 6,
+    "gemini_physical_sends": 20,
+    "download": 45,
+    "metadata": 1,
+    "search:pexels": 3,
+    "search:pixabay": 3,
+    "search:wikimedia": 3,
+    "tts_max": 3,
+    "per_model_operation_attempts_max": 3
+  },
+  "quota": "Unbilled model proof checked by runtime; unchanged monthly TTS ceilings; actual token/character use unknown until responses.",
+  "stop": "First terminal/unknown state; never rerun this ID. Explicit503 retries occur only within normal live preparing state and total budget.",
+  "submitted": true,
+  "submission_http_status": 202,
+  "initial_status": "preparing"
+}

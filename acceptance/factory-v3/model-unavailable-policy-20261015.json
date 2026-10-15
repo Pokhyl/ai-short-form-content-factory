@@ -1,6 +1,6 @@
 {
   "project_ready": false,
-  "deployed": false,
+  "deployed": true,
   "cause": "Repeated explicit Gemini503/UNAVAILABLE rejects otherwise valid preparation; treating it as an unknown send makes every transient overload terminal.",
   "reference": "https://ai.google.dev/gemini-api/docs/troubleshooting",
   "policy": "New preparing jobs only: at most3 distinct physical claims for explicit trusted gateway503/UNAVAILABLE with execution ID, exponential2/4second delays, Retry-After respected up to30seconds. Every physical claim consumes existing total Gemini budget. No repeats after timeouts, 502,429, missing provenance, ledger uncertainty, completed malformed output, TTS or voice-stage corrections. Historical terminal IDs remain immutable.",
@@ -9,5 +9,23 @@
     "factory_v3": 122,
     "material_first": 213
   },
-  "next": "isolated actual PostgreSQL assertions, exact image checks, additive function+app scoped rollout, one bounded new normal request"
+  "next": "isolated actual PostgreSQL assertions, exact image checks, additive function+app scoped rollout, one bounded new normal request",
+  "source_revision": "c32b512ca916108b941ee86eb7bd6fca97a950ae",
+  "image_id": "sha256:bb22414223a15fd99c057e9043240b93018b5a6db9559a9e8427e75d9e91a2ef",
+  "package_checks": {
+    "factory_v3": 122,
+    "material_first": 213,
+    "network": "none",
+    "runtime_source_overlays": false
+  },
+  "isolated_postgres": "passed: original claims/quota/terminal/cache assertions plus explicit503 physical budgets, strict provenance and immutable unknown states",
+  "rollout_job": "job_37f698ddaa08",
+  "rollout": {
+    "state": "verified",
+    "all_existing_factory_tables_equal": true,
+    "other_factory_functions_equal": true,
+    "active_n8n_workflows_and_settings_equal": true,
+    "new_function_body_verified": true,
+    "public_revision": "c32b512ca916108b941ee86eb7bd6fca97a950ae"
+  }
 }

@@ -1,3 +1,7 @@
+## Current-state pointer — 2026-10-15
+
+Read the top continuation checkpoint in `docs/CODEX_HANDOFF.md` and `docs/RELEASE_GATE.md` before acting. Chronological entries below are history; do not use their stale image IDs, model settings or next-run instructions as current state.
+
 ## Google OAuth restored; retrieved plan rejected — 2026-10-10
 
 Screenshot sign-in mismatch diagnosed against n8n DB: entered email lacked ".it"; corrected form to sole active account, existing password retained and used through UI. Logged in successfully. n8n Google account credential8KbFC6GBZOd18bzG displays connected; read-only billing probe758793e0-698a-4dd8-bc3e-ed6f8e9b52d9 passed after reconnect,0Gemini/0TTS. Boundary0d60b3ab terminal after oneGemini: picked three Crab Nebula metadata anchors under unrelated generic neutron star evidence; strict repeated-target gate stopped before review. No search/TTS. Inspect saved actual response in DB via this ID; do not repeat. 61 retrieved assets include several other remnants but source texts do not name their proper objects. Need offline generic source/observed-object bridge design; do not loosen source binding, image uniqueness or strict review by assumption. LIVEapp8fa79a4, gateway diagnostic category ac9260d. project_ready=false, no exact60s output.
