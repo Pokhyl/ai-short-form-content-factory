@@ -11,6 +11,8 @@ from factory_v3.executor import Executor, ReconciliationRequired
 from factory_v3.preflight import freeze, digest
 from factory_v3.runtime import Runtime
 from factory_v3.preparation import BudgetedCalls, PreparationLedger, PreparationBusy
+from factory_v3.credential_http import GATEWAY
+from factory_v3.http import HTTPFailure
 import hashlib
 
 dsn=os.environ["V3_TEST_DATABASE_URL"]
@@ -105,6 +107,11 @@ class ControlledAdapters:
     def render(self,*args):return {"status":"ready","controlled_test":True}
     def qa(self,*args):return {"status":"ready","controlled_test":True}
 
+class ControlledAdmission:
+    def request(self, method, url, body, headers, timeout):
+        assert (method,url,body,headers)==('POST',GATEWAY,{},{}), 'unexpected external request'
+        raise HTTPFailure(403,{})
+
 with tempfile.TemporaryDirectory() as directory:
     root=Path(directory)
     photo=root/"test.jpg";photo.write_bytes(b"controlled bytes, not visual acceptance")
@@ -144,7 +151,7 @@ with tempfile.TemporaryDirectory() as directory:
             "SELECT count(*) FROM factory.provider_usage_ledger WHERE job_id=%s",(race_job,)).fetchone()[0]
         assert amount==1
     runtime=Runtime({"database_url":dsn,"broker_token":"controlled-"+"x"*40},root,
-                    os.environ["FACTORY_V3_REVISION"])
+                    os.environ["FACTORY_V3_REVISION"],http=ControlledAdmission())
     request_id=str(uuid.uuid4())
     assert runtime.create(request_id,"Controlled topic","pl",15)["created"] is True
     assert runtime.create(request_id,"Controlled topic","pl",15)["created"] is False
