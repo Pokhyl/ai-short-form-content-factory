@@ -1,12 +1,10 @@
-## Current continuation — 2026-10-15 21:42 UTC
+## Current continuation — 2026-10-16
 
-LIVE fd387f5c3130bf409fdc0a0c3ddffc5922476af6 / image sha256:cd8c12edb301c9935beab8eebe1c76767e7b27ebd40f7cbb7664f000ada7fb3e. 122core+226material exact-image tests zero skips, no network/runtime overlay. App-only deployment verified; all factory table/function hashes, n8n workflow/history, settings and support containers unchanged; publichealth exact, gateway403. Release /var/lib/factory-v3/pixel-role-contract-20261015. Receipt acceptance/factory-v3/pixel-role-contract-20261015.json.
+LIVE remainsfd387f5/imagecd8c12ed. bb06c742 breadPL15 TERMINAL failed NarrationBudgetExceeded, no TTS/render: draft44 words, repair47, maximum38. Exact same-version saved-request replay job_ca6b14f9e317 confirms paragraphs.py250 with all request hashes matching; no calls/writes. Never rerun this ID.
 
-ACTIVE normal breadPL15 Vision bb06c742-008d-4901-a4a6-c787840b3fec, public API202 once, last preparing/photos. Check its status before anything; do not repeat ID. In-app browser studioTab id1 shows this request. No new TTS/MP4 yet verified. Whole project not accepted.
+Candidate deba46cf9a24ce8444b9a08d12de5692ac215662 pushed. Pixel-first length repair now allocates exact total preferred words across original paragraphs and requires one-word array items through bounded schema; server retains anchor identity, independent factual/native gates and natural voice remain. Fixture actual-pl15-length-failure-bb06.json plus saved oversized/extra-word/multiword/valid regressions; connected initial/overlong drafts across16language-duration pairs. Built image98d144b7, release /var/lib/factory-v3/pixel-word-budget-20261016. Exact-image package job_8007a96e1179 pending; MUST pass227material/122core without skips before rollout. Predeploy protected snapshot running separately. No new provider run yet.
 
-Prior bread4731d936 terminalfailed KeyError before TTS. Exact saved-request replay job_27defb123101 confirms paragraphs.py184 missing validated_visual_anchors after restoring identical target dictionary key order from reconstructed candidates; no provider calls/writes. Fix strips provisional search roles from brief/candidate copies before pixel inspection and requires approved anchors before role-based paragraph allocation. Connected regression includes initial and overlong drafts across all16 language/duration pairs plus separate absent-anchor length repair. All pass. Old IDs immutable. The full actual saved astronomy pool has10unique photos after2duplicate pairs, insufficient forUK60; do not call it acceptance.
-
-Next finish active bread request and inspect actual outputs or diagnose saved failure. Representative EN30/RU45/UK60 acceptance remains pending; do not focus exclusively on neutron star. Preserve unrelated dirty acceptance/work files.
+Prior photo/role fixes and their protected rollouts recorded in pixel-role-contract-20261015.json. Whole project not accepted; no new final MP4. Next finish package, scoped protected rollout, then bounded actual verification. Representative EN30/RU45/UK60 still pending. Preserve unrelated dirty acceptance/work files.
 
 Historical notes below are superseded.
 
