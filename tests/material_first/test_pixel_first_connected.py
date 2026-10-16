@@ -58,7 +58,10 @@ class PixelFirstConnectedTests(unittest.TestCase):
                 if key == 'material-compose-length-repair':
                     self.model_calls.append(key)
                     assert context['paragraph_plan'] is None
-                    return self.normal_draft, {'receipt_id': 'controlled-repair'}
+                    return {'paragraph_'+str(i+1): {
+                        'words':['control']*count,
+                        'fact_ids':self.normal_draft['beats'][i]['fact_ids']}
+                        for i,count in enumerate(context['word_allocations'])}, {'receipt_id': 'controlled-repair'}
                 result, receipt = super().generate(key, instruction, context, schema)
                 if key == 'material-compose':
                     self.normal_draft = copy.deepcopy(result)

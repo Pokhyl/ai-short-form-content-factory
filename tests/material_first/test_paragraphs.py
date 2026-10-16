@@ -6,6 +6,37 @@ from material_first.presentation import TOPIC_POLICY
 
 
 class ParagraphTests(unittest.TestCase):
+    def test_actual_pl15_length_failure_uses_bounded_word_arrays(self):
+        saved=json.loads((Path(__file__).parent/'fixtures/actual-pl15-length-failure-bb06.json').read_text())
+        draft=saved['material-compose']
+        context={'request':{'seconds':15,'language':'pl','presentation_policy':TOPIC_POLICY,
+                            'required_fact_ids':['f1','f2','f3']},
+                 'materials':[{'id':b['material_id'],'supported_fact_ids':b['fact_ids']} for b in draft['beats']],
+                 'evidence':{'sources':[],'facts':[{'id':'f'+str(i),'text':'Controlled source fact'} for i in (1,2,3)]}}
+        for mode in ('saved_oversize','extra_word','multiword','valid'):
+            calls=[]
+            def generate(key,instruction,payload,schema):
+                calls.append(key)
+                if key=='material-compose':return copy.deepcopy(draft),{}
+                if key=='material-language-edit':return {'narration':payload['narration']},{}
+                self.assertEqual(sum(payload['word_allocations']),32)
+                if mode=='saved_oversize':return copy.deepcopy(saved['material-compose-length-repair']),{}
+                result={'paragraph_'+str(i+1):{'words':['kontrola']*n,'fact_ids':draft['beats'][i]['fact_ids']}
+                        for i,n in enumerate(payload['word_allocations'])}
+                if mode=='extra_word':result['paragraph_1']['words'].append('extra')
+                if mode=='multiword':result['paragraph_1']['words'][0]='two words'
+                return result,{}
+            with self.subTest(mode=mode):
+                ops=Operations('.',None,SimpleNamespace(generate=generate),None,None)
+                if mode=='valid':
+                    result=ops.compose(copy.deepcopy(context))
+                    self.assertEqual(sum(len(b['narration'].split()) for b in result['beats']),32)
+                    self.assertEqual([(b['material_id'],b['fact_ids']) for b in result['beats']],
+                                     [(b['material_id'],b['fact_ids']) for b in draft['beats']])
+                else:
+                    with self.assertRaises(ValueError):ops.compose(copy.deepcopy(context))
+                    self.assertNotIn('material-language-edit',calls)
+
     def test_length_repair_does_not_require_approved_context_anchors(self):
         saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-keyed-budget-failure.json').read_text())
         context=copy.deepcopy(saved['composition_context'])

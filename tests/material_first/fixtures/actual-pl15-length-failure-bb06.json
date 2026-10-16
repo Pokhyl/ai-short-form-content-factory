@@ -1,0 +1,56 @@
+{
+  "id": "bb06c742-008d-4901-a4a6-c787840b3fec",
+  "language": "pl",
+  "seconds": 15,
+  "source": "actual completed Gemini responses, no acceptance claim",
+  "material-compose": {
+    "beats": [
+      {
+        "material_id": "pexels:36976900",
+        "narration": "W profesjonalnej piekarni składniki jak mąka, woda i drożdże trafiają do specjalnej miesiarki spiralnej.",
+        "fact_ids": [
+          "f1"
+        ]
+      },
+      {
+        "material_id": "wikimedia:143575399",
+        "narration": "Dzięki fermentacji drożdże wytwarzają bąbelki gazu, które skutecznie spulchniają ciasto, pozwalając mu szybko rosnąć.",
+        "fact_ids": [
+          "f2"
+        ]
+      },
+      {
+        "material_id": "wikimedia:150560197",
+        "narration": "Po pieczeniu bochenki kładzie się na kratce. Zapewnia to swobodny przepływ powietrza, co stabilizuje strukturę wypieku.",
+        "fact_ids": [
+          "f3"
+        ]
+      }
+    ]
+  },
+  "material-compose-length-repair": {
+    "beats": [
+      {
+        "material_id": "pexels:36976900",
+        "narration": "W profesjonalnej piekarni składniki jak mąka, woda i drożdże trafiają do specjalnej miesiarki spiralnej w celu wyrobienia ciasta.",
+        "fact_ids": [
+          "f1"
+        ]
+      },
+      {
+        "material_id": "wikimedia:143575399",
+        "narration": "Dzięki fermentacji drożdże wytwarzają bąbelki gazu, które skutecznie spulchniają ciasto, pozwalając mu rosnąć.",
+        "fact_ids": [
+          "f2"
+        ]
+      },
+      {
+        "material_id": "wikimedia:150560197",
+        "narration": "Po pieczeniu bochenki kładzie się na kratce. Zapewnia to swobodny przepływ powietrza, co stabilizuje strukturę wypieku.",
+        "fact_ids": [
+          "f3"
+        ]
+      }
+    ]
+  }
+}

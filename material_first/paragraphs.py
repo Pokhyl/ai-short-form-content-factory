@@ -209,6 +209,30 @@ def compose_paragraphs(gemini, context, budget_error):
                 'Each paragraph must explain its required_fact_ids and at least one identifying_fact_id. '
                 'Avoid repeating the same fact across paragraphs; explain a distinct supported aspect when anchors share a fact. '
                 'The server fixes anchors and visual roles. Do not add optional claims merely to fill length. ')
+        word_allocations = None
+        if not paragraph_plan and targets is None and length_problem:
+            # Pixel-first paragraphs have factual anchors but no approved roles.
+            # Bind identity server-side and require a bounded total in the wire
+            # schema, instead of hoping a second free-form draft gets shorter.
+            sizes = [len(b['narration'].split()) for b in beats]
+            total = min(max(preferred_words, minimum_words), maximum_words)
+            raw = [total * size / sum(sizes) for size in sizes]
+            word_allocations = [max(1, math.floor(n)) for n in raw]
+            while sum(word_allocations) < total:
+                i = max(range(len(raw)), key=lambda i: raw[i]-word_allocations[i])
+                word_allocations[i] += 1
+            while sum(word_allocations) > total:
+                i = max(range(len(raw)), key=lambda i: word_allocations[i]-raw[i] if word_allocations[i]>1 else -math.inf)
+                word_allocations[i] -= 1
+            repair_schema = obj({'paragraph_'+str(i+1): obj({
+                'words': array({**string(), 'maxLength':80}, n, n),
+                'fact_ids': array(string(f['id'] for f in context['evidence']['facts']),1,8)})
+                for i,n in enumerate(word_allocations)})
+            repair_identity_instruction = (
+                'Return the same paragraphs as paragraph_1, paragraph_2, etc. Each words array has exactly '
+                'the supplied word_allocations count, with one spoken word per item and punctuation attached. '
+                'Write natural sentences first, then split them into words. The server preserves photo identity. '
+                'Keep essential required facts and qualifiers; remove decorative wording and optional claims. ')
         repaired, _ = gemini.generate('material-compose-length-repair',
             instruction + f' The completed draft has {words} words. Rewrite to {minimum_words}–{maximum_words}, '
             f'preferably {preferred_words}. ' + repair_identity_instruction +
@@ -220,8 +244,18 @@ def compose_paragraphs(gemini, context, budget_error):
             'Correct fact_ids to the facts actually asserted in each revised paragraph. Never merely add a citation without explaining it; '
             'omit an optional fact_id that the paragraph does not assert. All required source facts must remain fully explained.',
             {**model_context, 'completed_draft':deepcopy(beats), 'cadence_error':cadence_error,
-             'paragraph_diagnostics':paragraph_diagnostics, 'paragraph_plan':paragraph_plan}, repair_schema)
+             'paragraph_diagnostics':paragraph_diagnostics, 'paragraph_plan':paragraph_plan,
+             **({'word_allocations':word_allocations} if word_allocations else {})}, repair_schema)
         validate_json(repaired, repair_schema)
+        if word_allocations:
+            converted=[]
+            for i, original in enumerate(beats):
+                paragraph=repaired['paragraph_'+str(i+1)]
+                if any(len(word.split())!=1 or word!=word.strip() for word in paragraph['words']):
+                    raise ValueError('paragraph word array must contain individual words')
+                converted.append({**original,'narration':' '.join(paragraph['words']),
+                                  'fact_ids':paragraph['fact_ids']})
+            repaired={'beats':converted}
         if paragraph_plan:
             structured=[]
             for i,contract in enumerate(paragraph_plan):
