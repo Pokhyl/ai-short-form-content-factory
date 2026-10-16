@@ -1,10 +1,12 @@
 ## Current continuation — 2026-10-16
 
-LIVE remainsdeba46c/image98d144b7. Normal2a8d74a8 TERMINALfailed MaterialUnavailable after successful32word repair and native edit; noTTS/render. Exact replay job_f01470ac3a6b matches all requests and proves pool selection defect:7accepted photos, but selected5 overweight first-discovered fields and omit required bread photo. No rerun of oldID.
+LIVE e38781ae2220829872ba5d147bcfba2f7bdec81c / image701c730bd11e056c837dbde790bd9180e5c161286c66a4225646e7a91ae3d719. 230material+122core exact-image tests zero skips/no network/runtime overlay. App-only deployment verified all factory tables/functions, n8n workflows/history, settings and supporting containers unchanged; exact publichealth/gateway403. Release /var/lib/factory-v3/global-photo-pool-20261016. Receipt global-photo-pool-20261016.json.
 
-Candidate e38781a pushed. make_visuals now uses global matching over complete inspected pool before selecting final bounded count, preserves narration/context anchors, then existing relevance/cadence/final verification apply. Actual saved unchanged draft/pool passes word+character preflight; all7candidate rotations, missing-topic negative and15/30/45/60 unevenpool tests pass. Fixture actual-pl15-pool-selection-2a8d.json. Full local227 tests passed before3new tests,5OpenCV skips. Build+exact-image full gate job_c75e40041829 RUNNING; release /var/lib/factory-v3/global-photo-pool-20261016. Expected230material+122core zero skips. Predeploy protected snapshot separate job; check result before rollout.
+ACTIVE normal breadPL15 Vision9fea550c-fcd2-4e5f-9269-43f068397077, submitted once202; last preparing. In-app tabstudioTab id1 opened to its URL. Check state before anything; never repeat ID. No newTTS/MP4 yet verified. Whole project not accepted; EN30/RU45/UK60 representative cases remain pending.
 
-Next complete image gates/scoped protected rollout, then actual bounded normal case. Whole project NOT ready; no newMP4. Representative EN30/RU45/UK60 pending. Preserve unrelated dirty files.
+Previous2a8d74a8 TERMINALfailed after lengthrepair/nativeedit, noTTS: exact replay matched all saved request hashes, selected5photos omitted needed bread image although complete7photo pool was feasible. New generic global pool assignment preserves mandatory anchors and assigns from whole pool before truncation. Saved unchanged realdraft/pool passes word+character preflight, shuffledorder controls and missing-topic negative; all durations covered. Earlierbb06 lengthfailure and4731 missinganchors remain immutable. Changes fix factory contracts rather than hand-written video.
+
+Next finish current normal case and inspect actual output or saved failure. Preserve unrelated dirty acceptance/work files.
 
 Historical notes below are superseded.
 
