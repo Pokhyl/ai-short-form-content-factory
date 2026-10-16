@@ -1,12 +1,10 @@
 ## Current continuation — 2026-10-16
 
-LIVE deba46cf9a24ce8444b9a08d12de5692ac215662 / image sha256:98d144b7dc41b886b8461d41c7eacc3e4127aaa5843b6b496a64d9bd223c6138. Exact-image227material+122core tests pass with zero skips/no network/runtime overlay. App-only rollout verified all factory table/function, n8n workflow/history, settings and supporting containers unchanged; publichealth exact/gateway403. Release /var/lib/factory-v3/pixel-word-budget-20261016; receipt acceptance/factory-v3/pixel-word-budget-20261016.json.
+LIVE remainsdeba46c/image98d144b7. Normal2a8d74a8 TERMINALfailed MaterialUnavailable after successful32word repair and native edit; noTTS/render. Exact replay job_f01470ac3a6b matches all requests and proves pool selection defect:7accepted photos, but selected5 overweight first-discovered fields and omit required bread photo. No rerun of oldID.
 
-ACTIVE normal breadPL15 Vision 2a8d74a8-7db5-401d-94bf-6ed6e02bf83e, submitted once202. Check its state before anything; never repeat. Last preparing. The schema-based word repair is live: exact total preferred words allocated across original paragraph anchors; independent fact/native review and natural voice gates remain. Whole-project acceptance NOT proven, no new MP4 yet verified.
+Candidate e38781a pushed. make_visuals now uses global matching over complete inspected pool before selecting final bounded count, preserves narration/context anchors, then existing relevance/cadence/final verification apply. Actual saved unchanged draft/pool passes word+character preflight; all7candidate rotations, missing-topic negative and15/30/45/60 unevenpool tests pass. Fixture actual-pl15-pool-selection-2a8d.json. Full local227 tests passed before3new tests,5OpenCV skips. Build+exact-image full gate job_c75e40041829 RUNNING; release /var/lib/factory-v3/global-photo-pool-20261016. Expected230material+122core zero skips. Predeploy protected snapshot separate job; check result before rollout.
 
-Prior bb06c742 immutablefailed NarrationBudgetExceeded, draft44words/repair47/max38, noTTS/render. Exact same-version saved replay job_ca6b14f9e317 matched all request hashes and confirms paragraphs.py250. Regression actual-pl15-length-failure-bb06.json covers old oversized reply, extra words, multiword tokens, valid32word control; connected overlong drafts acrossall16language-duration pairs.
-
-Next finish current normal case, inspect actual result or saved failure, then representative EN30/RU45/UK60. No blind repeats or neutron-only prompt tuning. Preserve unrelated dirty acceptance/work files.
+Next complete image gates/scoped protected rollout, then actual bounded normal case. Whole project NOT ready; no newMP4. Representative EN30/RU45/UK60 pending. Preserve unrelated dirty files.
 
 Historical notes below are superseded.
 

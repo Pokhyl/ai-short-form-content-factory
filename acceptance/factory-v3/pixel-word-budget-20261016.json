@@ -66,11 +66,20 @@
       "language": "pl",
       "visual_validation_mode": "gemini"
     },
-    "status": "preparing",
+    "status": "failed",
     "source_revision": "deba46cf9a24ce8444b9a08d12de5692ac215662",
-    "error_code": null,
+    "error_code": "MaterialUnavailable",
     "machine_pass": false,
     "human_pass": false,
     "review": null
+  },
+  "diagnosis": {
+    "exact_replay": "job_f01470ac3a6b, all saved request hashes matched, no provider calls",
+    "reason": "Photo pool selected by discovery order before topical scheduling;7 accepted photos contain a feasible5photo subset but original selection omitted needed bread image.",
+    "saved_fixture": "tests/material_first/fixtures/actual-pl15-pool-selection-2a8d.json",
+    "fix_revision": "e38781a",
+    "offline_result": "Actual unchanged draft and photos now pass global assignment and word/character capacity checks; shuffled candidates and missing-topic negatives covered.",
+    "tts": 0,
+    "render": 0
   }
 }
