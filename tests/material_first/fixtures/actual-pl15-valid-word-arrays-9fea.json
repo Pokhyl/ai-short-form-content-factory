@@ -1,0 +1,58 @@
+{
+  "paragraph_1": {
+    "words": [
+      "Wszystko",
+      "zaczyna",
+      "się",
+      "na",
+      "polu",
+      "gdzie",
+      "rolnik",
+      "wysiewa",
+      "ziarna",
+      "pszenicy",
+      "rosnące",
+      "w",
+      "kłosy."
+    ],
+    "fact_ids": [
+      "f1"
+    ]
+  },
+  "paragraph_2": {
+    "words": [
+      "W",
+      "młynie",
+      "ziarna",
+      "są",
+      "mielone",
+      "na",
+      "drobny",
+      "proszek",
+      "czyli",
+      "mąkę."
+    ],
+    "fact_ids": [
+      "f2"
+    ]
+  },
+  "paragraph_3": {
+    "words": [
+      "Drożdże",
+      "tworzą",
+      "bąbelki",
+      "gazu",
+      "dzięki",
+      "czemu",
+      "chleb",
+      "staje",
+      "się",
+      "lekki",
+      "i",
+      "puszysty."
+    ],
+    "fact_ids": [
+      "f3"
+    ]
+  }
+}

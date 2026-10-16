@@ -225,12 +225,13 @@ def compose_paragraphs(gemini, context, budget_error):
                 i = max(range(len(raw)), key=lambda i: word_allocations[i]-raw[i] if word_allocations[i]>1 else -math.inf)
                 word_allocations[i] -= 1
             repair_schema = obj({'paragraph_'+str(i+1): obj({
-                'words': array({**string(), 'maxLength':80}, n, n),
+                'words': array({**string(), 'maxLength':80}, 1, maximum_words),
                 'fact_ids': array(string(f['id'] for f in context['evidence']['facts']),1,8)})
                 for i,n in enumerate(word_allocations)})
             repair_identity_instruction = (
-                'Return the same paragraphs as paragraph_1, paragraph_2, etc. Each words array has exactly '
-                'the supplied word_allocations count, with one spoken word per item and punctuation attached. '
+                'Return the same paragraphs as paragraph_1, paragraph_2, etc. Aim for each supplied '
+                'word_allocations count, with one spoken word per item and punctuation attached. '
+                f'The combined total across all paragraphs must be {minimum_words}–{maximum_words} words. '
                 'Write natural sentences first, then split them into words. The server preserves photo identity. '
                 'Keep essential required facts and qualifiers; remove decorative wording and optional claims. ')
         repaired, _ = gemini.generate('material-compose-length-repair',

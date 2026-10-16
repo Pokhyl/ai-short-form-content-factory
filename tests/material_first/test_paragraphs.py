@@ -13,7 +13,7 @@ class ParagraphTests(unittest.TestCase):
                             'required_fact_ids':['f1','f2','f3']},
                  'materials':[{'id':b['material_id'],'supported_fact_ids':b['fact_ids']} for b in draft['beats']],
                  'evidence':{'sources':[],'facts':[{'id':'f'+str(i),'text':'Controlled source fact'} for i in (1,2,3)]}}
-        for mode in ('saved_oversize','extra_word','multiword','valid'):
+        for mode in ('saved_oversize','extra_word','multiword','valid','actual_valid'):
             calls=[]
             def generate(key,instruction,payload,schema):
                 calls.append(key)
@@ -21,16 +21,18 @@ class ParagraphTests(unittest.TestCase):
                 if key=='material-language-edit':return {'narration':payload['narration']},{}
                 self.assertEqual(sum(payload['word_allocations']),32)
                 if mode=='saved_oversize':return copy.deepcopy(saved['material-compose-length-repair']),{}
+                if mode=='actual_valid':
+                    return json.loads((Path(__file__).parent/'fixtures/actual-pl15-valid-word-arrays-9fea.json').read_text()),{}
                 result={'paragraph_'+str(i+1):{'words':['kontrola']*n,'fact_ids':draft['beats'][i]['fact_ids']}
                         for i,n in enumerate(payload['word_allocations'])}
-                if mode=='extra_word':result['paragraph_1']['words'].append('extra')
+                if mode=='extra_word':result['paragraph_1']['words'].extend(['extra']*7)
                 if mode=='multiword':result['paragraph_1']['words'][0]='two words'
                 return result,{}
             with self.subTest(mode=mode):
                 ops=Operations('.',None,SimpleNamespace(generate=generate),None,None)
-                if mode=='valid':
+                if mode in ('valid','actual_valid'):
                     result=ops.compose(copy.deepcopy(context))
-                    self.assertEqual(sum(len(b['narration'].split()) for b in result['beats']),32)
+                    self.assertEqual(sum(len(b['narration'].split()) for b in result['beats']),35 if mode=='actual_valid' else 32)
                     self.assertEqual([(b['material_id'],b['fact_ids']) for b in result['beats']],
                                      [(b['material_id'],b['fact_ids']) for b in draft['beats']])
                 else:
