@@ -29,7 +29,10 @@ def main():
     diagnostic = {**request, 'diagnostic': 'saved-composition-boundary',
                   'source_id': plan['source_id']}
     # INSERT has a unique key: this script never resumes or repeats a prior ID.
-    runtime.preparations.create(plan['id'], diagnostic, {'gemini': 2, 'metadata': 1})
+    limit = plan['maximum_calls']['gemini']
+    if type(limit) is not int or not 2 <= limit <= 6:
+        raise ValueError('diagnostic Gemini budget must be between two and six')
+    runtime.preparations.create(plan['id'], diagnostic, {'gemini': limit, 'metadata': 1})
     runtime.preparations.claim_run(plan['id'])
     result = {'id': plan['id'], 'source_id': plan['source_id'],
               'revision': plan['revision'], 'project_ready': False,
@@ -38,7 +41,7 @@ def main():
         producer = runtime.producer(plan['id'])
         producer.authorize()
         gemini = producer.operations.gemini
-        gemini.retry_unavailable = False
+        gemini.retry_unavailable = plan.get('retry_explicit_unavailable', False)
 
         class SavedInputThenNativeEdit:
             def generate(self, key, instruction, payload, schema):
@@ -75,10 +78,19 @@ def main():
         result.update(state='boundary_failed', error_type=type(error).__name__,
                       error=str(error))
     finally:
+        result['calls'] = runtime.ledger._call(
+            "SELECT jsonb_agg(jsonb_build_object('key',call_key,'state',state,"
+            "'status',response->'status','error_status',response->'error_status')) "
+            "FROM factory_v3.preparation_calls WHERE preparation_id=%s::uuid", (plan['id'],))
         Path(args.output).write_text(json.dumps(result, ensure_ascii=False, indent=2))
-        runtime.preparations.reject(plan['id'], 'DiagnosticBoundaryComplete' if
-                                    result.get('state') == 'boundary_passed' else
-                                    result.get('error_type', 'DiagnosticInterrupted'))
+        # A provider transport failure may already have terminalized the row.
+        # Preserve that unknown/failed outcome instead of masking it with a
+        # second terminal-state exception from the diagnostic cleanup.
+        status = runtime.preparations.snapshot(plan['id'])['status']
+        if status not in {'failed', 'unknown', 'prepared'}:
+            runtime.preparations.reject(plan['id'], 'DiagnosticBoundaryComplete' if
+                                        result.get('state') == 'boundary_passed' else
+                                        result.get('error_type', 'DiagnosticInterrupted'))
     print(json.dumps({k: v for k, v in result.items() if k not in {'draft', 'script', 'review', 'visuals'}}, ensure_ascii=False))
 
 

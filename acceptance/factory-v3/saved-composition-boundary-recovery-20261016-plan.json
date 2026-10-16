@@ -1,0 +1,23 @@
+{
+  "id": "eae3df25-3eea-4e99-bc27-5fe35be53282",
+  "source_id": "9fea550c-fcd2-4e5f-9269-43f068397077",
+  "revision": "e555dac665924d60e42f6ad0d128032b13caaa87",
+  "image": "sha256:d65c2c41b2d39d7e12d18f145713c8aa6e0b11905718aa059d66b60550c997f0",
+  "question": "Can the unchanged saved 35-word composition pass new native editing, independent factual review and unique-photo assignment?",
+  "maximum_calls": {
+    "gemini": 6,
+    "metadata": 1,
+    "search": 0,
+    "download": 0,
+    "tts": 0
+  },
+  "model": "gemini-3.1-flash-lite",
+  "expected_token_consumption": "unknown; maximum six physical calls for two logical operations; only trusted explicit503/UNAVAILABLE uses existing bounded2s/4s backoff; no retry after unknown transport or429; free-only",
+  "stop_condition": "First failed boundary or complete native/factual/photo assignment. No full job, no render readiness claim.",
+  "saved_input_semantics": "Responses are explicit fixture inputs, not cache hits for modified prompts.",
+  "retry_explicit_unavailable": true,
+  "prior_diagnostic": {
+    "id": "8f82c04f-745f-4a41-a570-dbea587906fb",
+    "outcome": "native edit returned explicit503/UNAVAILABLE, gateway13208; zero completed native text; immutableunknown"
+  }
+}
