@@ -1,0 +1,44 @@
+{
+  "id": "eae3df25-3eea-4e99-bc27-5fe35be53282",
+  "source_id": "9fea550c-fcd2-4e5f-9269-43f068397077",
+  "revision": "e555dac665924d60e42f6ad0d128032b13caaa87",
+  "project_ready": false,
+  "new_searches": 0,
+  "new_downloads": 0,
+  "new_tts": 0,
+  "state": "boundary_failed",
+  "error_type": "ModelUnavailable",
+  "error": "model temporarily unavailable after explicit provider rejection",
+  "calls": [
+    {
+      "key": "gemini-billing-check",
+      "state": "succeeded",
+      "status": 200,
+      "error_status": null
+    },
+    {
+      "key": "material-language-edit",
+      "state": "failed",
+      "status": 503,
+      "error_status": "UNAVAILABLE"
+    },
+    {
+      "key": "material-language-edit:availability:2",
+      "state": "failed",
+      "status": 503,
+      "error_status": "UNAVAILABLE"
+    },
+    {
+      "key": "material-language-edit:availability:3",
+      "state": "failed",
+      "status": 503,
+      "error_status": "UNAVAILABLE"
+    }
+  ],
+  "provider_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+  "gateway_execution_ids": [
+    "13210",
+    "13211",
+    "13212"
+  ]
+}

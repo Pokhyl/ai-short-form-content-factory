@@ -1,0 +1,48 @@
+{
+  "image.json": {
+    "tag": "factory-v3:narration-total-budget-e555dac-amd64",
+    "image_id": "sha256:d65c2c41b2d39d7e12d18f145713c8aa6e0b11905718aa059d66b60550c997f0",
+    "platform": "linux/amd64",
+    "source_commit": "e555dac665924d60e42f6ad0d128032b13caaa87",
+    "deployed": false
+  },
+  "package-checks.json": {
+    "factory_v3": {
+      "returncode": 0,
+      "summary": "..........................................................................................................................\n----------------------------------------------------------------------\nRan 122 tests in 0.690s\n\nOK\n"
+    },
+    "material_first": {
+      "returncode": 0,
+      "summary": "......................................................................................................................................................................................................................................\n----------------------------------------------------------------------\nRan 230 tests in 20.157s\n\nOK\n"
+    }
+  },
+  "saved-next-boundary.json": {
+    "boundary": "material-language-edit",
+    "words": 35,
+    "source_id": "9fea550c-fcd2-4e5f-9269-43f068397077",
+    "new_provider_calls": 0,
+    "claim": "saved response compatibility only"
+  },
+  "boundary-result.json": {
+    "id": "8f82c04f-745f-4a41-a570-dbea587906fb",
+    "source_id": "9fea550c-fcd2-4e5f-9269-43f068397077",
+    "revision": "e555dac665924d60e42f6ad0d128032b13caaa87",
+    "project_ready": false,
+    "new_searches": 0,
+    "new_downloads": 0,
+    "new_tts": 0,
+    "state": "boundary_failed",
+    "error_type": "HTTPFailure",
+    "error": "HTTP request rejected: 503"
+  },
+  "rollout.json": {
+    "health": {
+      "status": "serving",
+      "project_ready": false,
+      "source_revision": "e555dac665924d60e42f6ad0d128032b13caaa87"
+    },
+    "gateway_unauthenticated_status": 403,
+    "protected_equal": true,
+    "deployed": true
+  }
+}
