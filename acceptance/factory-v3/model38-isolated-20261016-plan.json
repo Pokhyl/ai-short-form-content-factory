@@ -1,0 +1,22 @@
+{
+  "id": "V3Model38Probe20261016",
+  "question": "Can current unbilled credential access Gemini3.8 and edit the unchanged saved Polish narration while3.1 returns503?",
+  "model": "gemini-3.8-flash",
+  "maximum_calls": {
+    "model_metadata": 1,
+    "generation": 1,
+    "tts": 0,
+    "search": 0,
+    "download": 0
+  },
+  "generation_output_tokens": 1024,
+  "retry": false,
+  "billing_proof": "Reuse most recent succeeded billing check from acf811d9-08b5-4458-a29e-b1c5ef22cebb, same credential and project; billing disabled.",
+  "sources": [
+    "https://ai.google.dev/gemini-api/docs/pricing",
+    "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash"
+  ],
+  "isolation": "New inactive n8n workflow in existing owner project. Existing active gateway/app/settings unchanged.",
+  "stop": "Non200 metadata, unsupported generateContent, or completed single generation response; never execute ID twice.",
+  "quota": "Free-only; input tokens unknown, output1024maximum."
+}
