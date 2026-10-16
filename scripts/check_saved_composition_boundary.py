@@ -46,7 +46,8 @@ def main():
         class SavedInputThenNativeEdit:
             def generate(self, key, instruction, payload, schema):
                 if key == 'material-language-edit':
-                    return gemini.generate(key, instruction, payload, schema)
+                    return gemini.generate(key, instruction, payload, schema,
+                                           max_tokens=plan.get('native_edit_max_tokens', 8192))
                 if key not in {'material-compose', 'material-compose-length-repair'}:
                     raise ValueError('unexpected saved-input boundary')
                 raw = rows[key]['response']['body']

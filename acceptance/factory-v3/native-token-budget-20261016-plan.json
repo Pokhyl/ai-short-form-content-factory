@@ -1,0 +1,21 @@
+{
+  "id": "acf811d9-08b5-4458-a29e-b1c5ef22cebb",
+  "source_id": "9fea550c-fcd2-4e5f-9269-43f068397077",
+  "revision": "e555dac665924d60e42f6ad0d128032b13caaa87",
+  "image": "sha256:d65c2c41b2d39d7e12d18f145713c8aa6e0b11905718aa059d66b60550c997f0",
+  "question": "Does unchanged saved native editing succeed when output reservation is reduced from8192 to1024 tokens? Independent factual review follows only if editor succeeds.",
+  "maximum_calls": {
+    "gemini": 2,
+    "metadata": 1,
+    "search": 0,
+    "download": 0,
+    "tts": 0
+  },
+  "model": "gemini-3.1-flash-lite",
+  "expected_token_consumption": "unknown; maximum2physical calls, no retry; editor output1024tokens; review8192 unchanged",
+  "stop_condition": "First failed boundary or complete native/factual/photo assignment. No full job, no render readiness claim.",
+  "saved_input_semantics": "Responses are explicit fixture inputs, not cache hits for modified prompts.",
+  "native_edit_max_tokens": 1024,
+  "retry_explicit_unavailable": false,
+  "hypothesis": "Output capacity reservation may contribute to admission failures; unproven until actual response. Same instruction/context/schema, no semantic relaxation."
+}
