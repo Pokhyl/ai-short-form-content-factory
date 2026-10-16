@@ -1,3 +1,15 @@
+## Active continuation — 2026-10-16 late evening
+
+LIVE 4811eae0fa6f1f21a753e1a50ca80dacd1de65a3 / image0bb0dc846f62689d9de6d108f5ff610e7486b5c4bbd4912b5438bee5b74d2890. Durable provider deferrals deployed with additive SQL; 357 exact-image checks and real isolated PostgreSQL recovery/concurrency checks passed. Protected preexisting factory/n8n/settings/supporting services unchanged; public revision and gateway403 verified. No active normal job.
+
+Provider recovered after hours: diagnostic881cc058-686b-484f-8890-a1da0861f4a2 completed native edit and independent review200, billing200, noTTS/search/download. Saved native boundary /var/lib/factory-v3/native-evening-boundary-20261016/result.json. Terminal diagnostic immutable. Full frozen-plan verification then rejected character-weighted photo cadence, despite word-weighted selection success. Exhaustive offline6-photo subsets prove valid4-photo pool, no newmedia/text required.
+
+Current candidate fixes generic selection: descending LEGAL pool sizes, both word/character timing, common transversal-matroid matching fallback with mandatory anchors. Typed VisualCapacityError preserves contextual regrouping. Actual PL15 regression all rotations, existing UK60 valid draft now avoids unnecessaryrepair; all durations and80 exhaustive small graph controls. Existing minima/relevance/uniqueness untouched. Local233material tests (5OpenCV skips require exactimage); build/package tests pending.
+
+Saved files /data/checks/saved-9fea-{compose,responses,assets,dual-timing-fixture}.json. Frozen file saved-9fea-native-reviewed-frozen.json NOT produced yet. Need build/exacttests, candidate offline freeze with new4pool (remove stale assert against native boundary5pool), commit/push downstream plan with actual frozen hash+revision, then app-only protected deployment and bounded saved downstream run. Unused ID17db204e-4e95-4110-ae43-b6b11ffcf6db; scripts/check_saved_downstream.py and acceptance/factory-v3/saved-downstream-20261016-plan.json remain uncommitted until plan finalized. NoTTS/MP4/projectready claim. Representative normal EN30/RU45/UK60 still pending. Preserve unrelated dirty acceptance/work files and all oldterminalIDs.
+
+Historical checkpoints below are superseded.
+
 ## Active implementation — 2026-10-16
 
 User asks to resolve provider failure and continue. Production still e555dac/image d65c2c41; no newTTS/MP4. Reduced native output budget1024 returned503 too (acf811d9 immutableunknown); hypothesis disproven. Isolated inactive n8n workflow V3Model38Probe20261016 imported into existing personal project; execution13215 metadata200/generation503 highdemand. All preexisting workflows/history unchanged, no production gateway/model/settings change. Remote /var/lib/factory-v3/model38-isolated-20261016/result.json, execute-private.log (do not dump raw logs). No repeat of these IDs.

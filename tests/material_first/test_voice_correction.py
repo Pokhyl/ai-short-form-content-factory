@@ -120,7 +120,7 @@ class RewriteTests(unittest.TestCase):
         selected_ids={item['material_id'] for item in visuals}
         candidate['assets']=[item for item in payload['assets'] if item['id'] in selected_ids]
         candidate['observations']=[item for item in observations if item['id'] in selected_ids]
-        self.assertEqual([(len(value.split()),len(value)) for value in selected],[(63,480),(30,241),(48,405)])
+        self.assertEqual([(len(value.split()),len(value)) for value in selected],[(63,480),(52,418),(24,191)])
         self.assertEqual(len(visuals),9)
         self.assertEqual({item['material_id'] for item in visuals},
                          {item['material_id'] for item in payload['visuals'][:9]})

@@ -1,0 +1,83 @@
+{
+  "source_preparation": "9fea550c-fcd2-4e5f-9269-43f068397077",
+  "source_review": "881cc058-686b-484f-8890-a1da0861f4a2",
+  "materials": [
+    {
+      "id": "pexels:1423597",
+      "media_type": "photo",
+      "sha256": "9e9702817206c91b22cfac85862bd75b2b383be3f9374e2a46247935ad981603",
+      "supported_fact_ids": [
+        "f1"
+      ]
+    },
+    {
+      "id": "wikimedia:15217424",
+      "media_type": "photo",
+      "sha256": "aa1eae9e4e4bdf6fc86025cecaae600022aa2ac3d53acd72fbf68a725fc6d702",
+      "supported_fact_ids": [
+        "f2"
+      ]
+    },
+    {
+      "id": "pixabay:1868396",
+      "media_type": "photo",
+      "sha256": "c6e7b1dec548cc82c3c0e975dc41ffd3941bb140314a5dd5caecd387d15dca32",
+      "supported_fact_ids": [
+        "f2"
+      ]
+    },
+    {
+      "id": "pexels:8599594",
+      "media_type": "photo",
+      "sha256": "e30f96f8e84e64af5aa6e97e7d6fe41f788439a19900c352acf50812a6aa933b",
+      "supported_fact_ids": [
+        "f3"
+      ]
+    },
+    {
+      "id": "pixabay:5032411",
+      "media_type": "photo",
+      "sha256": "9d7eee90625f60c8e379de393dbd11076ad367710bd2ccbd8014b6dce6e0c1a1",
+      "supported_fact_ids": [
+        "f3"
+      ]
+    },
+    {
+      "id": "wikimedia:148034694",
+      "media_type": "photo",
+      "sha256": "0dfc28554056683b0f0f451f09bb7ceac9aa7c053d33ef5b4d0eedd15201c949",
+      "supported_fact_ids": [
+        "f2"
+      ]
+    }
+  ],
+  "draft": {
+    "beats": [
+      {
+        "material_id": "pexels:1423597",
+        "narration": "Rolnik wysiewa ziarna pszenicy, które rosną w kłosy.",
+        "fact_ids": [
+          "f1"
+        ]
+      },
+      {
+        "material_id": "wikimedia:15217424",
+        "narration": "W młynie ziarna mielone są na mąkę.",
+        "fact_ids": [
+          "f2"
+        ]
+      },
+      {
+        "material_id": "pexels:8599594",
+        "narration": "Dzięki drożdżom chleb staje się lekki i puszysty za sprawą bąbelków gazu.",
+        "fact_ids": [
+          "f3"
+        ]
+      }
+    ]
+  },
+  "feasible_pool_sizes": [
+    3,
+    4
+  ]
+}

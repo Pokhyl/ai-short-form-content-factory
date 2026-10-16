@@ -201,6 +201,7 @@ def fit_contextual_paragraphs(available, draft, minimum=3, *, seconds=None, anch
     """
     if not 1 <= len(draft['beats']) <= 8 or not 1 <= minimum <= 8:
         raise ValueError('bounded contextual paragraphs required')
+    from .visuals import VisualCapacityError
     queue = [deepcopy(draft)]
     seen = set()
     while queue:
@@ -215,7 +216,7 @@ def fit_contextual_paragraphs(available, draft, minimum=3, *, seconds=None, anch
                 try:
                     paragraph_cadence_payload(available, matched, seconds, anchor_ids=anchor_ids)
                 except ValueError as error:
-                    if str(error) != 'no subject-related photograph for a narration interval':
+                    if not isinstance(error, VisualCapacityError) and str(error) != 'no subject-related photograph for a narration interval':
                         raise
                     raise MaterialUnavailable(str(error)) from None
             return matched

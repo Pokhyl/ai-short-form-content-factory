@@ -41,6 +41,10 @@ class ParagraphTests(unittest.TestCase):
 
     def test_length_repair_does_not_require_approved_context_anchors(self):
         saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-keyed-budget-failure.json').read_text())
+        # Exercise the repair protocol with an actually too-short draft; a
+        # smaller legal photo pool now makes the original cadence feasible.
+        for beat in saved['draft']['beats']:
+            beat['narration']=' '.join(beat['narration'].split()[:5])
         context=copy.deepcopy(saved['composition_context'])
         context['request'].pop('validated_visual_anchors',None)
         calls=[]
@@ -67,33 +71,17 @@ class ParagraphTests(unittest.TestCase):
             'fact_ids':list(dict.fromkeys(p['required_fact_ids']+p['identifying_fact_ids']))}
             for i,p in enumerate(plan)}
 
-    def test_actual_keyed_budget_failure_and_word_slot_controls(self):
+    def test_actual_keyed_draft_no_longer_needs_repair_for_photo_density(self):
         saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-keyed-budget-failure.json').read_text())
-        from factory_v3.gemini import provider_schema
-        for defect in ('saved','missing','multiword','valid'):
-            calls=[]
-            def generate(key,instruction,payload,schema):
-                calls.append(key)
-                if key=='material-compose':return copy.deepcopy(saved['draft']),{}
-                if key=='material-language-edit':return {'narration':payload['narration']},{}
-                plan=payload['paragraph_plan']
-                compiled=provider_schema(schema)
-                words=compiled['properties']['paragraph_1']['properties']['words']
-                self.assertEqual(len(words['required']),plan[0]['word_budget']['preferred'])
-                if defect=='saved':return copy.deepcopy(saved['failed_repair']),{}
-                reply=self.controlled_plan_reply(plan)
-                if defect=='missing':reply['paragraph_1']['words'].pop('word_1')
-                if defect=='multiword':reply['paragraph_1']['words']['word_1']='два слова'
-                return reply,{}
-            ops=Operations('.',None,SimpleNamespace(generate=generate),None,None)
-            with self.subTest(defect=defect):
-                if defect=='valid':
-                    result=ops.compose(copy.deepcopy(saved['composition_context']))
-                    self.assertEqual(sum(len(b['narration'].split()) for b in result['beats']),125)
-                    self.assertEqual(calls[-1],'material-language-edit')
-                else:
-                    with self.assertRaises(ValueError):ops.compose(copy.deepcopy(saved['composition_context']))
-                    self.assertNotIn('material-language-edit',calls)
+        calls=[]
+        def generate(key,instruction,payload,schema):
+            calls.append(key)
+            if key=='material-compose':return copy.deepcopy(saved['draft']),{}
+            self.assertEqual(key,'material-language-edit')
+            return {'narration':payload['narration']},{}
+        result=Operations('.',None,SimpleNamespace(generate=generate),None,None).compose(copy.deepcopy(saved['composition_context']))
+        self.assertEqual(sum(len(b['narration'].split()) for b in result['beats']),103)
+        self.assertEqual(calls,['material-compose','material-language-edit'])
 
     def test_short_but_cadence_feasible_draft_gets_server_owned_word_slots(self):
         from material_first.presentation import TOPIC_POLICY
@@ -297,7 +285,7 @@ class ParagraphTests(unittest.TestCase):
 class MeasuredParagraphTests(unittest.TestCase):
     def test_feedback_plan_uses_natural_paragraphs_instead_of_individual_word_slots(self):
         from material_first.voice_correction import POLICY
-        saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-keyed-budget-failure.json').read_text())
+        saved=json.loads((Path(__file__).parent/'fixtures/actual-uk60-rare-role-overlong.json').read_text())
         context=copy.deepcopy(saved['composition_context']);context['request']['voice_correction']=dict(POLICY)
         calls=[]
         def generate(key,instruction,payload,schema):

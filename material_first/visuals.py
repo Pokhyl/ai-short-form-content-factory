@@ -5,6 +5,11 @@ from .presentation import preferred_shots, visual_timeline, minimum_shots, phras
 POLICY = 'whole-photo-exact-v1'
 
 
+class VisualCapacityError(ValueError):
+    """No legal photo pool covers the estimated narration cadence."""
+
+
+
 def candidate_limit(seconds, policy=POLICY):
     # Topic images pass strict pixel-level relevance checks; a broader bounded
     # candidate pool prevents a viable topic from dying on a thin search page.
@@ -19,6 +24,8 @@ def make_visuals(seconds, materials, scenes, policy=POLICY, *, anchor_ids=()):
     selected = []
     # Preserve narration anchors, then rotate practical composition roles.
     for scene in scenes:
+        if scene['material_id'] not in by_id:
+            raise ValueError('subject-related narration anchor absent from inspected pool')
         if scene['material_id'] not in selected:
             selected.append(scene['material_id'])
     for anchor in anchor_ids:
@@ -32,16 +39,30 @@ def make_visuals(seconds, materials, scenes, policy=POLICY, *, anchor_ids=()):
         groups.setdefault(role, []).append(m['id'])
     count = min(len(materials), max(preferred_shots(seconds,policy), len(selected)), 32)
     if policy == TOPIC_POLICY and all(s.get('narration','').strip() for s in scenes) and scenes:
-        weights=[len(s['narration'].split()) for s in scenes]
-        cursor=0;timings=[]
-        for weight in weights:
-            end=cursor+seconds*1000*weight/sum(weights)
-            timings.append({'start_ms':cursor,'end_ms':end});cursor=end
         pool=[{'id':'candidate-'+str(i),'material_id':m['id']} for i,m in enumerate(materials)]
-        assigned=ordered_visuals({'seconds':seconds,'presentation_policy':policy,
-            'scenes':scenes,'observations':materials,'visuals':pool},timings,seconds*1000,
-            slot_count=count,required_material_ids=selected)
-        return [{'id':'photo-'+str(i+1),'material_id':v['material_id']} for i,v in enumerate(assigned)]
+        payload={'seconds':seconds,'presentation_policy':policy,
+                 'scenes':scenes,'observations':materials,'visuals':pool}
+        # Preferred density is a target, not a requirement. Try smaller legal
+        # pools before rejecting available, reviewed photographs. Every chosen
+        # pool must satisfy both estimates, with all narration anchors retained.
+        last_error = None
+        for size in range(count, max(minimum, len(selected))-1, -1):
+            for measure in ('words', 'characters'):
+                try:
+                    assigned=ordered_visuals(payload, estimated_timings(scenes, seconds, measure),
+                        seconds*1000, slot_count=size, required_material_ids=selected)
+                    visuals=[{'id':'photo-'+str(i+1),'material_id':v['material_id']}
+                             for i,v in enumerate(assigned)]
+                    preflight_visual_capacity({**payload, 'visuals':visuals})
+                    return visuals
+                except ValueError as error:
+                    last_error = error
+            visuals=common_visual_pool(payload,size,set(selected))
+            if visuals is not None:
+                preflight_visual_capacity({**payload,'visuals':visuals})
+                return visuals
+        raise VisualCapacityError('no subject-related photograph pool satisfies both cadence estimates: '
+                         + str(last_error)) from last_error
     while len(selected) < count:
         progressed = False
         for group in groups.values():
@@ -54,6 +75,64 @@ def make_visuals(seconds, materials, scenes, policy=POLICY, *, anchor_ids=()):
     visual_timeline(seconds, len(selected),policy)
     return [{'id': 'photo-' + str(i + 1), 'material_id': identity}
             for i, identity in enumerate(selected)]
+
+
+def common_visual_pool(payload, size, required):
+    """Common independent set of two photo/slot matchings, retaining anchors.
+
+    Each estimate defines a transversal matroid. Contract the required photos
+    and augment their common independent set; this avoids exponential subset
+    enumeration and candidate-order-dependent false rejections.
+    """
+    from collections import deque
+    photos=payload['visuals']; scenes=payload['scenes']; seconds=payload['seconds']
+    observations={m['id']:m for m in payload['observations']}
+    graphs=[]
+    for measure in ('words','characters'):
+        timings=estimated_timings(scenes, seconds, measure)
+        cuts=visual_timeline(seconds,size,payload['presentation_policy'],
+                            phrase_frames(timings,seconds*1000,seconds))
+        graph={i:[] for i in range(len(photos))}
+        for slot,cut in enumerate(cuts):
+            midpoint=(cut['start_frame']+cut['end_frame'])/60*1000
+            scene=scenes[min(range(len(timings)),key=lambda i:max(
+                timings[i]['start_ms']-midpoint,midpoint-timings[i]['end_ms'],0))]
+            for i,photo in enumerate(photos):
+                if set(scene['evidence_ids']) & set(observations[photo['material_id']]['supported_fact_ids']):
+                    graph[i].append(slot)
+        graphs.append(graph)
+    mandatory={i for i,p in enumerate(photos) if p['material_id'] in required}
+    def independent(chosen,graph):
+        owners={}
+        def assign(photo,seen):
+            for slot in graph[photo]:
+                if slot in seen:continue
+                seen.add(slot)
+                if slot not in owners or assign(owners[slot],seen):
+                    owners[slot]=photo;return True
+            return False
+        return all(assign(i,set()) for i in sorted(chosen))
+    if any(not independent(mandatory,g) for g in graphs):return None
+    chosen=set(mandatory); ground=set(range(len(photos)))
+    while len(chosen)<size:
+        outside=sorted(ground-chosen)
+        sources=[x for x in outside if independent(chosen|{x},graphs[0])]
+        parents={x:None for x in sources}; queue=deque(sources); end=None
+        while queue:
+            x=queue.popleft()
+            if x not in chosen:
+                if independent(chosen|{x},graphs[1]):end=x;break
+                neighbors=[y for y in sorted(chosen-mandatory)
+                           if independent((chosen-{y})|{x},graphs[1])]
+            else:
+                neighbors=[y for y in outside if independent((chosen-{x})|{y},graphs[0])]
+            for y in neighbors:
+                if y not in parents:parents[y]=x;queue.append(y)
+        if end is None:return None
+        while end is not None:
+            chosen.symmetric_difference_update({end});end=parents[end]
+    return [{'id':'photo-'+str(j+1),'material_id':photos[i]['material_id']}
+            for j,i in enumerate(sorted(chosen))]
 
 
 def validate_visuals(payload, observations):
@@ -140,6 +219,22 @@ def ordered_visuals(payload, timings, source_duration_ms, *, slot_count=None, re
     return [{**payload['visuals'][assignment[i]],**cut,'narration_scene_id':scene['id']} for i,(cut,scene) in enumerate(slots)]
 
 
+def estimated_timings(scenes, seconds, measure):
+    weights = [len(scene['narration'].split()) if measure == 'words'
+               else len(scene['narration'].strip()) for scene in scenes]
+    if any(weight <= 0 for weight in weights):
+        raise ValueError('topical visual preflight requires nonempty narration scenes')
+    total = sum(weights)
+    cursor = 0
+    timings = []
+    for weight in weights:
+        end = cursor + seconds * 1000 * weight / total
+        timings.append({'start_ms': cursor, 'end_ms': end})
+        cursor = end
+    timings[-1]['end_ms'] = seconds * 1000
+    return timings
+
+
 def preflight_visual_capacity(payload):
     """Reject topical plans whose estimated scene cadence exceeds relevant photos.
 
@@ -156,17 +251,7 @@ def preflight_visual_capacity(payload):
         raise ValueError('topical visual preflight requires narration scenes')
     seconds = payload['seconds']
     for measure in ('words', 'characters'):
-        weights = [len(scene['narration'].split()) if measure == 'words'
-                   else len(scene['narration'].strip()) for scene in scenes]
-        if any(weight <= 0 for weight in weights):
-            raise ValueError('topical visual preflight requires nonempty narration scenes')
-        total = sum(weights)
-        cursor = 0
-        timings = []
-        for weight in weights:
-            end = cursor + seconds * 1000 * weight / total
-            timings.append({'start_ms': cursor, 'end_ms': end})
-            cursor = end
+        timings = estimated_timings(scenes, seconds, measure)
         try:
             ordered_visuals(payload, timings, seconds * 1000)
         except ValueError as error:
