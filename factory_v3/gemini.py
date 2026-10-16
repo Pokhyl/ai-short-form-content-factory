@@ -97,7 +97,8 @@ class ModelSchemaError(ValueError):
 
 
 class Gemini:
-    def __init__(self, calls, authorization_key, http, *, model, free_tier_confirmed, retry_unavailable=False):
+    def __init__(self, calls, authorization_key, http, *, model, free_tier_confirmed, retry_unavailable=False,
+                 defer_unavailable=False):
         # Confirmation is server-owned deployment policy; never a public input field.
         if free_tier_confirmed is not True:
             raise ValueError("verified free-tier project required")
@@ -108,6 +109,7 @@ class Gemini:
         self.http = http
         self.model = model
         self.retry_unavailable = retry_unavailable
+        self.defer_unavailable = defer_unavailable
         self.sleep = time.sleep
 
     def generate(self, key, instruction, context, schema, *, photo=None, photos=None, max_tokens=8192,
@@ -116,7 +118,8 @@ class Gemini:
             raise ValueError("model output budget invalid")
         if thinking_level not in {None, "low", "medium", "high"}:
             raise ValueError("model thinking level invalid")
-        parts = [{"text": json.dumps(context, ensure_ascii=False, allow_nan=False)}]
+        # Stable after JSONB key reordering during deferred receipt replay.
+        parts = [{"text": json.dumps(context, ensure_ascii=False, allow_nan=False, sort_keys=True)}]
         if photo is not None and photos is not None:
             raise ValueError("choose one image input mechanism")
         images = [photo] if photo is not None else ([] if photos is None else photos)
@@ -166,6 +169,12 @@ class Gemini:
                     if attempt == 2:
                         raise
                     retry_after = error.receipt.get('headers', {}).get('retry-after', '')
+                    if self.defer_unavailable:
+                        delay = max((60, 300)[attempt], int(retry_after) if str(retry_after).isdigit() else 0)
+                        if delay > 1800:
+                            raise
+                        self.calls.defer_unavailable(call_key, key + ':availability:' + str(attempt + 2), delay)
+                        continue
                     delay = max(2 ** (attempt + 1), int(retry_after) if str(retry_after).isdigit() else 0)
                     if delay > 30:
                         raise  # Do not retry earlier than a long server-requested delay.

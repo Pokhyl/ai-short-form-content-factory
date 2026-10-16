@@ -83,7 +83,7 @@ class Runtime:
             if body.get("projectId") != proof["project_id"] or body.get("billingEnabled") is not False:
                 raise ValueError("Gemini project is not confirmed unbilled")
         gemini = Gemini(calls, lambda:"gateway-managed", self.gateway, model=MODEL,
-                        free_tier_confirmed=True, retry_unavailable=True)
+                        free_tier_confirmed=True, retry_unavailable=True, defer_unavailable=True)
         search = PhotoSearch(calls,ProviderCache(self.ledger),self.gateway,
                              lambda provider:"gateway-managed",self.settings["credential_scope"])
         producer = DurableProducer(self.root, self.preparations,
@@ -128,6 +128,10 @@ class Runtime:
         result = {"id":request_id,"request":prep["request"],"status":prep["status"],
                   "source_revision":prep["source_revision"],"error_code":prep["error_code"],
                   "machine_pass":False,"human_pass":False}
+        if prep['status'] == 'preparing':
+            waiting = self.preparations.waiting(request_id)
+            if waiting:
+                result.update(status='waiting_provider', retry_at=waiting['retry_at'])
         try:
             state = self.ledger.snapshot(request_id)
             result.update({"status":state["status"],"completed":list(state["outputs"]),

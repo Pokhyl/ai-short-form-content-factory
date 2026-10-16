@@ -1,0 +1,32 @@
+{
+  "last_node": "Sanitize receipt",
+  "nodes": [
+    "Manual",
+    "Read model metadata",
+    "Require available model",
+    "One native edit",
+    "Sanitize receipt"
+  ],
+  "execution_status": "success",
+  "metadata": {
+    "status": 200,
+    "name": "models/gemini-3.8-flash",
+    "methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  "receipt": {
+    "status": 503,
+    "headers": {
+      "content-type": "application/json; charset=UTF-8",
+      "date": "Fri, 16 Oct 2026 14:09:41 GMT"
+    },
+    "body": null,
+    "error_status": "UNAVAILABLE",
+    "error_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "gateway_execution_id": "13215"
+  }
+}

@@ -2,7 +2,7 @@
 const base = "/factory-v3";
 const $ = id => document.getElementById(id);
 let selected = null, detail = null, pending = null, pollTimer = null;
-const labels = {preparing:"Подготовка: факты и фотографии",prepared:"Подготовка завершена",voice_running:"Создание озвучки",voice_ready:"Озвучка готова",align_running:"Синхронизация сцен",align_ready:"Сцены синхронизированы",render_running:"Сборка видео",render_ready:"Видео собрано, проверка качества",qa_running:"Проверка качества",qa_pass:"Видео прошло проверку качества",failed:"Задание остановлено",unknown:"Результат внешнего запроса не подтверждён; повтор заблокирован"};
+const labels = {waiting_provider:"Сервис генерации перегружен. Задание сохранено",preparing:"Подготовка: факты и фотографии",prepared:"Подготовка завершена",voice_running:"Создание озвучки",voice_ready:"Озвучка готова",align_running:"Синхронизация сцен",align_ready:"Сцены синхронизированы",render_running:"Сборка видео",render_ready:"Видео собрано, проверка качества",qa_running:"Проверка качества",qa_pass:"Видео прошло проверку качества",failed:"Задание остановлено",unknown:"Результат внешнего запроса не подтверждён; повтор заблокирован"};
 async function api(path, options = {}) {
   const response = await fetch(base + path, {credentials:"same-origin",...options});
   const body = await response.json();
@@ -56,11 +56,14 @@ async function show(id) {
   detail = response;
   $("result").hidden = false; $("result-title").textContent = detail.request.topic;
   $("status").textContent = (labels[detail.status] || detail.status) + " · " + (detail.request.visual_validation_mode === "metadata" ? "Стандартный режим" : "Gemini Vision") + (detail.photo_count ? " · " + detail.photo_count + " фото" : "") + (detail.actual_duration_ms ? " · " + (detail.actual_duration_ms / 1000) + " с" : "");
+  if (detail.status === "waiting_provider" && detail.retry_at) {
+    $("status").textContent += " · следующая попытка после " + new Date(detail.retry_at).toLocaleTimeString();
+  }
   const stopped = ["failed", "unknown"].includes(detail.status);
   const emptyFailure = stopped && !detail.script && !(detail.scenes || []).length;
   $("result-content").hidden = emptyFailure;
   $("failure-notice").hidden = !stopped;
-  const reasons = {ModelSchemaError:"Не удалось подготовить текст в нужном формате.", MaterialUnavailable:"Не удалось завершить подготовку материалов."};
+  const reasons = {ModelUnavailable:"Сервис генерации недоступен после трёх ограниченных попыток.",ModelSchemaError:"Не удалось подготовить текст в нужном формате.", MaterialUnavailable:"Не удалось завершить подготовку материалов."};
   $("failure-notice").textContent = stopped ? (detail.status === "unknown" ? "Ответ внешнего сервиса не подтверждён. Автоматический повтор заблокирован." : (reasons[detail.error_code] || "Создание видео завершилось с ошибкой.")) + " Готового MP4 нет. Это сохранённый результат задания; обновление страницы и исправления сервиса его не изменяют." : "";
   $("script").textContent = detail.script || (stopped ? "Текст не подготовлен." : "Текст появится после проверки фактов и фотографий.");
   const ready = detail.machine_pass === true;

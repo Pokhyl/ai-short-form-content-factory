@@ -10,7 +10,7 @@ from factory_v3.ledger import PostgresLedger
 from factory_v3.executor import Executor, ReconciliationRequired
 from factory_v3.preflight import freeze, digest
 from factory_v3.runtime import Runtime
-from factory_v3.preparation import BudgetedCalls
+from factory_v3.preparation import BudgetedCalls, PreparationLedger, PreparationBusy
 import hashlib
 
 dsn=os.environ["V3_TEST_DATABASE_URL"]
@@ -21,6 +21,8 @@ with psycopg.connect(dsn) as connection:
         "(rewrite|proofread|script-review)","(rewrite|script-review)")
     connection.execute(legacy_preparation,prepare=False)
     connection.execute(Path("/fixtures/proofread_call_migration.sql").read_text(),prepare=False)
+    connection.execute(Path("/app/factory_v3/model_unavailable.sql").read_text(),prepare=False)
+    connection.execute(Path("/app/factory_v3/preparation_deferrals.sql").read_text(),prepare=False)
     connection.execute(Path("/app/factory_v3/provider_cache.sql").read_text(),prepare=False)
     connection.execute(Path("/app/factory_v3/review.sql").read_text(),prepare=False)
     connection.execute("""INSERT INTO factory.provider_budget_limits
@@ -29,6 +31,63 @@ with psycopg.connect(dsn) as connection:
       ('google_cloud_tts','wavenet','characters',4000000,3600000,true,CURRENT_DATE,'https://example.invalid/test')
       ON CONFLICT(provider,sku_family,usage_unit) DO UPDATE SET enabled=true,
       free_limit=excluded.free_limit,internal_limit=excluded.internal_limit""")
+
+# Actual durable queue, with database time advanced only in this isolated test.
+deferrals = PreparationLedger(PostgresLedger(dsn), 'controlled-deferrals')
+deferred_id = str(uuid.uuid4())
+deferrals.create(deferred_id, {'topic':'controlled','language':'pl','seconds':15}, {'gemini':3})
+deferrals.claim_run(deferred_id)
+deferrals.claim(deferred_id, 'edit', 'gemini', 'a'*64)
+deferrals.model_unavailable(deferred_id, 'edit', {'status':503,'error_status':'UNAVAILABLE','gateway_execution_id':'123'})
+assert deferrals.defer(deferred_id,'edit','edit:availability:2',60)['deferred']
+assert deferred_id not in deferrals.ready()
+try: deferrals.claim_run(deferred_id)
+except PreparationBusy: pass
+else: raise AssertionError('early resume admitted')
+with psycopg.connect(dsn) as connection:
+    connection.execute("UPDATE factory_v3.preparation_calls SET finished_at=now()-interval '61 seconds' WHERE preparation_id=%s", (deferred_id,))
+    connection.execute("UPDATE factory_v3.preparation_deferrals SET retry_at=now()-interval '1 second' WHERE preparation_id=%s", (deferred_id,))
+# New object simulates service restart; queue state is not held in process memory.
+deferrals = PreparationLedger(PostgresLedger(dsn), 'controlled-deferrals')
+assert deferred_id in deferrals.ready()
+def resume_claim():
+    try: deferrals.claim_run(deferred_id); return 'claimed'
+    except PreparationBusy: return 'busy'
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+    assert sorted(pool.map(lambda _:resume_claim(),range(2))) == ['busy','claimed']
+assert not deferrals.defer(deferred_id,'edit','edit:availability:2',60)['deferred']
+assert deferrals.claim(deferred_id,'edit','gemini','a'*64)['unavailable']
+try: deferrals.claim(deferred_id,'edit','gemini','b'*64)
+except psycopg.Error: pass
+else: raise AssertionError('changed provider identity admitted')
+deferrals.claim(deferred_id,'edit:availability:2','gemini','a'*64)
+deferrals.model_unavailable(deferred_id,'edit:availability:2',{'status':503,'error_status':'UNAVAILABLE','gateway_execution_id':'124'})
+assert deferrals.defer(deferred_id,'edit:availability:2','edit:availability:3',300)['deferred']
+with psycopg.connect(dsn) as connection:
+    connection.execute("UPDATE factory_v3.preparation_calls SET finished_at=now()-interval '301 seconds' WHERE preparation_id=%s AND call_key='edit:availability:2'", (deferred_id,))
+    connection.execute("UPDATE factory_v3.preparation_deferrals SET retry_at=now()-interval '1 second' WHERE preparation_id=%s", (deferred_id,))
+deferrals.claim_run(deferred_id)
+deferrals.claim(deferred_id,'edit:availability:3','gemini','a'*64)
+deferrals.finish(deferred_id,'edit:availability:3',{'status':200})
+assert deferrals.claim(deferred_id,'edit:availability:3','gemini','a'*64)['cached']
+try: deferrals.defer(deferred_id,'edit:availability:3','edit:availability:4',300)
+except psycopg.Error: pass
+else: raise AssertionError('fourth attempt admitted')
+deferrals.reject(deferred_id,'controlled_completed')
+assert deferred_id not in deferrals.ready()
+try: deferrals.claim_run(deferred_id)
+except psycopg.Error: pass
+else: raise AssertionError('terminal request reopened')
+unknown_id=str(uuid.uuid4())
+deferrals.create(unknown_id,{'topic':'controlled','language':'pl','seconds':15},{'gemini':3})
+deferrals.claim_run(unknown_id)
+deferrals.claim(unknown_id,'edit','gemini','a'*64)
+deferrals.fail(unknown_id,'edit','timeout',{'status':502})
+try: deferrals.defer(unknown_id,'edit','edit:availability:2',60)
+except psycopg.Error: pass
+else: raise AssertionError('ambiguous request deferred')
+assert unknown_id not in deferrals.ready()
+print('DURABLE_DEFERRAL_POSTGRES_PASS: restart, due-time, concurrent ownership, exact replay, 3-attempt cap, terminal and unknown protection')
 
 class ControlledAdapters:
     def __init__(self):
@@ -76,7 +135,7 @@ with tempfile.TemporaryDirectory() as directory:
     def attempt():
         try:
             ledger.claim(race_job,"voice",frozen["sha256"]);return "claimed"
-        except psycopg.Error:return "blocked"
+        except (psycopg.Error, PreparationBusy):return "blocked"
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
         results=list(pool.map(lambda _:attempt(),range(2)))
     assert sorted(results)==["blocked","claimed"],results
@@ -96,7 +155,7 @@ with tempfile.TemporaryDirectory() as directory:
     def claim_producer():
         try:
             runtime.preparations.claim_run(request_id);return "claimed"
-        except psycopg.Error:return "blocked"
+        except (psycopg.Error, PreparationBusy):return "blocked"
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
         producer_race=list(pool.map(lambda _:claim_producer(),range(2)))
     assert sorted(producer_race)==["blocked","claimed"],producer_race

@@ -29,6 +29,16 @@ class SavedRequestMismatch(ValueError):
         super().__init__("saved provider request identity does not match replay")
 
 
+class PreparationDeferred(RuntimeError):
+    def __init__(self, retry_at):
+        self.retry_at = retry_at
+        super().__init__('preparation waiting for scheduled provider retry')
+
+
+class PreparationBusy(RuntimeError):
+    pass
+
+
 def verify_saved_request(request, expected_hash):
     """Require an exact identity match before returning a saved provider response."""
     observed = digest(request)
@@ -56,8 +66,26 @@ class PreparationLedger:
         return result
 
     def claim_run(self, request_id):
-        return self.postgres._call("SELECT factory_v3.claim_preparation_run(%s::uuid,%s)",
-                                   (request_id, self.revision))
+        result = self.postgres._call("SELECT factory_v3.claim_preparation_run(%s::uuid,%s)",
+                                    (request_id, self.revision))
+        if result and result.get('busy'):
+            raise PreparationBusy('preparation already claimed or not due')
+        return result
+
+    def defer(self, request_id, failed_key, next_key, delay):
+        return self.postgres._call('SELECT factory_v3.defer_preparation_call(%s::uuid,%s,%s,%s,%s)',
+                                  (request_id, failed_key, next_key, delay, self.revision))
+
+    def waiting(self, request_id):
+        return self.postgres._call("SELECT jsonb_build_object('retry_at',d.retry_at) "
+            "FROM factory_v3.preparation_deferrals d JOIN factory_v3.preparations p ON p.id=d.preparation_id "
+            "WHERE p.id=%s::uuid AND p.status='preparing' AND d.state='waiting'", (request_id,))
+
+    def ready(self):
+        return self.postgres._call("SELECT coalesce(jsonb_agg(id),'[]'::jsonb) FROM ("
+            "SELECT p.id FROM factory_v3.preparation_deferrals d JOIN factory_v3.preparations p ON p.id=d.preparation_id "
+            "WHERE p.status='preparing' AND p.source_revision=%s AND d.state='waiting' AND d.retry_at<=now() "
+            "ORDER BY d.retry_at LIMIT 5) due", (self.revision,))
 
     def claim(self, request_id, key, kind, request_hash):
         return self.postgres._call(
@@ -95,6 +123,11 @@ class BudgetedCalls:
     def __init__(self, ledger, request_id):
         self.ledger = ledger
         self.request_id = request_id
+
+    def defer_unavailable(self, failed_key, next_key, delay):
+        result = self.ledger.defer(self.request_id, failed_key, next_key, delay)
+        if result['deferred']:
+            raise PreparationDeferred(result['retry_at'])
 
     def run(self, key, kind, public_request, invoke, *, allow_unavailable=False, allow_model_unavailable=False):
         # Include all identity-affecting settings, NEVER credentials.

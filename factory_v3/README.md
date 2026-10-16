@@ -28,3 +28,6 @@ python3 -m unittest discover -s tests/material_first
 For package tests, mount fixtures at `/app/tests` and `/app/acceptance`, read-only, with networking disabled. Keep the runtime modules from the image; mounting source over them would test different code. Provider-backed media and owner acceptance require separate evidence.
 
 Apply `model_unavailable.sql` after `preparation.sql` before deploying the bounded model-overload handler. It adds one function and does not rewrite historical jobs.
+
+### Durable provider waiting
+Apply `preparation_deferrals.sql` after `preparation.sql` and `model_unavailable.sql`, before starting the updated app. It adds an empty queue table and replaces only the preparation-run claim function; existing terminal rows are not reopened. New preparations defer explicit, gateway-proven Gemini503 rejections for60 then300seconds (honoring Retry-After up to1800seconds), with the same three physical attempts and total Gemini budget. The single worker is released while waiting. Due requests survive process restart, use exact saved successful receipts, and cannot be claimed by two workers. Unknown transport,429, voice synthesis and alreadyterminal requests do not enter this queue. App rollback may leave new waiting rows dormant; never reset or resend them manually. Deploy only while no preparation is active or waiting.

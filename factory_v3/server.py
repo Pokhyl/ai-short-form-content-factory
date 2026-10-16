@@ -1,4 +1,4 @@
-"""Private owner UI; bounded single worker; no automatic recovery/retry."""
+"""Studio with a bounded worker and durable explicit-provider deferrals."""
 import argparse
 import concurrent.futures
 import hashlib
@@ -16,6 +16,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit, parse_qs
 from uuid import UUID
 from .runtime import Runtime, load_settings
+from .preparation import PreparationDeferred, PreparationBusy
 from .readiness import GatewayUnavailable
 from .deletion import ensure_visible, deleted_ids, marker, remove_media
 from .preflight import asset_path, validate_asset
@@ -70,7 +71,7 @@ class Sessions:
 
 
 class Application:
-    def __init__(self, runtime, origin):
+    def __init__(self, runtime, origin, *, start_scheduler=True):
         parsed = urlsplit(origin)
         if parsed.scheme != "https" or not parsed.netloc or parsed.path not in {"", "/"} or parsed.query or parsed.fragment:
             raise ValueError("exact HTTPS public origin required")
@@ -81,6 +82,33 @@ class Application:
         self.pool = concurrent.futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix="factory-v3")
         self.slots = threading.BoundedSemaphore(5)
         self.media_lock = threading.RLock()
+        self.inflight = set()
+        self.queue_lock = threading.Lock()
+        self.scheduler_stop = threading.Event()
+        if start_scheduler and isinstance(runtime, Runtime):
+            threading.Thread(target=self._schedule, daemon=True, name='factory-v3-deferred').start()
+
+    def _schedule(self):
+        while not self.scheduler_stop.is_set():
+            try:
+                self.enqueue_due()
+            except Exception:
+                pass  # Database outage never authorizes an unrecorded provider send.
+            self.scheduler_stop.wait(5)
+
+    def enqueue_due(self):
+        for request_id in self.runtime.preparations.ready():
+            with self.queue_lock:
+                if request_id in self.inflight or not self.slots.acquire(blocking=False):
+                    continue
+                self.inflight.add(request_id)
+            try:
+                self.pool.submit(self._run, request_id)
+            except BaseException:
+                with self.queue_lock:
+                    self.inflight.discard(request_id)
+                self.slots.release()
+                raise
 
     def submit(self, data):
         if set(data) not in ({"request_id", "topic", "language", "seconds"}, {"request_id", "topic", "language", "seconds", "visual_validation_mode"}) or type(data["seconds"]) is not int:
@@ -96,6 +124,8 @@ class Application:
             args = (request_id, data["topic"], data["language"], data["seconds"])
             result = self.runtime.create(*args, visual_validation_mode=mode) if mode is not None else self.runtime.create(*args)
             if result["created"]:
+                with self.queue_lock:
+                    self.inflight.add(request_id)
                 self.pool.submit(self._run, request_id)
                 return result
         except BaseException:
@@ -107,6 +137,8 @@ class Application:
     def _run(self, request_id):
         try:
             self.runtime.run(request_id)
+        except (PreparationDeferred, PreparationBusy):
+            pass  # The queue or another worker owns it; never mark it failed.
         except Exception as error:
             # Do not expose HTTP bodies, tokens or stack traces; stage/call ledger holds evidence.
             try:
@@ -116,6 +148,8 @@ class Application:
             except Exception:
                 pass
         finally:
+            with self.queue_lock:
+                self.inflight.discard(request_id)
             self.slots.release()
 
     def delete(self, request_id, data):
@@ -338,7 +372,7 @@ def handler(application):
                 self.reply(202 if result["created"] else 200, result)
             elif local == "/api/requests" and self.command == "GET":
                 result = application.runtime.ledger._call(
-                    "SELECT COALESCE(jsonb_agg(x ORDER BY x.created_at DESC),'[]'::jsonb) FROM (SELECT p.id,p.request,p.created_at,COALESCE(j.status,p.status) AS status FROM factory_v3.preparations p LEFT JOIN factory_v3.jobs j ON j.id=p.id WHERE NOT (p.id = ANY(%s::uuid[])) ORDER BY p.created_at DESC LIMIT 50) x", (deleted_ids(application.runtime.root),))
+                    "SELECT COALESCE(jsonb_agg(x ORDER BY x.created_at DESC),'[]'::jsonb) FROM (SELECT p.id,p.request,p.created_at,COALESCE(j.status,CASE WHEN p.status='preparing' AND d.state='waiting' THEN 'waiting_provider' ELSE p.status END) AS status FROM factory_v3.preparations p LEFT JOIN factory_v3.jobs j ON j.id=p.id LEFT JOIN factory_v3.preparation_deferrals d ON d.preparation_id=p.id WHERE NOT (p.id = ANY(%s::uuid[])) ORDER BY p.created_at DESC LIMIT 50) x", (deleted_ids(application.runtime.root),))
                 self.reply(200, result)
             elif len(parts) == 3 and parts[:2] == ["api", "requests"] and self.command == "GET":
                 self.reply(200, application.detail(parts[2]))
@@ -395,6 +429,7 @@ def main():
         server.serve_forever()
     finally:
         server.server_close()
+        application.scheduler_stop.set()
         application.pool.shutdown(wait=False, cancel_futures=True)
 
 

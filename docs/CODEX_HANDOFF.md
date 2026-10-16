@@ -1,3 +1,9 @@
+## Active implementation — 2026-10-16
+
+User asks to resolve provider failure and continue. Production still e555dac/image d65c2c41; no newTTS/MP4. Reduced native output budget1024 returned503 too (acf811d9 immutableunknown); hypothesis disproven. Isolated inactive n8n workflow V3Model38Probe20261016 imported into existing personal project; execution13215 metadata200/generation503 highdemand. All preexisting workflows/history unchanged, no production gateway/model/settings change. Remote /var/lib/factory-v3/model38-isolated-20261016/result.json, execute-private.log (do not dump raw logs). No repeat of these IDs.
+
+Current candidate implements durable pre-voice deferral after trusted explicit503:60/300sec, threephysical attempts overall, existing totalbudget; no worker sleep, preserved JSONB-stable request hashes and saved receipts, unique due ownership, waiting_provider UI. New preparation_deferrals.sql adds empty table and replaces claim_preparation_run only. Legacy failed/unknown IDs stayimmutable.127core/230material local checks planned; OpenCV5cases require exactimage. Isolated realPostgres driver now covers restart/due/races/unknown/terminal. Commit/build/exacttests/isolatedDB/protected rollout required before normal newcase. Existing unrelated acceptance/work dirt preserved.
+
 ## Current continuation — 2026-10-16
 
 LIVE e555dac665924d60e42f6ad0d128032b13caaa87 / imaged65c2c41b2d39d7e12d18f145713c8aa6e0b11905718aa059d66b60550c997f0. App-only deployment protected tables/functions/settings/n8n/supporting containers identical, public health exact revision and gateway403. Studio public.

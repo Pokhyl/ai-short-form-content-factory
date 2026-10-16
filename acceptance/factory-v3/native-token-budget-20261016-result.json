@@ -1,0 +1,27 @@
+{
+  "id": "acf811d9-08b5-4458-a29e-b1c5ef22cebb",
+  "source_id": "9fea550c-fcd2-4e5f-9269-43f068397077",
+  "revision": "e555dac665924d60e42f6ad0d128032b13caaa87",
+  "project_ready": false,
+  "new_searches": 0,
+  "new_downloads": 0,
+  "new_tts": 0,
+  "state": "boundary_failed",
+  "error_type": "HTTPFailure",
+  "error": "HTTP request rejected: 503",
+  "calls": [
+    {
+      "key": "gemini-billing-check",
+      "state": "succeeded",
+      "status": 200,
+      "error_status": null
+    },
+    {
+      "key": "material-language-edit",
+      "state": "unknown",
+      "status": 503,
+      "error_status": "UNAVAILABLE"
+    }
+  ],
+  "conclusion": "Reducing output reservation from8192 to1024 did not resolve503; no runtime budget change justified."
+}

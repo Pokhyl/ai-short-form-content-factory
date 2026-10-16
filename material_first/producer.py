@@ -1,5 +1,6 @@
 """Durable single-run preparation wrapper for the replacement pipeline."""
 from .engine import Producer, verify
+from factory_v3.preparation import PreparationDeferred
 
 
 class DurableProducer:
@@ -28,6 +29,8 @@ class DurableProducer:
                 request['topic'], request['language'], request['seconds'])
             self.ledger.complete(request_id, frozen)
             return frozen
+        except PreparationDeferred:
+            raise
         except BaseException as error:
             try:
                 self.ledger.reject(request_id, type(error).__name__)

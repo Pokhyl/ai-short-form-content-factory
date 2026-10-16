@@ -41,6 +41,7 @@ def main():
         producer = runtime.producer(plan['id'])
         producer.authorize()
         gemini = producer.operations.gemini
+        gemini.defer_unavailable = False  # This isolated diagnostic never joins the production queue.
         gemini.retry_unavailable = plan.get('retry_explicit_unavailable', False)
 
         class SavedInputThenNativeEdit:
