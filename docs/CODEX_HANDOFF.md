@@ -1,10 +1,12 @@
 ## Current continuation — 2026-10-16
 
-LIVE remainsfd387f5/imagecd8c12ed. bb06c742 breadPL15 TERMINAL failed NarrationBudgetExceeded, no TTS/render: draft44 words, repair47, maximum38. Exact same-version saved-request replay job_ca6b14f9e317 confirms paragraphs.py250 with all request hashes matching; no calls/writes. Never rerun this ID.
+LIVE deba46cf9a24ce8444b9a08d12de5692ac215662 / image sha256:98d144b7dc41b886b8461d41c7eacc3e4127aaa5843b6b496a64d9bd223c6138. Exact-image227material+122core tests pass with zero skips/no network/runtime overlay. App-only rollout verified all factory table/function, n8n workflow/history, settings and supporting containers unchanged; publichealth exact/gateway403. Release /var/lib/factory-v3/pixel-word-budget-20261016; receipt acceptance/factory-v3/pixel-word-budget-20261016.json.
 
-Candidate deba46cf9a24ce8444b9a08d12de5692ac215662 pushed. Pixel-first length repair now allocates exact total preferred words across original paragraphs and requires one-word array items through bounded schema; server retains anchor identity, independent factual/native gates and natural voice remain. Fixture actual-pl15-length-failure-bb06.json plus saved oversized/extra-word/multiword/valid regressions; connected initial/overlong drafts across16language-duration pairs. Built image98d144b7, release /var/lib/factory-v3/pixel-word-budget-20261016. Exact-image package job_8007a96e1179 pending; MUST pass227material/122core without skips before rollout. Predeploy protected snapshot running separately. No new provider run yet.
+ACTIVE normal breadPL15 Vision 2a8d74a8-7db5-401d-94bf-6ed6e02bf83e, submitted once202. Check its state before anything; never repeat. Last preparing. The schema-based word repair is live: exact total preferred words allocated across original paragraph anchors; independent fact/native review and natural voice gates remain. Whole-project acceptance NOT proven, no new MP4 yet verified.
 
-Prior photo/role fixes and their protected rollouts recorded in pixel-role-contract-20261015.json. Whole project not accepted; no new final MP4. Next finish package, scoped protected rollout, then bounded actual verification. Representative EN30/RU45/UK60 still pending. Preserve unrelated dirty acceptance/work files.
+Prior bb06c742 immutablefailed NarrationBudgetExceeded, draft44words/repair47/max38, noTTS/render. Exact same-version saved replay job_ca6b14f9e317 matched all request hashes and confirms paragraphs.py250. Regression actual-pl15-length-failure-bb06.json covers old oversized reply, extra words, multiword tokens, valid32word control; connected overlong drafts acrossall16language-duration pairs.
+
+Next finish current normal case, inspect actual result or saved failure, then representative EN30/RU45/UK60. No blind repeats or neutron-only prompt tuning. Preserve unrelated dirty acceptance/work files.
 
 Historical notes below are superseded.
 

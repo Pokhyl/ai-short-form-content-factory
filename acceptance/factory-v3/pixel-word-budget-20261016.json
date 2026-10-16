@@ -1,0 +1,76 @@
+{
+  "image.json": {
+    "tag": "factory-v3:pixel-word-budget-deba46c-amd64",
+    "image_id": "sha256:98d144b7dc41b886b8461d41c7eacc3e4127aaa5843b6b496a64d9bd223c6138",
+    "platform": "linux/amd64",
+    "source_commit": "deba46cf9a24ce8444b9a08d12de5692ac215662",
+    "deployed": false
+  },
+  "package-checks.json": {
+    "factory_v3": {
+      "returncode": 0,
+      "summary": "..........................................................................................................................\n----------------------------------------------------------------------\nRan 122 tests in 0.614s\n\nOK\n"
+    },
+    "material_first": {
+      "returncode": 0,
+      "summary": "...................................................................................................................................................................................................................................\n----------------------------------------------------------------------\nRan 227 tests in 19.404s\n\nOK\n"
+    }
+  },
+  "rollout.json": {
+    "protected_state_equal": true,
+    "health": {
+      "status": "serving",
+      "project_ready": false,
+      "source_revision": "deba46cf9a24ce8444b9a08d12de5692ac215662"
+    },
+    "gateway_status": 403
+  },
+  "bread-normal-plan.json": {
+    "request": {
+      "request_id": "2a8d74a8-7db5-401d-94bf-6ed6e02bf83e",
+      "topic": "Jak powstaje chleb",
+      "language": "pl",
+      "seconds": 15,
+      "visual_validation_mode": "gemini"
+    },
+    "revision": "deba46cf9a24ce8444b9a08d12de5692ac215662",
+    "reason": "Prior length failure reproduced exactly; bounded paragraph arrays and349 exact-image tests passed",
+    "budgets": {
+      "research_search": 1,
+      "source_fetch": 6,
+      "gemini": 16,
+      "download": 32,
+      "metadata": 1,
+      "search:pexels": 3,
+      "search:wikimedia": 3,
+      "search:pixabay": 3,
+      "tts_max": 3
+    },
+    "quota": "free-only runtime authorization and existing monthly TTS ceilings; token/character amounts unknown",
+    "stop": "First terminal or unknown; never rerun ID",
+    "project_ready": false
+  },
+  "bread-normal-submission.json": {
+    "http": 202,
+    "body": {
+      "id": "2a8d74a8-7db5-401d-94bf-6ed6e02bf83e",
+      "created": true,
+      "status": "preparing"
+    }
+  },
+  "current_status": {
+    "id": "2a8d74a8-7db5-401d-94bf-6ed6e02bf83e",
+    "request": {
+      "topic": "Jak powstaje chleb",
+      "seconds": 15,
+      "language": "pl",
+      "visual_validation_mode": "gemini"
+    },
+    "status": "preparing",
+    "source_revision": "deba46cf9a24ce8444b9a08d12de5692ac215662",
+    "error_code": null,
+    "machine_pass": false,
+    "human_pass": false,
+    "review": null
+  }
+}
