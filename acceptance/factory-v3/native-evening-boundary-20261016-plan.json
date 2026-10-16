@@ -1,0 +1,20 @@
+{
+  "id": "881cc058-686b-484f-8890-a1da0861f4a2",
+  "source_id": "9fea550c-fcd2-4e5f-9269-43f068397077",
+  "revision": "4811eae0fa6f1f21a753e1a50ca80dacd1de65a3",
+  "image": "sha256:0bb0dc846f62689d9de6d108f5ff610e7486b5c4bbd4912b5438bee5b74d2890",
+  "question": "Can the unchanged saved 35-word composition pass new native editing, independent factual review and unique-photo assignment?",
+  "maximum_calls": {
+    "gemini": 2,
+    "metadata": 1,
+    "search": 0,
+    "download": 0,
+    "tts": 0
+  },
+  "model": "gemini-3.1-flash-lite",
+  "expected_token_consumption": "unknown; hard two-call ceiling; no retry or paid fallback",
+  "stop_condition": "First failed boundary or complete native/factual/photo assignment. No full job, no render readiness claim.",
+  "saved_input_semantics": "Responses are explicit fixture inputs, not cache hits for modified prompts.",
+  "retry_explicit_unavailable": false,
+  "availability_context": "More than seven hours elapsed since prior confirmed overload. Owner requested continuation. One bounded saved-input check, no discovery or TTS, no model rotation."
+}
