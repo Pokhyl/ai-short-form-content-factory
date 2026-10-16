@@ -176,6 +176,7 @@ def paragraph_cadence_payload(available, draft, seconds, *, anchor_ids=()):
     """Estimate paragraph durations before voice; final alignment remains authoritative."""
     from .visuals import ordered_visuals
     scenes = [{'id': 'beat-' + str(i + 1), 'material_id': beat['material_id'],
+               'narration': beat['narration'],
                'evidence_ids': beat['fact_ids'], 'visual_target_id': beat.get('visual_target_id')}
               for i, beat in enumerate(draft['beats'])]
     payload = {'seconds': seconds, 'presentation_policy': TOPIC_POLICY,

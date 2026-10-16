@@ -1,0 +1,123 @@
+{
+  "request": {
+    "topic": "Jak powstaje chleb",
+    "language": "pl",
+    "seconds": 15,
+    "presentation_policy": "whole-photo-topic-v3",
+    "voice_correction": {
+      "protocol": "measured-text-correction-v1",
+      "max_attempts": 3
+    },
+    "visual_validation_mode": "gemini",
+    "required_fact_ids": [
+      "f1",
+      "f2",
+      "f3"
+    ]
+  },
+  "materials": [
+    {
+      "id": "wikimedia:41546941",
+      "media_type": "photo",
+      "sha256": "b717ee209bdf3b0d665d77ac29b5d3041d0eee5433c75d717855135fa84ce817",
+      "supported_fact_ids": [
+        "f1"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "visible_description": "A close-up view of golden wheat ears in a field at sunset."
+    },
+    {
+      "id": "pexels:1423597",
+      "media_type": "photo",
+      "sha256": "9e9702817206c91b22cfac85862bd75b2b383be3f9374e2a46247935ad981603",
+      "supported_fact_ids": [
+        "f1"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "visible_description": "A vast, green grassy and agricultural landscape with a dirt path in the foreground."
+    },
+    {
+      "id": "pixabay:7347847",
+      "media_type": "photo",
+      "sha256": "80633379763a0095e1f844a4d8e9f3ea95e63b4dbd187915fd67fc7cd0b3e808",
+      "supported_fact_ids": [
+        "f1"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "visible_description": "A dense patch of ripening wheat ears in a field."
+    },
+    {
+      "id": "wikimedia:15217424",
+      "media_type": "photo",
+      "sha256": "aa1eae9e4e4bdf6fc86025cecaae600022aa2ac3d53acd72fbf68a725fc6d702",
+      "supported_fact_ids": [
+        "f2"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "visible_description": "A large, weathered industrial building labeled 'FLOUR MILLS'."
+    },
+    {
+      "id": "pixabay:1868396",
+      "media_type": "photo",
+      "sha256": "c6e7b1dec548cc82c3c0e975dc41ffd3941bb140314a5dd5caecd387d15dca32",
+      "supported_fact_ids": [
+        "f2"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "visible_description": "A person wearing an apron stands behind a wooden table with a ball of dough resting on a layer of flour."
+    },
+    {
+      "id": "wikimedia:136174464",
+      "media_type": "photo",
+      "sha256": "cba08550fb6d03eaa05dcb10b79e28d10e632e21bd3e34bd8276e94a3b4488b2",
+      "supported_fact_ids": [
+        "f3"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "visible_description": "A cross-section of a loaf of raisin bread showing the open, airy crumb structure."
+    },
+    {
+      "id": "pexels:9910316",
+      "media_type": "photo",
+      "sha256": "051651d0312b5a21c97bb4f03141751a63d99d4f39cb01a6b0d0210f3eae4d70",
+      "supported_fact_ids": [
+        "f3"
+      ],
+      "source_interval": null,
+      "capacity_ms": 60000,
+      "visible_description": "A close-up view of a piece of rustic brown bread highlighting the porous, textured crumb structure."
+    }
+  ],
+  "draft": {
+    "beats": [
+      {
+        "material_id": "pixabay:7347847",
+        "narration": "Produkcja chleba zaczyna się od uprawy pszenicy na polu.",
+        "fact_ids": [
+          "f1"
+        ]
+      },
+      {
+        "material_id": "wikimedia:15217424",
+        "narration": "W młynie ziarna mielone są na mąkę stanowiącą bazę ciasta.",
+        "fact_ids": [
+          "f2"
+        ]
+      },
+      {
+        "material_id": "wikimedia:136174464",
+        "narration": "Dzięki drożdżom ciasto rośnie, stając się lekkim i pulchnym wypiekiem.",
+        "fact_ids": [
+          "f3"
+        ]
+      }
+    ]
+  },
+  "source_request": "2a8d74a8-7db5-401d-94bf-6ed6e02bf83e"
+}

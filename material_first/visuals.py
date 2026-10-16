@@ -31,6 +31,17 @@ def make_visuals(seconds, materials, scenes, policy=POLICY, *, anchor_ids=()):
         role = next(iter(m.get('matched_visual_targets', {})), 'context')
         groups.setdefault(role, []).append(m['id'])
     count = min(len(materials), max(preferred_shots(seconds,policy), len(selected)), 32)
+    if policy == TOPIC_POLICY and all(s.get('narration','').strip() for s in scenes) and scenes:
+        weights=[len(s['narration'].split()) for s in scenes]
+        cursor=0;timings=[]
+        for weight in weights:
+            end=cursor+seconds*1000*weight/sum(weights)
+            timings.append({'start_ms':cursor,'end_ms':end});cursor=end
+        pool=[{'id':'candidate-'+str(i),'material_id':m['id']} for i,m in enumerate(materials)]
+        assigned=ordered_visuals({'seconds':seconds,'presentation_policy':policy,
+            'scenes':scenes,'observations':materials,'visuals':pool},timings,seconds*1000,
+            slot_count=count,required_material_ids=selected)
+        return [{'id':'photo-'+str(i+1),'material_id':v['material_id']} for i,v in enumerate(assigned)]
     while len(selected) < count:
         progressed = False
         for group in groups.values():
@@ -70,11 +81,11 @@ def validate_visuals(payload, observations):
     return visuals
 
 
-def ordered_visuals(payload, timings, source_duration_ms):
+def ordered_visuals(payload, timings, source_duration_ms, *, slot_count=None, required_material_ids=()):
     """Align cuts to paragraphs; topical plans never fill a slot with zero relevance."""
     policy = payload['presentation_policy']
     boundaries = phrase_frames(timings,source_duration_ms,payload['seconds']) if policy in CALM_POLICIES else ()
-    cuts = visual_timeline(payload['seconds'], len(payload['visuals']),policy,boundaries)
+    cuts = visual_timeline(payload['seconds'], slot_count or len(payload['visuals']),policy,boundaries)
     observations = {m['id']: m for m in payload['observations']}
     slots=[]
     for cut in cuts:
@@ -94,6 +105,26 @@ def ordered_visuals(payload, timings, source_duration_ms):
         return result
     options=[[i for i,v in sorted(enumerate(payload['visuals']),key=lambda row:-score(row[1],scene)) if score(v,scene)>0]
              for _,scene in slots]
+    if required_material_ids:
+        required=set(required_material_ids)
+        order=sorted(range(len(payload['visuals'])),key=lambda i:payload['visuals'][i]['material_id'] not in required)
+        owners={}
+        def assign_photo(photo,visited):
+            for slot in range(len(slots)):
+                if photo not in options[slot] or slot in visited:continue
+                visited.add(slot)
+                if slot not in owners or assign_photo(owners[slot],visited):
+                    owners[slot]=photo
+                    return True
+            return False
+        for photo in order:
+            if len(owners)==len(slots):break
+            if not assign_photo(photo,set()) and payload['visuals'][photo]['material_id'] in required:
+                raise ValueError('no subject-related photograph for a narration interval')
+        if len(owners)!=len(slots):
+            raise ValueError('no subject-related photograph for a narration interval')
+        return [{**payload['visuals'][owners[i]],**cut,'narration_scene_id':scene['id']}
+                for i,(cut,scene) in enumerate(slots)]
     owners={}
     def assign(slot,visited):
         for photo in options[slot]:
