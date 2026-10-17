@@ -40,3 +40,22 @@ Remaining before ANY traffic switch:
 
 Next step: connected adapter contract tests and real saved-media render before
 provider integration; preserve explicit list of unproven boundaries above.
+
+## Offline file-level integration checkpoint — 2026-10-17
+
+`tests/factory_next/test_media.py` exercises the replacement measured edit,
+`MediaStages.render`, the existing FFmpeg whole-photo renderer and the
+independent byte-level `MediaStages.audit`, using freshly generated distinct
+fixture images and a 14.5-second encoded test tone. The resulting actual
+15-second MP4 passes file-format, frame count, SHA-256, decoded output,
+source/fitted audio correlation, and visual-frame-timeline checks. This is a
+technical transport/render/audit integration check, **not** reviewed spoken
+narration, genuine provider-sourced photo acceptance, a saved-production-media
+replay, or a natural voice quality test. The deployed service was not changed.
+
+The active `shorts-v2_media_data` volume had zero MP3 and zero MP4 files at
+this inspection, so an independent old-audio replay cannot be claimed from
+that volume. Remaining work before traffic switch is the provider-budget and
+safe stage-reconciliation implementation, measured-duration correction with
+stored attempts, actual saved-provider media/voice connected acceptance when
+available, normal language/duration matrix, Studio routing, and owner review.
