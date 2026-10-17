@@ -40,3 +40,29 @@ def require_reviewed_revision(original, replacement):
                and s.get('material_id') for s in replacement['scenes']):
         raise NaturalDurationRejected('revised narration lacks evidence or photo anchors')
     return replacement
+
+
+def revision_length_window(script, measured_ms, seconds):
+    """Bound a draft *before* a metered voice attempt; audio remains authoritative.
+
+    Word count alone did not protect the real UK45 run: a 91-word hint
+    produced 161 words and 83.616 seconds. Character count also constrains
+    very long inflected sentences without requiring mechanical word slots.
+    """
+    words=revision_word_target(script,measured_ms,seconds)
+    target_ms=seconds*1000-500
+    characters=round(len(script)*target_ms/measured_ms)
+    words_slack=max(4,round(words*0.06))
+    chars_slack=max(25,round(characters*0.08))
+    return {'target_words':words,'min_words':max(1,words-words_slack),
+            'max_words':words+words_slack,
+            'target_characters':characters,
+            'min_characters':max(1,characters-chars_slack),
+            'max_characters':characters+chars_slack}
+
+
+def revision_length_fits(text, window):
+    if not isinstance(text,str) or not text.strip():return False
+    count=len(text.split())
+    return (window['min_words']<=count<=window['max_words'] and
+            window['min_characters']<=len(text)<=window['max_characters'])

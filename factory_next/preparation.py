@@ -16,7 +16,7 @@ from material_first.paragraphs import compact_materials, validate_native_surface
 from material_first.photo_identity import pixels, same_photo
 from material_first.presentation import TOPIC_POLICY, minimum_shots
 from material_first.visuals import candidate_limit
-from .duration import revision_word_target
+from .duration import revision_length_window, revision_length_fits, NaturalDurationRejected
 
 
 class VoiceRevisionCalls:
@@ -159,7 +159,8 @@ class PreparationStages:
         photos=context['outputs']['materials']['photos']
         original=context['outputs']['story']
         count=len(original['scenes'])
-        target=revision_word_target(original['script'],measured_ms,request['seconds'])
+        window=revision_length_window(original['script'],measured_ms,request['seconds'])
+        target=window['target_words']
         schema=obj({'beats':array(obj({
             'material_id':string(p['id'] for p in photos),
             'narration':{**string(),'maxLength':2400},
@@ -172,7 +173,13 @@ class PreparationStages:
             f"{measured_ms} ms; the requested video lasts {request['seconds']} seconds. "
             f"{direction.capitalize()} the speech while preserving all supplied "
             f"required facts, original claims, and reviewed photo grounding. "
-            f"Aim for about {target} natural words (hint, NOT a word-slot contract). "
+            f"Target {target} naturally flowing words and about "
+            f"{window['target_characters']} characters including spaces. "
+            f"Keep the entire narration within {window['min_words']} to "
+            f"{window['max_words']} words AND {window['min_characters']} to "
+            f"{window['max_characters']} characters. These totals cover all beats. "
+            "Make minimal local edits to the previous reviewed sentences, rather "
+            "than rewriting the narration as long new paragraphs. "
             "Use only provided evidence and real photographed subjects. Keep "
             "the original number of beats, each with a distinct photographed "
             "anchor and supported fact_ids. No narration of unseen mechanisms "
@@ -193,6 +200,33 @@ class PreparationStages:
              'previous_reviewed_script':original['script'],
              'actual_voice_duration_ms':measured_ms},schema)
         validate_json(draft,schema)
+        candidate_text=' '.join(b['narration'] for b in draft['beats'])
+        if not revision_length_fits(candidate_text,window):
+            # The real UK45 trial's 91-word hint became a rejected 161-word,
+            # 83.616-second voice. Repair BEFORE reserving another TTS call.
+            draft,_=revision_gemini.generate(
+                'next-measured-duration-revision-length-repair',
+                f"Repair the source-backed {LANGUAGES[request['language']]} "
+                f"narration with minimal edits. The rejected draft has "
+                f"{len(candidate_text.split())} words and {len(candidate_text)} "
+                f"characters; the target is {target} words and about "
+                f"{window['target_characters']} characters. Return natural "
+                f"speech with {count} original photo-grounded beats, "
+                f"TOTAL {window['min_words']}-{window['max_words']} words and "
+                f"TOTAL {window['min_characters']}-{window['max_characters']} "
+                "characters. Keep all source-supported facts, qualifiers, "
+                "material IDs, fact IDs and natural grammar. No new facts, "
+                "padding, expanded explanations or speech speed instructions.",
+                {**request,'evidence':evidence,'materials':compact_materials(photos),
+                 'previous_reviewed_scenes':original['scenes'],
+                 'previous_reviewed_script':original['script'],
+                 'rejected_provisional_beats':draft['beats'],
+                 'actual_voice_duration_ms':measured_ms,
+                 'length_window':window},schema)
+            validate_json(draft,schema)
+            candidate_text=' '.join(b['narration'] for b in draft['beats'])
+            if not revision_length_fits(candidate_text,window):
+                raise NaturalDurationRejected('duration rewrite still outside calibrated text-length window')
         scenes=validate_story(request,evidence,photos,draft)
         script=' '.join(s['narration'] for s in scenes)
         validate_native_surface(request['language'],script)

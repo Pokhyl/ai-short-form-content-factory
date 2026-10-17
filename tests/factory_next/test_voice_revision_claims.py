@@ -24,7 +24,7 @@ class SyntheticGemini:
     def __init__(self,calls):self.calls=calls
     def generate(self,key,instruction,context,schema):
         result=self.calls.run(key,'gemini',{'instruction':instruction,'context':context},
-            lambda:{'beats':[{'narration':'Short revised Polish scene.',
+            lambda:{'beats':[{'narration':' '.join(['pszczol']*10),
                               'material_id':f'p{i}','fact_ids':[f'f{i}']}
                              for i in range(3)]})
         return result,{'model':'controlled'}
@@ -55,12 +55,12 @@ class VoiceRevisionLedgerRegression(unittest.TestCase):
                                            'support':[]} for i in range(3)]}},
                 'materials':{'photos':[{'id':f'p{i}','sha256':f'sha{i}'}
                                         for i in range(3)]},
-                'story':{'script':'Original source reviewed script with many natural words.',
+                'story':{'script':' '.join(['pszczol']*73),
                          'scenes':[{'id':f'beat-{i+1}','material_id':f'p{i}',
                                     'narration':'Original scene','evidence_ids':[f'f{i}']}
                                    for i in range(3)]}}}
         revised_scenes=[{'id':f'beat-{i+1}','material_id':f'p{i}',
-                         'narration':'Short revised Polish scene.',
+                         'narration':' '.join(['pszczol']*10),
                          'evidence_ids':[f'f{i}']} for i in range(3)]
         with patch('factory_next.preparation.compact_materials',return_value=[]),              patch('factory_next.preparation.validate_json'),              patch('factory_next.preparation.validate_story',return_value=revised_scenes),              patch('factory_next.preparation.validate_native_surface'),              patch('factory_next.preparation.validate_script_review'):
             result=preparation.revise_story(context,33864)
