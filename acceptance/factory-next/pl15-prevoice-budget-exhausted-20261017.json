@@ -1,0 +1,31 @@
+{
+  "job_id": "18ff1836-52a8-4003-9d26-12d98a8e2ce5",
+  "date": "2026-10-17",
+  "source_revision": "e9d629879d0d93b8eaa218aa27cc73cd1d2a30cf",
+  "requested_language": "pl",
+  "seconds": 15,
+  "finished_stages": [
+    "research",
+    "materials",
+    "story"
+  ],
+  "reviewed_photos": 30,
+  "reviewed_scenes": 3,
+  "story_word_count": 43,
+  "native_review_passed": true,
+  "provider_budget": {
+    "provider": "gemini",
+    "limit": 16,
+    "used": 16,
+    "unknown": 0,
+    "requested_remaining_for_voice_correction": 2
+  },
+  "decision": "halt before voice: insufficient independent rewrite/review capacity",
+  "google_tts_attempts": 0,
+  "final_audio_exists": false,
+  "final_video_exists": false,
+  "pipeline_status": "ready",
+  "next_stage": "voice",
+  "production_switched": false,
+  "older_failed_jobs_replayed": false
+}

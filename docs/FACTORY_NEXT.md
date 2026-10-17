@@ -1,6 +1,48 @@
 # Replacement requested 2026-10-17
 
 
+## Explicit next-only Gemini budget and pre-voice headroom — 2026-10-17
+
+A fresh real PL15 job 18ff1836-52a8-4003-9d26-12d98a8e2ce5 ran
+from the exact tested e9d6298 image with separate immutable quota records.
+It completed research, independently reviewed 30 photographs and produced
+a source-reviewed native Polish story with 3 beats / 43 words.
+Two confirmed model 503/UNAVAILABLE events were safely deferred and
+reconciled through PostgreSQL. The preparation ledger reached **16/16**
+Gemini requests after story; there were **zero unknown operations**.
+The job remains ready immediately before the voice stage. Google TTS has
+not been called, and neither final audio nor MP4 exists. The original
+blocked jobs remain untouched. Evidence:
+acceptance/factory-next/pl15-prevoice-budget-exhausted-20261017.json.
+
+The previous shared preparation_budgets profile allowed no independent
+rewrite+review after a budget exhausted by source/photo/story and verified
+availability retries. This is a *planning* issue, not an authorization to
+silently skip independent review or accelerate natural speech.
+
+An opt-in factory_next admission entrypoint register_next() now reuses all
+existing Runtime.create gates (immutable UUID/parameters, gateway readiness,
+current revision, media collision checks) but stores an explicit immutable
+factory_next_budget_profile in the preparation request and adds **exactly
+three** maximum Gemini calls to that job's existing preparation budget.
+One extra call can repair a *completed* story beat-count mismatch, and two
+can rewrite and independently review speech after an actual MP3 measurement.
+The existing factory_v3 Runtime.create path and budget sizes are unchanged.
+Every attempt still counts in the same durable preparation ledger. An
+explicit free-tier 503 consumes a call and can still exhaust the limit;
+there is NO paid fallback, no quota bypass and no unlimited retry.
+
+The factory_next NextBudgetGate reads the immutable profile and live
+remaining Gemini count before stages, and refuses voice dispatch unless
+at least two independent corrective review requests remain and no
+started/unknown preparation calls exist. No Google TTS is sent on such a
+refusal. Existing jobs cannot be silently upgraded or replayed. The
+first version of this fix is unit-tested only; real provider and exact
+image acceptance need fresh evidence. Do not use the existing PL15 ID to
+test the new budget.
+
+
+
 ## One-shot story count repair after real PL15 schema miss — 2026-10-17
 
 Fresh real provider job bc2c69e3-37b3-42fe-acf1-1ed552133063 ran on

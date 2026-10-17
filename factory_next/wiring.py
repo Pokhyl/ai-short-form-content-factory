@@ -14,6 +14,7 @@ from .adapters import FactoryNextAdapters
 from .media import MediaStages
 from .preparation import PreparationStages
 from .voice import VoiceStages
+from .budget import PROFILE, MIN_VOICE_CORRECTION_HEADROOM
 
 
 class ProviderResumeGate:
@@ -60,6 +61,41 @@ class ProviderResumeGate:
         return True
 
 
+def register_next(runtime, job_id, topic, language, seconds):
+    """Use the existing immutable Runtime.create checks with next-only budget."""
+    identity=str(UUID(str(job_id)))
+    return runtime.create(identity,topic,language,seconds,
+                          visual_validation_mode='gemini',_factory_next=True)
+
+
+class NextBudgetGate:
+    """Read-only admission; fail before an uncorrectable external voice send."""
+
+    def __init__(self, runtime):
+        self.runtime=runtime
+
+    def __call__(self, stage, context):
+        record=self.runtime.preparations.snapshot(context['id'])
+        if (record.get('source_revision')!=self.runtime.revision or
+                record.get('request',{}).get('factory_next_budget_profile')!=PROFILE):
+            raise ValueError('factory_next immutable budget profile mismatch')
+        if stage!='voice':
+            return
+        receipt=self.runtime.ledger._call(
+            "SELECT jsonb_build_object("
+            "'limit', (SELECT (budgets->>'gemini')::int FROM factory_v3.preparations WHERE id=%s::uuid),"
+            "'used', (SELECT count(*) FROM factory_v3.preparation_calls WHERE preparation_id=%s::uuid AND kind='gemini'),"
+            "'unknown', (SELECT count(*) FROM factory_v3.preparation_calls WHERE preparation_id=%s::uuid AND state IN ('started','unknown')))",
+            (context['id'],context['id'],context['id']))
+        if (not isinstance(receipt,dict) or
+                type(receipt.get('limit')) is not int or
+                type(receipt.get('used')) is not int or
+                type(receipt.get('unknown')) is not int or
+                receipt['unknown']!=0 or
+                receipt['limit']-receipt['used']<MIN_VOICE_CORRECTION_HEADROOM):
+            raise ValueError('insufficient reviewed Gemini budget before Google TTS')
+
+
 def connected_adapters(runtime, job_id, *, preflight_gate=None):
     """Reuse the checked native gateway and persisted free-tier request budgets."""
     identity=str(UUID(str(job_id)))
@@ -74,6 +110,11 @@ def connected_adapters(runtime, job_id, *, preflight_gate=None):
     tts=GoogleVoice(lambda:'gateway-managed',runtime.gateway)
     voice=VoiceStages(runtime.root,tts,runtime.direct,runtime.ledger)
     media=MediaStages(runtime.root)
+    budget_gate=NextBudgetGate(runtime)
+    def combined_preflight(stage, context):
+        budget_gate(stage,context)
+        if preflight_gate is not None:
+            preflight_gate(stage,context)
     return FactoryNextAdapters(
-        preparation,voice,media,preflight_gate=preflight_gate,
+        preparation,voice,media,preflight_gate=combined_preflight,
         provider_resume_gate=ProviderResumeGate(runtime))

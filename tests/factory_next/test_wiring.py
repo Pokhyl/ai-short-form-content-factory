@@ -5,6 +5,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from factory_next.wiring import connected_adapters
+from factory_next.budget import PROFILE
 from factory_next.preparation import PreparationStages
 from factory_next.voice import VoiceStages
 from factory_next.media import MediaStages
@@ -16,12 +17,20 @@ class FakeProducer:
         self.authorize=lambda:sink.append('billing_gate_invoked')
 
 
+class StubPreparations:
+    def snapshot(self, job_id):
+        return {'status':'preparing','source_revision':'a'*40,
+                'request':{'factory_next_budget_profile':PROFILE}}
+
+
 class TrustedRuntime:
     def __init__(self,root,*,authorized=True):
         self.root=Path(root)
         self.gateway=object()
         self.direct=object()
         self.ledger=object()
+        self.preparations=StubPreparations()
+        self.revision='a'*40
         self.authorized=authorized
         self.producer_calls=[]
         self.external_calls=[]

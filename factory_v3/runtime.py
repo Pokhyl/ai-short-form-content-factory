@@ -39,7 +39,7 @@ class Runtime:
         self.gateway = CredentialHTTP(settings["broker_token"], self.direct)
         self.preparations = PreparationLedger(self.ledger, revision)
 
-    def create(self, request_id, topic, language, seconds, *, visual_validation_mode=None):
+    def create(self, request_id, topic, language, seconds, *, visual_validation_mode=None, _factory_next=False):
         request_id = str(UUID(str(request_id)))
         ensure_visible(self.root, request_id)
         if language not in {"pl","en","ru","uk"} or seconds not in {15,30,45,60}:
@@ -55,6 +55,11 @@ class Runtime:
             if visual_validation_mode not in {"metadata", "gemini"}:
                 raise ValueError("unsupported visual validation mode")
             request["visual_validation_mode"] = visual_validation_mode
+        if type(_factory_next) is not bool:
+            raise ValueError("trusted next-budget profile must be a boolean")
+        if _factory_next:
+            from factory_next.budget import PROFILE
+            request["factory_next_budget_profile"] = PROFILE
         if old is not None:
             if old["request"] != request or old["source_revision"] != self.revision:
                 raise ValueError("existing request identity changed")
@@ -65,7 +70,12 @@ class Runtime:
         # n8n healthz can pass before webhook registration. Do not consume an
         # immutable request ID (or provider budget) while that route is absent.
         check_gateway(self.direct)
-        self.preparations.create(request_id, request, preparation_budgets(seconds))
+        if _factory_next:
+            from factory_next.budget import next_preparation_budgets
+            budgets=next_preparation_budgets(seconds)
+        else:
+            budgets=preparation_budgets(seconds)
+        self.preparations.create(request_id, request, budgets)
         return {"id":request_id,"created":True,"status":"preparing"}
 
     def producer(self, request_id):
