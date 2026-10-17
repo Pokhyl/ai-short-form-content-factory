@@ -41,6 +41,18 @@ Remaining before ANY traffic switch:
 Next step: connected adapter contract tests and real saved-media render before
 provider integration; preserve explicit list of unproven boundaries above.
 
+## Runtime image packaging checkpoint — 2026-10-17
+
+The factory_v3/Dockerfile previously omitted factory_next entirely.
+It now copies the factory_next package alongside factory_v3 and
+material_first. A source-level regression test checks this inclusion.
+No exact Docker image has been built or tested from this revision:
+the server root disk had only about 1.2 GiB available at inspection,
+so an image build was deliberately withheld rather than risk unrelated
+production containers. Runtime image build, package imports inside the
+image, isolated exact-image test suite and protected deployment remain
+outstanding. This is a packaging source correction, not deployment proof.
+
 ## Measured natural-voice correction — offline checkpoint 2026-10-17
 
 The new voice adapter now measures MP3 bytes with the existing local
