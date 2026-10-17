@@ -1,0 +1,26 @@
+{
+  "job_id": "bc2c69e3-37b3-42fe-acf1-1ed552133063",
+  "date": "2026-10-17",
+  "source_revision": "b965f75c1cd2bd1785526535625fe16e36c40564",
+  "language": "pl",
+  "seconds": 15,
+  "finished_stages": [
+    "research",
+    "materials"
+  ],
+  "approved_photo_count": 25,
+  "required_fact_count": 3,
+  "provider_wait_reconciled": true,
+  "blocked_stage": "story",
+  "pipeline_status": "needs_attention",
+  "error_type": "ModelSchemaError",
+  "model_returned_beats": 2,
+  "schema_minimum_beats": 3,
+  "schema_maximum_beats": 8,
+  "model_response_was_durably_saved": true,
+  "no_google_tts_sent": true,
+  "retry_of_original_model_request": false,
+  "correction_policy": "one separately metered schema-count repair on complete saved JSON; all source and photo gates intact",
+  "previous_failed_jobs_unchanged": true,
+  "production_unchanged": true
+}

@@ -1,6 +1,42 @@
 # Replacement requested 2026-10-17
 
 
+## One-shot story count repair after real PL15 schema miss — 2026-10-17
+
+Fresh real provider job bc2c69e3-37b3-42fe-acf1-1ed552133063 ran on
+exact image b965f75 and completed research. During materials, Gemini
+explicitly responded 503/UNAVAILABLE; factory_next persisted provider_wait.
+After the saved due time, the PostgreSQL gate confirmed the job/revision,
+due receipt and zero ambiguous operations, then resumed the same stage.
+The earlier failed 503 was not resent. Materials completed with 25
+reviewed photographs and advanced to story.
+
+Gemini's story response was a **complete, durably receipted** JSON object
+containing only **2 beats**, below the 3-beat schema minimum for 15 s.
+The model's JSON validation rejected it with ModelSchemaError; the
+Pipeline retained needs_attention and no Google TTS call was made.
+This immutable failure is recorded at
+acceptance/factory-next/pl15-story-two-beats-20261017.json.
+
+A generic bounded recovery now catches only ModelSchemaError with a
+top-level beat count outside the original 3..min(8,photo_count) bounds
+and with at most 16 KiB of rejected model JSON. This is **not** an HTTP
+retry: the model response already succeeded and is in the durable
+preparation ledger. One separate budgeted call
+next-story-count-repair:1 asks for exactly three distinct, source-bound
+beats using the already inspected photos and the required original facts.
+It treats the rejected draft as untrusted. The repaired JSON must pass
+the unchanged schema validation, real validate_story media/fact gates,
+native-language check and independent script review. No nested-schema,
+unknown-transport, invalid second output or repeated repair is permitted.
+
+The already failed real job is NOT replayed. Offline tests show rejection
+of invalid/unknown repairs; this corrected version has not yet been
+proved through real Gemini, natural Google speech or the final MP4.
+Production and Studio were not switched.
+
+
+
 ## Bounded provider 503 recovery checkpoint — 2026-10-17
 
 The exact source Docker image for commit 63de52e was built separately as
