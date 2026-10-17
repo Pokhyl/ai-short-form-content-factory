@@ -1,3 +1,4 @@
+from .voice import VoiceStages
 """Bind the existing reviewed source, voice and media components to Pipeline.
 
 This is not a production route. The optional gate must do no provider dispatch,
@@ -28,6 +29,8 @@ class FactoryNextAdapters:
         return self.preparation.story(context)
 
     def voice(self, context):
+        if isinstance(self.voice_stages,VoiceStages):
+            return self.voice_stages.voice(context,revision_builder=self.preparation.revise_story)
         return self.voice_stages.voice(context)
 
     def alignment(self, context):

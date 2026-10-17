@@ -41,6 +41,40 @@ Remaining before ANY traffic switch:
 Next step: connected adapter contract tests and real saved-media render before
 provider integration; preserve explicit list of unproven boundaries above.
 
+## Measured natural-voice correction — offline checkpoint 2026-10-17
+
+The new voice adapter now measures MP3 bytes with the existing local
+media-worker voiceover-probe endpoint before storing the accepted voice.
+The strict speech window is [requested duration - 1000 ms, requested duration].
+If attempt 1 misses, it invokes **one** source/photo-grounded Gemini rewrite
+with the same mandatory facts and paragraph count. The revised
+script receives the full native-language and independent factual review
+before attempt 2 may be synthesized. A word estimate is a prompt hint only,
+never a substitute for measuring the second MP3.
+
+Every actual TTS synthesis has its own factory.reserve_provider_usage and
+factory.commit_provider_usage key and an exclusive fsynced local attempt
+archive. The provider-produced bytes must match the hash returned by the
+media-worker probe. At most two synthesis calls are possible. A miss on
+attempt 2 stops without promoting a voice candidate or launching a third
+call. The accepted candidate alone is saved and then promoted through the
+media-worker voiceover-candidates endpoints; it is not an in-place
+replacement of an existing final file. Speech speed is unchanged.
+The final alignment and edit compiler both use the newly reviewed scenes
+attached to the selected voice receipt. All uncertain transport/provider
+results remain held by the Pipeline non-replayable running checkpoint:
+there is NO blind automatic re-send.
+
+Tests include scripted provider/quota/worker failures, missing revision
+review, immutable attempt identity, and a real-byte pair of FFmpeg-encoded
+9 s / 14.6 s MP3 inputs. The latter exercises actual ffprobe measurement,
+accepted voice hashing and source archive retention through an isolated
+worker protocol double. This does **not** establish real Google TTS,
+actual Gemini revision quality, running media-worker compatibility,
+real provider budget/recovery, exact container-image acceptance, normal
+PL15/EN30/RU45/UK60 results or Studio integration. The old production
+deployment, previously failed jobs and user media are untouched.
+
 ## Composed stage adapter checkpoint — 2026-10-17
 
 factory_next/adapters.py now composes the existing preparation (research,

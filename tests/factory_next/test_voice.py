@@ -1,3 +1,4 @@
+from uuid import uuid4
 import tempfile
 import unittest
 from factory_next.voice import VoiceStages
@@ -13,5 +14,5 @@ class BudgetTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             stage=VoiceStages(root,Provider(),object(),Quota())
             with self.assertRaisesRegex(ValueError,'budget exhausted'):
-                stage.voice({'id':'test','request':{'language':'pl'},'outputs':{'story':{'script':'Test'}}})
+                stage.voice({'id':str(uuid4()),'request':{'language':'pl'},'outputs':{'story':{'script':'Test'}}})
         self.assertEqual(calls,['quota'])

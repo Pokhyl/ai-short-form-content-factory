@@ -145,7 +145,8 @@ class Pipeline:
                     outputs=context['outputs']
                     if outputs['alignment']['audio_sha256'] != outputs['voice']['sha256']:
                         raise ValueError('alignment belongs to another audio file')
-                    output=compile_edit(outputs['story']['scenes'],outputs['materials']['photos'],
+                    active_story=outputs['voice'].get('reviewed_story',outputs['story'])
+                    output=compile_edit(active_story['scenes'],outputs['materials']['photos'],
                                         outputs['alignment']['timings'],outputs['voice']['duration_ms'],
                                         context['request']['seconds'])
                 else:

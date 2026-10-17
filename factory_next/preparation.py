@@ -15,6 +15,7 @@ from material_first.paragraphs import compact_materials, validate_native_surface
 from material_first.photo_identity import pixels, same_photo
 from material_first.presentation import TOPIC_POLICY, minimum_shots
 from material_first.visuals import candidate_limit
+from .duration import revision_word_target
 
 
 class PreparationStages:
@@ -93,4 +94,57 @@ class PreparationStages:
         validate_script_review(evidence,request['language'],script,scenes,review,topic=request['topic'])
         if review.get('native_language_quality') is not True:
             raise ValueError('independent native-language review failed')
+        return {'scenes':scenes,'script':script,'review':review}
+
+    def revise_story(self, context, measured_ms):
+        """One source-grounded native rewrite after actually measuring TTS #1.
+
+        One Gemini draft and one independent review, both inside the already
+        claimed (never auto-replayed) voice stage. No invented photos/facts.
+        """
+        source=context['outputs']['research']
+        request=source['request']
+        evidence=source['evidence']
+        photos=context['outputs']['materials']['photos']
+        original=context['outputs']['story']
+        count=len(original['scenes'])
+        target=revision_word_target(original['script'],measured_ms,request['seconds'])
+        schema=obj({'beats':array(obj({
+            'material_id':string(p['id'] for p in photos),
+            'narration':{**string(),'maxLength':2400},
+            'fact_ids':array(string(f['id'] for f in evidence['facts']),1,8),
+        }),count,count)})
+        direction='expand' if measured_ms < request['seconds']*1000-1000 else 'shorten'
+        instruction=(
+            f"Rewrite the already reviewed narration as natural spoken "
+            f"{LANGUAGES[request['language']]}. The first actual voice lasted "
+            f"{measured_ms} ms; the requested video lasts {request['seconds']} seconds. "
+            f"{direction.capitalize()} the speech while preserving all supplied "
+            f"required facts, original claims, and reviewed photo grounding. "
+            f"Aim for about {target} natural words (hint, NOT a word-slot contract). "
+            "Use only provided evidence and real photographed subjects. Keep "
+            "the original number of beats, each with a distinct photographed "
+            "anchor and supported fact_ids. No narration of unseen mechanisms "
+            "as if visibly photographed. Do not add unsourced facts, padding, "
+            "repeated filler or an artificial ending. No timing or speed instructions. "
+            "The next synthesized MP3 is independently measured and strictly "
+            "rejected if it misses the target duration."
+        )
+        draft,_=self.operations.gemini.generate(
+            'next-measured-duration-revision',instruction,
+            {**request,'evidence':evidence,'materials':compact_materials(photos),
+             'previous_reviewed_scenes':original['scenes'],
+             'previous_reviewed_script':original['script'],
+             'actual_voice_duration_ms':measured_ms},schema)
+        validate_json(draft,schema)
+        scenes=validate_story(request,evidence,photos,draft)
+        script=' '.join(s['narration'] for s in scenes)
+        validate_native_surface(request['language'],script)
+        review=self.operations.review_script(
+            {**request,'evidence':evidence,'materials':photos,
+             'scenes':scenes,'script':script})
+        validate_script_review(evidence,request['language'],script,scenes,
+                               review,topic=request['topic'])
+        if review.get('native_language_quality') is not True:
+            raise ValueError('revised native-language review failed')
         return {'scenes':scenes,'script':script,'review':review}
