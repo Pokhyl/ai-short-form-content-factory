@@ -10,12 +10,31 @@ import fcntl
 import hashlib
 import json
 import os
+import time
 from pathlib import Path
 from uuid import UUID
 
 from .timeline import compile_edit
 
 STAGES=('research','materials','story','voice','alignment','edit','render','audit')
+MAX_PRE_DISPATCH_DEFERRALS=3
+
+
+class PreDispatchUnavailable(RuntimeError):
+    """Verified provider unavailability BEFORE any stage operation was sent.
+
+    Only the adapter's preflight(stage, context) may raise this exception.
+    An error from the stage operation itself is always ambiguous and terminal.
+    """
+    def __init__(self, provider, retry_after_seconds):
+        if not isinstance(provider,str) or not provider.strip():
+            raise ValueError('pre-dispatch provider identity required')
+        if type(retry_after_seconds) is not int or not 1<=retry_after_seconds<=3600:
+            raise ValueError('bounded explicit retry-after seconds required')
+        self.provider=provider.strip()
+        self.retry_after_seconds=retry_after_seconds
+        super().__init__('provider unavailable before stage dispatch')
+
 
 
 def fingerprint(value):
@@ -28,8 +47,9 @@ class ReconciliationRequired(RuntimeError):
 
 
 class Pipeline:
-    def __init__(self, root, adapters, revision):
+    def __init__(self, root, adapters, revision, *, clock=None):
         self.root=Path(root);self.adapters=adapters;self.revision=revision
+        self.clock=clock or time.time
         if len(revision)!=40 or any(c not in '0123456789abcdef' for c in revision):
             raise ValueError('exact code revision required')
 
@@ -77,15 +97,50 @@ class Pipeline:
                 if fingerprint(output)!=state['receipts'].get(stage):
                     raise ValueError('completed stage output changed')
             if state['status']=='complete':return state
-            if state['status']!='ready':
+            if state['status'] not in ('ready','deferred'):
                 raise ReconciliationRequired('claimed or failed stage cannot be repeated')
             stage=state['next_stage']
             expected=list(STAGES[:STAGES.index(stage)])
             if list(state['outputs'])!=expected:raise ValueError('nonconsecutive stage history')
+            context={'id':state['id'],'request':deepcopy(state['request']),
+                     'outputs':deepcopy(state['outputs'])}
+            # A deferred preflight is safe to revisit because no stage call was
+            # made. Unknown results and interrupted checks remain immutable.
+            history=state.setdefault('preflight_deferrals',{})
+            previous=history.get(stage,{})
+            now=int(self.clock())
+            if state['status']=='deferred':
+                if not previous or previous.get('status')!='deferred':
+                    raise ReconciliationRequired('deferred gate receipt missing')
+                if now < previous['next_retry_at']:
+                    return deepcopy(state)
+            gate=getattr(self.adapters,'preflight',None)
+            if gate is not None:
+                # Crash during this gate must NOT silently dispatch later.
+                state['status']='checking';self.save(directory,state)
+                try:
+                    gate(stage,deepcopy(context))
+                except PreDispatchUnavailable as error:
+                    attempts=previous.get('attempts',0)+1
+                    exhausted=attempts>=MAX_PRE_DISPATCH_DEFERRALS
+                    history[stage]={'attempts':attempts,'provider':error.provider,
+                                    'retry_after_seconds':error.retry_after_seconds,
+                                    'next_retry_at':now+error.retry_after_seconds,
+                                    'status':'exhausted' if exhausted else 'deferred'}
+                    state['status']='needs_attention' if exhausted else 'deferred'
+                    if exhausted:state['error_type']='PreDispatchAttemptsExhausted'
+                    self.save(directory,state)
+                    return deepcopy(state)
+                except BaseException as error:
+                    state.update(status='needs_attention',error_type=type(error).__name__)
+                    self.save(directory,state)
+                    raise
+                if previous:
+                    history[stage]={**previous,'status':'resolved'}
+            elif state['status']=='deferred':
+                raise ReconciliationRequired('preflight adapter missing on deferred stage')
             state['status']='running';self.save(directory,state)
             try:
-                context={'id':state['id'],'request':deepcopy(state['request']),
-                         'outputs':deepcopy(state['outputs'])}
                 if stage=='edit':
                     outputs=context['outputs']
                     if outputs['alignment']['audio_sha256'] != outputs['voice']['sha256']:
