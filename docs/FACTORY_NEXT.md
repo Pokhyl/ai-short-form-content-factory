@@ -1,6 +1,42 @@
 # Replacement requested 2026-10-17
 
 
+## Bounded provider 503 recovery checkpoint — 2026-10-17
+
+The exact source Docker image for commit 63de52e was built separately as
+factory-v3:factory-next-63de52e, image sha256
+74ecb192e467b0dfb38f62052c404f3dd2719c9e9c779d963cee93c7a206ed3f.
+All 36 tests ran **inside** that baked image with networking disabled and
+passed. The deployed factory-v3-app was never switched.
+
+A fresh real PL15 job c8944de0-482a-4f9d-8479-990715be0e10 was then
+submitted through the verified free-tier gateway and existing preparation
+budget. During research, Gemini explicitly rejected an invocation with
+503/UNAVAILABLE. The existing PostgreSQL ledger correctly persisted a
+bounded deferred attempt, but factory_next Pipeline v1 incorrectly treated
+PreparationDeferred as an ambiguous terminal needs_attention failure.
+No research output, voice or MP4 was produced, and no provider request was
+replayed. The real job remains immutable and blocked at research.
+Evidence: acceptance/factory-next/pl15-provider-503-20261017.json.
+
+The revised checkpoint system now distinguishes a **verified** model
+rejection from unknown transport failures. Only research, materials and
+story can persist provider_wait with the database-assigned due timestamp.
+A subsequent explicit Pipeline.step() returns unchanged until due.
+At due, the trusted ProviderResumeGate verifies the exact job/revision,
+a matching waiting PostgreSQL deferral and zero started/unknown provider
+calls, then claims the bounded preparation run before continuing. Crashes
+during reconciliation stop as checking_provider (manual reconciliation).
+Real Google TTS and every other non-ledger stage remain non-replayable.
+
+The full source-level factory_next suite passed **44/44** (8 new tests).
+This is not yet an exact-image test of the new recovery revision, nor is
+the database due/resume path verified with a real post-fix 503.
+The previous research/voice failures are NOT unlocked and must NOT be
+resent. No Studio traffic switch or production deployment occurred.
+
+
+
 ## Actual provider PL15 checkpoint and voice review collision — 2026-10-17
 
 An isolated, budgeted normal PL15 diagnostic request

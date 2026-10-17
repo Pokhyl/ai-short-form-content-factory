@@ -1,0 +1,26 @@
+{
+  "job_id": "c8944de0-482a-4f9d-8479-990715be0e10",
+  "date": "2026-10-17",
+  "requested_seconds": 15,
+  "language": "pl",
+  "subject": "How bees pollinate flowers",
+  "source_commit": "63de52e27ce3b50a3072cdba4e29431dbb660b42",
+  "source_image_sha256": "74ecb192e467b0dfb38f62052c404f3dd2719c9e9c779d963cee93c7a206ed3f",
+  "baked_image_unit_tests": {
+    "passed": 36,
+    "failed": 0,
+    "network": "disabled"
+  },
+  "real_operation": {
+    "stage": "research",
+    "status": "needs_attention",
+    "persisted_error_type": "PreparationDeferred",
+    "cause": "Gemini explicit 503/UNAVAILABLE, existing quota ledger scheduled deferred retry",
+    "completed_stages": [],
+    "automatic_retry_performed": false
+  },
+  "fix": "Persist verified model 503 as provider_wait; require original budget ledger due and no ambiguous operation before resume; no TTS retry",
+  "fix_validation": "offline unit tests required; no live resume performed",
+  "previous_failed_job_untouched": true,
+  "production_image_unchanged": true
+}

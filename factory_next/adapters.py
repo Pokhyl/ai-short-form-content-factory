@@ -9,11 +9,17 @@ from copy import deepcopy
 
 
 class FactoryNextAdapters:
-    def __init__(self, preparation, voice, media, *, preflight_gate=None):
+    def __init__(self, preparation, voice, media, *, preflight_gate=None, provider_resume_gate=None):
         self.preparation=preparation
         self.voice_stages=voice
         self.media=media
         self.preflight_gate=preflight_gate
+        self.provider_resume_gate=provider_resume_gate
+
+    def resume_provider_wait(self, stage, context, receipt):
+        if self.provider_resume_gate is None:
+            raise RuntimeError('trusted provider ledger resume gate missing')
+        return self.provider_resume_gate(stage,deepcopy(context),deepcopy(receipt))
 
     def preflight(self, stage, context):
         if self.preflight_gate is not None:
