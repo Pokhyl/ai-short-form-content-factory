@@ -41,6 +41,18 @@ Remaining before ANY traffic switch:
 Next step: connected adapter contract tests and real saved-media render before
 provider integration; preserve explicit list of unproven boundaries above.
 
+## Composed stage adapter checkpoint — 2026-10-17
+
+factory_next/adapters.py now composes the existing preparation (research,
+materials, story), voice (synthesis and alignment), and media (render and
+independent audit) adapters behind the complete eight-stage Pipeline
+interface. A separate optional preflight gate can stop the entire stage
+**before** dispatch. tests/factory_next/test_adapters.py covers ordered
+checkpoint receipt execution and pre-dispatch gate behavior with controlled
+adapters. The live Studio intake is NOT routed to this composed adapter yet.
+No claim is made that actual provider budgets, restart recovery of ambiguous
+requests, or natural-duration correction are fully integrated.
+
 ## Durable pre-dispatch recovery checkpoint — 2026-10-17
 
 The replacement pipeline now has persisted **pre-dispatch only** provider
