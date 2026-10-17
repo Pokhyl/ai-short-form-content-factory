@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-17",
+  "run_type": "real_provider_PL15",
+  "job_id": "89764416-aafe-4e81-a8e4-572e77feb56b",
+  "source_revision": "da6472ecb52ca6add6b616015d06b1ace56c7740",
+  "request": {
+    "language": "pl",
+    "seconds": 15
+  },
+  "completed_stages": [
+    "research",
+    "materials",
+    "story"
+  ],
+  "approved_distinct_photos": 29,
+  "reviewed_story_scenes": 3,
+  "reviewed_story_words": 73,
+  "story_native_review_passed": true,
+  "audio_attempt_1": {
+    "actual_mp3_seconds": 38.736,
+    "bytes": 154944,
+    "sha256": "1c27835bcd5954417af041a84aa75cf1e4622583321c2fcf65e9790a96ad9093",
+    "path_label": "voiceover-attempts/job/attempt-1.mp3"
+  },
+  "failure": {
+    "stage": "voice",
+    "checkpoint_status": "needs_attention",
+    "error_type": "UnsafeProviderDeferral",
+    "cause": "Gemini explicit 503/UNAVAILABLE during source-grounded measured-duration rewrite",
+    "retry_authorized": false,
+    "replayed": false
+  },
+  "final_mp3_exists": false,
+  "final_mp4_exists": false,
+  "studio_switched": false,
+  "recovery_constraint": "Need exact-ledger/archived-audio reconciliation; do not repeat first Google TTS request or old pipeline stage."
+}
