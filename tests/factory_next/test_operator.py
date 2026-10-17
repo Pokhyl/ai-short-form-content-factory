@@ -1,5 +1,5 @@
 """Operator CLI contract; no network, credentials or provider calls."""
-from contextlib import redirect_stdout
+from contextlib import redirect_stdout, redirect_stderr
 from io import StringIO
 import json
 import os
@@ -9,7 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 from uuid import uuid4
 
-from factory_next.operator import progress,run
+from factory_next.operator import progress,run,main
 from factory_next.pipeline import Pipeline,PreDispatchUnavailable,ReconciliationRequired
 
 
@@ -111,6 +111,16 @@ class OperatorTests(unittest.TestCase):
                     returned=run(['--data-root',directory,'status',job])
             self.assertEqual(returned,0)
             self.assertEqual(json.loads(output.getvalue())['next_stage'],'research')
+
+    def test_help_exits_successfully_without_false_error(self):
+        with patch('sys.argv',['factory_next.operator','--help']):
+            output=StringIO();errors=StringIO()
+            with redirect_stdout(output),redirect_stderr(errors):
+                with self.assertRaises(SystemExit) as finished:
+                    main()
+        self.assertEqual(finished.exception.code,0)
+        self.assertIn('start',output.getvalue())
+        self.assertEqual(errors.getvalue(),'')
 
     def test_revision_mismatch_or_bad_arguments_rejected_before_dispatch(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -112,8 +112,9 @@ def run(argv=None, *, runtime_factory=None):
 def main():
     try:
         return run()
-    except BaseException as error:
-        # No raw provider request, token, model payload or secret in logs.
+    except Exception as error:
+        # Never reinterpret argparse --help/SystemExit(0) or Ctrl-C as
+        # a failed provider operation. Do not expose secrets in logs.
         print(json.dumps({'status':'error',
             'error_type':type(error).__name__,
             'message':'execution stopped; inspect immutable checkpoint and ledger before retry'}),
