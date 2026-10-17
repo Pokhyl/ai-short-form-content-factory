@@ -123,5 +123,5 @@ def rebind_adjacent_literal_mentions(contexts, spans):
                   and (span['end']==selected['start'] or span['start']==selected['end'])
                   and mention in span['text']]
         if len(adjacent)==1:
-            row['support_span_ids']=[adjacent[0]['id']]
+            row['support_span_ids']=[ids[0],adjacent[0]['id']]
     return repaired
