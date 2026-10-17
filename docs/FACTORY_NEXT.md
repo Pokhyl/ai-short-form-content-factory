@@ -1,5 +1,49 @@
 # Replacement requested 2026-10-17
 
+
+## Actual provider PL15 checkpoint and voice review collision — 2026-10-17
+
+An isolated, budgeted normal PL15 diagnostic request
+04a59c6f-4f9a-4ad2-a6e5-076e5b882f53 ran with exact source revision
+27f8e5e54deff10a2d93e9d64e3b60fcef78984d. The existing verified
+free-only Gemini gateway and existing provider/quota ledger were used.
+No normal Studio intake was switched, and unrelated projects were untouched.
+
+Connected provider evidence, not controlled fixtures:
+- Research completed: 3 source-grounded facts, 3 essential facts,
+  3 photo queries and 3 source records.
+- Materials completed: 23 reviewed, distinct byte-identified photos
+  sourced across Wikimedia, Pexels and Pixabay.
+- Story completed: 3 source-bound scenes / 66 Polish words; independent
+  native-language review passed.
+- Google TTS attempt 1 was actually synthesized, measured and archived:
+  33,864 ms (requested 15,000 ms), SHA-256
+  b4ba32ef6fbf4a8e06b9faf4853eefc42b569d7d2cf8d0a2ba57117eb365735b.
+  This requires a shorter source-grounded reviewed narration.
+- The voice correction draft generated, but its independent script review
+  reused the original script-review ledger key with different model input.
+  Existing factory_v3.claim_preparation_call correctly rejected the
+  conflicting identity; the Pipeline checkpoint became needs_attention.
+  No second TTS synthesis, no final MP3, no MP4 and NO replay of this ID.
+
+Generic implementation fix (not deployed/real-provider accepted):
+factory_next.preparation.VoiceRevisionCalls namespaces both Gemini
+revision and independent factual/native review claims under
+next-voice-correction:2, including explicitly deferred retry identities.
+It keeps the *same* BudgetedCalls and the same free-tier enforcement;
+the original story review receipt is never changed. The live failure
+class is reproduced by tests/factory_next/test_voice_revision_claims.py.
+All 36 local factory_next tests pass, including offline HTTP and
+real-byte MP4 audit. Record:
+acceptance/factory-next/pl15-first-real-20261017.json.
+
+The failed job remains immutable. Do NOT resend its voice or assume its
+correction is accepted. Before the next normal paid/free provider smoke:
+review this generic fix, check full suites, build the exact protected
+image when server disk permits, and separately authorize/verify a new
+immutable request. Studio production is still the old image.
+
+
 The owner explicitly requested a complete rebuild. Development now targets
 `factory_next`; the previous dual-cadence candidate is tested but NOT deployed.
 Live Studio and existing output/media/accounting remain intact.

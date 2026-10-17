@@ -4,7 +4,7 @@ Provider transports, free-only accounting, source proofs and image inspection
 remain shared infrastructure. Legacy paragraph repair and estimated visual-pool
 selection are deliberately absent from this orchestration.
 """
-from copy import deepcopy
+from copy import deepcopy, copy
 
 from factory_v3.gemini import obj, array, string, validate_json
 from factory_v3.grounding import validate_evidence, validate_script_review
@@ -16,6 +16,27 @@ from material_first.photo_identity import pixels, same_photo
 from material_first.presentation import TOPIC_POLICY, minimum_shots
 from material_first.visuals import candidate_limit
 from .duration import revision_word_target
+
+
+class VoiceRevisionCalls:
+    """Use unique durable keys for all calls in reviewed voice correction.
+
+    The original story and its independent review use generic model keys.
+    A corrected script has different model input; reusing the original
+    review key would be rejected by the preparation ledger.
+    All claims still flow through the same bounded ledger.
+    """
+    PREFIX='next-voice-correction:2:'
+
+    def __init__(self, underlying):
+        self.underlying=underlying
+
+    def run(self, key, kind, public_request, invoke, **kwargs):
+        return self.underlying.run(self.PREFIX+key,kind,public_request,invoke,**kwargs)
+
+    def defer_unavailable(self, failed_key, next_key, delay):
+        return self.underlying.defer_unavailable(
+            self.PREFIX+failed_key,self.PREFIX+next_key,delay)
 
 
 class PreparationStages:
@@ -130,7 +151,11 @@ class PreparationStages:
             "The next synthesized MP3 is independently measured and strictly "
             "rejected if it misses the target duration."
         )
-        draft,_=self.operations.gemini.generate(
+        # Distinct input requires an independent ledger key for both
+        # rewrite generation and factual/native-language review.
+        revision_gemini=copy(self.operations.gemini)
+        revision_gemini.calls=VoiceRevisionCalls(self.operations.gemini.calls)
+        draft,_=revision_gemini.generate(
             'next-measured-duration-revision',instruction,
             {**request,'evidence':evidence,'materials':compact_materials(photos),
              'previous_reviewed_scenes':original['scenes'],
@@ -140,7 +165,7 @@ class PreparationStages:
         scenes=validate_story(request,evidence,photos,draft)
         script=' '.join(s['narration'] for s in scenes)
         validate_native_surface(request['language'],script)
-        review=self.operations.review_script(
+        review=revision_gemini.review_script(
             {**request,'evidence':evidence,'materials':photos,
              'scenes':scenes,'script':script})
         validate_script_review(evidence,request['language'],script,scenes,

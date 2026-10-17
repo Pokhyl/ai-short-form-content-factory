@@ -1,0 +1,41 @@
+{
+  "kind": "isolated_real_provider_stage_checkpoint",
+  "date": "2026-10-17",
+  "job_id": "04a59c6f-4f9a-4ad2-a6e5-076e5b882f53",
+  "source_revision": "27f8e5e54deff10a2d93e9d64e3b60fcef78984d",
+  "language": "pl",
+  "requested_seconds": 15,
+  "execution_status": "needs_attention",
+  "blocked_stage": "voice",
+  "finished_stages": [
+    "research",
+    "materials",
+    "story"
+  ],
+  "research": {
+    "fact_count": 3,
+    "required_fact_count": 3,
+    "query_count": 3,
+    "source_count": 3
+  },
+  "materials": {
+    "approved_photo_count": 23,
+    "distinct_sha_count": 23
+  },
+  "story": {
+    "scene_count": 3,
+    "word_count": 66,
+    "native_review_passed": true
+  },
+  "voice": {
+    "first_attempt_mp3_sha256": "b4ba32ef6fbf4a8e06b9faf4853eefc42b569d7d2cf8d0a2ba57117eb365735b",
+    "first_attempt_duration_ms": 33864,
+    "final_audio_absent": true,
+    "second_attempt_not_sent": true,
+    "failed_error_type": "RaiseException"
+  },
+  "root_cause": "second corrected-script review reused original script-review ledger key",
+  "continuation_policy": "failed job immutable; do not replay; verify generic fix offline before new smoke",
+  "production_switched": false,
+  "user_acceptance": false
+}
