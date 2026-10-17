@@ -1,6 +1,33 @@
 # Replacement requested 2026-10-17
 
 
+## Pre-story quota admission — 2026-10-17
+
+Postmortem of the PL15 real-provider job
+18ff1836-52a8-4003-9d26-12d98a8e2ce5 showed that a voice-only
+quota gate permitted the fully reviewed story to consume all 16 of 16
+Gemini calls, leaving no rewrite/review capacity for an actually
+measured Google TTS narration. No TTS was sent and no final video exists.
+
+The next-only NextBudgetGate now checks remaining durable PostgreSQL
+ledger capacity before story, without claiming a model operation.
+The minimum is five unused Gemini calls: one initial source/photo-
+grounded story, one independent native/factual review, one optional
+separately metered completed-JSON beat-count correction, and two
+preserved for a measured voice rewrite and its independent review.
+Other stages retain their earlier admission; voice still requires
+two unused calls, and every gate forbids started/unknown operations.
+A profile or source revision mismatch blocks all stages. Failed
+preflight stops before any new provider send.
+
+Five is a minimum reserve at the stage boundary, not a guarantee
+that the vendor will be available: explicit 503 retries also consume
+budget, and can still make a request ineligible to continue. The gate
+does NOT enlarge budgets, bypass validated input or grandfather older
+jobs. Legacy factory_v3 budgets and execution are unchanged.
+This correction is verified on fixtures/offline tests; no new real
+provider run, natural speech or release acceptance is implied.
+
 ## Explicit next-only Gemini budget and pre-voice headroom — 2026-10-17
 
 A fresh real PL15 job 18ff1836-52a8-4003-9d26-12d98a8e2ce5 ran

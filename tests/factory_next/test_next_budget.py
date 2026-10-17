@@ -8,8 +8,11 @@ from uuid import uuid4
 from material_first.operations import preparation_budgets
 from factory_v3.runtime import Runtime
 from factory_next.budget import (PROFILE,EXTRA_GEMINI_CALLS,
-                                 MIN_VOICE_CORRECTION_HEADROOM,next_preparation_budgets)
+                                 MIN_VOICE_CORRECTION_HEADROOM,
+                                 MIN_STORY_AND_VOICE_HEADROOM,
+                                 next_preparation_budgets)
 from factory_next.wiring import register_next,NextBudgetGate
+from factory_next.pipeline import Pipeline, fingerprint, ReconciliationRequired
 
 
 class SavedPreparations:
@@ -108,9 +111,48 @@ class HeadroomGateTests(unittest.TestCase):
         for used,unknown in ((18,0),(19,0),(17,1)):
             with self.subTest(used=used,unknown=unknown):
                 runtime=FakeRuntime(limit=19,used=used,unknown=unknown)
-                with self.assertRaisesRegex(ValueError,'insufficient reviewed'):
+                with self.assertRaisesRegex(ValueError,'insufficient reserved'):
                     NextBudgetGate(runtime)('voice',{'id':str(uuid4())})
                 self.assertEqual(len(runtime.ledger.calls),1)
+
+    def test_story_requires_draft_review_one_repair_and_voice_review_headroom(self):
+        self.assertEqual(MIN_STORY_AND_VOICE_HEADROOM,5)
+        # Exactly 5 is permitted; 4 is not. This check runs before any
+        # draft/model call and does not consume a Gemini quota claim.
+        runtime=FakeRuntime(limit=19,used=14)
+        job=str(uuid4())
+        gate=NextBudgetGate(runtime)
+        gate('story',{'id':job,'request':{},'outputs':{}})
+        self.assertEqual(runtime.ledger.calls[0][1],(job,job,job))
+        self.assertEqual(len(runtime.ledger.calls),1)
+        runtime=FakeRuntime(limit=19,used=15)
+        with self.assertRaisesRegex(ValueError,'before story'):
+            NextBudgetGate(runtime)('story',{'id':job,'request':{},'outputs':{}})
+        self.assertEqual(len(runtime.ledger.calls),1)
+
+    def test_in_progress_call_blocks_story_as_well_as_voice(self):
+        runtime=FakeRuntime(limit=19,used=0,unknown=1)
+        with self.assertRaisesRegex(ValueError,'before story'):
+            NextBudgetGate(runtime)('story',{'id':str(uuid4())})
+        self.assertEqual(len(runtime.ledger.calls),1)
+
+    def test_preflight_never_queries_budget_during_photo_research(self):
+        runtime=FakeRuntime(limit=19,used=19)
+        gate=NextBudgetGate(runtime)
+        job=str(uuid4())
+        for stage in ('research','materials','alignment','render','audit'):
+            gate(stage,{'id':job})
+        self.assertEqual(runtime.ledger.calls,[])
+
+    def test_regression_last_real_pl15_story_guard_prevents_wasted_draft(self):
+        # The saved 2026-10-17 PL15 job consumed 16 of 16 by voice.
+        # Simulate the penultimate stage: with only four remaining calls,
+        # beginning the story would permit a script but not protect the
+        # measured voice correction. The guard blocks *before* first send.
+        runtime=FakeRuntime(limit=16,used=12)
+        with self.assertRaisesRegex(ValueError,'before story'):
+            NextBudgetGate(runtime)('story',{'id':str(uuid4())})
+        self.assertEqual(len(runtime.ledger.calls),1)
 
     def test_all_stages_require_matching_immutable_profile_and_revision(self):
         runtime=FakeRuntime(profile='legacy')
@@ -122,6 +164,41 @@ class HeadroomGateTests(unittest.TestCase):
             'source_revision':'a'*40,'request':{'factory_next_budget_profile':PROFILE}}})()
         with self.assertRaisesRegex(ValueError,'profile mismatch'):
             NextBudgetGate(runtime)('research',{'id':str(uuid4())})
+
+
+
+class CheckpointedBudgetAdmission(unittest.TestCase):
+    def test_pipeline_story_never_sends_with_only_four_remaining_calls(self):
+        with tempfile.TemporaryDirectory() as root:
+            job=str(uuid4())
+            runtime=FakeRuntime(limit=19,used=15)
+            class Adapter:
+                sent=0
+                def preflight(self,stage,context):
+                    return NextBudgetGate(runtime)(stage,context)
+                def story(self,context):
+                    self.sent+=1
+                    raise AssertionError('Gemini story must not be sent')
+            adapter=Adapter()
+            pipeline=Pipeline(Path(root),adapter,'b'*40)
+            pipeline.create(job,'Checked source topic','pl',15)
+            state=pipeline.snapshot(job)
+            for stage in ('research','materials'):
+                output={'saved_stage':stage}
+                state['outputs'][stage]=output
+                state['receipts'][stage]=fingerprint(output)
+            state['next_stage']='story'
+            pipeline.save(pipeline.directory(job),state)
+            with self.assertRaisesRegex(ValueError,'before story'):
+                pipeline.step(job)
+            final=pipeline.snapshot(job)
+            self.assertEqual(final['status'],'needs_attention')
+            self.assertEqual(final['next_stage'],'story')
+            self.assertNotIn('story',final['outputs'])
+            self.assertEqual(adapter.sent,0)
+            self.assertEqual(len(runtime.ledger.calls),1)
+            with self.assertRaises(ReconciliationRequired):
+                pipeline.step(job)
 
 
 if __name__=='__main__':unittest.main()

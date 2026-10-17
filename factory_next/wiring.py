@@ -14,7 +14,7 @@ from .adapters import FactoryNextAdapters
 from .media import MediaStages
 from .preparation import PreparationStages
 from .voice import VoiceStages
-from .budget import PROFILE, MIN_VOICE_CORRECTION_HEADROOM
+from .budget import PROFILE, MIN_VOICE_CORRECTION_HEADROOM, MIN_STORY_AND_VOICE_HEADROOM
 
 
 class ProviderResumeGate:
@@ -79,7 +79,7 @@ class NextBudgetGate:
         if (record.get('source_revision')!=self.runtime.revision or
                 record.get('request',{}).get('factory_next_budget_profile')!=PROFILE):
             raise ValueError('factory_next immutable budget profile mismatch')
-        if stage!='voice':
+        if stage not in ('story','voice'):
             return
         receipt=self.runtime.ledger._call(
             "SELECT jsonb_build_object("
@@ -87,13 +87,15 @@ class NextBudgetGate:
             "'used', (SELECT count(*) FROM factory_v3.preparation_calls WHERE preparation_id=%s::uuid AND kind='gemini'),"
             "'unknown', (SELECT count(*) FROM factory_v3.preparation_calls WHERE preparation_id=%s::uuid AND state IN ('started','unknown')))",
             (context['id'],context['id'],context['id']))
+        required=(MIN_STORY_AND_VOICE_HEADROOM if stage=='story'
+                  else MIN_VOICE_CORRECTION_HEADROOM)
         if (not isinstance(receipt,dict) or
                 type(receipt.get('limit')) is not int or
                 type(receipt.get('used')) is not int or
                 type(receipt.get('unknown')) is not int or
-                receipt['unknown']!=0 or
-                receipt['limit']-receipt['used']<MIN_VOICE_CORRECTION_HEADROOM):
-            raise ValueError('insufficient reviewed Gemini budget before Google TTS')
+                receipt['limit']<0 or receipt['used']<0 or receipt['unknown']!=0 or
+                receipt['limit']-receipt['used']<required):
+            raise ValueError('insufficient reserved Gemini budget before '+stage)
 
 
 def connected_adapters(runtime, job_id, *, preflight_gate=None):
