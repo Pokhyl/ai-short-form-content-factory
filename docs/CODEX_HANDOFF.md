@@ -1,3 +1,11 @@
+## Active complete rebuild — 2026-10-17
+
+Owner explicitly authorized full rebuild after rejecting another narrow patch. New factory_next package: checkpointed pipeline, complete photo corpus preparation, direct native story plus independent review, natural voice with shared quota reservation, measured alignment/edit compiler, existing whole-photo rendering and independent actual media audit. Seven controlled tests pass (16 duration/language combinations inside timeline test). No provider calls, new MP4, deployment or production acceptance for new core.
+
+Read docs/FACTORY_NEXT.md for architecture and concrete remaining work: measured-duration correction, budget/provider recovery wiring, saved actual media connected check, normal matrix, Studio progress/history routing. Current adapters deliberately are not hooked into public intake. Voice alone does NOT guarantee exact duration; compiler rejects mismatches rather than stretching. Current checkpoint engine stops ambiguous interrupted stages for reconciliation; transient deferred recovery still needs wiring. Do not mistake scaffolding/controlled tests for a finished replacement.
+
+Previous dual-cadence image completed360 exact-image checks (233material+127core, zero skips), image46d7eb40aed6747e65bd4d53b891a04178899adfaa4ca98551609abb3b9c2076, revision9dda131109b5f38090b66377937ddf64f1e18a33; NOT deployed. Buildjob_ce1d394b6eda succeeded. Live remains4811eae. Saved downstream diagnostic17db204e remains unused; stop this old execution plan pending replacement integration. All unrelated dirty files remain untouched. No active background build.
+
 ## Active continuation — 2026-10-16 late evening
 
 LIVE 4811eae0fa6f1f21a753e1a50ca80dacd1de65a3 / image0bb0dc846f62689d9de6d108f5ff610e7486b5c4bbd4912b5438bee5b74d2890. Durable provider deferrals deployed with additive SQL; 357 exact-image checks and real isolated PostgreSQL recovery/concurrency checks passed. Protected preexisting factory/n8n/settings/supporting services unchanged; public revision and gateway403 verified. No active normal job.

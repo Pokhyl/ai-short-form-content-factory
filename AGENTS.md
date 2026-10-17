@@ -1,3 +1,7 @@
+## Owner-requested complete rebuild — 2026-10-17
+
+The owner explicitly requested "переделывай все полностью". Active development is factory_next, documented in docs/FACTORY_NEXT.md. Preserve live Studio, existing media, unrelated projects, free-only budgets and old terminal IDs. Do not deploy the previous dual-cadence candidate as if it fulfills the new request. New staged core and adapters are implemented but not production-wired or accepted. Complete natural-duration correction, provider/recovery wiring, actual connected media checks and Studio migration before switching traffic. No project-ready claim from isolated tests.
+
 ## Current-state pointer — 2026-10-15
 
 Read the top continuation checkpoint in `docs/CODEX_HANDOFF.md` and `docs/RELEASE_GATE.md` before acting. Chronological entries below are history; do not use their stale image IDs, model settings or next-run instructions as current state.
