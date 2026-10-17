@@ -110,7 +110,7 @@ function safeLink(url,words){
   try{const u=new URL(url);if(!["http:","https:"].includes(u.protocol)||u.username||u.password)throw Error();a.href=u.href;}
   catch{}return a;
 }
-async function history(){
+async function loadJobHistory(){
  const items=await request(API),root=get("history");root.replaceChildren();
  if(!items.length){const p=document.createElement("p");p.textContent="Пока нет видео. Введите тему и нажмите «Создать видео».";p.className="muted";root.append(p);return items;}
  for(const item of items){
@@ -155,7 +155,7 @@ async function show(id){
   const url=new URL(location.href);url.searchParams.set("request",id);window.history.replaceState(null,"",url);
   for(const b of get("history").querySelectorAll("button"))b.setAttribute("aria-current",String(b.dataset.id===id));
   if(!ready&&!failure){
-    timer=setTimeout(()=>Promise.all([history(),show(id)]).catch(report),5000);
+    timer=setTimeout(()=>Promise.all([loadJobHistory(),show(id)]).catch(report),5000);
   }
 }
 get("request-form").onsubmit=async event=>{
@@ -166,14 +166,14 @@ get("request-form").onsubmit=async event=>{
   try{
     const result=await request(API,{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({topic,language,seconds})});
-    await history();await show(result.id);
+    await loadJobHistory();await show(result.id);
   }catch(e){report(e);}
   finally{get("submit").disabled=false;get("submit").textContent="Создать видео";}
 };
-get("refresh").onclick=()=>Promise.all([history(),selected&&show(selected)]).catch(report);
+get("refresh").onclick=()=>Promise.all([loadJobHistory(),selected&&show(selected)]).catch(report);
 (async()=>{
  try{
-   const items=await history(),parameter=new URLSearchParams(location.search).get("request");
+   const items=await loadJobHistory(),parameter=new URLSearchParams(location.search).get("request");
    const requested=parameter&&/^[0-9a-f-]{36}$/.test(parameter)?parameter:null;
    if(requested&&items.some(x=>x.id===requested))await show(requested);
    else if(items.length)await show(items[0].id);

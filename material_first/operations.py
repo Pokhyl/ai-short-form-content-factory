@@ -167,10 +167,15 @@ class Operations:
                     raise ValueError('photo search repair changed source-backed facts')
                 for role, row in original['photo_contexts'].items():
                     repaired = result['photo_contexts'][role]
-                    for field in ('fact_ids', 'support_span_ids', 'source_mention'):
-                        if repaired.get(field) != row.get(field):
-                            raise ValueError('photo search repair changed '+role+' source bindings')
-                validate_search_hints(result['photo_contexts'], request['topic'], spans)
+                    if repaired.get('fact_ids') != row.get('fact_ids'):
+                        raise ValueError('photo search repair changed '+role+' fact bindings')
+                # A corrected source mention may legitimately use a different
+                # span/language. Verify the replacement against real fetched
+                # source text; facts and required fact IDs remain frozen.
+                from .photo_contexts import bind_english_objects, validate_context_mentions
+                normalized = bind_english_objects(result['photo_contexts'])
+                validate_context_mentions(normalized, spans)
+                validate_search_hints(normalized, request['topic'], spans)
         if self.documented_contexts and measured_feedback:
             from .research_review import reviewed_brief
             # Provisional hints reject explicit invisible depictions locally.

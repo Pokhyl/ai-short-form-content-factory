@@ -80,7 +80,8 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
                 raise ValueError('photo search repair changed source-backed facts')
             for role, row in rejected_draft['photo_contexts'].items():
                 repaired = draft['photo_contexts'][role]
-                for field in ('fact_ids', 'support_span_ids', 'source_mention'):
-                    if repaired.get(field) != row.get(field):
-                        raise ValueError('photo search repair changed '+role+' source bindings')
+                if repaired.get('fact_ids') != row.get('fact_ids'):
+                    raise ValueError('photo search repair changed '+role+' fact bindings')
+                # Span/mention rebinding is checked against actual quoted source
+                # spans by validate_context_mentions on the next iteration.
     raise AssertionError('bounded research review exhausted')
