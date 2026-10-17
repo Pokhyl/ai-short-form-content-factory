@@ -58,6 +58,31 @@ class ServerTests(unittest.TestCase):
             with self.assertRaisesRegex(OverflowError,"already in progress"):
                 self.app.create({"topic":"three","language":"uk","seconds":60})
 
+    def test_rejected_post_closes_http_connection_safely(self):
+        import http.client
+        import threading
+        from http.server import ThreadingHTTPServer
+        server=ThreadingHTTPServer(("127.0.0.1",0),ss.make_handler(self.app))
+        self.addCleanup(server.server_close)
+        thread=threading.Thread(target=server.serve_forever,daemon=True)
+        thread.start()
+        self.addCleanup(server.shutdown)
+        connection=http.client.HTTPConnection("127.0.0.1",server.server_address[1],timeout=3)
+        self.addCleanup(connection.close)
+        body=b'{"topic":"sample","language":"pl","seconds":15}'
+        connection.request("POST","/factory-next/api/jobs",body=body,headers={
+            "Content-Type":"application/json","Origin":"https://invalid.example"})
+        response=connection.getresponse()
+        self.assertEqual(response.status,403)
+        self.assertEqual(response.getheader("Connection"),"close")
+        response.read()
+        # Reusing the client must establish a clean HTTP request: the rejected
+        # JSON payload cannot become a prefix of the following GET.
+        connection.request("GET","/factory-next/api/jobs")
+        response=connection.getresponse()
+        self.assertEqual(response.status,200)
+        self.assertEqual(response.read(),b"[]")
+
     def test_render_video_cannot_be_served_without_pass(self):
         with patch.object(ss,"register_next",return_value={"created":True}):
             new=self.app.create({"topic":"Custom","language":"ru","seconds":45})

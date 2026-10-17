@@ -283,6 +283,8 @@ def make_handler(app):
             self.send_header("Cache-Control","no-store")
             self.send_header("X-Content-Type-Options","nosniff")
             self.send_header("X-Frame-Options","DENY")
+            if self.close_connection:
+                self.send_header("Connection","close")
             for key,value in extra or ():
                 self.send_header(key,value)
             self.end_headers()
@@ -345,6 +347,9 @@ def make_handler(app):
                 self.reply(404,{"error":"not found"})
 
         def do_POST(self):
+            # Invalid JSON/Origin must never leave an unread request body on a
+            # keep-alive connection: Caddy could interpret it as the next GET.
+            self.close_connection=True
             path=urlsplit(self.path).path
             if path!=PREFIX+"/api/jobs":
                 return self.reply(404,{"error":"not found"})
