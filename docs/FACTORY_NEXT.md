@@ -141,3 +141,32 @@ that volume. Remaining work before traffic switch is the provider-budget and
 safe stage-reconciliation implementation, measured-duration correction with
 stored attempts, actual saved-provider media/voice connected acceptance when
 available, normal language/duration matrix, Studio routing, and owner review.
+
+
+## Isolated real media-worker HTTP integration — 2026-10-17
+
+The full factory_next source test suite completed **29/29 PASS** (including\nthe three isolated actual-worker HTTP integration tests).\n\ntests/factory_next/test_worker_http.py starts the **real** Python HTTP
+handler from services/media-worker/server.py on a loopback-only ephemeral
+port, with **every** media storage root redirected to a fresh disposable
+directory. It drives VoiceStages via the real JSONHTTP and WorkerAdapters
+transport, without touching the running media-worker, any Docker volume,
+production credentials or Google/Gemini provider endpoints.
+
+Verified with real FFmpeg-encoded MP3 bytes:
+- First fitting voice: probe -> exclusive candidate create -> promote to final;
+  SHA-256 and measured duration match, 409 on duplicate cannot overwrite.
+- First too short, second fitting: two quota reservations/commits, independent
+  retained attempt audio files and exclusive promotion of only the winner.
+- Full eight-stage checkpointed Pipeline: controlled source and photo facts,
+  real local HTTP voice save, **controlled** alignment timings (no ASR),
+  measured edit, real 1080x1920 H.264/AAC whole-photo MP4 rendering and
+  independent file-level audit. Exact 15-second duration and all audit gates
+  passed; the only TTS provider call was a local recorded-audio fixture.
+
+Scope is **offline technical integration**, not finished product acceptance.
+All photographs and sound in this test are synthetic, upstream research/review
+and ASR are fixtures, and the live worker service was never modified.
+Still required: full real-provider story and photo evidence review, actual
+Google TTS and ASR, measured-duration correction on real spoken audio,
+normal PL15/EN30/RU45/UK60 cases, Studio routing, exact Docker image build,
+and protected real output acceptance. No production deployment occurred.
