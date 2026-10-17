@@ -41,6 +41,30 @@ Remaining before ANY traffic switch:
 Next step: connected adapter contract tests and real saved-media render before
 provider integration; preserve explicit list of unproven boundaries above.
 
+## Durable pre-dispatch recovery checkpoint — 2026-10-17
+
+The replacement pipeline now has persisted **pre-dispatch only** provider
+deferrals via the optional adapters.preflight(stage, context) contract and
+PreDispatchUnavailable(provider, retry_after_seconds). The runner claims a
+checking checkpoint before calling preflight. Only a typed, explicitly
+bounded unavailability response returned there can become deferred. Due
+rechecks require another explicit step() call; no sleep or background retry
+loop is introduced. Each stage is capped at three preflight deferrals, with
+attempt counts, provider identity and next-retry epoch retained in the
+fsynced state. Unknown/checking/running and all after-dispatch failures
+(including a PreDispatchUnavailable raised by an actual stage method) remain
+blocked for operator reconciliation and are **never re-sent** automatically.
+Previous completed-stage output fingerprints are checked before every revisit.
+
+tests/factory_next/test_recovery.py covers pre-dispatch due/resume, limit,
+unexpected preflight failure, interrupted claim, after-send failure, corrupted
+prior checkpoint, and invalid retry metadata. The full local factory_next suite
+passed 14/14 (including the real FFmpeg file-level integration test). This
+does **not** mean provider recovery is live: no production adapter currently
+supplies the non-dispatching preflight contract, and no durable per-provider
+call ledger or Studio due-work scheduler is connected. No network provider,
+TTS or normal production job was invoked. Production remains unchanged.
+
 ## Offline file-level integration checkpoint — 2026-10-17
 
 `tests/factory_next/test_media.py` exercises the replacement measured edit,
