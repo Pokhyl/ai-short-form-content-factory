@@ -3,7 +3,7 @@ from copy import deepcopy
 from factory_v3.gemini import obj, string, BOOL, validate_json
 from factory_v3.grounding import validate_evidence
 from .source_spans import bind_support
-from .photo_contexts import bind_english_objects, validate_context_mentions, validate_search_hints, source_catalog_references
+from .photo_contexts import bind_english_objects, validate_context_mentions, validate_search_hints, source_catalog_references, rebind_adjacent_literal_mentions
 
 
 def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_photos=True):
@@ -16,6 +16,7 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
         try:
             validate_json(draft, schema)
             normalized={**draft,'photo_contexts':bind_english_objects(draft['photo_contexts'])}
+            normalized['photo_contexts']=rebind_adjacent_literal_mentions(normalized['photo_contexts'],spans)
             validate_context_mentions(normalized['photo_contexts'],spans)
             validate_search_hints(normalized['photo_contexts'],request['topic'],spans)
             evidence=bind_support(sources,spans,draft['facts'])

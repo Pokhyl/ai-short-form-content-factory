@@ -98,3 +98,30 @@ def bind_english_objects(contexts):
     return {role:{**{k:v for k,v in row.items() if k!='english_photo_object'},
                   'subject':row['english_photo_object'], 'query':row['english_photo_object']}
             for role,row in contexts.items()}
+
+
+def rebind_adjacent_literal_mentions(contexts, spans):
+    """Use only a directly neighboring span of the SAME original source.
+
+    A model may cite a sentence immediately after the object's literal name.
+    Never invent a name, alter a fact, or rebind to a distant/context-free span.
+    Any ambiguous match remains for the normal fail-closed validation.
+    """
+    from copy import deepcopy
+    by_id={span['id']:span for span in spans}
+    repaired=deepcopy(contexts)
+    for row in repaired.values():
+        ids=row.get('support_span_ids',[])
+        mention=row.get('source_mention','')
+        if len(ids)!=1 or not isinstance(mention,str) or not 3<=len(mention)<=160:
+            continue
+        selected=by_id.get(ids[0])
+        if selected is None or mention in selected['text']:
+            continue
+        adjacent=[span for span in spans
+                  if span['source_id']==selected['source_id']
+                  and (span['end']==selected['start'] or span['start']==selected['end'])
+                  and mention in span['text']]
+        if len(adjacent)==1:
+            row['support_span_ids']=[adjacent[0]['id']]
+    return repaired
