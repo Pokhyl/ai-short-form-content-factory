@@ -174,8 +174,14 @@ class Operations:
                 # source text; facts and required fact IDs remain frozen.
                 from .photo_contexts import bind_english_objects, validate_context_mentions
                 normalized = bind_english_objects(result['photo_contexts'])
-                validate_context_mentions(normalized, spans)
-                validate_search_hints(normalized, request['topic'], spans)
+                if not measured_feedback:
+                    validate_context_mentions(normalized, spans)
+                    validate_search_hints(normalized, request['topic'], spans)
+                # For the bounded measured-voice research path, a repaired
+                # hint with an invalid span or source mention is provisional.
+                # reviewed_brief independently validates the real span catalog
+                # and can issue its own limited, uniquely claimed correction;
+                # an invalid final result still fails closed.
         if self.documented_contexts and measured_feedback:
             from .research_review import reviewed_brief
             # Provisional hints reject explicit invisible depictions locally.

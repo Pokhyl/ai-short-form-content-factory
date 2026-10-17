@@ -38,7 +38,7 @@ def contexts(spans,*,repaired):
 
 
 class Model:
-    def __init__(self,sources,repaired=None):
+    def __init__(self,sources,repaired=None, *, refuse_correction=False):
         spans=source_spans(sources)
         facts=[{"id":"f"+str(i+1),"text":"Andromeda has observable stars.",
                 "support":[{"span_id":spans[i]["id"]}]} for i in range(3)]
@@ -48,6 +48,8 @@ class Model:
         self.repaired["photo_contexts"]=contexts(spans,repaired=True)
         if repaired is not None:repaired(self.repaired)
         self.keys=[]
+        self.valid_rebound_contexts=contexts(spans,repaired=True)
+        self.refuse_correction=refuse_correction
 
     def generate(self,key,*args):
         self.keys.append(key)
@@ -55,16 +57,21 @@ class Model:
             return deepcopy(self.original),{"cached":True}
         if key=="material-brief-repair:initial":
             return deepcopy(self.repaired),{"cached":True}
-        if key=="material-brief-review:1":
+        if key in ("material-brief-repair:review:1", "material-brief-repair:review:2"):
+            next_draft=deepcopy(self.repaired)
+            if not self.refuse_correction:
+                next_draft['photo_contexts']=deepcopy(self.valid_rebound_contexts)
+            return next_draft,{"cached":True}
+        if key in ("material-brief-review:1", "material-brief-review:2", "material-brief-review:3"):
             return {"facts":{f["id"]:{"supported":True,"reason":"source quote matches"}
                              for f in self.repaired["facts"]}},{"cached":True}
         raise AssertionError("unexpected Gemini request: "+key)
 
 
 class ResearchRebindingTests(unittest.TestCase):
-    def run_research(self,mutation=None):
+    def run_research(self,mutation=None, *, refuse_correction=False):
         source=Source()
-        model=Model(source.sources,mutation)
+        model=Model(source.sources,mutation,refuse_correction=refuse_correction)
         ops=Operations("/isolated",source,model,search=None,downloader=None,
                        documented_contexts=True)
         ops.voice_correction_enabled=True
@@ -81,11 +88,20 @@ class ResearchRebindingTests(unittest.TestCase):
         self.assertEqual(plan["required_fact_ids"],["f1","f2","f3"])
         self.assertEqual(len(plan["queries"]),3)
 
-    def test_rebinding_cannot_invent_source_literal(self):
+    def test_bounded_additional_repair_recovers_invalid_source_mention(self):
         def mutate(result):
             result["photo_contexts"]["setting"]["source_mention"]="Неіснуюча галактика"
-        with self.assertRaisesRegex(ValueError,"source span does not contain"):
-            self.run_research(mutate)
+        data,model=self.run_research(mutate)
+        self.assertIn('material-brief-repair:review:1',model.keys)
+        self.assertIn('material-brief-review:2',model.keys)
+        self.assertEqual(len(data['evidence']['facts']),3)
+        self.assertEqual(data['required_fact_ids'],['f1','f2','f3'])
+
+    def test_unresolved_source_literal_stops_after_two_extra_reviews(self):
+        def mutate(result):
+            result["photo_contexts"]["setting"]["source_mention"]="Неіснуюча галактика"
+        with self.assertRaisesRegex(ValueError,"research preflight failed after 2 revisions"):
+            self.run_research(mutate,refuse_correction=True)
 
     def test_repair_may_not_change_facts(self):
         def mutate(result):
