@@ -1,6 +1,31 @@
 # Replacement requested 2026-10-17
 
 
+## Operator-controlled checkpoint CLI — 2026-10-17
+
+An explicit, bounded factory_next operator entrypoint is available in
+factory_next/operator.py with a host-side invocation contract described
+in docs/FACTORY_NEXT_OPERATOR.md. It registers a fresh UUID through
+register_next, stores the separate next-only budget, then advances no
+more than eight checkpointed stages; optional --steps 1 isolates stages.
+It never retries failed/ambiguous jobs. Explicit provider_wait is only
+resumed when a later operator invocation passes the existing due-time
+PostgreSQL verification. The read-only status command never touches
+credentials or provider endpoints.
+
+The operator CLI is a software delivery for an approved host
+administrator, NOT an authorization to bypass chat tool restrictions.
+SentinelX diagnostics established that the blocked ChatGPT tool request
+was intercepted before reaching SentinelX (caller_side_block); host
+permissions, Docker or SentinelX configuration did not cause it.
+No chat-initiated real provider invocation was made through this CLI.
+The user can submit platform feedback on the blocked action, or use
+their own approved terminal after reviewing the command. Production
+and unrelated projects remain unchanged. Offline tests and packaged
+image validation do NOT replace real quality acceptance.
+
+
+
 ## Pre-story quota admission — 2026-10-17
 
 Postmortem of the PL15 real-provider job
