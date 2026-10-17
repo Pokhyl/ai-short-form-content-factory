@@ -82,6 +82,16 @@ class VoiceRevisionLedgerRegression(unittest.TestCase):
                          [('next-voice-correction:2:script-review',
                            'next-voice-correction:2:script-review:availability:2',60)])
 
+    def test_third_correction_has_distinct_durable_keys(self):
+        ledger=StrictLedger()
+        second=VoiceRevisionCalls(ledger,attempt=2)
+        third=VoiceRevisionCalls(ledger,attempt=3)
+        second.run('script-review','gemini',{'script':'second'},lambda:{'pass':True})
+        third.run('script-review','gemini',{'script':'third'},lambda:{'pass':True})
+        self.assertIn('next-voice-correction:2:script-review',ledger.claims)
+        self.assertIn('next-voice-correction:3:script-review',ledger.claims)
+        with self.assertRaises(ValueError):VoiceRevisionCalls(ledger,attempt=4)
+
     def test_original_review_collision_is_reproduced_without_namespace(self):
         ledger=StrictLedger()
         with self.assertRaisesRegex(ValueError,'request changed'):

@@ -1,0 +1,9 @@
+# Natural voice: three measured attempts (2026-10-17)
+
+The owner-provided Studio run `15225f17-9556-4a1d-9092-61e6abc107b6`, Ukrainian, 45 seconds, stopped at voice `NaturalDurationRejected`. The two real archived MP3 durations are 46.104 and 41.448 seconds. Neither meets the existing unchanged 44–45 second natural-speech window. No MP4 exists for that run; its checkpoint remains immutable.
+
+The `factory_next` v2 profile permits **at most three** distinct metered Google TTS attempts, each synthesized from a different fact/photo-grounded, independently reviewed narration. After the first and second *measured* misses, a fresh review uses the previous narration and its actual audio duration, with distinct `next-voice-correction:2` and `:3` durable Gemini ledger namespaces. Third audio has its own quota key and exclusive O_EXCL archive. Any uncertain send, failed native/factual review or failed quota reservation stops without resending a previous attempt. A third duration miss is terminal; no fourth attempt, cropping, speed manipulation, or fabricated evidence.
+
+Only new preparations on the exact new source revision use `factory-next-three-natural-attempts-v2`; their immutable preparation budget adds 5 Gemini maximum calls to the legacy baseline and pre-reserves four for two correction/review rounds. The old factory_v3 and historical failed jobs remain unchanged. The 44–45 second audio window and final audio/video audit have not been weakened.
+
+Offline exact-source-in-container checks: 77 factory_next and 127 factory_v3 tests passed on 2026-10-17. The new regression models the real 46.104/41.448 second over/under measured sequence and a third 44.544 second success. This is a controlled simulation, **not** proof a future live TTS output fits; real production verification still requires a distinct new job and full media audit.

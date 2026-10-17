@@ -1,4 +1,4 @@
-"""At most two metered natural TTS attempts; store only the measured winner.
+"""At most three separately metered natural TTS attempts; store only the measured winner.
 
 No retry after uncertain sends. The Pipeline running checkpoint blocks any
 replay of a partly executed voice stage. Each attempt has a distinct quota key,
@@ -23,7 +23,7 @@ class VoiceStages:
         self.worker=WorkerAdapters(root,voice_provider,'http://shorts-v2-media-worker-1:3001',None,http=worker_http)
 
     def _synthesize_once(self, job, language, script, attempt):
-        if attempt not in (1,2):raise ValueError('unbudgeted TTS attempt')
+        if attempt not in (1,2,3):raise ValueError('unbudgeted TTS attempt')
         key='next:'+job+':voice:'+str(attempt)
         sku='wavenet' if language=='ru' else 'chirp3_hd'
         self.quota._call("SELECT factory.reserve_provider_usage(%s,'google_cloud_tts',%s,'characters',"
@@ -59,20 +59,25 @@ class VoiceStages:
         script=original['script']
         if not isinstance(script,str) or not script.strip():
             raise ValueError('empty reviewed narration')
-        encoded,measurement,expected=self._synthesize_once(job,request['language'],script,1)
         selected_story=original
-        selected_attempt=1
-        if not duration_fits(measurement['duration_ms'],request['seconds']):
-            if revision_builder is None:
-                raise NaturalDurationRejected('reviewed natural-duration correction unavailable')
-            corrected=require_reviewed_revision(
-                original,revision_builder(context,measurement['duration_ms']))
-            script=corrected['script']
-            encoded,measurement,expected=self._synthesize_once(job,request['language'],script,2)
-            selected_story=corrected
-            selected_attempt=2
-            if not duration_fits(measurement['duration_ms'],request['seconds']):
-                raise NaturalDurationRejected('two measured natural-voice attempts exhausted')
+        for selected_attempt in (1,2,3):
+            if selected_attempt>1:
+                if revision_builder is None:
+                    raise NaturalDurationRejected('reviewed natural-duration correction unavailable')
+                # A distinct approved rewrite and ledger namespace is required
+                # for each *new* measured MP3. Never resend earlier audio.
+                correction_context={**context,
+                    'outputs':{**context['outputs'],'story':selected_story},
+                    '_voice_correction_round':selected_attempt}
+                selected_story=require_reviewed_revision(
+                    selected_story,revision_builder(correction_context,measurement['duration_ms']))
+                script=selected_story['script']
+            encoded,measurement,expected=self._synthesize_once(
+                job,request['language'],script,selected_attempt)
+            if duration_fits(measurement['duration_ms'],request['seconds']):
+                break
+        else:
+            raise NaturalDurationRejected('three measured natural-voice attempts exhausted')
         # Never upload rejected audio to the final-job namespace.
         staged=self.worker._post('/voiceover-candidates/'+job,
                                  {'audio_base64':encoded})

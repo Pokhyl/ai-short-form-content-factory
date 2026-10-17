@@ -27,10 +27,11 @@ class VoiceRevisionCalls:
     review key would be rejected by the preparation ledger.
     All claims still flow through the same bounded ledger.
     """
-    PREFIX='next-voice-correction:2:'
-
-    def __init__(self, underlying):
+    def __init__(self, underlying, *, attempt=2):
+        if attempt not in (2,3):
+            raise ValueError('unbudgeted voice correction round')
         self.underlying=underlying
+        self.PREFIX=f'next-voice-correction:{attempt}:'
 
     def run(self, key, kind, public_request, invoke, **kwargs):
         return self.underlying.run(self.PREFIX+key,kind,public_request,invoke,**kwargs)
@@ -183,7 +184,8 @@ class PreparationStages:
         # Distinct input requires an independent ledger key for both
         # rewrite generation and factual/native-language review.
         revision_gemini=copy(self.operations.gemini)
-        revision_gemini.calls=VoiceRevisionCalls(self.operations.gemini.calls)
+        revision_gemini.calls=VoiceRevisionCalls(
+            self.operations.gemini.calls,attempt=context.get('_voice_correction_round',2))
         draft,_=revision_gemini.generate(
             'next-measured-duration-revision',instruction,
             {**request,'evidence':evidence,'materials':compact_materials(photos),

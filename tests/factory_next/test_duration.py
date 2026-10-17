@@ -126,16 +126,61 @@ class NaturalDurationTests(unittest.TestCase):
             self.assertEqual((Path(root)/'voiceovers'/ctx['id']/'final.mp3').read_bytes(),b'test-audio-2')
             self.assertEqual((Path(root)/'voiceover-attempts'/ctx['id']/'attempt-1.mp3').read_bytes(),b'test-audio-1')
 
-    def test_second_attempt_miss_stops_without_promotion_or_third_send(self):
+    def test_third_reviewed_attempt_fits_after_two_misses(self):
+        with tempfile.TemporaryDirectory() as root:
+            stage,provider,worker,quota=self.create(root,[46104,41448,44544])
+            ctx=self.context();ctx['request']['seconds']=45
+            revisions=[]
+            def rewrite(c,measured):
+                attempt=c['_voice_correction_round']
+                revisions.append((attempt,measured,c['outputs']['story']['script']))
+                candidate=self.revision()
+                if attempt==3:
+                    candidate['script']='Natural expanded factual reviewed narration.'
+                return candidate
+            result=stage.voice(ctx,revision_builder=rewrite)
+            self.assertEqual([(n,ms) for n,ms,_ in revisions],[(2,46104),(3,41448)])
+            self.assertEqual(revisions[1][2],self.revision()['script'])
+            self.assertEqual(result['attempt_count'],3)
+            self.assertEqual(result['duration_ms'],44544)
+            self.assertEqual(result['audio_tempo_factor'],1.0)
+            self.assertEqual(len(provider.calls),3)
+            self.assertEqual(len(quota.calls),6)
+            self.assertIn(':voice:3',quota.calls[4][1][0])
+            self.assertEqual((Path(root)/'voiceovers'/ctx['id']/'final.mp3').read_bytes(),b'test-audio-3')
+            for n in (1,2,3):
+                self.assertEqual((Path(root)/'voiceover-attempts'/ctx['id']/f'attempt-{n}.mp3').read_bytes(),f'test-audio-{n}'.encode())
+
+    def test_third_attempt_miss_stops_without_promotion_or_fourth_send(self):
+        with tempfile.TemporaryDirectory() as root:
+            stage,provider,worker,quota=self.create(root,[9000,11000,12000])
+            ctx=self.context()
+            def revision(c,ms):
+                candidate=self.revision()
+                if c['_voice_correction_round']==3:
+                    candidate['script']='New validated third narration.'
+                return candidate
+            with self.assertRaisesRegex(NaturalDurationRejected,'exhausted'):
+                stage.voice(ctx,revision_builder=revision)
+            self.assertEqual(len(provider.calls),3)
+            self.assertEqual(len(quota.calls),6)
+            self.assertFalse(any('/voiceover-candidates/' in u for u in worker.calls))
+            self.assertFalse((Path(root)/'voiceovers'/ctx['id']/'final.mp3').exists())
+
+    def test_unreviewed_third_rewrite_stops_before_tts_three(self):
         with tempfile.TemporaryDirectory() as root:
             stage,provider,worker,quota=self.create(root,[9000,11000])
             ctx=self.context()
-            with self.assertRaisesRegex(NaturalDurationRejected,'exhausted'):
-                stage.voice(ctx,revision_builder=lambda *_:self.revision())
+            def revision(c,ms):
+                candidate=self.revision()
+                if c['_voice_correction_round']==3:
+                    candidate['script']='New revised story.'
+                    candidate['review']={}
+                return candidate
+            with self.assertRaises(NaturalDurationRejected):
+                stage.voice(ctx,revision_builder=revision)
             self.assertEqual(len(provider.calls),2)
             self.assertEqual(len(quota.calls),4)
-            self.assertFalse(any('/voiceover-candidates/' in u for u in worker.calls))
-            self.assertFalse((Path(root)/'voiceovers'/ctx['id']/'final.mp3').exists())
 
     def test_missing_independent_revision_review_stops_before_tts_two(self):
         with tempfile.TemporaryDirectory() as root:
