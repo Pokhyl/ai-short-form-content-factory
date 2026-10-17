@@ -143,6 +143,34 @@ stored attempts, actual saved-provider media/voice connected acceptance when
 available, normal language/duration matrix, Studio routing, and owner review.
 
 
+## Provider runtime wiring and live read-only admission — 2026-10-17
+
+factory_next/wiring.py now constructs the reviewed research/photo/story
+PreparationStages, natural GoogleVoice + quota-accounted VoiceStages and
+whole-photo MediaStages using the **existing** Runtime.producer, broker gateway,
+BudgetedCalls, PostgresLedger and confirmed free-tier project. Adapter
+assembly alone does not register a job, reserve quota or send a provider
+request. It refuses an invalid job identity or unverified producer admission.
+tests/factory_next/test_wiring.py covers construction without dispatch,
+invalid identity, free-tier refusal and an optional local preflight gate.
+
+Real gateway read-only metadata checks against the running, unchanged
+factory-v3 app returned HTTP 200 for the free project's billing status
+(confirmed unbilled) and gemini-3.1-flash-lite model identity. A real
+settings/dependency import in a network-disabled, read-only isolated
+Docker container successfully assembled the connected adapters; actual
+types were CredentialHTTP, Operations and PostgresLedger. A read-only
+Postgres check confirmed the reserve_provider_usage and
+commit_provider_usage(text,text) signatures and enabled Google TTS
+budget limits. These checks do **not** imply any real source/Gemini/TTS
+creation, public job migration, provider budget exhaustion safety under
+real load, or a deployed factory_next build.
+
+An actual-provider one-stage research execution must first provision a
+fresh immutable request identity and preparation budget through the
+existing bounded Runtime; no arbitrary direct gateway sends or unmetered
+Gemini calls are permitted. A completed or unknown call is never replayed.
+
 ## Isolated real media-worker HTTP integration — 2026-10-17
 
 The full factory_next source test suite completed **29/29 PASS** (including\nthe three isolated actual-worker HTTP integration tests).\n\ntests/factory_next/test_worker_http.py starts the **real** Python HTTP
