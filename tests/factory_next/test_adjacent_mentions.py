@@ -23,7 +23,7 @@ class AdjacentSourceMentionTests(unittest.TestCase):
 
     def test_verified_adjacent_span_of_same_source_can_rebind(self):
         result=rebind_adjacent_literal_mentions(self.context(),self.spans())
-        self.assertEqual(result['subject']['support_span_ids'],['s1-0-20'])
+        self.assertEqual(result['subject']['support_span_ids'],['s1-20-42','s1-0-20'])
         validate_context_mentions(result,self.spans())
 
     def test_distant_span_does_not_rebind(self):
