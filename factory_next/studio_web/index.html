@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f5f1">
+<title>Студия видео — создание по своей теме</title>
+<style>
+:root{color-scheme:light;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif;color:#202520;background:#f5f4f0}
+*{box-sizing:border-box}body{margin:0}main{max-width:1200px;margin:0 auto;padding:24px 20px 70px}
+header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #dedfd9;padding:8px 0 25px;margin-bottom:34px}
+.brand{font-size:19px;font-weight:750;color:#202520;text-decoration:none;display:flex;gap:10px;align-items:center}
+.logo{background:#354d3c;color:#fff;width:35px;height:35px;display:grid;place-items:center;border-radius:10px}
+.muted,.small{color:#6d746f}.muted{line-height:1.5}.small{font-size:13px}
+h1{font-size:clamp(26px,4vw,37px);letter-spacing:-.035em;margin:8px 0 8px}h2{font-size:20px;margin:0}h3{font-size:16px;margin:0 0 12px}
+.kicker{font-size:11px;letter-spacing:.12em;font-weight:750;color:#526a59;text-transform:uppercase}
+.columns{display:grid;grid-template-columns:minmax(0,1.13fr) minmax(310px,.87fr);gap:22px;margin:27px 0}
+.panel{background:#fff;border:1px solid #e4e5dd;border-radius:17px;padding:25px;box-shadow:0 5px 22px #273b2e08}
+label{font-size:14px;font-weight:650;display:block;margin:17px 0 8px}
+textarea,select{font:inherit;width:100%;border:1px solid #ccd3ca;border-radius:9px;padding:13px;background:#fff;color:#202520}
+textarea{min-height:115px;resize:vertical;line-height:1.45}textarea:focus,select:focus,button:focus-visible{outline:3px solid #b8d3be;outline-offset:2px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+button,.button{font:inherit;font-weight:650;cursor:pointer;border:1px solid #cbd2c8;border-radius:10px;padding:12px 16px;background:#fff;color:#233a2b;text-decoration:none;display:inline-block}
+.primary{background:#354d3c;color:white;border-color:#354d3c}.full{width:100%;margin-top:20px}
+button:disabled{cursor:not-allowed;opacity:.6}
+.panelhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.history{display:grid;gap:9px;max-height:340px;overflow:auto}
+.history button{text-align:left;width:100%;border:1px solid #e5e7df;border-radius:10px;display:grid;gap:8px;padding:13px}
+.history button[aria-current="true"]{background:#f0f5ee;border-color:#8ba691}
+.history-title{font-weight:650;overflow-wrap:anywhere}.history-meta{font-size:12px;color:#69736c}
+.result{margin-top:26px}.resultgrid{display:grid;grid-template-columns:minmax(270px,.76fr) minmax(0,1.24fr);gap:24px}
+video{display:block;background:#121b13;border-radius:12px;width:100%;aspect-ratio:9/16;max-height:590px;object-fit:contain}
+.placeholder{display:flex;align-items:center;justify-content:center;flex-direction:column;background:#e7ebe4;aspect-ratio:9/16;max-height:490px;border-radius:12px;text-align:center;padding:20px;color:#66736a}
+.download{display:block;text-align:center;background:#354d3c;color:white;margin-top:12px;text-decoration:none}
+.script{white-space:pre-wrap;line-height:1.65;margin:0 0 20px}
+.scene{display:flex;gap:13px;padding:13px 0;border-top:1px solid #e6e7e1}
+.scene img{width:96px;height:114px;object-fit:cover;border-radius:8px;background:#eee}
+.scene p{font-size:14px;line-height:1.5;margin:0 0 5px}.scene a{font-size:12px;color:#526a59}
+.status{margin:15px 0 20px;color:#344e39;font-weight:650}
+.details{margin-top:20px;border-top:1px solid #e4e5dd;padding-top:18px}
+.details summary{cursor:pointer;font-weight:650}
+.links{display:grid;gap:8px;margin-top:14px;overflow-wrap:anywhere}.links a{color:#466752}
+.error{color:#a03236;line-height:1.45;margin-top:12px}
+@media(max-width:740px){main{padding:16px 13px 52px}header{padding-bottom:16px;margin-bottom:22px}.columns,.resultgrid{grid-template-columns:1fr}.panel{padding:19px}.resultgrid{gap:25px}.fields{gap:10px}.smallheader{display:none}video,.placeholder{max-height:530px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<a class="brand" href="/factory-next/"><span class="logo">H</span>Студия видео</a>
+<span class="small smallheader">Твоя тема → реальные фотографии → MP4</span>
+</header>
+<div class="kicker">AI SHORT-FORM CONTENT FACTORY</div>
+<h1>Создайте видео по своей теме</h1>
+<p class="muted">Напишите тему, выберите язык и длительность. Генерация выполняется на сервере; статус и результат сохраняются в разделе «Ваши видео».</p>
+<div class="columns">
+<form id="request-form" class="panel">
+  <div class="panelhead"><h2>Новое видео</h2><span class="small">01</span></div>
+  <label for="topic">Тема видео</label>
+  <textarea id="topic" maxlength="300" required placeholder="Например: Почему листья меняют цвет осенью?"></textarea>
+  <div class="fields">
+    <div><label for="language">Язык озвучки</label><select id="language"><option value="pl">Polski</option><option value="en">English</option><option value="ru">Русский</option><option value="uk">Українська</option></select></div>
+    <div><label for="seconds">Длительность</label><select id="seconds"><option value="15">15 секунд</option><option value="30">30 секунд</option><option value="45">45 секунд</option><option value="60">60 секунд</option></select></div>
+  </div>
+  <button id="submit" class="primary full" type="submit">Создать видео</button>
+  <p id="message" class="error" role="alert" hidden></p>
+  <p class="small muted">Новая фабрика · Проверка фактов и фотографий · Естественная озвучка</p>
+</form>
+<section class="panel">
+  <div class="panelhead"><h2>Ваши видео</h2><span class="small">02</span></div>
+  <p class="muted small">Выберите задание, чтобы посмотреть этапы или готовый ролик.</p>
+  <div id="history" class="history"><p class="muted">Загружаем задания…</p></div>
+</section>
+</div>
+<section id="result" class="panel result" hidden>
+  <div class="panelhead"><h2 id="result-title">Результат</h2><button id="refresh" type="button">Обновить</button></div>
+  <div class="status" id="status" role="status"></div>
+  <p id="failure" class="error" hidden></p>
+  <div class="resultgrid">
+    <div>
+      <video id="video" controls playsinline preload="metadata" hidden></video>
+      <div id="placeholder" class="placeholder"><strong>Видео появится здесь</strong><span class="small">9:16 · вертикальный MP4</span></div>
+      <a id="download" class="button download" hidden download>Сохранить MP4</a>
+    </div>
+    <div>
+      <h3>Текст озвучки</h3><p id="script" class="script"></p>
+      <h3>Фотографии и сцены</h3><div id="scenes"></div>
+      <details class="details"><summary>Источники фактов</summary><div id="sources" class="links"></div></details>
+      <details class="details"><summary>Технические сведения</summary><p id="technical" class="small muted"></p></details>
+    </div>
+  </div>
+</section>
+</main>
+<script>
+"use strict";
+const API="/factory-next/api/jobs",get=id=>document.getElementById(id);
+let selected=null, timer=null, detail=null;
+const stages={research:"Проверка источников",materials:"Поиск и проверка фотографий",story:"Создание и проверка сценария",voice:"Генерация озвучки",alignment:"Синхронизация сцен",edit:"Планирование монтажа",render:"Создание MP4",audit:"Финальная проверка качества"};
+const label=s=>s==="complete"?"Готово · проверка пройдена":s==="provider_wait"?"Сервис перегружен, повтор по расписанию":s==="needs_attention"?"Задание остановлено для проверки":s==="queued"?"В очереди":s==="registration_pending"?"Регистрация не завершена":s==="deferred"?"Ожидание провайдера":s==="running"?"Выполняется":s==="checking"||s==="checking_provider"?"Проверка разрешения на продолжение":"В работе";
+const escapeText=s=>String(s??"");
+async function request(url,opts={}){
+  const response=await fetch(url,{credentials:"same-origin",cache:"no-store",...opts});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"Ошибка запроса");
+  return data;
+}
+function safeLink(url,words){
+  const a=document.createElement("a");a.textContent=words;a.target="_blank";a.rel="noopener noreferrer";
+  try{const u=new URL(url);if(!["http:","https:"].includes(u.protocol)||u.username||u.password)throw Error();a.href=u.href;}
+  catch{}return a;
+}
+async function history(){
+ const items=await request(API),root=get("history");root.replaceChildren();
+ if(!items.length){const p=document.createElement("p");p.textContent="Пока нет видео. Введите тему и нажмите «Создать видео».";p.className="muted";root.append(p);return items;}
+ for(const item of items){
+   const b=document.createElement("button");b.type="button";b.dataset.id=item.id;b.setAttribute("aria-current",String(item.id===selected));
+   const title=document.createElement("span");title.className="history-title";title.textContent=item.request.topic;
+   const meta=document.createElement("span");meta.className="history-meta";
+   meta.textContent=item.request.language.toUpperCase()+" · "+item.request.seconds+" с · "+label(item.status);
+   b.append(title,meta);b.onclick=()=>show(item.id).catch(report);root.append(b);
+ }
+ return items;
+}
+function report(e){get("message").hidden=false;get("message").textContent=e.message||"Ошибка соединения";}
+async function show(id){
+  clearTimeout(timer);timer=null;
+  selected=id;
+  const d=await request(API+"/"+encodeURIComponent(id));
+  if(selected!==id)return;
+  detail=d;get("result").hidden=false;
+  get("result-title").textContent=d.request.topic;
+  const stage=d.next_stage&&stages[d.next_stage]?" · "+stages[d.next_stage]:"";
+  const wait=d.retry_at?" · повтор после "+new Date(d.retry_at).toLocaleTimeString():"";
+  get("status").textContent=label(d.status)+stage+wait+(d.voice_duration_ms?" · голос "+(d.voice_duration_ms/1000).toFixed(2)+" с":"");
+  const failure=d.status==="needs_attention";
+  get("failure").hidden=!failure;
+  get("failure").textContent=failure?"Выполнение остановлено: "+(d.error_type||"требуется проверка")+". Уже полученные материалы сохранены.":"";
+  get("script").textContent=d.script||"Текст появится после проверки сценария.";
+  const ready=d.machine_pass===true;
+  const player=get("video");
+  if(ready){if(player.getAttribute("src")!==d.video_url)player.src=d.video_url;player.hidden=false;get("placeholder").hidden=true;get("download").href=d.video_url+"?download=1";get("download").hidden=false;get("download").download="video-"+id+".mp4";}
+  else {player.pause();player.removeAttribute("src");player.load();player.hidden=true;get("placeholder").hidden=false;get("download").hidden=true;}
+  const scenes=get("scenes");scenes.replaceChildren();
+  for(const scene of d.scenes||[]){
+    const row=document.createElement("div");row.className="scene";
+    const image=document.createElement("img");image.src=scene.photo_url;image.loading="lazy";image.alt=scene.narration;
+    const box=document.createElement("div"),text=document.createElement("p");text.textContent=scene.narration;box.append(text);
+    const at=document.createElement("p");at.className="small muted";at.textContent="Автор: "+(scene.author||"не указан");box.append(at);
+    box.append(safeLink(scene.source_url,"Источник фотографии"));row.append(image,box);scenes.append(row);
+  }
+  const sources=get("sources");sources.replaceChildren();
+  for(const source of d.sources||[])sources.append(safeLink(source.url,source.title||source.url));
+  get("technical").textContent="ID: "+d.id+" · Версия: "+d.source_revision+(d.video_sha256?" · SHA-256: "+d.video_sha256:"");
+  const url=new URL(location.href);url.searchParams.set("request",id);window.history.replaceState(null,"",url);
+  for(const b of get("history").querySelectorAll("button"))b.setAttribute("aria-current",String(b.dataset.id===id));
+  if(!ready&&!failure){
+    timer=setTimeout(()=>Promise.all([history(),show(id)]).catch(report),5000);
+  }
+}
+get("request-form").onsubmit=async event=>{
+  event.preventDefault();get("message").hidden=true;
+  const topic=get("topic").value.trim(),language=get("language").value,seconds=Number(get("seconds").value);
+  if(!topic)return;
+  get("submit").disabled=true;get("submit").textContent="Создаём задание…";
+  try{
+    const result=await request(API,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({topic,language,seconds})});
+    await history();await show(result.id);
+  }catch(e){report(e);}
+  finally{get("submit").disabled=false;get("submit").textContent="Создать видео";}
+};
+get("refresh").onclick=()=>Promise.all([history(),selected&&show(selected)]).catch(report);
+(async()=>{
+ try{
+   const items=await history(),parameter=new URLSearchParams(location.search).get("request");
+   const requested=parameter&&/^[0-9a-f-]{36}$/.test(parameter)?parameter:null;
+   if(requested&&items.some(x=>x.id===requested))await show(requested);
+   else if(items.length)await show(items[0].id);
+ }catch(e){report(e);}
+})();
+</script>
+</body>
+</html>
