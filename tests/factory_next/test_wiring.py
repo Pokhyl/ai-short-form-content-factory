@@ -31,6 +31,7 @@ class TrustedRuntime:
         self.ledger=object()
         self.preparations=StubPreparations()
         self.revision='a'*40
+        self.settings={}
         self.authorized=authorized
         self.producer_calls=[]
         self.external_calls=[]
@@ -54,7 +55,18 @@ class ConnectedWiringTests(unittest.TestCase):
             self.assertIs(adapters.voice_stages.quota,runtime.ledger)
             self.assertIs(adapters.voice_stages.http,runtime.direct)
             self.assertIs(adapters.voice_stages.provider.http,runtime.gateway)
+            self.assertFalse(adapters.voice_stages.tts_billing_verified)
             self.assertEqual(runtime.external_calls,[])
+
+    def test_only_explicit_billing_verification_enables_tts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            runtime=TrustedRuntime(directory)
+            runtime.settings['google_tts_external_usage_verified']='true'
+            adapter=connected_adapters(runtime,str(uuid4()))
+            self.assertFalse(adapter.voice_stages.tts_billing_verified)
+            runtime.settings['google_tts_external_usage_verified']=True
+            adapter=connected_adapters(runtime,str(uuid4()))
+            self.assertTrue(adapter.voice_stages.tts_billing_verified)
 
     def test_unverified_project_blocks_assembly_before_provider(self):
         with tempfile.TemporaryDirectory() as directory:

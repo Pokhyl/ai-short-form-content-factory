@@ -88,7 +88,7 @@ class NaturalDurationTests(unittest.TestCase):
         provider=Provider(sounds)
         worker=Worker(root,dict(zip(sounds,values)),fail_on=fail_on)
         quota=Ledger(fail_at)
-        stage=VoiceStages(root,provider,worker,quota)
+        stage=VoiceStages(root,provider,worker,quota,tts_billing_verified=True)
         return stage,provider,worker,quota
 
     def test_first_actual_measurement_passes_without_correction(self):

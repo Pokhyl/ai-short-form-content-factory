@@ -1,3 +1,39 @@
+## 2026-10-18 — Financial fail-closed hold (owner requires no paid charges)
+
+**Production status:** Financial verification incomplete. Public Studio may
+serve the existing job history and previously audited MP4s, but must not
+accept or schedule generation while verification remains incomplete.
+
+The factory uses dedicated Google Cloud Text-to-Speech voices (Chirp 3 HD
+and WaveNet) specified in the project PLAN.md and PROVIDER_POLICY.md. Its
+PostgreSQL quotas reserve and commit every requested character before an
+external synthesis. The internal 90%-of-free-tier ceilings are effective,
+but DO NOT establish the true billable usage when other clients may share
+the Google Cloud project. The quota may reset by month but an external
+Google Cloud billing line item may still accrue; no cost guarantee follows
+from the counter alone.
+
+Production now fails closed by default using the private, server-owned
+setting `google_tts_external_usage_verified`. It must be exactly boolean
+true before generating any new job or sending TTS. Absence, a string value,
+or false all deny admission. Google TTS voice modules reject sends before
+both PostgreSQL reservation and the external provider request. Queue
+admission, the periodic scheduler and Studio worker dispatch are also
+disabled when this hold is active. The public read-only status endpoint
+`/factory-next/api/status` explains the hold without exposing secrets;
+GET history and audited media remain accessible.
+
+The flag alone is an administrative acknowledgment, NOT an independent
+Google billing guarantee. Do not set it true until the specific billing
+project, its use outside the factory, free allowance, billing alerts and
+actual cost exposure are reconciled. The GitHub code does NOT contain
+tokens, billing identifiers or private configuration.
+
+No paid provider call or job creation is part of this change. Terminal
+historical jobs remain immutable. The factory is not production accepted.
+
+---
+
 ## Durable automatic Studio waiting queue — 2026-10-18
 
 The owner enters their own topic once. When daily Studio admission (6 runs

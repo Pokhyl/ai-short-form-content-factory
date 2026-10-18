@@ -33,6 +33,10 @@ MAX_WAITING=3
 WEB=Path(__file__).with_name("studio_web")/"index.html"
 
 
+class TTSBillingHold(RuntimeError):
+    """No job admission or provider sends without external billing verification."""
+
+
 def safe_id(value):
     return str(UUID(str(value)))
 
@@ -51,6 +55,20 @@ class Studio:
         self.stop=threading.Event()
         self.scheduler=threading.Thread(target=self._schedule,daemon=True,name="factory-next-scheduler")
         self.scheduler.start()
+
+    def generation_enabled(self):
+        # Server-owned verified evidence, never a browser-supplied override.
+        # The internal PostgreSQL usage counter alone cannot establish this.
+        return self.runtime.settings.get("google_tts_external_usage_verified") is True
+
+    def require_generation_enabled(self):
+        if not self.generation_enabled():
+            raise TTSBillingHold("Google TTS billing unverified; generation paused")
+
+    def public_status(self):
+        return {"generation_enabled":self.generation_enabled(),
+                "reason":None if self.generation_enabled() else "GOOGLE_TTS_BILLING_UNVERIFIED",
+                "history_available":True}
 
     def record(self,job):
         return self.records/(safe_id(job)+".json")
@@ -118,6 +136,8 @@ class Studio:
         any uncertain external registration, the exclusive record is marked
         'registering': a crash will NOT cause automatic duplicate dispatch.
         """
+        if not self.generation_enabled():
+            return None
         now=now or datetime.now(timezone.utc)
         if now.tzinfo is None or now.utcoffset() is None:
             raise ValueError("aware admission clock required")
@@ -161,8 +181,11 @@ class Studio:
                 or type(seconds) is not int or seconds not in (15,30,45,60)):
             raise ValueError("invalid topic, language or duration")
         topic=topic.strip()
+        self.require_generation_enabled()
         now=datetime.now(timezone.utc)
         with self.lock:
+            # Re-check under the durable admission lock.
+            self.require_generation_enabled()
             rows=self.entries()
             today=now.date().isoformat()
             used=sum(self._admission_date(x)==today for x in rows)
@@ -213,7 +236,11 @@ class Studio:
         os.replace(temporary,path)
 
     def enqueue(self,job):
+        if not self.generation_enabled():
+            return
         with self.lock:
+            if not self.generation_enabled():
+                return
             # A queued submission is never dispatched before durable admission.
             if hasattr(self,"records"):
                 row=json.loads(self.record(job).read_text())
@@ -231,6 +258,8 @@ class Studio:
 
     def _advance(self,job):
         try:
+            if not self.generation_enabled():
+                return
             pipeline=self.pipeline(job,with_adapters=True)
             for _ in STAGES:
                 s=pipeline.snapshot(job)
@@ -260,6 +289,8 @@ class Studio:
 
     def _schedule(self):
         while not self.stop.wait(8):
+            if not self.generation_enabled():
+                continue
             try:
                 admitted=self._admit_waiting()
                 if admitted is not None:
@@ -293,8 +324,11 @@ class Studio:
         record=json.loads(self.record(job).read_text())
         if record.get("registration")!="complete":
             queued=record.get("registration")=="queued"
+            hold=not self.generation_enabled()
             return {"id":job,"request":record["request"],
-                    "status":"queued_for_quota" if queued else "registration_pending",
+                    "status":"billing_hold" if hold else (
+                        "queued_for_quota" if queued else "registration_pending"),
+                    "generation_on_hold":hold,
                     "eligible_after":record.get("eligible_after") if queued else None,
                     "next_stage":"research","completed_stages":[],
                     "error_type":None,"failure_reason":None,"retry_at":None,
@@ -344,7 +378,9 @@ class Studio:
             except Exception:
                 failure_reason=None
         return {"id":job,"request":state["request"],
-                "status":state["status"],"eligible_after":None,
+                "status":state["status"],
+                "generation_on_hold":not self.generation_enabled(),
+                "eligible_after":None,
                 "next_stage":state.get("next_stage"),"completed_stages":list(outputs),
                 "error_type":state.get("error_type"),"failure_reason":failure_reason,
                 "retry_at":state.get("provider_wait_receipt",{}).get("retry_at"),
@@ -455,6 +491,8 @@ def make_handler(app):
             if route in (PREFIX,PREFIX+"/"):
                 return self.reply(200,WEB.read_bytes(),"text/html; charset=utf-8",
                                   [("Content-Security-Policy","default-src 'self'; img-src 'self' https:; media-src 'self'; style-src 'unsafe-inline' 'self'; script-src 'unsafe-inline' 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'")],head=head)
+            if route==PREFIX+"/api/status":
+                return self.reply(200,app.public_status(),head=head)
             if route==PREFIX+"/api/jobs":
                 return self.reply(200,app.all_jobs(),head=head)
             match=re.fullmatch(re.escape(PREFIX)+r"/api/jobs/([0-9a-f-]{36})(?:/(video|photo/\d+))?",route)
@@ -501,6 +539,9 @@ def make_handler(app):
                 return self.reply(400,{"error":"check topic, language and duration"})
             except OverflowError as error:
                 return self.reply(429,{"error":str(error)})
+            except TTSBillingHold:
+                return self.reply(503,{"error":"Google TTS: проверка отсутствия платных списаний не завершена; генерация приостановлена",
+                                       "code":"GOOGLE_TTS_BILLING_UNVERIFIED"})
             except Exception:
                 # Existing prepared or uncertain database operations are NOT retried.
                 return self.reply(503,{"error":"registration incomplete; inspect saved job before retry"})

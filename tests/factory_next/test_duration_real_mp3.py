@@ -78,7 +78,7 @@ class RealMeasuredMP3(unittest.TestCase):
             self.assertGreaterEqual(second,14000)
             self.assertLessEqual(second,15000)
             provider=RecordedProvider(sounds);http=MeasuredWorker(root);quota=Meter()
-            stage=VoiceStages(root,provider,http,quota)
+            stage=VoiceStages(root,provider,http,quota,tts_billing_verified=True)
             job=str(uuid4())
             original={'script':'Original reviewed text',
                       'scenes':[{'id':'beat-1','material_id':'photo-1',

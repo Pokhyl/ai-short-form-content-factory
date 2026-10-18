@@ -11,7 +11,9 @@ REV="da6472ecb52ca6add6b616015d06b1ace56c7740"
 
 
 class FakeRuntime:
-    def __init__(self,*args):self.calls=0
+    def __init__(self,*args):
+        self.calls=0
+        self.settings={"google_tts_external_usage_verified":True}
 
 
 class ServerTests(unittest.TestCase):
@@ -24,6 +26,71 @@ class ServerTests(unittest.TestCase):
         self.addCleanup(patcher.stop)
         self.app=ss.Studio(self.root,{},REV)
         self.app.enqueue=lambda job:None
+
+    def test_billing_hold_prevents_post_and_preserves_existing_read_only_history(self):
+        import http.client
+        import threading
+        from http.server import ThreadingHTTPServer
+        with patch.object(ss,"register_next",return_value={"created":True}) as registered:
+            original=self.app.create({"topic":"Original video","language":"pl","seconds":15})
+        registered.assert_called_once()
+        original_state=self.app.pipeline(original["id"]).snapshot(original["id"])
+        self.app.runtime.settings["google_tts_external_usage_verified"]=False
+        before=list(self.app.entries())
+        self.assertFalse(self.app.public_status()["generation_enabled"])
+        with patch.object(ss,"register_next") as registrar:
+            with self.assertRaisesRegex(ss.TTSBillingHold,"unverified"):
+                self.app.create({"topic":"No paid TTS","language":"uk","seconds":45})
+            self.assertIsNone(self.app._admit_waiting())
+            self.assertEqual(len(self.app.entries()),len(before))
+            registrar.assert_not_called()
+        server=ThreadingHTTPServer(("127.0.0.1",0),ss.make_handler(self.app))
+        self.addCleanup(server.server_close)
+        worker=threading.Thread(target=server.serve_forever,daemon=True)
+        worker.start()
+        self.addCleanup(server.shutdown)
+        conn=http.client.HTTPConnection("127.0.0.1",server.server_address[1],timeout=3)
+        self.addCleanup(conn.close)
+        conn.request("GET","/factory-next/api/status")
+        result=conn.getresponse()
+        self.assertEqual(result.status,200)
+        current=json.loads(result.read())
+        self.assertFalse(current["generation_enabled"])
+        self.assertEqual(current["reason"],"GOOGLE_TTS_BILLING_UNVERIFIED")
+        conn.request("GET","/factory-next/api/jobs")
+        result=conn.getresponse()
+        self.assertEqual(result.status,200)
+        listing=json.loads(result.read())
+        self.assertEqual(len(listing),1)
+        conn.request("POST","/factory-next/api/jobs",
+            body=json.dumps({"topic":"A second topic","language":"uk","seconds":45}),
+            headers={"Origin":"https://studio.hodor.com.pl",
+                     "Content-Type":"application/json"})
+        result=conn.getresponse()
+        self.assertEqual(result.status,503)
+        self.assertEqual(json.loads(result.read())["code"],"GOOGLE_TTS_BILLING_UNVERIFIED")
+        self.assertEqual(self.app.pipeline(original["id"]).snapshot(original["id"]),original_state)
+        self.assertEqual(len(self.app.entries()),1)
+
+    def test_financial_hold_never_admits_saved_queue_or_schedules_provider_work(self):
+        from uuid import uuid4
+        job=str(uuid4())
+        self.app._save_record({"id":job,
+            "request":{"topic":"DNA molecule","language":"uk","seconds":45},
+            "registration":"queued","eligible_after":datetime.now(timezone.utc).isoformat(),
+            "created_at":datetime.now(timezone.utc).isoformat()})
+        self.app.runtime.settings["google_tts_external_usage_verified"]=False
+        started=[]
+        self.app.enqueue=lambda job:started.append(job)
+        with patch.object(ss,"register_next") as registrar:
+            self.assertIsNone(self.app._admit_waiting())
+            registrar.assert_not_called()
+        detail=self.app.detail(job)
+        self.assertEqual(detail["status"],"billing_hold")
+        self.assertTrue(detail["generation_on_hold"])
+        self.assertEqual(started,[])
+        self.assertEqual(self.app.entries()[0]["registration"],"queued")
+        self.assertFalse(self.app.pipeline(job).directory(job).exists())
 
     def test_create_and_retrieve_custom_topic(self):
         topic="Jak powstają bursztyny nad morzem?"

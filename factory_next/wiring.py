@@ -110,7 +110,12 @@ def connected_adapters(runtime, job_id, *, preflight_gate=None):
     # and inspections in their durable preparation budget ledger.
     preparation=PreparationStages(runtime.root,producer.operations,producer.authorize)
     tts=GoogleVoice(lambda:'gateway-managed',runtime.gateway)
-    voice=VoiceStages(runtime.root,tts,runtime.direct,runtime.ledger)
+    # Financial guard defaults OFF. A persisted internal character counter
+    # does not prove that all externally billed TTS usage is accounted for.
+    # Never enable by reusing the Gemini project free-tier receipt.
+    verified=runtime.settings.get('google_tts_external_usage_verified',False)
+    voice=VoiceStages(runtime.root,tts,runtime.direct,runtime.ledger,
+                      tts_billing_verified=verified is True)
     media=MediaStages(runtime.root)
     budget_gate=NextBudgetGate(runtime)
     def combined_preflight(stage, context):
