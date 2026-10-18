@@ -1,4 +1,4 @@
-"""Stop surplus photo inspections without losing required-fact coverage."""
+"""Stop surplus photo inspections while keeping real topical-source coverage."""
 import unittest
 from hashlib import sha256
 from unittest.mock import Mock, patch
@@ -7,7 +7,7 @@ from factory_next.preparation import PreparationStages, required_verified_image_
 
 
 class PhotoBudgetStopTests(unittest.TestCase):
-    def run_materials(self, coverage):
+    def run_materials(self, coverage, seconds=15):
         source_text = "A test source documenting three facts for grounded photographs."
         evidence = {
             "sources": [{"id": "source-1", "url": "https://example.org/source",
@@ -17,7 +17,7 @@ class PhotoBudgetStopTests(unittest.TestCase):
                       for fact in ("f1", "f2", "f3")],
         }
         request = {"topic": "Arbitrary independent subject", "language": "en",
-                   "seconds": 15, "visual_validation_mode": "gemini",
+                   "seconds": seconds, "visual_validation_mode": "gemini",
                    "required_fact_ids": ["f1", "f2", "f3"]}
         source = {"request": request, "evidence": evidence, "queries": ["any"]}
         candidate_ids = ["asset-" + str(i) for i in range(20)]
@@ -69,6 +69,33 @@ class PhotoBudgetStopTests(unittest.TestCase):
         self.assertEqual(operations.inspect_many.call_count, 2)
         self.assertEqual(operations.download.call_count, 8)
         self.assertEqual(len(result["assets"]), 8)
+
+    def test_invisible_source_fact_does_not_exhaust_material_inspections(self):
+        # f2 is inheritance: no still image directly proves it. 45-second
+        # cinema can use a separately source-verified DNA diagram as context.
+        result,operations=self.run_materials(
+            lambda i: ["f1"] if i%2==0 else ["f3"],seconds=45)
+        self.assertEqual(len(result["photos"]),12)
+        self.assertEqual(operations.inspect_many.call_count,3)
+        self.assertEqual(operations.download.call_count,12)
+        self.assertEqual({f for photo in result["photos"]
+                          for f in photo["supported_fact_ids"]},{"f1","f3"})
+        self.assertTrue(all(set(p["supported_fact_ids"]) & {"f1","f2","f3"}
+                            for p in result["photos"]))
+
+    def test_non_topic_illustrations_do_not_count_toward_source_coverage(self):
+        # Model-reported extra topics cannot be promoted to required visual
+        # evidence; still seek enough explicitly inspected source visuals.
+        def coverage(index):
+            if index<4:return ["f4"]
+            if index<8:return ["f1"]
+            return ["f3"]
+        result,operations=self.run_materials(coverage)
+        self.assertEqual(len(result["photos"]),8)
+        self.assertEqual(operations.inspect_many.call_count,3)
+        self.assertEqual(operations.download.call_count,12)
+        self.assertNotIn("f4",{f for photo in result["photos"]
+                               for f in photo["supported_fact_ids"]})
 
     def test_keep_searching_if_photo_count_met_but_required_facts_uncovered(self):
         def coverage(i):

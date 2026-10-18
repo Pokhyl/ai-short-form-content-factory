@@ -151,11 +151,17 @@ async function show(id){
   const scenes=get("scenes");scenes.replaceChildren();
   for(const scene of d.scenes||[]){
     const row=document.createElement("div");row.className="scene";
-    const image=document.createElement("img");image.src=scene.photo_url;image.loading="lazy";image.alt=scene.narration;
+    const image=document.createElement("img");image.src=scene.photo_url;image.loading="lazy";
+    image.alt=scene.visible_description||scene.narration;
     const box=document.createElement("div"),text=document.createElement("p");text.textContent=scene.narration;box.append(text);
     const kind=document.createElement("p");kind.className="small muted";
     kind.textContent=scene.visual_kind==="scientific_illustration"
       ?"Научная иллюстрация · не фотография":"Фотография или наблюдательное изображение";box.append(kind);
+    if(scene.visual_relation==="topic_context"){
+      const context=document.createElement("p");context.className="small muted";
+      context.textContent="Тематическая иллюстрация: факт подтверждён источниками, а не самим изображением.";
+      box.append(context);
+    }
     const at=document.createElement("p");at.className="small muted";at.textContent="Автор: "+(scene.author||"не указан")+(scene.license?" · Лицензия: "+scene.license:"");box.append(at);
     box.append(safeLink(scene.source_url,"Источник изображения"));
     if(scene.license_url)box.append(safeLink(scene.license_url,"Условия лицензии"));

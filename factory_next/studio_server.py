@@ -322,6 +322,8 @@ class Studio:
             scenes.append({"id":scene.get("id"),"narration":scene.get("narration",""),
                            "photo_url":PREFIX+"/api/jobs/"+job+"/photo/"+str(i),
                            "visual_kind":visuals.get(scene.get("material_id"),{}).get("visual_kind","photograph"),
+                           "visual_relation":scene.get("visual_relation","direct_fact_visual"),
+                           "visible_description":visuals.get(scene.get("material_id"),{}).get("visible_description",""),
                            "source_url":asset.get("source_url",""),
                            "author":asset.get("author",""),
                            "license":asset.get("license",""),

@@ -85,13 +85,18 @@ class ServerTests(unittest.TestCase):
                "license_url":"https://creativecommons.org/licenses/by-sa/4.0/"}
         state["outputs"]={
             "materials":{"assets":[asset],"photos":[{"id":asset["id"],
-                "visual_kind":"scientific_illustration"}]},
+                "visual_kind":"scientific_illustration",
+                "visible_description":"Scientific illustration of paired DNA bases"}]},
             "story":{"scenes":[{"id":"beat-1","material_id":asset["id"],
-                                "narration":"DNA contains complementary strands."}]},
+                                "narration":"DNA contains complementary strands.",
+                "visual_relation":"topic_context"}]},
         }
         pipeline.save(pipeline.directory(job),state)
         result=self.app.detail(job)
         self.assertEqual(result["scenes"][0]["visual_kind"],"scientific_illustration")
+        self.assertEqual(result["scenes"][0]["visual_relation"],"topic_context")
+        self.assertEqual(result["scenes"][0]["visible_description"],
+                         "Scientific illustration of paired DNA bases")
         self.assertEqual(result["scenes"][0]["license"],"CC BY-SA")
         self.assertEqual(result["scenes"][0]["author"],"Science author")
         self.assertEqual(result["scenes"][0]["license_url"],

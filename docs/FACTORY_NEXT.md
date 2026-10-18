@@ -1,3 +1,48 @@
+## 2026-10-18 — Factual narration with source-backed topical image context
+
+The user-submitted Ukrainian DNA-45 job
+`0878aafa-5301-4b4f-9b97-294b28ab5fc5` passed source research
+and verified 19 real, distinct Wikimedia images on the fixed image
+decoder. A real Gemini `next-story` answer accurately referenced the
+three required source facts and three different approved images. However
+the second fact ("DNA stores inherited information") is not a
+photographable feature: **0 of 19 images** directly depicted that
+functional claim, although 19 images illustrated DNA structure or
+complementary base pairing. The generic story validator rejected this
+as `MaterialUnavailable`; this job remains terminal and is not
+replayed or represented as a finished MP4.
+
+Factory Next now separates **text evidence** from **image evidence**
+without inventing visible microscopic mechanisms. A narration scene may
+have an independently verified, closely topical image when its fact is
+unobservable in that image, provided the image's pixel inspection
+supports at least one *required source fact* about the requested
+subject. The scene receives a server-owned
+`visual_relation=topic_context` plus an explicit
+`contextual_not_direct_proof=true` contract. Images that support
+unrelated facts cannot stand in. The independent script/source/native
+language/visual-contract review remains mandatory and receives these
+labels; unsupported narration is still blocked. The default legacy
+validator remains strict and this opt-in applies ONLY to Factory Next.
+
+To avoid exhausting model allowance while futilely searching for
+literal pictures of invisible mechanisms, the materials stage stops
+once the preferred number of distinct independently approved topic
+images covers at least two required *visible* facts. The remaining
+source-required facts stay auditable in text. The same old job's
+19-photo set and saved, provider-succeeded Gemini `next-story` JSON
+were replayed in memory with **no external requests**: legacy
+validation rejected it, Factory Next accepted three scenes with
+relations direct/contextual/direct. Fixture regressions cover
+molecular biology, astrophysics and botany, malicious unrelated
+visual substitutes, legacy boundaries and required independent
+semantic review.
+
+This is not acceptance of a newly generated public MP4. Historical
+terminal jobs remain immutable and must not be silently retried.
+
+---
+
 ## 2026-10-18 — Correct bad-image recovery at the actual FFmpeg failure
 
 Follow-up inspection of archived `wikimedia:80800904` from owner job

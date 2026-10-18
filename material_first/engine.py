@@ -244,7 +244,14 @@ def fit_contextual_paragraphs(available, draft, minimum=3, *, seconds=None, anch
     raise MaterialUnavailable('not enough distinct inspected pictures for narrated claims')
 
 
-def validate_story(request, evidence, available, draft):
+def validate_story(request, evidence, available, draft, *, allow_topic_context=False):
+    # An independently source-grounded claim need not be visibly observable
+    # in a still image. Factory Next alone opts into illustrations of the
+    # verified topic as CONTEXT, never as photographic proof of that claim.
+    if type(allow_topic_context) is not bool:
+        raise ValueError('explicit topic context policy required')
+    if allow_topic_context and request.get('presentation_policy') != TOPIC_POLICY:
+        raise ValueError('context images supported only for topic policy')
     known = {m["id"]: m for m in available}
     contextual = request.get("presentation_policy") in WHOLE_POLICIES
     allowed_facts = {f["id"] for f in evidence["facts"]}
@@ -270,8 +277,21 @@ def validate_story(request, evidence, available, draft):
                 or len(set(fact_ids)) != len(fact_ids)
                 or not set(fact_ids) <= (allowed_facts if contextual else set(material["supported_fact_ids"]))):
             raise ValueError("narration exceeds inspected material support")
-        if request.get('presentation_policy') == TOPIC_POLICY and not set(fact_ids) & set(material['supported_fact_ids']):
-            raise MaterialUnavailable('paragraph anchor unrelated to its narrated subject')
+        topic_policy=request.get('presentation_policy') == TOPIC_POLICY
+        direct_fact_ids=(set(fact_ids) & set(material['supported_fact_ids'])
+                         if topic_policy else set())
+        contextual_image=topic_policy and not direct_fact_ids
+        if contextual_image:
+            if not allow_topic_context:
+                raise MaterialUnavailable('paragraph anchor unrelated to its narrated subject')
+            # A topical illustration must already have passed pixel inspection
+            # for at least one REQUIRED fact about this very topic. Otherwise
+            # a generic science image could silently accompany an unrelated
+            # assertion despite exact source text support.
+            inspected_topic_facts=(set(material['supported_fact_ids'])
+                                   & set(request['required_fact_ids']))
+            if not inspected_topic_facts:
+                raise MaterialUnavailable('context visual not inspected for the actual topic')
         text = beat["narration"]
         if not isinstance(text, str) or not text.strip():
             raise ValueError("empty narration")
@@ -281,6 +301,13 @@ def validate_story(request, evidence, available, draft):
             "source_interval": material["source_interval"], "capacity_ms": material["capacity_ms"],
             "contract": {"visual_intent": material["visible_description"],
                          "must_show": [material["visible_description"]], "must_not_show": []}})
+        if allow_topic_context:
+            # This explicit label travels to the independent script reviewer
+            # and Studio; the model cannot claim the visual proves a hidden
+            # mechanism or hereditary information.
+            scenes[-1]['visual_relation']=('topic_context' if contextual_image
+                                           else 'direct_fact_visual')
+            scenes[-1]['contract']['contextual_not_direct_proof']=contextual_image
         if known_targets is not None:
             target_id = beat['visual_target_id']
             if 'validated_visual_anchors' in request and target_id not in request['validated_visual_anchors']:

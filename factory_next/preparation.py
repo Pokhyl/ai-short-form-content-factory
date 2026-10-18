@@ -20,6 +20,17 @@ from .duration import revision_length_window, revision_length_fits, NaturalDurat
 from .voice_length_repair import sentence_contract, assemble_sentence_repair
 
 
+def validated_next_story(request, evidence, photos, draft):
+    """Opt in to topical image context only for a trusted Next topic policy.
+
+    Legacy/test callers lacking the Factory Next policy keep the original
+    four-positional-argument validation contract unchanged.
+    """
+    if request.get('presentation_policy') == TOPIC_POLICY:
+        return validate_story(request,evidence,photos,draft,allow_topic_context=True)
+    return validate_story(request,evidence,photos,draft)
+
+
 def required_verified_image_target(seconds):
     """Viable ~5-second image cadence, rather than quota-costly ~3.5 seconds.
 
@@ -96,10 +107,12 @@ class PreparationStages:
         if not isinstance(candidates,list) or len(candidates)>candidate_limit(request['seconds'],TOPIC_POLICY):
             raise ValueError('photo corpus exceeded bounded discovery budget')
         assets=[];photos=[];hashes=set();identities=set();fingerprints=[]
-        # Model inspections are free-tier but quota-bound. Stop only after
-        # enough DISTINCT, independently inspected photos cover every required
-        # source fact; never consume the remaining discovery budget just to
-        # collect surplus images for an already viable video.
+        # All required narrated facts must remain independently source-backed,
+        # but a hidden function cannot always be proved by image pixels.
+        # Once enough distinct topical images cover two different required
+        # visual facts, additional reviews cannot make inherited information
+        # or other invisible mechanisms photographically observable.
+        # Save Gemini quota for the independently audited story and voice.
         desired=required_verified_image_target(request['seconds'])
         required_facts=set(request['required_fact_ids'])
         for offset in range(0,len(candidates),4):
@@ -125,9 +138,14 @@ class PreparationStages:
             if len(receipts)!=len(batch):raise ValueError('photo inspection omitted input')
             for asset,receipt in zip(batch,receipts):
                 photo=inspected_material(asset,receipt,evidence,facts,'gemini_scientific')
-                if photo is not None:assets.append(asset);photos.append(photo)
-            if len(photos)>=desired and required_facts <= {
-                    fact for photo in photos for fact in photo['supported_fact_ids']}:
+                if photo is not None and required_facts.intersection(photo['supported_fact_ids']):
+                    assets.append(asset);photos.append(photo)
+            visual_coverage=required_facts & {
+                fact for photo in photos for fact in photo['supported_fact_ids']}
+            if (len(photos)>=desired
+                    and len(visual_coverage)>=min(2,len(required_facts))):
+                # Invisible claims are supported by source citations and
+                # the independent script reviewer, not invented photographs.
                 break
         if len(photos)<max(3,minimum_shots(request['seconds'],TOPIC_POLICY)):
             raise ValueError('insufficient distinct source-related verified images')
@@ -143,8 +161,11 @@ class PreparationStages:
         instruction=(f"Write one coherent spoken explanation in native {LANGUAGES[request['language']]}. "
             f"Aim for {round(seconds*2.1)} words for {seconds} seconds of natural speech. "
             "Use only supplied source facts and verified photographic or scientific-illustration subjects. Cover every required_fact_id. "
-            "Assign each paragraph a distinct supplied photo anchor related to its facts. "
-            "Preserve mechanisms and meaning; do not claim the photograph literally shows an invisible process. "
+            "Assign each paragraph a distinct supplied inspected image of the requested topic. "
+            "For an invisible function or mechanism, a verified image of the related topic "
+            "may be CONTEXT, not direct visual evidence for the narration. "
+            "Never claim a picture shows inheritance, molecular information or another "
+            "invisible process. Preserve mechanism and source-based meaning. "
             "Return natural narration directly; no word slots, scene durations or editing instructions.")
         source_context={**request,'evidence':evidence,'materials':compact_materials(photos)}
         try:
@@ -177,7 +198,7 @@ class PreparationStages:
                 {**source_context,'rejected_draft':rejected,
                  'required_fact_ids':request['required_fact_ids']},schema)
         validate_json(draft,schema)
-        scenes=validate_story(request,evidence,photos,draft)
+        scenes=validated_next_story(request,evidence,photos,draft)
         script=' '.join(s['narration'] for s in scenes)
         validate_native_surface(request['language'],script)
         review=self.operations.review_script({**request,'evidence':evidence,'materials':photos,
@@ -249,7 +270,7 @@ class PreparationStages:
              'length_window':window,'sentence_counts':sentence_counts,
              'sentence_limits':sentence_limits},repair_schema)
         draft=assemble_sentence_repair(draft,repair_schema,original['scenes'],window)
-        scenes=validate_story(request,evidence,photos,draft)
+        scenes=validated_next_story(request,evidence,photos,draft)
         script=' '.join(s['narration'] for s in scenes)
         validate_native_surface(request['language'],script)
         review=revision_gemini.review_script(
