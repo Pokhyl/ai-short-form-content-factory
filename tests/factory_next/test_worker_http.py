@@ -209,4 +209,98 @@ class WorkerHTTPBoundary(unittest.TestCase):
                          len(state['outputs']['edit']['shots']))
 
 
+    def test_studio_automatically_completes_45s_mp4_from_two_measured_voices(self):
+        """Click/enqueue -> all 8 stages -> real audited 45s MP4, no manual edits.
+
+        First local TTS result is short; second is approximately 43.656 seconds
+        and must be accepted with a naturally silent tail and unchanged speech.
+        All materials/TTS are controlled fixtures: no Gemini or external sends.
+        """
+        from concurrent.futures import ThreadPoolExecutor
+        from threading import RLock
+        from factory_next.studio_server import Studio
+        from material_first.rendering import probe
+
+        first=audio_file(self.root, 'first-40s.mp3', 40.58, 440)
+        second=audio_file(self.root, 'second-43s.mp3', 43.63, 500)
+        voice,provider,quota=self.create_stage([first,second])
+        measured_second=round(float(probe(second)['format']['duration'])*1000)
+        self.assertTrue(43000<=measured_second<45000)
+        photo_dir=self.root/'photos'
+        photo_dir.mkdir()
+        assets=[];photos=[]
+        for index in range(9):
+            path=photo_dir/f'dna-fixture-{index}.png'
+            color=f'0x{40+index*15:02x}{65+index*9:02x}{85+index*10:02x}'
+            subprocess.run(['ffmpeg','-nostdin','-v','error','-y',
+                 '-f','lavfi','-i',f'color=c={color}:s=144x256',
+                 '-frames:v','1','-update','1',str(path)],check=True,timeout=15)
+            signature=sha(path)
+            assets.append({'id':f'dna-photo-{index}',
+                 'path':str(path.relative_to(self.root)),
+                 'sha256':signature,'media_type':'photo',
+                 'source_url':f'https://example.invalid/fixture/{index}',
+                 'author':'isolated local test', 'license':'CC0',
+                 'license_url':'https://creativecommons.org/publicdomain/zero/1.0/'})
+            photos.append({'id':f'dna-photo-{index}', 'sha256':signature,
+                'media_type':'photo', 'supported_fact_ids':[f'fact-{index//3}']})
+        scenes=[{'id':f'beat-{i+1}','material_id':f'dna-photo-{i*3}',
+                 'narration':f'Grounded explanation segment {i+1} for the DNA molecule.',
+                 'evidence_ids':[f'fact-{i}']} for i in range(3)]
+        script=' '.join(x['narration'] for x in scenes)
+        updated=[{**scene, 'narration':scene['narration']+' Another verified detail.'}
+                 for scene in scenes]
+        replacement={'script':' '.join(x['narration'] for x in updated),
+                     'scenes':updated,'review':{'native_language_quality':True}}
+        class OfflinePreparation:
+            def __init__(self): self.revisions=0
+            def research(self,ctx): return {'fixture':'read-only source'}
+            def materials(self,ctx): return {'assets':assets,'photos':photos}
+            def story(self,ctx): return {'script':script,'scenes':scenes,
+                'review':{'native_language_quality':True}}
+            def revise_story(self,ctx,ms):
+                self.revisions+=1
+                return replacement
+        preparation=OfflinePreparation()
+        def align(ctx):
+            selected=ctx['outputs']['voice']
+            self.assertEqual(selected['attempt_count'],2)
+            duration=selected['duration_ms']
+            return {'audio_sha256':selected['sha256'],
+                     'timings':[{'start_ms':duration*i/3,
+                                 'end_ms':duration*(i+1)/3}
+                                for i in range(3)]}
+        voice.alignment=align
+        adapters=FactoryNextAdapters(preparation,voice,MediaStages(self.root))
+        checkpoint_root=self.root/'automatic-checkpoints'
+        job=str(uuid4()); revision='e'*40
+        Pipeline(checkpoint_root,adapters,revision).create(job,'DNA molecule','uk',45)
+        studio=Studio.__new__(Studio)
+        studio.lock=RLock()
+        studio.inflight=set()
+        studio.workers=ThreadPoolExecutor(max_workers=1)
+        studio.pipeline=lambda job_id,with_adapters=False: Pipeline(
+            checkpoint_root,adapters,revision)
+        # This is the actual Studio submission mechanism, not eight manually
+        # invoked Pipeline steps. It must reach audit and finish unattended.
+        studio.enqueue(job)
+        studio.workers.shutdown(wait=True)
+        state=Pipeline(checkpoint_root,None,revision).snapshot(job)
+        self.assertEqual(state['status'],'complete',state.get('error_type'))
+        self.assertEqual(len(state['outputs']),8)
+        self.assertEqual(provider.calls,2)
+        self.assertEqual(preparation.revisions,1)
+        self.assertEqual(len(quota.operations),4)
+        self.assertEqual(state['outputs']['voice']['duration_ms'],measured_second)
+        self.assertEqual(state['outputs']['edit']['tail_silence_ms'],45000-measured_second)
+        self.assertEqual(state['outputs']['render']['audio_tempo_factor'],1.0)
+        self.assertTrue(state['outputs']['audit']['passed'])
+        self.assertTrue(all(state['outputs']['audit']['gates'].values()))
+        video=self.root/'renders'/job/'final.mp4'
+        self.assertTrue(video.is_file())
+        self.assertEqual(sha(video),state['outputs']['render']['sha256'])
+        self.assertEqual(round(float(probe(video)['format']['duration'])),45)
+        self.assertFalse(studio.inflight)
+
+
 if __name__=='__main__': unittest.main()

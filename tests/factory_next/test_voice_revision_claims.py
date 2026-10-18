@@ -23,10 +23,12 @@ class StrictLedger:
 class SyntheticGemini:
     def __init__(self,calls):self.calls=calls
     def generate(self,key,instruction,context,schema):
+        # Voice correction now produces a fixed, server-owned natural
+        # sentence structure in exactly one model call.
         result=self.calls.run(key,'gemini',{'instruction':instruction,'context':context},
-            lambda:{'beats':[{'narration':' '.join(['pszczol']*10),
-                              'material_id':f'p{i}','fact_ids':[f'f{i}']}
-                             for i in range(3)]})
+            lambda:{f'beat_{i+1}':{'sentence_1':
+                    ' '.join(['pszczol']*10)+f' temat{i}.'}
+                    for i in range(3)})
         return result,{'model':'controlled'}
     def review_script(self,request):
         return self.calls.run('script-review','gemini',{'script':request['script']},

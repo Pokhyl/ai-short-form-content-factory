@@ -18,7 +18,7 @@ def validate_native_surface(language, narration):
 
 def compact_materials(materials):
     """Keep semantic observations; HTTP receipts belong to server verification."""
-    fields = ('id','media_type','visible_description','supported_fact_ids',
+    fields = ('id','media_type','visual_kind','visible_description','supported_fact_ids',
               'matched_visual_targets','source_interval')
     inspection_fields = ('validation_method','medium','topic_relation','visible_fact_details',
                          'target_matches','visual_qualification_protocol')

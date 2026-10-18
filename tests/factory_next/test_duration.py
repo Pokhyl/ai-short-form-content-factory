@@ -212,9 +212,12 @@ class NaturalDurationTests(unittest.TestCase):
             self.assertFalse(any('/voiceover-candidates/' in u for u in worker.calls))
 
     def test_strict_measured_bounds_and_nonbinding_word_hint(self):
+        self.assertTrue(duration_fits(13000,15))
         self.assertTrue(duration_fits(14000,15))
         self.assertTrue(duration_fits(15000,15))
-        self.assertFalse(duration_fits(13999,15))
+        self.assertTrue(duration_fits(43656,45))
+        self.assertFalse(duration_fits(12999,15))
+        self.assertFalse(duration_fits(42999,45))
         self.assertFalse(duration_fits(15001,15))
         self.assertGreater(revision_word_target('one two three four',9000,15),4)
         for value in (float('nan'),float('inf'),0,-1):

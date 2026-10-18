@@ -21,6 +21,19 @@ class PresentationTests(unittest.TestCase):
             self.assertEqual(tempo_factor(original,seconds),1.0)
         for original in [58.999,60.001]:
             with self.assertRaises(ValueError):tempo_factor(original,60)
+    def test_factory_next_two_second_natural_tail_does_not_relax_legacy(self):
+        from material_first.presentation import TOPIC_POLICY
+        self.assertEqual(tempo_factor(43.656,45,TOPIC_POLICY),1.0)
+        self.assertEqual(tempo_factor(43,45,TOPIC_POLICY),1.0)
+        with self.assertRaises(ValueError):
+            tempo_factor(42.999,45,TOPIC_POLICY)
+        with self.assertRaises(ValueError):
+            tempo_factor(45.001,45,TOPIC_POLICY)
+        with self.assertRaises(ValueError):
+            tempo_factor(43.656,45)
+        with self.assertRaises(ValueError):
+            tempo_factor(43.656,45,'whole-photo-exact-v2')
+
     def test_nonfinite_audio_and_unsupported_target_are_rejected(self):
         for duration in [float('nan'),float('inf'),0,-1]:
             with self.assertRaises(ValueError):tempo_factor(duration,30)

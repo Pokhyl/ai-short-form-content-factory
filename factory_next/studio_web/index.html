@@ -49,7 +49,7 @@ video{display:block;background:#121b13;border-radius:12px;width:100%;aspect-rati
 <main>
 <header>
 <a class="brand" href="/factory-next/"><span class="logo">H</span>Студия видео</a>
-<span class="small smallheader">Твоя тема → реальные фотографии → MP4</span>
+<span class="small smallheader">Твоя тема → проверенные изображения → MP4</span>
 </header>
 <div class="kicker">AI SHORT-FORM CONTENT FACTORY</div>
 <h1>Создайте видео по своей теме</h1>
@@ -65,7 +65,7 @@ video{display:block;background:#121b13;border-radius:12px;width:100%;aspect-rati
   </div>
   <button id="submit" class="primary full" type="submit">Создать видео</button>
   <p id="message" class="error" role="alert" hidden></p>
-  <p class="small muted">Новая фабрика · Проверка фактов и фотографий · Естественная озвучка</p>
+  <p class="small muted">Новая фабрика · Проверка фактов и изображений · Естественная озвучка</p>
 </form>
 <section class="panel">
   <div class="panelhead"><h2>Ваши видео</h2><span class="small">02</span></div>
@@ -85,7 +85,7 @@ video{display:block;background:#121b13;border-radius:12px;width:100%;aspect-rati
     </div>
     <div>
       <h3>Текст озвучки</h3><p id="script" class="script"></p>
-      <h3>Фотографии и сцены</h3><div id="scenes"></div>
+      <h3>Изображения и сцены</h3><div id="scenes"></div>
       <details class="details"><summary>Источники фактов</summary><div id="sources" class="links"></div></details>
       <details class="details"><summary>Технические сведения</summary><p id="technical" class="small muted"></p></details>
     </div>
@@ -97,7 +97,7 @@ video{display:block;background:#121b13;border-radius:12px;width:100%;aspect-rati
 const API="/factory-next/api/jobs",get=id=>document.getElementById(id);
 let selected=null, timer=null, detail=null;
 const stages={research:"Проверка источников",materials:"Поиск и проверка фотографий",story:"Создание и проверка сценария",voice:"Генерация озвучки",alignment:"Синхронизация сцен",edit:"Планирование монтажа",render:"Создание MP4",audit:"Финальная проверка качества"};
-const label=s=>s==="complete"?"Готово · проверка пройдена":s==="provider_wait"?"Сервис перегружен, повтор по расписанию":s==="needs_attention"?"Задание остановлено для проверки":s==="queued"?"В очереди":s==="registration_pending"?"Регистрация не завершена":s==="deferred"?"Ожидание провайдера":s==="running"?"Выполняется":s==="checking"||s==="checking_provider"?"Проверка разрешения на продолжение":"В работе";
+const label=s=>s==="complete"?"Готово · проверка пройдена":s==="provider_wait"?"Сервис перегружен, повтор по расписанию":s==="needs_attention"?"Задание остановлено для проверки":s==="queued"?"В очереди":s==="queued_for_quota"?"В очереди · автоматический запуск после освобождения лимита":s==="registration_pending"?"Регистрация не завершена":s==="deferred"?"Ожидание провайдера":s==="running"?"Выполняется":s==="checking"||s==="checking_provider"?"Проверка разрешения на продолжение":"В работе";
 const escapeText=s=>String(s??"");
 async function request(url,opts={}){
   const response=await fetch(url,{credentials:"same-origin",cache:"no-store",...opts});
@@ -131,11 +131,18 @@ async function show(id){
   detail=d;get("result").hidden=false;
   get("result-title").textContent=d.request.topic;
   const stage=d.next_stage&&stages[d.next_stage]?" · "+stages[d.next_stage]:"";
-  const wait=d.retry_at?" · повтор после "+new Date(d.retry_at).toLocaleTimeString():"";
+  const wait=d.eligible_after?" · запуск не раньше "+new Date(d.eligible_after).toLocaleString():
+    d.retry_at?" · повтор после "+new Date(d.retry_at).toLocaleTimeString():"";
   get("status").textContent=label(d.status)+stage+wait+(d.voice_duration_ms?" · голос "+(d.voice_duration_ms/1000).toFixed(2)+" с":"");
   const failure=d.status==="needs_attention";
   get("failure").hidden=!failure;
-  get("failure").textContent=failure?"Выполнение остановлено: "+(d.error_type||"требуется проверка")+". Уже полученные материалы сохранены.":"";
+  get("failure").textContent=failure?(d.failure_reason==="GOOGLE_OAUTH_RECONNECT_REQUIRED"
+    ?"Создание остановлено: Google OAuth в n8n требует повторной авторизации. Этот запрос автоматически не повторяется."
+    :d.failure_reason==="GEMINI_RATE_OR_QUOTA_EXHAUSTED"
+    ?"Google Gemini вернул HTTP 429: превышен лимит запросов или квота. Сценарий и проверенные изображения сохранены. Повтор этого задания не запускается; время восстановления лимита пока неизвестно."
+    :d.error_type==="NaturalDurationRejected"
+    ?"Озвучка не уложилась в заданную длительность. Сценарий и проверенные изображения сохранены. Повторное выполнение остановленного задания не запускается."
+    :"Выполнение остановлено: "+(d.error_type||"требуется проверка")+". Уже полученные материалы сохранены."):"";
   get("script").textContent=d.script||"Текст появится после проверки сценария.";
   const ready=d.machine_pass===true;
   const player=get("video");
@@ -146,8 +153,13 @@ async function show(id){
     const row=document.createElement("div");row.className="scene";
     const image=document.createElement("img");image.src=scene.photo_url;image.loading="lazy";image.alt=scene.narration;
     const box=document.createElement("div"),text=document.createElement("p");text.textContent=scene.narration;box.append(text);
-    const at=document.createElement("p");at.className="small muted";at.textContent="Автор: "+(scene.author||"не указан");box.append(at);
-    box.append(safeLink(scene.source_url,"Источник фотографии"));row.append(image,box);scenes.append(row);
+    const kind=document.createElement("p");kind.className="small muted";
+    kind.textContent=scene.visual_kind==="scientific_illustration"
+      ?"Научная иллюстрация · не фотография":"Фотография или наблюдательное изображение";box.append(kind);
+    const at=document.createElement("p");at.className="small muted";at.textContent="Автор: "+(scene.author||"не указан")+(scene.license?" · Лицензия: "+scene.license:"");box.append(at);
+    box.append(safeLink(scene.source_url,"Источник изображения"));
+    if(scene.license_url)box.append(safeLink(scene.license_url,"Условия лицензии"));
+    row.append(image,box);scenes.append(row);
   }
   const sources=get("sources");sources.replaceChildren();
   for(const source of d.sources||[])sources.append(safeLink(source.url,source.title||source.url));

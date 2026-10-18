@@ -6,7 +6,7 @@ ambiguous stage or reuses prior audio. Does not touch factory_v3 routes.
 """
 import argparse
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import hashlib
 import json
 import mimetypes
@@ -29,6 +29,7 @@ PREFIX="/factory-next"
 STAGES=("research","materials","story","voice","alignment","edit","render","audit")
 DAY_LIMIT=6
 MAX_ACTIVE=2
+MAX_WAITING=3
 WEB=Path(__file__).with_name("studio_web")/"index.html"
 
 
@@ -76,6 +77,81 @@ class Studio:
             raise FileNotFoundError("unknown studio video")
         return self.pipeline(job).snapshot(job)
 
+    @staticmethod
+    def _admission_date(row):
+        """Admission consumes the daily START limit, not the submission date.
+
+        Historical completed records predate the queue and were admitted when
+        created. Queued records have eligible_after but no admitted_at.
+        """
+        if row.get("registration")!="complete":
+            return None
+        if row.get("admitted_at"):
+            return row["admitted_at"][:10]
+        if "eligible_after" not in row:
+            return row.get("created_at","")[:10]
+        return None
+
+    def _active_count(self,rows):
+        active=0
+        for row in rows:
+            if row.get("registration")=="registering":
+                active+=1
+                continue
+            if not self._admission_date(row):
+                continue
+            try:
+                state=self.pipeline(row["id"]).snapshot(row["id"])
+                if state["status"] in ("ready","running","checking",
+                                       "checking_provider","deferred","provider_wait"):
+                    active+=1
+            except (OSError,ValueError,KeyError):
+                # Uncertain registration/checkpoint must not free capacity.
+                active+=1
+        return active
+
+    def _admit_waiting(self,now=None):
+        """Register exactly one due request, then persist its runnable state.
+
+        Queued items carry NO PostgreSQL preparation, so a new code version can
+        safely register them under its own current immutable revision. Before
+        any uncertain external registration, the exclusive record is marked
+        'registering': a crash will NOT cause automatic duplicate dispatch.
+        """
+        now=now or datetime.now(timezone.utc)
+        if now.tzinfo is None or now.utcoffset() is None:
+            raise ValueError("aware admission clock required")
+        with self.lock:
+            rows=self.entries()
+            if any(x.get("registration")=="registering" for x in rows):
+                # An uncertain prior registration needs explicit reconciliation.
+                return None
+            if sum(self._admission_date(x)==now.date().isoformat() for x in rows)>=DAY_LIMIT:
+                return None
+            if self._active_count(rows)>=MAX_ACTIVE:
+                return None
+            for row in reversed(rows):
+                if row.get("registration")!="queued":
+                    continue
+                due=datetime.fromisoformat(row["eligible_after"])
+                if due.tzinfo is None or due.utcoffset() is None or due>now:
+                    continue
+                row["registration"]="registering"
+                self._save_record(row)
+                job=row["id"];request=row["request"]
+                registered=register_next(self.runtime,job,request["topic"],
+                                         request["language"],request["seconds"])
+                if registered.get("created") is not True:
+                    raise RuntimeError("queued registration uncertain")
+                self.pipeline(job).create(job,request["topic"],
+                                          request["language"],request["seconds"])
+                row["registration"]="complete"
+                row["admitted_at"]=now.isoformat()
+                row["registered_revision"]=self.revision
+                self._save_record(row)
+                return job
+        return None
+
     def create(self,data):
         if not isinstance(data,dict) or set(data)!={"topic","language","seconds"}:
             raise ValueError("only topic, language and duration are accepted")
@@ -89,34 +165,43 @@ class Studio:
         with self.lock:
             rows=self.entries()
             today=now.date().isoformat()
-            if sum(x.get("created_at","").startswith(today) for x in rows)>=DAY_LIMIT:
-                raise OverflowError("daily free-tier Studio test limit reached")
-            active=0
-            for row in rows:
-                try:
-                    s=self.pipeline(row["id"]).snapshot(row["id"])
-                    if s["status"] in ("ready","running","checking","checking_provider","deferred","provider_wait"):
-                        active+=1
-                except (OSError,ValueError,KeyError):
-                    active+=1
-            if active>=MAX_ACTIVE:
-                raise OverflowError("two jobs already in progress")
+            used=sum(self._admission_date(x)==today for x in rows)
+            active=self._active_count(rows)
+            waiting=sum(x.get("registration") in ("queued","registering")
+                        for x in rows)
+            delayed=(used>=DAY_LIMIT or active>=MAX_ACTIVE or waiting>0)
+            if delayed and waiting>=MAX_WAITING:
+                raise OverflowError("Studio waiting queue is full")
             job=str(uuid4())
             record={"id":job,"request":{"topic":topic,"language":language,"seconds":seconds},
-                    "created_at":now.isoformat(),"registration":"pending"}
-            # Exclusive registration marker makes an interrupted creation non-replayable.
+                    "created_at":now.isoformat(),
+                    "registration":"queued" if delayed else "pending"}
+            if delayed:
+                # Waiting in the queue does not authorize a provider request.
+                # Daily admission allowance resets at 00:00 UTC.
+                due=(datetime.combine(now.date()+timedelta(days=1),
+                                      datetime.min.time(),tzinfo=timezone.utc)
+                     if used>=DAY_LIMIT else now)
+                record["eligible_after"]=due.isoformat()
+            # Store a unique durable identifier before any external operation.
+            # Delayed items intentionally do NOT register a preparation yet.
+            # Its registration and code revision are established at admission.
             with self.record(job).open("x") as stream:
                 json.dump(record,stream,ensure_ascii=False)
                 stream.flush()
                 os.fsync(stream.fileno())
-            registered=register_next(self.runtime,job,topic,language,seconds)
-            if registered.get("created") is not True:
-                raise RuntimeError("new job registration uncertain")
-            self.pipeline(job).create(job,topic,language,seconds)
-            record["registration"]="complete"
-            self._save_record(record)
-        self.enqueue(job)
-        return {"id":job,"status":"queued"}
+            if not delayed:
+                registered=register_next(self.runtime,job,topic,language,seconds)
+                if registered.get("created") is not True:
+                    raise RuntimeError("new job registration uncertain")
+                self.pipeline(job).create(job,topic,language,seconds)
+                record["registration"]="complete"
+                record["admitted_at"]=now.isoformat()
+                record["registered_revision"]=self.revision
+                self._save_record(record)
+        if not delayed:
+            self.enqueue(job)
+        return {"id":job,"status":"queued_for_quota" if delayed else "queued"}
 
     def _save_record(self,record):
         path=self.record(record["id"])
@@ -129,6 +214,11 @@ class Studio:
 
     def enqueue(self,job):
         with self.lock:
+            # A queued submission is never dispatched before durable admission.
+            if hasattr(self,"records"):
+                row=json.loads(self.record(job).read_text())
+                if row.get("registration")!="complete":
+                    return
             if job in self.inflight:
                 return
             self.inflight.add(job)
@@ -170,6 +260,13 @@ class Studio:
 
     def _schedule(self):
         while not self.stop.wait(8):
+            try:
+                admitted=self._admit_waiting()
+                if admitted is not None:
+                    self.enqueue(admitted)
+            except Exception:
+                # Preserve queued jobs for the next safe scheduler check.
+                pass
             for row in self.entries():
                 if row.get("registration")!="complete":
                     continue
@@ -193,28 +290,64 @@ class Studio:
 
     def detail(self,job):
         job=safe_id(job)
+        record=json.loads(self.record(job).read_text())
+        if record.get("registration")!="complete":
+            queued=record.get("registration")=="queued"
+            return {"id":job,"request":record["request"],
+                    "status":"queued_for_quota" if queued else "registration_pending",
+                    "eligible_after":record.get("eligible_after") if queued else None,
+                    "next_stage":"research","completed_stages":[],
+                    "error_type":None,"failure_reason":None,"retry_at":None,
+                    "script":"","scenes":[],"sources":[],"photo_count":0,
+                    "voice_duration_ms":None,"machine_pass":False,"video_url":None,
+                    "video_sha256":None,"source_revision":None}
         state=self.snapshot(job)
         outputs=state.get("outputs",{})
         research=outputs.get("research",{})
         assets={a["id"]:a for a in outputs.get("materials",{}).get("assets",[])}
+        visuals={p["id"]:p for p in outputs.get("materials",{}).get("photos",[])}
         active_story=outputs.get("voice",{}).get("reviewed_story",outputs.get("story",{}))
         scenes=[]
         for i,scene in enumerate(active_story.get("scenes",[])):
             asset=assets.get(scene.get("material_id"),{})
             scenes.append({"id":scene.get("id"),"narration":scene.get("narration",""),
                            "photo_url":PREFIX+"/api/jobs/"+job+"/photo/"+str(i),
+                           "visual_kind":visuals.get(scene.get("material_id"),{}).get("visual_kind","photograph"),
                            "source_url":asset.get("source_url",""),
                            "author":asset.get("author",""),
-                           "license":asset.get("license","")})
+                           "license":asset.get("license",""),
+                           "license_url":asset.get("license_url","")})
         complete=(state["status"]=="complete" and
                   outputs.get("audit",{}).get("passed") is True and
                   outputs.get("render",{}).get("sha256")==outputs.get("audit",{}).get("sha256"))
         sources=[{"title":x.get("title",""),"url":x.get("url","")}
                  for x in research.get("evidence",{}).get("sources",[])
                  if isinstance(x,dict)]
-        return {"id":job,"request":state["request"],"status":state["status"],
+        # Owner-facing, read-only diagnosis from the durable failure receipt.
+        # Never expose provider headers, messages, tokens or execution data.
+        failure_reason=None
+        if state["status"]=="needs_attention" and state.get("error_type")=="HTTPFailure":
+            try:
+                failure_reason=self.runtime.ledger._call(
+                    "SELECT CASE WHEN EXISTS("
+                    "SELECT 1 FROM factory_v3.preparation_calls "
+                    "WHERE preparation_id=%s::uuid AND state='unknown' "
+                    "AND response->>'error_reason'='OAUTH_GRANT_REJECTED'"
+                    ") THEN 'GOOGLE_OAUTH_RECONNECT_REQUIRED' "
+                    "WHEN EXISTS(SELECT 1 FROM factory_v3.preparation_calls "
+                    "WHERE preparation_id=%s::uuid AND kind='gemini' "
+                    "AND state='unknown' AND error_code='HTTPFailure' "
+                    "AND response->>'status'='429' "
+                    "AND response->>'error_status'='RESOURCE_EXHAUSTED') "
+                    "THEN 'GEMINI_RATE_OR_QUOTA_EXHAUSTED' ELSE NULL END",
+                    (job,job))
+            except Exception:
+                failure_reason=None
+        return {"id":job,"request":state["request"],
+                "status":state["status"],"eligible_after":None,
                 "next_stage":state.get("next_stage"),"completed_stages":list(outputs),
-                "error_type":state.get("error_type"),"retry_at":state.get("provider_wait_receipt",{}).get("retry_at"),
+                "error_type":state.get("error_type"),"failure_reason":failure_reason,
+                "retry_at":state.get("provider_wait_receipt",{}).get("retry_at"),
                 "script":active_story.get("script",""),"scenes":scenes,"sources":sources,
                 "photo_count":len(outputs.get("materials",{}).get("photos",[])),
                 "voice_duration_ms":outputs.get("voice",{}).get("duration_ms"),

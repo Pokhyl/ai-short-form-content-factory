@@ -83,14 +83,16 @@ def validate_timeline(seconds, count, timeline, policy=LEGACY_POLICY):
     if cursor!=seconds*FPS: raise ValueError('visual frames do not cover requested duration')
     return timeline
 
-def tempo_factor(source_seconds,target_seconds):
+def tempo_factor(source_seconds,target_seconds,policy=LEGACY_POLICY):
     preferred_shots(target_seconds)
     if not math.isfinite(source_seconds) or source_seconds <= 0:
         raise ValueError('invalid source audio duration')
     # A duration mismatch must never be concealed by changing speech speed.
-    # At most one second of trailing silence preserves the requested frame count.
-    if not 0 <= target_seconds - source_seconds <= 1:
-        raise ValueError('natural narration must end within one second of requested time; changing speech speed is forbidden')
+    # Allow a natural final pause up to 2s for Factory Next only. The
+    # unchanged older pipelines still permit no more than one second.
+    maximum_tail=2 if policy==TOPIC_POLICY else 1
+    if not 0 <= target_seconds - source_seconds <= maximum_tail:
+        raise ValueError('natural narration outside allowed trailing silence; changing speech speed is forbidden')
     return 1.0
 
 def render_whole_photos(directory, audio_source, photos, seconds, *, policy=LEGACY_POLICY, timeline=None):
@@ -100,7 +102,7 @@ def render_whole_photos(directory, audio_source, photos, seconds, *, policy=LEGA
     if len(set(hashes))!=len(hashes): raise ValueError('repeated photo bytes')
     original_ms=round(float(probe(audio_source)['format']['duration'])*1000)
     source_audio_hash=sha(audio_source)
-    rate=tempo_factor(original_ms/1000,seconds)
+    rate=tempo_factor(original_ms/1000,seconds,policy)
     directory.mkdir(parents=True,exist_ok=False)
     # Use a lossless fitted track so the expected audio duration is exact.
     # Keep the encoded original immutable; no new TTS and no second synthesis.
@@ -147,7 +149,7 @@ def render_whole_photos(directory, audio_source, photos, seconds, *, policy=LEGA
            'frame_count':int(v[0]['nb_frames']),'shot_count':len(photos),'unique_photo_count':len(set(hashes)),
            'framing':'whole photograph, aspect preserved, solid matte, no crop or blur',
            'source_audio_sha256':source_audio_hash,'source_audio_duration_ms':original_ms,
-           'audio_tempo_factor':rate,'fitted_audio_sha256':sha(fitted),'audio_policy':'natural speed, at most one second trailing silence, original unchanged',
+           'audio_tempo_factor':rate,'fitted_audio_sha256':sha(fitted),'audio_policy':('natural speed, at most two seconds trailing silence, original unchanged' if policy==TOPIC_POLICY else 'natural speed, at most one second trailing silence, original unchanged'),
            'new_tts_calls':0,'full_decode_pass':True,'video_sha256':sha(final),
            'timeline':timeline,'photos':[{'path':str(p),'sha256':h} for p,h in zip(photos,hashes)]}
     (directory/'proof.json').write_text(json.dumps(proof,indent=2)+'\n')

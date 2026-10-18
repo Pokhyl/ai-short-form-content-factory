@@ -3,7 +3,7 @@ import json
 import math
 from pathlib import Path
 from .rendering import probe, run, sha
-from .presentation import visual_timeline, tempo_factor, phrase_frames, CALM_POLICY, CALM_POLICIES
+from .presentation import visual_timeline, tempo_factor, phrase_frames, CALM_POLICY, CALM_POLICIES, TOPIC_POLICY
 from scripts.audit_final_media import pcm
 
 
@@ -38,7 +38,7 @@ def audit_whole(root, job_id, payload, expected_hash, expected_voice_hash, *, ti
         'exact_visual_timeline': [{'start_frame': s['start_frame'], 'end_frame': s['end_frame']} for s in segments] == cuts,
         'staged_photo_bytes': all(sha(Path(s['asset_path'])) == s['asset_sha256'] for s in segments),
         'whole_photo_policy': manifest['duration_policy'] == payload['presentation_policy'],
-        'natural_voice_speed': manifest['audio_tempo_factor'] == tempo_factor(manifest['audio_duration_ms'] / 1000, seconds) == 1.0,
+        'natural_voice_speed': manifest['audio_tempo_factor'] == tempo_factor(manifest['audio_duration_ms'] / 1000, seconds, policy) == 1.0,
     }
     run(['ffmpeg', '-nostdin', '-v', 'error', '-xerror', '-i', str(final), '-f', 'null', '-'])
     gates['full_decode'] = True
@@ -52,7 +52,7 @@ def audit_whole(root, job_id, payload, expected_hash, expected_voice_hash, *, ti
     count = min(len(original), len(right))
     energy = sum(x*x for x in original[:count]) * sum(x*x for x in right[:count])
     original_correlation = (sum(x*y for x,y in zip(original[:count], right[:count])) / math.sqrt(energy)) if energy else 0
-    gates['original_narration_preserved'] = original_correlation >= .99 and 0 <= len(right)-len(original) <= 16000
+    gates['original_narration_preserved'] = original_correlation >= .99 and 0 <= len(right)-len(original) <= (32000 if policy==TOPIC_POLICY else 16000)
     if not all(gates.values()):
         raise ValueError('whole-photo media audit failed: ' + ','.join(k for k,v in gates.items() if not v))
     return {'passed': True, 'sha256': expected_hash, 'gates': gates,

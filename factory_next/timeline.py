@@ -20,7 +20,7 @@ def compile_edit(story, photos, timings, audio_duration_ms, seconds):
     preferred = preferred_shots(seconds, TOPIC_POLICY)
     if not isinstance(audio_duration_ms, (int, float)) or not math.isfinite(audio_duration_ms):
         raise EditUnavailable('finite measured audio duration required')
-    if not seconds*1000-1000 <= audio_duration_ms <= seconds*1000:
+    if not seconds*1000-2000 <= audio_duration_ms <= seconds*1000:
         raise EditUnavailable('natural speech does not fit the requested duration')
     if not story or len(timings) != len(story):
         raise EditUnavailable('measured alignment must cover every paragraph')

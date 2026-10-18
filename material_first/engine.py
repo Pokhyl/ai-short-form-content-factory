@@ -73,9 +73,14 @@ def inspected_material(asset, receipt, evidence, facts, validation_mode="gemini"
     if validation_mode == "metadata":
         from .metadata import material
         return material(asset, receipt, evidence, facts)
-    if validation_mode != "gemini" or receipt.get("validation_method") == "metadata":
+    if validation_mode not in ('gemini', 'gemini_scientific') or receipt.get("validation_method") == "metadata":
         raise ValueError("visual validation mode changed")
     """Metadata tags alone can never admit a material to the composer."""
+    from .scientific_illustrations import is_scientific_illustration
+    source_illustration=(validation_mode=='gemini_scientific'
+                         and is_scientific_illustration(asset,receipt))
+    if receipt.get('inspection_protocol') == 'source-illustration-v1' and not source_illustration:
+        return None
     if (receipt.get("asset_id") != asset["id"] or receipt.get("asset_sha256") != asset["sha256"]
             or receipt.get("evidence_sha256") != digest(evidence)
             or not receipt.get("receipt_id") or not receipt.get("model")
@@ -101,9 +106,9 @@ def inspected_material(asset, receipt, evidence, facts, validation_mode="gemini"
         capacity = end - start
         if capacity < 1000:
             return None
-    if receipt.get('inspection_protocol') == 'topic-specific-v1':
+    if receipt.get('inspection_protocol') in ('topic-specific-v1','source-illustration-v1'):
         relation = receipt.get('topic_relation', {})
-        if (receipt.get('medium') not in {'photograph','observational_image'}
+        if (not source_illustration and receipt.get('medium') not in {'photograph','observational_image'}
             or relation.get('kind') not in {'direct_subject','direct_part_or_stage'}
             or not str(relation.get('visible_subject','')).strip() or not str(relation.get('connection','')).strip()):
             return None
@@ -114,6 +119,8 @@ def inspected_material(asset, receipt, evidence, facts, validation_mode="gemini"
             "sha256": asset["sha256"], "visible_description": visible.strip(),
             "supported_fact_ids": support, "source_interval": interval,
             "capacity_ms": capacity, "inspection": deepcopy(receipt)}
+    if validation_mode == 'gemini_scientific':
+        result['visual_kind'] = 'scientific_illustration' if source_illustration else 'photograph'
     if target_matches is not None:
         result['matched_visual_targets'] = target_matches
     return result

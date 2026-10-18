@@ -1,3 +1,79 @@
+## Durable automatic Studio waiting queue — 2026-10-18
+
+The owner enters their own topic once. When daily Studio admission (6 runs
+per UTC date) is exhausted or two existing jobs are still active, Studio now
+accepts a bounded queue of up to 3 extra submissions and displays
+"queued_for_quota" with an earliest start time. No provider request, Gemini
+budget reservation or PostgreSQL preparation is made while waiting.
+
+The eight-second Studio scheduler automatically admits the oldest eligible
+queued job when both daily and concurrent admission permit it, registers
+the preparation exactly once, creates immutable stage checkpoints using
+the CURRENT deployed revision, and enqueues the normal 8-stage factory
+worker. A deployment between request submission and its start therefore
+does not bind the waiting request to an obsolete container revision.
+
+An exclusive record is durably marked "registering" before database
+registration. Ambiguous registration failures remain pending for
+reconciliation rather than being resent or creating duplicate provider
+work. The queue is persistent across container restarts (media volume).
+All existing pre-queue Studio jobs count against daily admissions using
+their original creation date. A GET request for a waiting job is safe and
+returns status, its selected topic/language/duration, and eligible_after.
+
+Tests exercise public GET, FIFO admission over UTC resets, queue bounds,
+concurrency, old-to-new revision upgrades, crash uncertainty and automatic
+scheduler dispatch. These tests do not assert that a fresh provider run
+has already generated an MP4; the existing isolated Studio integration test
+independently verifies all eight stages and successful MP4 audit.
+
+---
+
+## Two-second natural ending for measured Factory Next voice — 2026-10-18
+
+A new, real 45-second Ukrainian DNA job recorded two independently measured
+MP3 attempts. The second was 43.656 seconds, only 1.344 seconds short. The
+former one-second final-pause rule forced a third Gemini rewrite; the completed
+third response failed its length schema and the immutable stage stopped.
+
+Only the Factory Next presentation policy now allows up to two seconds of
+natural final silence. The original MP3 remains byte-identical, speaking
+rate is 1.0, and the video has exactly 45 seconds, 30 frames/s. The edit
+compiler, media renderer and independent PCM auditor use the same two-second
+window. Legacy policy still allows only one second.
+
+A real local FFmpeg regression creates a 45-second H.264/AAC file from an
+approximately 43.65-second MP3, using nine distinct still images, then runs
+the independent full-file frame/audio/hash audit; no TTS or Gemini provider
+calls occur. This media test does NOT mark any terminal Studio job complete
+or repeat an ambiguous provider call.
+
+---
+
+## Source-grounded scientific illustrations (Factory Next only)
+
+The DNA molecule Studio input exposed a generic failure: 35 downloaded media
+assets, 10 model inspection batches and zero accepted images. The old workflow
+rejected even accurate published diagrams because it required camera
+photographs of an unphotographable molecule.
+
+Factory Next now permits independently inspected scientific illustrations from
+eligible Wikimedia Commons files (Public Domain, CC0, CC BY, CC BY-SA).
+The server verifies original bytes, licensing, provenance, selected source
+facts, exact image identity and Gemini's visible-content assessment.
+Digital fantasy art, unrelated graphics, unverifiable licenses and invented
+source relationships remain rejected. Diagram materials keep the existing
+still-image byte type for FFmpeg compatibility but receive a separate
+"scientific_illustration" visual label, credited to the owner in Studio.
+The legacy photo-only pipeline remains unchanged.
+
+Offline gates prove schema checks, attribution labels and stage acceptance
+using controlled images. They do not establish that the next arbitrary topic
+will pass a live semantic reviewer or reach a final MP4. Historical failed
+requests remain immutable; do not replay them by changing their checkpoints.
+
+---
+
 # Replacement requested 2026-10-17
 
 

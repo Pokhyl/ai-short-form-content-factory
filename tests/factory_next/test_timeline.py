@@ -27,6 +27,16 @@ class MeasuredEditTests(unittest.TestCase):
                 for left,right in zip(plan['shots'],plan['shots'][1:]):
                     self.assertEqual(left['end_frame'],right['start_frame'])
 
+    def test_real_dna_second_recording_compiles_without_speed_change(self):
+        scenes,photos,_,_=self.inputs(45)
+        audio_ms=43656  # measured TTS #2 from the live DNA 45-second run
+        timings=[{'start_ms':audio_ms*i/3,'end_ms':audio_ms*(i+1)/3}
+                 for i in range(3)]
+        plan=compile_edit(scenes,photos,timings,audio_ms,45)
+        self.assertEqual(plan['tail_silence_ms'],1344)
+        self.assertEqual(plan['audio_tempo_factor'],1.0)
+        self.assertEqual(plan['shots'][-1]['end_frame'],45*30)
+
     def test_actual_audio_not_text_length_controls_photo_assignment(self):
         scenes,photos,timings,duration=self.inputs(15)
         first=compile_edit(scenes,photos,timings,duration,15)
