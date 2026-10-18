@@ -1,3 +1,73 @@
+## 2026-10-18 — ACTIVE FACTORY NEXT HANDOFF: KEEP WORKING, DO NOT RESET DECISIONS
+
+**User requirement:** Deliver a working completely automatic video factory from an
+arbitrary user topic, native language pl/en/ru/uk, duration 15/30/45/60 to
+audited 1080×1920 MP4 shown in Studio. Do NOT replace this with a mock movie,
+manually joined MP4, only test counts, more status messages or requests for
+the user to run terminal commands. Do not stop at code/tests; verify real
+Studio availability and an actual automatic end-to-end product. No topic-specific
+hardcoding, no lowering factual/image/audio QA, no silent repeats of failed IDs.
+
+**DECISIONS ALREADY CLOSED — DO NOT REOPEN:** Free-only, no paid fallback.
+Per PLAN.md and docs/PROVIDER_POLICY.md use the four selected Google Cloud
+TTS voices; use PostgreSQL internal character budgets (Chirp 3 HD 900000,
+WaveNet 3600000/month). Gemini free-tier/billing gate is verified by saved
+HTTP200 billingEnabled=false receipts. Owner explicitly ordered on 2026-10-18
+that the previous 7fe65a5 billing_hold and arbitrary Studio DAY_LIMIT=6 be
+REMOVED; this is ALREADY DONE in 1e5d846. Do not re-add, disable Studio
+or start another billing debate. No Piper/local alternative without explicit
+new consent. No new external provider calls just to test status. Do not
+touch unrelated projects, n8n/credentials/stacks or other websites.
+
+**Live/repo checkpoint before this fix:** branch factory-v3, HEAD/origin
+b8e8391c172603baea570ff85f172782a4e10da9; Studio running image
+factory-v3:factory-next-studio-b8e8391. Last user UK45 DNA
+bf30f889-b5da-498d-8248-eea3ca37db2b is terminal needs_attention
+at voice/ModelSchemaError, completed research/materials/story, 9 distinct
+approved illustrations; no MP4. Recorded first TTS MP3 lasts 47.424s
+at /data/voiceover-attempts/<job>/attempt-1.mp3. Fully RECEIPTED Gemini
+call next-voice-correction:2:next-measured-duration-revision succeeded
+and returned 3x3 Ukrainian complete sentences, but has ONLY 72 words vs
+calibrated 78..88, plus beat_2.sentence_2 only 37 chars vs 52..101.
+Gemini.generate rejected the local string length schema before the
+independent story review and second TTS. The old job is immutable: NEVER
+resend/replay the same job ID.
+
+Earlier terminal DNA UK45 job 0878aafa-5301-4b4f-9b97-294b28ab5fc5
+failed story/MaterialUnavailable because scientifically invisible facts
+were inappropriately required to be directly photographed. Code b8e8391
+already resolved this generically with strictly labelled topic_context
+images and factual citations, preserving the old job as failed.
+Original e3bab2c1-cf61-4d8e-af35-223d8c3300a6 failed undecodable
+image; code 97537a8 and 98665a9 handled it generically, without
+manually relaunching old jobs.
+
+**CURRENT WORK (verify before claiming deployed):** factory_next/preparation.py
+accepts one DISTINCT, bounded and budgeted Gemini structured-repair request
+after an already-completed invalid measured-duration response, keyed
+next-voice-correction:<attempt>:next-measured-duration-structured-repair.
+It preserves original scene/photo/fact IDs, independent source-native
+review, strict per-sentence and total words/characters, and rejection
+after the repair. NO extra TTS until validation and review pass. The
+6-call reserved voice correction headroom allows up to one such
+extra Gemini repair in each of two voice rounds; no unlimited retries.
+tests/factory_next/test_measured_voice_length.py reproduces the stored
+actual schema violation plus success and terminal-negative controls.
+Focused repair/ledger regressions and 135 Factory Next tests PASS;
+127 legacy Factory v3 tests PASS. Actual production acceptance is still
+test remain REQUIRED, as do commit AND GitHub push on factory-v3,
+exact active image verification, and a NEW (not failed) user-topic real
+production acceptance job only after complete offline closure.
+
+**Operating discipline:** Read AGENTS.md, docs/OPERATOR_RULES.md,
+docs/DELIVERY_STRATEGY.md, this top checkpoint and PLAN.md at start of
+future chats. One brief verified tool action at a time; no silent lengthy
+waits, polling loops or blind provider reruns. Save facts and exact
+commit/image/result IDs to GitHub after every meaningful verified
+checkpoint. Say NOT READY until public audited MP4 exists.
+
+---
+
 ## 2026-10-18 — Factual narration with source-backed topical image context
 
 The user-submitted Ukrainian DNA-45 job

@@ -94,6 +94,33 @@ class VoiceRevisionLedgerRegression(unittest.TestCase):
         self.assertIn('next-voice-correction:3:script-review',ledger.claims)
         with self.assertRaises(ValueError):VoiceRevisionCalls(ledger,attempt=4)
 
+    def test_structured_repair_is_a_new_bounded_claim_in_each_voice_round(self):
+        ledger=StrictLedger()
+        for attempt in (2,3):
+            scoped=VoiceRevisionCalls(ledger,attempt=attempt)
+            scoped.run('next-measured-duration-revision','gemini',
+                       {'round':attempt,'draft':'completed_invalid'},
+                       lambda:{'status':'completed'})
+            scoped.run('next-measured-duration-structured-repair','gemini',
+                       {'round':attempt,'draft':'corrected_new_request'},
+                       lambda:{'status':'completed'})
+            scoped.run('script-review','gemini',
+                       {'round':attempt,'approved':'reviewed'},
+                       lambda:{'native_language_quality':True})
+        self.assertEqual(len(ledger.claims),7) # original review plus 3 * 2 rounds
+        self.assertEqual(ledger.claims['script-review'],
+                         {'script':'original reviewed narration'})
+        for attempt in (2,3):
+            self.assertIn(
+                f'next-voice-correction:{attempt}:next-measured-duration-structured-repair',
+                ledger.claims)
+        # Replacing a persisted request under the same key must still fail.
+        with self.assertRaisesRegex(ValueError,'request changed'):
+            VoiceRevisionCalls(ledger,attempt=2).run(
+                'next-measured-duration-structured-repair','gemini',
+                {'round':2,'draft':'different'},
+                lambda:{'status':'unreachable'})
+
     def test_original_review_collision_is_reproduced_without_namespace(self):
         ledger=StrictLedger()
         with self.assertRaisesRegex(ValueError,'request changed'):

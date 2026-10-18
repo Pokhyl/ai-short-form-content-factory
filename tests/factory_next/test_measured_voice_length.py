@@ -1,10 +1,11 @@
-"""One metered structured Gemini rewrite protects measured voice retries."""
+"""Metered measured-voice rewrites and bounded completed-schema repair."""
 from copy import deepcopy
 from types import SimpleNamespace
 from unittest import TestCase, main
 from unittest.mock import patch
 
 from factory_next.duration import revision_length_window, revision_length_fits, NaturalDurationRejected
+from factory_v3.gemini import ModelSchemaError
 from factory_next.preparation import PreparationStages
 from factory_next.voice_length_repair import sentence_contract, assemble_sentence_repair
 
@@ -23,7 +24,10 @@ class FakeGemini:
         self.requests=[]
     def generate(self,key,*args):
         self.keys.append(key);self.requests.append(args)
-        return deepcopy(self.drafts.pop(0)),{'cached':True}
+        draft=self.drafts.pop(0)
+        if isinstance(draft,Exception):
+            raise draft
+        return deepcopy(draft),{'cached':True}
     def review_script(self,*args):
         self.reviews.append(1)
         return {'native_language_quality':True}
@@ -122,6 +126,65 @@ class LengthProtectionTests(TestCase):
                 self.assertEqual(len(counts),3)
                 self.assertTrue(all(1<=count<=5 for count in counts))
 
+    def test_durable_schema_error_repairs_in_one_new_claim_then_reviews(self):
+        context=self.context()
+        original=context['outputs']['story']
+        window=revision_length_window(original['script'],40824,45)
+        valid=sentence_draft(window,original['scenes'])
+        first=deepcopy(valid)
+        first['beat_2']['sentence_2']='Short.'
+        received=ModelSchemaError(first,'model response contains empty text')
+        result,gemini=self.run_revision([received,valid])
+        self.assertEqual(gemini.keys,[
+            'next-measured-duration-revision',
+            'next-measured-duration-structured-repair'])
+        self.assertEqual(len(gemini.reviews),1)
+        self.assertEqual(len(gemini.requests),2)
+        self.assertIn('rejected_completed_draft',gemini.requests[1][1])
+        self.assertEqual(
+            gemini.requests[1][1]['rejected_completed_draft'],first)
+        self.assertTrue(revision_length_fits(result['script'],window))
+        self.assertEqual([x['material_id'] for x in result['scenes']],
+                         [x['material_id'] for x in original['scenes']])
+
+    def test_local_length_rejection_repairs_once_without_resynthesizing(self):
+        context=self.context()
+        original=context['outputs']['story']
+        window=revision_length_window(original['script'],40824,45)
+        short=sentence_draft(window,original['scenes'],words_per_sentence=2)
+        repaired=sentence_draft(window,original['scenes'])
+        result,gemini=self.run_revision([short,repaired])
+        self.assertEqual(len(gemini.keys),2)
+        self.assertEqual(len(gemini.reviews),1)
+        self.assertEqual(gemini.keys[1],
+                         'next-measured-duration-structured-repair')
+        self.assertTrue(revision_length_fits(result['script'],window))
+
+    def test_saved_ukrainian_45s_response_is_rejected_without_loose_validation(self):
+        # Recorded 2026-10-18 real completed model output, no secret fields.
+        # TTS #1 = 47.424s, original script 88 words; this reply was
+        # 72 words and had a sentence with only 37 (<52) characters.
+        scenes=self.context()['outputs']['story']['scenes']
+        window={'target_words':83,'min_words':78,'max_words':88,
+                'target_characters':673,'min_characters':619,'max_characters':727}
+        reply={
+            'beat_1':{'sentence_1':'Дезоксирибонуклеїнова кислота або ДНК є важливою макромолекулою живих організмів.',
+                      'sentence_2':'Вона складається з двох антипаралельних ланцюгів нуклеотидів.',
+                      'sentence_3':'Ці ланцюги закручені у формі складної подвійної спіралі.'},
+            'beat_2':{'sentence_1':"Нуклеотиди з'єднуються всередині структури за принципом комплементарності.",
+                      'sentence_2':'Аденін завжди утворює пару з тиміном.',
+                      'sentence_3':"Гуанін при цьому незмінно поєднується з цитозином, гарантуючи міцність зв'язків."},
+            'beat_3':{'sentence_1':'ДНК відповідає за довготривале зберігання нашої біологічної інформації.',
+                      'sentence_2':'Вона передає генетичну програму наступним поколінням організмів.',
+                      'sentence_3':'Молекула також забезпечує реалізацію життєвих інструкцій клітини через біосинтез білків.'}}
+        schema,_=sentence_contract(scenes,window)
+        with self.assertRaisesRegex(ValueError,'model response contains empty text'):
+            assemble_sentence_repair(reply,schema,scenes,window)
+        text=' '.join(v for row in reply.values() for v in row.values())
+        self.assertEqual(len(text.split()),72)
+        self.assertEqual(len(reply['beat_2']['sentence_2']),37)
+        self.assertFalse(revision_length_fits(text,window))
+
     def test_duplicate_sentence_is_not_sent_for_tts(self):
         context=self.context()
         window=revision_length_window(context['outputs']['story']['script'],40824,45)
@@ -139,13 +202,15 @@ class LengthProtectionTests(TestCase):
         # Complete sentence fields whose 9 sentences total only 9 words are
         # invalid; do not try a second unreviewed TTS.
         broken=sentence_draft(window,old['scenes'],words_per_sentence=1)
-        gemini=FakeGemini([broken])
+        gemini=FakeGemini([broken,broken])
         stage=PreparationStages('/empty',SimpleNamespace(gemini=gemini),lambda:None)
         with patch('factory_next.preparation.compact_materials',return_value=[]):
             with self.assertRaises((NaturalDurationRejected,ValueError)):
                 stage.revise_story({**context,'_voice_correction_round':3},40824)
         self.assertEqual(len(gemini.reviews),0)
-        self.assertEqual(len(gemini.keys),1)
+        self.assertEqual(gemini.keys,[
+            'next-measured-duration-revision',
+            'next-measured-duration-structured-repair'])
 
 
 if __name__=="__main__":
