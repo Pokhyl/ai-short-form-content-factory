@@ -15,12 +15,21 @@ def sentence_contract(previous_scenes, window):
         raise ValueError('bounded reviewed scene count required')
     if not isinstance(window, dict) or window['target_words'] < len(previous_scenes):
         raise ValueError('insufficient spoken words for reviewed beats')
-    counts = [max(1,round(window['target_words'] / len(previous_scenes) / 10))
-              for _ in previous_scenes]
-    # Keep simple whole-sentence prose, not word arrays or individual word keys.
-    count=sum(counts)
+    # An actual production correction measured 96 words where the calibrated
+    # window allowed 74..84: the old nine-field contract asked for about
+    # 9 words/sentence, but Gemini consistently wrote 10..12 natural words
+    # in EACH field, even after one separately metered repair. Asking for
+    # fewer complete sentences is a schema-level way to avoid generating
+    # content just to fill nine fields. It does NOT alter speech speed or
+    # remove any source/factual/native-review constraints.
+    count=max(len(previous_scenes),round(window['target_words']/10.6))
     if count>32:
         raise ValueError('too many bounded sentences')
+    per_beat,extra=divmod(count,len(previous_scenes))
+    counts=[per_beat+(1 if i<extra else 0)
+            for i in range(len(previous_scenes))]
+    # The actual MP3, not this calibrated prose heuristic, decides whether
+    # a voice fits the requested video duration.
     per_sentence_chars=window['target_characters']/count
     properties={}
     for i,n in enumerate(counts,1):

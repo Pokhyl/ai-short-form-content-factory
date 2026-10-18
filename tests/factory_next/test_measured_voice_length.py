@@ -33,8 +33,10 @@ class FakeGemini:
         return {'native_language_quality':True}
 
 
-def sentence_draft(window,scenes,words_per_sentence=10):
+def sentence_draft(window,scenes,words_per_sentence=None):
     schema,counts=sentence_contract(scenes,window)
+    if words_per_sentence is None:
+        words_per_sentence=max(5,round(window['target_words']/sum(counts)))
     keys={}
     for i,count in enumerate(counts,1):
         keys['beat_'+str(i)]={ 'sentence_'+str(j+1):
@@ -91,7 +93,7 @@ class LengthProtectionTests(TestCase):
         self.assertTrue(revision_length_fits(result['script'],window))
         self.assertEqual(len(result['scenes']),3)
 
-    def test_live_dna_calibration_bounded_nine_natural_sentences(self):
+    def test_live_dna_calibration_bounded_natural_sentences(self):
         original=' '.join(['ДНК']*66)
         # The production script had 512 Ukrainian characters and 66 words;
         # preserve both real measurements without storing an account-dependent
@@ -106,13 +108,13 @@ class LengthProtectionTests(TestCase):
         self.assertEqual(window['max_characters'],733)
         scenes=self.context()['outputs']['story']['scenes']
         schema,counts=sentence_contract(scenes,window)
-        self.assertEqual(counts,[3,3,3])
-        # Ten synthetic complete utterances per scene would overshoot;
-        # nine complete, 10-word sentences can pass the calibrated contract.
-        rows=sentence_draft(window,scenes,words_per_sentence=10)
+        self.assertEqual(counts,[3,3,2])
+        # Eight fluent 11-word fields fit the same calibrated window.
+        # No scene, fact identity or independent reviewer is removed.
+        rows=sentence_draft(window,scenes,words_per_sentence=11)
         result=assemble_sentence_repair(rows,schema,scenes,window)
         self.assertEqual(len(result['beats']),3)
-        self.assertEqual(len(' '.join(b['narration'] for b in result['beats']).split()),90)
+        self.assertEqual(len(' '.join(b['narration'] for b in result['beats']).split()),88)
         self.assertEqual([b['material_id'] for b in result['beats']],['p0','p1','p2'])
 
     def test_sentence_contract_across_every_supported_duration(self):
@@ -160,6 +162,34 @@ class LengthProtectionTests(TestCase):
                          'next-measured-duration-structured-repair')
         self.assertTrue(revision_length_fits(result['script'],window))
 
+    def test_real_measured_overlong_45s_revision_uses_seven_not_nine_sentences(self):
+        # Archived job 30cab913: TTS #1 = 54.504s, 96 words, 789 chars.
+        # Gemini wrote 96 then 98 words in nine sentences. The corrected
+        # schema must avoid forcing that number of naturally lengthy fields.
+        source=('молекула ДНК довга закручена подвійна спіраль ')*16
+        source=source.strip().ljust(789,'.')
+        window=revision_length_window(source,54504,45)
+        self.assertEqual(window['target_characters'],644)
+        self.assertEqual(window['min_words'],74)
+        self.assertEqual(window['max_words'],84)
+        _,counts=sentence_contract(self.context()['outputs']['story']['scenes'],window)
+        self.assertEqual(counts,[3,2,2])
+        self.assertEqual(sum(counts),7)
+        self.assertTrue(all(n>=2 for n in counts))
+
+    def test_schema_sentence_count_tracks_actual_duration_for_all_video_lengths(self):
+        scenes=self.context()['outputs']['story']['scenes']
+        for seconds in (15,30,45,60):
+            # Calibrated words from the actual measured MP3 determine number
+            # of natural sentences, never a fixed per-topic 9-field schema.
+            window={'target_words':round(seconds*1.8),
+                    'target_characters':round(seconds*14)}
+            schema,counts=sentence_contract(scenes,window)
+            self.assertEqual(sum(counts),max(3,round(window['target_words']/10.6)))
+            self.assertEqual(len(counts),3)
+            self.assertTrue(all(n>=1 for n in counts))
+            self.assertEqual(len(schema['properties']),3)
+
     def test_saved_ukrainian_45s_response_is_rejected_without_loose_validation(self):
         # Recorded 2026-10-18 real completed model output, no secret fields.
         # TTS #1 = 47.424s, original script 88 words; this reply was
@@ -178,7 +208,9 @@ class LengthProtectionTests(TestCase):
                       'sentence_2':'Вона передає генетичну програму наступним поколінням організмів.',
                       'sentence_3':'Молекула також забезпечує реалізацію життєвих інструкцій клітини через біосинтез білків.'}}
         schema,_=sentence_contract(scenes,window)
-        with self.assertRaisesRegex(ValueError,'model response contains empty text'):
+        # A previously recorded nine-field response is not valid under a
+        # newly calibrated eight-field schema. It remains strictly rejected.
+        with self.assertRaises(ValueError):
             assemble_sentence_repair(reply,schema,scenes,window)
         text=' '.join(v for row in reply.values() for v in row.values())
         self.assertEqual(len(text.split()),72)
@@ -199,8 +231,8 @@ class LengthProtectionTests(TestCase):
         context=self.context()
         old=self.context()['outputs']['story']
         window=revision_length_window(old['script'],40824,45)
-        # Complete sentence fields whose 9 sentences total only 9 words are
-        # invalid; do not try a second unreviewed TTS.
+        # Complete sentence fields with only one word each are invalid;
+        # do not try a second unreviewed TTS.
         broken=sentence_draft(window,old['scenes'],words_per_sentence=1)
         gemini=FakeGemini([broken,broken])
         stage=PreparationStages('/empty',SimpleNamespace(gemini=gemini),lambda:None)

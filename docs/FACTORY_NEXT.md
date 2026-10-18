@@ -1,3 +1,58 @@
+## 2026-10-18 — Measured-voice sentence-count defect (LATEST CHECKPOINT)
+
+Fresh user-topic UK45 DNA after real research fix was accepted by
+public Studio as UUID 30cab913-0f98-4db4-b551-cb1b7f292605 on live
+f72fc20cb0c1754624dd6bbe3cddf67a21c3b1ef. Research completed,
+11 verified distinct source-backed images passed materials, native
+script and independent script review passed story. Real first MP3
+was measured at exactly 54.504 seconds (not 45). Claimed voice
+was terminal needs_attention / ModelSchemaError; NO public MP4.
+Do NOT retry or mutate this UUID, ever.
+
+Saved PostgreSQL receipts show the first *completed* Gemini
+next-voice-correction:2:next-measured-duration-revision returned
+96 words / 759 chars in 9 complete sentences. The calibrated
+window for this actual recording was 74..84 words, 592..696
+characters. It therefore failed strict natural-duration preflight.
+The additional distinct metered repair
+next-voice-correction:2:next-measured-duration-structured-repair
+succeeded HTTP 200 but returned 98 words / 815 chars, and two
+individual sentences exceeded the schema max 97 characters.
+Both replies were already complete/receipted and were not resent.
+This proves that a 9-field sentence schema implicitly FORCED the
+model to write about 9x10..12 natural words despite instruction
+to shorten. No additional TTS was sent.
+
+New GENERAL fix, all offline tests PASSED (deployment pending):
+factory_next.voice_length_repair.sentence_contract calculates
+the number of WHOLE natural sentences dynamically from the
+calibrated total target word count, at approximately 10.6
+natural words per sentence observed in real provider receipts.
+The number is bounded, at least one per original verified
+visual/fact beat; 74..84-word UK45 case now has seven fields
+[3,2,2] instead of nine. This does not edit or hardcode DNA
+text, skip independent review, loosen timing, alter TTS tempo,
+reuse a claimed request, or manually stitch media. A new
+Gemini response and TTS #2 must STILL meet existing length,
+native/factual/source audit and measured MP3 43..45s acceptance.
+Existing separate budgeted structured correction remains at
+most one, then terminal if still invalid.
+
+Focused regression tests include the recorded 54.504s/96word
+failure and a 15/30/45/60s generic sentence allocation matrix.
+OFFLINE SUCCESS: Factory Next 139 PASS; factory_v3 127 PASS.
+For REAL production acceptance, run full factory_next and legacy
+tests, sync exact GitHub tree, build/deploy exact revision,
+submit ONE fresh new user-topic UK45 DNA job and inspect all
+eight automated stages and HTTP 200 independently audited MP4.
+The live f72fc20 task above remains immutable.
+
+Stay within PLAN.md free-only Google Gemini+TTS with PostgreSQL
+quota and selected voices; no re-opening of the billing debate
+or six/day Studio submission cap. No changes to other projects.
+
+---
+
 ## 2026-10-18 — Source-literal research failure on new UK45 DNA (CURRENT CHECKPOINT)
 
 Live failed UUID: 40b8563d-737f-4a1b-9272-4e6eaa6c30f4, submitted
