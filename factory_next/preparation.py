@@ -83,6 +83,15 @@ class PreparationStages:
         self.operations.topic=request['topic']
         self.operations.visual_validation_mode=request['visual_validation_mode']
         self.operations.allow_source_illustrations=True
+        from factory_v3.download import PhotoDownload
+        from material_first.portrait import PortraitDownload
+        source_downloader=getattr(self.operations,"downloader",None)
+        if (isinstance(source_downloader,PortraitDownload)
+                and isinstance(source_downloader.downloader,PhotoDownload)):
+            # Opt in ONLY for Factory Next. A corrupt original still-image
+            # must be durably recorded as unusable and skipped, never turn an
+            # otherwise viable story into an ambiguous terminal download.
+            source_downloader.downloader.skip_invalid_local_media=True
         candidates=self.operations.discover(deepcopy(request),deepcopy(source['queries']))
         if not isinstance(candidates,list) or len(candidates)>candidate_limit(request['seconds'],TOPIC_POLICY):
             raise ValueError('photo corpus exceeded bounded discovery budget')

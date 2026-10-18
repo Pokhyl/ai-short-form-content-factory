@@ -1,3 +1,30 @@
+## 2026-10-18 — Skip definitively unreadable original source images
+
+Real owner-submitted DNA UK45 job e3bab2c1-cf61-4d8e-af35-223d8c3300a6
+automatically started under revision 1e5d846 and passed research. At
+materials, download:wikimedia:80800904 failed with a local FFprobe
+CalledProcessError, marking the download operation unknown and the entire
+stage needs_attention. The image bytes are stored locally. Subsequent
+inspection of those saved bytes found an FFprobe PNG warning "chunk too big".
+This historical job remains terminal and MUST NOT be automatically replayed.
+
+Factory Next only now opts into a deterministic local-media rejection
+path after successful remote fetch: FFprobe CalledProcessError/ValueError
+returns a JSON-safe "local_image_rejected" receipt as a successfully completed
+durable download ledger call. A cached result raises ResourceUnavailable
+outside the provider accounting operation, allowing the materials loop to
+skip that exact asset and review other available originals, with no new
+provider send or fabricated media. Other types of unknown download errors
+are still terminal and require operator reconciliation. Legacy download
+semantics are unchanged by default.
+
+Offline tests verify the single durable remote call, repeat refusal from
+cached receipt, default legacy behavior, metadata-type rejection and
+Factory Next-only opt-in. Do not mark the original task finished. Recheck
+the full eight-stage production pipeline on an owner-authorized request.
+
+---
+
 ## 2026-10-18 — Restore agreed Google Cloud TTS operation
 
 The external-billing-verified boolean gate added after the owner had already

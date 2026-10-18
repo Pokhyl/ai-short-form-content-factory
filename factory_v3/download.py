@@ -1,5 +1,6 @@
 """Download only bounded selected candidates, once, for exact-byte model review."""
 import hashlib
+import subprocess
 from pathlib import Path
 from uuid import UUID
 from urllib.parse import urlsplit
@@ -15,6 +16,8 @@ class PhotoDownload:
         self.request_id = str(UUID(str(request_id)))
         self.calls, self.http, self.probe = calls, http, probe
         self.rate_limited_hosts = {}
+        # Only Factory Next opts in. Legacy photo download semantics unchanged.
+        self.skip_invalid_local_media = False
 
     def download(self, candidate):
         url = media_url(candidate["provider"], candidate["media_url"])
@@ -37,7 +40,20 @@ class PhotoDownload:
             file = directory / ("selected" + extension)
             with file.open("xb") as handle:
                 handle.write(raw)
-            dimensions = self.probe(file)
+            try:
+                dimensions = self.probe(file)
+            except (subprocess.CalledProcessError, ValueError):
+                if not self.skip_invalid_local_media:
+                    raise
+                # This is a definitive LOCAL image-decoding failure after a
+                # successful, durably receipted external fetch. Return a
+                # JSON-safe refusal result so the ledger finishes the call
+                # rather than recording an ambiguous unknown provider send.
+                # No second HTTP request is authorized on replay.
+                return {"local_image_rejected": True,
+                        "asset_id": candidate["id"],
+                        "reason": "UNDECODABLE_DOWNLOADED_IMAGE",
+                        "sha256": hashlib.sha256(raw).hexdigest()}
             asset = dict(candidate)
             asset.update({"path": str(file.relative_to(self.root)),
                           "sha256": hashlib.sha256(raw).hexdigest(),
@@ -54,5 +70,12 @@ class PhotoDownload:
             if error.receipt.get("status") == 429:
                 self.rate_limited_hosts[host] = error.receipt
             raise
+        if (self.skip_invalid_local_media and isinstance(asset, dict)
+                and asset.get("local_image_rejected") is True
+                and asset.get("asset_id") == candidate["id"]):
+            # The saved ledger response is now safely reusable without any
+            # re-download, and the caller can inspect other candidates.
+            raise ResourceUnavailable({"reason": "UNDECODABLE_DOWNLOADED_IMAGE",
+                                       "asset_id": candidate["id"]})
         validate_asset(self.root, asset)
         return asset
