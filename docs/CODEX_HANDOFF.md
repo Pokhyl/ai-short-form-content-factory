@@ -1,3 +1,53 @@
+## 2026-10-18 — Source-literal research failure on new UK45 DNA (CURRENT CHECKPOINT)
+
+Live failed UUID: 40b8563d-737f-4a1b-9272-4e6eaa6c30f4, submitted
+via public Studio HTTP 201, topic "Молекула ДНК", language uk, 45s,
+revision 819901d501dacbde8548a486e8d80958f63ddb18. This task stopped
+at research/ValueError with NO completed stages, TTS call or MP4.
+It is IMMUTABLE: never resend/replay this UUID.
+Three original source fetches, initial Gemini material-brief and TWO
+bounded Gemini material-brief-repair:review:1/2 succeeded HTTP 200.
+The issue was reproduced from the same saved database receipts and
+source text OFFLINE, with no API sends.
+
+ROOT CAUSE: Research source_mention literal validation rejected
+translated or mis-cased strings. Role "Cell nucleus" claimed Ukrainian
+"ядро клітини", absent from saved selected source span, although the
+Russian independent source-1 says "в ядре клетки" near the end of
+its first text span (source span ID s1-0-1055). Role "DNA double helix"
+claimed "подвійна спіраль" whereas its selected span used capitalized
+"Подвійна спіраль" (s2-8712-9882). Nucleotide role sometimes used
+an inflection absent from its selected span (s2-1132-2260).
+
+FIX VERIFIED OFFLINE (production rollout pending): Only for Factory Next facts-only research,
+restore letter CASE if and only if identical words are present in the
+SAME selected original text. Never translate, fabricate or silently
+reassign a remote citation. On normal bounded review-repair call,
+include small focused excerpts and source IDs to guide Gemini to
+copy exact original mentions or choose a genuinely supported object.
+1200-character excerpts retain the real "в ядре клетки" in its 1055
+character span (former 950-character excerpt omitted it).
+Original strict source-literal, visual and factual review remains
+mandatory. Other legacy behavior remains unchanged.
+
+OFFLINE EVIDENCE: Archived Gemini candidate with amended correct
+source-1 s1-0-1055 "ядре клетки", source-2 s2-8712-9882
+"Подвійна спіраль", source-2 s2-1132-2260 "нуклеотидів"
+passed local literal/context/search validation. This does NOT prove
+new real Gemini requests will pass.
+
+OFFLINE TESTS: 137 Factory Next tests PASS, 127 legacy factory_v3 tests PASS, 12 research review tests PASS. No external provider request was made by those tests.
+
+REQUIRED NEXT: Checkpoint commit and GitHub sync with
+exact matching tree, deployment verified by code SHA, ONE fresh owner
+DNA 45s job from public Studio, wait for all eight automatic stages
+and real audited playable MP4. Keep prior failed jobs immutable.
+No manually assembled videos, no unrelated projects touched.
+Per existing PLAN.md no paid service fallback, do not reopen TTS
+billing debate, and never recreate arbitrary six-job/day limit.
+
+---
+
 ## 2026-10-18 — ACTIVE FACTORY NEXT HANDOFF: KEEP WORKING, DO NOT RESET DECISIONS
 
 **User requirement:** Deliver a working completely automatic video factory from an

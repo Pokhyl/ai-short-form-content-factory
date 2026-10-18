@@ -1,5 +1,5 @@
 import unittest
-from material_first.photo_contexts import rebind_adjacent_literal_mentions, validate_context_mentions
+from material_first.photo_contexts import rebind_adjacent_literal_mentions, validate_context_mentions, restore_exact_source_case
 
 
 class AdjacentSourceMentionTests(unittest.TestCase):
@@ -41,6 +41,25 @@ class AdjacentSourceMentionTests(unittest.TestCase):
     def test_unverified_source_text_never_rebinds(self):
         draft=self.context(source_mention='Вигадане слово')
         self.assertEqual(rebind_adjacent_literal_mentions(draft,self.spans()),draft)
+
+    def test_only_original_case_from_selected_source_is_restored(self):
+        draft=self.context(support_span_ids=['s1-0-20'],
+                           source_mention='галактика андромеди')
+        fixed=restore_exact_source_case(draft,self.spans())
+        self.assertEqual(fixed['subject']['source_mention'],'Галактика Андромеди')
+        self.assertEqual(draft['subject']['source_mention'],'галактика андромеди')
+        self.assertEqual(fixed['subject']['support_span_ids'],['s1-0-20'])
+        validate_context_mentions(fixed,self.spans())
+
+    def test_case_restoration_does_not_translate_or_rebind(self):
+        draft=self.context(support_span_ids=['s1-42-70'],
+                           source_mention='галактика андромеди')
+        self.assertEqual(restore_exact_source_case(draft,self.spans()),draft)
+        translation=self.context(support_span_ids=['s1-0-20'],
+                                 source_mention='Andromeda Galaxy')
+        self.assertEqual(restore_exact_source_case(translation,self.spans()),translation)
+        with self.assertRaisesRegex(ValueError,'span does not contain'):
+            validate_context_mentions(restore_exact_source_case(translation,self.spans()),self.spans())
 
     def test_does_not_modify_input_or_facts(self):
         draft=self.context(fact_ids=['f1'])

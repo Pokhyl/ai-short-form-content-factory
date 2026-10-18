@@ -100,6 +100,36 @@ def bind_english_objects(contexts):
             for role,row in contexts.items()}
 
 
+
+def restore_exact_source_case(contexts, spans):
+    """Return the original lettercase of an already selected literal quote.
+
+    A source quotation in a heading may be capitalized, while the model
+    returns the identical words in lowercase. Never infer new words, change
+    source IDs, translate, or accept a mention absent from its selected text.
+    The unchanged strict literal validator must still pass afterward.
+    """
+    from copy import deepcopy
+    by_id={span['id']:span['text'] for span in spans}
+    result=deepcopy(contexts)
+    for row in result.values():
+        mention=row.get('source_mention')
+        ids=row.get('support_span_ids')
+        if not isinstance(mention,str) or not 3<=len(mention)<=160 or not isinstance(ids,list):
+            continue
+        texts=[by_id[sid] for sid in ids if sid in by_id]
+        if any(mention in text for text in texts):
+            continue
+        matched=[]
+        for text in texts:
+            found=re.search(re.escape(mention),text,flags=re.IGNORECASE)
+            if found is not None:
+                matched.append(found.group(0))
+        if matched and len(set(m.casefold() for m in matched))==1:
+            row['source_mention']=matched[0]
+    return result
+
+
 def rebind_adjacent_literal_mentions(contexts, spans):
     """Use only a directly neighboring span of the SAME original source.
 

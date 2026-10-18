@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 from factory_v3.gemini import obj,array,string
-from material_first.research_review import reviewed_brief
+from material_first.research_review import reviewed_brief, _focused_literal_source_quotes
 from material_first.photo_contexts import validate_search_hints
 from material_first.source_spans import source_spans
 
@@ -21,6 +21,58 @@ class ResearchReviewTests(unittest.TestCase):
     def review(self, context, supported=True):
         return {'facts':{f['id']:{'supported':supported,'reason':'Check mass qualifier against quoted source'} for f in context['facts']},
             'photo_contexts':{role:{'source_supported':True,'observable_object':supported,'reason':'A hidden interior cannot be shown by a real photo'} for role in context['photo_contexts']}}
+    def test_repair_gets_actual_quote_ids_without_inventing_absent_name(self):
+        malformed=copy.deepcopy(self.draft)
+        malformed['photo_contexts']['setting']['source_mention']='вигадана точна цитата'
+        # The prior citations and actual fetched sources remain the authority.
+        real_quotes=_focused_literal_source_quotes(malformed,self.spans)
+        self.assertTrue(real_quotes)
+        ids={span['id']:span for span in self.spans}
+        for entry in real_quotes:
+            self.assertIn(entry['span_id'],ids)
+            self.assertEqual(entry['literal_source_excerpt'],ids[entry['span_id']]['text'][:1200])
+        seen=[]
+        def fake_generate(key,instruction,context,schema):
+            seen.append((key,context))
+            self.assertIn(key,('material-brief-repair:review:1','material-brief-repair:review:2'))
+            self.assertTrue(context['focused_literal_source_quotes'])
+            self.assertIn('selected source span does not contain',context['failures'][0])
+            return copy.deepcopy(malformed),{}
+        with self.assertRaisesRegex(ValueError,'after 2 revisions'):
+            reviewed_brief(SimpleNamespace(generate=fake_generate),
+                           {'topic':'Нейтронная звезда'},self.sources,self.spans,
+                           self.schema,malformed,check_photos=False)
+        self.assertEqual(len(seen),2)
+
+    def test_source_excerpt_keeps_literal_mention_at_end_of_bounded_span(self):
+        # A real DNA45 failure cited "ядро клітини" absent from the source.
+        # The Russian source actually says "в ядре клетки" near the END
+        # of a 1055-character span. The old 950-character excerpt dropped it.
+        span={'id':'s1-0-1055','source_id':'source-1','start':0,'end':1055,
+              'text':('ДНК: источник. '+('Проверенные сведения. '*44)+
+                      ' В клетках эукариотов ДНК находится в ядре клетки')}
+        draft={'photo_contexts':{'setting':{'support_span_ids':['s1-0-1055'],
+                     'source_mention':'ядро клітини'}}}
+        quotes=_focused_literal_source_quotes(draft,[span])
+        self.assertEqual(len(quotes),1)
+        self.assertIn('в ядре клетки',quotes[0]['literal_source_excerpt'])
+        self.assertEqual(quotes[0]['span_id'],'s1-0-1055')
+        self.assertLessEqual(len(quotes[0]['literal_source_excerpt']),1200)
+
+    def test_original_source_quotes_are_not_sent_for_unrelated_schema_failure(self):
+        malformed=copy.deepcopy(self.draft)
+        malformed['required_fact_ids']=['wrong']
+        calls=[]
+        def fake_generate(key,instruction,context,schema):
+            calls.append(context)
+            return copy.deepcopy(malformed),{}
+        with self.assertRaisesRegex(ValueError,'after 2 revisions'):
+            reviewed_brief(SimpleNamespace(generate=fake_generate),
+                           {'topic':'Нейтронная звезда'},self.sources,self.spans,
+                           self.schema,malformed)
+        self.assertEqual(len(calls),2)
+        self.assertEqual([x['focused_literal_source_quotes'] for x in calls],[[],[]])
+
     def test_actual_bad_plan_stops_after_two_revisions(self):
         def generate(key,instruction,context,schema):
             if key.startswith('material-brief-repair:review:'):
@@ -88,7 +140,7 @@ class ResearchReviewTests(unittest.TestCase):
         bad=copy.deepcopy(self.draft)
         bad['photo_contexts']['setting']['english_photo_object']='space'
         def generate(key,instruction,context,schema):
-            self.assertEqual(key,'material-brief-repair:review:1')
+            self.assertIn(key,('material-brief-repair:review:1','material-brief-repair:review:2'))
             changed=copy.deepcopy(bad);changed['facts'][0]['text']+=' unsupported'
             return changed,{}
         with self.assertRaisesRegex(ValueError,'changed source-backed facts'):
