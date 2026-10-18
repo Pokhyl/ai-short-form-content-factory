@@ -15,23 +15,14 @@ from .duration import duration_fits, require_reviewed_revision, NaturalDurationR
 
 
 class VoiceStages:
-    def __init__(self, root, voice_provider, worker_http, quota_ledger,
-                 *, tts_billing_verified=False):
-        if type(tts_billing_verified) is not bool:
-            raise ValueError("trusted TTS billing verification flag required")
+    def __init__(self, root, voice_provider, worker_http, quota_ledger):
         self.root=Path(root)
         self.provider=voice_provider
         self.http=worker_http
         self.quota=quota_ledger
-        self.tts_billing_verified=tts_billing_verified
         self.worker=WorkerAdapters(root,voice_provider,'http://shorts-v2-media-worker-1:3001',None,http=worker_http)
 
     def _synthesize_once(self, job, language, script, attempt):
-        # Internal 90% quotas cannot observe other clients of the same Google
-        # Cloud billing project. The user requires strictly no paid sends.
-        # Fail BEFORE reserving quota, committing usage or invoking Google.
-        if self.tts_billing_verified is not True:
-            raise ValueError("TTS_BILLING_NOT_VERIFIED: external sends disabled")
         if attempt not in (1,2,3):raise ValueError('unbudgeted TTS attempt')
         key='next:'+job+':voice:'+str(attempt)
         sku='wavenet' if language=='ru' else 'chirp3_hd'

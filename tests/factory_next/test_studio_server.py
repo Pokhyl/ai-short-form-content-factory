@@ -11,9 +11,7 @@ REV="da6472ecb52ca6add6b616015d06b1ace56c7740"
 
 
 class FakeRuntime:
-    def __init__(self,*args):
-        self.calls=0
-        self.settings={"google_tts_external_usage_verified":True}
+    def __init__(self,*args):self.calls=0
 
 
 class ServerTests(unittest.TestCase):
@@ -26,71 +24,6 @@ class ServerTests(unittest.TestCase):
         self.addCleanup(patcher.stop)
         self.app=ss.Studio(self.root,{},REV)
         self.app.enqueue=lambda job:None
-
-    def test_billing_hold_prevents_post_and_preserves_existing_read_only_history(self):
-        import http.client
-        import threading
-        from http.server import ThreadingHTTPServer
-        with patch.object(ss,"register_next",return_value={"created":True}) as registered:
-            original=self.app.create({"topic":"Original video","language":"pl","seconds":15})
-        registered.assert_called_once()
-        original_state=self.app.pipeline(original["id"]).snapshot(original["id"])
-        self.app.runtime.settings["google_tts_external_usage_verified"]=False
-        before=list(self.app.entries())
-        self.assertFalse(self.app.public_status()["generation_enabled"])
-        with patch.object(ss,"register_next") as registrar:
-            with self.assertRaisesRegex(ss.TTSBillingHold,"unverified"):
-                self.app.create({"topic":"No paid TTS","language":"uk","seconds":45})
-            self.assertIsNone(self.app._admit_waiting())
-            self.assertEqual(len(self.app.entries()),len(before))
-            registrar.assert_not_called()
-        server=ThreadingHTTPServer(("127.0.0.1",0),ss.make_handler(self.app))
-        self.addCleanup(server.server_close)
-        worker=threading.Thread(target=server.serve_forever,daemon=True)
-        worker.start()
-        self.addCleanup(server.shutdown)
-        conn=http.client.HTTPConnection("127.0.0.1",server.server_address[1],timeout=3)
-        self.addCleanup(conn.close)
-        conn.request("GET","/factory-next/api/status")
-        result=conn.getresponse()
-        self.assertEqual(result.status,200)
-        current=json.loads(result.read())
-        self.assertFalse(current["generation_enabled"])
-        self.assertEqual(current["reason"],"GOOGLE_TTS_BILLING_UNVERIFIED")
-        conn.request("GET","/factory-next/api/jobs")
-        result=conn.getresponse()
-        self.assertEqual(result.status,200)
-        listing=json.loads(result.read())
-        self.assertEqual(len(listing),1)
-        conn.request("POST","/factory-next/api/jobs",
-            body=json.dumps({"topic":"A second topic","language":"uk","seconds":45}),
-            headers={"Origin":"https://studio.hodor.com.pl",
-                     "Content-Type":"application/json"})
-        result=conn.getresponse()
-        self.assertEqual(result.status,503)
-        self.assertEqual(json.loads(result.read())["code"],"GOOGLE_TTS_BILLING_UNVERIFIED")
-        self.assertEqual(self.app.pipeline(original["id"]).snapshot(original["id"]),original_state)
-        self.assertEqual(len(self.app.entries()),1)
-
-    def test_financial_hold_never_admits_saved_queue_or_schedules_provider_work(self):
-        from uuid import uuid4
-        job=str(uuid4())
-        self.app._save_record({"id":job,
-            "request":{"topic":"DNA molecule","language":"uk","seconds":45},
-            "registration":"queued","eligible_after":datetime.now(timezone.utc).isoformat(),
-            "created_at":datetime.now(timezone.utc).isoformat()})
-        self.app.runtime.settings["google_tts_external_usage_verified"]=False
-        started=[]
-        self.app.enqueue=lambda job:started.append(job)
-        with patch.object(ss,"register_next") as registrar:
-            self.assertIsNone(self.app._admit_waiting())
-            registrar.assert_not_called()
-        detail=self.app.detail(job)
-        self.assertEqual(detail["status"],"billing_hold")
-        self.assertTrue(detail["generation_on_hold"])
-        self.assertEqual(started,[])
-        self.assertEqual(self.app.entries()[0]["registration"],"queued")
-        self.assertFalse(self.app.pipeline(job).directory(job).exists())
 
     def test_create_and_retrieve_custom_topic(self):
         topic="Jak powstają bursztyny nad morzem?"
@@ -174,6 +107,36 @@ class ServerTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.app.create(payload)
         self.assertEqual(list(self.app.entries()),[])
+
+    def test_no_artificial_daily_limit_after_terminal_jobs(self):
+        with patch.object(ss,"register_next",return_value={"created":True}) as registry:
+            for index in range(8):
+                created=self.app.create({"topic":"Independent topic "+str(index),
+                                         "language":"uk","seconds":45})
+                self.assertEqual(created["status"],"queued")
+                pipeline=self.app.pipeline(created["id"])
+                state=pipeline.snapshot(created["id"])
+                state.update(status="needs_attention",error_type="ControlledTest")
+                pipeline.save(pipeline.directory(created["id"]),state)
+        self.assertEqual(registry.call_count,8)
+        self.assertFalse(any(x.get("eligible_after") for x in self.app.entries()))
+
+    def test_existing_queued_request_is_admitted_without_waiting_until_tomorrow(self):
+        from uuid import uuid4
+        job=str(uuid4())
+        now=datetime.now(timezone.utc)
+        self.app._save_record({
+            "id":job,"request":{"topic":"Молекула ДНК","language":"uk","seconds":45},
+            "registration":"queued","created_at":now.isoformat(),
+            "eligible_after":(now+timedelta(days=1)).isoformat()})
+        self.assertEqual(self.app.detail(job)["status"],"queued_for_quota")
+        self.assertIsNone(self.app.detail(job)["eligible_after"])
+        with patch.object(ss,"register_next",return_value={"created":True}) as registry:
+            self.assertEqual(self.app._admit_waiting(now=now),job)
+            registry.assert_called_once()
+        state=self.app.pipeline(job).snapshot(job)
+        self.assertEqual(state["status"],"ready")
+        self.assertEqual(state["request"]["topic"],"Молекула ДНК")
 
     def test_busy_studio_queues_without_dispatch_and_bounds_waiting_count(self):
         admitted=[]
@@ -282,7 +245,10 @@ class ServerTests(unittest.TestCase):
              patch.object(ss,"register_next",return_value={"created":True}):
             self.app.create({"topic":"First","language":"pl","seconds":15})
             queued=self.app.create({"topic":"DNA molecule","language":"uk","seconds":45})
-        due=datetime.fromisoformat(self.app.detail(queued["id"])["eligible_after"])
+        # Stored admission hint stays present; production no longer delays
+        # this job for an artificial calendar limit.
+        saved=json.loads(self.app.record(queued["id"]).read_text())
+        due=datetime.fromisoformat(saved["eligible_after"])
         with patch.object(ss,"register_next",side_effect=RuntimeError("uncertain")) as registry:
             with self.assertRaisesRegex(RuntimeError,"uncertain"):
                 self.app._admit_waiting(now=due)
@@ -333,7 +299,7 @@ class ServerTests(unittest.TestCase):
         body=json.loads(result.read())
         self.assertEqual(body["status"],"queued_for_quota")
         self.assertEqual(body["request"]["topic"],"DNA molecule")
-        self.assertIsNotNone(body["eligible_after"])
+        self.assertIsNone(body["eligible_after"]) # daily cap retired
         self.assertIsNone(body["video_url"])
         conn.request("GET","/factory-next/api/jobs")
         result=conn.getresponse()

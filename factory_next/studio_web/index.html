@@ -54,7 +54,6 @@ video{display:block;background:#121b13;border-radius:12px;width:100%;aspect-rati
 <div class="kicker">AI SHORT-FORM CONTENT FACTORY</div>
 <h1>Создайте видео по своей теме</h1>
 <p class="muted">Напишите тему, выберите язык и длительность. Генерация выполняется на сервере; статус и результат сохраняются в разделе «Ваши видео».</p>
-<p id="billing-hold" class="error" role="status" hidden>Создание видео временно приостановлено: не подтверждено, что Google Cloud TTS не приведёт к списаниям. Сохранённые задания и видео доступны.</p>
 <div class="columns">
 <form id="request-form" class="panel">
   <div class="panelhead"><h2>Новое видео</h2><span class="small">01</span></div>
@@ -96,9 +95,9 @@ video{display:block;background:#121b13;border-radius:12px;width:100%;aspect-rati
 <script>
 "use strict";
 const API="/factory-next/api/jobs",get=id=>document.getElementById(id);
-let selected=null, timer=null, detail=null, generationEnabled=false;
+let selected=null, timer=null, detail=null;
 const stages={research:"Проверка источников",materials:"Поиск и проверка фотографий",story:"Создание и проверка сценария",voice:"Генерация озвучки",alignment:"Синхронизация сцен",edit:"Планирование монтажа",render:"Создание MP4",audit:"Финальная проверка качества"};
-const label=s=>s==="complete"?"Готово · проверка пройдена":s==="provider_wait"?"Сервис перегружен, повтор по расписанию":s==="needs_attention"?"Задание остановлено для проверки":s==="queued"?"В очереди":s==="queued_for_quota"?"В очереди · автоматический запуск после освобождения лимита":s==="billing_hold"?"Ожидание проверки расходов Google":s==="registration_pending"?"Регистрация не завершена":s==="deferred"?"Ожидание провайдера":s==="running"?"Выполняется":s==="checking"||s==="checking_provider"?"Проверка разрешения на продолжение":"В работе";
+const label=s=>s==="complete"?"Готово · проверка пройдена":s==="provider_wait"?"Сервис перегружен, повтор по расписанию":s==="needs_attention"?"Задание остановлено для проверки":s==="queued"?"В очереди":s==="queued_for_quota"?"В очереди · автоматический запуск при свободном месте":s==="registration_pending"?"Регистрация не завершена":s==="deferred"?"Ожидание провайдера":s==="running"?"Выполняется":s==="checking"||s==="checking_provider"?"Проверка разрешения на продолжение":"В работе";
 const escapeText=s=>String(s??"");
 async function request(url,opts={}){
   const response=await fetch(url,{credentials:"same-origin",cache:"no-store",...opts});
@@ -110,14 +109,6 @@ function safeLink(url,words){
   const a=document.createElement("a");a.textContent=words;a.target="_blank";a.rel="noopener noreferrer";
   try{const u=new URL(url);if(!["http:","https:"].includes(u.protocol)||u.username||u.password)throw Error();a.href=u.href;}
   catch{}return a;
-}
-async function loadFinancialStatus(){
-  // Fail closed if the status route is inaccessible or returns malformed JSON.
-  generationEnabled=false;
-  const d=await request("/factory-next/api/status");
-  generationEnabled=d.generation_enabled===true;
-  get("billing-hold").hidden=generationEnabled;
-  get("submit").disabled=!generationEnabled;
 }
 async function loadJobHistory(){
  const items=await request(API),root=get("history");root.replaceChildren();
@@ -175,13 +166,12 @@ async function show(id){
   get("technical").textContent="ID: "+d.id+" · Версия: "+d.source_revision+(d.video_sha256?" · SHA-256: "+d.video_sha256:"");
   const url=new URL(location.href);url.searchParams.set("request",id);window.history.replaceState(null,"",url);
   for(const b of get("history").querySelectorAll("button"))b.setAttribute("aria-current",String(b.dataset.id===id));
-  if(!ready&&!failure&&!d.generation_on_hold){
+  if(!ready&&!failure){
     timer=setTimeout(()=>Promise.all([loadJobHistory(),show(id)]).catch(report),5000);
   }
 }
 get("request-form").onsubmit=async event=>{
   event.preventDefault();get("message").hidden=true;
-  if(!generationEnabled){get("billing-hold").hidden=false;return;}
   const topic=get("topic").value.trim(),language=get("language").value,seconds=Number(get("seconds").value);
   if(!topic)return;
   get("submit").disabled=true;get("submit").textContent="Создаём задание…";
@@ -190,12 +180,11 @@ get("request-form").onsubmit=async event=>{
       body:JSON.stringify({topic,language,seconds})});
     await loadJobHistory();await show(result.id);
   }catch(e){report(e);}
-  finally{get("submit").disabled=!generationEnabled;get("submit").textContent="Создать видео";}
+  finally{get("submit").disabled=false;get("submit").textContent="Создать видео";}
 };
 get("refresh").onclick=()=>Promise.all([loadJobHistory(),selected&&show(selected)]).catch(report);
 (async()=>{
  try{
-   await loadFinancialStatus();
    const items=await loadJobHistory(),parameter=new URLSearchParams(location.search).get("request");
    const requested=parameter&&/^[0-9a-f-]{36}$/.test(parameter)?parameter:null;
    if(requested&&items.some(x=>x.id===requested))await show(requested);

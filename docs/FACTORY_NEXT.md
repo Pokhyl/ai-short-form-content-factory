@@ -1,36 +1,26 @@
-## 2026-10-18 — Financial fail-closed hold (owner requires no paid charges)
+## 2026-10-18 — Restore agreed Google Cloud TTS operation
 
-**Production status:** Financial verification incomplete. Public Studio may
-serve the existing job history and previously audited MP4s, but must not
-accept or schedule generation while verification remains incomplete.
+The external-billing-verified boolean gate added after the owner had already
+configured Google Cloud TTS was NOT in PLAN.md or PROVIDER_POLICY.md and
+unnecessarily disabled all Studio work. Reverted in full. TTS is governed by
+the pre-existing PostgreSQL project usage ledger instead:
 
-The factory uses dedicated Google Cloud Text-to-Speech voices (Chirp 3 HD
-and WaveNet) specified in the project PLAN.md and PROVIDER_POLICY.md. Its
-PostgreSQL quotas reserve and commit every requested character before an
-external synthesis. The internal 90%-of-free-tier ceilings are effective,
-but DO NOT establish the true billable usage when other clients may share
-the Google Cloud project. The quota may reset by month but an external
-Google Cloud billing line item may still accrue; no cost guarantee follows
-from the counter alone.
+- Chirp 3 HD: hard internal 900,000 chars/month;
+- WaveNet: hard internal 3,600,000 chars/month;
+- unique, durable character reservations committed before each synthesis;
+- no paid fallback, and no retry after an ambiguous send.
 
-Production now fails closed by default using the private, server-owned
-setting `google_tts_external_usage_verified`. It must be exactly boolean
-true before generating any new job or sending TTS. Absence, a string value,
-or false all deny admission. Google TTS voice modules reject sends before
-both PostgreSQL reservation and the external provider request. Queue
-admission, the periodic scheduler and Studio worker dispatch are also
-disabled when this hold is active. The public read-only status endpoint
-`/factory-next/api/status` explains the hold without exposing secrets;
-GET history and audited media remain accessible.
+This internal protection must not be described as a comprehensive Google
+Cloud account billing guarantee: it does not see unrelated external usage.
 
-The flag alone is an administrative acknowledgment, NOT an independent
-Google billing guarantee. Do not set it true until the specific billing
-project, its use outside the factory, free allowance, billing alerts and
-actual cost exposure are reconciled. The GitHub code does NOT contain
-tokens, billing identifiers or private configuration.
+The separate Studio six-runs-per-day admission cap was not a Google provider
+quota. It is retired; the persistent queue, maximum 2 admitted active tasks,
+and maximum 3 pending tasks remain. An old queue item held until tomorrow
+solely by the Studio cap becomes eligible now, but remains subject to
+concurrency and the actual provider ledgers. It is NOT copied into a new job.
 
-No paid provider call or job creation is part of this change. Terminal
-historical jobs remain immutable. The factory is not production accepted.
+Historical errors remain immutable and are never automatically resent.
+The next end-to-end user-submitted MP4 must still be audited in production.
 
 ---
 

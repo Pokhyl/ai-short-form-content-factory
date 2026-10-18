@@ -81,7 +81,7 @@ class WorkerHTTPBoundary(unittest.TestCase):
     def create_stage(self,files):
         provider=FixedVoiceProvider(files)
         quota=Quota()
-        voice=VoiceStages(self.root,provider,self.http,quota,tts_billing_verified=True)
+        voice=VoiceStages(self.root,provider,self.http,quota)
         # Production uses the fixed internal worker address; this test alone
         # substitutes the explicitly allowlisted localhost HTTP endpoint.
         voice.worker=WorkerAdapters(self.root,provider,self.url,None,http=self.http)
@@ -276,11 +276,6 @@ class WorkerHTTPBoundary(unittest.TestCase):
         job=str(uuid4()); revision='e'*40
         Pipeline(checkpoint_root,adapters,revision).create(job,'DNA molecule','uk',45)
         studio=Studio.__new__(Studio)
-        from types import SimpleNamespace
-        # The isolated HTTP/test-provider harness has no external billing.
-        # Explicitly opt in here; production defaults to a financial hold.
-        studio.runtime=SimpleNamespace(
-            settings={"google_tts_external_usage_verified":True})
         studio.lock=RLock()
         studio.inflight=set()
         studio.workers=ThreadPoolExecutor(max_workers=1)
