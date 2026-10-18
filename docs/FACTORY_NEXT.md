@@ -1,3 +1,27 @@
+## 2026-10-18 — Correct bad-image recovery at the actual FFmpeg failure
+
+Follow-up inspection of archived `wikimedia:80800904` from owner job
+`e3bab2c1-cf61-4d8e-af35-223d8c3300a6` reproduced the real failure
+**without network access**: `ffprobe` returned correct PNG dimensions
+(823×267) but `material_first.photo_identity.fingerprint` called
+`ffmpeg`, which rejected the pixel stream with
+`Invalid data found when processing input` / `CalledProcessError`.
+The previous Factory Next guard protected only `ffprobe`, therefore did
+NOT fix this stored case.
+
+Now both metadata probing and whole-original FFmpeg fingerprint creation
+happen in the same guarded, once-only download closure. A locally
+undecodable image receives the durable rejected receipt and is skipped by
+Factory Next without a second HTTP call. Legacy behavior, unique
+download identities, quotas, media evidence and all other ambiguous
+provider failures remain unchanged. A portable offline regression builds
+a deliberately malformed PNG whose header is accepted by `ffprobe`
+while pixel decoding fails; it asserts one saved rejection and one
+download across repeated access. The previous terminal job is not
+replayed, modified or counted complete.
+
+---
+
 ## 2026-10-18 — Skip definitively unreadable original source images
 
 Real owner-submitted DNA UK45 job e3bab2c1-cf61-4d8e-af35-223d8c3300a6

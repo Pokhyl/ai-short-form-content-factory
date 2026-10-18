@@ -42,6 +42,16 @@ class PhotoDownload:
                 handle.write(raw)
             try:
                 dimensions = self.probe(file)
+                # A valid ffprobe header does NOT guarantee that FFmpeg can
+                # decode its pixels. Run the exact fingerprint validation in
+                # this same protected block and persist a definitive rejection
+                # if the original source bytes are undecodable.
+                visual_fingerprint = None
+                if candidate.get("topic_protocol") == "topic-specific-v1":
+                    from material_first.photo_identity import fingerprint
+                    visual_fingerprint = fingerprint(
+                        file, hashlib.sha256(raw).hexdigest(),
+                        dimensions["width"], dimensions["height"])
             except (subprocess.CalledProcessError, ValueError):
                 if not self.skip_invalid_local_media:
                     raise
@@ -59,9 +69,8 @@ class PhotoDownload:
                           "sha256": hashlib.sha256(raw).hexdigest(),
                           "width": dimensions["width"], "height": dimensions["height"],
                           "download_receipt": {k: v for k, v in receipt.items() if k != "body"}})
-            if candidate.get('topic_protocol') == 'topic-specific-v1':
-                from material_first.photo_identity import fingerprint
-                asset['visual_fingerprint'] = fingerprint(file, asset['sha256'], dimensions['width'], dimensions['height'])
+            if visual_fingerprint is not None:
+                asset['visual_fingerprint'] = visual_fingerprint
             validate_asset(self.root, asset)
             return asset
         try:

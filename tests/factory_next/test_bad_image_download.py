@@ -3,6 +3,8 @@
 Pure offline fixtures: no HTTP provider calls, no database writes, no model use.
 """
 import subprocess
+import struct
+import zlib
 import tempfile
 import unittest
 from pathlib import Path
@@ -48,7 +50,50 @@ def broken_probe(_path):
     raise subprocess.CalledProcessError(1,["ffprobe","broken-original.png"])
 
 
+def valid_header_broken_pixels():
+    """Self-contained PNG: FFprobe sees IHDR; FFmpeg cannot inflate IDAT."""
+    def png_chunk(kind, payload):
+        return (struct.pack(">I",len(payload))+kind+payload
+                +struct.pack(">I",zlib.crc32(kind+payload)&0xffffffff))
+    header=struct.pack(">IIBBBBB",8,8,8,2,0,0,0)
+    return (b"\x89PNG\r\n\x1a\n"+png_chunk(b"IHDR",header)
+            +png_chunk(b"IDAT",b"corrupt compressed bytes!")
+            +png_chunk(b"IEND",b""))
+
+
 class BadOriginalTests(unittest.TestCase):
+    def test_real_ffprobe_header_succeeds_but_ffmpeg_fingerprint_fails_safely(self):
+        from factory_v3.worker_adapters import probe_photo
+        from material_first.photo_identity import fingerprint
+        from hashlib import sha256
+        payload=valid_header_broken_pixels()
+        with tempfile.TemporaryDirectory() as folder:
+            candidate={**CANDIDATE,"topic_protocol":"topic-specific-v1"}
+            original=Path(folder)/"header-only.png"
+            original.write_bytes(payload)
+            self.assertEqual(probe_photo(original),{"width":8,"height":8})
+            with self.assertRaises(subprocess.CalledProcessError):
+                fingerprint(original,sha256(payload).hexdigest(),8,8)
+            http=OnceHTTP()
+            def local_receipt(_url):
+                http.sends+=1
+                return {"headers":{"content-type":"image/png"},
+                        "body":payload,"status":200}
+            http.binary_receipt=local_receipt
+            calls=CachedCalls()
+            downloader=PhotoDownload(folder,str(uuid4()),calls,http)
+            downloader.skip_invalid_local_media=True
+            for _ in range(2):
+                with self.assertRaises(ResourceUnavailable) as error:
+                    downloader.download(candidate)
+                self.assertEqual(error.exception.receipt["reason"],
+                                 "UNDECODABLE_DOWNLOADED_IMAGE")
+            self.assertEqual(http.sends,1)
+            self.assertEqual(calls.invokes,1)
+            receipt=calls.responses["download:"+candidate["id"]]
+            self.assertTrue(receipt["local_image_rejected"])
+            self.assertEqual(receipt["sha256"],sha256(payload).hexdigest())
+
     def test_next_only_local_media_rejection_is_cached_and_never_downloaded_twice(self):
         with tempfile.TemporaryDirectory() as folder:
             http=OnceHTTP()
