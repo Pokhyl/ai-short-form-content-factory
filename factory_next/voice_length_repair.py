@@ -7,6 +7,7 @@ single, budgeted repair of a completed model response, NOT a TTS retry.
 """
 import math
 import re
+from itertools import combinations
 from factory_v3.gemini import obj, string, validate_json
 from .duration import revision_length_fits, NaturalDurationRejected
 
@@ -157,3 +158,80 @@ def apply_extractive_omission_plan(reviewed_scenes,plan,candidates,schema,window
     if not revision_length_fits(narration,window):
         raise NaturalDurationRejected('extractive narration outside measured length window')
     return {'beats':beats}
+
+
+# An optional LOCAL (zero additional provider calls) correction for a
+# structurally valid but slightly TOO LONG completed expansion response.
+# Only remove nonessential style modifiers from the completed JSON. Source
+# fact vocabulary remains protected by extractive_omission_candidates.
+# Never use this to pad an underlong response or replace any fact.
+_STYLE_MODIFIERS = frozenset({
+    # English
+    'very','extremely','particularly','remarkably','highly','truly','really',
+    'genuinely','significantly','quite','important','remarkable','numerous',
+    # Polish
+    'bardzo','niezwykle','szczególnie','naprawdę','wyraźnie','istotnie',
+    'znacznie','ważne','ważnych','liczne','licznych','stabilną',
+    # Ukrainian
+    'надзвичайно','справді','значно','надійно','важливі',
+    'такий','багатьох','повторюваних','особливо','істотно',
+    # Russian
+    'очень','особенно','крайне','значительно','надёжно','надежно',
+    'важные','важный','различные','многочисленные','действительно',
+})
+
+
+def trim_complete_expansion_locally(result, schema, previous_scenes, evidence, window):
+    """Deterministically remove low-risk modifiers from a completed reply.
+
+    The reply MUST already satisfy its exact per-sentence schema. Strict
+    source/fact/native-language review remains required after this helper.
+    If there is not a safe bounded solution, stop rather than invent words.
+    """
+    validate_json(result,schema)
+    beats=[];revised=[]
+    for index,scene in enumerate(previous_scenes,1):
+        row=result['beat_'+str(index)]
+        sentences=[row[key].strip() for key in schema['properties']['beat_'+str(index)]['required']]
+        if any(not line or line[-1] not in '.!?…' or len(line.split())<5 for line in sentences):
+            raise NaturalDurationRejected('complete sentences required for local expansion trim')
+        revised.append({**scene,'narration':' '.join(sentences)})
+    text=' '.join(scene['narration'] for scene in revised)
+    if len(text.split())<=window['max_words'] and len(text)<=window['max_characters']:
+        raise NaturalDurationRejected('local trim cannot expand an underlength draft')
+    _public,candidates,plan_schema=extractive_omission_candidates(revised,evidence,window)
+    style=[candidate for candidate in candidates
+           if candidate['word'].casefold() in _STYLE_MODIFIERS]
+    # The plan is constrained to a small finite space and is completely
+    # deterministic. No combinatorial search through unconstrained inputs.
+    if not 1<=len(style)<=18:
+        raise NaturalDurationRejected('no bounded optional modifiers for local repair')
+    best=None
+    minimum=plan_schema['properties']['remove_ids']['minItems']
+    maximum=min(len(style),plan_schema['properties']['remove_ids']['maxItems'])
+    for n in range(minimum,maximum+1):
+        for subset in combinations(style,n):
+            plan={'remove_ids':[candidate['id'] for candidate in subset]}
+            try:
+                edited=apply_extractive_omission_plan(
+                    revised,plan,candidates,plan_schema,window)
+            except (NaturalDurationRejected,ValueError):
+                continue
+            final=' '.join(beat['narration'] for beat in edited['beats'])
+            # The original per-beat complete sentence boundaries and source
+            # anchors are retained. Validate natural sentences after deletion.
+            valid=True
+            for original,beat in zip(revised,edited['beats']):
+                before=re.split(r'(?<=[.!?…])\s+',original['narration'])
+                after=re.split(r'(?<=[.!?…])\s+',beat['narration'])
+                if len(before)!=len(after) or any(len(x.split())<5 for x in after):
+                    valid=False;break
+            if not valid:
+                continue
+            score=(abs(len(final.split())-window['target_words'])*4+
+                   abs(len(final)-window['target_characters'])/8+n*.04)
+            if best is None or score<best[0]:
+                best=score,edited
+    if best is None:
+        raise NaturalDurationRejected('cannot locally correct completed voice expansion safely')
+    return best[1]

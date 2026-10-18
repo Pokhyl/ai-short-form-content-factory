@@ -1,3 +1,58 @@
+## 2026-10-18 — LATEST: Natural-duration local correction for underlong original TTS
+
+**Owner's closed rules:** Completely automatic new topic -> factual sourced
+science -> 3+ real verified topic images -> native review -> chosen
+Google Cloud free-only TTS voices with existing PostgreSQL quotas ->
+native-timing alignment -> FFmpeg -> independent final 45s MP4 audit,
+accessible through public Studio. No manual composition, no topic-specific
+fixes, no rerunning terminal job UUIDs, no reopening TTS billing issue or
+6/day submission restriction; nothing outside Factory Next is modified.
+
+**Latest production failure:** Public Studio revision
+796eec50da899341f552cb9fd55b5fee68171fb9 admitted DNA Ukrainian 45s
+job b37140b1-018d-4185-8160-540664770527. The NEW source-preserving
+OVERLONG repair was not entered because original TTS #1 was UNDERLONG:
+39.936s for 81 words/601 chars. Research, 9 verified images, independently
+reviewed source-grounded native story succeeded. The completion became
+needs_attention at voice / NaturalDurationRejected. NEVER replay this ID.
+
+The immutable first measured-duration revision Gemini response was
+99 words, 777 chars (and two sentences above per-sentence max). The
+separate metered completed-response repair gave 95 words, 735 chars:
+valid 8 named sentences, yet the actual calibrated window was
+85..95 words and 616..724 chars (target ~90 words and 670 chars).
+All evidence and source fact IDs were correct, but local preflight
+necessarily rejected the extra 11 chars. These responses cannot be
+resent under the same ledger keys. NO second TTS was sent.
+
+**Fix verified offline, production deployment pending:** For a STRUCTURALLY
+VALID, COMPLETED but globally slightly too-long FREEFORM EXPANSION,
+apply a ZERO-API, deterministic, source-protected trim of only known
+generic stylistic modifiers in Ukrainian/Russian/Polish/English.
+The already-approved original science fact words are protected;
+candidate IDs, full-word span deletions, fact and material anchors,
+normal complete sentences and BOTH existing word/character constraints
+are enforced. Fail closed if no candidate subset fits; no sentence or
+provider word-slot invention. The resulting complete script goes through
+the independent native-language/fact/image/science reviewer BEFORE
+any new TTS. There is no new Gemini request for the local trim.
+Original overlong audio takes the prior separately bounded,
+source-preserving edit-ID route; both paths retain all original source QA.
+
+**Archived exact regression:** The recorded 95-word/735-char completed
+revision can be cut to 90 words/692 chars with all three source-fact
+and scene-photo IDs preserved, no invented words. 3 exact fixture tests pass, plus 147 Factory Next full-suite\ntests PASS and 127 legacy factory_v3 tests PASS, including integration proof that the reviewed exact script and
+separate voice-correction ledger keys are used. Do NOT claim production
+MP4 until a new real job passes measured TTS #2/3 and final render/audit.
+
+NEXT: Full test suite completed successfully (147+127),
+commit checkpoint+fix, GitHub factory-v3 exact SHA synchronization,
+deploy one new isolated Studio container, run ONE NEW user-topic DNA
+UK45 job, inspect audited playable MP4 URL. Preserve immutable
+b37140b1, c4e97b50 and every earlier failure.
+
+---
+
 ## 2026-10-18 — CURRENT: source-preserving measured voice shortening (latest)
 
 **Owner's unchanged acceptance:** An automatic video factory from the topic

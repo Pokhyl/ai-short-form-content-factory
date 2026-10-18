@@ -18,7 +18,8 @@ from material_first.presentation import TOPIC_POLICY, minimum_shots, preferred_s
 from material_first.visuals import candidate_limit
 from .duration import revision_length_window, revision_length_fits, NaturalDurationRejected
 from .voice_length_repair import (sentence_contract, assemble_sentence_repair,
-    extractive_omission_candidates, apply_extractive_omission_plan)
+    extractive_omission_candidates, apply_extractive_omission_plan,
+    trim_complete_expansion_locally)
 
 
 def validated_next_story(request, evidence, photos, draft):
@@ -354,8 +355,19 @@ class PreparationStages:
             # A completed provider response is already receipted. Do not
             # resend it; its parsed JSON can be input to one NEW correction.
             draft=error.result
+        def accept_completed_expansion(result):
+            try:
+                return assemble_sentence_repair(result,repair_schema,original['scenes'],window)
+            except NaturalDurationRejected:
+                # This response already passed the complete per-sentence
+                # schema but may exceed the global calibrated word/char
+                # window. First attempt ZERO-extra-provider corrective
+                # omissions of approved stylistic modifiers, then still
+                # require independent fact/native-language review below.
+                return trim_complete_expansion_locally(
+                    result,repair_schema,original['scenes'],evidence,window)
         try:
-            repaired=assemble_sentence_repair(draft,repair_schema,original['scenes'],window)
+            repaired=accept_completed_expansion(draft)
         except (ValueError, NaturalDurationRejected) as error:
             if not isinstance(draft,dict) or len(json.dumps(draft,ensure_ascii=False))>16384:
                 raise
@@ -386,8 +398,7 @@ class PreparationStages:
                  'actual_voice_duration_ms':measured_ms,
                  'length_window':window,'sentence_counts':sentence_counts,
                  'sentence_limits':sentence_limits},repair_schema)
-            repaired=assemble_sentence_repair(
-                draft,repair_schema,original['scenes'],window)
+            repaired=accept_completed_expansion(draft)
         draft=repaired
         scenes=validated_next_story(request,evidence,photos,draft)
         script=' '.join(s['narration'] for s in scenes)
