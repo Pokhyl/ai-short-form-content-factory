@@ -6,6 +6,7 @@ and forces the model to make enough genuine assertions. This is an optional
 single, budgeted repair of a completed model response, NOT a TTS retry.
 """
 import math
+import re
 from factory_v3.gemini import obj, string, validate_json
 from .duration import revision_length_fits, NaturalDurationRejected
 
@@ -59,4 +60,100 @@ def assemble_sentence_repair(result,schema,reviewed_scenes,window):
     text=' '.join(beat['narration'] for beat in beats)
     if not revision_length_fits(text,window):
         raise NaturalDurationRejected('sentence repair outside calibrated voice length window')
+    return {'beats':beats}
+
+
+# Extractive shortening is used ONLY when a naturally spoken, independently
+# reviewed original MP3 runs too long. There are no word-slot outputs:
+# the final narration remains the original prose, minus bounded modifiers.
+# Essential fact terms are excluded from selectable deletion candidates.
+_NEGATION={'never','without','cannot','not','nothing','always','ніколи',
+           'немає','нікому','нельзя','никогда','nigdy','nigdyż','brak'}
+
+
+def extractive_omission_candidates(reviewed_scenes, evidence, window):
+    if not isinstance(reviewed_scenes,list) or not 1<=len(reviewed_scenes)<=8:
+        raise ValueError('bounded reviewed scenes required')
+    if not isinstance(evidence,dict) or not evidence.get('facts'):
+        raise ValueError('source evidence required for extractive editing')
+    protected=set()
+    for fact in evidence['facts']:
+        for token in re.findall(r'[^\W\d_][\w’\'-]*',fact['text'].casefold()):
+            if len(token)>=5:
+                protected.add(token[:5])
+    candidates=[]
+    for scene in reviewed_scenes:
+        text=scene['narration']
+        for m in re.finditer(r'[^\W\d_][\w’\'-]*',text):
+            word=m.group()
+            if len(word)<5 or word.casefold()[:5] in protected or word.casefold() in _NEGATION:
+                continue
+            # Avoid editing word stems, mandatory terminal punctuation or
+            # connective punctuation; only a standalone whole-word span.
+            start,end=m.span()
+            if end<len(text) and text[end] in ',.;:!?':
+                continue
+            if end<len(text) and text[end].isspace():
+                cut_start,cut_end=start,end+1
+            elif start>0 and text[start-1].isspace():
+                cut_start,cut_end=start-1,end
+            else:
+                continue
+            candidates.append({
+                'id':f"{scene['id']}:{start}",
+                'scene_id':scene['id'],
+                'word':word,
+                'left_context':text[max(0,start-20):start],
+                'right_context':text[end:min(len(text),end+20)],
+                'removed_characters':cut_end-cut_start,
+                '_start':cut_start,'_end':cut_end})
+    words=sum(len(scene['narration'].split()) for scene in reviewed_scenes)
+    minimum=max(1,words-window['max_words'])
+    maximum=min(24,len(candidates),max(0,words-window['min_words']))
+    if not 1<=minimum<=maximum:
+        raise NaturalDurationRejected('no bounded source-preserving omission plan available')
+    public=[{k:v for k,v in candidate.items() if not k.startswith('_')}
+            for candidate in candidates]
+    schema=obj({'remove_ids':{
+        'type':'array','items':string(c['id'] for c in candidates),
+        'minItems':minimum,'maxItems':maximum}})
+    return public,candidates,schema
+
+
+def apply_extractive_omission_plan(reviewed_scenes,plan,candidates,schema,window):
+    validate_json(plan,schema)
+    ids=plan['remove_ids']
+    if len(ids)!=len(set(ids)):
+        raise NaturalDurationRejected('repeated omission identity is invalid')
+    by_id={candidate['id']:candidate for candidate in candidates}
+    if len(by_id)!=len(candidates):
+        raise ValueError('candidate identities duplicated')
+    grouped={}
+    for identity in ids:
+        candidate=by_id[identity]
+        grouped.setdefault(candidate['scene_id'],[]).append(candidate)
+    beats=[]
+    for scene in reviewed_scenes:
+        text=scene['narration']
+        removals=sorted(grouped.get(scene['id'],[]),
+                        key=lambda c:c['_start'],reverse=True)
+        last_start=len(text)
+        for candidate in removals:
+            first,last=candidate['_start'],candidate['_end']
+            if last>last_start:
+                raise NaturalDurationRejected('overlapping omissions forbidden')
+            original=text[first:last]
+            if candidate['word'] not in original:
+                raise NaturalDurationRejected('omission changed after approval')
+            text=text[:first]+text[last:]
+            last_start=first
+        text=re.sub(r'\s+',' ',text).strip()
+        if len(text.split())<5 or not text or text[-1] not in '.!?…':
+            raise NaturalDurationRejected('extractive scene lost natural narration')
+        beats.append({'material_id':scene['material_id'],
+                      'fact_ids':list(scene['evidence_ids']),
+                      'narration':text})
+    narration=' '.join(beat['narration'] for beat in beats)
+    if not revision_length_fits(narration,window):
+        raise NaturalDurationRejected('extractive narration outside measured length window')
     return {'beats':beats}

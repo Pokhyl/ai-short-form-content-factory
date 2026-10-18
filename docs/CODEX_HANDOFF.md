@@ -1,3 +1,60 @@
+## 2026-10-18 — CURRENT: source-preserving measured voice shortening (latest)
+
+**Owner's unchanged acceptance:** An automatic video factory from the topic
+typed in public Studio to independently audited playable 45s vertical MP4.
+No manual assembly, no fabricated science, no repeated attempts on a terminal
+job, no changes outside Factory Next, no paid provider fallback, no billing
+debate, no arbitrary six-video/day limiter. Do not conclude success from tests.
+
+**Last live trial:** c4e97b50-601c-47f8-b67d-f2c23e999ab3 on exact revision
+7830a29f89658b2bd25e43187e930bf6f2350f24. Completed research,
+10 validated visual assets, reviewed three-beat Ukrainian DNA story; real
+MP3 #1 measured 49.536 seconds against 45s target. Final status
+needs_attention/ModelSchemaError at voice. NO MP4. DO NOT replay this ID.
+
+**Evidence from immutable database receipts:** With original narration
+98 words, 765 characters and measured TTS 49.536s, the authorized
+word/character correction window was 83..93 words and 632..742 chars.
+Gemini responded to first correction with 102 words/825 chars and then to
+one separately metered correction with 115 words/912 chars. Both failed,
+with two overlong sentences after the second correction. Repetitive
+free-form rewrites are unsafe: they can change verified science or exceed
+duration even when fewer sentence fields are requested.
+
+**New fix under test, NOT deployed:** Only for OVERSHOOTING measured audio,
+factory_next/voice_length_repair.py builds exact word-level deletion
+candidates from the PREVIOUSLY INDEPENDENTLY REVIEWED narration and
+protects important words already named in the cited scientific source
+facts. Gemini receives a finite set of IDs (never a free-form rewrite),
+selects bounded unnecessary words only; server accepts only eligible
+unique exact IDs and performs the deletions. No new words, facts, scenes,
+material IDs, or fact IDs can be introduced. It strictly checks both
+calibrated word AND character windows; then reviews the exact resulting
+native-language narration independently before any new metered Google
+TTS request. A separately metered correction to an invalid COMPLETED
+deletion plan is allowed ONCE, never re-sending the previous call.
+If it fails the same strict checks, terminate without sending TTS.
+
+**Reproduction:** Exact saved UK45 verified narration shortened from
+98 words and 765 chars to 88 words and 667 chars through ten deletions,
+preserving all original narration words otherwise and all three fact and
+image IDs. Pure-editor and scoped-ledger tests passed. Full regression:\n144 Factory Next PASS and 127 legacy factory_v3 PASS. One test asserts the exact current production text, disallows
+invented words/IDs/duplicated identities, and checks independent review.
+The previous expansion pathway (short first recording) remains unchanged.
+No production acceptance or TTS #2 measured yet.
+
+**Next required steps:** Full regression PASSED; 144 Factory Next and 127 legacy factory_v3.
+Commit actual code plus this checkpoint to GitHub factory-v3 with exact
+matching tree (remote push from VPS lacks auth; the GitHub connector is
+used for safe SHA-matching); deploy exact SHA to ONLY Studio container,
+which must stay on two Docker networks with the original /data volume.
+Check status, submit exactly ONE NEW Studio owner-topic 45s DNA job (not
+the terminal failed ID); monitor all eight stages, independently verify
+HTTP 200 actual audited MP4. No new paid providers or handmontage. If
+failure recurs, use preserved Postgres receipts, do not repeat an old job.
+
+---
+
 ## 2026-10-18 — Measured-voice sentence-count defect (LATEST CHECKPOINT)
 
 Fresh user-topic UK45 DNA after real research fix was accepted by

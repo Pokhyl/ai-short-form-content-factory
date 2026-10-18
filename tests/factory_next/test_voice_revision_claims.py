@@ -64,13 +64,26 @@ class VoiceRevisionLedgerRegression(unittest.TestCase):
         revised_scenes=[{'id':f'beat-{i+1}','material_id':f'p{i}',
                          'narration':' '.join(['pszczol']*10),
                          'evidence_ids':[f'f{i}']} for i in range(3)]
-        with patch('factory_next.preparation.compact_materials',return_value=[]),              patch('factory_next.preparation.validate_json'),              patch('factory_next.preparation.validate_story',return_value=revised_scenes),              patch('factory_next.preparation.validate_native_surface'),              patch('factory_next.preparation.validate_script_review'):
+        # This test exercises isolated scoped ledger identity, not real
+        # research/TTS prose. Supply a controlled reviewed scene edit so
+        # the extractive correction branch uses the same durable namespace.
+        fixed={'beats':[{'material_id':f'p{i}','fact_ids':[f'f{i}'],
+                         'narration':'Controlled shortened scene.'}
+                        for i in range(3)]}
+        with patch('factory_next.preparation.extractive_omission_candidates',
+                   return_value=([{'id':'b0:5'}],[{'id':'b0:5'}],{'type':'object'})), \
+             patch('factory_next.preparation.apply_extractive_omission_plan',
+                   return_value=fixed), \
+             patch('factory_next.preparation.validate_json'), \
+             patch('factory_next.preparation.validate_story',return_value=revised_scenes), \
+             patch('factory_next.preparation.validate_native_surface'), \
+             patch('factory_next.preparation.validate_script_review'):
             result=preparation.revise_story(context,33864)
         self.assertEqual(result['review']['native_language_quality'],True)
         self.assertEqual(result['scenes'],revised_scenes)
         self.assertEqual(ledger.claims['script-review'],
                          {'script':'original reviewed narration'})
-        self.assertIn('next-voice-correction:2:next-measured-duration-revision',
+        self.assertIn('next-voice-correction:2:next-measured-extractive-deletions',
                       ledger.claims)
         self.assertIn('next-voice-correction:2:script-review',ledger.claims)
         self.assertIs(operations.gemini.calls,ledger)
