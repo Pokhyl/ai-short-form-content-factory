@@ -18,7 +18,8 @@ from material_first.presentation import TOPIC_POLICY, minimum_shots, preferred_s
 from material_first.visuals import candidate_limit
 from .duration import revision_length_window, revision_length_fits, NaturalDurationRejected
 from .voice_length_repair import (sentence_contract, assemble_sentence_repair,
-    adaptive_underlength_sentence_contract, extractive_omission_candidates,
+    adaptive_underlength_sentence_contract, trim_one_complete_sentence_locally,
+    extractive_omission_candidates,
     apply_extractive_omission_plan, trim_complete_expansion_locally)
 
 
@@ -413,13 +414,12 @@ class PreparationStages:
             try:
                 return assemble_sentence_repair(result,active_schema,original['scenes'],window)
             except NaturalDurationRejected:
-                # This response already passed the complete per-sentence
-                # schema but may exceed the global calibrated word/char
-                # window. First attempt ZERO-extra-provider corrective
-                # omissions of approved stylistic modifiers, then still
-                # require independent fact/native-language review below.
-                return trim_complete_expansion_locally(
-                    result,active_schema,original['scenes'],evidence,window)
+                # The response has complete structured sentences, but is
+                # overlong. Do not delete verbs/adjectives from sentences.
+                # The semantic and language audit will review the exact
+                # complete-sentence candidate before any new TTS send.
+                return trim_one_complete_sentence_locally(
+                    result,active_schema,original['scenes'],window)
         try:
             repaired=accept_completed_expansion(draft)
         except (ValueError, NaturalDurationRejected) as error:
