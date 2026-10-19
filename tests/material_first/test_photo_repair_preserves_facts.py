@@ -53,11 +53,14 @@ class PhotoRepairFactInvariant(unittest.TestCase):
                         self.calls.append(key)
                         if key=="material-brief-repair:review:1":
                             self_prompt=instruction
-                            assert "Only correct photo_contexts" in self_prompt
+                            assert "Return ONLY photo_contexts" in self_prompt
                             revision=deepcopy(initial)
                             revision["photo_contexts"]["setting"]["source_mention"]=things[0]
-                            revision["facts"][0]["text"]="MODEL-INVENTED HISTORICAL CLAIM"
-                            return revision,{}
+                            assert set(required_schema['properties'])=={'photo_contexts'}
+                            return {'photo_contexts':{
+                                role:{field:value for field,value in ctx.items()
+                                      if field!='fact_ids'}
+                                for role,ctx in revision['photo_contexts'].items()}},{}
                         if key=="material-brief-review:2":
                             assert context["facts"][0]["text"]==facts[0]["text"]
                             return {"facts":{
@@ -83,20 +86,20 @@ class PhotoRepairFactInvariant(unittest.TestCase):
                 "subject":{"fact_ids":["f1"],"source_mention":"source name"}
             }
         }
-        proposed=deepcopy(before)
-        proposed["photo_contexts"]["subject"]["fact_ids"]=["f1","f2"]
-        proposed["facts"][0]["text"]="Invented rewrite"
+        proposed={'photo_contexts':{'subject':{'source_mention':'updated source'}}}
         result=preserve_facts_after_photo_repair(before,proposed)
-        self.assertEqual(result["facts"],before["facts"])
-        self.assertEqual(result["photo_contexts"]["subject"]["fact_ids"],["f1"])
+        self.assertEqual(result['facts'],before['facts'])
+        self.assertEqual(result['photo_contexts']['subject']['fact_ids'],['f1'])
+        self.assertEqual(result['photo_contexts']['subject']['source_mention'],'updated source')
+        with self.assertRaisesRegex(ValueError,'prohibited fields'):
+            preserve_facts_after_photo_repair(before,deepcopy(before))
 
     def test_facts_cannot_be_rebound_to_different_photo_context(self):
         before={"facts":[{"id":"f1","text":"Original"}],
                 "required_fact_ids":["f1"],
                 "photo_contexts":{"setting":{"fact_ids":["f1"]}}}
-        changed=deepcopy(before)
-        changed["photo_contexts"]["setting"]["fact_ids"]=["f2"]
-        with self.assertRaisesRegex(ValueError,"fact bindings"):
+        changed={'photo_contexts':{'setting':{'fact_ids':['f2']}}}
+        with self.assertRaisesRegex(ValueError,'protected fields'):
             preserve_facts_after_photo_repair(before,changed)
 
 
