@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-19",
+  "scope": "Shared source-mention literal alignment in Factory Next",
+  "previous_problem": {
+    "job_id": "8d4d2acd-d30f-449f-a655-edaa4a58a460",
+    "stage": "research",
+    "failure": "ValueError / STAGE_VALIDATION_FAILED",
+    "recorded_source_mention": "Crist Drive in Los Altos",
+    "selected_span": "s3-8557-9204",
+    "immediate_neighbors": [
+      "s3-7584-8557",
+      "s3-9204-10085"
+    ],
+    "description": "Both immediate same-source neighbor spans literally contain the requested phrase; old code only rebounded if precisely one neighbor matched. This invalidated otherwise supported source mention despite model revisions.",
+    "old_job_replayed": false
+  },
+  "implementation": {
+    "file": "material_first/photo_contexts.py",
+    "behavior": "When 1 or 2 literally matching immediately adjacent spans belong to the same original source, bind selected+matching neighbor(s), sorted by start. Never admit distant, cross-source or fuzzy matches.",
+    "special_topic_cases": false,
+    "source_revision": "f8f3c8cc01f5e29b96dc779daca820e5266f9ad1"
+  },
+  "validation": {
+    "exact_image": "factory-v3:factory-next-adjacent-f8f3c8c",
+    "material_tests": "243 PASS, no errors",
+    "factory_v3_tests": "127 PASS, no errors",
+    "factory_next_tests": "153 PASS, no errors",
+    "on_second_failed_job_read_only_replay": "Advanced from two failed photo corrections/ValueError to independent factual review key material-brief-review:2 after one saved correction, no external calls",
+    "public_studio_http": 200,
+    "public_jobs_api_http": 200,
+    "prior_successful_dna_mp4_http": 206
+  },
+  "deployment": {
+    "container": "factory-next-studio-v9",
+    "rollback_container": "factory-next-studio-v9-before-adjacent-20261019",
+    "other_project_changes": false
+  },
+  "new_real_job": {
+    "id": "f731bc08-a84b-42ff-a6da-7f510e854336",
+    "topic": "стив джобс",
+    "language": "uk",
+    "seconds": 60,
+    "submission_http": 201,
+    "last_observed_stage": "materials",
+    "completed": [
+      "research"
+    ],
+    "full_mp4_status": "pending observation; no success claim"
+  },
+  "limitations": {
+    "do_not_retry_old_job_ids": true,
+    "do_not_remove_free_only_controls": true,
+    "keep_strict_fact_image_voice_quality_gates": true,
+    "terminal_mp4_result_not_yet_observed": true
+  }
+}
