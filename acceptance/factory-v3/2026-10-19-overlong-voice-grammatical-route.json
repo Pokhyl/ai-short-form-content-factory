@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-19",
+  "problem": "Natural TTS is sometimes too long; previously the default overlong correction deleted individual words from a source-reviewed script. The independent native/factual reviewer rejected the resulting ungrammatical, unsupported narration.",
+  "immutable_failed_job": {
+    "id": "263dc32a-2536-442a-b3ab-2253b420d78f",
+    "source_revision": "6a50f8d9ff5d2612fba7a9a17c0012e539dc3e6b",
+    "completed": [
+      "research",
+      "materials",
+      "story"
+    ],
+    "first_mp3_seconds": 69.288,
+    "target_seconds": 60,
+    "original_script_words": 135,
+    "allowed_window": {
+      "words": [
+        109,
+        123
+      ],
+      "characters": [
+        758,
+        890
+      ]
+    },
+    "first_extractive_plan": "24 word identities, failed local length gate",
+    "second_extractive_plan": "22 word identities; locally fitted to 113 words and 766 characters, then failed semantic/native independent review",
+    "independent_review": {
+      "no_unsupported_claims": false,
+      "native_language_quality": false
+    },
+    "second_tts_sent": false,
+    "mp4_created": false,
+    "old_job_replayed": false
+  },
+  "generic_correction": {
+    "code_revision": "909d2aebcdfb01bbc606c2e42a6a4681fa4211f8",
+    "description": "Both measured overlong and underlong natural speech corrections use complete server-bounded named sentences, original source-backed fact/photo identities and a new independent native/semantic review before second TTS. The old deletion-only editor remains tested but is no longer a production route.",
+    "preserves_original_evidence_ids": true,
+    "tempo_changes": false,
+    "extra_budgeted_model_claims": 0,
+    "independent_review_required": true,
+    "no_topic_specific_branching": true
+  },
+  "candidate_image": "factory-v3:factory-next-safe-overlong-909d2ae",
+  "validation": {
+    "source_factory_next_tests": 159,
+    "source_material_tests": 243,
+    "source_factory_v3_tests": 127,
+    "candidate_image_material_tests": 243,
+    "candidate_image_factory_v3_tests": 127,
+    "candidate_image_factory_next_tests": "in progress at report creation",
+    "changed_file_checksum_matches_image": true,
+    "production_deployment": "not yet at report creation",
+    "new_public_mp4": "not yet proven"
+  },
+  "previous_running_services_and_unrelated_projects_unchanged": true
+}
