@@ -78,7 +78,9 @@ class VoiceRevisionLedgerRegression(unittest.TestCase):
              patch('factory_next.preparation.validate_story',return_value=revised_scenes), \
              patch('factory_next.preparation.validate_native_surface'), \
              patch('factory_next.preparation.validate_script_review'):
-            result=preparation.revise_story(context,33864)
+            from factory_next.duration import revision_length_window
+            window=revision_length_window(context['outputs']['story']['script'],33864,15)
+            result=preparation._revise_overlong_extractively(context,window)
         self.assertEqual(result['review']['native_language_quality'],True)
         self.assertEqual(result['scenes'],revised_scenes)
         self.assertEqual(ledger.claims['script-review'],
