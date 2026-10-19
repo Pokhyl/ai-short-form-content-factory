@@ -136,13 +136,27 @@ async function show(id){
   get("status").textContent=label(d.status)+stage+wait+(d.voice_duration_ms?" · голос "+(d.voice_duration_ms/1000).toFixed(2)+" с":"");
   const failure=d.status==="needs_attention";
   get("failure").hidden=!failure;
-  get("failure").textContent=failure?(d.failure_reason==="GOOGLE_OAUTH_RECONNECT_REQUIRED"
+  const failureText={
+    RESEARCH_FACTS_REJECTED:"Проверка фактов отклонила материал даже после ограниченных исправлений. Неподтверждённые утверждения не попали в сценарий.",
+    RESEARCH_FACTS_INCOMPLETE:"Не удалось получить три самостоятельных факта с подтверждением из источников.",
+    SOURCE_OBJECT_UNSUPPORTED:"Выбранное изображение нельзя связать с указанным фрагментом источника. Подмена изображений запрещена.",
+    NO_VERIFIABLE_SOURCES:"В пределах лимита поиска не найдено доступных источников с пригодным текстом.",
+    SOURCE_BINDING_CHANGED:"Исправление материала нарушило уже подтверждённые связи фактов с источниками.",
+    MODEL_RESPONSE_INVALID:"Ответ модели не прошёл проверку формата. Повтор остановленного задания не выполняется.",
+    MATERIALS_NOT_VERIFIED:"Не найдено достаточного количества подходящих и проверенных материалов.",
+    MEDIA_PROCESSING_FAILED:"Ошибка обработки медиа. Требуется диагностика монтажа или кодирования.",
+    VOICE_DURATION_OUT_OF_RANGE:"Синтезированная речь не уложилась в установленную длительность.",
+    EXTERNAL_OPERATION_UNCERTAIN:"Результат обращения к внешнему сервису не определён. Автоматический повтор запрещён.",
+    STAGE_VALIDATION_FAILED:"Результат текущего этапа не прошёл внутреннюю проверку.",
+  };
+  get("failure").textContent=failure?(failureText[d.failure_reason]||
+    (d.failure_reason==="GOOGLE_OAUTH_RECONNECT_REQUIRED"
     ?"Создание остановлено: Google OAuth в n8n требует повторной авторизации. Этот запрос автоматически не повторяется."
     :d.failure_reason==="GEMINI_RATE_OR_QUOTA_EXHAUSTED"
     ?"Google Gemini вернул HTTP 429: превышен лимит запросов или квота. Сценарий и проверенные изображения сохранены. Повтор этого задания не запускается; время восстановления лимита пока неизвестно."
     :d.error_type==="NaturalDurationRejected"
     ?"Озвучка не уложилась в заданную длительность. Сценарий и проверенные изображения сохранены. Повторное выполнение остановленного задания не запускается."
-    :"Выполнение остановлено: "+(d.error_type||"требуется проверка")+". Уже полученные материалы сохранены."):"";
+    :"Выполнение остановлено: "+(d.error_type||"требуется проверка")+". Уже полученные материалы сохранены.")):"";
   get("script").textContent=d.script||"Текст появится после проверки сценария.";
   const ready=d.machine_pass===true;
   const player=get("video");
