@@ -354,6 +354,18 @@ class Studio:
                     (job,job))
             except Exception:
                 failure_reason=None
+        if failure_reason is None and state["status"]=="needs_attention":
+            # Persisted codes are an allowlist, not arbitrary exception text.
+            candidate=state.get("failure_code")
+            if candidate in {
+                "VOICE_DURATION_OUT_OF_RANGE", "MODEL_RESPONSE_INVALID",
+                "MATERIALS_NOT_VERIFIED", "EXTERNAL_OPERATION_UNCERTAIN",
+                "MEDIA_PROCESSING_FAILED", "RESEARCH_FACTS_REJECTED",
+                "SOURCE_OBJECT_UNSUPPORTED", "NO_VERIFIABLE_SOURCES",
+                "SOURCE_BINDING_CHANGED", "RESEARCH_FACTS_INCOMPLETE",
+                "STAGE_VALIDATION_FAILED",
+            }:
+                failure_reason=candidate
         return {"id":job,"request":state["request"],
                 "status":state["status"],"eligible_after":None,
                 "next_stage":state.get("next_stage"),"completed_stages":list(outputs),
