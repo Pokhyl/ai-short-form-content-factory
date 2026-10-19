@@ -23,6 +23,39 @@ MAX_PRE_DISPATCH_DEFERRALS=3
 SAFE_LEDGER_STAGES=('research','materials','story')
 
 
+# Only fixed, non-sensitive error categories may be stored in durable checkpoints.
+# Never persist str(error), provider responses, URLs, tokens or source quotations.
+def classify_stage_failure(stage, error):
+    name=type(error).__name__
+    if name == 'NaturalDurationRejected':
+        return 'VOICE_DURATION_OUT_OF_RANGE'
+    if name == 'ModelSchemaError':
+        return 'MODEL_RESPONSE_INVALID'
+    if name in ('MaterialUnavailable','MaterialResolutionUnavailable'):
+        return 'MATERIALS_NOT_VERIFIED'
+    if name in ('TimeoutError','ConnectionError','HTTPFailure'):
+        return 'EXTERNAL_OPERATION_UNCERTAIN'
+    if name == 'CalledProcessError':
+        return 'MEDIA_PROCESSING_FAILED'
+    if isinstance(error, ValueError):
+        message=str(error)
+        if message.startswith('research preflight failed after '):
+            return 'RESEARCH_FACTS_REJECTED'
+        if 'selected source span does not contain the object mention' in message:
+            return 'SOURCE_OBJECT_UNSUPPORTED'
+        if message == 'no usable fetched research sources within budget':
+            return 'NO_VERIFIABLE_SOURCES'
+        if message.startswith('photo search repair changed '):
+            return 'SOURCE_BINDING_CHANGED'
+        if message.startswith('model response '):
+            return 'MODEL_RESPONSE_INVALID'
+        if message in ('measured narration requires exactly three essential facts',
+                       'exactly three distinct known essential facts required'):
+            return 'RESEARCH_FACTS_INCOMPLETE'
+        return 'STAGE_VALIDATION_FAILED'
+    return None
+
+
 class PreDispatchUnavailable(RuntimeError):
     """Verified provider unavailability BEFORE any stage operation was sent.
 
@@ -131,7 +164,8 @@ class Pipeline:
                     if resume(stage,deepcopy(context),deepcopy(waiting)) is not True:
                         raise ReconciliationRequired('provider ledger did not authorize resume')
                 except BaseException as error:
-                    state.update(status='needs_attention',error_type=type(error).__name__)
+                    state.update(status='needs_attention',error_type=type(error).__name__,
+                             failure_code=classify_stage_failure(stage,error))
                     self.save(directory,state)
                     raise
                 state.pop('provider_wait_receipt')
@@ -164,7 +198,8 @@ class Pipeline:
                     self.save(directory,state)
                     return deepcopy(state)
                 except BaseException as error:
-                    state.update(status='needs_attention',error_type=type(error).__name__)
+                    state.update(status='needs_attention',error_type=type(error).__name__,
+                             failure_code=classify_stage_failure(stage,error))
                     self.save(directory,state)
                     raise
                 if previous:
@@ -208,7 +243,8 @@ class Pipeline:
                 self.save(directory,state)
                 raise
             except BaseException as error:
-                state.update(status='needs_attention',error_type=type(error).__name__)
+                state.update(status='needs_attention',error_type=type(error).__name__,
+                             failure_code=classify_stage_failure(stage,error))
                 self.save(directory,state)
                 raise
             state['outputs'][stage]=output;state['receipts'][stage]=receipt
