@@ -55,6 +55,35 @@ def preserve_validated_contexts_after_fact_repair(before, repaired):
     return result
 
 
+
+
+def photo_only_validation_failure(failures):
+    """Classify narrowly scoped photo errors, never arbitrary model/JSON errors."""
+    if len(failures)!=1 or not isinstance(failures[0],str):
+        return False
+    parts=[part.strip() for part in failures[0].split(';')]
+    return bool(parts) and all(part.startswith(
+        ('setting:', 'subject:', 'detail:', 'photo contexts:')) for part in parts)
+
+
+def preserve_facts_after_photo_repair(before, repaired):
+    """An image-citation repair cannot rewrite factual statements or IDs.
+
+    Source mentions and selected spans may change, but their context-to-fact
+    associations must remain identical. The next review independently checks
+    original facts against their exact fetched evidence.
+    """
+    if set(before['photo_contexts']) != set(repaired['photo_contexts']):
+        raise ValueError('photo correction changed required context roles')
+    for role, original in before['photo_contexts'].items():
+        if repaired['photo_contexts'][role].get('fact_ids') != original.get('fact_ids'):
+            raise ValueError('photo correction changed contextual fact bindings')
+    saved=deepcopy(repaired)
+    saved['facts']=deepcopy(before['facts'])
+    saved['required_fact_ids']=deepcopy(before['required_fact_ids'])
+    return saved
+
+
 def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_photos=True):
     # An initially malformed draft may consume one repair before it is ready
     # for semantic review. Keep one additional correction available when that
@@ -62,6 +91,7 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
     for attempt in range(3):
         semantic_reviewed = False
         query_only_repair = False
+        photo_only_repair = False
         try:
             validate_json(draft, schema)
             normalized={**draft,'photo_contexts':bind_english_objects(draft['photo_contexts'])}
@@ -87,6 +117,7 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
         except ValueError as error:
             failures=[str(error)]
             query_only_repair = 'search hint' in failures[0]
+            photo_only_repair = not check_photos and photo_only_validation_failure(failures)
         else:
             if not check_photos:contexts={}
             review_schema=obj({'facts':obj({f['id']:obj({'supported':BOOL,'reason':string()}) for f in evidence['facts']}),
@@ -117,6 +148,8 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
         rejected_draft = deepcopy(draft)
         draft,_=gemini.generate('material-brief-repair:review:'+str(attempt+1),
             'Revise this provisional research plan to resolve ALL supplied validation/review failures. '
+            + ('Only correct photo_contexts. Keep facts, required_fact_ids and every context fact_ids unchanged. '
+               'Do not rewrite factual claims to solve an image citation problem. ' if photo_only_repair else '') +
             'When a reviewer rejects a factual claim, preserve its exact source qualifiers and certainty; '
             'remove unsupported scope such as universal wording instead of paraphrasing or strengthening it. '
             'Keep already supported facts unchanged unless their own review decision rejects them. '
@@ -141,6 +174,8 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
                      'selected source span does not contain the object mention' in failure
                      for failure in failures) else []),
              'rejected_draft':rejected_draft,'failures':failures},schema)
+        if photo_only_repair:
+            draft=preserve_facts_after_photo_repair(rejected_draft,draft)
         if semantic_reviewed and not check_photos:
             # The evidence reviewer rejected facts only. Keep the already
             # source-cited visual objects instead of letting a fact correction
