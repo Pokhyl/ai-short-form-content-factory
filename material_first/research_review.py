@@ -33,6 +33,28 @@ def _focused_literal_source_quotes(draft, spans, maximum=9):
             for identity in chosen[:maximum]]
 
 
+
+def preserve_validated_contexts_after_fact_repair(before, repaired):
+    """Fact-only revisions cannot silently rewrite already grounded image citations.
+
+    This runs only when the initial locally validated photo contexts passed,
+    and an independent semantic review rejected facts rather than photos.
+    A subsequent full local validation still checks the preserved references;
+    missing/rebound fact identities are rejected, not invented.
+    """
+    old_contexts=before['photo_contexts']
+    old_ids={f['id'] for f in before['facts']}
+    new_ids={f['id'] for f in repaired['facts']}
+    if len(new_ids)!=len(repaired['facts']) or not old_ids <= new_ids:
+        raise ValueError('fact correction changed contextual fact identities')
+    for context in old_contexts.values():
+        if not set(context['fact_ids']) <= new_ids:
+            raise ValueError('fact correction removed cited visual fact')
+    result=deepcopy(repaired)
+    result['photo_contexts']=deepcopy(old_contexts)
+    return result
+
+
 def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_photos=True):
     # An initially malformed draft may consume one repair before it is ready
     # for semantic review. Keep one additional correction available when that
@@ -119,6 +141,11 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
                      'selected source span does not contain the object mention' in failure
                      for failure in failures) else []),
              'rejected_draft':rejected_draft,'failures':failures},schema)
+        if semantic_reviewed and not check_photos:
+            # The evidence reviewer rejected facts only. Keep the already
+            # source-cited visual objects instead of letting a fact correction
+            # invent a new mention which the cited source never contained.
+            draft=preserve_validated_contexts_after_fact_repair(rejected_draft,draft)
         if query_only_repair:
             if draft.get('facts') != rejected_draft.get('facts') or draft.get('required_fact_ids') != rejected_draft.get('required_fact_ids'):
                 raise ValueError('photo search repair changed source-backed facts')
