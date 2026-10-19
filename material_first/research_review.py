@@ -67,27 +67,25 @@ def photo_only_validation_failure(failures):
 
 
 def preserve_facts_after_photo_repair(before, repaired):
-    """An image-citation repair cannot rewrite factual statements or IDs.
+    """Server-compose a photo-only correction; facts and fact IDs never leave it.
 
-    Source mentions and selected spans may change, but their context-to-fact
-    associations must remain identical. The next review independently checks
-    original facts against their exact fetched evidence.
+    The dedicated provider schema excludes factual claims and photo-to-fact
+    bindings. Rehydrate those identities exclusively from the original draft,
+    then run every ordinary source/semantic/pixel validator again.
     """
-    if set(before['photo_contexts']) != set(repaired['photo_contexts']):
+    if set(repaired) != {'photo_contexts'}:
+        raise ValueError('photo-only correction returned prohibited fields')
+    original_contexts=before['photo_contexts']
+    photos=repaired['photo_contexts']
+    if set(original_contexts)!=set(photos):
         raise ValueError('photo correction changed required context roles')
-    saved=deepcopy(repaired)
-    for role, original in before['photo_contexts'].items():
-        original_ids=original.get('fact_ids')
-        proposed_ids=saved['photo_contexts'][role].get('fact_ids')
-        if (not isinstance(original_ids,list) or not isinstance(proposed_ids,list)
-                or len(set(proposed_ids))!=len(proposed_ids)
-                or not set(original_ids)<=set(proposed_ids)):
-            raise ValueError('photo correction removed or replaced contextual fact bindings')
-        # Ignore additional model-invented fact associations. Only the
-        # previously validated, narrower original bindings remain eligible.
-        saved['photo_contexts'][role]['fact_ids']=deepcopy(original_ids)
-    saved['facts']=deepcopy(before['facts'])
-    saved['required_fact_ids']=deepcopy(before['required_fact_ids'])
+    saved=deepcopy(before)
+    for role, original in original_contexts.items():
+        fields=set(original)-{'fact_ids'}
+        if not isinstance(photos[role],dict) or set(photos[role])!=fields:
+            raise ValueError('photo-only correction changed protected fields')
+        saved['photo_contexts'][role]={**deepcopy(photos[role]),
+                                      'fact_ids':deepcopy(original['fact_ids'])}
     return saved
 
 
@@ -161,10 +159,22 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
             revision_count=attempt
             raise ValueError(f'research preflight failed after {revision_count} revisions: '+'; '.join(failures))
         rejected_draft = deepcopy(draft)
+        repair_schema=schema
+        if photo_only_repair:
+            # Restrict the actual provider JSON Schema, not only the prompt:
+            # the model cannot output facts, required IDs or context fact IDs.
+            contexts_schema=deepcopy(schema['properties']['photo_contexts'])
+            for row_schema in contexts_schema['properties'].values():
+                row_schema['properties'].pop('fact_ids',None)
+                if 'fact_ids' in row_schema['required']:
+                    row_schema['required'].remove('fact_ids')
+            repair_schema=obj({'photo_contexts':contexts_schema})
         draft,_=gemini.generate('material-brief-repair:review:'+str(attempt+1),
             'Revise this provisional research plan to resolve ALL supplied validation/review failures. '
-            + ('Only correct photo_contexts. Keep facts, required_fact_ids and every context fact_ids unchanged. '
-               'Do not rewrite factual claims to solve an image citation problem. ' if photo_only_repair else '') +
+            + ('Return ONLY photo_contexts with source_mention, english_photo_object and support_span_ids. '
+               'Never output facts, required_fact_ids or photo fact_ids; they are preserved by the server. '
+               'Do not invent a new factual assertion while correcting an image citation. '
+               if photo_only_repair else '') +
             'When a reviewer rejects a factual claim, preserve its exact source qualifiers and certainty; '
             'remove unsupported scope such as universal wording instead of paraphrasing or strengthening it. '
             'Keep already supported facts unchanged unless their own review decision rejects them. '
@@ -188,7 +198,7 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
                  if not check_photos and any(
                      'selected source span does not contain the object mention' in failure
                      for failure in failures) else []),
-             'rejected_draft':rejected_draft,'failures':failures},schema)
+             'rejected_draft':rejected_draft,'failures':failures},repair_schema)
         if photo_only_repair:
             photo_repairs_used+=1
             draft=preserve_facts_after_photo_repair(rejected_draft,draft)
