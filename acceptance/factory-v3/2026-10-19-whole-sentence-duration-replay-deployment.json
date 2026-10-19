@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-19",
+  "scope": "Factory Next only, shared measured-voice correction on arbitrary topics",
+  "defect": {
+    "immutable_failed_job_id": "a78ee9d1-c0fb-45fc-82c3-7c4dadc01928",
+    "stage": "voice",
+    "error_type": "ModelSchemaError",
+    "category": "MODEL_RESPONSE_INVALID",
+    "requested_seconds": 60,
+    "recorded_first_mp3_ms": 63168,
+    "recorded_first_correction": {
+      "words": 121,
+      "characters": 955,
+      "sentences": 10
+    },
+    "recorded_second_correction": {
+      "words": 124,
+      "characters": 981,
+      "sentences": 10
+    },
+    "allowed": {
+      "words_min": 104,
+      "words_max": 118,
+      "characters_min": 794,
+      "characters_max": 932
+    },
+    "prior_local_trim_error": "no bounded optional modifiers for local repair",
+    "historical_job_untouched": true
+  },
+  "correction": {
+    "code_revision": "cc1ec6a82ffca5d6a38ed300ac2f1bf952840186",
+    "branch": "fix/factory-next-complete-sentence-voice-trim-20261019",
+    "image": "factory-v3:factory-next-whole-sentence-cc1ec6a",
+    "operation": "When an otherwise complete structured narration exceeds calibrated length, first try removing one intact sentence, preserving all other sentence text verbatim and server-owned photo/fact IDs. If no full-sentence candidate fits, retain prior bounded modifier fallback to avoid breaking previously accepted short clips. Every changed script still requires independent source and native-language review before TTS.",
+    "new_claims_added": 0,
+    "provider_keys_changed": false,
+    "allowed_quotas_changed": false,
+    "topic_specific_conditionals": false
+  },
+  "offline_validation": {
+    "archived_candidate": {
+      "words": 110,
+      "characters": 860,
+      "local_story_validation": "PASS",
+      "native_surface_validation": "PASS",
+      "photo_and_fact_ids_preserved": true
+    },
+    "real_script_independent_semantic_review": "NOT RUN",
+    "tests": {
+      "factory_next": 165,
+      "material_first": 243,
+      "factory_v3": 127,
+      "total": 535
+    },
+    "test_result": "PASS after updating five stale provider-schema fixtures to existing scoped JSON contract",
+    "baseline_fixture_regressions": "Original image had research fixture failures under old payload shape; tests corrected without changing source/fact validator",
+    "changed_code_files_sha256_match_image": true,
+    "external_provider_requests_during_replay": 0,
+    "new_tts_requests_during_replay": 0
+  },
+  "deployment": {
+    "container": "factory-next-studio-v9",
+    "previous_container": "factory-next-studio-v9-before-whole-sentence-20261019",
+    "studio_http": 200,
+    "jobs_api_http": 200,
+    "existing_video_http": 206,
+    "other_project_services_modified": false,
+    "existing_jobs_rerun": false,
+    "new_video_generated": false
+  },
+  "limitations": {
+    "complete_new_mp4_with_revision": "NOT YET OBSERVED",
+    "independent_review_of_removed_sentence": "MUST STILL OCCUR IN A NEW FULL JOB",
+    "universal_topic_reliability": "NOT ESTABLISHED",
+    "billing_for_unrelated_google_cloud_usage": "UNKNOWN"
+  }
+}
