@@ -184,6 +184,12 @@ class ContextTests(unittest.TestCase):
             for row in wire_rows.values():
                 row['english_photo_object']=row.pop('subject');row.pop('query')
                 if mutate_repair and key=='material-brief-repair:initial':result['facts'][0]['text']+=' invented claim'
+            if (key.startswith('material-brief-repair:review:')
+                    and set(schema['properties'])=={'photo_contexts'}):
+                result={'photo_contexts':{
+                    role:{field:value for field,value in row.items()
+                          if field!='fact_ids'}
+                    for role,row in result['photo_contexts'].items()}}
             validate_json(result,schema)
             return result,{'receipt_id':key}
         ops=Operations('.',SimpleNamespace(fetch=lambda *args:[source]),SimpleNamespace(generate=generate),None,None,documented_contexts=True)
