@@ -418,8 +418,16 @@ class PreparationStages:
                 # overlong. Do not delete verbs/adjectives from sentences.
                 # The semantic and language audit will review the exact
                 # complete-sentence candidate before any new TTS send.
-                return trim_one_complete_sentence_locally(
-                    result,active_schema,original['scenes'],window)
+                try:
+                    return trim_one_complete_sentence_locally(
+                        result,active_schema,original['scenes'],window)
+                except NaturalDurationRejected:
+                    # Preserve the existing, separately bounded modifier
+                    # correction for short windows where removing a complete
+                    # sentence would destroy too much of the narration.
+                    # Independent source and native review remains mandatory.
+                    return trim_complete_expansion_locally(
+                        result,active_schema,original['scenes'],evidence,window)
         try:
             repaired=accept_completed_expansion(draft)
         except (ValueError, NaturalDurationRejected) as error:
