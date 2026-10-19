@@ -1,3 +1,23 @@
+## 2026-10-19 — VERIFIED PUBLIC END-TO-END SUCCESS (DO NOT LOSE)
+
+**FIRST CONFIRMED REAL automatic owner-topic UK45 DNA MP4** after prior failed immutable trials:
+- Studio job ID: fe298c76-e3a6-497f-84f8-eaa6d28d351f
+- User-submitted topic: Молекула ДНК; language uk; requested duration 45 sec.
+- Public playable MP4 URL: https://studio.hodor.com.pl/factory-next/api/jobs/fe298c76-e3a6-497f-84f8-eaa6d28d351f/video
+- Public GET API detail: https://studio.hodor.com.pl/factory-next/api/jobs/fe298c76-e3a6-497f-84f8-eaa6d28d351f
+- Deployed and repo-synced source revision: 0459cd63b11f1f38ef60d68878187a2a03429899
+- Status: complete. All eight stages passed in this exact order: research, materials, story, voice, alignment, edit, render, audit. No hand assembly, manual FFmpeg or old job replay.
+- Audited 10 approved distinct scientific/contextual images; chosen natural voice duration 44.496 seconds (audio_tempo_factor=1.0).
+- Independently measured final MP4 (ffprobe from media worker): **45.000000 seconds**, 1080x1920 portrait H.264, **30 fps**, **1350 frames**, AAC audio; size 7,279,689 bytes.
+- Public independent HTTP GET: 200, video/mp4, 7,279,689 bytes. Public HEAD: 200, accept-ranges=bytes.
+- Final local and published audit SHA256: **9a9eaa63cfa64fb792243e1400d43c15e8f623ae174e69668e4785da27ad70b3** (verified with sha256sum against local final.mp4).
+- Audit's 16 gates all true, including exact_duration, video/audio format, frame_count, full_decode, audio preservation, final sha256, exact scene timeline, distinct verified materials and photo bytes; machine_pass=true. No errors.
+- Active Docker container: factory-v3:factory-next-studio-0459cd6, two networks n8n_default and shorts-v2_default; local repo HEAD and origin/factory-v3 both 0459cd63b11f1f38ef60d68878187a2a03429899; working tree clean at checkpoint.
+
+**This verifies ONE real user topic through the public Studio, not universal reliability across topics/languages/lengths.** Preserve the exact success and immutable historic failures. Keep agreed free-only provider/voice/DB quotas, never resurrect billing_hold, six-run/day submission limiter or unrelated architecture. The user must be able to enter other topics and obtain equivalent results without manual steps. Next useful work: inspect actual on-screen scene relevance and test other user-selected topics/languages only with deliberate resource budget; do not claim those cases verified yet. Do not edit or rerun this completed job.
+
+---
+
 ## 2026-10-18 — LATEST: Natural-duration local correction for underlong original TTS
 
 **Owner's closed rules:** Completely automatic new topic -> factual sourced
