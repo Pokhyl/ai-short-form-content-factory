@@ -147,6 +147,7 @@ async function show(id){
     MEDIA_PROCESSING_FAILED:"Ошибка обработки медиа. Требуется диагностика монтажа или кодирования.",
     VOICE_DURATION_OUT_OF_RANGE:"Синтезированная речь не уложилась в установленную длительность.",
     EXTERNAL_OPERATION_UNCERTAIN:"Результат обращения к внешнему сервису не определён. Автоматический повтор запрещён.",
+    EXTERNAL_HTTP_FAILURE:"Внешний сервис отклонил запрос с ошибкой HTTP. Автоматический повтор этого задания не запускается.",
     STAGE_VALIDATION_FAILED:"Результат текущего этапа не прошёл внутреннюю проверку.",
   };
   get("failure").textContent=failure?(failureText[d.failure_reason]||
