@@ -26,6 +26,29 @@ class AdjacentSourceMentionTests(unittest.TestCase):
         self.assertEqual(result['subject']['support_span_ids'],['s1-20-42','s1-0-20'])
         validate_context_mentions(result,self.spans())
 
+    def test_both_neighbouring_spans_with_same_literal_are_retained(self):
+        for literal in ("Crist Drive in Los Altos","documented coral reef"):
+            with self.subTest(literal=literal):
+                rows=[
+                    {'id':'source-0-100','source_id':'source','start':0,'end':100,
+                     'text':'This source names '+literal+' explicitly.'},
+                    {'id':'source-100-200','source_id':'source','start':100,'end':200,
+                     'text':'A separate paragraph with no object mention.'},
+                    {'id':'source-200-300','source_id':'source','start':200,'end':300,
+                     'text':'The same source also describes '+literal+'.'},
+                    {'id':'other-0-100','source_id':'other','start':0,'end':100,
+                     'text':'Unrelated publisher quotes '+literal+'.'},
+                ]
+                ctx={'setting':{'support_span_ids':['source-100-200'],
+                    'source_mention':literal,'subject':'Documented subject',
+                    'query':'Documented subject'}}
+                original=ctx['setting']['support_span_ids'][:]
+                repaired=rebind_adjacent_literal_mentions(ctx,rows)
+                self.assertEqual(repaired['setting']['support_span_ids'],
+                    ['source-100-200','source-0-100','source-200-300'])
+                self.assertEqual(ctx['setting']['support_span_ids'],original)
+                validate_context_mentions(repaired,rows)
+
     def test_distant_span_does_not_rebind(self):
         draft=self.context(support_span_ids=['s1-42-70'])
         result=rebind_adjacent_literal_mentions(draft,self.spans())
