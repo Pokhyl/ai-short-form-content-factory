@@ -61,6 +61,11 @@ class Model:
             next_draft=deepcopy(self.repaired)
             if not self.refuse_correction:
                 next_draft['photo_contexts']=deepcopy(self.valid_rebound_contexts)
+            if set(args[-1]['properties'])=={'photo_contexts'}:
+                # The live provider schema excludes facts and fact identities.
+                return {'photo_contexts':{
+                    role:{name:value for name,value in ctx.items() if name!='fact_ids'}
+                    for role,ctx in next_draft['photo_contexts'].items()}},{"cached":True}
             return next_draft,{"cached":True}
         if key in ("material-brief-review:1", "material-brief-review:2", "material-brief-review:3"):
             return {"facts":{f["id"]:{"supported":True,"reason":"source quote matches"}
