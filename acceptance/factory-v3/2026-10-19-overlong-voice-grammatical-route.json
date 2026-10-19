@@ -48,10 +48,22 @@
     "source_factory_v3_tests": 127,
     "candidate_image_material_tests": 243,
     "candidate_image_factory_v3_tests": 127,
-    "candidate_image_factory_next_tests": "in progress at report creation",
+    "candidate_image_factory_next_tests": 159,
     "changed_file_checksum_matches_image": true,
-    "production_deployment": "not yet at report creation",
-    "new_public_mp4": "not yet proven"
+    "production_deployment": "factory-next-studio-v9 running image factory-v3:factory-next-safe-overlong-909d2ae",
+    "new_public_mp4": "pending",
+    "candidate_image_test_results": "all 159 factory_next and 243 material_first and 127 factory_v3 tests PASS",
+    "deployed_revision": "909d2aebcdfb01bbc606c2e42a6a4681fa4211f8",
+    "studio_api_http": 200,
+    "previous_complete_mp4_http": 206
   },
-  "previous_running_services_and_unrelated_projects_unchanged": true
+  "previous_running_services_and_unrelated_projects_unchanged": true,
+  "fresh_test": {
+    "id": "6a398db2-aa06-4cc7-8033-f6f3cc549093",
+    "topic": "стив джобс",
+    "language": "uk",
+    "duration": 60,
+    "submission_http": 201,
+    "result": "pending"
+  }
 }
