@@ -33,8 +33,10 @@ def classify_stage_failure(stage, error):
         return 'MODEL_RESPONSE_INVALID'
     if name in ('MaterialUnavailable','MaterialResolutionUnavailable'):
         return 'MATERIALS_NOT_VERIFIED'
-    if name in ('TimeoutError','ConnectionError','HTTPFailure'):
+    if name in ('TimeoutError','ConnectionError'):
         return 'EXTERNAL_OPERATION_UNCERTAIN'
+    if name == 'HTTPFailure':
+        return 'EXTERNAL_HTTP_FAILURE'
     if name == 'CalledProcessError':
         return 'MEDIA_PROCESSING_FAILED'
     if isinstance(error, ValueError):
