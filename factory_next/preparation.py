@@ -307,7 +307,8 @@ class PreparationStages:
         # hit a 429 before a second TTS attempt could be measured.
         # Ask for reviewed, bounded sentences directly in ONE metered call.
         direction='expand' if measured_ms < request['seconds']*1000-1000 else 'shorten'
-        repair_schema,sentence_counts=sentence_contract(original['scenes'],window)
+        repair_schema,sentence_counts=sentence_contract(
+            original['scenes'],window,measured_expansion=(direction=='expand'))
         total_sentences=sum(sentence_counts)
         # Gemini's documented provider-schema subset omits string length
         # constraints. Include exact bounds in server-owned input and
