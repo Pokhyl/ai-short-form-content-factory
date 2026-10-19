@@ -88,7 +88,11 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
     # An initially malformed draft may consume one repair before it is ready
     # for semantic review. Keep one additional correction available when that
     # reviewed revision still contains a specifically rejected claim.
-    for attempt in range(3):
+    # The normal two repair slots stay unchanged. Factory Next may spend ONE
+    # third, separately metered repair only if an earlier slot had to fix a
+    # photo citation and the final independent fact review rejects claims.
+    photo_repairs_used=0
+    for attempt in range(4 if not check_photos else 3):
         semantic_reviewed = False
         query_only_repair = False
         photo_only_repair = False
@@ -142,8 +146,12 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
                          if not row['source_supported'] or not row['observable_object']]
             if not failures:return normalized
             semantic_reviewed = True
-        if attempt == 2:
-            revision_count = attempt
+        eligible_extra_fact_repair=(
+            not check_photos and attempt==2 and photo_repairs_used>0
+            and semantic_reviewed and bool(failures)
+            and all(failure.startswith('fact ') for failure in failures))
+        if attempt == 3 or (attempt == 2 and not eligible_extra_fact_repair):
+            revision_count=attempt
             raise ValueError(f'research preflight failed after {revision_count} revisions: '+'; '.join(failures))
         rejected_draft = deepcopy(draft)
         draft,_=gemini.generate('material-brief-repair:review:'+str(attempt+1),
@@ -175,6 +183,7 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
                      for failure in failures) else []),
              'rejected_draft':rejected_draft,'failures':failures},schema)
         if photo_only_repair:
+            photo_repairs_used+=1
             draft=preserve_facts_after_photo_repair(rejected_draft,draft)
         if semantic_reviewed and not check_photos:
             # The evidence reviewer rejected facts only. Keep the already
