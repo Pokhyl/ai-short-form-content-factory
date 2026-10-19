@@ -12,7 +12,7 @@ from factory_v3.gemini import obj, string, validate_json
 from .duration import revision_length_fits, NaturalDurationRejected
 
 
-def sentence_contract(previous_scenes, window, *, measured_expansion=False):
+def sentence_contract(previous_scenes, window, *, sentence_count=None):
     if not isinstance(previous_scenes, list) or not 1 <= len(previous_scenes) <= 8:
         raise ValueError('bounded reviewed scene count required')
     if not isinstance(window, dict) or window['target_words'] < len(previous_scenes):
@@ -24,20 +24,17 @@ def sentence_contract(previous_scenes, window, *, measured_expansion=False):
     # fewer complete sentences is a schema-level way to avoid generating
     # content just to fill nine fields. It does NOT alter speech speed or
     # remove any source/factual/native-review constraints.
-    # Two independent, separately metered real UK60 responses after a 53.904s
-    # first recording contained the *same* ten sentences: 91 words total,
-    # average 9.1 words per sentence, despite a target of 109 words.
-    # The previously calibrated 10.6-word count remains the default.
-    # Only an UNDERLONG measured MP3 asks for more natural sentences, based
-    # on the observed 9.1-word output. This is a prompt/shape hint, not
-    # acceptance: strict text length, native/source review, then MP3 duration
-    # remain independent and authoritative.
-    # Keep the archived shorter-length calibration unchanged. The observed
-    # 91/10 words-per-sentence error came from a *long* (109-target-word)
-    # expansion, not the separately evidenced 45-second cases.
-    words_per_sentence=(9.1 if measured_expansion and
-                        window['target_words']>=100 else 10.6)
-    count=max(len(previous_scenes),round(window['target_words']/words_per_sentence))
+    # The default count is calibrated from previous complete sentences.
+    # A SINGLE separately metered correction may increase this count only
+    # when an actual completed provider reply had too few words. That count
+    # is inferred from the present reply, never hardcoded to a topic or TTS
+    # duration. All local word/character/native/source checks still apply.
+    if sentence_count is not None:
+        if type(sentence_count) is not int or sentence_count<len(previous_scenes):
+            raise ValueError('invalid bounded sentence count')
+        count=sentence_count
+    else:
+        count=max(len(previous_scenes),round(window['target_words']/10.6))
     if count>32:
         raise ValueError('too many bounded sentences')
     per_beat,extra=divmod(count,len(previous_scenes))
@@ -61,6 +58,46 @@ def sentence_contract(previous_scenes, window, *, measured_expansion=False):
                     'supplied material context. No fillers or repeated sentences.')}
         properties['beat_'+str(i)]=obj(fields)
     return obj(properties),counts
+
+
+
+
+def adaptive_underlength_sentence_contract(reply, previous_schema, previous_scenes, window):
+    """One bounded second schema learned from a COMPLETED short JSON response.
+
+    Return unchanged schema when the prior output is malformed, repetitive,
+    not actually too short, or would require an excessive increase. Never
+    fabricate missing sentences or accept incomplete text locally.
+    """
+    try:
+        if not isinstance(reply,dict) or set(reply)!=set(previous_schema['required']):
+            return previous_schema,None
+        sentences=[]
+        for beat,beat_schema in previous_schema['properties'].items():
+            body=reply[beat]
+            if not isinstance(body,dict) or set(body)!=set(beat_schema['required']):
+                return previous_schema,None
+            for key in beat_schema['required']:
+                sentence=body[key]
+                if (not isinstance(sentence,str) or len(sentence.split())<5 or
+                        sentence.strip()[-1:] not in ('.','!','?','…')):
+                    return previous_schema,None
+                sentences.append(sentence.strip())
+        if len({s.casefold() for s in sentences})!=len(sentences):
+            return previous_schema,None
+        observed_words=len(' '.join(sentences).split())
+        if observed_words>=window['min_words']:
+            return previous_schema,None
+        observed_per_sentence=observed_words/len(sentences)
+        if observed_per_sentence<5:
+            return previous_schema,None
+        proposed=math.ceil(window['target_words']/observed_per_sentence)
+        if proposed<=len(sentences) or proposed>min(32,len(sentences)+max(2,math.ceil(len(sentences)*.5))):
+            return previous_schema,None
+        schema,counts=sentence_contract(previous_scenes,window,sentence_count=proposed)
+        return schema,counts
+    except (KeyError,TypeError,ValueError,ZeroDivisionError):
+        return previous_schema,None
 
 
 def assemble_sentence_repair(result,schema,reviewed_scenes,window):
