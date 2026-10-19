@@ -160,18 +160,21 @@ class Gemini:
         else:
             # Separate physical claims share the existing total Gemini budget.
             # Only a trusted explicit 503/UNAVAILABLE permits a subsequent send.
-            for attempt in range(3):
+            # A definitive 503 is not an unknown provider result. Allow a
+            # bounded second availability window while keeping every physical
+            # request in the same immutable preparation budget.
+            for attempt in range(6):
                 call_key = key if attempt == 0 else key + ':availability:' + str(attempt + 1)
                 try:
                     receipt = self.calls.run(call_key, 'gemini', identity, send,
                                              allow_model_unavailable=True)
                     break
                 except ModelUnavailable as error:
-                    if attempt == 2:
+                    if attempt == 5:
                         raise
                     retry_after = error.receipt.get('headers', {}).get('retry-after', '')
                     if self.defer_unavailable:
-                        delay = max((60, 300)[attempt], int(retry_after) if str(retry_after).isdigit() else 0)
+                        delay = max((60, 300, 900, 900, 900)[attempt], int(retry_after) if str(retry_after).isdigit() else 0)
                         if delay > 1800:
                             raise
                         self.calls.defer_unavailable(call_key, key + ':availability:' + str(attempt + 2), delay)
