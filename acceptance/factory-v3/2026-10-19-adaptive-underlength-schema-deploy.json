@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-19",
+  "release_kind": "scope-limited Factory Next Studio voice-revision correction",
+  "source_code_revision": "6a50f8d9ff5d2612fba7a9a17c0012e539dc3e6b",
+  "image": "factory-v3:factory-next-expansion-6a50f8d",
+  "active_container": "factory-next-studio-v9",
+  "rollback_container": "factory-next-studio-v9-before-adaptive-voice-20261019",
+  "issue": {
+    "preceding_immutable_job": "f731bc08-a84b-42ff-a6da-7f510e854336",
+    "status": "needs_attention / ModelSchemaError at voice",
+    "completed_stages": [
+      "research",
+      "materials",
+      "story"
+    ],
+    "first_mp3_duration_seconds": 53.904,
+    "requested_seconds": 60,
+    "original_words": 99,
+    "original_characters": 728,
+    "allowed_correction_words": [
+      102,
+      116
+    ],
+    "allowed_correction_characters": [
+      740,
+      868
+    ],
+    "first_completed_response": {
+      "words": 91,
+      "characters": 626,
+      "sentences": 10
+    },
+    "second_completed_response": {
+      "words": 91,
+      "characters": 626,
+      "sentences": 10
+    },
+    "same_provider_response_sha256": true,
+    "distinct_ledger_request_hashes": true,
+    "no_mp4_for_this_immutable_job": true
+  },
+  "generic_fix": {
+    "description": "If and only if the first, separately claimed, completed revision response is structurally valid, unique, and too short, calculate observed words per real sentence and adjust the fields of the one already-permitted correction. Do not retry a claimed request. Preserve the original source fact and photo identities and require independent review before sending any second TTS.",
+    "primary_sentence_contract": "existing 10.6 word calibration unchanged",
+    "adaptive_correction": "observed first response -> dynamic sentence count; actual fixture 10 to 12 fields",
+    "schema_guidance": "Google-supported JSON Schema description for server-authored sentence fields; minLength/maxLength kept in local validator, not transmitted as unsupported JSON Schema keywords",
+    "affected_files": [
+      "factory_next/voice_length_repair.py",
+      "factory_next/preparation.py",
+      "factory_v3/gemini.py"
+    ],
+    "no_topic_specific_routing": true,
+    "additional_provider_claims_allowed": 0,
+    "local_gate_relaxation": false
+  },
+  "validation": {
+    "test_material_first": 243,
+    "test_factory_v3": 127,
+    "test_factory_next": 157,
+    "source_test_results": "all PASS, five fixture skips in material_first",
+    "packaged_image_test_results": "all PASS",
+    "changed_files_sha256_match_container": true,
+    "offline_saved_response_analysis": "10 source sentence fields -> 12 adaptive correction fields; no provider send",
+    "deployed_studio_http": 200,
+    "deployed_jobs_api_http": 200,
+    "archived_dna_mp4_http": 206
+  },
+  "fresh_trial": {
+    "job_id": "263dc32a-2536-442a-b3ab-2253b420d78f",
+    "entered_topic": "стив джобс",
+    "language": "uk",
+    "seconds": 60,
+    "admitted_http": 201,
+    "last_observed_stage": "materials",
+    "terminal_outcome": "PENDING"
+  },
+  "constraints": {
+    "prior_terminal_jobs_untouched": true,
+    "other_project_services_modified": false,
+    "old_container_available_for_rollback": true,
+    "proven_universal_reliability": false,
+    "no_paid_fallback_added": true
+  }
+}
