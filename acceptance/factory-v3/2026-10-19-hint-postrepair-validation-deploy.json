@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-19",
+  "purpose": "Systemic post-repair source-hint validation",
+  "cause": "Measured-voice research path skipped validate_search_hints on an initial image-hint repair. Existing generic fixture reproduced this failure on baseline revision 71a6f66 and on revision 5131ad0.",
+  "change": "Always revalidate repaired query hints and source-catalog requirements; literal mention reconciliation remains delegated to bounded reviewed_brief in measured-voice mode.",
+  "revision": "d3ee30357e4f12bc610cad8a7828bf25e3c8d018",
+  "scope": "factory-next Studio only",
+  "image": "factory-v3:factory-next-hint-validation-d3ee303",
+  "container": "factory-next-studio-v9",
+  "rollback_container": "factory-next-studio-v9-before-hint-validation-20261019",
+  "validation": {
+    "failing_case_before": "test_saved_source_and_old_bad_repair_stop_before_review_or_search: FAIL on baseline 71a6f66",
+    "failing_case_after": "PASS",
+    "material_suite": "237 tests, 5 skipped, 0 failures",
+    "factory_next_suite": "147 tests, 0 failures",
+    "image_material_suite": "237 tests, 5 skipped, 0 failures",
+    "studio_http": 200,
+    "api_http": 200,
+    "runtime_revision_matches": true
+  },
+  "production": {
+    "existing_jobs_rerun": false,
+    "new_jobs_created": false,
+    "provider_generate_calls_during_deployment": 0,
+    "paid_provider_calls_during_deployment": 0,
+    "other_project_containers_modified": false,
+    "new_full_video_generated": false,
+    "full_end_to_end_product_ready": false
+  }
+}
