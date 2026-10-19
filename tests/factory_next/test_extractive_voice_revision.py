@@ -134,7 +134,7 @@ class ExtractiveVoiceRevisionTests(unittest.TestCase):
                    side_effect=validate_story), \
              patch('factory_next.preparation.validate_native_surface'), \
              patch('factory_next.preparation.validate_script_review') as review:
-            result=stage.revise_story(context,49536)
+            result=stage._revise_overlong_extractively(context,self.window)
         self.assertEqual(len(model.requests),1)
         self.assertEqual(len(model.reviews),1)
         self.assertEqual(model.reviews[0]['script'],result['script'])
@@ -162,7 +162,7 @@ class ExtractiveVoiceRevisionTests(unittest.TestCase):
                        for s,b in zip(self.scenes,draft['beats'])]), \
              patch('factory_next.preparation.validate_native_surface'), \
              patch('factory_next.preparation.validate_script_review'):
-            result=stage.revise_story(context,49536)
+            result=stage._revise_overlong_extractively(context,self.window)
         self.assertEqual(len(model.requests),2)
         self.assertEqual(len(model.reviews),1)
         self.assertIn('next-voice-correction:2:next-measured-extractive-deletion-repair',
