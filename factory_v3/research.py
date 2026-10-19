@@ -60,9 +60,16 @@ class PublicPage:
         try:
             return self._fetch(url)
         except HTTPFailure as error:
-            if error.receipt['status'] != 429:
-                raise
-            return {'usable': False, **error.receipt, 'reason': 'source rate limited'}
+            status = error.receipt['status']
+            if status == 429:
+                return {'usable': False, **error.receipt, 'reason': 'source rate limited'}
+            # A public page requiring authorization or denying anonymous access
+            # is not valid evidence. Skip it, retaining its HTTP receipt.
+            # Do not turn an unrelated public website's 401 into a terminal
+            # failure of the whole research job.
+            if status in (401, 403, 404, 410):
+                return {'usable': False, **error.receipt, 'reason': 'source inaccessible'}
+            raise
         except (TimeoutError, OSError, http.client.HTTPException) as error:
             return {"usable": False, "reason": "source transport failure",
                     "error_type": type(error).__name__}
