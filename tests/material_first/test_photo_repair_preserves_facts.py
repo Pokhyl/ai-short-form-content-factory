@@ -75,6 +75,21 @@ class PhotoRepairFactInvariant(unittest.TestCase):
                 self.assertEqual(model.calls,["material-brief-repair:review:1","material-brief-review:2"])
                 self.assertEqual(initial,original)
 
+    def test_extra_photo_fact_associations_are_discarded(self):
+        before={
+            "facts":[{"id":"f1","text":"Fact one"},{"id":"f2","text":"Fact two"}],
+            "required_fact_ids":["f1"],
+            "photo_contexts":{
+                "subject":{"fact_ids":["f1"],"source_mention":"source name"}
+            }
+        }
+        proposed=deepcopy(before)
+        proposed["photo_contexts"]["subject"]["fact_ids"]=["f1","f2"]
+        proposed["facts"][0]["text"]="Invented rewrite"
+        result=preserve_facts_after_photo_repair(before,proposed)
+        self.assertEqual(result["facts"],before["facts"])
+        self.assertEqual(result["photo_contexts"]["subject"]["fact_ids"],["f1"])
+
     def test_facts_cannot_be_rebound_to_different_photo_context(self):
         before={"facts":[{"id":"f1","text":"Original"}],
                 "required_fact_ids":["f1"],
