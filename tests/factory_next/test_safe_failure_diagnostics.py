@@ -46,6 +46,13 @@ class SafeFailureDiagnostics(unittest.TestCase):
             self.assertEqual(state["failure_code"], "STAGE_VALIDATION_FAILED")
             self.assertNotIn("TOP_SECRET",Path(directory,job,"state.json").read_text())
 
+    def test_definite_http_rejection_differs_from_uncertain_transport(self):
+        from factory_v3.http import HTTPFailure
+        self.assertEqual(classify_stage_failure("research",HTTPFailure(403,{})),
+                         "EXTERNAL_HTTP_FAILURE")
+        self.assertEqual(classify_stage_failure("research",TimeoutError("unknown")),
+                         "EXTERNAL_OPERATION_UNCERTAIN")
+
     def test_failure_categories_do_not_depend_on_the_topic(self):
         for stage in ("research","materials","story","voice","render","audit"):
             with self.subTest(stage=stage):
