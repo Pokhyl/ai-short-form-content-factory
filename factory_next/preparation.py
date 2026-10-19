@@ -300,8 +300,9 @@ class PreparationStages:
         original=context['outputs']['story']
         count=len(original['scenes'])
         window=revision_length_window(original['script'],measured_ms,request['seconds'])
-        if measured_ms>request['seconds']*1000:
-            return self._revise_overlong_extractively(context,window)
+        # Overlong voice must be rewritten as complete natural sentences.
+        # Whole-word deletion previously broke grammatical and factual claims;
+        # every rewrite still requires exact independent review before TTS.
         # The previous two-call strategy failed in production: free-form
         # expansion consumed one Gemini request, then the structured repair
         # hit a 429 before a second TTS attempt could be measured.
