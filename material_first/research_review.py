@@ -33,11 +33,50 @@ def _focused_literal_source_quotes(draft, spans, maximum=9):
             for identity in chosen[:maximum]]
 
 
+def preserve_literal_context_on_fact_repair(draft, last_valid, spans):
+    """Retain an already source-grounded photo reference when fact repair
+    damages ONLY its literal citation, not the object or its fact bindings.
+
+    This is a copy of previously verified source provenance, not a semantic
+    guess, a fuzzy match, or permission to accept an unsupported new object.
+    """
+    if not last_valid or not isinstance(draft.get('photo_contexts'), dict):
+        return draft
+    repaired=deepcopy(draft)
+    for role, row in repaired['photo_contexts'].items():
+        old=last_valid.get(role)
+        if (not isinstance(old, dict) or not isinstance(row, dict)
+                or row.get('english_photo_object')!=old.get('subject')
+                or row.get('fact_ids')!=old.get('fact_ids')):
+            continue
+        current=bind_english_objects({role:row})
+        try:
+            validate_context_mentions(current,spans)
+        except ValueError as error:
+            # A different validation failure must never be hidden by a valid
+            # citation from a different draft.
+            if str(error)!=role+': selected source span does not contain the object mention':
+                continue
+        else:
+            continue
+        candidate={**row,'source_mention':old['source_mention'],
+                   'support_span_ids':deepcopy(old['support_span_ids'])}
+        try:
+            validate_context_mentions(bind_english_objects({role:candidate}),spans)
+        except ValueError:
+            continue
+        repaired['photo_contexts'][role]=candidate
+    return repaired
+
+
 def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_photos=True):
     # An initially malformed draft may consume one repair before it is ready
     # for semantic review. Keep one additional correction available when that
     # reviewed revision still contains a specifically rejected claim.
+    last_grounded_contexts = None
     for attempt in range(3):
+        if not check_photos and last_grounded_contexts:
+            draft=preserve_literal_context_on_fact_repair(draft,last_grounded_contexts,spans)
         semantic_reviewed = False
         query_only_repair = False
         try:
@@ -66,7 +105,9 @@ def reviewed_brief(gemini, request, sources, spans, schema, draft, *, check_phot
             failures=[str(error)]
             query_only_repair = 'search hint' in failures[0]
         else:
-            if not check_photos:contexts={}
+            if not check_photos:
+                last_grounded_contexts=deepcopy(normalized['photo_contexts'])
+                contexts={}
             review_schema=obj({'facts':obj({f['id']:obj({'supported':BOOL,'reason':string()}) for f in evidence['facts']}),
                 'photo_contexts':obj({role:obj({'source_supported':BOOL,'observable_object':BOOL,'reason':string()}) for role in contexts})})
             if not check_photos:
