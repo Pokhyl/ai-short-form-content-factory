@@ -1,0 +1,46 @@
+{
+  "recorded_at": "2026-10-19",
+  "scope": "Generic fact-only semantic repair in factory-next research",
+  "observed_failure": {
+    "job_id": "2493ace0-f696-4656-9513-2b820905864c",
+    "request_topic": "стив джобс",
+    "language": "uk",
+    "seconds": 60,
+    "stage": "research",
+    "status": "needs_attention",
+    "error_type": "ValueError",
+    "recorded_calls": {
+      "source_fetched": 3,
+      "gemini": 4,
+      "all_successful_in_ledger": true
+    },
+    "local_validation_replay": {
+      "original_brief": "LOCAL_OK",
+      "revision_1": "setting: selected source span does not contain the object mention",
+      "revision_2": "setting: selected source span does not contain the object mention"
+    },
+    "original_job_preserved": true
+  },
+  "root_cause": "Factual review repair also rewrote previously locally validated photo_contexts and introduced a nonliteral source_mention, despite the review rejecting only facts.",
+  "correction": "Preserve locally validated photo_contexts across factual-only semantic repair when all referenced fact IDs remain. Revalidate fully afterward. Reject changed/missing fact identities. Provider photo-context correction remains independently available when actually needed.",
+  "source_revision": "5131ad071d115e150ce4642b79d005c6784e93af",
+  "deployed_image": "factory-v3:factory-next-fact-citation-5131ad0",
+  "deployed_container": "factory-next-studio-v9",
+  "rollback_container": "factory-next-studio-v9-before-fact-citation-20261019",
+  "validation": {
+    "offline_regression_tests": "6 passed including unrelated bee and coral topics",
+    "image_regression_tests": "6 passed",
+    "actual_failed_job_saved_provider_replay": "advanced beyond prior invalid source mention and reached second independent fact review, which was not sent",
+    "studio_status_http": 200,
+    "jobs_api_http": 200,
+    "existing_video_http": 206
+  },
+  "explicit_limitations": {
+    "no_new_provider_calls": true,
+    "no_new_video_created": true,
+    "new_model_review_after_repair": "NOT PERFORMED",
+    "full_end_to_end": "NOT PROVEN",
+    "deployment_does_not_recover_immutable_failed_job": true,
+    "unrelated_projects_modified": false
+  }
+}
