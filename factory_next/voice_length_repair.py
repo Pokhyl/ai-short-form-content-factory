@@ -12,7 +12,7 @@ from factory_v3.gemini import obj, string, validate_json
 from .duration import revision_length_fits, NaturalDurationRejected
 
 
-def sentence_contract(previous_scenes, window):
+def sentence_contract(previous_scenes, window, *, measured_expansion=False):
     if not isinstance(previous_scenes, list) or not 1 <= len(previous_scenes) <= 8:
         raise ValueError('bounded reviewed scene count required')
     if not isinstance(window, dict) or window['target_words'] < len(previous_scenes):
@@ -24,7 +24,20 @@ def sentence_contract(previous_scenes, window):
     # fewer complete sentences is a schema-level way to avoid generating
     # content just to fill nine fields. It does NOT alter speech speed or
     # remove any source/factual/native-review constraints.
-    count=max(len(previous_scenes),round(window['target_words']/10.6))
+    # Two independent, separately metered real UK60 responses after a 53.904s
+    # first recording contained the *same* ten sentences: 91 words total,
+    # average 9.1 words per sentence, despite a target of 109 words.
+    # The previously calibrated 10.6-word count remains the default.
+    # Only an UNDERLONG measured MP3 asks for more natural sentences, based
+    # on the observed 9.1-word output. This is a prompt/shape hint, not
+    # acceptance: strict text length, native/source review, then MP3 duration
+    # remain independent and authoritative.
+    # Keep the archived shorter-length calibration unchanged. The observed
+    # 91/10 words-per-sentence error came from a *long* (109-target-word)
+    # expansion, not the separately evidenced 45-second cases.
+    words_per_sentence=(9.1 if measured_expansion and
+                        window['target_words']>=100 else 10.6)
+    count=max(len(previous_scenes),round(window['target_words']/words_per_sentence))
     if count>32:
         raise ValueError('too many bounded sentences')
     per_beat,extra=divmod(count,len(previous_scenes))
@@ -36,10 +49,16 @@ def sentence_contract(previous_scenes, window):
     properties={}
     for i,n in enumerate(counts,1):
         fields={}
+        target_words_per_sentence=max(5,round(window['target_words']/count))
         for j in range(1,n+1):
             fields['sentence_'+str(j)]={
                 **string(), 'minLength':max(12,math.floor(per_sentence_chars*.70)),
-                'maxLength':max(32,math.ceil(per_sentence_chars*1.35))}
+                'maxLength':max(32,math.ceil(per_sentence_chars*1.35)),
+                'description':('One complete, fact-grounded sentence; aim for '
+                    f'{target_words_per_sentence} natural words and '
+                    f'{round(per_sentence_chars)} characters, including spaces. '
+                    'Respect the native language, factual certainty and '
+                    'supplied material context. No fillers or repeated sentences.')}
         properties['beat_'+str(i)]=obj(fields)
     return obj(properties),counts
 
