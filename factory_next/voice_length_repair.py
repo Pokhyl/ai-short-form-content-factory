@@ -237,6 +237,60 @@ _STYLE_MODIFIERS = frozenset({
 })
 
 
+def trim_one_complete_sentence_locally(result, schema, previous_scenes, window):
+    """Drop at most one complete sentence; factual approval is separate.
+
+    This constructs a candidate, not a factually approved script. The caller
+    must run strict source and native-language review before using it for TTS.
+    Never edit any word or preserve an unsupported assertion by fiat.
+    """
+    validate_json(result, schema)
+    if not isinstance(previous_scenes,list) or not 1<=len(previous_scenes)<=8:
+        raise ValueError('bounded reviewed scene count required')
+    groups=[]
+    for idx,scene in enumerate(previous_scenes,1):
+        key=f'beat_{idx}'
+        if key not in schema['properties'] or key not in result:
+            raise ValueError('voice correction beat identities differ')
+        sentences=[result[key][name].strip()
+                   for name in schema['properties'][key]['required']]
+        if (not sentences or any(
+                len(sentence.split())<5 or sentence[-1] not in '.!?…'
+                for sentence in sentences)):
+            raise NaturalDurationRejected('complete sentences required')
+        groups.append(sentences)
+    all_sentences=[sent for group in groups for sent in group]
+    if len({s.casefold() for s in all_sentences})!=len(all_sentences):
+        raise NaturalDurationRejected('repeated narration sentences')
+    text=' '.join(all_sentences)
+    if (len(text.split())<=window['max_words']
+            and len(text)<=window['max_characters']):
+        raise NaturalDurationRejected('whole-sentence trim not needed')
+    best=None
+    for idx,group in enumerate(groups):
+        if len(group)<2:continue
+        for drop_idx in range(len(group)):
+            remaining=[list(other) for other in groups]
+            del remaining[idx][drop_idx]
+            edited=' '.join(' '.join(sentences) for sentences in remaining)
+            if not revision_length_fits(edited,window):
+                continue
+            # Score only distance to target; source adequacy is never
+            # inferred from a string similarity heuristic.
+            score=(abs(len(edited.split())-window['target_words'])*4+
+                   abs(len(edited)-window['target_characters'])/8,
+                   idx,drop_idx)
+            if best is None or score<best[0]:
+                best=score,remaining
+    if best is None:
+        raise NaturalDurationRejected('no bounded whole-sentence correction')
+    return {'beats':[{
+        'material_id':scene['material_id'],
+        'fact_ids':list(scene['evidence_ids']),
+        'narration':' '.join(sentences)}
+        for scene,sentences in zip(previous_scenes,best[1])]}
+
+
 def trim_complete_expansion_locally(result, schema, previous_scenes, evidence, window):
     """Deterministically remove low-risk modifiers from a completed reply.
 
