@@ -75,10 +75,17 @@ def preserve_facts_after_photo_repair(before, repaired):
     """
     if set(before['photo_contexts']) != set(repaired['photo_contexts']):
         raise ValueError('photo correction changed required context roles')
-    for role, original in before['photo_contexts'].items():
-        if repaired['photo_contexts'][role].get('fact_ids') != original.get('fact_ids'):
-            raise ValueError('photo correction changed contextual fact bindings')
     saved=deepcopy(repaired)
+    for role, original in before['photo_contexts'].items():
+        original_ids=original.get('fact_ids')
+        proposed_ids=saved['photo_contexts'][role].get('fact_ids')
+        if (not isinstance(original_ids,list) or not isinstance(proposed_ids,list)
+                or len(set(proposed_ids))!=len(proposed_ids)
+                or not set(original_ids)<=set(proposed_ids)):
+            raise ValueError('photo correction removed or replaced contextual fact bindings')
+        # Ignore additional model-invented fact associations. Only the
+        # previously validated, narrower original bindings remain eligible.
+        saved['photo_contexts'][role]['fact_ids']=deepcopy(original_ids)
     saved['facts']=deepcopy(before['facts'])
     saved['required_fact_ids']=deepcopy(before['required_fact_ids'])
     return saved
