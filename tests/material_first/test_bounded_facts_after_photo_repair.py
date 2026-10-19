@@ -59,7 +59,11 @@ class BoundedFactAfterPhotoRepair(unittest.TestCase):
                             elif attempt==3:
                                 edited["photo_contexts"]["setting"]["source_mention"]="fake change"
                                 edited["facts"][1]["text"]="Independent correction of fact two"
-                            edited["facts"][0]["text"]="Unapproved photo-repair rewrite" if attempt<=2 else edited["facts"][0]["text"]
+                            if attempt<=2 and set(expected_schema['properties'])=={'photo_contexts'}:
+                                return {'photo_contexts':{
+                                    role:{field:value for field,value in ctx.items()
+                                          if field!='fact_ids'}
+                                    for role,ctx in edited['photo_contexts'].items()}},{}
                             return edited,{}
                         if key=="material-brief-review:3":
                             self.assert_noop=False
