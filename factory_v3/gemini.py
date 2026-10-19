@@ -31,7 +31,8 @@ BOOL = {"type": "boolean"}
 def provider_schema(schema):
     """Compile Google's documented subset; retain full local validation separately."""
     allowed = {"type", "properties", "required", "additionalProperties", "items",
-               "minItems", "maxItems", "enum", "format", "minimum", "maximum"}
+               "minItems", "maxItems", "enum", "format", "minimum", "maximum",
+               "description"}
     local_only = {"minLength", "maxLength", "minItems", "maxItems"}
     if set(schema) - allowed - local_only:
         raise ValueError("unsupported provider schema keyword")
