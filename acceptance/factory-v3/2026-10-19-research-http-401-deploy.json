@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-19",
+  "scope": "factory-next Studio source fetching only",
+  "failure_evidence": {
+    "job_id": "06d774ef-dafa-4af6-a6b7-68b312c1c1a3",
+    "stage": "research",
+    "recorded_source_calls": [
+      "metadata:200",
+      "research_search:200",
+      "source_fetch:200",
+      "source_fetch:401"
+    ],
+    "persisted_status": "needs_attention",
+    "old_job_restarted": false
+  },
+  "source_revision": "71a6f66cc07ee1de64c506d01b1cfa3a3e42bb41",
+  "image": "factory-v3:factory-next-source-http-71a6f66",
+  "deployment": {
+    "container": "factory-next-studio-v9",
+    "old_container_retained_as": "factory-next-studio-v9-rollback-20261019",
+    "other_services_changed": false
+  },
+  "validation": {
+    "unit_tests": "4 PASS",
+    "unit_tests_inside_image": "4 PASS",
+    "new_container_source_http_401": {
+      "usable": false,
+      "reason": "source inaccessible"
+    },
+    "studio_http": 200,
+    "jobs_api_http": 200
+  },
+  "limits": {
+    "production_new_job_started": false,
+    "external_provider_calls_made_for_deployment": false,
+    "mp4_end_to_end_acceptance": "NOT RUN",
+    "failed_job_immutable": true
+  }
+}
