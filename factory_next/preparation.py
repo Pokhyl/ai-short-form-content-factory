@@ -300,8 +300,13 @@ class PreparationStages:
         original=context['outputs']['story']
         count=len(original['scenes'])
         window=revision_length_window(original['script'],measured_ms,request['seconds'])
-        if measured_ms>request['seconds']*1000:
-            return self._revise_overlong_extractively(context,window)
+        # Real completed overlong extraction removed essential verbs and nouns,
+        # then failed independent grammar/fact review. Never submit a locally
+        # word-deleted draft as the normal correction pathway. Both overlong
+        # and underlong MP3s now use complete sentence rewrites with the exact
+        # SAME source IDs, bounded schema and independent native/factual
+        # review before any new TTS. The old extractive editor remains only
+        # for isolated regression of its fail-closed behavior.
         # The previous two-call strategy failed in production: free-form
         # expansion consumed one Gemini request, then the structured repair
         # hit a 429 before a second TTS attempt could be measured.
@@ -376,9 +381,8 @@ class PreparationStages:
             # A complete but UNDERLONG first reply can now revise the SECOND
             # schema's sentence count based on its actually observed words.
             # Never relax factual, length or native-language review gates.
-            alternate,adapted_counts=(adaptive_underlength_sentence_contract(
+            alternate,adapted_counts=adaptive_underlength_sentence_contract(
                 draft,repair_schema,original['scenes'],window)
-                if direction=='expand' else (repair_schema,None))
             active_counts=adapted_counts or sentence_counts
             active_limits=(sentence_limits if adapted_counts is None else {
                 beat:[{'field':field,'minimum_characters':spec['minLength'],
