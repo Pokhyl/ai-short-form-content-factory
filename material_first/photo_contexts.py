@@ -135,7 +135,9 @@ def rebind_adjacent_literal_mentions(contexts, spans):
 
     A model may cite a sentence immediately after the object's literal name.
     Never invent a name, alter a fact, or rebind to a distant/context-free span.
-    Any ambiguous match remains for the normal fail-closed validation.
+    At most two immediate neighbours may be used when BOTH literally contain
+    the same object mention: include both instead of guessing one. All other
+    ambiguity remains for strict validation.
     """
     from copy import deepcopy
     by_id={span['id']:span for span in spans}
@@ -152,6 +154,10 @@ def rebind_adjacent_literal_mentions(contexts, spans):
                   if span['source_id']==selected['source_id']
                   and (span['end']==selected['start'] or span['start']==selected['end'])
                   and mention in span['text']]
-        if len(adjacent)==1:
-            row['support_span_ids']=[ids[0],adjacent[0]['id']]
+        # A literal name can occur on both sides of a selected source span.
+        # All admitted citations remain from the SAME original source and
+        # touch the selected span; never choose a distant or fuzzy match.
+        if 1<=len(adjacent)<=2 and len({span['id'] for span in adjacent})==len(adjacent):
+            row['support_span_ids']=[ids[0]]+[
+                span['id'] for span in sorted(adjacent,key=lambda span:span['start'])]
     return repaired
