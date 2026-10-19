@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-19",
+  "scope": "Only factory-next Studio failure diagnostics",
+  "source_revision": "fe08bfba800ffd92c4922ca7876704cf7ee9730b",
+  "deployed_image": "factory-v3:factory-next-diagnostics-fe08bfb",
+  "container": "factory-next-studio-v9",
+  "previous_version_retained_as": "factory-next-studio-v9-before-http-diagnostics-20261019",
+  "change": "Persist only allowlisted error classification codes at terminal checkpoints. Return safe codes via Studio API. Show specific owner-facing descriptions. Never expose exception text, source quotations, gateway receipts or keys.",
+  "detail": "Distinguish definite HTTP errors from unknown network/transport outcomes. Existing immutable terminal jobs are not rewritten.",
+  "validation": {
+    "diagnostic_tests": 5,
+    "studio_tests": 18,
+    "pipeline_tests": 3,
+    "browser_js_syntax": "pass in isolated Node image",
+    "studio_http": 200,
+    "jobs_api_http": 200,
+    "existing_video_http": 206,
+    "deployed_classifier_http_failure": "EXTERNAL_HTTP_FAILURE",
+    "deployed_classifier_timeout": "EXTERNAL_OPERATION_UNCERTAIN",
+    "prior_failed_job_preserved": true
+  },
+  "stored_audio_evidence": {
+    "job": "d0ec62da-5ad6-440c-ac01-8ec20b4fa3b8",
+    "requested_seconds": 45,
+    "measured_attempt_seconds": [
+      60.22,
+      40.82,
+      83.62
+    ],
+    "prior_revision": "d6f07cd",
+    "note": "Prior revision: not evidence of an identical voice defect in current deployment"
+  },
+  "limitations": {
+    "new_full_job_run": false,
+    "new_provider_generation_calls": 0,
+    "full_end_to_end_mp4_acceptance": false,
+    "legacy_failures_without_failure_code_remain_generic": true,
+    "unrelated_services_modified": false
+  }
+}
