@@ -37,6 +37,10 @@ class ResearchReviewTests(unittest.TestCase):
             self.assertIn(key,('material-brief-repair:review:1','material-brief-repair:review:2'))
             self.assertTrue(context['focused_literal_source_quotes'])
             self.assertIn('selected source span does not contain',context['failures'][0])
+            if set(schema['properties'])=={'photo_contexts'}:
+                return {'photo_contexts':{
+                    role:{k:v for k,v in row.items() if k!='fact_ids'}
+                    for role,row in malformed['photo_contexts'].items()}},{}
             return copy.deepcopy(malformed),{}
         with self.assertRaisesRegex(ValueError,'after 2 revisions'):
             reviewed_brief(SimpleNamespace(generate=fake_generate),
