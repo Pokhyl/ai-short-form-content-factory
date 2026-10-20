@@ -1,0 +1,12 @@
+{
+  "source_revision": "c4ef9213ed068c6f35472456dc01c0e427fff438",
+  "image": "factory-v3:factory-next-narrative-c4ef921",
+  "image_id": "sha256:16a43affb4ae266715cd7ad3db6ef88bc2fbed8fb80513d23b638481e2a99afe",
+  "previous_image_id": "sha256:425ccca981d8909cbf66fec6b4fa52a1e28208001304d7297a8f7dd5363cc2ce",
+  "previous_container_name": "factory-next-studio-v9-before-deadline-20261020",
+  "settings_sha256": "6904ea4ef6d28f308c8a58a480f38de09d27137011209e7148b9dee7692b247d",
+  "settings_changes": false,
+  "gate": "fresh multilingual boundary b868b207-68d7-4653-8a1e-8bfe69c0937a completed and all8 controls match; no active Studio jobs",
+  "n8n_changes_in_app_rollout": false,
+  "started": false
+}

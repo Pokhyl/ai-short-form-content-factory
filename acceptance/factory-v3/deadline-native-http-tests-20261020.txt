@@ -1,0 +1,1 @@
+{"status":"passed","native_http_execute":true,"native_transport_failure_receipt":true,"transport_sends":1,"provider_calls":0,"production_mutations":0}

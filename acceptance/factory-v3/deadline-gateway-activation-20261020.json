@@ -1,0 +1,10 @@
+{
+  "source_revision": "c4ef9213ed068c6f35472456dc01c0e427fff438",
+  "active_version": "6624cdc6-cdff-4284-b91d-278e9f58499d",
+  "source_parity": true,
+  "protected_workflows_unchanged": 35,
+  "upstream_ms": 240000,
+  "workflow_seconds": 300,
+  "restart_started": true,
+  "route_ready": true
+}
