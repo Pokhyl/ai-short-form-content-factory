@@ -70,6 +70,30 @@ class GeminiTests(unittest.TestCase):
         self.assertEqual(first[1]["http"]["headers"]["x-ratelimit-remaining"], "controlled")
         self.assertNotIn("controlled-secret", json.dumps(first))
 
+    def test_narrative_client_waits_longer_than_its_native_upstream_deadline(self):
+        from factory_v3.deadlines import NARRATIVE_UPSTREAM_SECONDS, GATEWAY_WORKFLOW_SECONDS
+        self.adapter.model='gemini-3.8-flash'
+        self.generate()
+        timeout=self.http.requests[0][-1]
+        self.assertGreater(timeout,NARRATIVE_UPSTREAM_SECONDS)
+        self.assertLess(timeout,GATEWAY_WORKFLOW_SECONDS)
+        self.assertEqual(len(self.http.requests),1)
+
+    def test_narrative_timeout_is_not_resent(self):
+        self.adapter.model='gemini-3.8-flash'
+        sends=[]
+        def fail(*args,**kwargs):
+            sends.append(kwargs['timeout'])
+            raise TimeoutError('controlled late model response')
+        self.http.request_receipt=fail
+        with self.assertRaises(TimeoutError):self.generate()
+        with self.assertRaises(ValueError):self.generate()
+        self.assertEqual(sends,[270])
+
+    def test_existing_model_keeps_its_transport_deadline(self):
+        self.generate()
+        self.assertEqual(self.http.requests[0][-1],90)
+
     def test_truncated_response_is_not_retried(self):
         self.http.finish = "MAX_TOKENS"
         for _ in range(2):

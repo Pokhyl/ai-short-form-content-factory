@@ -1,0 +1,15 @@
+{
+  "source_revision": "01527613e9ac103564ff02c541814d76db9be3ec",
+  "narrative_model": "gemini-3.8-flash",
+  "primary_model": "gemini-3.1-flash-lite",
+  "correction_enabled": true,
+  "health": {
+    "ok": true,
+    "app": "factory-next-studio"
+  },
+  "public_health": {
+    "ok": true,
+    "app": "factory-next-studio"
+  },
+  "image_id": "sha256:425ccca981d8909cbf66fec6b4fa52a1e28208001304d7297a8f7dd5363cc2ce"
+}

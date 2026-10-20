@@ -5,6 +5,7 @@ import json
 import re
 import time
 from .preparation import ModelUnavailable
+from .deadlines import model_request_timeout
 from .preflight import asset_path, digest, validate_asset
 from .grounding import validate_evidence, validate_script_review, compact_evidence
 
@@ -154,7 +155,7 @@ class Gemini:
             if not isinstance(credential, str) or not credential.strip():
                 raise ValueError("Gemini authorization unavailable")
             return self.http.request_receipt("POST", url, body,
-                headers={"x-goog-api-key": credential}, timeout=90)
+                headers={"x-goog-api-key": credential}, timeout=model_request_timeout(self.model))
         if not self.retry_unavailable:
             receipt = self.calls.run(key, "gemini", identity, send)
         else:

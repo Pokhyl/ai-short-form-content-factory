@@ -1,9 +1,12 @@
 """Generate the scoped native credential gateway; never import/publish implicitly."""
 import json
+import sys
 from pathlib import Path
 from uuid import uuid5, NAMESPACE_URL
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT))
+from factory_v3.deadlines import upstream_timeout_ms, GATEWAY_WORKFLOW_SECONDS
 WORKFLOW_ID = "VIDEO-V3-Credential-Gateway"
 TOKEN_CREDENTIAL = "V3ProviderGatewayToken"
 guard = (ROOT / "factory_v3/gateway_validate.js").read_text().split("if (typeof module")[0]
@@ -43,7 +46,7 @@ for index, provider in enumerate(providers):
     auth = credentials["gemini" if provider in {"gemini_info","gemini_narrative"} else "google_tts" if provider == "google_metadata" else provider]
     credential_type = next(iter(auth))
     params = {"method": "={{ $json.method }}", "url": "={{ $json.url }}",
-        "options": {"timeout": 120000, "response": {"response": {
+        "options": {"timeout": upstream_timeout_ms(provider), "response": {"response": {
             "fullResponse": True, "neverError": True, "responseFormat": "text",
             "outputPropertyName": "body"}}}}
     if credential_type in {"httpQueryAuth","httpHeaderAuth"}:
@@ -125,7 +128,7 @@ connections = {
 for provider in providers:
     connections["Upstream "+provider]={"main":[[{"node":"Sanitize receipt","type":"main","index":0}]]}
 workflow = {"id":WORKFLOW_ID,"name":WORKFLOW_ID,"active":False,"nodes":nodes,"connections":connections,
-    "settings":{"executionOrder":"v1","executionTimeout":180,"saveManualExecutions":False,
+    "settings":{"executionOrder":"v1","executionTimeout":GATEWAY_WORKFLOW_SECONDS,"saveManualExecutions":False,
                 "saveDataSuccessExecution":"none","saveDataErrorExecution":"none"}}
 path = ROOT / "workflows/VIDEO-V3-Credential-Gateway.json"
 path.write_text(json.dumps(workflow,ensure_ascii=False,indent=2)+"\n")

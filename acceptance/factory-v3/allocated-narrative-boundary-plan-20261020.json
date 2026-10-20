@@ -1,0 +1,13 @@
+{
+  "id": "a3b9455c-2624-44e4-9ac0-8a860181b7b9",
+  "source_job": "95170921-1183-461c-bcd0-5278445a8daf",
+  "source_revision": "01527613e9ac103564ff02c541814d76db9be3ec",
+  "model": "gemini-3.8-flash",
+  "max_gemini": 3,
+  "max_metadata": 1,
+  "search": 0,
+  "tts": 0,
+  "question": "Can allocated whole-beat correction preserve exact source meaning and fit the measured 19224ms-to-15s length window under an independent narrative review?",
+  "stop": "one bounded generation/optional repair/review; first error; no retry or failed-ID replay",
+  "quota": "unknown input tokens; max8192 output tokens per request; existing preparation meter retained"
+}

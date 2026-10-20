@@ -28,6 +28,9 @@ assert.deepStrictEqual(narrative.body,good.gemini.body);
 assert.throws(()=>validate({provider:'gemini_narrative',request:{body:{...good.gemini.body,tools:[{googleSearch:{}}]}}}));
 assert.deepStrictEqual(workflow.nodes.find(n=>n.name==='Upstream gemini_narrative').credentials,
   workflow.nodes.find(n=>n.name==='Upstream gemini').credentials);
+assert.strictEqual(workflow.nodes.find(n=>n.name==='Upstream gemini_narrative').parameters.options.timeout,240000);
+assert.strictEqual(workflow.nodes.find(n=>n.name==='Upstream gemini').parameters.options.timeout,120000);
+assert.strictEqual(workflow.settings.executionTimeout,300);
 const lowThinking = structuredClone(good.gemini);
 lowThinking.body.generationConfig.thinkingConfig = {thinkingLevel:'low'};
 assert.strictEqual(validate({provider:'gemini',request:lowThinking}).provider,'gemini');

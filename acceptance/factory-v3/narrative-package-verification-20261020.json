@@ -1,0 +1,17 @@
+{
+  "source_revision": "01527613e9ac103564ff02c541814d76db9be3ec",
+  "image_id": "sha256:425ccca981d8909cbf66fec6b4fa52a1e28208001304d7297a8f7dd5363cc2ce",
+  "network": "disabled during package checks",
+  "runtime_source_overlay": false,
+  "next_tests": {
+    "total": 184,
+    "first_invocation_passed": 180,
+    "fixture_path_errors": 4,
+    "worker_rerun_passed": 4
+  },
+  "active_before": "f98a35119fcf0813566b79092b7a6adf4a0a387d",
+  "gateway_pending": false,
+  "providers_called_by_package_tests": 0,
+  "packaged_core_passed": 128,
+  "native_http_passed": true
+}

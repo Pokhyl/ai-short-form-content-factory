@@ -1,0 +1,20 @@
+{
+  "id": "77e850da-b9aa-479f-9e10-e763ea4b2789",
+  "source_revision": "01527613e9ac103564ff02c541814d76db9be3ec",
+  "status": "needs_attention",
+  "stage": "story",
+  "failure_code": "EXTERNAL_OPERATION_UNCERTAIN",
+  "error_type": "TimeoutError",
+  "completed": [
+    "research",
+    "materials"
+  ],
+  "normal_story_generation": {
+    "first": "explicit503",
+    "second": "succeeded48s"
+  },
+  "independent_review": "unknown after client90s deadline",
+  "tts": 0,
+  "mp4": false,
+  "immutable": true
+}

@@ -1,0 +1,18 @@
+{
+  "request": {
+    "topic": "Почему листья меняют цвет осенью",
+    "language": "ru",
+    "seconds": 15
+  },
+  "source_revision": "01527613e9ac103564ff02c541814d76db9be3ec",
+  "purpose": "normal public API intake through all8 automatic stages after measured correction boundary",
+  "max_gemini": 23,
+  "max_tts": 3,
+  "metadata": 1,
+  "source_fetch": 6,
+  "photo_search": "existing3 per provider ceilings",
+  "no_old_job_replay": true,
+  "stop": "one normal job; no rescue or repeated submission; inspect any failure",
+  "expected": "15s 1080x1920 H264 yuv420p 30fps AAC and independent audit",
+  "created_at": "2026-10-20T07:55:17.486888+00:00"
+}

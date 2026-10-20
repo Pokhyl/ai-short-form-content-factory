@@ -1,0 +1,19 @@
+{
+  "id": "a3b9455c-2624-44e4-9ac0-8a860181b7b9",
+  "phase": "separate measured voice check after completed source/native correction review",
+  "max_tts": 1,
+  "max_gemini": 0,
+  "new_metadata": 0,
+  "voice": "ru-RU-Wavenet-D",
+  "sku": "wavenet",
+  "characters": 198,
+  "script_sha256": "d60aae3b887eb46cc66397d8ad3b63fe80a991a932e67946866bf0b3d6850963",
+  "tempo_factor": 1.0,
+  "target_ms": [
+    13000,
+    15000
+  ],
+  "stop": "one reserved/committed send or first error; no retry",
+  "archive": "voiceover-attempts/a3b9455c-2624-44e4-9ac0-8a860181b7b9/attempt-1.mp3",
+  "quotas": "existing monthly reserve_provider_usage ceiling; no paid fallback"
+}
