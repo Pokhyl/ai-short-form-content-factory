@@ -1,0 +1,11 @@
+{
+  "id": "0d8477b1-fd67-4b6b-94d7-b472c1f9fb82",
+  "source_job": "95170921-1183-461c-bcd0-5278445a8daf",
+  "source_revision": "bf800a35f743735b451c8ee620be4995a393b1c5",
+  "max_gemini": 4,
+  "metadata": 1,
+  "new_search": 0,
+  "tts": 0,
+  "no_provider_retry": true,
+  "purpose": "new strong-model research generation and independent source review on immutable saved sources"
+}

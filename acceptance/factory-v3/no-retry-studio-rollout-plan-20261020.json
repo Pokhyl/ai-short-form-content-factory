@@ -1,0 +1,11 @@
+{
+  "source_revision": "bf800a35f743735b451c8ee620be4995a393b1c5",
+  "image": "factory-v3:factory-next-no-retry-bf800a3",
+  "image_id": "sha256:56646d33d1a8a8ee6a50a0f58213db9bf5ca229dbe0b5d917242cfe5e4e8ac53",
+  "previous_image_id": "sha256:16a43affb4ae266715cd7ad3db6ef88bc2fbed8fb80513d23b638481e2a99afe",
+  "previous_container_name": "factory-next-studio-v9-before-no-retry-20261020",
+  "settings_sha256": "6904ea4ef6d28f308c8a58a480f38de09d27137011209e7148b9dee7692b247d",
+  "database_changes": false,
+  "gateway_changes": false,
+  "old_terminal_ids_replayed": false
+}

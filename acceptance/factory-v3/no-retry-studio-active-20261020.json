@@ -1,0 +1,16 @@
+{
+  "image_id": "sha256:56646d33d1a8a8ee6a50a0f58213db9bf5ca229dbe0b5d917242cfe5e4e8ac53",
+  "runtime": {
+    "source_revision": "bf800a35f743735b451c8ee620be4995a393b1c5",
+    "provider_retry_options": false,
+    "provider_resume_gate": false,
+    "gateway": 403
+  },
+  "public_health": {
+    "ok": true,
+    "app": "factory-next-studio"
+  },
+  "other_containers_unchanged": 66,
+  "normal_mp4": false,
+  "blocked_by": "actual Gemini503 in one-send saved-source research boundary"
+}

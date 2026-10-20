@@ -1,0 +1,15 @@
+...............[png @ 0x5b1e4d4bc0c0] inflate returned error -3
+[png @ 0x5b1e4d4d4340] inflate returned error -3
+Error while decoding stream #0:0: Generic error in an external library
+[png @ 0x64e3a9e9e180] inflate returned error -3
+[png @ 0x64e3a9eb5ec0] inflate returned error -3
+Error while decoding stream #0:0: Generic error in an external library
+......................................................................usage: python3 -m unittest [-h] [--data-root DATA_ROOT] [--settings SETTINGS]
+                           [--steps STEPS]
+                           {start,continue,status} ...
+python3 -m unittest: error: --steps must be between 1 and 8
+..............................................................................................
+----------------------------------------------------------------------
+Ran 179 tests in 115.329s
+
+OK
