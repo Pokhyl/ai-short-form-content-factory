@@ -1,0 +1,40 @@
+{
+  "diagnostic_id": "a6647022-f98f-430c-97cd-fff70f4e89ca",
+  "request_sha256": "dda6280fb5395b1d8909c69659f6d7b7d6ff0409f0fdf89c71c0d2ea445eb970",
+  "preflight": {
+    "original_model_reservation": "started, never sent before this continuation",
+    "original_workflow_execution_count": 0,
+    "imported_workflow_matches_reserved_body": true,
+    "inactive_workflow": true,
+    "retryOnFail": false,
+    "original_metadata_budget": 1,
+    "attempted_metadata_refresh": "rejected by existing budget before HTTP; no budget change",
+    "fresh_billing_id": "1c86beca-4f11-46f0-84e9-09a68b2e2522",
+    "fresh_billing_budgets": {"metadata": 1},
+    "fresh_billing_enabled": false,
+    "fresh_billing_terminal_code": "DIAGNOSTIC_COMPLETE",
+    "first_native_launcher": "task broker port5679 collision before workflow execution; execution count remained zero",
+    "isolated_native_launcher": "N8N_RUNNERS_BROKER_PORT=5689; one physical HTTP call; no production restart"
+  },
+  "final_ledger": {
+    "call_state": "succeeded",
+    "meaning": "HTTP response durably completed with status503; not semantic success",
+    "preparation_status": "failed",
+    "error_code": "DIAGNOSTIC_PROVIDER_UNAVAILABLE",
+    "immutable": true
+  },
+  "live_revision": "bf800a35f743735b451c8ee620be4995a393b1c5",
+  "studio_state_counts": {"needs_attention": 39, "complete": 2, "ready": 1},
+  "legacy_ready_job": {
+    "id": "18ff1836-52a8-4003-9d26-12d98a8e2ce5",
+    "revision": "e9d629879d0d93b8eaa218aa27cc73cd1d2a30cf",
+    "next_stage": "voice",
+    "action": "read only; not resumed or used as current release acceptance"
+  },
+  "no_new_mp4": true,
+  "production_configuration_changed": false,
+  "pricing_source": "https://ai.google.dev/gemini-api/docs/pricing#gemini-3.6-flash",
+  "pricing_checked": "Standard input and output including thinking free of charge",
+  "provider_status_page": "https://aistudio.google.com/status did not expose usable incident data; no global outage claim",
+  "private_native_logs": "Retained only under /opt/factory-source-context-20261020/acceptance/factory-v3; never commit raw CLI logs"
+}

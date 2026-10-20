@@ -1,5 +1,5 @@
 # Factory repair: start here
-Snapshot for Codex handoff after owner request, 2026-10-20 17:26 Europe/Warsaw.
+Snapshot updated after bounded model diagnostic, 2026-10-20 19:50 UTC.
 
 Goal: finish the automatic video factory for arbitrary topics, PL/EN/RU/UK and15/30/45/60seconds. Owner explicitly removed automatic503 retries. No paid fallback, fabricated approvals, tempo manipulation, manual one-topic substitute, or modifications to unrelated projects. Do not claim completion without a new normal automatically produced MP4 and actual audit.
 
@@ -18,11 +18,14 @@ Current selected reasoning model Gemini3.8Flash is unavailable in multiple disti
 
 Old normal4fa81f5b-04ec-43cd-8e3e-a5159ec8829f is terminal at research with final review3 UNKNOWN502. Old77e850da-b9aa-479f-9e10-e763ea4b2789 is terminal unknown narrative review. Never replay/rescue failed/unknown IDs. No new MP4.
 
-## Pending alternative-model diagnostic: NOT EXECUTED
-Gemini3.6Flash official Standard pricing lists free input/output including thinking: https://ai.google.dev/gemini-api/docs/pricing#gemini-3.6-flash. No runtime model change/fallback implemented.
-Fresh diagnostic a6647022-f98f-430c-97cd-fff70f4e89ca passed a fresh billing-disabled gate and reserved exactly one Gemini call under key reviewer36-evaluation. Reservation state may be started, but native provider execution has NOT occurred. Inactive n8n workflow F3Eval3620261020B was imported, using existing credential reference V3GeminiFreeTier20261005 and the same six positive/negative controls previously used to reject the weak model. No publish/restart/production gateway changes.
+## Alternative-model diagnostic completed — 2026-10-20 19:50 UTC
+Gemini3.6Flash diagnostic `a6647022-f98f-430c-97cd-fff70f4e89ca` is TERMINAL failed with `DIAGNOSTIC_PROVIDER_UNAVAILABLE`. Exactly one physical native HTTP request returned503/UNAVAILABLE/high demand in7243ms. No control answers, semantic acceptance, search, TTS or newMP4. NEVER repeat this ID. Evidence: `acceptance/factory-v3/reviewer36-evaluation-result-20261020.json` and `reviewer36-continuation-20261020.json`.
 
-VPS operations files: /opt/factory-source-context-20261020/acceptance/factory-v3/reviewer36-evaluation-{plan,input}-20261020.json and reviewer36-reservation-20261020.json. Workflow source: /opt/factory-source-context-20261020/workflows/VIDEO-Factory-Reviewer36-Evaluation.json. No reviewer36-native-started marker/execution/result at handoff. Before any eventual execution inspect actual marker/native history and freshness of billing evidence; never infer permission to repeat an unknown send. Budgeted physical ceiling1Gemini/1metadata/0search/0TTS. Native raw CLI output can contain resume tokens: keep private, publish sanitized results only. No semantic approval or availability claim for3.6 exists yet.
+Exact reserved request hash and inactive workflow body matched; no prior native execution existed. Original metadata budget1 blocked a refresh before HTTP and was not expanded. Separate metadata-only diagnostic `1c86beca-4f11-46f0-84e9-09a68b2e2522` confirmed billing false and is terminal DIAGNOSTIC_COMPLETE. First CLI startup failed on task broker port5679 BEFORE workflow execution; history remained empty. Isolated CLI port5689 then performed the sole actual model call. No production restart/publication. Private raw CLI logs remain on VPS; never commit them.
+
+HTTP receipt stored through finish_preparation_call, then preparation rejected. Call state succeeded means a completed HTTP receipt containing status503, NOT model success. Neither selected3.8 nor alternative3.6 has current successful semantic research evidence. Automatic retries remain removed; no scheduled follow-up/new full run. An actual recovery signal or separately justified available free model with semantic validation is required before provider-dependent acceptance.
+
+LIVE remains bf800a3; candidate6d10ca7 remains undeployed. No runtime/settings/gateway changes. Observed Studio counts:39needs_attention,2historiccomplete,1ready. Ready job `18ff1836-52a8-4003-9d26-12d98a8e2ce5` is old revisione9d6298, waiting before voice; read only, not resumed or current release acceptance. Official pricing still lists3.6Standard free input/output. Public status page exposed no usable incident information; no global outage claim.
 
 ## Runtime access and continuation
 VPS ubuntu-4gb-hel1-1, SentinelX host_58bbeb7da5059807. Repository access alone does not grant server/secret access. Private settings stay /var/lib/factory-v3/settings.json; never print or commit them. Media volume shorts-v2_media_data, states /data/factory-next-states, read-only originals preserved. Keep /opt/factory-v4-clean untouched. n8n container ai-short-form-n8n; active credential gateway6624cdc6-cdff-4284-b91d-278e9f58499d unchanged.

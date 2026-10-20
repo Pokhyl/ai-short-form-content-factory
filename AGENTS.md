@@ -1,5 +1,5 @@
 ## Current continuation —2026-10-20
-Read docs/CODEX_START_HERE.md FIRST. It distinguishes LIVE bf800a3 from the tested but undeployed6d10ca7 candidate, records removed503 retries, actual provider failures and the reserved but NOT EXECUTED3.6 diagnostic. Current snapshot overrides stale chronological next-run directions below. Keep all failed/unknown IDs immutable and preserve free-only/unrelated-project constraints.
+Read docs/CODEX_START_HERE.md FIRST. It distinguishes LIVE bf800a3 from the tested but undeployed6d10ca7 candidate, records removed503 retries, actual provider failures and the terminal3.6 diagnostic (one HTTP503, no semantic result; never repeat its ID). Current snapshot overrides stale chronological next-run directions below. Keep all failed/unknown IDs immutable and preserve free-only/unrelated-project constraints.
 
 ## Owner-requested complete rebuild — 2026-10-17
 

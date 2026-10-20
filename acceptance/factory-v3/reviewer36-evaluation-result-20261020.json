@@ -1,0 +1,19 @@
+{
+  "id": "a6647022-f98f-430c-97cd-fff70f4e89ca",
+  "model": "gemini-3.6-flash",
+  "workflow": "F3Eval3620261020B",
+  "status": 503,
+  "error_status": "UNAVAILABLE",
+  "error_message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+  "started_at": "2026-10-20T19:50:29.699Z",
+  "stopped_at": "2026-10-20T19:50:36.962Z",
+  "native_request_ms": 7243,
+  "physical_model_calls": 1,
+  "automatic_retry": false,
+  "search": 0,
+  "tts": 0,
+  "semantic_controls_evaluated": false,
+  "billing_diagnostic_id": "1c86beca-4f11-46f0-84e9-09a68b2e2522",
+  "production_changed": false,
+  "project_ready": false
+}
