@@ -1,0 +1,12 @@
+{
+  "status": "candidate_failed_not_deployed",
+  "diagnostic": "ed1a438c-167e-405e-8c45-4c3a333b659b",
+  "source_job": "95170921-1183-461c-bcd0-5278445a8daf",
+  "source_original_voice_ms": 19224,
+  "requested_ms": 15000,
+  "failure": "NaturalDurationRejected: no bounded optional modifiers for local repair",
+  "conclusion": "Measured-feedback prompt correction did not close actual natural-duration boundary. Do not deploy or launch another full smoke based on it.",
+  "focused_tests_passed": 25,
+  "new_tts": 0,
+  "video_created": false
+}

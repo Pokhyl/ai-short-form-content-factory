@@ -1,0 +1,75 @@
+diff --git a/factory_next/preparation.py b/factory_next/preparation.py
+index 6acc83e..ad0be0c 100644
+--- a/factory_next/preparation.py
++++ b/factory_next/preparation.py
+@@ -18,7 +18,7 @@ from material_first.presentation import TOPIC_POLICY, minimum_shots, preferred_s
+ from material_first.visuals import candidate_limit
+ from .duration import revision_length_window, revision_length_fits, NaturalDurationRejected
+ from .voice_length_repair import (sentence_contract, assemble_sentence_repair,
+-    adaptive_underlength_sentence_contract, trim_one_complete_sentence_locally,
++    adaptive_underlength_sentence_contract, trim_one_complete_sentence_locally, measured_revision_feedback,
+     extractive_omission_candidates,
+     apply_extractive_omission_plan, trim_complete_expansion_locally)
+ 
+@@ -447,10 +447,17 @@ class PreparationStages:
+                        'maximum_characters':spec['maxLength']}
+                       for field,spec in row['properties'].items()]
+                 for beat,row in alternate['properties'].items()})
++            measured_feedback=measured_revision_feedback(draft,window)
+             draft,_=revision_gemini.generate(
+                 'next-measured-duration-structured-repair',
+                 f"Correct the completed invalid {LANGUAGES[request['language']]} "
+-                "voice revision JSON. Return exactly "
++                "voice revision JSON. "
++                f"The rejected draft ACTUALLY contains {measured_feedback['observed_words']} words "
++                f"and {measured_feedback['observed_characters']} characters including spaces. "
++                f"{measured_feedback['direction'].capitalize()} it to approximately "
++                f"{window['target_words']} words and {window['target_characters']} characters. "
++                "Do not expand an overlong rejected draft. Per-sentence maxima are ceilings, "
++                "not targets; their sum must still fit the supplied total character budget. Return exactly "
+                 f"{sum(active_counts)} complete sentences across {count} beats "
+                 "using the NEW named beat_N/sentence_N schema fields, "
+                 "complete fluent sentences, and the original evidence-"
+@@ -470,6 +477,7 @@ class PreparationStages:
+                  'previous_reviewed_script':original['script'],
+                  'rejected_completed_draft':draft,
+                  'invalid_reason':type(error).__name__,
++                 'measured_length_feedback':measured_feedback,
+                  'actual_voice_duration_ms':measured_ms,
+                  'length_window':window,'sentence_counts':active_counts,
+                  'sentence_limits':active_limits},alternate)
+diff --git a/factory_next/voice_length_repair.py b/factory_next/voice_length_repair.py
+index 23331c0..5ae6029 100644
+--- a/factory_next/voice_length_repair.py
++++ b/factory_next/voice_length_repair.py
+@@ -344,4 +344,28 @@ def trim_complete_expansion_locally(result, schema, previous_scenes, evidence, w
+                 best=score,edited
+     if best is None:
+         raise NaturalDurationRejected('cannot locally correct completed voice expansion safely')
+-    return best[1]
+\ No newline at end of file
++    return best[1]
++
++def measured_revision_feedback(reply, window):
++    """Expose measured length errors to the one already-budgeted repair call."""
++    sentences=[]
++    if not isinstance(reply,dict):
++        raise ValueError('completed sentence object required')
++    for beat,row in reply.items():
++        if not isinstance(row,dict):
++            raise ValueError('completed sentence object required')
++        for field,text in row.items():
++            if not isinstance(text,str):
++                raise ValueError('completed sentence text required')
++            sentences.append({'beat':beat,'field':field,'characters':len(text.strip()),
++                              'words':len(text.split())})
++    if not sentences or len(sentences)>32:
++        raise ValueError('bounded completed sentence set required')
++    text=' '.join(text.strip() for row in reply.values() for text in row.values())
++    return {'observed_words':len(text.split()),'observed_characters':len(text),
++            'target_words':window['target_words'],
++            'target_characters':window['target_characters'],
++            'character_change_needed':window['target_characters']-len(text),
++            'word_change_needed':window['target_words']-len(text.split()),
++            'direction':'shorten' if len(text)>window['target_characters'] else 'expand',
++            'sentences':sentences}

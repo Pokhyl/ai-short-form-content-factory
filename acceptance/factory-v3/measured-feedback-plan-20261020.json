@@ -1,0 +1,12 @@
+{
+  "id": "ed1a438c-167e-405e-8c45-4c3a333b659b",
+  "source_job": "95170921-1183-461c-bcd0-5278445a8daf",
+  "purpose": "Test measured correction feedback on saved source/photos/story and actual 19224ms voice. No new TTS or video.",
+  "max_metadata": 1,
+  "max_gemini": 3,
+  "retry": false,
+  "tts": 0,
+  "search": 0,
+  "stop": "first final result/error; no repeat",
+  "code": "candidate working tree, not deployed"
+}
